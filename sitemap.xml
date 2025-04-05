@@ -1,77 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset
-      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
-
-
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<!--  created with Free Online Sitemap Generator www.xml-sitemaps.com  -->
 <url>
-  <loc>https://www.kinesica.com.ar/</loc>
-  <lastmod>2025-04-03T16:45:35+00:00</lastmod>
-  <priority>1.00</priority>
+<loc>https://www.kinesica.com.ar/</loc>
+<lastmod>2025-04-05T05:42:47+00:00</lastmod>
+<priority>1.00</priority>
 </url>
 <url>
-  <loc>https://www.kinesica.com.ar/index.html</loc>
-  <lastmod>2025-04-03T16:45:35+00:00</lastmod>
-  <priority>0.80</priority>
+<loc>https://www.kinesica.com.ar/index.html</loc>
+<lastmod>2025-04-05T05:42:47+00:00</lastmod>
+<priority>0.80</priority>
 </url>
 <url>
-  <loc>https://www.kinesica.com.ar/index_en.html</loc>
-  <lastmod>2025-04-03T16:45:35+00:00</lastmod>
-  <priority>0.80</priority>
+<loc>https://www.kinesica.com.ar/index_en.html</loc>
+<lastmod>2025-04-05T05:42:47+00:00</lastmod>
+<priority>0.80</priority>
 </url>
 <url>
-  <loc>https://www.kinesica.com.ar/rpg.html</loc>
-  <lastmod>2025-04-03T16:45:36+00:00</lastmod>
-  <priority>0.80</priority>
+<loc>https://www.kinesica.com.ar/rpg.html</loc>
+<lastmod>2025-04-05T05:42:47+00:00</lastmod>
+<priority>0.80</priority>
 </url>
 <url>
-  <loc>https://www.kinesica.com.ar/osteopatia.html</loc>
-  <lastmod>2025-04-03T16:45:35+00:00</lastmod>
-  <priority>0.80</priority>
+<loc>https://www.kinesica.com.ar/osteopatia.html</loc>
+<lastmod>2025-04-05T05:42:47+00:00</lastmod>
+<priority>0.80</priority>
 </url>
 <url>
-  <loc>https://www.kinesica.com.ar/cadenas.html</loc>
-  <lastmod>2025-04-03T16:45:35+00:00</lastmod>
-  <priority>0.80</priority>
+<loc>https://www.kinesica.com.ar/cadenas.html</loc>
+<lastmod>2025-04-05T05:42:47+00:00</lastmod>
+<priority>0.80</priority>
 </url>
 <url>
-  <loc>https://www.kinesica.com.ar/manipulaciones.html</loc>
-  <lastmod>2025-04-03T16:45:35+00:00</lastmod>
-  <priority>0.80</priority>
+<loc>https://www.kinesica.com.ar/manipulaciones.html</loc>
+<lastmod>2025-04-05T05:42:47+00:00</lastmod>
+<priority>0.80</priority>
 </url>
 <url>
-  <loc>https://www.kinesica.com.ar/neurodinamia.html</loc>
-  <lastmod>2025-04-03T16:45:35+00:00</lastmod>
-  <priority>0.80</priority>
+<loc>https://www.kinesica.com.ar/neurodinamia.html</loc>
+<lastmod>2025-04-05T05:42:47+00:00</lastmod>
+<priority>0.80</priority>
 </url>
 <url>
-  <loc>https://www.kinesica.com.ar/rpg_en.html</loc>
-  <lastmod>2025-04-03T16:45:36+00:00</lastmod>
-  <priority>0.64</priority>
+<loc>https://www.kinesica.com.ar/cv-norberto-brude.pdf</loc>
+<lastmod>2025-04-05T05:42:47+00:00</lastmod>
+<priority>0.80</priority>
 </url>
 <url>
-  <loc>https://www.kinesica.com.ar/osteopatia_en.html</loc>
-  <lastmod>2025-04-03T16:45:35+00:00</lastmod>
-  <priority>0.64</priority>
+<loc>https://www.kinesica.com.ar/rpg_en.html</loc>
+<lastmod>2025-04-05T05:42:47+00:00</lastmod>
+<priority>0.64</priority>
 </url>
 <url>
-  <loc>https://www.kinesica.com.ar/cadenas_en.html</loc>
-  <lastmod>2025-04-03T16:45:35+00:00</lastmod>
-  <priority>0.64</priority>
+<loc>https://www.kinesica.com.ar/osteopatia_en.html</loc>
+<lastmod>2025-04-05T05:42:47+00:00</lastmod>
+<priority>0.64</priority>
 </url>
 <url>
-  <loc>https://www.kinesica.com.ar/manipulaciones_en.html</loc>
-  <lastmod>2025-04-03T16:45:35+00:00</lastmod>
-  <priority>0.64</priority>
+<loc>https://www.kinesica.com.ar/cadenas_en.html</loc>
+<lastmod>2025-04-05T05:42:47+00:00</lastmod>
+<priority>0.64</priority>
 </url>
 <url>
-  <loc>https://www.kinesica.com.ar/neurodinamia_en.html</loc>
-  <lastmod>2025-04-03T16:45:35+00:00</lastmod>
-  <priority>0.64</priority>
+<loc>https://www.kinesica.com.ar/manipulaciones_en.html</loc>
+<lastmod>2025-04-05T05:42:47+00:00</lastmod>
+<priority>0.64</priority>
 </url>
-
-
+<url>
+<loc>https://www.kinesica.com.ar/neurodinamia_en.html</loc>
+<lastmod>2025-04-05T05:42:47+00:00</lastmod>
+<priority>0.64</priority>
+</url>
 </urlset>
