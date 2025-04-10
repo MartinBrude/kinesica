@@ -373,7 +373,7 @@ box-shadow: 0px 2px 6px 0px rgba(230,230,230,1);}
 #navigation li:hover > ul > li { height: 47px; }
 #navigation ul ul ul { margin-left: 100%; top: 0; }
 #navigation.align-right ul ul ul { margin-left: 0; margin-right: 100%; }
-#navigation ul ul li a { padding: 16px; width: 170px; font-size: 14px; text-decoration: none; color: #fff; font-weight: 500; background: #031c42; text-transform: uppercase; border-bottom: 2px solid #069c57; }
+#navigation ul ul li a { padding: 16px; width: 170px; font-size: 14px; text-decoration: none; color: #fff; font-weight: 500; background: #031c42; text-transform: uppercase; border-bottom: 2px solid #ccc; }
 #navigation ul ul li:last-child > a, #navigation ul ul li.last-item > a { border-bottom: 0; }
 #navigation ul ul li:hover > a, #navigation ul ul li a:hover { color: #ffffff; background-color: #031c42; }
 #navigation ul ul li.has-sub > a:after { position: absolute; top: 16px; right: 11px; width: 8px; height: 2px; display: block; background: #dddddd; content: ''; }
