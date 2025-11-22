@@ -317,6 +317,9 @@ label { }
 .header-top { background-color: #031c42; font-size: 15px; padding-top: 11px; padding-bottom: 11px; line-height: 15px; color: #fff; font-weight: 500; }
 .top-text { text-align: right; }
 .top-text .text-block { padding-left: 20px; color: #fff; line-height: 18px; }
+.lang-switcher { list-style: none; padding: 0; margin: 0; display: inline-flex; }
+.lang-switcher li { margin-left: 10px; }
+.lang-switcher li a { text-decoration: none; font-size: 20px; }
 .call-block { }
 .call-no { }
 .mail-block { }

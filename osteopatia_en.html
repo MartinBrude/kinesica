@@ -11,24 +11,26 @@
       <title>Kinésica - Clinic for Kinesiology, Osteopathy and RPG</title>
       <!-- Bootstrap -->
       <link href="css/bootstrap.min.css" rel="stylesheet">
+      <!-- Preconnect para mejorar carga de recursos externos -->
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link rel="preconnect" href="https://www.googletagmanager.com">
       <!-- Google Fonts -->
-      <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i" rel="stylesheet" media="print" onload="this.media=\'all\'">
+      <noscript><link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i" rel="stylesheet"></noscript>
       <!-- Font Awesome -->
       <link href="css/font-awesome.min.css" rel="stylesheet">
       <!-- Style -->
       <link href="css/style.css" rel="stylesheet">
       <link rel="stylesheet" href="css/whatsapp.css">
+      <link rel="canonical" href="https://www.kinesica.com.ar/osteopatia_en.html" />
       <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
       <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
       <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
       <![endif]-->
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<meta http-equiv="Pragma" content="no-cache" />
-<meta http-equiv="Expires" content="0" />
-
-      <meta property="og:title" content="Kinesica - Center for Physiotherapy, Osteopathy, and Manual Therapy">
+<meta property="og:title" content="Kinesica - Center for Physiotherapy, Osteopathy, and Manual Therapy">
       <meta property="og:description" content="Kinesica is a physiotherapy, osteopathy, and manual therapy center.">
       <meta property="og:image" content="https://kinesica.com.ar/images/logo.svg"> <!-- Replace with actual image URL -->
       <meta property="og:url" content="https://kinesica.com.ar"> <!-- Replace with actual website URL -->
@@ -57,13 +59,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                   </span>
                </div>
                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
-                  <div class="top-text" style="text-align: right;">
-                     <ul style="list-style: none; padding: 0; margin: 0; display: inline-flex;">
-                        <li style="margin-left: 10px;">
-                           <a href="osteopatia.html" style="text-decoration: none; font-size: 20px;"><img src="images/es.svg" alt="bandera español" width="24" height="16"></a>
+                  <div class="top-text">
+                     <ul class="lang-switcher">
+                        <li>
+                           <a href="es.html"><img src="images/es.svg" alt="bandera español" width="24" height="16" loading="lazy"></a>
                         </li>
-                        <li style="margin-left: 10px;">
-                           <a href="osteopatia_en.html" style="text-decoration: none; font-size: 20px;"><img src="images/gb.svg" alt="bandera inglesa" width="24" height="16"></a>
+                        <li>
+                           <a href="gb.html"><img src="images/gb.svg" alt="bandera inglesa" width="24" height="16" loading="lazy"></a>
                         </li>
                      </ul>
                   </div>
@@ -75,7 +77,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
          <div class="container">
             <div class="row">
                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                  <a href="index_en.html"><img src="images/logo.svg" alt="logo kinesica" width="224" height="64"></a>
+                  <a href="index_en.html"><img src="images/logo.svg" alt="logo kinesica" width="224" height="64" loading="eager"></a>
                </div>
                <div class="col-lg-8 col-md-4 col-sm-12 col-xs-12">
                   <div class="navigation">
@@ -111,7 +113,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="row">
          <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
             <h1>Osteopathy</h1>
-            <!-- <img src="images/service-single.jpg" alt="" class="img-responsive mb30"> -->
+            <!-- <img src="images/service-single.jpg" alt="" class="img-responsive mb30" loading="lazy"> -->
             <p class="lead">Osteopathy is a method of evaluating and treating somatic dysfunctions and their associated symptoms.</p>
             <p>It links symptoms to the lack of mobility in the body's tissues (muscles, viscera, and connective tissue). Various treatment techniques are used depending on the characteristics of the tissues involved.</p>
             <p>The fundamental principle is that healing depends on the body's ability to heal itself. When dysfunction or certain pathologies are present, this ability is limited by the loss of movement in the affected tissues. Restoring mobility allows the body to activate its self-healing mechanisms.</p>
@@ -221,8 +223,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <script src="js/jquery.min.js"></script>
       <!-- Include all compiled plugins (below), or include individual files as needed -->
       <script src="js/bootstrap.min.js"></script>
-      <script src="js/menumaker.js"></script>
-      <script src="js/jquery.sticky.js"></script>
-      <script src="js/sticky-header.js"></script>
+      <script src="js/menumaker.js" defer></script>
+      <script src="js/jquery.sticky.js" defer></script>
+      <script src="js/sticky-header.js" defer></script>
    </body>
 </html>
