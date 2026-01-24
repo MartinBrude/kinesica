@@ -11,10 +11,12 @@
   border-radius: 50%;
   text-align: center;
   font-size: 28px;
-  box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
   z-index: 9999;
   transition: transform 0.2s ease-in-out;
-  animation: bounceIn 1s ease-out, pulse 3s infinite ease-in-out;
+  animation:
+    bounceIn 1s ease-out,
+    pulse 3s infinite ease-in-out;
 }
 .whatsapp-float:hover {
   transform: scale(1.1);
@@ -43,7 +45,8 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {

@@ -1,0 +1,6 @@
+# Minified / vendor - do not reformat
+**/*.min.js
+**/*.min.css
+node_modules
+# CSS bundled as .js (Owl Carousel)
+js/slider-carousel.js
