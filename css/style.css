@@ -388,9 +388,11 @@ label {}
 }
 
 .btn-white:hover {
-  background-color: #005f99;
-  border-color: #005f99;
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
   color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .btn-white.focus,
