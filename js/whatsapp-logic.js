@@ -9,23 +9,24 @@ document.addEventListener("DOMContentLoaded", function () {
   const isMariaPeriod = now >= startDate && now <= endDate;
 
   // Configuración de datos según el periodo
+	‪5491128531224‬
   const contactData = {
     whatsapp: {
-      num: isMariaPeriod ? "5492236807252" : "5491161564311",
-      numShort: isMariaPeriod ? "542236807252" : "541161564311", // Sin el 9 adicional para algunos enlaces
-      text: isMariaPeriod ? "+54 (223) 680-7252" : "+54 (11) 6156-4311",
-      textShort: isMariaPeriod ? "+54 (223) 680-7252" : "+54 (11) 61564311", // Formato corto sin guiones
+      num: isMariaPeriod ? "5491128531224‬" : "5491161564311",
+      numShort: isMariaPeriod ? "5491128531224‬" : "541161564311", // Sin el 9 adicional para algunos enlaces
+      text: isMariaPeriod ? "+54 (911) 2853-1224‬" : "+54 (11) 6156-4311",
+      textShort: isMariaPeriod ? "+54 (911) 2853-1224‬" : "+54 (11) 61564311", // Formato corto sin guiones
     },
     phone: {
-      text: isMariaPeriod ? "+54 (223) 680-7252" : "+54 (11) 6156-4311",
-      textShort: isMariaPeriod ? "+54 (223) 680-7252" : "+54 (11) 61564311",
-      jsonLd: isMariaPeriod ? "+54 223 680 7252" : "+54 11 6156 4311",
+      text: isMariaPeriod ? "+54 (911) 2853-1224‬" : "+54 (11) 6156-4311",
+      textShort: isMariaPeriod ? "+54 (911) 2853-1224‬" : "+54 (11) 61564311",
+      jsonLd: isMariaPeriod ? "+54 911 2853-1224‬" : "+54 11 6156 4311",
     },
     telegram: {
       // Asumiendo que el Telegram de María es el mismo número
       // Si el de ella es distinto, cámbialo aquí:
-      num: isMariaPeriod ? "5492236807252" : "541131814589",
-      text: isMariaPeriod ? "+54 (223) 680-7252" : "+54 (11) 3181-4589",
+      num: isMariaPeriod ? "5491128531224‬" : "541161564311",
+      text: isMariaPeriod ? "+54 (911) 2853-1224‬" : "+54 (11) 6156-4311",
     },
   };
 
