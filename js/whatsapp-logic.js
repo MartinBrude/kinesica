@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+function kinesicaApplyWhatsAppContact() {
   const now = new Date();
   const year = now.getFullYear();
 
@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const sanitized = String(phone).replace(/\D/g, "");
     document.querySelectorAll(selector).forEach(el => {
       el.href = `${urlBase}${sanitized}`;
-      // Si realmente quieres el comportamiento de doble apertura, mantenlo, 
+      // Si realmente quieres el comportamiento de doble apertura, mantenlo,
       // pero wa.me es el estándar "limpio".
     });
   }
@@ -40,4 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     } catch (e) { /* Silencioso */ }
   });
-});
+}
+
+window.kinesicaApplyWhatsAppContact = kinesicaApplyWhatsAppContact;
+document.addEventListener("DOMContentLoaded", kinesicaApplyWhatsAppContact);
