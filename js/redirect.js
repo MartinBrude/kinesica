@@ -1,30 +1,46 @@
-(function() {
+(function () {
   try {
-    // Check if the user has already been redirected or manually selected a language
-    var hasRedirected = localStorage.getItem('kinesica_lang_redirected');
-
-    if (!hasRedirected) {
-      // Get browser language
-      var userLang = navigator.language || navigator.userLanguage; 
-      
-      // Check if language starts with 'en' (English)
-      if (userLang && userLang.toLowerCase().startsWith('en')) {
-        // Mark as redirected so it doesn't happen again
-        localStorage.setItem('kinesica_lang_redirected', 'true');
-        
-        // Redirect to English version
-        // We assume we are on index.html, so we go to index_en.html
-        // If we want to be smarter about other pages, we'd need a map, but request was simple.
-        if (!window.location.href.includes('_en.html')) {
-             window.location.replace('index_en.html');
-        }
-      } else {
-        // If not english, we also mark as 'visited' so we don't keep checking unnecessarily? 
-        // Or maybe strictly "only redirect if english". 
-        // Let's set the flag anyway so we don't run this logic every single time if they prefer Spanish.
-        localStorage.setItem('kinesica_lang_redirected', 'true');
-      }
+    if (window.location.href.includes('_en.html')) {
+      return;
     }
+
+    var hasRedirected = localStorage.getItem('kinesica_lang_redirected');
+    if (hasRedirected) {
+      return;
+    }
+
+    var userLang = navigator.language || navigator.userLanguage;
+    if (!userLang || !userLang.toLowerCase().startsWith('en')) {
+      localStorage.setItem('kinesica_lang_redirected', 'true');
+      return;
+    }
+
+    var path = window.location.pathname;
+    var file = path.substring(path.lastIndexOf('/') + 1);
+    if (!file || file === '/') {
+      file = 'index.html';
+    }
+
+    var enMap = {
+      'index.html': 'index_en.html',
+      'rpg.html': 'rpg_en.html',
+      'osteopatia.html': 'osteopatia_en.html',
+      'cadenas.html': 'cadenas_en.html',
+      'manipulaciones.html': 'manipulaciones_en.html',
+      'neurodinamia.html': 'neurodinamia_en.html',
+      'articulos.html': 'articulos_en.html',
+      'cervicalgia.html': 'cervicalgia_en.html',
+      'lumbalgia.html': 'lumbalgia_en.html',
+    };
+
+    var target = enMap[file];
+    if (!target) {
+      localStorage.setItem('kinesica_lang_redirected', 'true');
+      return;
+    }
+
+    localStorage.setItem('kinesica_lang_redirected', 'true');
+    window.location.replace(target);
   } catch (e) {
     console.warn('Language redirect suppressed', e);
   }

@@ -2,15 +2,15 @@
 <html lang="es">
 
 <head>
-  <script src="js/redirect.js"></script>
-  <link rel="icon" type="image/svg" href="images/favicon.svg" />
-  <link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <script src="js/redirect.js"></script>
+  <link rel="icon" type="image/svg" href="images/favicon.svg" />
+  <link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
   <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
   <meta name="description"
-    content="Kinesica es un centro de kinesiología, osteopatía y terapias manuales en Palermo que ofrece tratamientos personalizados." />
+    content="Kinésica es un centro de kinesiología, osteopatía y terapias manuales en Palermo que ofrece tratamientos personalizados." />
   <meta name="keywords"
     content="Kinesiología, Osteopatía, Terapias manuales, neurodinamia, manipulaciones viscerales, RPG, dolor de espalda, lumbalgia, cervicales, cintura, viscerales, sesión, tratamiento, cuello" />
   <title>
@@ -45,57 +45,28 @@
     <![endif]-->
   <!-- Open Graph Meta Tags (Facebook, LinkedIn, etc.) -->
   <meta property="og:title" content="Kinésica - Centro de atención en Kinesiología, Osteopatía y RPG" />
-  <meta property="og:description" content="Kinesica es un centro de kinesiología, osteopatía y terapias manuales." />
-  <meta property="og:image" content="https://kinesica.com.ar/images/logo.svg" />
-  <meta property="og:url" content="https://kinesica.com.ar" />
+  <meta property="og:description" content="Kinésica es un centro de kinesiología, osteopatía y terapias manuales en Palermo." />
+  <meta property="og:image" content="https://www.kinesica.com.ar/images/logo.svg" />
+  <meta property="og:url" content="https://www.kinesica.com.ar/" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Kinésica" />
+  <meta property="og:locale" content="es_AR" />
+  <meta property="og:locale:alternate" content="en_US" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Kinésica - Centro de atención en Kinesiología, Osteopatía y RPG" />
+  <meta name="twitter:description" content="Kinésica es un centro de kinesiología, osteopatía y terapias manuales en Palermo." />
+  <meta name="twitter:image" content="https://www.kinesica.com.ar/images/logo.svg" />
   <!-- Google Tag Manager -->
-  <script>
-    (function (w, d, s, l, i) {
-      w[l] = w[l] || [];
-      w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
-      var f = d.getElementsByTagName(s)[0],
-        j = d.createElement(s),
-        dl = l != "dataLayer" ? "&l=" + l : "";
-      j.async = true;
-      j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
-      f.parentNode.insertBefore(j, f);
-    })(window, document, "script", "dataLayer", "GTM-NVDTCTXM");
-  </script>
+  <script src="partials/gtm-head.js"></script>
   <!-- End Google Tag Manager -->
-  <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "MedicalClinic",
-        "name": "Kinésica",
-        "image": "https://www.kinesica.com.ar/images/logo.svg",
-        "@id": "https://www.kinesica.com.ar/",
-        "url": "https://www.kinesica.com.ar/",
-        "telephone": "+54 11 6156 4311",
-        "address": {
-          "@type": "PostalAddress",
-          "streetAddress": "Charcas 3889 5ª B",
-          "addressLocality": "Ciudad Autónoma de Buenos Aires",
-          "addressCountry": "AR"
-        },
-        "description": "Kinésica ofrece servicios de kinesiología, osteopatía y terapia manual, incluyendo métodos como RPG, acupuntura y neurodinamia.",
-        "medicalSpecialty": ["Kinesiología", "Osteopatía", "Terapia Manual"],
-        "founder": [
-          {
-            "@type": "Person",
-            "name": "Norberto Silvio Brude"
-          }
-        ],
-        "sameAs": ["https://www.facebook.com/kinesicabrude"]
-      }
-    </script>
+  <script src="partials/medical-clinic-schema.js"></script>
 </head>
 
 <body>
   <!-- Google Tag Manager (noscript) -->
-  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NVDTCTXM" height="0" width="0"
-      style="display: none; visibility: hidden"></iframe></noscript>
+  <div id="site-gtm-body-root"></div>
+  <script src="partials/gtm-body.js"></script>
+  <script src="js/gtm-body-include.js"></script>
   <!-- End Google Tag Manager (noscript) -->
   <div class="header-top">
     <!-- header-top-->
@@ -127,7 +98,7 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-          <a href="https://kinesica.com.ar">
+          <a href="https://www.kinesica.com.ar/">
             <img src="images/logo.svg" title="logo kinesica" alt="logo kinesica" width="224" height="64"
               loading="eager" />
           </a>
@@ -586,10 +557,9 @@
   <script src="partials/footer-es.js"></script>
   <script src="js/footer-include.js"></script>
   <!-- Botón flotante de WhatsApp -->
-  <a id="whatsapp-link" href="https://wa.me/5491161564311" class="whatsapp-float" target="_blank"
-    aria-label="Contactar por WhatsApp" rel="noopener noreferrer">
-    <i class="fa fa-whatsapp whatsapp-icon"></i>
-  </a>
+  <div id="site-whatsapp-root" data-whatsapp-lang="es"></div>
+  <script src="partials/whatsapp-float-es.js"></script>
+  <script src="js/whatsapp-float-include.js"></script>
   <script src="js/whatsapp-logic.js"></script>
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
   <script src="js/jquery.min.js"></script>
