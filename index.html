@@ -5,6 +5,8 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <script src="js/lang-routes.js"></script>
+  <script src="js/lang-preference.js"></script>
   <script src="js/redirect.js"></script>
   <link rel="icon" type="image/svg" href="images/favicon.svg" />
   <link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
@@ -32,6 +34,7 @@
   <link rel="canonical" href="https://www.kinesica.com.ar/" />
   <link rel="alternate" hreflang="es" href="https://www.kinesica.com.ar/" />
   <link rel="alternate" hreflang="en" href="https://www.kinesica.com.ar/index_en.html" />
+  <link rel="alternate" hreflang="fr" href="https://www.kinesica.com.ar/index_fr.html" />
   <link rel="alternate" hreflang="x-default" href="https://www.kinesica.com.ar/" />
   <!-- Preconnect para mejorar carga de recursos externos -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -52,6 +55,7 @@
   <meta property="og:site_name" content="Kinésica" />
   <meta property="og:locale" content="es_AR" />
   <meta property="og:locale:alternate" content="en_US" />
+  <meta property="og:locale:alternate" content="fr_FR" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Kinésica - Centro de atención en Kinesiología, Osteopatía y RPG" />
   <meta name="twitter:description" content="Kinésica es un centro de kinesiología, osteopatía y terapias manuales en Palermo." />
@@ -88,6 +92,10 @@
                 <a href="index_en.html"><img src="images/gb.svg" title="bandera inglesa" alt="bandera inglesa"
                     width="24" height="16" /></a>
               </li>
+              <li>
+                <a href="index_fr.html"><img src="images/fr.svg" alt="bandera francesa" width="24" height="16" /></a>
+              </li>
+            
             </ul>
           </div>
         </div>
@@ -222,6 +230,7 @@
             </div>
             <!-- /.service block -->
           </div>
+          
         </div>
         <br />
         <div class="row">
@@ -274,6 +283,23 @@
             </div>
             <!-- /.service block -->
           </div>
+          <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12" data-feature="atm" hidden>
+            <div class="service-block">
+              <div class="service-img mb20">
+                <a href="atm.html"><img src="images/atm.jpg" title="ATM"
+                    alt="Tratamiento de ATM – articulación temporomandibular" class="img-responsive"
+                    loading="lazy" /></a>
+              </div>
+              <div class="service-content">
+                <h2><a href="atm.html" class="title">ATM</a></h2>
+                <p>
+                  ATM (Articulación Temporomandibular) es una especialidad que trata las disfunciones de la
+                  mandíbula, aliviando dolor, chasquidos y bruxismo mediante terapia manual, ejercicios y
+                  reeducación postural.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -294,7 +320,6 @@
           </div>
         </div>
       </div>
-    </section>
     </section>
     <!-- /.call to action -->
     <!--
@@ -554,8 +579,10 @@
         </section>
   </main>
   <div id="site-footer-root" data-footer-lang="es"></div>
+  <script src="js/site-config.js"></script>
   <script src="partials/footer-es.js"></script>
   <script src="js/footer-include.js"></script>
+  <script src="js/feature-flags.js"></script>
   <!-- Botón flotante de WhatsApp -->
   <div id="site-whatsapp-root" data-whatsapp-lang="es"></div>
   <script src="partials/whatsapp-float-es.js"></script>

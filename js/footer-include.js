@@ -3,12 +3,20 @@
   if (!root) {
     return;
   }
-  var lang = root.getAttribute("data-footer-lang") === "en" ? "en" : "es";
+  var langAttr = root.getAttribute("data-footer-lang") || "es";
+  var lang =
+    langAttr === "en" || langAttr === "fr" ? langAttr : "es";
   var html =
-    lang === "en" ? window.__KINESICA_FOOTER_SNIPPET_EN : window.__KINESICA_FOOTER_SNIPPET_ES;
+    lang === "en"
+      ? window.__KINESICA_FOOTER_SNIPPET_EN
+      : lang === "fr"
+        ? window.__KINESICA_FOOTER_SNIPPET_FR
+        : window.__KINESICA_FOOTER_SNIPPET_ES;
   if (!html) {
     console.error(
-      "[footer-include] Missing snippet: load partials/footer-" + lang + ".js before js/footer-include.js"
+      "[footer-include] Missing snippet: load partials/footer-" +
+        lang +
+        ".js before js/footer-include.js"
     );
     return;
   }

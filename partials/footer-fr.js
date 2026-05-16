@@ -1,26 +1,26 @@
-/* English footer markup. Loaded with <script src>; works from file:// (unlike fetch of .html). */
-window.__KINESICA_FOOTER_SNIPPET_EN = `
+/* French footer markup. Loaded with <script src>; works from file:// (unlike fetch of .html). */
+window.__KINESICA_FOOTER_SNIPPET_FR = `
 <footer class="footer">
   <div class="container">
     <div class="row">
       <div class="col-lg-4 col-md-2 col-sm-2 col-xs-12">
         <div class="footer-widget">
-          <h2 class="widget-title">Methods & Techniques</h2>
+          <h2 class="widget-title">Méthodes et techniques</h2>
           <ul class="listnone">
-            <li><a href="rpg_en.html">RPG</a></li>
-            <li><a href="osteopatia_en.html">Osteopathy</a></li>
-            <li><a href="cadenas_en.html">Physiological Chains</a></li>
+            <li><a href="rpg_fr.html">RPG</a></li>
+            <li><a href="osteopatia_fr.html">Ostéopathie</a></li>
+            <li><a href="cadenas_fr.html">Chaînes physiologiques</a></li>
             <li>
-              <a href="manipulaciones_en.html">Visceral Manipulations</a>
+              <a href="manipulaciones_fr.html">Manipulations viscérales</a>
             </li>
-            <li><a href="neurodinamia_en.html">Neurodynamics</a></li>
-            <li data-feature="atm" hidden><a href="atm_en.html">ATM (TMJ)</a></li>
+            <li><a href="neurodinamia_fr.html">Neurodynamique</a></li>
+            <li data-feature="atm" hidden><a href="atm_fr.html">ATM</a></li>
           </ul>
         </div>
       </div>
-      <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+      <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
         <div class="footer-widget footer-social">
-          <h2 class="widget-title">Social media</h2>
+          <h2 class="widget-title">Réseaux sociaux</h2>
           <ul class="listnone">
             <li>
               <a href="https://www.instagram.com/kinesicabrude/" target="_blank" rel="noopener noreferrer"><i
@@ -35,7 +35,7 @@ window.__KINESICA_FOOTER_SNIPPET_EN = `
       </div>
       <div class="col-lg-4 col-md-2 col-sm-2 col-xs-12">
         <div class="footer-widget footer-social">
-          <h2 class="widget-title">Clinic</h2>
+          <h2 class="widget-title">Cabinet</h2>
           <ul class="listnone">
             <li>
               <a href="https://maps.app.goo.gl/urpkh4HYe7dSdjPS9" target="_blank" rel="noopener noreferrer"><i

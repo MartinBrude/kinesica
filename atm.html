@@ -10,12 +10,13 @@
   <script src="js/lang-routes.js"></script>
   <script src="js/lang-preference.js"></script>
   <script src="js/redirect.js"></script>
+  <script src="js/site-config.js"></script>
   <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
   <meta name="description"
-    content="Reeducación Postural Global (RPG): método de tratamiento que trabaja sobre la flexibilización de músculos estáticos. Sesiones individuales en Palermo, Buenos Aires." />
+    content="ATM (Articulación Temporomandibular): tratamiento de disfunciones de la mandíbula, dolor, chasquidos y bruxismo con terapia manual en Palermo." />
   <meta name="keywords"
-    content="Kinesiología, Osteopatía, Terapias manuales, neurodinamia, manipulaciones viscerales, RPG, dolor de espalda, lumbalgia, cervicales, cintura, viscerales, sesión, tratamiento, cuello" />
-  <title>RPG - Reeducación Postural Global | Kinésica</title>
+    content="Kinesiología, Osteopatía, Terapias manuales, ATM, articulación temporomandibular, bruxismo, mandíbula, Palermo" />
+  <title>ATM – Articulación Temporomandibular | Kinésica</title>
   <!-- Bootstrap -->
   <link href="css/bootstrap.min.css" rel="stylesheet" />
   <!-- Preconnect para mejorar carga de recursos externos -->
@@ -24,7 +25,7 @@
   <link rel="preconnect" href="https://www.googletagmanager.com" />
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i" rel="stylesheet"
-    media="print" onload="this.media = 'all'" />
+    media="print" onload="this.media='all'" />
   <noscript>
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i" rel="stylesheet" />
   </noscript>
@@ -33,11 +34,11 @@
   <!-- Style -->
   <link href="css/style.css" rel="stylesheet" />
   <link rel="stylesheet" href="css/whatsapp.css" />
-  <link rel="canonical" href="https://www.kinesica.com.ar/rpg.html" />
-  <link rel="alternate" hreflang="es" href="https://www.kinesica.com.ar/rpg.html" />
-  <link rel="alternate" hreflang="en" href="https://www.kinesica.com.ar/rpg_en.html" />
-  <link rel="alternate" hreflang="fr" href="https://www.kinesica.com.ar/rpg_fr.html" />
-  <link rel="alternate" hreflang="x-default" href="https://www.kinesica.com.ar/rpg.html" />
+  <link rel="canonical" href="https://www.kinesica.com.ar/atm.html" />
+  <link rel="alternate" hreflang="es" href="https://www.kinesica.com.ar/atm.html" />
+  <link rel="alternate" hreflang="en" href="https://www.kinesica.com.ar/atm_en.html" />
+  <link rel="alternate" hreflang="fr" href="https://www.kinesica.com.ar/atm_fr.html" />
+  <link rel="alternate" hreflang="x-default" href="https://www.kinesica.com.ar/atm.html" />
   <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
   <!--[if lt IE 9]>
@@ -45,11 +46,11 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
   <!-- Open Graph Meta Tags (Facebook, LinkedIn, etc.) -->
-  <meta property="og:title" content="RPG - Reeducación Postural Global | Kinésica" />
+  <meta property="og:title" content="ATM – Articulación Temporomandibular | Kinésica" />
   <meta property="og:description"
-    content="Reeducación Postural Global (RPG): método de tratamiento que trabaja sobre la flexibilización de músculos estáticos. Sesiones individuales en Palermo, Buenos Aires." />
-  <meta property="og:image" content="https://www.kinesica.com.ar/images/rpg.jpg" />
-  <meta property="og:url" content="https://www.kinesica.com.ar/rpg.html" />
+    content="ATM (Articulación Temporomandibular): tratamiento de disfunciones de la mandíbula, dolor, chasquidos y bruxismo con terapia manual en Palermo." />
+  <meta property="og:image" content="https://www.kinesica.com.ar/images/atm.jpg" />
+  <meta property="og:url" content="https://www.kinesica.com.ar/atm.html" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Kinésica" />
 
@@ -57,9 +58,10 @@
   <meta property="og:locale:alternate" content="en_US" />
   <meta property="og:locale:alternate" content="fr_FR" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="RPG - Reeducación Postural Global | Kinésica" />
-  <meta name="twitter:description" content="Reeducación Postural Global (RPG): método de tratamiento que trabaja sobre la flexibilización de músculos estáticos. Sesiones individuales en Palermo, Buenos Aires." />
-  <meta name="twitter:image" content="https://www.kinesica.com.ar/images/rpg.jpg" />
+  <meta name="twitter:title" content="ATM – Articulación Temporomandibular | Kinésica" />
+  <meta name="twitter:description"
+    content="ATM (Articulación Temporomandibular): tratamiento de disfunciones de la mandíbula, dolor, chasquidos y bruxismo con terapia manual en Palermo." />
+  <meta name="twitter:image" content="https://www.kinesica.com.ar/images/atm.jpg" />
   <!-- Google Tag Manager -->
   <script src="partials/gtm-head.js"></script>
   <!-- End Google Tag Manager -->
@@ -77,12 +79,13 @@
           {
             "@type": "ListItem",
             "position": 2,
-            "name": "RPG",
-            "item": "https://www.kinesica.com.ar/rpg.html"
+            "name": "ATM",
+            "item": "https://www.kinesica.com.ar/atm.html"
           }
         ]
       }
     </script>
+  <script src="js/feature-flags.js"></script>
 </head>
 
 <body>
@@ -104,13 +107,14 @@
           <div class="top-text">
             <ul class="lang-switcher">
               <li>
-                <a href="rpg.html"><img src="images/es.svg" alt="bandera español" width="24" height="16" /></a>
+                <a href="atm.html"><img src="images/es.svg" alt="bandera español" width="24" height="16" /></a>
               </li>
               <li>
-                <a href="rpg_en.html"><img src="images/gb.svg" alt="bandera inglesa" width="24" height="16" /></a>
+                <a href="atm_en.html"><img src="images/gb.svg" alt="bandera inglesa" width="24"
+                    height="16" /></a>
               </li>
               <li>
-                <a href="rpg_fr.html"><img src="images/fr.svg" alt="bandera francesa" width="24" height="16" /></a>
+                <a href="atm_fr.html"><img src="images/fr.svg" alt="bandera francesa" width="24" height="16" /></a>
               </li>
             
             </ul>
@@ -151,7 +155,7 @@
         <div class="col-lg-12">
           <ol class="breadcrumb">
             <li><a href="index.html">Home</a></li>
-            <li class="active">RPG</li>
+            <li class="active">ATM</li>
           </ol>
         </div>
       </div>
@@ -160,26 +164,25 @@
       <div class="container">
         <div class="row">
           <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
-            <h1>RPG – Reeducación postural global</h1>
-            <!-- <img src="images/service-single.jpg" alt="" class="img-responsive mb30"> -->
+            <h1>ATM – Articulación temporomandibular</h1>
             <p class="lead">
-              La Reeducación Postural Global es un Método de Tratamiento creado
-              en 1980 por el fisioterapeuta PH Souchard. Investigando en la
-              organización postural concluyó que la Postura depende de la
-              tensión de los músculos estáticos (los que se oponen a la acción
-              de la Fuerza de Gravedad). Definió la forma en que se organizan
-              estos músculos con el nombre de Cadenas Musculares.
+              Cuando la articulación temporomandibular (ATM) no funciona con normalidad, la persona puede
+              sentir dolor en la mandíbula, ruidos al abrir la boca (como chasquidos), dificultad para
+              masticar o incluso bloqueos al intentar cerrar o abrir del todo. Dependiendo de si el problema
+              está en el hueso, en el disco o en los músculos, el tratamiento se enfocará en devolver el
+              movimiento natural.
             </p>
             <p>
-              Definió la forma en que se organizan estos músculos con el nombre
-              de Cadenas Musculares. Se realiza una evaluación donde se define
-              cuáles son las cadenas que mas se acortaron y se relacionan con el
-              motivo de consulta. Utiliza posturas de tratamiento para
-              estirarlas en forma suave, progresiva y sostenida. Son posturas
-              activas donde el terapeuta guía el estiramiento y corrige las
-              compensaciones. Busca remontar del síntoma a la causa primaria en
-              el desalineamiento postural. Se trabaja en sesiones individuales.
-              La frecuencia de las sesiones es generalmente semanal.
+              Simplificando la situación, la ATM es la pieza que une la mandíbula con el cráneo y es
+              fundamental para hablar, comer y bostezar. El tratamiento especializado busca evaluar y
+              corregir cómo se mueve esta articulación para que no genere tensión en la cara o el cuello.
+            </p>
+            <p>
+              Para que todo funcione bien, existe un pequeño disco entre los huesos que debe desplazarse
+              suavemente cada vez que movemos la boca. A veces, por tensión excesiva o por apretar mucho los
+              dientes, este disco se desplaza o los músculos se sobrecargan. Utilizamos técnicas de
+              movilidad y ejercicios suaves para que la mandíbula vuelva a su sitio, los músculos se
+              relajen y la persona pueda volver a sus actividades diarias sin molestias.
             </p>
           </div>
         </div>
@@ -205,7 +208,6 @@
     </section>
   </main>
   <div id="site-footer-root" data-footer-lang="es"></div>
-  <script src="js/site-config.js"></script>
   <script src="partials/footer-es.js"></script>
   <script src="js/footer-include.js"></script>
   <script src="js/feature-flags.js"></script>
@@ -213,6 +215,8 @@
   <div id="site-whatsapp-root" data-whatsapp-lang="es"></div>
   <script src="partials/whatsapp-float-es.js"></script>
   <script src="js/whatsapp-float-include.js"></script>
+
+  <script src="js/whatsapp-logic.js"></script>
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
   <script src="js/jquery.min.js"></script>
   <!-- Include all compiled plugins (below), or include individual files as needed -->
@@ -220,7 +224,6 @@
   <script src="js/menumaker.js" defer></script>
   <script src="js/jquery.sticky.js" defer></script>
   <script src="js/sticky-header.js" defer></script>
-  <script src="js/whatsapp-logic.js"></script>
 </body>
 
 </html>

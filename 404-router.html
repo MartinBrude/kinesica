@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <title>404</title>
+  <script src="js/lang-preference.js"></script>
+  <script>
+    (function () {
+      var pref =
+        typeof window.kinesicaGetLangPreference === "function"
+          ? window.kinesicaGetLangPreference()
+          : null;
+      var nav = (navigator.language || navigator.userLanguage || "").toLowerCase();
+      var lang = "es";
+      if (pref === "en" || pref === "fr" || pref === "es") {
+        lang = pref;
+      } else if (nav.indexOf("fr") === 0) {
+        lang = "fr";
+      } else if (nav.indexOf("en") === 0) {
+        lang = "en";
+      }
+      var target =
+        lang === "fr" ? "404_fr.html" : lang === "en" ? "404_en.html" : "404.html";
+      window.location.replace(target);
+    })();
+  </script>
+</head>
+
+<body></body>
+
+</html>

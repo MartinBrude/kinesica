@@ -14,6 +14,7 @@ window.__KINESICA_FOOTER_SNIPPET_ES = `
               <a href="manipulaciones.html">Manipulaciones viscerales</a>
             </li>
             <li><a href="neurodinamia.html">Neurodinamia</a></li>
+            <li data-feature="atm" hidden><a href="atm.html">ATM</a></li>
           </ul>
         </div>
       </div>

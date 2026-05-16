@@ -1,47 +1,52 @@
 (function () {
   try {
-    if (window.location.href.includes('_en.html')) {
+    var routes = window.KINESICA_LANG_ROUTES;
+    if (!routes) {
       return;
     }
 
-    var hasRedirected = localStorage.getItem('kinesica_lang_redirected');
-    if (hasRedirected) {
+    var file = routes.spanishFileFromPath();
+    if (!routes.isSpanishPage(file)) {
       return;
     }
 
-    var userLang = navigator.language || navigator.userLanguage;
-    if (!userLang || !userLang.toLowerCase().startsWith('en')) {
-      localStorage.setItem('kinesica_lang_redirected', 'true');
+    var pref =
+      typeof window.kinesicaGetLangPreference === "function"
+        ? window.kinesicaGetLangPreference()
+        : null;
+
+    if (pref === "en" || pref === "fr") {
+      var preferred = routes.targetForLang(file, pref);
+      if (preferred && preferred !== file) {
+        window.location.replace(preferred);
+      }
       return;
     }
 
-    var path = window.location.pathname;
-    var file = path.substring(path.lastIndexOf('/') + 1);
-    if (!file || file === '/') {
-      file = 'index.html';
-    }
-
-    var enMap = {
-      'index.html': 'index_en.html',
-      'rpg.html': 'rpg_en.html',
-      'osteopatia.html': 'osteopatia_en.html',
-      'cadenas.html': 'cadenas_en.html',
-      'manipulaciones.html': 'manipulaciones_en.html',
-      'neurodinamia.html': 'neurodinamia_en.html',
-      'articulos.html': 'articulos_en.html',
-      'cervicalgia.html': 'cervicalgia_en.html',
-      'lumbalgia.html': 'lumbalgia_en.html',
-    };
-
-    var target = enMap[file];
-    if (!target) {
-      localStorage.setItem('kinesica_lang_redirected', 'true');
+    if (sessionStorage.getItem("kinesica_auto_redirected") === "1") {
       return;
     }
 
-    localStorage.setItem('kinesica_lang_redirected', 'true');
+    var userLang = (navigator.language || navigator.userLanguage || "").toLowerCase();
+    var detected = null;
+    if (userLang.indexOf("fr") === 0) {
+      detected = "fr";
+    } else if (userLang.indexOf("en") === 0) {
+      detected = "en";
+    }
+
+    if (!detected) {
+      return;
+    }
+
+    var target = routes.targetForLang(file, detected);
+    if (!target || target === file) {
+      return;
+    }
+
+    sessionStorage.setItem("kinesica_auto_redirected", "1");
     window.location.replace(target);
   } catch (e) {
-    console.warn('Language redirect suppressed', e);
+    console.warn("Language redirect suppressed", e);
   }
 })();
