@@ -13,7 +13,7 @@
     }
   });
 
-  if (!atmVisible && /atm(_en|_fr)?\.html$/i.test(window.location.pathname)) {
+  if (!atmVisible && /\/atm\.html$/i.test(window.location.pathname)) {
     var robots = document.querySelector('meta[name="robots"]');
     if (!robots) {
       robots = document.createElement("meta");

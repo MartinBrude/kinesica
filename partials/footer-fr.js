@@ -7,14 +7,14 @@ window.__KINESICA_FOOTER_SNIPPET_FR = `
         <div class="footer-widget">
           <h2 class="widget-title">Méthodes et techniques</h2>
           <ul class="listnone">
-            <li><a href="rpg_fr.html">RPG</a></li>
-            <li><a href="osteopatia_fr.html">Ostéopathie</a></li>
-            <li><a href="cadenas_fr.html">Chaînes physiologiques</a></li>
+            <li><a href="rpg.html">RPG</a></li>
+            <li><a href="osteopatia.html">Ostéopathie</a></li>
+            <li><a href="cadenas.html">Chaînes physiologiques</a></li>
             <li>
-              <a href="manipulaciones_fr.html">Manipulations viscérales</a>
+              <a href="manipulaciones.html">Manipulations viscérales</a>
             </li>
-            <li><a href="neurodinamia_fr.html">Neurodynamique</a></li>
-            <li data-feature="atm" hidden><a href="atm_fr.html">ATM</a></li>
+            <li><a href="neurodinamia.html">Neurodynamique</a></li>
+            <li data-feature="atm" hidden><a href="atm.html">ATM</a></li>
           </ul>
         </div>
       </div>
@@ -38,9 +38,9 @@ window.__KINESICA_FOOTER_SNIPPET_FR = `
           <h2 class="widget-title">Cabinet</h2>
           <ul class="listnone">
             <li>
-              <a href="https://maps.app.goo.gl/urpkh4HYe7dSdjPS9" target="_blank" rel="noopener noreferrer"><i
-                  class="fa fa-map-marker"></i> Charcas 3889,
-                CABA</a>
+              <a href="https://maps.app.goo.gl/urpkh4HYe7dSdjPS9" target="_blank" rel="noopener noreferrer"
+                title="Voir Kinésica sur Google Maps"><i class="fa fa-map-marker"></i> Charcas 3889, CABA
+                <span class="footer-gbp-label">(Google Maps)</span></a>
             </li>
             <li>
               <a href="#" class="dynamic-whatsapp-link" target="_blank" rel="noopener noreferrer">

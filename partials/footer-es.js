@@ -38,9 +38,9 @@ window.__KINESICA_FOOTER_SNIPPET_ES = `
           <h2 class="widget-title">Consultorio</h2>
           <ul class="listnone">
             <li>
-              <a href="https://maps.app.goo.gl/urpkh4HYe7dSdjPS9" target="_blank" rel="noopener noreferrer"><i
-                  class="fa fa-map-marker"></i> Charcas 3889,
-                CABA</a>
+              <a href="https://maps.app.goo.gl/urpkh4HYe7dSdjPS9" target="_blank" rel="noopener noreferrer"
+                title="Ver Kinésica en Google Maps"><i class="fa fa-map-marker"></i> Charcas 3889, CABA
+                <span class="footer-gbp-label">(Google Maps)</span></a>
             </li>
             <li>
               <a href="#" class="dynamic-whatsapp-link" target="_blank" rel="noopener noreferrer">

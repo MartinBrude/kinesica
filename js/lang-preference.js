@@ -1,22 +1,26 @@
 /**
  * Persists explicit language choice (ES / EN / FR).
  * Preference is saved only when the user clicks a language flag.
- * Visiting the Spanish home (/) resets preference to ES.
+ * Visiting the Spanish home resets preference to ES.
  */
 (function () {
   var STORAGE_KEY = "kinesica_lang";
 
+  function routes() {
+    return window.KINESICA_LANG_ROUTES;
+  }
+
   function langFromPath() {
+    var r = routes();
+    if (r && r.parseLocation) {
+      return r.parseLocation().lang;
+    }
     var path = window.location.pathname;
-    var file = path.substring(path.lastIndexOf("/") + 1);
-    if (!file || file === "/") {
-      return "es";
-    }
-    if (/_fr\.html$/i.test(file)) {
-      return "fr";
-    }
-    if (/_en\.html$/i.test(file)) {
+    if (path.indexOf("/en/") !== -1 || path === "/en") {
       return "en";
+    }
+    if (path.indexOf("/fr/") !== -1 || path === "/fr") {
+      return "fr";
     }
     return "es";
   }
@@ -38,9 +42,12 @@
   }
 
   function isSpanishHome() {
+    var r = routes();
+    if (r && r.isSpanishHome) {
+      return r.isSpanishHome();
+    }
     var path = window.location.pathname;
-    var file = path.substring(path.lastIndexOf("/") + 1);
-    return !file || file === "index.html";
+    return path === "/" || path === "/index.html";
   }
 
   if (isSpanishHome()) {
@@ -54,8 +61,14 @@
     var current = langFromPath();
     document.querySelectorAll(".lang-switcher a[href]").forEach(function (link) {
       var href = link.getAttribute("href") || "";
-      var isFr = href.indexOf("_fr") !== -1 || href.indexOf("404_fr") !== -1;
-      var isEn = href.indexOf("_en") !== -1 || href.indexOf("404_en") !== -1;
+      var isFr =
+        href.indexOf("/fr/") !== -1 ||
+        href.indexOf("fr/") === 0 ||
+        href.indexOf("../fr/") !== -1;
+      var isEn =
+        href.indexOf("/en/") !== -1 ||
+        href.indexOf("en/") === 0 ||
+        href.indexOf("../en/") !== -1;
       var isEs = !isFr && !isEn;
       var match =
         (current === "fr" && isFr) ||
@@ -69,10 +82,18 @@
     });
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", markCurrentLangFlag);
-  } else {
+  function onReady() {
+    var r = routes();
+    if (r && r.applyFileProtocolLinks) {
+      r.applyFileProtocolLinks();
+    }
     markCurrentLangFlag();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", onReady);
+  } else {
+    onReady();
   }
 
   document.addEventListener(
@@ -83,9 +104,17 @@
         return;
       }
       var href = link.getAttribute("href") || "";
-      if (/_fr\.html/i.test(href) || href.indexOf("404_fr") !== -1) {
+      if (
+        href.indexOf("/fr/") !== -1 ||
+        href.indexOf("fr/") === 0 ||
+        href.indexOf("../fr/") !== -1
+      ) {
         saveLang("fr");
-      } else if (/_en\.html/i.test(href) || href.indexOf("404_en") !== -1) {
+      } else if (
+        href.indexOf("/en/") !== -1 ||
+        href.indexOf("en/") === 0 ||
+        href.indexOf("../en/") !== -1
+      ) {
         saveLang("en");
       } else {
         saveLang("es");

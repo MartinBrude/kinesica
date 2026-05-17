@@ -1,1 +1,21 @@
+RewriteEngine On
+
+# Canonical home for /en/ and /fr/
+RewriteRule ^en/index\.html$ /en/ [R=301,L]
+RewriteRule ^fr/index\.html$ /fr/ [R=301,L]
+
+# Legacy English filenames → /en/ (root only — avoid /en/foo_en → /en/en/foo)
+RewriteCond %{REQUEST_URI} !^/en/
+RewriteCond %{REQUEST_URI} !^/fr/
+RewriteRule ^index_en\.html$ /en/ [R=301,L]
+RewriteRule ^404_en\.html$ /en/404.html [R=301,L]
+RewriteRule ^(.+)_en\.html$ /en/$1.html [R=301,L]
+
+# Legacy French filenames → /fr/ (root only — avoid /fr/foo_fr → /fr/fr/foo)
+RewriteCond %{REQUEST_URI} !^/en/
+RewriteCond %{REQUEST_URI} !^/fr/
+RewriteRule ^index_fr\.html$ /fr/ [R=301,L]
+RewriteRule ^404_fr\.html$ /fr/404.html [R=301,L]
+RewriteRule ^(.+)_fr\.html$ /fr/$1.html [R=301,L]
+
 ErrorDocument 404 /404-router.html

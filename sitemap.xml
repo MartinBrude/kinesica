@@ -1,172 +1,163 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset
-      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
-
-
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
   <loc>https://www.kinesica.com.ar/</loc>
-  <lastmod>2026-05-16</lastmod>
+  <lastmod>2026-05-17</lastmod>
   <priority>1.00</priority>
 </url>
 <url>
-  <loc>https://www.kinesica.com.ar/index_en.html</loc>
-  <lastmod>2026-05-16</lastmod>
+  <loc>https://www.kinesica.com.ar/articulos.html</loc>
+  <lastmod>2026-05-17</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
-  <loc>https://www.kinesica.com.ar/index_fr.html</loc>
-  <lastmod>2026-05-16</lastmod>
-  <priority>0.80</priority>
-</url>
-<url>
-  <loc>https://www.kinesica.com.ar/rpg.html</loc>
-  <lastmod>2026-05-16</lastmod>
-  <priority>0.80</priority>
-</url>
-<url>
-  <loc>https://www.kinesica.com.ar/osteopatia.html</loc>
-  <lastmod>2026-05-16</lastmod>
+  <loc>https://www.kinesica.com.ar/atm.html</loc>
+  <lastmod>2026-05-17</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
   <loc>https://www.kinesica.com.ar/cadenas.html</loc>
-  <lastmod>2026-05-16</lastmod>
+  <lastmod>2026-05-17</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.kinesica.com.ar/cervicalgia.html</loc>
+  <lastmod>2026-05-17</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.kinesica.com.ar/lumbalgia.html</loc>
+  <lastmod>2026-05-17</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
   <loc>https://www.kinesica.com.ar/manipulaciones.html</loc>
-  <lastmod>2026-05-16</lastmod>
+  <lastmod>2026-05-17</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
   <loc>https://www.kinesica.com.ar/neurodinamia.html</loc>
-  <lastmod>2026-05-16</lastmod>
+  <lastmod>2026-05-17</lastmod>
   <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.kinesica.com.ar/osteopatia.html</loc>
+  <lastmod>2026-05-17</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.kinesica.com.ar/rpg.html</loc>
+  <lastmod>2026-05-17</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.kinesica.com.ar/en/</loc>
+  <lastmod>2026-05-17</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.kinesica.com.ar/en/articulos.html</loc>
+  <lastmod>2026-05-17</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kinesica.com.ar/en/atm.html</loc>
+  <lastmod>2026-05-17</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kinesica.com.ar/en/cadenas.html</loc>
+  <lastmod>2026-05-17</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kinesica.com.ar/en/cervicalgia.html</loc>
+  <lastmod>2026-05-17</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kinesica.com.ar/en/lumbalgia.html</loc>
+  <lastmod>2026-05-17</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kinesica.com.ar/en/manipulaciones.html</loc>
+  <lastmod>2026-05-17</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kinesica.com.ar/en/neurodinamia.html</loc>
+  <lastmod>2026-05-17</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kinesica.com.ar/en/osteopatia.html</loc>
+  <lastmod>2026-05-17</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kinesica.com.ar/en/rpg.html</loc>
+  <lastmod>2026-05-17</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kinesica.com.ar/fr/</loc>
+  <lastmod>2026-05-17</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.kinesica.com.ar/fr/articulos.html</loc>
+  <lastmod>2026-05-17</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kinesica.com.ar/fr/atm.html</loc>
+  <lastmod>2026-05-17</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kinesica.com.ar/fr/cadenas.html</loc>
+  <lastmod>2026-05-17</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kinesica.com.ar/fr/cervicalgia.html</loc>
+  <lastmod>2026-05-17</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kinesica.com.ar/fr/lumbalgia.html</loc>
+  <lastmod>2026-05-17</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kinesica.com.ar/fr/manipulaciones.html</loc>
+  <lastmod>2026-05-17</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kinesica.com.ar/fr/neurodinamia.html</loc>
+  <lastmod>2026-05-17</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kinesica.com.ar/fr/osteopatia.html</loc>
+  <lastmod>2026-05-17</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kinesica.com.ar/fr/rpg.html</loc>
+  <lastmod>2026-05-17</lastmod>
+  <priority>0.64</priority>
 </url>
 <url>
   <loc>https://www.kinesica.com.ar/cv-norberto-brude.pdf</loc>
-  <lastmod>2026-05-16</lastmod>
+  <lastmod>2026-05-17</lastmod>
   <priority>0.80</priority>
-</url>
-<url>
-  <loc>https://www.kinesica.com.ar/rpg_en.html</loc>
-  <lastmod>2026-05-16</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.kinesica.com.ar/rpg_fr.html</loc>
-  <lastmod>2026-05-16</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.kinesica.com.ar/osteopatia_en.html</loc>
-  <lastmod>2026-05-16</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.kinesica.com.ar/osteopatia_fr.html</loc>
-  <lastmod>2026-05-16</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.kinesica.com.ar/cadenas_en.html</loc>
-  <lastmod>2026-05-16</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.kinesica.com.ar/cadenas_fr.html</loc>
-  <lastmod>2026-05-16</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.kinesica.com.ar/manipulaciones_en.html</loc>
-  <lastmod>2026-05-16</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.kinesica.com.ar/manipulaciones_fr.html</loc>
-  <lastmod>2026-05-16</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.kinesica.com.ar/neurodinamia_en.html</loc>
-  <lastmod>2026-05-16</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.kinesica.com.ar/neurodinamia_fr.html</loc>
-  <lastmod>2026-05-16</lastmod>
-  <priority>0.64</priority>
 </url>
 <url>
   <loc>https://www.kinesica.com.ar/cv-norberto-brude_en.pdf</loc>
-  <lastmod>2026-05-16</lastmod>
+  <lastmod>2026-05-17</lastmod>
   <priority>0.64</priority>
 </url>
-<url>
-  <loc>https://www.kinesica.com.ar/articulos.html</loc>
-  <lastmod>2026-05-16</lastmod>
-  <priority>0.80</priority>
-</url>
-<url>
-  <loc>https://www.kinesica.com.ar/articulos_en.html</loc>
-  <lastmod>2026-05-16</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.kinesica.com.ar/articulos_fr.html</loc>
-  <lastmod>2026-05-16</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.kinesica.com.ar/cervicalgia.html</loc>
-  <lastmod>2026-05-16</lastmod>
-  <priority>0.80</priority>
-</url>
-<url>
-  <loc>https://www.kinesica.com.ar/cervicalgia_en.html</loc>
-  <lastmod>2026-05-16</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.kinesica.com.ar/cervicalgia_fr.html</loc>
-  <lastmod>2026-05-16</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.kinesica.com.ar/lumbalgia.html</loc>
-  <lastmod>2026-05-16</lastmod>
-  <priority>0.80</priority>
-</url>
-<url>
-  <loc>https://www.kinesica.com.ar/lumbalgia_en.html</loc>
-  <lastmod>2026-05-16</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.kinesica.com.ar/lumbalgia_fr.html</loc>
-  <lastmod>2026-05-16</lastmod>
-  <priority>0.64</priority>
-</url>
-
-<url>
-  <loc>https://www.kinesica.com.ar/atm.html</loc>
-  <lastmod>2026-05-16</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.kinesica.com.ar/atm_en.html</loc>
-  <lastmod>2026-05-16</lastmod>
-  <priority>0.51</priority>
-</url>
-<url>
-  <loc>https://www.kinesica.com.ar/atm_fr.html</loc>
-  <lastmod>2026-05-16</lastmod>
-  <priority>0.51</priority>
-</url>
-
 </urlset>

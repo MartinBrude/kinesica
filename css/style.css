@@ -1025,7 +1025,7 @@ label {}
 
 /* French blue (#002395) sits close to header bar (#031c42) — slightly stronger default glow */
 .lang-switcher li a[href*="_fr"]:not([aria-current="true"]),
-.lang-switcher li a[href="404_fr.html"]:not([aria-current="true"]) {
+.lang-switcher li a[href="/fr/404.html"]:not([aria-current="true"]) {
   background: rgba(255, 255, 255, 0.09);
   box-shadow:
     0 0 5px rgba(255, 255, 255, 0.16),
@@ -1066,8 +1066,8 @@ label {}
 
 .lang-switcher li a[href*="_fr"]:not([aria-current="true"]):hover,
 .lang-switcher li a[href*="_fr"]:not([aria-current="true"]):focus-visible,
-.lang-switcher li a[href="404_fr.html"]:not([aria-current="true"]):hover,
-.lang-switcher li a[href="404_fr.html"]:not([aria-current="true"]):focus-visible {
+.lang-switcher li a[href="/fr/404.html"]:not([aria-current="true"]):hover,
+.lang-switcher li a[href="/fr/404.html"]:not([aria-current="true"]):focus-visible {
   background: rgba(255, 255, 255, 0.26);
   box-shadow:
     0 0 16px rgba(255, 255, 255, 0.55),

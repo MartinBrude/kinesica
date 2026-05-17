@@ -3,9 +3,9 @@
   var isEn = htmlLang === "en";
   var isFr = htmlLang === "fr";
   var pageUrl = isFr
-    ? "https://www.kinesica.com.ar/index_fr.html"
+    ? "https://www.kinesica.com.ar/fr/"
     : isEn
-      ? "https://www.kinesica.com.ar/index_en.html"
+      ? "https://www.kinesica.com.ar/en/"
       : "https://www.kinesica.com.ar/";
   var schema = {
     "@context": "https://schema.org",
@@ -67,6 +67,8 @@
     sameAs: [
       "https://www.facebook.com/kinesicabrude",
       "https://www.instagram.com/kinesicabrude/",
+      (window.KINESICA_SITE && window.KINESICA_SITE.googleMapsUrl) ||
+        "https://maps.app.goo.gl/urpkh4HYe7dSdjPS9",
     ],
   };
   var script = document.createElement("script");

@@ -4,9 +4,11 @@
 <head>
   <meta charset="utf-8" />
   <title>404</title>
+  <script src="js/lang-routes.js"></script>
   <script src="js/lang-preference.js"></script>
   <script>
     (function () {
+      var routes = window.KINESICA_LANG_ROUTES;
       var pref =
         typeof window.kinesicaGetLangPreference === "function"
           ? window.kinesicaGetLangPreference()
@@ -20,8 +22,18 @@
       } else if (nav.indexOf("en") === 0) {
         lang = "en";
       }
-      var target =
-        lang === "fr" ? "404_fr.html" : lang === "en" ? "404_en.html" : "404.html";
+      var target;
+      if (routes && routes.isFileProtocol && routes.isFileProtocol()) {
+        target =
+          lang === "fr"
+            ? "fr/404.html"
+            : lang === "en"
+              ? "en/404.html"
+              : "404.html";
+      } else {
+        target =
+          lang === "fr" ? "/fr/404.html" : lang === "en" ? "/en/404.html" : "/404.html";
+      }
       window.location.replace(target);
     })();
   </script>

@@ -24,4 +24,12 @@
   if (typeof window.kinesicaApplyWhatsAppContact === "function") {
     window.kinesicaApplyWhatsAppContact();
   }
+
+  var ref = document.currentScript;
+  if (ref && ref.src && !window.__KINESICA_GTM_EVENTS_LOADED) {
+    window.__KINESICA_GTM_EVENTS_LOADED = true;
+    var gtmEvents = document.createElement("script");
+    gtmEvents.src = ref.src.replace(/footer-include\.js(\?.*)?$/, "gtm-events.js");
+    document.body.appendChild(gtmEvents);
+  }
 })();

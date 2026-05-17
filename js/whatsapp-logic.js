@@ -22,8 +22,16 @@ function kinesicaApplyWhatsAppContact() {
   }
 
   // Ejecución de cambios
-  setupLinks(".dynamic-whatsapp-link, #whatsapp-link", "https://wa.me/", contactData.whatsapp);
+  setupLinks(
+    ".dynamic-whatsapp-link, .dynamic-whatsapp-url, #whatsapp-link",
+    "https://wa.me/",
+    contactData.whatsapp
+  );
   setupLinks(".dynamic-telegram-link", "https://t.me/+", contactData.whatsapp); // Reutiliza número
+
+  document.querySelectorAll(".dynamic-tel-link").forEach(function (el) {
+    el.href = "tel:+" + String(contactData.whatsapp).replace(/\D/g, "");
+  });
 
   document.querySelectorAll(".dynamic-whatsapp-text, .dynamic-phone-text").forEach(el => {
     el.textContent = contactData.whatsappText;
