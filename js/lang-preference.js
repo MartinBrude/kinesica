@@ -1,7 +1,7 @@
 /**
  * Persists explicit language choice (ES / EN / FR).
- * Preference is set when the user clicks a flag or lands on a localized page.
- * Loading a Spanish page does not reset an existing preference.
+ * Preference is saved only when the user clicks a language flag.
+ * Visiting the Spanish home (/) resets preference to ES.
  */
 (function () {
   var STORAGE_KEY = "kinesica_lang";
@@ -37,14 +37,15 @@
     }
   }
 
-  function syncLangFromUrlIfLocalized() {
-    var lang = langFromPath();
-    if (lang === "en" || lang === "fr") {
-      saveLang(lang);
-    }
+  function isSpanishHome() {
+    var path = window.location.pathname;
+    var file = path.substring(path.lastIndexOf("/") + 1);
+    return !file || file === "index.html";
   }
 
-  syncLangFromUrlIfLocalized();
+  if (isSpanishHome()) {
+    saveLang("es");
+  }
 
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({ page_language: langFromPath() });
