@@ -10,6 +10,7 @@ import { CV } from "./cv-content.mjs";
 import { SITE, absoluteUrl, repoPath } from "./i18n-urls.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const CV_EMAIL = "norberto1712@gmail.com";
 
 function esc(s) {
   return String(s)
@@ -119,7 +120,7 @@ function buildPage(lang, data) {
       "@type": "Person",
       name: "Norberto Silvio Brude",
       jobTitle: data.role,
-      email: "norberto@kinesica.com",
+      email: CV_EMAIL,
       telephone: "+54-11-6156-4311",
       url: canonical,
       image: `${SITE}/images/noberto-brude-kinesiologo-osteopata.jpg`,
@@ -238,7 +239,7 @@ ${altOg}
             <h1>Norberto S. Brude</h1>
             <p class="cv-role">${esc(data.role)}</p>
             <ul class="cv-contact">
-              <li><a href="mailto:norberto@kinesica.com">norberto@kinesica.com</a></li>
+              <li><a href="mailto:${CV_EMAIL}">${CV_EMAIL}</a></li>
               <li><a href="https://wa.me/5491161564311" class="dynamic-whatsapp-url" target="_blank" rel="noopener noreferrer">(+54) 1161564311</a></li>
               <li>${esc(data.location)}</li>
             </ul>

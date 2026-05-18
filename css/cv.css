@@ -120,8 +120,13 @@
   text-align: justify;
 }
 
+.cv-main > .cv-jobs {
+  margin-top: 32px;
+}
+
 .cv-jobs h2 {
   font-size: 1.35rem;
+  margin-top: 0;
   margin-bottom: 18px;
   padding-bottom: 8px;
   border-bottom: 2px solid var(--accent-color);
