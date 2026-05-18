@@ -14,7 +14,7 @@ window.__KINESICA_FOOTER_SNIPPET_FR = `
               <a href="manipulaciones.html">Manipulations viscérales</a>
             </li>
             <li><a href="neurodinamia.html">Neurodynamique</a></li>
-            <li data-feature="atm" hidden><a href="atm.html">ATM</a></li>
+            <li><a href="atm.html">ATM</a></li>
           </ul>
         </div>
       </div>
@@ -39,8 +39,7 @@ window.__KINESICA_FOOTER_SNIPPET_FR = `
           <ul class="listnone">
             <li>
               <a href="https://maps.app.goo.gl/urpkh4HYe7dSdjPS9" target="_blank" rel="noopener noreferrer"
-                title="Voir Kinésica sur Google Maps"><i class="fa fa-map-marker"></i> Charcas 3889, CABA
-                <span class="footer-gbp-label">(Google Maps)</span></a>
+                title="Voir Kinésica sur Google Maps"><i class="fa fa-map-marker"></i> Charcas 3889, CABA</a>
             </li>
             <li>
               <a href="#" class="dynamic-whatsapp-link" target="_blank" rel="noopener noreferrer">

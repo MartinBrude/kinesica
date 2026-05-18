@@ -168,8 +168,9 @@ function generateSitemap() {
       add(absoluteUrl(lang, stem), "0.64");
     }
   }
-  add(`${SITE}/cv-norberto-brude.pdf`, "0.80");
-  add(`${SITE}/cv-norberto-brude_en.pdf`, "0.64");
+  add(`${SITE}/cv.html`, "0.80");
+  add(`${SITE}/en/cv.html`, "0.64");
+  add(`${SITE}/fr/cv.html`, "0.64");
 
   const body = urls
     .map(

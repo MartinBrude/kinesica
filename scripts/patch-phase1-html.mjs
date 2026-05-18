@@ -193,7 +193,7 @@ function patch404(filePath, file) {
         `</div>\n        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
           <div class="top-text">
             <ul class="lang-switcher">
-              <li><a href="404.html"><img src="images/es.svg" alt="bandera español" width="24" height="16" /></a></li>
+              <li><a href="404.html"><img src="images/es.svg" alt="bandera española" width="24" height="16" /></a></li>
               <li><a href="404_en.html"><img src="images/gb.svg" alt="bandera inglesa" width="24" height="16" /></a></li>
               <li><a href="404_fr.html"><img src="images/fr.svg" alt="bandera francesa" width="24" height="16" /></a></li>
             </ul>
@@ -216,13 +216,13 @@ function patch404(filePath, file) {
       <div class="row">
         <motion.div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
           <span class="text-block time-block">
-            <span class="time-text">Lunes a Viernes: <strong>10am - 8pm</strong></span>
+            <span class="time-text">Lunes a viernes: <strong>10 a 20 h</strong></span>
           </span>
         </motion.div>
         <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
           <div class="top-text">
             <ul class="lang-switcher">
-              <li><a href="404.html"><img src="images/es.svg" alt="bandera español" width="24" height="16" /></a></li>
+              <li><a href="404.html"><img src="images/es.svg" alt="bandera española" width="24" height="16" /></a></li>
               <li><a href="404_en.html"><img src="images/gb.svg" alt="bandera inglesa" width="24" height="16" /></a></li>
               <li><a href="404_fr.html"><img src="images/fr.svg" alt="bandera francesa" width="24" height="16" /></a></li>
             </ul>
@@ -262,7 +262,7 @@ function patch404Simple() {
   html = html.replace(
     `<motion.div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
           <span class="text-block time-block">
-            <span class="time-text">Lunes a Viernes: <strong>10am - 8pm</strong></span>
+            <span class="time-text">Lunes a viernes: <strong>10 a 20 h</strong></span>
           </span>
         </motion.div>
       </motion.div>
@@ -270,13 +270,13 @@ function patch404Simple() {
   </motion.div>`,
     `<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
           <span class="text-block time-block">
-            <span class="time-text">Lunes a Viernes: <strong>10am - 8pm</strong></span>
+            <span class="time-text">Lunes a viernes: <strong>10 a 20 h</strong></span>
           </span>
         </div>
         <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
           <div class="top-text">
             <ul class="lang-switcher">
-              <li><a href="404.html"><img src="images/es.svg" alt="bandera español" width="24" height="16" /></a></li>
+              <li><a href="404.html"><img src="images/es.svg" alt="bandera española" width="24" height="16" /></a></li>
               <li><a href="404_en.html"><img src="images/gb.svg" alt="bandera inglesa" width="24" height="16" /></a></li>
               <li><a href="404_fr.html"><img src="images/fr.svg" alt="bandera francesa" width="24" height="16" /></a></li>
             </ul>
@@ -293,7 +293,7 @@ function patch404Simple() {
       <motion.div class="row">
         <motion.div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
           <span class="text-block time-block">
-            <span class="time-text">Lunes a Viernes: <strong>10am - 8pm</strong></span>
+            <span class="time-text">Lunes a viernes: <strong>10 a 20 h</strong></span>
           </span>
         </motion.div>
       </motion.div>
@@ -307,7 +307,7 @@ function patch404Simple() {
       <div class="row">
         <motion.div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
           <span class="text-block time-block">
-            <span class="time-text">Lunes a Viernes: <strong>10am - 8pm</strong></span>
+            <span class="time-text">Lunes a viernes: <strong>10 a 20 h</strong></span>
           </span>
         </motion.div>
       </motion.div>
@@ -318,13 +318,13 @@ function patch404Simple() {
       <div class="row">
         <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
           <span class="text-block time-block">
-            <span class="time-text">Lunes a Viernes: <strong>10am - 8pm</strong></span>
+            <span class="time-text">Lunes a viernes: <strong>10 a 20 h</strong></span>
           </span>
         </div>
         <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
           <div class="top-text">
             <ul class="lang-switcher">
-              <li><a href="404.html"><img src="images/es.svg" alt="bandera español" width="24" height="16" /></a></li>
+              <li><a href="404.html"><img src="images/es.svg" alt="bandera española" width="24" height="16" /></a></li>
               <li><a href="404_en.html"><img src="images/gb.svg" alt="bandera inglesa" width="24" height="16" /></a></li>
               <li><a href="404_fr.html"><img src="images/fr.svg" alt="bandera francesa" width="24" height="16" /></a></li>
             </ul>

@@ -14,6 +14,7 @@ const CONTENT_STEMS = [
   "atm",
   "cadenas",
   "cervicalgia",
+  "cv",
   "lumbalgia",
   "manipulaciones",
   "neurodinamia",
@@ -53,7 +54,7 @@ for (const stem of CONTENT_STEMS) {
         if (!html.includes("lang-preference.js")) errors.push(`${f}: missing lang-preference.js`);
         if (!html.includes("lang-routes.js")) errors.push(`${f}: missing lang-routes.js`);
         if (!html.includes("../css/")) errors.push(`${f}: missing ../ asset paths`);
-        if (/10am - 8pm|Lunes a Viernes|Squelette FR/i.test(html))
+        if (/Lunes a Viernes|bandera español[^a"]|Squelette FR/i.test(html))
           errors.push(`${f}: leftover ES/EN/skeleton text`);
       });
     } else if (lang === "en") {

@@ -18,4 +18,9 @@ RewriteRule ^index_fr\.html$ /fr/ [R=301,L]
 RewriteRule ^404_fr\.html$ /fr/404.html [R=301,L]
 RewriteRule ^(.+)_fr\.html$ /fr/$1.html [R=301,L]
 
+# Legacy CV PDFs → HTML pages
+RewriteRule ^cv-norberto-brude\.pdf$ /cv.html [R=301,L]
+RewriteRule ^cv-norberto-brude_en\.pdf$ /en/cv.html [R=301,L]
+RewriteRule ^cv-norberto-brude_fr\.pdf$ /fr/cv.html [R=301,L]
+
 ErrorDocument 404 /404-router.html

@@ -22,7 +22,9 @@ function add(severity, file, msg) {
 }
 
 function listHtmlFiles() {
-  const files = fs.readdirSync(ROOT).filter((f) => f.endsWith(".html"));
+  const files = fs
+    .readdirSync(ROOT)
+    .filter((f) => f.endsWith(".html") && !f.startsWith("cv-"));
   for (const lang of ["en", "fr"]) {
     const dir = path.join(ROOT, lang);
     if (!fs.existsSync(dir)) continue;
@@ -245,10 +247,6 @@ for (const file of htmlFiles) {
   }
 }
 
-for (const pdf of ["cv-norberto-brude.pdf", "cv-norberto-brude_en.pdf"]) {
-  if (!allRootFiles.has(pdf))
-    warnings.push({ file: "sitemap/refs", msg: `Missing ${pdf} in repo root` });
-}
 
 const sitemap = fs.readFileSync(path.join(ROOT, "sitemap.xml"), "utf8");
 const locs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);

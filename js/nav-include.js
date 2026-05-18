@@ -23,14 +23,7 @@
 
   root.innerHTML = html;
 
-  if (window.KINESICA_SITE && window.KINESICA_SITE.features) {
-    var atmVisible = window.KINESICA_SITE.features.atm === true;
-    root.querySelectorAll('[data-feature="atm"]').forEach(function (el) {
-      if (atmVisible) {
-        el.removeAttribute("hidden");
-      } else {
-        el.setAttribute("hidden", "hidden");
-      }
-    });
+  if (typeof window.kinesicaApplyFeatureFlags === "function") {
+    window.kinesicaApplyFeatureFlags(root);
   }
 })();

@@ -1,52 +1,29 @@
 function kinesicaApplyWhatsAppContact() {
-  const now = new Date();
-  const year = now.getFullYear();
-
-  // 5 de Abril al 4 de Mayo
-  const isMariaPeriod = now >= new Date(year, 3, 5) && now <= new Date(year, 4, 4, 23, 59, 59);
-
-  const contactData = {
-    whatsapp: isMariaPeriod ? "5491128531224" : "5491161564311",
-    whatsappText: isMariaPeriod ? "+54 (911) 2853-1224" : "+54 (11) 6156-4311",
-    jsonLd: isMariaPeriod ? "+54 911 2853 1224" : "+54 11 6156 4311"
+  var contactData = {
+    whatsapp: "5491161564311",
+    whatsappText: "+54 (11) 6156-4311",
   };
 
-  // Función simplificada: wa.me ya maneja la apertura de la app en móviles
   function setupLinks(selector, urlBase, phone) {
-    const sanitized = String(phone).replace(/\D/g, "");
-    document.querySelectorAll(selector).forEach(el => {
-      el.href = `${urlBase}${sanitized}`;
-      // Si realmente quieres el comportamiento de doble apertura, mantenlo,
-      // pero wa.me es el estándar "limpio".
+    var sanitized = String(phone).replace(/\D/g, "");
+    document.querySelectorAll(selector).forEach(function (el) {
+      el.href = urlBase + sanitized;
     });
   }
 
-  // Ejecución de cambios
   setupLinks(
     ".dynamic-whatsapp-link, .dynamic-whatsapp-url, #whatsapp-link",
     "https://wa.me/",
     contactData.whatsapp
   );
-  setupLinks(".dynamic-telegram-link", "https://t.me/+", contactData.whatsapp); // Reutiliza número
+  setupLinks(".dynamic-telegram-link", "https://t.me/+", contactData.whatsapp);
 
   document.querySelectorAll(".dynamic-tel-link").forEach(function (el) {
     el.href = "tel:+" + String(contactData.whatsapp).replace(/\D/g, "");
   });
 
-  document.querySelectorAll(".dynamic-whatsapp-text, .dynamic-phone-text").forEach(el => {
+  document.querySelectorAll(".dynamic-whatsapp-text, .dynamic-phone-text").forEach(function (el) {
     el.textContent = contactData.whatsappText;
-  });
-
-  // Actualizar Schema.org
-  document.querySelectorAll('script[type="application/ld+json"]').forEach(script => {
-    try {
-      const data = JSON.parse(script.textContent);
-      // Usamos optional chaining para evitar errores si la estructura no es la esperada
-      if (data?.["@type"] === "MedicalClinic") {
-        data.telephone = contactData.jsonLd;
-        script.textContent = JSON.stringify(data);
-      }
-    } catch (e) { /* Silencioso */ }
   });
 }
 

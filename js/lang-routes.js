@@ -10,6 +10,7 @@
     "atm",
     "cadenas",
     "cervicalgia",
+    "cv",
     "lumbalgia",
     "manipulaciones",
     "neurodinamia",
