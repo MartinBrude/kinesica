@@ -1959,15 +1959,23 @@ main:focus {
 
 /*-------------- tiny footer ------------*/
 .tiny-footer {
-  background-color: #1f2937;
-  /* Gray 800 */
+  background-color: #111827;
   padding-top: 9px;
   padding-bottom: 9px;
   font-size: 12px;
-  color: #56575e;
-  text-align: left;
-  text-transform: uppercase;
+  color: #9ca3af;
   text-align: center;
+  text-transform: uppercase;
+}
+
+.tiny-footer a {
+  color: #d1d5db;
+  transition: color 0.2s ease;
+}
+
+.tiny-footer a:hover,
+.tiny-footer a:focus {
+  color: #fff;
 }
 
 .copyright-content {
