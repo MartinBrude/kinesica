@@ -7,6 +7,7 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#005f99" />
   <meta name="robots" content="noindex, follow" />
   <script src="js/lang-routes.js"></script>
   <script src="js/lang-preference.js"></script>
@@ -14,8 +15,6 @@
   <script src="js/site-config.js"></script>
   <meta name="description"
     content="Posturología Clínica: evaluación y tratamiento de la postura, equilibrio y apoyo en Palermo. Análisis global del cuerpo en Kinésica." />
-  <meta name="keywords"
-    content="Kinesiología, Posturología clínica, postura, equilibrio, Palermo, terapia manual" />
   <title>Posturología Clínica | Kinésica</title>
   <link href="css/bootstrap.min.css" rel="stylesheet" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -68,6 +67,9 @@
 </head>
 
 <body>
+  <div id="site-skip-link-root"></div>
+  <script src="partials/skip-link.js"></script>
+  <script src="js/skip-link-include.js"></script>
   <div id="site-gtm-body-root"></div>
   <script src="partials/gtm-body.js"></script>
   <script src="js/gtm-body-include.js"></script>
@@ -91,7 +93,7 @@
                     height="16" /></a>
               </li>
               <li>
-                <a href="/fr/posturologia-clinica.html"><img src="images/fr.svg" alt="bandera francesa" width="24"
+                <a href="/fr/posturologia-clinica.html"><img src="images/fr.svg" title="bandera francesa" alt="bandera francesa" width="24"
                     height="16" /></a>
               </li>
             </ul>
@@ -115,7 +117,7 @@
       </div>
     </div>
   </header>
-  <main>
+  <main id="main" tabindex="-1">
     <section class="page-header">
       <div class="container">
         <div class="row">

@@ -5,22 +5,9 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { repoPath } from "./i18n-urls.mjs";
+import { repoPath, STEMS } from "./i18n-urls.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const CONTENT_STEMS = [
-  "index",
-  "articulos",
-  "atm",
-  "cadenas",
-  "cervicalgia",
-  "cv",
-  "lumbalgia",
-  "manipulaciones",
-  "neurodinamia",
-  "osteopatia",
-  "rpg",
-];
 
 const errors = [];
 
@@ -33,7 +20,7 @@ function check(file, fn) {
   fn(fs.readFileSync(p, "utf8"), file);
 }
 
-for (const stem of CONTENT_STEMS) {
+for (const stem of STEMS) {
   for (const lang of ["es", "en", "fr"]) {
     const file = repoPath(lang, stem);
     if (lang === "es" && stem === "index") {
@@ -93,4 +80,4 @@ if (errors.length) {
   console.error("i18n verify failed:\n" + errors.map((e) => "  - " + e).join("\n"));
   process.exit(1);
 }
-console.log("i18n verify OK (" + CONTENT_STEMS.length * 3 + " content pages + router)");
+console.log("i18n verify OK (" + STEMS.length * 3 + " content pages + router)");

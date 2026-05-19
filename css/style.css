@@ -1131,6 +1131,69 @@ label {}
   margin-bottom: 30px;
 }
 
+@keyframes heroFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-section .hero-title,
+.hero-section .hero-text,
+.hero-section .btn-default {
+  animation: heroFadeInUp 0.6s ease-out backwards;
+}
+
+.hero-section .hero-text {
+  animation-delay: 0.1s;
+}
+
+.hero-section .btn-default {
+  animation-delay: 0.2s;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 10000;
+  padding: 0.75rem 1.25rem;
+  background: var(--bg-white);
+  color: var(--secondary-color);
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  left: 1rem;
+  top: 1rem;
+  outline: 3px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+main:focus {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 .navigation {
   float: right;
 }
@@ -1205,6 +1268,17 @@ label {}
   text-decoration: none;
   font-weight: 500;
   text-transform: uppercase;
+}
+
+#navigation>ul>li>a:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+  color: var(--primary-color);
+}
+
+#navigation ul ul li a:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: -2px;
 }
 
 #navigation>ul>li:hover>a {
@@ -1796,12 +1870,6 @@ label {}
 
 .service-icon img {}
 
-.service-single-block {}
-
-.service-single-img {}
-
-.service-single-content {}
-
 /*-----------------------------------------
     service side-nav
    ------------------------------------------*/
@@ -2054,27 +2122,6 @@ address {
 .meta-link {}
 
 .meta-tags {}
-
-/*-------- Post Type --------*/
-.post-sticky {
-  background: url(../images/sticky.png) no-repeat;
-  position: absolute;
-  right: 35px;
-  bottom: 35px;
-  width: 30px;
-  height: 30px;
-  color: #fff;
-}
-
-.post-gallery {}
-
-.post-video {}
-
-.post-video .video-sign {}
-
-.post-audio {}
-
-.post-quote {}
 
 /*-------- Related Post --------*/
 .related-post-block {
@@ -2466,63 +2513,6 @@ ul.widget-recent-post {}
   color: #474747;
   font-weight: 600;
   font-size: 13px;
-}
-
-/*--------------------------------
- Extra Plugin CSS - Back to top  
----------------------------------*/
-.cd-top {
-  display: inline-block;
-  height: 40px;
-  width: 40px;
-  position: fixed;
-  bottom: 40px;
-  right: 10px;
-  overflow: hidden;
-  text-indent: 100%;
-  white-space: nowrap;
-  background: rgba(212, 27, 44, 100) url(../images/cd-top-arrow.svg) no-repeat center 50%;
-  visibility: hidden;
-  opacity: 0;
-  -webkit-transition:
-    opacity 0.3s 0s,
-    visibility 0s 0.3s;
-  -moz-transition:
-    opacity 0.3s 0s,
-    visibility 0s 0.3s;
-  transition:
-    opacity 0.3s 0s,
-    visibility 0s 0.3s;
-}
-
-.cd-top.cd-is-visible,
-.cd-top.cd-fade-out,
-.no-touch .cd-top:hover {
-  -webkit-transition:
-    opacity 0.3s 0s,
-    visibility 0s 0s;
-  -moz-transition:
-    opacity 0.3s 0s,
-    visibility 0s 0s;
-  transition:
-    opacity 0.3s 0s,
-    visibility 0s 0s;
-}
-
-.cd-top.cd-is-visible {
-  /* the button becomes visible */
-  visibility: visible;
-  opacity: 1;
-}
-
-.cd-top.cd-fade-out {
-  /* if the user keeps scrolling down, the button is out of focus and becomes less visible */
-  opacity: 0.5;
-}
-
-.no-touch .cd-top:hover {
-  background-color: #e70359;
-  opacity: 1;
 }
 
 /*-------------styleguide-------------*/

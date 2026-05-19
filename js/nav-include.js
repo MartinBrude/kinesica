@@ -22,8 +22,4 @@
   }
 
   root.innerHTML = html;
-
-  if (typeof window.kinesicaApplyFeatureFlags === "function") {
-    window.kinesicaApplyFeatureFlags(root);
-  }
 })();

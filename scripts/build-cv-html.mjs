@@ -104,13 +104,13 @@ function buildPage(lang, data) {
   const langSwitcher = `
             <ul class="lang-switcher">
               <li>
-                <a href="/cv.html"><img src="${prefix}images/es.svg" alt="${data.flags.es}" width="24" height="16" /></a>
+                <a href="/cv.html"><img src="${prefix}images/es.svg" title="${data.flags.es}" alt="${data.flags.es}" width="24" height="16" /></a>
               </li>
               <li>
-                <a href="/en/cv.html"><img src="${prefix}images/gb.svg" alt="${data.flags.en}" width="24" height="16" /></a>
+                <a href="/en/cv.html"><img src="${prefix}images/gb.svg" title="${data.flags.en}" alt="${data.flags.en}" width="24" height="16" /></a>
               </li>
               <li>
-                <a href="/fr/cv.html"><img src="${prefix}images/fr.svg" alt="${data.flags.fr}" width="24" height="16" /></a>
+                <a href="/fr/cv.html"><img src="${prefix}images/fr.svg" title="${data.flags.fr}" alt="${data.flags.fr}" width="24" height="16" /></a>
               </li>
             </ul>`;
 
@@ -169,6 +169,7 @@ function buildPage(lang, data) {
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#005f99" />
   <meta name="description" content="${esc(data.description)}" />
   <title>${esc(data.title)}</title>
   <link rel="icon" type="image/svg" href="${prefix}images/favicon.svg" />
@@ -201,6 +202,9 @@ ${altOg}
   <div id="site-gtm-body-root"></div>
   <script src="${prefix}partials/gtm-body.js"></script>
   <script src="${prefix}js/gtm-body-include.js"></script>
+  <div id="site-skip-link-root"></div>
+  <script src="${prefix}partials/skip-link.js"></script>
+  <script src="${prefix}js/skip-link-include.js"></script>
   <div class="header-top">
     <div class="container">
       <div class="row">
@@ -230,7 +234,7 @@ ${altOg}
       </div>
     </div>
   </header>
-  <main class="cv-page">
+  <main id="main" class="cv-page" tabindex="-1">
     <section class="cv-hero">
       <div class="container">
         <div class="cv-hero-inner">

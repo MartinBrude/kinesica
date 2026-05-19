@@ -7,6 +7,7 @@ export const STEMS = [
   "index",
   "articulos",
   "atm",
+  "acupuntura",
   "cadenas",
   "cervicalgia",
   "cv",
@@ -14,6 +15,7 @@ export const STEMS = [
   "manipulaciones",
   "neurodinamia",
   "osteopatia",
+  "posturologia-clinica",
   "rpg",
 ];
 
