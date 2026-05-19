@@ -1613,15 +1613,197 @@ main:focus {
 }
 
 /*----------------------------------------------
-    5.4 Page Header
+    5.4 Page Header — fondo abstracto + título tipográfico
 ----------------------------------------------*/
 .page-header {
-  background: url(../images/page-header.jpg) no-repeat center;
-  background-size: cover;
+  --page-header-height: clamp(120px, 20vw, 200px);
   position: relative;
+  overflow: hidden;
   margin: 0;
   padding-bottom: 0;
   border-bottom: none;
+  min-height: var(--page-header-height);
+  isolation: isolate;
+  background-color: #d4eef5;
+  background-image:
+    linear-gradient(to bottom, transparent 55%, rgba(0, 95, 153, 0.05) 100%),
+    linear-gradient(
+      128deg,
+      #edf7fa 0%,
+      #d4eef5 42%,
+      #c0e4ed 72%,
+      #b0d9e6 100%
+    );
+}
+
+/* Capa profunda — manchas alejadas del texto (derecha) */
+.page-header::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: -35% -15% -25% 35%;
+  pointer-events: none;
+  filter: blur(40px);
+  opacity: 0.9;
+  background:
+    radial-gradient(
+      ellipse 65% 80% at 18% 38%,
+      rgba(46, 191, 165, 0.34) 0%,
+      rgba(46, 191, 165, 0.1) 42%,
+      transparent 72%
+    ),
+    radial-gradient(
+      ellipse 55% 65% at 48% 78%,
+      rgba(0, 95, 153, 0.16) 0%,
+      transparent 68%
+    );
+  animation: pageHeaderBlobA 52s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* Capa media — brillo suave al centro-izquierda */
+.page-header::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: -30% 25% -35% -20%;
+  pointer-events: none;
+  filter: blur(34px);
+  opacity: 0.7;
+  background:
+    radial-gradient(
+      ellipse 55% 70% at 32% 42%,
+      rgba(255, 255, 255, 0.45) 0%,
+      rgba(184, 236, 244, 0.2) 38%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 45% 55% at 8% 55%,
+      rgba(168, 221, 232, 0.3) 0%,
+      transparent 65%
+    );
+  animation: pageHeaderBlobB 44s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.page-header .container {
+  position: relative;
+  min-height: var(--page-header-height);
+}
+
+/* Capa frontal suave + sombra de profundidad abajo */
+.page-header .container::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: -25% -25% -15% -10%;
+  pointer-events: none;
+  filter: blur(26px);
+  opacity: 0.65;
+  background:
+    radial-gradient(
+      ellipse 48% 58% at 28% 58%,
+      rgba(110, 184, 204, 0.24) 0%,
+      transparent 62%
+    ),
+    radial-gradient(
+      ellipse 40% 50% at 62% 22%,
+      rgba(0, 95, 153, 0.12) 0%,
+      transparent 58%
+    );
+  animation: pageHeaderBlobC 38s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.page-header .container::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 55%;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    rgba(0, 95, 153, 0.07) 0%,
+    rgba(0, 95, 153, 0.02) 35%,
+    transparent 100%
+  );
+  box-shadow: inset 0 -1px 0 rgba(0, 95, 153, 0.1);
+}
+
+.page-header .page-caption {
+  position: relative;
+  z-index: 1;
+  min-height: var(--page-header-height);
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+}
+
+.page-header-word {
+  position: absolute;
+  right: clamp(0.75rem, 5vw, 3.5rem);
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  max-width: min(92%, 18ch);
+  font-family: inherit;
+  font-size: clamp(3.25rem, 16vw, 9.5rem);
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  text-align: right;
+  text-transform: uppercase;
+  color: rgba(0, 95, 153, 0.1);
+  -webkit-text-stroke: 0.75px rgba(0, 95, 153, 0.12);
+  text-shadow: none;
+  background: none;
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+  user-select: none;
+  pointer-events: none;
+}
+
+.page-header-word--long {
+  font-size: clamp(2.25rem, 10vw, 5.5rem);
+  max-width: min(95%, 22ch);
+}
+
+@keyframes pageHeaderBlobA {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  100% {
+    transform: translate(-3%, 2%) scale(1.06);
+  }
+}
+
+@keyframes pageHeaderBlobB {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  100% {
+    transform: translate(4%, -2%) scale(1.05);
+  }
+}
+
+@keyframes pageHeaderBlobC {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.55;
+  }
+
+  100% {
+    transform: translate(-2%, 3%) scale(1.08);
+    opacity: 0.72;
+  }
 }
 
 .service-block {
@@ -1640,14 +1822,11 @@ main:focus {
 }
 
 .page-caption {
-  padding: 90px 0px;
   position: relative;
   z-index: 1;
-  color: #fff;
 }
 
-.page-title {
-  color: #fff;
+.page-title:not(.page-header-word) {
   text-align: left;
   font-size: 40px;
   font-weight: 400;

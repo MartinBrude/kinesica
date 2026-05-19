@@ -1,4 +1,20 @@
 (function () {
+  var ref = document.currentScript;
+  if (
+    ref &&
+    ref.src &&
+    document.querySelector(".page-header") &&
+    !window.__KINESICA_PAGE_HEADER_WORD_LOADED
+  ) {
+    window.__KINESICA_PAGE_HEADER_WORD_LOADED = true;
+    var pageHeaderWord = document.createElement("script");
+    pageHeaderWord.src = ref.src.replace(
+      /footer-include\.js(\?.*)?$/,
+      "page-header-word.js"
+    );
+    document.body.appendChild(pageHeaderWord);
+  }
+
   var root = document.getElementById("site-footer-root");
   if (!root) {
     return;
@@ -25,7 +41,6 @@
     window.kinesicaApplyWhatsAppContact();
   }
 
-  var ref = document.currentScript;
   if (ref && ref.src && !window.__KINESICA_GTM_EVENTS_LOADED) {
     window.__KINESICA_GTM_EVENTS_LOADED = true;
     var gtmEvents = document.createElement("script");
