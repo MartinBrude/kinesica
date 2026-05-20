@@ -22,4 +22,7 @@
   }
 
   root.innerHTML = html;
+  document.dispatchEvent(
+    new CustomEvent("kinesica:nav-ready", { bubbles: true }),
+  );
 })();

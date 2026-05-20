@@ -228,7 +228,7 @@ ${altOg}
         </div>
         <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
           <nav class="navigation">
-            <div id="navigation" class="nav navbar-nav navbar-right hidden-xs" data-nav-inject="true"></div>
+            <div id="navigation" class="nav navbar-nav navbar-right" data-nav-inject="true"></div>
           </nav>
         </div>
       </div>
@@ -268,19 +268,15 @@ ${altOg}
   </main>
   <div id="site-footer-root" data-footer-lang="${lang}"></div>
   <script src="${prefix}js/site-config.js"></script>
-  <script src="${prefix}partials/nav-es.js"></script>
-  <script src="${prefix}partials/nav-en.js"></script>
-  <script src="${prefix}partials/nav-fr.js"></script>
+  <script src="${prefix}partials/nav-${lang}.js"></script>
   <script src="${prefix}js/nav-include.js"></script>
   <script src="${prefix}partials/footer-${lang}.js"></script>
   <script src="${prefix}js/footer-include.js"></script>
   <div id="site-whatsapp-root" data-whatsapp-lang="${lang}"></div>
   <script src="${prefix}partials/whatsapp-float-${lang}.js"></script>
   <script src="${prefix}js/whatsapp-float-include.js"></script>
-  <script src="${prefix}js/jquery.min.js"></script>
-  <script src="${prefix}js/bootstrap.min.js"></script>
-  <script src="${prefix}js/menumaker.js" defer></script>
-  <script src="${prefix}js/jquery.sticky.js" defer></script>
+  <script src="${prefix}js/mobile-nav.js" defer></script>
+  <script src="${prefix}js/ui-reveal.js" defer></script>
   <script src="${prefix}js/sticky-header.js" defer></script>
   <script src="${prefix}js/whatsapp-logic.js"></script>
   <script src="${prefix}js/lang-routes.js"></script>

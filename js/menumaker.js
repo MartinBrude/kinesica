@@ -1,3 +1,7 @@
+/**
+ * @deprecated Replaced by js/mobile-nav.js (vanilla JS). Kept for reference only.
+ * Do not load this file in HTML.
+ */
 (function ($) {
   $.fn.menumaker = function (options) {
     var cssmenu = $(this),
@@ -102,10 +106,3 @@
     });
   };
 })(jQuery);
-
-/*
- $("#navigation").menumaker({
-   title: "Menu",
-   format: "multitoggle"
-});
-*/
