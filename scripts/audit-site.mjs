@@ -238,11 +238,11 @@ for (const file of htmlFiles) {
     const fl = m ? m[1] : null;
     if (fl && fl !== expectedLang(file) && !file.includes("404"))
       add("error", file, `data-footer-lang="${fl}" vs page lang ${expectedLang(file)}`);
-    if (fl === "fr" && !html.includes("footer-fr.js"))
+    if (fl === "fr" && !/footer-fr(\.min)?\.js/.test(html))
       add("error", file, "French footer lang but missing footer-fr.js");
-    if (fl === "en" && !html.includes("footer-en.js"))
+    if (fl === "en" && !/footer-en(\.min)?\.js/.test(html))
       add("error", file, "English footer lang but missing footer-en.js");
-    if (fl === "es" && !html.includes("footer-es.js") && !file.includes("404"))
+    if (fl === "es" && !/footer-es(\.min)?\.js/.test(html) && !file.includes("404"))
       add("error", file, "Spanish footer lang but missing footer-es.js");
   }
 }

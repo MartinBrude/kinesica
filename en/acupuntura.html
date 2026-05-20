@@ -5,7 +5,7 @@
   <link rel="icon" type="image/svg" href="../images/favicon.svg" />
   <link rel="apple-touch-icon" href="../images/apple-touch-icon.png" />
   <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="content-language" content="en" />  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#005f99" />
   <meta name="robots" content="noindex, follow" />
@@ -23,9 +23,9 @@
   </noscript>
   <link href="../css/font-awesome.min.css" rel="stylesheet" media="print" onload="this.media='all'" />
   <noscript><link href="../css/font-awesome.min.css" rel="stylesheet" /></noscript>
-  <link href="../css/style.css" rel="stylesheet" />
-  <link href="../css/whatsapp.css" rel="stylesheet" media="print" onload="this.media='all'" />
-  <noscript><link href="../css/whatsapp.css" rel="stylesheet" /></noscript>
+  <link href="../css/style.min.css" rel="stylesheet" />
+  <link href="../css/whatsapp.min.css" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="../css/whatsapp.min.css" rel="stylesheet" /></noscript>
   <link rel="canonical" href="https://www.kinesica.com.ar/en/acupuntura.html" />
   <link rel="alternate" hreflang="es" href="https://www.kinesica.com.ar/acupuntura.html" />
   <link rel="alternate" hreflang="en" href="https://www.kinesica.com.ar/en/acupuntura.html" />
@@ -41,7 +41,7 @@
   <meta property="og:locale" content="en_US" />
   <meta property="og:locale:alternate" content="es_AR" />
   <meta property="og:locale:alternate" content="fr_FR" />
-  <script src="../partials/gtm-head.js" defer></script>
+  <script src="../partials/gtm-head.min.js" defer></script>
   <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -62,15 +62,327 @@
         ]
       }
     </script>
+  <script type="application/ld+json" id="kinesica-local-schema">
+{
+  "@context": "https://schema.org",
+  "@type": [
+    "Physiotherapy",
+    "MedicalClinic"
+  ],
+  "@id": "https://www.kinesica.com.ar/#kinesica",
+  "name": "Kinésica",
+  "alternateName": "Kinésica — Centro de kinesiología y fisioterapia",
+  "url": "https://www.kinesica.com.ar/en/",
+  "mainEntityOfPage": "https://www.kinesica.com.ar/en/",
+  "inLanguage": "en",
+  "description": "Physiotherapy and kinesiology clinic in Palermo, Buenos Aires: osteopathy, RPG, neurodynamics, and personalized manual therapy.",
+  "image": [
+    "https://www.kinesica.com.ar/images/logo.svg",
+    "https://www.kinesica.com.ar/images/hero-img.jpg"
+  ],
+  "logo": "https://www.kinesica.com.ar/images/logo.svg",
+  "telephone": "+54-11-6156-4311",
+  "email": "norberto1712@gmail.com",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Charcas 3889 5ª B",
+    "addressLocality": "Ciudad Autónoma de Buenos Aires",
+    "addressRegion": "CABA",
+    "postalCode": "C1425",
+    "addressCountry": "AR"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": -34.587025,
+    "longitude": -58.421046
+  },
+  "hasMap": "https://maps.app.goo.gl/urpkh4HYe7dSdjPS9",
+  "areaServed": [
+    {
+      "@type": "City",
+      "name": "Ciudad Autónoma de Buenos Aires"
+    },
+    {
+      "@type": "AdministrativeArea",
+      "name": "CABA"
+    },
+    {
+      "@type": "Place",
+      "name": "Palermo, Buenos Aires"
+    }
+  ],
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday"
+      ],
+      "opens": "10:00",
+      "closes": "20:00"
+    }
+  ],
+  "medicalSpecialty": [
+    {
+      "@type": "MedicalSpecialty",
+      "name": "Physiotherapy"
+    },
+    {
+      "@type": "MedicalSpecialty",
+      "name": "Kinesiology"
+    },
+    {
+      "@type": "MedicalSpecialty",
+      "name": "Osteopathy"
+    },
+    {
+      "@type": "MedicalSpecialty",
+      "name": "Manual therapy"
+    },
+    {
+      "@type": "MedicalSpecialty",
+      "name": "RPG"
+    }
+  ],
+  "additionalType": "https://schema.org/Physiotherapy",
+  "availableLanguage": [
+    "es",
+    "en",
+    "fr"
+  ],
+  "currenciesAccepted": "ARS",
+  "paymentAccepted": [
+    "Cash",
+    "Credit Card",
+    "Debit Card"
+  ],
+  "priceRange": "$",
+  "founder": {
+    "@type": "Person",
+    "name": "Norberto Silvio Brude",
+    "jobTitle": "Physiotherapist and osteopath",
+    "url": "https://www.kinesica.com.ar/en/cv.html"
+  },
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "+54-11-6156-4311",
+    "email": "norberto1712@gmail.com",
+    "contactType": "customer service",
+    "areaServed": "AR",
+    "availableLanguage": [
+      "English",
+      "Spanish",
+      "French"
+    ]
+  },
+  "potentialAction": {
+    "@type": "ReserveAction",
+    "name": "Book via WhatsApp",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "https://wa.me/5491161564311",
+      "inLanguage": "en",
+      "actionPlatform": [
+        "https://schema.org/WhatsApp",
+        "https://schema.org/MobileWebPlatform"
+      ]
+    }
+  },
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Kinésica treatments",
+    "itemListElement": [
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "@id": "https://www.kinesica.com.ar/en/atm.html#service",
+          "name": "TMJ treatment",
+          "description": "Therapy for temporomandibular joint disorders and bruxism.",
+          "url": "https://www.kinesica.com.ar/en/atm.html",
+          "provider": {
+            "@id": "https://www.kinesica.com.ar/#kinesica"
+          },
+          "areaServed": {
+            "@type": "Place",
+            "name": "Palermo, Buenos Aires"
+          }
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "@id": "https://www.kinesica.com.ar/en/acupuntura.html#service",
+          "name": "Acupuncture",
+          "description": "Acupuncture as a complement for pain and stress management.",
+          "url": "https://www.kinesica.com.ar/en/acupuntura.html",
+          "provider": {
+            "@id": "https://www.kinesica.com.ar/#kinesica"
+          },
+          "areaServed": {
+            "@type": "Place",
+            "name": "Palermo, Buenos Aires"
+          }
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "@id": "https://www.kinesica.com.ar/en/cadenas.html#service",
+          "name": "Muscle chains therapy",
+          "description": "Treatment based on muscular and fascial chains.",
+          "url": "https://www.kinesica.com.ar/en/cadenas.html",
+          "provider": {
+            "@id": "https://www.kinesica.com.ar/#kinesica"
+          },
+          "areaServed": {
+            "@type": "Place",
+            "name": "Palermo, Buenos Aires"
+          }
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "@id": "https://www.kinesica.com.ar/en/cervicalgia.html#service",
+          "name": "Cervical pain treatment",
+          "description": "Care for neck pain and stiffness in Palermo.",
+          "url": "https://www.kinesica.com.ar/en/cervicalgia.html",
+          "provider": {
+            "@id": "https://www.kinesica.com.ar/#kinesica"
+          },
+          "areaServed": {
+            "@type": "Place",
+            "name": "Palermo, Buenos Aires"
+          }
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "@id": "https://www.kinesica.com.ar/en/lumbalgia.html#service",
+          "name": "Low back pain treatment",
+          "description": "Treatment for lumbar pain and sciatica.",
+          "url": "https://www.kinesica.com.ar/en/lumbalgia.html",
+          "provider": {
+            "@id": "https://www.kinesica.com.ar/#kinesica"
+          },
+          "areaServed": {
+            "@type": "Place",
+            "name": "Palermo, Buenos Aires"
+          }
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "@id": "https://www.kinesica.com.ar/en/manipulaciones.html#service",
+          "name": "Visceral manipulation",
+          "description": "Visceral manual therapy to improve organ function.",
+          "url": "https://www.kinesica.com.ar/en/manipulaciones.html",
+          "provider": {
+            "@id": "https://www.kinesica.com.ar/#kinesica"
+          },
+          "areaServed": {
+            "@type": "Place",
+            "name": "Palermo, Buenos Aires"
+          }
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "@id": "https://www.kinesica.com.ar/en/neurodinamia.html#service",
+          "name": "Neurodynamics",
+          "description": "Treatment for nerve tension and neural mobilization.",
+          "url": "https://www.kinesica.com.ar/en/neurodinamia.html",
+          "provider": {
+            "@id": "https://www.kinesica.com.ar/#kinesica"
+          },
+          "areaServed": {
+            "@type": "Place",
+            "name": "Palermo, Buenos Aires"
+          }
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "@id": "https://www.kinesica.com.ar/en/osteopatia.html#service",
+          "name": "Osteopathy",
+          "description": "Osteopathic treatment to restore body balance.",
+          "url": "https://www.kinesica.com.ar/en/osteopatia.html",
+          "provider": {
+            "@id": "https://www.kinesica.com.ar/#kinesica"
+          },
+          "areaServed": {
+            "@type": "Place",
+            "name": "Palermo, Buenos Aires"
+          }
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "@id": "https://www.kinesica.com.ar/en/posturologia-clinica.html#service",
+          "name": "Clinical posturology",
+          "description": "Personalized postural assessment and treatment.",
+          "url": "https://www.kinesica.com.ar/en/posturologia-clinica.html",
+          "provider": {
+            "@id": "https://www.kinesica.com.ar/#kinesica"
+          },
+          "areaServed": {
+            "@type": "Place",
+            "name": "Palermo, Buenos Aires"
+          }
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "@id": "https://www.kinesica.com.ar/en/rpg.html#service",
+          "name": "RPG — Global Postural Reeducation",
+          "description": "RPG method to release static muscle chains and re-educate posture.",
+          "url": "https://www.kinesica.com.ar/en/rpg.html",
+          "provider": {
+            "@id": "https://www.kinesica.com.ar/#kinesica"
+          },
+          "areaServed": {
+            "@type": "Place",
+            "name": "Palermo, Buenos Aires"
+          }
+        }
+      }
+    ]
+  },
+  "sameAs": [
+    "https://www.facebook.com/kinesicabrude",
+    "https://www.instagram.com/kinesicabrude/",
+    "https://maps.app.goo.gl/urpkh4HYe7dSdjPS9"
+  ]
+}
+  </script>
 </head>
 
 <body>
   <div id="site-skip-link-root"></div>
-  <script src="../partials/skip-link.js" defer></script>
-  <script src="../js/skip-link-include.js" defer></script>
+  <script src="../partials/skip-link.min.js" defer></script>
+  <script src="../js/skip-link-include.min.js" defer></script>
   <div id="site-gtm-body-root"></div>
-  <script src="../partials/gtm-body.js" defer></script>
-  <script src="../js/gtm-body-include.js" defer></script>
+  <script src="../partials/gtm-body.min.js" defer></script>
+  <script src="../js/gtm-body-include.min.js" defer></script>
   <div class="header-top">
     <div class="container">
       <div class="row">
@@ -169,18 +481,18 @@
     </section>
   </main>
   <div id="site-footer-root" data-footer-lang="en"></div>
-  <script src="../js/site-config.js" defer></script>
-  <script src="../partials/nav-en.js"></script>
-<script src="../js/nav-include.js"></script>
-  <script src="../partials/footer-en.js"></script>
-  <script src="../js/footer-include.js"></script>
+  <script src="../js/site-config.min.js" defer></script>
+  <script src="../partials/nav-en.min.js"></script>
+<script src="../js/nav-include.min.js"></script>
+  <script src="../partials/footer-en.min.js"></script>
+  <script src="../js/footer-include.min.js"></script>
   <div id="site-whatsapp-root" data-whatsapp-lang="en"></div>
-  <script src="../partials/whatsapp-float-en.js"></script>
-  <script src="../js/whatsapp-float-include.js"></script>
-  <script src="../js/whatsapp-logic.js"></script>  <script src="../js/mobile-nav.js" defer></script>
-  <script src="../js/ui-reveal.js" defer></script>
-  <script src="../js/sticky-header.js" defer></script>  <script src="../js/lang-routes.js"></script>
-  <script src="../js/lang-preference.js"></script>
+  <script src="../partials/whatsapp-float-en.min.js"></script>
+  <script src="../js/whatsapp-float-include.min.js"></script>
+  <script src="../js/whatsapp-logic.min.js"></script>  <script src="../js/mobile-nav.min.js" defer></script>
+  <script src="../js/ui-reveal.min.js" defer></script>
+  <script src="../js/sticky-header.min.js" defer></script>  <script src="../js/lang-routes.min.js"></script>
+  <script src="../js/lang-preference.min.js"></script>
 
 </body>
 

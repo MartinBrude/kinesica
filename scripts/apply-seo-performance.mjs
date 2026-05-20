@@ -18,13 +18,11 @@ const FONT_DISPLAY_SWAP =
   "https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i&display=swap";
 
 const ASYNC_CSS =
-  /<link (?=[^>]*href="(\.\.\/)?css\/(font-awesome\.min|whatsapp)\.css")[^>]*rel="stylesheet"[^>]*\/>/g;
+  /<link (?=[^>]*href="(\.\.\/)?css\/(font-awesome\.min|whatsapp(?:\.min)?)\.css")[^>]*rel="stylesheet"[^>]*\/>/g;
 
 const DEFER_SCRIPTS = [
   "partials/gtm-head.js",
   "js/site-config.js",
-  "partials/medical-clinic-schema.js",
-  "partials/faq-schema.js",
   "partials/gtm-body.js",
   "js/gtm-body-include.js",
   "partials/skip-link.js",

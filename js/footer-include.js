@@ -9,8 +9,8 @@
     window.__KINESICA_PAGE_HEADER_WORD_LOADED = true;
     var pageHeaderWord = document.createElement("script");
     pageHeaderWord.src = ref.src.replace(
-      /footer-include\.js(\?.*)?$/,
-      "page-header-word.js"
+      /footer-include(\.min)?\.js(\?.*)?$/,
+      "page-header-word$1.js"
     );
     document.body.appendChild(pageHeaderWord);
   }
@@ -57,7 +57,10 @@
   if (ref && ref.src && !window.__KINESICA_GTM_EVENTS_LOADED) {
     window.__KINESICA_GTM_EVENTS_LOADED = true;
     var gtmEvents = document.createElement("script");
-    gtmEvents.src = ref.src.replace(/footer-include\.js(\?.*)?$/, "gtm-events.js");
+    gtmEvents.src = ref.src.replace(
+      /footer-include(\.min)?\.js(\?.*)?$/,
+      "gtm-events$1.js"
+    );
     document.body.appendChild(gtmEvents);
   }
 })();

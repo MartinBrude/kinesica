@@ -1,10 +1,11 @@
 /**
  * Persists explicit language choice (ES / EN / FR).
  * Preference is saved only when the user clicks a language flag.
- * Visiting the Spanish home resets preference to ES.
+ * Visiting the Spanish home resets preference to ES (idioma por defecto Argentina).
  */
 (function () {
   var STORAGE_KEY = "kinesica_lang";
+  var SESSION_EXPLICIT_KEY = "kinesica_lang_explicit";
 
   function routes() {
     return window.KINESICA_LANG_ROUTES;
@@ -50,8 +51,25 @@
     return path === "/" || path === "/index.html";
   }
 
+  function clearExplicitSession() {
+    try {
+      sessionStorage.removeItem(SESSION_EXPLICIT_KEY);
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
+  function markExplicitLang(lang) {
+    try {
+      sessionStorage.setItem(SESSION_EXPLICIT_KEY, lang);
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
   if (isSpanishHome()) {
     saveLang("es");
+    clearExplicitSession();
   }
 
   window.dataLayer = window.dataLayer || [];
@@ -110,14 +128,17 @@
         href.indexOf("../fr/") !== -1
       ) {
         saveLang("fr");
+        markExplicitLang("fr");
       } else if (
         href.indexOf("/en/") !== -1 ||
         href.indexOf("en/") === 0 ||
         href.indexOf("../en/") !== -1
       ) {
         saveLang("en");
+        markExplicitLang("en");
       } else {
         saveLang("es");
+        clearExplicitSession();
       }
     },
     true

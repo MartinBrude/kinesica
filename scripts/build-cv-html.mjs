@@ -6,11 +6,20 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { createRequire } from "module";
 import { CV } from "./cv-content.mjs";
 import { SITE, absoluteUrl, repoPath } from "./i18n-urls.mjs";
 
+const require = createRequire(import.meta.url);
+const { toMinPath } = require("../assets.config.cjs");
+
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CV_EMAIL = "norberto1712@gmail.com";
+
+/** Ruta de producción (.min) con prefijo en/ o fr/. */
+function asset(prefix, rel) {
+  return `${prefix}${toMinPath(rel)}`;
+}
 
 function esc(s) {
   return String(s)
@@ -181,9 +190,9 @@ ${hreflangs}
   <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i" rel="stylesheet" />
   <link href="${prefix}css/bootstrap.min.css" rel="stylesheet" />
   <link href="${prefix}css/font-awesome.min.css" rel="stylesheet" />
-  <link href="${prefix}css/style.css" rel="stylesheet" />
-  <link href="${prefix}css/cv.css" rel="stylesheet" />
-  <link rel="stylesheet" href="${prefix}css/whatsapp.css" />
+  <link href="${asset(prefix, "css/style.css")}" rel="stylesheet" />
+  <link href="${asset(prefix, "css/cv.css")}" rel="stylesheet" />
+  <link rel="stylesheet" href="${asset(prefix, "css/whatsapp.css")}" />
   <meta property="og:title" content="${esc(data.title)}" />
   <meta property="og:description" content="${esc(data.description)}" />
   <meta property="og:image" content="${SITE}/images/noberto-brude-kinesiologo-osteopata.jpg" />
@@ -192,19 +201,19 @@ ${hreflangs}
   <meta property="og:site_name" content="Kinésica" />
   <meta property="og:locale" content="${ogLocale}" />
 ${altOg}
-  <script src="${prefix}partials/gtm-head.js"></script>
-  <script src="${prefix}js/site-config.js"></script>
+  <script src="${asset(prefix, "partials/gtm-head.js")}"></script>
+  <script src="${asset(prefix, "js/site-config.js")}"></script>
   <script type="application/ld+json">${personSchema}</script>
   <script type="application/ld+json">${breadcrumbSchema}</script>
 </head>
 
 <body>
   <div id="site-gtm-body-root"></div>
-  <script src="${prefix}partials/gtm-body.js"></script>
-  <script src="${prefix}js/gtm-body-include.js"></script>
+  <script src="${asset(prefix, "partials/gtm-body.js")}"></script>
+  <script src="${asset(prefix, "js/gtm-body-include.js")}"></script>
   <div id="site-skip-link-root"></div>
-  <script src="${prefix}partials/skip-link.js"></script>
-  <script src="${prefix}js/skip-link-include.js"></script>
+  <script src="${asset(prefix, "partials/skip-link.js")}"></script>
+  <script src="${asset(prefix, "js/skip-link-include.js")}"></script>
   <div class="header-top">
     <div class="container">
       <div class="row">
@@ -267,20 +276,20 @@ ${altOg}
     </section>
   </main>
   <div id="site-footer-root" data-footer-lang="${lang}"></div>
-  <script src="${prefix}js/site-config.js"></script>
-  <script src="${prefix}partials/nav-${lang}.js"></script>
-  <script src="${prefix}js/nav-include.js"></script>
-  <script src="${prefix}partials/footer-${lang}.js"></script>
-  <script src="${prefix}js/footer-include.js"></script>
+  <script src="${asset(prefix, "js/site-config.js")}"></script>
+  <script src="${asset(prefix, `partials/nav-${lang}.js`)}"></script>
+  <script src="${asset(prefix, "js/nav-include.js")}"></script>
+  <script src="${asset(prefix, `partials/footer-${lang}.js`)}"></script>
+  <script src="${asset(prefix, "js/footer-include.js")}"></script>
   <div id="site-whatsapp-root" data-whatsapp-lang="${lang}"></div>
-  <script src="${prefix}partials/whatsapp-float-${lang}.js"></script>
-  <script src="${prefix}js/whatsapp-float-include.js"></script>
-  <script src="${prefix}js/mobile-nav.js" defer></script>
-  <script src="${prefix}js/ui-reveal.js" defer></script>
-  <script src="${prefix}js/sticky-header.js" defer></script>
-  <script src="${prefix}js/whatsapp-logic.js"></script>
-  <script src="${prefix}js/lang-routes.js"></script>
-  <script src="${prefix}js/lang-preference.js"></script>
+  <script src="${asset(prefix, `partials/whatsapp-float-${lang}.js`)}"></script>
+  <script src="${asset(prefix, "js/whatsapp-float-include.js")}"></script>
+  <script src="${asset(prefix, "js/mobile-nav.js")}" defer></script>
+  <script src="${asset(prefix, "js/ui-reveal.js")}" defer></script>
+  <script src="${asset(prefix, "js/sticky-header.js")}" defer></script>
+  <script src="${asset(prefix, "js/whatsapp-logic.js")}"></script>
+  <script src="${asset(prefix, "js/lang-routes.js")}"></script>
+  <script src="${asset(prefix, "js/lang-preference.js")}"></script>
 </body>
 
 </html>

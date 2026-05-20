@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 /**
- * - Remove duplicate-prone og:locale:alternate (hreflang covers languages)
- * - Inline Schema.org JSON-LD on home pages (crawlers do not run JS schema)
- * - Sync FR home OG with updated copy
+ * Limpieza OG en páginas secundarias.
+ * Schema local (fisioterapia): usar npm run seo:schema
  * Run: node scripts/fix-og-schema-seo.mjs
  */
 import fs from "fs";

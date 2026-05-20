@@ -8,10 +8,16 @@
     "css:build": "node scripts/purge-css.mjs --write",
     "css:build:cv": "node scripts/purge-css.mjs --write --profile=cv",
     "seo:sitemap": "node scripts/generate-sitemap.mjs",
+    "seo:schema": "node scripts/inject-local-schema.mjs",
+    "seo:lang": "node scripts/apply-lang-meta.mjs",
+    "schema:partials": "node scripts/build-schema-partials.mjs",
     "seo:apply": "node scripts/apply-seo-performance.mjs",
-    "seo:audit": "node scripts/audit-site.mjs"
+    "seo:audit": "node scripts/audit-site.mjs",
+    "assets:build": "node scripts/minify-assets.mjs",
+    "build:seo": "npm run seo:schema && npm run schema:partials && npm run assets:build"
   },
   "devDependencies": {
+    "esbuild": "^0.25.0",
     "purgecss": "^7.0.2"
   }
 }
