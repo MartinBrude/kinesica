@@ -1,5 +1,16 @@
 RewriteEngine On
 
+# Canonical host: apex and bare domain → www
+RewriteCond %{HTTP_HOST} ^kinesica\.com\.ar$ [NC]
+RewriteRule ^ https://www.kinesica.com.ar%{REQUEST_URI} [R=301,L]
+
+# HTTPS (when the request reaches Apache without TLS termination redirect)
+RewriteCond %{HTTPS} off
+RewriteRule ^ https://www.kinesica.com.ar%{REQUEST_URI} [R=301,L]
+
+# Spanish home: /index.html → /
+RewriteRule ^index\.html$ / [R=301,L]
+
 # Canonical home for /en/ and /fr/
 RewriteRule ^en/index\.html$ /en/ [R=301,L]
 RewriteRule ^fr/index\.html$ /fr/ [R=301,L]

@@ -17,6 +17,20 @@ const ROBOTS_NOINDEX =
 const FONT_DISPLAY_SWAP =
   "https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i&display=swap";
 
+const ASYNC_CSS =
+  /<link (?=[^>]*href="(\.\.\/)?css\/(font-awesome\.min|whatsapp)\.css")[^>]*rel="stylesheet"[^>]*\/>/g;
+
+const DEFER_SCRIPTS = [
+  "partials/gtm-head.js",
+  "js/site-config.js",
+  "partials/medical-clinic-schema.js",
+  "partials/faq-schema.js",
+  "partials/gtm-body.js",
+  "js/gtm-body-include.js",
+  "partials/skip-link.js",
+  "js/skip-link-include.js",
+];
+
 function listHtmlFiles() {
   const files = fs
     .readdirSync(ROOT)
@@ -46,17 +60,6 @@ function addRobotsMeta(html, file) {
   );
 }
 
-function deferLangScripts(html) {
-  let out = html;
-  for (const name of ["lang-routes.js", "lang-preference.js", "redirect.js"]) {
-    out = out.replace(
-      new RegExp(`<script src="(\\.\\./)?js/${name}"><\\/script>`, "g"),
-      '<script src="$1js/' + name + '" defer></script>',
-    );
-  }
-  return out;
-}
-
 function fontDisplaySwap(html) {
   return html.replace(
     /https:\/\/fonts\.googleapis\.com\/css\?family=Roboto:[^"']+/g,
@@ -64,14 +67,35 @@ function fontDisplaySwap(html) {
   );
 }
 
-function asyncFontAwesome(html) {
-  if (html.includes("font-awesome.min.css") && html.includes('media="print"')) {
-    return html;
+function asyncNonCriticalCss(html) {
+  return html.replace(ASYNC_CSS, (tag) => {
+    if (tag.includes('media="print"')) {
+      return tag;
+    }
+    const href = tag.match(/href="([^"]+)"/)[1];
+    return (
+      `<link href="${href}" rel="stylesheet" media="print" onload="this.media='all'" />\n` +
+      `  <noscript><link href="${href}" rel="stylesheet" /></noscript>`
+    );
+  });
+}
+
+function deferHeadScripts(html) {
+  let out = html;
+  for (const src of DEFER_SCRIPTS) {
+    const escaped = src.replace(/\//g, "\\/");
+    const re = new RegExp(
+      `<script src="(\\.\\./)?${escaped}"(?![^>]*\\bdefer\\b)([^>]*)><\\/script>`,
+      "g",
+    );
+    out = out.replace(re, (match, prefix = "", rest = "") => {
+      if (match.includes(" defer")) {
+        return match;
+      }
+      return `<script src="${prefix || ""}${src}" defer${rest}></script>`;
+    });
   }
-  return html.replace(
-    /<link href="(\.\.\/)?css\/font-awesome\.min\.css" rel="stylesheet" \/>/g,
-    '<link href="$1css/font-awesome.min.css" rel="stylesheet" media="print" onload="this.media=\'all\'" />\n  <noscript><link href="$1css/font-awesome.min.css" rel="stylesheet" /></noscript>',
-  );
+  return out;
 }
 
 function fixMapIframe(html) {
@@ -97,9 +121,9 @@ for (const file of listHtmlFiles()) {
   let html = fs.readFileSync(full, "utf8");
   const original = html;
   html = addRobotsMeta(html, file);
-  html = deferLangScripts(html);
   html = fontDisplaySwap(html);
-  html = asyncFontAwesome(html);
+  html = asyncNonCriticalCss(html);
+  html = deferHeadScripts(html);
   html = fixMapIframe(html);
   html = fix404FooterStyle(html, file);
   if (html !== original) {

@@ -19,14 +19,16 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preconnect" href="https://www.googletagmanager.com" />
-  <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i" rel="stylesheet"
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i&display=swap" rel="stylesheet"
     media="print" onload="this.media='all'" />
   <noscript>
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i&display=swap" rel="stylesheet" />
   </noscript>
-  <link href="css/font-awesome.min.css" rel="stylesheet" />
+  <link href="css/font-awesome.min.css" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="css/font-awesome.min.css" rel="stylesheet" /></noscript>
   <link href="css/style.css" rel="stylesheet" />
-  <link rel="stylesheet" href="css/whatsapp.css" />
+  <link href="css/whatsapp.css" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="css/whatsapp.css" rel="stylesheet" /></noscript>
   <link rel="canonical" href="https://www.kinesica.com.ar/posturologia-clinica.html" />
   <link rel="alternate" hreflang="es" href="https://www.kinesica.com.ar/posturologia-clinica.html" />
   <link rel="alternate" hreflang="en" href="https://www.kinesica.com.ar/en/posturologia-clinica.html" />
@@ -42,7 +44,7 @@
   <meta property="og:locale" content="es_AR" />
   <meta property="og:locale:alternate" content="en_US" />
   <meta property="og:locale:alternate" content="fr_FR" />
-  <script src="partials/gtm-head.js"></script>
+  <script src="partials/gtm-head.js" defer></script>
   <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -67,11 +69,11 @@
 
 <body>
   <div id="site-skip-link-root"></div>
-  <script src="partials/skip-link.js"></script>
-  <script src="js/skip-link-include.js"></script>
+  <script src="partials/skip-link.js" defer></script>
+  <script src="js/skip-link-include.js" defer></script>
   <div id="site-gtm-body-root"></div>
-  <script src="partials/gtm-body.js"></script>
-  <script src="js/gtm-body-include.js"></script>
+  <script src="partials/gtm-body.js" defer></script>
+  <script src="js/gtm-body-include.js" defer></script>
   <div class="header-top">
     <div class="container">
       <div class="row">
@@ -172,7 +174,7 @@
     </section>
   </main>
   <div id="site-footer-root" data-footer-lang="es"></div>
-  <script src="js/site-config.js"></script>
+  <script src="js/site-config.js" defer></script>
   <script src="partials/nav-es.js"></script>
 <script src="js/nav-include.js"></script>
   <script src="partials/footer-es.js"></script>
