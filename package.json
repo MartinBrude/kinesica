@@ -1,0 +1,14 @@
+{
+  "name": "kinesica-site",
+  "private": true,
+  "description": "Static site tooling (CSS purge audit, scripts)",
+  "scripts": {
+    "css:audit": "node scripts/purge-css.mjs --audit",
+    "css:audit:cv": "node scripts/purge-css.mjs --audit --profile=cv",
+    "css:build": "node scripts/purge-css.mjs --write",
+    "css:build:cv": "node scripts/purge-css.mjs --write --profile=cv"
+  },
+  "devDependencies": {
+    "purgecss": "^7.0.2"
+  }
+}
