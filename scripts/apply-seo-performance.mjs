@@ -98,13 +98,6 @@ function deferHeadScripts(html) {
   return out;
 }
 
-function fixMapIframe(html) {
-  return html.replace(
-    /<iframe\s+src="(https:\/\/www\.google\.com\/maps\/embed[^"]*)"\s+style="width: 100%; height: 370px; border: 0; display: block"\s+allowfullscreen=""\s+loading="lazy"/g,
-    '<iframe class="map-embed" src="$1" allowfullscreen="" loading="lazy"',
-  );
-}
-
 function fix404FooterStyle(html, file) {
   if (!/\/404\.html$/.test(file)) {
     return html;
@@ -124,7 +117,6 @@ for (const file of listHtmlFiles()) {
   html = fontDisplaySwap(html);
   html = asyncNonCriticalCss(html);
   html = deferHeadScripts(html);
-  html = fixMapIframe(html);
   html = fix404FooterStyle(html, file);
   if (html !== original) {
     fs.writeFileSync(full, html);
