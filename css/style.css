@@ -360,6 +360,12 @@ label {}
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
+.btn-default:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+  transition-duration: 0.1s;
+}
+
 .btn-default.focus,
 .btn-default:focus {
   color: #fff;
@@ -1192,6 +1198,11 @@ main:focus {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+
+  .ui-reveal {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .navigation {
@@ -1268,6 +1279,25 @@ main:focus {
   text-decoration: none;
   font-weight: 500;
   text-transform: uppercase;
+  position: relative;
+}
+
+#navigation>ul>li>a::after {
+  content: "";
+  position: absolute;
+  left: 25px;
+  right: 25px;
+  bottom: 10px;
+  height: 2px;
+  background: var(--accent-color);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+}
+
+#navigation>ul>li:hover>a::after,
+#navigation>ul>li>a:focus-visible::after {
+  transform: scaleX(1);
 }
 
 #navigation>ul>li>a:focus-visible {
@@ -1804,6 +1834,30 @@ main:focus {
     transform: translate(-2%, 3%) scale(1.08);
     opacity: 0.72;
   }
+}
+
+.ui-reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.ui-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.service-block.ui-reveal:nth-child(1),
+.row > div:nth-child(1) .service-block.ui-reveal {
+  transition-delay: 0s;
+}
+
+.row > div:nth-child(2) .service-block.ui-reveal {
+  transition-delay: 0.08s;
+}
+
+.row > div:nth-child(3) .service-block.ui-reveal {
+  transition-delay: 0.16s;
 }
 
 .service-block {
