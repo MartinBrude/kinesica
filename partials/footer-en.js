@@ -1,4 +1,4 @@
-/* English footer markup. Loaded with <script src>; works from file:// (unlike fetch of .html). */
+/* English footer — /en/… links. file:// adjusted in footer-include.js. */
 window.__KINESICA_FOOTER_SNIPPET_EN = `
 <footer class="footer">
   <div class="container">
@@ -7,14 +7,14 @@ window.__KINESICA_FOOTER_SNIPPET_EN = `
         <div class="footer-widget">
           <h2 class="widget-title">Methods & Techniques</h2>
           <ul class="listnone">
-            <li><a href="rpg.html">RPG</a></li>
-            <li><a href="osteopatia.html">Osteopathy</a></li>
-            <li><a href="cadenas.html">Physiological Chains</a></li>
+            <li><a href="/en/rpg.html">RPG</a></li>
+            <li><a href="/en/osteopatia.html">Osteopathy</a></li>
+            <li><a href="/en/cadenas.html">Physiological Chains</a></li>
             <li>
-              <a href="manipulaciones.html">Visceral Manipulations</a>
+              <a href="/en/manipulaciones.html">Visceral Manipulations</a>
             </li>
-            <li><a href="neurodinamia.html">Neurodynamics</a></li>
-            <li><a href="atm.html">ATM (TMJ)</a></li>
+            <li><a href="/en/neurodinamia.html">Neurodynamics</a></li>
+            <li><a href="/en/atm.html">ATM (TMJ)</a></li>
           </ul>
         </div>
       </div>

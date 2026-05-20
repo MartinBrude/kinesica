@@ -37,6 +37,19 @@
     return;
   }
   root.innerHTML = html;
+
+  function applyFileProtocolFooterLinks() {
+    var routes = window.KINESICA_LANG_ROUTES;
+    if (routes && routes.isFileProtocol && routes.isFileProtocol()) {
+      routes.applyFileProtocolLinks(root);
+    }
+  }
+
+  applyFileProtocolFooterLinks();
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", applyFileProtocolFooterLinks);
+  }
+
   if (typeof window.kinesicaApplyWhatsAppContact === "function") {
     window.kinesicaApplyWhatsAppContact();
   }
