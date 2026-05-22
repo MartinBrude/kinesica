@@ -261,19 +261,9 @@ ${altOg}
       </div>
     </section>
     ${renderBody(data)}
-    <section class="space-small bg-primary">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-8 col-sm-8 col-md-8 col-xs-12">
-            <h2 class="cta-title">${esc(data.ctaTitle)}</h2>
-            <p class="cta-text">${esc(data.ctaText)}</p>
-          </div>
-          <div class="col-lg-4 col-sm-4 col-md-4 col-xs-12">
-            <a href="https://wa.me/5491161564311" target="_blank" class="btn btn-white btn-lg mt20 dynamic-whatsapp-url" rel="noopener noreferrer">${esc(data.ctaBtn)}</a>
-          </div>
-        </div>
-      </div>
-    </section>
+  <div id="site-cta-strip-root" data-cta-lang="${lang}"></div>
+  <script src="${asset(prefix, `partials/cta-strip-${lang}.js`)}"></script>
+  <script src="${asset(prefix, "js/cta-strip-include.js")}"></script>
   </main>
   <div id="site-footer-root" data-footer-lang="${lang}"></div>
   <script src="${asset(prefix, "js/site-config.js")}"></script>

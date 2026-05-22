@@ -42,6 +42,62 @@
       fr: "Posturologie",
     },
     articulos: { es: "Artículos", en: "Articles", fr: "Articles" },
+    cefalea: { es: "Cefalea", en: "Headache", fr: "Céphalée" },
+    dorsalgia: { es: "Dorsalgia", en: "Dorsalgia", fr: "Dorsalgie" },
+    ciatalgia: { es: "Ciatalgia", en: "Sciatica", fr: "Ciatalgie" },
+    cervicobraquialgia: {
+      es: "Cervicobraquialgia",
+      en: "Cervicobrachialgia",
+      fr: "Cervicobrachialgie",
+    },
+    pubalgia: { es: "Pubalgia", en: "Pubalgia", fr: "Pubalgie" },
+    gonalgia: { es: "Gonalgia", en: "Knee pain", fr: "Gonalgie" },
+    talalgia: { es: "Talalgia", en: "Heel pain", fr: "Talalgie" },
+    "dolor-sacriiliaco": {
+      es: "Sacroilíaco",
+      en: "Sacroiliac",
+      fr: "Sacro-iliaque",
+    },
+    "hernia-disco": { es: "Hernia disco", en: "Disc hernia", fr: "Hernie" },
+    "protrusion-discal": {
+      es: "Protrusión",
+      en: "Protrusion",
+      fr: "Protrusion",
+    },
+    hipercifosis: { es: "Hipercifosis", en: "Hyperkyphosis", fr: "Hypercyphose" },
+    hiperlordosis: { es: "Hiperlordosis", en: "Hyperlordosis", fr: "Hyperlordose" },
+    "dorso-plano": { es: "Dorso plano", en: "Flat back", fr: "Dos plat" },
+    "genu-valgo": { es: "Genu valgo", en: "Genu valgum", fr: "Genu valgum" },
+    "genu-varo": { es: "Genu varo", en: "Genu varum", fr: "Genu varum" },
+    "pies-planos": { es: "Pies planos", en: "Flat feet", fr: "Pieds plats" },
+    escoliosis: { es: "Escoliosis", en: "Scoliosis", fr: "Scoliose" },
+    "epicondilitis-lateral": {
+      es: "Codo tenista",
+      en: "Tennis elbow",
+      fr: "Épicondylite",
+    },
+    "epicondilitis-medial": {
+      es: "Codo golfista",
+      en: "Golfer's elbow",
+      fr: "Épicondylite",
+    },
+    "impingement-subacromial": {
+      es: "Impingement",
+      en: "Impingement",
+      fr: "Conflit",
+    },
+    "manguito-rotador": {
+      es: "Manguito",
+      en: "Rotator cuff",
+      fr: "Coiffe",
+    },
+    radiculopatia: { es: "Radiculopatía", en: "Radiculopathy", fr: "Radiculopathie" },
+    meniscopatia: { es: "Meniscopatía", en: "Meniscopathy", fr: "Méniscopathie" },
+    "fascitis-plantar": {
+      es: "Fascitis",
+      en: "Plantar fascia",
+      fr: "Fasciite",
+    },
   };
 
   var entry = labels[file];

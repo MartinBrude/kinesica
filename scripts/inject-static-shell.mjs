@@ -52,6 +52,31 @@ function injectNav(html, file) {
   );
 }
 
+function injectCta(html, file) {
+  const lang = expectedLang(file);
+  if (!html.includes('id="site-cta-strip-root"')) {
+    return html;
+  }
+  const ctaHtml = loadSnippet(`partials/cta-strip-${lang}.js`);
+  const langAttr = lang === "en" || lang === "fr" ? lang : "es";
+  const openTag = `<div id="site-cta-strip-root" data-cta-lang="${langAttr}">`;
+  html = html.replace(/<div id="site-cta-strip-root[^>]*>/, openTag);
+  if (/<div id="site-cta-strip-root"[^>]*>\s*<section class="space-small bg-primary site-cta-strip">/.test(html)) {
+    return html;
+  }
+  const replaced = html.replace(
+    /<div id="site-cta-strip-root"[^>]*>\s*<\/div>/,
+    `${openTag}\n${ctaHtml}\n</div>`,
+  );
+  if (replaced !== html) {
+    return replaced;
+  }
+  return html.replace(
+    /<div id="site-cta-strip-root"([^>]*)><\/div>/,
+    `${openTag}\n${ctaHtml}\n</div>`,
+  );
+}
+
 function injectFooter(html, file) {
   const lang = expectedLang(file);
   if (!html.includes('id="site-footer-root"')) {
@@ -84,6 +109,7 @@ for (const file of listHtmlFiles()) {
   let html = fs.readFileSync(full, "utf8");
   const original = html;
   html = injectNav(html, file);
+  html = injectCta(html, file);
   html = injectFooter(html, file);
   if (html !== original) {
     fs.writeFileSync(full, html);

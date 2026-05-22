@@ -34,9 +34,9 @@
   <link href="css/font-awesome.min.css" rel="stylesheet" media="print" onload="this.media='all'" />
   <noscript><link href="css/font-awesome.min.css" rel="stylesheet" /></noscript>
   <!-- Style -->
-  <link href="css/style.min.css?v=1779442494" rel="stylesheet" />
-  <link href="css/whatsapp.min.css?v=1779442494" rel="stylesheet" media="print" onload="this.media='all'" />
-  <noscript><link href="css/whatsapp.min.css?v=1779442494" rel="stylesheet" /></noscript>
+  <link href="css/style.min.css?v=1779449998" rel="stylesheet" />
+  <link href="css/whatsapp.min.css?v=1779449998" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="css/whatsapp.min.css?v=1779449998" rel="stylesheet" /></noscript>
   <link rel="canonical" href="https://www.kinesica.com.ar/osteopatia.html" />
   <link rel="alternate" hreflang="es" href="https://www.kinesica.com.ar/osteopatia.html" />
   <link rel="alternate" hreflang="en" href="https://www.kinesica.com.ar/en/osteopatia.html" />
@@ -265,40 +265,6 @@
         "@type": "Offer",
         "itemOffered": {
           "@type": "Service",
-          "@id": "https://www.kinesica.com.ar/cervicalgia.html#service",
-          "name": "Tratamiento de cervicalgia",
-          "description": "Abordaje de dolor y rigidez cervical en Palermo.",
-          "url": "https://www.kinesica.com.ar/cervicalgia.html",
-          "provider": {
-            "@id": "https://www.kinesica.com.ar/#kinesica"
-          },
-          "areaServed": {
-            "@type": "Place",
-            "name": "Palermo, Buenos Aires"
-          }
-        }
-      },
-      {
-        "@type": "Offer",
-        "itemOffered": {
-          "@type": "Service",
-          "@id": "https://www.kinesica.com.ar/lumbalgia.html#service",
-          "name": "Tratamiento de lumbalgia",
-          "description": "Tratamiento de dolor lumbar y ciática.",
-          "url": "https://www.kinesica.com.ar/lumbalgia.html",
-          "provider": {
-            "@id": "https://www.kinesica.com.ar/#kinesica"
-          },
-          "areaServed": {
-            "@type": "Place",
-            "name": "Palermo, Buenos Aires"
-          }
-        }
-      },
-      {
-        "@type": "Offer",
-        "itemOffered": {
-          "@type": "Service",
           "@id": "https://www.kinesica.com.ar/manipulaciones.html#service",
           "name": "Manipulaciones viscerales",
           "description": "Terapia manual visceral para mejorar la función de órganos.",
@@ -379,6 +345,40 @@
             "name": "Palermo, Buenos Aires"
           }
         }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "@id": "https://www.kinesica.com.ar/lumbalgia.html#service",
+          "name": "Tratamiento de lumbalgia",
+          "description": "Tratamiento de dolor lumbar y ciática.",
+          "url": "https://www.kinesica.com.ar/lumbalgia.html",
+          "provider": {
+            "@id": "https://www.kinesica.com.ar/#kinesica"
+          },
+          "areaServed": {
+            "@type": "Place",
+            "name": "Palermo, Buenos Aires"
+          }
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "@id": "https://www.kinesica.com.ar/cervicalgia.html#service",
+          "name": "Tratamiento de cervicalgia",
+          "description": "Abordaje de dolor y rigidez cervical en Palermo.",
+          "url": "https://www.kinesica.com.ar/cervicalgia.html",
+          "provider": {
+            "@id": "https://www.kinesica.com.ar/#kinesica"
+          },
+          "areaServed": {
+            "@type": "Place",
+            "name": "Palermo, Buenos Aires"
+          }
+        }
       }
     ]
   },
@@ -438,7 +438,28 @@
         </div>
         <div class="col-lg-8 col-md-4 col-sm-12 col-xs-12">
           <nav class="navigation">
-            <div id="navigation" class="nav navbar-nav navbar-right" data-nav-inject="true"></div>
+            <div id="navigation" class="nav navbar-nav navbar-right" data-nav-inject="true">
+<ul>
+  <li class="has-sub">
+    <a href="articulos.html" title="Artículos">Artículos</a>
+    <ul>
+      <li><a href="cervicalgia.html" title="Cervicalgia">Cervicalgia</a></li>
+      <li><a href="lumbalgia.html" title="Lumbalgia">Lumbalgia</a></li>
+    </ul>
+  </li>
+  <li class="has-sub">
+    <a href="rpg.html" title="Métodos y Técnicas">Métodos y Técnicas</a>
+    <ul>
+      <li><a href="rpg.html" title="RPG">RPG</a></li>
+      <li><a href="osteopatia.html" title="Osteopatía">Osteopatía</a></li>
+      <li><a href="cadenas.html" title="Cadenas Fisiológicas">Cadenas Fisiológicas</a></li>
+      <li><a href="manipulaciones.html" title="Manipulaciones viscerales">Manipulaciones viscerales</a></li>
+      <li><a href="neurodinamia.html" title="Neurodinamia">Neurodinamia</a></li>
+      <li><a href="atm.html" title="ATM">ATM</a></li>
+    </ul>
+  </li>
+</ul>
+</div>
           </nav>
         </div>
       </div>
@@ -530,25 +551,93 @@
         </div>
       </div>
     </section>
-    <section class="space-small bg-primary">
-      <!-- call to action -->
+  </main>
+  <div id="site-cta-strip-root" data-cta-lang="es">
+<section class="space-small bg-primary site-cta-strip">
       <div class="container">
         <div class="row">
           <div class="col-lg-8 col-sm-8 col-md-8 col-xs-12">
             <h2 class="cta-title">Contáctanos y reserva un turno</h2>
-            <p class="cta-text">
-              Antes de la primera sesión hacemos una llamada para aclarar dudas.
-            </p>
+            <p class="cta-text">Antes de la primera sesión hacemos una llamada para aclarar dudas.</p>
           </div>
           <div class="col-lg-4 col-sm-4 col-md-4 col-xs-12">
             <a href="https://wa.me/5491161564311" target="_blank" class="btn btn-white btn-lg mt20 dynamic-whatsapp-url"
               rel="noopener noreferrer">Contacto</a>
-</div>
+          </div>
         </div>
       </div>
     </section>
-  </main>
-  <div id="site-footer-root" data-footer-lang="es"></div>
+</div>
+  <script src="partials/cta-strip-es.min.js"></script>
+  <script src="js/cta-strip-include.min.js"></script>
+
+  <div id="site-footer-root" data-footer-lang="es">
+<footer class="footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4 col-md-2 col-sm-2 col-xs-12">
+        <div class="footer-widget">
+          <h2 class="widget-title">Métodos y Técnicas</h2>
+          <ul class="listnone">
+            <li><a href="/rpg.html">RPG</a></li>
+            <li><a href="/osteopatia.html">Osteopatía</a></li>
+            <li><a href="/cadenas.html">Cadenas Fisiológicas</a></li>
+            <li>
+              <a href="/manipulaciones.html">Manipulaciones viscerales</a>
+            </li>
+            <li><a href="/neurodinamia.html">Neurodinamia</a></li>
+            <li><a href="/atm.html">ATM</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+        <div class="footer-widget footer-social">
+          <h2 class="widget-title">Redes sociales</h2>
+          <ul class="listnone">
+            <li>
+              <a href="https://www.instagram.com/kinesicabrude/" target="_blank" rel="noopener noreferrer"><i
+                  class="fa fa-instagram"></i> kinesicabrude</a>
+            </li>
+            <li>
+              <a href="https://www.facebook.com/kinesicabrude/" target="_blank" rel="noopener noreferrer"><i
+                  class="fa fa-facebook"></i> kinesicabrude</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-2 col-sm-2 col-xs-12">
+        <div class="footer-widget footer-social">
+          <h2 class="widget-title">Consultorio</h2>
+          <ul class="listnone">
+            <li>
+              <a href="https://maps.app.goo.gl/urpkh4HYe7dSdjPS9" target="_blank" rel="noopener noreferrer"
+                title="Ver Kinésica en Google Maps"><i class="fa fa-map-marker"></i> Charcas 3889, CABA</a>
+            </li>
+            <li>
+              <a href="#" class="dynamic-whatsapp-link" target="_blank" rel="noopener noreferrer">
+                <i class="fa fa-phone"></i>
+                <span class="dynamic-whatsapp-text">+54 (11) 6156-4311</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+<div class="tiny-footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="copyright-content">
+          Shared by <i class="fa fa-love"></i><a href="https://bootstrapthemes.co">BootstrapThemes</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
   <script src="js/site-config.min.js" defer></script>
   <script src="partials/nav-es.min.js"></script>
 <script src="js/nav-include.min.js"></script>

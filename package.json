@@ -14,7 +14,9 @@
     "seo:apply": "node scripts/apply-seo-performance.mjs",
     "seo:audit": "node scripts/audit-site.mjs",
     "assets:build": "node scripts/minify-assets.mjs",
-    "build:seo": "npm run seo:schema && npm run schema:partials && npm run assets:build"
+    "build:seo": "npm run seo:schema && npm run schema:partials && npm run assets:build",
+    "build:pathologies": "node scripts/build-pathology-pages.mjs && node scripts/inject-local-schema.mjs && node scripts/inject-static-shell.mjs && node scripts/verify-pathology-pages.mjs && npm run assets:build",
+    "migrate:cta": "node scripts/migrate-cta-strip.mjs && node scripts/normalize-cta-strip.mjs && node scripts/inject-static-shell.mjs && npm run assets:build"
   },
   "devDependencies": {
     "esbuild": "^0.25.0",

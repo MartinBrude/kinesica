@@ -35,9 +35,9 @@
   <link href="../css/font-awesome.min.css" rel="stylesheet" media="print" onload="this.media='all'" />
   <noscript><link href="../css/font-awesome.min.css" rel="stylesheet" /></noscript>
   <!-- Style -->
-  <link href="../css/style.min.css?v=1779442494" rel="stylesheet" />
-  <link href="../css/whatsapp.min.css?v=1779442494" rel="stylesheet" media="print" onload="this.media='all'" />
-  <noscript><link href="../css/whatsapp.min.css?v=1779442494" rel="stylesheet" /></noscript>
+  <link href="../css/style.min.css?v=1779449998" rel="stylesheet" />
+  <link href="../css/whatsapp.min.css?v=1779449998" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="../css/whatsapp.min.css?v=1779449998" rel="stylesheet" /></noscript>
 <meta property="og:title" content="Kinésica - Clinic for Kinesiology, Osteopathy and RPG" />
   <meta property="og:description" content="Kinésica is a kinesiology, osteopathy, and manual therapy center in Palermo." />
   <meta property="og:image" content="https://www.kinesica.com.ar/images/hero-img.jpg" />
@@ -251,40 +251,6 @@
             "@type": "Offer",
             "itemOffered": {
               "@type": "Service",
-              "@id": "https://www.kinesica.com.ar/en/cervicalgia.html#service",
-              "name": "Cervical pain treatment",
-              "description": "Care for neck pain and stiffness in Palermo.",
-              "url": "https://www.kinesica.com.ar/en/cervicalgia.html",
-              "provider": {
-                "@id": "https://www.kinesica.com.ar/#kinesica"
-              },
-              "areaServed": {
-                "@type": "Place",
-                "name": "Palermo, Buenos Aires"
-              }
-            }
-          },
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "@id": "https://www.kinesica.com.ar/en/lumbalgia.html#service",
-              "name": "Low back pain treatment",
-              "description": "Treatment for lumbar pain and sciatica.",
-              "url": "https://www.kinesica.com.ar/en/lumbalgia.html",
-              "provider": {
-                "@id": "https://www.kinesica.com.ar/#kinesica"
-              },
-              "areaServed": {
-                "@type": "Place",
-                "name": "Palermo, Buenos Aires"
-              }
-            }
-          },
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
               "@id": "https://www.kinesica.com.ar/en/manipulaciones.html#service",
               "name": "Visceral manipulation",
               "description": "Visceral manual therapy to improve organ function.",
@@ -357,6 +323,40 @@
               "name": "RPG — Global Postural Reeducation",
               "description": "RPG method to release static muscle chains and re-educate posture.",
               "url": "https://www.kinesica.com.ar/en/rpg.html",
+              "provider": {
+                "@id": "https://www.kinesica.com.ar/#kinesica"
+              },
+              "areaServed": {
+                "@type": "Place",
+                "name": "Palermo, Buenos Aires"
+              }
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "@id": "https://www.kinesica.com.ar/en/lumbalgia.html#service",
+              "name": "Low back pain treatment",
+              "description": "Treatment for lumbar pain and sciatica.",
+              "url": "https://www.kinesica.com.ar/en/lumbalgia.html",
+              "provider": {
+                "@id": "https://www.kinesica.com.ar/#kinesica"
+              },
+              "areaServed": {
+                "@type": "Place",
+                "name": "Palermo, Buenos Aires"
+              }
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "@id": "https://www.kinesica.com.ar/en/cervicalgia.html#service",
+              "name": "Cervical pain treatment",
+              "description": "Care for neck pain and stiffness in Palermo.",
+              "url": "https://www.kinesica.com.ar/en/cervicalgia.html",
               "provider": {
                 "@id": "https://www.kinesica.com.ar/#kinesica"
               },
@@ -484,7 +484,28 @@
         </div>
         <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
           <nav class="navigation">
-            <div id="navigation" class="nav navbar-nav navbar-right" data-nav-inject="true"></div>
+            <div id="navigation" class="nav navbar-nav navbar-right" data-nav-inject="true">
+<ul>
+  <li class="has-sub">
+    <a href="articulos.html" title="Articles">Articles</a>
+    <ul>
+      <li><a href="cervicalgia.html" title="Cervical Pain">Cervical Pain</a></li>
+      <li><a href="lumbalgia.html" title="Low Back Pain">Low Back Pain</a></li>
+    </ul>
+  </li>
+  <li class="has-sub">
+    <a href="rpg.html" title="Methods & Techniques">Methods & Techniques</a>
+    <ul>
+      <li><a href="rpg.html" title="RPG">RPG</a></li>
+      <li><a href="osteopatia.html" title="Osteopathy">Osteopathy</a></li>
+      <li><a href="cadenas.html" title="Physiological Chains">Physiological Chains</a></li>
+      <li><a href="manipulaciones.html" title="Visceral Manipulations">Visceral Manipulations</a></li>
+      <li><a href="neurodinamia.html" title="Neurodynamics">Neurodynamics</a></li>
+      <li><a href="atm.html" title="ATM (TMJ)">ATM (TMJ)</a></li>
+    </ul>
+  </li>
+</ul>
+</div>
           </nav>
         </div>
       </div>
@@ -655,25 +676,25 @@
         </div>
       </div>
     </section>
-    <section class="space-small bg-primary">
-      <!-- call to action -->
+          <div id="site-cta-strip-root" data-cta-lang="en">
+<section class="space-small bg-primary site-cta-strip">
       <div class="container">
         <div class="row">
           <div class="col-lg-8 col-sm-8 col-md-8 col-xs-12">
             <h2 class="cta-title">Contact us and book an appointment</h2>
-            <p class="cta-text">
-              Before the first session we can chat to clarify any questions.
-            </p>
+            <p class="cta-text">Before the first session we can chat to clarify any questions.</p>
           </div>
           <div class="col-lg-4 col-sm-4 col-md-4 col-xs-12">
             <a href="https://wa.me/5491161564311" target="_blank" class="btn btn-white btn-lg mt20 dynamic-whatsapp-url"
               rel="noopener noreferrer">Contact</a>
-</div>
+          </div>
         </div>
       </div>
     </section>
-    <!-- /.call to action -->
-    <section class="space-medium section-intro">
+</div>
+  <script src="../partials/cta-strip-en.min.js"></script>
+  <script src="../js/cta-strip-include.min.js"></script>
+<section class="space-medium section-intro">
       <div class="container">
         <div class="row">
           <div class="col-lg-offset-2 col-lg-8 col-md-offset-2 col-md-8 col-sm-12 col-xs-12">
@@ -858,42 +879,39 @@
                     <br />
                     <strong>Pain:</strong>
                     <ul>
-                      <li>Headache</li>
-                      <li>Dorsalgia (upper/mid-back pain)</li>
-                      <li>Lumbalgia (lower back pain)</li>
-                      <li>Sciatica</li>
-                      <li>Cervicobrachialgia (neck and arm pain)</li>
-                      <li>Pubalgia (groin pain)</li>
-                      <li>Gonalgia (knee pain)</li>
-                      <li>Talalgia (heel pain)</li>
-                      <li>Sacroiliac pain</li>
+                      <li><a href="/en/cefalea.html">Headache</a></li>
+                      <li><a href="/en/dorsalgia.html">Dorsalgia (upper/mid-back pain)</a></li>
+                      <li><a href="/en/lumbalgia.html">Lumbalgia (lower back pain)</a></li>
+                      <li><a href="/en/ciatalgia.html">Sciatica</a></li>
+                      <li><a href="/en/cervicobraquialgia.html">Cervicobrachialgia (neck and arm pain)</a></li>
+                      <li><a href="/en/pubalgia.html">Pubalgia (groin pain)</a></li>
+                      <li><a href="/en/gonalgia.html">Gonalgia (knee pain)</a></li>
+                      <li><a href="/en/talalgia.html">Talalgia (heel pain)</a></li>
+                      <li><a href="/en/dolor-sacriiliaco.html">Sacroiliac pain</a></li>
                       <li>Herniated discs</li>
-                      <li>Disc protrusions</li>
+                      <li><a href="/en/protrusion-discal.html">Disc protrusions</a></li>
                     </ul>
                     <strong>Postural Issues:</strong>
                     <ul>
-                      <li>Hyperkyphosis (excessive upper back curvature)</li>
-                      <li>
-                        Cervical/lumbar hyperlordosis (excessive inward spinal
-                        curve)
-                      </li>
-                      <li>Flat back</li>
-                      <li>Genu valgum (knock knees)</li>
-                      <li>Genu varum (bow legs)</li>
+                      <li><a href="/en/hipercifosis.html">Hyperkyphosis (excessive upper back curvature)</a></li>
+                      <li><a href="/en/hiperlordosis.html">Cervical/lumbar hyperlordosis (excessive inward spinal curve)</a></li>
+                      <li><a href="/en/dorso-plano.html">Flat back</a></li>
+                      <li><a href="/en/genu-valgo.html">Genu valgum (knock knees)</a></li>
+                      <li><a href="/en/genu-varo.html">Genu varum (bow legs)</a></li>
                       <li>High or flat arches (cavus/planus feet)</li>
-                      <li>Scoliosis</li>
+                      <li><a href="/en/escoliosis.html">Scoliosis</a></li>
                     </ul>
                     <strong>Sports Injuries:</strong>
                     <ul>
-                      <li>Tennis elbow</li>
+                      <li><a href="/en/epicondilitis-lateral.html">Tennis elbow</a></li>
                       <li>Golfer’s elbow</li>
-                      <li>Heel pain</li>
-                      <li>Subacromial impingement</li>
-                      <li>Rotator cuff injuries</li>
-                      <li>Groin pain</li>
-                      <li>Radiculopathies (pinched nerves)</li>
+                      <li><a href="/en/talalgia.html">Heel pain</a></li>
+                      <li><a href="/en/impingement-subacromial.html">Subacromial impingement</a></li>
+                      <li><a href="/en/manguito-rotador.html">Rotator cuff injuries</a></li>
+                      <li><a href="/en/pubalgia.html">Groin pain</a></li>
+                      <li><a href="/en/radiculopatia.html">Radiculopathies (pinched nerves)</a></li>
                       <li>Non-surgical meniscus injuries</li>
-                      <li>Plantar fasciitis</li>
+                      <li><a href="/en/fascitis-plantar.html">Plantar fasciitis</a></li>
                     </ul>
                   </div>
                 </div>
@@ -904,7 +922,73 @@
       </div>
     </section>
   </main>
-  <div id="site-footer-root" data-footer-lang="en"></div>
+<div id="site-footer-root" data-footer-lang="en">
+<footer class="footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4 col-md-2 col-sm-2 col-xs-12">
+        <div class="footer-widget">
+          <h2 class="widget-title">Methods & Techniques</h2>
+          <ul class="listnone">
+            <li><a href="/en/rpg.html">RPG</a></li>
+            <li><a href="/en/osteopatia.html">Osteopathy</a></li>
+            <li><a href="/en/cadenas.html">Physiological Chains</a></li>
+            <li>
+              <a href="/en/manipulaciones.html">Visceral Manipulations</a>
+            </li>
+            <li><a href="/en/neurodinamia.html">Neurodynamics</a></li>
+            <li><a href="/en/atm.html">ATM (TMJ)</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+        <div class="footer-widget footer-social">
+          <h2 class="widget-title">Social media</h2>
+          <ul class="listnone">
+            <li>
+              <a href="https://www.instagram.com/kinesicabrude/" target="_blank" rel="noopener noreferrer"><i
+                  class="fa fa-instagram"></i> kinesicabrude</a>
+            </li>
+            <li>
+              <a href="https://www.facebook.com/kinesicabrude/" target="_blank" rel="noopener noreferrer"><i
+                  class="fa fa-facebook"></i> kinesicabrude</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-2 col-sm-2 col-xs-12">
+        <div class="footer-widget footer-social">
+          <h2 class="widget-title">Clinic</h2>
+          <ul class="listnone">
+            <li>
+              <a href="https://maps.app.goo.gl/urpkh4HYe7dSdjPS9" target="_blank" rel="noopener noreferrer"
+                title="View Kinésica on Google Maps"><i class="fa fa-map-marker"></i> Charcas 3889, CABA</a>
+            </li>
+            <li>
+              <a href="#" class="dynamic-whatsapp-link" target="_blank" rel="noopener noreferrer">
+                <i class="fa fa-phone"></i>
+                <span class="dynamic-whatsapp-text">+54 (11) 6156-4311</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+<div class="tiny-footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="copyright-content">
+          Shared by <i class="fa fa-love"></i><a href="https://bootstrapthemes.co">BootstrapThemes</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
   <script src="../partials/nav-en.min.js"></script>
   <script src="../js/nav-include.min.js"></script>
   <script src="../partials/footer-en.min.js"></script>

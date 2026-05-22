@@ -3,20 +3,21 @@
  */
 export const SITE = "https://www.kinesica.com.ar";
 
+import { PATHOLOGY_STEMS } from "./pathology-content.mjs";
+
 export const STEMS = [
   "index",
   "articulos",
   "atm",
   "acupuntura",
   "cadenas",
-  "cervicalgia",
   "cv",
-  "lumbalgia",
   "manipulaciones",
   "neurodinamia",
   "osteopatia",
   "posturologia-clinica",
   "rpg",
+  ...PATHOLOGY_STEMS,
 ];
 
 /** Public absolute URL for a page. */
