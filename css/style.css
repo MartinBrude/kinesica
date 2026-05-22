@@ -138,9 +138,11 @@ ol li {}
 a {
   color: #031c42;
   text-decoration: none;
-  -webkit-transition: all 0.3s;
-  -moz-transition: all 0.3s;
-  transition: all 0.3s;
+  transition:
+    color 0.3s ease,
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    opacity 0.3s ease;
 }
 
 a:focus,
@@ -1417,10 +1419,6 @@ main:focus {
   margin-top: 10px;
 }
 
-#navigation>ul>li {
-  float: left;
-}
-
 #navigation.align-center>ul {
   font-size: 0;
   text-align: center;
@@ -1439,80 +1437,11 @@ main:focus {
   float: right;
 }
 
-#navigation>ul>li>a {
-  padding: 15px 25px;
-  font-size: 14px;
-  color: #474747;
-  text-decoration: none;
-  font-weight: 500;
-  text-transform: uppercase;
-  position: relative;
-}
-
-#navigation>ul>li>a::after {
-  content: "";
-  position: absolute;
-  left: 25px;
-  right: 25px;
-  bottom: 10px;
-  height: 2px;
-  background: var(--accent-color);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.25s ease;
-}
-
-#navigation>ul>li:hover>a::after,
-#navigation>ul>li>a:focus-visible::after {
-  transform: scaleX(1);
-}
-
-#navigation>ul>li>a:focus-visible {
-  outline: 2px solid var(--accent-color);
-  outline-offset: 2px;
-  color: var(--primary-color);
-}
-
 #navigation ul ul li a:focus-visible {
   outline: 2px solid var(--accent-color);
   outline-offset: -2px;
 }
 
-#navigation>ul>li:hover>a {
-  color: var(--primary-color);
-  background-color: transparent;
-}
-
-#navigation>ul>li.has-sub>a {
-  padding-right: 32px;
-}
-
-/*#navigation > ul > li.has-sub > a:after {
- position: absolute;
- top: 22px;
- right: 11px;
- width: 8px;
- height: 2px;
- display: block;
- background: #dddddd;
- content: '';
-}*/
-#navigation>ul>li.has-sub>a:before {
-  position: absolute;
-  right: 14px;
-  font-family: FontAwesome;
-  content: "\f107";
-  -webkit-transition: all 0.25s ease;
-  -moz-transition: all 0.25s ease;
-  -ms-transition: all 0.25s ease;
-  -o-transition: all 0.25s ease;
-  transition: all 0.25s ease;
-}
-
-/*#navigation > ul > li.has-sub:hover > a:before {
- top: 23px;
- height: 0;
-}*/
 #navigation ul ul {
   position: absolute;
   left: -9999px;
@@ -3496,5 +3425,127 @@ Pathology detail pages (FAQ dolencias)
   .articles-index-card:hover,
   .articles-index-card:focus-visible {
     transform: none;
+  }
+}
+
+/* --- Nav estable (al final del bundle para ganar cascada) --- */
+html {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
+.page-header-word {
+  right: 2.5rem;
+  font-size: clamp(3.25rem, 7.5rem, 9.5rem);
+  transform: translate3d(0, -50%, 0);
+}
+
+.page-header-word--long {
+  font-size: clamp(2.25rem, 5.5rem, 5.5rem);
+}
+
+#navigation {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.header .row > [class*="col-"]:last-child {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.navigation {
+  float: none;
+  width: 100%;
+  max-width: 100%;
+}
+
+#navigation > ul {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  align-items: stretch;
+  float: right;
+  width: max-content;
+  max-width: 100%;
+  margin-left: auto;
+}
+
+#navigation > ul > li {
+  float: none !important;
+  flex: 0 0 auto;
+}
+
+#navigation a,
+#navigation a::before,
+#navigation a::after {
+  transition: none !important;
+}
+
+#navigation > ul > li > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 15px 25px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  text-decoration: none !important;
+  white-space: nowrap;
+  color: #474747 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  border: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#navigation > ul > li > a::after {
+  display: none !important;
+  content: none !important;
+}
+
+#navigation > ul > li > a:hover,
+#navigation > ul > li > a:focus,
+#navigation > ul > li > a:focus-visible,
+#navigation > ul > li > a:active,
+#navigation > ul > li:hover > a {
+  color: #474747 !important;
+  outline: none !important;
+  background: transparent !important;
+}
+
+#navigation > ul > li.has-sub > a::before {
+  display: none !important;
+  content: none !important;
+}
+
+.site-nav__chevron {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  margin-top: 1px;
+  border: 0;
+  border-right: 2px solid #474747;
+  border-bottom: 2px solid #474747;
+  transform: rotate(45deg);
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+#navigation.small-screen .site-nav__chevron {
+  display: none;
+}
+
+@media (min-width: 769px) {
+  #navigation ul ul li {
+    transition: none !important;
+  }
+
+  #navigation li:hover > ul > li {
+    transition: none !important;
   }
 }

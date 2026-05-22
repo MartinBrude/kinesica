@@ -40,16 +40,21 @@ function loadSnippet(jsPath) {
 function injectNav(html, file) {
   const lang = expectedLang(file);
   const navHtml = loadSnippet(`partials/nav-${lang}.js`);
-  const emptyNav = /<div id="navigation"([^>]*)><\/div>/;
-  const filledNav = new RegExp(
-    `<div id="navigation"([^>]*)>[\\s\\S]*?<\\/div>\\s*<\\/nav>`,
+  html = html.replace(
+    /<div id="navigation" class="nav navbar-nav navbar-right"/g,
+    '<div id="navigation"',
   );
-  if (filledNav.test(html) && html.includes("<ul>")) {
-    return html;
+  const navBlock =
+    /<div id="navigation"([^>]*)>[\s\S]*?<\/div>(?=\s*<\/nav>)/;
+  if (navBlock.test(html)) {
+    return html.replace(
+      navBlock,
+      `<div id="navigation"$1>\n${navHtml}\n            </div>`,
+    );
   }
   return html.replace(
-    emptyNav,
-    `<div id="navigation"$1>\n${navHtml}\n</div>`,
+    /<div id="navigation"([^>]*)><\/div>/,
+    `<div id="navigation"$1>\n${navHtml}\n            </div>`,
   );
 }
 

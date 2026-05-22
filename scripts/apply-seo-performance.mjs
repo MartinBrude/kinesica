@@ -65,6 +65,40 @@ function fontDisplaySwap(html) {
   );
 }
 
+/** Roboto bloqueante: evita reflow del menú y del título al cargar (regresión bed1d6f). */
+function preloadRoboto(html) {
+  if (html.includes('rel="preload"') && html.includes("fonts.googleapis.com")) {
+    return html;
+  }
+  return html.replace(
+    /(<link rel="preconnect" href="https:\/\/fonts\.gstatic\.com" crossorigin \/>)/,
+    '$1\n  <link rel="preload" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i&display=swap" as="style" />',
+  );
+}
+
+function syncRobotoStylesheet(html) {
+  const asyncRoboto =
+    /<link href="(https:\/\/fonts\.googleapis\.com\/css\?family=Roboto:[^"]+)" rel="stylesheet"\s+media="print" onload="this\.media='all'" \/>\s*<noscript>\s*<link href="\1" rel="stylesheet" \/>\s*<\/noscript>\s*/g;
+  let out = html.replace(
+    asyncRoboto,
+    '<link href="$1" rel="stylesheet" />\n',
+  );
+  const asyncRobotoOnly =
+    /<link href="(https:\/\/fonts\.googleapis\.com\/css\?family=Roboto:[^"]+)" rel="stylesheet"\s+media="print" onload="this\.media='all'" \/>\s*/g;
+  out = out.replace(
+    asyncRobotoOnly,
+    '<link href="$1" rel="stylesheet" />\n',
+  );
+  return out;
+}
+
+function fixBrokenFontAwesomeNoscript(html) {
+  return html.replace(
+    /<noscript><link (href="(?:\.\.\/)?css\/font-awesome\.min\.css") rel="stylesheet" media="print" onload="this\.media='all'" \/>\s*<noscript><link \1 rel="stylesheet" \/><\/noscript><\/noscript>/g,
+    '<noscript><link $1 rel="stylesheet" /></noscript>',
+  );
+}
+
 function asyncNonCriticalCss(html) {
   return html.replace(ASYNC_CSS, (tag) => {
     if (tag.includes('media="print"')) {
@@ -113,6 +147,9 @@ for (const file of listHtmlFiles()) {
   const original = html;
   html = addRobotsMeta(html, file);
   html = fontDisplaySwap(html);
+  html = preloadRoboto(html);
+  html = syncRobotoStylesheet(html);
+  html = fixBrokenFontAwesomeNoscript(html);
   html = asyncNonCriticalCss(html);
   html = deferHeadScripts(html);
   html = fix404FooterStyle(html, file);
