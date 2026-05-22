@@ -36,6 +36,14 @@ function esc(s) {
     .replace(/"/g, "&quot;");
 }
 
+/** Título decorativo en .page-header (igual que métodos / RPG). */
+function pageCaptionMarkup(label) {
+  const longClass = label.length > 11 ? " page-header-word--long" : "";
+  return `            <div class="page-caption">
+              <span class="page-header-word${longClass}" aria-hidden="true">${esc(label)}</span>
+            </div>`;
+}
+
 function prefix(lang) {
   if (lang === "es") return "";
   return "../";
@@ -277,7 +285,7 @@ ${langFlags}
       <div class="container">
         <div class="row">
           <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <div class="page-caption"></div>
+${pageCaptionMarkup(data.breadcrumb)}
           </div>
         </div>
       </div>

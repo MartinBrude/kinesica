@@ -771,6 +771,17 @@ label {}
   margin-bottom: 0;
 }
 
+/* Home — Sobre mí / About */
+.section-intro--about .section-lead {
+  max-width: 69rem;
+}
+
+.section-intro--about .section-title {
+  max-width: 69rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .section-intro .service-content p {
   font-size: 1.5rem;
   line-height: 1.65;
@@ -2900,8 +2911,8 @@ ul.widget-recent-post {}
 
 .team-img .team-photo {
   display: block;
-  width: 200px;
-  max-width: min(200px, 68vw);
+  width: 248px;
+  max-width: min(248px, 76vw);
   height: auto;
   aspect-ratio: 262 / 310;
   object-fit: cover;
