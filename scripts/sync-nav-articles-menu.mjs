@@ -9,6 +9,10 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { PATHOLOGIES } from "./pathology-content.mjs";
+import {
+  articlesSubmenuItems,
+  patchArticlesSubmenu,
+} from "./nav-articles-submenu.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -17,22 +21,6 @@ const NAV_PARTIALS = {
   en: path.join(ROOT, "partials", "nav-en.js"),
   fr: path.join(ROOT, "partials", "nav-fr.js"),
 };
-
-function articlesSubmenuItems(lang) {
-  return PATHOLOGIES.map((p) => {
-    const label = p[lang].breadcrumb;
-    return `      <li><a href="${p.stem}.html" title="${label}">${label}</a></li>`;
-  }).join("\n");
-}
-
-function patchArticlesSubmenu(html, submenu) {
-  const re =
-    /(<li class="has-sub">\s*<a href="articulos\.html"[^>]*>[^<]*<\/a>\s*<ul>\s*)([\s\S]*?)(\s*<\/ul>\s*<\/li>\s*<li class="has-sub">)/;
-  if (!re.test(html)) {
-    return null;
-  }
-  return html.replace(re, `$1\n${submenu}\n$3`);
-}
 
 function patchNavPartial(filePath, lang) {
   let js = fs.readFileSync(filePath, "utf8");

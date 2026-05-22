@@ -7,6 +7,10 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { injectStaticHeader } from "./header-shell.mjs";
+import {
+  articlesSubmenuItems,
+  patchArticlesSubmenu,
+} from "./nav-articles-submenu.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -39,6 +43,12 @@ function loadSnippet(jsPath) {
 
 function injectNav(html, file) {
   const lang = expectedLang(file);
+  const submenu = articlesSubmenuItems(lang);
+  const patchedSubmenu = patchArticlesSubmenu(html, submenu);
+  if (patchedSubmenu) {
+    html = patchedSubmenu;
+  }
+
   const navHtml = loadSnippet(`partials/nav-${lang}.js`);
   const emptyNav = /<div id="navigation"([^>]*)><\/div>/;
   const filledNav = new RegExp(

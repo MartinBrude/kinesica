@@ -79,12 +79,15 @@ export function fillHeaderSnippet(headerHtml, pageLang, stem, navHtml) {
   return html;
 }
 
-/** Markup before <main>: empty root + sync header scripts. */
-export function headerShellMarkup(lang, prefix = "") {
+/** Markup before <main>: header root + header/nav scripts (nav early avoids stale footer cache). */
+export function headerShellMarkup(lang, prefix = "", cacheQuery = "") {
   const l = lang === "en" || lang === "fr" ? lang : "es";
+  const q = cacheQuery ? `?v=${cacheQuery}` : "";
   return `  <div id="site-header-root" data-header-lang="${l}"></div>
-  <script src="${prefix}partials/header-${l}.min.js"></script>
-  <script src="${prefix}js/header-include.min.js"></script>
+  <script src="${prefix}partials/header-${l}.min.js${q}"></script>
+  <script src="${prefix}js/header-include.min.js${q}"></script>
+  <script src="${prefix}partials/nav-${l}.min.js${q}"></script>
+  <script src="${prefix}js/nav-include.min.js${q}"></script>
 `;
 }
 

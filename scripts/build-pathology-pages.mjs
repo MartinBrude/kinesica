@@ -229,7 +229,7 @@ ${JSON.stringify(articleSchema, null, 6).replace(/^/gm, "      ")}
   <div id="site-gtm-body-root"></div>
   <script src="${p}partials/gtm-body.min.js" defer></script>
   <script src="${p}js/gtm-body-include.min.js" defer></script>
-${headerShellMarkup(lang, p)}
+${headerShellMarkup(lang, p, ASSET_V)}
   <main id="main" tabindex="-1">
     <section class="page-header">
       <div class="container">
@@ -255,8 +255,6 @@ ${buildMain(pathology, lang)}
 ${ctaPlaceholder(lang)}
   <div id="site-footer-root" data-footer-lang="${lang}"></div>
   <script src="${p}js/site-config.min.js" defer></script>
-  <script src="${p}partials/nav-${lang === "es" ? "es" : lang}.min.js"></script>
-  <script src="${p}js/nav-include.min.js"></script>
   <script src="${p}partials/footer-${lang === "es" ? "es" : lang}.min.js"></script>
   <script src="${p}js/footer-include.min.js"></script>
   <div id="site-whatsapp-root" data-whatsapp-lang="${lang}"></div>

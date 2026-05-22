@@ -17,6 +17,7 @@
     "build:seo": "npm run seo:schema && npm run schema:partials && npm run assets:build",
     "build:pathologies": "node scripts/sync-pathology-header-labels.mjs && node scripts/sync-nav-articles-menu.mjs && node scripts/build-pathology-pages.mjs && node scripts/inject-local-schema.mjs && node scripts/inject-static-shell.mjs && node scripts/verify-pathology-pages.mjs && npm run assets:build",
     "migrate:header": "node scripts/migrate-header-shell.mjs && node scripts/inject-static-shell.mjs && npm run assets:build",
+    "sync:nav-articles": "node scripts/sync-nav-articles-menu.mjs && node scripts/migrate-nav-to-header.mjs && node scripts/ensure-header-nav-scripts.mjs && node scripts/inject-static-shell.mjs && npm run assets:build",
     "migrate:cta": "node scripts/migrate-cta-strip.mjs && node scripts/normalize-cta-strip.mjs && node scripts/inject-static-shell.mjs && npm run assets:build"
   },
   "devDependencies": {

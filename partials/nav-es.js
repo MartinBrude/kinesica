@@ -5,6 +5,7 @@ window.__KINESICA_NAV_SNIPPET_ES = `
     <a href="articulos.html" title="Artículos">Artículos</a>
     <ul>
       
+      
       <li><a href="cefalea.html" title="Cefalea">Cefalea</a></li>
       <li><a href="dorsalgia.html" title="Dorsalgia">Dorsalgia</a></li>
       <li><a href="lumbalgia.html" title="Lumbalgia">Lumbalgia</a></li>
@@ -31,6 +32,7 @@ window.__KINESICA_NAV_SNIPPET_ES = `
       <li><a href="meniscopatia.html" title="Meniscopatía">Meniscopatía</a></li>
       <li><a href="fascitis-plantar.html" title="Fascitis plantar">Fascitis plantar</a></li>
       <li><a href="cervicalgia.html" title="Cervicalgia">Cervicalgia</a></li>
+
 
     </ul>
   </li>

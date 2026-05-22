@@ -87,6 +87,51 @@ function cssCacheVersion() {
   return String(Math.floor(stat.mtimeMs / 1000));
 }
 
+const SHELL_JS = [
+  "partials/nav-es.js",
+  "partials/nav-en.js",
+  "partials/nav-fr.js",
+  "partials/header-es.js",
+  "partials/header-en.js",
+  "partials/header-fr.js",
+  "js/nav-include.js",
+  "js/header-include.js",
+];
+
+function shellCacheVersion() {
+  let max = 0;
+  for (const rel of SHELL_JS) {
+    const p = path.join(ROOT, rel);
+    if (!fs.existsSync(p)) continue;
+    max = Math.max(max, fs.statSync(p).mtimeMs);
+  }
+  return String(Math.floor(max / 1000) || cssCacheVersion());
+}
+
+/** Añade ?v=… a partials/header|nav y js/*-include.min.js (idempotente). */
+function syncHtmlShellJsCacheBust(html, version) {
+  const files = [
+    "partials/nav-es.min.js",
+    "partials/nav-en.min.js",
+    "partials/nav-fr.min.js",
+    "partials/header-es.min.js",
+    "partials/header-en.min.js",
+    "partials/header-fr.min.js",
+    "js/nav-include.min.js",
+    "js/header-include.min.js",
+  ];
+  let out = html;
+  for (const file of files) {
+    const esc = file.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const re = new RegExp(
+      `(src=(["'])(?:\\.\\./)?${esc})(?:\\?v=[^"']*)?\\2`,
+      "g",
+    );
+    out = out.replace(re, `$1?v=${version}$2`);
+  }
+  return out;
+}
+
 /** Añade ?v=… a css/*.min.css en el HTML (idempotente). */
 function syncHtmlCssCacheBust(html, version) {
   const cssMin = ["style.min.css", "whatsapp.min.css", "cv.min.css"];
@@ -112,9 +157,11 @@ async function main() {
   }
 
   const cssVersion = cssCacheVersion();
+  const shellVersion = shellCacheVersion();
   fs.writeFileSync(
     path.join(ROOT, "css", ".asset-version.json"),
-    JSON.stringify({ style: cssVersion }, null, 2) + "\n",
+    JSON.stringify({ style: cssVersion, shell: shellVersion }, null, 2) +
+      "\n",
   );
 
   let htmlChanged = 0;
@@ -123,6 +170,7 @@ async function main() {
     const original = fs.readFileSync(full, "utf8");
     let next = syncHtmlAssetRefs(original, sources);
     next = syncHtmlCssCacheBust(next, cssVersion);
+    next = syncHtmlShellJsCacheBust(next, shellVersion);
     if (next !== original) {
       fs.writeFileSync(full, next);
       htmlChanged++;
@@ -137,9 +185,13 @@ async function main() {
   }
   console.log(`\n${rows.length} file(s) minified.`);
   if (htmlChanged) {
-    console.log(`${htmlChanged} HTML file(s) updated (.min refs + ?v=${cssVersion}).`);
+    console.log(
+      `${htmlChanged} HTML file(s) updated (CSS ?v=${cssVersion}, shell ?v=${shellVersion}).`,
+    );
   } else {
-    console.log(`HTML refs OK (CSS cache ?v=${cssVersion}).`);
+    console.log(
+      `HTML refs OK (CSS ?v=${cssVersion}, shell ?v=${shellVersion}).`,
+    );
   }
 }
 
