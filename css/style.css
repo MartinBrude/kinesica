@@ -731,6 +731,68 @@ label {}
 
 .section-title {}
 
+/* First content band after hero — methods intro */
+.methods-intro.space-medium {
+  padding-top: 72px;
+  padding-bottom: 88px;
+  background-color: var(--bg-light);
+}
+
+.methods-intro .section-title h2 {
+  font-size: 2rem;
+  margin-bottom: 0;
+}
+
+.methods-intro .section-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--primary-color);
+  margin: 0 0 0.75rem;
+}
+
+.methods-intro .heading-line-center::after {
+  display: block;
+  content: "";
+  width: 48px;
+  height: 3px;
+  margin: 1rem auto 1.25rem;
+  background-color: var(--accent-color);
+  border-radius: 3px;
+}
+
+.methods-intro .section-lead {
+  font-size: 1.25rem;
+  line-height: 1.65;
+  color: var(--text-color);
+  font-weight: 400;
+  max-width: 42rem;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 0;
+}
+
+.methods-intro .text-highlight {
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+@media (max-width: 767px) {
+  .methods-intro.space-medium {
+    padding-top: 48px;
+    padding-bottom: 56px;
+  }
+
+  .methods-intro .section-title h2 {
+    font-size: 1.75rem;
+  }
+
+  .methods-intro .section-lead {
+    font-size: 1.125rem;
+  }
+}
+
 .title {
   color: var(--heading-color);
 }
