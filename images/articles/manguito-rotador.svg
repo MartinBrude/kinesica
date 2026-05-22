@@ -1,24 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-hidden="true">
-  <rect width="640" height="360" fill="#ffffff"/>
-  <rect width="320" height="360" fill="hsl(210 40% 97%)"/>
-  <rect x="320" width="320" height="360" fill="#e8f7f4"/>
-  <g transform="translate(0, 8)">
-    <circle cx="318" cy="128" r="9" fill="#2ebfa5"/><circle cx="298" cy="148" r="7" fill="#2ebfa5"/><circle cx="338" cy="148" r="7" fill="#2ebfa5"/>
-    <path d="M318 110 Q298 148 318 168 Q338 148 318 110" fill="none" stroke="#2ebfa5" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="268" cy="175" r="6" fill="#2ebfa5"/>
-    <circle cx="268" cy="198" r="7" fill="#2ebfa5"/>
-    <circle cx="268" cy="220" r="8" fill="#2ebfa5"/>
-    <circle cx="268" cy="242" r="9" fill="#2ebfa5"/>
-    <circle cx="268" cy="262" r="10" fill="#2ebfa5"/>
-    <circle cx="268" cy="280" r="10" fill="#2ebfa5"/>
-    <circle cx="268" cy="295" r="9" fill="#2ebfa5"/>
-    <circle cx="268" cy="305" r="8" fill="#2ebfa5"/>
-    <circle cx="268" cy="312" r="7" fill="#2ebfa5"/>
-    <circle cx="268" cy="318" r="6" fill="#2ebfa5"/>
-    <circle cx="268" cy="322" r="5" fill="#2ebfa5"/>
-    <path d="M348 175 Q358 240 348 300" fill="none" stroke="#2ebfa5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="248" cy="228" r="6" fill="#2ebfa5"/><circle cx="235" cy="258" r="6" fill="#2ebfa5"/>
-    <path d="M318 195 Q260 220 235 258" fill="none" stroke="#2ebfa5" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-  </g>
+  <defs>
+    <linearGradient id="bg-manguito-rotador" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="hsl(210 42% 99%)"/>
+      <stop offset="55%" stop-color="hsl(210 38% 96%)"/>
+      <stop offset="100%" stop-color="hsl(210 48% 90%)"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg-manguito-rotador)"/>
+  <g transform="translate(0, 4)"><circle cx="268" cy="135" r="6" fill="#2ebfa5"/>
+    <circle cx="268" cy="175" r="8" fill="#2ebfa5"/>
+    <circle cx="268" cy="215" r="8" fill="#2ebfa5"/>
+    <circle cx="268" cy="255" r="7" fill="#2ebfa5"/>
+    <circle cx="298" cy="125" r="8" fill="#2ebfa5"/>
+    <circle cx="228" cy="238" r="6" fill="#2ebfa5"/>
+    <circle cx="238" cy="262" r="5" fill="#2ebfa5"/>
+    <path d="M348 120 Q358 200 342 275 M342 175 Q270 200 235 255" fill="none" stroke="#2ebfa5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></g>
 </svg>

@@ -1,26 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-hidden="true">
-  <rect width="640" height="360" fill="#ffffff"/>
-  <rect width="320" height="360" fill="hsl(165 40% 97%)"/>
-  <rect x="320" width="320" height="360" fill="#e8f7f4"/>
-  <g transform="translate(0, 8)">
-    <circle cx="268" cy="92" r="5" fill="#2ebfa5"/>
-    <circle cx="268" cy="118" r="6" fill="#2ebfa5"/>
-    <circle cx="268" cy="142" r="7" fill="#2ebfa5"/>
-    <circle cx="268" cy="165" r="9" fill="#2ebfa5"/>
-    <circle cx="268" cy="188" r="11" fill="#2ebfa5"/>
-    <circle cx="268" cy="212" r="13" fill="#2ebfa5"/>
-    <circle cx="268" cy="235" r="13" fill="#2ebfa5"/>
-    <circle cx="268" cy="258" r="11" fill="#2ebfa5"/>
-    <circle cx="268" cy="278" r="9" fill="#2ebfa5"/>
-    <circle cx="268" cy="292" r="7" fill="#2ebfa5"/>
-    <circle cx="268" cy="302" r="5" fill="#2ebfa5"/>
-    <path d="M348 88 Q362 148 342 208 Q358 258 348 288" fill="none" stroke="#2ebfa5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="240" cy="210" r="5" fill="#2ebfa5"/>
-    <circle cx="220" cy="240" r="5" fill="#2ebfa5"/>
-    <circle cx="400" cy="210" r="5" fill="#2ebfa5"/>
-    <circle cx="420" cy="240" r="5" fill="#2ebfa5"/>
-    <path d="M268 212 Q230 240 220 262" fill="none" stroke="#2ebfa5" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M348 212 Q400 240 420 262" fill="none" stroke="#2ebfa5" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-  </g>
+  <defs>
+    <linearGradient id="bg-radiculopatia" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="hsl(165 42% 99%)"/>
+      <stop offset="55%" stop-color="hsl(165 38% 96%)"/>
+      <stop offset="100%" stop-color="hsl(165 48% 90%)"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg-radiculopatia)"/>
+  <g transform="translate(0, 4)"><circle cx="268" cy="100" r="5" fill="#2ebfa5"/>
+    <circle cx="268" cy="150" r="8" fill="#2ebfa5"/>
+    <circle cx="268" cy="200" r="10" fill="#2ebfa5"/>
+    <circle cx="268" cy="248" r="8" fill="#2ebfa5"/>
+    <circle cx="218" cy="255" r="5" fill="#2ebfa5"/>
+    <circle cx="228" cy="275" r="5" fill="#2ebfa5"/>
+    <circle cx="408" cy="255" r="5" fill="#2ebfa5"/>
+    <circle cx="418" cy="275" r="5" fill="#2ebfa5"/>
+    <path d="M352 95 Q365 180 348 255 M268 210 Q230 240 215 270 M348 210 Q400 240 418 270" fill="none" stroke="#2ebfa5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></g>
 </svg>

@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-hidden="true">
-  <rect width="640" height="360" fill="#ffffff"/>
-  <rect width="320" height="360" fill="hsl(168 40% 97%)"/>
-  <rect x="320" width="320" height="360" fill="#e8f7f4"/>
-  <g transform="translate(0, 8)"><circle cx="268" cy="95" r="5" fill="#2ebfa5"/>
-    <circle cx="268" cy="120" r="7" fill="#2ebfa5"/>
-    <circle cx="268" cy="145" r="9" fill="#2ebfa5"/>
-    <circle cx="268" cy="168" r="12" fill="#2ebfa5"/>
-    <circle cx="268" cy="192" r="14" fill="#2ebfa5"/>
-    <circle cx="268" cy="215" r="14" fill="#2ebfa5"/>
-    <circle cx="268" cy="238" r="12" fill="#2ebfa5"/>
-    <circle cx="268" cy="258" r="10" fill="#2ebfa5"/>
-    <circle cx="268" cy="275" r="8" fill="#2ebfa5"/>
-    <circle cx="268" cy="288" r="6" fill="#2ebfa5"/>
-    <circle cx="268" cy="298" r="5" fill="#2ebfa5"/>
-    <path d="M348 92 Q360 140 345 185 Q358 220 348 248" fill="none" stroke="#2ebfa5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <defs>
+    <linearGradient id="bg-dorsalgia" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="hsl(168 42% 99%)"/>
+      <stop offset="55%" stop-color="hsl(168 38% 96%)"/>
+      <stop offset="100%" stop-color="hsl(168 48% 90%)"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg-dorsalgia)"/>
+  <g transform="translate(0, 4)"><circle cx="262" cy="108" r="5" fill="#2ebfa5"/>
+    <circle cx="262" cy="132" r="7" fill="#2ebfa5"/>
+    <circle cx="262" cy="158" r="9" fill="#2ebfa5"/>
+    <circle cx="262" cy="185" r="12" fill="#2ebfa5"/>
+    <circle cx="262" cy="212" r="13" fill="#2ebfa5"/>
+    <circle cx="262" cy="238" r="11" fill="#2ebfa5"/>
+    <circle cx="262" cy="262" r="8" fill="#2ebfa5"/>
+    <circle cx="262" cy="282" r="6" fill="#2ebfa5"/>
+    <path d="M352 100 Q368 155 345 210 Q358 250 348 275" fill="none" stroke="#2ebfa5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></g>
 </svg>

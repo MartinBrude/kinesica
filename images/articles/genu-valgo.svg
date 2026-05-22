@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-hidden="true">
-  <rect width="640" height="360" fill="#ffffff"/>
-  <rect width="320" height="360" fill="hsl(165 40% 97%)"/>
-  <rect x="320" width="320" height="360" fill="#e8f7f4"/>
-  <g transform="translate(0, 8)">
-    <circle cx="288" cy="100" r="6" fill="#2ebfa5"/><circle cx="288" cy="160" r="7" fill="#2ebfa5"/><circle cx="288" cy="220" r="8" fill="#2ebfa5"/><path d="M308 100 Q312 220 308 280" fill="none" stroke="#2ebfa5" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="352" cy="100" r="6" fill="#2ebfa5"/><circle cx="352" cy="160" r="7" fill="#2ebfa5"/><circle cx="352" cy="220" r="8" fill="#2ebfa5"/><path d="M332 100 Q328 220 332 280" fill="none" stroke="#2ebfa5" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M308 228 Q320 248 332 228" fill="none" stroke="#2ebfa5" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-  </g>
+  <defs>
+    <linearGradient id="bg-genu-valgo" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="hsl(165 42% 99%)"/>
+      <stop offset="55%" stop-color="hsl(165 38% 96%)"/>
+      <stop offset="100%" stop-color="hsl(165 48% 90%)"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg-genu-valgo)"/>
+  <g transform="translate(0, 4)"><circle cx="272" cy="120" r="6" fill="#2ebfa5"/>
+    <circle cx="272" cy="200" r="7" fill="#2ebfa5"/>
+    <circle cx="272" cy="268" r="6" fill="#2ebfa5"/>
+    <circle cx="342" cy="120" r="6" fill="#2ebfa5"/>
+    <circle cx="342" cy="200" r="7" fill="#2ebfa5"/>
+    <circle cx="342" cy="268" r="6" fill="#2ebfa5"/>
+    <path d="M285 95 Q288 200 282 285 M355 95 Q352 200 358 285 M282 228 Q320 252 358 228" fill="none" stroke="#2ebfa5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></g>
 </svg>

@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-hidden="true">
-  <rect width="640" height="360" fill="#ffffff"/>
-  <rect width="320" height="360" fill="hsl(165 40% 97%)"/>
-  <rect x="320" width="320" height="360" fill="#e8f7f4"/>
-  <g transform="translate(0, 8)">
-    <circle cx="308" cy="88" r="6" fill="#2ebfa5"/>
-    <circle cx="308" cy="118" r="7" fill="#2ebfa5"/>
-    <circle cx="308" cy="148" r="8" fill="#2ebfa5"/>
-    <circle cx="308" cy="178" r="9" fill="#2ebfa5"/>
-    <circle cx="308" cy="208" r="11" fill="#2ebfa5"/>
-    <circle cx="308" cy="238" r="10" fill="#2ebfa5"/>
-    <circle cx="308" cy="268" r="8" fill="#2ebfa5"/>
-    <path d="M332 88 Q338 178 332 268" fill="none" stroke="#2ebfa5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="348" cy="208" r="10" fill="#2ebfa5"/>
-    <path d="M332 208 Q365 208 378 228 Q365 248 348 248" fill="none" stroke="#2ebfa5" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-  </g>
+  <defs>
+    <linearGradient id="bg-gonalgia" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="hsl(165 42% 99%)"/>
+      <stop offset="55%" stop-color="hsl(165 38% 96%)"/>
+      <stop offset="100%" stop-color="hsl(165 48% 90%)"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg-gonalgia)"/>
+  <g transform="translate(0, 4)"><circle cx="292" cy="108" r="6" fill="#2ebfa5"/>
+    <circle cx="292" cy="148" r="7" fill="#2ebfa5"/>
+    <circle cx="292" cy="188" r="8" fill="#2ebfa5"/>
+    <circle cx="292" cy="228" r="7" fill="#2ebfa5"/>
+    <circle cx="368" cy="218" r="9" fill="#2ebfa5"/>
+    <circle cx="378" cy="238" r="7" fill="#2ebfa5"/>
+    <path d="M310 95 Q315 175 308 255 M308 200 Q355 195 375 225 Q355 255 325 252" fill="none" stroke="#2ebfa5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></g>
 </svg>

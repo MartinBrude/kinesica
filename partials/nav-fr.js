@@ -1,7 +1,7 @@
 /* French header nav — relative links from fr/ directory. */
 window.__KINESICA_NAV_SNIPPET_FR = `
 <ul>
-      <li>
+        <li>
     <a href="articulos.html" title="Articles">Articles</a>
   </li>
   <li class="has-sub">

@@ -1,23 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-hidden="true">
-  <rect width="640" height="360" fill="#ffffff"/>
-  <rect width="320" height="360" fill="hsl(210 40% 97%)"/>
-  <rect x="320" width="320" height="360" fill="#e8f7f4"/>
-  <g transform="translate(0, 8)">
-    <circle cx="268" cy="100" r="5" fill="#2ebfa5"/>
-    <circle cx="268" cy="125" r="6" fill="#2ebfa5"/>
-    <circle cx="268" cy="150" r="8" fill="#2ebfa5"/>
-    <circle cx="268" cy="175" r="10" fill="#2ebfa5"/>
-    <circle cx="268" cy="200" r="11" fill="#2ebfa5"/>
-    <circle cx="268" cy="225" r="12" fill="#2ebfa5"/>
-    <circle cx="268" cy="248" r="12" fill="#2ebfa5"/>
-    <circle cx="268" cy="268" r="10" fill="#2ebfa5"/>
-    <circle cx="268" cy="285" r="8" fill="#2ebfa5"/>
-    <circle cx="268" cy="296" r="6" fill="#2ebfa5"/>
-    <circle cx="268" cy="304" r="5" fill="#2ebfa5"/>
-    <path d="M348 88 Q362 148 342 208 Q358 258 348 288" fill="none" stroke="#2ebfa5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="295" cy="278" r="8" fill="#2ebfa5"/>
-    <circle cx="345" cy="278" r="8" fill="#2ebfa5"/>
-    <path d="M278 278 Q320 258 362 278" fill="none" stroke="#2ebfa5" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-  </g>
+  <defs>
+    <linearGradient id="bg-pubalgia" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="hsl(210 42% 99%)"/>
+      <stop offset="55%" stop-color="hsl(210 38% 96%)"/>
+      <stop offset="100%" stop-color="hsl(210 48% 90%)"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg-pubalgia)"/>
+  <g transform="translate(0, 4)"><circle cx="268" cy="165" r="6" fill="#2ebfa5"/>
+    <circle cx="268" cy="195" r="8" fill="#2ebfa5"/>
+    <circle cx="268" cy="225" r="8" fill="#2ebfa5"/>
+    <circle cx="295" cy="218" r="7" fill="#2ebfa5"/>
+    <circle cx="345" cy="218" r="7" fill="#2ebfa5"/>
+    <circle cx="320" cy="248" r="8" fill="#2ebfa5"/>
+    <path d="M280 200 Q320 175 360 200 Q320 255 280 230 Q320 200 360 230" fill="none" stroke="#2ebfa5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></g>
 </svg>

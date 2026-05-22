@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-hidden="true">
-  <rect width="640" height="360" fill="#ffffff"/>
-  <rect width="320" height="360" fill="hsl(198 40% 97%)"/>
-  <rect x="320" width="320" height="360" fill="#e8f7f4"/>
-  <g transform="translate(0, 8)">
-    <circle cx="220" cy="228" r="6" fill="#2ebfa5"/><circle cx="248" cy="238" r="7" fill="#2ebfa5"/><circle cx="278" cy="242" r="8" fill="#2ebfa5"/><circle cx="308" cy="242" r="9" fill="#2ebfa5"/><circle cx="338" cy="242" r="8" fill="#2ebfa5"/><circle cx="368" cy="238" r="7" fill="#2ebfa5"/><circle cx="398" cy="228" r="6" fill="#2ebfa5"/>
-    <path d="M210 228 Q320 268 410 228" fill="none" stroke="#2ebfa5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-    
-  </g>
+  <defs>
+    <linearGradient id="bg-pies-planos" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="hsl(198 42% 99%)"/>
+      <stop offset="55%" stop-color="hsl(198 38% 96%)"/>
+      <stop offset="100%" stop-color="hsl(198 48% 90%)"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg-pies-planos)"/>
+  <g transform="translate(0, 4)"><circle cx="215" cy="238" r="5" fill="#2ebfa5"/>
+    <circle cx="255" cy="242" r="6" fill="#2ebfa5"/>
+    <circle cx="295" cy="244" r="6" fill="#2ebfa5"/>
+    <circle cx="320" cy="245" r="7" fill="#2ebfa5"/>
+    <circle cx="345" cy="244" r="6" fill="#2ebfa5"/>
+    <circle cx="385" cy="242" r="6" fill="#2ebfa5"/>
+    <circle cx="425" cy="238" r="5" fill="#2ebfa5"/>
+    <path d="M200 240 L440 240 Q320 268 200 240" fill="none" stroke="#2ebfa5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></g>
 </svg>
