@@ -3318,3 +3318,182 @@ Pathology detail pages (FAQ dolencias)
 #faqAccordion #faq6 .panel-body a:focus-visible {
   color: var(--brand-primary, #005f99);
 }
+
+/* —— Artículos index (card grid) —— */
+.articles-index {
+  padding-top: 2.5rem;
+  padding-bottom: 4rem;
+}
+
+.articles-index-intro {
+  max-width: 42rem;
+  margin: 0 auto 2.5rem;
+  text-align: center;
+  font-size: 1.125rem;
+  line-height: 1.65;
+  color: var(--text-color);
+}
+
+.articles-index-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17.5rem, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 3rem;
+}
+
+.articles-index-card {
+  --card-hue: 198;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  background: var(--bg-white);
+  border: 1px solid #e5e7eb;
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s ease,
+    border-color 0.25s ease;
+}
+
+.articles-index-card:hover,
+.articles-index-card:focus-visible {
+  transform: translateY(-6px);
+  border-color: hsl(var(--card-hue) 42% 72%);
+  box-shadow:
+    0 14px 28px -8px hsla(var(--card-hue), 45%, 38%, 0.22),
+    var(--shadow-md);
+  outline: none;
+  text-decoration: none;
+  color: inherit;
+}
+
+.articles-index-card-media {
+  display: block;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: linear-gradient(
+    135deg,
+    hsl(var(--card-hue) 55% 94%) 0%,
+    hsl(var(--card-hue) 40% 88%) 100%
+  );
+}
+
+.articles-index-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.articles-index-card:hover .articles-index-card-media img,
+.articles-index-card:focus-visible .articles-index-card-media img {
+  transform: scale(1.04);
+}
+
+.articles-index-card-media--placeholder {
+  background: linear-gradient(
+    145deg,
+    hsl(var(--card-hue) 48% 42%) 0%,
+    hsl(var(--card-hue) 55% 28%) 55%,
+    var(--secondary-color) 100%
+  );
+  opacity: 0.92;
+}
+
+.articles-index-card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0.5rem;
+  padding: 1.15rem 1.2rem 1.25rem;
+}
+
+.articles-index-card-label {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--heading-color);
+  line-height: 1.25;
+}
+
+.articles-index-card-lead {
+  flex: 1;
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--text-color);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.articles-index-card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--primary-color);
+  margin-top: 0.35rem;
+}
+
+.articles-index-card-arrow {
+  display: inline-block;
+  transition: transform 0.25s ease;
+}
+
+.articles-index-card:hover .articles-index-card-arrow,
+.articles-index-card:focus-visible .articles-index-card-arrow {
+  transform: translateX(4px);
+}
+
+.articles-index-quote {
+  max-width: 36rem;
+  margin: 0 auto;
+  padding: 1.5rem 1.75rem;
+  border: none;
+  border-left: 4px solid var(--accent-color);
+  background: var(--bg-light);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  font-size: 1.05rem;
+  font-style: italic;
+  color: var(--heading-color);
+}
+
+.articles-index-quote p {
+  margin: 0 0 0.5rem;
+}
+
+.articles-index-quote footer {
+  font-size: 0.875rem;
+  font-style: normal;
+  color: var(--text-color);
+}
+
+.articles-index-card.ui-reveal {
+  transition:
+    opacity 0.55s ease,
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s ease,
+    border-color 0.25s ease;
+  transition-delay: calc(var(--card-i, 0) * 45ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .articles-index-card,
+  .articles-index-card-media img,
+  .articles-index-card-arrow {
+    transition: none;
+  }
+
+  .articles-index-card:hover,
+  .articles-index-card:focus-visible {
+    transform: none;
+  }
+}

@@ -1,20 +1,19 @@
 #!/usr/bin/env node
 /**
- * Add all pathology pages to the Artículos / Articles dropdown in nav partials
- * and inline <nav> blocks (legacy pages).
- *
- * Run: node scripts/sync-nav-articles-menu.mjs && npm run assets:build
+ * Artículos nav: single link to articulos.html (no dropdown).
+ * Run: node scripts/sync-nav-articles-menu.mjs && node scripts/inject-static-shell.mjs && npm run assets:build
  */
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { PATHOLOGIES } from "./pathology-content.mjs";
-import {
-  articlesSubmenuItems,
-  patchArticlesSubmenu,
-} from "./nav-articles-submenu.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+
+const NAV_LABELS = {
+  es: { href: "articulos.html", title: "Artículos", label: "Artículos" },
+  en: { href: "articulos.html", title: "Articles", label: "Articles" },
+  fr: { href: "articulos.html", title: "Articles", label: "Articles" },
+};
 
 const NAV_PARTIALS = {
   es: path.join(ROOT, "partials", "nav-es.js"),
@@ -22,50 +21,66 @@ const NAV_PARTIALS = {
   fr: path.join(ROOT, "partials", "nav-fr.js"),
 };
 
-function patchNavPartial(filePath, lang) {
-  let js = fs.readFileSync(filePath, "utf8");
-  const submenu = articlesSubmenuItems(lang);
-  const patched = patchArticlesSubmenu(js, submenu);
-  if (!patched) {
-    throw new Error(`Could not patch articles submenu in ${filePath}`);
-  }
-  fs.writeFileSync(filePath, patched);
+function articlesNavItem(lang) {
+  const { href, title, label } = NAV_LABELS[lang];
+  return `  <li>
+    <a href="${href}" title="${title}">${label}</a>
+  </li>`;
 }
 
-function collectInlineNavHtmlFiles() {
-  const out = [];
-  for (const rel of ["", "en/", "fr/"]) {
-    const dir = path.join(ROOT, rel);
-    for (const name of fs.readdirSync(dir)) {
-      if (!name.endsWith(".html")) continue;
-      const full = path.join(dir, name);
-      const html = fs.readFileSync(full, "utf8");
-      if (!html.includes('href="articulos.html"') || !html.includes('href="cervicalgia.html"')) {
-        continue;
-      }
-      out.push(full);
-    }
+function patchArticlesNav(html, item) {
+  const dropdown = new RegExp(
+    String.raw`<li class="has-sub">\s*<a href="articulos\.html"[^>]*>[^<]*<\/a>\s*<ul>[\s\S]*?<\/ul>\s*<\/li>\s*(?=<li class="has-sub">\s*<a href="rpg\.html")`,
+  );
+  if (dropdown.test(html)) {
+    return html.replace(dropdown, `${item}\n`);
   }
-  return out;
+  const simple = /<li>\s*<a href="articulos\.html"[^>]*>[^<]*<\/a>\s*<\/li>/;
+  if (simple.test(html)) {
+    return html.replace(simple, item);
+  }
+  return null;
 }
 
 for (const [lang, filePath] of Object.entries(NAV_PARTIALS)) {
-  patchNavPartial(filePath, lang);
-  console.log(`Updated ${path.relative(ROOT, filePath)} (${PATHOLOGIES.length} articles)`);
+  const item = articlesNavItem(lang);
+  let js = fs.readFileSync(filePath, "utf8");
+  const patched = patchArticlesNav(js, item);
+  if (!patched) {
+    throw new Error(`Could not patch Artículos nav in ${filePath}`);
+  }
+  fs.writeFileSync(filePath, patched);
+  console.log(`Updated ${path.relative(ROOT, filePath)}`);
 }
 
 let htmlUpdated = 0;
-for (const filePath of collectInlineNavHtmlFiles()) {
-  const lang = filePath.includes(`${path.sep}en${path.sep}`)
-    ? "en"
-    : filePath.includes(`${path.sep}fr${path.sep}`)
-      ? "fr"
-      : "es";
-  const html = fs.readFileSync(filePath, "utf8");
-  const patched = patchArticlesSubmenu(html, articlesSubmenuItems(lang));
+for (const rel of ["", "en/", "fr/"]) {
+  const dir = path.join(ROOT, rel);
+  for (const name of fs.readdirSync(dir)) {
+    if (!name.endsWith(".html") || name === "articulos.html") continue;
+    const full = path.join(dir, name);
+    const html = fs.readFileSync(full, "utf8");
+    if (!html.includes('href="articulos.html"')) continue;
+    const lang = rel.startsWith("en") ? "en" : rel.startsWith("fr") ? "fr" : "es";
+    const patched = patchArticlesNav(html, articlesNavItem(lang));
+    if (patched && patched !== html) {
+      fs.writeFileSync(full, patched);
+      htmlUpdated += 1;
+    }
+  }
+}
+
+const articulosFiles = ["articulos.html", "en/articulos.html", "fr/articulos.html"];
+for (const rel of articulosFiles) {
+  const full = path.join(ROOT, rel);
+  if (!fs.existsSync(full)) continue;
+  const lang = rel.startsWith("en") ? "en" : rel.startsWith("fr") ? "fr" : "es";
+  const html = fs.readFileSync(full, "utf8");
+  const patched = patchArticlesNav(html, articlesNavItem(lang));
   if (patched && patched !== html) {
-    fs.writeFileSync(filePath, patched);
+    fs.writeFileSync(full, patched);
     htmlUpdated += 1;
   }
 }
+
 console.log(`Updated inline nav in ${htmlUpdated} HTML file(s)`);

@@ -4,7 +4,7 @@
   }
 
   var targets = document.querySelectorAll(
-    ".service-block, .section-title, .feature, .page-caption, .team-img",
+    ".service-block, .section-title, .feature, .page-caption, .team-img, .articles-index-intro, .articles-index-card, .articles-index-quote",
   );
   if (!targets.length) {
     return;
