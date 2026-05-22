@@ -3477,12 +3477,12 @@ html {
 }
 
 #navigation a,
-#navigation a::before,
-#navigation a::after {
+#navigation a::before {
   transition: none !important;
 }
 
 #navigation > ul > li > a {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
@@ -3502,9 +3502,24 @@ html {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Subrayado verde en hover: solo transform (no mueve el texto) */
 #navigation > ul > li > a::after {
-  display: none !important;
-  content: none !important;
+  content: "";
+  position: absolute;
+  left: 25px;
+  right: 25px;
+  bottom: 10px;
+  height: 2px;
+  background: var(--accent-color);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease !important;
+  pointer-events: none;
+}
+
+#navigation > ul > li > a:hover::after,
+#navigation > ul > li > a:focus-visible::after {
+  transform: scaleX(1);
 }
 
 #navigation > ul > li > a:hover,
@@ -3538,6 +3553,10 @@ html {
 
 #navigation.small-screen .site-nav__chevron {
   display: none;
+}
+
+#navigation.small-screen > ul > li > a::after {
+  display: none !important;
 }
 
 @media (min-width: 769px) {
