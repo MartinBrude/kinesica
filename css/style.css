@@ -731,19 +731,13 @@ label {}
 
 .section-title {}
 
-/* First content band after hero — methods intro */
-.methods-intro.space-medium {
-  padding-top: 72px;
-  padding-bottom: 88px;
-  background-color: var(--bg-light);
-}
-
-.methods-intro .section-title h2 {
-  font-size: 2rem;
+/* Reusable section header pattern (home) */
+.section-intro .section-title h2 {
+  font-size: 2.125rem;
   margin-bottom: 0;
 }
 
-.methods-intro .section-eyebrow {
+.section-intro .section-eyebrow {
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.14em;
@@ -752,7 +746,7 @@ label {}
   margin: 0 0 0.75rem;
 }
 
-.methods-intro .heading-line-center::after {
+.section-intro .heading-line-center::after {
   display: block;
   content: "";
   width: 48px;
@@ -762,34 +756,94 @@ label {}
   border-radius: 3px;
 }
 
-.methods-intro .section-lead {
-  font-size: 1.25rem;
-  line-height: 1.65;
+.section-intro--compact .heading-line-center::after {
+  margin-bottom: 0;
+}
+
+.section-intro .section-lead {
+  font-size: 1.875rem;
+  line-height: 1.7;
   color: var(--text-color);
   font-weight: 400;
-  max-width: 42rem;
+  max-width: 46rem;
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 0;
 }
 
-.methods-intro .text-highlight {
+.section-intro .service-content p {
+  font-size: 1.5rem;
+  line-height: 1.65;
+}
+
+.section-intro .panel-body {
+  font-size: 1.5rem;
+  line-height: 1.65;
+}
+
+.section-intro .text-highlight {
   color: var(--primary-color);
   font-weight: 500;
 }
 
+.section-intro--band.space-medium {
+  padding-top: 72px;
+  padding-bottom: 88px;
+  background-color: var(--bg-light);
+}
+
 @media (max-width: 767px) {
-  .methods-intro.space-medium {
+  .section-intro--band.space-medium {
     padding-top: 48px;
     padding-bottom: 56px;
   }
 
-  .methods-intro .section-title h2 {
-    font-size: 1.75rem;
+  .section-intro .section-title h2 {
+    font-size: 1.875rem;
   }
 
-  .methods-intro .section-lead {
-    font-size: 1.125rem;
+  .section-intro .section-lead {
+    font-size: 1.5625rem;
+  }
+
+  .section-intro .service-content p {
+    font-size: 1.375rem;
+  }
+
+  .section-intro .panel-body {
+    font-size: 1.375rem;
+  }
+
+  .hero-text {
+    font-size: 1.5rem;
+  }
+
+  .content h1 {
+    font-size: 2rem;
+  }
+
+  .content .lead {
+    font-size: 1.5625rem;
+    padding: 1rem 1.125rem;
+  }
+
+  .content p:not(.lead),
+  .content li,
+  .content .post-content p:not(:first-of-type) {
+    font-size: 1.375rem;
+  }
+
+  .content .post-content > p:first-of-type {
+    font-size: 1.5625rem;
+    padding: 1rem 1.125rem;
+  }
+
+  .content h2 {
+    font-size: 1.625rem;
+  }
+
+  .content h3 {
+    font-size: 1.3125rem;
   }
 }
 
@@ -898,7 +952,7 @@ label {}
 }
 
 .cta-text {
-  font-size: 18px;
+  font-size: 1.25rem;
   color: #bae6fd;
   /* Light blue text */
 }
@@ -1194,9 +1248,11 @@ label {}
 }
 
 .hero-text {
-  font-size: 18px;
+  font-size: 1.625rem;
   color: #fff;
   margin-bottom: 30px;
+  line-height: 1.7;
+  max-width: 36rem;
 }
 
 @keyframes heroFadeInUp {
@@ -1989,6 +2045,77 @@ main:focus {
 .content {
   padding-top: 60px;
   padding-bottom: 60px;
+}
+
+/* Detail pages (rpg, osteopatía, artículos, etc.) */
+.content h1 {
+  font-size: 2.5rem;
+  line-height: 1.15;
+  margin-bottom: 1.25rem;
+}
+
+.content .lead {
+  font-size: 1.875rem;
+  line-height: 1.7;
+  color: var(--heading-color);
+  font-weight: 400;
+  margin-bottom: 1.75rem;
+  padding: 1.25rem 1.5rem;
+  border-left: 4px solid var(--accent-color);
+  background-color: var(--bg-light);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+.content p:not(.lead),
+.content li {
+  font-size: 1.5rem;
+  line-height: 1.65;
+}
+
+.content .post-content > p:first-of-type {
+  font-size: 1.875rem;
+  line-height: 1.7;
+  color: var(--heading-color);
+  margin-bottom: 1.75rem;
+  padding: 1.25rem 1.5rem;
+  border-left: 4px solid var(--accent-color);
+  background-color: var(--bg-light);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+.content .post-content > p:first-of-type b,
+.content .post-content > p:first-of-type strong {
+  font-weight: 500;
+  color: var(--primary-color);
+}
+
+.content h2 {
+  font-size: 1.875rem;
+  margin-top: 2rem;
+}
+
+.content h3 {
+  font-size: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.content ul,
+.content ol {
+  margin-bottom: 1.25rem;
+  padding-left: 1.5rem;
+}
+
+.content li {
+  margin-bottom: 0.35rem;
+}
+
+.content .post-content p:not(:first-of-type) {
+  font-size: 1.5rem;
+  line-height: 1.65;
+}
+
+.content .post-title .title {
+  font-size: 1.5rem;
 }
 
 /*-----------------------------------

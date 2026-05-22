@@ -80,6 +80,28 @@ function syncHtmlAssetRefs(html, sources) {
   return out;
 }
 
+/** Versión para romper caché del navegador (mtime del CSS principal). */
+function cssCacheVersion() {
+  const stylePath = path.join(ROOT, "css/style.css");
+  const stat = fs.statSync(stylePath);
+  return String(Math.floor(stat.mtimeMs / 1000));
+}
+
+/** Añade ?v=… a css/*.min.css en el HTML (idempotente). */
+function syncHtmlCssCacheBust(html, version) {
+  const cssMin = ["style.min.css", "whatsapp.min.css", "cv.min.css"];
+  let out = html;
+  for (const file of cssMin) {
+    const esc = file.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const re = new RegExp(
+      `(href=(["'])(?:\\.\\./)?css/${esc})(?:\\?v=[^"']*)?\\2`,
+      "g",
+    );
+    out = out.replace(re, `$1?v=${version}$2`);
+  }
+  return out;
+}
+
 async function main() {
   const { css, js } = getSourceManifest();
   const sources = [...css, ...js];
@@ -89,11 +111,18 @@ async function main() {
     rows.push(await minifyOne(rel));
   }
 
+  const cssVersion = cssCacheVersion();
+  fs.writeFileSync(
+    path.join(ROOT, "css", ".asset-version.json"),
+    JSON.stringify({ style: cssVersion }, null, 2) + "\n",
+  );
+
   let htmlChanged = 0;
   for (const file of listHtmlFiles()) {
     const full = path.join(ROOT, file);
     const original = fs.readFileSync(full, "utf8");
-    const next = syncHtmlAssetRefs(original, sources);
+    let next = syncHtmlAssetRefs(original, sources);
+    next = syncHtmlCssCacheBust(next, cssVersion);
     if (next !== original) {
       fs.writeFileSync(full, next);
       htmlChanged++;
@@ -108,9 +137,9 @@ async function main() {
   }
   console.log(`\n${rows.length} file(s) minified.`);
   if (htmlChanged) {
-    console.log(`${htmlChanged} HTML file(s) updated to use .min assets.`);
+    console.log(`${htmlChanged} HTML file(s) updated (.min refs + ?v=${cssVersion}).`);
   } else {
-    console.log("HTML already references .min assets.");
+    console.log(`HTML refs OK (CSS cache ?v=${cssVersion}).`);
   }
 }
 

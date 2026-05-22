@@ -24,7 +24,9 @@ npm run assets:build # después de cada cambio en CSS/JS fuente
 El script:
 
 1. Minifica fuentes → `css/style.min.css`, `js/nav-include.min.js`, etc.
-2. Actualiza el HTML para cargar las versiones `.min`.
+2. Actualiza el HTML para cargar las versiones `.min` con `?v=…` (rompe caché del navegador).
+
+Si ves el sitio **igual** después de cambiar CSS: ejecutá `npm run assets:build`, recargá con recarga forzada, y comprobá que abrís la carpeta `kinesica/` (no solo el repo padre). En producción hay que **subir** `style.min.css` y el HTML con el `?v=` nuevo.
 
 ## Despliegue (Hostinger)
 
