@@ -3382,7 +3382,8 @@ Pathology detail pages (FAQ dolencias)
   );
 }
 
-.articles-index-card-media img {
+.articles-index-card-media img,
+.articles-index-card-media svg {
   width: 100%;
   height: 100%;
   object-fit: cover;

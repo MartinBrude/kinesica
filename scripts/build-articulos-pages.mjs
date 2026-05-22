@@ -8,6 +8,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { PATHOLOGIES } from "./pathology-content.mjs";
 import { ARTICLES_INDEX_UI } from "./articles-index-content.mjs";
+import { cardHue } from "./article-thumbnail-icons.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -19,24 +20,22 @@ function esc(s) {
     .replace(/"/g, "&quot;");
 }
 
-function cardHue(index) {
-  const hues = [198, 168, 205, 178, 192, 210, 165, 188];
-  return hues[index % hues.length];
+function articleThumbSrc(stem, lang) {
+  const rel = `images/articles/${stem}.svg`;
+  const file = path.join(ROOT, rel);
+  if (!fs.existsSync(file)) return null;
+  return lang === "es" ? rel : `../${rel}`;
 }
 
 function buildMain(lang) {
   const ui = ARTICLES_INDEX_UI[lang];
-  const prefix = lang === "es" ? "" : "../";
 
   const cards = PATHOLOGIES.map((p, i) => {
     const data = p[lang];
-    const href = lang === "es" ? `${p.stem}.html` : `${p.stem}.html`;
-    const img =
-      p.image && p.image !== "hero-img.jpg"
-        ? `images/${p.image}`
-        : null;
-    const media = img
-      ? `<span class="articles-index-card-media"><img src="${prefix}${img}" alt="" width="320" height="180" loading="lazy" /></span>`
+    const href = `${p.stem}.html`;
+    const thumb = articleThumbSrc(p.stem, lang);
+    const media = thumb
+      ? `<span class="articles-index-card-media"><img src="${thumb}" alt="" width="320" height="180" loading="lazy" decoding="async" /></span>`
       : `<span class="articles-index-card-media articles-index-card-media--placeholder" aria-hidden="true"></span>`;
 
     return `          <a href="${href}" class="articles-index-card ui-reveal" style="--card-i: ${i}; --card-hue: ${cardHue(i)}">
@@ -63,18 +62,33 @@ ${cards}
     </section>`;
 }
 
+function replaceContentBlock(html, main) {
+  const patterns = [
+    /<section class="content[^"]*">[\s\S]*?<\/section>\s*(?=<div id="site-cta-strip-root")/,
+    /<div class="content">[\s\S]*?<\/div>\s*(?=<div id="site-cta-strip-root")/,
+    /<section class="content[^"]*">[\s\S]*?<\/section>\s*(?=<\/main>)/,
+    /<div class="content">[\s\S]*?<\/div>\s*(?=<\/main>)/,
+  ];
+  for (const re of patterns) {
+    if (re.test(html)) {
+      return html.replace(re, `${main}\n`);
+    }
+  }
+  return null;
+}
+
 function patchArticulosFile(rel, lang) {
   const full = path.join(ROOT, rel);
   let html = fs.readFileSync(full, "utf8");
   const ui = ARTICLES_INDEX_UI[lang];
 
   const main = buildMain(lang);
-  const contentRe = /<section class="content[^"]*">[\s\S]*?<\/section>\s*(?=<\/main>)/;
-  if (!contentRe.test(html)) {
+  const patched = replaceContentBlock(html, main);
+  if (!patched) {
     console.warn("skip (no content section):", rel);
     return false;
   }
-  html = html.replace(contentRe, `${main}\n`);
+  html = patched;
 
   html = html.replace(
     /<div class="page-caption">\s*<h1 class="page-title">[^<]*<\/h1>\s*<\/div>/,
