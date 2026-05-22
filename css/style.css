@@ -3537,24 +3537,6 @@ html {
   content: none !important;
 }
 
-.site-nav__chevron {
-  display: inline-block;
-  width: 7px;
-  height: 7px;
-  flex: 0 0 7px;
-  margin-top: 1px;
-  border: 0;
-  border-right: 2px solid #474747;
-  border-bottom: 2px solid #474747;
-  transform: rotate(45deg);
-  opacity: 0.65;
-  pointer-events: none;
-}
-
-#navigation.small-screen .site-nav__chevron {
-  display: none;
-}
-
 #navigation.small-screen > ul > li > a::after {
   display: none !important;
 }
