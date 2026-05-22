@@ -15,6 +15,7 @@
     "cervicobraquialgia",
     "ciatalgia",
     "cv",
+    "404",
     "dolor-sacriiliaco",
     "dorso-plano",
     "dorsalgia",
@@ -70,6 +71,37 @@
       return "../" + file;
     }
     return "../" + toLang + "/" + file;
+  }
+
+  /** Infer target language from a lang-switcher href (absolute or file:// relative). */
+  function langFromHref(href) {
+    if (!href) {
+      return null;
+    }
+    var parsed = parseSiteHref(href);
+    if (parsed) {
+      return parsed.lang;
+    }
+    if (href === "index.html") {
+      return parseLocation().lang;
+    }
+    if (/^(?:\.\.\/)+index\.html$/.test(href)) {
+      return "es";
+    }
+    if (/^(?:\.\.\/)+fr\//.test(href) || /^fr\//.test(href)) {
+      return "fr";
+    }
+    if (/^(?:\.\.\/)+en\//.test(href) || /^en\//.test(href)) {
+      return "en";
+    }
+    if (/^(?:\.\.\/)+/.test(href)) {
+      return "es";
+    }
+    var from = parseLocation().lang;
+    if ((from === "en" || from === "fr") && href.indexOf("..") === -1) {
+      return from;
+    }
+    return "es";
   }
 
   function parseSiteHref(href) {
@@ -170,6 +202,7 @@
     pathForLang: pathForLang,
     relativePathFor: relativePathFor,
     parseSiteHref: parseSiteHref,
+    langFromHref: langFromHref,
     parseLocation: parseLocation,
     isFileProtocol: isFileProtocol,
     isSpanishHome: isSpanishHome,

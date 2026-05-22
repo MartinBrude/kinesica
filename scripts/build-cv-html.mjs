@@ -9,6 +9,7 @@ import { fileURLToPath } from "url";
 import { createRequire } from "module";
 import { CV } from "./cv-content.mjs";
 import { SITE, absoluteUrl, repoPath } from "./i18n-urls.mjs";
+import { headerShellMarkup } from "./header-shell.mjs";
 
 const require = createRequire(import.meta.url);
 const { toMinPath } = require("../assets.config.cjs");
@@ -110,19 +111,6 @@ function buildPage(lang, data) {
     .map((l) => `  <meta property="og:locale:alternate" content="${l}" />`)
     .join("\n");
 
-  const langSwitcher = `
-            <ul class="lang-switcher">
-              <li>
-                <a href="/cv.html"><img src="${prefix}images/es.svg" title="${data.flags.es}" alt="${data.flags.es}" width="24" height="16" /></a>
-              </li>
-              <li>
-                <a href="/en/cv.html"><img src="${prefix}images/gb.svg" title="${data.flags.en}" alt="${data.flags.en}" width="24" height="16" /></a>
-              </li>
-              <li>
-                <a href="/fr/cv.html"><img src="${prefix}images/fr.svg" title="${data.flags.fr}" alt="${data.flags.fr}" width="24" height="16" /></a>
-              </li>
-            </ul>`;
-
   const personSchema = JSON.stringify(
     {
       "@context": "https://schema.org",
@@ -214,35 +202,7 @@ ${altOg}
   <div id="site-skip-link-root"></div>
   <script src="${asset(prefix, "partials/skip-link.js")}"></script>
   <script src="${asset(prefix, "js/skip-link-include.js")}"></script>
-  <div class="header-top">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-          <span class="text-block time-block">
-            <span class="time-text">${data.time}</span>
-          </span>
-        </div>
-        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
-          <div class="top-text">${langSwitcher}
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <header class="header">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-          <a href="${home}"><img src="${prefix}images/logo.svg" alt="Kinésica" width="224" height="64" loading="eager" /></a>
-        </div>
-        <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
-          <nav class="navigation">
-            <div id="navigation" class="nav navbar-nav navbar-right" data-nav-inject="true"></div>
-          </nav>
-        </div>
-      </div>
-    </div>
-  </header>
+${headerShellMarkup(lang, prefix)}
   <main id="main" class="cv-page" tabindex="-1">
     <section class="cv-hero">
       <div class="container">

@@ -76,23 +76,13 @@
   window.dataLayer.push({ page_language: langFromPath() });
 
   function markCurrentLangFlag() {
+    var r = routes();
     var current = langFromPath();
+    var langFromHref = r && r.langFromHref;
     document.querySelectorAll(".lang-switcher a[href]").forEach(function (link) {
       var href = link.getAttribute("href") || "";
-      var isFr =
-        href.indexOf("/fr/") !== -1 ||
-        href.indexOf("fr/") === 0 ||
-        href.indexOf("../fr/") !== -1;
-      var isEn =
-        href.indexOf("/en/") !== -1 ||
-        href.indexOf("en/") === 0 ||
-        href.indexOf("../en/") !== -1;
-      var isEs = !isFr && !isEn;
-      var match =
-        (current === "fr" && isFr) ||
-        (current === "en" && isEn) ||
-        (current === "es" && isEs);
-      if (match) {
+      var targetLang = langFromHref ? langFromHref(href) : null;
+      if (targetLang === current) {
         link.setAttribute("aria-current", "true");
       } else {
         link.removeAttribute("aria-current");
@@ -144,6 +134,9 @@
     true
   );
 
+  document.addEventListener("kinesica:header-ready", markCurrentLangFlag);
+
   window.kinesicaGetLangPreference = getLang;
   window.kinesicaSaveLangPreference = saveLang;
+  window.kinesicaMarkCurrentLangFlag = markCurrentLangFlag;
 })();

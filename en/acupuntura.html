@@ -383,23 +383,23 @@
   <div id="site-gtm-body-root"></div>
   <script src="../partials/gtm-body.min.js" defer></script>
   <script src="../js/gtm-body-include.min.js" defer></script>
-  <div class="header-top">
+    <div id="site-header-root" data-header-lang="en">
+<div class="header-top">
     <div class="container">
       <div class="row">
         <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
           <span class="text-block time-block">
-            <span class="time-text">Monday to Friday: <strong>10am - 8pm</strong></span>
+            <span class="time-text">Monday to Friday: <strong>10 a.m. to 8 p.m.</strong></span>
           </span>
         </div>
         <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
           <div class="top-text">
             <ul class="lang-switcher">
               <li>
-                <a href="/acupuntura.html"><img src="../images/es.svg" alt="spanish flag" width="24" height="16" /></a>
+                <a href="/acupuntura.html"><img src="../images/es.svg" title="Spanish Flag" alt="spanish flag" width="24" height="16" /></a>
               </li>
               <li>
-                <a href="/en/acupuntura.html"><img src="../images/gb.svg" alt="british flag" width="24"
-                    height="16" /></a>
+                <a href="/en/acupuntura.html" aria-current="true"><img src="../images/gb.svg" title="British Flag" alt="british flag" width="24" height="16" /></a>
               </li>
               <li>
                 <a href="/fr/acupuntura.html"><img src="../images/fr.svg" title="French flag" alt="french flag" width="24" height="16" /></a>
@@ -414,18 +414,44 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-          <a href="/en/"><img src="../images/logo.svg" alt="logo kinesica" width="224" height="64"
+          <a href="/en/"><img src="../images/logo.svg" alt="kinesica logo" width="224" height="64"
               loading="eager" /></a>
         </div>
-        <div class="col-lg-8 col-md-4 col-sm-12 col-xs-12">
+        <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
           <nav class="navigation">
             <div id="navigation" class="nav navbar-nav navbar-right" data-nav-inject="true">
 <ul>
   <li class="has-sub">
     <a href="articulos.html" title="Articles">Articles</a>
     <ul>
-      <li><a href="cervicalgia.html" title="Cervical Pain">Cervical Pain</a></li>
-      <li><a href="lumbalgia.html" title="Low Back Pain">Low Back Pain</a></li>
+      
+      <li><a href="cefalea.html" title="Headache">Headache</a></li>
+      <li><a href="dorsalgia.html" title="Upper back pain">Upper back pain</a></li>
+      <li><a href="lumbalgia.html" title="Low back pain">Low back pain</a></li>
+      <li><a href="ciatalgia.html" title="Ciatalgia">Ciatalgia</a></li>
+      <li><a href="cervicobraquialgia.html" title="Cervicobrachialgia">Cervicobrachialgia</a></li>
+      <li><a href="pubalgia.html" title="Pubalgia">Pubalgia</a></li>
+      <li><a href="gonalgia.html" title="Knee pain">Knee pain</a></li>
+      <li><a href="talalgia.html" title="Heel pain">Heel pain</a></li>
+      <li><a href="dolor-sacriiliaco.html" title="Sacroiliac pain">Sacroiliac pain</a></li>
+      <li><a href="hernia-disco.html" title="Disc herniation">Disc herniation</a></li>
+      <li><a href="protrusion-discal.html" title="Disc protrusion">Disc protrusion</a></li>
+      <li><a href="hipercifosis.html" title="Hyperkyphosis">Hyperkyphosis</a></li>
+      <li><a href="hiperlordosis.html" title="Hyperlordosis">Hyperlordosis</a></li>
+      <li><a href="dorso-plano.html" title="Flat back">Flat back</a></li>
+      <li><a href="genu-valgo.html" title="Knee valgus">Knee valgus</a></li>
+      <li><a href="genu-varo.html" title="Knee varus">Knee varus</a></li>
+      <li><a href="pies-planos.html" title="Flat feet">Flat feet</a></li>
+      <li><a href="escoliosis.html" title="Scoliosis">Scoliosis</a></li>
+      <li><a href="epicondilitis-lateral.html" title="Tennis elbow">Tennis elbow</a></li>
+      <li><a href="epicondilitis-medial.html" title="Golfer’s elbow">Golfer’s elbow</a></li>
+      <li><a href="impingement-subacromial.html" title="Subacromial impingement">Subacromial impingement</a></li>
+      <li><a href="manguito-rotador.html" title="Rotator cuff">Rotator cuff</a></li>
+      <li><a href="radiculopatia.html" title="Radiculopathy">Radiculopathy</a></li>
+      <li><a href="meniscopatia.html" title="Meniscopathy">Meniscopathy</a></li>
+      <li><a href="fascitis-plantar.html" title="Plantar fasciitis">Plantar fasciitis</a></li>
+      <li><a href="cervicalgia.html" title="Neck pain">Neck pain</a></li>
+
     </ul>
   </li>
   <li class="has-sub">
@@ -440,13 +466,16 @@
     </ul>
   </li>
 </ul>
-</div>
+            </div>
           </nav>
         </div>
       </div>
     </div>
   </header>
-  <main id="main" tabindex="-1">
+</div>
+  <script src="../partials/header-en.min.js"></script>
+  <script src="../js/header-include.min.js"></script>
+<main id="main" tabindex="-1">
     <section class="page-header">
       <div class="container">
         <div class="row">

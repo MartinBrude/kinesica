@@ -6,6 +6,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { injectStaticHeader } from "./header-shell.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -104,10 +105,11 @@ function injectFooter(html, file) {
 
 let changed = 0;
 for (const file of listHtmlFiles()) {
-  if (/404/.test(file)) continue;
+  if (/404-router/.test(file)) continue;
   const full = path.join(ROOT, file);
   let html = fs.readFileSync(full, "utf8");
   const original = html;
+  html = injectStaticHeader(html, file, ROOT);
   html = injectNav(html, file);
   html = injectCta(html, file);
   html = injectFooter(html, file);
@@ -117,4 +119,4 @@ for (const file of listHtmlFiles()) {
     console.log("updated:", file);
   }
 }
-console.log(`Done. ${changed} file(s) with static nav/footer.`);
+console.log(`Done. ${changed} file(s) with static header/nav/footer.`);

@@ -12,6 +12,7 @@ export const STEMS = [
   "acupuntura",
   "cadenas",
   "cv",
+  "404",
   "manipulaciones",
   "neurodinamia",
   "osteopatia",

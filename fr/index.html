@@ -445,29 +445,26 @@
   <div id="site-skip-link-root"></div>
   <script src="../partials/skip-link.min.js" defer></script>
   <script src="../js/skip-link-include.min.js" defer></script>
-  <div class="header-top">
-    <!-- header-top-->
+    <div id="site-header-root" data-header-lang="fr">
+<div class="header-top">
     <div class="container">
       <div class="row">
         <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
           <span class="text-block time-block">
-            <span class="time-text">Lundi au vendredi : <strong>10h - 20h</strong></span>
+            <span class="time-text">Lundi au vendredi : <strong>10 h à 20 h</strong></span>
           </span>
         </div>
         <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
           <div class="top-text">
             <ul class="lang-switcher">
               <li>
-                <a href="/"><img src="../images/es.svg" title="Drapeau espagnol" alt="drapeau espagnol" width="24"
-                    height="16" /></a>
+                <a href="/"><img src="../images/es.svg" title="Drapeau espagnol" alt="drapeau espagnol" width="24" height="16" /></a>
               </li>
               <li>
-                <a href="/en/"><img src="../images/gb.svg" title="Drapeau britannique" alt="drapeau britannique" width="24"
-                    height="16" /></a>
+                <a href="/en/"><img src="../images/gb.svg" title="Drapeau britannique" alt="drapeau britannique" width="24" height="16" /></a>
               </li>
               <li>
-                <a href="/fr/"><img src="../images/fr.svg" title="Drapeau français" alt="drapeau français" width="24"
-                    height="16" /></a>
+                <a href="/fr/" aria-current="true"><img src="../images/fr.svg" title="Drapeau français" alt="drapeau français" width="24" height="16" /></a>
               </li>
             </ul>
           </div>
@@ -479,8 +476,8 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-          <a href="https://www.kinesica.com.ar/fr/"><img src="../images/logo.svg" title="Logo Kinésica"
-              alt="logo kinésica" width="224" height="64" loading="eager" /></a>
+          <a href="/fr/"><img src="../images/logo.svg" alt="logo Kinésica" width="224" height="64"
+              loading="eager" /></a>
         </div>
         <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
           <nav class="navigation">
@@ -489,8 +486,34 @@
   <li class="has-sub">
     <a href="articulos.html" title="Articles">Articles</a>
     <ul>
-      <li><a href="cervicalgia.html" title="Douleur cervicale">Douleur cervicale</a></li>
+      
+      <li><a href="cefalea.html" title="Céphalée">Céphalée</a></li>
+      <li><a href="dorsalgia.html" title="Dorsalgie">Dorsalgie</a></li>
       <li><a href="lumbalgia.html" title="Lombalgie">Lombalgie</a></li>
+      <li><a href="ciatalgia.html" title="Ciatalgie">Ciatalgie</a></li>
+      <li><a href="cervicobraquialgia.html" title="Cervicobrachialgie">Cervicobrachialgie</a></li>
+      <li><a href="pubalgia.html" title="Pubalgie">Pubalgie</a></li>
+      <li><a href="gonalgia.html" title="Gonalgie">Gonalgie</a></li>
+      <li><a href="talalgia.html" title="Talalgie">Talalgie</a></li>
+      <li><a href="dolor-sacriiliaco.html" title="Douleur sacro-iliaque">Douleur sacro-iliaque</a></li>
+      <li><a href="hernia-disco.html" title="Hernie discale">Hernie discale</a></li>
+      <li><a href="protrusion-discal.html" title="Protrusion discale">Protrusion discale</a></li>
+      <li><a href="hipercifosis.html" title="Hypercyphose">Hypercyphose</a></li>
+      <li><a href="hiperlordosis.html" title="Hyperlordose">Hyperlordose</a></li>
+      <li><a href="dorso-plano.html" title="Dos plat">Dos plat</a></li>
+      <li><a href="genu-valgo.html" title="Genu valgum">Genu valgum</a></li>
+      <li><a href="genu-varo.html" title="Genu varum">Genu varum</a></li>
+      <li><a href="pies-planos.html" title="Pieds plats">Pieds plats</a></li>
+      <li><a href="escoliosis.html" title="Scoliose">Scoliose</a></li>
+      <li><a href="epicondilitis-lateral.html" title="Épicondylite latérale">Épicondylite latérale</a></li>
+      <li><a href="epicondilitis-medial.html" title="Épicondylite médiale">Épicondylite médiale</a></li>
+      <li><a href="impingement-subacromial.html" title="Conflit sous-acromial">Conflit sous-acromial</a></li>
+      <li><a href="manguito-rotador.html" title="Coiffe des rotateurs">Coiffe des rotateurs</a></li>
+      <li><a href="radiculopatia.html" title="Radiculopathie">Radiculopathie</a></li>
+      <li><a href="meniscopatia.html" title="Méniscopathie">Méniscopathie</a></li>
+      <li><a href="fascitis-plantar.html" title="Fasciite plantaire">Fasciite plantaire</a></li>
+      <li><a href="cervicalgia.html" title="Cervicalgie">Cervicalgie</a></li>
+
     </ul>
   </li>
   <li class="has-sub">
@@ -505,13 +528,16 @@
     </ul>
   </li>
 </ul>
-</div>
+            </div>
           </nav>
         </div>
       </div>
     </div>
   </header>
-  <main id="main" tabindex="-1">
+</div>
+  <script src="../partials/header-fr.min.js"></script>
+  <script src="../js/header-include.min.js"></script>
+<main id="main" tabindex="-1">
     <section class="hero-section">
       <div class="container">
         <div class="row">

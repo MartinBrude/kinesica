@@ -13,6 +13,7 @@ import {
   UI,
 } from "./pathology-content.mjs";
 import { absoluteUrl, repoPath, sitePath } from "./i18n-urls.mjs";
+import { headerShellMarkup } from "./header-shell.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ASSET_V = JSON.parse(
@@ -22,12 +23,6 @@ const ASSET_V = JSON.parse(
 const LANGS = ["es", "en", "fr"];
 const LOCALE = { es: "es-AR", en: "en", fr: "fr" };
 const OG_LOCALE = { es: "es_AR", en: "en_US", fr: "fr_FR" };
-const SCHEDULE = {
-  es: "Lunes a viernes: <strong>10 a 20 h</strong>",
-  en: "Monday to Friday: <strong>10 a.m. to 8 p.m.</strong>",
-  fr: "Lundi au vendredi : <strong>10 h à 20 h</strong>",
-};
-
 function esc(s) {
   return String(s)
     .replace(/&/g, "&amp;")
@@ -135,19 +130,6 @@ function buildHtml(pathology, lang) {
     .map((l) => `  <meta property="og:locale:alternate" content="${OG_LOCALE[l]}" />`)
     .join("\n");
 
-  const langFlags = LANGS.map((l) => {
-    const flag = l === "es" ? "es.svg" : l === "en" ? "gb.svg" : "fr.svg";
-    const alt =
-      l === "es"
-        ? "bandera española"
-        : l === "en"
-          ? "bandera inglesa"
-          : "bandera francesa";
-    return `              <li>
-                <a href="${sitePath(l, stem)}"><img src="${p}images/${flag}" alt="${alt}" width="24" height="16" /></a>
-              </li>`;
-  }).join("\n");
-
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -247,39 +229,7 @@ ${JSON.stringify(articleSchema, null, 6).replace(/^/gm, "      ")}
   <div id="site-gtm-body-root"></div>
   <script src="${p}partials/gtm-body.min.js" defer></script>
   <script src="${p}js/gtm-body-include.min.js" defer></script>
-  <div class="header-top">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-          <span class="text-block time-block">
-            <span class="time-text">${SCHEDULE[lang]}</span>
-          </span>
-        </div>
-        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
-          <div class="top-text">
-            <ul class="lang-switcher">
-${langFlags}
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <header class="header">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-          <a href="${sitePath(lang, "index")}"><img src="${p}images/logo.svg" alt="logo kinesica" width="224" height="64"
-              loading="eager" /></a>
-        </div>
-        <div class="col-lg-8 col-md-4 col-sm-12 col-xs-12">
-          <nav class="navigation">
-            <div id="navigation" class="nav navbar-nav navbar-right" data-nav-inject="true"></div>
-          </nav>
-        </div>
-      </div>
-    </div>
-  </header>
+${headerShellMarkup(lang, p)}
   <main id="main" tabindex="-1">
     <section class="page-header">
       <div class="container">
