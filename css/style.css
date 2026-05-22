@@ -12,6 +12,9 @@
   --bg-light: #f3f4f6;
   /* Gray 100 */
   --bg-white: #ffffff;
+  /* Overscroll / bounce past document edges (Safari, iOS, macOS) */
+  --surface-canvas-top: #031c42;
+  --surface-canvas-bottom: #111827;
   --font-main: "Roboto", sans-serif;
   --radius-sm: 4px;
   --radius-md: 8px;
@@ -19,15 +22,41 @@
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
+html {
+  min-height: 100%;
+  /* Fallback si el gradiente no aplica (p. ej. overscroll inferior) */
+  background-color: var(--surface-canvas-bottom);
+  background-image: linear-gradient(
+    180deg,
+    var(--surface-canvas-top) 0%,
+    var(--surface-canvas-top) 3.25rem,
+    var(--bg-white) 9rem,
+    var(--bg-white) 70%,
+    var(--surface-canvas-bottom) 88%,
+    var(--surface-canvas-bottom) 100%
+  );
+  background-repeat: no-repeat;
+  background-size: 100% 100vh;
+  background-attachment: fixed;
+}
+
 body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   font-size: 16px;
   /* Increased base font size */
+  min-height: 100vh;
   background-color: var(--bg-white);
   color: var(--text-color);
   font-family: var(--font-main);
   line-height: 1.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    background-attachment: scroll;
+    background-size: 100% 100%;
+  }
 }
 
 h1,
