@@ -6,23 +6,29 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { absoluteUrl, repoPath } from "./i18n-urls.mjs";
+import { absoluteUrl, HREFLANG, HTML_LANG } from "./i18n-urls.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 const LANG_META = {
   es: {
-    contentLanguage: "es-AR",
+    htmlLang: HTML_LANG.es,
+    contentLanguage: HTML_LANG.es,
+    hreflang: HREFLANG.es,
     ogLocale: "es_AR",
     ogAlternates: ["en_US", "fr_FR"],
   },
   en: {
-    contentLanguage: "en",
+    htmlLang: HTML_LANG.en,
+    contentLanguage: HTML_LANG.en,
+    hreflang: HREFLANG.en,
     ogLocale: "en_US",
     ogAlternates: ["es_AR", "fr_FR"],
   },
   fr: {
-    contentLanguage: "fr",
+    htmlLang: HTML_LANG.fr,
+    contentLanguage: HTML_LANG.fr,
+    hreflang: HREFLANG.fr,
     ogLocale: "fr_FR",
     ogAlternates: ["es_AR", "en_US"],
   },
@@ -112,9 +118,9 @@ function ensureHreflangBlock(html, file) {
 
   /* Una etiqueta por idioma + x-default → español (sin duplicar href ni es+es-AR). */
   const block =
-    `  <link rel="alternate" hreflang="es" href="${es}" />\n` +
-    `  <link rel="alternate" hreflang="en" href="${en}" />\n` +
-    `  <link rel="alternate" hreflang="fr" href="${fr}" />\n` +
+    `  <link rel="alternate" hreflang="${HREFLANG.es}" href="${es}" />\n` +
+    `  <link rel="alternate" hreflang="${HREFLANG.en}" href="${en}" />\n` +
+    `  <link rel="alternate" hreflang="${HREFLANG.fr}" href="${fr}" />\n` +
     `  <link rel="alternate" hreflang="x-default" href="${es}" />\n`;
 
   if (out.includes('rel="canonical"')) {
@@ -157,9 +163,13 @@ function apply(file) {
   }
 
   if (!html.match(/<html lang="/)) {
-    html = html.replace("<html>", `<html lang="${lang}">`);
+    html = html.replace("<html>", `<html lang="${cfg.htmlLang}">`);
   } else {
-    html = html.replace(/<html lang="[^"]*">/, `<html lang="${lang}">`);
+    html = html.replace(/<html lang="[^"]*">/, `<html lang="${cfg.htmlLang}">`);
+  }
+
+  if (lang === "es") {
+    html = html.replace(/"inLanguage": "es"/g, '"inLanguage": "es-AR"');
   }
 
   return html;

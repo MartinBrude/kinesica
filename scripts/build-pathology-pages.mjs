@@ -12,7 +12,14 @@ import {
   TECHNIQUE_LABELS,
   UI,
 } from "./pathology-content.mjs";
-import { absoluteUrl, repoPath, sitePath } from "./i18n-urls.mjs";
+import {
+  absoluteUrl,
+  HREFLANG,
+  HTML_LANG,
+  repoPath,
+  SCHEMA_LANGUAGE,
+  sitePath,
+} from "./i18n-urls.mjs";
 import { headerShellMarkup } from "./header-shell.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -124,7 +131,7 @@ function buildHtml(pathology, lang) {
   const imgUrl = `https://www.kinesica.com.ar/images/${pathology.image}`;
   const hreflang = LANGS.map(
     (l) =>
-      `  <link rel="alternate" hreflang="${l === "es" ? "es" : l}" href="${absoluteUrl(l, stem)}" />`,
+      `  <link rel="alternate" hreflang="${HREFLANG[l]}" href="${absoluteUrl(l, stem)}" />`,
   ).join("\n");
   const altLocales = LANGS.filter((l) => l !== lang)
     .map((l) => `  <meta property="og:locale:alternate" content="${OG_LOCALE[l]}" />`)
@@ -157,7 +164,7 @@ function buildHtml(pathology, lang) {
     image: imgUrl,
     url: canonical,
     mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
-    inLanguage: lang === "es" ? "es" : lang,
+    inLanguage: SCHEMA_LANGUAGE[lang],
     author: { "@type": "Person", name: "Norberto Silvio Brude" },
     publisher: {
       "@type": "Organization",
@@ -172,7 +179,7 @@ function buildHtml(pathology, lang) {
   };
 
   return `<!doctype html>
-<html lang="${lang === "es" ? "es" : lang}">
+<html lang="${HTML_LANG[lang]}">
 
 <head>
   <link rel="icon" type="image/svg" href="${p}images/favicon.svg" />

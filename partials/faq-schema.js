@@ -3,14 +3,14 @@
  */
 (function () {
   if (!document.getElementById("faqAccordion")) return;
-  var htmlLang = document.documentElement.getAttribute("lang") || "es";
+  var htmlLang = document.documentElement.getAttribute("lang") || "es-AR";
   var lang = htmlLang === "en" ? "en" : htmlLang === "fr" ? "fr" : "es";
   var schemas = {
   "es": {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     "@id": "https://www.kinesica.com.ar/#faq",
-    "inLanguage": "es",
+    "inLanguage": "es-AR",
     "mainEntityOfPage": "https://www.kinesica.com.ar/",
     "mainEntity": [
       {

@@ -8,7 +8,13 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { createRequire } from "module";
 import { CV } from "./cv-content.mjs";
-import { SITE, absoluteUrl, repoPath } from "./i18n-urls.mjs";
+import {
+  SITE,
+  absoluteUrl,
+  HREFLANG,
+  HTML_LANG,
+  repoPath,
+} from "./i18n-urls.mjs";
 import { headerShellMarkup } from "./header-shell.mjs";
 
 const require = createRequire(import.meta.url);
@@ -114,7 +120,7 @@ function buildPage(lang, data) {
   const hreflangs = ["es", "en", "fr"]
     .map(
       (l) =>
-        `  <link rel="alternate" hreflang="${l}" href="${absoluteUrl(l, "cv")}" />`
+        `  <link rel="alternate" hreflang="${HREFLANG[l]}" href="${absoluteUrl(l, "cv")}" />`,
     )
     .join("\n");
 
@@ -171,10 +177,11 @@ function buildPage(lang, data) {
   );
 
   return `<!doctype html>
-<html lang="${lang}">
+<html lang="${HTML_LANG[lang]}">
 
 <head>
   <meta charset="utf-8" />
+  <meta http-equiv="content-language" content="${HTML_LANG[lang]}" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#005f99" />

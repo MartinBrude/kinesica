@@ -3,6 +3,11 @@
  */
 export const SITE = "https://www.kinesica.com.ar";
 
+/** BCP 47 — alineado entre <html lang>, content-language, hreflang e inLanguage. */
+export const HTML_LANG = { es: "es-AR", en: "en", fr: "fr" };
+export const HREFLANG = { es: "es-AR", en: "en", fr: "fr" };
+export const SCHEMA_LANGUAGE = { es: "es-AR", en: "en", fr: "fr" };
+
 import { PATHOLOGY_STEMS } from "./pathology-content.mjs";
 
 export const STEMS = [

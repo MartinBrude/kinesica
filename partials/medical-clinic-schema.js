@@ -3,7 +3,7 @@
  * Regenerar: npm run schema:partials
  */
 (function () {
-  var htmlLang = document.documentElement.getAttribute("lang") || "es";
+  var htmlLang = document.documentElement.getAttribute("lang") || "es-AR";
   var lang = htmlLang === "en" ? "en" : htmlLang === "fr" ? "fr" : "es";
   var schemas = {
   "es": {
@@ -17,7 +17,7 @@
     "alternateName": "Kinésica — Centro de kinesiología y fisioterapia",
     "url": "https://www.kinesica.com.ar/",
     "mainEntityOfPage": "https://www.kinesica.com.ar/",
-    "inLanguage": "es",
+    "inLanguage": "es-AR",
     "description": "Centro de fisioterapia y kinesiología en Palermo, Buenos Aires: osteopatía, RPG, neurodinámia y terapias manuales personalizadas.",
     "image": [
       "https://www.kinesica.com.ar/images/logo.svg",
@@ -127,7 +127,7 @@
       "target": {
         "@type": "EntryPoint",
         "urlTemplate": "https://wa.me/5491161564311",
-        "inLanguage": "es",
+        "inLanguage": "es-AR",
         "actionPlatform": [
           "https://schema.org/WhatsApp",
           "https://schema.org/MobileWebPlatform"
@@ -180,40 +180,6 @@
             "name": "Cadenas musculares",
             "description": "Tratamiento según cadenas musculares y fasciales.",
             "url": "https://www.kinesica.com.ar/cadenas.html",
-            "provider": {
-              "@id": "https://www.kinesica.com.ar/#kinesica"
-            },
-            "areaServed": {
-              "@type": "Place",
-              "name": "Palermo, Buenos Aires"
-            }
-          }
-        },
-        {
-          "@type": "Offer",
-          "itemOffered": {
-            "@type": "Service",
-            "@id": "https://www.kinesica.com.ar/cervicalgia.html#service",
-            "name": "Tratamiento de cervicalgia",
-            "description": "Abordaje de dolor y rigidez cervical en Palermo.",
-            "url": "https://www.kinesica.com.ar/cervicalgia.html",
-            "provider": {
-              "@id": "https://www.kinesica.com.ar/#kinesica"
-            },
-            "areaServed": {
-              "@type": "Place",
-              "name": "Palermo, Buenos Aires"
-            }
-          }
-        },
-        {
-          "@type": "Offer",
-          "itemOffered": {
-            "@type": "Service",
-            "@id": "https://www.kinesica.com.ar/lumbalgia.html#service",
-            "name": "Tratamiento de lumbalgia",
-            "description": "Tratamiento de dolor lumbar y ciática.",
-            "url": "https://www.kinesica.com.ar/lumbalgia.html",
             "provider": {
               "@id": "https://www.kinesica.com.ar/#kinesica"
             },
@@ -299,6 +265,40 @@
             "name": "RPG — Reeducación Postural Global",
             "description": "Método de RPG para flexibilizar musculatura estática y reeducar la postura.",
             "url": "https://www.kinesica.com.ar/rpg.html",
+            "provider": {
+              "@id": "https://www.kinesica.com.ar/#kinesica"
+            },
+            "areaServed": {
+              "@type": "Place",
+              "name": "Palermo, Buenos Aires"
+            }
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "@id": "https://www.kinesica.com.ar/lumbalgia.html#service",
+            "name": "Tratamiento de lumbalgia",
+            "description": "Tratamiento de dolor lumbar y ciática.",
+            "url": "https://www.kinesica.com.ar/lumbalgia.html",
+            "provider": {
+              "@id": "https://www.kinesica.com.ar/#kinesica"
+            },
+            "areaServed": {
+              "@type": "Place",
+              "name": "Palermo, Buenos Aires"
+            }
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "@id": "https://www.kinesica.com.ar/cervicalgia.html#service",
+            "name": "Tratamiento de cervicalgia",
+            "description": "Abordaje de dolor y rigidez cervical en Palermo.",
+            "url": "https://www.kinesica.com.ar/cervicalgia.html",
             "provider": {
               "@id": "https://www.kinesica.com.ar/#kinesica"
             },
@@ -503,40 +503,6 @@
           "@type": "Offer",
           "itemOffered": {
             "@type": "Service",
-            "@id": "https://www.kinesica.com.ar/en/cervicalgia.html#service",
-            "name": "Cervical pain treatment",
-            "description": "Care for neck pain and stiffness in Palermo.",
-            "url": "https://www.kinesica.com.ar/en/cervicalgia.html",
-            "provider": {
-              "@id": "https://www.kinesica.com.ar/#kinesica"
-            },
-            "areaServed": {
-              "@type": "Place",
-              "name": "Palermo, Buenos Aires"
-            }
-          }
-        },
-        {
-          "@type": "Offer",
-          "itemOffered": {
-            "@type": "Service",
-            "@id": "https://www.kinesica.com.ar/en/lumbalgia.html#service",
-            "name": "Low back pain treatment",
-            "description": "Treatment for lumbar pain and sciatica.",
-            "url": "https://www.kinesica.com.ar/en/lumbalgia.html",
-            "provider": {
-              "@id": "https://www.kinesica.com.ar/#kinesica"
-            },
-            "areaServed": {
-              "@type": "Place",
-              "name": "Palermo, Buenos Aires"
-            }
-          }
-        },
-        {
-          "@type": "Offer",
-          "itemOffered": {
-            "@type": "Service",
             "@id": "https://www.kinesica.com.ar/en/manipulaciones.html#service",
             "name": "Visceral manipulation",
             "description": "Visceral manual therapy to improve organ function.",
@@ -609,6 +575,40 @@
             "name": "RPG — Global Postural Reeducation",
             "description": "RPG method to release static muscle chains and re-educate posture.",
             "url": "https://www.kinesica.com.ar/en/rpg.html",
+            "provider": {
+              "@id": "https://www.kinesica.com.ar/#kinesica"
+            },
+            "areaServed": {
+              "@type": "Place",
+              "name": "Palermo, Buenos Aires"
+            }
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "@id": "https://www.kinesica.com.ar/en/lumbalgia.html#service",
+            "name": "Low back pain treatment",
+            "description": "Treatment for lumbar pain and sciatica.",
+            "url": "https://www.kinesica.com.ar/en/lumbalgia.html",
+            "provider": {
+              "@id": "https://www.kinesica.com.ar/#kinesica"
+            },
+            "areaServed": {
+              "@type": "Place",
+              "name": "Palermo, Buenos Aires"
+            }
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "@id": "https://www.kinesica.com.ar/en/cervicalgia.html#service",
+            "name": "Cervical pain treatment",
+            "description": "Care for neck pain and stiffness in Palermo.",
+            "url": "https://www.kinesica.com.ar/en/cervicalgia.html",
             "provider": {
               "@id": "https://www.kinesica.com.ar/#kinesica"
             },
@@ -813,40 +813,6 @@
           "@type": "Offer",
           "itemOffered": {
             "@type": "Service",
-            "@id": "https://www.kinesica.com.ar/fr/cervicalgia.html#service",
-            "name": "Traitement de la cervicalgie",
-            "description": "Prise en charge des douleurs cervicales à Palermo.",
-            "url": "https://www.kinesica.com.ar/fr/cervicalgia.html",
-            "provider": {
-              "@id": "https://www.kinesica.com.ar/#kinesica"
-            },
-            "areaServed": {
-              "@type": "Place",
-              "name": "Palermo, Buenos Aires"
-            }
-          }
-        },
-        {
-          "@type": "Offer",
-          "itemOffered": {
-            "@type": "Service",
-            "@id": "https://www.kinesica.com.ar/fr/lumbalgia.html#service",
-            "name": "Traitement de la lombalgie",
-            "description": "Traitement des douleurs lombaires et sciatique.",
-            "url": "https://www.kinesica.com.ar/fr/lumbalgia.html",
-            "provider": {
-              "@id": "https://www.kinesica.com.ar/#kinesica"
-            },
-            "areaServed": {
-              "@type": "Place",
-              "name": "Palermo, Buenos Aires"
-            }
-          }
-        },
-        {
-          "@type": "Offer",
-          "itemOffered": {
-            "@type": "Service",
             "@id": "https://www.kinesica.com.ar/fr/manipulaciones.html#service",
             "name": "Manipulations viscérales",
             "description": "Thérapie manuelle viscérale pour améliorer la fonction des organes.",
@@ -919,6 +885,40 @@
             "name": "RPG — Rééducation Posturale Globale",
             "description": "Méthode RPG pour assouplir les chaînes musculaires statiques.",
             "url": "https://www.kinesica.com.ar/fr/rpg.html",
+            "provider": {
+              "@id": "https://www.kinesica.com.ar/#kinesica"
+            },
+            "areaServed": {
+              "@type": "Place",
+              "name": "Palermo, Buenos Aires"
+            }
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "@id": "https://www.kinesica.com.ar/fr/lumbalgia.html#service",
+            "name": "Traitement de la lombalgie",
+            "description": "Traitement des douleurs lombaires et sciatique.",
+            "url": "https://www.kinesica.com.ar/fr/lumbalgia.html",
+            "provider": {
+              "@id": "https://www.kinesica.com.ar/#kinesica"
+            },
+            "areaServed": {
+              "@type": "Place",
+              "name": "Palermo, Buenos Aires"
+            }
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "@id": "https://www.kinesica.com.ar/fr/cervicalgia.html#service",
+            "name": "Traitement de la cervicalgie",
+            "description": "Prise en charge des douleurs cervicales à Palermo.",
+            "url": "https://www.kinesica.com.ar/fr/cervicalgia.html",
             "provider": {
               "@id": "https://www.kinesica.com.ar/#kinesica"
             },

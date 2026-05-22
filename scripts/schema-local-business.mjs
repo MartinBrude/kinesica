@@ -320,7 +320,8 @@ function buildOfferCatalog(lang) {
 /** Clínica de fisioterapia — entidad local principal. */
 export function buildPhysiotherapyClinic(lang) {
   const t = COPY[lang];
-  const langCode = lang === "fr" ? "fr" : lang === "en" ? "en" : "es";
+  const langCode =
+    lang === "fr" ? "fr" : lang === "en" ? "en" : "es-AR";
   const contactLanguages =
     lang === "fr"
       ? ["French", "Spanish", "English"]
@@ -411,7 +412,7 @@ export function buildFaqPage(lang) {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     "@id": `${COPY[lang].homeUrl}#faq`,
-    inLanguage: lang === "fr" ? "fr" : lang === "en" ? "en" : "es",
+    inLanguage: lang === "fr" ? "fr" : lang === "en" ? "en" : "es-AR",
     mainEntityOfPage: COPY[lang].homeUrl,
     mainEntity: t.faqs.map((item) => ({
       "@type": "Question",

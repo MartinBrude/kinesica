@@ -172,8 +172,8 @@ for (const file of htmlFiles) {
     const langs = hreflangs.map((h) => h.lang);
     if (!langs.includes("fr") && !file.startsWith("fr/"))
       add("warning", file, "Missing hreflang fr");
-    if (!langs.includes("es") && !file.startsWith("fr/"))
-      add("warning", file, "Missing hreflang es");
+    if (!langs.includes("es-AR") && !langs.includes("es") && !file.startsWith("fr/"))
+      add("warning", file, "Missing hreflang es-AR");
   }
 
   for (const { lang: hl, href } of hreflangs) {
@@ -221,7 +221,7 @@ for (const file of htmlFiles) {
     const stem = stemFromFile(file);
     if (stem !== "404" && stem !== "index") {
       for (const [hl, expected] of [
-        ["es", absoluteUrl("es", stem)],
+        ["es-AR", absoluteUrl("es", stem)],
         ["en", absoluteUrl("en", stem)],
         ["fr", absoluteUrl("fr", stem)],
       ]) {
