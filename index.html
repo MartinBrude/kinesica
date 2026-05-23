@@ -30,10 +30,10 @@
   <noscript><link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i&display=swap" rel="stylesheet" /></noscript>
 <link rel="preload" href="css/font-awesome.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
   <noscript><link href="css/font-awesome.min.css" rel="stylesheet" /></noscript>
-<link rel="preload" href="css/style.min.css?v=1779549650" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-  <noscript><link href="css/style.min.css?v=1779549650" rel="stylesheet" /></noscript>
-<link rel="preload" href="css/whatsapp.min.css?v=1779549650" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-  <noscript><link href="css/whatsapp.min.css?v=1779549650" rel="stylesheet" /></noscript>
+<link rel="preload" href="css/style.min.css?v=1779549926" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link href="css/style.min.css?v=1779549926" rel="stylesheet" /></noscript>
+<link rel="preload" href="css/whatsapp.min.css?v=1779549926" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link href="css/whatsapp.min.css?v=1779549926" rel="stylesheet" /></noscript>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="canonical" href="https://www.kinesica.com.ar/" />
@@ -762,17 +762,40 @@
         title="Ubicación de Kinésica en Google Maps">
       </iframe>
       <div class="container map-transit-wrap">
-        <p class="map-transit-lead">Transporte público cercano</p>
-        <ul class="map-transit-list">
-          <li>
-            <span class="map-transit-label">Subte</span>
-            Línea D — estación Scalabrini Ortiz
-          </li>
-          <li>
-            <span class="map-transit-label">Colectivos</span>
-            Líneas 39, 64, 68, 111, 152 y 160 (Av. Santa Fe y Scalabrini Ortiz)
-          </li>
-        </ul>
+        <div class="map-transit-panel">
+          <p class="map-transit-lead">Transporte público cercano</p>
+          <div class="map-transit-grid">
+            <article class="map-transit-card map-transit-card--subte">
+              <div class="map-transit-card-icon" aria-hidden="true">
+                <i class="fa fa-train"></i>
+              </div>
+              <div class="map-transit-card-body">
+                <h3 class="map-transit-card-title">Subte</h3>
+                <p class="map-transit-card-detail">
+                  <span class="map-transit-badge map-transit-badge--line-d">D</span>
+                  Estación Scalabrini Ortiz
+                </p>
+              </div>
+            </article>
+            <article class="map-transit-card map-transit-card--bus">
+              <div class="map-transit-card-icon" aria-hidden="true">
+                <i class="fa fa-bus"></i>
+              </div>
+              <div class="map-transit-card-body">
+                <h3 class="map-transit-card-title">Colectivos</h3>
+                <p class="map-transit-card-meta">Av. Santa Fe y Scalabrini Ortiz</p>
+                <ul class="map-transit-lines" aria-label="Líneas de colectivo">
+                  <li>39</li>
+                  <li>64</li>
+                  <li>68</li>
+                  <li>111</li>
+                  <li>152</li>
+                  <li>160</li>
+                </ul>
+              </div>
+            </article>
+          </div>
+        </div>
       </div>
     </section>
     <section class="space-medium section-intro section-intro--compact">

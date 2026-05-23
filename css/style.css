@@ -2456,7 +2456,8 @@ main:focus {
 }
 
 .map-transit-wrap {
-  padding: 1rem 15px 2.25rem;
+  margin-top: 1.5rem;
+  padding: 0 15px 2.5rem;
 }
 
 .map-transit-note {
@@ -2468,37 +2469,176 @@ main:focus {
   text-align: center;
 }
 
-.map-transit-lead {
-  margin: 0 auto 0.75rem;
-  max-width: 40rem;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--heading-color);
-  text-align: center;
-}
-
-.map-transit-list {
+.map-transit-panel {
   margin: 0 auto;
-  padding: 0;
-  max-width: 40rem;
-  list-style: none;
-  font-size: 0.9375rem;
-  line-height: 1.6;
-  color: var(--text-color);
+  max-width: 52rem;
+  padding: 1.35rem 1.25rem 1.5rem;
+  background-color: var(--bg-white);
+  border: 1px solid rgba(0, 95, 153, 0.12);
+  border-radius: 12px;
+  box-shadow:
+    var(--shadow-md),
+    0 12px 32px -12px rgba(3, 28, 66, 0.14);
+}
+
+.map-transit-lead {
+  margin: 0 0 1.1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--primary-color);
   text-align: center;
 }
 
-.map-transit-list li + li {
-  margin-top: 0.5rem;
+.map-transit-grid {
+  display: grid;
+  gap: 0.85rem;
 }
 
-.map-transit-label {
-  display: inline-block;
-  margin-right: 0.35rem;
-  font-weight: 600;
+@media (min-width: 640px) {
+  .map-transit-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .map-transit-panel {
+    padding: 1.5rem 1.5rem 1.65rem;
+  }
+}
+
+.map-transit-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  padding: 1rem 1rem 1.05rem;
+  border-radius: var(--radius-md);
+  background-color: var(--bg-light);
+  border: 1px solid transparent;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.map-transit-card--subte {
+  background: linear-gradient(145deg, rgba(0, 95, 153, 0.07) 0%, rgba(0, 95, 153, 0.02) 100%);
+}
+
+.map-transit-card--bus {
+  background: linear-gradient(145deg, rgba(46, 191, 165, 0.1) 0%, rgba(46, 191, 165, 0.02) 100%);
+}
+
+@media (hover: hover) {
+  .map-transit-card:hover {
+    border-color: rgba(0, 95, 153, 0.14);
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+.map-transit-card-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  font-size: 1.125rem;
+  line-height: 1;
+}
+
+.map-transit-card--subte .map-transit-card-icon {
+  color: var(--bg-white);
+  background: linear-gradient(145deg, var(--primary-color) 0%, #004a75 100%);
+  box-shadow: 0 4px 12px rgba(0, 95, 153, 0.28);
+}
+
+.map-transit-card--bus .map-transit-card-icon {
+  color: var(--bg-white);
+  background: linear-gradient(145deg, var(--accent-color) 0%, #239b86 100%);
+  box-shadow: 0 4px 12px rgba(46, 191, 165, 0.32);
+}
+
+.map-transit-card-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.map-transit-card-title {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+  font-weight: 700;
   color: var(--heading-color);
+  line-height: 1.25;
+}
+
+.map-transit-card-detail {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: var(--text-color);
+}
+
+.map-transit-card-meta {
+  margin: 0 0 0.55rem;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--text-color);
+}
+
+.map-transit-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.65rem;
+  height: 1.65rem;
+  padding: 0 0.35rem;
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: #fff;
+}
+
+.map-transit-badge--line-d {
+  background: linear-gradient(180deg, #00a650 0%, #008542 100%);
+  box-shadow: 0 1px 3px rgba(0, 133, 66, 0.35);
+}
+
+.map-transit-lines {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.map-transit-lines li {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--secondary-color);
+  background-color: var(--bg-white);
+  border: 1px solid rgba(3, 28, 66, 0.1);
+  box-shadow: var(--shadow-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-transit-card {
+    transition: none;
+  }
 }
 
 .contact-social {
