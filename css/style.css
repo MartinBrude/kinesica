@@ -2465,6 +2465,12 @@ main:focus {
   padding-bottom: 1.5rem;
 }
 
+/* Oculto por ahora; el HTML en index (ES/EN/FR) se conserva para reactivar. */
+.map-transit-wrap,
+.map-transit-note {
+  display: none !important;
+}
+
 .map-transit-wrap {
   margin-top: 1.5rem;
   padding: 0 15px;
