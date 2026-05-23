@@ -201,6 +201,19 @@ function fix404FooterStyle(html, file) {
   );
 }
 
+/** Obsolete comments from legacy Bootstrap / preconnect blocks. */
+function removeStaleHeadComments(html) {
+  return html
+    .replace(
+      /\s*<!-- The above 3 meta tags \*must\* come first in the head; any other head content must come \*after\* these tags -->\s*\n?/g,
+      "\n",
+    )
+    .replace(
+      /\s*<!-- Preconnect para mejorar carga de recursos externos -->\s*\n?/g,
+      "\n",
+    );
+}
+
 let changed = 0;
 for (const file of listHtmlFiles()) {
   const full = path.join(ROOT, file);
@@ -216,6 +229,7 @@ for (const file of listHtmlFiles()) {
   html = deferLangHeadScripts(html);
   html = deferHeadScripts(html);
   html = fix404FooterStyle(html, file);
+  html = removeStaleHeadComments(html);
   if (html !== original) {
     fs.writeFileSync(full, html);
     changed++;

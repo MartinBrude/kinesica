@@ -62,6 +62,17 @@ ${cards}
     </section>`;
 }
 
+/** EN/FR articulos historically omitted </main> before the CTA strip. */
+function ensureMainClosedBeforeCta(html) {
+  if (!/<main id="main"/.test(html) || /<\/main>/.test(html)) {
+    return html;
+  }
+  return html.replace(
+    /(<section class="content articles-index">[\s\S]*?<\/section>)\s*(?=<div id="site-cta-strip-root")/,
+    "$1\n</main>\n",
+  );
+}
+
 function replaceContentBlock(html, main) {
   const patterns = [
     /<section class="content[^"]*">[\s\S]*?<\/section>\s*(?=<div id="site-cta-strip-root")/,
@@ -102,6 +113,8 @@ function patchArticulosFile(rel, lang) {
     /<li><a href="[^"]*">[^<]*<\/a><\/li>\s*<li class="active">[^<]*<\/li>/,
     `<li><a href="${homeHref}">${ui.homeLabel}</a></li>\n            <li class="active">${ui.breadcrumb}</li>`,
   );
+
+  html = ensureMainClosedBeforeCta(html);
 
   fs.writeFileSync(full, html);
   return true;
