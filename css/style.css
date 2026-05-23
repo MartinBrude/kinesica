@@ -2455,6 +2455,52 @@ main:focus {
   display: block;
 }
 
+.map-transit-wrap {
+  padding: 1rem 15px 2.25rem;
+}
+
+.map-transit-note {
+  margin: 0 auto;
+  max-width: 40rem;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--text-color);
+  text-align: center;
+}
+
+.map-transit-lead {
+  margin: 0 auto 0.75rem;
+  max-width: 40rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--heading-color);
+  text-align: center;
+}
+
+.map-transit-list {
+  margin: 0 auto;
+  padding: 0;
+  max-width: 40rem;
+  list-style: none;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--text-color);
+  text-align: center;
+}
+
+.map-transit-list li + li {
+  margin-top: 0.5rem;
+}
+
+.map-transit-label {
+  display: inline-block;
+  margin-right: 0.35rem;
+  font-weight: 600;
+  color: var(--heading-color);
+}
+
 .contact-social {
   text-align: center;
 }
