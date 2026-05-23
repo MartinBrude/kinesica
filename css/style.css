@@ -3141,6 +3141,20 @@ ul.widget-recent-post {}
     padding-top: 60px;
     padding-bottom: 60px;
   }
+
+  /* Técnicas (RPG, osteopatía…): título del banner un poco más chico en móvil */
+  .page-header:has(+ .page-breadcrumb + section.content:not(.pathology-page):not(.articles-index))
+    .page-header-word {
+    font-size: clamp(2.25rem, 10vw, 3.75rem);
+    right: clamp(0.625rem, 2.5vw, 1.25rem);
+    max-width: min(86%, 13ch);
+  }
+
+  .page-header:has(+ .page-breadcrumb + section.content:not(.pathology-page):not(.articles-index))
+    .page-header-word--long {
+    font-size: clamp(1.85rem, 8vw, 3rem);
+    max-width: min(88%, 16ch);
+  }
 }
 
 /*--------------------------------
@@ -3441,14 +3455,16 @@ html {
   scrollbar-gutter: stable;
 }
 
-.page-header-word {
-  right: 2.5rem;
-  font-size: clamp(3.25rem, 7.5rem, 9.5rem);
-  transform: translate3d(0, -50%, 0);
-}
+@media screen and (min-width: 769px) {
+  .page-header-word {
+    right: 2.5rem;
+    font-size: clamp(3.25rem, 7.5rem, 9.5rem);
+    transform: translate3d(0, -50%, 0);
+  }
 
-.page-header-word--long {
-  font-size: clamp(2.25rem, 5.5rem, 5.5rem);
+  .page-header-word--long {
+    font-size: clamp(2.25rem, 5.5rem, 5.5rem);
+  }
 }
 
 #navigation {
