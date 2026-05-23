@@ -10,7 +10,12 @@ const path = require("path");
 const ROOT = __dirname;
 
 /** CSS propios del sitio (no vendor). */
-const CSS_SOURCES = ["css/style.css", "css/whatsapp.css", "css/cv.css"];
+const CSS_SOURCES = [
+  "css/critical.css",
+  "css/style.css",
+  "css/whatsapp.css",
+  "css/cv.css",
+];
 
 /** JS de terceros o ya minificados — no regenerar. */
 const JS_SKIP = new Set([

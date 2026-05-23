@@ -186,24 +186,23 @@ function buildHtml(pathology, lang) {
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
   <meta name="theme-color" content="#005f99" />
-  <script src="${p}js/lang-routes.min.js"></script>
-  <script src="${p}js/lang-preference.min.js"></script>
-  <script src="${p}js/redirect.min.js"></script>
+  <script src="${p}js/lang-routes.min.js" defer></script>
+  <script src="${p}js/lang-preference.min.js" defer></script>
+  <script src="${p}js/redirect.min.js" defer></script>
   <meta name="description" content="${esc(data.metaDescription)}" />
   <title>${esc(data.title)}</title>
-  <link href="${p}css/bootstrap.min.css" rel="stylesheet" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preconnect" href="https://www.googletagmanager.com" />
-  <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i&display=swap" rel="stylesheet"
-    media="print" onload="this.media='all'" />
-  <noscript>
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i&display=swap" rel="stylesheet" />
-  </noscript>
-  <link href="${p}css/font-awesome.min.css" rel="stylesheet" media="print" onload="this.media='all'" />
+  <link rel="preload" href="${p}css/bootstrap.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link href="${p}css/bootstrap.min.css" rel="stylesheet" /></noscript>
+  <link rel="preload" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i&display=swap" rel="stylesheet" /></noscript>
+  <link rel="preload" href="${p}css/font-awesome.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
   <noscript><link href="${p}css/font-awesome.min.css" rel="stylesheet" /></noscript>
-  <link href="${p}css/style.min.css?v=${ASSET_V}" rel="stylesheet" />
-  <link href="${p}css/whatsapp.min.css?v=${ASSET_V}" rel="stylesheet" media="print" onload="this.media='all'" />
+  <link rel="preload" href="${p}css/style.min.css?v=${ASSET_V}" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link href="${p}css/style.min.css?v=${ASSET_V}" rel="stylesheet" /></noscript>
+  <link rel="preload" href="${p}css/whatsapp.min.css?v=${ASSET_V}" as="style" onload="this.onload=null;this.rel='stylesheet'" />
   <noscript><link href="${p}css/whatsapp.min.css?v=${ASSET_V}" rel="stylesheet" /></noscript>
   <link rel="canonical" href="${canonical}" />
 ${hreflang}
