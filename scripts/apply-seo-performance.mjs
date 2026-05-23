@@ -6,6 +6,11 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import {
+  FONT_DISPLAY_SWAP,
+  dedupePreconnects,
+  headStandardStylesheets,
+} from "./page-shell.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CRITICAL_MIN = path.join(ROOT, "css/critical.min.css");
@@ -14,9 +19,6 @@ const ROBOTS_INDEX =
   '  <meta name="robots" content="index, follow, max-image-preview:large" />\n';
 const ROBOTS_NOINDEX =
   '  <meta name="robots" content="noindex, nofollow" />\n';
-
-const FONT_DISPLAY_SWAP =
-  "https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i&display=swap";
 
 const LANG_SCRIPTS =
   /<script src="((?:\.\.\/)?js\/(lang-routes|lang-preference|redirect)(?:\.min)?\.js)"><\/script>/g;
@@ -93,19 +95,6 @@ function removeEmptyNoscript(html) {
   return out;
 }
 
-/** Non-blocking: icons and WhatsApp widget only. */
-function asyncCssLink(href) {
-  return (
-    `<link rel="preload" href="${href}" as="style" onload="this.onload=null;this.rel='stylesheet'" />\n` +
-    `  <noscript><link href="${href}" rel="stylesheet" /></noscript>\n`
-  );
-}
-
-/** Blocking: layout + typography; avoids FOUC while async CSS loads. */
-function syncCssLink(href) {
-  return `  <link href="${href}" rel="stylesheet" />\n`;
-}
-
 function normalizeHeadStylesheets(html, file) {
   if (/\/cv\.html$/.test(file)) {
     return html;
@@ -121,6 +110,9 @@ function normalizeHeadStylesheets(html, file) {
 
   head = head
     .replace(/<!-- Bootstrap -->|<!-- Google Fonts -->|<!-- Font Awesome -->|<!-- Style -->\s*/g, "")
+    .replace(/^\s*<link rel="preconnect" href="https:\/\/fonts\.googleapis\.com"[^>]*\/>\s*\n/gm, "")
+    .replace(/^\s*<link rel="preconnect" href="https:\/\/fonts\.gstatic\.com"[^>]*\/>\s*\n/gm, "")
+    .replace(/^\s*<link rel="preconnect" href="https:\/\/www\.googletagmanager\.com"[^>]*\/>\s*\n/gm, "")
     .replace(/<link[^>]*bootstrap\.min\.css[^>]*>\s*/gi, "")
     .replace(/<link[^>]*style\.min\.css[^>]*>\s*/gi, "")
     .replace(/<link[^>]*font-awesome\.min\.css[^>]*>\s*/gi, "")
@@ -134,14 +126,7 @@ function normalizeHeadStylesheets(html, file) {
           : block,
     );
 
-  const cssBlock =
-    '  <link rel="preconnect" href="https://fonts.googleapis.com" />\n' +
-    '  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />\n' +
-    syncCssLink(`${p}css/bootstrap.min.css`) +
-    syncCssLink(FONT_DISPLAY_SWAP) +
-    asyncCssLink(`${p}css/font-awesome.min.css`) +
-    syncCssLink(`${p}css/style.min.css`) +
-    asyncCssLink(`${p}css/whatsapp.min.css`);
+  const cssBlock = headStandardStylesheets(p, { gtm: true });
 
   const hasBlockingLayout =
     head.includes(`href="${p}css/bootstrap.min.css" rel="stylesheet"`) &&
@@ -226,6 +211,7 @@ for (const file of listHtmlFiles()) {
   html = injectCriticalCss(html);
   html = normalizeHeadStylesheets(html, file);
   html = removeEmptyNoscript(html);
+  html = dedupePreconnects(html);
   html = ensurePreconnectBeforeFonts(html);
   html = deferLangHeadScripts(html);
   html = deferHeadScripts(html);

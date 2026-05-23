@@ -21,12 +21,21 @@ import {
   sitePath,
 } from "./i18n-urls.mjs";
 import { headerShellMarkup } from "./header-shell.mjs";
+import {
+  OG_LOCALE,
+  LOCALE,
+  assetPrefixForLang,
+  bodyFooterAndUiScripts,
+  bodyShellTop,
+  ctaStripPlaceholder,
+  headFavicon,
+  headLangScripts,
+  headStandardStylesheets,
+} from "./page-shell.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-
 const LANGS = ["es", "en", "fr"];
-const LOCALE = { es: "es-AR", en: "en", fr: "fr" };
-const OG_LOCALE = { es: "es_AR", en: "en_US", fr: "fr_FR" };
+
 function esc(s) {
   return String(s)
     .replace(/&/g, "&amp;")
@@ -44,8 +53,7 @@ function pageCaptionMarkup(label) {
 }
 
 function prefix(lang) {
-  if (lang === "es") return "";
-  return "../";
+  return assetPrefixForLang(lang);
 }
 
 function pageHref(lang, stem) {
@@ -54,14 +62,6 @@ function pageHref(lang, stem) {
 
 function techniqueHref(lang, techStem) {
   return sitePath(lang, techStem);
-}
-
-function ctaPlaceholder(lang) {
-  const p = prefix(lang);
-  const l = lang === "es" ? "es" : lang;
-  return `  <div id="site-cta-strip-root" data-cta-lang="${l}"></div>
-  <script src="${p}partials/cta-strip-${l}.min.js"></script>
-  <script src="${p}js/cta-strip-include.min.js"></script>`;
 }
 
 function buildMain(pathology, lang) {
@@ -175,30 +175,15 @@ function buildHtml(pathology, lang) {
 <html lang="${HTML_LANG[lang]}">
 
 <head>
-  <link rel="icon" type="image/svg" href="${p}images/favicon.svg" />
-  <link rel="apple-touch-icon" href="${p}images/apple-touch-icon.png" />
-  <meta charset="utf-8" />
+${headFavicon(p)}  <meta charset="utf-8" />
   <meta http-equiv="content-language" content="${LOCALE[lang]}" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
   <meta name="theme-color" content="#005f99" />
-  <script src="${p}js/lang-routes.min.js" defer></script>
-  <script src="${p}js/lang-preference.min.js" defer></script>
-  <script src="${p}js/redirect.min.js" defer></script>
-  <meta name="description" content="${esc(data.metaDescription)}" />
+${headLangScripts(p)}  <meta name="description" content="${esc(data.metaDescription)}" />
   <title>${esc(data.title)}</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="preconnect" href="https://www.googletagmanager.com" />
-  <link href="${p}css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i&display=swap" rel="stylesheet" />
-  <link rel="preload" href="${p}css/font-awesome.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-  <noscript><link href="${p}css/font-awesome.min.css" rel="stylesheet" /></noscript>
-  <link href="${p}css/style.min.css" rel="stylesheet" />
-  <link rel="preload" href="${p}css/whatsapp.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-  <noscript><link href="${p}css/whatsapp.min.css" rel="stylesheet" /></noscript>
-  <link rel="canonical" href="${canonical}" />
+${headStandardStylesheets(p)}  <link rel="canonical" href="${canonical}" />
 ${hreflang}
   <link rel="alternate" hreflang="x-default" href="${absoluteUrl("es", stem)}" />
   <meta property="og:title" content="${esc(data.title)}" />
@@ -218,13 +203,7 @@ ${JSON.stringify(articleSchema, null, 6).replace(/^/gm, "      ")}
 </head>
 
 <body>
-  <div id="site-skip-link-root"></div>
-  <script src="${p}partials/skip-link.min.js" defer></script>
-  <script src="${p}js/skip-link-include.min.js" defer></script>
-  <div id="site-gtm-body-root"></div>
-  <script src="${p}partials/gtm-body.min.js" defer></script>
-  <script src="${p}js/gtm-body-include.min.js" defer></script>
-${headerShellMarkup(lang, p)}
+${bodyShellTop(p)}${headerShellMarkup(lang, p)}
   <main id="main" tabindex="-1">
     <section class="page-header">
       <div class="container">
@@ -247,19 +226,8 @@ ${pageCaptionMarkup(data.breadcrumb)}
     </section>
 ${buildMain(pathology, lang)}
   </main>
-${ctaPlaceholder(lang)}
-  <div id="site-footer-root" data-footer-lang="${lang}"></div>
-  <script src="${p}js/site-config.min.js" defer></script>
-  <script src="${p}partials/footer-${lang === "es" ? "es" : lang}.min.js"></script>
-  <script src="${p}js/footer-include.min.js"></script>
-  <div id="site-whatsapp-root" data-whatsapp-lang="${lang}"></div>
-  <script src="${p}partials/whatsapp-float-${lang === "es" ? "es" : lang}.min.js"></script>
-  <script src="${p}js/whatsapp-float-include.min.js"></script>
-  <script src="${p}js/whatsapp-logic.min.js"></script>
-  <script src="${p}js/page-header-word.min.js" defer></script>
-  <script src="${p}js/mobile-nav.min.js" defer></script>
-  <script src="${p}js/ui-reveal.min.js" defer></script>
-  <script src="${p}js/sticky-header.min.js" defer></script>
+${ctaStripPlaceholder(lang, p)}
+${bodyFooterAndUiScripts(lang, p)}
 </body>
 
 </html>

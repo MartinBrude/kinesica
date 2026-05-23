@@ -16,6 +16,7 @@ import {
   repoPath,
 } from "./i18n-urls.mjs";
 import { headerShellMarkup } from "./header-shell.mjs";
+import { headPreconnectFonts } from "./page-shell.mjs";
 
 const require = createRequire(import.meta.url);
 const { toMinPath } = require("../assets.config.cjs");
@@ -170,9 +171,7 @@ function buildPage(lang, data) {
   <link rel="canonical" href="${canonical}" />
 ${hreflangs}
   <link rel="alternate" hreflang="x-default" href="${absoluteUrl("es", "cv")}" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i" rel="stylesheet" />
+${headPreconnectFonts()}  <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i" rel="stylesheet" />
   <link href="${prefix}css/bootstrap.min.css" rel="stylesheet" />
   <link href="${prefix}css/font-awesome.min.css" rel="stylesheet" />
   <link href="${asset(prefix, "css/style.css")}" rel="stylesheet" />
