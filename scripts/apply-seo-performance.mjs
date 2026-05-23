@@ -93,11 +93,17 @@ function removeEmptyNoscript(html) {
   return out;
 }
 
+/** Non-blocking: icons and WhatsApp widget only. */
 function asyncCssLink(href) {
   return (
     `<link rel="preload" href="${href}" as="style" onload="this.onload=null;this.rel='stylesheet'" />\n` +
     `  <noscript><link href="${href}" rel="stylesheet" /></noscript>\n`
   );
+}
+
+/** Blocking: layout + typography; avoids FOUC while async CSS loads. */
+function syncCssLink(href) {
+  return `  <link href="${href}" rel="stylesheet" />\n`;
 }
 
 function normalizeHeadStylesheets(html, file) {
@@ -129,16 +135,21 @@ function normalizeHeadStylesheets(html, file) {
     );
 
   const cssBlock =
-    asyncCssLink(`${p}css/bootstrap.min.css`) +
-    asyncCssLink(FONT_DISPLAY_SWAP) +
+    '  <link rel="preconnect" href="https://fonts.googleapis.com" />\n' +
+    '  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />\n' +
+    syncCssLink(`${p}css/bootstrap.min.css`) +
+    syncCssLink(FONT_DISPLAY_SWAP) +
     asyncCssLink(`${p}css/font-awesome.min.css`) +
-    asyncCssLink(`${p}css/style.min.css`) +
+    syncCssLink(`${p}css/style.min.css`) +
     asyncCssLink(`${p}css/whatsapp.min.css`);
 
-  if (
-    head.includes(`rel="preload" href="${p}css/bootstrap.min.css" as="style"`) &&
-    head.includes(`rel="preload" href="${p}css/style.min.css`)
-  ) {
+  const hasBlockingLayout =
+    head.includes(`href="${p}css/bootstrap.min.css" rel="stylesheet"`) &&
+    head.includes(`href="${p}css/style.min.css" rel="stylesheet"`) &&
+    head.includes(`href="${FONT_DISPLAY_SWAP}" rel="stylesheet"`) &&
+    !head.includes(`rel="preload" href="${p}css/bootstrap.min.css" as="style"`);
+
+  if (hasBlockingLayout) {
     return html;
   }
 

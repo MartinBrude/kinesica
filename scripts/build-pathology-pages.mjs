@@ -191,14 +191,11 @@ function buildHtml(pathology, lang) {
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preconnect" href="https://www.googletagmanager.com" />
-  <link rel="preload" href="${p}css/bootstrap.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-  <noscript><link href="${p}css/bootstrap.min.css" rel="stylesheet" /></noscript>
-  <link rel="preload" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-  <noscript><link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i&display=swap" rel="stylesheet" /></noscript>
+  <link href="${p}css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i&display=swap" rel="stylesheet" />
   <link rel="preload" href="${p}css/font-awesome.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
   <noscript><link href="${p}css/font-awesome.min.css" rel="stylesheet" /></noscript>
-  <link rel="preload" href="${p}css/style.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-  <noscript><link href="${p}css/style.min.css" rel="stylesheet" /></noscript>
+  <link href="${p}css/style.min.css" rel="stylesheet" />
   <link rel="preload" href="${p}css/whatsapp.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
   <noscript><link href="${p}css/whatsapp.min.css" rel="stylesheet" /></noscript>
   <link rel="canonical" href="${canonical}" />
