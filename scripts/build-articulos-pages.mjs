@@ -91,9 +91,9 @@ function patchArticulosFile(rel, lang) {
   html = patched;
 
   html = html.replace(
-    /<div class="page-caption">\s*<h1 class="page-title">[^<]*<\/h1>\s*<\/div>/,
+    /<div class="page-caption">\s*(?:<span class="page-header-word"[^>]*>[^<]*<\/span>|<h1 class="page-title">[^<]*<\/h1>)\s*<\/div>/,
     `<div class="page-caption">
-              <span class="page-header-word" aria-hidden="true">${esc(ui.pageTitle)}</span>
+              <h1 class="page-title">${esc(ui.pageTitle)}</h1>
             </div>`,
   );
 

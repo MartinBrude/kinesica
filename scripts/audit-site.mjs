@@ -171,6 +171,14 @@ for (const file of htmlFiles) {
       "Duplicate Open Graph: remove og:locale:alternate (use hreflang only)",
     );
 
+  if (/articulos\.html$/.test(file) && !/<h1\b/i.test(html))
+    add("error", file, "articulos index: missing <h1>");
+
+  if (/articulos\.html$/.test(file)) {
+    const h1n = (html.match(/<h1\b/gi) || []).length;
+    if (h1n !== 1) add("error", file, `articulos index: expected 1 <h1>, got ${h1n}`);
+  }
+
   if (file !== "404-router.html" && !file.includes("404") && !canonical)
     add("warning", file, "Missing canonical URL");
 

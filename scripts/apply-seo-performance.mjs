@@ -165,11 +165,11 @@ function injectCriticalCss(html) {
   if (!fs.existsSync(CRITICAL_MIN)) {
     return html;
   }
-  if (html.includes('id="kinesica-critical"')) {
-    return html;
-  }
   const css = fs.readFileSync(CRITICAL_MIN, "utf8").trim();
   const tag = `  <style id="kinesica-critical">\n${css}\n  </style>\n`;
+  if (html.includes('id="kinesica-critical"')) {
+    return html.replace(/<style id="kinesica-critical">[\s\S]*?<\/style>\s*\n/, tag);
+  }
   if (/<meta charset="utf-8" \/>/.test(html)) {
     return html.replace(/<meta charset="utf-8" \/>\s*\n/, `<meta charset="utf-8" />\n${tag}`);
   }
