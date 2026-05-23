@@ -69,6 +69,7 @@ check(".htaccess", (html) => {
   if (!/index_en\\\.html/.test(html)) errors.push(".htaccess: missing legacy EN redirect");
   if (!html.includes("/en/")) errors.push(".htaccess: missing /en/ redirect target");
   if (!html.includes("ExpiresActive On")) errors.push(".htaccess: missing image Expires headers");
+  if (!html.includes("must-revalidate")) errors.push(".htaccess: missing CSS/JS must-revalidate");
 });
 
 check("404-router.html", (html) => {

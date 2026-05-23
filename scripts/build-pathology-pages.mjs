@@ -23,9 +23,6 @@ import {
 import { headerShellMarkup } from "./header-shell.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const ASSET_V = JSON.parse(
-  fs.readFileSync(path.join(ROOT, "css/.asset-version.json"), "utf8"),
-).style;
 
 const LANGS = ["es", "en", "fr"];
 const LOCALE = { es: "es-AR", en: "en", fr: "fr" };
@@ -200,10 +197,10 @@ function buildHtml(pathology, lang) {
   <noscript><link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i&display=swap" rel="stylesheet" /></noscript>
   <link rel="preload" href="${p}css/font-awesome.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
   <noscript><link href="${p}css/font-awesome.min.css" rel="stylesheet" /></noscript>
-  <link rel="preload" href="${p}css/style.min.css?v=${ASSET_V}" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-  <noscript><link href="${p}css/style.min.css?v=${ASSET_V}" rel="stylesheet" /></noscript>
-  <link rel="preload" href="${p}css/whatsapp.min.css?v=${ASSET_V}" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-  <noscript><link href="${p}css/whatsapp.min.css?v=${ASSET_V}" rel="stylesheet" /></noscript>
+  <link rel="preload" href="${p}css/style.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link href="${p}css/style.min.css" rel="stylesheet" /></noscript>
+  <link rel="preload" href="${p}css/whatsapp.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link href="${p}css/whatsapp.min.css" rel="stylesheet" /></noscript>
   <link rel="canonical" href="${canonical}" />
 ${hreflang}
   <link rel="alternate" hreflang="x-default" href="${absoluteUrl("es", stem)}" />
@@ -230,7 +227,7 @@ ${JSON.stringify(articleSchema, null, 6).replace(/^/gm, "      ")}
   <div id="site-gtm-body-root"></div>
   <script src="${p}partials/gtm-body.min.js" defer></script>
   <script src="${p}js/gtm-body-include.min.js" defer></script>
-${headerShellMarkup(lang, p, ASSET_V)}
+${headerShellMarkup(lang, p)}
   <main id="main" tabindex="-1">
     <section class="page-header">
       <div class="container">

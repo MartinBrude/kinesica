@@ -23,17 +23,6 @@ const { toMinPath } = require("../assets.config.cjs");
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CV_EMAIL = "norberto1712@gmail.com";
 
-function shellCacheVersion() {
-  try {
-    const v = JSON.parse(
-      fs.readFileSync(path.join(ROOT, "css", ".asset-version.json"), "utf8"),
-    );
-    return v.shell || v.style || "";
-  } catch {
-    return "";
-  }
-}
-
 /** Ruta de producción (.min) con prefijo en/ o fr/. */
 function asset(prefix, rel) {
   return `${prefix}${toMinPath(rel)}`;
@@ -209,7 +198,7 @@ ${hreflangs}
   <div id="site-skip-link-root"></div>
   <script src="${asset(prefix, "partials/skip-link.js")}"></script>
   <script src="${asset(prefix, "js/skip-link-include.js")}"></script>
-${headerShellMarkup(lang, prefix, shellCacheVersion())}
+${headerShellMarkup(lang, prefix)}
   <main id="main" class="cv-page" tabindex="-1">
     <section class="cv-hero">
       <div class="container">

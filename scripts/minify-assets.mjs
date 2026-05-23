@@ -3,6 +3,8 @@
  * Minifica CSS/JS propios del sitio → archivos .min (producción).
  * Los fuentes (.css / .js sin .min) siguen siendo los que editás.
  *
+ * Cache bust: no escribe ?v= en HTML; el servidor revalida CSS/JS (.htaccess).
+ *
  *   npm run assets:build
  */
 import fs from "fs";
@@ -14,8 +16,6 @@ import {
   getSourceManifest,
   toMinPath,
 } from "../assets.config.cjs";
-
-const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 
 function formatKb(bytes) {
   return `${(bytes / 1024).toFixed(1)} KB`;
@@ -80,7 +80,14 @@ function syncHtmlAssetRefs(html, sources) {
   return out;
 }
 
-/** Versión para romper caché del navegador (mtime del CSS principal). */
+/** Quita ?v=… de CSS/JS en HTML (idempotente). */
+function stripCacheQueryFromHtml(html) {
+  return html.replace(
+    /((?:href|src)=["'][^"']+\.(?:min\.)?(?:css|js))\?v=\d+(["'])/g,
+    "$1$2",
+  );
+}
+
 function cssCacheVersion() {
   const stylePath = path.join(ROOT, "css/style.css");
   const stat = fs.statSync(stylePath);
@@ -108,45 +115,6 @@ function shellCacheVersion() {
   return String(Math.floor(max / 1000) || cssCacheVersion());
 }
 
-/** Añade ?v=… a partials/header|nav y js/*-include.min.js (idempotente). */
-function syncHtmlShellJsCacheBust(html, version) {
-  const files = [
-    "partials/nav-es.min.js",
-    "partials/nav-en.min.js",
-    "partials/nav-fr.min.js",
-    "partials/header-es.min.js",
-    "partials/header-en.min.js",
-    "partials/header-fr.min.js",
-    "js/nav-include.min.js",
-    "js/header-include.min.js",
-  ];
-  let out = html;
-  for (const file of files) {
-    const esc = file.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const re = new RegExp(
-      `(src=(["'])(?:\\.\\./)?${esc})(?:\\?v=[^"']*)?\\2`,
-      "g",
-    );
-    out = out.replace(re, `$1?v=${version}$2`);
-  }
-  return out;
-}
-
-/** Añade ?v=… a css/*.min.css en el HTML (idempotente). */
-function syncHtmlCssCacheBust(html, version) {
-  const cssMin = ["style.min.css", "whatsapp.min.css", "cv.min.css"];
-  let out = html;
-  for (const file of cssMin) {
-    const esc = file.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const re = new RegExp(
-      `(href=(["'])(?:\\.\\./)?css/${esc})(?:\\?v=[^"']*)?\\2`,
-      "g",
-    );
-    out = out.replace(re, `$1?v=${version}$2`);
-  }
-  return out;
-}
-
 async function main() {
   const { css, js } = getSourceManifest();
   const sources = [...css, ...js];
@@ -160,8 +128,15 @@ async function main() {
   const shellVersion = shellCacheVersion();
   fs.writeFileSync(
     path.join(ROOT, "css", ".asset-version.json"),
-    JSON.stringify({ style: cssVersion, shell: shellVersion }, null, 2) +
-      "\n",
+    JSON.stringify(
+      {
+        style: cssVersion,
+        shell: shellVersion,
+        note: "Solo referencia de build; el HTML no usa ?v=. Cache: .htaccess must-revalidate.",
+      },
+      null,
+      2,
+    ) + "\n",
   );
 
   let htmlChanged = 0;
@@ -169,8 +144,7 @@ async function main() {
     const full = path.join(ROOT, file);
     const original = fs.readFileSync(full, "utf8");
     let next = syncHtmlAssetRefs(original, sources);
-    next = syncHtmlCssCacheBust(next, cssVersion);
-    next = syncHtmlShellJsCacheBust(next, shellVersion);
+    next = stripCacheQueryFromHtml(next);
     if (next !== original) {
       fs.writeFileSync(full, next);
       htmlChanged++;
@@ -185,14 +159,13 @@ async function main() {
   }
   console.log(`\n${rows.length} file(s) minified.`);
   if (htmlChanged) {
-    console.log(
-      `${htmlChanged} HTML file(s) updated (CSS ?v=${cssVersion}, shell ?v=${shellVersion}).`,
-    );
+    console.log(`${htmlChanged} HTML file(s) synced (refs .min, sin ?v=).`);
   } else {
-    console.log(
-      `HTML refs OK (CSS ?v=${cssVersion}, shell ?v=${shellVersion}).`,
-    );
+    console.log("HTML refs OK (sin ?v=).");
   }
+  console.log(
+    `Build metadata: css/.asset-version.json (style=${cssVersion}, shell=${shellVersion}).`,
+  );
 }
 
 main().catch((err) => {

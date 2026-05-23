@@ -20,16 +20,6 @@ function listHtmlFiles() {
   return files;
 }
 
-let shellV = "";
-try {
-  shellV = JSON.parse(
-    fs.readFileSync(path.join(ROOT, "css", ".asset-version.json"), "utf8"),
-  ).shell;
-} catch {
-  shellV = "";
-}
-const q = shellV ? `?v=${shellV}` : "";
-
 let changed = 0;
 for (const file of listHtmlFiles()) {
   const full = path.join(ROOT, file);
@@ -48,8 +38,8 @@ for (const file of listHtmlFiles()) {
   if (headerPart.includes(`partials/nav-${lang}.min.js`)) {
     continue;
   }
-  const block = `  <script src="${prefix}partials/nav-${lang}.min.js${q}"></script>
-  <script src="${prefix}js/nav-include.min.js${q}"></script>`;
+  const block = `  <script src="${prefix}partials/nav-${lang}.min.js"></script>
+  <script src="${prefix}js/nav-include.min.js"></script>`;
   const next = html.replace(
     /(<script src="(?:\.\.\/)?js\/header-include\.min\.js(?:\?v=\d+)?"><\/script>)/,
     `$1\n${block}`,

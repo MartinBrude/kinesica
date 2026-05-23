@@ -100,21 +100,11 @@ function asyncCssLink(href) {
   );
 }
 
-function extractQuery(html, file) {
-  const m = html.match(
-    new RegExp(`href="(?:\\.\\./)?css/${file}(\\?v=\\d+)?"`),
-  );
-  return m?.[1] || "";
-}
-
-/** Rebuilds vendor CSS in <head> to a single non-blocking pattern (idempotent). */
 function normalizeHeadStylesheets(html, file) {
   if (/\/cv\.html$/.test(file)) {
     return html;
   }
   const p = file.includes("/") ? "../" : "";
-  const styleQ = extractQuery(html, "style.min.css");
-  const whatsappQ = extractQuery(html, "whatsapp.min.css") || styleQ;
   const headEnd = html.indexOf("</head>");
   if (headEnd === -1) {
     return html;
@@ -142,8 +132,8 @@ function normalizeHeadStylesheets(html, file) {
     asyncCssLink(`${p}css/bootstrap.min.css`) +
     asyncCssLink(FONT_DISPLAY_SWAP) +
     asyncCssLink(`${p}css/font-awesome.min.css`) +
-    asyncCssLink(`${p}css/style.min.css${styleQ}`) +
-    asyncCssLink(`${p}css/whatsapp.min.css${whatsappQ}`);
+    asyncCssLink(`${p}css/style.min.css`) +
+    asyncCssLink(`${p}css/whatsapp.min.css`);
 
   if (
     head.includes(`rel="preload" href="${p}css/bootstrap.min.css" as="style"`) &&
