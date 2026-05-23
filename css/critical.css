@@ -10,7 +10,7 @@
 
 html {
   min-height: 100%;
-  background-color: #111827;
+  background-color: var(--secondary-color);
 }
 
 body {
@@ -62,11 +62,16 @@ body {
   padding: 11px 0;
 }
 
-.header {
-  background: var(--bg-white);
+#site-header-root {
   position: sticky;
   top: 0;
   z-index: 9999;
+  background-color: var(--secondary-color);
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.header {
+  background: var(--bg-white);
   padding: 15px 0;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }

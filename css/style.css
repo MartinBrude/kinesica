@@ -12,8 +12,8 @@
   --bg-light: #f3f4f6;
   /* Gray 100 */
   --bg-white: #ffffff;
-  /* Overscroll / bounce past document edges (Safari, iOS, macOS) */
-  --surface-canvas-top: #031c42;
+  /* Overscroll / bounce: mismo tono que .header-top (barra de banderas) */
+  --surface-canvas-top: var(--secondary-color);
   --surface-canvas-bottom: #111827;
   --font-main: "Roboto", sans-serif;
   --radius-sm: 4px;
@@ -24,13 +24,13 @@
 
 html {
   min-height: 100%;
-  /* Fallback si el gradiente no aplica (p. ej. overscroll inferior) */
-  background-color: var(--surface-canvas-bottom);
+  /* Overscroll superior: mismo tono que .header-top */
+  background-color: var(--secondary-color);
   background-image: linear-gradient(
     180deg,
     var(--surface-canvas-top) 0%,
-    var(--surface-canvas-top) 3.25rem,
-    var(--bg-white) 9rem,
+    var(--surface-canvas-top) 8rem,
+    var(--bg-white) 12rem,
     var(--bg-white) 70%,
     var(--surface-canvas-bottom) 88%,
     var(--surface-canvas-bottom) 100%
@@ -1110,14 +1110,17 @@ label {}
     5.1 Header Regular #1d64d0
    ----------------------*/
 
-
+#site-header-root {
+  position: sticky;
+  top: 0;
+  z-index: 10000;
+  background-color: var(--secondary-color);
+  padding-top: env(safe-area-inset-top, 0px);
+}
 
 .header {
   background-color: var(--bg-white);
   z-index: 9999;
-  position: sticky;
-  /* Make header sticky */
-  top: 0;
   padding-top: 15px;
   padding-bottom: 15px;
   box-shadow: var(--shadow-sm);
@@ -1372,9 +1375,7 @@ main:focus {
 }
 
 .header {
-  position: sticky;
-  top: 0;
-  z-index: 1030;
+  z-index: 9999;
   background-color: var(--bg-white);
 }
 
