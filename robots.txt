@@ -12,3 +12,6 @@ Disallow: /en/404.html
 Disallow: /fr/404.html
 
 Sitemap: https://www.kinesica.com.ar/sitemap.xml
+
+# LLM-friendly site map (https://llmstxt.org/)
+# https://www.kinesica.com.ar/llms.txt

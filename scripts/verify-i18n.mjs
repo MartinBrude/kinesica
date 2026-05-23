@@ -57,6 +57,13 @@ for (const stem of STEMS) {
   }
 }
 
+check("llms.txt", (text) => {
+  if (!text.startsWith("# Kinésica")) errors.push("llms.txt: missing H1 title");
+  if (!text.includes("## Optional")) errors.push("llms.txt: missing Optional section");
+  if (!text.includes("https://www.kinesica.com.ar/"))
+    errors.push("llms.txt: should link to canonical site URLs");
+});
+
 check(".htaccess", (html) => {
   if (!html.includes("404-router.html")) errors.push(".htaccess: should use 404-router.html");
   if (!/index_en\\\.html/.test(html)) errors.push(".htaccess: missing legacy EN redirect");

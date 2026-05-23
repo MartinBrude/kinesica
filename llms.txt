@@ -1,0 +1,126 @@
+# Kinésica
+
+> Centro de kinesiología, osteopatía y terapias manuales en Palermo, Buenos Aires (Argentina). Sitio informativo en español (principal), inglés y francés.
+
+Información útil para asistentes y crawlers:
+
+- **Idioma por defecto:** español (Argentina), URLs en la raíz (`/`).
+- **Inglés:** `/en/` · **Francés:** `/fr/`
+- **Turnos:** WhatsApp [+54 11 6156-4311](https://wa.me/5491161564311)
+- **Horario:** lunes a viernes, 10:00–20:00
+- **Ubicación:** Palermo, CABA (ver mapa en la home)
+- **Profesional:** Norberto Silvio Brude — kinesiólogo y osteópata
+
+## Páginas principales
+
+- [Inicio (español, Argentina)](https://www.kinesica.com.ar/): Kinésica es un centro de kinesiología, osteopatía y terapias manuales en Palermo que ofrece tratamientos personalizados.
+- [Artículos y patologías](https://www.kinesica.com.ar/articulos.html): Artículos sobre kinesiología, osteopatía y terapia manual. Información sobre cervicalgia, lumbalgia y tratamientos en Palermo.
+- [CV — Norberto Silvio Brude](https://www.kinesica.com.ar/cv.html): Kinesiólogo y osteópata; formación y experiencia profesional.
+
+## Métodos y técnicas
+
+- [RPG](https://www.kinesica.com.ar/rpg.html): Reeducación Postural Global (RPG): método de tratamiento que trabaja sobre la flexibilización de músculos estáticos. Sesiones individuales en Palermo, Buenos Aires.
+- [Osteopatía](https://www.kinesica.com.ar/osteopatia.html): Osteopatía estructural y visceral: evaluación y tratamiento de disfunciones somáticas. Técnicas manuales en Palermo, Buenos Aires.
+- [Cadenas musculares](https://www.kinesica.com.ar/cadenas.html): Cadenas Fisiológicas: método que define la relación entre estructura corporal y contenido visceral. Terapia manual en Palermo.
+- [Manipulaciones](https://www.kinesica.com.ar/manipulaciones.html): Manipulaciones viscerales: tratamiento de tensiones viscerales que afectan el aparato locomotor. Terapia manual en Palermo.
+- [Neurodinamia](https://www.kinesica.com.ar/neurodinamia.html): Neurodinamia: estudio y tratamiento de trastornos del sistema nervioso. Alivio del dolor y mejora de la función neurológica en Palermo.
+- [ATM](https://www.kinesica.com.ar/atm.html): ATM (Articulación Temporomandibular): tratamiento de disfunciones de la mandíbula, dolor, chasquidos y bruxismo con terapia manual en Palermo.
+- [acupuntura](https://www.kinesica.com.ar/acupuntura.html): Acupuntura en Palermo: técnica de medicina tradicional china integrada al abordaje terapéutico para dolor, estrés y equilibrio energético.
+- [posturologia-clinica](https://www.kinesica.com.ar/posturologia-clinica.html): Posturología Clínica: evaluación y tratamiento de la postura, equilibrio y apoyo en Palermo. Análisis global del cuerpo en Kinésica.
+
+## Patologías y dolencias
+
+- [Cefalea: dolor de cabeza y tensión](https://www.kinesica.com.ar/cefalea.html): Tratamiento de cefalea en Kinésica (Buenos Aires). Evaluamos cuello, postura y ATM para aliviar dolor, reducir recurrencias y recuperar tu rutina.
+- [Dorsalgia: dolor en la espalda alta](https://www.kinesica.com.ar/dorsalgia.html): Tratamiento de dorsalgia en Kinésica (Buenos Aires). Abordaje postural y manual para aliviar dolor dorsal, mejorar movilidad torácica y respirar mejor.
+- [Lumbalgia: dolor lumbar](https://www.kinesica.com.ar/lumbalgia.html): Tratamiento de lumbalgia en Kinésica (Buenos Aires). Evaluación y terapia manual + ejercicio para aliviar dolor lumbar y volver a moverte con confianza.
+- [Ciatalgia: dolor que baja por la pierna](https://www.kinesica.com.ar/ciatalgia.html): Ciatalgia en Kinésica (Buenos Aires). Evaluamos nervio ciático, columna y cadera. Neurodinamia, terapia manual y ejercicio para volver a moverte.
+- [Cervicobraquialgia: dolor de cuello a brazo](https://www.kinesica.com.ar/cervicobraquialgia.html): Cervicobraquialgia en Kinésica (Buenos Aires). Evaluación cervical y neural. Neurodinamia y terapia manual para bajar dolor y recuperar movilidad del brazo.
+- [Pubalgia: dolor en la ingle y pubis](https://www.kinesica.com.ar/pubalgia.html): Pubalgia en Kinésica (Buenos Aires). Evaluación de pelvis, cadera y cadena anterior. Terapia manual y ejercicio para volver a entrenar sin dolor.
+- [Gonalgia: dolor de rodilla](https://www.kinesica.com.ar/gonalgia.html): Dolor de rodilla (gonalgia) en Kinésica Buenos Aires. Evaluamos rodilla, cadera y pie. Terapia manual y ejercicio para bajar dolor y mejorar la función.
+- [Talalgia: dolor de talón](https://www.kinesica.com.ar/talalgia.html): Dolor de talón (talalgia) en Kinésica Buenos Aires. Evaluación de pie, tobillo y cadena posterior. Terapia manual y ejercicio para caminar sin dolor.
+- [Dolor sacroilíaco: pelvis y zona baja](https://www.kinesica.com.ar/dolor-sacriiliaco.html): Dolor sacroilíaco en Kinésica (Buenos Aires). Evaluación de pelvis, lumbar y cadera. Terapia manual, osteopatía y ejercicio para estabilizar y aliviar.
+- [Hernia de disco: dolor y recuperación](https://www.kinesica.com.ar/hernia-disco.html): Hernia de disco en Kinésica (Buenos Aires). Evaluación, terapia manual y ejercicio. Neurodinamia y reeducación postural para recuperar movilidad y función.
+- [Protrusión discal: manejo del dolor y movilidad](https://www.kinesica.com.ar/protrusion-discal.html): Protrusión discal en Kinésica (Buenos Aires). Abordaje con terapia manual y ejercicio para bajar dolor, mejorar movilidad y volver a tus actividades.
+- [Hipercifosis: aumento de curvatura dorsal](https://www.kinesica.com.ar/hipercifosis.html): Hipercifosis en Kinésica (Buenos Aires). Reeducación postural (RPG), cadenas musculares y terapia manual para mejorar movilidad torácica y postura.
+- [Hiperlordosis: curva lumbar aumentada](https://www.kinesica.com.ar/hiperlordosis.html): Hiperlordosis en Kinésica (Buenos Aires). Reeducación postural (RPG), cadenas musculares y terapia manual para reducir sobrecarga lumbar y mejorar control.
+- [Dorso plano: rigidez y postura](https://www.kinesica.com.ar/dorso-plano.html): Dorso plano en Kinésica (Buenos Aires). Trabajo de movilidad torácica, cadenas musculares y RPG para mejorar postura, respiración y tolerancia al esfuerzo.
+- [Genu valgo: alineación de rodillas hacia adentro](https://www.kinesica.com.ar/genu-valgo.html): Genu valgo en Kinésica (Buenos Aires). Evaluación de control de cadera, rodilla y pie. Ejercicio y terapia manual para mejorar mecánica y tolerancia.
+- [Genu varo: alineación de rodillas hacia afuera](https://www.kinesica.com.ar/genu-varo.html): Genu varo en Kinésica (Buenos Aires). Evaluación de rodilla, cadera y pie. Terapia manual y ejercicio para mejorar distribución de carga y dolor.
+- [Pies planos: apoyo y sobrecarga](https://www.kinesica.com.ar/pies-planos.html): Pies planos en Kinésica (Buenos Aires). Evaluación de apoyo, tobillo y cadena posterior. Terapia manual y ejercicio para mejorar tolerancia y función.
+- [Escoliosis: postura, dolor y movimiento](https://www.kinesica.com.ar/escoliosis.html): Escoliosis en Kinésica (Buenos Aires). Evaluamos postura, movilidad y dolor. RPG, cadenas musculares y terapia manual para mejorar función y bienestar.
+- [Epicondilitis lateral: codo de tenista](https://www.kinesica.com.ar/epicondilitis-lateral.html): Epicondilitis lateral en Kinésica (Buenos Aires). Terapia manual y ejercicio para dolor en codo, mejorar fuerza de antebrazo y volver a usar la mano sin molestias.
+- [Epicondilitis medial: codo de golfista](https://www.kinesica.com.ar/epicondilitis-medial.html): Epicondilitis medial en Kinésica (Buenos Aires). Dolor en la cara interna del codo. Terapia manual y ejercicio para recuperar fuerza y uso del brazo.
+- [Impingement subacromial: dolor al elevar el brazo](https://www.kinesica.com.ar/impingement-subacromial.html): Impingement subacromial en Kinésica (Buenos Aires). Evaluamos hombro, escápula y postura. Terapia manual y ejercicio para recuperar movilidad sin dolor.
+- [Manguito rotador: dolor y fuerza de hombro](https://www.kinesica.com.ar/manguito-rotador.html): Manguito rotador en Kinésica (Buenos Aires). Evaluación, terapia manual y ejercicio para dolor de hombro, fuerza y control escapular en actividades diarias y deporte.
+- [Radiculopatía: dolor irradiado y hormigueo](https://www.kinesica.com.ar/radiculopatia.html): Radiculopatía en Kinésica (Buenos Aires). Evaluación neurológica y funcional. Neurodinamia, terapia manual y ejercicio para mejorar dolor irradiado y función.
+- [Meniscopatía: dolor y bloqueo de rodilla](https://www.kinesica.com.ar/meniscopatia.html): Meniscopatía en Kinésica (Buenos Aires). Evaluación de rodilla y patrón de carga. Terapia manual y ejercicio para mejorar dolor, movilidad y estabilidad.
+- [Fascitis plantar: dolor en el arco del pie](https://www.kinesica.com.ar/fascitis-plantar.html): Fascitis plantar en Kinésica (Buenos Aires). Dolor en arco o talón, especialmente al levantarse. Terapia manual y ejercicio para mejorar apoyo y carga.
+- [Cervicalgia: dolor de cuello](https://www.kinesica.com.ar/cervicalgia.html): Cervicalgia en Kinésica (Buenos Aires). Evaluación de cuello, postura y ATM. Terapia manual, RPG y pautas para aliviar dolor y prevenir recaídas.
+
+## English
+
+- [Home (English)](https://www.kinesica.com.ar/en/): Kinésica is a center for kinesiology, osteopathy, and manual therapy in Palermo offering personalized treatments.
+- [Articles & conditions](https://www.kinesica.com.ar/en/articulos.html): Articles about kinesiology, osteopathy, and manual therapy. Information about cervical pain, low back pain, and treatments in Palermo.
+- [CV — Norberto Silvio Brude](https://www.kinesica.com.ar/en/cv.html): Physiotherapist and osteopath profile.
+
+## Français
+
+- [Accueil (français)](https://www.kinesica.com.ar/fr/): Kinésica est un centre de kinésithérapie, ostéopathie et thérapie manuelle à Palermo, avec des traitements personnalisés.
+- [Articles et pathologies](https://www.kinesica.com.ar/fr/articulos.html): Articles sur la kinésithérapie, l'ostéopathie et la thérapie manuelle : douleur cervicale, lombalgie et traitements à Palermo.
+- [CV — Norberto Silvio Brude](https://www.kinesica.com.ar/fr/cv.html): Profil du kinésithérapeute et ostéopathe.
+
+## Optional
+
+- [Sitemap](https://www.kinesica.com.ar/sitemap.xml): all public HTML URLs (es/en/fr).
+- [Headache: pain and tension relief](https://www.kinesica.com.ar/en/cefalea.html): Headache treatment at Kinésica (Buenos Aires). We assess neck, posture and TMJ to reduce pain, prevent recurrence and restore daily life.
+- [Upper back pain (dorsalgia)](https://www.kinesica.com.ar/en/dorsalgia.html): Upper back pain treatment at Kinésica (Buenos Aires). Hands-on care and posture work to ease pain, restore thoracic mobility and improve breathing.
+- [Low back pain (lumbalgia)](https://www.kinesica.com.ar/en/lumbalgia.html): Low back pain care at Kinésica (Buenos Aires). Assessment plus manual therapy and exercise to relieve pain and rebuild confident movement.
+- [Sciatica-like pain (ciatalgia)](https://www.kinesica.com.ar/en/ciatalgia.html): Sciatica-like symptoms at Kinésica (Buenos Aires). We assess the sciatic nerve, spine and hip. Neurodynamics plus manual therapy and exercise.
+- [Neck-to-arm pain (cervicobrachialgia)](https://www.kinesica.com.ar/en/cervicobraquialgia.html): Neck-to-arm pain care at Kinésica (Buenos Aires). Cervical and neural assessment, neurodynamics and manual therapy to restore comfort and function.
+- [Groin pain (pubalgia)](https://www.kinesica.com.ar/en/pubalgia.html): Groin pain care at Kinésica (Buenos Aires). Pelvis and hip assessment, manual therapy and exercise to return to sport with confidence.
+- [Knee pain (gonalgia)](https://www.kinesica.com.ar/en/gonalgia.html): Knee pain care at Kinésica (Buenos Aires). We assess knee, hip and foot. Manual therapy and exercise to reduce pain and improve function.
+- [Heel pain (talalgia)](https://www.kinesica.com.ar/en/talalgia.html): Heel pain care at Kinésica (Buenos Aires). Foot and ankle assessment plus manual therapy and exercise to walk and train comfortably again.
+- [Sacroiliac pain: pelvis and low back](https://www.kinesica.com.ar/en/dolor-sacriiliaco.html): Sacroiliac-region pain at Kinésica (Buenos Aires). Pelvis, hip and lumbar assessment with manual therapy and exercise to reduce pain and improve stability.
+- [Disc herniation: recovery and function](https://www.kinesica.com.ar/en/hernia-disco.html): Disc herniation care at Kinésica (Buenos Aires). Assessment, education, manual therapy and exercise. Neurodynamics and postural work to restore function.
+- [Disc protrusion: pain management and mobility](https://www.kinesica.com.ar/en/protrusion-discal.html): Disc protrusion care at Kinésica (Buenos Aires). Manual therapy plus exercise to reduce pain, improve mobility and return to daily activities.
+- [Hyperkyphosis: increased thoracic curve](https://www.kinesica.com.ar/en/hipercifosis.html): Hyperkyphosis care at Kinésica (Buenos Aires). RPG, muscle-chain work and manual therapy to improve thoracic mobility, posture and comfort.
+- [Hyperlordosis: increased lumbar curve](https://www.kinesica.com.ar/en/hiperlordosis.html): Hyperlordosis care at Kinésica (Buenos Aires). RPG, muscle-chain work and manual therapy to reduce lumbar overload and improve control.
+- [Flat back (dorso plano): stiffness and posture](https://www.kinesica.com.ar/en/dorso-plano.html): Flat back care at Kinésica (Buenos Aires). Thoracic mobility, muscle-chain work and RPG to improve posture, breathing and load tolerance.
+- [Knee valgus: inward knee tendency](https://www.kinesica.com.ar/en/genu-valgo.html): Knee valgus support at Kinésica (Buenos Aires). Hip, knee and foot control assessment with exercise and manual therapy to improve mechanics.
+- [Knee varus: outward knee alignment](https://www.kinesica.com.ar/en/genu-varo.html): Knee varus support at Kinésica (Buenos Aires). Assessment of knee, hip and foot with manual therapy and exercise to improve load distribution.
+- [Flat feet: support and overload](https://www.kinesica.com.ar/en/pies-planos.html): Flat feet support at Kinésica (Buenos Aires). Foot and ankle assessment with manual therapy and exercise to improve load tolerance and function.
+- [Scoliosis: posture, pain and movement](https://www.kinesica.com.ar/en/escoliosis.html): Scoliosis care at Kinésica (Buenos Aires). We assess posture, mobility and pain. RPG, muscle-chain work and manual therapy to improve function.
+- [Lateral epicondylitis (tennis elbow)](https://www.kinesica.com.ar/en/epicondilitis-lateral.html): Tennis elbow care at Kinésica (Buenos Aires). Manual therapy and exercise to reduce elbow pain, rebuild forearm strength and restore daily function.
+- [Medial epicondylitis (golfer’s elbow)](https://www.kinesica.com.ar/en/epicondilitis-medial.html): Golfer’s elbow care at Kinésica (Buenos Aires). Inner elbow pain treated with manual therapy and progressive exercise to restore strength and function.
+- [Subacromial impingement: pain with lifting the arm](https://www.kinesica.com.ar/en/impingement-subacromial.html): Subacromial shoulder pain at Kinésica (Buenos Aires). We assess shoulder and scapula mechanics. Manual therapy and exercise to restore pain-free motion.
+- [Rotator cuff: shoulder pain and strength](https://www.kinesica.com.ar/en/manguito-rotador.html): Rotator cuff care at Kinésica (Buenos Aires). Assessment, manual therapy and exercise to restore shoulder strength, control and comfortable overhead activity.
+- [Radiculopathy: radiating pain and tingling](https://www.kinesica.com.ar/en/radiculopatia.html): Radiculopathy care at Kinésica (Buenos Aires). Neurological and functional assessment. Neurodynamics, manual therapy and exercise to restore function.
+- [Meniscus-related pain (meniscopathy)](https://www.kinesica.com.ar/en/meniscopatia.html): Meniscus-related knee pain care at Kinésica (Buenos Aires). Assessment, manual therapy and exercise to restore mobility, stability and load tolerance.
+- [Plantar fasciitis: arch and heel pain](https://www.kinesica.com.ar/en/fascitis-plantar.html): Plantar fasciitis care at Kinésica (Buenos Aires). Morning heel/arch pain treated with manual therapy and progressive loading to restore foot function.
+- [Neck pain (cervicalgia)](https://www.kinesica.com.ar/en/cervicalgia.html): Neck pain care at Kinésica (Buenos Aires). Neck, posture and TMJ assessment with manual therapy and RPG to relieve pain and reduce recurrences.
+- [Céphalée : soulager la douleur](https://www.kinesica.com.ar/fr/cefalea.html): Prise en charge des céphalées chez Kinésica (Buenos Aires). Bilan du cou, de la posture et de l’ATM pour réduire la douleur et les récidives.
+- [Dorsalgie : douleur du haut du dos](https://www.kinesica.com.ar/fr/dorsalgia.html): Traitement de la dorsalgie chez Kinésica (Buenos Aires). Thérapie manuelle et posture pour réduire la douleur et améliorer la mobilité thoracique.
+- [Lombalgie : douleur lombaire](https://www.kinesica.com.ar/fr/lumbalgia.html): Prise en charge de la lombalgie chez Kinésica (Buenos Aires). Bilan, thérapie manuelle et exercice pour soulager et retrouver un mouvement confiant.
+- [Ciatalgie : douleur qui descend dans la jambe](https://www.kinesica.com.ar/fr/ciatalgia.html): Ciatalgie chez Kinésica (Buenos Aires). Bilan du nerf sciatique, de la colonne et de la hanche. Neurodynamique, thérapie manuelle et exercice.
+- [Cervicobrachialgie : du cou au bras](https://www.kinesica.com.ar/fr/cervicobraquialgia.html): Cervicobrachialgie chez Kinésica (Buenos Aires). Bilan cervical et neural, neurodynamique et thérapie manuelle pour réduire la douleur et récupérer le bras.
+- [Pubalgie : douleur de l’aine et du pubis](https://www.kinesica.com.ar/fr/pubalgia.html): Prise en charge de la pubalgie chez Kinésica (Buenos Aires). Bilan bassin/hanche, thérapie manuelle et exercice pour reprendre le sport sans douleur.
+- [Gonalgie : douleur du genou](https://www.kinesica.com.ar/fr/gonalgia.html): Douleur du genou chez Kinésica (Buenos Aires). Bilan genou/hanche/pied, thérapie manuelle et exercice pour réduire la douleur et améliorer la fonction.
+- [Talalgie : douleur du talon](https://www.kinesica.com.ar/fr/talalgia.html): Douleur du talon chez Kinésica (Buenos Aires). Bilan pied/cheville et thérapie manuelle + exercice pour marcher et reprendre l’activité sans douleur.
+- [Douleur sacro-iliaque : bassin et bas du dos](https://www.kinesica.com.ar/fr/dolor-sacriiliaco.html): Douleur sacro-iliaque chez Kinésica (Buenos Aires). Bilan bassin/hanche/lombaires, thérapie manuelle et exercice pour soulager et stabiliser.
+- [Hernie discale : douleur et récupération](https://www.kinesica.com.ar/fr/hernia-disco.html): Hernie discale chez Kinésica (Buenos Aires). Bilan, éducation, thérapie manuelle et exercice. Neurodynamique et RPG pour retrouver la fonction.
+- [Protrusion discale : douleur et mobilité](https://www.kinesica.com.ar/fr/protrusion-discal.html): Protrusion discale chez Kinésica (Buenos Aires). Thérapie manuelle et exercice pour réduire la douleur, améliorer la mobilité et reprendre les activités.
+- [Hypercyphose : courbure dorsale augmentée](https://www.kinesica.com.ar/fr/hipercifosis.html): Hypercyphose chez Kinésica (Buenos Aires). RPG, chaînes musculaires et thérapie manuelle pour améliorer la mobilité thoracique et la posture.
+- [Hyperlordose : courbure lombaire augmentée](https://www.kinesica.com.ar/fr/hiperlordosis.html): Hyperlordose chez Kinésica (Buenos Aires). RPG, chaînes musculaires et thérapie manuelle pour réduire la surcharge lombaire et améliorer le contrôle.
+- [Dos plat : raideur et posture](https://www.kinesica.com.ar/fr/dorso-plano.html): Dos plat chez Kinésica (Buenos Aires). Mobilité thoracique, chaînes musculaires et RPG pour améliorer posture, respiration et tolérance à l’effort.
+- [Genu valgum : genoux vers l’intérieur](https://www.kinesica.com.ar/fr/genu-valgo.html): Genu valgum chez Kinésica (Buenos Aires). Bilan hanche/genou/pied, exercice et thérapie manuelle pour améliorer le contrôle et la mécanique.
+- [Genu varum : genoux vers l’extérieur](https://www.kinesica.com.ar/fr/genu-varo.html): Genu varum chez Kinésica (Buenos Aires). Bilan genou/hanche/pied, thérapie manuelle et exercice pour améliorer la répartition des charges.
+- [Pieds plats : appui et surcharge](https://www.kinesica.com.ar/fr/pies-planos.html): Pieds plats chez Kinésica (Buenos Aires). Bilan de l’appui et de la cheville. Thérapie manuelle et exercice pour améliorer tolérance à la charge et fonction.
+- [Scoliose : posture, douleur et mouvement](https://www.kinesica.com.ar/fr/escoliosis.html): Scoliose chez Kinésica (Buenos Aires). Bilan posture/mobilité/douleur. RPG, chaînes musculaires et thérapie manuelle pour améliorer la fonction.
+- [Épicondylite latérale : coude du tennisman](https://www.kinesica.com.ar/fr/epicondilitis-lateral.html): Épicondylite latérale chez Kinésica (Buenos Aires). Thérapie manuelle et exercice pour réduire la douleur du coude et retrouver la force de l’avant-bras.
+- [Épicondylite médiale : coude du golfeur](https://www.kinesica.com.ar/fr/epicondilitis-medial.html): Épicondylite médiale chez Kinésica (Buenos Aires). Douleur interne du coude, thérapie manuelle et exercice progressif pour retrouver force et fonction.
+- [Conflit sous-acromial : douleur à l’élévation](https://www.kinesica.com.ar/fr/impingement-subacromial.html): Conflit sous-acromial chez Kinésica (Buenos Aires). Bilan épaule/omoplate/posture. Thérapie manuelle et exercice pour retrouver un mouvement sans douleur.
+- [Coiffe des rotateurs : douleur et force de l’épaule](https://www.kinesica.com.ar/fr/manguito-rotador.html): Coiffe des rotateurs chez Kinésica (Buenos Aires). Bilan, thérapie manuelle et exercice pour retrouver force, contrôle et gestes au-dessus de la tête.
+- [Radiculopathie : douleur irradiée et fourmillements](https://www.kinesica.com.ar/fr/radiculopatia.html): Radiculopathie chez Kinésica (Buenos Aires). Bilan neurologique et fonctionnel. Neurodynamique, thérapie manuelle et exercice pour récupérer la fonction.
+- [Méniscopathie : douleur et blocage du genou](https://www.kinesica.com.ar/fr/meniscopatia.html): Méniscopathie chez Kinésica (Buenos Aires). Bilan du genou et de la charge, thérapie manuelle et exercice pour améliorer mobilité, stabilité et douleur.
+- [Fasciite plantaire : douleur de la voûte](https://www.kinesica.com.ar/fr/fascitis-plantar.html): Fasciite plantaire chez Kinésica (Buenos Aires). Douleur talon/voûte surtout au lever. Thérapie manuelle et charge progressive pour retrouver la fonction.
+- [Cervicalgie : douleur du cou](https://www.kinesica.com.ar/fr/cervicalgia.html): Cervicalgie chez Kinésica (Buenos Aires). Bilan du cou, de la posture et de l’ATM. Thérapie manuelle et RPG pour soulager et prévenir les récidives.
