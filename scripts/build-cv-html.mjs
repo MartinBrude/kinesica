@@ -110,22 +110,12 @@ function buildPage(lang, data) {
   const canonical = absoluteUrl(lang, "cv");
   const ogLocale =
     lang === "es" ? "es_AR" : lang === "en" ? "en_US" : "fr_FR";
-  const altLocales =
-    lang === "es"
-      ? ["en_US", "fr_FR"]
-      : lang === "en"
-        ? ["es_AR", "fr_FR"]
-        : ["es_AR", "en_US"];
 
   const hreflangs = ["es", "en", "fr"]
     .map(
       (l) =>
         `  <link rel="alternate" hreflang="${HREFLANG[l]}" href="${absoluteUrl(l, "cv")}" />`,
     )
-    .join("\n");
-
-  const altOg = altLocales
-    .map((l) => `  <meta property="og:locale:alternate" content="${l}" />`)
     .join("\n");
 
   const personSchema = JSON.stringify(
@@ -206,7 +196,6 @@ ${hreflangs}
   <meta property="og:type" content="profile" />
   <meta property="og:site_name" content="Kinésica" />
   <meta property="og:locale" content="${ogLocale}" />
-${altOg}
   <script src="${asset(prefix, "partials/gtm-head.js")}"></script>
   <script src="${asset(prefix, "js/site-config.js")}"></script>
   <script type="application/ld+json">${personSchema}</script>

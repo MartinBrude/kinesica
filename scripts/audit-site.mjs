@@ -164,6 +164,13 @@ for (const file of htmlFiles) {
   if (canonical && ogUrl && canonical !== ogUrl)
     add("warning", file, `canonical (${canonical}) ≠ og:url (${ogUrl})`);
 
+  if (html.includes('property="og:locale:alternate"'))
+    add(
+      "error",
+      file,
+      "Duplicate Open Graph: remove og:locale:alternate (use hreflang only)",
+    );
+
   if (file !== "404-router.html" && !file.includes("404") && !canonical)
     add("warning", file, "Missing canonical URL");
 

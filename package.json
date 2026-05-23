@@ -10,6 +10,7 @@
     "seo:sitemap": "node scripts/generate-sitemap.mjs",
     "seo:schema": "node scripts/inject-local-schema.mjs",
     "seo:lang": "node scripts/apply-lang-meta.mjs",
+    "seo:og": "node scripts/fix-og-schema-seo.mjs",
     "schema:partials": "node scripts/build-schema-partials.mjs",
     "seo:apply": "node scripts/apply-seo-performance.mjs",
     "seo:audit": "node scripts/audit-site.mjs",

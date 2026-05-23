@@ -133,10 +133,6 @@ function buildHtml(pathology, lang) {
     (l) =>
       `  <link rel="alternate" hreflang="${HREFLANG[l]}" href="${absoluteUrl(l, stem)}" />`,
   ).join("\n");
-  const altLocales = LANGS.filter((l) => l !== lang)
-    .map((l) => `  <meta property="og:locale:alternate" content="${OG_LOCALE[l]}" />`)
-    .join("\n");
-
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -219,7 +215,6 @@ ${hreflang}
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="Kinésica" />
   <meta property="og:locale" content="${OG_LOCALE[lang]}" />
-${altLocales}
   <script src="${p}partials/gtm-head.min.js" defer></script>
   <script type="application/ld+json">
 ${JSON.stringify(breadcrumbSchema, null, 6).replace(/^/gm, "      ")}

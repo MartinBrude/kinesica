@@ -61,6 +61,7 @@ check(".htaccess", (html) => {
   if (!html.includes("404-router.html")) errors.push(".htaccess: should use 404-router.html");
   if (!/index_en\\\.html/.test(html)) errors.push(".htaccess: missing legacy EN redirect");
   if (!html.includes("/en/")) errors.push(".htaccess: missing /en/ redirect target");
+  if (!html.includes("ExpiresActive On")) errors.push(".htaccess: missing image Expires headers");
 });
 
 check("404-router.html", (html) => {

@@ -16,21 +16,18 @@ const LANG_META = {
     contentLanguage: HTML_LANG.es,
     hreflang: HREFLANG.es,
     ogLocale: "es_AR",
-    ogAlternates: ["en_US", "fr_FR"],
   },
   en: {
     htmlLang: HTML_LANG.en,
     contentLanguage: HTML_LANG.en,
     hreflang: HREFLANG.en,
     ogLocale: "en_US",
-    ogAlternates: ["es_AR", "fr_FR"],
   },
   fr: {
     htmlLang: HTML_LANG.fr,
     contentLanguage: HTML_LANG.fr,
     hreflang: HREFLANG.fr,
     ogLocale: "fr_FR",
-    ogAlternates: ["es_AR", "en_US"],
   },
 };
 
@@ -84,22 +81,15 @@ function removeAllHreflang(html) {
 }
 
 function syncOgLocale(html, cfg) {
-  let out = html.replace(
-    /<meta property="og:locale" content="[^"]*" \/>/,
-    `<meta property="og:locale" content="${cfg.ogLocale}" />`,
-  );
-  out = out.replace(
-    /<meta property="og:locale:alternate" content="[^"]*" \/>\s*/g,
-    "",
-  );
-  const alternates = cfg.ogAlternates
-    .map((l) => `  <meta property="og:locale:alternate" content="${l}" />\n`)
-    .join("");
-  out = out.replace(
-    /(<meta property="og:locale" content="[^"]*" \/>)/,
-    `$1\n${alternates.trimEnd()}`,
-  );
-  return out;
+  return html
+    .replace(
+      /<meta property="og:locale" content="[^"]*" \/>/,
+      `<meta property="og:locale" content="${cfg.ogLocale}" />`,
+    )
+    .replace(
+      /\s*<meta property="og:locale:alternate" content="[^"]*" \/>\n/g,
+      "",
+    );
 }
 
 function ensureHreflangBlock(html, file) {
