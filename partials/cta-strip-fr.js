@@ -1,3 +1,4 @@
+/* CTA strip — edit strings in scripts/partials-strings.mjs */
 window.__KINESICA_CTA_STRIP_SNIPPET_FR = `
     <section class="space-small bg-primary site-cta-strip">
       <div class="container">

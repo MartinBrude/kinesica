@@ -1,4 +1,4 @@
-/* French site header — lang flags filled by js/header-include.js */
+/* French site header — lang picker filled by js/header-include.js */
 window.__KINESICA_HEADER_SNIPPET_FR = `
   <div class="header-top">
     <div class="container">

@@ -11,13 +11,9 @@ import {
   langByCode,
   partialLang,
 } from "./languages.mjs";
+import { HEADER_SCHEDULE } from "./partials-strings.mjs";
 
-export const HEADER_SCHEDULE = {
-  es: "Lunes a viernes: <strong>10 a 20 h</strong>",
-  en: "Monday to Friday: <strong>10 a.m. to 8 p.m.</strong>",
-  fr: "Lundi au vendredi : <strong>10 h à 20 h</strong>",
-  pt: "Segunda a sexta: <strong>10 h às 20 h</strong>",
-};
+export { HEADER_SCHEDULE };
 
 const GLOBE_SVG = `<svg class="lang-picker__icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`;
 
