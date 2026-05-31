@@ -74,6 +74,11 @@ function ensureMainClosedBeforeCta(html) {
 }
 
 function replaceContentBlock(html, main) {
+  const articlesIndexRe =
+    /[ \t]*<section class="content articles-index">[\s\S]*?<\/section>\s*(?=<div id="site-cta-strip-root")/;
+  if (articlesIndexRe.test(html)) {
+    return html.replace(articlesIndexRe, `${main}\n`);
+  }
   const patterns = [
     /<section class="content[^"]*">[\s\S]*?<\/section>\s*(?=<div id="site-cta-strip-root")/,
     /<div class="content">[\s\S]*?<\/div>\s*(?=<div id="site-cta-strip-root")/,
