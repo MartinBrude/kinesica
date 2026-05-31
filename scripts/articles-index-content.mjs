@@ -3,7 +3,6 @@
  */
 export const ARTICLES_INDEX_UI = {
   es: {
-    eyebrow: "Información",
     introTitle: "Dolencias frecuentes",
     intro:
       "Cómo las abordamos con terapia manual, osteopatía y kinesiología en Kinésica.",
@@ -16,7 +15,6 @@ export const ARTICLES_INDEX_UI = {
     pageTitle: "Artículos",
   },
   en: {
-    eyebrow: "Information",
     introTitle: "Common conditions",
     intro:
       "How we address them with manual therapy, osteopathy, and physiotherapy at Kinésica.",
@@ -28,7 +26,6 @@ export const ARTICLES_INDEX_UI = {
     pageTitle: "Articles",
   },
   fr: {
-    eyebrow: "Informations",
     introTitle: "Pathologies fréquentes",
     intro:
       "Notre approche en thérapie manuelle, ostéopathie et kinésithérapie chez Kinésica.",
@@ -40,7 +37,6 @@ export const ARTICLES_INDEX_UI = {
     pageTitle: "Articles",
   },
   pt: {
-    eyebrow: "Informação",
     introTitle: "Condições frequentes",
     intro:
       "Como as abordamos com terapia manual, osteopatia e fisioterapia na Kinésica.",

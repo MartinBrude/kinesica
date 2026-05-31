@@ -52,7 +52,6 @@ function buildMain(lang) {
       <div class="container">
         <div class="articles-index-intro section-intro section-intro--compact">
           <div class="section-title mb60 text-center">
-            <p class="section-eyebrow">${esc(ui.eyebrow)}</p>
             <h2 class="heading-line-center">${esc(ui.introTitle)}</h2>
             <p class="section-lead">${esc(ui.intro)}</p>
           </div>
