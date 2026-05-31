@@ -1,0 +1,44 @@
+---
+description: Rol Developer — implementación HTML, JS, CSS y scripts
+globs: "**/*.{html,js,css,mjs,cjs}"
+alwaysApply: false
+---
+
+# Rol: Developer
+
+Implementar cambios mínimos, reutilizando convenciones del repo.
+
+## HTML y partials
+
+- ES en raíz; EN en `en/`; FR en `fr/`. Prefijo de assets: `assetPrefixForLang()` (`../` fuera de ES).
+- Header/footer vía partials + `*-include.js`; lang switcher con 3 banderas y rutas de `sitePath()`.
+- Scripts de sitio con `defer`; includes de partials minificados (`.min.js`) en producción.
+- `data-footer-lang` debe coincidir con el idioma de la página.
+
+## Scripts (`scripts/`)
+
+- Importar helpers desde `i18n-urls.mjs` y `page-shell.mjs`; no reimplementar URLs o `<head>`.
+- Nuevo contenido multilingüe: objeto por idioma en el módulo de datos, no strings sueltos en el builder.
+- Tras editar fuentes o generadores relevantes, ejecutar el script de build correspondiente (`build:pathologies`, `build:articulos`, `seo:apply`, etc.).
+
+## CSS y JS
+
+- Estilos globales en `css/style.css` → minificar con pipeline de assets.
+- CSS crítico inline solo vía `apply-seo-performance.mjs` / `critical.css`; no duplicar reglas largas en cada página.
+- JS: preferir módulos pequeños en `js/`; lógica de WhatsApp/GTM/lang ya centralizada — extender, no reescribir.
+
+## Ejemplo DRY — nueva patología
+
+```javascript
+// ❌ Crear cefalea.html, en/cefalea.html, fr/cefalea.html a mano
+// ✅ Añadir entrada en pathology-content.mjs + stem en PATHOLOGY_STEMS
+//    npm run build:pathologies
+```
+
+## Ejemplo i18n
+
+```javascript
+// ✅ Usar helpers existentes
+import { absoluteUrl, repoPath, sitePath } from "./i18n-urls.mjs";
+const url = absoluteUrl("en", "gonalgia"); // https://www.kinesica.com.ar/en/gonalgia.html
+```

@@ -1,0 +1,34 @@
+# Kinésica — Cursor Rules
+
+Sitio estático multilingüe (ES / EN / FR). Reglas detalladas en `.cursor/rules/`.
+
+## Roles
+
+Actúa según la tarea con uno o más roles:
+
+1. **Arquitecto** (`role-architect.mdc`) — estructura, DRY, escalabilidad, SEO de diseño
+2. **Developer** (`role-developer.mdc`) — HTML, JS, CSS, scripts y generadores
+3. **QA** (`role-qa.mdc`) — auditoría antes de cerrar (`npm run seo:audit`)
+
+## Principios
+
+- Simple y funcional: no sobre-ingeniería ni frameworks innecesarios
+- DRY: datos en `scripts/*.mjs`, páginas generadas, shell compartido (`page-shell.mjs`, partials)
+- SEO: canonical, hreflang, schema, performance (critical CSS, defer, minify)
+- i18n: toda página pública en los 3 idiomas; URLs vía `i18n-urls.mjs`
+
+## Fuentes de verdad
+
+| Módulo | Uso |
+|--------|-----|
+| `i18n-urls.mjs` | URLs, stems, paths por idioma |
+| `page-shell.mjs` | `<head>`, CSS, scripts de shell |
+| `header-shell.mjs` | Header y nav compartidos |
+| `pathology-content.mjs` | Copy de patologías ES/EN/FR |
+
+## Antes de entregar
+
+```bash
+npm run seo:audit
+npm run assets:build   # si hubo cambios en js/, partials/ o css/
+```

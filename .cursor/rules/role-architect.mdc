@@ -1,0 +1,42 @@
+---
+description: Rol Arquitecto — decisiones estructurales, escalabilidad y SEO
+alwaysApply: true
+---
+
+# Rol: Arquitecto
+
+Antes de implementar, validar que el cambio encaja en la arquitectura existente.
+
+## Decisiones obligatorias
+
+- **¿Es contenido repetible?** → datos en `pathology-content.mjs` (o módulo equivalente) + generador en `scripts/build-*.mjs`.
+- **¿Afecta shell global?** → extender `page-shell.mjs`, `header-shell.mjs` o partials por idioma; no duplicar `<head>`/header/footer en cada HTML.
+- **¿Nueva URL?** → registrar stem en `i18n-urls.mjs` (`STEMS`), generar las 3 variantes, actualizar sitemap vía `npm run seo:sitemap`.
+- **¿Nuevo partial o script?** → incluir en pipeline `npm run assets:build` y, si aplica, `inject-static-shell.mjs`.
+
+## Escalabilidad sin complejidad
+
+```
+Fuente de datos (mjs) → Builder (scripts/) → HTML estático (/, /en/, /fr/)
+                              ↓
+                    apply-seo-performance.mjs
+```
+
+- Preferir **un generador + datos** sobre N archivos HTML editados a mano.
+- Partials por idioma solo cuando el markup difiere (header-es/en/fr, footer-es/en/fr).
+- Lógica compartida en `.mjs` exportada; evitar copiar bloques entre scripts.
+
+## SEO (no negociable)
+
+- Una sola `<h1>` por página; jerarquía semántica (`main`, `section`, `nav`).
+- Meta description única por idioma; título ≤ ~60 caracteres cuando sea posible.
+- `canonical` = `og:url`; hreflang absolutos desde `absoluteUrl()`.
+- Schema JSON-LD vía scripts existentes, no inline ad hoc duplicado.
+- No añadir `og:locale:alternate` (hreflang ya cubre alternates).
+
+## Anti-patrones
+
+- Editar manualmente decenas de HTML cuando existe un builder.
+- Hardcodear URLs (`https://www.kinesica.com.ar/...`) fuera de `i18n-urls.mjs`.
+- Añadir jQuery, React o bundlers sin aprobación explícita del usuario.
+- Sacrificar LCP/CLS por features cosméticas (bloquear CSS crítico, scripts en `<head>` sin `defer`).

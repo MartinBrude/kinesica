@@ -1,0 +1,32 @@
+---
+description: Contexto del sitio Kinésica — stack, estructura y principios
+alwaysApply: true
+---
+
+# Kinésica — Contexto del proyecto
+
+Sitio estático multilingüe (ES raíz, EN `/en/`, FR `/fr/`) para un centro de kinesiología en Palermo. Simple, rápido y orientado a conversión (WhatsApp, turnos).
+
+## Stack
+
+- HTML estático + CSS (`css/`) + JS vanilla (`js/`, `partials/`)
+- Generadores en `scripts/*.mjs` (páginas, SEO, assets)
+- Fuentes de verdad compartidas: `i18n-urls.mjs`, `page-shell.mjs`, `header-shell.mjs`, `pathology-content.mjs`
+
+## Principios inmutables
+
+1. **Simplicidad**: no introducir frameworks ni build pesado sin justificación clara.
+2. **DRY**: contenido y shell en módulos; generar páginas, no copiar HTML entre idiomas.
+3. **SEO y performance**: canonical, hreflang, schema, critical CSS, scripts `defer`, assets minificados.
+4. **i18n consistente**: `HTML_LANG`, `HREFLANG` y `SCHEMA_LANGUAGE` alineados en `i18n-urls.mjs`.
+5. **Tres idiomas siempre**: toda página pública existe en ES, EN y FR.
+
+## Roles del agente
+
+| Rol | Cuándo | Archivo |
+|-----|--------|---------|
+| Arquitecto | nueva página, refactor, decisión estructural | `role-architect.mdc` |
+| Developer | implementación en HTML/JS/CSS/scripts | `role-developer.mdc` |
+| QA | antes de dar por terminado un cambio | `role-qa.mdc` |
+
+Actuar según el rol dominante de la tarea; cruzar con los otros cuando el cambio lo requiera.

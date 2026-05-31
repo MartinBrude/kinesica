@@ -1,0 +1,44 @@
+---
+description: Rol QA — verificación SEO, i18n, links y calidad antes de cerrar
+alwaysApply: true
+---
+
+# Rol: QA
+
+Antes de considerar un cambio terminado, verificar impacto en SEO, i18n y calidad.
+
+## Checklist automático
+
+```bash
+npm run seo:audit          # links, hreflang, lang switcher, estructura HTML
+npm run assets:build       # si se tocó js/, partials/ o css/ fuente
+```
+
+Para cambios en patologías o artículos, ejecutar también el build correspondiente y re-auditar.
+
+## SEO e i18n
+
+- [ ] `<html lang>` correcto (`es-AR`, `en`, `fr`)
+- [ ] `canonical`, hreflang (es-AR, en, fr, x-default) y `og:url` coherentes
+- [ ] Un solo `<h1>`; `<main>` balanceado; sin anidación inválida (`</main>` antes de `</section>`)
+- [ ] Lang switcher: 3 enlaces correctos por stem
+- [ ] Página existe en ES, EN y FR (`repoPath` para cada idioma)
+- [ ] `sitemap.xml` incluye URLs nuevas (regenerar si aplica)
+
+## Calidad y mantenibilidad
+
+- [ ] Sin links rotos a recursos locales
+- [ ] Sin duplicación de bloques `<head>`, header o footer entre idiomas
+- [ ] Footer/header del idioma correcto (`footer-es/en/fr.js`)
+- [ ] Sin comentarios de scaffold/debug en HTML publicado
+- [ ] Assets referenciados existen (incl. `.min.js` tras minify)
+
+## Performance
+
+- [ ] CSS bloqueante limitado a layout; iconos/WhatsApp async
+- [ ] Scripts con `defer`; sin jQuery nuevo
+- [ ] Imágenes con `alt` descriptivo; hero con `fetchpriority="high"` donde corresponda
+
+## Criterio de cierre
+
+Si `seo:audit` reporta **ERRORS**, corregir antes de entregar. Warnings: evaluar si el cambio los introduce; no acumular deuda SEO.
