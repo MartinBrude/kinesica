@@ -19,7 +19,7 @@ const GLOBE_SVG = `<svg class="lang-picker__icon" xmlns="http://www.w3.org/2000/
 
 const CHEVRON_SVG = `<svg class="lang-picker__chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>`;
 
-export function buildLangPickerHtml(pageLang, stem, { compact = false } = {}) {
+export function buildLangPickerHtml(pageLang, stem) {
   const current = langByCode(pageLang);
   const triggerLabel = PICKER_TRIGGER_LABEL[pageLang] || "Language";
   const menuItems = LANG_CODES.map((toLang) => {
@@ -32,18 +32,11 @@ export function buildLangPickerHtml(pageLang, stem, { compact = false } = {}) {
               </li>`;
   }).join("\n");
 
-  const pickerClass = compact
-    ? "lang-picker lang-picker--compact"
-    : "lang-picker lang-picker--bar";
-  const triggerBody = compact
-    ? GLOBE_SVG
-    : `${GLOBE_SVG}
-                <span class="lang-picker__current">${current.nativeName}</span>
-                ${CHEVRON_SVG}`;
-
-  return `            <div class="${pickerClass}" data-lang-picker>
+  return `            <div class="lang-picker" data-lang-picker>
               <button type="button" class="lang-picker__trigger" aria-expanded="false" aria-haspopup="listbox" aria-label="${triggerLabel}">
-                ${triggerBody}
+                ${GLOBE_SVG}
+                <span class="lang-picker__current">${current.nativeName}</span>
+                ${CHEVRON_SVG}
               </button>
               <ul class="lang-picker__menu" role="listbox" aria-label="${triggerLabel}">
 ${menuItems}
@@ -71,22 +64,6 @@ export function fillHeaderSnippet(headerHtml, pageLang, stem, navHtml) {
   let html = headerHtml.replace(
     /<ul class="lang-switcher">[\s\S]*?<\/ul>/,
     buildLangPickerHtml(pageLang, stem),
-  );
-  html = html.replace(
-    /<div class="lang-picker lang-picker--bar" data-lang-picker>\s*<\/div>/,
-    buildLangPickerHtml(pageLang, stem),
-  );
-  html = html.replace(
-    /<div class="lang-picker lang-picker--compact" data-lang-picker>\s*<\/div>/,
-    buildLangPickerHtml(pageLang, stem, { compact: true }),
-  );
-  html = html.replace(
-    /<div class="lang-picker lang-picker--bar" data-lang-picker>[\s\S]*?<\/ul>\s*<\/div>/,
-    buildLangPickerHtml(pageLang, stem),
-  );
-  html = html.replace(
-    /<div class="lang-picker lang-picker--compact" data-lang-picker>[\s\S]*?<\/ul>\s*<\/div>/,
-    buildLangPickerHtml(pageLang, stem, { compact: true }),
   );
   html = html.replace(
     /<div class="lang-picker" data-lang-picker>\s*<\/div>/,
