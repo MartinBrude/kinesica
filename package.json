@@ -15,6 +15,7 @@
     "schema:partials": "node scripts/build-schema-partials.mjs",
     "seo:apply": "npm run assets:build && node scripts/apply-seo-performance.mjs",
     "seo:audit": "node scripts/audit-site.mjs",
+    "verify:pt": "node scripts/verify-pt-copy.mjs",
     "build:lang-routes": "node scripts/build-lang-routes.mjs",
     "assets:build": "node scripts/minify-assets.mjs",
     "build:seo": "npm run seo:schema && npm run schema:partials && npm run seo:llms && npm run assets:build",

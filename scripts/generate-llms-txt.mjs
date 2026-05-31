@@ -96,14 +96,30 @@ const frLines = [
   ),
 ];
 
+const ptLines = [
+  link("Início (português)", "pt", "index", metaDescription("pt", "index")),
+  link(
+    "Artigos e condições",
+    "pt",
+    "articulos",
+    metaDescription("pt", "articulos"),
+  ),
+  link(
+    "Currículo — Norberto Silvio Brude",
+    "pt",
+    "cv",
+    "Perfil do fisioterapeuta e osteopata.",
+  ),
+];
+
 const body = `# Kinésica
 
-> Centro de kinesiología, osteopatía y terapias manuales en Palermo, Buenos Aires (Argentina). Sitio informativo en español (principal), inglés y francés.
+> Centro de kinesiología, osteopatía y terapias manuales en Palermo, Buenos Aires (Argentina). Sitio informativo en español (principal), inglés, francés y portugués.
 
 Información útil para asistentes y crawlers:
 
 - **Idioma por defecto:** español (Argentina), URLs en la raíz (\`/\`).
-- **Inglés:** \`/en/\` · **Francés:** \`/fr/\`
+- **Inglés:** \`/en/\` · **Francés:** \`/fr/\` · **Português:** \`/pt/\`
 - **Turnos:** WhatsApp [+54 11 6156-4311](https://wa.me/5491161564311)
 - **Horario:** lunes a viernes, 10:00–20:00
 - **Ubicación:** Palermo, CABA (ver mapa en la home)
@@ -117,15 +133,19 @@ ${section("Métodos y técnicas", techniqueLines)}
 ${section("Patologías y dolencias", pathologyLines)}
 ${section("English", enLines)}
 ${section("Français", frLines)}
+${section("Português", ptLines)}
 ${section(
   "Optional",
   [
-    `- [Sitemap](${SITE}/sitemap.xml): all public HTML URLs (es/en/fr).`,
+    `- [Sitemap](${SITE}/sitemap.xml): all public HTML URLs (es/en/fr/pt).`,
     ...PATHOLOGIES.map((p) =>
       link(p.en?.title ?? p.stem, "en", p.stem, p.en?.metaDescription),
     ),
     ...PATHOLOGIES.map((p) =>
       link(p.fr?.title ?? p.stem, "fr", p.stem, p.fr?.metaDescription),
+    ),
+    ...PATHOLOGIES.map((p) =>
+      link(p.pt?.title ?? p.stem, "pt", p.stem, p.pt?.metaDescription),
     ),
   ],
 )}
@@ -134,5 +154,5 @@ ${section(
 fs.writeFileSync(OUT, body);
 console.log("Wrote", path.relative(ROOT, OUT));
 console.log(
-  `  ${mainPages.length} main · ${techniqueLines.length} techniques · ${pathologyLines.length} pathologies · optional EN/FR mirrors`,
+  `  ${mainPages.length} main · ${techniqueLines.length} techniques · ${pathologyLines.length} pathologies · optional EN/FR/PT mirrors`,
 );

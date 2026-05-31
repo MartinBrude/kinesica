@@ -1,11 +1,11 @@
 # Kinésica
 
-> Centro de kinesiología, osteopatía y terapias manuales en Palermo, Buenos Aires (Argentina). Sitio informativo en español (principal), inglés y francés.
+> Centro de kinesiología, osteopatía y terapias manuales en Palermo, Buenos Aires (Argentina). Sitio informativo en español (principal), inglés, francés y portugués.
 
 Información útil para asistentes y crawlers:
 
 - **Idioma por defecto:** español (Argentina), URLs en la raíz (`/`).
-- **Inglés:** `/en/` · **Francés:** `/fr/`
+- **Inglés:** `/en/` · **Francés:** `/fr/` · **Português:** `/pt/`
 - **Turnos:** WhatsApp [+54 11 6156-4311](https://wa.me/5491161564311)
 - **Horario:** lunes a viernes, 10:00–20:00
 - **Ubicación:** Palermo, CABA (ver mapa en la home)
@@ -69,9 +69,15 @@ Información útil para asistentes y crawlers:
 - [Articles et pathologies](https://www.kinesica.com.ar/fr/articulos.html): Articles sur la kinésithérapie, l'ostéopathie et la thérapie manuelle : douleur cervicale, lombalgie et traitements à Palermo.
 - [CV — Norberto Silvio Brude](https://www.kinesica.com.ar/fr/cv.html): Profil du kinésithérapeute et ostéopathe.
 
+## Português
+
+- [Início (português)](https://www.kinesica.com.ar/pt/): Kinésica é um centro de fisioterapia, osteopatia e terapias manuais em Palermo com tratamentos personalizados.
+- [Artigos e condições](https://www.kinesica.com.ar/pt/articulos.html): Artigos sobre fisioterapia, osteopatia e terapia manual: dor cervical, lombalgia e tratamentos em Palermo.
+- [Currículo — Norberto Silvio Brude](https://www.kinesica.com.ar/pt/cv.html): Perfil do fisioterapeuta e osteopata.
+
 ## Optional
 
-- [Sitemap](https://www.kinesica.com.ar/sitemap.xml): all public HTML URLs (es/en/fr).
+- [Sitemap](https://www.kinesica.com.ar/sitemap.xml): all public HTML URLs (es/en/fr/pt).
 - [Headache: pain and tension relief](https://www.kinesica.com.ar/en/cefalea.html): Headache treatment at Kinésica (Buenos Aires). We assess neck, posture and TMJ to reduce pain, prevent recurrence and restore daily life.
 - [Upper back pain (dorsalgia)](https://www.kinesica.com.ar/en/dorsalgia.html): Upper back pain treatment at Kinésica (Buenos Aires). Hands-on care and posture work to ease pain, restore thoracic mobility and improve breathing.
 - [Low back pain (lumbalgia)](https://www.kinesica.com.ar/en/lumbalgia.html): Low back pain care at Kinésica (Buenos Aires). Assessment plus manual therapy and exercise to relieve pain and rebuild confident movement.
@@ -124,3 +130,29 @@ Información útil para asistentes y crawlers:
 - [Méniscopathie : douleur et blocage du genou](https://www.kinesica.com.ar/fr/meniscopatia.html): Méniscopathie chez Kinésica (Buenos Aires). Bilan du genou et de la charge, thérapie manuelle et exercice pour améliorer mobilité, stabilité et douleur.
 - [Fasciite plantaire : douleur de la voûte](https://www.kinesica.com.ar/fr/fascitis-plantar.html): Fasciite plantaire chez Kinésica (Buenos Aires). Douleur talon/voûte surtout au lever. Thérapie manuelle et charge progressive pour retrouver la fonction.
 - [Cervicalgie : douleur du cou](https://www.kinesica.com.ar/fr/cervicalgia.html): Cervicalgie chez Kinésica (Buenos Aires). Bilan du cou, de la posture et de l’ATM. Thérapie manuelle et RPG pour soulager et prévenir les récidives.
+- [Cefaleia: dor de cabeça e tensão](https://www.kinesica.com.ar/pt/cefalea.html): Tratamento de cefaleia na Kinésica (Buenos Aires). Avaliamos pescoço, postura e ATM para reduzir dor, evitar recorrências e retomar sua rotina.
+- [Dorsalgia: dor na parte alta das costas](https://www.kinesica.com.ar/pt/dorsalgia.html): Tratamento de dorsalgia na Kinésica (Buenos Aires). Terapia manual e postura para aliviar dor dorsal, recuperar mobilidade torácica e respirar melhor.
+- [Lombalgia: dor na lombar](https://www.kinesica.com.ar/pt/lumbalgia.html): Tratamento de lombalgia na Kinésica (Buenos Aires). Abordagem manual e exercícios para reduzir dor lombar, recuperar mobilidade e prevenir novos episódios.
+- [Ciatalgia: dor irradiada no trajeto do ciático](https://www.kinesica.com.ar/pt/ciatalgia.html): Tratamento de ciatalgia na Kinésica (Buenos Aires). Avaliamos lombar, quadril e nervo ciático para reduzir dor irradiada e recuperar mobilidade.
+- [Cervicobraquialgia: dor que vai do pescoço ao braço](https://www.kinesica.com.ar/pt/cervicobraquialgia.html): Cervicobraquialgia na Kinésica (Buenos Aires). Tratamos dor cervical com irradiação para ombro e braço, liberando nervos e melhorando postura.
+- [Pubalgia: dor na região inguinal e púbis](https://www.kinesica.com.ar/pt/pubalgia.html): Tratamento de pubalgia na Kinésica (Buenos Aires). Abordagem manual e controle de carga para atletas e ativos, reduzindo dor no púbis e virilha.
+- [Gonalgia: dor no joelho](https://www.kinesica.com.ar/pt/gonalgia.html): Tratamento de dor no joelho (gonalgia) na Kinésica, Buenos Aires. Avaliamos alinhamento, mobilidade e carga para aliviar dor e voltar a treinar.
+- [Talalgia: dor no calcanhar](https://www.kinesica.com.ar/pt/talalgia.html): Tratamento de talalgia na Kinésica (Buenos Aires). Avaliamos fáscia plantar, tendão de Aquiles e mecânica do pé para reduzir dor no calcanhar.
+- [Dor sacroilíaca: desconforto na base da coluna](https://www.kinesica.com.ar/pt/dolor-sacriiliaco.html): Tratamento de dor sacroilíaca na Kinésica (Buenos Aires). Estabilizamos pelve e lombar com terapia manual e exercícios específicos.
+- [Hérnia de disco lombar ou cervical](https://www.kinesica.com.ar/pt/hernia-disco.html): Hérnia de disco na Kinésica (Buenos Aires). Avaliamos coluna e nervos para aliviar dor, reduzir irradiação e retomar movimento com segurança.
+- [Protrusão discal: prevenção de agravamento](https://www.kinesica.com.ar/pt/protrusion-discal.html): Protrusão discal na Kinésica (Buenos Aires). Cuidamos da coluna para aliviar dor, proteger o disco e manter sua rotina ativa.
+- [Hipercifose torácica](https://www.kinesica.com.ar/pt/hipercifosis.html): Tratamento de hipercifose na Kinésica (Buenos Aires). Melhoramos mobilidade torácica e postura com terapia manual e reeducação postural.
+- [Hiperlordose: aumento da curvatura lombar](https://www.kinesica.com.ar/pt/hiperlordosis.html): Cuidado para hiperlordose na Kinésica (Buenos Aires). Avaliamos pelve, core e postura para aliviar dor lombar e equilibrar curvaturas.
+- [Dorso plano: perda de curvatura torácica](https://www.kinesica.com.ar/pt/dorso-plano.html): Dorso plano na Kinésica (Buenos Aires). Melhoramos mobilidade torácica e equilíbrio postural para reduzir desconforto e rigidez.
+- [Genu valgo: desalinhamento em X](https://www.kinesica.com.ar/pt/genu-valgo.html): Genu valgo na Kinésica (Buenos Aires). Avaliamos alinhamento, força e controle para proteger joelhos e tornozelos e reduzir dor.
+- [Genu varo: desalinhamento em arco](https://www.kinesica.com.ar/pt/genu-varo.html): Genu varo na Kinésica (Buenos Aires). Reforçamos controle e mobilidade para reduzir sobrecarga lateral e proteger meniscos e ligamentos.
+- [Pé plano: colapso do arco plantar](https://www.kinesica.com.ar/pt/pies-planos.html): Pé plano na Kinésica (Buenos Aires). Fortalecemos pé e cadeia inferior para melhorar suporte, reduzir dor e prevenir sobrecarga.
+- [Escoliose: cuidado funcional](https://www.kinesica.com.ar/pt/escoliosis.html): Tratamento funcional de escoliose na Kinésica (Buenos Aires). Melhoramos mobilidade, controle e dor para manter sua rotina ativa.
+- [Epicondilite lateral (cotovelo do tenista)](https://www.kinesica.com.ar/pt/epicondilitis-lateral.html): Epicondilite lateral na Kinésica (Buenos Aires). Tratamos dor no cotovelo com terapia manual e progressão de carga para voltar a usar a mão sem dor.
+- [Epicondilite medial (cotovelo do golfista)](https://www.kinesica.com.ar/pt/epicondilitis-medial.html): Epicondilite medial na Kinésica (Buenos Aires). Reduzimos dor na face medial do cotovelo com terapia manual e exercícios específicos.
+- [Impingement subacromial](https://www.kinesica.com.ar/pt/impingement-subacromial.html): Impingement subacromial na Kinésica (Buenos Aires). Tratamos ombro doloroso ao elevar o braço com terapia manual e controle escapular.
+- [Lesão do manguito rotador](https://www.kinesica.com.ar/pt/manguito-rotador.html): Reabilitação do manguito rotador na Kinésica (Buenos Aires). Recuperamos força e mobilidade do ombro com progressão segura.
+- [Radiculopatia: compressão nervosa](https://www.kinesica.com.ar/pt/radiculopatia.html): Radiculopatia na Kinésica (Buenos Aires). Liberamos raízes nervosas com neurodinâmica e estabilização para reduzir dor e formigamento.
+- [Meniscopatia: irritação ou lesão de menisco](https://www.kinesica.com.ar/pt/meniscopatia.html): Reabilitação de menisco na Kinésica (Buenos Aires). Controlamos dor, restauramos mobilidade e força para voltar a caminhar e treinar.
+- [Fascite plantar](https://www.kinesica.com.ar/pt/fascitis-plantar.html): Fascite plantar na Kinésica (Buenos Aires). Reduzimos dor na sola do pé com terapia manual e fortalecimento específico.
+- [Cervicalgia: dor no pescoço](https://www.kinesica.com.ar/pt/cervicalgia.html): Cervicalgia na Kinésica (Buenos Aires). Aliviamos dor cervical com terapia manual, mobilidade e orientação postural personalizada.
