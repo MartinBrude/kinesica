@@ -4,8 +4,8 @@
  */
 (function (global) {
   var DEFAULT_LANG = "es";
-  var SUBDIRS = ["en","fr"];
-  var LANG_CODES = ["es","en","fr"];
+  var SUBDIRS = ["en","fr","pt"];
+  var LANG_CODES = ["es","en","fr","pt"];
   var LANGS = [
   {
     "code": "es",
@@ -26,6 +26,13 @@
     "nativeName": "Français",
     "hreflang": "fr",
     "urlPrefix": "fr",
+    "isDefault": false
+  },
+  {
+    "code": "pt",
+    "nativeName": "Português",
+    "hreflang": "pt",
+    "urlPrefix": "pt",
     "isDefault": false
   }
 ];

@@ -1,70 +1,38 @@
 #!/usr/bin/env node
 /**
- * Meta e hreflang para prioridad español (Argentina) en páginas ES.
+ * Meta e hreflang para todas as línguas publicadas.
  * Run: node scripts/apply-lang-meta.mjs
  */
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { absoluteUrl, HREFLANG, HTML_LANG } from "./i18n-urls.mjs";
+import {
+  LANG_CODES,
+  expectedLangFromFile,
+  listHtmlFiles,
+  ogLocaleFor,
+} from "./languages.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-const LANG_META = {
-  es: {
-    htmlLang: HTML_LANG.es,
-    contentLanguage: HTML_LANG.es,
-    hreflang: HREFLANG.es,
-    ogLocale: "es_AR",
-  },
-  en: {
-    htmlLang: HTML_LANG.en,
-    contentLanguage: HTML_LANG.en,
-    hreflang: HREFLANG.en,
-    ogLocale: "en_US",
-  },
-  fr: {
-    htmlLang: HTML_LANG.fr,
-    contentLanguage: HTML_LANG.fr,
-    hreflang: HREFLANG.fr,
-    ogLocale: "fr_FR",
-  },
-};
-
-function listHtmlFiles() {
-  const files = fs
-    .readdirSync(ROOT)
-    .filter((f) => f.endsWith(".html") && !f.startsWith("cv-"));
-  for (const lang of ["en", "fr"]) {
-    const dir = path.join(ROOT, lang);
-    if (!fs.existsSync(dir)) continue;
-    for (const f of fs.readdirSync(dir)) {
-      if (f.endsWith(".html")) files.push(`${lang}/${f}`);
-    }
-  }
-  return files;
-}
-
-function pageLang(file) {
-  if (file.startsWith("en/")) return "en";
-  if (file.startsWith("fr/")) return "fr";
-  return "es";
-}
+const LANG_META = Object.fromEntries(
+  LANG_CODES.map((code) => [
+    code,
+    {
+      htmlLang: HTML_LANG[code],
+      contentLanguage: HTML_LANG[code],
+      hreflang: HREFLANG[code],
+      ogLocale: ogLocaleFor(code),
+    },
+  ]),
+);
 
 function stemFromFile(file) {
   const base = file.includes("/") ? file.split("/").pop() : file;
   if (base === "index.html") return "index";
   if (base.startsWith("404")) return "404";
   return base.replace(/\.html$/, "");
-}
-
-function canonicalUrl(file) {
-  const lang = pageLang(file);
-  const stem = stemFromFile(file);
-  if (/404/.test(file)) {
-    return absoluteUrl(lang, "index").replace(/\/$/, "") + `/${lang === "es" ? "" : lang + "/"}404.html`.replace("//", "/");
-  }
-  return absoluteUrl(lang, stem);
 }
 
 function removeContentLanguage(html) {
@@ -93,39 +61,36 @@ function syncOgLocale(html, cfg) {
 }
 
 function ensureHreflangBlock(html, file) {
-  const lang = pageLang(file);
   const stem = stemFromFile(file);
   if (/404/.test(file)) return html;
-
-  const es = absoluteUrl("es", stem);
-  const en = absoluteUrl("en", stem);
-  const fr = absoluteUrl("fr", stem);
 
   let out = html.replace(
     /<link rel="alternate" hreflang="[^"]+" href="[^"]+" \/>\s*/g,
     "",
   );
 
-  /* Una etiqueta por idioma + x-default → español (sin duplicar href ni es+es-AR). */
-  const block =
-    `  <link rel="alternate" hreflang="${HREFLANG.es}" href="${es}" />\n` +
-    `  <link rel="alternate" hreflang="${HREFLANG.en}" href="${en}" />\n` +
-    `  <link rel="alternate" hreflang="${HREFLANG.fr}" href="${fr}" />\n` +
-    `  <link rel="alternate" hreflang="x-default" href="${es}" />\n`;
+  const block = LANG_CODES.map(
+    (code) =>
+      `  <link rel="alternate" hreflang="${HREFLANG[code]}" href="${absoluteUrl(code, stem)}" />`,
+  ).join("\n");
+
+  const fullBlock =
+    block +
+    `\n  <link rel="alternate" hreflang="x-default" href="${absoluteUrl("es", stem)}" />\n`;
 
   if (out.includes('rel="canonical"')) {
     out = out.replace(
       /(<link rel="canonical" href="[^"]+" \/>)/,
-      `$1\n${block.trimEnd()}`,
+      `$1\n${fullBlock.trimEnd()}`,
     );
   } else {
-    out = out.replace("</head>", `${block}</head>`);
+    out = out.replace("</head>", `${fullBlock}</head>`);
   }
   return out;
 }
 
 function apply(file) {
-  const lang = pageLang(file);
+  const lang = expectedLangFromFile(file);
   const cfg = LANG_META[lang];
   const full = path.join(ROOT, file);
   let html = fs.readFileSync(full, "utf8");
@@ -166,7 +131,7 @@ function apply(file) {
 }
 
 let changed = 0;
-for (const file of listHtmlFiles()) {
+for (const file of listHtmlFiles(ROOT)) {
   const full = path.join(ROOT, file);
   const original = fs.readFileSync(full, "utf8");
   const next = apply(file);

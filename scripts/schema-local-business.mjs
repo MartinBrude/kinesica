@@ -2,8 +2,9 @@
  * Schema.org — SEO local Kinésica (fisioterapia / kinesiología).
  * Fuente única para inyección en HTML y generación de partials.
  */
-import { SITE, absoluteUrl, STEMS } from "./i18n-urls.mjs";
-import { LANG_CODES } from "./languages.mjs";
+import { SITE, absoluteUrl, STEMS, HTML_LANG } from "./i18n-urls.mjs";
+import { LANG_CODES, expectedLangFromFile } from "./languages.mjs";
+import { COPY_PT } from "./schema-copy-pt.mjs";
 
 export const BUSINESS_ID = `${SITE}/#kinesica`;
 
@@ -258,6 +259,7 @@ const COPY = {
       },
     ],
   },
+  pt: COPY_PT,
 };
 
 const SERVICE_STEMS = STEMS.filter(
@@ -321,14 +323,15 @@ function buildOfferCatalog(lang) {
 /** Clínica de fisioterapia — entidad local principal. */
 export function buildPhysiotherapyClinic(lang) {
   const t = COPY[lang];
-  const langCode =
-    lang === "fr" ? "fr" : lang === "en" ? "en" : "es-AR";
+  const langCode = HTML_LANG[lang] ?? lang;
   const contactLanguages =
-    lang === "fr"
-      ? ["French", "Spanish", "English"]
-      : lang === "en"
-        ? ["English", "Spanish", "French"]
-        : ["Spanish", "English", "French"];
+    lang === "pt"
+      ? ["Portuguese", "Spanish", "English", "French"]
+      : lang === "fr"
+        ? ["French", "Spanish", "English", "Portuguese"]
+        : lang === "en"
+          ? ["English", "Spanish", "French", "Portuguese"]
+          : ["Spanish", "English", "French", "Portuguese"];
 
   return {
     "@context": "https://schema.org",
@@ -438,9 +441,7 @@ export function buildClinicOnly(lang) {
 }
 
 export function langFromHtmlFile(file) {
-  if (file.startsWith("en/")) return "en";
-  if (file.startsWith("fr/")) return "fr";
-  return "es";
+  return expectedLangFromFile(file);
 }
 
 export function ldJsonScript(obj) {

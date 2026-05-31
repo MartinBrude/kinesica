@@ -33,4 +33,14 @@ export const ARTICLES_INDEX_UI = {
     breadcrumb: "Articles",
     pageTitle: "Articles",
   },
+  pt: {
+    intro:
+      "Informações sobre condições frequentes e como as abordamos com terapia manual na Kinésica. Escolha um tema para ler o artigo completo.",
+    readMore: "Ler",
+    quote: "O corpo guarda a memória de todas as nossas experiências",
+    quoteAuthor: "Léopold Busquet",
+    homeLabel: "Início",
+    breadcrumb: "Artigos",
+    pageTitle: "Artigos",
+  },
 };

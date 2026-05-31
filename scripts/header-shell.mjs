@@ -7,13 +7,16 @@ import { sitePath } from "./i18n-urls.mjs";
 import {
   LANG_CODES,
   PICKER_TRIGGER_LABEL,
+  expectedLangFromFile,
   langByCode,
+  partialLang,
 } from "./languages.mjs";
 
 export const HEADER_SCHEDULE = {
   es: "Lunes a viernes: <strong>10 a 20 h</strong>",
   en: "Monday to Friday: <strong>10 a.m. to 8 p.m.</strong>",
   fr: "Lundi au vendredi : <strong>10 h à 20 h</strong>",
+  pt: "Segunda a sexta: <strong>10 h às 20 h</strong>",
 };
 
 const GLOBE_SVG = `<svg class="lang-picker__icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`;
@@ -70,6 +73,10 @@ export function fillHeaderSnippet(headerHtml, pageLang, stem, navHtml) {
     /<div class="lang-picker" data-lang-picker>\s*<\/div>/,
     buildLangPickerHtml(pageLang, stem),
   );
+  html = html.replace(
+    /<div class="lang-picker" data-lang-picker>[\s\S]*?<\/ul>\s*<\/div>/,
+    buildLangPickerHtml(pageLang, stem),
+  );
   if (navHtml) {
     html = html.replace(
       /<div id="navigation"([^>]*)><\/div>/,
@@ -81,8 +88,9 @@ export function fillHeaderSnippet(headerHtml, pageLang, stem, navHtml) {
 
 /** Markup before <main>: header root + header/nav scripts (nav early avoids stale footer cache). */
 export function headerShellMarkup(lang, prefix = "") {
-  const l = lang === "en" || lang === "fr" ? lang : "es";
+  const l = partialLang(lang);
   return `  <div id="site-header-root" data-header-lang="${l}"></div>
+  <script src="${prefix}js/snippet-lang.min.js"></script>
   <script src="${prefix}partials/header-${l}.min.js"></script>
   <script src="${prefix}js/header-include.min.js"></script>
   <script src="${prefix}js/lang-picker.min.js"></script>
@@ -92,8 +100,7 @@ export function headerShellMarkup(lang, prefix = "") {
 }
 
 export function injectStaticHeader(html, file, rootDir) {
-  const lang =
-    file.startsWith("en/") ? "en" : file.startsWith("fr/") ? "fr" : "es";
+  const lang = expectedLangFromFile(file);
   const stem = stemFromRepoFile(file);
   const headerHtml = fillHeaderSnippet(
     loadSnippet(rootDir, `partials/header-${lang}.js`),
@@ -105,7 +112,7 @@ export function injectStaticHeader(html, file, rootDir) {
 
   if (html.includes('id="site-header-root"')) {
     const filled = new RegExp(
-      `<div id="site-header-root"[^>]*>[\\s\\S]*?<\\/div>\\s*(?=<script[^>]*partials/header-)`,
+      `<div id="site-header-root"[^>]*>[\\s\\S]*?<\\/header>\\s*<\\/div>\\s*(?=<script)`,
     );
     if (filled.test(html)) {
       return html.replace(

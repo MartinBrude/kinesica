@@ -7,7 +7,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { injectStaticHeader } from "./header-shell.mjs";
-import { listHtmlFiles, expectedLangFromFile } from "./languages.mjs";
+import { listHtmlFiles, expectedLangFromFile, partialLang } from "./languages.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -45,7 +45,7 @@ function injectCta(html, file) {
     return html;
   }
   const ctaHtml = loadSnippet(`partials/cta-strip-${lang}.js`);
-  const langAttr = lang === "en" || lang === "fr" ? lang : "es";
+  const langAttr = partialLang(lang);
   const openTag = `<div id="site-cta-strip-root" data-cta-lang="${langAttr}">`;
   html = html.replace(/<div id="site-cta-strip-root[^>]*>/, openTag);
   if (/<div id="site-cta-strip-root"[^>]*>\s*<section class="space-small bg-primary site-cta-strip">/.test(html)) {
@@ -70,7 +70,7 @@ function injectFooter(html, file) {
     return html;
   }
   const footerHtml = loadSnippet(`partials/footer-${lang}.js`);
-  const langAttr = lang === "en" || lang === "fr" ? lang : "es";
+  const langAttr = partialLang(lang);
   const openTag = `<div id="site-footer-root" data-footer-lang="${langAttr}">`;
   html = html.replace(
     /<div id="site-footer-root[^>]*>/,
@@ -89,23 +89,31 @@ function injectFooter(html, file) {
   );
 }
 
-function ensureLangPickerScript(html, file) {
+function ensureShellScripts(html, file) {
   if (!html.includes('id="site-header-root"')) {
     return html;
   }
   const prefix = file.includes("/") ? "../" : "";
-  const tag = `<script src="${prefix}js/lang-picker.min.js"></script>`;
-  const tagUnmin = `<script src="${prefix}js/lang-picker.js"></script>`;
-  if (html.includes(tag) || html.includes(tagUnmin)) {
-    return html;
+  let out = html;
+  const snippetTag = `<script src="${prefix}js/snippet-lang.min.js"></script>`;
+  if (!out.includes("snippet-lang")) {
+    const headerPartial = new RegExp(
+      `(<script src="${prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}partials/header-)`,
+    );
+    if (headerPartial.test(out)) {
+      out = out.replace(headerPartial, `${snippetTag}\n  $1`);
+    }
   }
-  const afterHeaderInclude = new RegExp(
-    `(<script src="${prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}js/header-include(?:\\.min)?\\.js"><\\/script>)`,
-  );
-  if (afterHeaderInclude.test(html)) {
-    return html.replace(afterHeaderInclude, `$1\n  ${tag}`);
+  const pickerTag = `<script src="${prefix}js/lang-picker.min.js"></script>`;
+  if (!out.includes("lang-picker")) {
+    const afterHeaderInclude = new RegExp(
+      `(<script src="${prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}js/header-include(?:\\.min)?\\.js"><\\/script>)`,
+    );
+    if (afterHeaderInclude.test(out)) {
+      out = out.replace(afterHeaderInclude, `$1\n  ${pickerTag}`);
+    }
   }
-  return html;
+  return out;
 }
 
 let changed = 0;
@@ -118,7 +126,7 @@ for (const file of listHtmlFiles(ROOT)) {
   html = injectNav(html, file);
   html = injectCta(html, file);
   html = injectFooter(html, file);
-  html = ensureLangPickerScript(html, file);
+  html = ensureShellScripts(html, file);
   if (html !== original) {
     fs.writeFileSync(full, html);
     changed++;

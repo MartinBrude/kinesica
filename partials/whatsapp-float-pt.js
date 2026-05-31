@@ -1,0 +1,7 @@
+/* Portuguese WhatsApp float button. */
+window.__KINESICA_WHATSAPP_FLOAT_SNIPPET_PT = `
+<a id="whatsapp-link" href="https://wa.me/5491161564311" class="whatsapp-float" target="_blank"
+  aria-label="Contato pelo WhatsApp" rel="noopener noreferrer">
+  <i class="fa fa-whatsapp whatsapp-icon"></i>
+</a>
+`.trim();

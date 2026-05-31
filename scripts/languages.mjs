@@ -33,13 +33,29 @@ export const LANGUAGES = [
     isDefault: false,
     published: true,
   },
-  // { code: "pt", bcp47: "pt", hreflang: "pt", urlPrefix: "pt", nativeName: "Português", isDefault: false, published: false },
+  {
+    code: "pt",
+    bcp47: "pt",
+    hreflang: "pt",
+    urlPrefix: "pt",
+    nativeName: "Português",
+    isDefault: false,
+    published: true,
+  },
 ];
+
+export const OG_LOCALE = {
+  es: "es_AR",
+  en: "en_US",
+  fr: "fr_FR",
+  pt: "pt_BR",
+};
 
 export const PICKER_TRIGGER_LABEL = {
   es: "Idioma",
   en: "Language",
   fr: "Langue",
+  pt: "Idioma",
 };
 
 export const DEFAULT_LANG =
@@ -62,6 +78,19 @@ export function langByCode(code) {
 
 export function isDefaultLang(code) {
   return code === DEFAULT_LANG;
+}
+
+export function ogLocaleFor(code) {
+  return OG_LOCALE[code] ?? code;
+}
+
+/** Partial file suffix (header-es, nav-pt, …). */
+export function partialLang(code) {
+  return langByCode(code) ? code : DEFAULT_LANG;
+}
+
+export function snippetVar(prefix, code) {
+  return `__KINESICA_${prefix}_SNIPPET_${partialLang(code).toUpperCase()}`;
 }
 
 export function expectedLangFromFile(file) {

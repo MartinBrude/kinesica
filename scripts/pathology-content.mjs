@@ -1,8 +1,13 @@
 /**
- * Kinésica — Pathology landing/page copy (ES/EN/FR).
+ * Kinésica — Pathology landing/page copy (ES/EN/FR/PT).
  * - Keep paragraph counts exact (5).
  * - Keep complications list length 4–6.
  */
+import {
+  PT_PATHOLOGY_DATA,
+  PT_TECHNIQUE_LABELS,
+  PT_UI,
+} from "./pathology-content-pt.mjs";
 
 export const PATHOLOGY_STEMS = [
   "cefalea",
@@ -34,12 +39,12 @@ export const PATHOLOGY_STEMS = [
 ];
 
 export const TECHNIQUE_LABELS = {
-  rpg: { es: "RPG", en: "Postural Re-education (RPG)", fr: "Rééducation Posturale Globale (RPG)" },
-  osteopatia: { es: "Osteopatía", en: "Osteopathy", fr: "Ostéopathie" },
-  neurodinamia: { es: "Neurodinamia", en: "Neurodynamics", fr: "Neurodynamique" },
-  manipulaciones: { es: "Manipulaciones", en: "Manual manipulations", fr: "Manipulations" },
-  cadenas: { es: "Cadenas musculares", en: "Muscle chains", fr: "Chaînes musculaires" },
-  atm: { es: "ATM", en: "TMJ", fr: "ATM (articulation temporo-mandibulaire)" },
+  rpg: { es: "RPG", en: "Postural Re-education (RPG)", fr: "Rééducation Posturale Globale (RPG)", pt: PT_TECHNIQUE_LABELS.rpg },
+  osteopatia: { es: "Osteopatía", en: "Osteopathy", fr: "Ostéopathie", pt: PT_TECHNIQUE_LABELS.osteopatia },
+  neurodinamia: { es: "Neurodinamia", en: "Neurodynamics", fr: "Neurodynamique", pt: PT_TECHNIQUE_LABELS.neurodinamia },
+  manipulaciones: { es: "Manipulaciones", en: "Manual manipulations", fr: "Manipulations", pt: PT_TECHNIQUE_LABELS.manipulaciones },
+  cadenas: { es: "Cadenas musculares", en: "Muscle chains", fr: "Chaînes musculaires", pt: PT_TECHNIQUE_LABELS.cadenas },
+  atm: { es: "ATM", en: "TMJ", fr: "ATM (articulation temporo-mandibulaire)", pt: PT_TECHNIQUE_LABELS.atm },
 };
 
 export const UI = {
@@ -79,6 +84,7 @@ export const UI = {
     homeLabel: "Accueil",
     pathologiesBreadcrumb: "Pathologies",
   },
+  pt: PT_UI,
 };
 
 export const PATHOLOGIES = [
@@ -2032,4 +2038,11 @@ export const PATHOLOGIES = [
     },
   },
 ];
+
+for (const pathology of PATHOLOGIES) {
+  const pt = PT_PATHOLOGY_DATA[pathology.stem];
+  if (pt) {
+    pathology.pt = pt;
+  }
+}
 

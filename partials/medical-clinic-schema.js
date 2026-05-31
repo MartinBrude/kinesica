@@ -94,7 +94,8 @@
     "availableLanguage": [
       "es",
       "en",
-      "fr"
+      "fr",
+      "pt"
     ],
     "currenciesAccepted": "ARS",
     "paymentAccepted": [
@@ -118,7 +119,8 @@
       "availableLanguage": [
         "Spanish",
         "English",
-        "French"
+        "French",
+        "Portuguese"
       ]
     },
     "potentialAction": {
@@ -404,7 +406,8 @@
     "availableLanguage": [
       "es",
       "en",
-      "fr"
+      "fr",
+      "pt"
     ],
     "currenciesAccepted": "ARS",
     "paymentAccepted": [
@@ -428,7 +431,8 @@
       "availableLanguage": [
         "English",
         "Spanish",
-        "French"
+        "French",
+        "Portuguese"
       ]
     },
     "potentialAction": {
@@ -714,7 +718,8 @@
     "availableLanguage": [
       "es",
       "en",
-      "fr"
+      "fr",
+      "pt"
     ],
     "currenciesAccepted": "ARS",
     "paymentAccepted": [
@@ -738,7 +743,8 @@
       "availableLanguage": [
         "French",
         "Spanish",
-        "English"
+        "English",
+        "Portuguese"
       ]
     },
     "potentialAction": {

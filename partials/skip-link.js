@@ -5,3 +5,5 @@ window.__KINESICA_SKIP_LINK_SNIPPET_EN =
   '<a href="#main" class="skip-link">Skip to content</a>';
 window.__KINESICA_SKIP_LINK_SNIPPET_FR =
   '<a href="#main" class="skip-link">Aller au contenu</a>';
+window.__KINESICA_SKIP_LINK_SNIPPET_PT =
+  '<a href="#main" class="skip-link">Ir para o conteúdo</a>';

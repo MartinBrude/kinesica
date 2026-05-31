@@ -1,20 +1,20 @@
 /**
  * Shared HTML shell fragments for page builders and apply-seo-performance.mjs.
  */
+import { HTML_LANG } from "./i18n-urls.mjs";
+import { OG_LOCALE, partialLang } from "./languages.mjs";
 
 export const FONT_DISPLAY_SWAP =
   "https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i&display=swap";
 
-export const LOCALE = { es: "es-AR", en: "en", fr: "fr" };
-export const OG_LOCALE = { es: "es_AR", en: "en_US", fr: "fr_FR" };
+export const LOCALE = HTML_LANG;
+export { OG_LOCALE };
 
 export function assetPrefixForLang(lang) {
   return lang === "es" ? "" : "../";
 }
 
-export function partialLang(lang) {
-  return lang === "es" ? "es" : lang;
-}
+export { partialLang };
 
 /** Non-blocking: icons and WhatsApp widget only. */
 export function asyncCssLink(href) {

@@ -19,15 +19,12 @@
   if (!root) {
     return;
   }
-  var langAttr = root.getAttribute("data-footer-lang") || "es";
-  var lang =
-    langAttr === "en" || langAttr === "fr" ? langAttr : "es";
-  var html =
-    lang === "en"
-      ? window.__KINESICA_FOOTER_SNIPPET_EN
-      : lang === "fr"
-        ? window.__KINESICA_FOOTER_SNIPPET_FR
-        : window.__KINESICA_FOOTER_SNIPPET_ES;
+  var lang = window.kinesicaResolveLang
+    ? window.kinesicaResolveLang(root.getAttribute("data-footer-lang") || "es")
+    : root.getAttribute("data-footer-lang") || "es";
+  var html = window.kinesicaLoadSnippet
+    ? window.kinesicaLoadSnippet("FOOTER", lang)
+    : null;
   if (!html) {
     console.error(
       "[footer-include] Missing snippet: load partials/footer-" +

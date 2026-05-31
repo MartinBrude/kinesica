@@ -3,15 +3,12 @@
   if (!root) {
     return;
   }
-  var langAttr = root.getAttribute("data-whatsapp-lang") || "es";
-  var lang =
-    langAttr === "en" || langAttr === "fr" ? langAttr : "es";
-  var html =
-    lang === "en"
-      ? window.__KINESICA_WHATSAPP_FLOAT_SNIPPET_EN
-      : lang === "fr"
-        ? window.__KINESICA_WHATSAPP_FLOAT_SNIPPET_FR
-        : window.__KINESICA_WHATSAPP_FLOAT_SNIPPET_ES;
+  var lang = window.kinesicaResolveLang
+    ? window.kinesicaResolveLang(root.getAttribute("data-whatsapp-lang") || "es")
+    : root.getAttribute("data-whatsapp-lang") || "es";
+  var html = window.kinesicaLoadSnippet
+    ? window.kinesicaLoadSnippet("WHATSAPP_FLOAT", lang)
+    : null;
   if (!html) {
     console.error(
       "[whatsapp-float-include] Missing snippet: load partials/whatsapp-float-" +

@@ -15,7 +15,7 @@ import {
   HTML_LANG,
   repoPath,
 } from "./i18n-urls.mjs";
-import { LANG_CODES } from "./languages.mjs";
+import { LANG_CODES, ogLocaleFor } from "./languages.mjs";
 import { headerShellMarkup } from "./header-shell.mjs";
 import { headPreconnectFonts } from "./page-shell.mjs";
 
@@ -99,8 +99,7 @@ function buildPage(lang, data) {
   const home = isEs ? "/" : `/${lang}/`;
   const cvPath = isEs ? "/cv.html" : `/${lang}/cv.html`;
   const canonical = absoluteUrl(lang, "cv");
-  const ogLocale =
-    lang === "es" ? "es_AR" : lang === "en" ? "en_US" : "fr_FR";
+  const ogLocale = ogLocaleFor(lang);
 
   const hreflangs = LANG_CODES
     .map(

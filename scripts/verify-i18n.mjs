@@ -55,6 +55,21 @@ for (const stem of STEMS) {
         if (/Lunes a Viernes|bandera español[^a"]|Squelette FR/i.test(html))
           errors.push(`${f}: leftover ES/EN/skeleton text`);
       });
+    } else if (lang === "pt") {
+      check(file, (html, f) => {
+        if (stem === "404") {
+          if (!html.includes("../css/")) errors.push(`${f}: missing ../ asset paths`);
+          return;
+        }
+        if (!html.includes('lang="pt"')) errors.push(`${f}: missing lang=pt`);
+        if (!html.includes("lang-picker")) errors.push(`${f}: missing lang-picker`);
+        if (!hasAsset(html, "footer-pt.js")) errors.push(`${f}: missing footer-pt.js`);
+        if (!hasAsset(html, "whatsapp-float-pt.js"))
+          errors.push(`${f}: missing whatsapp-float-pt.js`);
+        if (!hasAsset(html, "lang-preference.js")) errors.push(`${f}: missing lang-preference.js`);
+        if (!hasAsset(html, "lang-routes.js")) errors.push(`${f}: missing lang-routes.js`);
+        if (!html.includes("../css/")) errors.push(`${f}: missing ../ asset paths`);
+      });
     } else if (lang === "en") {
       check(file, (html, f) => {
         if (stem === "404") {

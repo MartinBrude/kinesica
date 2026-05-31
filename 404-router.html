@@ -28,8 +28,10 @@
           : null;
       var nav = (navigator.language || navigator.userLanguage || "").toLowerCase();
       var lang = "es";
-      if (pref === "en" || pref === "fr" || pref === "es") {
+      if (pref === "en" || pref === "fr" || pref === "pt" || pref === "es") {
         lang = pref;
+      } else if (nav.indexOf("pt") === 0) {
+        lang = "pt";
       } else if (nav.indexOf("fr") === 0) {
         lang = "fr";
       } else if (nav.indexOf("en") === 0) {
@@ -42,10 +44,18 @@
             ? "fr/404.html"
             : lang === "en"
               ? "en/404.html"
-              : "404.html";
+              : lang === "pt"
+                ? "pt/404.html"
+                : "404.html";
       } else {
         target =
-          lang === "fr" ? "/fr/404.html" : lang === "en" ? "/en/404.html" : "/404.html";
+          lang === "fr"
+            ? "/fr/404.html"
+            : lang === "en"
+              ? "/en/404.html"
+              : lang === "pt"
+                ? "/pt/404.html"
+                : "/404.html";
       }
       window.location.replace(target);
     })();

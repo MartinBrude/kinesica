@@ -124,4 +124,5 @@ let n = 0;
 if (patchArticulosFile("articulos.html", "es")) n++;
 if (patchArticulosFile("en/articulos.html", "en")) n++;
 if (patchArticulosFile("fr/articulos.html", "fr")) n++;
+if (patchArticulosFile("pt/articulos.html", "pt")) n++;
 console.log(`Rebuilt ${n} articulos index page(s).`);

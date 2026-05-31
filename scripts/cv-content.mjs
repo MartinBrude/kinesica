@@ -1,4 +1,6 @@
-/** CV copy for es / en / fr — source: Spanish PDF, EN PDF, FR translation. */
+/** CV copy for es / en / fr / pt — source: Spanish PDF, EN PDF, FR translation. */
+import { CV_PT } from "./cv-content-pt.mjs";
+
 export const CV = {
   es: {
     lang: "es",
@@ -350,4 +352,6 @@ export const CV = {
     time: "Lundi au vendredi : <strong>10h - 20h</strong>",
     flags: { es: "drapeau espagnol", en: "drapeau britannique", fr: "drapeau français" },
   },
+
+  pt: CV_PT,
 };

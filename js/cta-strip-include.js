@@ -3,15 +3,12 @@
   if (!root) {
     return;
   }
-  var langAttr = root.getAttribute("data-cta-lang") || "es";
-  var lang =
-    langAttr === "en" || langAttr === "fr" ? langAttr : "es";
-  var html =
-    lang === "en"
-      ? window.__KINESICA_CTA_STRIP_SNIPPET_EN
-      : lang === "fr"
-        ? window.__KINESICA_CTA_STRIP_SNIPPET_FR
-        : window.__KINESICA_CTA_STRIP_SNIPPET_ES;
+  var lang = window.kinesicaResolveLang
+    ? window.kinesicaResolveLang(root.getAttribute("data-cta-lang") || "es")
+    : root.getAttribute("data-cta-lang") || "es";
+  var html = window.kinesicaLoadSnippet
+    ? window.kinesicaLoadSnippet("CTA_STRIP", lang)
+    : null;
   if (!html) {
     console.error(
       "[cta-strip-include] Missing snippet: load partials/cta-strip-" +

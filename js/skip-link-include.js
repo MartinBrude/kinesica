@@ -1,15 +1,11 @@
 (function () {
-  var lang = document.documentElement.getAttribute("lang") || "es";
-  if (lang !== "en" && lang !== "fr") {
-    lang = "es";
-  }
+  var lang = window.kinesicaResolveLang
+    ? window.kinesicaResolveLang(document.documentElement.getAttribute("lang"))
+    : document.documentElement.getAttribute("lang") || "es";
 
-  var html =
-    lang === "en"
-      ? window.__KINESICA_SKIP_LINK_SNIPPET_EN
-      : lang === "fr"
-        ? window.__KINESICA_SKIP_LINK_SNIPPET_FR
-        : window.__KINESICA_SKIP_LINK_SNIPPET_ES;
+  var html = window.kinesicaLoadSnippet
+    ? window.kinesicaLoadSnippet("SKIP_LINK", lang)
+    : null;
 
   if (!html) {
     console.error("[skip-link-include] Missing skip-link snippet for lang:", lang);

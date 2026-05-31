@@ -4,16 +4,13 @@
     return;
   }
 
-  var langAttr = root.getAttribute("data-header-lang") || "es";
-  var lang =
-    langAttr === "en" || langAttr === "fr" ? langAttr : "es";
+  var lang = window.kinesicaResolveLang
+    ? window.kinesicaResolveLang(root.getAttribute("data-header-lang") || "es")
+    : root.getAttribute("data-header-lang") || "es";
 
-  var html =
-    lang === "en"
-      ? window.__KINESICA_HEADER_SNIPPET_EN
-      : lang === "fr"
-        ? window.__KINESICA_HEADER_SNIPPET_FR
-        : window.__KINESICA_HEADER_SNIPPET_ES;
+  var html = window.kinesicaLoadSnippet
+    ? window.kinesicaLoadSnippet("HEADER", lang)
+    : null;
 
   if (!html) {
     console.error(

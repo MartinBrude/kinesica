@@ -13,6 +13,7 @@ import {
   repoPath,
   sitePath,
   HTML_LANG,
+  HREFLANG,
 } from "./i18n-urls.mjs";
 import {
   LANG_CODES,
@@ -231,16 +232,15 @@ for (const file of htmlFiles) {
   if (file.endsWith(".html") && !file.includes("404")) {
     const stem = stemFromFile(file);
     if (stem !== "404" && stem !== "index") {
-      for (const [hl, expected] of [
-        ["es-AR", absoluteUrl("es", stem)],
-        ["en", absoluteUrl("en", stem)],
-        ["fr", absoluteUrl("fr", stem)],
-      ]) {
-        const entry = hreflangs.find((h) => h.lang === hl);
-        if (entry && entry.href !== expected) {
-          add("warning", file, `hreflang ${hl} expected ${expected}, got ${entry.href}`);
-        }
-      }
+  for (const lang of LANG_CODES) {
+    const entry = langByCode(lang);
+    const hl = HREFLANG[lang];
+    const expected = absoluteUrl(lang, stem);
+    const found = hreflangs.find((h) => h.lang === hl);
+    if (found && found.href !== expected) {
+      add("warning", file, `hreflang ${hl} expected ${expected}, got ${found.href}`);
+    }
+  }
     }
   }
 
@@ -253,6 +253,8 @@ for (const file of htmlFiles) {
       add("error", file, "French footer lang but missing footer-fr.js");
     if (fl === "en" && !/footer-en(\.min)?\.js/.test(html))
       add("error", file, "English footer lang but missing footer-en.js");
+    if (fl === "pt" && !/footer-pt(\.min)?\.js/.test(html))
+      add("error", file, "Portuguese footer lang but missing footer-pt.js");
     if (fl === "es" && !/footer-es(\.min)?\.js/.test(html) && !file.includes("404"))
       add("error", file, "Spanish footer lang but missing footer-es.js");
   }
@@ -267,6 +269,7 @@ for (const loc of locs) {
   if (f === "") f = "index.html";
   else if (f === "en/" || f === "en") f = "en/index.html";
   else if (f === "fr/" || f === "fr") f = "fr/index.html";
+  else if (f === "pt/" || f === "pt") f = "pt/index.html";
   if (f.endsWith(".pdf")) {
     if (!allRootFiles.has(path.basename(f)))
       add("warning", "sitemap.xml", `Sitemap lists missing file: ${path.basename(f)}`);
