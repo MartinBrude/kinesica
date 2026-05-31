@@ -50,7 +50,7 @@ function buildMain(lang) {
 
   return `    <section class="content articles-index">
       <div class="container">
-        <div class="articles-index-intro section-intro section-intro--compact ui-reveal">
+        <div class="articles-index-intro section-intro section-intro--compact">
           <div class="section-title mb60 text-center">
             <p class="section-eyebrow">${esc(ui.eyebrow)}</p>
             <h2 class="heading-line-center">${esc(ui.introTitle)}</h2>

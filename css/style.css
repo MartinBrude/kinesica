@@ -3564,6 +3564,8 @@ Pathology detail pages (FAQ dolencias)
   margin-bottom: 2.5rem;
   padding: 0;
   background: transparent;
+  opacity: 1;
+  transform: none;
 }
 
 .articles-index-intro .section-title.mb60 {

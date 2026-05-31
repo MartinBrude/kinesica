@@ -3,9 +3,12 @@
     return;
   }
 
-  var targets = document.querySelectorAll(
-    ".service-block, .section-title, .feature, .team-img, .articles-index-intro, .articles-index-card, .articles-index-quote",
+  var nodes = document.querySelectorAll(
+    ".service-block, .section-title, .feature, .team-img, .articles-index-card, .articles-index-quote",
   );
+  var targets = Array.prototype.filter.call(nodes, function (el) {
+    return !(el.classList.contains("section-title") && el.closest(".articles-index-intro"));
+  });
   if (!targets.length) {
     return;
   }
