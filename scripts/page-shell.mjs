@@ -60,8 +60,14 @@ export function headFavicon(prefix) {
   );
 }
 
+/** Marks JS before body paint so lang-picker CSS does not flash inline links. */
+export function headJsClassScript() {
+  return '  <script>document.documentElement.classList.add("js");</script>\n';
+}
+
 export function headLangScripts(prefix) {
   return (
+    headJsClassScript() +
     `  <script src="${prefix}js/lang-preference.min.js" defer></script>\n` +
     `  <script src="${prefix}js/redirect.min.js" defer></script>\n`
   );

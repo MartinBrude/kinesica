@@ -1212,10 +1212,11 @@ label {}
     0 4px 16px rgba(0, 0, 0, 0.18),
     0 0 0 1px rgba(0, 0, 0, 0.06);
   z-index: 10001;
+  display: none;
 }
 
-html.js .lang-picker:not(.is-open) .lang-picker__menu {
-  display: none;
+.lang-picker.is-open .lang-picker__menu {
+  display: block;
 }
 
 .lang-picker__option {

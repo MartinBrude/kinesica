@@ -9,6 +9,7 @@ import { fileURLToPath } from "url";
 import {
   FONT_DISPLAY_SWAP,
   dedupePreconnects,
+  headJsClassScript,
   headStandardStylesheets,
 } from "./page-shell.mjs";
 
@@ -135,6 +136,23 @@ function normalizeHeadStylesheets(html, file) {
   return head + body;
 }
 
+function ensureHeadJsClass(html) {
+  if (
+    html.includes('classList.add("js")') ||
+    html.includes("classList.add('js')")
+  ) {
+    return html;
+  }
+  const tag = headJsClassScript().trim();
+  if (/<meta charset="utf-8" \/>/.test(html)) {
+    return html.replace(
+      /<meta charset="utf-8" \/>\s*\n/,
+      `<meta charset="utf-8" />\n${tag}\n`,
+    );
+  }
+  return html.replace("<head>", `<head>\n${tag}\n`);
+}
+
 function injectCriticalCss(html) {
   if (!fs.existsSync(CRITICAL_MIN)) {
     return html;
@@ -209,6 +227,7 @@ for (const file of listHtmlFiles(ROOT)) {
   const original = html;
   html = addRobotsMeta(html, file);
   html = fontDisplaySwap(html);
+  html = ensureHeadJsClass(html);
   html = injectCriticalCss(html);
   html = normalizeHeadStylesheets(html, file);
   html = removeEmptyNoscript(html);

@@ -62,6 +62,36 @@ body {
   padding: 11px 0;
 }
 
+/* Lang picker: dropdown by default; inline links only without JS */
+.lang-picker {
+  position: relative;
+  display: inline-block;
+}
+
+.lang-picker__menu {
+  display: none;
+}
+
+.lang-picker.is-open .lang-picker__menu {
+  display: block;
+}
+
+html:not(.js) .lang-picker__trigger {
+  display: none;
+}
+
+html:not(.js) .lang-picker__menu {
+  position: static;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: transparent;
+  box-shadow: none;
+}
+
 #site-header-root {
   position: sticky;
   top: 0;
