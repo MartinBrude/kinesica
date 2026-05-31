@@ -35,7 +35,10 @@
 
   function finishHeader() {
     applyFileProtocolHeaderLinks();
-    if (typeof window.kinesicaMarkCurrentLang === "function") {
+    if (
+      typeof window.kinesicaMarkCurrentLang === "function" &&
+      window.KINESICA_LANG_ROUTES
+    ) {
       window.kinesicaMarkCurrentLang();
     }
     if (typeof window.kinesicaInitLangPicker === "function") {

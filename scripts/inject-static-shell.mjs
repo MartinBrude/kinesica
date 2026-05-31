@@ -89,13 +89,45 @@ function injectFooter(html, file) {
   );
 }
 
+function dedupeDeferLangRoutes(html, prefix) {
+  const syncNeedle = `<script src="${prefix}js/lang-routes.min.js"></script>`;
+  if (!html.includes(syncNeedle)) {
+    return html;
+  }
+  const escaped = prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  let out = html.replace(
+    new RegExp(
+      `\\s*<script src="${escaped}js/lang-routes(?:\\.min)?\\.js" defer><\\/script>\\s*`,
+      "g",
+    ),
+    "\n",
+  );
+  const first = out.indexOf(syncNeedle);
+  if (first === -1) {
+    return out;
+  }
+  const tail = out.slice(first + syncNeedle.length);
+  const dedupedTail = tail.replace(
+    new RegExp(
+      `\\s*<script src="${escaped}js/lang-routes(?:\\.min)?\\.js"><\\/script>\\s*`,
+      "g",
+    ),
+    "\n",
+  );
+  return out.slice(0, first + syncNeedle.length) + dedupedTail;
+}
+
 function ensureShellScripts(html, file) {
   if (!html.includes('id="site-header-root"')) {
     return html;
   }
   const prefix = file.includes("/") ? "../" : "";
   let out = html;
+  const routesTag = `<script src="${prefix}js/lang-routes.min.js"></script>`;
   const snippetTag = `<script src="${prefix}js/snippet-lang.min.js"></script>`;
+  if (out.includes("snippet-lang") && !out.includes(`${prefix}js/lang-routes.min.js"></script>\n  ${snippetTag}`)) {
+    out = out.replace(snippetTag, `${routesTag}\n  ${snippetTag}`);
+  }
   if (!out.includes("snippet-lang")) {
     const headerPartial = new RegExp(
       `(<script src="${prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}partials/header-)`,
@@ -127,6 +159,7 @@ for (const file of listHtmlFiles(ROOT)) {
   html = injectCta(html, file);
   html = injectFooter(html, file);
   html = ensureShellScripts(html, file);
+  html = dedupeDeferLangRoutes(html, file.includes("/") ? "../" : "");
   if (html !== original) {
     fs.writeFileSync(full, html);
     changed++;

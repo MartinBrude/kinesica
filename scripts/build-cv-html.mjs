@@ -17,7 +17,7 @@ import {
 } from "./i18n-urls.mjs";
 import { LANG_CODES, ogLocaleFor } from "./languages.mjs";
 import { headerShellMarkup } from "./header-shell.mjs";
-import { headPreconnectFonts } from "./page-shell.mjs";
+import { headPreconnectFonts, headLangScripts } from "./page-shell.mjs";
 
 const require = createRequire(import.meta.url);
 const { toMinPath } = require("../assets.config.cjs");
@@ -188,7 +188,7 @@ ${headPreconnectFonts()}  <link href="https://fonts.googleapis.com/css?family=Ro
   <script src="${asset(prefix, "js/site-config.js")}"></script>
   <script type="application/ld+json">${personSchema}</script>
   <script type="application/ld+json">${breadcrumbSchema}</script>
-</head>
+${headLangScripts(prefix)}</head>
 
 <body>
   <div id="site-gtm-body-root"></div>
@@ -231,8 +231,6 @@ ${headerShellMarkup(lang, prefix)}
   <script src="${asset(prefix, "js/ui-reveal.js")}" defer></script>
   <script src="${asset(prefix, "js/sticky-header.js")}" defer></script>
   <script src="${asset(prefix, "js/whatsapp-logic.js")}"></script>
-  <script src="${asset(prefix, "js/lang-routes.js")}"></script>
-  <script src="${asset(prefix, "js/lang-preference.js")}"></script>
 </body>
 
 </html>

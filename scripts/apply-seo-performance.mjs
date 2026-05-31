@@ -21,7 +21,7 @@ const ROBOTS_NOINDEX =
   '  <meta name="robots" content="noindex, nofollow" />\n';
 
 const LANG_SCRIPTS =
-  /<script src="((?:\.\.\/)?js\/(lang-routes|lang-preference|redirect)(?:\.min)?\.js)"><\/script>/g;
+  /<script src="((?:\.\.\/)?js\/(lang-preference|redirect)(?:\.min)?\.js)"><\/script>/g;
 
 const DEFER_SCRIPTS = [
   "partials/gtm-head.js",
@@ -32,19 +32,7 @@ const DEFER_SCRIPTS = [
   "js/skip-link-include.js",
 ];
 
-function listHtmlFiles() {
-  const files = fs
-    .readdirSync(ROOT)
-    .filter((f) => f.endsWith(".html") && !f.startsWith("cv-"));
-  for (const lang of ["en", "fr"]) {
-    const dir = path.join(ROOT, lang);
-    if (!fs.existsSync(dir)) continue;
-    for (const f of fs.readdirSync(dir)) {
-      if (f.endsWith(".html")) files.push(`${lang}/${f}`);
-    }
-  }
-  return files;
-}
+import { listHtmlFiles } from "./languages.mjs";
 
 function isNoindexPage(file) {
   return /(^|\/)(404|404-router)\.html$/.test(file);
@@ -215,7 +203,7 @@ function removeStaleHeadComments(html) {
 }
 
 let changed = 0;
-for (const file of listHtmlFiles()) {
+for (const file of listHtmlFiles(ROOT)) {
   const full = path.join(ROOT, file);
   let html = fs.readFileSync(full, "utf8");
   const original = html;

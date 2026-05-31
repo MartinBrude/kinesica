@@ -16,12 +16,20 @@
     if (r && r.parseLocation) {
       return r.parseLocation().lang;
     }
+    var root = document.getElementById("site-header-root");
+    var fromAttr = root && root.getAttribute("data-header-lang");
+    if (fromAttr) {
+      return fromAttr;
+    }
     var path = window.location.pathname;
     if (path.indexOf("/en/") !== -1 || path === "/en") {
       return "en";
     }
     if (path.indexOf("/fr/") !== -1 || path === "/fr") {
       return "fr";
+    }
+    if (path.indexOf("/pt/") !== -1 || path === "/pt") {
+      return "pt";
     }
     return "es";
   }

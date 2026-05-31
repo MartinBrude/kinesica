@@ -62,7 +62,6 @@ export function headFavicon(prefix) {
 
 export function headLangScripts(prefix) {
   return (
-    `  <script src="${prefix}js/lang-routes.min.js" defer></script>\n` +
     `  <script src="${prefix}js/lang-preference.min.js" defer></script>\n` +
     `  <script src="${prefix}js/redirect.min.js" defer></script>\n`
   );

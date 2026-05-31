@@ -86,6 +86,7 @@ export function fillHeaderSnippet(headerHtml, pageLang, stem, navHtml) {
 export function headerShellMarkup(lang, prefix = "") {
   const l = partialLang(lang);
   return `  <div id="site-header-root" data-header-lang="${l}"></div>
+  <script src="${prefix}js/lang-routes.min.js"></script>
   <script src="${prefix}js/snippet-lang.min.js"></script>
   <script src="${prefix}partials/header-${l}.min.js"></script>
   <script src="${prefix}js/header-include.min.js"></script>
