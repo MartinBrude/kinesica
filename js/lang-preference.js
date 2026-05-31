@@ -106,10 +106,11 @@
           link.removeAttribute("aria-current");
         }
       });
-    var triggerLabel = document.querySelector(".lang-picker__current");
-    if (triggerLabel && r && r.nativeName) {
-      triggerLabel.textContent = r.nativeName(current);
-    }
+    document.querySelectorAll(".lang-picker__current").forEach(function (el) {
+      if (r && r.nativeName) {
+        el.textContent = r.nativeName(current);
+      }
+    });
   }
 
   function onReady() {

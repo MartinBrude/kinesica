@@ -1,6 +1,6 @@
 (function () {
   var BREAKPOINT = 768;
-  var TITLES = { es: "Menú", en: "Menu", fr: "Menu" };
+  var TITLES = { es: "Menú", en: "Menu", fr: "Menu", pt: "Menu" };
 
   function initNavigation() {
     var nav = document.getElementById("navigation");

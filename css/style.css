@@ -1267,6 +1267,31 @@ html:not(.js) .lang-picker__option[aria-current="true"] {
   color: #fff;
 }
 
+.header__mobile-lang {
+  display: none;
+}
+
+.header__toolbar {
+  display: block;
+}
+
+.lang-picker--compact .lang-picker__trigger {
+  padding: 8px;
+  color: var(--primary-color);
+  background: rgba(0, 95, 153, 0.08);
+  box-shadow: none;
+}
+
+.lang-picker--compact .lang-picker__trigger:hover,
+.lang-picker--compact .lang-picker__trigger:focus-visible {
+  background: rgba(0, 95, 153, 0.14);
+  box-shadow: none;
+}
+
+.lang-picker--compact .lang-picker__icon {
+  opacity: 1;
+}
+
 .call-block {}
 
 .call-no {}
@@ -3421,6 +3446,35 @@ ul.widget-recent-post {}
   .header-top {
     display: none;
     /* Hide top bar on mobile to save space */
+  }
+
+  .header__toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.15rem;
+  }
+
+  .header__mobile-lang {
+    display: block;
+    flex: 0 0 auto;
+  }
+
+  #navigation.small-screen {
+    width: auto;
+    flex: 0 0 auto;
+  }
+
+  #navigation.small-screen #menu-button {
+    border-top: 0;
+    position: relative;
+    min-width: 5.5rem;
+  }
+
+  #navigation.small-screen > ul.open {
+    flex: 1 1 100%;
+    width: 100%;
   }
 
   .header {

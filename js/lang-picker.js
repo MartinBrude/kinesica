@@ -20,7 +20,7 @@
     return TRIGGER_LABELS[pageLang] || "Language";
   }
 
-  function buildPickerMarkup(stem, pageLang) {
+  function buildPickerMarkup(stem, pageLang, compact) {
     var r = routes();
     if (!r || !r.langs) {
       return "";
@@ -47,15 +47,19 @@
       })
       .join("");
 
+    var triggerBody = compact
+      ? GLOBE_SVG
+      : GLOBE_SVG +
+        '<span class="lang-picker__current">' +
+        currentName +
+        "</span>" +
+        CHEVRON_SVG;
+
     return (
       '<button type="button" class="lang-picker__trigger" aria-expanded="false" aria-haspopup="listbox" aria-label="' +
       label +
       '">' +
-      GLOBE_SVG +
-      '<span class="lang-picker__current">' +
-      currentName +
-      "</span>" +
-      CHEVRON_SVG +
+      triggerBody +
       '</button><ul class="lang-picker__menu" role="listbox" aria-label="' +
       label +
       '">' +
@@ -146,7 +150,8 @@
     }
     if (!picker.querySelector(".lang-picker__menu")) {
       var stem = r.parseLocation().stem;
-      picker.innerHTML = buildPickerMarkup(stem, pageLang);
+      var compact = picker.classList.contains("lang-picker--compact");
+      picker.innerHTML = buildPickerMarkup(stem, pageLang, compact);
     }
     bindPicker(picker);
   }
