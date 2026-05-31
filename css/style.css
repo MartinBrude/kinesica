@@ -3556,37 +3556,18 @@ Pathology detail pages (FAQ dolencias)
 
 /* —— Artículos index (card grid) —— */
 .articles-index {
-  padding-top: 2rem;
+  padding-top: 1.5rem;
   padding-bottom: 4rem;
 }
 
-.articles-index-header {
-  max-width: 40rem;
-  margin: 0 auto 2.75rem;
-  text-align: center;
+.articles-index-intro.section-intro {
+  margin-bottom: 2.5rem;
+  padding: 0;
+  background: transparent;
 }
 
-.articles-index-intro {
-  margin: 0;
-  font-size: clamp(1.0625rem, 1.6vw, 1.2rem);
-  line-height: 1.75;
-  color: var(--text-color);
-  font-weight: 400;
-  letter-spacing: 0.01em;
-}
-
-.articles-index-header::after {
-  content: "";
-  display: block;
-  width: 2.75rem;
-  height: 3px;
-  margin: 1.35rem auto 0;
-  border-radius: 2px;
-  background: linear-gradient(
-    90deg,
-    var(--primary-color) 0%,
-    var(--accent-color, #2ebfa5) 100%
-  );
+.articles-index-intro .section-title.mb60 {
+  margin-bottom: 0;
 }
 
 .articles-index-grid {

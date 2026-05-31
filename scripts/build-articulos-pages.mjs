@@ -50,9 +50,13 @@ function buildMain(lang) {
 
   return `    <section class="content articles-index">
       <div class="container">
-        <header class="articles-index-header ui-reveal">
-          <p class="articles-index-intro">${ui.intro}</p>
-        </header>
+        <div class="articles-index-intro section-intro section-intro--compact ui-reveal">
+          <div class="section-title mb60 text-center">
+            <p class="section-eyebrow">${esc(ui.eyebrow)}</p>
+            <h2 class="heading-line-center">${esc(ui.introTitle)}</h2>
+            <p class="section-lead">${esc(ui.intro)}</p>
+          </div>
+        </div>
         <div class="articles-index-grid">
 ${cards}
         </div>
