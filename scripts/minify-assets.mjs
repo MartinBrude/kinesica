@@ -103,6 +103,7 @@ const SHELL_JS = [
   "partials/header-fr.js",
   "js/nav-include.js",
   "js/header-include.js",
+  "js/lang-picker.js",
 ];
 
 function shellCacheVersion() {

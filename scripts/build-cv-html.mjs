@@ -15,6 +15,7 @@ import {
   HTML_LANG,
   repoPath,
 } from "./i18n-urls.mjs";
+import { LANG_CODES } from "./languages.mjs";
 import { headerShellMarkup } from "./header-shell.mjs";
 import { headPreconnectFonts } from "./page-shell.mjs";
 
@@ -101,7 +102,7 @@ function buildPage(lang, data) {
   const ogLocale =
     lang === "es" ? "es_AR" : lang === "en" ? "en_US" : "fr_FR";
 
-  const hreflangs = ["es", "en", "fr"]
+  const hreflangs = LANG_CODES
     .map(
       (l) =>
         `  <link rel="alternate" hreflang="${HREFLANG[l]}" href="${absoluteUrl(l, "cv")}" />`,
@@ -239,7 +240,7 @@ ${headerShellMarkup(lang, prefix)}
 `;
 }
 
-for (const lang of ["es", "en", "fr"]) {
+for (const lang of LANG_CODES) {
   const out = path.join(ROOT, repoPath(lang, "cv"));
   fs.mkdirSync(path.dirname(out), { recursive: true });
   fs.writeFileSync(out, buildPage(lang, CV[lang]));

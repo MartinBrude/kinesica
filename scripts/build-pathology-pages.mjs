@@ -20,6 +20,7 @@ import {
   SCHEMA_LANGUAGE,
   sitePath,
 } from "./i18n-urls.mjs";
+import { LANG_CODES } from "./languages.mjs";
 import { headerShellMarkup } from "./header-shell.mjs";
 import {
   OG_LOCALE,
@@ -34,7 +35,7 @@ import {
 } from "./page-shell.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const LANGS = ["es", "en", "fr"];
+const LANGS = LANG_CODES;
 
 function esc(s) {
   return String(s)

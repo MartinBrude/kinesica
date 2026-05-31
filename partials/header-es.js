@@ -1,4 +1,4 @@
-/* Spanish site header — lang flags filled by js/header-include.js */
+/* Spanish site header — lang picker filled by inject-static-shell / js/lang-picker.js */
 window.__KINESICA_HEADER_SNIPPET_ES = `
   <div class="header-top">
     <div class="container">
@@ -10,7 +10,7 @@ window.__KINESICA_HEADER_SNIPPET_ES = `
         </div>
         <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
           <div class="top-text">
-            <ul class="lang-switcher"></ul>
+            <div class="lang-picker" data-lang-picker></div>
           </div>
         </div>
       </div>

@@ -1,5 +1,5 @@
 /**
- * Redirige a EN/FR solo si el usuario eligió idioma con la bandera en esta sesión.
+ * Redirige al idioma preferido solo si el usuario lo eligió en esta sesión.
  * El tráfico argentino (URLs en español, sin elección explícita) permanece en español.
  */
 (function () {
@@ -20,13 +20,20 @@
       return;
     }
 
-    if (explicit !== "en" && explicit !== "fr") {
+    if (!explicit || explicit === routes.defaultLang) {
+      return;
+    }
+
+    if (routes.langCodes && routes.langCodes.indexOf(explicit) === -1) {
       return;
     }
 
     var loc = routes.parseLocation();
     var preferred = routes.targetForLang(loc.stem, explicit);
-    if (preferred && preferred !== routes.pathForLang("es", loc.stem)) {
+    if (
+      preferred &&
+      preferred !== routes.pathForLang(routes.defaultLang, loc.stem)
+    ) {
       window.location.replace(preferred);
     }
   } catch (e) {

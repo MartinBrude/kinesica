@@ -7,6 +7,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { STEMS, absoluteUrl, repoPath } from "./i18n-urls.mjs";
+import { LANG_CODES } from "./languages.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -25,7 +26,7 @@ function lastmod(lang, stem) {
 
 const entries = [];
 for (const stem of STEMS) {
-  for (const lang of ["es", "en", "fr"]) {
+  for (const lang of LANG_CODES) {
     const rel = repoPath(lang, stem);
     if (!fs.existsSync(path.join(ROOT, rel))) {
       console.warn("skip missing:", rel);

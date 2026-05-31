@@ -1,6 +1,6 @@
 /**
- * Persists explicit language choice (ES / EN / FR).
- * Preference is saved only when the user clicks a language flag.
+ * Persists explicit language choice.
+ * Preference is saved only when the user picks a language from the picker.
  * Visiting the Spanish home resets preference to ES (idioma por defecto Argentina).
  */
 (function () {
@@ -67,6 +67,14 @@
     }
   }
 
+  function isDefaultLang(lang) {
+    var r = routes();
+    if (r && r.defaultLang) {
+      return lang === r.defaultLang;
+    }
+    return lang === "es";
+  }
+
   if (isSpanishHome()) {
     saveLang("es");
     clearExplicitSession();
@@ -75,19 +83,25 @@
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({ page_language: langFromPath() });
 
-  function markCurrentLangFlag() {
+  function markCurrentLang() {
     var r = routes();
     var current = langFromPath();
     var langFromHref = r && r.langFromHref;
-    document.querySelectorAll(".lang-switcher a[href]").forEach(function (link) {
-      var href = link.getAttribute("href") || "";
-      var targetLang = langFromHref ? langFromHref(href) : null;
-      if (targetLang === current) {
-        link.setAttribute("aria-current", "true");
-      } else {
-        link.removeAttribute("aria-current");
-      }
-    });
+    document
+      .querySelectorAll(".lang-picker__option[href]")
+      .forEach(function (link) {
+        var href = link.getAttribute("href") || "";
+        var targetLang = langFromHref ? langFromHref(href) : null;
+        if (targetLang === current) {
+          link.setAttribute("aria-current", "true");
+        } else {
+          link.removeAttribute("aria-current");
+        }
+      });
+    var triggerLabel = document.querySelector(".lang-picker__current");
+    if (triggerLabel && r && r.nativeName) {
+      triggerLabel.textContent = r.nativeName(current);
+    }
   }
 
   function onReady() {
@@ -95,7 +109,7 @@
     if (r && r.applyFileProtocolLinks) {
       r.applyFileProtocolLinks();
     }
-    markCurrentLangFlag();
+    markCurrentLang();
   }
 
   if (document.readyState === "loading") {
@@ -107,36 +121,30 @@
   document.addEventListener(
     "click",
     function (e) {
-      var link = e.target.closest(".lang-switcher a[href]");
+      var link = e.target.closest(".lang-picker__option[href]");
       if (!link) {
         return;
       }
       var href = link.getAttribute("href") || "";
-      if (
-        href.indexOf("/fr/") !== -1 ||
-        href.indexOf("fr/") === 0 ||
-        href.indexOf("../fr/") !== -1
-      ) {
-        saveLang("fr");
-        markExplicitLang("fr");
-      } else if (
-        href.indexOf("/en/") !== -1 ||
-        href.indexOf("en/") === 0 ||
-        href.indexOf("../en/") !== -1
-      ) {
-        saveLang("en");
-        markExplicitLang("en");
-      } else {
-        saveLang("es");
+      var r = routes();
+      var targetLang = r && r.langFromHref ? r.langFromHref(href) : null;
+      if (!targetLang) {
+        return;
+      }
+      saveLang(targetLang);
+      if (isDefaultLang(targetLang)) {
         clearExplicitSession();
+      } else {
+        markExplicitLang(targetLang);
       }
     },
-    true
+    true,
   );
 
-  document.addEventListener("kinesica:header-ready", markCurrentLangFlag);
+  document.addEventListener("kinesica:header-ready", markCurrentLang);
 
   window.kinesicaGetLangPreference = getLang;
   window.kinesicaSaveLangPreference = saveLang;
-  window.kinesicaMarkCurrentLangFlag = markCurrentLangFlag;
+  window.kinesicaMarkCurrentLang = markCurrentLang;
+  window.kinesicaMarkCurrentLangFlag = markCurrentLang;
 })();

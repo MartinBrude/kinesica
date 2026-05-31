@@ -11,7 +11,15 @@ import {
   STEMS,
   absoluteUrl,
   repoPath,
+  sitePath,
+  HTML_LANG,
 } from "./i18n-urls.mjs";
+import {
+  LANG_CODES,
+  langByCode,
+  listHtmlFiles,
+  expectedLangFromFile,
+} from "./languages.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const issues = [];
@@ -21,18 +29,8 @@ function add(severity, file, msg) {
   (severity === "error" ? issues : warnings).push({ file, msg });
 }
 
-function listHtmlFiles() {
-  const files = fs
-    .readdirSync(ROOT)
-    .filter((f) => f.endsWith(".html") && !f.startsWith("cv-"));
-  for (const lang of ["en", "fr"]) {
-    const dir = path.join(ROOT, lang);
-    if (!fs.existsSync(dir)) continue;
-    for (const f of fs.readdirSync(dir)) {
-      if (f.endsWith(".html")) files.push(`${lang}/${f}`);
-    }
-  }
-  return files;
+function listHtmlFilesLocal() {
+  return listHtmlFiles(ROOT);
 }
 
 function extractHrefs(html) {
@@ -67,9 +65,7 @@ function extractHtmlLang(html) {
 }
 
 function expectedLang(file) {
-  if (file.startsWith("en/")) return "en";
-  if (file.startsWith("fr/")) return "fr";
-  return "es";
+  return expectedLangFromFile(file);
 }
 
 function stemFromFile(file) {
@@ -86,42 +82,42 @@ function resolveLocal(href, fromFile) {
   return path.normalize(path.join(dir === "." ? "" : dir, href)).replace(/\\/g, "/");
 }
 
-function expectedLangSwitcherPaths(stem) {
-  return {
-    es:
-      stem === "index"
-        ? ["/", "index.html"]
-        : [`/${stem}.html`, `${stem}.html`],
-    en: [stem === "index" ? "/en/" : `/en/${stem}.html`],
-    fr: [stem === "index" ? "/fr/" : `/fr/${stem}.html`],
-  };
-}
-
-function auditLangSwitcher(html, file) {
+function auditLangPicker(html, file) {
   if (file.includes("404")) return;
-  const block = html.match(/<ul class="lang-switcher">([\s\S]*?)<\/ul>/);
-  if (!block) return;
+  if (!html.includes("lang-picker")) return;
 
-  const hrefs = [...block[1].matchAll(/href=["']([^"'#]+)["']/gi)].map((m) => m[1]);
-  if (hrefs.length !== 3) {
-    add("error", file, `Lang switcher: expected 3 flags, got ${hrefs.length} (${hrefs.join(", ")})`);
+  const hrefs = [
+    ...html.matchAll(
+      /class="lang-picker__option"[^>]*href=["']([^"'#]+)["']/gi,
+    ),
+  ].map((m) => m[1]);
+
+  if (hrefs.length !== LANG_CODES.length) {
+    add(
+      "error",
+      file,
+      `Lang picker: expected ${LANG_CODES.length} options, got ${hrefs.length} (${hrefs.join(", ")})`,
+    );
     return;
   }
 
   const stem = stemFromFile(file);
-  const exp = expectedLangSwitcherPaths(stem);
-  const fr = hrefs.filter((h) => h.includes("/fr/") || h === "/fr/");
-  const en = hrefs.filter((h) => h.includes("/en/") || h === "/en/");
-  const es = hrefs.filter((h) => !h.includes("/en/") && !h.includes("/fr/"));
-
-  if (fr.length !== 1 || !exp.fr.includes(fr[0])) {
-    add("error", file, `Lang switcher FR: ${fr[0] || "(none)"} expected ${exp.fr.join(" or ")}`);
-  }
-  if (en.length !== 1 || !exp.en.includes(en[0])) {
-    add("error", file, `Lang switcher EN: ${en[0] || "(none)"} expected ${exp.en.join(" or ")}`);
-  }
-  if (es.length !== 1 || !exp.es.includes(es[0])) {
-    add("error", file, `Lang switcher ES: ${es[0] || "(none)"} expected ${exp.es.join(" or ")}`);
+  for (const code of LANG_CODES) {
+    const expected = sitePath(code, stem);
+    const entry = langByCode(code);
+    const found = hrefs.some((href) => {
+      if (href === expected) return true;
+      if (entry.isDefault && (href === "index.html" || href === "../index.html"))
+        return stem === "index";
+      return false;
+    });
+    if (!found) {
+      add(
+        "error",
+        file,
+        `Lang picker ${code}: missing href ${expected} (got ${hrefs.join(", ")})`,
+      );
+    }
   }
 }
 
@@ -139,7 +135,7 @@ function auditLocalizedNav(html, file) {
   }
 }
 
-const htmlFiles = listHtmlFiles();
+const htmlFiles = listHtmlFilesLocal();
 const allRootFiles = new Set(fs.readdirSync(ROOT));
 
 for (const file of htmlFiles) {
@@ -147,8 +143,8 @@ for (const file of htmlFiles) {
   const lang = extractHtmlLang(html);
 
   if (!lang) add("error", file, "Missing <html lang>");
-  else if (lang !== expectedLang(file) && !file.includes("404"))
-    add("error", file, `lang="${lang}" expected "${expectedLang(file)}"`);
+  else if (lang !== HTML_LANG[expectedLang(file)] && !file.includes("404"))
+    add("error", file, `lang="${lang}" expected "${HTML_LANG[expectedLang(file)]}"`);
 
   if (/<\/main>\s*<\/section>/i.test(html))
     add("error", file, "Invalid nesting: </main> before </section>");
@@ -196,11 +192,11 @@ for (const file of htmlFiles) {
       add("warning", file, `hreflang ${hl} not absolute: ${href}`);
   }
 
-  auditLangSwitcher(html, file);
+  auditLangPicker(html, file);
   auditLocalizedNav(html, file);
 
   if (
-    html.includes("lang-switcher") &&
+    html.includes("lang-picker") &&
     html.includes("lang-preference.js") &&
     !html.includes("lang-routes.js") &&
     file !== "404-router.html"
@@ -280,7 +276,7 @@ for (const loc of locs) {
 }
 
 for (const stem of STEMS) {
-  for (const lang of ["es", "en", "fr"]) {
+  for (const lang of LANG_CODES) {
     const rel = repoPath(lang, stem);
     if (!htmlFiles.includes(rel)) {
       add("error", "structure", `Missing page file: ${rel}`);

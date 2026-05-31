@@ -422,17 +422,24 @@
         </div>
         <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
           <div class="top-text">
-            <ul class="lang-switcher">
-              <li>
-                <a href="/talalgia.html"><img src="../images/es.svg" title="Drapeau espagnol" alt="drapeau espagnol" width="24" height="16" /></a>
+                        <div class="lang-picker" data-lang-picker>
+              <button type="button" class="lang-picker__trigger" aria-expanded="false" aria-haspopup="listbox" aria-label="Langue">
+                <svg class="lang-picker__icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                <span class="lang-picker__current">Français</span>
+                <svg class="lang-picker__chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+              </button>
+              <ul class="lang-picker__menu" role="listbox" aria-label="Langue">
+              <li class="lang-picker__item" role="none">
+                <a class="lang-picker__option" href="/talalgia.html" role="option" hreflang="es-AR">Español</a>
               </li>
-              <li>
-                <a href="/en/talalgia.html"><img src="../images/gb.svg" title="Drapeau britannique" alt="drapeau britannique" width="24" height="16" /></a>
+              <li class="lang-picker__item" role="none">
+                <a class="lang-picker__option" href="/en/talalgia.html" role="option" hreflang="en">English</a>
               </li>
-              <li>
-                <a href="/fr/talalgia.html" aria-current="true"><img src="../images/fr.svg" title="Drapeau français" alt="drapeau français" width="24" height="16" /></a>
+              <li class="lang-picker__item" role="none">
+                <a class="lang-picker__option" href="/fr/talalgia.html" role="option" aria-current="true" hreflang="fr">Français</a>
               </li>
-            </ul>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -473,6 +480,7 @@
 </div>
   <script src="../partials/header-fr.min.js"></script>
   <script src="../js/header-include.min.js"></script>
+  <script src="../js/lang-picker.min.js"></script>
   <script src="../partials/nav-fr.min.js"></script>
   <script src="../js/nav-include.min.js"></script>
 

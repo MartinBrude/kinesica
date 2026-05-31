@@ -422,17 +422,24 @@
         </div>
         <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
           <div class="top-text">
-            <ul class="lang-switcher">
-              <li>
-                <a href="/cervicalgia.html" aria-current="true"><img src="images/es.svg" title="bandera española" alt="bandera española" width="24" height="16" /></a>
+                        <div class="lang-picker" data-lang-picker>
+              <button type="button" class="lang-picker__trigger" aria-expanded="false" aria-haspopup="listbox" aria-label="Idioma">
+                <svg class="lang-picker__icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                <span class="lang-picker__current">Español</span>
+                <svg class="lang-picker__chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+              </button>
+              <ul class="lang-picker__menu" role="listbox" aria-label="Idioma">
+              <li class="lang-picker__item" role="none">
+                <a class="lang-picker__option" href="/cervicalgia.html" role="option" aria-current="true" hreflang="es-AR">Español</a>
               </li>
-              <li>
-                <a href="/en/cervicalgia.html"><img src="images/gb.svg" title="bandera inglesa" alt="bandera inglesa" width="24" height="16" /></a>
+              <li class="lang-picker__item" role="none">
+                <a class="lang-picker__option" href="/en/cervicalgia.html" role="option" hreflang="en">English</a>
               </li>
-              <li>
-                <a href="/fr/cervicalgia.html"><img src="images/fr.svg" title="bandera francesa" alt="bandera francesa" width="24" height="16" /></a>
+              <li class="lang-picker__item" role="none">
+                <a class="lang-picker__option" href="/fr/cervicalgia.html" role="option" hreflang="fr">Français</a>
               </li>
-            </ul>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -473,6 +480,7 @@
 </div>
   <script src="partials/header-es.min.js"></script>
   <script src="js/header-include.min.js"></script>
+  <script src="js/lang-picker.min.js"></script>
   <script src="partials/nav-es.min.js"></script>
   <script src="js/nav-include.min.js"></script>
 

@@ -1,35 +1,50 @@
+#!/usr/bin/env node
 /**
+ * Generate js/lang-routes.js from languages.mjs + i18n-urls.mjs.
+ * Run: npm run build:lang-routes
+ */
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import {
+  DEFAULT_LANG,
+  LANG_CODES,
+  LANGUAGES,
+  SUBDIR_LANGS,
+} from "./languages.mjs";
+import { STEMS } from "./i18n-urls.mjs";
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const OUT = path.join(ROOT, "js/lang-routes.js");
+
+const publishedLangs = LANGUAGES.filter((l) => l.published);
+const langsJson = JSON.stringify(
+  publishedLangs.map((l) => ({
+    code: l.code,
+    nativeName: l.nativeName,
+    hreflang: l.hreflang,
+    urlPrefix: l.urlPrefix,
+    isDefault: l.isDefault,
+  })),
+  null,
+  2,
+);
+
+const subdirsJson = JSON.stringify(SUBDIR_LANGS);
+const stemsJson = JSON.stringify(STEMS);
+const defaultLangJson = JSON.stringify(DEFAULT_LANG);
+const langCodesJson = JSON.stringify(LANG_CODES);
+
+const source = `/**
  * Page stems → localized paths (/, /en/…, /fr/…).
  * AUTO-GENERATED — edit scripts/languages.mjs + npm run build:lang-routes
  */
 (function (global) {
-  var DEFAULT_LANG = "es";
-  var SUBDIRS = ["en","fr"];
-  var LANG_CODES = ["es","en","fr"];
-  var LANGS = [
-  {
-    "code": "es",
-    "nativeName": "Español",
-    "hreflang": "es-AR",
-    "urlPrefix": "",
-    "isDefault": true
-  },
-  {
-    "code": "en",
-    "nativeName": "English",
-    "hreflang": "en",
-    "urlPrefix": "en",
-    "isDefault": false
-  },
-  {
-    "code": "fr",
-    "nativeName": "Français",
-    "hreflang": "fr",
-    "urlPrefix": "fr",
-    "isDefault": false
-  }
-];
-  var STEMS = ["index","articulos","atm","acupuntura","cadenas","cv","404","manipulaciones","neurodinamia","osteopatia","posturologia-clinica","rpg","cefalea","dorsalgia","lumbalgia","ciatalgia","cervicobraquialgia","pubalgia","gonalgia","talalgia","dolor-sacriiliaco","hernia-disco","protrusion-discal","hipercifosis","hiperlordosis","dorso-plano","genu-valgo","genu-varo","pies-planos","escoliosis","epicondilitis-lateral","epicondilitis-medial","impingement-subacromial","manguito-rotador","radiculopatia","meniscopatia","fascitis-plantar","cervicalgia"];
+  var DEFAULT_LANG = ${defaultLangJson};
+  var SUBDIRS = ${subdirsJson};
+  var LANG_CODES = ${langCodesJson};
+  var LANGS = ${langsJson};
+  var STEMS = ${stemsJson};
 
   function langEntry(code) {
     for (var i = 0; i < LANGS.length; i++) {
@@ -93,13 +108,13 @@
       if (href === indexPath || href === indexFile) {
         return { lang: sub, stem: "index" };
       }
-      var re = new RegExp("^/" + sub + "/([^/?#]+)\\.html$");
+      var re = new RegExp("^/" + sub + "/([^/?#]+)\\\\.html$");
       var m = href.match(re);
       if (m) {
         return { lang: sub, stem: m[1] };
       }
     }
-    var rootMatch = href.match(/^\/([^/?#]+)\.html$/);
+    var rootMatch = href.match(/^\\/([^/?#]+)\\.html$/);
     if (rootMatch) {
       return { lang: DEFAULT_LANG, stem: rootMatch[1] };
     }
@@ -118,20 +133,20 @@
     if (href === "index.html") {
       return parseLocation().lang;
     }
-    if (/^(?:\.\.\/)+index\.html$/.test(href)) {
+    if (/^(?:\\.\\.\\/)+index\\.html$/.test(href)) {
       return DEFAULT_LANG;
     }
     var j;
     for (j = 0; j < SUBDIRS.length; j++) {
       var sub = SUBDIRS[j];
       if (
-        new RegExp("^(?:\\.\\./)+" + sub + "/").test(href) ||
+        new RegExp("^(?:\\\\.\\\\./)+" + sub + "/").test(href) ||
         new RegExp("^" + sub + "/").test(href)
       ) {
         return sub;
       }
     }
-    if (/^(?:\.\.\/)+/.test(href)) {
+    if (/^(?:\\.\\.\\/)+/.test(href)) {
       return DEFAULT_LANG;
     }
     var from = parseLocation().lang;
@@ -159,7 +174,7 @@
       if (idx !== -1) {
         var tail = path.slice(idx + marker.length);
         var file = tail.split("/")[0] || "index.html";
-        var stem = file.replace(/\.html$/i, "") || "index";
+        var stem = file.replace(/\\.html$/i, "") || "index";
         return { lang: lang, stem: stem };
       }
     }
@@ -168,17 +183,17 @@
     if (parts.length && SUBDIRS.indexOf(parts[0]) !== -1) {
       var langPart = parts[0];
       var filePart = parts[1] || "index.html";
-      var stemPart = filePart.replace(/\.html$/i, "") || "index";
+      var stemPart = filePart.replace(/\\.html$/i, "") || "index";
       return { lang: langPart, stem: stemPart };
     }
 
     var baseFile = path.substring(path.lastIndexOf("/") + 1);
-    if (!baseFile || !/\.html$/i.test(baseFile)) {
+    if (!baseFile || !/\\.html$/i.test(baseFile)) {
       return { lang: DEFAULT_LANG, stem: "index" };
     }
     return {
       lang: DEFAULT_LANG,
-      stem: baseFile.replace(/\.html$/i, "") || "index",
+      stem: baseFile.replace(/\\.html$/i, "") || "index",
     };
   }
 
@@ -252,3 +267,7 @@
     },
   };
 })(window);
+`;
+
+fs.writeFileSync(OUT, source);
+console.log("Wrote", path.relative(ROOT, OUT));

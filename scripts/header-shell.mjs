@@ -4,6 +4,11 @@
 import fs from "fs";
 import path from "path";
 import { sitePath } from "./i18n-urls.mjs";
+import {
+  LANG_CODES,
+  PICKER_TRIGGER_LABEL,
+  langByCode,
+} from "./languages.mjs";
 
 export const HEADER_SCHEDULE = {
   es: "Lunes a viernes: <strong>10 a 20 h</strong>",
@@ -11,23 +16,34 @@ export const HEADER_SCHEDULE = {
   fr: "Lundi au vendredi : <strong>10 h à 20 h</strong>",
 };
 
-export const FLAG_LABELS = {
-  es: {
-    es: ["bandera española", "bandera española"],
-    en: ["bandera inglesa", "bandera inglesa"],
-    fr: ["bandera francesa", "bandera francesa"],
-  },
-  en: {
-    es: ["Spanish Flag", "spanish flag"],
-    en: ["British Flag", "british flag"],
-    fr: ["French flag", "french flag"],
-  },
-  fr: {
-    es: ["Drapeau espagnol", "drapeau espagnol"],
-    en: ["Drapeau britannique", "drapeau britannique"],
-    fr: ["Drapeau français", "drapeau français"],
-  },
-};
+const GLOBE_SVG = `<svg class="lang-picker__icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`;
+
+const CHEVRON_SVG = `<svg class="lang-picker__chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>`;
+
+export function buildLangPickerHtml(pageLang, stem) {
+  const current = langByCode(pageLang);
+  const triggerLabel = PICKER_TRIGGER_LABEL[pageLang] || "Language";
+  const menuItems = LANG_CODES.map((toLang) => {
+    const entry = langByCode(toLang);
+    const href = sitePath(toLang, stem);
+    const currentAttr =
+      toLang === pageLang ? ' aria-current="true"' : "";
+    return `              <li class="lang-picker__item" role="none">
+                <a class="lang-picker__option" href="${href}" role="option"${currentAttr} hreflang="${entry.hreflang}">${entry.nativeName}</a>
+              </li>`;
+  }).join("\n");
+
+  return `            <div class="lang-picker" data-lang-picker>
+              <button type="button" class="lang-picker__trigger" aria-expanded="false" aria-haspopup="listbox" aria-label="${triggerLabel}">
+                ${GLOBE_SVG}
+                <span class="lang-picker__current">${current.nativeName}</span>
+                ${CHEVRON_SVG}
+              </button>
+              <ul class="lang-picker__menu" role="listbox" aria-label="${triggerLabel}">
+${menuItems}
+              </ul>
+            </div>`;
+}
 
 export function stemFromRepoFile(file) {
   const base = path.basename(file, ".html");
@@ -36,26 +52,6 @@ export function stemFromRepoFile(file) {
 
 export function assetPrefixForLang(lang) {
   return lang === "es" ? "" : "../";
-}
-
-export function buildLangSwitcherHtml(pageLang, stem) {
-  const imgPrefix = pageLang === "es" ? "images/" : "../images/";
-  const labels = FLAG_LABELS[pageLang];
-  const flagFile = { es: "es.svg", en: "gb.svg", fr: "fr.svg" };
-
-  return ["es", "en", "fr"]
-    .map((toLang) => {
-      const [title, alt] = labels[toLang];
-      const href = sitePath(toLang, stem);
-      const img = flagFile[toLang];
-      const titleAttr = title ? ` title="${title}"` : "";
-      const currentAttr =
-        toLang === pageLang ? ' aria-current="true"' : "";
-      return `              <li>
-                <a href="${href}"${currentAttr}><img src="${imgPrefix}${img}"${titleAttr} alt="${alt}" width="24" height="16" /></a>
-              </li>`;
-    })
-    .join("\n");
 }
 
 export function loadSnippet(root, jsPath) {
@@ -67,8 +63,12 @@ export function loadSnippet(root, jsPath) {
 
 export function fillHeaderSnippet(headerHtml, pageLang, stem, navHtml) {
   let html = headerHtml.replace(
-    /<ul class="lang-switcher">\s*<\/ul>/,
-    `<ul class="lang-switcher">\n${buildLangSwitcherHtml(pageLang, stem)}\n            </ul>`,
+    /<ul class="lang-switcher">[\s\S]*?<\/ul>/,
+    buildLangPickerHtml(pageLang, stem),
+  );
+  html = html.replace(
+    /<div class="lang-picker" data-lang-picker>\s*<\/div>/,
+    buildLangPickerHtml(pageLang, stem),
   );
   if (navHtml) {
     html = html.replace(
@@ -85,6 +85,7 @@ export function headerShellMarkup(lang, prefix = "") {
   return `  <div id="site-header-root" data-header-lang="${l}"></div>
   <script src="${prefix}partials/header-${l}.min.js"></script>
   <script src="${prefix}js/header-include.min.js"></script>
+  <script src="${prefix}js/lang-picker.min.js"></script>
   <script src="${prefix}partials/nav-${l}.min.js"></script>
   <script src="${prefix}js/nav-include.min.js"></script>
 `;

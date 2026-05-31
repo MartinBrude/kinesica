@@ -1,14 +1,28 @@
 /**
  * Canonical URL helpers for /, /en/, /fr/ structure.
  */
+import { PATHOLOGY_STEMS } from "./pathology-content.mjs";
+import {
+  DEFAULT_LANG,
+  LANG_CODES,
+  LANGUAGES,
+  langByCode,
+} from "./languages.mjs";
+
+export { LANG_CODES, DEFAULT_LANG } from "./languages.mjs";
+
 export const SITE = "https://www.kinesica.com.ar";
 
 /** BCP 47 — alineado entre <html lang>, content-language, hreflang e inLanguage. */
-export const HTML_LANG = { es: "es-AR", en: "en", fr: "fr" };
-export const HREFLANG = { es: "es-AR", en: "en", fr: "fr" };
-export const SCHEMA_LANGUAGE = { es: "es-AR", en: "en", fr: "fr" };
-
-import { PATHOLOGY_STEMS } from "./pathology-content.mjs";
+export const HTML_LANG = Object.fromEntries(
+  LANGUAGES.map((l) => [l.code, l.bcp47]),
+);
+export const HREFLANG = Object.fromEntries(
+  LANGUAGES.map((l) => [l.code, l.hreflang]),
+);
+export const SCHEMA_LANGUAGE = Object.fromEntries(
+  LANGUAGES.map((l) => [l.code, l.bcp47]),
+);
 
 export const STEMS = [
   "index",
@@ -28,32 +42,41 @@ export const STEMS = [
 
 /** Public absolute URL for a page. */
 export function absoluteUrl(lang, stem) {
-  if (lang === "es") {
+  const entry = langByCode(lang);
+  if (!entry || entry.isDefault) {
     return stem === "index" ? `${SITE}/` : `${SITE}/${stem}.html`;
   }
-  return stem === "index" ? `${SITE}/${lang}/` : `${SITE}/${lang}/${stem}.html`;
+  return stem === "index"
+    ? `${SITE}/${entry.urlPrefix}/`
+    : `${SITE}/${entry.urlPrefix}/${stem}.html`;
 }
 
 /** Site-root path (leading slash) for href. */
 export function sitePath(lang, stem) {
-  if (lang === "es") {
+  const entry = langByCode(lang);
+  if (!entry || entry.isDefault) {
     return stem === "index" ? "/" : `/${stem}.html`;
   }
-  return stem === "index" ? `/${lang}/` : `/${lang}/${stem}.html`;
+  return stem === "index"
+    ? `/${entry.urlPrefix}/`
+    : `/${entry.urlPrefix}/${stem}.html`;
 }
 
 /** Repo-relative file path. */
 export function repoPath(lang, stem) {
-  if (lang === "es") {
+  const entry = langByCode(lang);
+  if (!entry || entry.isDefault) {
     return stem === "index" ? "index.html" : `${stem}.html`;
   }
-  return stem === "index" ? `${lang}/index.html` : `${lang}/${stem}.html`;
+  return stem === "index"
+    ? `${entry.urlPrefix}/index.html`
+    : `${entry.urlPrefix}/${stem}.html`;
 }
 
 /** Legacy absolute URLs (pre-migration) for redirects. */
 export function legacyAbsoluteUrl(lang, stem) {
-  if (lang === "es") {
-    return absoluteUrl("es", stem);
+  if (lang === DEFAULT_LANG) {
+    return absoluteUrl(DEFAULT_LANG, stem);
   }
   if (stem === "index") {
     return `${SITE}/index_${lang}.html`;
@@ -62,8 +85,8 @@ export function legacyAbsoluteUrl(lang, stem) {
 }
 
 export function legacyRepoPath(lang, stem) {
-  if (lang === "es") {
-    return repoPath("es", stem);
+  if (lang === DEFAULT_LANG) {
+    return repoPath(DEFAULT_LANG, stem);
   }
   if (stem === "index") {
     return `index_${lang}.html`;

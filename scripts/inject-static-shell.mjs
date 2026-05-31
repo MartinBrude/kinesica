@@ -1,34 +1,15 @@
 #!/usr/bin/env node
 /**
- * Inject nav + footer HTML into pages so crawlers see internal links without JS.
+ * Inject static header (lang picker) and ensure lang-picker.js is loaded.
  * Run: node scripts/inject-static-shell.mjs
  */
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { injectStaticHeader } from "./header-shell.mjs";
+import { listHtmlFiles, expectedLangFromFile } from "./languages.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-
-function listHtmlFiles() {
-  const files = fs
-    .readdirSync(ROOT)
-    .filter((f) => f.endsWith(".html") && !f.startsWith("cv-"));
-  for (const lang of ["en", "fr"]) {
-    const dir = path.join(ROOT, lang);
-    if (!fs.existsSync(dir)) continue;
-    for (const f of fs.readdirSync(dir)) {
-      if (f.endsWith(".html")) files.push(`${lang}/${f}`);
-    }
-  }
-  return files;
-}
-
-function expectedLang(file) {
-  if (file.startsWith("en/")) return "en";
-  if (file.startsWith("fr/")) return "fr";
-  return "es";
-}
 
 function loadSnippet(jsPath) {
   const raw = fs.readFileSync(path.join(ROOT, jsPath), "utf8");
@@ -38,7 +19,7 @@ function loadSnippet(jsPath) {
 }
 
 function injectNav(html, file) {
-  const lang = expectedLang(file);
+  const lang = expectedLangFromFile(file);
   const navHtml = loadSnippet(`partials/nav-${lang}.js`);
   html = html.replace(
     /<div id="navigation" class="nav navbar-nav navbar-right"/g,
@@ -59,7 +40,7 @@ function injectNav(html, file) {
 }
 
 function injectCta(html, file) {
-  const lang = expectedLang(file);
+  const lang = expectedLangFromFile(file);
   if (!html.includes('id="site-cta-strip-root"')) {
     return html;
   }
@@ -84,7 +65,7 @@ function injectCta(html, file) {
 }
 
 function injectFooter(html, file) {
-  const lang = expectedLang(file);
+  const lang = expectedLangFromFile(file);
   if (!html.includes('id="site-footer-root"')) {
     return html;
   }
@@ -108,8 +89,27 @@ function injectFooter(html, file) {
   );
 }
 
+function ensureLangPickerScript(html, file) {
+  if (!html.includes('id="site-header-root"')) {
+    return html;
+  }
+  const prefix = file.includes("/") ? "../" : "";
+  const tag = `<script src="${prefix}js/lang-picker.min.js"></script>`;
+  const tagUnmin = `<script src="${prefix}js/lang-picker.js"></script>`;
+  if (html.includes(tag) || html.includes(tagUnmin)) {
+    return html;
+  }
+  const afterHeaderInclude = new RegExp(
+    `(<script src="${prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}js/header-include(?:\\.min)?\\.js"><\\/script>)`,
+  );
+  if (afterHeaderInclude.test(html)) {
+    return html.replace(afterHeaderInclude, `$1\n  ${tag}`);
+  }
+  return html;
+}
+
 let changed = 0;
-for (const file of listHtmlFiles()) {
+for (const file of listHtmlFiles(ROOT)) {
   if (/404-router/.test(file)) continue;
   const full = path.join(ROOT, file);
   let html = fs.readFileSync(full, "utf8");
@@ -118,6 +118,7 @@ for (const file of listHtmlFiles()) {
   html = injectNav(html, file);
   html = injectCta(html, file);
   html = injectFooter(html, file);
+  html = ensureLangPickerScript(html, file);
   if (html !== original) {
     fs.writeFileSync(full, html);
     changed++;

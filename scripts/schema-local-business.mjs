@@ -3,6 +3,7 @@
  * Fuente única para inyección en HTML y generación de partials.
  */
 import { SITE, absoluteUrl, STEMS } from "./i18n-urls.mjs";
+import { LANG_CODES } from "./languages.mjs";
 
 export const BUSINESS_ID = `${SITE}/#kinesica`;
 
@@ -361,7 +362,7 @@ export function buildPhysiotherapyClinic(lang) {
       name,
     })),
     additionalType: "https://schema.org/Physiotherapy",
-    availableLanguage: ["es", "en", "fr"],
+    availableLanguage: LANG_CODES,
     currenciesAccepted: "ARS",
     paymentAccepted: ["Cash", "Credit Card", "Debit Card"],
     priceRange: "$$",
