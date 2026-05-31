@@ -3,7 +3,7 @@ window.__KINESICA_FOOTER_SNIPPET_PT = `
 <footer class="footer">
   <div class="container">
     <div class="row">
-      <div class="col-lg-4 col-md-2 col-sm-2 col-xs-12">
+      <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
         <div class="footer-widget">
           <h2 class="widget-title">Métodos e técnicas</h2>
           <ul class="listnone">
@@ -18,7 +18,7 @@ window.__KINESICA_FOOTER_SNIPPET_PT = `
           </ul>
         </div>
       </div>
-      <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+      <div class="col-lg-2 col-md-4 col-sm-4 col-xs-12">
         <div class="footer-widget footer-social">
           <h2 class="widget-title">Redes sociais</h2>
           <ul class="listnone">
@@ -33,7 +33,7 @@ window.__KINESICA_FOOTER_SNIPPET_PT = `
           </ul>
         </div>
       </div>
-      <div class="col-lg-4 col-md-2 col-sm-2 col-xs-12">
+      <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
         <div class="footer-widget footer-social">
           <h2 class="widget-title">Consultório</h2>
           <ul class="listnone">

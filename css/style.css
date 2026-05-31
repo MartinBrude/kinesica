@@ -2156,6 +2156,16 @@ main:focus {
   white-space: nowrap;
 }
 
+@media (max-width: 1199.98px) {
+  .footer-social .widget-title {
+    white-space: normal;
+  }
+
+  .footer-widget .widget-title {
+    font-size: 1.05rem;
+  }
+}
+
 .footer-social ul {}
 
 .footer-social ul li {}

@@ -125,7 +125,7 @@ function buildFooter(lang, s) {
     `<footer class="footer">
   <div class="container">
     <div class="row">
-      <div class="col-lg-4 col-md-2 col-sm-2 col-xs-12">
+      <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
         <div class="footer-widget">
           <h2 class="widget-title">${s.methodsTitle}</h2>
           <ul class="listnone">
@@ -148,7 +148,7 @@ ${techniqueLinks}
           </ul>
         </div>
       </div>
-      <div class="col-lg-4 col-md-2 col-sm-2 col-xs-12">
+      <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
         <div class="footer-widget footer-social">
           <h2 class="widget-title">${s.clinicTitle}</h2>
           <ul class="listnone">
