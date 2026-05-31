@@ -1,46 +1,44 @@
 #!/usr/bin/env node
 /**
- * Fail if pt/ static pages still contain common EN/FR leakage.
+ * Fail if pt/ pages contain common EN/FR copy leakage (static + pathologies).
  * Run: node scripts/verify-pt-copy.mjs
  */
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { PATHOLOGY_STEMS } from "./pathology-content.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const PT = path.join(ROOT, "pt");
-const STATIC = new Set([
-  "index.html",
-  "404.html",
-  "articulos.html",
-  "cv.html",
-  "acupuntura.html",
-  "atm.html",
-  "cadenas.html",
-  "manipulaciones.html",
-  "neurodinamia.html",
-  "osteopatia.html",
-  "posturologia-clinica.html",
-  "rpg.html",
-]);
 
 const EN_RE =
   /\b(the |and |with |Your |What is |How long|Treatment |Don't get|I'm a |According to)\b/i;
 const FR_RE =
-  /\b(Accueil|Contactez-nous|kinésithérapeute|ostéopathie|Rééducation posturale|Questions fréquentes|Page introuvable)\b/i;
+  /\b(Accueil|Contactez-nous|kinésithérapeute|ostéopathie|Rééducation posturale|Questions fréquentes|Page introuvable|traitement des|Thérapie manuelle|méthode définissant|Un petit disque|mâchoire en place|étude et traitement|Informations sur les pathologies)\b/i;
 
-const WHITELIST = /English|Français|Español|WhatsApp|Google Maps|Busquet|Barral|Souchard|Kinésica|Palermo|Buenos Aires|Scalabrini|Português/i;
+const WHITELIST =
+  /English|Français|Español|WhatsApp|Google Maps|Busquet|Barral|Souchard|Kinésica|Palermo|Buenos Aires|Scalabrini|Português|Université Permanente de Thérapie|Léopold Busquet|btn-home/i;
+
+function extractCheckBlocks(html) {
+  const main = html.match(/<main[\s\S]*?<\/main>/i)?.[0] || "";
+  let head = html.match(/<head>[\s\S]*?<\/head>/i)?.[0] || "";
+  head = head.replace(
+    /<script type="application\/ld\+json" id="kinesica-local-schema">[\s\S]*?<\/script>/i,
+    "",
+  );
+  return `${head}\n${main}`;
+}
 
 let errors = 0;
-for (const name of fs.readdirSync(PT)) {
-  if (!name.endsWith(".html")) continue;
-  if (PATHOLOGY_STEMS.some((s) => name === `${s}.html`)) continue;
-  if (!STATIC.has(name)) continue;
+const files = fs.readdirSync(PT).filter((f) => f.endsWith(".html"));
+for (const name of files) {
   const html = fs.readFileSync(path.join(PT, name), "utf8");
-  const main = html.match(/<main[\s\S]*?<\/main>/i)?.[0] || html;
-  const head = html.match(/<head>[\s\S]*?<\/head>/i)?.[0] || "";
-  const check = `${head}\n${main}`;
+  const check = extractCheckBlocks(html);
+
+  if (/Ônibusquet|Ônibuscamos|Ônibusca /.test(check)) {
+    console.error(`[pt/${name}] corrupted Busquet/Busca copy`);
+    errors++;
+  }
+
   for (const re of [EN_RE, FR_RE]) {
     const hit = check.match(re);
     if (hit && !WHITELIST.test(hit[0])) {
@@ -50,8 +48,9 @@ for (const name of fs.readdirSync(PT)) {
     }
   }
 }
+
 if (errors) {
-  console.error(`\nverify-pt-copy FAILED (${errors} file(s))`);
+  console.error(`\nverify-pt-copy FAILED (${errors} issue(s) in ${files.length} pages)`);
   process.exit(1);
 }
-console.log("verify-pt-copy OK");
+console.log(`verify-pt-copy OK (${files.length} pages)`);

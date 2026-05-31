@@ -33,6 +33,7 @@ for (const stem of STEMS) {
       check(file, (html, f) => {
         if (!html.includes('hreflang="fr"')) errors.push(`${f}: missing hreflang fr`);
         if (!html.includes('hreflang="en"')) errors.push(`${f}: missing hreflang en`);
+        if (!html.includes('hreflang="pt"')) errors.push(`${f}: missing hreflang pt`);
         if (!html.includes("lang-picker")) errors.push(`${f}: missing lang-picker`);
         if (!hasAsset(html, "lang-routes.js")) errors.push(`${f}: missing lang-routes`);
         if (!html.includes("/en/")) errors.push(`${f}: missing /en/ links`);
@@ -90,6 +91,7 @@ for (const stem of STEMS) {
 check("llms.txt", (text) => {
   if (!text.startsWith("# Kinésica")) errors.push("llms.txt: missing H1 title");
   if (!text.includes("## Optional")) errors.push("llms.txt: missing Optional section");
+  if (!text.includes("## Português")) errors.push("llms.txt: missing Português section");
   if (!text.includes("https://www.kinesica.com.ar/"))
     errors.push("llms.txt: should link to canonical site URLs");
 });

@@ -43,4 +43,6 @@ if (errors.length) {
   console.error(errors.join("\n"));
   process.exit(1);
 }
-console.log(`OK: ${PATHOLOGY_STEMS.length * 3} pathology pages verified.`);
+console.log(
+  `OK: ${PATHOLOGY_STEMS.length * LANG_CODES.length} pathology pages verified.`,
+);

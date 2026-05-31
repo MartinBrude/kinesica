@@ -4,7 +4,7 @@
 (function () {
   if (!document.getElementById("faqAccordion")) return;
   var htmlLang = document.documentElement.getAttribute("lang") || "es-AR";
-  var lang = htmlLang === "en" ? "en" : htmlLang === "fr" ? "fr" : "es";
+  var lang = ({"es-AR":"es","en":"en","fr":"fr","pt":"pt"})[htmlLang]||"es";
   var schemas = {
   "es": {
     "@context": "https://schema.org",
@@ -173,6 +173,63 @@
         "acceptedAnswer": {
           "@type": "Answer",
           "text": "Les personnes souffrant de douleur, troubles de sensibilité, vertiges, troubles posturaux, blessures traumatiques ou sportives, entre autres."
+        }
+      }
+    ]
+  },
+  "pt": {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": "https://www.kinesica.com.ar/pt/#faq",
+    "inLanguage": "es-AR",
+    "mainEntityOfPage": "https://www.kinesica.com.ar/pt/",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Qual é a duração do tratamento?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Depende do objetivo, da condição do paciente e da evolução do tratamento."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Quanto tempo dura cada sessão?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A duração varia conforme o caso e a metodologia. Como referência, reservamos cerca de 1 hora por sessão."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Com que frequência são as sessões?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Varia conforme o caso e os métodos. Algumas modalidades são semanais; outras, a cada 2 ou 3 semanas."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "O que devo levar na primeira sessão?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Suas dúvidas e exames complementares, se tiver; roupa confortável. Menores devem vir acompanhados de um adulto."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Vocês aceitam planos de saúde ou reembolso?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Você pode solicitar reembolso junto ao seu plano ou seguro de saúde."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Quem pode se beneficiar desses tratamentos?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Pessoas com dor, alterações de sensibilidade, tontura, distúrbios posturais, lesões traumáticas ou esportivas, entre outras."
         }
       }
     ]

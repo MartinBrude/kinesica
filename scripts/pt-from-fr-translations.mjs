@@ -48,7 +48,7 @@ export const PT_FROM_FR_REPLACEMENTS = [
     "O tratamento combina técnicas manuais, exercícios de reeducação postural e, quando necessário, palmilhas ou recomendações para o dia a dia. Buscamos apoio mais estável, melhor alinhamento e maior conforto nas atividades cotidianas."
   ],
   [
-    "Un petit disque doit glisser à chaque mouvement de la bouche. Sous tension ou bruxismo, il peut se déplacer ou les muscles se surcharger. Techniques de mobilité et exercices doux remettent la mâchoire en place et relâchent les muscles.",
+    "Un petit disque doit glisser à chaque mouvement de la bouche. Sous tension ou bruxisme, il peut se déplacer ou les muscles se surcharger. Techniques de mobilité et exercices doux remettent la mâchoire en place et relâchent les muscles.",
     "Um pequeno disco deve deslizar a cada movimento da boca. Com tensão ou bruxismo, ele pode se deslocar ou os músculos se sobrecarregar. Técnicas de mobilidade e exercícios suaves reposicionam a mandíbula e relaxam os músculos."
   ],
   [
@@ -182,6 +182,22 @@ export const PT_FROM_FR_REPLACEMENTS = [
   [
     "ATM : traitement des dysfonctions de la mâchoire, douleur, claquements et bruxisme par thérapie manuelle à Palermo.",
     "ATM: tratamento de disfunções da mandíbula, dor, estalos e bruxismo com terapia manual em Palermo."
+  ],
+  [
+    "ATM : traitement des dysfonctions mandibulaires par thérapie manuelle à Palermo.",
+    "ATM: tratamento de disfunções da mandíbula, dor, estalos e bruxismo com terapia manual em Palermo."
+  ],
+  [
+    "Chaînes physiologiques : méthode définissant la relation entre la structure corporelle et le contenu viscéral. Thérapie manuelle à Palermo, Buenos Aires.",
+    "Cadeias fisiológicas: método que relaciona estrutura corporal e conteúdo visceral. Terapia manual em Palermo."
+  ],
+  [
+    "Manipulations viscérales : traitement des tensions viscérales affectant l'appareil locomoteur. Thérapie manuelle à Palermo, Buenos Aires.",
+    "Manipulações viscerais: tratamento de tensões viscerais que afetam o sistema locomotor. Terapia manual em Palermo."
+  ],
+  [
+    "Neurodynamique : étude et traitement des troubles du système nerveux. Soulagement de la douleur et amélioration neurologique à Palermo, Buenos Aires.",
+    "Neurodinâmica: estudo e tratamento de distúrbios do sistema nervoso. Alívio da dor e melhora neurológica em Palermo."
   ],
   [
     "Les techniques incluent les manipulations articulaires à thrust, les techniques rapides et les techniques douces.",
@@ -912,7 +928,11 @@ export const PT_FROM_FR_REPLACEMENTS = [
     "Ajuda"
   ],
   [
-    "Bus",
-    "Ônibus"
+    "Informations sur les pathologies fréquentes et notre approche en thérapie manuelle chez Kinésica. Choisissez un sujet pour lire l'article complet.",
+    "Informações sobre condições frequentes e como as abordamos com terapia manual na Kinésica. Escolha um tema para ler o artigo completo."
+  ],
+  [
+    '<h3 class="map-transit-card-title">Bus</h3>',
+    '<h3 class="map-transit-card-title">Ônibus</h3>'
   ]
 ];

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
  * Bootstrap pt/ pages from fr/ + apply FR→PT copy replacements.
+ * Then run: apply-lang-meta → build-articulos-pages → inject-local-schema → inject-static-shell
  * Run: node scripts/bootstrap-pt-pages.mjs
  */
 import fs from "fs";
@@ -18,6 +19,21 @@ const BOOTSTRAP_SKIP = new Set([
   "cv.html",
   ...PATHOLOGY_STEMS.map((s) => `${s}.html`),
 ]);
+
+function syncOgDescriptionFromMeta(html) {
+  const meta = html.match(
+    /<meta name="description"\s*\n?\s*content="([^"]*)"\s*\/?>/,
+  );
+  if (!meta) return html;
+  const desc = meta[1];
+  return html.replace(
+    /<meta property="og:description"\s*\n?\s*content="[^"]*"\s*\/?>/,
+    `<meta property="og:description"\n    content="${desc}" />`,
+  );
+}
+
+const SCHEMA_BLOCK_RE =
+  /\s*<script type="application\/ld\+json" id="kinesica-local-schema">[\s\S]*?<\/script>/;
 
 function cloneFrToPt(name) {
   const src = path.join(FR_DIR, name);
@@ -52,6 +68,12 @@ function cloneFrToPt(name) {
   for (const [from, to] of PT_FROM_FR_REPLACEMENTS) {
     html = html.split(from).join(to);
   }
+  html = html.replace(SCHEMA_BLOCK_RE, "");
+  html = syncOgDescriptionFromMeta(html);
+  html = html.replace(
+    /\s*<script src="\.\.\/partials\/footer-en\.min\.js"><\/script>\n/g,
+    "",
+  );
   fs.mkdirSync(PT_DIR, { recursive: true });
   fs.writeFileSync(dest, html);
   return true;
