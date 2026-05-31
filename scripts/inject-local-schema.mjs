@@ -14,6 +14,7 @@ import {
   langFromHtmlFile,
   ldJsonScript,
 } from "./schema-local-business.mjs";
+import { LANG_CODES, langByCode } from "./languages.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -27,11 +28,13 @@ function listHtmlFiles() {
   const files = fs
     .readdirSync(ROOT)
     .filter((f) => f.endsWith(".html") && !f.startsWith("cv-"));
-  for (const lang of ["en", "fr"]) {
-    const dir = path.join(ROOT, lang);
+  for (const code of LANG_CODES) {
+    const entry = langByCode(code);
+    if (!entry || entry.isDefault) continue;
+    const dir = path.join(ROOT, entry.urlPrefix);
     if (!fs.existsSync(dir)) continue;
     for (const f of fs.readdirSync(dir)) {
-      if (f.endsWith(".html")) files.push(`${lang}/${f}`);
+      if (f.endsWith(".html")) files.push(`${entry.urlPrefix}/${f}`);
     }
   }
   return files;
@@ -42,7 +45,7 @@ function isPublicPage(file) {
 }
 
 function isHomePage(file) {
-  return file === "index.html" || file === "en/index.html" || file === "fr/index.html";
+  return file === "index.html" || /^(en|fr|pt)\/index\.html$/.test(file);
 }
 
 function inject(html, file) {

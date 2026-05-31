@@ -17,111 +17,111 @@ export const CV_PT = {
   "courses": [
     [
       "1985",
-      "Functional Anatomy and Deep Myofascial Massage"
+      "Anatomia funcional e massagem do músculo e tecido conjuntivo profundos"
     ],
     [
       "1987",
-      "XXIV Congress of the Rioplatense Association of Anatomy"
+      "XXIV<sup>o</sup> Congresso da Associação Rioplatense de Anatomia"
     ],
     [
       "2003",
-      "Speaker at the I Congress of Rehabilitation in Orthopedics and Kinesiology"
+      "Palestrante no I Congresso de Reabilitação em Ortopedia e Fisioterapia"
     ],
     [
       "2004",
-      "TMJ Course, Universidad Mayor de Santiago de Chile"
+      "Curso de ATM, Universidad Mayor de Santiago de Chile"
     ],
     [
       "2010",
-      "Imaging Interpretation Workshop – Fundación Diagnóstico Maipú"
+      "Workshop de interpretação de imagens – Fundación Diagnóstico Maipú"
     ],
     [
       "2015",
-      "Physiological Chains – Méthode Busquet"
+      "Cadeias fisiológicas – Método Busquet"
     ],
     [
       "2018",
-      "Argentine and Latin American Congress of Manual Therapy"
+      "Congresso argentino e latino-americano de terapia manual"
     ],
     [
       "2019",
-      "II Fascial Connection – International Congress on Fascia"
+      "II Fascial Connection – Congresso internacional sobre fáscia"
     ]
   ],
   "summaryTitle": "Resumo",
-  "summary": "Tenho 36 anos de trajetória, combinando trabalho em instituições de saúde com atendimento personalizado em consultório. Especializo-me em terapias manuais, com foco no tratamento da dor, reabilitação funcional e bem-estar integral de cada paciente.",
+  "summary": "Tenho 36 anos de experiência, unindo trabalho em instituições de saúde e atendimento personalizado em consultório. Especializo-me em terapias manuais, com foco no tratamento da dor, reabilitação funcional e bem-estar integral de cada paciente. Minha abordagem é global e personalizada: adapto técnicas de fisioterapia, osteopatia e terapia manual às necessidades específicas de cada caso. Também tenho experiência na coordenação de equipes multidisciplinares e busco formação contínua em técnicas corporais e biomecânica aplicada.",
   "experienceTitle": "Experiência",
   "keyLabel": "Responsabilidades principais:",
   "jobs": [
     {
-      "title": "Degree in Manual Therapy – Université Permanente de Thérapie",
+      "title": "Pós-graduação em Terapia Manual – Université Permanente de Thérapie",
       "dates": "1992 – 2007",
-      "intro": "Ongoing training in Manual Therapy with a focus on advanced assessment and treatment techniques.",
+      "intro": "Formação continuada em terapia manual, com foco em técnicas avançadas de avaliação e tratamento.",
       "bullets": [
-        "Attendance at continuing education modules.",
-        "Ongoing training in manual therapeutic techniques.",
-        "Specialization in joint injuries and cervical pathologies.",
-        "Contribution to the promotion and professionalization of Global Postural Reeducation (RPG) in Argentina."
+        "Participação em módulos de formação continuada.",
+        "Atualização em técnicas terapêuticas manuais.",
+        "Especialização em lesões articulares e patologias cervicais.",
+        "Contribuição para a difusão e profissionalização da RPG na Argentina."
       ]
     },
     {
-      "title": "Training in Global Postural Reeducation (RPG) – Université Permanente de Thérapie",
+      "title": "Formação em RPG – Université Permanente de Thérapie",
       "dates": "2000 – 2007",
-      "intro": "Specialization in Global Postural Reeducation (RPG) applied to various pathologies.",
+      "intro": "Especialização em Reeducação Postural Global (RPG) aplicada a diversas patologias.",
       "bullets": [
-        "Basic and advanced training in Global Postural Reeducation (RPG).",
-        "Studies applied to scoliosis, joint injuries, and cervical pathologies.",
-        "Advanced Diploma in RPG.",
-        "X-ray reading and comprehensive clinical approach to musculoskeletal pathologies."
+        "Formação básica e avançada em RPG.",
+        "Estudos aplicados a escoliose, lesões articulares e patologias cervicais.",
+        "Diploma superior em RPG.",
+        "Leitura de radiografias e abordagem clínica global de patologias musculoesqueléticas."
       ]
     },
     {
-      "title": "Diploma in Osteopathy – Escuela Osteopática de Buenos Aires – CO",
+      "title": "Diploma em Osteopatia – Escuela Osteopática de Buenos Aires – CO",
       "dates": "2012 – 2018",
-      "intro": "Comprehensive program in structural and visceral osteopathy.",
+      "intro": "Programa integral em osteopatia estrutural e visceral.",
       "keyPoints": true,
       "bullets": [
-        "Ongoing theoretical and practical training.",
-        "Global osteopathic approach to patient care.",
-        "Integration of visceral manipulations (VM1, VM2, VM3) with musculoskeletal techniques.",
-        "Multidisciplinary clinical approach."
+        "Formação teórica e prática contínua.",
+        "Abordagem osteopática global do paciente.",
+        "Integração de manipulações viscerais (VM1, VM2, VM3) com técnicas musculoesqueléticas.",
+        "Abordagem clínica multidisciplinar."
       ]
     },
     {
-      "title": "Training in Respiratory Kinesiology in ICU – Caja de Kinesiólogos de la Provincia de Buenos Aires",
-      "dates": "May 2021",
-      "intro": "Specialized course in respiratory therapy for critical patients.",
+      "title": "Formação em fisioterapia respiratória em UTI – Caja de Kinesiólogos de la Provincia de Buenos Aires",
+      "dates": "Maio 2021",
+      "intro": "Curso especializado em terapia respiratória para pacientes críticos.",
       "keyPoints": true,
       "bullets": [
-        "Intensive training in ICU protocols.",
-        "Application of knowledge in a hospital setting.",
-        "Improvement of respiratory skills for critical care."
+        "Formação intensiva em protocolos de UTI.",
+        "Aplicação dos conhecimentos em contexto hospitalar.",
+        "Aprimoramento de habilidades respiratórias para cuidados críticos."
       ]
     },
     {
-      "title": "Neurodynamics – Neurodinamia Argentina",
+      "title": "Neurodinâmica – Neurodinamia Argentina",
       "dates": "2024",
-      "intro": "Professional update in neurodynamic techniques.",
+      "intro": "Atualização profissional em técnicas neurodinâmicas.",
       "bullets": [
-        "Assessment and treatment of the peripheral nervous system.",
-        "Incorporation of neurodynamic techniques into clinical practice."
+        "Avaliação e tratamento do sistema nervoso periférico.",
+        "Integração de técnicas neurodinâmicas à prática clínica."
       ]
     },
     {
-      "title": "Teaching Assistant – Universidad de Buenos Aires (UBA)",
-      "dates": "2022 – Present",
-      "intro": "Subject: Kinesiological Techniques 3",
+      "title": "Assistente docente – Universidade de Buenos Aires (UBA)",
+      "dates": "2022 – Atual",
+      "intro": "Disciplina: Técnicas cinesiológicas 3",
       "bullets": [
-        "Assistance in theoretical and practical classes.",
-        "Tutoring students in kinesiological approach.",
-        "Active participation in the training of future kinesiologists.",
-        "Integration of clinical experience into teaching."
+        "Assistência em aulas teóricas e práticas.",
+        "Tutoria de estudantes em abordagem fisioterapêutica.",
+        "Participação ativa na formação de futuros fisioterapeutas.",
+        "Integração da experiência clínica ao ensino."
       ]
     },
     {
-      "title": "Member and Co-founder – Asociación Argentina de Reeducación Postural Global (AARPG)",
+      "title": "Membro e cofundador – Associação Argentina de Reeducação Postural Global (AARPG)",
       "bullets": [
-        "Participation in the direction and organization of academic activities."
+        "Participação na direção e organização de atividades acadêmicas."
       ]
     }
   ],
@@ -132,8 +132,9 @@ export const CV_PT = {
   "breadcrumb": "Currículo",
   "time": "Segunda a sexta: <strong>10 h às 20 h</strong>",
   "flags": {
-    "es": "spanish flag",
-    "en": "british flag",
-    "fr": "french flag"
+    "es": "bandeira espanhola",
+    "en": "bandeira britânica",
+    "fr": "bandeira francesa",
+    "pt": "bandeira brasileira"
   }
 };

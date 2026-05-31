@@ -338,7 +338,14 @@ export function buildPhysiotherapyClinic(lang) {
     "@type": ["Physiotherapy", "MedicalClinic"],
     "@id": BUSINESS_ID,
     name: "Kinésica",
-    alternateName: "Kinésica — Centro de kinesiología y fisioterapia",
+    alternateName:
+      lang === "pt"
+        ? "Kinésica — Centro de fisioterapia e kinesiologia"
+        : lang === "fr"
+          ? "Kinésica — Cabinet de kinésithérapie et ostéopathie"
+          : lang === "en"
+            ? "Kinésica — Physiotherapy and osteopathy clinic"
+            : "Kinésica — Centro de kinesiología y fisioterapia",
     url: t.homeUrl,
     mainEntityOfPage: t.homeUrl,
     inLanguage: langCode,
@@ -373,11 +380,13 @@ export function buildPhysiotherapyClinic(lang) {
       "@type": "Person",
       name: "Norberto Silvio Brude",
       jobTitle:
-        lang === "fr"
-          ? "Kinésithérapeute et ostéopathe"
-          : lang === "en"
-            ? "Physiotherapist and osteopath"
-            : "Kinesiólogo y osteópata",
+        lang === "pt"
+          ? "Fisioterapeuta e osteopata"
+          : lang === "fr"
+            ? "Kinésithérapeute et ostéopathe"
+            : lang === "en"
+              ? "Physiotherapist and osteopath"
+              : "Kinesiólogo y osteópata",
       url: absoluteUrl(lang, "cv"),
     },
     contactPoint: {

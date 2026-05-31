@@ -114,6 +114,32 @@ function patchArticulosFile(rel, lang) {
     `<li><a href="${homeHref}">${ui.homeLabel}</a></li>\n            <li class="active">${ui.breadcrumb}</li>`,
   );
 
+  if (ui.metaTitle) {
+    html = html.replace(/<title>[^<]*<\/title>/, `<title>${esc(ui.metaTitle)}</title>`);
+  }
+  if (ui.metaDescription) {
+    html = html.replace(
+      /<meta name="description"\s*\n?\s*content="[^"]*"\s*\/?>/,
+      `<meta name="description"\n    content="${esc(ui.metaDescription)}" />`,
+    );
+    html = html.replace(
+      /<meta property="og:title" content="[^"]*"\s*\/?>/,
+      `<meta property="og:title" content="${esc(ui.metaTitle || ui.pageTitle)}" />`,
+    );
+    html = html.replace(
+      /<meta property="og:description"\s*\n?\s*content="[^"]*"\s*\/?>/,
+      `<meta property="og:description"\n    content="${esc(ui.metaDescription)}" />`,
+    );
+    html = html.replace(
+      /<meta name="twitter:title" content="[^"]*"\s*\/?>/,
+      `<meta name="twitter:title" content="${esc(ui.metaTitle || ui.pageTitle)}" />`,
+    );
+    html = html.replace(
+      /<meta name="twitter:description" content="[^"]*"\s*\/?>/,
+      `<meta name="twitter:description" content="${esc(ui.metaDescription)}" />`,
+    );
+  }
+
   html = ensureMainClosedBeforeCta(html);
 
   fs.writeFileSync(full, html);

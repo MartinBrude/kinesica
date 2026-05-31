@@ -42,5 +42,8 @@ export const ARTICLES_INDEX_UI = {
     homeLabel: "Início",
     breadcrumb: "Artigos",
     pageTitle: "Artigos",
+    metaTitle: "Artigos sobre terapia manual | Kinésica",
+    metaDescription:
+      "Artigos sobre fisioterapia, osteopatia e terapia manual: dor cervical, lombalgia e tratamentos em Palermo.",
   },
 };
