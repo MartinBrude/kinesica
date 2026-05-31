@@ -50,7 +50,9 @@ function buildMain(lang) {
 
   return `    <section class="content articles-index">
       <div class="container">
-        <p class="articles-index-intro ui-reveal">${ui.intro}</p>
+        <header class="articles-index-header ui-reveal">
+          <p class="articles-index-intro">${ui.intro}</p>
+        </header>
         <div class="articles-index-grid">
 ${cards}
         </div>

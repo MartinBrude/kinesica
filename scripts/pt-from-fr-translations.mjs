@@ -929,7 +929,7 @@ export const PT_FROM_FR_REPLACEMENTS = [
   ],
   [
     "Informations sur les pathologies fréquentes et notre approche en thérapie manuelle chez Kinésica. Choisissez un sujet pour lire l'article complet.",
-    "Informações sobre condições frequentes e como as abordamos com terapia manual na Kinésica. Escolha um tema para ler o artigo completo."
+    "Informações claras sobre condições frequentes e nossa abordagem com terapia manual, osteopatia e fisioterapia na Kinésica."
   ],
   [
     '<h3 class="map-transit-card-title">Bus</h3>',
