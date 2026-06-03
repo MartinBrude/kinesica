@@ -23,7 +23,7 @@ const SCHEMA = {
       telephone: "+54 11 6156 4311",
       address: {
         "@type": "PostalAddress",
-        streetAddress: "Charcas 3889 5ª B",
+        streetAddress: "Charcas 3889",
         addressLocality: "Ciudad Autónoma de Buenos Aires",
         addressRegion: "CABA",
         postalCode: "C1425",
@@ -130,7 +130,7 @@ const SCHEMA = {
       telephone: "+54 11 6156 4311",
       address: {
         "@type": "PostalAddress",
-        streetAddress: "Charcas 3889 5ª B",
+        streetAddress: "Charcas 3889",
         addressLocality: "Ciudad Autónoma de Buenos Aires",
         addressRegion: "CABA",
         postalCode: "C1425",
@@ -237,7 +237,7 @@ const SCHEMA = {
       telephone: "+54 11 6156 4311",
       address: {
         "@type": "PostalAddress",
-        streetAddress: "Charcas 3889 5ª B",
+        streetAddress: "Charcas 3889",
         addressLocality: "Ciudad Autónoma de Buenos Aires",
         addressRegion: "CABA",
         postalCode: "C1425",

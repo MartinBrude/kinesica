@@ -2485,6 +2485,9 @@ main:focus {
   height: 370px;
   border: 0;
   display: block;
+  box-shadow:
+    0 10px 28px -6px rgba(3, 28, 66, 0.2),
+    0 4px 14px -2px rgba(0, 95, 153, 0.12);
 }
 
 .map-review-cta {

@@ -28,7 +28,7 @@
     "email": "norberto1712@gmail.com",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "Charcas 3889 5ª B",
+      "streetAddress": "Charcas 3889",
       "addressLocality": "Ciudad Autónoma de Buenos Aires",
       "addressRegion": "CABA",
       "postalCode": "C1425",
@@ -340,7 +340,7 @@
     "email": "norberto1712@gmail.com",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "Charcas 3889 5ª B",
+      "streetAddress": "Charcas 3889",
       "addressLocality": "Ciudad Autónoma de Buenos Aires",
       "addressRegion": "CABA",
       "postalCode": "C1425",
@@ -652,7 +652,7 @@
     "email": "norberto1712@gmail.com",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "Charcas 3889 5ª B",
+      "streetAddress": "Charcas 3889",
       "addressLocality": "Ciudad Autónoma de Buenos Aires",
       "addressRegion": "CABA",
       "postalCode": "C1425",
@@ -964,7 +964,7 @@
     "email": "norberto1712@gmail.com",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "Charcas 3889 5ª B",
+      "streetAddress": "Charcas 3889",
       "addressLocality": "Ciudad Autónoma de Buenos Aires",
       "addressRegion": "CABA",
       "postalCode": "C1425",
