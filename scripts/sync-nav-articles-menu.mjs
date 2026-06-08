@@ -33,7 +33,7 @@ function articlesNavItem(lang) {
 
 function patchArticlesNav(html, item) {
   const dropdown = new RegExp(
-    String.raw`<li class="has-sub">\s*<a href="articulos\.html"[^>]*>[^<]*<\/a>\s*<ul>[\s\S]*?<\/ul>\s*<\/li>\s*(?=<li class="has-sub">\s*<a href="rpg\.html")`,
+    String.raw`<li class="has-sub">\s*<a href="articulos\.html"[^>]*>[^<]*<\/a>\s*<ul>[\s\S]*?<\/ul>\s*<\/li>\s*(?=<li class="has-sub">\s*<span class="nav-parent")`,
   );
   if (dropdown.test(html)) {
     return html.replace(dropdown, `${item}\n`);

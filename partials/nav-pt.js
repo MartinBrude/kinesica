@@ -5,7 +5,7 @@ window.__KINESICA_NAV_SNIPPET_PT = `
     <a href="articulos.html" title="Artigos">Artigos</a>
   </li>
   <li class="has-sub">
-    <a href="rpg.html" title="Métodos e técnicas">Métodos e técnicas</a>
+    <span class="nav-parent" title="Métodos e técnicas" aria-haspopup="true">Métodos e técnicas</span>
     <ul>
       <li><a href="rpg.html" title="RPG">RPG</a></li>
       <li><a href="osteopatia.html" title="Osteopatia">Osteopatia</a></li>

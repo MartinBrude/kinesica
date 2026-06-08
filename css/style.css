@@ -1595,6 +1595,7 @@ main:focus {
 }
 
 #navigation.small-screen ul li a,
+#navigation.small-screen ul li .nav-parent,
 #navigation.small-screen ul ul li a {
   width: 100%;
   border-bottom: 0;
@@ -3885,7 +3886,8 @@ html {
   transition: none !important;
 }
 
-#navigation > ul > li > a {
+#navigation > ul > li > a,
+#navigation > ul > li > .nav-parent {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -3906,8 +3908,13 @@ html {
   -webkit-tap-highlight-color: transparent;
 }
 
+#navigation > ul > li > .nav-parent {
+  cursor: default;
+}
+
 /* Subrayado verde en hover: solo transform (no mueve el texto) */
-#navigation > ul > li > a::after {
+#navigation > ul > li > a::after,
+#navigation > ul > li > .nav-parent::after {
   content: "";
   position: absolute;
   left: 25px;
@@ -3922,7 +3929,8 @@ html {
 }
 
 #navigation > ul > li > a:hover::after,
-#navigation > ul > li > a:focus-visible::after {
+#navigation > ul > li > a:focus-visible::after,
+#navigation > ul > li:hover > .nav-parent::after {
   transform: scaleX(1);
 }
 
@@ -3930,18 +3938,20 @@ html {
 #navigation > ul > li > a:focus,
 #navigation > ul > li > a:focus-visible,
 #navigation > ul > li > a:active,
-#navigation > ul > li:hover > a {
+#navigation > ul > li:hover > a,
+#navigation > ul > li:hover > .nav-parent {
   color: #474747 !important;
   outline: none !important;
   background: transparent !important;
 }
 
-#navigation > ul > li.has-sub > a::before {
+#navigation > ul > li.has-sub > .nav-parent::before {
   display: none !important;
   content: none !important;
 }
 
-#navigation.small-screen > ul > li > a::after {
+#navigation.small-screen > ul > li > a::after,
+#navigation.small-screen > ul > li > .nav-parent::after {
   display: none !important;
 }
 

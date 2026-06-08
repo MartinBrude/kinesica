@@ -96,7 +96,7 @@ function buildNav(lang, s) {
     <a href="articulos.html" title="${escAttr(s.articles.title)}">${escHtml(s.articles.label)}</a>
   </li>
   <li class="has-sub">
-    <a href="rpg.html" title="${escAttr(s.methodsMenu.title)}">${escHtml(s.methodsMenu.label)}</a>
+    <span class="nav-parent" title="${escAttr(s.methodsMenu.title)}" aria-haspopup="true">${escHtml(s.methodsMenu.label)}</span>
     <ul>
 ${techniqueItems}
     </ul>
