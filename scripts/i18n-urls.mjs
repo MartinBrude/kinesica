@@ -1,6 +1,7 @@
 /**
  * Canonical URL helpers for /, /en/, /fr/ structure.
  */
+import path from "path";
 import { PATHOLOGY_STEMS } from "./pathology-content.mjs";
 import {
   DEFAULT_LANG,
@@ -60,6 +61,14 @@ export function sitePath(lang, stem) {
   return stem === "index"
     ? `/${entry.urlPrefix}/`
     : `/${entry.urlPrefix}/${stem}.html`;
+}
+
+/** Page stem from a repo-relative HTML path (e.g. en/gonalgia.html → gonalgia). */
+export function stemFromFile(file) {
+  const base = path.basename(file);
+  if (base === "index.html") return "index";
+  if (base.startsWith("404")) return "404";
+  return base.replace(/\.html$/, "");
 }
 
 /** Repo-relative file path. */

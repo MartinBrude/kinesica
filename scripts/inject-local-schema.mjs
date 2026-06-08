@@ -14,7 +14,7 @@ import {
   langFromHtmlFile,
   ldJsonScript,
 } from "./schema-local-business.mjs";
-import { LANG_CODES, langByCode } from "./languages.mjs";
+import { listHtmlFiles, SUBDIR_PREFIXES } from "./languages.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -24,28 +24,13 @@ const SCHEMA_BLOCK_RE =
 const LEGACY_SCHEMA_SCRIPTS_RE =
   /\s*<script src="(?:\.\.\/)*(?:partials\/medical-clinic-schema|partials\/faq-schema)(?:\.min)?\.js"[^>]*><\/script>/g;
 
-function listHtmlFiles() {
-  const files = fs
-    .readdirSync(ROOT)
-    .filter((f) => f.endsWith(".html") && !f.startsWith("cv-"));
-  for (const code of LANG_CODES) {
-    const entry = langByCode(code);
-    if (!entry || entry.isDefault) continue;
-    const dir = path.join(ROOT, entry.urlPrefix);
-    if (!fs.existsSync(dir)) continue;
-    for (const f of fs.readdirSync(dir)) {
-      if (f.endsWith(".html")) files.push(`${entry.urlPrefix}/${f}`);
-    }
-  }
-  return files;
-}
-
 function isPublicPage(file) {
   return !/(^|\/)(404|404-router)\.html$/.test(file);
 }
 
 function isHomePage(file) {
-  return file === "index.html" || /^(en|fr|pt)\/index\.html$/.test(file);
+  if (file === "index.html") return true;
+  return SUBDIR_PREFIXES.some((prefix) => file === `${prefix}/index.html`);
 }
 
 function inject(html, file) {
@@ -68,7 +53,7 @@ function inject(html, file) {
 }
 
 let changed = 0;
-for (const file of listHtmlFiles()) {
+for (const file of listHtmlFiles(ROOT)) {
   if (!isPublicPage(file)) continue;
   const full = path.join(ROOT, file);
   const original = fs.readFileSync(full, "utf8");

@@ -11,20 +11,10 @@ import {
   PARTIAL_STRINGS,
   TECHNIQUE_NAV_STEMS,
 } from "./partials-strings.mjs";
+import { escAttr, escHtml } from "./html-utils.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = path.join(ROOT, "partials");
-
-function escAttr(s) {
-  return String(s)
-    .replace(/&/g, "&amp;")
-    .replace(/"/g, "&quot;")
-    .replace(/</g, "&lt;");
-}
-
-function escHtml(s) {
-  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
-}
 
 function writePartial(name, lang, comment, body) {
   const key = lang.toUpperCase();

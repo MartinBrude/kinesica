@@ -9,22 +9,18 @@ import { fileURLToPath } from "url";
 import { PATHOLOGIES } from "./pathology-content.mjs";
 import { ARTICLES_INDEX_UI } from "./articles-index-content.mjs";
 import { cardHue } from "./article-thumbnail-icons.mjs";
+import { repoPath } from "./i18n-urls.mjs";
+import { LANG_CODES } from "./languages.mjs";
+import { escHtml, patchPageMeta } from "./html-utils.mjs";
+import { assetPrefixForLang, pageCaptionMarkup } from "./page-shell.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-
-function esc(s) {
-  return String(s)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
 
 function articleThumbSrc(stem, lang) {
   const rel = `images/articles/${stem}.svg`;
   const file = path.join(ROOT, rel);
   if (!fs.existsSync(file)) return null;
-  return lang === "es" ? rel : `../${rel}`;
+  return `${assetPrefixForLang(lang)}${rel}`;
 }
 
 function buildMain(lang) {
@@ -41,8 +37,8 @@ function buildMain(lang) {
     return `          <a href="${href}" class="articles-index-card ui-reveal" style="--card-i: ${i}; --card-hue: ${cardHue(i)}">
             ${media}
             <span class="articles-index-card-body">
-              <span class="articles-index-card-label">${esc(data.breadcrumb)}</span>
-              <span class="articles-index-card-lead">${esc(data.lead)}</span>
+              <span class="articles-index-card-label">${escHtml(data.breadcrumb)}</span>
+              <span class="articles-index-card-lead">${escHtml(data.lead)}</span>
               <span class="articles-index-card-cta">${ui.readMore}<span class="articles-index-card-arrow" aria-hidden="true">→</span></span>
             </span>
           </a>`;
@@ -52,8 +48,8 @@ function buildMain(lang) {
       <div class="container">
         <div class="articles-index-intro section-intro section-intro--compact">
           <div class="section-title mb60 text-center">
-            <h2 class="heading-line-center">${esc(ui.introTitle)}</h2>
-            <p class="section-lead">${esc(ui.intro)}</p>
+            <h2 class="heading-line-center">${escHtml(ui.introTitle)}</h2>
+            <p class="section-lead">${escHtml(ui.intro)}</p>
           </div>
         </div>
         <div class="articles-index-grid">
@@ -113,9 +109,7 @@ function patchArticulosFile(rel, lang) {
 
   html = html.replace(
     /<div class="page-caption">\s*(?:<span class="page-header-word"[^>]*>[^<]*<\/span>|<h1 class="page-title">[^<]*<\/h1>)\s*<\/div>/,
-    `<div class="page-caption">
-              <h1 class="page-title">${esc(ui.pageTitle)}</h1>
-            </div>`,
+    pageCaptionMarkup(ui.pageTitle, { variant: "title" }).trim(),
   );
 
   const homeHref = lang === "es" ? "index.html" : "index.html";
@@ -124,31 +118,11 @@ function patchArticulosFile(rel, lang) {
     `<li><a href="${homeHref}">${ui.homeLabel}</a></li>\n            <li class="active">${ui.breadcrumb}</li>`,
   );
 
-  if (ui.metaTitle) {
-    html = html.replace(/<title>[^<]*<\/title>/, `<title>${esc(ui.metaTitle)}</title>`);
-  }
-  if (ui.metaDescription) {
-    html = html.replace(
-      /<meta name="description"\s*\n?\s*content="[^"]*"\s*\/?>/,
-      `<meta name="description"\n    content="${esc(ui.metaDescription)}" />`,
-    );
-    html = html.replace(
-      /<meta property="og:title" content="[^"]*"\s*\/?>/,
-      `<meta property="og:title" content="${esc(ui.metaTitle || ui.pageTitle)}" />`,
-    );
-    html = html.replace(
-      /<meta property="og:description"\s*\n?\s*content="[^"]*"\s*\/?>/,
-      `<meta property="og:description"\n    content="${esc(ui.metaDescription)}" />`,
-    );
-    html = html.replace(
-      /<meta name="twitter:title" content="[^"]*"\s*\/?>/,
-      `<meta name="twitter:title" content="${esc(ui.metaTitle || ui.pageTitle)}" />`,
-    );
-    html = html.replace(
-      /<meta name="twitter:description" content="[^"]*"\s*\/?>/,
-      `<meta name="twitter:description" content="${esc(ui.metaDescription)}" />`,
-    );
-  }
+  html = patchPageMeta(html, {
+    title: ui.metaTitle,
+    description: ui.metaDescription,
+    pageTitle: ui.pageTitle,
+  });
 
   html = ensureMainClosedBeforeCta(html);
 
@@ -157,8 +131,7 @@ function patchArticulosFile(rel, lang) {
 }
 
 let n = 0;
-if (patchArticulosFile("articulos.html", "es")) n++;
-if (patchArticulosFile("en/articulos.html", "en")) n++;
-if (patchArticulosFile("fr/articulos.html", "fr")) n++;
-if (patchArticulosFile("pt/articulos.html", "pt")) n++;
+for (const lang of LANG_CODES) {
+  if (patchArticulosFile(repoPath(lang, "articulos"), lang)) n++;
+}
 console.log(`Rebuilt ${n} articulos index page(s).`);

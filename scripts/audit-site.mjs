@@ -12,6 +12,7 @@ import {
   absoluteUrl,
   repoPath,
   sitePath,
+  stemFromFile,
   HTML_LANG,
   HREFLANG,
 } from "./i18n-urls.mjs";
@@ -28,10 +29,6 @@ const warnings = [];
 
 function add(severity, file, msg) {
   (severity === "error" ? issues : warnings).push({ file, msg });
-}
-
-function listHtmlFilesLocal() {
-  return listHtmlFiles(ROOT);
 }
 
 function extractHrefs(html) {
@@ -67,13 +64,6 @@ function extractHtmlLang(html) {
 
 function expectedLang(file) {
   return expectedLangFromFile(file);
-}
-
-function stemFromFile(file) {
-  const base = file.includes("/") ? file.split("/").pop() : file;
-  if (base === "index.html") return "index";
-  if (base.startsWith("404")) return "404";
-  return base.replace(/\.html$/, "");
 }
 
 function resolveLocal(href, fromFile) {
@@ -136,7 +126,7 @@ function auditLocalizedNav(html, file) {
   }
 }
 
-const htmlFiles = listHtmlFilesLocal();
+const htmlFiles = listHtmlFiles(ROOT);
 const allRootFiles = new Set(fs.readdirSync(ROOT));
 
 for (const file of htmlFiles) {

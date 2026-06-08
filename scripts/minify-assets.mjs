@@ -16,6 +16,7 @@ import {
   getSourceManifest,
   toMinPath,
 } from "../assets.config.cjs";
+import { listHtmlFiles } from "./languages.mjs";
 
 function formatKb(bytes) {
   return `${(bytes / 1024).toFixed(1)} KB`;
@@ -45,20 +46,6 @@ async function minifyOne(rel) {
   const after = fs.statSync(outPath).size;
   const pct = before ? Math.round((1 - after / before) * 100) : 0;
   return { rel, out: toMinPath(rel), before, after, pct };
-}
-
-function listHtmlFiles() {
-  const files = fs
-    .readdirSync(ROOT)
-    .filter((f) => f.endsWith(".html") && !f.startsWith("cv-"));
-  for (const lang of ["en", "fr"]) {
-    const dir = path.join(ROOT, lang);
-    if (!fs.existsSync(dir)) continue;
-    for (const f of fs.readdirSync(dir)) {
-      if (f.endsWith(".html")) files.push(`${lang}/${f}`);
-    }
-  }
-  return files;
 }
 
 /** Apunta href/src de fuentes → .min en HTML (idempotente). */
@@ -144,7 +131,7 @@ async function main() {
   );
 
   let htmlChanged = 0;
-  for (const file of listHtmlFiles()) {
+  for (const file of listHtmlFiles(ROOT)) {
     const full = path.join(ROOT, file);
     const original = fs.readFileSync(full, "utf8");
     let next = syncHtmlAssetRefs(original, sources);

@@ -3,7 +3,7 @@
  */
 import fs from "fs";
 import path from "path";
-import { sitePath } from "./i18n-urls.mjs";
+import { sitePath, stemFromFile } from "./i18n-urls.mjs";
 import {
   LANG_CODES,
   PICKER_TRIGGER_LABEL,
@@ -42,15 +42,6 @@ export function buildLangPickerHtml(pageLang, stem) {
 ${menuItems}
               </ul>
             </div>`;
-}
-
-export function stemFromRepoFile(file) {
-  const base = path.basename(file, ".html");
-  return base === "index" ? "index" : base;
-}
-
-export function assetPrefixForLang(lang) {
-  return lang === "es" ? "" : "../";
 }
 
 export function loadSnippet(root, jsPath) {
@@ -98,7 +89,7 @@ export function headerShellMarkup(lang, prefix = "") {
 
 export function injectStaticHeader(html, file, rootDir) {
   const lang = expectedLangFromFile(file);
-  const stem = stemFromRepoFile(file);
+  const stem = stemFromFile(file);
   const headerHtml = fillHeaderSnippet(
     loadSnippet(rootDir, `partials/header-${lang}.js`),
     lang,

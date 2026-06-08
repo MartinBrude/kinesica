@@ -8,16 +8,16 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { createRequire } from "module";
 import { CV } from "./cv-content.mjs";
-import {
-  SITE,
-  absoluteUrl,
-  HREFLANG,
-  HTML_LANG,
-  repoPath,
-} from "./i18n-urls.mjs";
-import { LANG_CODES, ogLocaleFor } from "./languages.mjs";
+import { SITE, absoluteUrl, HTML_LANG, repoPath } from "./i18n-urls.mjs";
+import { LANG_CODES } from "./languages.mjs";
 import { headerShellMarkup } from "./header-shell.mjs";
-import { headPreconnectFonts, headLangScripts } from "./page-shell.mjs";
+import { breadcrumbListSchema, escHtml } from "./html-utils.mjs";
+import {
+  assetPrefixForLang,
+  headPreconnectFonts,
+  headLangScripts,
+  headSeoBlock,
+} from "./page-shell.mjs";
 
 const require = createRequire(import.meta.url);
 const { toMinPath } = require("../assets.config.cjs");
@@ -30,14 +30,6 @@ function asset(prefix, rel) {
   return `${prefix}${toMinPath(rel)}`;
 }
 
-function esc(s) {
-  return String(s)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
-
 function renderJobs(data) {
   return data.jobs
     .map((job) => {
@@ -46,11 +38,11 @@ function renderJobs(data) {
         .join("\n              ");
       return `<article class="cv-job">
               <h3>${job.title}</h3>
-              ${job.dates ? `<p class="cv-dates">${esc(job.dates)}</p>` : ""}
-              ${job.intro ? `<p class="cv-intro">${esc(job.intro)}</p>` : ""}
+              ${job.dates ? `<p class="cv-dates">${escHtml(job.dates)}</p>` : ""}
+              ${job.intro ? `<p class="cv-intro">${escHtml(job.intro)}</p>` : ""}
               ${
                 job.keyPoints
-                  ? `<p class="cv-key-label">${esc(data.keyLabel)}</p>`
+                  ? `<p class="cv-key-label">${escHtml(data.keyLabel)}</p>`
                   : ""
               }
               ${bullets ? `<ul>${bullets}</ul>` : ""}
@@ -60,9 +52,9 @@ function renderJobs(data) {
 }
 
 function renderBody(data) {
-  const methods = data.methods.map((m) => `<li>${esc(m)}</li>`).join("\n              ");
+  const methods = data.methods.map((m) => `<li>${escHtml(m)}</li>`).join("\n              ");
   const courses = data.courses
-    .map(([y, t]) => `<li><span class="year">${esc(y)}</span> – ${t}</li>`)
+    .map(([y, t]) => `<li><span class="year">${escHtml(y)}</span> – ${t}</li>`)
     .join("\n              ");
 
   return `<section class="cv-body">
@@ -70,21 +62,21 @@ function renderBody(data) {
           <div class="cv-grid">
             <aside class="cv-sidebar">
               <div class="cv-panel">
-                <h2>${esc(data.methodsTitle)}</h2>
+                <h2>${escHtml(data.methodsTitle)}</h2>
                 <ul>${methods}</ul>
               </div>
               <div class="cv-panel">
-                <h2>${esc(data.coursesTitle)}</h2>
+                <h2>${escHtml(data.coursesTitle)}</h2>
                 <ul class="cv-courses">${courses}</ul>
               </div>
             </aside>
             <div class="cv-main">
               <div class="cv-panel">
-                <h2>${esc(data.summaryTitle)}</h2>
-                <p class="cv-summary">${esc(data.summary)}</p>
+                <h2>${escHtml(data.summaryTitle)}</h2>
+                <p class="cv-summary">${escHtml(data.summary)}</p>
               </div>
               <div class="cv-jobs">
-                <h2>${esc(data.experienceTitle)}</h2>
+                <h2>${escHtml(data.experienceTitle)}</h2>
                 ${renderJobs(data)}
               </div>
             </div>
@@ -94,19 +86,9 @@ function renderBody(data) {
 }
 
 function buildPage(lang, data) {
-  const isEs = lang === "es";
-  const prefix = isEs ? "" : "../";
-  const home = isEs ? "/" : `/${lang}/`;
-  const cvPath = isEs ? "/cv.html" : `/${lang}/cv.html`;
+  const prefix = assetPrefixForLang(lang);
   const canonical = absoluteUrl(lang, "cv");
-  const ogLocale = ogLocaleFor(lang);
-
-  const hreflangs = LANG_CODES
-    .map(
-      (l) =>
-        `  <link rel="alternate" hreflang="${HREFLANG[l]}" href="${absoluteUrl(l, "cv")}" />`,
-    )
-    .join("\n");
+  const profileImage = `${SITE}/images/noberto-brude-kinesiologo-osteopata.jpg`;
 
   const personSchema = JSON.stringify(
     {
@@ -117,7 +99,7 @@ function buildPage(lang, data) {
       email: CV_EMAIL,
       telephone: "+54-11-6156-4311",
       url: canonical,
-      image: `${SITE}/images/noberto-brude-kinesiologo-osteopata.jpg`,
+      image: profileImage,
       worksFor: {
         "@type": "MedicalClinic",
         name: "Kinésica",
@@ -134,26 +116,12 @@ function buildPage(lang, data) {
   );
 
   const breadcrumbSchema = JSON.stringify(
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        {
-          "@type": "ListItem",
-          position: 1,
-          name: data.homeName,
-          item: absoluteUrl(lang, "index"),
-        },
-        {
-          "@type": "ListItem",
-          position: 2,
-          name: data.breadcrumb,
-          item: canonical,
-        },
-      ],
-    },
+    breadcrumbListSchema([
+      { name: data.homeName, item: absoluteUrl(lang, "index") },
+      { name: data.breadcrumb, item: canonical },
+    ]),
     null,
-    2
+    2,
   );
 
   return `<!doctype html>
@@ -165,25 +133,22 @@ function buildPage(lang, data) {
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#005f99" />
-  <meta name="description" content="${esc(data.description)}" />
-  <title>${esc(data.title)}</title>
+${headSeoBlock({
+    lang,
+    stem: "cv",
+    title: data.title,
+    description: data.description,
+    type: "profile",
+    image: profileImage,
+    canonical,
+  })}
   <link rel="icon" type="image/svg" href="${prefix}images/favicon.svg" />
-  <link rel="canonical" href="${canonical}" />
-${hreflangs}
-  <link rel="alternate" hreflang="x-default" href="${absoluteUrl("es", "cv")}" />
 ${headPreconnectFonts()}  <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i" rel="stylesheet" />
   <link href="${prefix}css/bootstrap.min.css" rel="stylesheet" />
   <link href="${prefix}css/font-awesome.min.css" rel="stylesheet" />
   <link href="${asset(prefix, "css/style.css")}" rel="stylesheet" />
   <link href="${asset(prefix, "css/cv.css")}" rel="stylesheet" />
   <link rel="stylesheet" href="${asset(prefix, "css/whatsapp.css")}" />
-  <meta property="og:title" content="${esc(data.title)}" />
-  <meta property="og:description" content="${esc(data.description)}" />
-  <meta property="og:image" content="${SITE}/images/noberto-brude-kinesiologo-osteopata.jpg" />
-  <meta property="og:url" content="${canonical}" />
-  <meta property="og:type" content="profile" />
-  <meta property="og:site_name" content="Kinésica" />
-  <meta property="og:locale" content="${ogLocale}" />
   <script src="${asset(prefix, "partials/gtm-head.js")}"></script>
   <script src="${asset(prefix, "js/site-config.js")}"></script>
   <script type="application/ld+json">${personSchema}</script>
@@ -205,11 +170,11 @@ ${headerShellMarkup(lang, prefix)}
           <img src="${prefix}images/noberto-brude-kinesiologo-osteopata.jpg" alt="Norberto S. Brude" class="cv-photo" width="140" height="140" loading="eager" />
           <div class="cv-hero-text">
             <h1>Norberto S. Brude</h1>
-            <p class="cv-role">${esc(data.role)}</p>
+            <p class="cv-role">${escHtml(data.role)}</p>
             <ul class="cv-contact">
               <li><a href="mailto:${CV_EMAIL}">${CV_EMAIL}</a></li>
               <li><a href="https://wa.me/5491161564311" class="dynamic-whatsapp-url" target="_blank" rel="noopener noreferrer">(+54) 1161564311</a></li>
-              <li>${esc(data.location)}</li>
+              <li>${escHtml(data.location)}</li>
             </ul>
           </div>
         </div>

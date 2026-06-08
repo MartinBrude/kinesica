@@ -6,13 +6,14 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { absoluteUrl, HREFLANG, HTML_LANG } from "./i18n-urls.mjs";
+import { HREFLANG, HTML_LANG, stemFromFile } from "./i18n-urls.mjs";
 import {
   LANG_CODES,
   expectedLangFromFile,
   listHtmlFiles,
   ogLocaleFor,
 } from "./languages.mjs";
+import { hreflangLinks } from "./html-utils.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -27,13 +28,6 @@ const LANG_META = Object.fromEntries(
     },
   ]),
 );
-
-function stemFromFile(file) {
-  const base = file.includes("/") ? file.split("/").pop() : file;
-  if (base === "index.html") return "index";
-  if (base.startsWith("404")) return "404";
-  return base.replace(/\.html$/, "");
-}
 
 function removeContentLanguage(html) {
   return html.replace(
@@ -69,14 +63,7 @@ function ensureHreflangBlock(html, file) {
     "",
   );
 
-  const block = LANG_CODES.map(
-    (code) =>
-      `  <link rel="alternate" hreflang="${HREFLANG[code]}" href="${absoluteUrl(code, stem)}" />`,
-  ).join("\n");
-
-  const fullBlock =
-    block +
-    `\n  <link rel="alternate" hreflang="x-default" href="${absoluteUrl("es", stem)}" />\n`;
+  const fullBlock = `${hreflangLinks(stem)}\n`;
 
   if (out.includes('rel="canonical"')) {
     out = out.replace(

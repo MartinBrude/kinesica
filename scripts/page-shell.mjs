@@ -1,8 +1,9 @@
 /**
  * Shared HTML shell fragments for page builders and apply-seo-performance.mjs.
  */
-import { HTML_LANG } from "./i18n-urls.mjs";
-import { OG_LOCALE, partialLang } from "./languages.mjs";
+import { absoluteUrl, HTML_LANG } from "./i18n-urls.mjs";
+import { OG_LOCALE, ogLocaleFor, partialLang } from "./languages.mjs";
+import { escHtml, hreflangLinks } from "./html-utils.mjs";
 
 export const FONT_DISPLAY_SWAP =
   "https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i&display=swap";
@@ -71,6 +72,76 @@ export function headLangScripts(prefix) {
     `  <script src="${prefix}js/lang-preference.min.js" defer></script>\n` +
     `  <script src="${prefix}js/redirect.min.js" defer></script>\n`
   );
+}
+
+/** Decorative page-header-word caption (métodos, RPG, patologías). */
+export function pageCaptionMarkup(label, { variant = "word" } = {}) {
+  if (variant === "title") {
+    return `            <div class="page-caption">
+              <h1 class="page-title">${escHtml(label)}</h1>
+            </div>`;
+  }
+  const longClass = label.length > 11 ? " page-header-word--long" : "";
+  return `            <div class="page-caption">
+              <span class="page-header-word${longClass}" aria-hidden="true">${escHtml(label)}</span>
+            </div>`;
+}
+
+export function pageHeaderSection(captionMarkup) {
+  return `    <section class="page-header">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+${captionMarkup}
+          </div>
+        </div>
+      </div>
+    </section>`;
+}
+
+export function pageBreadcrumbSection({ homeHref, homeLabel, activeLabel }) {
+  return `    <section class="page-breadcrumb">
+      <div class="container">
+        <div class="col-lg-12">
+          <ol class="breadcrumb">
+            <li><a href="${homeHref}">${homeLabel}</a></li>
+            <li class="active">${activeLabel}</li>
+          </ol>
+        </div>
+      </div>
+    </section>`;
+}
+
+/** Title, description, canonical, hreflang and Open Graph tags for page builders. */
+export function headSeoBlock({
+  lang,
+  stem,
+  title,
+  description,
+  type = "website",
+  image,
+  canonical,
+}) {
+  const url = canonical ?? absoluteUrl(lang, stem);
+  const locale = OG_LOCALE[lang] ?? ogLocaleFor(lang);
+  const lines = [
+    `  <meta name="description" content="${escHtml(description)}" />`,
+    `  <title>${escHtml(title)}</title>`,
+    `  <link rel="canonical" href="${url}" />`,
+    hreflangLinks(stem),
+    `  <meta property="og:title" content="${escHtml(title)}" />`,
+    `  <meta property="og:description" content="${escHtml(description)}" />`,
+  ];
+  if (image) {
+    lines.push(`  <meta property="og:image" content="${image}" />`);
+  }
+  lines.push(
+    `  <meta property="og:url" content="${url}" />`,
+    `  <meta property="og:type" content="${type}" />`,
+    `  <meta property="og:site_name" content="Kinésica" />`,
+    `  <meta property="og:locale" content="${locale}" />`,
+  );
+  return lines.join("\n");
 }
 
 export function bodyShellTop(prefix) {

@@ -14,7 +14,6 @@ import {
 } from "./pathology-content.mjs";
 import {
   absoluteUrl,
-  HREFLANG,
   HTML_LANG,
   repoPath,
   SCHEMA_LANGUAGE,
@@ -22,8 +21,8 @@ import {
 } from "./i18n-urls.mjs";
 import { LANG_CODES } from "./languages.mjs";
 import { headerShellMarkup } from "./header-shell.mjs";
+import { breadcrumbListSchema, escHtml } from "./html-utils.mjs";
 import {
-  OG_LOCALE,
   LOCALE,
   assetPrefixForLang,
   bodyFooterAndUiScripts,
@@ -31,35 +30,14 @@ import {
   ctaStripPlaceholder,
   headFavicon,
   headLangScripts,
+  headSeoBlock,
   headStandardStylesheets,
+  pageBreadcrumbSection,
+  pageCaptionMarkup,
+  pageHeaderSection,
 } from "./page-shell.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const LANGS = LANG_CODES;
-
-function esc(s) {
-  return String(s)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
-
-/** Título decorativo en .page-header (igual que métodos / RPG). */
-function pageCaptionMarkup(label) {
-  const longClass = label.length > 11 ? " page-header-word--long" : "";
-  return `            <div class="page-caption">
-              <span class="page-header-word${longClass}" aria-hidden="true">${esc(label)}</span>
-            </div>`;
-}
-
-function prefix(lang) {
-  return assetPrefixForLang(lang);
-}
-
-function pageHref(lang, stem) {
-  return sitePath(lang, stem).replace(/^\//, "") || "index.html";
-}
 
 function techniqueHref(lang, techStem) {
   return sitePath(lang, techStem);
@@ -72,7 +50,7 @@ function buildMain(pathology, lang) {
     .map((t) => {
       const label = TECHNIQUE_LABELS[t][lang];
       const href = techniqueHref(lang, t);
-      return `<li><a href="${href}">${esc(label)}</a></li>`;
+      return `<li><a href="${href}">${escHtml(label)}</a></li>`;
     })
     .join("\n              ");
 
@@ -122,33 +100,13 @@ function buildHtml(pathology, lang) {
   const ui = UI[lang];
   const data = pathology[lang];
   const stem = pathology.stem;
-  const p = prefix(lang);
-  const selfPath = pageHref(lang, stem);
-  const homePath = sitePath(lang, "index");
+  const p = assetPrefixForLang(lang);
   const canonical = absoluteUrl(lang, stem);
   const imgUrl = `https://www.kinesica.com.ar/images/${pathology.image}`;
-  const hreflang = LANGS.map(
-    (l) =>
-      `  <link rel="alternate" hreflang="${HREFLANG[l]}" href="${absoluteUrl(l, stem)}" />`,
-  ).join("\n");
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: ui.homeLabel,
-        item: absoluteUrl(lang, "index"),
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: data.breadcrumb,
-        item: canonical,
-      },
-    ],
-  };
+  const breadcrumbSchema = breadcrumbListSchema([
+    { name: ui.homeLabel, item: absoluteUrl(lang, "index") },
+    { name: data.breadcrumb, item: canonical },
+  ]);
 
   const articleSchema = {
     "@context": "https://schema.org",
@@ -182,19 +140,16 @@ ${headFavicon(p)}  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
   <meta name="theme-color" content="#005f99" />
-${headLangScripts(p)}  <meta name="description" content="${esc(data.metaDescription)}" />
-  <title>${esc(data.title)}</title>
-${headStandardStylesheets(p)}  <link rel="canonical" href="${canonical}" />
-${hreflang}
-  <link rel="alternate" hreflang="x-default" href="${absoluteUrl("es", stem)}" />
-  <meta property="og:title" content="${esc(data.title)}" />
-  <meta property="og:description" content="${esc(data.metaDescription)}" />
-  <meta property="og:image" content="${imgUrl}" />
-  <meta property="og:url" content="${canonical}" />
-  <meta property="og:type" content="article" />
-  <meta property="og:site_name" content="Kinésica" />
-  <meta property="og:locale" content="${OG_LOCALE[lang]}" />
-  <script src="${p}partials/gtm-head.min.js" defer></script>
+${headLangScripts(p)}${headSeoBlock({
+    lang,
+    stem,
+    title: data.title,
+    description: data.metaDescription,
+    type: "article",
+    image: imgUrl,
+    canonical,
+  })}
+${headStandardStylesheets(p)}  <script src="${p}partials/gtm-head.min.js" defer></script>
   <script type="application/ld+json">
 ${JSON.stringify(breadcrumbSchema, null, 6).replace(/^/gm, "      ")}
     </script>
@@ -206,25 +161,12 @@ ${JSON.stringify(articleSchema, null, 6).replace(/^/gm, "      ")}
 <body>
 ${bodyShellTop(p)}${headerShellMarkup(lang, p)}
   <main id="main" tabindex="-1">
-    <section class="page-header">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-${pageCaptionMarkup(data.breadcrumb)}
-          </div>
-        </div>
-      </div>
-    </section>
-    <section class="page-breadcrumb">
-      <div class="container">
-        <div class="col-lg-12">
-          <ol class="breadcrumb">
-            <li><a href="${sitePath(lang, "index")}">${ui.homeLabel}</a></li>
-            <li class="active">${data.breadcrumb}</li>
-          </ol>
-        </div>
-      </div>
-    </section>
+${pageHeaderSection(pageCaptionMarkup(data.breadcrumb))}
+${pageBreadcrumbSection({
+      homeHref: sitePath(lang, "index"),
+      homeLabel: ui.homeLabel,
+      activeLabel: data.breadcrumb,
+    })}
 ${buildMain(pathology, lang)}
   </main>
 ${ctaStripPlaceholder(lang, p)}
@@ -237,7 +179,7 @@ ${bodyFooterAndUiScripts(lang, p)}
 
 let written = 0;
 for (const pathology of PATHOLOGIES) {
-  for (const lang of LANGS) {
+  for (const lang of LANG_CODES) {
     const rel = repoPath(lang, pathology.stem);
     const full = path.join(ROOT, rel);
     fs.mkdirSync(path.dirname(full), { recursive: true });
