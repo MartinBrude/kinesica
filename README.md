@@ -66,6 +66,7 @@ Fuente de datos (.mjs)  →  Builder (scripts/)  →  HTML estático
 | `scripts/header-shell.mjs` | Header estático, lang picker |
 | `scripts/pathology-content.mjs` | Copy de patologías ES/EN/FR |
 | `scripts/articles-index-content.mjs` | Copy del índice `articulos.html` |
+| `scripts/methods-content.mjs` | Meta y breadcrumb de métodos (RPG, osteopatía, etc.) |
 | `scripts/cv-content.mjs` | Copy del CV |
 | `scripts/partials-strings.mjs` | Textos de header/nav/footer por idioma |
 | `scripts/schema-local-business.mjs` | JSON-LD clínica / FAQ |
@@ -155,6 +156,7 @@ npm run seo:audit     # auditoría final
 | `npm run seo:audit` | Auditoría de links, hreflang, lang picker, estructura |
 | `npm run build:pathologies` | Pipeline completo de patologías |
 | `npm run build:articulos` | Índice artículos + nav + shell |
+| `npm run patch:methods-seo` | Meta, breadcrumb y schema MedicalTherapy en páginas de métodos |
 | `npm run build:partials` | Genera `partials/header-*`, `nav-*`, `footer-*`… |
 | `npm run build:seo` | Schema + partials schema + llms + minify |
 | `npm run build:pt` | Pipeline completo de contenido portugués |

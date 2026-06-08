@@ -8,6 +8,11 @@ import { COPY_PT } from "./schema-copy-pt.mjs";
 
 export const BUSINESS_ID = `${SITE}/#kinesica`;
 
+/** Service name + description for a method/pathology stem (schema + method pages). */
+export function getMethodServiceCopy(lang, stem) {
+  return COPY[lang]?.services?.[stem] ?? null;
+}
+
 const MAPS_URL = "https://maps.app.goo.gl/urpkh4HYe7dSdjPS9";
 const WHATSAPP_URL = "https://wa.me/5491161564311";
 const EMAIL = "norberto1712@gmail.com";
