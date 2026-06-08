@@ -10,7 +10,7 @@ export const PT_STATIC_REPLACEMENTS = [
 
   // Clinical* before any bare "Clinic" replacement
   [
-    "Clinical Posturology: posture, balance and foot support assessment and treatment in Palermo. Whole-body analysis at Kinésica.",
+    "Clinical Posturology: posture, balance and plantar support assessment and treatment in Palermo. Whole-body analysis at Kinésica.",
     "Posturologia clínica: avaliação e tratamento de postura, equilíbrio e apoio plantar em Palermo. Análise global do corpo na Kinésica.",
   ],
   [
@@ -18,11 +18,11 @@ export const PT_STATIC_REPLACEMENTS = [
     "Posturologia clínica: avaliação e tratamento de postura e equilíbrio em Palermo.",
   ],
   [
-    "Clinical posturology studies how the body organizes itself in gravity: the position of the head, spine, pelvis and foot support influence balance, gait and load distribution. When imbalances exist, recurring pain, fatigue or a sense of instability may appear.",
+    "Clinical posturology studies how the body organizes itself in gravity: the position of the head, spine, pelvis and plantar support influence balance, gait and load distribution. When imbalances exist, recurring pain, fatigue or a sense of instability may appear.",
     "A posturologia clínica estuda como o corpo se organiza na gravidade: a posição da cabeça, coluna, pelve e apoio plantar influenciam equilíbrio, marcha e distribuição de cargas. Quando há desequilíbrios, podem surgir dor recorrente, fadiga ou sensação de instabilidade.",
   ],
   [
-    "Through a global assessment—including static and dynamic posture, balance tests and, when appropriate, foot support analysis—we identify factors that maintain tension or pain. The goal is to understand the cause, not only the symptom.",
+    "Through a global assessment—including static and dynamic posture, balance tests and, when appropriate, plantar support analysis—we identify factors that maintain tension or pain. The goal is to understand the cause, not only the symptom.",
     "Por meio de uma avaliação global — incluindo postura estática e dinâmica, testes de equilíbrio e, quando indicado, análise do apoio plantar — identificamos fatores que mantêm tensão ou dor. O objetivo é compreender a causa, não apenas o sintoma.",
   ],
   [
@@ -67,7 +67,7 @@ export const PT_STATIC_REPLACEMENTS = [
   ["Global Postural Reeducation (RPG)", "Reeducação Postural Global (RPG)"],
   ["Aims to restore health by improving tissue mobility.", "Busca restaurar a saúde melhorando a mobilidade dos tecidos."],
   ["Physiological Chains", "Cadeias fisiológicas"],
-  ["Defines the relationship between body structure and visceral content to understand how we function in both static and movement.", "Define a relação entre a estrutura corporal e o conteúdo visceral para entender como funcionamos no repouso e no movimento."],
+  ["Defines the relationship between body structure and visceral function to understand how we function at rest and in movement.", "Define a relação entre a estrutura corporal e as funções viscerais para entender como funcionamos no repouso e no movimento."],
   ["Visceral Manipulations", "Manipulações viscerais"],
   ["Visceral tensions are transmitted to the locomotor system, affecting its function.", "Tensões viscerais se transmitem ao sistema locomotor e afetam sua função."],
   ["Neurodynamics", "Neurodinâmica"],

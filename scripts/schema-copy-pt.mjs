@@ -9,7 +9,6 @@ export const COPY_PT = {
   catalogName: "Tratamentos Kinésica",
   specialties: [
     "Fisioterapia",
-    "Kinesiologia",
     "Osteopatia",
     "Terapia manual",
     "RPG",

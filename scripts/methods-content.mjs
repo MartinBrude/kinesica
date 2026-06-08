@@ -44,7 +44,7 @@ export const METHODS = {
     pt: {
       metaTitle: "RPG — Reeducação Postural Global | Kinésica",
       metaDescription:
-        "RPG na Kinésica (Buenos Aires). Reeducação postural global e cadeias musculares em Palermo. Sessões individuais para flexibilizar a musculatura estática.",
+        "RPG na Kinésica (Buenos Aires). Reeducação postural global e cadeias musculares em Palermo. Sessões individuais para liberar a musculatura estática.",
       breadcrumb: "RPG",
     },
   },
@@ -90,13 +90,13 @@ export const METHODS = {
     fr: {
       metaTitle: "Chaînes physiologiques | Kinésica",
       metaDescription:
-        "Chaînes musculaires chez Kinésica (Buenos Aires). Méthode Busquet reliant structure corporelle et contenu viscéral. Thérapie manuelle à Palermo.",
+        "Chaînes musculaires chez Kinésica (Buenos Aires). Méthode Busquet reliant structure corporelle et fonctions viscérales. Thérapie manuelle à Palermo.",
       breadcrumb: "Chaînes physiologiques",
     },
     pt: {
       metaTitle: "Cadeias fisiológicas | Kinésica",
       metaDescription:
-        "Cadeias musculares na Kinésica (Buenos Aires). Método Busquet que relaciona estrutura corporal e conteúdo visceral. Terapia manual em Palermo.",
+        "Cadeias musculares na Kinésica (Buenos Aires). Método Busquet que relaciona estrutura corporal e funções viscerais. Terapia manual em Palermo.",
       breadcrumb: "Cadeias fisiológicas",
     },
   },
@@ -136,13 +136,13 @@ export const METHODS = {
     en: {
       metaTitle: "Neurodynamics | Kinésica",
       metaDescription:
-        "Neurodynamics at Kinésica (Buenos Aires). Neural mobilization and treatment of nervous system disorders in Palermo.",
+        "Neurodynamics at Kinésica (Buenos Aires). Neural mobilization and treatment of nerve-related conditions in Palermo.",
       breadcrumb: "Neurodynamics",
     },
     fr: {
       metaTitle: "Neurodynamique | Kinésica",
       metaDescription:
-        "Neurodynamique chez Kinésica (Buenos Aires). Mobilisation neurale et traitement des troubles du système nerveux à Palermo.",
+        "Neurodynamique chez Kinésica (Buenos Aires). Mobilisation neurale et traitement des troubles nerveux à Palermo.",
       breadcrumb: "Neurodynamique",
     },
     pt: {
@@ -160,10 +160,10 @@ export const METHODS = {
       breadcrumb: "ATM",
     },
     en: {
-      metaTitle: "ATM – Temporomandibular Joint | Kinésica",
+      metaTitle: "TMJ – Temporomandibular Joint | Kinésica",
       metaDescription:
         "TMJ treatment at Kinésica (Buenos Aires). Jaw pain, clicking and bruxism with manual therapy in Palermo.",
-      breadcrumb: "ATM (TMJ)",
+      breadcrumb: "TMJ",
     },
     fr: {
       metaTitle: "ATM — Articulation temporo-mandibulaire | Kinésica",
@@ -188,7 +188,7 @@ export const METHODS = {
     en: {
       metaTitle: "Acupuncture | Kinésica",
       metaDescription:
-        "Acupuncture at Kinésica (Buenos Aires). Traditional Chinese medicine integrated into pain and stress care in Palermo.",
+        "Acupuncture at Kinésica (Buenos Aires). Traditional Chinese medicine as part of an integrated approach to pain and stress in Palermo.",
       breadcrumb: "Acupuncture",
     },
     fr: {
@@ -200,7 +200,7 @@ export const METHODS = {
     pt: {
       metaTitle: "Acupuntura | Kinésica",
       metaDescription:
-        "Acupuntura na Kinésica (Buenos Aires). Medicina tradicional chinesa integrada ao cuidado da dor e do estresse em Palermo.",
+        "Acupuntura na Kinésica (Buenos Aires). Medicina tradicional chinesa integrada ao tratamento da dor e do estresse em Palermo.",
       breadcrumb: "Acupuntura",
     },
   },
@@ -214,7 +214,7 @@ export const METHODS = {
     en: {
       metaTitle: "Clinical Posturology | Kinésica",
       metaDescription:
-        "Clinical posturology at Kinésica (Buenos Aires). Posture, balance and foot support assessment in Palermo.",
+        "Clinical posturology at Kinésica (Buenos Aires). Assessment of posture, balance and plantar support in Palermo.",
       breadcrumb: "Clinical Posturology",
     },
     fr: {

@@ -574,7 +574,7 @@ export const PATHOLOGIES = [
       lead: "Knee pain depends on the knee and on how the hip, foot and posture work together. A strong plan targets drivers, not only symptoms.",
       paragraphs: [
         "Gonalgia is knee pain, whether at the front, inside, outside or back of the joint. It can show up with stairs, running, squatting or after long periods of sitting.",
-        "Common contributors include activity overload, sudden training changes, hip weakness, ankle stiffness, altered foot support and poor control during lowering or landing tasks.",
+        "Common contributors include activity overload, sudden training changes, hip weakness, ankle stiffness, altered plantar support and poor control during lowering or landing tasks.",
         "If it persists, it may limit sport and daily life, cause recurrent swelling and increase stress on other areas through compensation. It can also reduce confidence to move.",
         "At Kinésica we integrate hands-on care and movement retraining: osteopathy to restore mobility in the hip/ankle when relevant, targeted manual manipulations, and muscle-chain work plus RPG to refine posture and loading mechanics.",
         "Assessment includes gait and squat analysis, glute strength and knee control. Sessions progress with dosed exercise, functional training and clear guidance to return to running or training.",
@@ -649,10 +649,10 @@ export const PATHOLOGIES = [
       lead: "Heel pain can affect every step. Understanding foot mechanics and global loading helps recovery.",
       paragraphs: [
         "Talalgia is pain around the heel, often felt with weight-bearing, walking or first steps in the morning. It may affect one side or both.",
-        "Typical contributors include load increase (more walking or running), ankle stiffness, posterior-chain tension and altered foot support. Footwear and surfaces can also influence symptoms.",
+        "Typical contributors include load increase (more walking or running), ankle stiffness, posterior-chain tension and altered plantar support. Footwear and surfaces can also influence symptoms.",
         "If it continues, it can change your gait, create knee or hip discomfort through compensation and reduce physical activity. Morning pain and tissue irritability often increase.",
         "At Kinésica we use manual therapy for the foot and ankle, osteopathy to improve mobility and load distribution, and targeted manual manipulations when indicated. We integrate muscle-chain work and RPG to address overall gait mechanics.",
-        "Assessment includes foot support, ankle mobility and load tolerance. Sessions progress with foot and calf strengthening, activity dosing and a plan to return to walking or running.",
+        "Assessment includes plantar support, ankle mobility and load tolerance. Sessions progress with foot and calf strengthening, activity dosing and a plan to return to walking or running.",
       ],
       complications: [
         "Altered gait pattern",
@@ -1174,7 +1174,7 @@ export const PATHOLOGIES = [
       lead: "Knee valgus is a tendency for knees to move inward. Rather than chasing a perfect shape, we train control and load distribution.",
       paragraphs: [
         "Knee valgus describes an alignment where the knees tend to drift inward, especially during squats, landing and stairs. It may or may not be painful.",
-        "It is often linked to hip control (glutes), ankle mobility, foot support and learned movement patterns. Fatigue and higher loads can make it more noticeable.",
+        "It is often linked to hip control (glutes), ankle mobility, plantar support and learned movement patterns. Fatigue and higher loads can make it more noticeable.",
         "When painful, it can increase stress on the knee, contribute to kneecap or inner-knee symptoms and create compensations at the hip or foot. It may also affect sport performance.",
         "At Kinésica we integrate muscle-chain work and RPG to improve postural organization, alongside hands-on care. We use osteopathy and manual manipulations when indicated to optimize hip and ankle mobility and support a better loading pattern.",
         "Assessment includes squat, landing and gait analysis. Sessions progress with glute strengthening, neuromuscular control and sport- or activity-specific drills.",
@@ -1249,7 +1249,7 @@ export const PATHOLOGIES = [
       lead: "Knee varus describes a more outward alignment. We focus on mobility, strength and mechanics to improve load tolerance and comfort.",
       paragraphs: [
         "Knee varus is an alignment where the knees tend to sit more outward with a greater gap between them. It can be an individual characteristic and does not always cause pain.",
-        "When symptoms occur, hip and ankle mobility, foot support and load distribution during walking or training often matter. Stiffness and weakness in key muscle groups can increase stress.",
+        "When symptoms occur, hip and ankle mobility, plantar support and load distribution during walking or training often matter. Stiffness and weakness in key muscle groups can increase stress.",
         "Without a plan, it may be associated with discomfort on the inner or outer side of the knee and fatigue with long walks or sport. Compensations at the hip and foot can also develop.",
         "At Kinésica we integrate hands-on care—osteopathy and manual manipulations when indicated—to improve mobility, and add RPG plus muscle-chain work to optimize posture and loading patterns.",
         "Assessment reviews gait, strength and control in functional tasks. Sessions include progressive strengthening, dynamic alignment drills and load-management guidance tailored to your activity.",
@@ -1258,7 +1258,7 @@ export const PATHOLOGIES = [
         "Knee compartment discomfort",
         "Fatigue with walking or running",
         "Hip compensation",
-        "Altered foot support",
+        "Altered plantar support",
         "Reduced impact tolerance",
       ],
       techniquesNote: "Your plan is tailored to your mechanics and what you need to move more comfortably.",
@@ -1924,7 +1924,7 @@ export const PATHOLOGIES = [
       lead: "Plantar fasciitis often hurts with first steps in the morning. With progressive loading, the foot can rebuild tolerance and function.",
       paragraphs: [
         "Plantar fasciitis is pain on the sole of the foot near the heel or arch. It commonly feels worse with the first steps after waking or after sitting.",
-        "It is often linked to increased load (walking, running), ankle stiffness, calf tightness and changes in foot support. Posterior-chain tension can increase stress on the plantar tissues.",
+        "It is often linked to increased load (walking, running), ankle stiffness, calf tightness and changes in plantar support. Posterior-chain tension can increase stress on the plantar tissues.",
         "If not managed, it can alter gait, limit physical activity and create compensations in the knee or hip. Tissue irritability may increase and prolong symptoms.",
         "At Kinésica we integrate manual therapy for the foot and calf, osteopathy to improve mobility and load distribution, and targeted manual manipulations when indicated. We add muscle-chain work and RPG to address global support and gait mechanics.",
         "Assessment includes ankle mobility, load tolerance and support analysis. Sessions progress with foot and calf strengthening, dosing of walking/running and relapse-prevention guidance.",

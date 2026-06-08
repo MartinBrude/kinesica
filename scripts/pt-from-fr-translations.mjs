@@ -32,8 +32,8 @@ export const PT_FROM_FR_REPLACEMENTS = [
     "A osteopatia estrutural trata alterações do sistema musculoesquelético. Como os tecidos estão interconectados, uma alteração vertebral pode gerar disfunção visceral e vice-versa — daí a recorrência de alguns sintomas. Romper esse ciclo é essencial."
   ],
   [
-    "Lorsque le système nerveux transmet mal les impulsions, il peut en résulter douleur, sensations altérées (paresthésies, fourmillements, engourdissement) ou troubles nutritionnels des tissus innervés. Le traitement dépend du degré d'atteinte nerveuse.",
-    "Quando o sistema nervoso transmite mal os impulsos, podem surgir dor, sensações alteradas (parestesias, formigamento, dormência) ou distúrbios nutricionais dos tecidos inervados. O tratamento depende do grau de comprometimento neural."
+    "Lorsque le système nerveux transmet mal les impulsions, il peut en résulter douleur, sensations altérées (paresthésies, fourmillements, engourdissement) ou troubles trophiques des tissus innervés. Le traitement dépend du degré d'atteinte nerveuse.",
+    "Quando o sistema nervoso transmite mal os impulsos, podem surgir dor, sensações alteradas (parestesias, formigamento, dormência) ou alterações tróficas nos tecidos inervados. O tratamento depende do grau de comprometimento neural."
   ],
   [
     "Au cabinet, on évalue l'état général de la personne et on intègre l'acupuncture aux autres outils de thérapie manuelle si nécessaire. Elle ne remplace pas l'avis médical lorsque des pathologies doivent être étudiées par le spécialiste concerné.",
@@ -125,7 +125,7 @@ export const PT_FROM_FR_REPLACEMENTS = [
   ],
   [
     "Acupuncture à Palermo : technique de médecine traditionnelle chinoise intégrée à la prise en charge thérapeutique pour la douleur, le stress et l'équilibre.",
-    "Acupuntura em Palermo: técnica da medicina tradicional chinesa integrada ao cuidado terapêutico para dor, estresse e equilíbrio."
+    "Acupuntura em Palermo: técnica da medicina tradicional chinesa integrada ao tratamento da dor, do estresse e do equilíbrio."
   ],
   [
     "Ostéopathie structurelle et viscérale : évaluation et traitement des dysfonctions somatiques. Techniques de thérapie manuelle à Palermo, Buenos Aires.",
@@ -149,11 +149,11 @@ export const PT_FROM_FR_REPLACEMENTS = [
   ],
   [
     "Rééducation posturale globale (RPG) : méthode axée sur la souplesse des muscles statiques. Séances individuelles à Palermo, Buenos Aires.",
-    "Reeducação Postural Global (RPG): método que foca na flexibilidade dos músculos estáticos. Sessões individuais em Palermo, Buenos Aires."
+    "Reeducação Postural Global (RPG): método que foca na liberação da musculatura estática. Sessões individuais em Palermo, Buenos Aires."
   ],
   [
-    "Définit la relation entre la structure corporelle et le contenu viscéral pour comprendre notre fonctionnement au repos et en mouvement.",
-    "Define a relação entre a estrutura corporal e o conteúdo visceral para entender como funcionamos no repouso e no movimento."
+    "Définit la relation entre la structure corporelle et les fonctions viscérales pour comprendre notre fonctionnement au repos et en mouvement.",
+    "Define a relação entre a estrutura corporal e as funções viscerais para entender como funcionamos no repouso e no movimento."
   ],
   [
     "Neurodynamique : étude et traitement des troubles du système nerveux. Soulagement de la douleur et amélioration neurologique à Palermo.",
@@ -188,8 +188,8 @@ export const PT_FROM_FR_REPLACEMENTS = [
     "ATM: tratamento de disfunções da mandíbula, dor, estalos e bruxismo com terapia manual em Palermo."
   ],
   [
-    "Chaînes physiologiques : méthode définissant la relation entre la structure corporelle et le contenu viscéral. Thérapie manuelle à Palermo, Buenos Aires.",
-    "Cadeias fisiológicas: método que relaciona estrutura corporal e conteúdo visceral. Terapia manual em Palermo."
+    "Chaînes physiologiques : méthode définissant la relation entre la structure corporelle et les fonctions viscérales. Thérapie manuelle à Palermo, Buenos Aires.",
+    "Cadeias fisiológicas: método que relaciona estrutura corporal e funções viscerais. Terapia manual em Palermo."
   ],
   [
     "Manipulations viscérales : traitement des tensions viscérales affectant l'appareil locomoteur. Thérapie manuelle à Palermo, Buenos Aires.",
@@ -204,8 +204,8 @@ export const PT_FROM_FR_REPLACEMENTS = [
     "As técnicas incluem manipulações articulares com impulso, técnicas de alta velocidade e técnicas suaves."
   ],
   [
-    "Chaînes physiologiques : méthode reliant structure corporelle et contenu viscéral. Thérapie manuelle à Palermo.",
-    "Cadeias fisiológicas: método que relaciona estrutura corporal e conteúdo visceral. Terapia manual em Palermo."
+    "Chaînes physiologiques : méthode reliant structure corporelle et fonctions viscérales. Thérapie manuelle à Palermo.",
+    "Cadeias fisiológicas: método que relaciona estrutura corporal e funções viscerais. Terapia manual em Palermo."
   ],
   [
     "L'ostéopathie est une méthode d'évaluation et de traitement des dysfonctions somatiques et de leurs symptômes.",
