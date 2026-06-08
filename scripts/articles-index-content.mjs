@@ -13,6 +13,9 @@ export const ARTICLES_INDEX_UI = {
     homeLabel: "Inicio",
     breadcrumb: "Artículos",
     pageTitle: "Artículos",
+    metaTitle: "Artículos sobre Terapia Manual | Kinésica",
+    metaDescription:
+      "Artículos sobre kinesiología, osteopatía y terapia manual. Información sobre cervicalgia, lumbalgia y tratamientos en Palermo.",
   },
   en: {
     introTitle: "Common conditions",
@@ -24,6 +27,9 @@ export const ARTICLES_INDEX_UI = {
     homeLabel: "Home",
     breadcrumb: "Articles",
     pageTitle: "Articles",
+    metaTitle: "Articles about Manual Therapy | Kinésica",
+    metaDescription:
+      "Articles about kinesiology, osteopathy, and manual therapy. Information about cervical pain, low back pain, and treatments in Palermo.",
   },
   fr: {
     introTitle: "Pathologies fréquentes",
@@ -35,6 +41,9 @@ export const ARTICLES_INDEX_UI = {
     homeLabel: "Accueil",
     breadcrumb: "Articles",
     pageTitle: "Articles",
+    metaTitle: "Articles sur la thérapie manuelle | Kinésica",
+    metaDescription:
+      "Articles sur la kinésithérapie, l'ostéopathie et la thérapie manuelle : douleur cervicale, lombalgie et traitements à Palermo.",
   },
   pt: {
     introTitle: "Condições frequentes",
