@@ -298,8 +298,8 @@ export const PATHOLOGIES = [
       paragraphs: [
         "La lombalgie est une douleur dans le bas du dos. Elle peut survenir après un effort, à cause d’une posture prolongée, ou sans facteur évident, et son intensité varie souvent selon l’activité.",
         "Elle est souvent liée à une surcharge musculaire, une raideur des hanches ou de la colonne, une faible tolérance à certaines positions et une coordination du tronc insuffisante. Le stress et le sommeil modifient aussi la perception de la douleur.",
-        "Sans prise en charge, elle peut entraîner une évitement du mouvement, un déconditionnement et des épisodes répétitifs. Dans certains cas, elle s’accompagne d’une gêne vers les fessiers ou d’une sensibilité accrue lombaire.",
-        "Chez Kinésica, nous associons thérapie manuelle et approche posturale globale : ostéopathie et manipulations si indiqué, puis RPG et travail des chaînes musculaires pour optimiser la mobilité et la répartition des charges. Le but est de mieux bouger durablement.",
+        "Sans prise en charge, elle peut entraîner un évitement du mouvement, un déconditionnement et des épisodes répétitifs. Dans certains cas, elle s’accompagne d’une gêne vers les fessiers ou d’une sensibilité accrue lombaire.",
+        "Chez Kinésica, nous associons thérapie manuelle et approche posturale globale : ostéopathie et manipulations si indiquées, puis RPG et travail des chaînes musculaires pour optimiser la mobilité et la répartition des charges. Le but est de mieux bouger durablement.",
         "Le bilan étudie les mouvements qui aggravent ou soulagent, la mobilité des hanches, le contrôle du tronc et vos habitudes. Les séances incluent un exercice progressif, des stratégies en cas de crise et un plan de reprise des activités.",
       ],
       complications: [
@@ -374,7 +374,7 @@ export const PATHOLOGIES = [
         "La ciatalgie regroupe des symptômes le long du nerf sciatique : douleur, sensation électrique, fourmillements ou engourdissement dans la fesse, la cuisse ou la jambe.",
         "Elle peut être liée à une irritation près de la colonne lombaire, à des tensions autour du bassin, ou à une combinaison de raideur, de charge et de sensibilité. Les postures prolongées et certains efforts la déclenchent souvent.",
         "Sans prise en charge, elle peut limiter la marche, le sommeil ou la position assise, et entraîner des compensations qui surchargent le bas du dos. La sensibilité nerveuse peut augmenter et prolonger les épisodes.",
-        "Chez Kinésica, nous agissons sur la cause et l’environnement du nerf : neurodynamique pour améliorer mobilité et tolérance, ostéopathie et manipulations si indiqué, et RPG pour réorganiser la posture et décharger la région lombaire.",
+        "Chez Kinésica, nous agissons sur la cause et l’environnement du nerf : neurodynamique pour améliorer mobilité et tolérance, ostéopathie et manipulations si indiquées, et RPG pour réorganiser la posture et décharger la région lombaire.",
         "Le bilan comprend des tests neurologiques et fonctionnels pour doser le bon stimulus sans forcer. Les séances progressent avec exercices, éducation en cas de crise et stratégie de reprise d’activité en sécurité.",
       ],
       complications: [
@@ -448,8 +448,8 @@ export const PATHOLOGIES = [
       paragraphs: [
         "La cervicobrachialgie est une douleur d’origine cervicale qui irradie vers l’épaule, le bras ou la main. Elle peut s’accompagner de fourmillements, de sensations électriques ou d’une baisse d’usage liée à la douleur.",
         "Les causes fréquentes sont l’irritation d’une racine nerveuse, la tension des muscles cervicaux et de la ceinture scapulaire, la raideur thoracique et les postures prolongées tête en avant. Les gestes répétitifs du membre supérieur peuvent aussi contribuer.",
-        "Sans prise en charge, la sensibilité du système nerveux peut augmenter, le sommeil se dégrader et les activités avec le bras devenir difficiles. Une raideur de protection au cou et à l’épaule entretient parfois le problème.",
-        "Chez Kinésica, nous associons neurodynamique pour améliorer la tolérance nerveuse et thérapie manuelle du cou et du thorax. Nous intégrons ostéopathie, manipulations si indiqué et RPG pour réorganiser la posture et décharger la zone cervico-scapulaire.",
+        "Sans prise en charge, la sensibilité nerveuse peut augmenter, le sommeil se dégrader et les activités avec le bras devenir difficiles. Une raideur de protection au cou et à l’épaule entretient parfois le problème.",
+        "Chez Kinésica, nous associons neurodynamique pour améliorer la tolérance nerveuse et thérapie manuelle du cou et du thorax. Nous intégrons ostéopathie, manipulations si indiquées et RPG pour réorganiser la posture et décharger la zone cervico-scapulaire.",
         "Le bilan comprend des tests de mobilité cervicale, d’épaule et des tests neuraux pour doser le bon stimulus. Les séances progressent avec mobilité, renforcement et conseils ergonomiques pour retrouver un bras fonctionnel et confiant.",
       ],
       complications: [
@@ -524,11 +524,11 @@ export const PATHOLOGIES = [
         "La pubalgie est une douleur au niveau du pubis et de l’aine, parfois déclenchée par la course, les changements de direction, les frappes ou même le fait de se relever d’une chaise. Elle peut donner une sensation de tiraillement des adducteurs ou des abdominaux bas.",
         "Elle est souvent liée à une surcharge des adducteurs, à une mécanique de hanche perturbée, à une raideur du bassin et à un déséquilibre entre abdominaux, fessiers et cuisses. Une augmentation brusque de la charge d’entraînement est un facteur classique.",
         "Sans prise en charge, elle peut devenir chronique, limiter le sport et entraîner des compensations au niveau lombaire, de la hanche ou du genou. Certaines personnes ressentent aussi une douleur persistante à la marche ou dans les escaliers.",
-        "Chez Kinésica, nous abordons la zone comme un ensemble : ostéopathie et thérapie manuelle pour améliorer la mobilité du bassin et de la hanche, manipulations si indiqué, et travail des chaînes musculaires et RPG pour réorganiser les charges et diminuer la tension dans l’aine.",
+        "Chez Kinésica, nous abordons la zone comme un ensemble : ostéopathie et thérapie manuelle pour améliorer la mobilité du bassin et de la hanche, manipulations si indiquées, et travail des chaînes musculaires et RPG pour réorganiser les charges et diminuer la tension dans l’aine.",
         "Le bilan inclut des tests de force, le contrôle lombo-pelvien et la mobilité de hanche. Les séances progressent avec exercice ciblé, reprise graduelle du sport et conseils de gestion de charge pour éviter les rechutes.",
       ],
       complications: [
-        "Douleur à la course ou au tir",
+        "Douleur à la course ou aux frappes",
         "Difficulté lors des changements de direction",
         "Compensation lombaire",
         "Surcharge du genou ou de la hanche",
@@ -597,7 +597,7 @@ export const PATHOLOGIES = [
       lead: "La douleur du genou dépend du genou mais aussi de la hanche, du pied et de la posture. Un bon plan vise les causes, pas seulement les symptômes.",
       paragraphs: [
         "La gonalgie est une douleur du genou, à l’avant, à l’intérieur, à l’extérieur ou à l’arrière. Elle peut apparaître dans les escaliers, à la course, au squat ou après une position assise prolongée.",
-        "Les facteurs fréquents sont la surcharge d’activité, des changements brusques d’entraînement, une faiblesse de hanche, une raideur de cheville, un appui du pied modifié et un contrôle insuffisant lors des descentes ou des réceptions.",
+        "Les facteurs fréquents sont la surcharge d’activité, des changements brusques d’entraînement, une faiblesse de hanche, une raideur de cheville, un appui plantaire modifié et un contrôle insuffisant lors des descentes ou des réceptions.",
         "Si elle persiste, elle peut limiter le sport et le quotidien, entraîner des gonflements récurrents et augmenter les contraintes ailleurs par compensation. Elle peut aussi diminuer la confiance dans le mouvement.",
         "Chez Kinésica, nous associons thérapie manuelle et rééducation du mouvement : ostéopathie pour restaurer la mobilité hanche/cheville si nécessaire, manipulations ciblées, et travail des chaînes musculaires et RPG pour améliorer la posture et la mécanique de charge.",
         "Le bilan inclut l’analyse de la marche et du squat, la force des fessiers et le contrôle du genou. Les séances progressent avec exercice dosé, entraînement fonctionnel et conseils clairs pour reprendre la course ou l’entraînement.",
@@ -669,12 +669,12 @@ export const PATHOLOGIES = [
       metaDescription:
         "Douleur du talon chez Kinésica (Buenos Aires). Bilan pied/cheville et thérapie manuelle + exercice pour marcher et reprendre l’activité sans douleur.",
       h1: "Talalgie",
-      lead: "La douleur du talon peut gêner chaque pas. Comprendre l’appui du pied et la charge globale aide à récupérer durablement.",
+      lead: "La douleur du talon peut gêner chaque pas. Comprendre l’appui plantaire et la charge globale aide à récupérer durablement.",
       paragraphs: [
         "La talalgie est une douleur localisée au talon, ressentie à l’appui, à la marche ou lors des premiers pas du matin. Elle peut être d’un seul côté ou bilatérale.",
-        "Les facteurs fréquents sont l’augmentation de charge (marche ou course), la raideur de cheville, la tension de la chaîne postérieure et un appui du pied modifié. Les chaussures et les surfaces jouent aussi un rôle.",
+        "Les facteurs fréquents sont l’augmentation de charge (marche ou course), la raideur de cheville, la tension de la chaîne postérieure et un appui plantaire modifié. Les chaussures et les surfaces jouent aussi un rôle.",
         "Si elle persiste, elle peut modifier la marche, provoquer des douleurs au genou ou à la hanche par compensation et réduire l’activité physique. La douleur matinale et l’irritabilité des tissus ont tendance à augmenter.",
-        "Chez Kinésica, nous utilisons la thérapie manuelle du pied et de la cheville, l’ostéopathie pour améliorer mobilité et répartition des charges, et des manipulations ciblées si indiqué. Nous intégrons chaînes musculaires et RPG pour travailler la mécanique globale de la marche.",
+        "Chez Kinésica, nous utilisons la thérapie manuelle du pied et de la cheville, l’ostéopathie pour améliorer mobilité et répartition des charges, et des manipulations ciblées si indiquées. Nous intégrons chaînes musculaires et RPG pour travailler la mécanique globale de la marche.",
         "Le bilan comprend l’analyse de l’appui, la mobilité de cheville et la tolérance à la charge. Les séances progressent avec renforcement du pied et du mollet, gestion de charge et plan de reprise marche/course.",
       ],
       complications: [
@@ -749,7 +749,7 @@ export const PATHOLOGIES = [
         "La douleur sacro-iliaque se situe autour du sacrum, de la fesse ou à l’arrière du bassin. Elle peut apparaître à la marche, lors d’une station debout prolongée ou en se tournant dans le lit.",
         "Elle peut être associée à une raideur ou une irritation de la région sacro-iliaque, à des asymétries de charge, à une faiblesse des fessiers ou à une mobilité limitée de la hanche et des lombaires. La grossesse, le sport ou les contraintes répétées peuvent contribuer.",
         "Sans prise en charge, elle peut devenir récurrente, créer une raideur lombaire et de hanche et perturber le sommeil ou la marche. Les compensations augmentent parfois les tensions lombaires ou une gêne dans l’aine.",
-        "Chez Kinésica, nous associons ostéopathie et thérapie manuelle pour améliorer la mobilité et diminuer la sensibilité locale, avec des manipulations ciblées si indiqué. Nous ajoutons chaînes musculaires et RPG pour améliorer la posture et la stabilité lombo-pelvienne.",
+        "Chez Kinésica, nous associons ostéopathie et thérapie manuelle pour améliorer la mobilité et diminuer la sensibilité locale, avec des manipulations ciblées si indiquées. Nous ajoutons chaînes musculaires et RPG pour améliorer la posture et la stabilité lombo-pelvienne.",
         "Le bilan étudie la tolérance à la charge, la mobilité des hanches et le contrôle du tronc. Les séances combinent soulagement, renforcement progressif et stratégies pour reprendre marche, sport et station debout avec confort.",
       ],
       complications: [
@@ -822,7 +822,7 @@ export const PATHOLOGIES = [
       lead: "Une hernie discale peut provoquer une douleur lombaire ou cervicale et parfois des symptômes dans un membre. Un plan progressif aide à récupérer.",
       paragraphs: [
         "Une hernie discale correspond à une modification du disque intervertébral pouvant irriter des structures proches. Les symptômes varient : douleur locale, raideur et parfois irradiation avec fourmillements ou sensations électriques.",
-        "Elle peut apparaître par accumulation de contraintes, mouvements répétitifs, faible tolérance à certaines positions ou à la suite d’un épisode ponctuel. La sensibilité du système nerveux et le contexte (stress, sommeil) influencent l’intensité.",
+        "Elle peut apparaître par accumulation de contraintes, mouvements répétitifs, faible tolérance à certaines positions ou à la suite d’un épisode ponctuel. La sensibilité nerveuse et le contexte (stress, sommeil) influencent l’intensité.",
         "Sans prise en charge, la douleur peut durer, limiter l’activité et installer une peur du mouvement. La raideur de protection et la perte de force par évitement diminuent la tolérance à la charge.",
         "Chez Kinésica, nous associons éducation, thérapie manuelle et exercice. Nous intégrons neurodynamique en cas de signes neuraux, RPG pour améliorer le contrôle postural et, selon la phase, ostéopathie et manipulations douces pour optimiser la mobilité sans forcer.",
         "Le bilan détermine ce qui est sécurisé et ce qui doit être dosé. Les séances progressent avec exercices ciblés, stratégies en cas de crise et plan de reprise graduelle du travail, du sport et du quotidien.",
@@ -899,7 +899,7 @@ export const PATHOLOGIES = [
         "La protrusion discale est une modification du disque intervertébral pouvant provoquer douleur locale et raideur. Elle n’entraîne pas toujours d’irradiation, et son impact dépend de la sensibilité et de la façon dont la colonne est sollicitée.",
         "Elle est souvent liée à une accumulation de contraintes, des mouvements répétitifs, des postures prolongées et une mobilité limitée des hanches ou de la colonne. Le niveau d’activité et la tolérance des tissus comptent aussi.",
         "Sans prise en charge, elle peut favoriser des crises répétées et limiter des gestes simples comme se pencher, porter ou rester assis longtemps. L’évitement prolongé tend à dégrader la condition physique générale.",
-        "Chez Kinésica, nous utilisons la thérapie manuelle pour restaurer la mobilité et diminuer les tensions, avec ostéopathie et manipulations si indiqué. Nous ajoutons RPG et travail des chaînes musculaires pour améliorer la posture et la répartition des charges.",
+        "Chez Kinésica, nous utilisons la thérapie manuelle pour restaurer la mobilité et diminuer les tensions, avec ostéopathie et manipulations si indiquées. Nous ajoutons RPG et travail des chaînes musculaires pour améliorer la posture et la répartition des charges.",
         "Le bilan précise les mouvements utiles et ceux à doser. Les séances incluent exercice progressif, éducation pour gérer les symptômes et plan de reprise graduelle du quotidien et de l’entraînement.",
       ],
       complications: [
@@ -974,7 +974,7 @@ export const PATHOLOGIES = [
         "L’hypercyphose correspond à une courbure thoracique augmentée. Elle peut donner une posture voûtée et, selon les cas, s’accompagner de douleur dorsale, de raideur et de tensions au cou et aux épaules.",
         "Elle est souvent liée aux habitudes posturales, à la sédentarité, à une extension thoracique limitée et à des pectoraux raccourcis. Même avec des facteurs structurels, la mobilité et le contrôle peuvent progresser.",
         "Sans travail spécifique, elle peut surcharger le cou et les épaules, réduire l’expansion de la cage thoracique à la respiration et favoriser des gênes récurrentes en position assise ou en fin de journée.",
-        "Chez Kinésica, nous travaillons la posture avec RPG et chaînes musculaires pour retrouver extension et alignement. Nous intégrons ostéopathie et manipulations si indiqué afin de libérer la mobilité thoracique et améliorer le confort du mouvement.",
+        "Chez Kinésica, nous travaillons la posture avec RPG et chaînes musculaires pour retrouver extension et alignement. Nous intégrons ostéopathie et manipulations si indiquées afin de libérer la mobilité thoracique et améliorer le confort du mouvement.",
         "Le bilan évalue la posture, la mobilité thoracique et le contrôle scapulaire. Les séances associent mobilité, renforcement de la chaîne postérieure et stratégies concrètes pour améliorer la posture au quotidien.",
       ],
       complications: [
@@ -1049,7 +1049,7 @@ export const PATHOLOGIES = [
         "L’hyperlordose correspond à une courbure lombaire augmentée, souvent associée à une bascule antérieure du bassin. Certaines personnes n’ont pas de douleur; d’autres ressentent une gêne lombaire, de la raideur ou des tensions.",
         "Elle est souvent liée aux habitudes posturales et aux schémas de mouvement, à une raideur de hanche, à un contrôle du tronc réduit et à un déséquilibre entre fessiers, abdominaux et fléchisseurs de hanche. La sédentarité et le stress peuvent contribuer.",
         "Lorsqu’elle est douloureuse, elle peut entraîner des épisodes récurrents, une sensation de surcharge lombaire en station debout et des compensations au niveau des hanches et du haut du dos. Elle peut aussi limiter certains exercices ou gestes du quotidien.",
-        "Chez Kinésica, nous travaillons avec RPG et chaînes musculaires pour améliorer l’alignement et le contrôle, en plus de la thérapie manuelle. Nous intégrons ostéopathie et manipulations si indiqué pour optimiser la mobilité du bassin, des lombaires et des hanches et diminuer la surcharge.",
+        "Chez Kinésica, nous travaillons avec RPG et chaînes musculaires pour améliorer l’alignement et le contrôle, en plus de la thérapie manuelle. Nous intégrons ostéopathie et manipulations si indiquées pour optimiser la mobilité du bassin, des lombaires et des hanches et diminuer la surcharge.",
         "Le bilan évalue la posture, la mobilité des hanches et le contrôle lombo-pelvien. Les séances progressent avec exercices ciblés, respiration et stratégies de charge pour mieux tolérer les activités.",
       ],
       complications: [
@@ -1124,7 +1124,7 @@ export const PATHOLOGIES = [
         "Le dos plat décrit une colonne thoracique avec une courbure réduite. Il peut s’accompagner de raideur, d’une sensation de “dos dur” et de gênes au cou, entre les omoplates ou dans le haut du dos.",
         "Il est souvent lié à une mobilité thoracique limitée, à une respiration peu efficiente et à des tensions des muscles paravertébraux. Il peut aussi apparaître en compensation d’autres postures ou habitudes d’entraînement.",
         "Sans prise en charge, il peut augmenter les contraintes sur le cou et les lombaires, réduire l’adaptabilité de la colonne et provoquer des gênes en position assise prolongée ou à l’effort.",
-        "Chez Kinésica, nous utilisons RPG et chaînes musculaires pour retrouver des courbures fonctionnelles et un meilleur contrôle. Nous intégrons ostéopathie et manipulations si indiqué pour libérer la mobilité thoracique et améliorer la mécanique respiratoire et du tronc.",
+        "Chez Kinésica, nous utilisons RPG et chaînes musculaires pour retrouver des courbures fonctionnelles et un meilleur contrôle. Nous intégrons ostéopathie et manipulations si indiquées pour libérer la mobilité thoracique et améliorer la mécanique respiratoire et du tronc.",
         "Le bilan évalue mobilité thoracique, respiration et contrôle scapulaire. Les séances associent mobilité, renforcement progressif et stratégies posturales concrètes pour un dos plus souple au quotidien.",
       ],
       complications: [
@@ -1197,9 +1197,9 @@ export const PATHOLOGIES = [
       lead: "Le genu valgum est une tendance des genoux à aller vers l’intérieur. L’objectif est d’améliorer le contrôle et la répartition des charges.",
       paragraphs: [
         "Le genu valgum décrit une tendance des genoux à se rapprocher vers l’intérieur, surtout au squat, à la réception de saut ou dans les escaliers. Il peut être douloureux ou non.",
-        "Il est souvent lié au contrôle de hanche (fessiers), à la mobilité de cheville, à l’appui du pied et à des schémas moteurs appris. La fatigue et l’augmentation de charge le rendent plus visible.",
+        "Il est souvent lié au contrôle de hanche (fessiers), à la mobilité de cheville, à l’appui plantaire et à des schémas moteurs appris. La fatigue et l’augmentation de charge le rendent plus visible.",
         "S’il s’accompagne de douleur, il peut augmenter les contraintes au genou, favoriser des douleurs rotuliennes ou internes et entraîner des compensations au niveau de la hanche ou du pied. Il peut aussi limiter la performance sportive.",
-        "Chez Kinésica, nous associons chaînes musculaires et RPG pour améliorer l’organisation posturale, avec thérapie manuelle. Nous intégrons ostéopathie et manipulations si indiqué afin d’optimiser la mobilité de hanche et de cheville et d’aider un meilleur schéma de charge.",
+        "Chez Kinésica, nous associons chaînes musculaires et RPG pour améliorer l’organisation posturale, avec thérapie manuelle. Nous intégrons ostéopathie et manipulations si indiquées afin d’optimiser la mobilité de hanche et de cheville et d’aider un meilleur schéma de charge.",
         "Le bilan inclut l’analyse du squat, de la réception et de la marche. Les séances progressent avec renforcement des fessiers, contrôle neuromusculaire et exercices adaptés au sport ou à l’activité.",
       ],
       complications: [
@@ -1271,17 +1271,17 @@ export const PATHOLOGIES = [
       h1: "Genu varum",
       lead: "Le genu varum correspond à une orientation plus “ouverte” des genoux. Nous travaillons mobilité, force et mécanique pour mieux tolérer la charge.",
       paragraphs: [
-        "Le genu varum est une alignment où les genoux sont plus orientés vers l’extérieur, avec un espace plus important entre eux. Il peut s’agir d’une caractéristique individuelle sans douleur.",
-        "En cas de symptômes, la mobilité de hanche et de cheville, l’appui du pied et la répartition de charge à la marche ou à l’entraînement sont déterminants. La raideur et la faiblesse de certains muscles peuvent accentuer la surcharge.",
+        "Le genu varum est un alignement où les genoux sont plus orientés vers l’extérieur, avec un espace plus important entre eux. Il peut s’agir d’une caractéristique individuelle sans douleur.",
+        "En cas de symptômes, la mobilité de hanche et de cheville, l’appui plantaire et la répartition de charge à la marche ou à l’entraînement sont déterminants. La raideur et la faiblesse de certains muscles peuvent accentuer la surcharge.",
         "Sans prise en charge, il peut s’associer à des gênes internes ou externes du genou et à une fatigue lors de longues marches ou du sport. Des compensations hanche/pied peuvent apparaître.",
-        "Chez Kinésica, nous associons thérapie manuelle—ostéopathie et manipulations si indiqué—pour améliorer la mobilité, et ajoutons RPG et chaînes musculaires pour optimiser la posture et les schémas de charge.",
+        "Chez Kinésica, nous associons thérapie manuelle—ostéopathie et manipulations si indiquées—pour améliorer la mobilité, et ajoutons RPG et chaînes musculaires pour optimiser la posture et les schémas de charge.",
         "Le bilan analyse la marche, la force et le contrôle dans les gestes fonctionnels. Les séances incluent renforcement progressif, exercices d’alignement dynamique et conseils de gestion de charge adaptés à votre activité.",
       ],
       complications: [
         "Gêne des compartiments du genou",
         "Fatigue à la marche ou à la course",
         "Compensation de hanche",
-        "Appui du pied modifié",
+        "Appui plantaire modifié",
         "Tolérance réduite aux impacts",
       ],
       techniquesNote: "Le programme est adapté à votre mécanique et à vos objectifs de mouvement.",
@@ -1344,12 +1344,12 @@ export const PATHOLOGIES = [
       metaDescription:
         "Pieds plats chez Kinésica (Buenos Aires). Bilan de l’appui et de la cheville. Thérapie manuelle et exercice pour améliorer tolérance à la charge et fonction.",
       h1: "Pieds plats",
-      lead: "Un arche plus bas n’est pas forcément un problème. L’important est la tolérance à la charge et l’apparition éventuelle de symptômes.",
+      lead: "Une voûte plus basse n’est pas forcément un problème. L’important est la tolérance à la charge et l’apparition éventuelle de symptômes.",
       paragraphs: [
         "Les pieds plats décrivent une voûte plantaire basse ou un appui plus pronateur. Cela peut être une variation normale et ne pas nécessiter de traitement en l’absence de douleur ou de limitation.",
         "En cas de symptômes, la mobilité de cheville, la force du pied et la coordination avec le genou et la hanche sont souvent en jeu. Les augmentations brusques de charge et des chaussures inadaptées peuvent déclencher des gênes.",
         "Si la douleur persiste, la marche peut être modifiée et une surcharge peut apparaître à la cheville, au genou ou même au bas du dos. La tolérance à la course ou à la station debout prolongée peut diminuer.",
-        "Chez Kinésica, nous abordons le pied dans la chaîne globale : thérapie manuelle et ostéopathie pour améliorer la mobilité de cheville et du médio-pied, manipulations ciblées si indiqué, et chaînes musculaires + RPG pour optimiser l’alignement et la charge à la marche.",
+        "Chez Kinésica, nous abordons le pied dans la chaîne globale : thérapie manuelle et ostéopathie pour améliorer la mobilité de cheville et du médio-pied, manipulations ciblées si indiquées, et chaînes musculaires + RPG pour optimiser l’alignement et la charge à la marche.",
         "Le bilan inclut l’analyse de l’appui, des tests de force et de tolérance à la charge. Les séances progressent avec exercices pied/mollet, contrôle genou/hanche et conseils pour doser la marche ou la course.",
       ],
       complications: [
@@ -1424,7 +1424,7 @@ export const PATHOLOGIES = [
         "La scoliose est une déviation de la colonne qui s’exprime dans plusieurs plans et peut varier en importance. Certaines personnes n’ont pas de douleur; d’autres ressentent des gênes liées aux tensions, à la raideur ou à la fatigue musculaire.",
         "Les symptômes peuvent être liés à des asymétries de charge, à une mobilité réduite de certains segments et à des compensations du bassin, de la cage thoracique et de la ceinture scapulaire. L’activité et le stress influencent également le ressenti.",
         "Sans accompagnement, des épisodes douloureux, une fatigue posturale et une difficulté à rester dans certaines positions peuvent apparaître. Parfois, la respiration semble plus limitée en raison d’une raideur thoracique.",
-        "Chez Kinésica, nous travaillons avec RPG et chaînes musculaires pour améliorer l’organisation posturale et le contrôle, avec thérapie manuelle. Nous intégrons ostéopathie et manipulations si indiqué pour relâcher les tensions et optimiser la mobilité des zones les plus raides.",
+        "Chez Kinésica, nous travaillons avec RPG et chaînes musculaires pour améliorer l’organisation posturale et le contrôle, avec thérapie manuelle. Nous intégrons ostéopathie et manipulations si indiquées pour relâcher les tensions et optimiser la mobilité des zones les plus raides.",
         "Le bilan observe la posture, la mobilité, la force et l’expression de la douleur dans vos activités. Les séances incluent exercices spécifiques, éducation à l’auto-gestion et progression réaliste pour gagner en confort et en capacité au quotidien.",
       ],
       complications: [
@@ -1649,7 +1649,7 @@ export const PATHOLOGIES = [
         "Le conflit sous-acromial correspond à une douleur d’épaule, souvent à l’élévation du bras, pour s’habiller ou atteindre un objet. La douleur se situe fréquemment sur la face latérale de l’épaule et peut augmenter la nuit.",
         "Il est souvent associé à une surcharge du tendon du manguito rotateur, à un contrôle scapulaire insuffisant, à une raideur thoracique et à une posture épaules en avant. Les changements brusques d’entraînement ou le travail au-dessus de la tête sont des déclencheurs fréquents.",
         "Sans prise en charge, la mobilité et la force peuvent diminuer, les activités sportives et domestiques être limitées et la douleur nocturne augmenter. Des compensations au cou et au haut du dos peuvent amplifier les tensions.",
-        "Chez Kinésica, nous associons thérapie manuelle et rééducation du mouvement : ostéopathie pour améliorer la mobilité thoracique et du complexe de l’épaule, manipulations si indiqué, et chaînes musculaires + RPG pour optimiser posture et mécanique de l’omoplate.",
+        "Chez Kinésica, nous associons thérapie manuelle et rééducation du mouvement : ostéopathie pour améliorer la mobilité thoracique et du complexe de l’épaule, manipulations si indiquées, et chaînes musculaires + RPG pour optimiser posture et mécanique de l’omoplate.",
         "Le bilan analyse amplitude, force du manguito et contrôle de l’omoplate. Les séances progressent avec exercices spécifiques, gestion de charge et reprise graduelle de l’entraînement.",
       ],
       complications: [
@@ -1724,7 +1724,7 @@ export const PATHOLOGIES = [
         "La coiffe des rotateurs est un ensemble de muscles et tendons stabilisant l’épaule. La surcharge peut provoquer douleur, faiblesse ou gêne en dormant sur le côté atteint.",
         "Elle est souvent liée à une augmentation de charge (salle, natation, travail), une technique imparfaite, une fatigue du contrôle scapulaire et une raideur thoracique. Le stress et le manque de récupération influencent aussi la guérison.",
         "Sans prise en charge, elle peut limiter le port de charge, l’entraînement et les gestes au-dessus de la tête, et augmenter la douleur nocturne. Une compensation cervicale peut majorer les tensions.",
-        "Chez Kinésica, nous associons thérapie manuelle et exercice spécifique : ostéopathie et manipulations si indiqué pour améliorer la mobilité et réduire les tensions, ainsi que chaînes musculaires + RPG pour optimiser posture et coordination de l’épaule.",
+        "Chez Kinésica, nous associons thérapie manuelle et exercice spécifique : ostéopathie et manipulations si indiquées pour améliorer la mobilité et réduire les tensions, ainsi que chaînes musculaires + RPG pour optimiser posture et coordination de l’épaule.",
         "Le bilan évalue la force, le contrôle de l’omoplate et la tolérance à la charge. Les séances progressent avec renforcement de la coiffe, mobilité et reprise graduelle du sport ou du travail, avec des règles claires de dosage.",
       ],
       complications: [
@@ -1798,8 +1798,8 @@ export const PATHOLOGIES = [
       paragraphs: [
         "La radiculopathie survient lorsqu’une racine nerveuse est irritée, le plus souvent au niveau cervical ou lombaire. Elle peut entraîner douleur irradiée, fourmillements, engourdissement ou sensation de faiblesse.",
         "Les facteurs peuvent inclure des changements discaux, une raideur articulaire, une inflammation locale ou une combinaison de charge et de posture. Il n’y a pas toujours une cause unique, d’où l’importance d’un bilan symptomatique et fonctionnel.",
-        "Sans prise en charge, elle peut perturber le sommeil, le travail et l’activité physique, et augmenter la sensibilité du système nerveux. Les compensations posturales peuvent entretenir l’irritation.",
-        "Chez Kinésica, nous associons neurodynamique pour améliorer la mobilité et la tolérance du nerf, avec ostéopathie et manipulations douces si indiqué pour optimiser la mobilité vertébrale. Nous ajoutons RPG pour améliorer le contrôle postural et décharger la zone concernée.",
+        "Sans prise en charge, elle peut perturber le sommeil, le travail et l’activité physique, et augmenter la sensibilité nerveuse. Les compensations posturales peuvent entretenir l’irritation.",
+        "Chez Kinésica, nous associons neurodynamique pour améliorer la mobilité et la tolérance du nerf, avec ostéopathie et manipulations douces si indiquées pour optimiser la mobilité vertébrale. Nous ajoutons RPG pour améliorer le contrôle postural et décharger la zone concernée.",
         "Le bilan comprend tests neurologiques, force, sensibilité et mouvements modifiant les symptômes. Les séances progressent avec exercice gradué, éducation en cas de crise et plan de reprise progressive des activités.",
       ],
       complications: [
@@ -1809,7 +1809,7 @@ export const PATHOLOGIES = [
         "Limitation fonctionnelle du membre",
         "Peur du mouvement",
       ],
-      techniquesNote: "La priorité est de doser des stimuli sûrs pour le système nerveux et de progresser sans irriter.",
+      techniquesNote: "La priorité est de doser des stimuli sûrs pour le tissu nerveux et de progresser sans irriter.",
     },
   },
 
@@ -1874,7 +1874,7 @@ export const PATHOLOGIES = [
         "La méniscopathie désigne des symptômes liés au ménisque du genou. Elle peut se manifester par une douleur sur la ligne articulaire, un gonflement, une sensation d’accrochage ou une limitation à la flexion.",
         "Elle peut survenir après une torsion ou un impact, ou par surcharge accumulée à l’entraînement ou au travail. La mobilité de hanche et de cheville et le contrôle du mouvement influencent la répartition des charges au genou.",
         "Sans prise en charge, la mobilité peut diminuer, le gonflement devenir récurrent et la marche, les escaliers ou le sport être limités. L’évitement prolongé peut réduire la force et la stabilité.",
-        "Chez Kinésica, nous associons thérapie manuelle et exercice : ostéopathie et manipulations ciblées si indiqué pour améliorer la mobilité et réduire les tensions, et chaînes musculaires + RPG pour optimiser l’alignement et le contrôle sous charge.",
+        "Chez Kinésica, nous associons thérapie manuelle et exercice : ostéopathie et manipulations ciblées si indiquées pour améliorer la mobilité et réduire les tensions, et chaînes musculaires + RPG pour optimiser l’alignement et le contrôle sous charge.",
         "Le bilan analyse amplitude, tolérance à la flexion, force et gestes fonctionnels. Les séances progressent avec renforcement, contrôle neuromusculaire et plan clair de reprise du sport pour limiter les rechutes.",
       ],
       complications: [
@@ -1949,7 +1949,7 @@ export const PATHOLOGIES = [
         "La fasciite plantaire est une douleur sous le pied, près du talon ou de la voûte. Elle est typiquement plus forte au lever ou après une période assise.",
         "Elle est souvent liée à une augmentation de charge (marche, course), une raideur de cheville, une tension du mollet et des changements d’appui. La tension de la chaîne postérieure augmente les contraintes sur les tissus plantaires.",
         "Sans prise en charge, elle peut modifier la marche, limiter l’activité physique et entraîner des compensations au genou ou à la hanche. L’irritabilité des tissus peut augmenter et prolonger les symptômes.",
-        "Chez Kinésica, nous intégrons thérapie manuelle du pied et du mollet, ostéopathie pour améliorer la mobilité et la répartition des charges, et manipulations ciblées si indiqué. Nous ajoutons chaînes musculaires + RPG pour travailler l’appui et la mécanique globale de la marche.",
+        "Chez Kinésica, nous intégrons thérapie manuelle du pied et du mollet, ostéopathie pour améliorer la mobilité et la répartition des charges, et manipulations ciblées si indiquées. Nous ajoutons chaînes musculaires + RPG pour travailler l’appui plantaire et la mécanique globale de la marche.",
         "Le bilan inclut mobilité de cheville, tolérance à la charge et analyse de l’appui. Les séances progressent avec renforcement pied/mollet, gestion de charge marche/course et conseils de prévention des rechutes.",
       ],
       complications: [
@@ -2024,7 +2024,7 @@ export const PATHOLOGIES = [
         "La cervicalgie est une douleur du cou, parfois avec raideur et sensation de tête lourde. Elle peut apparaître après de longues heures d’écran, du stress ou des changements d’activité physique.",
         "Elle est souvent liée à une tension musculaire, une mobilité limitée de la colonne cervicale et thoracique et une posture tête en avant. Chez certaines personnes, l’ATM peut aussi contribuer en cas de serrement des dents.",
         "Sans prise en charge, elle peut devenir récurrente, s’associer à des maux de tête et perturber le sommeil ou la concentration. Les compensations des épaules et du haut du dos augmentent souvent la charge sur le cou.",
-        "Chez Kinésica, nous associons thérapie manuelle et RPG pour améliorer l’organisation posturale. Nous intégrons ostéopathie et manipulations douces si indiqué, ainsi qu’un travail de l’ATM en cas d’implication mandibulaire, afin de retrouver un cou mobile et stable.",
+        "Chez Kinésica, nous associons thérapie manuelle et RPG pour améliorer l’organisation posturale. Nous intégrons ostéopathie et manipulations douces si indiquées, ainsi qu’un travail de l’ATM en cas d’implication mandibulaire, afin de retrouver un cou mobile et stable.",
         "Le bilan comprend mobilité cervicale/thoracique, contrôle scapulaire et habitudes de travail. Les séances ajoutent exercices ciblés, conseils ergonomiques et stratégies d’auto-gestion pour maintenir l’amélioration.",
       ],
       complications: [
