@@ -24,8 +24,12 @@ function lastmod(lang, stem) {
   return mtime.toISOString().slice(0, 10);
 }
 
+/** Stems that must not appear in the public sitemap (error/noindex pages). */
+const SITEMAP_EXCLUDE = new Set(["404"]);
+
 const entries = [];
 for (const stem of STEMS) {
+  if (SITEMAP_EXCLUDE.has(stem)) continue;
   for (const lang of LANG_CODES) {
     const rel = repoPath(lang, stem);
     if (!fs.existsSync(path.join(ROOT, rel))) {

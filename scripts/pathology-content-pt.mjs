@@ -14,6 +14,9 @@ export const PT_UI = {
   ctaButton: "Contato",
   homeLabel: "Início",
   pathologiesBreadcrumb: "Condições",
+  relatedTitle: "Condições relacionadas",
+  relatedLead:
+    "Outras condições frequentemente avaliadas junto com esta ou que compartilham abordagem semelhante.",
 };
 
 export const PT_TECHNIQUE_LABELS = {

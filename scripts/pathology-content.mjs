@@ -59,6 +59,9 @@ export const UI = {
     ctaButton: "Contacto",
     homeLabel: "Inicio",
     pathologiesBreadcrumb: "Patologías",
+    relatedTitle: "Condiciones relacionadas",
+    relatedLead:
+      "Otras dolencias que suelen evaluarse junto con esta condición o comparten un abordaje similar.",
   },
   en: {
     eyebrow: "Conditions",
@@ -71,6 +74,9 @@ export const UI = {
     ctaButton: "Contact",
     homeLabel: "Home",
     pathologiesBreadcrumb: "Conditions",
+    relatedTitle: "Related conditions",
+    relatedLead:
+      "Other conditions often assessed alongside this one or that share a similar treatment approach.",
   },
   fr: {
     eyebrow: "Pathologies",
@@ -83,6 +89,9 @@ export const UI = {
     ctaButton: "Contact",
     homeLabel: "Accueil",
     pathologiesBreadcrumb: "Pathologies",
+    relatedTitle: "Pathologies associées",
+    relatedLead:
+      "D’autres affections souvent évaluées avec celle-ci ou partageant une approche thérapeutique similaire.",
   },
   pt: PT_UI,
 };
@@ -2044,5 +2053,41 @@ for (const pathology of PATHOLOGIES) {
   if (pt) {
     pathology.pt = pt;
   }
+}
+
+/** Related pathology stems for internal linking (3–5 per page). */
+export const PATHOLOGY_RELATED = {
+  cefalea: ["cervicalgia", "cervicobraquialgia", "dorsalgia"],
+  dorsalgia: ["cervicalgia", "hipercifosis", "dorso-plano", "escoliosis"],
+  lumbalgia: ["ciatalgia", "hernia-disco", "protrusion-discal", "dolor-sacriiliaco"],
+  ciatalgia: ["lumbalgia", "hernia-disco", "protrusion-discal", "radiculopatia"],
+  cervicobraquialgia: ["cervicalgia", "radiculopatia", "cefalea", "manguito-rotador"],
+  pubalgia: ["dolor-sacriiliaco", "gonalgia", "lumbalgia"],
+  gonalgia: ["meniscopatia", "genu-valgo", "genu-varo", "talalgia"],
+  talalgia: ["fascitis-plantar", "pies-planos", "gonalgia"],
+  "dolor-sacriiliaco": ["lumbalgia", "pubalgia", "ciatalgia"],
+  "hernia-disco": ["protrusion-discal", "lumbalgia", "ciatalgia", "radiculopatia"],
+  "protrusion-discal": ["hernia-disco", "lumbalgia", "ciatalgia"],
+  hipercifosis: ["dorso-plano", "escoliosis", "dorsalgia", "hiperlordosis"],
+  hiperlordosis: ["lumbalgia", "hipercifosis", "escoliosis"],
+  "dorso-plano": ["hipercifosis", "escoliosis", "dorsalgia"],
+  "genu-valgo": ["genu-varo", "gonalgia", "pies-planos"],
+  "genu-varo": ["genu-valgo", "gonalgia", "pies-planos"],
+  "pies-planos": ["talalgia", "fascitis-plantar", "genu-valgo"],
+  escoliosis: ["hipercifosis", "hiperlordosis", "dorso-plano"],
+  "epicondilitis-lateral": ["epicondilitis-medial", "manguito-rotador"],
+  "epicondilitis-medial": ["epicondilitis-lateral", "manguito-rotador"],
+  "impingement-subacromial": ["manguito-rotador", "cervicobraquialgia"],
+  "manguito-rotador": ["impingement-subacromial", "cervicobraquialgia", "cervicalgia"],
+  radiculopatia: ["cervicobraquialgia", "ciatalgia", "hernia-disco", "cervicalgia"],
+  meniscopatia: ["gonalgia", "genu-valgo"],
+  "fascitis-plantar": ["talalgia", "pies-planos"],
+  cervicalgia: ["cefalea", "cervicobraquialgia", "dorsalgia", "radiculopatia"],
+};
+
+const pathologyByStem = new Map(PATHOLOGIES.map((p) => [p.stem, p]));
+
+export function pathologyForStem(stem) {
+  return pathologyByStem.get(stem);
 }
 

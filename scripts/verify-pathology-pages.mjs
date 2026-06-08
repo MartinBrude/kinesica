@@ -27,6 +27,9 @@ for (const stem of PATHOLOGY_STEMS) {
     if (!html.includes("pathology-technique-links")) {
       errors.push(`${file}: missing technique links`);
     }
+    if (!html.includes("pathology-related")) {
+      errors.push(`${file}: missing pathology-related section`);
+    }
     if (!html.includes("site-cta-strip-root")) {
       errors.push(`${file}: missing site-cta-strip-root`);
     }

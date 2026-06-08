@@ -8,9 +8,11 @@ import path from "path";
 import { fileURLToPath } from "url";
 import {
   PATHOLOGIES,
+  PATHOLOGY_RELATED,
   PATHOLOGY_STEMS,
   TECHNIQUE_LABELS,
   UI,
+  pathologyForStem,
 } from "./pathology-content.mjs";
 import {
   absoluteUrl,
@@ -41,6 +43,39 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 function techniqueHref(lang, techStem) {
   return sitePath(lang, techStem);
+}
+
+function buildRelatedSection(pathology, lang) {
+  const ui = UI[lang];
+  const relatedStems = PATHOLOGY_RELATED[pathology.stem];
+  if (!relatedStems?.length) return "";
+
+  const items = relatedStems
+    .map((relatedStem) => {
+      const related = pathologyForStem(relatedStem);
+      if (!related?.[lang]) return "";
+      const label = related[lang].breadcrumb;
+      const href = sitePath(lang, relatedStem);
+      return `<li><a href="${href}">${escHtml(label)}</a></li>`;
+    })
+    .filter(Boolean)
+    .join("\n              ");
+
+  if (!items) return "";
+
+  return `    <section class="pathology-related space-medium">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12">
+            <h2>${ui.relatedTitle}</h2>
+            <p class="pathology-related-lead">${ui.relatedLead}</p>
+            <ul class="pathology-technique-links pathology-related-links">
+              ${items}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>`;
 }
 
 function buildMain(pathology, lang) {
@@ -93,7 +128,8 @@ ${complications}
           </div>
         </div>
       </div>
-    </section>`;
+    </section>
+${buildRelatedSection(pathology, lang)}`;
 }
 
 function buildHtml(pathology, lang) {

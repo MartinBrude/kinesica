@@ -3630,6 +3630,21 @@ Pathology detail pages (FAQ dolencias)
   text-decoration: none;
 }
 
+.pathology-related {
+  padding-top: 40px;
+  padding-bottom: 48px;
+}
+
+.pathology-related h2 {
+  font-size: 1.375rem;
+  margin: 0 0 0.75rem;
+}
+
+.pathology-related-lead {
+  margin-bottom: 1.25rem;
+  max-width: 42rem;
+}
+
 @media screen and (max-width: 991px) {
   .pathology-aside {
     margin-top: 2rem;
