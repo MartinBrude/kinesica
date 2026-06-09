@@ -10,6 +10,7 @@ Disallow: /404-router.html
 Disallow: /404.html
 Disallow: /en/404.html
 Disallow: /fr/404.html
+Disallow: /pt/404.html
 
 Sitemap: https://www.kinesica.com.ar/sitemap.xml
 
