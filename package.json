@@ -29,6 +29,8 @@
     "generate:article-thumbnails": "node scripts/generate-article-thumbnails.mjs",
     "build:articulos": "node scripts/generate-article-thumbnails.mjs && node scripts/build-articulos-pages.mjs && node scripts/sync-nav-articles-menu.mjs && node scripts/inject-static-shell.mjs && npm run assets:build",
     "build:404": "node scripts/build-404-pages.mjs && node scripts/inject-static-shell.mjs && node scripts/apply-seo-performance.mjs",
+    "build:home": "node scripts/build-home-pages.mjs && node scripts/inject-local-schema.mjs && node scripts/inject-static-shell.mjs && node scripts/verify-home-pages.mjs && npm run assets:build && node scripts/apply-seo-performance.mjs && npm run seo:sitemap && npm run seo:llms",
+    "extract:home-content": "node scripts/extract-home-content.mjs",
     "build:methods": "node scripts/build-method-pages.mjs && node scripts/inject-local-schema.mjs && node scripts/inject-static-shell.mjs && node scripts/verify-method-pages.mjs && npm run assets:build && node scripts/apply-seo-performance.mjs",
     "extract:methods-body": "node scripts/extract-methods-body.mjs",
     "patch:methods-seo": "node scripts/patch-methods-seo.mjs",

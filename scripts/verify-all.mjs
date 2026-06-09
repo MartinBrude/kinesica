@@ -14,6 +14,7 @@ const steps = [
   ["node", ["scripts/verify-pt-copy.mjs"]],
   ["node", ["scripts/verify-schema-i18n.mjs"]],
   ["node", ["scripts/verify-pathology-pages.mjs"]],
+  ["node", ["scripts/verify-home-pages.mjs"]],
   ["node", ["scripts/audit-site.mjs"]],
 ];
 

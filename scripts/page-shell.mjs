@@ -129,19 +129,21 @@ export function headSeoBlock({
   stem,
   title,
   description,
+  ogDescription,
   type = "website",
   image,
   canonical,
 }) {
   const url = canonical ?? absoluteUrl(lang, stem);
   const locale = OG_LOCALE[lang] ?? ogLocaleFor(lang);
+  const ogDesc = ogDescription ?? description;
   const lines = [
     `  <meta name="description" content="${escHtml(description)}" />`,
     `  <title>${escHtml(title)}</title>`,
     `  <link rel="canonical" href="${url}" />`,
     hreflangLinks(stem),
     `  <meta property="og:title" content="${escHtml(title)}" />`,
-    `  <meta property="og:description" content="${escHtml(description)}" />`,
+    `  <meta property="og:description" content="${escHtml(ogDesc)}" />`,
   ];
   if (image) {
     lines.push(`  <meta property="og:image" content="${image}" />`);
@@ -152,6 +154,24 @@ export function headSeoBlock({
     `  <meta property="og:site_name" content="Kinésica" />`,
     `  <meta property="og:locale" content="${locale}" />`,
   );
+  return lines.join("\n");
+}
+
+/** Twitter Card tags (home and shareable pages). */
+export function headTwitterBlock({ title, description, image, imageAlt }) {
+  const lines = [
+    `  <meta name="twitter:card" content="summary_large_image" />`,
+    `  <meta name="twitter:title" content="${escHtml(title)}" />`,
+    `  <meta name="twitter:description" content="${escHtml(description)}" />`,
+  ];
+  if (image) {
+    lines.push(`  <meta name="twitter:image" content="${image}" />`);
+  }
+  if (imageAlt) {
+    lines.push(
+      `  <meta name="twitter:image:alt" content="${escHtml(imageAlt)}" />`,
+    );
+  }
   return lines.join("\n");
 }
 
