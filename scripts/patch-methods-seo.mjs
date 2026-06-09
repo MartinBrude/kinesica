@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Patch method pages: meta, breadcrumb labels, BreadcrumbList and MedicalTherapy schema.
+ * @deprecated Use npm run build:methods — patches are applied by build-method-pages.mjs.
  * Run: node scripts/patch-methods-seo.mjs
  */
 import fs from "fs";
@@ -10,6 +10,7 @@ import { absoluteUrl, HTML_LANG, repoPath } from "./i18n-urls.mjs";
 import { LANG_CODES } from "./languages.mjs";
 import { patchPageMeta } from "./html-utils.mjs";
 import { METHOD_STEMS, METHOD_UI, METHODS } from "./methods-content.mjs";
+import { pageCaptionMarkup } from "./page-shell.mjs";
 import {
   BUSINESS_ID,
   getMethodServiceCopy,
@@ -44,6 +45,20 @@ function methodTherapySchema(lang, stem, service) {
 function therapySchemaScript(schema) {
   const json = JSON.stringify(schema, null, 4).replace(/^/gm, "      ");
   return `  <script type="application/ld+json" id="kinesica-method-therapy">\n${json}\n    </script>`;
+}
+
+function patchPageHeaderCaption(html, breadcrumb) {
+  const caption = pageCaptionMarkup(breadcrumb);
+  const emptyComment =
+    /<div class="page-caption">\s*<!--[\s\S]*?-->\s*<\/div>/;
+  const emptyDiv = /<div class="page-caption"><\/div>/;
+  if (emptyComment.test(html)) {
+    return html.replace(emptyComment, caption);
+  }
+  if (emptyDiv.test(html)) {
+    return html.replace(emptyDiv, caption);
+  }
+  return html;
 }
 
 function patchBreadcrumbHtml(html, ui) {
@@ -99,6 +114,7 @@ function patchFile(rel, lang, stem) {
     description: data.metaDescription,
   });
 
+  html = patchPageHeaderCaption(html, data.breadcrumb);
   html = patchBreadcrumbHtml(html, ui);
   html = patchBreadcrumbSchema(html, ui, data.breadcrumb, lang, stem);
   html = injectTherapySchema(html, methodTherapySchema(lang, stem, service));

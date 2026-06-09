@@ -6,7 +6,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { PATHOLOGY_STEMS } from "./pathology-content.mjs";
-import { repoPath, sitePath } from "./i18n-urls.mjs";
+import { repoPath, absoluteUrl } from "./i18n-urls.mjs";
 import { LANG_CODES } from "./languages.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -34,9 +34,9 @@ for (const stem of PATHOLOGY_STEMS) {
       errors.push(`${file}: missing site-cta-strip-root`);
     }
     for (const targetLang of LANG_CODES) {
-      const expected = sitePath(targetLang, stem);
+      const expected = absoluteUrl(targetLang, stem);
       if (!html.includes(`href="${expected}"`)) {
-        errors.push(`${file}: missing lang link ${expected}`);
+        errors.push(`${file}: missing hreflang ${expected}`);
       }
     }
   }

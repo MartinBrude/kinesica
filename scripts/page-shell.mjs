@@ -69,9 +69,20 @@ export function headJsClassScript() {
 export function headLangScripts(prefix) {
   return (
     headJsClassScript() +
+    headLangDeferScripts(prefix)
+  );
+}
+
+export function headLangDeferScripts(prefix) {
+  return (
     `  <script src="${prefix}js/lang-preference.min.js" defer></script>\n` +
     `  <script src="${prefix}js/redirect.min.js" defer></script>\n`
   );
+}
+
+/** Blocking critical CSS (shared file; no inline duplicate per page). */
+export function headCriticalCss(prefix) {
+  return syncCssLink(`${prefix}css/critical.min.css`);
 }
 
 /** Decorative page-header-word caption (métodos, RPG, patologías). */

@@ -1,91 +1,49 @@
 #!/usr/bin/env node
 /**
- * Inject static header (lang picker) and ensure lang-picker.js is loaded.
+ * Ensure JS-injected site shell: empty placeholders + required scripts.
+ * Header, nav, footer and CTA load at runtime via partials/*.js + *-include.js.
  * Run: node scripts/inject-static-shell.mjs
  */
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { injectStaticHeader } from "./header-shell.mjs";
+import { headerShellMarkup } from "./header-shell.mjs";
 import { listHtmlFiles, expectedLangFromFile, partialLang } from "./languages.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-function loadSnippet(jsPath) {
-  const raw = fs.readFileSync(path.join(ROOT, jsPath), "utf8");
-  const m = raw.match(/=\s*`([\s\S]*?)`\s*\.trim\(\)/);
-  if (!m) throw new Error(`Could not parse snippet: ${jsPath}`);
-  return m[1].trim();
-}
-
-function injectNav(html, file) {
-  const lang = expectedLangFromFile(file);
-  const navHtml = loadSnippet(`partials/nav-${lang}.js`);
-  html = html.replace(
-    /<div id="navigation" class="nav navbar-nav navbar-right"/g,
-    '<div id="navigation"',
-  );
-  const navBlock =
-    /<div id="navigation"([^>]*)>[\s\S]*?<\/div>(?=\s*<\/nav>)/;
-  if (navBlock.test(html)) {
-    return html.replace(
-      navBlock,
-      `<div id="navigation"$1>\n${navHtml}\n            </div>`,
-    );
+/** Remove baked-in header markup; keep empty #site-header-root. */
+function stripInlinedHeader(html) {
+  const filled = /<div id="site-header-root"([^>]*)>[\s\S]*?<\/header>\s*<\/div>\s*(?=<script)/;
+  if (!filled.test(html)) {
+    return html;
   }
   return html.replace(
-    /<div id="navigation"([^>]*)><\/div>/,
-    `<div id="navigation"$1>\n${navHtml}\n            </div>`,
+    filled,
+    `<div id="site-header-root"$1></div>\n  `,
   );
 }
 
-function injectCta(html, file) {
-  const lang = expectedLangFromFile(file);
-  if (!html.includes('id="site-cta-strip-root"')) {
+/** Remove baked-in CTA; keep empty #site-cta-strip-root. */
+function stripInlinedCta(html) {
+  const filled =
+    /<div id="site-cta-strip-root"([^>]*)>\s*<section class="space-small bg-primary site-cta-strip">[\s\S]*?<\/section>\s*<\/div>/;
+  if (!filled.test(html)) {
     return html;
   }
-  const ctaHtml = loadSnippet(`partials/cta-strip-${lang}.js`);
-  const langAttr = partialLang(lang);
-  const openTag = `<div id="site-cta-strip-root" data-cta-lang="${langAttr}">`;
-  html = html.replace(/<div id="site-cta-strip-root[^>]*>/, openTag);
-  if (/<div id="site-cta-strip-root"[^>]*>\s*<section class="space-small bg-primary site-cta-strip">/.test(html)) {
-    return html;
-  }
-  const replaced = html.replace(
-    /<div id="site-cta-strip-root"[^>]*>\s*<\/div>/,
-    `${openTag}\n${ctaHtml}\n</div>`,
-  );
-  if (replaced !== html) {
-    return replaced;
-  }
-  return html.replace(
-    /<div id="site-cta-strip-root"([^>]*)><\/div>/,
-    `${openTag}\n${ctaHtml}\n</div>`,
-  );
+  return html.replace(filled, `<div id="site-cta-strip-root"$1></div>`);
 }
 
-function injectFooter(html, file) {
-  const lang = expectedLangFromFile(file);
-  if (!html.includes('id="site-footer-root"')) {
+/** Remove baked-in footer; keep empty #site-footer-root. */
+function stripInlinedFooter(html) {
+  const filled =
+    /<div id="site-footer-root"([^>]*)>\s*<footer class="footer">[\s\S]*?<\/div>\s*\n\s*(?=<script src="[^"]*site-config)/;
+  if (!filled.test(html)) {
     return html;
   }
-  const footerHtml = loadSnippet(`partials/footer-${lang}.js`);
-  const langAttr = partialLang(lang);
-  const openTag = `<div id="site-footer-root" data-footer-lang="${langAttr}">`;
-  html = html.replace(
-    /<div id="site-footer-root[^>]*>/,
-    openTag,
-  );
-  const replaced = html.replace(
-    /<div id="site-footer-root"[^>]*>[\s\S]*?<\/div>\s*(?=\n\s*<script)/,
-    `${openTag}\n${footerHtml}\n</div>\n`,
-  );
-  if (replaced !== html) {
-    return replaced;
-  }
   return html.replace(
-    /<div id="site-footer-root"([^>]*)><\/div>/,
-    `${openTag}\n${footerHtml}\n</div>`,
+    filled,
+    `<div id="site-footer-root"$1></div>\n\n  `,
   );
 }
 
@@ -117,35 +75,40 @@ function dedupeDeferLangRoutes(html, prefix) {
   return out.slice(0, first + syncNeedle.length) + dedupedTail;
 }
 
-function ensureShellScripts(html, file) {
+function ensureHeaderShell(html, file) {
   if (!html.includes('id="site-header-root"')) {
     return html;
   }
+  const lang = expectedLangFromFile(file);
   const prefix = file.includes("/") ? "../" : "";
-  let out = html;
-  const routesTag = `<script src="${prefix}js/lang-routes.min.js"></script>`;
-  const snippetTag = `<script src="${prefix}js/snippet-lang.min.js"></script>`;
-  if (out.includes("snippet-lang") && !out.includes(`${prefix}js/lang-routes.min.js"></script>\n  ${snippetTag}`)) {
-    out = out.replace(snippetTag, `${routesTag}\n  ${snippetTag}`);
+  const shell = headerShellMarkup(lang, prefix);
+  const emptyRoot = `<div id="site-header-root" data-header-lang="${partialLang(lang)}"></div>`;
+  const block =
+    /<div id="site-header-root"[^>]*><\/div>\s*(?:<script src="[^"]*lang-routes[^"]*"><\/script>\s*)*(?:<script src="[^"]*snippet-lang[^"]*"><\/script>\s*)*(?:<script src="[^"]*partials\/header-[^"]*"><\/script>\s*)*(?:<script src="[^"]*header-include[^"]*"><\/script>\s*)*(?:<script src="[^"]*lang-picker[^"]*"><\/script>\s*)*(?:<script src="[^"]*partials\/nav-[^"]*"><\/script>\s*)*(?:<script src="[^"]*nav-include[^"]*"><\/script>\s*)*/;
+  if (block.test(html)) {
+    return html.replace(block, shell);
   }
-  if (!out.includes("snippet-lang")) {
-    const headerPartial = new RegExp(
-      `(<script src="${prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}partials/header-)`,
-    );
-    if (headerPartial.test(out)) {
-      out = out.replace(headerPartial, `${snippetTag}\n  $1`);
-    }
+  if (html.includes(emptyRoot)) {
+    return html.replace(emptyRoot, shell.trimEnd());
   }
-  const pickerTag = `<script src="${prefix}js/lang-picker.min.js"></script>`;
-  if (!out.includes("lang-picker")) {
-    const afterHeaderInclude = new RegExp(
-      `(<script src="${prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}js/header-include(?:\\.min)?\\.js"><\\/script>)`,
-    );
-    if (afterHeaderInclude.test(out)) {
-      out = out.replace(afterHeaderInclude, `$1\n  ${pickerTag}`);
-    }
+  return html;
+}
+
+function ensureCtaScripts(html, file) {
+  if (!html.includes('id="site-cta-strip-root"')) {
+    return html;
   }
-  return out;
+  const lang = partialLang(expectedLangFromFile(file));
+  const prefix = file.includes("/") ? "../" : "";
+  const ctaPartial = `<script src="${prefix}partials/cta-strip-${lang}.min.js"></script>`;
+  const ctaInclude = `<script src="${prefix}js/cta-strip-include.min.js"></script>`;
+  if (html.includes(ctaPartial) && html.includes(ctaInclude)) {
+    return html;
+  }
+  return html.replace(
+    /(<div id="site-cta-strip-root"[^>]*><\/div>)/,
+    `$1\n  ${ctaPartial}\n  ${ctaInclude}`,
+  );
 }
 
 let changed = 0;
@@ -154,11 +117,11 @@ for (const file of listHtmlFiles(ROOT)) {
   const full = path.join(ROOT, file);
   let html = fs.readFileSync(full, "utf8");
   const original = html;
-  html = injectStaticHeader(html, file, ROOT);
-  html = injectNav(html, file);
-  html = injectCta(html, file);
-  html = injectFooter(html, file);
-  html = ensureShellScripts(html, file);
+  html = stripInlinedHeader(html);
+  html = stripInlinedCta(html);
+  html = stripInlinedFooter(html);
+  html = ensureHeaderShell(html, file);
+  html = ensureCtaScripts(html, file);
   html = dedupeDeferLangRoutes(html, file.includes("/") ? "../" : "");
   if (html !== original) {
     fs.writeFileSync(full, html);
@@ -166,4 +129,4 @@ for (const file of listHtmlFiles(ROOT)) {
     console.log("updated:", file);
   }
 }
-console.log(`Done. ${changed} file(s) with static header/nav/footer.`);
+console.log(`Done. ${changed} file(s) with JS shell placeholders.`);

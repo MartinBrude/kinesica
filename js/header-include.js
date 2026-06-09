@@ -21,8 +21,7 @@
     return;
   }
 
-  var hadHeader = root.querySelector(".header");
-  if (!hadHeader) {
+  if (!root.querySelector(".header")) {
     root.innerHTML = html;
   }
 

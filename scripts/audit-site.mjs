@@ -73,8 +73,52 @@ function resolveLocal(href, fromFile) {
   return path.normalize(path.join(dir === "." ? "" : dir, href)).replace(/\\/g, "/");
 }
 
+function usesJsShell(html) {
+  return /<div id="site-header-root"[^>]*>\s*<\/div>/.test(html);
+}
+
+function auditJsShellScripts(html, file) {
+  if (!usesJsShell(html)) return;
+  const prefix = file.includes("/") ? "../" : "";
+  const required = [
+    `${prefix}js/lang-routes`,
+    `${prefix}js/header-include`,
+    `${prefix}js/lang-picker`,
+    `${prefix}js/nav-include`,
+    `${prefix}partials/header-`,
+    `${prefix}partials/nav-`,
+  ];
+  for (const fragment of required) {
+    if (!html.includes(fragment)) {
+      add("error", file, `JS shell: missing ${fragment}`);
+    }
+  }
+}
+
 function auditLangPicker(html, file) {
   if (file.includes("404")) return;
+
+  if (usesJsShell(html)) {
+    const stem = stemFromFile(file);
+    const hreflangs = extractHreflangs(html);
+    for (const code of LANG_CODES) {
+      const expected = absoluteUrl(code, stem);
+      const hl = HREFLANG[code];
+      const found = hreflangs.find((h) => h.lang === hl);
+      if (!found) {
+        add("error", file, `JS shell hreflang: missing ${hl}`);
+      } else if (found.href !== expected) {
+        add(
+          "error",
+          file,
+          `JS shell hreflang ${hl}: expected ${expected}, got ${found.href}`,
+        );
+      }
+    }
+    auditJsShellScripts(html, file);
+    return;
+  }
+
   if (!html.includes("lang-picker")) return;
 
   const hrefs = [
@@ -120,7 +164,9 @@ function auditLocalizedNav(html, file) {
       ? "/fr/articulos.html"
       : pageLang === "en"
         ? "/en/articulos.html"
-        : "articulos.html";
+        : pageLang === "pt"
+          ? "/pt/articulos.html"
+          : "articulos.html";
   if (!html.includes(mustInclude)) {
     add("error", file, `Articles nav missing link to ${mustInclude}`);
   }

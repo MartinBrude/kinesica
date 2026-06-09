@@ -1,4 +1,4 @@
-/* Above-the-fold: inlined in <head>; full styles load async (bootstrap + style.min). */
+/* Above-the-fold: linked as css/critical.min.css from every public page. */
 :root {
   --primary-color: #005f99;
   --secondary-color: #031c42;

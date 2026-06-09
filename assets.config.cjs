@@ -18,11 +18,7 @@ const CSS_SOURCES = [
 ];
 
 /** JS de terceros o ya minificados — no regenerar. */
-const JS_SKIP = new Set([
-  "jquery.min.js",
-  "bootstrap.min.js",
-  "menumaker.js",
-]);
+const JS_SKIP = new Set(["jquery.min.js", "bootstrap.min.js"]);
 
 function discoverJsSources() {
   const files = [];

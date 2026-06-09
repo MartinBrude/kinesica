@@ -9,12 +9,12 @@ import { fileURLToPath } from "url";
 import {
   FONT_DISPLAY_SWAP,
   dedupePreconnects,
+  headCriticalCss,
   headJsClassScript,
   headStandardStylesheets,
 } from "./page-shell.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const CRITICAL_MIN = path.join(ROOT, "css/critical.min.css");
 
 const ROBOTS_INDEX =
   '  <meta name="robots" content="index, follow, max-image-preview:large" />\n';
@@ -153,19 +153,20 @@ function ensureHeadJsClass(html) {
   return html.replace("<head>", `<head>\n${tag}\n`);
 }
 
-function injectCriticalCss(html) {
-  if (!fs.existsSync(CRITICAL_MIN)) {
+function ensureCriticalCss(html, file) {
+  if (/\/cv\.html$/.test(file)) {
     return html;
   }
-  const css = fs.readFileSync(CRITICAL_MIN, "utf8").trim();
-  const tag = `  <style id="kinesica-critical">\n${css}\n  </style>\n`;
-  if (html.includes('id="kinesica-critical"')) {
-    return html.replace(/<style id="kinesica-critical">[\s\S]*?<\/style>\s*\n/, tag);
+  const p = file.includes("/") ? "../" : "";
+  const link = headCriticalCss(p).trim();
+  let out = html.replace(/<style id="kinesica-critical">[\s\S]*?<\/style>\s*\n?/g, "");
+  if (out.includes("critical.min.css")) {
+    return out;
   }
-  if (/<meta charset="utf-8" \/>/.test(html)) {
-    return html.replace(/<meta charset="utf-8" \/>\s*\n/, `<meta charset="utf-8" />\n${tag}`);
+  if (/<meta charset="utf-8" \/>/.test(out)) {
+    return out.replace(/<meta charset="utf-8" \/>\s*\n/, `<meta charset="utf-8" />\n${link}\n`);
   }
-  return html.replace("<head>", `<head>\n${tag}`);
+  return out.replace("<head>", `<head>\n${link}\n`);
 }
 
 function deferLangHeadScripts(html) {
@@ -228,7 +229,7 @@ for (const file of listHtmlFiles(ROOT)) {
   html = addRobotsMeta(html, file);
   html = fontDisplaySwap(html);
   html = ensureHeadJsClass(html);
-  html = injectCriticalCss(html);
+  html = ensureCriticalCss(html, file);
   html = normalizeHeadStylesheets(html, file);
   html = removeEmptyNoscript(html);
   html = dedupePreconnects(html);

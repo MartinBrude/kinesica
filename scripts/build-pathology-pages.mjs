@@ -8,6 +8,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import {
   PATHOLOGIES,
+  PATHOLOGY_DEFAULT_UPDATED_AT,
   PATHOLOGY_RELATED,
   PATHOLOGY_STEMS,
   TECHNIQUE_LABELS,
@@ -31,6 +32,9 @@ import {
   bodyShellTop,
   ctaStripPlaceholder,
   headFavicon,
+  headCriticalCss,
+  headJsClassScript,
+  headLangDeferScripts,
   headLangScripts,
   headSeoBlock,
   headStandardStylesheets,
@@ -163,7 +167,7 @@ function buildHtml(pathology, lang) {
       },
     },
     datePublished: "2024-06-01",
-    dateModified: new Date().toISOString().slice(0, 10),
+    dateModified: pathology.updatedAt ?? PATHOLOGY_DEFAULT_UPDATED_AT,
   };
 
   return `<!doctype html>
@@ -171,12 +175,12 @@ function buildHtml(pathology, lang) {
 
 <head>
 ${headFavicon(p)}  <meta charset="utf-8" />
-  <meta http-equiv="content-language" content="${LOCALE[lang]}" />
+${headJsClassScript()}${headCriticalCss(p)}  <meta http-equiv="content-language" content="${LOCALE[lang]}" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
   <meta name="theme-color" content="#005f99" />
-${headLangScripts(p)}${headSeoBlock({
+${headLangDeferScripts(p)}${headSeoBlock({
     lang,
     stem,
     title: data.title,

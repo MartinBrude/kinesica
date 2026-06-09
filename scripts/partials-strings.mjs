@@ -14,7 +14,7 @@ export const TECHNIQUE_NAV_STEMS = [
 export const PARTIAL_STRINGS = {
   es: {
     headerComment:
-      "Spanish site header — lang picker filled by inject-static-shell / js/lang-picker.js",
+      "Spanish site header — lang picker filled at runtime by js/lang-picker.js",
     schedule: "Lunes a viernes: <strong>10 a 20 h</strong>",
     homeHref: "/",
     logoSrc: "images/logo.svg",
