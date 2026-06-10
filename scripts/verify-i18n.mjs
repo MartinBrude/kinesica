@@ -92,8 +92,22 @@ check("llms.txt", (text) => {
   if (!text.startsWith("# Kinésica")) errors.push("llms.txt: missing H1 title");
   if (!text.includes("## Optional")) errors.push("llms.txt: missing Optional section");
   if (!text.includes("## Português")) errors.push("llms.txt: missing Português section");
+  if (!text.includes("## Methods & techniques (English)"))
+    errors.push("llms.txt: missing EN methods section");
+  if (!text.includes("llms-full.txt"))
+    errors.push("llms.txt: should link to llms-full.txt");
   if (!text.includes("https://www.kinesica.com.ar/"))
     errors.push("llms.txt: should link to canonical site URLs");
+});
+
+check("llms-full.txt", (text) => {
+  if (!text.startsWith("# Kinésica (documentación extendida)"))
+    errors.push("llms-full.txt: missing H1 title");
+  if (!text.includes("llms.txt")) errors.push("llms-full.txt: should link to llms.txt");
+  if (!text.includes("## Patologías y dolencias"))
+    errors.push("llms-full.txt: missing ES pathologies section");
+  if (!text.includes("## Methods & techniques (English)"))
+    errors.push("llms-full.txt: missing EN methods section");
 });
 
 check(".htaccess", (html) => {

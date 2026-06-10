@@ -19,14 +19,14 @@ Información útil para asistentes y crawlers:
 
 ## Métodos y técnicas
 
-- [RPG](https://www.kinesica.com.ar/rpg.html): Reeducación Postural Global (RPG): método de tratamiento que trabaja sobre la flexibilización de músculos estáticos. Sesiones individuales en Palermo, Buenos Aires.
-- [Osteopatía](https://www.kinesica.com.ar/osteopatia.html): Osteopatía estructural y visceral: evaluación y tratamiento de disfunciones somáticas. Técnicas manuales en Palermo, Buenos Aires.
-- [Cadenas musculares](https://www.kinesica.com.ar/cadenas.html): Cadenas Fisiológicas: método que define la relación entre estructura corporal y contenido visceral. Terapia manual en Palermo.
-- [Manipulaciones](https://www.kinesica.com.ar/manipulaciones.html): Manipulaciones viscerales: tratamiento de tensiones viscerales que afectan el aparato locomotor. Terapia manual en Palermo.
-- [Neurodinamia](https://www.kinesica.com.ar/neurodinamia.html): Neurodinamia: estudio y tratamiento de trastornos del sistema nervioso. Alivio del dolor y mejora de la función neurológica en Palermo.
-- [ATM](https://www.kinesica.com.ar/atm.html): ATM (Articulación Temporomandibular): tratamiento de disfunciones de la mandíbula, dolor, chasquidos y bruxismo con terapia manual en Palermo.
-- [acupuntura](https://www.kinesica.com.ar/acupuntura.html): Acupuntura en Palermo: técnica de medicina tradicional china integrada al abordaje terapéutico para dolor, estrés y equilibrio energético.
-- [posturologia-clinica](https://www.kinesica.com.ar/posturologia-clinica.html): Posturología Clínica: evaluación y tratamiento de la postura, equilibrio y apoyo en Palermo. Análisis global del cuerpo en Kinésica.
+- [RPG – Reeducación postural global](https://www.kinesica.com.ar/rpg.html): RPG en Kinésica (Buenos Aires). Reeducación postural y cadenas musculares en Palermo. Sesiones individuales para flexibilizar musculatura estática.
+- [Osteopatía estructural y visceral](https://www.kinesica.com.ar/osteopatia.html): Osteopatía en Kinésica (Buenos Aires). Evaluación y tratamiento de disfunciones somáticas con técnicas manuales en Palermo.
+- [Cadenas fisiológicas – método Busquet](https://www.kinesica.com.ar/cadenas.html): Cadenas musculares en Kinésica (Buenos Aires). Método Busquet que relaciona estructura corporal y contenido visceral. Terapia manual en Palermo.
+- [Manipulación visceral – método Barral](https://www.kinesica.com.ar/manipulaciones.html): Manipulaciones viscerales en Kinésica (Buenos Aires). Tratamiento de tensiones viscerales que afectan el aparato locomotor. Terapia manual en Palermo.
+- [Neurodinamia](https://www.kinesica.com.ar/neurodinamia.html): Neurodinamia en Kinésica (Buenos Aires). Movilización neural y tratamiento de trastornos del sistema nervioso en Palermo.
+- [ATM – Articulación temporomandibular](https://www.kinesica.com.ar/atm.html): Tratamiento de ATM en Kinésica (Buenos Aires). Mandíbula, dolor, chasquidos y bruxismo con terapia manual en Palermo.
+- [Acupuntura](https://www.kinesica.com.ar/acupuntura.html): Acupuntura en Kinésica (Buenos Aires). Medicina tradicional china integrada al abordaje del dolor y el estrés en Palermo.
+- [Posturología Clínica](https://www.kinesica.com.ar/posturologia-clinica.html): Posturología clínica en Kinésica (Buenos Aires). Evaluación de postura, equilibrio y apoyo plantar en Palermo.
 
 ## Patologías y dolencias
 
@@ -63,11 +63,33 @@ Información útil para asistentes y crawlers:
 - [Articles & conditions](https://www.kinesica.com.ar/en/articulos.html): Articles about kinesiology, osteopathy, and manual therapy. Information about cervical pain, low back pain, and treatments in Palermo.
 - [CV — Norberto Silvio Brude](https://www.kinesica.com.ar/en/cv.html): Physiotherapist and osteopath profile.
 
+## Methods & techniques (English)
+
+- [RPG – Global Postural Reeducation](https://www.kinesica.com.ar/en/rpg.html): RPG at Kinésica (Buenos Aires). Global postural reeducation and muscle chains in Palermo. Individual sessions to release static muscle tension.
+- [Structural and visceral osteopathy](https://www.kinesica.com.ar/en/osteopatia.html): Osteopathy at Kinésica (Buenos Aires). Assessment and treatment of somatic dysfunctions with manual techniques in Palermo.
+- [Physiological chains – Busquet method](https://www.kinesica.com.ar/en/cadenas.html): Muscle chains therapy at Kinésica (Buenos Aires). Busquet method linking body structure and visceral function. Manual therapy in Palermo.
+- [Visceral manipulation – Barral method](https://www.kinesica.com.ar/en/manipulaciones.html): Visceral manipulation at Kinésica (Buenos Aires). Treatment of visceral tensions affecting the locomotor system. Manual therapy in Palermo.
+- [Neurodynamics](https://www.kinesica.com.ar/en/neurodinamia.html): Neurodynamics at Kinésica (Buenos Aires). Neural mobilization and treatment of nerve-related conditions in Palermo.
+- [TMJ – Temporomandibular joint](https://www.kinesica.com.ar/en/atm.html): TMJ treatment at Kinésica (Buenos Aires). Jaw pain, clicking and bruxism with manual therapy in Palermo.
+- [Acupuncture](https://www.kinesica.com.ar/en/acupuntura.html): Acupuncture at Kinésica (Buenos Aires). Traditional Chinese medicine as part of an integrated approach to pain and stress in Palermo.
+- [Clinical Posturology](https://www.kinesica.com.ar/en/posturologia-clinica.html): Clinical posturology at Kinésica (Buenos Aires). Assessment of posture, balance and plantar support in Palermo.
+
 ## Français
 
 - [Accueil (français)](https://www.kinesica.com.ar/fr/): Kinésica est un centre de kinésithérapie, ostéopathie et thérapie manuelle à Palermo, avec des traitements personnalisés.
 - [Articles et pathologies](https://www.kinesica.com.ar/fr/articulos.html): Articles sur la kinésithérapie, l'ostéopathie et la thérapie manuelle : douleur cervicale, lombalgie et traitements à Palermo.
 - [CV — Norberto Silvio Brude](https://www.kinesica.com.ar/fr/cv.html): Profil du kinésithérapeute et ostéopathe.
+
+## Méthodes et techniques
+
+- [RPG — Rééducation posturale globale](https://www.kinesica.com.ar/fr/rpg.html): RPG chez Kinésica (Buenos Aires). Rééducation posturale globale et chaînes musculaires à Palermo. Séances individuelles pour assouplir la musculature statique.
+- [Ostéopathie structurelle et viscérale](https://www.kinesica.com.ar/fr/osteopatia.html): Ostéopathie chez Kinésica (Buenos Aires). Évaluation et traitement des dysfonctions somatiques par thérapie manuelle à Palermo.
+- [Chaînes physiologiques — méthode Busquet](https://www.kinesica.com.ar/fr/cadenas.html): Chaînes musculaires chez Kinésica (Buenos Aires). Méthode Busquet reliant structure corporelle et fonctions viscérales. Thérapie manuelle à Palermo.
+- [Manipulations viscérales — méthode Barral](https://www.kinesica.com.ar/fr/manipulaciones.html): Manipulations viscérales chez Kinésica (Buenos Aires). Traitement des tensions viscérales affectant l'appareil locomoteur. Thérapie manuelle à Palermo.
+- [Neurodynamique](https://www.kinesica.com.ar/fr/neurodinamia.html): Neurodynamique chez Kinésica (Buenos Aires). Mobilisation neurale et traitement des troubles nerveux à Palermo.
+- [ATM — Articulation temporo-mandibulaire](https://www.kinesica.com.ar/fr/atm.html): Traitement de l'ATM chez Kinésica (Buenos Aires). Mâchoire, douleur, claquements et bruxisme par thérapie manuelle à Palermo.
+- [Acupuncture](https://www.kinesica.com.ar/fr/acupuntura.html): Acupuncture chez Kinésica (Buenos Aires). Médecine traditionnelle chinoise intégrée à la prise en charge de la douleur et du stress à Palermo.
+- [Posturologie clinique](https://www.kinesica.com.ar/fr/posturologia-clinica.html): Posturologie clinique chez Kinésica (Buenos Aires). Évaluation de la posture, de l'équilibre et de l'appui plantaire à Palermo.
 
 ## Português
 
@@ -75,8 +97,20 @@ Información útil para asistentes y crawlers:
 - [Artigos e condições](https://www.kinesica.com.ar/pt/articulos.html): Artigos sobre fisioterapia, osteopatia e terapia manual: dor cervical, lombalgia e tratamentos em Palermo.
 - [Currículo — Norberto Silvio Brude](https://www.kinesica.com.ar/pt/cv.html): Perfil do fisioterapeuta e osteopata.
 
+## Métodos e técnicas
+
+- [RPG — Reeducação Postural Global](https://www.kinesica.com.ar/pt/rpg.html): RPG na Kinésica (Buenos Aires). Reeducação postural global e cadeias musculares em Palermo. Sessões individuais para liberar a musculatura estática.
+- [Osteopatia estrutural e visceral](https://www.kinesica.com.ar/pt/osteopatia.html): Osteopatia na Kinésica (Buenos Aires). Avaliação e tratamento de disfunções somáticas com técnicas manuais em Palermo.
+- [Cadeias fisiológicas — método Busquet](https://www.kinesica.com.ar/pt/cadenas.html): Cadeias musculares na Kinésica (Buenos Aires). Método Busquet que relaciona estrutura corporal e funções viscerais. Terapia manual em Palermo.
+- [Manipulação visceral — método Barral](https://www.kinesica.com.ar/pt/manipulaciones.html): Manipulações viscerais na Kinésica (Buenos Aires). Tratamento de tensões viscerais que afetam o sistema locomotor. Terapia manual em Palermo.
+- [Neurodinâmica](https://www.kinesica.com.ar/pt/neurodinamia.html): Neurodinâmica na Kinésica (Buenos Aires). Mobilização neural e tratamento de distúrbios do sistema nervoso em Palermo.
+- [ATM — Articulação temporomandibular](https://www.kinesica.com.ar/pt/atm.html): Tratamento de ATM na Kinésica (Buenos Aires). Mandíbula, dor, estalos e bruxismo com terapia manual em Palermo.
+- [Acupuntura](https://www.kinesica.com.ar/pt/acupuntura.html): Acupuntura na Kinésica (Buenos Aires). Medicina tradicional chinesa integrada ao tratamento da dor e do estresse em Palermo.
+- [Posturologia clínica](https://www.kinesica.com.ar/pt/posturologia-clinica.html): Posturologia clínica na Kinésica (Buenos Aires). Avaliação de postura, equilíbrio e apoio plantar em Palermo.
+
 ## Optional
 
+- [Documentación extendida](https://www.kinesica.com.ar/llms-full.txt): resúmenes con párrafos clave de métodos y patologías (es/en/fr/pt).
 - [Sitemap](https://www.kinesica.com.ar/sitemap.xml): all public HTML URLs (es/en/fr/pt).
 - [Headache: pain and tension relief](https://www.kinesica.com.ar/en/cefalea.html): Headache treatment at Kinésica (Buenos Aires). We assess neck, posture and TMJ to reduce pain, prevent recurrence and restore daily life.
 - [Upper back pain (dorsalgia)](https://www.kinesica.com.ar/en/dorsalgia.html): Upper back pain treatment at Kinésica (Buenos Aires). Hands-on care and posture work to ease pain, restore thoracic mobility and improve breathing.
