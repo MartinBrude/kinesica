@@ -195,7 +195,11 @@ export function ctaStripPlaceholder(lang, prefix) {
   );
 }
 
-export function bodyFooterAndUiScripts(lang, prefix, { pageHeaderWord = true } = {}) {
+export function bodyFooterAndUiScripts(
+  lang,
+  prefix,
+  { pageHeaderWord = true, faqAccordion = false } = {},
+) {
   const l = partialLang(lang);
   const lines = [
     `  <div id="site-footer-root" data-footer-lang="${lang}"></div>`,
@@ -215,8 +219,13 @@ export function bodyFooterAndUiScripts(lang, prefix, { pageHeaderWord = true } =
   lines.push(
     `  <script src="${prefix}js/mobile-nav.min.js" defer></script>`,
     `  <script src="${prefix}js/ui-reveal.min.js" defer></script>`,
-    `  <script src="${prefix}js/sticky-header.min.js" defer></script>`,
   );
+  if (faqAccordion) {
+    lines.push(
+      `  <script src="${prefix}js/faq-accordion.min.js" defer></script>`,
+    );
+  }
+  lines.push(`  <script src="${prefix}js/sticky-header.min.js" defer></script>`);
   return lines.join("\n");
 }
 

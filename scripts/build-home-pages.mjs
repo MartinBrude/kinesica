@@ -80,7 +80,7 @@ ${headStandardStylesheets(p)}  <script src="${p}partials/gtm-head.min.js" defer>
 ${bodyShellTop(p)}${headerShellMarkup(lang, p)}  <main id="main" tabindex="-1">
 ${buildMainHtml(lang, p)}
   </main>
-${bodyFooterAndUiScripts(lang, p, { pageHeaderWord: false })}
+${bodyFooterAndUiScripts(lang, p, { pageHeaderWord: false, faqAccordion: true })}
 </body>
 
 </html>
