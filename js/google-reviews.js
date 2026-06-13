@@ -9,30 +9,18 @@
 
   var COPY = {
     es: {
-      seeAll: "Ver más reseñas en Google",
-      writeReview: "Dejar una reseña",
-      attribution: "Reseñas de Google",
       countOne: " reseña",
       countMany: " reseñas",
     },
     en: {
-      seeAll: "See more Google reviews",
-      writeReview: "Leave a review",
-      attribution: "Reviews from Google",
       countOne: " review",
       countMany: " reviews",
     },
     fr: {
-      seeAll: "Voir plus d'avis Google",
-      writeReview: "Laisser un avis",
-      attribution: "Avis Google",
       countOne: " avis",
       countMany: " avis",
     },
     pt: {
-      seeAll: "Ver mais avaliações no Google",
-      writeReview: "Deixar uma avaliação",
-      attribution: "Avaliações do Google",
       countOne: " avaliação",
       countMany: " avaliações",
     },
@@ -268,31 +256,11 @@
     return card;
   }
 
-  function fillActions(section, copy) {
-    var cfg = siteConfig();
-    var seeAllUrl = cfg.googleReviewsListUrl || "#";
-    var writeUrl = cfg.googleReviewUrl || seeAllUrl;
-
-    var seeAll = section.querySelector(".google-reviews-see-all");
-    if (seeAll) {
-      seeAll.textContent = copy.seeAll;
-      seeAll.href = seeAllUrl;
-    }
-
-    var write = section.querySelector(".google-reviews-write");
-    if (write) {
-      write.textContent = copy.writeReview;
-      write.href = writeUrl;
-    }
-
-    var attr = section.querySelector(".google-reviews-attribution");
-    if (attr) attr.textContent = copy.attribution;
-  }
-
   function showLoading(grid) {
     grid.innerHTML = "";
     grid.classList.add("google-reviews-grid--loading");
-    for (var i = 0; i < 3; i++) {
+    var count = window.matchMedia("(min-width: 992px)").matches ? 5 : 1;
+    for (var i = 0; i < count; i++) {
       var sk = document.createElement("div");
       sk.className = "google-review-card google-review-card--skeleton";
       sk.setAttribute("aria-hidden", "true");
@@ -327,8 +295,6 @@
     data.reviews.forEach(function (review) {
       grid.appendChild(renderCard(review));
     });
-
-    fillActions(section, copy);
   }
 
   function resolveData(lang) {
