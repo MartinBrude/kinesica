@@ -113,33 +113,44 @@
 
   function loadPlacesLibrary() {
     return new Promise(function (resolve, reject) {
-      if (window.google && window.google.maps && window.google.maps.importLibrary) {
+      function importPlaces() {
         window.google.maps.importLibrary("places").then(resolve).catch(reject);
+      }
+
+      if (window.google && window.google.maps && window.google.maps.importLibrary) {
+        importPlaces();
         return;
       }
+
       var key = mapsApiKey();
       if (!key) {
         reject(new Error("missing googlePlacesApiKey"));
         return;
       }
+
       var script = document.createElement("script");
       script.src =
         "https://maps.googleapis.com/maps/api/js?key=" +
         encodeURIComponent(key) +
         "&libraries=places&loading=async";
       script.async = true;
-      script.defer = true;
-      script.onload = function () {
-        if (!window.google || !window.google.maps) {
-          reject(new Error("maps js failed"));
-          return;
-        }
-        window.google.maps.importLibrary("places").then(resolve).catch(reject);
-      };
       script.onerror = function () {
         reject(new Error("maps js load error"));
       };
       document.head.appendChild(script);
+
+      var start = Date.now();
+      (function poll() {
+        if (window.google && window.google.maps && window.google.maps.importLibrary) {
+          importPlaces();
+          return;
+        }
+        if (Date.now() - start > FETCH_TIMEOUT_MS) {
+          reject(new Error("maps importLibrary timeout"));
+          return;
+        }
+        setTimeout(poll, 80);
+      })();
     });
   }
 

@@ -1,12 +1,11 @@
 /**
  * Standalone prod test for Google Places reviews (test.html).
- * Logs each step to #test-log and renders cards in #test-cards on success.
  */
 (function () {
   "use strict";
 
   var PLACE_ID = "ChIJZ2mPW9K1vJUR3J5kGRi5gws";
-  var TIMEOUT_MS = 20000;
+  var STEP_TIMEOUT_MS = 12000;
 
   function log(msg, kind) {
     var el = document.getElementById("test-log");
@@ -49,60 +48,83 @@
     return html;
   }
 
-  function withTimeout(promise, ms) {
+  function withTimeout(promise, ms, label) {
+    return Promise.race([
+      promise,
+      new Promise(function (_, reject) {
+        setTimeout(function () {
+          reject(new Error((label || "operación") + " — timeout " + ms + "ms"));
+        }, ms);
+      }),
+    ]);
+  }
+
+  function probeRestApi(key) {
+    return fetch(
+      "https://places.googleapis.com/v1/places/" + encodeURIComponent(PLACE_ID),
+      {
+        headers: {
+          "X-Goog-Api-Key": key,
+          "X-Goog-FieldMask": "reviews,rating,userRatingCount,displayName",
+        },
+      },
+    ).then(function (res) {
+      return res.json().then(function (body) {
+        return { status: res.status, body: body };
+      });
+    });
+  }
+
+  function waitForImportLibrary() {
     return new Promise(function (resolve, reject) {
-      var done = false;
-      var timer = setTimeout(function () {
-        if (done) return;
-        done = true;
-        reject(new Error("timeout after " + ms + "ms"));
-      }, ms);
-      promise.then(
-        function (v) {
-          if (done) return;
-          done = true;
-          clearTimeout(timer);
-          resolve(v);
-        },
-        function (e) {
-          if (done) return;
-          done = true;
-          clearTimeout(timer);
-          reject(e);
-        },
-      );
+      var start = Date.now();
+      (function poll() {
+        if (window.google && window.google.maps && window.google.maps.importLibrary) {
+          resolve();
+          return;
+        }
+        if (Date.now() - start > STEP_TIMEOUT_MS) {
+          reject(new Error("google.maps.importLibrary no disponible"));
+          return;
+        }
+        setTimeout(poll, 80);
+      })();
     });
   }
 
   function loadMaps(key) {
+    if (window.google && window.google.maps && window.google.maps.importLibrary) {
+      log("Maps JS ya cargado.", "ok");
+      return waitForImportLibrary().then(function () {
+        return google.maps.importLibrary("places");
+      });
+    }
+
     return new Promise(function (resolve, reject) {
-      if (window.google && window.google.maps && window.google.maps.importLibrary) {
-        window.google.maps.importLibrary("places").then(resolve).catch(reject);
-        return;
-      }
       var script = document.createElement("script");
       script.src =
         "https://maps.googleapis.com/maps/api/js?key=" +
         encodeURIComponent(key) +
         "&libraries=places&loading=async";
       script.async = true;
-      script.onload = function () {
-        if (!window.google || !window.google.maps) {
-          reject(new Error("Maps JS loaded but google.maps missing"));
-          return;
-        }
-        window.google.maps.importLibrary("places").then(resolve).catch(reject);
-      };
       script.onerror = function () {
-        reject(new Error("Failed to load Maps JS script"));
+        reject(new Error("No se pudo cargar el script de Maps JS"));
       };
       document.head.appendChild(script);
+
+      waitForImportLibrary()
+        .then(function () {
+          return google.maps.importLibrary("places");
+        })
+        .then(resolve)
+        .catch(reject);
     });
   }
 
-  function fetchLive(key) {
+  function fetchLiveJs(key) {
     return loadMaps(key).then(function (lib) {
-      if (!lib.Place) throw new Error("places.Place not available");
+      if (!lib.Place) throw new Error("places.Place no disponible");
+      log("Places library OK — fetchFields…", "ok");
       var place = new lib.Place({ id: PLACE_ID });
       return place
         .fetchFields({
@@ -110,7 +132,7 @@
         })
         .then(function () {
           return {
-            source: "live",
+            source: "Maps JS (Place)",
             displayName: place.displayName,
             rating: place.rating,
             userRatingCount: place.userRatingCount,
@@ -180,20 +202,26 @@
       });
   }
 
+  function explainReferrerBlock(body) {
+    var msg = body && body.error && body.error.message ? body.error.message : "";
+    log("REST Places API: " + msg, "err");
+    log(
+      "Fix en Google Cloud → Credentials → tu key → HTTP referrers. Agregá EXACTO:",
+      "warn",
+    );
+    log("  https://www.kinesica.com.ar/", "warn");
+    log("  https://www.kinesica.com.ar/*", "warn");
+    log("  https://kinesica.com.ar/*", "warn");
+    log("APIs habilitadas: Places API (New) + Maps JavaScript API", "warn");
+  }
+
   function run() {
     log("Origin: " + location.origin);
     log("URL: " + location.href);
-    log("Referrer enviado al cargar Maps: " + location.origin + "/");
 
     var staticData = window.KINESICA_GOOGLE_REVIEWS;
     if (staticData && staticData.reviews && staticData.reviews.length) {
-      log(
-        "Partial estático: " +
-          staticData.reviews.length +
-          " reseña(s), fetchedAt=" +
-          (staticData.fetchedAt || "null"),
-        "ok",
-      );
+      log("Partial estático: " + staticData.reviews.length + " reseña(s)", "ok");
       renderCards({
         source: "static partial",
         displayName: staticData.displayName,
@@ -202,39 +230,67 @@
         reviews: staticData.reviews,
       });
     } else {
-      log("Partial estático vacío o sin reseñas.", "warn");
+      log("Partial estático vacío.", "warn");
     }
 
     var key = apiKey();
     if (!key) {
-      log("Sin googlePlacesApiKey en site-config.js.", "err");
-      setStatus("Falta API key (js/site-config.js)", "err");
+      log("Sin googlePlacesApiKey.", "err");
+      setStatus("Falta API key", "err");
       return;
     }
 
     log("API key presente (" + key.slice(0, 8) + "…)", "ok");
-    setStatus("Cargando Maps JS + Places API…", "pending");
-    log("Iniciando fetch live (Places API New)…");
+    setStatus("Probando Places API…", "pending");
 
-    withTimeout(fetchLive(key), TIMEOUT_MS)
+    withTimeout(probeRestApi(key), 8000, "REST probe")
+      .then(function (rest) {
+        if (rest.status === 200 && rest.body.reviews) {
+          log("REST OK — " + rest.body.reviews.length + " reseña(s)", "ok");
+          return {
+            source: "REST Places API (New)",
+            displayName: rest.body.displayName?.text,
+            rating: rest.body.rating,
+            userRatingCount: rest.body.userRatingCount,
+            reviews: (rest.body.reviews || []).map(function (r) {
+              return {
+                author: r.authorAttribution?.displayName || "Google user",
+                authorPhoto: r.authorAttribution?.photoUri || null,
+                rating: r.rating,
+                text: r.text?.text || "",
+                relativeTime: r.relativePublishTimeDescription || "",
+              };
+            }),
+          };
+        }
+        if (rest.status === 403) {
+          explainReferrerBlock(rest.body);
+        } else {
+          log("REST HTTP " + rest.status, "warn");
+        }
+        log("Probando Maps JS Place.fetchFields…", "ok");
+        return withTimeout(fetchLiveJs(key), STEP_TIMEOUT_MS, "Maps JS");
+      })
       .then(function (data) {
+        if (!data) return;
         var withText = (data.reviews || []).filter(function (r) {
           return r.text;
         });
-        log(
-          "Live OK: " +
-            withText.length +
-            " reseña(s) con texto, rating=" +
-            data.rating,
-          "ok",
-        );
-        setStatus("OK — " + withText.length + " reseñas live", "ok");
+        if (!withText.length) {
+          log(
+            "Respuesta vacía (0 reseñas). Revisá referrers y Places API (New).",
+            "err",
+          );
+          setStatus("0 reseñas — revisar Google Cloud", "err");
+          return;
+        }
+        log("OK — " + withText.length + " reseña(s) con texto", "ok");
+        setStatus("OK — " + withText.length + " reseñas", "ok");
         renderCards(data);
       })
       .catch(function (err) {
-        var msg = err && err.message ? err.message : String(err);
-        log("Live FALLÓ: " + msg, "err");
-        setStatus("Bloqueado o error — ver log", "err");
+        log("Error: " + (err.message || err), "err");
+        setStatus("Error — ver log", "err");
       });
   }
 
