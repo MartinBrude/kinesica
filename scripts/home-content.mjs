@@ -11,13 +11,34 @@ import {
 
 export const HOME_HERO_IMAGE = "https://www.kinesica.com.ar/images/hero-img.jpg";
 
+/** Kinesica + estación Scalabrini Ortiz (D) visibles al cargar. Regenerar: Maps → encuadrar → Compartir → Insertar mapa. */
 const MAP_EMBED_BASE =
-  "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3284.6775463592357!2d-58.42104632274795!3d-34.58702477296039!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcb5d25b8f6967%3A0xb83b91819649edc!2sKinesica!5e0!3m2!1";
+  "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d5720.6828547033!2d-58.421280!3d-34.586220!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcb5d25b8f6967%3A0xb83b91819649edc!2sKinesica!5e0!3m2!1";
 
 /** @param {import("./languages.mjs").LangCode} lang */
 export function mapEmbedSrc(lang) {
   const hl = lang === "es" ? "ses" : lang;
   return `${MAP_EMBED_BASE}${hl}!2${hl}!4v1742940067621!5m2!1${hl}!2${hl}`;
+}
+
+const MAP_EMBED_TITLES = {
+  es: "Ubicación de Kinésica en Google Maps",
+  en: "Kinésica location on Google Maps",
+  fr: "Localisation de Kinésica sur Google Maps",
+  pt: "Localização da Kinésica no Google Maps",
+};
+
+/** @param {import("./languages.mjs").LangCode} lang */
+export function mapEmbedFrameBlock(lang) {
+  const title = MAP_EMBED_TITLES[lang] || MAP_EMBED_TITLES.es;
+  return [
+    "                <div class=\"map-embed-frame\">",
+    `              <iframe class="map-embed" src="${mapEmbedSrc(lang)}" allowfullscreen="" loading="lazy"`,
+    "                referrerpolicy=\"no-referrer-when-downgrade\"",
+    `                title="${title}">`,
+    "                </iframe>",
+    "                </div>",
+  ];
 }
 
 const MAP_REVIEWS_COPY = {
@@ -302,12 +323,7 @@ export const HOME = {
       "          <div class=\"map-reviews-panel\">",
       "            <div class=\"map-reviews-grid\">",
       "              <div class=\"map-reviews-map\">",
-      "                <div class=\"map-embed-frame\">",
-      `              <iframe class="map-embed" src="${mapEmbedSrc("es")}" allowfullscreen="" loading="lazy"`,
-      "                referrerpolicy=\"no-referrer-when-downgrade\"",
-      "                title=\"Ubicación de Kinésica en Google Maps\">",
-      "                </iframe>",
-      "                </div>",
+      ...mapEmbedFrameBlock("es"),
       "                <div class=\"map-transit-wrap\">",
       "                <div class=\"map-transit-panel\">",
       "                  <div class=\"map-transit-grid\">",
@@ -758,12 +774,7 @@ export const HOME = {
       "          <div class=\"map-reviews-panel\">",
       "            <div class=\"map-reviews-grid\">",
       "              <div class=\"map-reviews-map\">",
-      "                <div class=\"map-embed-frame\">",
-      `              <iframe class="map-embed" src="${mapEmbedSrc("en")}" allowfullscreen="" loading="lazy"`,
-      "                referrerpolicy=\"no-referrer-when-downgrade\"",
-      "                title=\"Kinésica location on Google Maps\">",
-      "                </iframe>",
-      "                </div>",
+      ...mapEmbedFrameBlock("en"),
       "                <div class=\"map-transit-wrap\">",
       "                <div class=\"map-transit-panel\">",
       "                  <div class=\"map-transit-grid\">",
@@ -1203,12 +1214,7 @@ export const HOME = {
       "          <div class=\"map-reviews-panel\">",
       "            <div class=\"map-reviews-grid\">",
       "              <div class=\"map-reviews-map\">",
-      "                <div class=\"map-embed-frame\">",
-      `              <iframe class="map-embed" src="${mapEmbedSrc("fr")}" allowfullscreen="" loading="lazy"`,
-      "                referrerpolicy=\"no-referrer-when-downgrade\"",
-      "                title=\"Localisation de Kinésica sur Google Maps\">",
-      "                </iframe>",
-      "                </div>",
+      ...mapEmbedFrameBlock("fr"),
       "                <div class=\"map-transit-wrap\">",
       "                <div class=\"map-transit-panel\">",
       "                  <div class=\"map-transit-grid\">",
@@ -1637,12 +1643,7 @@ export const HOME = {
       "          <div class=\"map-reviews-panel\">",
       "            <div class=\"map-reviews-grid\">",
       "              <div class=\"map-reviews-map\">",
-      "                <div class=\"map-embed-frame\">",
-      `              <iframe class="map-embed" src="${mapEmbedSrc("pt")}" allowfullscreen="" loading="lazy"`,
-      "                referrerpolicy=\"no-referrer-when-downgrade\"",
-      "                title=\"Localização da Kinésica no Google Maps\">",
-      "                </iframe>",
-      "                </div>",
+      ...mapEmbedFrameBlock("pt"),
       "                <div class=\"map-transit-wrap\">",
       "                <div class=\"map-transit-panel\">",
       "                  <div class=\"map-transit-grid\">",
