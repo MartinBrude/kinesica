@@ -176,6 +176,20 @@
     };
   }
 
+  function pickReviews(reviews) {
+    return reviews
+      .filter(function (r) {
+        return r.text;
+      })
+      .sort(function (a, b) {
+        var ratingA = Number(a.rating) || 0;
+        var ratingB = Number(b.rating) || 0;
+        if (ratingB !== ratingA) return ratingB - ratingA;
+        return b.text.length - a.text.length;
+      })
+      .slice(0, MAX_REVIEWS);
+  }
+
   function fetchLiveReviews() {
     return loadPlacesLibrary().then(function (places) {
       var Place = places.Place;
@@ -188,12 +202,9 @@
           fields: ["reviews", "rating", "userRatingCount", "displayName"],
         })
         .then(function () {
-          var reviews = (place.reviews || [])
-            .slice(0, MAX_REVIEWS)
-            .map(normalizeReview)
-            .filter(function (r) {
-              return r.text;
-            });
+          var reviews = pickReviews(
+            (place.reviews || []).map(normalizeReview),
+          );
           return {
             placeId: placeId(),
             rating: place.rating ?? null,

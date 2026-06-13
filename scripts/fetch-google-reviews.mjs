@@ -12,6 +12,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { GOOGLE_PLACE_ID } from "./google-place.mjs";
+import { pickReviews } from "./google-reviews-pick.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT_PARTIAL = path.join(ROOT, "partials/google-reviews-data.js");
@@ -35,7 +36,17 @@ function readApiKey() {
   const fromEnv = process.env.GOOGLE_PLACES_API_KEY?.trim();
   if (fromEnv) return { key: fromEnv, kind: "browser" };
 
-  if (!fs.existsSync(SECRETS_FILE)) return null;
+  if (!fs.existsSync(SECRETS_FILE)) {
+    const cfg = path.join(ROOT, "js/site-config.js");
+    if (fs.existsSync(cfg)) {
+      const match = fs
+        .readFileSync(cfg, "utf8")
+        .match(/googlePlacesApiKey:\s*"([^"]+)"/);
+      const key = match?.[1]?.trim() || null;
+      if (key) return { key, kind: "browser" };
+    }
+    return null;
+  }
   const match = fs
     .readFileSync(SECRETS_FILE, "utf8")
     .match(/googlePlacesApiKey:\s*"([^"]+)"/);
@@ -72,10 +83,10 @@ function normalizeReview(review) {
 }
 
 function buildPayload(raw) {
-  const reviews = (raw.reviews || [])
-    .slice(0, MAX_REVIEWS)
-    .map(normalizeReview)
-    .filter((r) => r.text);
+  const reviews = pickReviews(
+    (raw.reviews || []).map(normalizeReview),
+    MAX_REVIEWS,
+  );
 
   return {
     placeId: GOOGLE_PLACE_ID,
