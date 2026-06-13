@@ -61,6 +61,13 @@ body {
   color: #fff;
   font-size: 15px;
   padding: 11px 0;
+  line-height: 1.2;
+}
+
+.header-top .container > .row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 /* Lang picker: dropdown by default; inline links only without JS */

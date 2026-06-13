@@ -1132,9 +1132,22 @@ label {}
   font-size: 15px;
   padding-top: 11px;
   padding-bottom: 11px;
-  line-height: 15px;
+  line-height: 1.2;
   color: #fff;
   font-weight: 500;
+}
+
+.header-top .container > .row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.header-top .top-text {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 100%;
 }
 
 .top-text {
@@ -1144,7 +1157,7 @@ label {}
 .top-text .text-block {
   padding-left: 20px;
   color: #fff;
-  line-height: 18px;
+  line-height: 1.2;
 }
 
 .lang-picker {
@@ -1275,9 +1288,16 @@ html:not(.js) .lang-picker__option[aria-current="true"] {
 
 .mail-text {}
 
-.time-block {}
+.time-block {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1.2;
+}
 
-.time-text {}
+.time-text {
+  display: inline-block;
+  line-height: 1.2;
+}
 
 .call-block,
 .mail-block,
