@@ -7,7 +7,6 @@ Disallow: /partials/
 
 # Error handlers (noindex pages; avoid crawl budget on duplicates)
 Disallow: /404-router.html
-Disallow: /test.html
 Disallow: /404.html
 Disallow: /en/404.html
 Disallow: /fr/404.html
