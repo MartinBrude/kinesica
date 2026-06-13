@@ -5,6 +5,7 @@
   "use strict";
 
   var MAX_REVIEWS = 5;
+  var DISPLAY_REVIEWS = 3;
   var FETCH_TIMEOUT_MS = 15000;
 
   var COPY = {
@@ -276,7 +277,9 @@
   function showLoading(grid) {
     grid.innerHTML = "";
     grid.classList.add("google-reviews-grid--loading");
-    var count = window.matchMedia("(min-width: 992px)").matches ? 5 : 1;
+    var count = window.matchMedia("(min-width: 992px)").matches
+      ? DISPLAY_REVIEWS
+      : 1;
     for (var i = 0; i < count; i++) {
       var sk = document.createElement("div");
       sk.className = "google-review-card google-review-card--skeleton";
@@ -291,16 +294,26 @@
   }
 
   function hideSection(section) {
+    var aside = section.closest(".map-reviews-aside");
+    if (aside) aside.hidden = true;
+    else {
+      var wrap = section.closest(".google-reviews-wrap");
+      if (wrap) wrap.hidden = true;
+      else section.hidden = true;
+    }
+  }
+
+  function showSection(section) {
+    var aside = section.closest(".map-reviews-aside");
+    if (aside) aside.hidden = false;
+    section.hidden = false;
     var wrap = section.closest(".google-reviews-wrap");
-    if (wrap) wrap.hidden = true;
-    else section.hidden = true;
+    if (wrap) wrap.hidden = false;
   }
 
   function renderReviews(section, grid, data, copy) {
     section.setAttribute("lang", copy.langAttr);
-    section.hidden = false;
-    var wrap = section.closest(".google-reviews-wrap");
-    if (wrap) wrap.hidden = false;
+    showSection(section);
 
     var summarySlot = section.querySelector(".google-reviews-summary-slot");
     if (summarySlot) {
@@ -309,9 +322,11 @@
     }
 
     clearLoading(grid);
-    balanceReviewOrder(data.reviews).forEach(function (review) {
-      grid.appendChild(renderCard(review));
-    });
+    balanceReviewOrder(data.reviews)
+      .slice(0, DISPLAY_REVIEWS)
+      .forEach(function (review) {
+        grid.appendChild(renderCard(review));
+      });
   }
 
   function resolveData(lang) {
@@ -335,9 +350,7 @@
     var hasStatic = !!staticPayload(lang);
     if (!hasStatic && mapsApiKey()) {
       showLoading(grid);
-      section.hidden = false;
-      var wrap = section.closest(".google-reviews-wrap");
-      if (wrap) wrap.hidden = false;
+      showSection(section);
     }
 
     resolveData(lang).then(function (data) {
