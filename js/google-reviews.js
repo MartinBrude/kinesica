@@ -141,6 +141,23 @@
     };
   }
 
+  /** Keep in sync with scripts/google-reviews-pick.mjs */
+  var BALANCE_PERM = {
+    1: [0],
+    2: [0, 1],
+    3: [0, 2, 1],
+    4: [0, 2, 3, 1],
+    5: [0, 2, 4, 3, 1],
+  };
+
+  function balanceReviewOrder(picked) {
+    var perm = BALANCE_PERM[picked.length];
+    if (!perm) return picked;
+    return perm.map(function (i) {
+      return picked[i];
+    });
+  }
+
   function pickReviews(reviews) {
     return reviews
       .filter(function (r) {
@@ -292,7 +309,7 @@
     }
 
     clearLoading(grid);
-    data.reviews.forEach(function (review) {
+    balanceReviewOrder(data.reviews).forEach(function (review) {
       grid.appendChild(renderCard(review));
     });
   }
