@@ -10,6 +10,7 @@
     "seo:sitemap": "node scripts/generate-sitemap.mjs",
     "seo:llms": "node scripts/generate-llms-txt.mjs",
     "reviews:fetch": "node scripts/fetch-google-reviews.mjs",
+    "reviews:refresh": "npm run reviews:fetch && npm run assets:build",
     "seo:lang": "node scripts/apply-lang-meta.mjs",
     "seo:og": "node scripts/fix-og-schema-seo.mjs",
     "schema:partials": "node scripts/build-schema-partials.mjs",

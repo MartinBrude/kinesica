@@ -72,7 +72,7 @@
     if (data.byLang && data.byLang[lang] && data.byLang[lang].length) {
       return data.byLang[lang];
     }
-    if (lang === "es" && data.reviews && data.reviews.length) {
+    if (data.reviews && data.reviews.length) {
       return data.reviews;
     }
     return [];
