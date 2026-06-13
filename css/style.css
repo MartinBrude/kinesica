@@ -2573,13 +2573,16 @@ main:focus {
 
 /* Google reviews (build-time data + js/google-reviews.js) */
 .google-reviews-wrap {
-  padding: 0 15px;
+  width: 100%;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 1.5rem 15px 0.5rem;
+  text-align: center;
 }
 
 .google-reviews {
-  max-width: 72rem;
-  margin: 0 auto 1.5rem;
-  padding: 1.5rem 0 0.5rem;
+  margin: 0 auto;
+  padding: 0;
 }
 
 .google-reviews-header {
@@ -2616,7 +2619,9 @@ main:focus {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin: 0 auto 1rem;
+  justify-content: center;
+  max-width: 100%;
 }
 
 .google-review-card {

@@ -11,7 +11,7 @@
     es: {
       eyebrow: "Opiniones",
       title: "Lo que dicen nuestros pacientes",
-      seeAll: "Ver todas en Google",
+      seeAll: "Ver más reseñas en Google",
       writeReview: "Dejar una reseña",
       attribution: "Reseñas de Google",
       countOne: " reseña",
@@ -20,7 +20,7 @@
     en: {
       eyebrow: "Reviews",
       title: "What our patients say",
-      seeAll: "See all on Google",
+      seeAll: "See more Google reviews",
       writeReview: "Leave a review",
       attribution: "Reviews from Google",
       countOne: " review",
@@ -29,7 +29,7 @@
     fr: {
       eyebrow: "Avis",
       title: "Ce que disent nos patients",
-      seeAll: "Voir tout sur Google",
+      seeAll: "Voir plus d'avis Google",
       writeReview: "Laisser un avis",
       attribution: "Avis Google",
       countOne: " avis",
@@ -38,7 +38,7 @@
     pt: {
       eyebrow: "Avaliações",
       title: "O que dizem nossos pacientes",
-      seeAll: "Ver todas no Google",
+      seeAll: "Ver mais avaliações no Google",
       writeReview: "Deixar uma avaliação",
       attribution: "Avaliações do Google",
       countOne: " avaliação",

@@ -41,10 +41,7 @@ function buildMainHtml(lang, prefix) {
     .join("\n")
     .replace(/__PREFIX__/g, prefix);
   let body = copy.mainHtml
-    .replace(
-      '      <div class="map-block">',
-      `      <div class="map-block">\n${reviewsMarkup}`,
-    )
+    .replace("__GOOGLE_REVIEWS_PLACEHOLDER__", reviewsMarkup)
     .replace(/__PREFIX__/g, prefix)
     .replace("__CTA_PLACEHOLDER__", ctaInsideMain(lang, prefix));
   return body;
