@@ -1,19 +1,20 @@
 #!/usr/bin/env node
 /**
  * Fetch Google reviews at build time → partials/google-reviews-data.js
- * Single Places API call in Spanish (languageCode=es). EN/FR/PT pages use the
- * same review text until translations are added to byLang.
+ * One fetch per site language (languageCode) so ES/EN/FR/PT get localized text
+ * and relative times from Google.
  *
  *   npm run reviews:fetch
- *
- * Cost: 1 request per run — well within Google Maps $200/mo free credit
- * (e.g. weekly cron ≈ 4 requests/month).
  */
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { GOOGLE_PLACE_ID } from "./google-place.mjs";
-import { pickReviews } from "./google-reviews-pick.mjs";
+import {
+  REVIEW_LANG_CODES,
+  pickReviews,
+  placesLanguageCode,
+} from "./google-reviews-pick.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT_PARTIAL = path.join(ROOT, "partials/google-reviews-data.js");
@@ -89,8 +90,9 @@ function normalizeReview(review) {
   };
 }
 
-async function fetchSpanishReviews(apiKey) {
-  const url = `https://places.googleapis.com/v1/places/${GOOGLE_PLACE_ID}?languageCode=es`;
+async function fetchLangFromPlacesApi(apiKey, lang) {
+  const languageCode = placesLanguageCode(lang);
+  const url = `https://places.googleapis.com/v1/places/${GOOGLE_PLACE_ID}?languageCode=${languageCode}`;
   const res = await fetch(url, {
     headers: {
       "Content-Type": "application/json",
@@ -103,22 +105,50 @@ async function fetchSpanishReviews(apiKey) {
   const body = await res.json();
   if (!res.ok) {
     const msg = body.error?.message || res.statusText;
-    const err = new Error(`Places API ${res.status} (es): ${msg}`);
+    const err = new Error(`Places API ${res.status} (${lang}): ${msg}`);
     err.referrerBlocked = /referer|API_KEY_HTTP_REFERRER/i.test(msg);
     throw err;
   }
-
-  const reviews = pickReviews(
-    (body.reviews || []).map(normalizeReview),
-    MAX_REVIEWS,
-  );
 
   return {
     displayName: body.displayName?.text,
     googleMapsUri: body.googleMapsUri,
     rating: body.rating,
     userRatingCount: body.userRatingCount,
-    reviews,
+    reviews: pickReviews(
+      (body.reviews || []).map(normalizeReview),
+      MAX_REVIEWS,
+    ),
+  };
+}
+
+async function fetchAllLanguages(apiKey) {
+  const byLang = {};
+  let meta = null;
+
+  for (const lang of REVIEW_LANG_CODES) {
+    const data = await fetchLangFromPlacesApi(apiKey, lang);
+    byLang[lang] = data.reviews;
+    if (!meta) {
+      meta = {
+        displayName: data.displayName,
+        googleMapsUri: data.googleMapsUri,
+        rating: data.rating,
+        userRatingCount: data.userRatingCount,
+      };
+    }
+    console.log(`  ${lang}: ${data.reviews.length} review(s)`);
+  }
+
+  return {
+    placeId: GOOGLE_PLACE_ID,
+    fetchedAt: new Date().toISOString(),
+    displayName: meta?.displayName || "Kinésica",
+    googleMapsUri: meta?.googleMapsUri || null,
+    rating: meta?.rating ?? null,
+    userRatingCount: meta?.userRatingCount ?? null,
+    reviews: byLang.es || [],
+    byLang,
   };
 }
 
@@ -137,21 +167,8 @@ async function main() {
     return;
   }
 
-  const data = await fetchSpanishReviews(keyInfo.key);
-  console.log("Fetched via Places API (New) REST (languageCode=es).");
-  console.log(`  es: ${data.reviews.length} review(s)`);
-
-  const payload = {
-    placeId: GOOGLE_PLACE_ID,
-    fetchedAt: new Date().toISOString(),
-    displayName: data.displayName || "Kinésica",
-    googleMapsUri: data.googleMapsUri || null,
-    rating: data.rating ?? null,
-    userRatingCount: data.userRatingCount ?? null,
-    reviews: data.reviews,
-    /** Populated when translated copies exist; until then JS falls back to reviews. */
-    byLang: {},
-  };
+  const payload = await fetchAllLanguages(keyInfo.key);
+  console.log("Fetched via Places API (New) REST.");
 
   writePartial(payload);
   console.log(
