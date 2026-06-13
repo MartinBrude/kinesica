@@ -13,10 +13,15 @@ import { LANG_CODES } from "./languages.mjs";
 import { headerShellMarkup } from "./header-shell.mjs";
 import { breadcrumbListSchema, escHtml } from "./html-utils.mjs";
 import {
+  LOCALE,
   assetPrefixForLang,
-  headPreconnectFonts,
-  headLangScripts,
+  headCriticalCss,
+  headFavicon,
+  headJsClassScript,
+  headLangDeferScripts,
   headSeoBlock,
+  headStandardStylesheets,
+  syncCssLink,
 } from "./page-shell.mjs";
 
 const require = createRequire(import.meta.url);
@@ -51,8 +56,21 @@ function renderJobs(data) {
     .join("\n            ");
 }
 
+function renderMethods(methods) {
+  return methods
+    .map((entry) => {
+      const item = typeof entry === "string" ? { label: entry } : entry;
+      const label = escHtml(item.label);
+      if (item.stem) {
+        return `<li><a href="${escHtml(item.stem)}.html">${label}</a></li>`;
+      }
+      return `<li>${label}</li>`;
+    })
+    .join("\n              ");
+}
+
 function renderBody(data) {
-  const methods = data.methods.map((m) => `<li>${escHtml(m)}</li>`).join("\n              ");
+  const methods = renderMethods(data.methods);
   const courses = data.courses
     .map(([y, t]) => `<li><span class="year">${escHtml(y)}</span> – ${t}</li>`)
     .join("\n              ");
@@ -128,12 +146,13 @@ function buildPage(lang, data) {
 <html lang="${HTML_LANG[lang]}">
 
 <head>
-  <meta charset="utf-8" />
-  <meta http-equiv="content-language" content="${HTML_LANG[lang]}" />
+${headFavicon(prefix)}  <meta charset="utf-8" />
+${headJsClassScript()}${headCriticalCss(prefix)}  <meta http-equiv="content-language" content="${LOCALE[lang]}" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
   <meta name="theme-color" content="#005f99" />
-${headSeoBlock({
+${headLangDeferScripts(prefix)}${headSeoBlock({
     lang,
     stem: "cv",
     title: data.title,
@@ -142,18 +161,11 @@ ${headSeoBlock({
     image: profileImage,
     canonical,
   })}
-  <link rel="icon" type="image/svg" href="${prefix}images/favicon.svg" />
-${headPreconnectFonts()}  <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i" rel="stylesheet" />
-  <link href="${prefix}css/bootstrap.min.css" rel="stylesheet" />
-  <link href="${prefix}css/font-awesome.min.css" rel="stylesheet" />
-  <link href="${asset(prefix, "css/style.css")}" rel="stylesheet" />
-  <link href="${asset(prefix, "css/cv.css")}" rel="stylesheet" />
-  <link rel="stylesheet" href="${asset(prefix, "css/whatsapp.css")}" />
-  <script src="${asset(prefix, "partials/gtm-head.js")}"></script>
+${headStandardStylesheets(prefix)}${syncCssLink(asset(prefix, "css/cv.css"))}  <script src="${asset(prefix, "partials/gtm-head.js")}" defer></script>
   <script src="${asset(prefix, "js/site-config.js")}"></script>
   <script type="application/ld+json">${personSchema}</script>
   <script type="application/ld+json">${breadcrumbSchema}</script>
-${headLangScripts(prefix)}</head>
+</head>
 
 <body>
   <div id="site-gtm-body-root"></div>

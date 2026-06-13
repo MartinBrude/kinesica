@@ -104,6 +104,19 @@
   margin-bottom: 6px;
 }
 
+.cv-panel ul a {
+  color: var(--primary-color);
+  font-weight: 500;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(0, 95, 153, 0.25);
+}
+
+.cv-panel ul a:hover,
+.cv-panel ul a:focus {
+  color: #004a75;
+  border-bottom-color: #004a75;
+}
+
 .cv-courses li {
   margin-bottom: 10px;
   list-style: none;
