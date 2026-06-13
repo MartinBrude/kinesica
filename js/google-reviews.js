@@ -1,5 +1,5 @@
 /**
- * Google review cards — static partial (build) or live Places API (browser + site-secrets.js).
+ * Google review cards — static partial (by language) or live Places API REST.
  */
 (function () {
   "use strict";
@@ -9,8 +9,6 @@
 
   var COPY = {
     es: {
-      eyebrow: "Opiniones",
-      title: "Lo que dicen nuestros pacientes",
       seeAll: "Ver más reseñas en Google",
       writeReview: "Dejar una reseña",
       attribution: "Reseñas de Google",
@@ -18,8 +16,6 @@
       countMany: " reseñas",
     },
     en: {
-      eyebrow: "Reviews",
-      title: "What our patients say",
       seeAll: "See more Google reviews",
       writeReview: "Leave a review",
       attribution: "Reviews from Google",
@@ -27,8 +23,6 @@
       countMany: " reviews",
     },
     fr: {
-      eyebrow: "Avis",
-      title: "Ce que disent nos patients",
       seeAll: "Voir plus d'avis Google",
       writeReview: "Laisser un avis",
       attribution: "Avis Google",
@@ -36,8 +30,6 @@
       countMany: " avis",
     },
     pt: {
-      eyebrow: "Avaliações",
-      title: "O que dizem nossos pacientes",
       seeAll: "Ver mais avaliações no Google",
       writeReview: "Deixar uma avaliação",
       attribution: "Avaliações do Google",
@@ -80,10 +72,34 @@
     return cfg.googlePlaceId || data.placeId || "ChIJZ2mPW9K1vJUR3J5kGRi5gws";
   }
 
-  function staticPayload() {
+  function placesLanguageCode(lang) {
+    if (lang === "es") return "es";
+    if (lang === "fr") return "fr";
+    if (lang === "pt") return "pt";
+    return "en";
+  }
+
+  function reviewsForLang(data, lang) {
+    if (!data) return [];
+    if (data.byLang && data.byLang[lang] && data.byLang[lang].length) {
+      return data.byLang[lang];
+    }
+    if (lang === "es" && data.reviews && data.reviews.length) {
+      return data.reviews;
+    }
+    return [];
+  }
+
+  function staticPayload(lang) {
     var data = window.KINESICA_GOOGLE_REVIEWS;
-    if (!data || !data.reviews || !data.reviews.length) return null;
-    return data;
+    var reviews = reviewsForLang(data, lang);
+    if (!reviews.length) return null;
+    return {
+      placeId: data.placeId,
+      rating: data.rating,
+      userRatingCount: data.userRatingCount,
+      reviews: reviews,
+    };
   }
 
   function withTimeout(promise, ms) {
@@ -111,49 +127,6 @@
     });
   }
 
-  function loadPlacesLibrary() {
-    return new Promise(function (resolve, reject) {
-      function importPlaces() {
-        window.google.maps.importLibrary("places").then(resolve).catch(reject);
-      }
-
-      if (window.google && window.google.maps && window.google.maps.importLibrary) {
-        importPlaces();
-        return;
-      }
-
-      var key = mapsApiKey();
-      if (!key) {
-        reject(new Error("missing googlePlacesApiKey"));
-        return;
-      }
-
-      var script = document.createElement("script");
-      script.src =
-        "https://maps.googleapis.com/maps/api/js?key=" +
-        encodeURIComponent(key) +
-        "&libraries=places&loading=async";
-      script.async = true;
-      script.onerror = function () {
-        reject(new Error("maps js load error"));
-      };
-      document.head.appendChild(script);
-
-      var start = Date.now();
-      (function poll() {
-        if (window.google && window.google.maps && window.google.maps.importLibrary) {
-          importPlaces();
-          return;
-        }
-        if (Date.now() - start > FETCH_TIMEOUT_MS) {
-          reject(new Error("maps importLibrary timeout"));
-          return;
-        }
-        setTimeout(poll, 80);
-      })();
-    });
-  }
-
   function normalizeReview(review) {
     var text =
       typeof review.text === "string"
@@ -165,7 +138,11 @@
     return {
       author: author.displayName || review.author || author.author_name || "Google user",
       authorPhoto:
-        author.photoURI || author.photoUri || review.authorPhoto || review.profile_photo_url || null,
+        author.photoURI ||
+        author.photoUri ||
+        review.authorPhoto ||
+        review.profile_photo_url ||
+        null,
       rating: review.rating ?? null,
       text: String(text).trim(),
       relativeTime:
@@ -190,28 +167,34 @@
       .slice(0, MAX_REVIEWS);
   }
 
-  function fetchLiveReviews() {
-    return loadPlacesLibrary().then(function (places) {
-      var Place = places.Place;
-      if (!Place) {
-        throw new Error("places library missing Place");
-      }
-      var place = new Place({ id: placeId() });
-      return place
-        .fetchFields({
-          fields: ["reviews", "rating", "userRatingCount", "displayName"],
-        })
-        .then(function () {
-          var reviews = pickReviews(
-            (place.reviews || []).map(normalizeReview),
-          );
-          return {
-            placeId: placeId(),
-            rating: place.rating ?? null,
-            userRatingCount: place.userRatingCount ?? null,
-            reviews: reviews,
-          };
-        });
+  function fetchLiveReviews(lang) {
+    var key = mapsApiKey();
+    if (!key) return Promise.reject(new Error("missing googlePlacesApiKey"));
+
+    var code = placesLanguageCode(lang);
+    return fetch(
+      "https://places.googleapis.com/v1/places/" +
+        encodeURIComponent(placeId()) +
+        "?languageCode=" +
+        encodeURIComponent(code),
+      {
+        headers: {
+          "X-Goog-Api-Key": key,
+          "X-Goog-FieldMask": "reviews,rating,userRatingCount,displayName",
+        },
+      },
+    ).then(function (res) {
+      return res.json().then(function (body) {
+        if (!res.ok) {
+          throw new Error(body.error?.message || res.statusText || "places error");
+        }
+        return {
+          placeId: placeId(),
+          rating: body.rating ?? null,
+          userRatingCount: body.userRatingCount ?? null,
+          reviews: pickReviews((body.reviews || []).map(normalizeReview)),
+        };
+      });
     });
   }
 
@@ -334,16 +317,10 @@
     var wrap = section.closest(".google-reviews-wrap");
     if (wrap) wrap.hidden = false;
 
-    var titleEl = section.querySelector(".google-reviews-title");
-    var eyebrowEl = section.querySelector(".google-reviews-eyebrow");
-    if (titleEl) titleEl.textContent = copy.title;
-    if (eyebrowEl) eyebrowEl.textContent = copy.eyebrow;
-
-    var header = section.querySelector(".google-reviews-header");
-    if (header) {
-      var oldSummary = header.querySelector(".google-reviews-summary");
-      if (oldSummary) oldSummary.remove();
-      renderSummary(header, data, copy);
+    var summarySlot = section.querySelector(".google-reviews-summary-slot");
+    if (summarySlot) {
+      summarySlot.innerHTML = "";
+      renderSummary(summarySlot, data, copy);
     }
 
     clearLoading(grid);
@@ -354,11 +331,11 @@
     fillActions(section, copy);
   }
 
-  function resolveData() {
-    var staticData = staticPayload();
+  function resolveData(lang) {
+    var staticData = staticPayload(lang);
     if (staticData) return Promise.resolve(staticData);
     if (!mapsApiKey()) return Promise.resolve(null);
-    return withTimeout(fetchLiveReviews(), FETCH_TIMEOUT_MS).catch(function () {
+    return withTimeout(fetchLiveReviews(lang), FETCH_TIMEOUT_MS).catch(function () {
       return null;
     });
   }
@@ -372,7 +349,7 @@
     var copy = COPY[lang] || COPY.es;
     copy.langAttr = lang === "es" ? "es-AR" : lang;
 
-    var hasStatic = !!staticPayload();
+    var hasStatic = !!staticPayload(lang);
     if (!hasStatic && mapsApiKey()) {
       showLoading(grid);
       section.hidden = false;
@@ -380,7 +357,7 @@
       if (wrap) wrap.hidden = false;
     }
 
-    resolveData().then(function (data) {
+    resolveData(lang).then(function (data) {
       if (data && data.reviews && data.reviews.length) {
         renderReviews(section, grid, data, copy);
         return;

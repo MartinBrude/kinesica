@@ -1,18 +1,19 @@
 #!/usr/bin/env node
 /**
  * Fetch Google reviews at build time → partials/google-reviews-data.js
- *
- * Keys con restricción HTTP Referrer: usa headless browser en kinesica.com.ar.
- * Keys de servidor: REST Places API (New).
+ * One fetch per site language (languageCode) so ES/EN/FR/PT get localized text.
  *
  *   npm run reviews:fetch
- *   GOOGLE_PLACES_API_KEY=… npm run reviews:fetch
  */
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { GOOGLE_PLACE_ID } from "./google-place.mjs";
-import { pickReviews } from "./google-reviews-pick.mjs";
+import {
+  REVIEW_LANG_CODES,
+  pickReviews,
+  placesLanguageCode,
+} from "./google-reviews-pick.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT_PARTIAL = path.join(ROOT, "partials/google-reviews-data.js");
@@ -26,6 +27,7 @@ function emptyPayload() {
     rating: null,
     userRatingCount: null,
     reviews: [],
+    byLang: {},
   };
 }
 
@@ -73,6 +75,11 @@ function normalizeReview(review) {
     authorProfile: review.authorAttribution?.uri || null,
     rating: review.rating ?? null,
     text: text.trim(),
+    language:
+      review.language ||
+      review.text?.languageCode ||
+      review.originalText?.languageCode ||
+      null,
     relativeTime:
       review.relativeTime ||
       review.relativePublishTimeDescription ||
@@ -82,25 +89,9 @@ function normalizeReview(review) {
   };
 }
 
-function buildPayload(raw) {
-  const reviews = pickReviews(
-    (raw.reviews || []).map(normalizeReview),
-    MAX_REVIEWS,
-  );
-
-  return {
-    placeId: GOOGLE_PLACE_ID,
-    fetchedAt: new Date().toISOString(),
-    displayName: raw.displayName || "Kinésica",
-    googleMapsUri: raw.googleMapsUri || null,
-    rating: raw.rating ?? null,
-    userRatingCount: raw.userRatingCount ?? null,
-    reviews,
-  };
-}
-
-async function fetchFromPlacesApi(apiKey) {
-  const url = `https://places.googleapis.com/v1/places/${GOOGLE_PLACE_ID}`;
+async function fetchLangFromPlacesApi(apiKey, lang) {
+  const languageCode = placesLanguageCode(lang);
+  const url = `https://places.googleapis.com/v1/places/${GOOGLE_PLACE_ID}?languageCode=${languageCode}`;
   const res = await fetch(url, {
     headers: {
       "Content-Type": "application/json",
@@ -113,113 +104,51 @@ async function fetchFromPlacesApi(apiKey) {
   const body = await res.json();
   if (!res.ok) {
     const msg = body.error?.message || res.statusText;
-    const err = new Error(`Places API ${res.status}: ${msg}`);
+    const err = new Error(`Places API ${res.status} (${lang}): ${msg}`);
     err.referrerBlocked = /referer|API_KEY_HTTP_REFERRER/i.test(msg);
     throw err;
   }
 
-  return buildPayload({
+  return {
     displayName: body.displayName?.text,
     googleMapsUri: body.googleMapsUri,
     rating: body.rating,
     userRatingCount: body.userRatingCount,
-    reviews: body.reviews,
-  });
+    reviews: pickReviews(
+      (body.reviews || []).map(normalizeReview),
+      MAX_REVIEWS,
+    ),
+  };
 }
 
-async function fetchViaBrowser(apiKey) {
-  let puppeteer;
-  try {
-    puppeteer = await import("puppeteer");
-  } catch {
-    throw new Error(
-      "Key con restricción referrer: instala puppeteer (npm install) o usa GOOGLE_PLACES_SERVER_KEY.",
-    );
-  }
+async function fetchAllLanguages(apiKey) {
+  const byLang = {};
+  let meta = null;
 
-  const http = await import("http");
-  const port = 9200 + Math.floor(Math.random() * 800);
-  const html = `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>
-<script src="https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}&libraries=places&loading=async"></script>
-<script>
-(async () => {
-  try {
-    await new Promise((res, rej) => {
-      const t = setTimeout(() => rej(new Error("maps timeout")), 25000);
-      const check = () => {
-        if (window.google?.maps?.importLibrary) { clearTimeout(t); res(); }
-        else setTimeout(check, 100);
+  for (const lang of REVIEW_LANG_CODES) {
+    const data = await fetchLangFromPlacesApi(apiKey, lang);
+    byLang[lang] = data.reviews;
+    if (!meta) {
+      meta = {
+        displayName: data.displayName,
+        googleMapsUri: data.googleMapsUri,
+        rating: data.rating,
+        userRatingCount: data.userRatingCount,
       };
-      check();
-    });
-    const { Place } = await google.maps.importLibrary("places");
-    const place = new Place({ id: ${JSON.stringify(GOOGLE_PLACE_ID)} });
-    await place.fetchFields({ fields: ["reviews", "rating", "userRatingCount", "displayName"] });
-    window.__KINESICA_REVIEWS__ = {
-      displayName: place.displayName,
-      rating: place.rating,
-      userRatingCount: place.userRatingCount,
-      reviews: (place.reviews || []).map((r) => ({
-        author: r.authorAttribution?.displayName,
-        authorPhoto: r.authorAttribution?.photoURI,
-        rating: r.rating,
-        text: r.text?.text || "",
-        relativeTime: r.relativePublishTimeDescription || "",
-      })),
-    };
-  } catch (e) {
-    window.__KINESICA_REVIEWS__ = { error: String(e) };
-  }
-})();
-</script></body></html>`;
-
-  const server = http.createServer((_req, res) => {
-    res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
-    res.end(html);
-  });
-  await new Promise((resolve, reject) => {
-    server.once("error", reject);
-    server.listen(port, "localhost", resolve);
-  });
-
-  const browser = await puppeteer.default.launch({
-    headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-  });
-
-  try {
-    const page = await browser.newPage();
-    await page.goto(`http://localhost:${port}/`, {
-      waitUntil: "networkidle0",
-      timeout: 45000,
-    });
-    await page.waitForFunction(() => window.__KINESICA_REVIEWS__, {
-      timeout: 35000,
-    });
-    const raw = await page.evaluate(() => window.__KINESICA_REVIEWS__);
-
-    if (raw.error) {
-      throw new Error(
-        `${raw.error}\n` +
-          "Revisá en Google Cloud → Credentials → tu API key:\n" +
-          "  • Referrers: https://www.kinesica.com.ar/  (exacto, sin *)\n" +
-          "  • Referrers: https://www.kinesica.com.ar/*\n" +
-          "  • Referrers: http://localhost:*/*  (build + dev local)\n" +
-          "  • APIs: Maps JavaScript API + Places API (New)\n" +
-          "  • O creá GOOGLE_PLACES_SERVER_KEY sin restricción de referrer (solo IP)",
-      );
     }
-
-    return buildPayload({
-      displayName: raw.displayName,
-      rating: raw.rating,
-      userRatingCount: raw.userRatingCount,
-      reviews: raw.reviews,
-    });
-  } finally {
-    await browser.close();
-    server.close();
+    console.log(`  ${lang}: ${data.reviews.length} review(s)`);
   }
+
+  return {
+    placeId: GOOGLE_PLACE_ID,
+    fetchedAt: new Date().toISOString(),
+    displayName: meta?.displayName || "Kinésica",
+    googleMapsUri: meta?.googleMapsUri || null,
+    rating: meta?.rating ?? null,
+    userRatingCount: meta?.userRatingCount ?? null,
+    reviews: byLang.es || [],
+    byLang,
+  };
 }
 
 function writePartial(payload) {
@@ -232,34 +161,17 @@ function writePartial(payload) {
 async function main() {
   const keyInfo = readApiKey();
   if (!keyInfo) {
-    console.warn(
-      "Sin API key — js/site-secrets.js, GOOGLE_PLACES_API_KEY o GOOGLE_PLACES_SERVER_KEY.",
-    );
+    console.warn("Sin API key — js/site-config.js o GOOGLE_PLACES_SERVER_KEY.");
     writePartial(emptyPayload());
     return;
   }
 
-  const { key: apiKey, kind } = keyInfo;
-  let payload;
-
-  if (kind === "server") {
-    payload = await fetchFromPlacesApi(apiKey);
-    console.log("Fetched via Places API (New) REST (server key).");
-  } else {
-    try {
-      payload = await fetchFromPlacesApi(apiKey);
-      console.log("Fetched via Places API (New) REST.");
-    } catch (err) {
-      if (!err.referrerBlocked) throw err;
-      console.warn("REST bloqueado por referrer — usando browser en localhost…");
-      payload = await fetchViaBrowser(apiKey);
-      console.log("Fetched via Maps JavaScript API (headless localhost).");
-    }
-  }
+  const payload = await fetchAllLanguages(keyInfo.key);
+  console.log("Fetched via Places API (New) REST.");
 
   writePartial(payload);
   console.log(
-    `Wrote ${payload.reviews.length} review(s) → partials/google-reviews-data.js`,
+    `Wrote partial → partials/google-reviews-data.js (${payload.reviews.length} ES reviews)`,
   );
   if (payload.rating != null) {
     console.log(
