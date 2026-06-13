@@ -1,4 +1,7 @@
 node_modules/
+.env
+js/site-secrets.js
+js/site-secrets.min.js
 css/dist/
 css/dist-cv/
 scripts/reports/css-purge-audit.json

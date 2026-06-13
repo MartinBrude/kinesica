@@ -4,6 +4,7 @@
  */
 import { SITE, absoluteUrl, STEMS, HTML_LANG } from "./i18n-urls.mjs";
 import { LANG_CODES, expectedLangFromFile } from "./languages.mjs";
+import { GOOGLE_MAPS_URL } from "./google-place.mjs";
 
 export const BUSINESS_ID = `${SITE}/#kinesica`;
 
@@ -12,7 +13,7 @@ export function getMethodServiceCopy(lang, stem) {
   return COPY[lang]?.services?.[stem] ?? null;
 }
 
-const MAPS_URL = "https://maps.app.goo.gl/urpkh4HYe7dSdjPS9";
+const MAPS_URL = GOOGLE_MAPS_URL;
 const WHATSAPP_URL = "https://wa.me/5491161564311";
 const EMAIL = "norberto1712@gmail.com";
 

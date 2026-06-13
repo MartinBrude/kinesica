@@ -9,7 +9,7 @@
     "css:build:cv": "node scripts/purge-css.mjs --write --profile=cv",
     "seo:sitemap": "node scripts/generate-sitemap.mjs",
     "seo:llms": "node scripts/generate-llms-txt.mjs",
-    "seo:schema": "node scripts/inject-local-schema.mjs",
+    "reviews:fetch": "node scripts/fetch-google-reviews.mjs",
     "seo:lang": "node scripts/apply-lang-meta.mjs",
     "seo:og": "node scripts/fix-og-schema-seo.mjs",
     "schema:partials": "node scripts/build-schema-partials.mjs",
@@ -39,6 +39,7 @@
   },
   "devDependencies": {
     "esbuild": "^0.25.0",
+    "puppeteer": "^25.1.0",
     "purgecss": "^7.0.2"
   }
 }

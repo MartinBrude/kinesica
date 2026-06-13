@@ -1,0 +1,8 @@
+/** AUTO-GENERATED — no editar. Fuente: npm run reviews:fetch */
+window.KINESICA_GOOGLE_REVIEWS = {
+  "placeId": "ChIJZ2mPW9K1vJUR3J5kGRi5gws",
+  "fetchedAt": null,
+  "rating": null,
+  "userRatingCount": null,
+  "reviews": []
+};

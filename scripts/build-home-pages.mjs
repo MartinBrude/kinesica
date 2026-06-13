@@ -9,7 +9,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { HTML_LANG, repoPath } from "./i18n-urls.mjs";
 import { LANG_CODES, partialLang } from "./languages.mjs";
-import { HOME, HOME_HERO_IMAGE } from "./home-content.mjs";
+import { HOME, HOME_HERO_IMAGE, googleReviewsBlock } from "./home-content.mjs";
 import { headerShellMarkup } from "./header-shell.mjs";
 import {
   LOCALE,
@@ -28,6 +28,12 @@ import {
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
+function siteSecretsScript(prefix) {
+  const secrets = path.join(ROOT, "js/site-secrets.js");
+  if (!fs.existsSync(secrets)) return "";
+  return `      <script src="${prefix}js/site-secrets.js" defer></script>\n`;
+}
+
 function ctaInsideMain(lang, prefix) {
   const l = partialLang(lang);
   return `    <div id="site-cta-strip-root" data-cta-lang="${l}"></div>
@@ -37,7 +43,15 @@ function ctaInsideMain(lang, prefix) {
 
 function buildMainHtml(lang, prefix) {
   const copy = HOME[lang];
-  const body = copy.mainHtml
+  const reviewsMarkup = googleReviewsBlock(lang)
+    .join("\n")
+    .replace(/__PREFIX__/g, prefix)
+    .replace("__SITE_SECRETS_SCRIPT__", siteSecretsScript(prefix).trimEnd());
+  let body = copy.mainHtml
+    .replace(
+      '      <div class="map-block">',
+      `      <div class="map-block">\n${reviewsMarkup}`,
+    )
     .replace(/__PREFIX__/g, prefix)
     .replace("__CTA_PLACEHOLDER__", ctaInsideMain(lang, prefix));
   return body;

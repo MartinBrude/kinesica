@@ -4,8 +4,38 @@
  * Refresh from HTML: node scripts/extract-home-content.mjs
  */
 import { LANG_CODES } from "./languages.mjs";
+import {
+  googleReviewWriteUrl,
+  googleReviewsListUrl,
+} from "./google-place.mjs";
 
 export const HOME_HERO_IMAGE = "https://www.kinesica.com.ar/images/hero-img.jpg";
+
+/** Google review cards (populated by js/google-reviews.js + partial). */
+export function googleReviewsBlock(lang) {
+  return [
+    "      <div class=\"google-reviews-wrap\">",
+    `      <section id="google-reviews-section" class="google-reviews" data-reviews-lang="${lang}" hidden>`,
+    "        <div class=\"container\">",
+    "          <div class=\"google-reviews-header text-center\">",
+    "            <p class=\"google-reviews-eyebrow section-eyebrow\"></p>",
+    "            <h2 class=\"google-reviews-title heading-line-center\"></h2>",
+    "          </div>",
+    "          <div id=\"google-reviews-grid\" class=\"google-reviews-grid\"></div>",
+    "          <p class=\"google-reviews-actions text-center\">",
+    `            <a class="google-reviews-see-all" href="${googleReviewsListUrl()}" target="_blank" rel="noopener noreferrer"></a>`,
+    "            <span class=\"google-reviews-actions-sep\" aria-hidden=\"true\">·</span>",
+    `            <a class="google-reviews-write" href="${googleReviewWriteUrl()}" target="_blank" rel="noopener noreferrer"></a>`,
+    "          </p>",
+    "          <p class=\"google-reviews-attribution text-center\"></p>",
+    "        </div>",
+    "      </section>",
+    "__SITE_SECRETS_SCRIPT__",
+    "      <script src=\"__PREFIX__partials/google-reviews-data.min.js\" defer></script>",
+    "      <script src=\"__PREFIX__js/google-reviews.min.js\" defer></script>",
+    "      </div>",
+  ];
+}
 
 /** @type {Record<import("./languages.mjs").LangCode, HomeLang>} */
 export const HOME = {
