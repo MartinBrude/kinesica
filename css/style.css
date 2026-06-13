@@ -44,6 +44,21 @@ html {
     180deg,
     var(--surface-canvas-top) 0%,
     var(--surface-canvas-top) 8rem,
+    var(--bg-white) 12rem,
+    var(--bg-white) 70%,
+    var(--surface-canvas-bottom) 88%,
+    var(--surface-canvas-bottom) 100%
+  );
+  background-repeat: no-repeat;
+  background-size: 100% 100vh;
+  background-attachment: fixed;
+}
+
+html:has(body.page-home) {
+  background-image: linear-gradient(
+    180deg,
+    var(--surface-canvas-top) 0%,
+    var(--surface-canvas-top) 8rem,
     var(--bg-sky-origin) 12rem,
     var(--bg-sky-mid) 32%,
     var(--bg-sky-top) 48%,
@@ -51,9 +66,6 @@ html {
     var(--surface-canvas-bottom) 88%,
     var(--surface-canvas-bottom) 100%
   );
-  background-repeat: no-repeat;
-  background-size: 100% 100vh;
-  background-attachment: fixed;
 }
 
 body {
@@ -63,6 +75,12 @@ body {
   /* Increased base font size */
   min-height: 100vh;
   background-color: var(--bg-white);
+  color: var(--text-color);
+  font-family: var(--font-main);
+  line-height: 1.6;
+}
+
+body.page-home {
   background-image: linear-gradient(
     180deg,
     var(--bg-sky-origin) 0%,
@@ -73,13 +91,11 @@ body {
   );
   background-repeat: no-repeat;
   background-size: 100% max(100%, 100vh);
-  color: var(--text-color);
-  font-family: var(--font-main);
-  line-height: 1.6;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
+  html,
+  html:has(body.page-home) {
     background-attachment: scroll;
     background-size: 100% 100%;
   }

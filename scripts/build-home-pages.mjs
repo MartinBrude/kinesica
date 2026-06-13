@@ -82,7 +82,7 @@ ${headStandardStylesheets(p)}  <script src="${p}partials/gtm-head.min.js" defer>
 ${headLocalBusinessSchema(lang, { home: true })}
 </head>
 
-<body>
+<body class="page-home">
 ${bodyShellTop(p)}${headerShellMarkup(lang, p)}  <main id="main" tabindex="-1">
 ${buildMainHtml(lang, p)}
   </main>
