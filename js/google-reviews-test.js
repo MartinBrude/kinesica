@@ -207,8 +207,8 @@
 
     var key = apiKey();
     if (!key) {
-      log("Sin googlePlacesApiKey en site-secrets.js — solo prueba estática.", "err");
-      setStatus("Falta API key (js/site-secrets.js)", "err");
+      log("Sin googlePlacesApiKey en site-config.js.", "err");
+      setStatus("Falta API key (js/site-config.js)", "err");
       return;
     }
 

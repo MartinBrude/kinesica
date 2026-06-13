@@ -28,12 +28,6 @@ import {
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-function siteSecretsScript(prefix) {
-  const secrets = path.join(ROOT, "js/site-secrets.js");
-  if (!fs.existsSync(secrets)) return "";
-  return `      <script src="${prefix}js/site-secrets.js" defer></script>\n`;
-}
-
 function ctaInsideMain(lang, prefix) {
   const l = partialLang(lang);
   return `    <div id="site-cta-strip-root" data-cta-lang="${l}"></div>
@@ -45,8 +39,7 @@ function buildMainHtml(lang, prefix) {
   const copy = HOME[lang];
   const reviewsMarkup = googleReviewsBlock(lang)
     .join("\n")
-    .replace(/__PREFIX__/g, prefix)
-    .replace("__SITE_SECRETS_SCRIPT__", siteSecretsScript(prefix).trimEnd());
+    .replace(/__PREFIX__/g, prefix);
   let body = copy.mainHtml
     .replace(
       '      <div class="map-block">',

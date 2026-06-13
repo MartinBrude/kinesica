@@ -30,7 +30,6 @@ export function googleReviewsBlock(lang) {
     "          <p class=\"google-reviews-attribution text-center\"></p>",
     "        </div>",
     "      </section>",
-    "__SITE_SECRETS_SCRIPT__",
     "      <script src=\"__PREFIX__partials/google-reviews-data.min.js\" defer></script>",
     "      <script src=\"__PREFIX__js/google-reviews.min.js\" defer></script>",
     "      </div>",
