@@ -24,6 +24,7 @@
     var(--bg-white) 100%
   );
   --shadow-panel: 0 4px 24px rgba(0, 60, 95, 0.1), 0 1px 4px rgba(0, 40, 70, 0.05);
+  --panel-border: #c5d8e6;
   /* Overscroll / bounce: mismo tono que .header-top (barra de banderas) */
   --surface-canvas-top: var(--secondary-color);
   --surface-canvas-bottom: #111827;
@@ -2535,7 +2536,7 @@ main:focus {
   background: var(--bg-white);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-panel);
-  border: 1px solid rgba(0, 95, 153, 0.07);
+  border: 1px solid var(--panel-border);
 }
 
 .map-reviews-grid {
