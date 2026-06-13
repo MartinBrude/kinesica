@@ -2507,7 +2507,8 @@ main:focus {
   margin: 0 auto;
   padding: 0.85rem 1.35rem;
   background: var(--bg-white);
-  border: 1px solid rgba(0, 95, 153, 0.16);
+  border: 1px solid rgba(46, 191, 165, 0.35);
+  border-left: 4px solid var(--accent-color);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
 }
