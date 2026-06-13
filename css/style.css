@@ -2951,16 +2951,24 @@ main:focus {
 @media (min-width: 768px) {
   .map-reviews-panel {
     padding: 1.5rem 1.5rem 2.25rem;
-  }
-
-  .map-reviews-grid {
+    display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 2rem;
     align-items: stretch;
   }
 
+  /* El grid vive en el panel; map y reseñas son celdas hermanas */
+  .map-reviews-grid {
+    display: contents;
+  }
+
   .map-reviews-map {
+    grid-column: 1;
     min-height: 100%;
+  }
+
+  .map-reviews-aside {
+    grid-column: 2;
   }
 
   .map-embed-frame {
@@ -2989,6 +2997,8 @@ main:focus {
 
   #google-reviews-grid.google-reviews-grid {
     flex: 1 1 auto;
+    flex-direction: column;
+    overflow-x: visible;
   }
 
   .google-review-card {
