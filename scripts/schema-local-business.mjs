@@ -419,7 +419,7 @@ export function buildPhysiotherapyClinic(lang) {
 
   return {
     "@context": "https://schema.org",
-    "@type": ["Physiotherapy", "MedicalClinic"],
+    "@type": ["LocalBusiness", "Physiotherapy", "MedicalClinic"],
     "@id": BUSINESS_ID,
     name: "Kinésica",
     alternateName:
@@ -450,6 +450,7 @@ export function buildPhysiotherapyClinic(lang) {
       { "@type": "AdministrativeArea", name: "CABA" },
       { "@type": "Place", name: "Palermo, Buenos Aires" },
     ],
+    openingHours: ["Mo-Fr 10:00-20:00"],
     openingHoursSpecification: openingHours(),
     medicalSpecialty: t.specialties.map((name) => ({
       "@type": "MedicalSpecialty",

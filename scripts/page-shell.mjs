@@ -4,6 +4,11 @@
 import { absoluteUrl, HTML_LANG } from "./i18n-urls.mjs";
 import { OG_LOCALE, ogLocaleFor, partialLang } from "./languages.mjs";
 import { escHtml, hreflangLinks } from "./html-utils.mjs";
+import {
+  buildClinicOnly,
+  buildHomeGraph,
+  ldJsonScript,
+} from "./schema-local-business.mjs";
 
 export const FONT_DISPLAY_SWAP =
   "https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i&display=swap";
@@ -155,6 +160,12 @@ export function headSeoBlock({
     `  <meta property="og:locale" content="${locale}" />`,
   );
   return lines.join("\n");
+}
+
+/** JSON-LD LocalBusiness (Charcas 3889, teléfono, horarios) — SEO local / Local Pack. */
+export function headLocalBusinessSchema(lang, { home = false } = {}) {
+  const schema = home ? buildHomeGraph(lang) : buildClinicOnly(lang);
+  return ldJsonScript(schema);
 }
 
 /** Twitter Card tags (home and shareable pages). */

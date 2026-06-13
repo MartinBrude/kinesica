@@ -9,6 +9,7 @@
   "es": {
     "@context": "https://schema.org",
     "@type": [
+      "LocalBusiness",
       "Physiotherapy",
       "MedicalClinic"
     ],
@@ -53,6 +54,9 @@
         "@type": "Place",
         "name": "Palermo, Buenos Aires"
       }
+    ],
+    "openingHours": [
+      "Mo-Fr 10:00-20:00"
     ],
     "openingHoursSpecification": [
       {
@@ -321,6 +325,7 @@
   "en": {
     "@context": "https://schema.org",
     "@type": [
+      "LocalBusiness",
       "Physiotherapy",
       "MedicalClinic"
     ],
@@ -365,6 +370,9 @@
         "@type": "Place",
         "name": "Palermo, Buenos Aires"
       }
+    ],
+    "openingHours": [
+      "Mo-Fr 10:00-20:00"
     ],
     "openingHoursSpecification": [
       {
@@ -633,6 +641,7 @@
   "fr": {
     "@context": "https://schema.org",
     "@type": [
+      "LocalBusiness",
       "Physiotherapy",
       "MedicalClinic"
     ],
@@ -677,6 +686,9 @@
         "@type": "Place",
         "name": "Palermo, Buenos Aires"
       }
+    ],
+    "openingHours": [
+      "Mo-Fr 10:00-20:00"
     ],
     "openingHoursSpecification": [
       {
@@ -945,6 +957,7 @@
   "pt": {
     "@context": "https://schema.org",
     "@type": [
+      "LocalBusiness",
       "Physiotherapy",
       "MedicalClinic"
     ],
@@ -990,6 +1003,9 @@
         "name": "Palermo, Buenos Aires"
       }
     ],
+    "openingHours": [
+      "Mo-Fr 10:00-20:00"
+    ],
     "openingHoursSpecification": [
       {
         "@type": "OpeningHoursSpecification",
@@ -1008,10 +1024,6 @@
       {
         "@type": "MedicalSpecialty",
         "name": "Fisioterapia"
-      },
-      {
-        "@type": "MedicalSpecialty",
-        "name": "Kinesiologia"
       },
       {
         "@type": "MedicalSpecialty",

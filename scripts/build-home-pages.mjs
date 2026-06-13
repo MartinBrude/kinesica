@@ -20,6 +20,7 @@ import {
   headFavicon,
   headJsClassScript,
   headLangDeferScripts,
+  headLocalBusinessSchema,
   headSeoBlock,
   headStandardStylesheets,
   headTwitterBlock,
@@ -74,6 +75,7 @@ ${headTwitterBlock({
     imageAlt: copy.twitterImageAlt,
   })}
 ${headStandardStylesheets(p)}  <script src="${p}partials/gtm-head.min.js" defer></script>
+${headLocalBusinessSchema(lang, { home: true })}
 </head>
 
 <body>
