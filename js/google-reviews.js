@@ -1,10 +1,11 @@
 /**
- * Google review cards — static partial (build) or live fetch (Maps JS API + site-secrets.js).
+ * Google review cards — static partial (build) or live Places API (browser + site-secrets.js).
  */
 (function () {
   "use strict";
 
   var MAX_REVIEWS = 5;
+  var FETCH_TIMEOUT_MS = 15000;
 
   var COPY = {
     es: {
@@ -79,30 +80,35 @@
     return cfg.googlePlaceId || data.placeId || "ChIJZ2mPW9K1vJUR3J5kGRi5gws";
   }
 
-  function normalizeReview(review) {
-    var text =
-      typeof review.text === "string"
-        ? review.text
-        : review.text && review.text.text
-          ? review.text.text
-          : "";
-    var author = review.authorAttribution || review.author_name || {};
-    return {
-      author: author.displayName || author.author_name || "Google user",
-      authorPhoto: author.photoURI || author.photoUri || review.profile_photo_url || null,
-      rating: review.rating ?? null,
-      text: String(text).trim(),
-      relativeTime:
-        review.relativePublishTimeDescription ||
-        review.relative_time_description ||
-        "",
-    };
-  }
-
-  function payloadFromStatic() {
+  function staticPayload() {
     var data = window.KINESICA_GOOGLE_REVIEWS;
     if (!data || !data.reviews || !data.reviews.length) return null;
     return data;
+  }
+
+  function withTimeout(promise, ms) {
+    return new Promise(function (resolve, reject) {
+      var settled = false;
+      var timer = setTimeout(function () {
+        if (settled) return;
+        settled = true;
+        reject(new Error("timeout"));
+      }, ms);
+      promise.then(
+        function (value) {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timer);
+          resolve(value);
+        },
+        function (err) {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timer);
+          reject(err);
+        },
+      );
+    });
   }
 
   function loadPlacesLibrary() {
@@ -137,39 +143,53 @@
     });
   }
 
+  function normalizeReview(review) {
+    var text =
+      typeof review.text === "string"
+        ? review.text
+        : review.text && review.text.text
+          ? review.text.text
+          : "";
+    var author = review.authorAttribution || review.author_name || {};
+    return {
+      author: author.displayName || review.author || author.author_name || "Google user",
+      authorPhoto:
+        author.photoURI || author.photoUri || review.authorPhoto || review.profile_photo_url || null,
+      rating: review.rating ?? null,
+      text: String(text).trim(),
+      relativeTime:
+        review.relativePublishTimeDescription ||
+        review.relative_time_description ||
+        review.relativeTime ||
+        "",
+    };
+  }
+
   function fetchLiveReviews() {
-    return loadPlacesLibrary().then(function () {
-      return new Promise(function (resolve, reject) {
-        var host = document.createElement("div");
-        var service = new google.maps.places.PlacesService(host);
-        service.getDetails(
-          {
-            placeId: placeId(),
-            fields: ["reviews", "rating", "user_ratings_total", "name"],
-          },
-          function (place, status) {
-            if (
-              status !== google.maps.places.PlacesServiceStatus.OK ||
-              !place
-            ) {
-              reject(new Error(status || "places error"));
-              return;
-            }
-            var reviews = (place.reviews || [])
-              .slice(0, MAX_REVIEWS)
-              .map(normalizeReview)
-              .filter(function (r) {
-                return r.text;
-              });
-            resolve({
-              placeId: placeId(),
-              rating: place.rating ?? null,
-              userRatingCount: place.user_ratings_total ?? null,
-              reviews: reviews,
+    return loadPlacesLibrary().then(function (places) {
+      var Place = places.Place;
+      if (!Place) {
+        throw new Error("places library missing Place");
+      }
+      var place = new Place({ id: placeId() });
+      return place
+        .fetchFields({
+          fields: ["reviews", "rating", "userRatingCount", "displayName"],
+        })
+        .then(function () {
+          var reviews = (place.reviews || [])
+            .slice(0, MAX_REVIEWS)
+            .map(normalizeReview)
+            .filter(function (r) {
+              return r.text;
             });
-          },
-        );
-      });
+          return {
+            placeId: placeId(),
+            rating: place.rating ?? null,
+            userRatingCount: place.userRatingCount ?? null,
+            reviews: reviews,
+          };
+        });
     });
   }
 
@@ -211,6 +231,7 @@
       img.height = 40;
       img.loading = "lazy";
       img.decoding = "async";
+      img.referrerPolicy = "no-referrer";
       head.appendChild(img);
     }
 
@@ -242,27 +263,10 @@
     return card;
   }
 
-  function render(section, grid, data) {
-    var lang = section.getAttribute("data-reviews-lang") || "es";
-    var copy = COPY[lang] || COPY.es;
-    section.setAttribute("lang", lang === "es" ? "es-AR" : lang);
-    section.hidden = false;
-
+  function fillActions(section, copy) {
     var cfg = siteConfig();
     var seeAllUrl = cfg.googleReviewsListUrl || "#";
     var writeUrl = cfg.googleReviewUrl || seeAllUrl;
-
-    var titleEl = section.querySelector(".google-reviews-title");
-    var eyebrowEl = section.querySelector(".google-reviews-eyebrow");
-    if (titleEl) titleEl.textContent = copy.title;
-    if (eyebrowEl) eyebrowEl.textContent = copy.eyebrow;
-
-    var header = section.querySelector(".google-reviews-header");
-    if (header) renderSummary(header, data, copy);
-
-    data.reviews.forEach(function (review) {
-      grid.appendChild(renderCard(review));
-    });
 
     var seeAll = section.querySelector(".google-reviews-see-all");
     if (seeAll) {
@@ -280,11 +284,59 @@
     if (attr) attr.textContent = copy.attribution;
   }
 
+  function showLoading(grid) {
+    grid.innerHTML = "";
+    grid.classList.add("google-reviews-grid--loading");
+    for (var i = 0; i < 3; i++) {
+      var sk = document.createElement("div");
+      sk.className = "google-review-card google-review-card--skeleton";
+      sk.setAttribute("aria-hidden", "true");
+      grid.appendChild(sk);
+    }
+  }
+
+  function clearLoading(grid) {
+    grid.classList.remove("google-reviews-grid--loading");
+    grid.innerHTML = "";
+  }
+
+  function hideSection(section) {
+    var wrap = section.closest(".google-reviews-wrap");
+    if (wrap) wrap.hidden = true;
+    else section.hidden = true;
+  }
+
+  function renderReviews(section, grid, data, copy) {
+    section.setAttribute("lang", copy.langAttr);
+    section.hidden = false;
+    var wrap = section.closest(".google-reviews-wrap");
+    if (wrap) wrap.hidden = false;
+
+    var titleEl = section.querySelector(".google-reviews-title");
+    var eyebrowEl = section.querySelector(".google-reviews-eyebrow");
+    if (titleEl) titleEl.textContent = copy.title;
+    if (eyebrowEl) eyebrowEl.textContent = copy.eyebrow;
+
+    var header = section.querySelector(".google-reviews-header");
+    if (header) {
+      var oldSummary = header.querySelector(".google-reviews-summary");
+      if (oldSummary) oldSummary.remove();
+      renderSummary(header, data, copy);
+    }
+
+    clearLoading(grid);
+    data.reviews.forEach(function (review) {
+      grid.appendChild(renderCard(review));
+    });
+
+    fillActions(section, copy);
+  }
+
   function resolveData() {
-    var staticData = payloadFromStatic();
+    var staticData = staticPayload();
     if (staticData) return Promise.resolve(staticData);
     if (!mapsApiKey()) return Promise.resolve(null);
-    return fetchLiveReviews().catch(function () {
+    return withTimeout(fetchLiveReviews(), FETCH_TIMEOUT_MS).catch(function () {
       return null;
     });
   }
@@ -294,12 +346,24 @@
     var grid = document.getElementById("google-reviews-grid");
     if (!section || !grid) return;
 
+    var lang = section.getAttribute("data-reviews-lang") || "es";
+    var copy = COPY[lang] || COPY.es;
+    copy.langAttr = lang === "es" ? "es-AR" : lang;
+
+    var hasStatic = !!staticPayload();
+    if (!hasStatic && mapsApiKey()) {
+      showLoading(grid);
+      section.hidden = false;
+      var wrap = section.closest(".google-reviews-wrap");
+      if (wrap) wrap.hidden = false;
+    }
+
     resolveData().then(function (data) {
-      if (!data || !data.reviews || !data.reviews.length) {
-        section.hidden = true;
+      if (data && data.reviews && data.reviews.length) {
+        renderReviews(section, grid, data, copy);
         return;
       }
-      render(section, grid, data);
+      hideSection(section);
     });
   }
 

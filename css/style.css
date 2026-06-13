@@ -2716,6 +2716,37 @@ main:focus {
   letter-spacing: 0.02em;
 }
 
+.google-reviews-grid--loading {
+  min-height: 8rem;
+}
+
+.google-review-card--skeleton {
+  min-height: 9rem;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 95, 153, 0.06) 0%,
+    rgba(0, 95, 153, 0.12) 50%,
+    rgba(0, 95, 153, 0.06) 100%
+  );
+  background-size: 200% 100%;
+  animation: google-reviews-shimmer 1.2s ease-in-out infinite;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+@keyframes google-reviews-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+.google-reviews-empty {
+  display: none;
+}
+
 /* Móvil: panel debajo del mapa, aire simétrico */
 .space-small:has(.map-block) {
   padding-bottom: 1.5rem;

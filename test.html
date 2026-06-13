@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Test — Google Reviews · Kinésica</title>
+  <link href="css/style.min.css" rel="stylesheet" />
+  <link href="css/font-awesome.min.css" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+      background: #eef4f8;
+      color: #1e293b;
+    }
+    .test-page {
+      max-width: 52rem;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 3rem;
+    }
+    .test-banner {
+      background: #0f4c75;
+      color: #fff;
+      padding: 1rem 1.25rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .test-banner h1 {
+      margin: 0 0 0.35rem;
+      font-size: 1.25rem;
+    }
+    .test-banner p {
+      margin: 0;
+      font-size: 0.9rem;
+      opacity: 0.92;
+    }
+    .test-status {
+      font-weight: 600;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+      background: #fff;
+      border: 1px solid #cbd5e1;
+    }
+    .test-status--pending { border-color: #f59e0b; background: #fffbeb; }
+    .test-status--ok { border-color: #10b981; background: #ecfdf5; }
+    .test-status--err { border-color: #ef4444; background: #fef2f2; }
+    #test-log {
+      background: #0f172a;
+      color: #e2e8f0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.8rem;
+      line-height: 1.45;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      max-height: 14rem;
+      overflow: auto;
+      margin-bottom: 1.5rem;
+    }
+    .test-log-line--ok { color: #6ee7b7; }
+    .test-log-line--warn { color: #fcd34d; }
+    .test-log-line--err { color: #fca5a5; }
+    .test-cards-summary {
+      text-align: center;
+      margin: 0 0 1rem;
+      font-size: 0.95rem;
+    }
+    #test-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+      gap: 1rem;
+    }
+    .test-note {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-top: 2rem;
+    }
+    .test-note code {
+      background: #fff;
+      padding: 0.1rem 0.35rem;
+      border-radius: 0.25rem;
+    }
+  </style>
+</head>
+<body>
+  <main class="test-page">
+    <header class="test-banner">
+      <h1>Test Google Reviews (producción)</h1>
+      <p>Página aislada para verificar Places API y referrer en el dominio real.</p>
+    </header>
+
+    <p id="test-status" class="test-status">Iniciando…</p>
+    <div id="test-log" aria-live="polite"></div>
+
+    <section aria-labelledby="test-cards-heading">
+      <h2 id="test-cards-heading" style="font-size:1.1rem;margin:0 0 0.75rem;">Cards</h2>
+      <div id="test-cards"></div>
+    </section>
+
+    <p class="test-note">
+      Requiere <code>js/site-secrets.js</code> en el servidor con
+      <code>googlePlacesApiKey</code>. Referrers en Google Cloud:
+      <code>https://www.kinesica.com.ar/</code>,
+      <code>https://www.kinesica.com.ar/*</code>,
+      <code>http://localhost:*/*</code>.
+      Borrar esta página cuando termine la prueba.
+    </p>
+  </main>
+
+  <script src="js/site-config.min.js" defer></script>
+  <script src="js/site-secrets.js" defer></script>
+  <script src="partials/google-reviews-data.min.js" defer></script>
+  <script src="js/google-reviews-test.js" defer></script>
+</body>
+</html>

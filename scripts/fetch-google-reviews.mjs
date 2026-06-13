@@ -16,7 +16,6 @@ import { GOOGLE_PLACE_ID } from "./google-place.mjs";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT_PARTIAL = path.join(ROOT, "partials/google-reviews-data.js");
 const SECRETS_FILE = path.join(ROOT, "js/site-secrets.js");
-const ORIGIN_URL = "https://www.kinesica.com.ar/";
 const MAX_REVIEWS = 5;
 
 function emptyPayload() {
@@ -30,13 +29,18 @@ function emptyPayload() {
 }
 
 function readApiKey() {
+  const serverKey = process.env.GOOGLE_PLACES_SERVER_KEY?.trim();
+  if (serverKey) return { key: serverKey, kind: "server" };
+
   const fromEnv = process.env.GOOGLE_PLACES_API_KEY?.trim();
-  if (fromEnv) return fromEnv;
+  if (fromEnv) return { key: fromEnv, kind: "browser" };
+
   if (!fs.existsSync(SECRETS_FILE)) return null;
   const match = fs
     .readFileSync(SECRETS_FILE, "utf8")
     .match(/googlePlacesApiKey:\s*"([^"]+)"/);
-  return match?.[1]?.trim() || null;
+  const key = match?.[1]?.trim() || null;
+  return key ? { key, kind: "browser" } : null;
 }
 
 function normalizeReview(review) {
@@ -118,9 +122,54 @@ async function fetchViaBrowser(apiKey) {
     puppeteer = await import("puppeteer");
   } catch {
     throw new Error(
-      "Key con restricción referrer: instala puppeteer (npm install) o usa una key de servidor.",
+      "Key con restricción referrer: instala puppeteer (npm install) o usa GOOGLE_PLACES_SERVER_KEY.",
     );
   }
+
+  const http = await import("http");
+  const port = 9200 + Math.floor(Math.random() * 800);
+  const html = `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>
+<script src="https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}&libraries=places&loading=async"></script>
+<script>
+(async () => {
+  try {
+    await new Promise((res, rej) => {
+      const t = setTimeout(() => rej(new Error("maps timeout")), 25000);
+      const check = () => {
+        if (window.google?.maps?.importLibrary) { clearTimeout(t); res(); }
+        else setTimeout(check, 100);
+      };
+      check();
+    });
+    const { Place } = await google.maps.importLibrary("places");
+    const place = new Place({ id: ${JSON.stringify(GOOGLE_PLACE_ID)} });
+    await place.fetchFields({ fields: ["reviews", "rating", "userRatingCount", "displayName"] });
+    window.__KINESICA_REVIEWS__ = {
+      displayName: place.displayName,
+      rating: place.rating,
+      userRatingCount: place.userRatingCount,
+      reviews: (place.reviews || []).map((r) => ({
+        author: r.authorAttribution?.displayName,
+        authorPhoto: r.authorAttribution?.photoURI,
+        rating: r.rating,
+        text: r.text?.text || "",
+        relativeTime: r.relativePublishTimeDescription || "",
+      })),
+    };
+  } catch (e) {
+    window.__KINESICA_REVIEWS__ = { error: String(e) };
+  }
+})();
+</script></body></html>`;
+
+  const server = http.createServer((_req, res) => {
+    res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+    res.end(html);
+  });
+  await new Promise((resolve, reject) => {
+    server.once("error", reject);
+    server.listen(port, "localhost", resolve);
+  });
 
   const browser = await puppeteer.default.launch({
     headless: true,
@@ -129,52 +178,14 @@ async function fetchViaBrowser(apiKey) {
 
   try {
     const page = await browser.newPage();
-    await page.goto(ORIGIN_URL, {
-      waitUntil: "domcontentloaded",
+    await page.goto(`http://localhost:${port}/`, {
+      waitUntil: "networkidle0",
       timeout: 45000,
     });
-
-    await page.addScriptTag({
-      url:
-        "https://maps.googleapis.com/maps/api/js?key=" +
-        encodeURIComponent(apiKey) +
-        "&libraries=places&loading=async",
+    await page.waitForFunction(() => window.__KINESICA_REVIEWS__, {
+      timeout: 35000,
     });
-
-    await page.waitForFunction(
-      () => window.google?.maps?.importLibrary,
-      { timeout: 45000 },
-    );
-
-    const raw = await page.evaluate(async (placeId) => {
-      const timeout = new Promise((resolve) =>
-        setTimeout(() => resolve({ error: "TIMEOUT" }), 30000),
-      );
-      const work = (async () => {
-        try {
-          const { Place } = await google.maps.importLibrary("places");
-          const place = new Place({ id: placeId });
-          await place.fetchFields({
-            fields: ["reviews", "rating", "userRatingCount", "displayName"],
-          });
-          return {
-            displayName: place.displayName,
-            rating: place.rating,
-            userRatingCount: place.userRatingCount,
-            reviews: (place.reviews || []).map((r) => ({
-              author: r.authorAttribution?.displayName,
-              authorPhoto: r.authorAttribution?.photoURI,
-              rating: r.rating,
-              text: r.text?.text || "",
-              relativeTime: r.relativePublishTimeDescription || "",
-            })),
-          };
-        } catch (e) {
-          return { error: String(e) };
-        }
-      })();
-      return Promise.race([work, timeout]);
-    }, GOOGLE_PLACE_ID);
+    const raw = await page.evaluate(() => window.__KINESICA_REVIEWS__);
 
     if (raw.error) {
       throw new Error(
@@ -182,9 +193,9 @@ async function fetchViaBrowser(apiKey) {
           "Revisá en Google Cloud → Credentials → tu API key:\n" +
           "  • Referrers: https://www.kinesica.com.ar/  (exacto, sin *)\n" +
           "  • Referrers: https://www.kinesica.com.ar/*\n" +
-          "  • Referrers: http://localhost:*/*  (para pruebas locales)\n" +
+          "  • Referrers: http://localhost:*/*  (build + dev local)\n" +
           "  • APIs: Maps JavaScript API + Places API (New)\n" +
-          "  • Misma key que en js/site-secrets.js",
+          "  • O creá GOOGLE_PLACES_SERVER_KEY sin restricción de referrer (solo IP)",
       );
     }
 
@@ -196,6 +207,7 @@ async function fetchViaBrowser(apiKey) {
     });
   } finally {
     await browser.close();
+    server.close();
   }
 }
 
@@ -207,22 +219,31 @@ function writePartial(payload) {
 }
 
 async function main() {
-  const apiKey = readApiKey();
-  if (!apiKey) {
-    console.warn("Sin API key — escribe js/site-secrets.js o usa GOOGLE_PLACES_API_KEY.");
+  const keyInfo = readApiKey();
+  if (!keyInfo) {
+    console.warn(
+      "Sin API key — js/site-secrets.js, GOOGLE_PLACES_API_KEY o GOOGLE_PLACES_SERVER_KEY.",
+    );
     writePartial(emptyPayload());
     return;
   }
 
+  const { key: apiKey, kind } = keyInfo;
   let payload;
-  try {
+
+  if (kind === "server") {
     payload = await fetchFromPlacesApi(apiKey);
-    console.log("Fetched via Places API (New) REST.");
-  } catch (err) {
-    if (!err.referrerBlocked) throw err;
-    console.warn("REST bloqueado por referrer — usando browser en kinesica.com.ar…");
-    payload = await fetchViaBrowser(apiKey);
-    console.log("Fetched via Maps JavaScript API (headless).");
+    console.log("Fetched via Places API (New) REST (server key).");
+  } else {
+    try {
+      payload = await fetchFromPlacesApi(apiKey);
+      console.log("Fetched via Places API (New) REST.");
+    } catch (err) {
+      if (!err.referrerBlocked) throw err;
+      console.warn("REST bloqueado por referrer — usando browser en localhost…");
+      payload = await fetchViaBrowser(apiKey);
+      console.log("Fetched via Maps JavaScript API (headless localhost).");
+    }
   }
 
   writePartial(payload);

@@ -11,10 +11,10 @@ import {
 
 export const HOME_HERO_IMAGE = "https://www.kinesica.com.ar/images/hero-img.jpg";
 
-/** Google review cards (populated by js/google-reviews.js + partial). */
+/** Google review cards (Places API → npm run reviews:fetch or js/google-reviews.js). */
 export function googleReviewsBlock(lang) {
   return [
-    "      <div class=\"google-reviews-wrap\">",
+    "      <div class=\"google-reviews-wrap\" hidden>",
     `      <section id="google-reviews-section" class="google-reviews" data-reviews-lang="${lang}" hidden>`,
     "        <div class=\"container\">",
     "          <div class=\"google-reviews-header text-center\">",
