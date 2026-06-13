@@ -277,7 +277,7 @@
   function showLoading(grid) {
     grid.innerHTML = "";
     grid.classList.add("google-reviews-grid--loading");
-    var count = window.matchMedia("(min-width: 992px)").matches
+    var count = window.matchMedia("(min-width: 768px)").matches
       ? DISPLAY_REVIEWS
       : 1;
     for (var i = 0; i < count; i++) {

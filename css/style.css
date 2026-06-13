@@ -2878,7 +2878,7 @@ main:focus {
 }
 
 /* Móvil: mapa arriba, reseñas abajo (mismo panel unificado) */
-@media (max-width: 991px) {
+@media (max-width: 767px) {
   .map-reviews-panel {
     padding: 1rem 1rem 1.75rem;
   }
@@ -2931,8 +2931,8 @@ main:focus {
   }
 }
 
-/* Escritorio: dos columnas niveladas con gap 2rem */
-@media (min-width: 992px) {
+/* Tablet/desktop: dos columnas niveladas con gap 2rem */
+@media (min-width: 768px) {
   .map-reviews-panel {
     padding: 1.5rem 1.5rem 2.25rem;
   }
@@ -3004,8 +3004,8 @@ main:focus {
   padding: 0 15px;
 }
 
-/* Escritorio: panel sobre el mapa, abajo a la izquierda */
-@media (min-width: 992px) {
+/* Tablet/desktop: panel sobre el mapa, abajo a la izquierda */
+@media (min-width: 768px) {
   .space-small:has(.map-block) {
     padding-bottom: 0;
   }
