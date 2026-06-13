@@ -2493,7 +2493,7 @@ main:focus {
 
 .map-review-cta {
   margin: 0;
-  padding: 1.25rem 15px 0;
+  padding: 1.35rem 15px 0.35rem;
   text-align: center;
 }
 
@@ -2502,14 +2502,21 @@ main:focus {
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 0.65rem 1rem;
-  max-width: 38rem;
+  gap: 0.75rem 1.1rem;
+  max-width: 40rem;
   margin: 0 auto;
-  padding: 0.85rem 1.35rem;
-  background: var(--bg-white);
-  border: 1px solid rgba(0, 95, 153, 0.16);
+  padding: 1rem 1.4rem 1rem 1.2rem;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 95, 153, 0.07) 0%,
+    rgba(46, 191, 165, 0.09) 100%
+  );
+  border: 1px solid rgba(0, 95, 153, 0.22);
+  border-left: 4px solid var(--primary-color);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
+  box-shadow:
+    0 8px 22px -6px rgba(0, 95, 153, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.65);
 }
 
 .map-review-cta-body {
@@ -2519,7 +2526,7 @@ main:focus {
 }
 
 .map-review-cta-actions {
-  margin: 0.4rem 0 0;
+  margin: 0.45rem 0 0;
   font-size: 0.875rem;
   line-height: 1.45;
 }
@@ -2528,20 +2535,22 @@ main:focus {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: 50%;
   background: linear-gradient(145deg, var(--primary-color) 0%, #004a75 100%);
   color: #fff;
-  font-size: 1rem;
+  font-size: 1.05rem;
   flex-shrink: 0;
+  box-shadow: 0 3px 10px -2px rgba(0, 95, 153, 0.45);
 }
 
 .map-review-cta-text {
   margin: 0;
   font-size: 1rem;
   line-height: 1.5;
-  color: var(--text-color);
+  color: var(--heading-color);
+  font-weight: 500;
 }
 
 .map-review-cta-link {
