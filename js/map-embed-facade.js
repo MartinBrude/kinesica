@@ -1,8 +1,11 @@
 /**
- * Home map: load Google Maps embed iframe only after user click (saves ~400KB JS on mobile PSI).
+ * Home map: defer Google Maps iframe until the page is ready and the user interacts.
  */
 (function () {
   "use strict";
+
+  var loaded = false;
+  var facades = [];
 
   function loadMap(facade) {
     if (facade.getAttribute("data-map-loaded") === "true") {
@@ -13,15 +16,14 @@
       return;
     }
 
-    var btn = facade.querySelector(".map-embed-facade__btn");
-    var title =
-      (btn && btn.getAttribute("aria-label")) || "Google Maps";
+    var title = facade.getAttribute("data-embed-title") || "Google Maps";
     var frame = facade.closest(".map-embed-frame");
     if (!frame) {
       return;
     }
 
     facade.setAttribute("data-map-loaded", "true");
+    facade.removeAttribute("aria-busy");
 
     var iframe = document.createElement("iframe");
     iframe.className = "map-embed";
@@ -35,17 +37,30 @@
     facade.remove();
   }
 
+  function loadAll() {
+    if (loaded) {
+      return;
+    }
+    loaded = true;
+    facades.forEach(loadMap);
+  }
+
+  function bindInteraction() {
+    var opts = { once: true, passive: true, capture: true };
+    window.addEventListener("scroll", loadAll, opts);
+    window.addEventListener("touchstart", loadAll, opts);
+    window.addEventListener("pointerdown", loadAll, opts);
+    window.addEventListener("keydown", loadAll, opts);
+  }
+
   function init() {
-    var facades = document.querySelectorAll(".map-embed-facade[data-embed-src]");
-    facades.forEach(function (facade) {
-      var btn = facade.querySelector(".map-embed-facade__btn");
-      if (!btn) {
-        return;
-      }
-      btn.addEventListener("click", function () {
-        loadMap(facade);
-      });
-    });
+    facades = Array.prototype.slice.call(
+      document.querySelectorAll(".map-embed-facade[data-embed-src]"),
+    );
+    if (!facades.length) {
+      return;
+    }
+    bindInteraction();
   }
 
   if (document.readyState === "loading") {
