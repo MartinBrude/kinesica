@@ -19,6 +19,7 @@ Información útil para asistentes y crawlers:
 
 ## Métodos y técnicas
 
+- [Kinesiología y fisioterapia](https://www.kinesica.com.ar/kinesiologia.html): Kinesiología en Kinésica (Buenos Aires). Evaluación funcional, rehabilitación y terapia manual personalizada en Palermo.
 - [RPG – Reeducación postural global](https://www.kinesica.com.ar/rpg.html): RPG en Kinésica (Buenos Aires). Reeducación postural y cadenas musculares en Palermo. Sesiones individuales para flexibilizar musculatura estática.
 - [Osteopatía estructural y visceral](https://www.kinesica.com.ar/osteopatia.html): Osteopatía en Kinésica (Buenos Aires). Evaluación y tratamiento de disfunciones somáticas con técnicas manuales en Palermo.
 - [Cadenas fisiológicas – método Busquet](https://www.kinesica.com.ar/cadenas.html): Cadenas musculares en Kinésica (Buenos Aires). Método Busquet que relaciona estructura corporal y contenido visceral. Terapia manual en Palermo.
@@ -65,6 +66,7 @@ Información útil para asistentes y crawlers:
 
 ## Methods & techniques (English)
 
+- [Kinesiology and physiotherapy](https://www.kinesica.com.ar/en/kinesiologia.html): Kinesiology at Kinésica (Buenos Aires). Functional assessment, rehabilitation, and personalized manual therapy in Palermo.
 - [RPG – Global Postural Reeducation](https://www.kinesica.com.ar/en/rpg.html): RPG at Kinésica (Buenos Aires). Global postural reeducation and muscle chains in Palermo. Individual sessions to release static muscle tension.
 - [Structural and visceral osteopathy](https://www.kinesica.com.ar/en/osteopatia.html): Osteopathy at Kinésica (Buenos Aires). Assessment and treatment of somatic dysfunctions with manual techniques in Palermo.
 - [Physiological chains – Busquet method](https://www.kinesica.com.ar/en/cadenas.html): Muscle chains therapy at Kinésica (Buenos Aires). Busquet method linking body structure and visceral function. Manual therapy in Palermo.
@@ -82,6 +84,7 @@ Información útil para asistentes y crawlers:
 
 ## Méthodes et techniques
 
+- [Kinésithérapie et physiothérapie](https://www.kinesica.com.ar/fr/kinesiologia.html): Kinésithérapie chez Kinésica (Buenos Aires). Évaluation fonctionnelle, rééducation et thérapie manuelle personnalisée à Palermo.
 - [RPG — Rééducation posturale globale](https://www.kinesica.com.ar/fr/rpg.html): RPG chez Kinésica (Buenos Aires). Rééducation posturale globale et chaînes musculaires à Palermo. Séances individuelles pour assouplir la musculature statique.
 - [Ostéopathie structurelle et viscérale](https://www.kinesica.com.ar/fr/osteopatia.html): Ostéopathie chez Kinésica (Buenos Aires). Évaluation et traitement des dysfonctions somatiques par thérapie manuelle à Palermo.
 - [Chaînes physiologiques — méthode Busquet](https://www.kinesica.com.ar/fr/cadenas.html): Chaînes musculaires chez Kinésica (Buenos Aires). Méthode Busquet reliant structure corporelle et fonctions viscérales. Thérapie manuelle à Palermo.
@@ -99,6 +102,7 @@ Información útil para asistentes y crawlers:
 
 ## Métodos e técnicas
 
+- [Fisioterapia e kinesiologia](https://www.kinesica.com.ar/pt/kinesiologia.html): Fisioterapia na Kinésica (Buenos Aires). Avaliação funcional, reabilitação e terapia manual personalizada em Palermo.
 - [RPG — Reeducação Postural Global](https://www.kinesica.com.ar/pt/rpg.html): RPG na Kinésica (Buenos Aires). Reeducação postural global e cadeias musculares em Palermo. Sessões individuais para liberar a musculatura estática.
 - [Osteopatia estrutural e visceral](https://www.kinesica.com.ar/pt/osteopatia.html): Osteopatia na Kinésica (Buenos Aires). Avaliação e tratamento de disfunções somáticas com técnicas manuais em Palermo.
 - [Cadeias fisiológicas — método Busquet](https://www.kinesica.com.ar/pt/cadenas.html): Cadeias musculares na Kinésica (Buenos Aires). Método Busquet que relaciona estrutura corporal e funções viscerais. Terapia manual em Palermo.
