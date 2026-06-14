@@ -23,6 +23,14 @@ function articleThumbSrc(stem, lang) {
   return `${assetPrefixForLang(lang)}${rel}`;
 }
 
+function renderIntro(ui) {
+  const link = ui.introLink;
+  if (link) {
+    return `${escHtml(link.before)}<a href="kinesiologia.html">${escHtml(link.label)}</a>${escHtml(link.after)}`;
+  }
+  return escHtml(ui.intro ?? "");
+}
+
 function buildMain(lang) {
   const ui = ARTICLES_INDEX_UI[lang];
 
@@ -49,7 +57,7 @@ function buildMain(lang) {
         <div class="articles-index-intro section-intro section-intro--compact">
           <div class="section-title mb60 text-center">
             <h2 class="heading-line-center">${escHtml(ui.introTitle)}</h2>
-            <p class="section-lead">${escHtml(ui.intro)}</p>
+            <p class="section-lead">${renderIntro(ui)}</p>
           </div>
         </div>
         <div class="articles-index-grid">

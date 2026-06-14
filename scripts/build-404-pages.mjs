@@ -14,6 +14,7 @@ import {
   LOCALE,
   assetPrefixForLang,
   headCriticalCss,
+  headFavicon,
   headJsClassScript,
   headStandardStylesheets,
 } from "./page-shell.mjs";
@@ -74,9 +75,7 @@ ${headJsClassScript()}${headCriticalCss(p)}  <meta http-equiv="content-language"
   <title>${copy.title}</title>
 ${headStandardStylesheets(p, { gtm: false })}  <meta name="description" content="${copy.description}" />
   <meta name="robots" content="noindex, nofollow" />
-  <link rel="icon" type="image/svg" href="${p}images/favicon.svg" />
-  <link rel="apple-touch-icon" href="${p}images/apple-touch-icon.png" />
-${ERROR_STYLES}
+${headFavicon(p)}${ERROR_STYLES}
 </head>
 
 <body>

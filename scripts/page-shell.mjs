@@ -1,7 +1,10 @@
 /**
  * Shared HTML shell fragments for page builders and apply-seo-performance.mjs.
  */
+import path from "path";
+import { fileURLToPath } from "url";
 import { absoluteUrl, HTML_LANG } from "./i18n-urls.mjs";
+import { faviconCacheQuery } from "./favicon-version.mjs";
 import { OG_LOCALE, ogLocaleFor, partialLang } from "./languages.mjs";
 import { escHtml, hreflangLinks } from "./html-utils.mjs";
 import {
@@ -60,9 +63,12 @@ export function headStandardStylesheets(prefix, { gtm = true } = {}) {
 }
 
 export function headFavicon(prefix) {
+  const q = faviconCacheQuery(
+    path.resolve(path.dirname(fileURLToPath(import.meta.url)), ".."),
+  );
   return (
-    `  <link rel="icon" type="image/svg" href="${prefix}images/favicon.svg" />\n` +
-    `  <link rel="apple-touch-icon" href="${prefix}images/apple-touch-icon.png" />\n`
+    `  <link rel="icon" type="image/svg" href="${prefix}images/favicon.svg${q}" />\n` +
+    `  <link rel="apple-touch-icon" href="${prefix}images/apple-touch-icon.png${q}" />\n`
   );
 }
 

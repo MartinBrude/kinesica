@@ -17,6 +17,11 @@ import {
   toMinPath,
 } from "../assets.config.cjs";
 import { listHtmlFiles } from "./languages.mjs";
+import {
+  applyFaviconCacheQuery,
+  faviconCacheVersion,
+  stripFaviconCacheQuery,
+} from "./favicon-version.mjs";
 
 function formatKb(bytes) {
   return `${(bytes / 1024).toFixed(1)} KB`;
@@ -143,6 +148,7 @@ async function main() {
   const cssVersion = cssCacheVersion();
   const shellVersion = shellCacheVersion();
   const assetVersion = assetCacheVersion(sources);
+  const faviconVersion = faviconCacheVersion(ROOT);
   fs.writeFileSync(
     path.join(ROOT, "css", ".asset-version.json"),
     JSON.stringify(
@@ -150,7 +156,8 @@ async function main() {
         style: cssVersion,
         shell: shellVersion,
         assets: assetVersion,
-        note: "HTML refs locales usan ?v=assets tras npm run assets:build.",
+        favicon: faviconVersion,
+        note: "HTML refs locales usan ?v=assets tras npm run assets:build; favicon usa ?v=favicon.",
       },
       null,
       2,
@@ -164,6 +171,8 @@ async function main() {
     let next = syncHtmlAssetRefs(original, sources);
     next = stripCacheQueryFromHtml(next);
     next = applyCacheQueryToHtml(next, assetVersion, sources);
+    next = stripFaviconCacheQuery(next);
+    next = applyFaviconCacheQuery(next, faviconVersion);
     if (next !== original) {
       fs.writeFileSync(full, next);
       htmlChanged++;
@@ -183,7 +192,7 @@ async function main() {
     console.log(`HTML refs OK (?v=${assetVersion}).`);
   }
   console.log(
-    `Build metadata: css/.asset-version.json (style=${cssVersion}, shell=${shellVersion}, assets=${assetVersion}).`,
+    `Build metadata: css/.asset-version.json (style=${cssVersion}, shell=${shellVersion}, assets=${assetVersion}, favicon=${faviconVersion}).`,
   );
 }
 

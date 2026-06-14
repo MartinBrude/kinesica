@@ -36,6 +36,10 @@ const COPY = {
         name: "Osteopatía",
         description: "Tratamiento osteopático para restaurar el equilibrio del cuerpo.",
       },
+      kinesiologia: {
+        name: "Kinesiología",
+        description: "Evaluación funcional, rehabilitación y terapia manual personalizada.",
+      },
       rpg: {
         name: "RPG — Reeducación Postural Global",
         description: "Método de RPG para flexibilizar musculatura estática y reeducar la postura.",
@@ -117,6 +121,10 @@ const COPY = {
       osteopatia: {
         name: "Osteopathy",
         description: "Osteopathic treatment to restore body balance.",
+      },
+      kinesiologia: {
+        name: "Kinesiology",
+        description: "Functional assessment, rehabilitation, and personalized manual therapy.",
       },
       rpg: {
         name: "RPG — Global Postural Reeducation",
@@ -200,6 +208,10 @@ const COPY = {
         name: "Ostéopathie",
         description: "Traitement ostéopathique pour rétablir l'équilibre du corps.",
       },
+      kinesiologia: {
+        name: "Kinésithérapie",
+        description: "Évaluation fonctionnelle, rééducation et thérapie manuelle personnalisée.",
+      },
       rpg: {
         name: "RPG — Rééducation Posturale Globale",
         description: "Méthode RPG pour assouplir les chaînes musculaires statiques.",
@@ -280,6 +292,10 @@ const COPY = {
       osteopatia: {
         name: "Osteopatia",
         description: "Tratamento osteopático para restaurar o equilíbrio corporal.",
+      },
+      kinesiologia: {
+        name: "Fisioterapia",
+        description: "Avaliação funcional, reabilitação e terapia manual personalizada.",
       },
       rpg: {
         name: "RPG — Reeducação Postural Global",

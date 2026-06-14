@@ -9,7 +9,7 @@ export const CV = {
     location: "Ciudad Autónoma de Buenos Aires",
     methodsTitle: "Métodos y técnicas",
     methods: [
-      { label: "Kinesiología" },
+      { label: "Kinesiología", stem: "kinesiologia" },
       { label: "Osteopatía", stem: "osteopatia" },
       { label: "RPG", stem: "rpg" },
       { label: "Cadenas Fisiológicas", stem: "cadenas" },
@@ -127,7 +127,7 @@ export const CV = {
     location: "Ciudad Autónoma de Buenos Aires",
     methodsTitle: "Methods & techniques",
     methods: [
-      { label: "Kinesiology" },
+      { label: "Kinesiology", stem: "kinesiologia" },
       { label: "Osteopathy", stem: "osteopatia" },
       { label: "Global Postural Reeducation (RPG)", stem: "rpg" },
       { label: "Physiological Chains", stem: "cadenas" },
@@ -242,7 +242,7 @@ export const CV = {
     location: "Buenos Aires, Argentine",
     methodsTitle: "Méthodes et techniques",
     methods: [
-      { label: "Kinésithérapie" },
+      { label: "Kinésithérapie", stem: "kinesiologia" },
       { label: "Ostéopathie", stem: "osteopatia" },
       { label: "RPG", stem: "rpg" },
       { label: "Chaînes physiologiques", stem: "cadenas" },
@@ -360,7 +360,7 @@ export const CV = {
     location: "Cidade Autônoma de Buenos Aires",
     methodsTitle: "Métodos e técnicas",
     methods: [
-      { label: "Fisioterapia" },
+      { label: "Fisioterapia", stem: "kinesiologia" },
       { label: "Osteopatia", stem: "osteopatia" },
       { label: "RPG", stem: "rpg" },
       { label: "Cadeias fisiológicas", stem: "cadenas" },

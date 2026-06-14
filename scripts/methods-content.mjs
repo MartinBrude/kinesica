@@ -3,6 +3,7 @@
  * Edit copy here, then: npm run build:methods
  */
 export const METHOD_STEMS = [
+  "kinesiologia",
   "rpg",
   "osteopatia",
   "cadenas",
@@ -34,6 +35,81 @@ export const METHOD_UI = {
 
 /** @type {Record<string, { image: string, es: MethodLang, en: MethodLang, fr: MethodLang, pt: MethodLang }>} */
 export const METHODS = {
+    "kinesiologia": {
+      image: "hero-img.jpg",
+      es: {
+        metaTitle: "Kinesiología y Fisioterapia | Kinésica",
+        metaDescription: "Kinesiología en Kinésica (Buenos Aires). Evaluación funcional, rehabilitación y terapia manual personalizada en Palermo.",
+        breadcrumb: "Kinesiología",
+        h1: "Kinesiología y fisioterapia",
+        lead: "La kinesiología es la disciplina de la salud que evalúa, trata y previene alteraciones del movimiento y de la función corporal mediante técnicas específicas, ejercicios terapéuticos y terapia manual.",
+        blocks: [
+          { type: "p", text: "En el consultorio se parte de una valoración integral que incluye la historia clínica, la observación postural, los movimientos activos y pasivos, las pruebas funcionales y, cuando corresponde, la lectura de estudios complementarios. El objetivo es identificar las causas del dolor o la limitación funcional, y no solo aliviar el síntoma." },
+          { type: "p", text: "El tratamiento kinesiológico busca recuperar la movilidad, mejorar la fuerza y la coordinación, reducir el dolor y prevenir recaídas. Se adapta a cada persona según su edad, actividad y objetivos — ya sea volver al deporte, al trabajo o a las actividades cotidianas." },
+          { type: "h2", text: "Evaluación funcional" },
+          { type: "p", text: "La evaluación permite conocer cómo se organiza el cuerpo en el movimiento: cómo se distribuyen las cargas, qué articulaciones o segmentos tienen restricción, y qué tejidos (músculos, fascias, nervios) participan en el cuadro. Con esa información se define un plan de tratamiento claro y realista." },
+          { type: "p", text: "En la primera consulta se explican los hallazgos, las expectativas del tratamiento y las recomendaciones para el día a día. Cuando el caso lo requiere, se coordina con otros profesionales de la salud." },
+          { type: "h2", text: "Tratamiento y rehabilitación" },
+          { type: "p", text: "El abordaje puede incluir ejercicios terapéuticos, estiramientos, movilizaciones articulares, técnicas de terapia manual, neurodinamia, reeducación postural y otras modalidades según lo que la evaluación indique. En Kinésica integramos distintas herramientas para un tratamiento más completo." },
+          { type: "p", text: "Se atienden dolores musculoesqueléticos (cervicalgia, lumbalgia, hombro, rodilla), lesiones deportivas, secuelas de traumatismos, alteraciones posturales, tensiones nerviosas y procesos de recuperación después de cirugías o inmovilizaciones." },
+          { type: "p", text: "La frecuencia de las sesiones suele ser semanal al inicio del tratamiento, y puede espaciarse según la evolución. La duración habitual de cada sesión es de aproximadamente una hora." },
+        ],
+      },
+      en: {
+        metaTitle: "Kinesiology and Physiotherapy | Kinésica",
+        metaDescription: "Kinesiology at Kinésica (Buenos Aires). Functional assessment, rehabilitation, and personalized manual therapy in Palermo.",
+        breadcrumb: "Kinesiology",
+        h1: "Kinesiology and physiotherapy",
+        lead: "Kinesiology is the health discipline that assesses, treats, and prevents movement and functional disorders through specific techniques, therapeutic exercise, and manual therapy.",
+        blocks: [
+          { type: "p", text: "At the clinic, we begin with a comprehensive assessment that includes clinical history, postural observation, active and passive movement testing, functional tests, and—when appropriate—review of complementary studies. The goal is to identify the causes of pain or functional limitation, not only to relieve the symptom." },
+          { type: "p", text: "Kinesiology treatment aims to restore mobility, improve strength and coordination, reduce pain, and prevent recurrence. It is tailored to each person according to age, activity level, and goals—whether returning to sport, work, or everyday activities." },
+          { type: "h2", text: "Functional assessment" },
+          { type: "p", text: "Assessment reveals how the body organizes itself in movement: how loads are distributed, which joints or segments are restricted, and which tissues (muscles, fascia, nerves) are involved. This information defines a clear, realistic treatment plan." },
+          { type: "p", text: "At the first visit, findings, treatment expectations, and daily-life recommendations are explained. When needed, care is coordinated with other healthcare professionals." },
+          { type: "h2", text: "Treatment and rehabilitation" },
+          { type: "p", text: "The approach may include therapeutic exercise, stretching, joint mobilization, manual therapy techniques, neurodynamics, postural re-education, and other modalities as indicated by the assessment. At Kinésica we integrate different tools for more complete care." },
+          { type: "p", text: "We treat musculoskeletal pain (neck, low back, shoulder, knee), sports injuries, trauma sequelae, postural disorders, nerve tension, and recovery after surgery or immobilization." },
+          { type: "p", text: "Sessions are usually weekly at the start of treatment and may be spaced out as progress is made. Each session typically lasts about one hour." },
+        ],
+      },
+      fr: {
+        metaTitle: "Kinésithérapie et physiothérapie | Kinésica",
+        metaDescription: "Kinésithérapie chez Kinésica (Buenos Aires). Évaluation fonctionnelle, rééducation et thérapie manuelle personnalisée à Palermo.",
+        breadcrumb: "Kinésithérapie",
+        h1: "Kinésithérapie et physiothérapie",
+        lead: "La kinésithérapie est la discipline de santé qui évalue, traite et prévient les troubles du mouvement et de la fonction corporelle par des techniques spécifiques, des exercices thérapeutiques et la thérapie manuelle.",
+        blocks: [
+          { type: "p", text: "Au cabinet, nous commençons par une évaluation globale : antécédents, observation posturale, mouvements actifs et passifs, tests fonctionnels et, le cas échéant, lecture d'examens complémentaires. L'objectif est d'identifier les causes de la douleur ou de la limitation fonctionnelle, pas seulement de soulager le symptôme." },
+          { type: "p", text: "Le traitement vise à restaurer la mobilité, améliorer force et coordination, réduire la douleur et prévenir les récidives. Il s'adapte à chaque personne selon l'âge, l'activité et les objectifs — retour au sport, au travail ou aux activités quotidiennes." },
+          { type: "h2", text: "Évaluation fonctionnelle" },
+          { type: "p", text: "L'évaluation montre comment le corps s'organise dans le mouvement : répartition des charges, segments restreints, tissus impliqués (muscles, fascias, nerfs). Elle permet de définir un plan de traitement clair et réaliste." },
+          { type: "p", text: "Lors de la première consultation, les résultats, les attentes et les recommandations quotidiennes sont expliqués. Si nécessaire, une coordination avec d'autres professionnels de santé est mise en place." },
+          { type: "h2", text: "Traitement et rééducation" },
+          { type: "p", text: "La prise en charge peut inclure exercices thérapeutiques, étirements, mobilisations articulaires, thérapie manuelle, neurodynamique, rééducation posturale et autres modalités selon l'évaluation. Chez Kinésica, nous intégrons plusieurs outils pour une prise en charge plus complète." },
+          { type: "p", text: "Nous traitons les douleurs musculo-squelettiques (cervicalgie, lombalgie, épaule, genou), les blessures sportives, les séquelles traumatiques, les troubles posturaux, les tensions nerveuses et la récupération après chirurgie ou immobilisation." },
+          { type: "p", text: "Les séances sont en général hebdomadaires au début du traitement, puis peuvent s'espacer selon l'évolution. Chaque séance dure environ une heure." },
+        ],
+      },
+      pt: {
+        metaTitle: "Fisioterapia e kinesiologia | Kinésica",
+        metaDescription: "Fisioterapia na Kinésica (Buenos Aires). Avaliação funcional, reabilitação e terapia manual personalizada em Palermo.",
+        breadcrumb: "Fisioterapia",
+        h1: "Fisioterapia e kinesiologia",
+        lead: "A fisioterapia é a disciplina da saúde que avalia, trata e previne alterações do movimento e da função corporal por meio de técnicas específicas, exercícios terapêuticos e terapia manual.",
+        blocks: [
+          { type: "p", text: "No consultório, partimos de uma avaliação integral que inclui história clínica, observação postural, movimentos ativos e passivos, testes funcionais e, quando indicado, leitura de exames complementares. O objetivo é identificar as causas da dor ou da limitação funcional, e não apenas aliviar o sintoma." },
+          { type: "p", text: "O tratamento busca recuperar a mobilidade, melhorar força e coordenação, reduzir a dor e prevenir recidivas. Adapta-se a cada pessoa conforme idade, atividade e objetivos — seja retornar ao esporte, ao trabalho ou às atividades do dia a dia." },
+          { type: "h2", text: "Avaliação funcional" },
+          { type: "p", text: "A avaliação mostra como o corpo se organiza no movimento: distribuição de cargas, segmentos com restrição e tecidos envolvidos (músculos, fáscias, nervos). Com isso, define-se um plano de tratamento claro e realista." },
+          { type: "p", text: "Na primeira consulta, explicamos os achados, as expectativas do tratamento e recomendações para o cotidiano. Quando necessário, coordenamos com outros profissionais de saúde." },
+          { type: "h2", text: "Tratamento e reabilitação" },
+          { type: "p", text: "A abordagem pode incluir exercícios terapêuticos, alongamentos, mobilizações articulares, terapia manual, neurodinâmica, reeducação postural e outras modalidades conforme a avaliação. Na Kinésica integramos diferentes ferramentas para um cuidado mais completo." },
+          { type: "p", text: "Atendemos dores musculoesqueléticas (cervicalgia, lombalgia, ombro, joelho), lesões esportivas, sequelas de traumas, alterações posturais, tensões nervosas e recuperação após cirurgias ou imobilizações." },
+          { type: "p", text: "A frequência das sessões costuma ser semanal no início do tratamento, podendo espaçar conforme a evolução. Cada sessão dura em geral cerca de uma hora." },
+        ],
+      }
+    },
     "rpg": {
       image: "rpg.jpg",
       es: {

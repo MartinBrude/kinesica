@@ -15,6 +15,9 @@
 
       .cls-2 {
         fill: #7189af;
+        stroke: #1f3f7a;
+        stroke-width: 6px;
+        paint-order: stroke fill;
       }
 
       .cls-6 {
@@ -27,6 +30,9 @@
 
       .cls-4 {
         fill: #8ba4cc;
+        stroke: #1f3f7a;
+        stroke-width: 6px;
+        paint-order: stroke fill;
       }
     </style>
     <clipPath id="clippath">

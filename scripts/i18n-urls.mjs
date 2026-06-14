@@ -36,6 +36,7 @@ export const STEMS = [
   "manipulaciones",
   "neurodinamia",
   "osteopatia",
+  "kinesiologia",
   "posturologia-clinica",
   "rpg",
   ...PATHOLOGY_STEMS,

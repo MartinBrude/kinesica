@@ -36,7 +36,7 @@
     "isDefault": false
   }
 ];
-  var STEMS = ["index","articulos","atm","acupuntura","cadenas","cv","404","manipulaciones","neurodinamia","osteopatia","posturologia-clinica","rpg","cefalea","dorsalgia","lumbalgia","ciatalgia","cervicobraquialgia","pubalgia","gonalgia","talalgia","dolor-sacriiliaco","hernia-disco","protrusion-discal","hipercifosis","hiperlordosis","dorso-plano","genu-valgo","genu-varo","pies-planos","escoliosis","epicondilitis-lateral","epicondilitis-medial","impingement-subacromial","manguito-rotador","radiculopatia","meniscopatia","fascitis-plantar","cervicalgia"];
+  var STEMS = ["index","articulos","atm","acupuntura","cadenas","cv","404","manipulaciones","neurodinamia","osteopatia","kinesiologia","posturologia-clinica","rpg","cefalea","dorsalgia","lumbalgia","ciatalgia","cervicobraquialgia","pubalgia","gonalgia","talalgia","dolor-sacriiliaco","hernia-disco","protrusion-discal","hipercifosis","hiperlordosis","dorso-plano","genu-valgo","genu-varo","pies-planos","escoliosis","epicondilitis-lateral","epicondilitis-medial","impingement-subacromial","manguito-rotador","radiculopatia","meniscopatia","fascitis-plantar","cervicalgia"];
 
   function langEntry(code) {
     for (var i = 0; i < LANGS.length; i++) {
