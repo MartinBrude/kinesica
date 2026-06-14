@@ -13,8 +13,7 @@ import {
   ldJsonScript,
 } from "./schema-local-business.mjs";
 
-export const FONT_DISPLAY_SWAP =
-  "https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i&display=swap";
+export const ROBOTO_STYLESHEET = "css/roboto.min.css";
 
 export const LOCALE = HTML_LANG;
 export { OG_LOCALE };
@@ -38,11 +37,15 @@ export function syncCssLink(href) {
   return `  <link href="${href}" rel="stylesheet" />\n`;
 }
 
-export function headPreconnectFonts() {
+/** Preload regular Roboto (hero/body default weight). */
+export function headRobotoPreload(prefix) {
   return (
-    '  <link rel="preconnect" href="https://fonts.googleapis.com" />\n' +
-    '  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />\n'
+    `  <link rel="preload" href="${prefix}fonts/roboto/roboto-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />\n`
   );
+}
+
+export function headRobotoStylesheet(prefix) {
+  return syncCssLink(`${prefix}${ROBOTO_STYLESHEET}`);
 }
 
 export function headPreconnectGtm() {
@@ -52,10 +55,10 @@ export function headPreconnectGtm() {
 /** Standard site CSS: blocking layout + async icons/WhatsApp. */
 export function headStandardStylesheets(prefix, { gtm = true } = {}) {
   return (
-    headPreconnectFonts() +
+    headRobotoPreload(prefix) +
     (gtm ? headPreconnectGtm() : "") +
     syncCssLink(`${prefix}css/bootstrap.min.css`) +
-    syncCssLink(FONT_DISPLAY_SWAP) +
+    headRobotoStylesheet(prefix) +
     asyncCssLink(`${prefix}css/font-awesome.min.css`) +
     syncCssLink(`${prefix}css/style.min.css`) +
     asyncCssLink(`${prefix}css/whatsapp.min.css`)

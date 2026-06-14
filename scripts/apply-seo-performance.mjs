@@ -7,7 +7,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import {
-  FONT_DISPLAY_SWAP,
+  ROBOTO_STYLESHEET,
   dedupePreconnects,
   headCriticalCss,
   headJsClassScript,
@@ -47,27 +47,11 @@ function addRobotsMeta(html, file) {
   return html.replace(/<meta name="viewport"[^>]*\/>\s*\n/, (m) => m + tag);
 }
 
-function fontDisplaySwap(html) {
-  return html.replace(
-    /https:\/\/fonts\.googleapis\.com\/css\?family=Roboto:[^"']+/g,
-    FONT_DISPLAY_SWAP,
-  );
-}
-
-function ensurePreconnectBeforeFonts(html) {
-  const block =
-    '  <link rel="preconnect" href="https://fonts.googleapis.com" />\n' +
-    '  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />\n';
-  if (
-    html.includes("fonts.googleapis.com") &&
-    !html.includes('rel="preconnect" href="https://fonts.googleapis.com"')
-  ) {
-    return html.replace(
-      /<link rel="preload" href="https:\/\/fonts\.googleapis\.com/,
-      `${block}$&`,
-    );
-  }
-  return html;
+function removeGoogleFonts(html) {
+  return html
+    .replace(/^\s*<link rel="preconnect" href="https:\/\/fonts\.googleapis\.com"[^>]*\/>\s*\n/gm, "")
+    .replace(/^\s*<link rel="preconnect" href="https:\/\/fonts\.gstatic\.com"[^>]*\/>\s*\n/gm, "")
+    .replace(/<link[^>]*fonts\.googleapis\.com[^>]*>\s*/gi, "");
 }
 
 function removeEmptyNoscript(html) {
@@ -101,9 +85,11 @@ function normalizeHeadStylesheets(html, file) {
     .replace(/<!-- Bootstrap -->|<!-- Google Fonts -->|<!-- Font Awesome -->|<!-- Style -->\s*/g, "")
     .replace(/^\s*<link rel="preconnect" href="https:\/\/fonts\.googleapis\.com"[^>]*\/>\s*\n/gm, "")
     .replace(/^\s*<link rel="preconnect" href="https:\/\/fonts\.gstatic\.com"[^>]*\/>\s*\n/gm, "")
+    .replace(/^\s*<link rel="preload" href="(?:\.\.\/)?fonts\/roboto\/roboto-latin-400-normal\.woff2"[^>]*\/>\s*\n/gm, "")
     .replace(/^\s*<link rel="preconnect" href="https:\/\/www\.googletagmanager\.com"[^>]*\/>\s*\n/gm, "")
     .replace(/<link[^>]*bootstrap\.min\.css[^>]*>\s*/gi, "")
     .replace(/<link[^>]*style\.min\.css[^>]*>\s*/gi, "")
+    .replace(/<link[^>]*roboto\.min\.css[^>]*>\s*/gi, "")
     .replace(/<link[^>]*font-awesome\.min\.css[^>]*>\s*/gi, "")
     .replace(/<link[^>]*whatsapp\.min\.css[^>]*>\s*/gi, "")
     .replace(/<link[^>]*fonts\.googleapis\.com[^>]*>\s*/gi, "")
@@ -120,7 +106,8 @@ function normalizeHeadStylesheets(html, file) {
   const hasBlockingLayout =
     head.includes(`href="${p}css/bootstrap.min.css" rel="stylesheet"`) &&
     head.includes(`href="${p}css/style.min.css" rel="stylesheet"`) &&
-    head.includes(`href="${FONT_DISPLAY_SWAP}" rel="stylesheet"`) &&
+    head.includes(`href="${p}${ROBOTO_STYLESHEET}" rel="stylesheet"`) &&
+    head.includes(`href="${p}fonts/roboto/roboto-latin-400-normal.woff2"`) &&
     !head.includes(`rel="preload" href="${p}css/bootstrap.min.css" as="style"`);
 
   if (hasBlockingLayout) {
@@ -227,13 +214,12 @@ for (const file of listHtmlFiles(ROOT)) {
   let html = fs.readFileSync(full, "utf8");
   const original = html;
   html = addRobotsMeta(html, file);
-  html = fontDisplaySwap(html);
+  html = removeGoogleFonts(html);
   html = ensureHeadJsClass(html);
   html = ensureCriticalCss(html, file);
   html = normalizeHeadStylesheets(html, file);
   html = removeEmptyNoscript(html);
   html = dedupePreconnects(html);
-  html = ensurePreconnectBeforeFonts(html);
   html = deferLangHeadScripts(html);
   html = deferHeadScripts(html);
   html = fix404FooterStyle(html, file);

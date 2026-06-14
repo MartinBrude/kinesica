@@ -12,6 +12,7 @@ const ROOT = __dirname;
 /** CSS propios del sitio (no vendor). */
 const CSS_SOURCES = [
   "css/critical.css",
+  "css/roboto.css",
   "css/style.css",
   "css/whatsapp.css",
   "css/cv.css",
