@@ -23,6 +23,7 @@ import {
   headLocalBusinessSchema,
   headSeoBlock,
   headStandardStylesheets,
+  headHeroImagePreload,
   headTwitterBlock,
 } from "./page-shell.mjs";
 
@@ -61,8 +62,7 @@ ${headJsClassScript()}${headCriticalCss(p)}  <meta http-equiv="content-language"
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
-  <link rel="preload" as="image" href="${p}images/hero-img.jpg" fetchpriority="high" />
-  <meta name="theme-color" content="#005f99" />
+${headHeroImagePreload(p)}  <meta name="theme-color" content="#005f99" />
 ${headLangDeferScripts(p)}${headSeoBlock({
     lang,
     stem,

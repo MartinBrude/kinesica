@@ -1353,9 +1353,21 @@ html:not(.js) .lang-picker__option[aria-current="true"] {
 .hero-section {
   padding-top: 160px;
   padding-bottom: 160px;
-  background: linear-gradient(rgba(0, 30, 60, 0.7), rgba(0, 30, 60, 0.7)),
-    url(../images/hero-img.jpg) no-repeat center;
+  background-image: linear-gradient(rgba(0, 30, 60, 0.7), rgba(0, 30, 60, 0.7)),
+    image-set(
+      url(../images/hero-img-mobile.webp) type("image/webp"),
+      url(../images/hero-img-mobile.jpg) type("image/jpeg")
+    );
+  background-repeat: no-repeat;
+  background-position: center;
   background-size: cover;
+}
+
+@media (min-width: 992px) {
+  .hero-section {
+    background-image: linear-gradient(rgba(0, 30, 60, 0.7), rgba(0, 30, 60, 0.7)),
+      url(../images/hero-img.jpg);
+  }
 }
 
 .hero-caption {

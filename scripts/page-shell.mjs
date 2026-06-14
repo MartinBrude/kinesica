@@ -52,6 +52,14 @@ export function headPreconnectGtm() {
   return '  <link rel="preconnect" href="https://www.googletagmanager.com" />\n';
 }
 
+/** LCP hero: smaller asset on narrow viewports (see images/hero-img-mobile.*). */
+export function headHeroImagePreload(prefix) {
+  return (
+    `  <link rel="preload" as="image" href="${prefix}images/hero-img-mobile.webp" type="image/webp" media="(max-width: 991px)" fetchpriority="high" />\n` +
+    `  <link rel="preload" as="image" href="${prefix}images/hero-img.jpg" media="(min-width: 992px)" fetchpriority="high" />\n`
+  );
+}
+
 /** Standard site CSS: blocking layout + async icons/WhatsApp. */
 export function headStandardStylesheets(prefix, { gtm = true } = {}) {
   return (
