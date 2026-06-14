@@ -13,6 +13,7 @@ const ROOT = __dirname;
 const CSS_SOURCES = [
   "css/critical.css",
   "css/roboto.css",
+  "css/font-awesome.css",
   "css/style.css",
   "css/whatsapp.css",
   "css/cv.css",

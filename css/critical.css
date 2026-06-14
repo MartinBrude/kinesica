@@ -1,4 +1,13 @@
 /* Above-the-fold: linked as css/critical.min.css from every public page. */
+@font-face {
+  font-family: "Roboto Fallback";
+  src: local("Arial");
+  ascent-override: 92.7734%;
+  descent-override: 24.4141%;
+  line-gap-override: 0%;
+  size-adjust: 100.06%;
+}
+
 :root {
   --primary-color: #005f99;
   --secondary-color: #031c42;
@@ -6,7 +15,7 @@
   --bg-white: #ffffff;
   --text-color: #4b5563;
   --heading-color: #1f2937;
-  --font-main: "Roboto", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-main: "Roboto", "Roboto Fallback", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 html {
