@@ -31,7 +31,22 @@ const DEFER_SCRIPTS = [
   "js/gtm-body-include.js",
   "partials/skip-link.js",
   "js/skip-link-include.js",
+  "js/lang-routes.js",
+  "js/snippet-lang.js",
+  "js/header-include.js",
+  "js/lang-picker.js",
+  "js/nav-include.js",
+  "js/cta-strip-include.js",
+  "js/footer-include.js",
+  "js/whatsapp-float-include.js",
+  "js/whatsapp-logic.js",
 ];
+
+const DEFER_SHELL_PARTIAL =
+  /<script src="((?:\.\.\/)?partials\/(?:cta-strip|footer|header|nav|whatsapp-float)-(?:es|en|fr|pt)(?:\.min)?\.js(?:\?v=\d+)?)"(?![^>]*\bdefer\b)([^>]*)><\/script>/g;
+
+const DEFER_SHELL_JS =
+  /<script src="((?:\.\.\/)?js\/(?:lang-routes|snippet-lang|header-include|lang-picker|nav-include|cta-strip-include|footer-include|whatsapp-float-include|whatsapp-logic)(?:\.min)?\.js(?:\?v=\d+)?)"(?![^>]*\bdefer\b)([^>]*)><\/script>/g;
 
 import { listHtmlFiles } from "./languages.mjs";
 
@@ -170,7 +185,7 @@ function deferHeadScripts(html) {
   for (const src of DEFER_SCRIPTS) {
     const escaped = src.replace(/\//g, "\\/");
     const re = new RegExp(
-      `<script src="(\\.\\./)?${escaped}(?:\\.min)?\\.js"(?![^>]*\\bdefer\\b)([^>]*)><\\/script>`,
+      `<script src="(\\.\\./)?${escaped}(?:\\.min)?\\.js(?:\\?v=\\d+)?"(?![^>]*\\bdefer\\b)([^>]*)><\\/script>`,
       "g",
     );
     out = out.replace(re, (match, prefix = "", rest = "") => {
@@ -179,10 +194,22 @@ function deferHeadScripts(html) {
       }
       const base = `${prefix || ""}${src.replace(".js", "")}`;
       const min = match.includes(".min.js") ? ".min.js" : ".js";
-      return `<script src="${base}${min}" defer${rest}></script>`;
+      const q = match.match(/\?v=\d+/);
+      return `<script src="${base}${min}${q ? q[0] : ""}" defer${rest}></script>`;
     });
   }
-  return out;
+  out = out.replace(DEFER_SHELL_PARTIAL, (match, src, rest = "") => {
+    if (match.includes(" defer")) {
+      return match;
+    }
+    return `<script src="${src}" defer${rest}></script>`;
+  });
+  return out.replace(DEFER_SHELL_JS, (match, src, rest = "") => {
+    if (match.includes(" defer")) {
+      return match;
+    }
+    return `<script src="${src}" defer${rest}></script>`;
+  });
 }
 
 function fix404FooterStyle(html, file) {

@@ -194,20 +194,20 @@ ${headerShellMarkup(lang, prefix)}
     </section>
     ${renderBody(data)}
   <div id="site-cta-strip-root" data-cta-lang="${lang}"></div>
-  <script src="${asset(prefix, `partials/cta-strip-${lang}.js`)}"></script>
-  <script src="${asset(prefix, "js/cta-strip-include.js")}"></script>
+  <script src="${asset(prefix, `partials/cta-strip-${lang}.js`)}" defer></script>
+  <script src="${asset(prefix, "js/cta-strip-include.js")}" defer></script>
   </main>
   <div id="site-footer-root" data-footer-lang="${lang}"></div>
-  <script src="${asset(prefix, "js/site-config.js")}"></script>
-  <script src="${asset(prefix, `partials/footer-${lang}.js`)}"></script>
-  <script src="${asset(prefix, "js/footer-include.js")}"></script>
+  <script src="${asset(prefix, "js/site-config.js")}" defer></script>
+  <script src="${asset(prefix, `partials/footer-${lang}.js`)}" defer></script>
+  <script src="${asset(prefix, "js/footer-include.js")}" defer></script>
   <div id="site-whatsapp-root" data-whatsapp-lang="${lang}"></div>
-  <script src="${asset(prefix, `partials/whatsapp-float-${lang}.js`)}"></script>
-  <script src="${asset(prefix, "js/whatsapp-float-include.js")}"></script>
+  <script src="${asset(prefix, `partials/whatsapp-float-${lang}.js`)}" defer></script>
+  <script src="${asset(prefix, "js/whatsapp-float-include.js")}" defer></script>
   <script src="${asset(prefix, "js/mobile-nav.js")}" defer></script>
   <script src="${asset(prefix, "js/ui-reveal.js")}" defer></script>
   <script src="${asset(prefix, "js/sticky-header.js")}" defer></script>
-  <script src="${asset(prefix, "js/whatsapp-logic.js")}"></script>
+  <script src="${asset(prefix, "js/whatsapp-logic.js")}" defer></script>
 </body>
 
 </html>

@@ -218,8 +218,8 @@ export function ctaStripPlaceholder(lang, prefix) {
   const l = partialLang(lang);
   return (
     `  <div id="site-cta-strip-root" data-cta-lang="${l}"></div>\n` +
-    `  <script src="${prefix}partials/cta-strip-${l}.min.js"></script>\n` +
-    `  <script src="${prefix}js/cta-strip-include.min.js"></script>`
+    `  <script src="${prefix}partials/cta-strip-${l}.min.js" defer></script>\n` +
+    `  <script src="${prefix}js/cta-strip-include.min.js" defer></script>`
   );
 }
 
@@ -232,12 +232,12 @@ export function bodyFooterAndUiScripts(
   const lines = [
     `  <div id="site-footer-root" data-footer-lang="${lang}"></div>`,
     `  <script src="${prefix}js/site-config.min.js" defer></script>`,
-    `  <script src="${prefix}partials/footer-${l}.min.js"></script>`,
-    `  <script src="${prefix}js/footer-include.min.js"></script>`,
+    `  <script src="${prefix}partials/footer-${l}.min.js" defer></script>`,
+    `  <script src="${prefix}js/footer-include.min.js" defer></script>`,
     `  <div id="site-whatsapp-root" data-whatsapp-lang="${lang}"></div>`,
-    `  <script src="${prefix}partials/whatsapp-float-${l}.min.js"></script>`,
-    `  <script src="${prefix}js/whatsapp-float-include.min.js"></script>`,
-    `  <script src="${prefix}js/whatsapp-logic.min.js"></script>`,
+    `  <script src="${prefix}partials/whatsapp-float-${l}.min.js" defer></script>`,
+    `  <script src="${prefix}js/whatsapp-float-include.min.js" defer></script>`,
+    `  <script src="${prefix}js/whatsapp-logic.min.js" defer></script>`,
   ];
   if (pageHeaderWord) {
     lines.push(

@@ -47,32 +47,18 @@ function stripInlinedFooter(html) {
   );
 }
 
-function dedupeDeferLangRoutes(html, prefix) {
-  const syncNeedle = `<script src="${prefix}js/lang-routes.min.js"></script>`;
-  if (!html.includes(syncNeedle)) {
-    return html;
-  }
+function dedupeLangRoutes(html, prefix) {
   const escaped = prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  let out = html.replace(
-    new RegExp(
-      `\\s*<script src="${escaped}js/lang-routes(?:\\.min)?\\.js" defer><\\/script>\\s*`,
-      "g",
-    ),
-    "\n",
+  const re = new RegExp(
+    `\\s*<script src="${escaped}js/lang-routes(?:\\.min)?\\.js"(?: defer)?><\\/script>`,
+    "g",
   );
-  const first = out.indexOf(syncNeedle);
-  if (first === -1) {
-    return out;
-  }
-  const tail = out.slice(first + syncNeedle.length);
-  const dedupedTail = tail.replace(
-    new RegExp(
-      `\\s*<script src="${escaped}js/lang-routes(?:\\.min)?\\.js"><\\/script>\\s*`,
-      "g",
-    ),
-    "\n",
-  );
-  return out.slice(0, first + syncNeedle.length) + dedupedTail;
+  let n = 0;
+  return html.replace(re, (match) => (n++ === 0 ? match : "\n"));
+}
+
+function shellScriptTagPattern(name) {
+  return `(?:<script src="[^"]*${name}[^"]*"(?: defer)?><\\/script>\\s*)*`;
 }
 
 function ensureHeaderShell(html, file) {
@@ -83,8 +69,9 @@ function ensureHeaderShell(html, file) {
   const prefix = file.includes("/") ? "../" : "";
   const shell = headerShellMarkup(lang, prefix);
   const emptyRoot = `<div id="site-header-root" data-header-lang="${partialLang(lang)}"></div>`;
-  const block =
-    /<div id="site-header-root"[^>]*><\/div>\s*(?:<script src="[^"]*lang-routes[^"]*"><\/script>\s*)*(?:<script src="[^"]*snippet-lang[^"]*"><\/script>\s*)*(?:<script src="[^"]*partials\/header-[^"]*"><\/script>\s*)*(?:<script src="[^"]*header-include[^"]*"><\/script>\s*)*(?:<script src="[^"]*lang-picker[^"]*"><\/script>\s*)*(?:<script src="[^"]*partials\/nav-[^"]*"><\/script>\s*)*(?:<script src="[^"]*nav-include[^"]*"><\/script>\s*)*/;
+  const block = new RegExp(
+    `<div id="site-header-root"[^>]*><\\/div>\\s*${shellScriptTagPattern("lang-routes")}${shellScriptTagPattern("snippet-lang")}${shellScriptTagPattern("partials\\/header-")}${shellScriptTagPattern("header-include")}${shellScriptTagPattern("lang-picker")}${shellScriptTagPattern("partials\\/nav-")}${shellScriptTagPattern("nav-include")}`,
+  );
   if (block.test(html)) {
     return html.replace(block, shell);
   }
@@ -100,8 +87,14 @@ function ensureCtaScripts(html, file) {
   }
   const lang = partialLang(expectedLangFromFile(file));
   const prefix = file.includes("/") ? "../" : "";
-  const ctaPartial = `<script src="${prefix}partials/cta-strip-${lang}.min.js"></script>`;
-  const ctaInclude = `<script src="${prefix}js/cta-strip-include.min.js"></script>`;
+  const ctaPartial = `<script src="${prefix}partials/cta-strip-${lang}.min.js" defer></script>`;
+  const ctaInclude = `<script src="${prefix}js/cta-strip-include.min.js" defer></script>`;
+  const block = new RegExp(
+    `(<div id="site-cta-strip-root"[^>]*><\\/div>)\\s*${shellScriptTagPattern("cta-strip-")}${shellScriptTagPattern("cta-strip-include")}`,
+  );
+  if (block.test(html)) {
+    return html.replace(block, `$1\n  ${ctaPartial}\n  ${ctaInclude}`);
+  }
   if (html.includes(ctaPartial) && html.includes(ctaInclude)) {
     return html;
   }
@@ -122,7 +115,7 @@ for (const file of listHtmlFiles(ROOT)) {
   html = stripInlinedFooter(html);
   html = ensureHeaderShell(html, file);
   html = ensureCtaScripts(html, file);
-  html = dedupeDeferLangRoutes(html, file.includes("/") ? "../" : "");
+  html = dedupeLangRoutes(html, file.includes("/") ? "../" : "");
   if (html !== original) {
     fs.writeFileSync(full, html);
     changed++;
