@@ -3,7 +3,7 @@
  * Minifica CSS/JS propios del sitio → archivos .min (producción).
  * Los fuentes (.css / .js sin .min) siguen siendo los que editás.
  *
- * Cache bust: no escribe ?v= en HTML; el servidor revalida CSS/JS (.htaccess).
+ * Cache bust: ?v= en refs locales .min.css / .min.js (ver assetCacheVersion).
  *
  *   npm run assets:build
  */
@@ -75,6 +75,31 @@ function stripCacheQueryFromHtml(html) {
   );
 }
 
+/** Añade ?v= a CSS/JS locales minificados del manifest (idempotente tras strip). */
+function applyCacheQueryToHtml(html, version, sources) {
+  let out = html;
+  for (const rel of sources) {
+    const min = toMinPath(rel);
+    const esc = min.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const re = new RegExp(
+      `((?:href|src)=["'])((?:\\.\\./)?${esc})(["'])`,
+      "g",
+    );
+    out = out.replace(re, `$1$2?v=${version}$3`);
+  }
+  return out;
+}
+
+function assetCacheVersion(sources) {
+  let max = 0;
+  for (const rel of sources) {
+    const p = path.join(ROOT, rel);
+    if (!fs.existsSync(p)) continue;
+    max = Math.max(max, fs.statSync(p).mtimeMs);
+  }
+  return String(Math.floor(max / 1000) || Math.floor(Date.now() / 1000));
+}
+
 function cssCacheVersion() {
   const stylePath = path.join(ROOT, "css/style.css");
   const stat = fs.statSync(stylePath);
@@ -117,13 +142,15 @@ async function main() {
 
   const cssVersion = cssCacheVersion();
   const shellVersion = shellCacheVersion();
+  const assetVersion = assetCacheVersion(sources);
   fs.writeFileSync(
     path.join(ROOT, "css", ".asset-version.json"),
     JSON.stringify(
       {
         style: cssVersion,
         shell: shellVersion,
-        note: "Solo referencia de build; el HTML no usa ?v=. Cache: .htaccess must-revalidate.",
+        assets: assetVersion,
+        note: "HTML refs locales usan ?v=assets tras npm run assets:build.",
       },
       null,
       2,
@@ -136,6 +163,7 @@ async function main() {
     const original = fs.readFileSync(full, "utf8");
     let next = syncHtmlAssetRefs(original, sources);
     next = stripCacheQueryFromHtml(next);
+    next = applyCacheQueryToHtml(next, assetVersion, sources);
     if (next !== original) {
       fs.writeFileSync(full, next);
       htmlChanged++;
@@ -150,12 +178,12 @@ async function main() {
   }
   console.log(`\n${rows.length} file(s) minified.`);
   if (htmlChanged) {
-    console.log(`${htmlChanged} HTML file(s) synced (refs .min, sin ?v=).`);
+    console.log(`${htmlChanged} HTML file(s) synced (refs .min + ?v=${assetVersion}).`);
   } else {
-    console.log("HTML refs OK (sin ?v=).");
+    console.log(`HTML refs OK (?v=${assetVersion}).`);
   }
   console.log(
-    `Build metadata: css/.asset-version.json (style=${cssVersion}, shell=${shellVersion}).`,
+    `Build metadata: css/.asset-version.json (style=${cssVersion}, shell=${shellVersion}, assets=${assetVersion}).`,
   );
 }
 

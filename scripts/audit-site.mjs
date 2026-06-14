@@ -68,9 +68,10 @@ function expectedLang(file) {
 
 function resolveLocal(href, fromFile) {
   if (/^(https?:|mailto:|tel:|javascript:)/i.test(href)) return null;
-  if (href.startsWith("/")) return href.slice(1);
+  const pathOnly = href.split("?")[0].split("#")[0];
+  if (pathOnly.startsWith("/")) return pathOnly.slice(1);
   const dir = path.dirname(fromFile);
-  return path.normalize(path.join(dir === "." ? "" : dir, href)).replace(/\\/g, "/");
+  return path.normalize(path.join(dir === "." ? "" : dir, pathOnly)).replace(/\\/g, "/");
 }
 
 function usesJsShell(html) {
