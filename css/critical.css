@@ -6,7 +6,13 @@
   --bg-white: #ffffff;
   --text-color: #4b5563;
   --heading-color: #1f2937;
+  --bg-sky-origin: #c8dce8;
+  --bg-sky-mid: #dce9f2;
+  --bg-sky-top: #f2f7fa;
   --font-main: "Roboto", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --radius-md: 8px;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 html {
@@ -23,6 +29,19 @@ body {
   line-height: 1.6;
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
+}
+
+body.page-home {
+  background-image: linear-gradient(
+    180deg,
+    var(--bg-sky-origin) 0%,
+    var(--bg-sky-mid) 24%,
+    var(--bg-sky-top) 45%,
+    var(--bg-white) 68%,
+    var(--bg-white) 100%
+  );
+  background-repeat: no-repeat;
+  background-size: 100% max(100%, 100vh);
 }
 
 /* Solo hero: no pisar .row/.col de Bootstrap en el resto de la página */
@@ -116,8 +135,21 @@ html:not(.js) .lang-picker__menu {
 
 .hero-section {
   padding: 160px 0;
-  background: linear-gradient(rgba(0, 30, 60, 0.7), rgba(0, 30, 60, 0.7)),
-    #031c42 center/cover no-repeat;
+  background-image: linear-gradient(rgba(0, 30, 60, 0.7), rgba(0, 30, 60, 0.7)),
+    image-set(
+      url(../images/hero-img-mobile.webp) type("image/webp"),
+      url(../images/hero-img-mobile.jpg) type("image/jpeg")
+    );
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+@media (min-width: 992px) {
+  .hero-section {
+    background-image: linear-gradient(rgba(0, 30, 60, 0.7), rgba(0, 30, 60, 0.7)),
+      url(../images/hero-img.jpg);
+  }
 }
 
 .hero-title {
@@ -133,6 +165,69 @@ html:not(.js) .lang-picker__menu {
   font-size: 1.25rem;
   color: #fff;
   max-width: 36rem;
+}
+
+.hero-section .btn {
+  display: inline-block;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  line-height: 1.5;
+  text-align: center;
+  border: none;
+  text-transform: uppercase;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: #fff;
+  background-color: var(--primary-color);
+  box-shadow: var(--shadow-md);
+}
+
+/* Inner pages: page header before style.min.css loads */
+.page-header {
+  --page-header-height: clamp(120px, 20vw, 200px);
+  position: relative;
+  overflow: hidden;
+  margin: 0;
+  min-height: var(--page-header-height);
+  background-color: #d4eef5;
+  background-image: linear-gradient(
+    128deg,
+    #edf7fa 0%,
+    #d4eef5 42%,
+    #c0e4ed 72%,
+    #b0d9e6 100%
+  );
+}
+
+.page-header .page-caption {
+  position: relative;
+  min-height: var(--page-header-height);
+  margin: 0;
+  padding: 0;
+}
+
+.page-header-word {
+  position: absolute;
+  right: clamp(0.75rem, 5vw, 3.5rem);
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0;
+  max-width: min(92%, 18ch);
+  font-size: clamp(3.25rem, 16vw, 9.5rem);
+  font-weight: 700;
+  line-height: 0.9;
+  text-align: right;
+  text-transform: uppercase;
+  color: rgba(0, 95, 153, 0.1);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.page-header-word--long {
+  font-size: clamp(2.25rem, 10vw, 5.5rem);
+  max-width: min(95%, 22ch);
 }
 
 @media (max-width: 991px) {

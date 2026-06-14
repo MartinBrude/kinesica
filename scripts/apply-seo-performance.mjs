@@ -120,7 +120,7 @@ function normalizeHeadStylesheets(html, file) {
 
   const hasBlockingLayout =
     head.includes(`href="${p}css/bootstrap.min.css" rel="stylesheet"`) &&
-    head.includes(`href="${p}css/style.min.css" rel="stylesheet"`) &&
+    head.includes(`rel="preload" href="${p}css/style.min.css" as="style"`) &&
     head.includes(`href="${p}${ROBOTO_STYLESHEET}" rel="stylesheet"`) &&
     head.includes(`href="${p}fonts/roboto/roboto-latin-400-normal.woff2"`) &&
     !head.includes(`rel="preload" href="${p}css/bootstrap.min.css" as="style"`);

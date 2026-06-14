@@ -68,7 +68,7 @@ export function headStandardStylesheets(prefix, { gtm = true } = {}) {
     syncCssLink(`${prefix}css/bootstrap.min.css`) +
     headRobotoStylesheet(prefix) +
     asyncCssLink(`${prefix}css/font-awesome.min.css`) +
-    syncCssLink(`${prefix}css/style.min.css`) +
+    asyncCssLink(`${prefix}css/style.min.css`) +
     asyncCssLink(`${prefix}css/whatsapp.min.css`)
   );
 }
