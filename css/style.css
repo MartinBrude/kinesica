@@ -2547,6 +2547,12 @@ main:focus {
   margin-top: 0.25rem;
 }
 
+/* Mismo ancho útil que .row (tarjetas de servicios, etc.) */
+.section-intro--compact .container > .map-block {
+  margin-left: -15px;
+  margin-right: -15px;
+}
+
 .map-reviews-panel {
   padding: 1.25rem 1.25rem 1.875rem;
   background: var(--bg-white);
@@ -2955,6 +2961,11 @@ main:focus {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 2rem;
     align-items: stretch;
+  }
+
+  /* Sin reseñas cargadas: mapa a ancho completo del panel */
+  .map-reviews-panel:not(:has(.map-reviews-aside:not([hidden]))) {
+    grid-template-columns: 1fr;
   }
 
   /* El grid vive en el panel; map y reseñas son celdas hermanas */
