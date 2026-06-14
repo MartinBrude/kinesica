@@ -27,6 +27,7 @@ import {
   pageBreadcrumbSection,
   pageCaptionMarkup,
   pageHeaderSection,
+  socialImageUrl,
 } from "./page-shell.mjs";
 import {
   BUSINESS_ID,
@@ -94,7 +95,7 @@ function buildHtml(stem, lang) {
 
   const p = assetPrefixForLang(lang);
   const canonical = absoluteUrl(lang, stem);
-  const imgUrl = `https://www.kinesica.com.ar/images/${method.image}`;
+  const imgUrl = socialImageUrl(method.image);
   const breadcrumbSchema = breadcrumbListSchema([
     { name: ui.homeLabel, item: absoluteUrl(lang, "index") },
     { name: data.breadcrumb, item: canonical },

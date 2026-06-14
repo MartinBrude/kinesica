@@ -8,8 +8,11 @@ import {
   googleReviewWriteUrl,
   googleReviewsListUrl,
 } from "./google-place.mjs";
+import { SITE_OG_IMAGE } from "./page-shell.mjs";
 
-export const HOME_HERO_IMAGE = "https://www.kinesica.com.ar/images/hero-img.jpg";
+export const HOME_OG_IMAGE = SITE_OG_IMAGE;
+/** @deprecated Use HOME_OG_IMAGE for social previews. */
+export const HOME_HERO_IMAGE = HOME_OG_IMAGE;
 
 /** Kinesica + estación Scalabrini Ortiz (D) visibles al cargar. Regenerar: Maps → encuadrar → Compartir → Insertar mapa. */
 const MAP_EMBED_BASE =

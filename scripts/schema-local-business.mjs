@@ -451,7 +451,7 @@ export function buildPhysiotherapyClinic(lang) {
     mainEntityOfPage: t.homeUrl,
     inLanguage: langCode,
     description: t.description,
-    image: [`${SITE}/images/logo.svg`, `${SITE}/images/hero-img.jpg`],
+    image: [`${SITE}/images/logo.svg`, `${SITE}/images/og-image.jpg`],
     logo: `${SITE}/images/logo.svg`,
     telephone: "+54-11-6156-4311",
     email: EMAIL,

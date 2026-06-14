@@ -41,6 +41,7 @@ import {
   pageBreadcrumbSection,
   pageCaptionMarkup,
   pageHeaderSection,
+  socialImageUrl,
 } from "./page-shell.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -142,7 +143,7 @@ function buildHtml(pathology, lang) {
   const stem = pathology.stem;
   const p = assetPrefixForLang(lang);
   const canonical = absoluteUrl(lang, stem);
-  const imgUrl = `https://www.kinesica.com.ar/images/${pathology.image}`;
+  const imgUrl = socialImageUrl(pathology.image);
   const breadcrumbSchema = breadcrumbListSchema([
     { name: ui.homeLabel, item: absoluteUrl(lang, "index") },
     { name: data.breadcrumb, item: canonical },

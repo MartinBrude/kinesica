@@ -91,7 +91,7 @@ const out = `/**
  */
 import { LANG_CODES } from "./languages.mjs";
 
-export const HOME_HERO_IMAGE = "https://www.kinesica.com.ar/images/hero-img.jpg";
+export const HOME_HERO_IMAGE = "https://www.kinesica.com.ar/images/og-image.jpg";
 
 /** @type {Record<import("./languages.mjs").LangCode, HomeLang>} */
 export const HOME = {
