@@ -2,9 +2,9 @@
 export const CV = {
   es: {
     lang: "es",
-    title: "Currículum de Norberto S. Brude | Kinésica",
+    title: "Currículum de Norberto Brude | Kinésica",
     description:
-      "Currículum de Norberto S. Brude: kinesiólogo, osteópata y especialista en RPG, terapia manual y neurodinamia en Palermo, Buenos Aires.",
+      "Currículum de Norberto Brude: kinesiólogo, osteópata y especialista en RPG, terapia manual y neurodinamia en Palermo, Buenos Aires.",
     role: "Lic. Kinesiólogo Fisiatra",
     location: "Ciudad Autónoma de Buenos Aires",
     methodsTitle: "Métodos y técnicas",
@@ -120,9 +120,9 @@ export const CV = {
 
   en: {
     lang: "en",
-    title: "Résumé — Norberto S. Brude | Kinésica",
+    title: "Résumé — Norberto Brude | Kinésica",
     description:
-      "Résumé of Norberto S. Brude: licensed kinesiologist, osteopath, and specialist in RPG, manual therapy, and neurodynamics in Palermo, Buenos Aires.",
+      "Résumé of Norberto Brude: licensed kinesiologist, osteopath, and specialist in RPG, manual therapy, and neurodynamics in Palermo, Buenos Aires.",
     role: "Licensed Kinesiologist & Physiatrist",
     location: "Ciudad Autónoma de Buenos Aires",
     methodsTitle: "Methods & techniques",
@@ -235,9 +235,9 @@ export const CV = {
 
   fr: {
     lang: "fr",
-    title: "CV — Norberto S. Brude | Kinésica",
+    title: "CV — Norberto Brude | Kinésica",
     description:
-      "CV de Norberto S. Brude : kinésithérapeute, ostéopathe et spécialiste en RPG, thérapie manuelle et neurodynamique à Palermo, Buenos Aires.",
+      "CV de Norberto Brude : kinésithérapeute, ostéopathe et spécialiste en RPG, thérapie manuelle et neurodynamique à Palermo, Buenos Aires.",
     role: "Kinésithérapeute et physiatre",
     location: "Buenos Aires, Argentine",
     methodsTitle: "Méthodes et techniques",
@@ -353,9 +353,9 @@ export const CV = {
 
   pt: {
     lang: "pt",
-    title: "Currículo — Norberto S. Brude | Kinésica",
+    title: "Currículo — Norberto Brude | Kinésica",
     description:
-      "Currículo de Norberto S. Brude: fisioterapeuta, osteopata e especialista em RPG, terapia manual e neurodinâmica em Palermo, Buenos Aires.",
+      "Currículo de Norberto Brude: fisioterapeuta, osteopata e especialista em RPG, terapia manual e neurodinâmica em Palermo, Buenos Aires.",
     role: "Licenciado em fisioterapia e fisiatria",
     location: "Cidade Autônoma de Buenos Aires",
     methodsTitle: "Métodos e técnicas",

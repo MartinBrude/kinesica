@@ -179,9 +179,9 @@ ${headerShellMarkup(lang, prefix)}
     <section class="cv-hero">
       <div class="container">
         <div class="cv-hero-inner">
-          <img src="${prefix}images/noberto-brude-kinesiologo-osteopata.jpg" alt="Norberto S. Brude" class="cv-photo" width="140" height="140" loading="eager" />
+          <img src="${prefix}images/noberto-brude-kinesiologo-osteopata.jpg" alt="Norberto Brude" class="cv-photo" width="140" height="140" loading="eager" />
           <div class="cv-hero-text">
-            <h1>Norberto S. Brude</h1>
+            <h1>Norberto Brude</h1>
             <p class="cv-role">${escHtml(data.role)}</p>
             <ul class="cv-contact">
               <li><a href="mailto:${CV_EMAIL}">${CV_EMAIL}</a></li>
