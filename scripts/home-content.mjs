@@ -28,15 +28,39 @@ const MAP_EMBED_TITLES = {
   pt: "Localização da Kinésica no Google Maps",
 };
 
+const MAP_EMBED_FACADE = {
+  es: {
+    hint: "Palermo, Buenos Aires",
+    button: "Ver mapa interactivo",
+  },
+  en: {
+    hint: "Palermo, Buenos Aires",
+    button: "View interactive map",
+  },
+  fr: {
+    hint: "Palermo, Buenos Aires",
+    button: "Voir la carte interactive",
+  },
+  pt: {
+    hint: "Palermo, Buenos Aires",
+    button: "Ver mapa interativo",
+  },
+};
+
 /** @param {import("./languages.mjs").LangCode} lang */
 export function mapEmbedFrameBlock(lang) {
   const title = MAP_EMBED_TITLES[lang] || MAP_EMBED_TITLES.es;
+  const copy = MAP_EMBED_FACADE[lang] || MAP_EMBED_FACADE.es;
+  const src = mapEmbedSrc(lang);
   return [
     "                <div class=\"map-embed-frame\">",
-    `              <iframe class="map-embed" src="${mapEmbedSrc(lang)}" allowfullscreen="" loading="lazy"`,
-    "                referrerpolicy=\"no-referrer-when-downgrade\"",
-    `                title="${title}">`,
-    "                </iframe>",
+    `              <div class="map-embed-facade" data-embed-src="${src}">`,
+    `                <p class="map-embed-facade__hint">${copy.hint}</p>`,
+    `                <button type="button" class="map-embed-facade__btn" aria-label="${title}">`,
+    "                  <span class=\"map-embed-facade__pin\" aria-hidden=\"true\"></span>",
+    `                  ${copy.button}`,
+    "                </button>",
+    "              </div>",
     "                </div>",
   ];
 }

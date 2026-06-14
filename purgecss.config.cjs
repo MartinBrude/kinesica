@@ -43,6 +43,8 @@ const dynamicSafelist = [
   "google-review-star--on",
   "faq-accordion",
   "js",
+  "map-embed-facade",
+  "map-embed-frame--loaded",
 ];
 
 const profiles = {

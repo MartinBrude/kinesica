@@ -226,7 +226,7 @@ export function ctaStripPlaceholder(lang, prefix) {
 export function bodyFooterAndUiScripts(
   lang,
   prefix,
-  { pageHeaderWord = true, faqAccordion = false } = {},
+  { pageHeaderWord = true, faqAccordion = false, mapEmbedFacade = false } = {},
 ) {
   const l = partialLang(lang);
   const lines = [
@@ -251,6 +251,11 @@ export function bodyFooterAndUiScripts(
   if (faqAccordion) {
     lines.push(
       `  <script src="${prefix}js/faq-accordion.min.js" defer></script>`,
+    );
+  }
+  if (mapEmbedFacade) {
+    lines.push(
+      `  <script src="${prefix}js/map-embed-facade.min.js" defer></script>`,
     );
   }
   lines.push(`  <script src="${prefix}js/sticky-header.min.js" defer></script>`);

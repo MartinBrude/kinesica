@@ -86,7 +86,7 @@ ${headLocalBusinessSchema(lang, { home: true })}
 ${bodyShellTop(p)}${headerShellMarkup(lang, p)}  <main id="main" tabindex="-1">
 ${buildMainHtml(lang, p)}
   </main>
-${bodyFooterAndUiScripts(lang, p, { pageHeaderWord: false, faqAccordion: true })}
+${bodyFooterAndUiScripts(lang, p, { pageHeaderWord: false, faqAccordion: true, mapEmbedFacade: true })}
 </body>
 
 </html>
