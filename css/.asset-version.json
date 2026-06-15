@@ -1,7 +1,7 @@
 {
-  "style": "1781459273",
+  "style": "1781516964",
   "shell": "1781431124",
-  "assets": "1781459490",
+  "assets": "1781516964",
   "favicon": "1763887610",
   "note": "HTML refs locales usan ?v=assets tras npm run assets:build; favicon usa ?v=favicon."
 }

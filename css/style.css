@@ -1826,7 +1826,7 @@ main:focus {
 }
 
 .map-review-cta {
-  margin: 1.25rem 0 0;
+  margin: 2.5rem auto;
   padding: 0;
   display: flex;
   justify-content: center;
@@ -2237,8 +2237,12 @@ main:focus {
   padding-bottom: 0;
 }
 
+.space-small:has(.map-block) + .space-medium.section-intro--compact {
+  padding-top: 2.5rem;
+}
+
 .section-intro--compact .map-block {
-  padding-bottom: 0.5rem;
+  padding-bottom: 0;
 }
 
 /* Oculto por ahora; el HTML en index (ES/EN/FR) se conserva para reactivar. */
@@ -2259,7 +2263,7 @@ main:focus {
   }
 
   .section-intro--compact .map-block {
-    padding-bottom: 0.75rem;
+    padding-bottom: 0;
   }
 
   .map-transit-wrap {
