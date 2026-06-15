@@ -489,32 +489,14 @@ label {}
   background-color: var(--bg-light);
 }
 
-/* Home — Métodos y Técnicas: cajas de igual alto */
-.page-home .section-intro--band > .container {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 30px;
-}
-
-.page-home .section-intro--band > .container > .row:first-child {
-  grid-column: 1 / -1;
-}
-
-.page-home .section-intro--band > .container > br {
-  display: none;
-}
-
-.page-home .section-intro--band > .container > .row:has(.service-block) {
-  display: contents;
-}
-
-.page-home .section-intro--band > .container > .row:has(.service-block) > [class*="col-"] {
+/* Home — Métodos y Técnicas: cajas de igual alto por fila */
+.page-home .section-intro--band .row:has(.service-block) {
   display: flex;
-  float: none;
-  width: auto;
-  max-width: none;
-  padding-left: 0;
-  padding-right: 0;
+  flex-wrap: wrap;
+}
+
+.page-home .section-intro--band .row:has(.service-block) > [class*="col-"] {
+  display: flex;
 }
 
 .page-home .section-intro--band .service-block {
@@ -526,13 +508,6 @@ label {}
 
 .page-home .section-intro--band .service-content {
   flex: 1;
-}
-
-@media (min-width: 768px) {
-  .page-home .section-intro--band > .container {
-    grid-template-columns: repeat(3, 1fr);
-    grid-auto-rows: 1fr;
-  }
 }
 
 @media (max-width: 767px) {
