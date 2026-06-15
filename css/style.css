@@ -489,6 +489,23 @@ label {}
   background-color: var(--bg-light);
 }
 
+/* Home — equal-height technique cards per row */
+.section-intro--band .row:has(.service-block) {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.section-intro--band .row:has(.service-block) > [class*="col-"] {
+  display: flex;
+  flex-direction: column;
+}
+
+.section-intro--band .service-block {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
 @media (max-width: 767px) {
   .section-intro--band.space-medium {
     padding-top: 48px;
@@ -1415,8 +1432,8 @@ main:focus {
   letter-spacing: -0.03em;
   text-align: right;
   text-transform: uppercase;
-  color: rgba(0, 95, 153, 0.1);
-  -webkit-text-stroke: 0.75px rgba(0, 95, 153, 0.12);
+  color: rgba(0, 95, 153, 0.16);
+  -webkit-text-stroke: 0.75px rgba(0, 95, 153, 0.18);
   text-shadow: none;
   background: none;
   white-space: nowrap;
