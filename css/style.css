@@ -1432,8 +1432,9 @@ main:focus {
   letter-spacing: -0.03em;
   text-align: right;
   text-transform: uppercase;
-  color: rgba(0, 95, 153, 0.16);
-  -webkit-text-stroke: 0.75px rgba(0, 95, 153, 0.18);
+  color: rgba(0, 95, 153, 0.28);
+  -webkit-text-stroke: 1px rgba(0, 95, 153, 0.42);
+  paint-order: stroke fill;
   text-shadow: none;
   background: none;
   white-space: nowrap;
