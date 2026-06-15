@@ -489,6 +489,52 @@ label {}
   background-color: var(--bg-light);
 }
 
+/* Home — Métodos y Técnicas: cajas de igual alto */
+.page-home .section-intro--band > .container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 30px;
+}
+
+.page-home .section-intro--band > .container > .row:first-child {
+  grid-column: 1 / -1;
+}
+
+.page-home .section-intro--band > .container > br {
+  display: none;
+}
+
+.page-home .section-intro--band > .container > .row:has(.service-block) {
+  display: contents;
+}
+
+.page-home .section-intro--band > .container > .row:has(.service-block) > [class*="col-"] {
+  display: flex;
+  float: none;
+  width: auto;
+  max-width: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.page-home .section-intro--band .service-block {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+}
+
+.page-home .section-intro--band .service-content {
+  flex: 1;
+}
+
+@media (min-width: 768px) {
+  .page-home .section-intro--band > .container {
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: 1fr;
+  }
+}
+
 @media (max-width: 767px) {
   .section-intro--band.space-medium {
     padding-top: 48px;
@@ -1431,6 +1477,13 @@ main:focus {
   max-width: min(95%, 22ch);
 }
 
+/* Técnicas (RPG, osteopatía…): título un poco más legible sobre el fondo */
+.page-header:has(+ .page-breadcrumb + section.content:not(.pathology-page):not(.articles-index))
+  .page-header-word {
+  color: rgba(0, 95, 153, 0.18);
+  -webkit-text-stroke: 0.75px rgba(0, 95, 153, 0.22);
+}
+
 @keyframes pageHeaderBlobA {
   0% {
     transform: translate(0, 0) scale(1);
@@ -1826,7 +1879,7 @@ main:focus {
 }
 
 .map-review-cta {
-  margin: 1.25rem 0 0;
+  margin: 2.5rem auto;
   padding: 0;
   display: flex;
   justify-content: center;
@@ -2237,8 +2290,12 @@ main:focus {
   padding-bottom: 0;
 }
 
+.space-small:has(.map-block) + .space-medium.section-intro--compact {
+  padding-top: 2.5rem;
+}
+
 .section-intro--compact .map-block {
-  padding-bottom: 0.5rem;
+  padding-bottom: 0;
 }
 
 /* Oculto por ahora; el HTML en index (ES/EN/FR) se conserva para reactivar. */
@@ -2259,7 +2316,7 @@ main:focus {
   }
 
   .section-intro--compact .map-block {
-    padding-bottom: 0.75rem;
+    padding-bottom: 0;
   }
 
   .map-transit-wrap {
