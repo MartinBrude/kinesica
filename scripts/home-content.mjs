@@ -85,7 +85,7 @@ export function googleReviewsBlock(lang) {
 /** @type {Record<import("./languages.mjs").LangCode, HomeLang>} */
 export const HOME = {
   es: {
-    title: "Kinésica - Centro de atención en Kinesiología, Osteopatía y RPG",
+    title: "Kinésica - Centro de Kinesiología, Osteopatía y RPG",
     description: "Kinésica es un centro de kinesiología, osteopatía y terapias manuales en Palermo que ofrece tratamientos personalizados.",
     ogDescription: "Kinésica es un centro de kinesiología, osteopatía y terapias manuales en Palermo.",
     twitterDescription: "Kinésica es un centro de kinesiología, osteopatía y terapias manuales en Palermo.",
