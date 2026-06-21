@@ -629,6 +629,34 @@ label {}
   /* Add subtle shadow */
 }
 
+/* Kinesica logo link styles for smooth click and focus states */
+.header a:has(img) {
+  display: inline-block;
+  vertical-align: middle;
+  outline: none;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.header a:has(img):focus {
+  outline: none;
+}
+
+.header a:has(img):focus-visible {
+  outline: 3px solid rgba(0, 95, 153, 0.4);
+  outline-offset: 2px;
+}
+
+.header a:has(img):active {
+  transform: scale(0.97);
+}
+
+.header a:has(img) img {
+  display: block;
+}
+
 .header-top {
   background-color: var(--secondary-color);
   font-size: 15px;
