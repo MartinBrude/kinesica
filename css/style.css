@@ -1274,6 +1274,10 @@ main:focus {
   transform: rotate(-45deg);
 }
 
+#navigation .submenu-button {
+  display: none;
+}
+
 #navigation.small-screen .submenu-button {
   position: absolute;
   z-index: 99;
