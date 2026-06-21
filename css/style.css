@@ -156,10 +156,23 @@ a {
     opacity 0.3s ease;
 }
 
-a:focus,
+a:focus {
+  outline: none;
+}
+
+a:focus-visible {
+  outline: 2px solid rgba(0, 95, 153, 0.4);
+  outline-offset: 2px;
+}
+
 a:hover {
   text-decoration: none;
   color: #005f99;
+}
+
+a:active:not(.btn) {
+  opacity: 0.75;
+  transition: opacity 0.1s ease;
 }
 
 strong {}
