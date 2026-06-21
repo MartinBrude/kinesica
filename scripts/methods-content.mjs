@@ -119,7 +119,7 @@ export const METHODS = {
         h1: "RPG – Reeducación postural global",
         lead: "La Reeducación Postural Global es un Método de Tratamiento creado en 1980 por el fisioterapeuta PH Souchard. Investigando en la organización postural concluyó que la Postura depende de la tensión de los músculos estáticos (los que se oponen a la acción de la Fuerza de Gravedad). Definió la forma en que se organizan estos músculos con el nombre de Cadenas Musculares.",
         blocks: [
-          { type: "p", text: "Definió la forma en que se organizan estos músculos con el nombre de Cadenas Musculares. Se realiza una evaluación donde se define cuáles son las cadenas que mas se acortaron y se relacionan con el motivo de consulta. Utiliza posturas de tratamiento para estirarlas en forma suave, progresiva y sostenida. Son posturas activas donde el terapeuta guía el estiramiento y corrige las compensaciones. Busca remontar del síntoma a la causa primaria en el desalineamiento postural. Se trabaja en sesiones individuales. La frecuencia de las sesiones es generalmente semanal." },
+          { type: "p", text: "Definió la forma en que se organizan estos músculos con el nombre de Cadenas Musculares. Se realiza una evaluación donde se define cuáles son las cadenas que más se acortaron y se relacionan con el motivo de consulta. Utiliza posturas de tratamiento para estirarlas en forma suave, progresiva y sostenida. Son posturas activas donde el terapeuta guía el estiramiento y corrige las compensaciones. Busca remontar del síntoma a la causa primaria en el desalineamiento postural. Se trabaja en sesiones individuales. La frecuencia de las sesiones es generalmente semanal." },
         ],
       },
       en: {
@@ -165,10 +165,10 @@ export const METHODS = {
           { type: "p", text: "Relaciona los síntomas con la falta de movilidad de los tejidos del cuerpo (músculo, vísceras y tejido conectivo). Hay diversas técnicas de tratamiento según la característica de los tejidos a tratar." },
           { type: "p", text: "El principio es que la curación depende de la capacidad del cuerpo para curarse. Cuando hay una disfunción y/o algunas patologías esa capacidad se ve limitada por la pérdida de movimiento de los tejidos involucrados. Devolver la posibilidad de movimiento es permitir que el cuerpo active los mecanismos para curarse." },
           { type: "h2", text: "Osteopatía Estructural" },
-          { type: "p", text: "Aborda las alteraciones en el sistema músculo esquelético. Dada la íntima dependencia de los tejidos, la alteración de un sector de la columna puede originar una disfunción visceral. Y al revés una disfunción visceral puede bloquear el movimiento de un sector de la columna. Es un motivo por el que algunas lesiones o síntomas se reiteran. Es necesario romper ese círculo vicioso. Se utilizan técnicas de trhust, de alta velocidad o las llamadas técnicas blandas." },
+          { type: "p", text: "Aborda las alteraciones en el sistema musculoesquelético. Dada la íntima dependencia de los tejidos, la alteración de un sector de la columna puede originar una disfunción visceral. Y al revés una disfunción visceral puede bloquear el movimiento de un sector de la columna. Es un motivo por el que algunas lesiones o síntomas se reiteran. Es necesario romper ese círculo vicioso. Se utilizan técnicas de thrust, de alta velocidad o las llamadas técnicas blandas." },
           { type: "h2", text: "Osteopatía Visceral" },
-          { type: "p", text: "Las vísceras tienen un movimiento que le es propio, y se relaciona con el movimiento de las demás vísceras a través de tejido conectivo (epiplones, ligamentos y mesos). El movimiento del Diafragma, (músculo que separa tórax del abdomen) aumenta o disminuye la presión en estas cavidades y con esto participa del movimiento visceral. Estas presiones influyen tanto en las vísceras del tórax (respiratorias), del abdomen (digestivas) como sobre el contenido dentro de la pelvis (uro- genital). Es necesario entonces restablecer la movilidad de las vísceras y verificar que el sistema en su conjunto trabaje en armonía para que las funciones se cumplan adecuadamente." },
-          { type: "p", text: "En el abdomen encontramos el Peritoneo, bolsa virtual que envuelve a un conjunto de vísceras. El peritoneo termina en la pared de los músculos abdominales. La tensión de una víscera o del tejido conectivo que las conecta se transmite al músculo entonces. (en las inflamaciones agudas del peritoneo los abdominales se ponen rígidos, ¨vientre de madera¨ se lo llama). Una vez mas la relación entre lo muscular y lo visceral." },
+          { type: "p", text: "Las vísceras tienen un movimiento que le es propio, y se relaciona con el movimiento de las demás vísceras a través de tejido conectivo (epiplones, ligamentos y mesos). El movimiento del Diafragma, (músculo que separa tórax del abdomen) aumenta o disminuye la presión en estas cavidades y con esto participa del movimiento visceral. Estas presiones influyen tanto en las vísceras del tórax (respiratorias), del abdomen (digestivas) como sobre el contenido dentro de la pelvis (urogenital). Es necesario entonces restablecer la movilidad de las vísceras y verificar que el sistema en su conjunto trabaje en armonía para que las funciones se cumplan adecuadamente." },
+          { type: "p", text: "En el abdomen encontramos el Peritoneo, bolsa virtual que envuelve a un conjunto de vísceras. El peritoneo termina en la pared de los músculos abdominales. La tensión de una víscera o del tejido conectivo que las conecta se transmite al músculo entonces. (en las inflamaciones agudas del peritoneo los abdominales se ponen rígidos, «vientre de madera» se lo llama). Una vez más la relación entre lo muscular y lo visceral." },
           { type: "p", text: "La frecuencia de las sesiones es generalmente cada 2 o 3 semanas, según el caso." },
         ],
       },
@@ -237,9 +237,9 @@ export const METHODS = {
         metaDescription: "Cadenas musculares en Kinésica (Buenos Aires). Método Busquet que relaciona estructura corporal y contenido visceral. Terapia manual en Palermo.",
         breadcrumb: "Cadenas Fisiológicas",
         h1: "Cadenas fisiológicas – método Busquet",
-        lead: "Leopold Busquet es un fisioterapeuta y osteópata francés que trabajó inicialmente en Cadenas Musculares. Avanzó en su capacitación como Osteópata y creó un método relacionando las dos formaciones. Este método agrega un concepto propio en el tratamiento de Kinesiología: la Relación Continente - Contenido.",
+        lead: "Léopold Busquet es un fisioterapeuta y osteópata francés que trabajó inicialmente en Cadenas Musculares. Avanzó en su capacitación como osteópata y creó un método relacionando las dos formaciones. Este método agrega un concepto propio en el tratamiento de kinesiología: la relación Continente–Contenido.",
         blocks: [
-          { type: "p", text: "Define la organización del cuerpo como la adaptación a las tensiones internas y externas (mecánicas, viscerales, cicatrices, emocionales, traumáticas...). Entiende al Continente (la forma del cuerpo) como el resultado del trabajo muscular buscando generar confort y / o aliviar dolores u otros síntomas. Tiene un método de evaluación propio que permite seguir las pistas que guían hacia las zonas de tensión. Evalúa como está organizado el cuerpo según la tensión de las cadenas fisiológicas (músculos, tejido nervioso, visceral , fascial…). El tratamiento se realiza mediante posturas de relajación de esas cadenas de mayor tensión. Son posturas muy suaves que buscan la efectividad por ser específica para el tejido a tratar." },
+          { type: "p", text: "Define la organización del cuerpo como la adaptación a las tensiones internas y externas (mecánicas, viscerales, cicatrices, emocionales, traumáticas...). Entiende al Continente (la forma del cuerpo) como el resultado del trabajo muscular buscando generar confort y/o aliviar dolores u otros síntomas. Tiene un método de evaluación propio que permite seguir las pistas que guían hacia las zonas de tensión. Evalúa cómo está organizado el cuerpo según la tensión de las cadenas fisiológicas (músculos, tejido nervioso, visceral, fascial…). El tratamiento se realiza mediante posturas de relajación de esas cadenas de mayor tensión. Son posturas muy suaves que buscan la efectividad por ser específicas para el tejido a tratar." },
           { type: "p", text: "Se trabaja en sesiones individuales." },
           { type: "p", text: "La frecuencia de las sesiones es una sesión cada una o dos semanas según los casos." },
         ],
@@ -249,7 +249,7 @@ export const METHODS = {
         metaDescription: "Muscle chains therapy at Kinésica (Buenos Aires). Busquet method linking body structure and visceral function. Manual therapy in Palermo.",
         breadcrumb: "Physiological Chains",
         h1: "Physiological chains – Busquet method",
-        lead: "Leopold Busquet, a French physiotherapist and osteopath, initially worked with muscle chains before advancing his training in osteopathy. He later developed a method that integrates both disciplines, introducing a unique concept in physiotherapy: the container–content relationship.",
+        lead: "Léopold Busquet, a French physiotherapist and osteopath, initially worked with muscle chains before advancing his training in osteopathy. He later developed a method that integrates both disciplines, introducing a unique concept in physiotherapy: the container–content relationship.",
         blocks: [
           { type: "p", text: "According to Busquet, the body’s organization adapts to internal and external tensions—whether mechanical, visceral, scarring, emotional, or traumatic. He describes the Container (the body’s shape) as the result of muscular activity aimed at creating comfort and/or alleviating pain and other symptoms." },
           { type: "p", text: "This method features its own evaluation system, which tracks pathways leading to areas of tension. It assesses how the body organizes itself based on the tension in physiological chains (muscles, nervous tissue, visceral structures, fascia, etc.). Treatment involves relaxation postures that specifically target the chains with the highest tension. These gentle yet precise postures are designed to address the affected tissues effectively." },
@@ -288,7 +288,7 @@ export const METHODS = {
         metaDescription: "Manipulaciones viscerales en Kinésica (Buenos Aires). Tratamiento de tensiones viscerales que afectan el aparato locomotor. Terapia manual en Palermo.",
         breadcrumb: "Manipulaciones viscerales",
         h1: "Manipulación visceral – método Barral",
-        lead: "Es un tratamiento osteopático muy específico para el tejido visceral. La Terapia de Manipulaciones Viscerales busca devolver la movilidad al tejido fascial que conecta a las vísceras entre sí y con el aparato músculo esquelético. Fue creada por el fisioterapeuta francés Jean Pierre Barral",
+        lead: "Es un tratamiento osteopático muy específico para el tejido visceral. La Terapia de Manipulaciones Viscerales busca devolver la movilidad al tejido fascial que conecta a las vísceras entre sí y con el aparato musculoesquelético. Fue creada por el fisioterapeuta francés Jean-Pierre Barral.",
         blocks: [
           { type: "p", text: "¿Por qué hacemos esto? Porque la tensión de estos tejidos limita la posibilidad de movimiento en el cuerpo, en el tejido cercano o a distancia. Sin ese movimiento disminuye la salud y se organizan los síntomas" },
           { type: "p", text: "¿Para qué lo hacemos? La limitación de movimiento, también en los tejidos internos, genera disfunciones que dan origen a cuadros dolorosos u otros síntomas. Devolver la capacidad de movimiento es ir en el sentido de la curación." },
@@ -354,7 +354,7 @@ export const METHODS = {
         metaDescription: "Neurodinamia en Kinésica (Buenos Aires). Movilización neural y tratamiento de trastornos del sistema nervioso en Palermo.",
         breadcrumb: "Neurodinamia",
         h1: "Neurodinamia",
-        lead: "Si el sistema nervioso no transmite correctamente el impulso, la persona puede sentir dolor, modificaciones de la sensibilidad- parestesias, pinchazos, adormecimiento, falta de sensibilidad –o alteraciones en la nutrición de los tejidos que inerva. Dependiendo del grado de agresión que haya sufrido el nervio podemos tratarlo.",
+        lead: "Si el sistema nervioso no transmite correctamente el impulso, la persona puede sentir dolor, modificaciones de la sensibilidad — parestesias, pinchazos, adormecimiento, falta de sensibilidad — o alteraciones en la nutrición de los tejidos que inerva. Dependiendo del grado de agresión que haya sufrido el nervio podemos tratarlo.",
         blocks: [
           { type: "p", text: "Simplificando la situación, podemos considerar que todos los tejidos reciben información de tono, sensibilidad o nutrición a través del sistema nervioso. La Neurodinamia es la aplicación de maniobras diagnósticas y terapéuticas, con el fin de evaluar y restaurar el funcionamiento y la mecánica del sistema nervioso." },
           { type: "p", text: "Para realizar esta tarea los nervios deben poder deslizarse adecuadamente en las superficies de contacto con otras estructuras ( músculos, ligamentos, articulaciones). Algunas veces las zonas donde deslizan los nervios se estrechan y pueden irritarse y alterar la conducción. Utilizamos las maniobras de neurodinamia para diferenciar el tejido nervioso de los demás tejidos y para restablecer las condiciones para una correcta transmisión del impulso." },
@@ -422,11 +422,11 @@ export const METHODS = {
         ],
       },
       fr: {
-        metaTitle: "ATM — Articulation temporo-mandibulaire | Kinésica",
+        metaTitle: "ATM — Articulation temporomandibulaire | Kinésica",
         metaDescription: "Traitement de l'ATM chez Kinésica (Buenos Aires). Mâchoire, douleur, claquements et bruxisme par thérapie manuelle à Palermo.",
         breadcrumb: "ATM",
-        h1: "ATM — Articulation temporo-mandibulaire",
-        lead: "Lorsque l'articulation temporo-mandibulaire (ATM) ne fonctionne pas normalement, on peut ressentir douleur à la mâchoire, des bruits à l'ouverture (claquements), des difficultés à mâcher ou un blocage. Le traitement vise à restaurer le mouvement naturel selon que l'atteinte est osseuse, discale ou musculaire.",
+        h1: "ATM — Articulation temporomandibulaire",
+        lead: "Lorsque l'articulation temporomandibulaire (ATM) ne fonctionne pas normalement, on peut ressentir de la douleur à la mâchoire, des bruits à l'ouverture (claquements), des difficultés à mâcher ou un blocage. Le traitement vise à restaurer le mouvement naturel selon que l'atteinte est osseuse, discale ou musculaire.",
         blocks: [
           { type: "p", text: "L'ATM relie la mâchoire au crâne et est essentielle pour parler, manger et bâiller. Le traitement évalue et corrige son mouvement pour éviter les tensions du visage et du cou." },
           { type: "p", text: "Un petit disque doit glisser à chaque mouvement de la bouche. Sous tension ou bruxisme, il peut se déplacer ou les muscles se surcharger. Techniques de mobilité et exercices doux remettent la mâchoire en place et relâchent les muscles." },

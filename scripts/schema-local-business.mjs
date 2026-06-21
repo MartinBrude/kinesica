@@ -21,7 +21,7 @@ const COPY = {
   es: {
     homeUrl: `${SITE}/`,
     description:
-      "Centro de fisioterapia y kinesiología en Palermo, Buenos Aires: osteopatía, RPG, neurodinámia y terapias manuales personalizadas.",
+      "Centro de fisioterapia y kinesiología en Palermo, Buenos Aires: osteopatía, RPG, neurodinamia y terapias manuales personalizadas.",
     bookAction: "Reservar turno por WhatsApp",
     catalogName: "Tratamientos Kinésica",
     specialties: [
@@ -242,7 +242,7 @@ const COPY = {
       },
       atm: {
         name: "Traitement de l'ATM",
-        description: "Thérapie pour l'articulation temporo-mandibulaire et le bruxisme.",
+        description: "Thérapie pour l'articulation temporomandibulaire et le bruxisme.",
       },
       cadenas: {
         name: "Chaînes musculaires",

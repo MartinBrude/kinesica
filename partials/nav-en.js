@@ -1,7 +1,7 @@
 /* English header nav — relative links from en/ directory. */
 window.__KINESICA_NAV_SNIPPET_EN = `
 <ul>
-        <li>
+          <li>
     <a href="articulos.html" title="Articles">Articles</a>
   </li>
   <li class="has-sub">

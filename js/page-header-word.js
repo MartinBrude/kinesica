@@ -50,7 +50,7 @@
     "pubalgia": { es: "Pubalgia", en: "Pubalgia", fr: "Pubalgie" },
     "gonalgia": { es: "Gonalgia", en: "Knee pain", fr: "Gonalgie" },
     "talalgia": { es: "Talalgia", en: "Heel pain", fr: "Talalgie" },
-    "dolor-sacriiliaco": { es: "Dolor sacroilíaco", en: "Sacroiliac pain", fr: "Douleur sacro-iliaque" },
+    "dolor-sacroiliaco": { es: "Dolor sacroilíaco", en: "Sacroiliac pain", fr: "Douleur sacro-iliaque" },
     "hernia-disco": { es: "Hernia de disco", en: "Disc herniation", fr: "Hernie discale" },
     "protrusion-discal": { es: "Protrusión discal", en: "Disc protrusion", fr: "Protrusion discale" },
     "hipercifosis": { es: "Hipercifosis", en: "Hyperkyphosis", fr: "Hypercyphose" },
@@ -71,7 +71,7 @@
     pubalgia: { es: "Pubalgia", en: "Pubalgia", fr: "Pubalgie" },
     gonalgia: { es: "Gonalgia", en: "Knee pain", fr: "Gonalgie" },
     talalgia: { es: "Talalgia", en: "Heel pain", fr: "Talalgie" },
-    "dolor-sacriiliaco": {
+    "dolor-sacroiliaco": {
       es: "Sacroilíaco",
       en: "Sacroiliac",
       fr: "Sacro-iliaque",

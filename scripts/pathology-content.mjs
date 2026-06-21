@@ -14,7 +14,7 @@ export const PATHOLOGY_STEMS = [
   "pubalgia",
   "gonalgia",
   "talalgia",
-  "dolor-sacriiliaco",
+  "dolor-sacroiliaco",
   "hernia-disco",
   "protrusion-discal",
   "hipercifosis",
@@ -40,7 +40,7 @@ export const TECHNIQUE_LABELS = {
   neurodinamia: { es: "Neurodinamia", en: "Neurodynamics", fr: "Neurodynamique", pt: "Neurodinâmica" },
   manipulaciones: { es: "Manipulaciones", en: "Manual manipulations", fr: "Manipulations", pt: "Manipulações manuais" },
   cadenas: { es: "Cadenas musculares", en: "Muscle chains", fr: "Chaînes musculaires", pt: "Cadeias musculares" },
-  atm: { es: "ATM", en: "TMJ", fr: "ATM (articulation temporo-mandibulaire)", pt: "ATM (articulação temporomandibular)" },
+  atm: { es: "ATM", en: "TMJ", fr: "ATM (articulation temporomandibulaire)", pt: "ATM (articulação temporomandibular)" },
 };
 
 export const UI = {
@@ -876,7 +876,7 @@ export const PATHOLOGIES = [
   },
 
   {
-    stem: "dolor-sacriiliaco",
+    stem: "dolor-sacroiliaco",
     image: "hero-img.jpg",
     techniques: ["osteopatia", "manipulaciones", "cadenas", "rpg"],
     es: {
@@ -1697,7 +1697,7 @@ export const PATHOLOGIES = [
       title: "Pieds plats : appui et surcharge",
       breadcrumb: "Pieds plats",
       metaDescription:
-        "Pieds plats chez Kinésica (Buenos Aires). Bilan de l’appui et de la cheville. Thérapie manuelle et exercice pour améliorer tolérance à la charge et fonction.",
+        "Pieds plats chez Kinésica (Buenos Aires). Bilan de l’appui et de la cheville. Thérapie manuelle et exercice pour améliorer la tolérance à la charge et fonction.",
       h1: "Pieds plats",
       lead: "Une voûte plus basse n’est pas forcément un problème. L’important est la tolérance à la charge et l’apparition éventuelle de symptômes.",
       paragraphs: [
@@ -2136,7 +2136,7 @@ export const PATHOLOGIES = [
       lead: "El manguito rotador estabiliza el hombro. Cuando se sobrecarga, aparece dolor y pérdida de fuerza, sobre todo al elevar o rotar el brazo.",
       paragraphs: [
         "El manguito rotador es un grupo de músculos y tendones que estabilizan el hombro. La sobrecarga puede generar dolor, debilidad o molestias al dormir sobre ese lado.",
-        "Suele asociarse a aumento de carga (gimnasio, natación, trabajo), técnica deficiente, fatiga del control escapular y rigidez torácica. El estrés y la falta de descanso también afectan la recuperación.",
+        "Suele asociarse a aumento de carga (gimnasio, natación, trabajo), mala técnica, fatiga del control escapular y rigidez torácica. El estrés y la falta de descanso también afectan la recuperación.",
         "Si no se trata, puede limitar levantar objetos, entrenar o hacer gestos por encima de la cabeza, y aumentar el dolor nocturno. La compensación del cuello puede intensificar la tensión.",
         "En Kinésica combinamos terapia manual con ejercicio específico: osteopatía y manipulaciones cuando están indicadas para mejorar movilidad y reducir tensión, además de trabajo de cadenas musculares y RPG para optimizar postura y coordinación del hombro.",
         "La evaluación analiza fuerza, control escapular y tolerancia a la carga. En sesiones progresamos con fortalecimiento del manguito, movilidad y un plan de retorno gradual al deporte o trabajo, con pautas claras de dosificación.",
@@ -2609,13 +2609,13 @@ export const PATHOLOGIES = [
 export const PATHOLOGY_RELATED = {
   cefalea: ["cervicalgia", "cervicobraquialgia", "dorsalgia"],
   dorsalgia: ["cervicalgia", "hipercifosis", "dorso-plano", "escoliosis"],
-  lumbalgia: ["ciatalgia", "hernia-disco", "protrusion-discal", "dolor-sacriiliaco"],
+  lumbalgia: ["ciatalgia", "hernia-disco", "protrusion-discal", "dolor-sacroiliaco"],
   ciatalgia: ["lumbalgia", "hernia-disco", "protrusion-discal", "radiculopatia"],
   cervicobraquialgia: ["cervicalgia", "radiculopatia", "cefalea", "manguito-rotador"],
-  pubalgia: ["dolor-sacriiliaco", "gonalgia", "lumbalgia"],
+  pubalgia: ["dolor-sacroiliaco", "gonalgia", "lumbalgia"],
   gonalgia: ["meniscopatia", "genu-valgo", "genu-varo", "talalgia"],
   talalgia: ["fascitis-plantar", "pies-planos", "gonalgia"],
-  "dolor-sacriiliaco": ["lumbalgia", "pubalgia", "ciatalgia"],
+  "dolor-sacroiliaco": ["lumbalgia", "pubalgia", "ciatalgia"],
   "hernia-disco": ["protrusion-discal", "lumbalgia", "ciatalgia", "radiculopatia"],
   "protrusion-discal": ["hernia-disco", "lumbalgia", "ciatalgia"],
   hipercifosis: ["dorso-plano", "escoliosis", "dorsalgia", "hiperlordosis"],

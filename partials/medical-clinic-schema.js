@@ -19,10 +19,10 @@
     "url": "https://www.kinesica.com.ar/",
     "mainEntityOfPage": "https://www.kinesica.com.ar/",
     "inLanguage": "es-AR",
-    "description": "Centro de fisioterapia y kinesiología en Palermo, Buenos Aires: osteopatía, RPG, neurodinámia y terapias manuales personalizadas.",
+    "description": "Centro de fisioterapia y kinesiología en Palermo, Buenos Aires: osteopatía, RPG, neurodinamia y terapias manuales personalizadas.",
     "image": [
       "https://www.kinesica.com.ar/images/logo.svg",
-      "https://www.kinesica.com.ar/images/hero-img.jpg"
+      "https://www.kinesica.com.ar/images/og-image.jpg"
     ],
     "logo": "https://www.kinesica.com.ar/images/logo.svg",
     "telephone": "+54-11-6156-4311",
@@ -250,6 +250,23 @@
           "@type": "Offer",
           "itemOffered": {
             "@type": "Service",
+            "@id": "https://www.kinesica.com.ar/kinesiologia.html#service",
+            "name": "Kinesiología",
+            "description": "Evaluación funcional, rehabilitación y terapia manual personalizada.",
+            "url": "https://www.kinesica.com.ar/kinesiologia.html",
+            "provider": {
+              "@id": "https://www.kinesica.com.ar/#kinesica"
+            },
+            "areaServed": {
+              "@type": "Place",
+              "name": "Palermo, Buenos Aires"
+            }
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
             "@id": "https://www.kinesica.com.ar/posturologia-clinica.html#service",
             "name": "Posturología clínica",
             "description": "Evaluación y tratamiento postural personalizado.",
@@ -338,7 +355,7 @@
     "description": "Physiotherapy and kinesiology clinic in Palermo, Buenos Aires: osteopathy, RPG, neurodynamics, and personalized manual therapy.",
     "image": [
       "https://www.kinesica.com.ar/images/logo.svg",
-      "https://www.kinesica.com.ar/images/hero-img.jpg"
+      "https://www.kinesica.com.ar/images/og-image.jpg"
     ],
     "logo": "https://www.kinesica.com.ar/images/logo.svg",
     "telephone": "+54-11-6156-4311",
@@ -566,6 +583,23 @@
           "@type": "Offer",
           "itemOffered": {
             "@type": "Service",
+            "@id": "https://www.kinesica.com.ar/en/kinesiologia.html#service",
+            "name": "Kinesiology",
+            "description": "Functional assessment, rehabilitation, and personalized manual therapy.",
+            "url": "https://www.kinesica.com.ar/en/kinesiologia.html",
+            "provider": {
+              "@id": "https://www.kinesica.com.ar/#kinesica"
+            },
+            "areaServed": {
+              "@type": "Place",
+              "name": "Palermo, Buenos Aires"
+            }
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
             "@id": "https://www.kinesica.com.ar/en/posturologia-clinica.html#service",
             "name": "Clinical posturology",
             "description": "Personalized postural assessment and treatment.",
@@ -654,7 +688,7 @@
     "description": "Centre de kinésithérapie et physiothérapie à Palermo, Buenos Aires : ostéopathie, RPG, neurodynamique et thérapies manuelles personnalisées.",
     "image": [
       "https://www.kinesica.com.ar/images/logo.svg",
-      "https://www.kinesica.com.ar/images/hero-img.jpg"
+      "https://www.kinesica.com.ar/images/og-image.jpg"
     ],
     "logo": "https://www.kinesica.com.ar/images/logo.svg",
     "telephone": "+54-11-6156-4311",
@@ -782,7 +816,7 @@
             "@type": "Service",
             "@id": "https://www.kinesica.com.ar/fr/atm.html#service",
             "name": "Traitement de l'ATM",
-            "description": "Thérapie pour l'articulation temporo-mandibulaire et le bruxisme.",
+            "description": "Thérapie pour l'articulation temporomandibulaire et le bruxisme.",
             "url": "https://www.kinesica.com.ar/fr/atm.html",
             "provider": {
               "@id": "https://www.kinesica.com.ar/#kinesica"
@@ -869,6 +903,23 @@
             "name": "Ostéopathie",
             "description": "Traitement ostéopathique pour rétablir l'équilibre du corps.",
             "url": "https://www.kinesica.com.ar/fr/osteopatia.html",
+            "provider": {
+              "@id": "https://www.kinesica.com.ar/#kinesica"
+            },
+            "areaServed": {
+              "@type": "Place",
+              "name": "Palermo, Buenos Aires"
+            }
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "@id": "https://www.kinesica.com.ar/fr/kinesiologia.html#service",
+            "name": "Kinésithérapie",
+            "description": "Évaluation fonctionnelle, rééducation et thérapie manuelle personnalisée.",
+            "url": "https://www.kinesica.com.ar/fr/kinesiologia.html",
             "provider": {
               "@id": "https://www.kinesica.com.ar/#kinesica"
             },
@@ -970,7 +1021,7 @@
     "description": "Clínica de fisioterapia em Palermo, Buenos Aires: osteopatia, RPG, neurodinâmica e terapia manual personalizada.",
     "image": [
       "https://www.kinesica.com.ar/images/logo.svg",
-      "https://www.kinesica.com.ar/images/hero-img.jpg"
+      "https://www.kinesica.com.ar/images/og-image.jpg"
     ],
     "logo": "https://www.kinesica.com.ar/images/logo.svg",
     "telephone": "+54-11-6156-4311",
@@ -1181,6 +1232,23 @@
             "name": "Osteopatia",
             "description": "Tratamento osteopático para restaurar o equilíbrio corporal.",
             "url": "https://www.kinesica.com.ar/pt/osteopatia.html",
+            "provider": {
+              "@id": "https://www.kinesica.com.ar/#kinesica"
+            },
+            "areaServed": {
+              "@type": "Place",
+              "name": "Palermo, Buenos Aires"
+            }
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "@id": "https://www.kinesica.com.ar/pt/kinesiologia.html#service",
+            "name": "Fisioterapia",
+            "description": "Avaliação funcional, reabilitação e terapia manual personalizada.",
+            "url": "https://www.kinesica.com.ar/pt/kinesiologia.html",
             "provider": {
               "@id": "https://www.kinesica.com.ar/#kinesica"
             },

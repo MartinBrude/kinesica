@@ -19,7 +19,7 @@ export const THUMBNAIL_BY_STEM = {
   pubalgia: "groin",
   gonalgia: "knee",
   talalgia: "foot-heel",
-  "dolor-sacriiliaco": "pelvis",
+  "dolor-sacroiliaco": "pelvis",
   "hernia-disco": "spine-disc",
   "protrusion-discal": "spine-bulge",
   hipercifosis: "spine-kyphosis",

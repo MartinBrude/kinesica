@@ -20,7 +20,7 @@ export const PT_FROM_FR_REPLACEMENTS = [
     "A posturologia clínica estuda como o corpo se organiza na gravidade: a posição da cabeça, coluna, pelve e apoio plantar influenciam equilíbrio, marcha e distribuição de cargas. Quando há desequilíbrios, podem surgir dor recorrente, fadiga ou sensação de instabilidade."
   ],
   [
-    "Lorsque l'articulation temporo-mandibulaire (ATM) ne fonctionne pas normalement, on peut ressentir douleur à la mâchoire, des bruits à l'ouverture (claquements), des difficultés à mâcher ou un blocage. Le traitement vise à restaurer le mouvement naturel selon que l'atteinte est osseuse, discale ou musculaire.",
+    "Lorsque l'articulation temporomandibulaire (ATM) ne fonctionne pas normalement, on peut ressentir de la douleur à la mâchoire, des bruits à l'ouverture (claquements), des difficultés à mâcher ou un blocage. Le traitement vise à restaurer le mouvement naturel selon que l'atteinte est osseuse, discale ou musculaire.",
     "Quando a articulação temporomandibular (ATM) não funciona normalmente, podem surgir dor na mandíbula, ruídos ao abrir a boca (estalos), dificuldade para mastigar ou sensação de travamento. O tratamento busca restaurar o movimento natural, conforme a origem seja óssea, discal ou muscular."
   ],
   [
@@ -88,7 +88,7 @@ export const PT_FROM_FR_REPLACEMENTS = [
     "A tensão nesses tecidos limita a amplitude de movimento do corpo, localmente e à distância. Sem movimento adequado, a saúde global se deteriora e surgem sintomas."
   ],
   [
-    "L'ATM (articulation temporo-mandibulaire) est une spécialité qui traite les dysfonctions de la mâchoire : douleur, claquements et bruxisme, par thérapie manuelle, exercices et rééducation posturale.",
+    "L'ATM (articulation temporomandibulaire) est une spécialité qui traite les dysfonctions de la mâchoire : douleur, claquements et bruxisme, par thérapie manuelle, exercices et rééducation posturale.",
     "A ATM (articulação temporomandibular) trata disfunções da mandíbula, aliviando dor, estalos e bruxismo com terapia manual, exercícios e reeducação postural."
   ],
   [
@@ -292,7 +292,7 @@ export const PT_FROM_FR_REPLACEMENTS = [
     "Kinésica | Fisioterapia, osteopatia e RPG em Palermo"
   ],
   [
-    "Traitement de l'ATM (articulation temporo-mandibulaire)",
+    "Traitement de l'ATM (articulation temporomandibulaire)",
     "Tratamento de ATM (articulação temporomandibular)"
   ],
   [
@@ -308,7 +308,7 @@ export const PT_FROM_FR_REPLACEMENTS = [
     "Radiculopatia: compressão nervosa"
   ],
   [
-    "ATM — Articulation temporo-mandibulaire | Kinésica",
+    "ATM — Articulation temporomandibulaire | Kinésica",
     "ATM — Articulação temporomandibular | Kinésica"
   ],
   [
@@ -424,7 +424,7 @@ export const PT_FROM_FR_REPLACEMENTS = [
     "Fascite plantar"
   ],
   [
-    "ATM — Articulation temporo-mandibulaire",
+    "ATM — Articulation temporomandibulaire",
     "ATM — Articulação temporomandibular"
   ],
   [

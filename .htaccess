@@ -37,6 +37,12 @@ RewriteRule ^cv-norberto-brude\.pdf$ /cv.html [R=301,L]
 RewriteRule ^cv-norberto-brude_en\.pdf$ /en/cv.html [R=301,L]
 RewriteRule ^cv-norberto-brude_fr\.pdf$ /fr/cv.html [R=301,L]
 
+# Typo slug fix: sacriiliaco → sacroiliaco (301)
+RewriteRule ^dolor-sacriiliaco\.html$ /dolor-sacroiliaco.html [R=301,L]
+RewriteRule ^en/dolor-sacriiliaco\.html$ /en/dolor-sacroiliaco.html [R=301,L]
+RewriteRule ^fr/dolor-sacriiliaco\.html$ /fr/dolor-sacroiliaco.html [R=301,L]
+RewriteRule ^pt/dolor-sacriiliaco\.html$ /pt/dolor-sacroiliaco.html [R=301,L]
+
 ErrorDocument 404 /404-router.html
 
 # Cache static images (SEO: Expires headers)
