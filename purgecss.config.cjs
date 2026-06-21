@@ -53,15 +53,22 @@ const profiles = {
     css: ["./css/style.css", "./css/whatsapp.css"],
     output: "./css/dist",
   },
+  bootstrap: {
+    content: siteContent,
+    css: ["./css/bootstrap.full.min.css"],
+    output: "./css",
+    rename: { "bootstrap.full.min.css": "bootstrap.css" },
+  },
   siteFull: {
     content: siteContent,
     css: [
-      "./css/bootstrap.min.css",
+      "./css/bootstrap.full.min.css",
       "./css/font-awesome.min.css",
       "./css/style.css",
       "./css/whatsapp.css",
     ],
     output: "./css/dist-full",
+    rename: { "bootstrap.full.min.css": "bootstrap.css" },
   },
   cv: {
     content: [

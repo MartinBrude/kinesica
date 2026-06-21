@@ -70,12 +70,14 @@ async function purgeProfile(name) {
     const file = result[i];
     const srcPath = originalPaths[i];
     const base = path.basename(srcPath);
+    const outName = profile.rename?.[base] ?? base;
     const before = sizeOf(srcPath);
     const after = Buffer.byteLength(file.css, "utf8");
     totalBefore += before;
     totalAfter += after;
     rows.push({
       file: base,
+      outName,
       before,
       after,
       saved: before - after,
@@ -89,7 +91,7 @@ async function purgeProfile(name) {
   if (write) {
     ensureDir(outDir);
     for (let i = 0; i < result.length; i++) {
-      fs.writeFileSync(path.join(outDir, rows[i].file), result[i].css);
+      fs.writeFileSync(path.join(outDir, rows[i].outName), result[i].css);
     }
   }
 
@@ -107,8 +109,9 @@ function printReport(report) {
   console.log(`\nPurgeCSS — profile: ${report.profile}`);
   console.log("─".repeat(60));
   for (const row of report.rows) {
+    const label = row.outName && row.outName !== row.file ? `${row.file} → ${row.outName}` : row.file;
     console.log(
-      `${row.file.padEnd(28)} ${formatKb(row.before).padStart(9)} → ${formatKb(row.after).padStart(9)}  (−${row.savedPct}%, ${row.rejectedCount} selectors removed)`,
+      `${label.padEnd(28)} ${formatKb(row.before).padStart(9)} → ${formatKb(row.after).padStart(9)}  (−${row.savedPct}%, ${row.rejectedCount} selectors removed)`,
     );
   }
   const totalSaved = report.totalBefore - report.totalAfter;

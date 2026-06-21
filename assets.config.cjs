@@ -9,11 +9,12 @@ const path = require("path");
 
 const ROOT = __dirname;
 
-/** CSS propios del sitio (no vendor). */
+/** CSS propios del sitio (no vendor). bootstrap.css se genera con css:build:bootstrap. */
 const CSS_SOURCES = [
   "css/critical.css",
   "css/roboto.css",
   "css/font-awesome.css",
+  "css/bootstrap.css",
   "css/style.css",
   "css/whatsapp.css",
   "css/cv.css",
