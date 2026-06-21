@@ -1218,6 +1218,7 @@ main:focus {
 
 #navigation.small-screen #menu-button {
   display: block;
+  width: 100%;
   padding: 15px;
   color: #474747;
   cursor: pointer;
@@ -1225,6 +1226,7 @@ main:focus {
   border-top: 1px solid #474747;
   text-transform: uppercase;
   font-weight: 700;
+  text-align: left;
 }
 
 #navigation.small-screen #menu-button:after {

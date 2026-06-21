@@ -47,7 +47,6 @@
     button.setAttribute("aria-expanded", "false");
     button.setAttribute("aria-controls", "navigation-menu");
     button.setAttribute("aria-label", title);
-    button.textContent = title;
 
     menuList.id = "navigation-menu";
     nav.insertBefore(button, menuList);
