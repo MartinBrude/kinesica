@@ -87,8 +87,8 @@ export const HOME = {
   es: {
     title: "Kinésica - Centro de Kinesiología, Osteopatía y RPG",
     description: "Kinésica es un centro de kinesiología, osteopatía y terapias manuales en Palermo que ofrece tratamientos personalizados.",
-    ogDescription: "Kinésica es un centro de kinesiología, osteopatía y terapias manuales en Palermo.",
-    twitterDescription: "Kinésica es un centro de kinesiología, osteopatía y terapias manuales en Palermo.",
+    ogDescription: "Kinésica es un centro de kinesiología, osteopatía y terapias manuales en Palermo que ofrece tratamientos personalizados.",
+    twitterDescription: "Kinésica es un centro de kinesiología, osteopatía y terapias manuales en Palermo que ofrece tratamientos personalizados.",
     twitterImageAlt: "Centro Kinésica — kinesiología y terapias manuales en Palermo",
     mainHtml: [
       "<section class=\"hero-section\">",
@@ -547,8 +547,8 @@ export const HOME = {
   en: {
     title: "Kinésica - Clinic for Kinesiology, Osteopathy and RPG",
     description: "Kinésica is a center for kinesiology, osteopathy, and manual therapy in Palermo offering personalized treatments.",
-    ogDescription: "Kinésica is a kinesiology, osteopathy, and manual therapy center in Palermo.",
-    twitterDescription: "Kinésica is a kinesiology, osteopathy, and manual therapy center in Palermo.",
+    ogDescription: "Kinésica is a center for kinesiology, osteopathy, and manual therapy in Palermo offering personalized treatments.",
+    twitterDescription: "Kinésica is a center for kinesiology, osteopathy, and manual therapy in Palermo offering personalized treatments.",
     twitterImageAlt: "Kinésica clinic — kinesiology and manual therapy in Palermo",
     mainHtml: [
       "<section class=\"hero-section\">",
@@ -1000,8 +1000,8 @@ export const HOME = {
   fr: {
     title: "Kinésica — Cabinet de kinésithérapie, ostéopathie et RPG",
     description: "Kinésica est un centre de kinésithérapie, ostéopathie et thérapie manuelle à Palermo, avec des traitements personnalisés.",
-    ogDescription: "Centre de kinésithérapie, ostéopathie et RPG à Palermo. Thérapies manuelles et rendez-vous par WhatsApp.",
-    twitterDescription: "Kinésica est un centre de kinésithérapie, ostéopathie et thérapie manuelle à Palermo.",
+    ogDescription: "Kinésica est un centre de kinésithérapie, ostéopathie et thérapie manuelle à Palermo, avec des traitements personnalisés.",
+    twitterDescription: "Kinésica est un centre de kinésithérapie, ostéopathie et thérapie manuelle à Palermo, avec des traitements personnalisés.",
     twitterImageAlt: "Centre Kinésica — kinésithérapie et thérapies manuelles à Palermo",
     mainHtml: [
       "<section class=\"hero-section\">",
@@ -1430,7 +1430,7 @@ export const HOME = {
     title: "Kinésica — Centro de fisioterapia, osteopatia e RPG",
     description: "Kinésica é um centro de fisioterapia, osteopatia e terapias manuais em Palermo com tratamentos personalizados.",
     ogDescription: "Kinésica é um centro de fisioterapia, osteopatia e terapias manuais em Palermo com tratamentos personalizados.",
-    twitterDescription: "Kinésica é um centro de fisioterapia, osteopatia e terapias manuais em Palermo.",
+    twitterDescription: "Kinésica é um centro de fisioterapia, osteopatia e terapias manuais em Palermo com tratamentos personalizados.",
     twitterImageAlt: "Clínica Kinésica — fisioterapia e terapias manuais em Palermo",
     mainHtml: [
       "<section class=\"hero-section\">",
