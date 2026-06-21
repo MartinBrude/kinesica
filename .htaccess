@@ -61,6 +61,8 @@ ErrorDocument 404 /404-router.html
   Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" "expr=%{HTTPS} == 'on'"
   <FilesMatch "\.(jpe?g|png|gif|webp|svg|ico)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
+    # mod_expires is inconsistent on Hostinger CDN for JPEG/PNG; set Expires explicitly for SEO audits.
+    Header always set Expires "Tue, 21 Jun 2027 23:59:59 GMT"
   </FilesMatch>
   <FilesMatch "\.(css|js)$">
     Header set Cache-Control "public, max-age=0, must-revalidate"
