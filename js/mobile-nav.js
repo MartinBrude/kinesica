@@ -1,6 +1,21 @@
 (function () {
   var BREAKPOINT = 768;
-  var TITLES = { es: "Menú", en: "Menu", fr: "Menu" };
+  var TITLES = { es: "Menú", en: "Menu", fr: "Menu", pt: "Menu" };
+  var SUBMENU_LABELS = {
+    es: "Mostrar submenú",
+    en: "Show submenu",
+    fr: "Afficher le sous-menu",
+    pt: "Mostrar submenu",
+  };
+
+  function pageLang() {
+    var lang = document.documentElement.getAttribute("lang") || "es";
+    if (lang.indexOf("es") === 0) return "es";
+    if (lang.indexOf("en") === 0) return "en";
+    if (lang.indexOf("fr") === 0) return "fr";
+    if (lang.indexOf("pt") === 0) return "pt";
+    return "es";
+  }
 
   function initNavigation() {
     var nav = document.getElementById("navigation");
@@ -22,26 +37,27 @@
       }
     });
 
-    var lang = document.documentElement.getAttribute("lang") || "es";
+    var lang = pageLang();
     var title = TITLES[lang] || TITLES.es;
+    var submenuLabel = SUBMENU_LABELS[lang] || SUBMENU_LABELS.es;
 
-    var button = document.createElement("div");
+    var button = document.createElement("button");
+    button.type = "button";
     button.id = "menu-button";
-    button.setAttribute("role", "button");
-    button.setAttribute("tabindex", "0");
     button.setAttribute("aria-expanded", "false");
     button.setAttribute("aria-controls", "navigation-menu");
+    button.setAttribute("aria-label", title);
     button.textContent = title;
 
     menuList.id = "navigation-menu";
     nav.insertBefore(button, menuList);
 
     nav.querySelectorAll(".has-sub").forEach(function (li) {
-      var subBtn = document.createElement("span");
+      var subBtn = document.createElement("button");
+      subBtn.type = "button";
       subBtn.className = "submenu-button";
-      subBtn.setAttribute("role", "button");
-      subBtn.setAttribute("tabindex", "0");
       subBtn.setAttribute("aria-expanded", "false");
+      subBtn.setAttribute("aria-label", submenuLabel);
       li.insertBefore(subBtn, li.firstChild);
 
       subBtn.addEventListener("click", function (e) {
@@ -81,12 +97,6 @@
     }
 
     button.addEventListener("click", toggleMainMenu);
-    button.addEventListener("keydown", function (e) {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        toggleMainMenu();
-      }
-    });
 
     function applyLayout() {
       var small = window.innerWidth <= BREAKPOINT;

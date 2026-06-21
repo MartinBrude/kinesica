@@ -997,6 +997,16 @@ main:focus {
 
 #navigation #menu-button {
   display: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  background: transparent;
+}
+
+#navigation > ul > li > button.nav-parent {
+  cursor: pointer;
+  font: inherit;
+  text-align: inherit;
 }
 
 #navigation {
@@ -1270,9 +1280,15 @@ main:focus {
   right: 0;
   top: 0;
   display: block;
+  border: none;
   border-left: 1px solid #474747;
   height: 53px;
   width: 53px;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  background: transparent;
   cursor: pointer;
 }
 
@@ -3267,7 +3283,7 @@ html {
 }
 
 #navigation > ul > li > .nav-parent {
-  cursor: default;
+  cursor: pointer;
 }
 
 /* Subrayado verde en hover: solo transform (no mueve el texto) */

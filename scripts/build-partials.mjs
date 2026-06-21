@@ -86,7 +86,7 @@ function buildNav(lang, s) {
     <a href="articulos.html" title="${escAttr(s.articles.title)}">${escHtml(s.articles.label)}</a>
   </li>
   <li class="has-sub">
-    <span class="nav-parent" title="${escAttr(s.methodsMenu.title)}" aria-haspopup="true">${escHtml(s.methodsMenu.label)}</span>
+    <button type="button" class="nav-parent" title="${escAttr(s.methodsMenu.title)}" aria-haspopup="true" aria-expanded="false">${escHtml(s.methodsMenu.label)}</button>
     <ul>
 ${techniqueItems}
     </ul>
@@ -129,11 +129,11 @@ ${techniqueLinks}
           <ul class="listnone">
             <li>
               <a href="https://www.instagram.com/kinesicabrude/" target="_blank" rel="noopener noreferrer"><i
-                  class="fa fa-instagram"></i> kinesicabrude</a>
+                  class="fa fa-instagram" aria-hidden="true"></i> kinesicabrude</a>
             </li>
             <li>
               <a href="https://www.facebook.com/kinesicabrude/" target="_blank" rel="noopener noreferrer"><i
-                  class="fa fa-facebook"></i> kinesicabrude</a>
+                  class="fa fa-facebook" aria-hidden="true"></i> kinesicabrude</a>
             </li>
           </ul>
         </div>
@@ -144,11 +144,11 @@ ${techniqueLinks}
           <ul class="listnone">
             <li>
               <a href="https://maps.app.goo.gl/urpkh4HYe7dSdjPS9" target="_blank" rel="noopener noreferrer"
-                title="${escAttr(s.mapsTitle)}"><i class="fa fa-map-marker"></i> Charcas 3889, CABA</a>
+                title="${escAttr(s.mapsTitle)}"><i class="fa fa-map-marker" aria-hidden="true"></i> Charcas 3889, CABA</a>
             </li>
             <li>
               <a href="#" class="dynamic-whatsapp-link" target="_blank" rel="noopener noreferrer">
-                <i class="fa fa-phone"></i>
+                <i class="fa fa-phone" aria-hidden="true"></i>
                 <span class="dynamic-whatsapp-text">+54 (11) 6156-4311</span>
               </a>
             </li>
@@ -201,7 +201,7 @@ function buildWhatsappFloat(lang, s) {
     s.whatsappComment,
     `<a id="whatsapp-link" href="https://wa.me/5491161564311" class="whatsapp-float" target="_blank"
   aria-label="${escAttr(s.whatsappAria)}" rel="noopener noreferrer">
-  <i class="fa fa-whatsapp whatsapp-icon"></i>
+  <i class="fa fa-whatsapp whatsapp-icon" aria-hidden="true"></i>
 </a>`,
   );
 }

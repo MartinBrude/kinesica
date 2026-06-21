@@ -1,11 +1,11 @@
 /* Spanish header nav — relative links from site root. */
 window.__KINESICA_NAV_SNIPPET_ES = `
 <ul>
-          <li>
+        <li>
     <a href="articulos.html" title="Artículos">Artículos</a>
   </li>
   <li class="has-sub">
-    <span class="nav-parent" title="Métodos y Técnicas" aria-haspopup="true">Métodos y Técnicas</span>
+    <button type="button" class="nav-parent" title="Métodos y Técnicas" aria-haspopup="true" aria-expanded="false">Métodos y Técnicas</button>
     <ul>
       <li><a href="rpg.html" title="RPG">RPG</a></li>
       <li><a href="osteopatia.html" title="Osteopatía">Osteopatía</a></li>

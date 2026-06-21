@@ -2,6 +2,6 @@
 window.__KINESICA_WHATSAPP_FLOAT_SNIPPET_EN = `
 <a id="whatsapp-link" href="https://wa.me/5491161564311" class="whatsapp-float" target="_blank"
   aria-label="Contact via WhatsApp" rel="noopener noreferrer">
-  <i class="fa fa-whatsapp whatsapp-icon"></i>
+  <i class="fa fa-whatsapp whatsapp-icon" aria-hidden="true"></i>
 </a>
 `.trim();
