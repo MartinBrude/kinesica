@@ -2975,6 +2975,25 @@ Pathology detail pages (FAQ dolencias)
   }
 }
 
+/* —— FAQ Accordion —— */
+#faqAccordion .panel-title a {
+  text-decoration: none !important;
+  color: var(--heading-color);
+  transition: color 0.2s ease;
+}
+
+#faqAccordion .panel-title a:hover,
+#faqAccordion .panel-title a:focus,
+#faqAccordion .panel-title a:active {
+  text-decoration: none !important;
+  color: var(--primary-color);
+}
+
+#faqAccordion .panel-title a:not(.collapsed) {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
 #faqAccordion #faq6 .panel-body a {
   color: inherit;
   text-decoration: none;
@@ -2984,7 +3003,7 @@ Pathology detail pages (FAQ dolencias)
 
 #faqAccordion #faq6 .panel-body a:hover,
 #faqAccordion #faq6 .panel-body a:focus-visible {
-  color: var(--brand-primary, #005f99);
+  color: var(--primary-color);
 }
 
 /* —— Artículos index (card grid) —— */
