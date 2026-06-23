@@ -127,14 +127,14 @@ export function headCriticalCss(prefix) {
   return syncCssLink(`${prefix}css/critical.min.css`);
 }
 
-/** Decorative page-header-word caption (métodos, RPG, patologías). */
+/** Decorative page-header-word caption (métodos, RPG, patologías, artículos index). */
 export function pageCaptionMarkup(label, { variant = "word" } = {}) {
+  const longClass = label.length > 11 ? " page-header-word--long" : "";
   if (variant === "title") {
     return `            <div class="page-caption">
-              <h1 class="page-title">${escHtml(label)}</h1>
+              <h1 class="page-title page-header-word${longClass}">${escHtml(label)}</h1>
             </div>`;
   }
-  const longClass = label.length > 11 ? " page-header-word--long" : "";
   return `            <div class="page-caption">
               <span class="page-header-word${longClass}" aria-hidden="true">${escHtml(label)}</span>
             </div>`;

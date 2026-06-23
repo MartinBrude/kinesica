@@ -116,7 +116,7 @@ function patchArticulosFile(rel, lang) {
   html = patched;
 
   html = html.replace(
-    /<div class="page-caption">\s*(?:<span class="page-header-word"[^>]*>[^<]*<\/span>|<h1 class="page-title">[^<]*<\/h1>)\s*<\/div>/,
+    /<div class="page-caption">\s*(?:<span class="page-header-word"[^>]*>[^<]*<\/span>|<h1 class="page-title[^"]*">[^<]*<\/h1>)\s*<\/div>/,
     pageCaptionMarkup(ui.pageTitle, { variant: "title" }).trim(),
   );
 

@@ -37,7 +37,7 @@ const DEFER_SHELL_BUNDLE =
   /<script src="((?:\.\.\/)?js\/(?:shell-(?:header|cta|footer|whatsapp)-(?:es|en|fr|pt)|head-lang|shell-top|ui-core|ui-home|reviews)(?:\.min)?\.js(?:\?v=\d+)?)"(?![^>]*\bdefer\b)([^>]*)><\/script>/g;
 
 const DEFER_LEGACY_SHELL =
-  /<script src="((?:\.\.\/)?js\/(?:lang-routes|snippet-lang|header-include|lang-picker|nav-include|cta-strip-include|footer-include|whatsapp-float-include|whatsapp-logic|site-config|skip-link-include|gtm-body-include|mobile-nav|ui-reveal|sticky-header|faq-accordion|map-embed-facade|page-header-word|google-reviews)(?:\.min)?\.js(?:\?v=\d+)?)"(?![^>]*\bdefer\b)([^>]*)><\/script>/g;
+  /<script src="((?:\.\.\/)?js\/(?:lang-routes|snippet-lang|header-include|lang-picker|nav-include|cta-strip-include|footer-include|whatsapp-float-include|whatsapp-logic|site-config|skip-link-include|gtm-body-include|mobile-nav|ui-reveal|sticky-header|faq-accordion|map-embed-facade|google-reviews)(?:\.min)?\.js(?:\?v=\d+)?)"(?![^>]*\bdefer\b)([^>]*)><\/script>/g;
 
 const DEFER_LEGACY_PARTIAL =
   /<script src="((?:\.\.\/)?partials\/(?:cta-strip|footer|header|nav|whatsapp-float|skip-link|gtm-body|google-reviews-data)-(?:es|en|fr|pt)?(?:\.min)?\.js(?:\?v=\d+)?)"(?![^>]*\bdefer\b)([^>]*)><\/script>/g;
