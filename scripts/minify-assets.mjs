@@ -17,6 +17,8 @@ import {
   toMinPath,
 } from "../assets.config.cjs";
 import { listHtmlFiles } from "./languages.mjs";
+import { buildAllJsBundles } from "./build-js-bundles.mjs";
+import { allBundlePaths } from "./js-bundles.mjs";
 import {
   applyFaviconCacheQuery,
   faviconCacheVersion,
@@ -80,11 +82,12 @@ function stripCacheQueryFromHtml(html) {
   );
 }
 
-/** Añade ?v= a CSS/JS locales minificados del manifest (idempotente tras strip). */
-function applyCacheQueryToHtml(html, version, sources) {
+/** Añade ?v= a CSS/JS locales minificados del manifest + bundles (idempotente tras strip). */
+function applyCacheQueryToHtml(html, version, sources, bundles = []) {
   let out = html;
-  for (const rel of sources) {
-    const min = toMinPath(rel);
+  const allRefs = [...sources.map(toMinPath), ...bundles];
+  for (const rel of allRefs) {
+    const min = rel.endsWith(".min.js") || rel.endsWith(".min.css") ? rel : toMinPath(rel);
     const esc = min.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const re = new RegExp(
       `((?:href|src)=["'])((?:\\.\\./)?${esc})(["'])`,
@@ -95,9 +98,9 @@ function applyCacheQueryToHtml(html, version, sources) {
   return out;
 }
 
-function assetCacheVersion(sources) {
+function assetCacheVersion(refs) {
   let max = 0;
-  for (const rel of sources) {
+  for (const rel of refs) {
     const p = path.join(ROOT, rel);
     if (!fs.existsSync(p)) continue;
     max = Math.max(max, fs.statSync(p).mtimeMs);
@@ -145,9 +148,15 @@ async function main() {
     rows.push(await minifyOne(rel));
   }
 
+  const bundleRows = buildAllJsBundles();
+  const bundles = allBundlePaths();
+
   const cssVersion = cssCacheVersion();
   const shellVersion = shellCacheVersion();
-  const assetVersion = assetCacheVersion(sources);
+  const assetVersion = assetCacheVersion([
+    ...sources.map((rel) => toMinPath(rel)),
+    ...bundles,
+  ]);
   const faviconVersion = faviconCacheVersion(ROOT);
   fs.writeFileSync(
     path.join(ROOT, "css", ".asset-version.json"),
@@ -170,7 +179,7 @@ async function main() {
     const original = fs.readFileSync(full, "utf8");
     let next = syncHtmlAssetRefs(original, sources);
     next = stripCacheQueryFromHtml(next);
-    next = applyCacheQueryToHtml(next, assetVersion, sources);
+    next = applyCacheQueryToHtml(next, assetVersion, sources, bundles);
     next = stripFaviconCacheQuery(next);
     next = applyFaviconCacheQuery(next, faviconVersion);
     if (next !== original) {
@@ -186,6 +195,9 @@ async function main() {
     );
   }
   console.log(`\n${rows.length} file(s) minified.`);
+  if (bundleRows.length) {
+    console.log(`\n${bundleRows.length} JS bundle(s) built.`);
+  }
   if (htmlChanged) {
     console.log(`${htmlChanged} HTML file(s) synced (refs .min + ?v=${assetVersion}).`);
   } else {

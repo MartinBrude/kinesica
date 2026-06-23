@@ -22,31 +22,25 @@ const ROBOTS_NOINDEX =
   '  <meta name="robots" content="noindex, nofollow" />\n';
 
 const LANG_SCRIPTS =
-  /<script src="((?:\.\.\/)?js\/(lang-preference|redirect)(?:\.min)?\.js)"><\/script>/g;
+  /<script src="((?:\.\.\/)?js\/(?:head-lang|lang-preference|redirect)(?:\.min)?\.js(?:\?v=\d+)?)"><\/script>/g;
 
 const DEFER_SCRIPTS = [
   "partials/gtm-head.js",
-  "js/site-config.js",
-  "partials/gtm-body.js",
-  "js/gtm-body-include.js",
-  "partials/skip-link.js",
-  "js/skip-link-include.js",
-  "js/lang-routes.js",
-  "js/snippet-lang.js",
-  "js/header-include.js",
-  "js/lang-picker.js",
-  "js/nav-include.js",
-  "js/cta-strip-include.js",
-  "js/footer-include.js",
-  "js/whatsapp-float-include.js",
-  "js/whatsapp-logic.js",
+  "js/head-lang.js",
+  "js/shell-top.js",
+  "js/ui-core.js",
+  "js/ui-home.js",
+  "js/reviews.js",
 ];
 
-const DEFER_SHELL_PARTIAL =
-  /<script src="((?:\.\.\/)?partials\/(?:cta-strip|footer|header|nav|whatsapp-float)-(?:es|en|fr|pt)(?:\.min)?\.js(?:\?v=\d+)?)"(?![^>]*\bdefer\b)([^>]*)><\/script>/g;
+const DEFER_SHELL_BUNDLE =
+  /<script src="((?:\.\.\/)?js\/(?:shell-(?:header|cta|footer|whatsapp)-(?:es|en|fr|pt)|head-lang|shell-top|ui-core|ui-home|reviews)(?:\.min)?\.js(?:\?v=\d+)?)"(?![^>]*\bdefer\b)([^>]*)><\/script>/g;
 
-const DEFER_SHELL_JS =
-  /<script src="((?:\.\.\/)?js\/(?:lang-routes|snippet-lang|header-include|lang-picker|nav-include|cta-strip-include|footer-include|whatsapp-float-include|whatsapp-logic)(?:\.min)?\.js(?:\?v=\d+)?)"(?![^>]*\bdefer\b)([^>]*)><\/script>/g;
+const DEFER_LEGACY_SHELL =
+  /<script src="((?:\.\.\/)?js\/(?:lang-routes|snippet-lang|header-include|lang-picker|nav-include|cta-strip-include|footer-include|whatsapp-float-include|whatsapp-logic|site-config|skip-link-include|gtm-body-include|mobile-nav|ui-reveal|sticky-header|faq-accordion|map-embed-facade|page-header-word|google-reviews)(?:\.min)?\.js(?:\?v=\d+)?)"(?![^>]*\bdefer\b)([^>]*)><\/script>/g;
+
+const DEFER_LEGACY_PARTIAL =
+  /<script src="((?:\.\.\/)?partials\/(?:cta-strip|footer|header|nav|whatsapp-float|skip-link|gtm-body|google-reviews-data)-(?:es|en|fr|pt)?(?:\.min)?\.js(?:\?v=\d+)?)"(?![^>]*\bdefer\b)([^>]*)><\/script>/g;
 
 import { listHtmlFiles } from "./languages.mjs";
 
@@ -198,13 +192,19 @@ function deferHeadScripts(html) {
       return `<script src="${base}${min}${q ? q[0] : ""}" defer${rest}></script>`;
     });
   }
-  out = out.replace(DEFER_SHELL_PARTIAL, (match, src, rest = "") => {
+  out = out.replace(DEFER_SHELL_BUNDLE, (match, src, rest = "") => {
     if (match.includes(" defer")) {
       return match;
     }
     return `<script src="${src}" defer${rest}></script>`;
   });
-  return out.replace(DEFER_SHELL_JS, (match, src, rest = "") => {
+  out = out.replace(DEFER_LEGACY_PARTIAL, (match, src, rest = "") => {
+    if (match.includes(" defer")) {
+      return match;
+    }
+    return `<script src="${src}" defer${rest}></script>`;
+  });
+  return out.replace(DEFER_LEGACY_SHELL, (match, src, rest = "") => {
     if (match.includes(" defer")) {
       return match;
     }

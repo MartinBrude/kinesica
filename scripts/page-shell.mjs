@@ -119,10 +119,7 @@ export function headLangScripts(prefix) {
 }
 
 export function headLangDeferScripts(prefix) {
-  return (
-    `  <script src="${prefix}js/lang-preference.min.js" defer></script>\n` +
-    `  <script src="${prefix}js/redirect.min.js" defer></script>\n`
-  );
+  return `  <script src="${prefix}js/head-lang.min.js" defer></script>\n`;
 }
 
 /** Blocking critical CSS (shared file; no inline duplicate per page). */
@@ -241,11 +238,8 @@ export function headTwitterBlock({ title, description, image, imageAlt }) {
 export function bodyShellTop(prefix) {
   return (
     `  <div id="site-skip-link-root"></div>\n` +
-    `  <script src="${prefix}partials/skip-link.min.js" defer></script>\n` +
-    `  <script src="${prefix}js/skip-link-include.min.js" defer></script>\n` +
     `  <div id="site-gtm-body-root"></div>\n` +
-    `  <script src="${prefix}partials/gtm-body.min.js" defer></script>\n` +
-    `  <script src="${prefix}js/gtm-body-include.min.js" defer></script>\n`
+    `  <script src="${prefix}js/shell-top.min.js" defer></script>\n`
   );
 }
 
@@ -253,47 +247,26 @@ export function ctaStripPlaceholder(lang, prefix) {
   const l = partialLang(lang);
   return (
     `  <div id="site-cta-strip-root" data-cta-lang="${l}"></div>\n` +
-    `  <script src="${prefix}partials/cta-strip-${l}.min.js" defer></script>\n` +
-    `  <script src="${prefix}js/cta-strip-include.min.js" defer></script>`
+    `  <script src="${prefix}js/shell-cta-${l}.min.js" defer></script>`
   );
 }
 
 export function bodyFooterAndUiScripts(
   lang,
   prefix,
-  { pageHeaderWord = true, faqAccordion = false, mapEmbedFacade = false } = {},
+  { faqAccordion = false, mapEmbedFacade = false } = {},
 ) {
   const l = partialLang(lang);
   const lines = [
     `  <div id="site-footer-root" data-footer-lang="${lang}"></div>`,
-    `  <script src="${prefix}js/site-config.min.js" defer></script>`,
-    `  <script src="${prefix}partials/footer-${l}.min.js" defer></script>`,
-    `  <script src="${prefix}js/footer-include.min.js" defer></script>`,
+    `  <script src="${prefix}js/shell-footer-${l}.min.js" defer></script>`,
     `  <div id="site-whatsapp-root" data-whatsapp-lang="${lang}"></div>`,
-    `  <script src="${prefix}partials/whatsapp-float-${l}.min.js" defer></script>`,
-    `  <script src="${prefix}js/whatsapp-float-include.min.js" defer></script>`,
-    `  <script src="${prefix}js/whatsapp-logic.min.js" defer></script>`,
+    `  <script src="${prefix}js/shell-whatsapp-${l}.min.js" defer></script>`,
+    `  <script src="${prefix}js/ui-core.min.js" defer></script>`,
   ];
-  if (pageHeaderWord) {
-    lines.push(
-      `  <script src="${prefix}js/page-header-word.min.js" defer></script>`,
-    );
+  if (faqAccordion || mapEmbedFacade) {
+    lines.push(`  <script src="${prefix}js/ui-home.min.js" defer></script>`);
   }
-  lines.push(
-    `  <script src="${prefix}js/mobile-nav.min.js" defer></script>`,
-    `  <script src="${prefix}js/ui-reveal.min.js" defer></script>`,
-  );
-  if (faqAccordion) {
-    lines.push(
-      `  <script src="${prefix}js/faq-accordion.min.js" defer></script>`,
-    );
-  }
-  if (mapEmbedFacade) {
-    lines.push(
-      `  <script src="${prefix}js/map-embed-facade.min.js" defer></script>`,
-    );
-  }
-  lines.push(`  <script src="${prefix}js/sticky-header.min.js" defer></script>`);
   return lines.join("\n");
 }
 

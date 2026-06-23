@@ -32,8 +32,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 function ctaInsideMain(lang, prefix) {
   const l = partialLang(lang);
   return `    <div id="site-cta-strip-root" data-cta-lang="${l}"></div>
-  <script src="${prefix}partials/cta-strip-${l}.min.js" defer></script>
-  <script src="${prefix}js/cta-strip-include.min.js" defer></script>`;
+  <script src="${prefix}js/shell-cta-${l}.min.js" defer></script>`;
 }
 
 function buildMainHtml(lang, prefix) {
@@ -86,7 +85,7 @@ ${headLocalBusinessSchema(lang, { home: true })}
 ${bodyShellTop(p)}${headerShellMarkup(lang, p)}  <main id="main" tabindex="-1">
 ${buildMainHtml(lang, p)}
   </main>
-${bodyFooterAndUiScripts(lang, p, { pageHeaderWord: false, faqAccordion: true, mapEmbedFacade: true })}
+${bodyFooterAndUiScripts(lang, p, { faqAccordion: true, mapEmbedFacade: true })}
 </body>
 
 </html>

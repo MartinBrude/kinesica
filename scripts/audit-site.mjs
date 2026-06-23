@@ -82,12 +82,9 @@ function auditJsShellScripts(html, file) {
   if (!usesJsShell(html)) return;
   const prefix = file.includes("/") ? "../" : "";
   const required = [
-    `${prefix}js/lang-routes`,
-    `${prefix}js/header-include`,
-    `${prefix}js/lang-picker`,
-    `${prefix}js/nav-include`,
-    `${prefix}partials/header-`,
-    `${prefix}partials/nav-`,
+    `${prefix}js/shell-header-`,
+    `${prefix}js/shell-footer-`,
+    `${prefix}js/ui-core`,
   ];
   for (const fragment of required) {
     if (!html.includes(fragment)) {
@@ -237,9 +234,19 @@ for (const file of htmlFiles) {
     html.includes("lang-picker") &&
     html.includes("lang-preference.js") &&
     !html.includes("lang-routes.js") &&
+    !html.includes("shell-header-") &&
     file !== "404-router.html"
   ) {
     add("error", file, "lang-preference without lang-routes.js (file:// links will break)");
+  }
+
+  if (
+    html.includes("lang-picker") &&
+    html.includes("head-lang") &&
+    !html.includes("shell-header-") &&
+    file !== "404-router.html"
+  ) {
+    add("error", file, "head-lang without shell-header bundle (lang routes missing)");
   }
 
   for (const href of extractHrefs(html)) {

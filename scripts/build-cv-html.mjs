@@ -15,6 +15,8 @@ import { breadcrumbListSchema, escHtml } from "./html-utils.mjs";
 import {
   LOCALE,
   assetPrefixForLang,
+  bodyFooterAndUiScripts,
+  bodyShellTop,
   headCriticalCss,
   headFavicon,
   headJsClassScript,
@@ -23,6 +25,8 @@ import {
   headStandardStylesheets,
   syncCssLink,
 } from "./page-shell.mjs";
+import { langBundlePath } from "./js-bundles.mjs";
+import { partialLang } from "./languages.mjs";
 
 const require = createRequire(import.meta.url);
 const { toMinPath } = require("../assets.config.cjs");
@@ -162,19 +166,12 @@ ${headLangDeferScripts(prefix)}${headSeoBlock({
     canonical,
   })}
 ${headStandardStylesheets(prefix)}${syncCssLink(asset(prefix, "css/cv.css"))}  <script src="${asset(prefix, "partials/gtm-head.js")}" defer></script>
-  <script src="${asset(prefix, "js/site-config.js")}"></script>
   <script type="application/ld+json">${personSchema}</script>
   <script type="application/ld+json">${breadcrumbSchema}</script>
 </head>
 
 <body>
-  <div id="site-gtm-body-root"></div>
-  <script src="${asset(prefix, "partials/gtm-body.js")}"></script>
-  <script src="${asset(prefix, "js/gtm-body-include.js")}"></script>
-  <div id="site-skip-link-root"></div>
-  <script src="${asset(prefix, "partials/skip-link.js")}"></script>
-  <script src="${asset(prefix, "js/skip-link-include.js")}"></script>
-${headerShellMarkup(lang, prefix)}
+${bodyShellTop(prefix)}${headerShellMarkup(lang, prefix)}
   <main id="main" class="cv-page" tabindex="-1">
     <section class="cv-hero">
       <div class="container">
@@ -193,21 +190,10 @@ ${headerShellMarkup(lang, prefix)}
       </div>
     </section>
     ${renderBody(data)}
-  <div id="site-cta-strip-root" data-cta-lang="${lang}"></div>
-  <script src="${asset(prefix, `partials/cta-strip-${lang}.js`)}" defer></script>
-  <script src="${asset(prefix, "js/cta-strip-include.js")}" defer></script>
+  <div id="site-cta-strip-root" data-cta-lang="${partialLang(lang)}"></div>
+  <script src="${prefix}${langBundlePath("cta", lang)}" defer></script>
   </main>
-  <div id="site-footer-root" data-footer-lang="${lang}"></div>
-  <script src="${asset(prefix, "js/site-config.js")}" defer></script>
-  <script src="${asset(prefix, `partials/footer-${lang}.js`)}" defer></script>
-  <script src="${asset(prefix, "js/footer-include.js")}" defer></script>
-  <div id="site-whatsapp-root" data-whatsapp-lang="${lang}"></div>
-  <script src="${asset(prefix, `partials/whatsapp-float-${lang}.js`)}" defer></script>
-  <script src="${asset(prefix, "js/whatsapp-float-include.js")}" defer></script>
-  <script src="${asset(prefix, "js/mobile-nav.js")}" defer></script>
-  <script src="${asset(prefix, "js/ui-reveal.js")}" defer></script>
-  <script src="${asset(prefix, "js/sticky-header.js")}" defer></script>
-  <script src="${asset(prefix, "js/whatsapp-logic.js")}" defer></script>
+${bodyFooterAndUiScripts(lang, prefix)}
 </body>
 
 </html>

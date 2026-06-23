@@ -13,9 +13,11 @@ import { ERROR_404, ERROR_404_LANG_LINKS } from "./404-content.mjs";
 import {
   LOCALE,
   assetPrefixForLang,
+  bodyShellTop,
   headCriticalCss,
   headFavicon,
   headJsClassScript,
+  headLangDeferScripts,
   headStandardStylesheets,
 } from "./page-shell.mjs";
 
@@ -72,17 +74,14 @@ ${headJsClassScript()}${headCriticalCss(p)}  <meta http-equiv="content-language"
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#005f99" />
-  <title>${copy.title}</title>
+${headLangDeferScripts(p)}  <title>${copy.title}</title>
 ${headStandardStylesheets(p, { gtm: false })}  <meta name="description" content="${copy.description}" />
   <meta name="robots" content="noindex, nofollow" />
 ${headFavicon(p)}${ERROR_STYLES}
 </head>
 
 <body>
-  <div id="site-skip-link-root"></div>
-  <script src="${p}partials/skip-link.min.js" defer></script>
-  <script src="${p}js/skip-link-include.min.js" defer></script>
-${headerShellMarkup(lang, p)}<div id="main" class="error-section" tabindex="-1">
+${bodyShellTop(p)}${headerShellMarkup(lang, p)}<div id="main" class="error-section" tabindex="-1">
     <h1 class="error-title">404</h1>
     <p class="error-message">${copy.message}</p>
     <a href="${copy.homeHref}" class="btn btn-primary btn-home" rel="noopener">${copy.homeLabel}</a>
@@ -96,7 +95,6 @@ ${headerShellMarkup(lang, p)}<div id="main" class="error-section" tabindex="-1">
       ${copy.copyright}
     </div>
   </footer>
-  <script src="${p}js/lang-preference.min.js" defer></script>
 </body>
 
 </html>
