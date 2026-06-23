@@ -17,10 +17,22 @@
     return base + filename.replace(/\.js$/i, "") + min + q;
   }
 
-  if (
-    document.querySelector(".page-header") &&
-    !window.__KINESICA_PAGE_HEADER_WORD_LOADED
-  ) {
+  function needsPageHeaderWordScript() {
+    var header = document.querySelector(".page-header");
+    if (!header) {
+      return false;
+    }
+    var caption = header.querySelector(".page-caption");
+    if (!caption || caption.querySelector(".page-header-word")) {
+      return false;
+    }
+    if (caption.querySelector(".page-title")) {
+      return true;
+    }
+    return !(caption.textContent || "").trim();
+  }
+
+  if (needsPageHeaderWordScript() && !window.__KINESICA_PAGE_HEADER_WORD_LOADED) {
     var pageHeaderSrc = jsSiblingScript("page-header-word.js");
     if (pageHeaderSrc) {
       window.__KINESICA_PAGE_HEADER_WORD_LOADED = true;
