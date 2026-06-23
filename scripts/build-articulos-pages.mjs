@@ -12,7 +12,11 @@ import { cardHue } from "./article-thumbnail-icons.mjs";
 import { repoPath } from "./i18n-urls.mjs";
 import { LANG_CODES } from "./languages.mjs";
 import { escHtml, patchPageMeta } from "./html-utils.mjs";
-import { assetPrefixForLang, pageCaptionMarkup } from "./page-shell.mjs";
+import {
+  assetPrefixForLang,
+  headLangDeferScripts,
+  pageCaptionMarkup,
+} from "./page-shell.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -69,6 +73,17 @@ ${cards}
         </blockquote>
       </div>
     </section>`;
+}
+
+function ensureHeadLangBundle(html, lang) {
+  if (html.includes("head-lang")) {
+    return html;
+  }
+  const tag = headLangDeferScripts(assetPrefixForLang(lang));
+  return html.replace(
+    /(<meta name="theme-color"[^>]*\/>\s*\n)/,
+    `$1${tag}`,
+  );
 }
 
 /** EN/FR articulos historically omitted </main> before the CTA strip. */
@@ -133,6 +148,7 @@ function patchArticulosFile(rel, lang) {
   });
 
   html = ensureMainClosedBeforeCta(html);
+  html = ensureHeadLangBundle(html, lang);
 
   fs.writeFileSync(full, html);
   return true;
