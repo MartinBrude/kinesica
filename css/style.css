@@ -1217,9 +1217,11 @@ main:focus {
 }
 
 #navigation.small-screen #menu-button {
+  --menu-icon-inset: 20px;
   display: block;
   width: 100%;
-  padding: 15px;
+  padding: 16px var(--menu-icon-inset);
+  min-height: 48px;
   color: #474747;
   cursor: pointer;
   font-size: 12px;
@@ -1229,10 +1231,17 @@ main:focus {
   text-align: left;
 }
 
+#navigation.small-screen #menu-button.menu-opened {
+  --menu-icon-inset: 24px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  min-height: 56px;
+}
+
 #navigation.small-screen #menu-button:after {
   position: absolute;
-  top: 16px;
-  right: 17px;
+  top: 17px;
+  right: var(--menu-icon-inset);
   display: block;
   height: 12px;
   width: 20px;
@@ -1243,8 +1252,8 @@ main:focus {
 
 #navigation.small-screen #menu-button:before {
   position: absolute;
-  top: 21px;
-  right: 17px;
+  top: 22px;
+  right: var(--menu-icon-inset);
   display: block;
   height: 2px;
   width: 20px;
@@ -1253,27 +1262,29 @@ main:focus {
 }
 
 #navigation.small-screen #menu-button.menu-opened:after {
-  top: 23px;
+  top: 50%;
+  right: var(--menu-icon-inset);
   border: 0;
   height: 2px;
-  width: 15px;
+  width: 16px;
   background: #474747;
-  -webkit-transform: rotate(45deg);
-  -moz-transform: rotate(45deg);
-  -ms-transform: rotate(45deg);
-  -o-transform: rotate(45deg);
-  transform: rotate(45deg);
+  -webkit-transform: translateY(-50%) rotate(45deg);
+  -moz-transform: translateY(-50%) rotate(45deg);
+  -ms-transform: translateY(-50%) rotate(45deg);
+  -o-transform: translateY(-50%) rotate(45deg);
+  transform: translateY(-50%) rotate(45deg);
 }
 
 #navigation.small-screen #menu-button.menu-opened:before {
-  top: 23px;
+  top: 50%;
+  right: var(--menu-icon-inset);
   background: #474747;
-  width: 15px;
-  -webkit-transform: rotate(-45deg);
-  -moz-transform: rotate(-45deg);
-  -ms-transform: rotate(-45deg);
-  -o-transform: rotate(-45deg);
-  transform: rotate(-45deg);
+  width: 16px;
+  -webkit-transform: translateY(-50%) rotate(-45deg);
+  -moz-transform: translateY(-50%) rotate(-45deg);
+  -ms-transform: translateY(-50%) rotate(-45deg);
+  -o-transform: translateY(-50%) rotate(-45deg);
+  transform: translateY(-50%) rotate(-45deg);
 }
 
 #navigation .submenu-button {
