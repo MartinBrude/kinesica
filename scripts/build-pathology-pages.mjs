@@ -25,6 +25,7 @@ import {
 import { LANG_CODES } from "./languages.mjs";
 import { headerShellMarkup } from "./header-shell.mjs";
 import { breadcrumbListSchema, escHtml } from "./html-utils.mjs";
+import { ARTICLES_INDEX_UI } from "./articles-index-content.mjs";
 import {
   LOCALE,
   assetPrefixForLang,
@@ -144,8 +145,10 @@ function buildHtml(pathology, lang) {
   const p = assetPrefixForLang(lang);
   const canonical = absoluteUrl(lang, stem);
   const imgUrl = socialImageUrl(pathology.image);
+  const articlesUi = ARTICLES_INDEX_UI[lang];
   const breadcrumbSchema = breadcrumbListSchema([
     { name: ui.homeLabel, item: absoluteUrl(lang, "index") },
+    { name: articlesUi.breadcrumb, item: absoluteUrl(lang, "articulos") },
     { name: data.breadcrumb, item: canonical },
   ]);
 
@@ -206,6 +209,8 @@ ${pageHeaderSection(pageCaptionMarkup(data.breadcrumb))}
 ${pageBreadcrumbSection({
       homeHref: sitePath(lang, "index"),
       homeLabel: ui.homeLabel,
+      parentHref: sitePath(lang, "articulos"),
+      parentLabel: articlesUi.breadcrumb,
       activeLabel: data.breadcrumb,
     })}
 ${buildMain(pathology, lang)}

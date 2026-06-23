@@ -152,12 +152,23 @@ ${captionMarkup}
     </section>`;
 }
 
-export function pageBreadcrumbSection({ homeHref, homeLabel, activeLabel }) {
+export function pageBreadcrumbSection({
+  homeHref,
+  homeLabel,
+  parentHref,
+  parentLabel,
+  activeLabel,
+}) {
+  const parentItem =
+    parentHref && parentLabel
+      ? `\n            <li><a href="${parentHref}">${parentLabel}</a></li>`
+      : "";
+
   return `    <section class="page-breadcrumb">
       <div class="container">
         <div class="col-lg-12">
           <ol class="breadcrumb">
-            <li><a href="${homeHref}">${homeLabel}</a></li>
+            <li><a href="${homeHref}">${homeLabel}</a></li>${parentItem}
             <li class="active">${activeLabel}</li>
           </ol>
         </div>
