@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
  * Ensure JS-injected site shell: empty placeholders + bundled scripts.
+ * Expects builder-generated HTML; strips inlined partial markup if present.
  * Run: node scripts/inject-static-shell.mjs
  */
 import fs from "fs";
@@ -8,7 +9,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { headerShellMarkup } from "./header-shell.mjs";
 import { langBundlePath } from "./js-bundles.mjs";
-import { bodyFooterAndUiScripts } from "./page-shell.mjs";
+import { bodyFooterAndUiScripts, headLangDeferScripts } from "./page-shell.mjs";
 import { listHtmlFiles, expectedLangFromFile, partialLang } from "./languages.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -56,73 +57,16 @@ function stripInlinedFooter(html) {
   );
 }
 
-function stripLegacyAfterBundle(html, bundleNeedle, legacyPatterns) {
-  if (!html.includes(bundleNeedle)) {
-    return html;
-  }
-  let out = html;
-  for (const re of legacyPatterns) {
-    out = out.replace(re, "");
-  }
-  return out;
-}
-
-function stripLegacyShellScripts(html) {
-  let out = html;
-  out = stripLegacyAfterBundle(out, "shell-header-", [
-    /\s*<script src="[^"]*\/lang-routes\.min\.js[^"]*" defer><\/script>/g,
-    /\s*<script src="[^"]*\/snippet-lang\.min\.js[^"]*" defer><\/script>/g,
-    /\s*<script src="[^"]*partials\/header-(?:es|en|fr|pt)\.min\.js[^"]*" defer><\/script>/g,
-    /\s*<script src="[^"]*\/header-include\.min\.js[^"]*" defer><\/script>/g,
-    /\s*<script src="[^"]*\/lang-picker\.min\.js[^"]*" defer><\/script>/g,
-    /\s*<script src="[^"]*partials\/nav-(?:es|en|fr|pt)\.min\.js[^"]*" defer><\/script>/g,
-    /\s*<script src="[^"]*\/nav-include\.min\.js[^"]*" defer><\/script>/g,
-  ]);
-  out = stripLegacyAfterBundle(out, "shell-cta-", [
-    /\s*<script src="[^"]*partials\/cta-strip-(?:es|en|fr|pt)\.min\.js[^"]*" defer><\/script>/g,
-    /\s*<script src="[^"]*\/cta-strip-include\.min\.js[^"]*" defer><\/script>/g,
-  ]);
-  out = stripLegacyAfterBundle(out, "shell-footer-", [
-    /\s*<script src="[^"]*\/site-config\.min\.js[^"]*" defer><\/script>/g,
-    /\s*<script src="[^"]*partials\/footer-(?:es|en|fr|pt)\.min\.js[^"]*" defer><\/script>/g,
-    /\s*<script src="[^"]*\/footer-include\.min\.js[^"]*" defer><\/script>/g,
-  ]);
-  out = stripLegacyAfterBundle(out, "shell-whatsapp-", [
-    /\s*<script src="[^"]*partials\/whatsapp-float-(?:es|en|fr|pt)\.min\.js[^"]*" defer><\/script>/g,
-    /\s*<script src="[^"]*\/whatsapp-float-include\.min\.js[^"]*" defer><\/script>/g,
-    /\s*<script src="[^"]*\/whatsapp-logic\.min\.js[^"]*" defer><\/script>/g,
-  ]);
-  out = stripLegacyAfterBundle(out, "ui-core.min.js", [
-    /\s*<script src="[^"]*\/mobile-nav\.min\.js[^"]*" defer><\/script>/g,
-    /\s*<script src="[^"]*\/ui-reveal\.min\.js[^"]*" defer><\/script>/g,
-    /\s*<script src="[^"]*\/sticky-header\.min\.js[^"]*" defer><\/script>/g,
-    /\s*<script src="[^"]*\/page-header-word\.min\.js[^"]*" defer><\/script>/g,
-  ]);
-  out = stripLegacyAfterBundle(out, "head-lang.min.js", [
-    /\s*<script src="[^"]*\/lang-preference\.min\.js[^"]*" defer><\/script>/g,
-    /\s*<script src="[^"]*\/redirect\.min\.js[^"]*" defer><\/script>/g,
-  ]);
-  out = stripLegacyAfterBundle(out, "shell-top.min.js", [
-    /\s*<script src="[^"]*partials\/skip-link\.min\.js[^"]*" defer><\/script>/g,
-    /\s*<script src="[^"]*\/skip-link-include\.min\.js[^"]*" defer><\/script>/g,
-    /\s*<script src="[^"]*partials\/gtm-body\.min\.js[^"]*" defer><\/script>/g,
-    /\s*<script src="[^"]*\/gtm-body-include\.min\.js[^"]*" defer><\/script>/g,
-  ]);
-  return out;
-}
-
 function ensureHeadLangBundle(html, file) {
-  const prefix = file.includes("/") ? "../" : "";
-  const tag = `  <script src="${prefix}js/head-lang.min.js" defer></script>\n`;
-  if (html.includes("head-lang.min.js")) {
+  if (html.includes("head-lang")) {
     return html;
   }
-  const legacy =
-    /\s*<script src="[^"]*lang-preference\.min\.js[^"]*" defer><\/script>\s*\n?\s*<script src="[^"]*redirect\.min\.js[^"]*" defer><\/script>/;
-  if (legacy.test(html)) {
-    return html.replace(legacy, `\n${tag}`);
-  }
-  return html;
+  const prefix = file.includes("/") ? "../" : "";
+  const tag = headLangDeferScripts(prefix);
+  return html.replace(
+    /(<meta name="theme-color"[^>]*\/>\s*\n)/,
+    `$1${tag}`,
+  );
 }
 
 function ensureBodyShellTop(html, file) {
@@ -134,12 +78,10 @@ function ensureBodyShellTop(html, file) {
     `  <div id="site-skip-link-root"></div>\n` +
     `  <div id="site-gtm-body-root"></div>\n` +
     `  <script src="${prefix}js/shell-top.min.js" defer></script>\n`;
-  const legacy =
-    /(<div id="site-skip-link-root"><\/div>\s*)<script src="[^"]*skip-link[^"]*" defer><\/script>\s*<script src="[^"]*skip-link-include[^"]*" defer><\/script>\s*(?:<div id="site-gtm-body-root"><\/div>\s*<script src="[^"]*gtm-body[^"]*" defer><\/script>\s*<script src="[^"]*gtm-body-include[^"]*" defer><\/script>\s*)?/;
-  if (legacy.test(html)) {
-    return html.replace(legacy, top);
-  }
-  return html;
+  return html.replace(
+    /<div id="site-skip-link-root"><\/div>/,
+    top.trimEnd(),
+  );
 }
 
 function ensureBodyFooterBundles(html, file) {
@@ -225,7 +167,6 @@ for (const file of listHtmlFiles(ROOT)) {
   html = ensureHeadLangBundle(html, file);
   html = ensureBodyShellTop(html, file);
   html = ensureBodyFooterBundles(html, file);
-  html = stripLegacyShellScripts(html);
   if (html !== original) {
     fs.writeFileSync(full, html);
     changed++;

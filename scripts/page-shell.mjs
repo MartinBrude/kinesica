@@ -243,10 +243,11 @@ export function bodyShellTop(prefix) {
   );
 }
 
-export function ctaStripPlaceholder(lang, prefix) {
+export function ctaStripPlaceholder(lang, prefix, { insideMain = false } = {}) {
   const l = partialLang(lang);
+  const divIndent = insideMain ? "    " : "  ";
   return (
-    `  <div id="site-cta-strip-root" data-cta-lang="${l}"></div>\n` +
+    `${divIndent}<div id="site-cta-strip-root" data-cta-lang="${l}"></div>\n` +
     `  <script src="${prefix}js/shell-cta-${l}.min.js" defer></script>`
   );
 }

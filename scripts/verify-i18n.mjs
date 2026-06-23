@@ -6,7 +6,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { repoPath, STEMS } from "./i18n-urls.mjs";
-import { LANG_CODES, SUBDIR_PREFIXES } from "./languages.mjs";
+import { LANG_CODES, SUBDIR_PREFIXES, partialLang } from "./languages.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -15,6 +15,11 @@ const errors = [];
 function hasAsset(html, baseName) {
   const stem = baseName.replace(/\.js$/, "");
   return html.includes(`${stem}.js`) || html.includes(`${stem}.min.js`);
+}
+
+function hasShellBundle(html, name, lang) {
+  const l = partialLang(lang);
+  return hasAsset(html, `shell-${name}-${l}.js`);
 }
 
 function check(file, fn) {
@@ -34,8 +39,9 @@ for (const stem of STEMS) {
         if (!html.includes('hreflang="fr"')) errors.push(`${f}: missing hreflang fr`);
         if (!html.includes('hreflang="en"')) errors.push(`${f}: missing hreflang en`);
         if (!html.includes('hreflang="pt"')) errors.push(`${f}: missing hreflang pt`);
-        if (!html.includes("lang-picker")) errors.push(`${f}: missing lang-picker`);
-        if (!hasAsset(html, "lang-routes.js")) errors.push(`${f}: missing lang-routes`);
+        if (!hasShellBundle(html, "header", lang))
+          errors.push(`${f}: missing shell-header bundle`);
+        if (!hasAsset(html, "head-lang.js")) errors.push(`${f}: missing head-lang bundle`);
         if (!html.includes("/en/")) errors.push(`${f}: missing /en/ links`);
       });
     } else if (lang === "fr") {
@@ -47,11 +53,13 @@ for (const stem of STEMS) {
         }
         if (!html.includes('lang="fr"')) errors.push(`${f}: missing lang=fr`);
         if (!html.includes('hreflang="fr"')) errors.push(`${f}: missing hreflang fr`);
-        if (!hasAsset(html, "footer-fr.js")) errors.push(`${f}: missing footer-fr.js`);
-        if (!hasAsset(html, "whatsapp-float-fr.js"))
-          errors.push(`${f}: missing whatsapp-float-fr.js`);
-        if (!hasAsset(html, "lang-preference.js")) errors.push(`${f}: missing lang-preference.js`);
-        if (!hasAsset(html, "lang-routes.js")) errors.push(`${f}: missing lang-routes.js`);
+        if (!hasShellBundle(html, "footer", lang))
+          errors.push(`${f}: missing shell-footer bundle`);
+        if (!hasShellBundle(html, "whatsapp", lang))
+          errors.push(`${f}: missing shell-whatsapp bundle`);
+        if (!hasAsset(html, "head-lang.js")) errors.push(`${f}: missing head-lang bundle`);
+        if (!hasShellBundle(html, "header", lang))
+          errors.push(`${f}: missing shell-header bundle`);
         if (!html.includes("../css/")) errors.push(`${f}: missing ../ asset paths`);
         if (/Lunes a Viernes|bandera español[^a"]|Squelette FR/i.test(html))
           errors.push(`${f}: leftover ES/EN/skeleton text`);
@@ -63,12 +71,13 @@ for (const stem of STEMS) {
           return;
         }
         if (!html.includes('lang="pt"')) errors.push(`${f}: missing lang=pt`);
-        if (!html.includes("lang-picker")) errors.push(`${f}: missing lang-picker`);
-        if (!hasAsset(html, "footer-pt.js")) errors.push(`${f}: missing footer-pt.js`);
-        if (!hasAsset(html, "whatsapp-float-pt.js"))
-          errors.push(`${f}: missing whatsapp-float-pt.js`);
-        if (!hasAsset(html, "lang-preference.js")) errors.push(`${f}: missing lang-preference.js`);
-        if (!hasAsset(html, "lang-routes.js")) errors.push(`${f}: missing lang-routes.js`);
+        if (!hasShellBundle(html, "footer", lang))
+          errors.push(`${f}: missing shell-footer bundle`);
+        if (!hasShellBundle(html, "whatsapp", lang))
+          errors.push(`${f}: missing shell-whatsapp bundle`);
+        if (!hasAsset(html, "head-lang.js")) errors.push(`${f}: missing head-lang bundle`);
+        if (!hasShellBundle(html, "header", lang))
+          errors.push(`${f}: missing shell-header bundle`);
         if (!html.includes("../css/")) errors.push(`${f}: missing ../ asset paths`);
       });
     } else if (lang === "en") {
@@ -78,11 +87,12 @@ for (const stem of STEMS) {
           return;
         }
         if (!html.includes('hreflang="fr"')) errors.push(`${f}: missing hreflang fr`);
-        if (!html.includes("lang-picker")) errors.push(`${f}: missing lang-picker`);
-        if (!hasAsset(html, "footer-en.js")) errors.push(`${f}: missing footer-en.js`);
+        if (!hasShellBundle(html, "footer", lang))
+          errors.push(`${f}: missing shell-footer bundle`);
         if (!html.includes("../js/")) errors.push(`${f}: missing ../js/ paths`);
-        if (!hasAsset(html, "lang-routes.js")) errors.push(`${f}: missing lang-routes.js`);
-        if (!hasAsset(html, "lang-preference.js")) errors.push(`${f}: missing lang-preference.js`);
+        if (!hasShellBundle(html, "header", lang))
+          errors.push(`${f}: missing shell-header bundle`);
+        if (!hasAsset(html, "head-lang.js")) errors.push(`${f}: missing head-lang bundle`);
       });
     }
   }
@@ -119,7 +129,9 @@ check(".htaccess", (html) => {
 });
 
 check("404-router.html", (html) => {
-  if (!hasAsset(html, "lang-preference.js")) errors.push("404-router.html: missing lang-preference");
+  if (!hasAsset(html, "lang-routes.js")) errors.push("404-router.html: missing lang-routes");
+  if (!hasAsset(html, "lang-preference.js"))
+    errors.push("404-router.html: missing lang-preference (standalone router page)");
   if (!html.includes("/en/404.html")) errors.push("404-router.html: missing /en/404.html target");
 });
 

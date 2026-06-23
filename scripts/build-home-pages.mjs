@@ -8,7 +8,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { HTML_LANG, repoPath } from "./i18n-urls.mjs";
-import { LANG_CODES, partialLang } from "./languages.mjs";
+import { LANG_CODES } from "./languages.mjs";
 import { HOME, HOME_HERO_IMAGE, googleReviewsBlock } from "./home-content.mjs";
 import { headerShellMarkup } from "./header-shell.mjs";
 import {
@@ -16,6 +16,7 @@ import {
   assetPrefixForLang,
   bodyFooterAndUiScripts,
   bodyShellTop,
+  ctaStripPlaceholder,
   headCriticalCss,
   headFavicon,
   headJsClassScript,
@@ -29,12 +30,6 @@ import {
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-function ctaInsideMain(lang, prefix) {
-  const l = partialLang(lang);
-  return `    <div id="site-cta-strip-root" data-cta-lang="${l}"></div>
-  <script src="${prefix}js/shell-cta-${l}.min.js" defer></script>`;
-}
-
 function buildMainHtml(lang, prefix) {
   const copy = HOME[lang];
   const reviewsMarkup = googleReviewsBlock(lang)
@@ -43,7 +38,10 @@ function buildMainHtml(lang, prefix) {
   let body = copy.mainHtml
     .replace("__GOOGLE_REVIEWS_PLACEHOLDER__", reviewsMarkup)
     .replace(/__PREFIX__/g, prefix)
-    .replace("__CTA_PLACEHOLDER__", ctaInsideMain(lang, prefix));
+    .replace(
+      "__CTA_PLACEHOLDER__",
+      ctaStripPlaceholder(lang, prefix, { insideMain: true }),
+    );
   return body;
 }
 
