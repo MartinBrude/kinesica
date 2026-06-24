@@ -1005,7 +1005,6 @@ main:focus {
 
 #navigation > ul > li > button.nav-parent {
   cursor: pointer;
-  font: inherit;
   text-align: inherit;
 }
 
@@ -3284,6 +3283,7 @@ html {
   align-items: center;
   gap: 0.35rem;
   padding: 15px 25px;
+  font-family: var(--font-main);
   font-size: 14px;
   font-weight: 500;
   letter-spacing: 0.03em;
