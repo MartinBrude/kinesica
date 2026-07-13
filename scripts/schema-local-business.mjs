@@ -5,6 +5,7 @@
 import { SITE, absoluteUrl, STEMS, HTML_LANG } from "./i18n-urls.mjs";
 import { LANG_CODES, expectedLangFromFile } from "./languages.mjs";
 import { GOOGLE_MAPS_URL } from "./google-place.mjs";
+import { CONTACT, SOCIALS, waMeUrl } from "./site-contact.mjs";
 
 export const BUSINESS_ID = `${SITE}/#kinesica`;
 
@@ -14,8 +15,8 @@ export function getMethodServiceCopy(lang, stem) {
 }
 
 const MAPS_URL = GOOGLE_MAPS_URL;
-const WHATSAPP_URL = "https://wa.me/5491161564311";
-const EMAIL = "norberto1712@gmail.com";
+const WHATSAPP_URL = waMeUrl(CONTACT.whatsappDigits);
+const EMAIL = CONTACT.email;
 
 const COPY = {
   es: {
@@ -518,8 +519,9 @@ export function buildPhysiotherapyClinic(lang) {
     },
     hasOfferCatalog: buildOfferCatalog(lang),
     sameAs: [
-      "https://www.facebook.com/kinesicabrude",
-      "https://www.instagram.com/kinesicabrude/",
+      SOCIALS.facebookBusiness,
+      SOCIALS.instagramBusiness,
+      SOCIALS.instagramMaria,
       MAPS_URL,
     ],
   };

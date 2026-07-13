@@ -27,12 +27,14 @@ import {
 } from "./page-shell.mjs";
 import { langBundlePath } from "./js-bundles.mjs";
 import { partialLang } from "./languages.mjs";
+import { CONTACT, waMeUrl, mailtoUrl } from "./site-contact.mjs";
 
 const require = createRequire(import.meta.url);
 const { toMinPath } = require("../assets.config.cjs");
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const CV_EMAIL = "norberto1712@gmail.com";
+const CV_EMAIL = CONTACT.email;
+const CV_WHATSAPP_URL = waMeUrl(CONTACT.whatsappDigits);
 
 /** Ruta de producción (.min) con prefijo en/ o fr/. */
 function asset(prefix, rel) {
@@ -119,7 +121,7 @@ function buildPage(lang, data) {
       name: "Norberto Silvio Brude",
       jobTitle: data.role,
       email: CV_EMAIL,
-      telephone: "+54-11-6156-4311",
+      telephone: CONTACT.phoneDisplay.replace(/[()\\s]/g, "").replace(/^\\+/, "+"),
       url: canonical,
       image: profileImage,
       worksFor: {
@@ -181,8 +183,8 @@ ${bodyShellTop(prefix)}${headerShellMarkup(lang, prefix)}
             <h1>Norberto Brude</h1>
             <p class="cv-role">${escHtml(data.role)}</p>
             <ul class="cv-contact">
-              <li><a href="mailto:${CV_EMAIL}">${CV_EMAIL}</a></li>
-              <li><a href="https://wa.me/5491161564311" class="dynamic-whatsapp-url" target="_blank" rel="noopener noreferrer">(+54) 1161564311</a></li>
+              <li><a href="${mailtoUrl(CV_EMAIL)}">${CV_EMAIL}</a></li>
+              <li><a href="${CV_WHATSAPP_URL}" class="dynamic-whatsapp-url" target="_blank" rel="noopener noreferrer">${CONTACT.phoneDisplay}</a></li>
               <li>${escHtml(data.location)}</li>
             </ul>
           </div>
