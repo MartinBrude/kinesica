@@ -12,6 +12,7 @@ import {
   TECHNIQUE_NAV_STEMS,
 } from "./partials-strings.mjs";
 import { escAttr, escHtml } from "./html-utils.mjs";
+import { CONTACT, SOCIALS, waMeUrl } from "./site-contact.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = path.join(ROOT, "partials");
@@ -128,11 +129,15 @@ ${techniqueLinks}
           <h2 class="widget-title">${s.socialTitle}</h2>
           <ul class="listnone">
             <li>
-              <a href="https://www.instagram.com/kinesicabrude/" target="_blank" rel="noopener noreferrer"><i
+              <a href="${SOCIALS.instagramBusiness}" target="_blank" rel="noopener noreferrer"><i
                   class="fa fa-instagram" aria-hidden="true"></i> kinesicabrude</a>
             </li>
             <li>
-              <a href="https://www.facebook.com/kinesicabrude/" target="_blank" rel="noopener noreferrer"><i
+              <a href="${SOCIALS.instagramMaria}" target="_blank" rel="noopener noreferrer"><i
+                  class="fa fa-instagram" aria-hidden="true"></i> kinesio_mariagulin</a>
+            </li>
+            <li>
+              <a href="${SOCIALS.facebookBusiness}" target="_blank" rel="noopener noreferrer"><i
                   class="fa fa-facebook" aria-hidden="true"></i> kinesicabrude</a>
             </li>
           </ul>
@@ -143,13 +148,13 @@ ${techniqueLinks}
           <h2 class="widget-title">${s.clinicTitle}</h2>
           <ul class="listnone">
             <li>
-              <a href="https://maps.app.goo.gl/urpkh4HYe7dSdjPS9" target="_blank" rel="noopener noreferrer"
-                title="${escAttr(s.mapsTitle)}"><i class="fa fa-map-marker" aria-hidden="true"></i> Charcas 3889, CABA</a>
+              <a href="${CONTACT.mapsUrl}" target="_blank" rel="noopener noreferrer"
+                title="${escAttr(s.mapsTitle)}"><i class="fa fa-map-marker" aria-hidden="true"></i> ${CONTACT.address.shortLine}</a>
             </li>
             <li>
               <a href="#" class="dynamic-whatsapp-link" target="_blank" rel="noopener noreferrer">
                 <i class="fa fa-phone" aria-hidden="true"></i>
-                <span class="dynamic-whatsapp-text">+54 (11) 6156-4311</span>
+                <span class="dynamic-whatsapp-text">${CONTACT.phoneDisplay}</span>
               </a>
             </li>
           </ul>
@@ -185,7 +190,7 @@ function buildCtaStrip(lang, s) {
             <p class="cta-text">${s.ctaText}</p>
           </div>
           <div class="col-lg-4 col-sm-4 col-md-4 col-xs-12">
-            <a href="https://wa.me/5491161564311" target="_blank" class="btn btn-white btn-lg mt20 dynamic-whatsapp-url"
+            <a href="${waMeUrl(CONTACT.whatsappDigits)}" target="_blank" class="btn btn-white btn-lg mt20 dynamic-whatsapp-url"
               rel="noopener noreferrer">${s.ctaButton}</a>
           </div>
         </div>
@@ -199,7 +204,7 @@ function buildWhatsappFloat(lang, s) {
     "whatsapp-float",
     lang,
     s.whatsappComment,
-    `<a id="whatsapp-link" href="https://wa.me/5491161564311" class="whatsapp-float" target="_blank"
+    `<a id="whatsapp-link" href="${waMeUrl(CONTACT.whatsappDigits)}" class="whatsapp-float" target="_blank"
   aria-label="${escAttr(s.whatsappAria)}" rel="noopener noreferrer">
   <i class="fa fa-whatsapp whatsapp-icon" aria-hidden="true"></i>
 </a>`,

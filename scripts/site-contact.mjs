@@ -2,6 +2,8 @@
  * Single source of truth for clinic contact + social profiles.
  * Used by generators (schema, partials, CV, etc.) and optionally by browser config.
  */
+import { GOOGLE_MAPS_URL } from "./google-place.mjs";
+
 export const CONTACT = {
   /** WhatsApp phone in international format (digits only, no +). */
   whatsappDigits: "5491161564311",
@@ -9,6 +11,8 @@ export const CONTACT = {
   phoneDisplay: "+54 (11) 6156-4311",
   /** Primary email for contact. */
   email: "norberto1712@gmail.com",
+  /** Google Maps short link (same as Google Business Profile listing). */
+  mapsUrl: GOOGLE_MAPS_URL,
   /** Clinic address (UI + schema). */
   address: {
     streetAddress: "Charcas 3889",

@@ -1,7 +1,9 @@
 function kinesicaApplyWhatsAppContact() {
+  var site = window.KINESICA_SITE || {};
+  var cfg = site.contact || {};
   var contactData = {
-    whatsapp: "5491161564311",
-    whatsappText: "+54 (11) 6156-4311",
+    whatsapp: cfg.whatsappDigits || "5491161564311",
+    whatsappText: cfg.phoneDisplay || "+54 (11) 6156-4311",
   };
 
   function setupLinks(selector, urlBase, phone) {
