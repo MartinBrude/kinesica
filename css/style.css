@@ -2699,6 +2699,7 @@ address {
   color: #031c42;
 }
 
+.space-medium:has(.team-grid),
 .space-medium:has(.team-block) {
   background: linear-gradient(
     180deg,
@@ -2706,6 +2707,21 @@ address {
     var(--bg-sky-mid) 42%,
     var(--bg-white) 100%
   );
+}
+
+.team-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 40px 56px;
+  width: 100%;
+}
+
+.team-grid .team-block {
+  flex: 1 1 220px;
+  max-width: 300px;
+  margin-bottom: 0;
 }
 
 .team-block {

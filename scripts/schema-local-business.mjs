@@ -21,15 +21,16 @@ const COPY = {
   es: {
     homeUrl: `${SITE}/`,
     description:
-      "Centro de fisioterapia y kinesiología en Palermo, Buenos Aires: osteopatía, RPG, neurodinamia y terapias manuales personalizadas.",
+      "Centro de fisioterapia y kinesiología en Palermo, Buenos Aires: kinesiología, osteopatía, RPG, ATM y terapias manuales personalizadas.",
     bookAction: "Reservar turno por WhatsApp",
     catalogName: "Tratamientos Kinésica",
     specialties: [
       "Fisioterapia",
       "Kinesiología",
       "Osteopatía",
-      "Terapia manual",
       "RPG",
+      "ATM",
+      "Terapia manual",
     ],
     services: {
       osteopatia: {
@@ -107,15 +108,16 @@ const COPY = {
   en: {
     homeUrl: `${SITE}/en/`,
     description:
-      "Physiotherapy and kinesiology clinic in Palermo, Buenos Aires: osteopathy, RPG, neurodynamics, and personalized manual therapy.",
+      "Physiotherapy and kinesiology clinic in Palermo, Buenos Aires: kinesiology, osteopathy, RPG, TMJ, and personalized manual therapy.",
     bookAction: "Book via WhatsApp",
     catalogName: "Kinésica treatments",
     specialties: [
       "Physiotherapy",
       "Kinesiology",
       "Osteopathy",
-      "Manual therapy",
       "RPG",
+      "TMJ",
+      "Manual therapy",
     ],
     services: {
       osteopatia: {
@@ -193,15 +195,16 @@ const COPY = {
   fr: {
     homeUrl: `${SITE}/fr/`,
     description:
-      "Centre de kinésithérapie et physiothérapie à Palermo, Buenos Aires : ostéopathie, RPG, neurodynamique et thérapies manuelles personnalisées.",
+      "Centre de kinésithérapie et physiothérapie à Palermo, Buenos Aires : kinésithérapie, ostéopathie, RPG, ATM et thérapies manuelles personnalisées.",
     bookAction: "Prendre rendez-vous via WhatsApp",
     catalogName: "Traitements Kinésica",
     specialties: [
       "Kinésithérapie",
       "Physiothérapie",
       "Ostéopathie",
-      "Thérapie manuelle",
       "RPG",
+      "ATM",
+      "Thérapie manuelle",
     ],
     services: {
       osteopatia: {
@@ -279,14 +282,15 @@ const COPY = {
   pt: {
     homeUrl: `${SITE}/pt/`,
     description:
-      "Clínica de fisioterapia em Palermo, Buenos Aires: osteopatia, RPG, neurodinâmica e terapia manual personalizada.",
+      "Clínica de fisioterapia em Palermo, Buenos Aires: fisioterapia, osteopatia, RPG, ATM e terapia manual personalizada.",
     bookAction: "Agendar pelo WhatsApp",
     catalogName: "Tratamentos Kinésica",
     specialties: [
       "Fisioterapia",
       "Osteopatia",
-      "Terapia manual",
       "RPG",
+      "ATM",
+      "Terapia manual",
     ],
     services: {
       osteopatia: {

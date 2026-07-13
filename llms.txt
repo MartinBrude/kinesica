@@ -1,6 +1,6 @@
 # Kinésica
 
-> Centro de kinesiología, osteopatía y terapias manuales en Palermo, Buenos Aires (Argentina). Sitio informativo en español (principal), inglés, francés y portugués.
+> Centro de kinesiología, osteopatía, RPG, ATM y terapias manuales en Palermo, Buenos Aires (Argentina). Sitio informativo en español (principal), inglés, francés y portugués.
 
 Información útil para asistentes y crawlers:
 
@@ -13,7 +13,7 @@ Información útil para asistentes y crawlers:
 
 ## Páginas principales
 
-- [Inicio (español, Argentina)](https://www.kinesica.com.ar/): Kinésica es un centro de kinesiología, osteopatía y terapias manuales en Palermo que ofrece tratamientos personalizados.
+- [Inicio (español, Argentina)](https://www.kinesica.com.ar/): Kinésica es un centro de kinesiología, osteopatía, RPG y ATM en Palermo. Terapias manuales personalizadas.
 - [Artículos y patologías](https://www.kinesica.com.ar/articulos.html): Artículos sobre kinesiología, osteopatía y terapia manual. Información sobre cervicalgia, lumbalgia y tratamientos en Palermo.
 - [CV — Norberto Silvio Brude](https://www.kinesica.com.ar/cv.html): Kinesiólogo y osteópata; formación y experiencia profesional.
 
@@ -60,7 +60,7 @@ Información útil para asistentes y crawlers:
 
 ## English
 
-- [Home (English)](https://www.kinesica.com.ar/en/): Kinésica is a center for kinesiology, osteopathy, and manual therapy in Palermo offering personalized treatments.
+- [Home (English)](https://www.kinesica.com.ar/en/): Kinésica is a clinic for kinesiology, osteopathy, RPG, and TMJ in Palermo offering personalized manual therapy.
 - [Articles & conditions](https://www.kinesica.com.ar/en/articulos.html): Articles about kinesiology, osteopathy, and manual therapy. Information about cervical pain, low back pain, and treatments in Palermo.
 - [CV — Norberto Silvio Brude](https://www.kinesica.com.ar/en/cv.html): Physiotherapist and osteopath profile.
 
@@ -78,7 +78,7 @@ Información útil para asistentes y crawlers:
 
 ## Français
 
-- [Accueil (français)](https://www.kinesica.com.ar/fr/): Kinésica est un centre de kinésithérapie, ostéopathie et thérapie manuelle à Palermo, avec des traitements personnalisés.
+- [Accueil (français)](https://www.kinesica.com.ar/fr/): Kinésica est un centre de kinésithérapie, ostéopathie, RPG et ATM à Palermo. Thérapies manuelles personnalisées.
 - [Articles et pathologies](https://www.kinesica.com.ar/fr/articulos.html): Articles sur la kinésithérapie, l'ostéopathie et la thérapie manuelle : douleur cervicale, lombalgie et traitements à Palermo.
 - [CV — Norberto Silvio Brude](https://www.kinesica.com.ar/fr/cv.html): Profil du kinésithérapeute et ostéopathe.
 
@@ -96,7 +96,7 @@ Información útil para asistentes y crawlers:
 
 ## Português
 
-- [Início (português)](https://www.kinesica.com.ar/pt/): Kinésica é um centro de fisioterapia, osteopatia e terapias manuais em Palermo com tratamentos personalizados.
+- [Início (português)](https://www.kinesica.com.ar/pt/): Kinésica é um centro de fisioterapia, osteopatia, RPG e ATM em Palermo com terapias manuais personalizadas.
 - [Artigos e condições](https://www.kinesica.com.ar/pt/articulos.html): Artigos sobre fisioterapia, osteopatia e terapia manual: dor cervical, lombalgia e tratamentos em Palermo.
 - [Currículo — Norberto Silvio Brude](https://www.kinesica.com.ar/pt/cv.html): Perfil do fisioterapeuta e osteopata.
 

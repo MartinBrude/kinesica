@@ -14,7 +14,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = path.join(ROOT, "llms.txt");
 const OUT_FULL = path.join(ROOT, "llms-full.txt");
 
-const INTRO = `> Centro de kinesiología, osteopatía y terapias manuales en Palermo, Buenos Aires (Argentina). Sitio informativo en español (principal), inglés, francés y portugués.
+const INTRO = `> Centro de kinesiología, osteopatía, RPG, ATM y terapias manuales en Palermo, Buenos Aires (Argentina). Sitio informativo en español (principal), inglés, francés y portugués.
 
 Información útil para asistentes y crawlers:
 
