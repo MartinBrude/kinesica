@@ -27,6 +27,10 @@ window.__KINESICA_FOOTER_SNIPPET_FR = `
                   class="fa fa-instagram" aria-hidden="true"></i> kinesicabrude</a>
             </li>
             <li>
+              <a href="https://www.instagram.com/kinesio_mariagulin/" target="_blank" rel="noopener noreferrer"><i
+                  class="fa fa-instagram" aria-hidden="true"></i> kinesio_mariagulin</a>
+            </li>
+            <li>
               <a href="https://www.facebook.com/kinesicabrude/" target="_blank" rel="noopener noreferrer"><i
                   class="fa fa-facebook" aria-hidden="true"></i> kinesicabrude</a>
             </li>
