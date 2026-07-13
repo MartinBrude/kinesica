@@ -2,6 +2,10 @@
  * UI strings for generated partials (header, nav, footer, CTA, WhatsApp).
  * Edit here, then: npm run build:partials && npm run assets:build
  */
+/** Bootstrap column for footer social block (same width in all locales). */
+export const FOOTER_SOCIAL_COL_CLASS =
+  "col-lg-3 col-md-4 col-sm-4 col-xs-12";
+
 export const TECHNIQUE_NAV_STEMS = [
   "rpg",
   "osteopatia",
@@ -40,7 +44,6 @@ export const PARTIAL_STRINGS = {
     clinicTitle: "Consultorio",
     mapsTitle: "Ver Kinésica en Google Maps",
     copyright: "© Kinésica — Todos los derechos reservados",
-    footerSocialColClass: "col-lg-2 col-md-4 col-sm-4 col-xs-12",
     ctaTitle: "Contáctanos y reserva un turno",
     ctaText: "Antes de la primera sesión hacemos una llamada para aclarar dudas.",
     ctaButton: "Contacto",
@@ -79,7 +82,6 @@ export const PARTIAL_STRINGS = {
     clinicTitle: "Clinic",
     mapsTitle: "View Kinésica on Google Maps",
     copyright: "© Kinésica — All rights reserved",
-    footerSocialColClass: "col-lg-2 col-md-4 col-sm-4 col-xs-12",
     ctaTitle: "Contact us and book an appointment",
     ctaText: "Before the first session we can chat to clarify any questions.",
     ctaButton: "Contact",
@@ -118,7 +120,6 @@ export const PARTIAL_STRINGS = {
     clinicTitle: "Cabinet",
     mapsTitle: "Voir Kinésica sur Google Maps",
     copyright: "© Kinésica — Tous droits réservés",
-    footerSocialColClass: "col-lg-3 col-md-4 col-sm-4 col-xs-12",
     ctaTitle: "Contactez-nous et prenez rendez-vous",
     ctaText:
       "Avant la première séance, nous pouvons échanger pour répondre à vos questions.",
@@ -156,7 +157,6 @@ export const PARTIAL_STRINGS = {
     clinicTitle: "Consultório",
     mapsTitle: "Ver Kinésica no Google Maps",
     copyright: "© Kinésica — Todos os direitos reservados",
-    footerSocialColClass: "col-lg-2 col-md-4 col-sm-4 col-xs-12",
     ctaTitle: "Fale conosco e agende",
     ctaText: "Antes da primeira sessão podemos ligar para tirar dúvidas.",
     ctaButton: "Contato",

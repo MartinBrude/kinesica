@@ -1741,6 +1741,10 @@ main:focus {
 
 .footer-social ul li {}
 
+.footer-social ul li a {
+  white-space: nowrap;
+}
+
 .footer-social ul li a i {
   padding-right: 10px;
   width: 30px;

@@ -8,6 +8,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { LANG_CODES } from "./languages.mjs";
 import {
+  FOOTER_SOCIAL_COL_CLASS,
   PARTIAL_STRINGS,
   TECHNIQUE_NAV_STEMS,
 } from "./partials-strings.mjs";
@@ -124,7 +125,7 @@ ${techniqueLinks}
           </ul>
         </div>
       </div>
-      <div class="${s.footerSocialColClass}">
+      <div class="${FOOTER_SOCIAL_COL_CLASS}">
         <div class="footer-widget footer-social">
           <h2 class="widget-title">${s.socialTitle}</h2>
           <ul class="listnone">
