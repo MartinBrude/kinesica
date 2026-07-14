@@ -66,7 +66,7 @@ const TEAM_ABOUT = {
     eyebrow: "Profesionales",
     title: "Sobre nosotros",
     lead:
-      "Somos kinesiólogos que nos perfeccionamos permanentemente aprendiendo nuevos métodos para poder ayudarte. Una persona tiene muchos aspectos, y buscamos distintas miradas para poder comprenderla. El abordaje que realizamos es en <span class=\"text-highlight\">Terapia Manual</span>. Utilizamos los métodos de tratamiento según la necesidad del paciente y la problemática que tenga. No te acostumbres a vivir con dolor, podemos encontrar juntos un camino para que vivas mejor. Kinésica es un centro de atención en kinesiología, osteopatía, RPG y ATM en Palermo.",
+      "Somos kinesiólogos que nos perfeccionamos permanentemente, aprendiendo nuevos métodos para poder ayudarte. Una persona tiene muchos aspectos, y buscamos distintas miradas para comprenderla. Nuestro abordaje es la <span class=\"text-highlight\">Terapia Manual</span>: utilizamos los métodos de tratamiento según la necesidad de cada paciente y la problemática que presente. No te acostumbres a vivir con dolor; podemos encontrar juntos un camino para que vivas mejor. Para ayudarte armamos Kinésica, un centro de atención en kinesiología, osteopatía, RPG y ATM en Palermo.",
     members: [
       {
         name: "Norberto Brude",
@@ -90,7 +90,7 @@ const TEAM_ABOUT = {
     eyebrow: "Professionals",
     title: "About us",
     lead:
-      "We are kinesiologists who continuously refine our skills by learning new methods to better assist you. A person has many aspects, and we seek different perspectives to understand them. Our approach is based on <span class=\"text-highlight\">Manual Therapy</span>. We apply treatment methods according to the patient's needs and specific condition. Don't get used to living with pain—we can find a path together for you to live better. Kinésica is a clinic for kinesiology, osteopathy, RPG, and TMJ in Palermo.",
+      "We are kinesiologists who continuously refine our skills by learning new methods to better assist you. A person has many aspects, and we seek different perspectives to understand them. Our approach is <span class=\"text-highlight\">Manual Therapy</span>: we apply treatment methods according to each patient's needs and specific condition. Don't get used to living with pain; together we can find a path for you to live better. To help you, we created Kinésica, a clinic for kinesiology, osteopathy, RPG, and TMJ in Palermo.",
     members: [
       {
         name: "Norberto Brude",
@@ -114,7 +114,7 @@ const TEAM_ABOUT = {
     eyebrow: "Praticiens",
     title: "À propos de nous",
     lead:
-      "Nous sommes kinésithérapeutes et affinons continuellement nos compétences pour mieux vous accompagner. Une personne a de nombreuses dimensions : nous cherchons plusieurs perspectives pour les comprendre. Notre approche repose sur la <span class=\"text-highlight\">thérapie manuelle</span>, adaptée aux besoins et à l'état de chaque patient. N'habituez pas votre corps à la douleur — ensemble, nous pouvons trouver un chemin vers un mieux-être. Kinésica est un cabinet de kinésithérapie, ostéopathie, RPG et ATM à Palermo.",
+      "Nous sommes kinésithérapeutes et affinons continuellement nos compétences pour mieux vous accompagner. Une personne a de nombreuses dimensions : nous cherchons plusieurs perspectives pour les comprendre. Notre approche est la <span class=\"text-highlight\">thérapie manuelle</span> : nous adaptons les techniques aux besoins et à l'état de chaque patient. N'habituez pas votre corps à la douleur ; ensemble, nous pouvons trouver un chemin vers un mieux-être. Pour vous aider, nous avons créé Kinésica, un cabinet de kinésithérapie, ostéopathie, RPG et ATM à Palermo.",
     members: [
       {
         name: "Norberto Brude",
@@ -138,7 +138,7 @@ const TEAM_ABOUT = {
     eyebrow: "Profissionais",
     title: "Sobre nós",
     lead:
-      "Somos fisioterapeutas e aprimoramos continuamente nossas habilidades para cuidar melhor de você. Uma pessoa tem muitos aspectos, e buscamos diferentes perspectivas para compreendê-la. Nossa abordagem se baseia em <span class=\"text-highlight\">terapia manual</span>, adaptada às necessidades e à condição de cada paciente. Não se acostume a viver com dor — podemos encontrar juntos um caminho para você viver melhor. Kinésica é um centro de fisioterapia, osteopatia, RPG e ATM em Palermo.",
+      "Somos fisioterapeutas e aprimoramos continuamente nossas habilidades, incorporando novos métodos para cuidar melhor de você. Uma pessoa tem muitos aspectos, e buscamos diferentes perspectivas para compreendê-la. Nossa abordagem é a <span class=\"text-highlight\">terapia manual</span>: aplicamos cada técnica conforme a necessidade e a condição de cada paciente. Não se acostume a viver com dor; podemos encontrar juntos um caminho para você viver melhor. Para ajudá-lo, criamos a Kinésica, um centro de fisioterapia, osteopatia, RPG e ATM em Palermo.",
     members: [
       {
         name: "Norberto Brude",
