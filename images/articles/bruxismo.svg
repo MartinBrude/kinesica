@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="bg-bruxismo" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="hsl(205 42% 99%)"/>
+      <stop offset="55%" stop-color="hsl(205 38% 96%)"/>
+      <stop offset="100%" stop-color="hsl(205 48% 90%)"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg-bruxismo)"/>
+  <g transform="translate(0, 4)"><circle cx="292" cy="88" r="6" fill="#2ebfa5"/>
+    <circle cx="308" cy="72" r="8" fill="#2ebfa5"/>
+    <circle cx="328" cy="68" r="9" fill="#2ebfa5"/>
+    <circle cx="348" cy="78" r="7" fill="#2ebfa5"/>
+    <circle cx="358" cy="98" r="6" fill="#2ebfa5"/>
+    <circle cx="338" cy="118" r="5" fill="#2ebfa5"/>
+    <circle cx="318" cy="122" r="5" fill="#2ebfa5"/>
+    <circle cx="298" cy="118" r="5" fill="#2ebfa5"/>
+    <circle cx="278" cy="255" r="6" fill="#2ebfa5"/>
+    <circle cx="288" cy="272" r="6" fill="#2ebfa5"/>
+    <circle cx="378" cy="188" r="7" fill="#2ebfa5"/>
+    <circle cx="392" cy="205" r="6" fill="#2ebfa5"/>
+    <path d="M300 95 Q318 130 310 175 Q305 210 295 235 Q285 255 278 268 M310 175 Q355 165 385 195" fill="none" stroke="#2ebfa5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></g>
+</svg>

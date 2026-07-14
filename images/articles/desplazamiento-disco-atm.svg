@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="bg-desplazamiento-disco-atm" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="hsl(178 42% 99%)"/>
+      <stop offset="55%" stop-color="hsl(178 38% 96%)"/>
+      <stop offset="100%" stop-color="hsl(178 48% 90%)"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg-desplazamiento-disco-atm)"/>
+  <g transform="translate(0, 4)"><circle cx="288" cy="85" r="6" fill="#2ebfa5"/>
+    <circle cx="305" cy="70" r="8" fill="#2ebfa5"/>
+    <circle cx="325" cy="68" r="8" fill="#2ebfa5"/>
+    <circle cx="345" cy="78" r="7" fill="#2ebfa5"/>
+    <circle cx="355" cy="98" r="6" fill="#2ebfa5"/>
+    <circle cx="328" cy="165" r="9" fill="#2ebfa5"/>
+    <circle cx="328" cy="178" r="7" fill="#2ebfa5"/>
+    <circle cx="365" cy="182" r="6" fill="#2ebfa5"/>
+    <circle cx="378" cy="198" r="5" fill="#2ebfa5"/>
+    <circle cx="278" cy="248" r="6" fill="#2ebfa5"/>
+    <circle cx="288" cy="268" r="5" fill="#2ebfa5"/>
+    <path d="M295 92 Q318 135 305 185 Q298 225 288 255 M305 165 Q345 155 372 185 Q345 205 305 198" fill="none" stroke="#2ebfa5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></g>
+</svg>

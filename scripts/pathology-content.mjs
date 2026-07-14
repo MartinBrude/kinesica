@@ -32,6 +32,9 @@ export const PATHOLOGY_STEMS = [
   "meniscopatia",
   "fascitis-plantar",
   "cervicalgia",
+  "bruxismo",
+  "desplazamiento-disco-atm",
+  "artrosis-atm",
 ];
 
 export const TECHNIQUE_LABELS = {
@@ -2602,12 +2605,309 @@ export const PATHOLOGIES = [
       techniquesNote: "Selecionamos técnicas e exercícios conforme sua irritabilidade e rotina.",
     },
   },
+
+  {
+    stem: "bruxismo",
+    image: "hero-img.jpg",
+    updatedAt: "2026-07-14",
+    techniques: ["atm", "osteopatia", "manipulaciones", "rpg"],
+    es: {
+      title: "Bruxismo y dolor miofascial de la ATM",
+      breadcrumb: "Bruxismo",
+      metaDescription:
+        "Bruxismo y dolor miofascial mandibular en Kinésica (Buenos Aires). Evaluamos músculos masticatorios, ATM y postura para aliviar dolor, tensión y recurrencias.",
+      h1: "Bruxismo y dolor miofascial",
+      lead: "El bruxismo y la tensión de los músculos masticatorios son la causa más frecuente de dolor en la ATM. Un abordaje integral alivia la sobrecarga y reduce la irradiación hacia oído, sien o cuello.",
+      paragraphs: [
+        "Los trastornos de los músculos masticatorios —a veces llamados dolor miofascial— son la causa más común de molestias en la articulación temporomandibular. El dolor no siempre proviene del cartílago o del hueso, sino de la fatiga y la tensión sostenida de los músculos que mueven la mandíbula.",
+        "El bruxismo es el hábito involuntario de apretar o rechinar los dientes, con frecuencia durante el sueño. Esa sobrecarga repetida tensiona maseteros, temporales y músculos profundos de la mandíbula. Los puntos gatillo son zonas de tensión acumulada que pueden irradiar dolor hacia el oído, la sien, la cara o el cuello.",
+        "Sin tratamiento, el dolor puede volverse crónico, empeorar con el estrés o la falta de descanso y asociarse a cefaleas, rigidez cervical o sensación de oído tapado. Muchas personas también notan mayor sensibilidad al masticar alimentos duros o al despertar.",
+        "En Kinésica evaluamos la ATM, la movilidad mandibular, la postura cervical y los hábitos de apretamiento. Integramos técnicas de ATM, osteopatía, manipulaciones suaves y RPG para liberar tensión muscular, mejorar la coordinación mandibular y reducir la carga sobre la articulación.",
+        "El plan incluye pautas de autocuidado, estrategias para el estrés y, cuando corresponde, recomendaciones sobre férulas o hábitos nocturnos. El objetivo es disminuir el dolor, recuperar la apertura cómoda de la boca y prevenir recaídas.",
+      ],
+      complications: [
+        "Cefalea tensional",
+        "Dolor referido al oído o la sien",
+        "Rigidez cervical",
+        "Desgaste dental por apretamiento",
+        "Dolor al masticar o al despertar",
+      ],
+      techniquesNote: "El abordaje se adapta según si el bruxismo es diurno, nocturno o mixto y según tu nivel de irritabilidad.",
+    },
+    en: {
+      title: "Bruxism and TMJ myofascial pain",
+      breadcrumb: "Bruxism",
+      metaDescription:
+        "Bruxism and TMJ myofascial pain at Kinésica (Buenos Aires). We assess masticatory muscles, jaw mechanics and posture to relieve tension and reduce flare-ups.",
+      h1: "Bruxism and myofascial pain",
+      lead: "Bruxism and masticatory muscle tension are the most common cause of TMJ discomfort. An integrated approach eases overload and referred pain to the ear, temple or neck.",
+      paragraphs: [
+        "Masticatory muscle disorders —often described as myofascial pain— are the most frequent cause of temporomandibular symptoms. Pain may not come from cartilage or bone, but from fatigue and sustained tension in the muscles that move the jaw.",
+        "Bruxism is the involuntary habit of clenching or grinding the teeth, often during sleep. Repeated overload tightens the masseters, temporalis and deep jaw muscles. Trigger points are areas of accumulated tension that can refer pain to the ear, temple, face or neck.",
+        "Without treatment, pain can become chronic, worsen with stress or poor sleep and be associated with headaches, neck stiffness or a blocked-ear sensation. Many people also notice increased sensitivity when chewing hard foods or on waking.",
+        "At Kinésica we assess the TMJ, jaw mobility, neck posture and clenching habits. We integrate TMJ techniques, osteopathy, gentle manual work and RPG to release muscle tension, improve jaw coordination and reduce load on the joint.",
+        "The plan includes self-care guidance, stress strategies and, when appropriate, recommendations on splints or night-time habits. The goal is to reduce pain, restore comfortable mouth opening and prevent recurrences.",
+      ],
+      complications: [
+        "Tension-type headaches",
+        "Referred pain to ear or temple",
+        "Neck stiffness",
+        "Tooth wear from clenching",
+        "Pain when chewing or on waking",
+      ],
+      techniquesNote: "We tailor care depending on whether bruxism is daytime, nighttime or mixed, and on symptom irritability.",
+    },
+    fr: {
+      title: "Bruxisme et douleur myofasciale de l’ATM",
+      breadcrumb: "Bruxisme",
+      metaDescription:
+        "Bruxisme et douleur myofasciale mandibulaire chez Kinésica (Buenos Aires). Bilan des muscles masticateurs, de l’ATM et de la posture pour soulager tension et récidives.",
+      h1: "Bruxisme et douleur myofasciale",
+      lead: "Le bruxisme et la tension des muscles masticateurs sont la cause la plus fréquente de douleur à l’ATM. Une prise en charge globale réduit la surcharge et l’irradiation vers l’oreille, la tempe ou le cou.",
+      paragraphs: [
+        "Les troubles des muscles masticateurs —souvent appelés douleur myofasciale— sont la cause la plus courante de gêne à l’articulation temporomandibulaire. La douleur ne provient pas toujours du cartilage ou de l’os, mais de la fatigue et de la tension prolongée des muscles qui mobilisent la mâchoire.",
+        "Le bruxisme est l’habitude involontaire de serrer ou grincer des dents, fréquemment la nuit. Cette surcharge répétée tend les masséters, le temporal et les muscles profonds de la mandibule. Les points gâchettes sont des zones de tension accumulée qui peuvent irradier vers l’oreille, la tempe, la face ou le cou.",
+        "Sans prise en charge, la douleur peut devenir chronique, s’aggraver avec le stress ou un sommeil insuffisant et s’associer à des céphalées, une raideur cervicale ou une sensation d’oreille bouchée. Beaucoup de personnes remarquent aussi une sensibilité accrue en mâchant des aliments durs ou au réveil.",
+        "Chez Kinésica, nous évaluons l’ATM, la mobilité mandibulaire, la posture cervicale et les habitudes de serrement. Nous intégrons techniques ATM, ostéopathie, manipulations douces et RPG pour relâcher la tension musculaire, améliorer la coordination mandibulaire et diminuer la charge sur l’articulation.",
+        "Le plan inclut des conseils d’auto-gestion, des stratégies face au stress et, si nécessaire, des recommandations sur gouttières ou habitudes nocturnes. L’objectif est de réduire la douleur, retrouver une ouverture confortable et prévenir les récidives.",
+      ],
+      complications: [
+        "Céphalées de tension",
+        "Douleur référée à l’oreille ou la tempe",
+        "Raideur cervicale",
+        "Usure dentaire par serrement",
+        "Douleur à la mastication ou au réveil",
+      ],
+      techniquesNote: "L’approche est adaptée selon que le bruxisme est diurne, nocturne ou mixte, et selon l’irritabilité des symptômes.",
+    },
+    pt: {
+      title: "Bruxismo e dor miofascial da ATM",
+      breadcrumb: "Bruxismo",
+      metaDescription:
+        "Bruxismo e dor miofascial mandibular na Kinésica (Buenos Aires). Avaliamos músculos mastigatórios, ATM e postura para aliviar tensão e reduzir recorrências.",
+      h1: "Bruxismo e dor miofascial",
+      lead: "Bruxismo e tensão dos músculos mastigatórios são a causa mais comum de desconforto na ATM. Uma abordagem integral alivia a sobrecarga e a dor irradiada para orelha, têmpora ou pescoço.",
+      paragraphs: [
+        "Os distúrbios dos músculos mastigatórios —muitas vezes descritos como dor miofascial— são a causa mais frequente de sintomas na articulação temporomandibular. A dor nem sempre vem da cartilagem ou do osso, mas do cansaço e da tensão sustentada dos músculos que movem a mandíbula.",
+        "Bruxismo é o hábito involuntário de apertar ou ranger os dentes, com frequência durante o sono. Essa sobrecarga repetida tensiona masseter, temporal e músculos profundos da mandíbula. Pontos gatilho são áreas de tensão acumulada que podem irradiar dor para orelha, têmpora, face ou pescoço.",
+        "Sem tratamento, a dor pode tornar-se crônica, piorar com estresse ou sono ruim e associar-se a cefaleia, rigidez cervical ou sensação de ouvido tapado. Muitas pessoas também notam maior sensibilidade ao mastigar alimentos duros ou ao acordar.",
+        "Na Kinésica avaliamos ATM, mobilidade mandibular, postura cervical e hábitos de apertamento. Integramos técnicas de ATM, osteopatia, manipulações suaves e RPG para liberar tensão muscular, melhorar coordenação mandibular e reduzir carga sobre a articulação.",
+        "O plano inclui orientações de autocuidado, estratégias para estresse e, quando indicado, recomendações sobre placas ou hábitos noturnos. O objetivo é diminuir a dor, recuperar abertura confortável da boca e prevenir recidivas.",
+      ],
+      complications: [
+        "Cefaleia tensional",
+        "Dor referida à orelha ou têmpora",
+        "Rigidez cervical",
+        "Desgaste dental por apertamento",
+        "Dor ao mastigar ou ao acordar",
+      ],
+      techniquesNote: "A abordagem é adaptada conforme bruxismo diurno, noturno ou misto e conforme a irritabilidade dos sintomas.",
+    },
+  },
+
+  {
+    stem: "desplazamiento-disco-atm",
+    image: "hero-img.jpg",
+    updatedAt: "2026-07-14",
+    techniques: ["atm", "osteopatia", "manipulaciones"],
+    es: {
+      title: "Desplazamiento del disco articular de la ATM",
+      breadcrumb: "Desplazamiento del disco ATM",
+      metaDescription:
+        "Desplazamiento del disco articular de la ATM en Kinésica (Buenos Aires). Evaluamos chasquidos, bloqueos mandibulares y limitación de apertura con terapia manual especializada.",
+      h1: "Desplazamiento del disco articular",
+      lead: "Cuando el disco de la ATM se desplaza de su posición, pueden aparecer chasquidos, bloqueos o dificultad para abrir la boca. Una evaluación precisa orienta el tratamiento.",
+      paragraphs: [
+        "Los desórdenes internos de la articulación temporomandibular ocurren cuando el disco articular —el cartílago que amortigua el roce entre los huesos— se desplaza de su posición habitual. Es una de las causas más frecuentes de chasquidos, bloqueos y limitación de apertura.",
+        "En el desplazamiento con reducción, el disco se desliza hacia adelante con la boca cerrada y vuelve a su sitio al abrirla. Suele producir un chasquido o click audible, a veces acompañado de dolor puntual. En el desplazamiento sin reducción, el disco queda permanentemente adelantado y la mandíbula puede quedar trabada con apertura muy limitada.",
+        "Estos cuadros pueden iniciarse tras un traumatismo, apretamiento prolongado, posturas sostenidas o cambios bruscos en la función mandibular. Sin tratamiento, los chasquidos pueden volverse más frecuentes, el bloqueo más persistente y la apertura de la boca más restringida.",
+        "En Kinésica realizamos una evaluación detallada de la apertura, la trayectoria mandibular, los sonidos articulares y la participación muscular. Aplicamos técnicas de ATM, osteopatía y manipulaciones suaves para mejorar la biomecánica, reducir la irritación del disco y recuperar un rango de movimiento más funcional.",
+        "Según el caso, complementamos con ejercicios de movilidad mandibular, educación sobre hábitos y coordinación con odontología si hay factores oclusales. El objetivo es disminuir el dolor, normalizar la apertura y evitar que un bloqueo agudo se cronifique.",
+      ],
+      complications: [
+        "Bloqueo mandibular intermitente o persistente",
+        "Limitación de apertura bucal",
+        "Dolor al masticar o al bostezar",
+        "Chasquidos cada vez más frecuentes",
+        "Cefalea o dolor de oído asociado",
+      ],
+      techniquesNote: "El plan depende de si hay reducción del disco, bloqueo actual y cuánto tiempo lleva el cuadro.",
+    },
+    en: {
+      title: "TMJ disc displacement",
+      breadcrumb: "TMJ disc displacement",
+      metaDescription:
+        "TMJ disc displacement at Kinésica (Buenos Aires). We assess clicking, jaw locking and limited opening with specialized manual therapy for the temporomandibular joint.",
+      h1: "Articular disc displacement",
+      lead: "When the TMJ disc shifts out of position, clicking, locking or difficulty opening the mouth may appear. A precise assessment guides treatment.",
+      paragraphs: [
+        "Internal derangements of the temporomandibular joint occur when the articular disc —the cartilage that cushions bone contact— moves out of its usual position. This is a common cause of clicking, locking and limited opening.",
+        "With disc displacement with reduction, the disc slides forward when the mouth is closed and returns on opening, often producing an audible click, sometimes with brief pain. With disc displacement without reduction, the disc stays forward and the jaw may lock with markedly limited opening.",
+        "These patterns may start after trauma, prolonged clenching, sustained posture or sudden changes in jaw function. Without care, clicks can become more frequent, locking more persistent and mouth opening more restricted.",
+        "At Kinésica we assess opening range, jaw tracking, joint sounds and muscle involvement. We use TMJ techniques, osteopathy and gentle manual work to improve biomechanics, reduce disc irritation and restore a more functional range.",
+        "When indicated, we add jaw mobility exercises, habit education and coordination with dentistry for occlusal factors. The goal is to reduce pain, normalize opening and prevent an acute lock from becoming chronic.",
+      ],
+      complications: [
+        "Intermittent or persistent jaw locking",
+        "Limited mouth opening",
+        "Pain when chewing or yawning",
+        "Increasingly frequent clicking",
+        "Associated headache or ear pain",
+      ],
+      techniquesNote: "Care depends on whether the disc reduces, whether there is current locking and how long symptoms have been present.",
+    },
+    fr: {
+      title: "Déplacement du disque articulaire de l’ATM",
+      breadcrumb: "Déplacement du disque ATM",
+      metaDescription:
+        "Déplacement du disque de l’ATM chez Kinésica (Buenos Aires). Bilan des claquements, blocages mandibulaires et limitation d’ouverture avec thérapie manuelle spécialisée.",
+      h1: "Déplacement du disque articulaire",
+      lead: "Lorsque le disque de l’ATM se déplace, des claquements, blocages ou difficultés d’ouverture peuvent apparaître. Un bilan précis oriente la prise en charge.",
+      paragraphs: [
+        "Les troubles internes de l’articulation temporomandibulaire surviennent lorsque le disque articulaire —le cartilage qui amortit le contact osseux— quitte sa position habituelle. C’est une cause fréquente de claquements, blocages et ouverture limitée.",
+        "Dans le déplacement avec réduction, le disque glisse vers l’avant bouche fermée et reprend sa place à l’ouverture, produisant souvent un claquement audible, parfois avec une douleur brève. Sans réduction, le disque reste en avant et la mâchoire peut se bloquer avec une ouverture très réduite.",
+        "Ces tableaux peuvent débuter après un traumatisme, un serrement prolongé, des postures soutenues ou un changement brutal de la fonction mandibulaire. Sans traitement, les claquements peuvent s’intensifier, le blocage persister et l’ouverture se restreindre.",
+        "Chez Kinésica, nous évaluons l’ouverture, la trajectoire mandibulaire, les bruits articulaires et la participation musculaire. Nous appliquons techniques ATM, ostéopathie et manipulations douces pour améliorer la biomécanique, réduire l’irritation du disque et retrouver un amplitude plus fonctionnelle.",
+        "Selon le cas, nous ajoutons exercices de mobilité mandibulaire, éducation aux habitudes et coordination avec la dentisterie si des facteurs occlusaux sont présents. L’objectif est de diminuer la douleur, normaliser l’ouverture et éviter qu’un blocage aigu ne devienne chronique.",
+      ],
+      complications: [
+        "Blocage mandibulaire intermittent ou persistant",
+        "Limitation de l’ouverture buccale",
+        "Douleur à la mastication ou au bâillement",
+        "Claquements de plus en plus fréquents",
+        "Céphalée ou douleur d’oreille associée",
+      ],
+      techniquesNote: "La prise en charge dépend de la réduction du disque, d’un blocage actuel et de l’ancienneté des symptômes.",
+    },
+    pt: {
+      title: "Deslocamento do disco articular da ATM",
+      breadcrumb: "Deslocamento do disco ATM",
+      metaDescription:
+        "Deslocamento do disco articular da ATM na Kinésica (Buenos Aires). Avaliamos estalos, travamentos mandibulares e limitação de abertura com terapia manual especializada.",
+      h1: "Deslocamento do disco articular",
+      lead: "Quando o disco da ATM se desloca, podem surgir estalos, travamentos ou dificuldade para abrir a boca. Uma avaliação precisa orienta o tratamento.",
+      paragraphs: [
+        "Os distúrbios internos da articulação temporomandibular ocorrem quando o disco articular —a cartilagem que amortece o contato ósseo— sai da posição habitual. É uma causa frequente de estalos, travamentos e abertura limitada.",
+        "No deslocamento com redução, o disco desliza para frente com a boca fechada e retorna ao abrir, muitas vezes com estalo audível, às vezes com dor breve. Sem redução, o disco permanece adiantado e a mandíbula pode travar com abertura muito reduzida.",
+        "Esses quadros podem iniciar após trauma, apertamento prolongado, posturas sustentadas ou mudanças bruscas na função mandibular. Sem tratamento, os estalos podem ficar mais frequentes, o travamento mais persistente e a abertura mais restrita.",
+        "Na Kinésica avaliamos amplitude de abertura, trajetória mandibular, ruídos articulares e participação muscular. Aplicamos técnicas de ATM, osteopatia e manipulações suaves para melhorar biomecânica, reduzir irritação do disco e recuperar amplitude mais funcional.",
+        "Conforme o caso, complementamos com exercícios de mobilidade mandibular, educação sobre hábitos e coordenação com odontologia se houver fatores oclusais. O objetivo é diminuir dor, normalizar abertura e evitar que um travamento agudo cronifique.",
+      ],
+      complications: [
+        "Travamento mandibular intermitente ou persistente",
+        "Limitação de abertura bucal",
+        "Dor ao mastigar ou bocejar",
+        "Estalos cada vez mais frequentes",
+        "Cefaleia ou dor de ouvido associada",
+      ],
+      techniquesNote: "O plano depende de haver redução do disco, travamento atual e tempo de evolução dos sintomas.",
+    },
+  },
+
+  {
+    stem: "artrosis-atm",
+    image: "hero-img.jpg",
+    updatedAt: "2026-07-14",
+    techniques: ["atm", "osteopatia", "manipulaciones"],
+    es: {
+      title: "Artrosis e inflamación de la ATM",
+      breadcrumb: "Artrosis ATM",
+      metaDescription:
+        "Artrosis, artritis y sinovitis de la ATM en Kinésica (Buenos Aires). Tratamiento para dolor articular, rigidez mandibular y creptación con terapia manual.",
+      h1: "Artrosis e inflamación de la ATM",
+      lead: "El desgaste cartilaginoso y la inflamación de la ATM pueden generar dolor, rigidez y sensación de fricción al mover la mandíbula. Un abordaje gradual ayuda a recuperar función.",
+      paragraphs: [
+        "Las enfermedades degenerativas e inflamatorias afectan directamente las superficies óseas y cartilaginosas de la articulación temporomandibular. A diferencia del dolor puramente muscular, aquí la molestia proviene del tejido articular y de las estructuras que lo recubren.",
+        "La artrosis —o osteoartritis de la ATM— es un desgaste progresivo del cartílago por edad o sobrecarga mecánica crónica. Puede manifestarse con dolor profundo, rigidez matutina y una sensación de fricción o “arena” al mover la mandíbula, conocida como crepitación.",
+        "La artritis reumatoide es una enfermedad autoinmune que inflama la membrana sinovial y puede destruir tejido articular con el tiempo. La sinovitis o capsulitis es inflamación del revestimiento articular, muy dolorosa al tacto o al masticar, a menudo tras un golpe directo en la mandíbula.",
+        "En Kinésica evaluamos el grado de irritabilidad, la apertura disponible, la calidad del movimiento y la participación muscular asociada. Integramos técnicas de ATM, osteopatía y manipulaciones suaves dosificadas para reducir inflamación, mejorar lubricación funcional y disminuir la sobrecarga sobre la articulación.",
+        "El tratamiento se adapta a la fase aguda o crónica del cuadro e incluye pautas de autocuidado, progresión de movilidad y coordinación con el médico tratante cuando hay enfermedad sistémica. El objetivo es aliviar el dolor, preservar la función mandibular y evitar empeoramientos por sobrecarga.",
+      ],
+      complications: [
+        "Rigidez mandibular progresiva",
+        "Dolor constante al masticar",
+        "Crepitación o fricción articular",
+        "Limitación de apertura bucal",
+        "Deformidad articular en casos avanzados",
+      ],
+      techniquesNote: "La intensidad del tratamiento se modula según inflamación activa, desgaste articular y tolerancia al movimiento.",
+    },
+    en: {
+      title: "TMJ osteoarthritis and inflammation",
+      breadcrumb: "TMJ osteoarthritis",
+      metaDescription:
+        "TMJ osteoarthritis, arthritis and synovitis at Kinésica (Buenos Aires). Care for joint pain, jaw stiffness and crepitus with graded manual therapy.",
+      h1: "TMJ osteoarthritis and inflammation",
+      lead: "Cartilage wear and TMJ inflammation can cause pain, stiffness and a gritty sensation when moving the jaw. A gradual approach helps restore function.",
+      paragraphs: [
+        "Degenerative and inflammatory conditions affect the bony and cartilaginous surfaces of the temporomandibular joint directly. Unlike purely muscular pain, discomfort here comes from joint tissue and its surrounding structures.",
+        "Osteoarthritis of the TMJ is progressive cartilage wear due to age or chronic mechanical overload. It may present with deep pain, morning stiffness and a grinding or sandy sensation when moving the jaw — crepitus.",
+        "Rheumatoid arthritis is an autoimmune disease that inflames the synovial membrane and can destroy joint tissue over time. Synovitis or capsulitis is inflammation of the joint lining, often very tender to touch or when chewing, frequently after direct trauma to the jaw.",
+        "At Kinésica we assess irritability, available opening, movement quality and associated muscle tension. We integrate TMJ techniques, osteopathy and carefully dosed manual work to reduce inflammation, improve functional lubrication and decrease overload on the joint.",
+        "Treatment is adapted to acute or chronic phases and includes self-care guidance, mobility progression and coordination with your physician when systemic disease is present. The goal is to relieve pain, preserve jaw function and prevent overload flare-ups.",
+      ],
+      complications: [
+        "Progressive jaw stiffness",
+        "Persistent pain when chewing",
+        "Joint crepitus or grinding",
+        "Limited mouth opening",
+        "Joint deformity in advanced cases",
+      ],
+      techniquesNote: "Treatment intensity is adjusted for active inflammation, joint wear and movement tolerance.",
+    },
+    fr: {
+      title: "Arthrose et inflammation de l’ATM",
+      breadcrumb: "Arthrose ATM",
+      metaDescription:
+        "Arthrose, arthrite et synovite de l’ATM chez Kinésica (Buenos Aires). Prise en charge de la douleur articulaire, raideur mandibulaire et crépitement.",
+      h1: "Arthrose et inflammation de l’ATM",
+      lead: "L’usure cartilagineuse et l’inflammation de l’ATM peuvent provoquer douleur, raideur et sensation de frottement à la mobilisation de la mâchoire. Une approche progressive aide à retrouver la fonction.",
+      paragraphs: [
+        "Les maladies dégénératives et inflammatoires touchent directement les surfaces osseuses et cartilagineuses de l’articulation temporomandibulaire. Contrairement à une douleur purement musculaire, l’inconfort provient ici du tissu articulaire et des structures qui l’entourent.",
+        "L’arthrose —ou ostéoarthrite de l’ATM— est une usure progressive du cartilage liée à l’âge ou à une surcharge mécanique chronique. Elle peut se manifester par une douleur profonde, une raideur matinale et une sensation de frottement ou de « sable » au mouvement mandibulaire, appelée crépitement.",
+        "L’arthrite rhumatoïde est une maladie auto-immune qui inflame la membrane synoviale et peut détruire le tissu articulaire avec le temps. La synovite ou capsulite est une inflammation de l’enveloppe articulaire, très douloureuse au toucher ou à la mastication, souvent après un choc direct sur la mâchoire.",
+        "Chez Kinésica, nous évaluons l’irritabilité, l’ouverture disponible, la qualité du mouvement et la tension musculaire associée. Nous intégrons techniques ATM, ostéopathie et manipulations douces dosées pour réduire l’inflammation, améliorer la lubrification fonctionnelle et diminuer la surcharge articulaire.",
+        "La prise en charge s’adapte à la phase aiguë ou chronique et inclut conseils d’auto-gestion, progression de mobilité et coordination avec le médecin traitant en cas de maladie systémique. L’objectif est de soulager la douleur, préserver la fonction mandibulaire et éviter les aggravations par surcharge.",
+      ],
+      complications: [
+        "Raideur mandibulaire progressive",
+        "Douleur constante à la mastication",
+        "Crépitement ou frottement articulaire",
+        "Limitation de l’ouverture buccale",
+        "Déformation articulaire dans les formes avancées",
+      ],
+      techniquesNote: "L’intensité du traitement est modulée selon l’inflammation active, l’usure articulaire et la tolérance au mouvement.",
+    },
+    pt: {
+      title: "Artrose e inflamação da ATM",
+      breadcrumb: "Artrose ATM",
+      metaDescription:
+        "Artrose, artrite e sinovite da ATM na Kinésica (Buenos Aires). Tratamento para dor articular, rigidez mandibular e crepitação com terapia manual.",
+      h1: "Artrose e inflamação da ATM",
+      lead: "Desgaste cartilaginoso e inflamação da ATM podem causar dor, rigidez e sensação de atrito ao mover a mandíbula. Uma abordagem gradual ajuda a recuperar função.",
+      paragraphs: [
+        "Doenças degenerativas e inflamatórias afetam diretamente as superfícies ósseas e cartilaginosas da articulação temporomandibular. Diferente da dor puramente muscular, o desconforto aqui vem do tecido articular e das estruturas que o revestem.",
+        "Artrose —ou osteoartrite da ATM— é desgaste progressivo da cartilagem por idade ou sobrecarga mecânica crônica. Pode manifestar-se com dor profunda, rigidez matinal e sensação de atrito ou “areia” ao mover a mandíbula, conhecida como crepitação.",
+        "Artrite reumatoide é doença autoimune que inflama a membrana sinovial e pode destruir tecido articular com o tempo. Sinovite ou capsulite é inflamação do revestimento articular, muito dolorosa ao toque ou ao mastigar, frequentemente após trauma direto na mandíbula.",
+        "Na Kinésica avaliamos grau de irritabilidade, abertura disponível, qualidade do movimento e tensão muscular associada. Integramos técnicas de ATM, osteopatia e manipulações suaves dosadas para reduzir inflamação, melhorar lubrificação funcional e diminuir sobrecarga sobre a articulação.",
+        "O tratamento adapta-se à fase aguda ou crônica e inclui orientações de autocuidado, progressão de mobilidade e coordenação com médico assistente quando há doença sistêmica. O objetivo é aliviar dor, preservar função mandibular e evitar piora por sobrecarga.",
+      ],
+      complications: [
+        "Rigidez mandibular progressiva",
+        "Dor constante ao mastigar",
+        "Crepitação ou atrito articular",
+        "Limitação de abertura bucal",
+        "Deformidade articular em casos avançados",
+      ],
+      techniquesNote: "A intensidade do tratamento é modulada conforme inflamação ativa, desgaste articular e tolerância ao movimento.",
+    },
+  },
 ];
 
 
 /** Related pathology stems for internal linking (3–5 per page). */
 export const PATHOLOGY_RELATED = {
-  cefalea: ["cervicalgia", "cervicobraquialgia", "dorsalgia"],
+  cefalea: ["cervicalgia", "cervicobraquialgia", "bruxismo"],
   dorsalgia: ["cervicalgia", "hipercifosis", "dorso-plano", "escoliosis"],
   lumbalgia: ["ciatalgia", "hernia-disco", "protrusion-discal", "dolor-sacroiliaco"],
   ciatalgia: ["lumbalgia", "hernia-disco", "protrusion-discal", "radiculopatia"],
@@ -2632,7 +2932,10 @@ export const PATHOLOGY_RELATED = {
   radiculopatia: ["cervicobraquialgia", "ciatalgia", "hernia-disco", "cervicalgia"],
   meniscopatia: ["gonalgia", "genu-valgo"],
   "fascitis-plantar": ["talalgia", "pies-planos"],
-  cervicalgia: ["cefalea", "cervicobraquialgia", "dorsalgia", "radiculopatia"],
+  cervicalgia: ["cefalea", "cervicobraquialgia", "bruxismo", "desplazamiento-disco-atm"],
+  bruxismo: ["cefalea", "cervicalgia", "desplazamiento-disco-atm", "artrosis-atm"],
+  "desplazamiento-disco-atm": ["bruxismo", "artrosis-atm", "cefalea", "cervicalgia"],
+  "artrosis-atm": ["desplazamiento-disco-atm", "bruxismo", "cefalea", "cervicalgia"],
 };
 
 const pathologyByStem = new Map(PATHOLOGIES.map((p) => [p.stem, p]));

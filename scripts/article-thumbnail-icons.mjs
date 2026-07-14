@@ -37,6 +37,9 @@ export const THUMBNAIL_BY_STEM = {
   meniscopatia: "knee",
   "fascitis-plantar": "foot-sole",
   cervicalgia: "neck",
+  bruxismo: "jaw-muscles",
+  "desplazamiento-disco-atm": "jaw-disc",
+  "artrosis-atm": "jaw-joint",
 };
 
 function dot(cx, cy, r, fill = TEAL) {
@@ -55,6 +58,64 @@ function motif(contourPath, points) {
 }
 
 const ICONS = {
+  /** Mandíbula + tensión muscular (bruxismo). */
+  "jaw-muscles": () =>
+    motif(
+      "M300 95 Q318 130 310 175 Q305 210 295 235 Q285 255 278 268 M310 175 Q355 165 385 195",
+      [
+        [292, 88, 6],
+        [308, 72, 8],
+        [328, 68, 9],
+        [348, 78, 7],
+        [358, 98, 6],
+        [338, 118, 5],
+        [318, 122, 5],
+        [298, 118, 5],
+        [278, 255, 6],
+        [288, 272, 6],
+        [378, 188, 7],
+        [392, 205, 6],
+      ],
+    ),
+
+  /** ATM + disco desplazado. */
+  "jaw-disc": () =>
+    motif(
+      "M295 92 Q318 135 305 185 Q298 225 288 255 M305 165 Q345 155 372 185 Q345 205 305 198",
+      [
+        [288, 85, 6],
+        [305, 70, 8],
+        [325, 68, 8],
+        [345, 78, 7],
+        [355, 98, 6],
+        [328, 165, 9],
+        [328, 178, 7],
+        [365, 182, 6],
+        [378, 198, 5],
+        [278, 248, 6],
+        [288, 268, 5],
+      ],
+    ),
+
+  /** Articulación mandibular / desgaste. */
+  "jaw-joint": () =>
+    motif(
+      "M292 90 Q312 140 300 195 Q292 235 285 265 M300 175 Q338 168 368 198 Q338 218 300 210",
+      [
+        [285, 82, 6],
+        [302, 68, 8],
+        [322, 65, 9],
+        [342, 75, 7],
+        [352, 95, 6],
+        [318, 175, 10],
+        [318, 188, 8],
+        [358, 195, 7],
+        [368, 212, 6],
+        [275, 252, 6],
+        [282, 272, 5],
+      ],
+    ),
+
   /** Cabeza en perfil (cefalea). */
   head: () =>
     motif(
