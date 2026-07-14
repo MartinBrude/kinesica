@@ -23,6 +23,7 @@ export const SHARED_BUNDLES = {
   "js/ui-core.min.js": [
     "js/mobile-nav.js",
     "js/ui-reveal.js",
+    "js/articles-categories.js",
     "js/sticky-header.js",
   ],
   "js/ui-home.min.js": ["js/faq-accordion.js", "js/map-embed-facade.js"],

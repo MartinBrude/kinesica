@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Rebuild articulos.html index body: card grid for all pathologies.
+ * Rebuild articulos.html index body: expandable category panels for pathologies.
  * Run: node scripts/build-articulos-pages.mjs
  */
 import fs from "fs";
@@ -8,6 +8,10 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { PATHOLOGIES } from "./pathology-content.mjs";
 import { ARTICLES_INDEX_UI } from "./articles-index-content.mjs";
+import {
+  ARTICLE_CATEGORIES,
+  articleCountLabel,
+} from "./articles-categories.mjs";
 import { cardHue } from "./article-thumbnail-icons.mjs";
 import { repoPath } from "./i18n-urls.mjs";
 import { LANG_CODES } from "./languages.mjs";
@@ -19,6 +23,8 @@ import {
 } from "./page-shell.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+
+const pathologyByStem = new Map(PATHOLOGIES.map((p, i) => [p.stem, { pathology: p, index: i }]));
 
 function articleThumbSrc(stem, lang) {
   const rel = `images/articles/${stem}.svg`;
@@ -35,26 +41,65 @@ function renderIntro(ui) {
   return escHtml(ui.intro ?? "");
 }
 
+function renderCard(p, globalIndex, lang, ui) {
+  const data = p[lang];
+  const href = `${p.stem}.html`;
+  const thumb = articleThumbSrc(p.stem, lang);
+  const media = thumb
+    ? `<span class="articles-index-card-media"><img src="${thumb}" alt="" width="320" height="180" loading="lazy" decoding="async" /></span>`
+    : `<span class="articles-index-card-media articles-index-card-media--placeholder" aria-hidden="true"></span>`;
+
+  return `                <a href="${href}" class="articles-index-card" style="--card-i: ${globalIndex}; --card-hue: ${cardHue(globalIndex)}">
+                  ${media}
+                  <span class="articles-index-card-body">
+                    <span class="articles-index-card-label">${escHtml(data.breadcrumb)}</span>
+                    <span class="articles-index-card-lead">${escHtml(data.lead)}</span>
+                    <span class="articles-index-card-cta">${ui.readMore}<span class="articles-index-card-arrow" aria-hidden="true">→</span></span>
+                  </span>
+                </a>`;
+}
+
+function renderCategory(category, catIndex, lang, ui) {
+  const copy = category[lang];
+  const stems = category.stems.filter((stem) => pathologyByStem.has(stem));
+  const cards = stems
+    .map((stem) => {
+      const entry = pathologyByStem.get(stem);
+      return renderCard(entry.pathology, entry.index, lang, ui);
+    })
+    .join("\n");
+
+  const panelId = `articles-cat-${category.id}`;
+
+  return `          <div class="articles-category ui-reveal" style="--cat-i: ${catIndex}" data-category="${category.id}">
+            <button type="button" class="articles-category-trigger" aria-expanded="false" aria-controls="${panelId}">
+              <span class="articles-category-trigger-inner">
+                <span class="articles-category-body">
+                  <span class="articles-category-heading">
+                    <span class="articles-category-title">${escHtml(copy.title)}</span>
+                    <span class="articles-category-count">${escHtml(articleCountLabel(lang, stems.length))}</span>
+                  </span>
+                  <span class="articles-category-desc">${escHtml(copy.description)}</span>
+                </span>
+                <span class="articles-category-chevron" aria-hidden="true"></span>
+              </span>
+            </button>
+            <div id="${panelId}" class="articles-category-panel" aria-hidden="true">
+              <div class="articles-category-panel-inner">
+                <div class="articles-index-grid articles-index-grid--nested">
+${cards}
+                </div>
+              </div>
+            </div>
+          </div>`;
+}
+
 function buildMain(lang) {
   const ui = ARTICLES_INDEX_UI[lang];
 
-  const cards = PATHOLOGIES.map((p, i) => {
-    const data = p[lang];
-    const href = `${p.stem}.html`;
-    const thumb = articleThumbSrc(p.stem, lang);
-    const media = thumb
-      ? `<span class="articles-index-card-media"><img src="${thumb}" alt="" width="320" height="180" loading="lazy" decoding="async" /></span>`
-      : `<span class="articles-index-card-media articles-index-card-media--placeholder" aria-hidden="true"></span>`;
-
-    return `          <a href="${href}" class="articles-index-card ui-reveal" style="--card-i: ${i}; --card-hue: ${cardHue(i)}">
-            ${media}
-            <span class="articles-index-card-body">
-              <span class="articles-index-card-label">${escHtml(data.breadcrumb)}</span>
-              <span class="articles-index-card-lead">${escHtml(data.lead)}</span>
-              <span class="articles-index-card-cta">${ui.readMore}<span class="articles-index-card-arrow" aria-hidden="true">→</span></span>
-            </span>
-          </a>`;
-  }).join("\n");
+  const categories = ARTICLE_CATEGORIES.map((category, i) =>
+    renderCategory(category, i, lang, ui),
+  ).join("\n");
 
   return `    <section class="content articles-index">
       <div class="container">
@@ -64,8 +109,8 @@ function buildMain(lang) {
             <p class="section-lead">${renderIntro(ui)}</p>
           </div>
         </div>
-        <div class="articles-index-grid">
-${cards}
+        <div class="articles-categories" id="articles-categories">
+${categories}
         </div>
         <blockquote class="articles-index-quote ui-reveal">
           <p>“${ui.quote}”</p>

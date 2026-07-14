@@ -4,7 +4,7 @@
   }
 
   var nodes = document.querySelectorAll(
-    ".service-block, .section-title, .feature, .team-img, .articles-index-card, .articles-index-quote",
+    ".service-block, .section-title, .feature, .team-img, .articles-category, .articles-index-quote",
   );
   var targets = Array.prototype.filter.call(nodes, function (el) {
     return !(el.classList.contains("section-title") && el.closest(".articles-index-intro"));

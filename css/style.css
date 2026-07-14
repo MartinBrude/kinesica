@@ -3058,7 +3058,7 @@ Pathology detail pages (FAQ dolencias)
   color: var(--primary-color);
 }
 
-/* —— Artículos index (card grid) —— */
+/* —— Artículos index (category accordion) —— */
 .articles-index {
   padding-top: 1.5rem;
   padding-bottom: 4rem;
@@ -3076,11 +3076,202 @@ Pathology detail pages (FAQ dolencias)
   margin-bottom: 0;
 }
 
+.articles-categories {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+@media (min-width: 768px) {
+  .articles-categories {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+}
+
+.articles-category {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--bg-white);
+  border: 1px solid #e5e7eb;
+  box-shadow: var(--shadow-sm);
+  transition:
+    box-shadow 0.5s ease,
+    border-color 0.5s ease,
+    grid-column 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.articles-category.is-open {
+  grid-column: 1 / -1;
+  border-color: #b8c9d9;
+  box-shadow:
+    0 14px 28px -8px rgba(0, 60, 100, 0.14),
+    var(--shadow-md);
+}
+
+.articles-category-trigger {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+}
+
+.articles-category-trigger:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: -2px;
+}
+
+.articles-category-trigger-inner {
+  --cat-header-color-duration: 0.9s;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem 1.25rem 1.5rem 1.5rem;
+  background: linear-gradient(135deg, #f5f7fa 0%, #eef2f6 100%);
+  transition: background var(--cat-header-color-duration) ease;
+}
+
+.articles-category-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.articles-category.is-open .articles-category-trigger-inner {
+  gap: 1rem;
+  padding: 1.5rem 1.25rem 1.5rem 1.5rem;
+  background: linear-gradient(
+    135deg,
+    var(--primary-color) 0%,
+    #004d7a 100%
+  );
+}
+
+.articles-category-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.65rem;
+}
+
+.articles-category-title {
+  font-size: clamp(1.125rem, 2.4vw, 1.3rem);
+  font-weight: 700;
+  color: var(--heading-color);
+  line-height: 1.25;
+  transition: color var(--cat-header-color-duration, 0.9s) ease;
+}
+
+.articles-category.is-open .articles-category-title {
+  color: #fff;
+}
+
+.articles-category-count {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #4a6278;
+  background: rgba(0, 95, 153, 0.09);
+  transition:
+    color var(--cat-header-color-duration, 0.9s) ease,
+    background var(--cat-header-color-duration, 0.9s) ease;
+}
+
+.articles-category.is-open .articles-category-count {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.articles-category-desc {
+  margin: 0;
+  max-width: none;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--text-color);
+  transition: color var(--cat-header-color-duration, 0.9s) ease;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.articles-category.is-open .articles-category-desc {
+  display: block;
+  -webkit-line-clamp: unset;
+  overflow: visible;
+  max-width: 36rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.articles-category-chevron {
+  flex-shrink: 0;
+  width: 0.65rem;
+  height: 0.65rem;
+  margin-right: 0.15rem;
+  border-right: 2px solid #5a7288;
+  border-bottom: 2px solid #5a7288;
+  transform: rotate(45deg);
+  transition:
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color var(--cat-header-color-duration, 0.9s) ease;
+}
+
+.articles-category.is-open .articles-category-chevron {
+  border-color: #fff;
+  transform: rotate(-135deg);
+}
+
+.articles-category-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.articles-category.is-open .articles-category-panel {
+  grid-template-rows: 1fr;
+}
+
+.articles-category-panel-inner {
+  overflow: hidden;
+}
+
+.articles-category-panel .articles-index-grid--nested {
+  padding: 1.25rem;
+  margin-bottom: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.articles-category.is-open .articles-index-grid--nested {
+  visibility: visible;
+  pointer-events: auto;
+}
+
 .articles-index-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(17.5rem, 1fr));
   gap: 1.25rem;
   margin-bottom: 3rem;
+}
+
+.articles-index-grid--nested {
+  margin-bottom: 0;
 }
 
 .articles-index-card {
@@ -3228,15 +3419,49 @@ Pathology detail pages (FAQ dolencias)
   transition-delay: calc(var(--card-i, 0) * 45ms);
 }
 
+.articles-category.ui-reveal {
+  transition:
+    opacity 0.55s ease,
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s ease,
+    border-color 0.3s ease;
+  transition-delay: calc(var(--cat-i, 0) * 70ms);
+}
+
+.articles-category-panel .articles-index-card {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 0.58s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.58s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s ease,
+    border-color 0.25s ease;
+  transition-delay: calc(var(--card-i, 0) * 55ms);
+}
+
+.articles-category.is-open .articles-index-card {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .articles-index-card,
   .articles-index-card-media img,
-  .articles-index-card-arrow {
+  .articles-index-card-arrow,
+  .articles-category,
+  .articles-category-panel,
+  .articles-category-chevron,
+  .articles-category-trigger-inner {
     transition: none;
   }
 
   .articles-index-card:hover,
   .articles-index-card:focus-visible {
+    transform: none;
+  }
+
+  .articles-category-panel .articles-index-card {
+    opacity: 1;
     transform: none;
   }
 }
