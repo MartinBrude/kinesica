@@ -131,15 +131,15 @@ ${techniqueLinks}
           <ul class="listnone">
             <li>
               <a href="${SOCIALS.instagramBusiness}" target="_blank" rel="noopener noreferrer"><i
-                  class="fa fa-instagram" aria-hidden="true"></i> kinesicabrude</a>
+                  class="fa fa-instagram" aria-hidden="true"></i> ${SOCIALS.handles.instagramBusiness}</a>
             </li>
             <li>
               <a href="${SOCIALS.instagramMaria}" target="_blank" rel="noopener noreferrer"><i
-                  class="fa fa-instagram" aria-hidden="true"></i> kinesio_mariagulin</a>
+                  class="fa fa-instagram" aria-hidden="true"></i> ${SOCIALS.handles.instagramMaria}</a>
             </li>
             <li>
               <a href="${SOCIALS.facebookBusiness}" target="_blank" rel="noopener noreferrer"><i
-                  class="fa fa-facebook" aria-hidden="true"></i> kinesicabrude</a>
+                  class="fa fa-facebook" aria-hidden="true"></i> ${SOCIALS.handles.facebookBusiness}</a>
             </li>
           </ul>
         </div>

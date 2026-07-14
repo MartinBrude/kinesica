@@ -27,7 +27,7 @@ import {
 } from "./page-shell.mjs";
 import { langBundlePath } from "./js-bundles.mjs";
 import { partialLang } from "./languages.mjs";
-import { CONTACT, waMeUrl, mailtoUrl } from "./site-contact.mjs";
+import { CONTACT, FOUNDER, waMeUrl, mailtoUrl } from "./site-contact.mjs";
 
 const require = createRequire(import.meta.url);
 const { toMinPath } = require("../assets.config.cjs");
@@ -118,10 +118,10 @@ function buildPage(lang, data) {
     {
       "@context": "https://schema.org",
       "@type": "Person",
-      name: "Norberto Silvio Brude",
+      name: FOUNDER.name,
       jobTitle: data.role,
       email: CV_EMAIL,
-      telephone: CONTACT.phoneDisplay.replace(/[()\\s]/g, "").replace(/^\\+/, "+"),
+      telephone: CONTACT.phoneSchema,
       url: canonical,
       image: profileImage,
       worksFor: {
@@ -178,9 +178,9 @@ ${bodyShellTop(prefix)}${headerShellMarkup(lang, prefix)}
     <section class="cv-hero">
       <div class="container">
         <div class="cv-hero-inner">
-          <img src="${prefix}images/noberto-brude-kinesiologo-osteopata.jpg" alt="Norberto Brude" class="cv-photo" width="140" height="140" loading="eager" />
+          <img src="${prefix}images/noberto-brude-kinesiologo-osteopata.jpg" alt="${escHtml(FOUNDER.shortName)}" class="cv-photo" width="140" height="140" loading="eager" />
           <div class="cv-hero-text">
-            <h1>Norberto Brude</h1>
+            <h1>${escHtml(FOUNDER.shortName)}</h1>
             <p class="cv-role">${escHtml(data.role)}</p>
             <ul class="cv-contact">
               <li><a href="${mailtoUrl(CV_EMAIL)}">${CV_EMAIL}</a></li>

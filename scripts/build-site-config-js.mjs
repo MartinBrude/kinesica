@@ -6,18 +6,19 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import {
+  GOOGLE_PLACE_ID,
+  googleReviewWriteUrl,
+  googleReviewsListUrl,
+} from "./google-place.mjs";
+import { BUSINESS_ID } from "./schema-local-business.mjs";
 import { CONTACT, SOCIALS } from "./site-contact.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = path.join(ROOT, "js/site-config.js");
 
-// Keep these here (browser-only config). They are not contact data.
-const GOOGLE_PLACE_ID = "ChIJZ2mPW9K1vJUR3J5kGRi5gws";
+// Browser-only config (not contact data).
 const GOOGLE_PLACES_API_KEY = "AIzaSyA6qg_adYYVgTZG3iUjxY-8EuXK5H2HmpE";
-const BUSINESS_ID = "https://www.kinesica.com.ar/#kinesica";
-
-const googleReviewUrl = `https://search.google.com/local/writereview?placeid=${GOOGLE_PLACE_ID}`;
-const googleReviewsListUrl = `https://search.google.com/local/reviews?placeid=${GOOGLE_PLACE_ID}`;
 
 const content = [
   "/** Global site configuration. AUTO-GENERATED — do not edit.",
@@ -29,9 +30,9 @@ const content = [
   "  /** Google Business Profile place ID (Charcas 3889). */",
   `  googlePlaceId: ${JSON.stringify(GOOGLE_PLACE_ID)},`,
   "  /** Direct link to leave a Google review (place ID). */",
-  `  googleReviewUrl: ${JSON.stringify(googleReviewUrl)},`,
+  `  googleReviewUrl: ${JSON.stringify(googleReviewWriteUrl())},`,
   "  /** Direct link to read Google reviews (same place ID). */",
-  `  googleReviewsListUrl: ${JSON.stringify(googleReviewsListUrl)},`,
+  `  googleReviewsListUrl: ${JSON.stringify(googleReviewsListUrl())},`,
   "  /**",
   "   * Maps JavaScript API key (referrer-restricted in Google Cloud).",
   "   * Override locally via js/site-secrets.js if needed.",
@@ -55,4 +56,3 @@ const content = [
 
 fs.writeFileSync(OUT, content);
 console.log("wrote:", path.relative(ROOT, OUT));
-

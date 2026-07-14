@@ -222,7 +222,7 @@ export function headSeoBlock({
   return lines.join("\n");
 }
 
-/** JSON-LD LocalBusiness (Charcas 3889, teléfono, horarios) — SEO local / Local Pack. */
+/** JSON-LD LocalBusiness (contacto vía site-contact.mjs) — SEO local / Local Pack. */
 export function headLocalBusinessSchema(lang, { home = false } = {}) {
   const schema = home ? buildHomeGraph(lang) : buildClinicOnly(lang);
   return ldJsonScript(schema);

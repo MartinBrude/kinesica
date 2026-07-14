@@ -19,7 +19,7 @@
     "url": "https://www.kinesica.com.ar/",
     "mainEntityOfPage": "https://www.kinesica.com.ar/",
     "inLanguage": "es-AR",
-    "description": "Centro de fisioterapia y kinesiología en Palermo, Buenos Aires: osteopatía, RPG, neurodinamia y terapias manuales personalizadas.",
+    "description": "Centro de fisioterapia y kinesiología en Palermo, Buenos Aires: kinesiología, osteopatía, RPG, ATM y terapias manuales personalizadas.",
     "image": [
       "https://www.kinesica.com.ar/images/logo.svg",
       "https://www.kinesica.com.ar/images/og-image.jpg"
@@ -87,11 +87,15 @@
       },
       {
         "@type": "MedicalSpecialty",
-        "name": "Terapia manual"
+        "name": "RPG"
       },
       {
         "@type": "MedicalSpecialty",
-        "name": "RPG"
+        "name": "ATM"
+      },
+      {
+        "@type": "MedicalSpecialty",
+        "name": "Terapia manual"
       }
     ],
     "additionalType": "https://schema.org/Physiotherapy",
@@ -334,8 +338,9 @@
       ]
     },
     "sameAs": [
-      "https://www.facebook.com/kinesicabrude",
+      "https://www.facebook.com/kinesicabrude/",
       "https://www.instagram.com/kinesicabrude/",
+      "https://www.instagram.com/kinesio_mariagulin/",
       "https://maps.app.goo.gl/urpkh4HYe7dSdjPS9"
     ]
   },
@@ -352,7 +357,7 @@
     "url": "https://www.kinesica.com.ar/en/",
     "mainEntityOfPage": "https://www.kinesica.com.ar/en/",
     "inLanguage": "en",
-    "description": "Physiotherapy and kinesiology clinic in Palermo, Buenos Aires: osteopathy, RPG, neurodynamics, and personalized manual therapy.",
+    "description": "Physiotherapy and kinesiology clinic in Palermo, Buenos Aires: kinesiology, osteopathy, RPG, TMJ, and personalized manual therapy.",
     "image": [
       "https://www.kinesica.com.ar/images/logo.svg",
       "https://www.kinesica.com.ar/images/og-image.jpg"
@@ -420,11 +425,15 @@
       },
       {
         "@type": "MedicalSpecialty",
-        "name": "Manual therapy"
+        "name": "RPG"
       },
       {
         "@type": "MedicalSpecialty",
-        "name": "RPG"
+        "name": "TMJ"
+      },
+      {
+        "@type": "MedicalSpecialty",
+        "name": "Manual therapy"
       }
     ],
     "additionalType": "https://schema.org/Physiotherapy",
@@ -667,8 +676,9 @@
       ]
     },
     "sameAs": [
-      "https://www.facebook.com/kinesicabrude",
+      "https://www.facebook.com/kinesicabrude/",
       "https://www.instagram.com/kinesicabrude/",
+      "https://www.instagram.com/kinesio_mariagulin/",
       "https://maps.app.goo.gl/urpkh4HYe7dSdjPS9"
     ]
   },
@@ -685,7 +695,7 @@
     "url": "https://www.kinesica.com.ar/fr/",
     "mainEntityOfPage": "https://www.kinesica.com.ar/fr/",
     "inLanguage": "fr",
-    "description": "Centre de kinésithérapie et physiothérapie à Palermo, Buenos Aires : ostéopathie, RPG, neurodynamique et thérapies manuelles personnalisées.",
+    "description": "Centre de kinésithérapie et physiothérapie à Palermo, Buenos Aires : kinésithérapie, ostéopathie, RPG, ATM et thérapies manuelles personnalisées.",
     "image": [
       "https://www.kinesica.com.ar/images/logo.svg",
       "https://www.kinesica.com.ar/images/og-image.jpg"
@@ -753,11 +763,15 @@
       },
       {
         "@type": "MedicalSpecialty",
-        "name": "Thérapie manuelle"
+        "name": "RPG"
       },
       {
         "@type": "MedicalSpecialty",
-        "name": "RPG"
+        "name": "ATM"
+      },
+      {
+        "@type": "MedicalSpecialty",
+        "name": "Thérapie manuelle"
       }
     ],
     "additionalType": "https://schema.org/Physiotherapy",
@@ -1000,8 +1014,9 @@
       ]
     },
     "sameAs": [
-      "https://www.facebook.com/kinesicabrude",
+      "https://www.facebook.com/kinesicabrude/",
       "https://www.instagram.com/kinesicabrude/",
+      "https://www.instagram.com/kinesio_mariagulin/",
       "https://maps.app.goo.gl/urpkh4HYe7dSdjPS9"
     ]
   },
@@ -1018,7 +1033,7 @@
     "url": "https://www.kinesica.com.ar/pt/",
     "mainEntityOfPage": "https://www.kinesica.com.ar/pt/",
     "inLanguage": "pt",
-    "description": "Clínica de fisioterapia em Palermo, Buenos Aires: osteopatia, RPG, neurodinâmica e terapia manual personalizada.",
+    "description": "Clínica de fisioterapia em Palermo, Buenos Aires: fisioterapia, osteopatia, RPG, ATM e terapia manual personalizada.",
     "image": [
       "https://www.kinesica.com.ar/images/logo.svg",
       "https://www.kinesica.com.ar/images/og-image.jpg"
@@ -1082,11 +1097,15 @@
       },
       {
         "@type": "MedicalSpecialty",
-        "name": "Terapia manual"
+        "name": "RPG"
       },
       {
         "@type": "MedicalSpecialty",
-        "name": "RPG"
+        "name": "ATM"
+      },
+      {
+        "@type": "MedicalSpecialty",
+        "name": "Terapia manual"
       }
     ],
     "additionalType": "https://schema.org/Physiotherapy",
@@ -1329,8 +1348,9 @@
       ]
     },
     "sameAs": [
-      "https://www.facebook.com/kinesicabrude",
+      "https://www.facebook.com/kinesicabrude/",
       "https://www.instagram.com/kinesicabrude/",
+      "https://www.instagram.com/kinesio_mariagulin/",
       "https://maps.app.goo.gl/urpkh4HYe7dSdjPS9"
     ]
   }

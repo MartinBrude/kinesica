@@ -21,6 +21,7 @@ import {
   repoPath,
   SCHEMA_LANGUAGE,
   sitePath,
+  SITE,
 } from "./i18n-urls.mjs";
 import { LANG_CODES } from "./languages.mjs";
 import { headerShellMarkup } from "./header-shell.mjs";
@@ -44,6 +45,7 @@ import {
   pageHeaderSection,
   socialImageUrl,
 } from "./page-shell.mjs";
+import { FOUNDER } from "./site-contact.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -161,13 +163,13 @@ function buildHtml(pathology, lang) {
     url: canonical,
     mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
     inLanguage: SCHEMA_LANGUAGE[lang],
-    author: { "@type": "Person", name: "Norberto Silvio Brude" },
+    author: { "@type": "Person", name: FOUNDER.name },
     publisher: {
       "@type": "Organization",
       name: "Kinésica",
       logo: {
         "@type": "ImageObject",
-        url: "https://www.kinesica.com.ar/images/logo.svg",
+        url: `${SITE}/images/logo.svg`,
       },
     },
     datePublished: "2024-06-01",

@@ -9,10 +9,13 @@ import {
   googleReviewsListUrl,
 } from "./google-place.mjs";
 import { SITE_OG_IMAGE } from "./page-shell.mjs";
+import { waMeUrl } from "./site-contact.mjs";
 
 export const HOME_OG_IMAGE = SITE_OG_IMAGE;
 /** @deprecated Use HOME_OG_IMAGE for social previews. */
 export const HOME_HERO_IMAGE = HOME_OG_IMAGE;
+
+const HOME_WHATSAPP_HREF = waMeUrl();
 
 /** Kinesica + estación Scalabrini Ortiz (D) visibles al cargar. Regenerar: Maps → encuadrar → Compartir → Insertar mapa. */
 const MAP_EMBED_BASE =
@@ -257,7 +260,7 @@ export const HOME = {
       "              No te acostumbres a vivir con dolor, podemos encontrar juntos un",
       "              camino para que vivas mejor.",
       "            </p>",
-      "            <a href=\"https://wa.me/5491161564311\" target=\"_blank\" class=\"btn btn-default dynamic-whatsapp-url\"",
+      `            <a href="${HOME_WHATSAPP_HREF}" target="_blank" class="btn btn-default dynamic-whatsapp-url"`,
       "              rel=\"noopener noreferrer\">Contacto y turnos</a>",
       "</div>",
       "        </div>",
@@ -669,7 +672,7 @@ export const HOME = {
       "              Don't get used to living in pain. Together, we can find a way for",
       "              you to live better.",
       "            </p>",
-      "            <a href=\"https://wa.me/5491161564311\" target=\"_blank\" class=\"btn btn-default dynamic-whatsapp-url\"",
+      `            <a href="${HOME_WHATSAPP_HREF}" target="_blank" class="btn btn-default dynamic-whatsapp-url"`,
       "              rel=\"noopener noreferrer\">Contact & Appointments</a>",
       "</div>",
       "        </div>",
@@ -1075,7 +1078,7 @@ export const HOME = {
       "            <p class=\"hero-text\">",
       "              N'habituez pas votre corps à la douleur. Ensemble, nous pouvons trouver une façon de mieux vivre.",
       "            </p>",
-      "            <a href=\"https://wa.me/5491161564311\" target=\"_blank\" class=\"btn btn-default dynamic-whatsapp-url\"",
+      `            <a href="${HOME_WHATSAPP_HREF}" target="_blank" class="btn btn-default dynamic-whatsapp-url"`,
       "              rel=\"noopener noreferrer\">Contact et rendez-vous</a>",
       "</div>",
       "        </div>",
@@ -1464,7 +1467,7 @@ export const HOME = {
       "            <p class=\"hero-text\">",
       "              Não se acostume a viver com dor. Juntos, podemos encontrar um caminho para você viver melhor.",
       "            </p>",
-      "            <a href=\"https://wa.me/5491161564311\" target=\"_blank\" class=\"btn btn-default dynamic-whatsapp-url\"",
+      `            <a href="${HOME_WHATSAPP_HREF}" target="_blank" class="btn btn-default dynamic-whatsapp-url"`,
       "              rel=\"noopener noreferrer\">Contato e agendamento</a>",
       "</div>",
       "        </div>",

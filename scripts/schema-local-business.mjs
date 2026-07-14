@@ -5,7 +5,16 @@
 import { SITE, absoluteUrl, STEMS, HTML_LANG } from "./i18n-urls.mjs";
 import { LANG_CODES, expectedLangFromFile } from "./languages.mjs";
 import { GOOGLE_MAPS_URL } from "./google-place.mjs";
-import { CONTACT, SOCIALS, waMeUrl } from "./site-contact.mjs";
+import {
+  CONTACT,
+  FOUNDER,
+  OPENING_HOURS,
+  SOCIALS,
+  geoCoordinatesSchema,
+  openingHoursSpecification,
+  postalAddressSchema,
+  waMeUrl,
+} from "./site-contact.mjs";
 
 export const BUSINESS_ID = `${SITE}/#kinesica`;
 
@@ -372,33 +381,6 @@ const SERVICE_STEMS = STEMS.filter(
   (s) => !["index", "articulos", "cv"].includes(s),
 );
 
-function openingHours() {
-  return [
-    {
-      "@type": "OpeningHoursSpecification",
-      dayOfWeek: [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-      ],
-      opens: "10:00",
-      closes: "20:00",
-    },
-  ];
-}
-
-function postalAddress() {
-  return {
-    "@type": "PostalAddress",
-    streetAddress: "Charcas 3889",
-    addressLocality: "Ciudad Autónoma de Buenos Aires",
-    addressRegion: "CABA",
-    postalCode: "C1425",
-    addressCountry: "AR",
-  };
-}
 
 function buildOfferCatalog(lang) {
   const t = COPY[lang];
@@ -458,22 +440,18 @@ export function buildPhysiotherapyClinic(lang) {
     description: t.description,
     image: [`${SITE}/images/logo.svg`, `${SITE}/images/og-image.jpg`],
     logo: `${SITE}/images/logo.svg`,
-    telephone: "+54-11-6156-4311",
+    telephone: CONTACT.phoneSchema,
     email: EMAIL,
-    address: postalAddress(),
-    geo: {
-      "@type": "GeoCoordinates",
-      latitude: -34.587025,
-      longitude: -58.421046,
-    },
+    address: postalAddressSchema(),
+    geo: geoCoordinatesSchema(),
     hasMap: MAPS_URL,
     areaServed: [
       { "@type": "City", name: "Ciudad Autónoma de Buenos Aires" },
       { "@type": "AdministrativeArea", name: "CABA" },
       { "@type": "Place", name: "Palermo, Buenos Aires" },
     ],
-    openingHours: ["Mo-Fr 10:00-20:00"],
-    openingHoursSpecification: openingHours(),
+    openingHours: [OPENING_HOURS.schemaShort],
+    openingHoursSpecification: openingHoursSpecification(),
     medicalSpecialty: t.specialties.map((name) => ({
       "@type": "MedicalSpecialty",
       name,
@@ -485,7 +463,7 @@ export function buildPhysiotherapyClinic(lang) {
     priceRange: "$$",
     founder: {
       "@type": "Person",
-      name: "Norberto Silvio Brude",
+      name: FOUNDER.name,
       jobTitle:
         lang === "pt"
           ? "Fisioterapeuta e osteopata"
@@ -498,7 +476,7 @@ export function buildPhysiotherapyClinic(lang) {
     },
     contactPoint: {
       "@type": "ContactPoint",
-      telephone: "+54-11-6156-4311",
+      telephone: CONTACT.phoneSchema,
       email: EMAIL,
       contactType: "customer service",
       areaServed: "AR",

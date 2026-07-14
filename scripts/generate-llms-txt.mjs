@@ -9,6 +9,12 @@ import { fileURLToPath } from "url";
 import { SITE, absoluteUrl, repoPath } from "./i18n-urls.mjs";
 import { PATHOLOGIES } from "./pathology-content.mjs";
 import { METHOD_STEMS, METHODS } from "./methods-content.mjs";
+import {
+  CONTACT,
+  FOUNDER,
+  OPENING_HOURS,
+  waMeUrl,
+} from "./site-contact.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = path.join(ROOT, "llms.txt");
@@ -20,10 +26,10 @@ Información útil para asistentes y crawlers:
 
 - **Idioma por defecto:** español (Argentina), URLs en la raíz (\`/\`).
 - **Inglés:** \`/en/\` · **Francés:** \`/fr/\` · **Português:** \`/pt/\`
-- **Turnos:** WhatsApp [+54 11 6156-4311](https://wa.me/5491161564311)
-- **Horario:** lunes a viernes, 10:00–20:00
+- **Turnos:** WhatsApp [${CONTACT.phoneDisplay}](${waMeUrl()})
+- **Horario:** ${OPENING_HOURS.llmsLine}
 - **Ubicación:** Palermo, CABA (ver mapa en la home)
-- **Profesional:** Norberto Silvio Brude — kinesiólogo y osteópata`;
+- **Profesional:** ${FOUNDER.name} — kinesiólogo y osteópata`;
 
 const METHOD_SECTION_TITLES = {
   es: "Métodos y técnicas",
@@ -140,7 +146,7 @@ const mainPagesEs = [
     metaDescription("es", "articulos"),
   ],
   [
-    "CV — Norberto Silvio Brude",
+    `CV — ${FOUNDER.name}`,
     "es",
     "cv",
     "Kinesiólogo y osteópata; formación y experiencia profesional.",
@@ -150,7 +156,7 @@ const mainPagesEs = [
 const enMainLines = [
   link("Home (English)", "en", "index", metaDescription("en", "index")),
   link("Articles & conditions", "en", "articulos", metaDescription("en", "articulos")),
-  link("CV — Norberto Silvio Brude", "en", "cv", "Physiotherapist and osteopath profile."),
+  link(`CV — ${FOUNDER.name}`, "en", "cv", "Physiotherapist and osteopath profile."),
 ];
 
 const frMainLines = [
@@ -162,7 +168,7 @@ const frMainLines = [
     metaDescription("fr", "articulos"),
   ),
   link(
-    "CV — Norberto Silvio Brude",
+    `CV — ${FOUNDER.name}`,
     "fr",
     "cv",
     "Profil du kinésithérapeute et ostéopathe.",
@@ -178,7 +184,7 @@ const ptMainLines = [
     metaDescription("pt", "articulos"),
   ),
   link(
-    "Currículo — Norberto Silvio Brude",
+    `Currículo — ${FOUNDER.name}`,
     "pt",
     "cv",
     "Perfil do fisioterapeuta e osteopata.",
