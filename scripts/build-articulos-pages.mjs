@@ -41,7 +41,7 @@ function renderIntro(ui) {
   return escHtml(ui.intro ?? "");
 }
 
-function renderCard(p, globalIndex, lang, ui) {
+function renderCard(p, localIndex, globalIndex, lang, ui) {
   const data = p[lang];
   const href = `${p.stem}.html`;
   const thumb = articleThumbSrc(p.stem, lang);
@@ -49,7 +49,7 @@ function renderCard(p, globalIndex, lang, ui) {
     ? `<span class="articles-index-card-media"><img src="${thumb}" alt="" width="320" height="180" loading="lazy" decoding="async" /></span>`
     : `<span class="articles-index-card-media articles-index-card-media--placeholder" aria-hidden="true"></span>`;
 
-  return `                <a href="${href}" class="articles-index-card" style="--card-i: ${globalIndex}; --card-hue: ${cardHue(globalIndex)}">
+  return `                <a href="${href}" class="articles-index-card" style="--card-i: ${localIndex}; --card-hue: ${cardHue(globalIndex)}">
                   ${media}
                   <span class="articles-index-card-body">
                     <span class="articles-index-card-label">${escHtml(data.breadcrumb)}</span>
@@ -63,9 +63,9 @@ function renderCategory(category, catIndex, lang, ui) {
   const copy = category[lang];
   const stems = category.stems.filter((stem) => pathologyByStem.has(stem));
   const cards = stems
-    .map((stem) => {
+    .map((stem, localIndex) => {
       const entry = pathologyByStem.get(stem);
-      return renderCard(entry.pathology, entry.index, lang, ui);
+      return renderCard(entry.pathology, localIndex, entry.index, lang, ui);
     })
     .join("\n");
 
