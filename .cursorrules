@@ -25,6 +25,8 @@ Actúa según la tarea con uno o más roles:
 | `page-shell.mjs` | `<head>`, CSS, scripts de shell |
 | `header-shell.mjs` | Header y nav compartidos |
 | `pathology-content.mjs` | Copy de patologías ES/EN/FR |
+| `site-contact.mjs` | Teléfono, email, dirección, horarios schema, founder, redes — ver [docs/data-sources.md](docs/data-sources.md) |
+| `google-place.mjs` | Google Place ID, Maps, URLs de reseñas |
 
 ## Antes de entregar
 

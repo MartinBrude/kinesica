@@ -70,6 +70,8 @@ Fuente de datos (.mjs)  →  Builder (scripts/)  →  HTML estático
 | `scripts/cv-content.mjs` | Copy del CV |
 | `scripts/partials-strings.mjs` | Textos de header/nav/footer por idioma |
 | `scripts/schema-local-business.mjs` | JSON-LD clínica / FAQ |
+| `scripts/site-contact.mjs` | Contacto, horarios schema, founder, redes |
+| `scripts/google-place.mjs` | Google Place ID, Maps, reseñas |
 
 ## Primeros pasos
 
@@ -125,6 +127,13 @@ node scripts/build-cv-html.mjs
 node scripts/inject-static-shell.mjs
 npm run assets:build
 ```
+
+### Cambiar teléfono, email, dirección u horarios
+
+1. Datos estructurados: `scripts/site-contact.mjs` (y `scripts/google-place.mjs` si cambia Google).
+2. Horario legible en header: `scripts/partials-strings.mjs` → `schedule`.
+3. Regenerar según [docs/data-sources.md](docs/data-sources.md#qué-regenerar-según-el-cambio).
+4. `npm run seo:audit`.
 
 ### Cambiar header, nav o footer
 
@@ -189,6 +198,7 @@ Reglas detalladas para desarrollo con Cursor: `.cursorrules` y `.cursor/rules/`.
 
 | Archivo | Contenido |
 |---------|-----------|
+| [docs/data-sources.md](docs/data-sources.md) | Contacto, fuentes de verdad, pipelines de regeneración |
 | [ASSETS.md](ASSETS.md) | Pipeline CSS/JS, caché, despliegue de assets |
 | [.cursorrules](.cursorrules) | Resumen de principios y fuentes de verdad |
 | `.cursor/rules/*.mdc` | Roles arquitecto, developer y QA |
