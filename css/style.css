@@ -3165,6 +3165,24 @@ Pathology detail pages (FAQ dolencias)
   pointer-events: none;
 }
 
+.articles-category-trigger-inner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.22s ease;
+  pointer-events: none;
+}
+
+.articles-category:not(.is-open) .articles-category-trigger-inner::after {
+  background: rgba(0, 95, 153, 0.08);
+}
+
+.articles-category.is-open .articles-category-trigger-inner::after {
+  background: rgba(255, 255, 255, 0.1);
+}
+
 .articles-category.is-open .articles-category-trigger-inner::before {
   opacity: 1;
 }
@@ -3263,14 +3281,44 @@ Pathology detail pages (FAQ dolencias)
 }
 
 .articles-category.is-open .articles-category-chevron {
+  border-color: #fff;
+  transform: rotate(-135deg);
   transition:
     transform var(--cat-panel-open-duration) cubic-bezier(0.22, 1, 0.36, 1),
     border-color var(--cat-header-color-duration) ease;
 }
 
-.articles-category.is-open .articles-category-chevron {
-  border-color: #fff;
-  transform: rotate(-135deg);
+@media (hover: hover) {
+  .articles-category-trigger:hover .articles-category-trigger-inner::after {
+    opacity: 1;
+  }
+
+  .articles-category:not(.is-open) .articles-category-trigger:hover .articles-category-chevron {
+    transform: rotate(45deg) translateY(2px);
+    border-color: var(--primary-color);
+    transition:
+      transform 0.22s ease,
+      border-color 0.22s ease;
+  }
+
+  .articles-category.is-open .articles-category-trigger:hover .articles-category-chevron {
+    transform: rotate(-135deg) translateY(-1px);
+    transition:
+      transform 0.22s ease,
+      border-color 0.22s ease;
+  }
+}
+
+.articles-category-trigger:active .articles-category-trigger-inner::after {
+  opacity: 1;
+}
+
+.articles-category-trigger:active:not(:hover) .articles-category-trigger-inner::after {
+  background: rgba(0, 95, 153, 0.12);
+}
+
+.articles-category.is-open .articles-category-trigger:active:not(:hover) .articles-category-trigger-inner::after {
+  background: rgba(255, 255, 255, 0.14);
 }
 
 .articles-category-panel {
@@ -3510,7 +3558,8 @@ Pathology detail pages (FAQ dolencias)
   .articles-category-panel,
   .articles-category-chevron,
   .articles-category-trigger-inner,
-  .articles-category-trigger-inner::before {
+  .articles-category-trigger-inner::before,
+  .articles-category-trigger-inner::after {
     transition: none;
   }
 
