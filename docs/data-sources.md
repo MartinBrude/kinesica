@@ -2,6 +2,8 @@
 
 Guía para cambiar datos del sitio sin duplicar ni romper generadores. Leer esto **antes** de buscar teléfonos, horarios o URLs en HTML.
 
+**Artículos (patologías) y métodos:** guía dedicada → [articles-and-methods.md](articles-and-methods.md).
+
 ## Mapa rápido
 
 ```
@@ -110,5 +112,11 @@ rg 'site-contact' scripts/ --glob '*.mjs'
 ```
 
 ## Otras fuentes de verdad (contenido)
+
+| Tema | Guía |
+|------|------|
+| Patologías / artículos | [articles-and-methods.md](articles-and-methods.md#artículos--patologías) |
+| Métodos (RPG, osteopatía, …) | [articles-and-methods.md](articles-and-methods.md#métodos-y-técnicas) |
+| Contacto, horarios, teléfono | Este doc + `site-contact.mjs` |
 
 Ver también [README.md](../README.md#fuentes-de-verdad): `pathology-content.mjs`, `methods-content.mjs`, `cv-content.mjs`, `partials-strings.mjs`, `i18n-urls.mjs`, `page-shell.mjs`.

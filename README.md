@@ -100,23 +100,25 @@ npm run assets:build
 
 ### Nueva patología
 
-1. Añadir entrada en `scripts/pathology-content.mjs` (objeto por idioma: `es`, `en`, `fr`; PT si aplica en `pathology-content-pt.mjs`).
-2. El stem queda registrado vía `PATHOLOGY_STEMS` en el mismo módulo.
-3. Regenerar:
+Ver checklist completo en [docs/articles-and-methods.md](docs/articles-and-methods.md#añadir-patología-nueva). Resumen:
 
-```bash
-npm run build:pathologies
-```
-
-Eso genera las 104 páginas (26 stems × 4 idiomas), thumbnails, índice de artículos, schema, shell y minifica assets.
+1. `scripts/pathology-content.mjs` — stem, copy ES/EN/FR/PT, `PATHOLOGY_RELATED`.
+2. `scripts/articles-categories.mjs` — categoría del índice.
+3. `scripts/article-thumbnail-icons.mjs` — icono del stem.
+4. `npm run build:pathologies`
 
 ### Actualizar índice de artículos
 
-Editar `scripts/articles-index-content.mjs` y/o thumbnails en `scripts/article-thumbnail-icons.mjs`, luego:
+Editar `scripts/articles-index-content.mjs` y/o `scripts/articles-categories.mjs`, luego:
 
 ```bash
 npm run build:articulos
 ```
+
+### Métodos (RPG, osteopatía, ATM, …)
+
+Copy en **`scripts/methods-content.mjs`** → `npm run build:methods`.  
+Detalle y métodos nuevos: [docs/articles-and-methods.md](docs/articles-and-methods.md#métodos-y-técnicas).
 
 ### Actualizar CV
 
@@ -199,6 +201,7 @@ Reglas detalladas para desarrollo con Cursor: `.cursorrules` y `.cursor/rules/`.
 | Archivo | Contenido |
 |---------|-----------|
 | [docs/data-sources.md](docs/data-sources.md) | Contacto, fuentes de verdad, pipelines de regeneración |
+| [docs/articles-and-methods.md](docs/articles-and-methods.md) | Patologías, índice articulos, métodos — dónde editar y qué build correr |
 | [ASSETS.md](ASSETS.md) | Pipeline CSS/JS, caché, despliegue de assets |
 | [.cursorrules](.cursorrules) | Resumen de principios y fuentes de verdad |
 | `.cursor/rules/*.mdc` | Roles arquitecto, developer y QA |

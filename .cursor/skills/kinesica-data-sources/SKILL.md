@@ -1,69 +1,80 @@
 ---
 name: kinesica-data-sources
 description: >-
-  Kinésica static site data sources, contact unification, and generator
-  pipelines. Use when changing phone, WhatsApp, email, address, hours, social
-  links, founder name, Google Maps/Place ID, hunting duplicated contact data,
-  or deciding which npm build to run after editing scripts/*.mjs.
+  Kinésica static site data sources and build pipelines. Use when changing
+  contact/phone/WhatsApp/hours, adding or editing pathology articles
+  (articulos, gonalgia, cervicalgia), method pages (RPG, osteopatia,
+  kinesiologia), hunting duplicated data, or deciding which npm build to run.
 ---
 
-# Kinésica — fuentes de verdad y contacto
+# Kinésica — fuentes de verdad
 
 ## Antes de investigar
 
-1. Leer [docs/data-sources.md](../../docs/data-sources.md) (mapa completo).
-2. Asumir que contacto vive en **`scripts/site-contact.mjs`** + **`scripts/google-place.mjs`**.
-3. No greppear 170 HTML — buscar en `scripts/` y regenerar.
+1. **Contacto** → [docs/data-sources.md](../../docs/data-sources.md)
+2. **Artículos / patologías** → [docs/articles-and-methods.md](../../docs/articles-and-methods.md#artículos--patologías)
+3. **Métodos** → [docs/articles-and-methods.md](../../docs/articles-and-methods.md#métodos-y-técnicas)
+4. No greppear HTML masivo — editar `scripts/*-content.mjs` y regenerar.
 
-## Cambios frecuentes
+## Artículos (patologías)
+
+| Tarea | Editar | Regenerar |
+|-------|--------|-----------|
+| Copy de una patología | `pathology-content.mjs` (+ bump `updatedAt`) | `npm run build:pathologies` |
+| Índice / categorías articulos | `articles-index-content.mjs`, `articles-categories.mjs` | `npm run build:articulos` |
+| **Nueva** patología | `PATHOLOGY_STEMS`, `PATHOLOGIES`, `PATHOLOGY_RELATED`, `articles-categories.mjs`, `article-thumbnail-icons.mjs` | `npm run build:pathologies` |
+
+Fuente única: **`scripts/pathology-content.mjs`**. Stems → `i18n-urls.mjs` automático.
+
+## Métodos
+
+| Tarea | Editar | Regenerar |
+|-------|--------|-----------|
+| Copy de un método | `methods-content.mjs` | `npm run build:methods` |
+| Schema MedicalTherapy | `schema-local-business.mjs` → `COPY[lang].services[stem]` | `npm run build:methods` |
+| Nav «Métodos y Técnicas» | `partials-strings.mjs` → `TECHNIQUE_NAV_STEMS` | `build:methods` + `build:partials` |
+| **Nuevo** método | + `METHOD_STEMS`, `METHODS`, `i18n-urls.mjs` → `STEMS`, schema services ×4 langs | `build:methods` (+ `build:partials` si nav) |
+
+Fuente única: **`scripts/methods-content.mjs`**.
+
+## Contacto
 
 | Tarea | Editar | Regenerar |
 |-------|--------|-----------|
 | Teléfono / email / dirección | `site-contact.mjs` | `build:partials` → `seo:schema` → `schema:partials` → `seo:llms` → `assets:build` |
 | Horario header (texto UI) | `partials-strings.mjs` → `schedule` | `build:partials` → `inject-static-shell` → `assets:build` |
 | Horario schema / llms | `site-contact.mjs` → `OPENING_HOURS` | + `seo:schema`, `seo:llms` |
-| Redes sociales | `site-contact.mjs` → `SOCIALS` + `handles` | `build:partials` → `assets:build` |
-| Founder / autor artículos | `site-contact.mjs` → `FOUNDER` | `build:cv`, `build:pathologies`, `seo:schema`, `seo:llms` |
-| Google Place / Maps | `google-place.mjs` | `assets:build`, `seo:schema`, `reviews:fetch` si aplica |
-| Botón WhatsApp home | `home-content.mjs` (usar `waMeUrl()`) | `build:home` |
-
-## Imports en generadores
-
-```js
-import { CONTACT, FOUNDER, OPENING_HOURS, SOCIALS, waMeUrl } from "./site-contact.mjs";
-import { GOOGLE_PLACE_ID, GOOGLE_MAPS_URL } from "./google-place.mjs";
-```
-
-Schema helpers: `postalAddressSchema()`, `openingHoursSpecification()`, `geoCoordinatesSchema()`.
+| Redes sociales | `site-contact.mjs` → `SOCIALS` | `build:partials` → `assets:build` |
 
 ## QA obligatorio
 
 ```bash
-npm run seo:audit   # incluye check anti-hardcode en scripts/
-npm run assets:build  # si tocó js/, partials/ o css/ fuente
+npm run seo:audit
+npm run assets:build   # si tocó js/, partials/ o css/ fuente
 ```
-
-## Anti-patrones
-
-- Hardcodear contacto en `scripts/*.mjs` → importar desde `site-contact.mjs`.
-- Editar `js/site-config.js`, `*.min.js` o HTML masivo a mano.
-- Duplicar horarios: UI en `partials-strings.mjs`, estructura en `OPENING_HOURS`.
-- Usar `seo:og` para schema (solo limpia OG; schema = `seo:schema`).
 
 ## Árbol de decisión
 
 ```
-¿Es dato de contacto/clínica/Google?
+¿Patología / artículo / articulos.html?
+  → pathology-content.mjs (+ articles-* si índice)
+  → npm run build:pathologies
+
+¿Método (RPG, osteopatía, ATM, …)?
+  → methods-content.mjs (+ schema-local-business si schema)
+  → npm run build:methods
+
+¿Contacto / Google / horarios schema?
   → site-contact.mjs / google-place.mjs
 
-¿Es copy visible por idioma (header, CTA, nav)?
-  → partials-strings.mjs (+ build:partials)
+¿Header, footer, CTA, nav global?
+  → partials-strings.mjs → build:partials
 
-¿Es contenido de página (patología, método, CV, home)?
-  → *-content.mjs correspondiente + build:* del README
+¿Home?
+  → home-content.mjs → build:home
 
-¿Es URL del sitio?
-  → i18n-urls.mjs (STEMS, absoluteUrl)
+¿URL del sitio?
+  → i18n-urls.mjs
 ```
 
-Detalle de módulos y matrices: [docs/data-sources.md](../../docs/data-sources.md).
+Detalle: [docs/data-sources.md](../../docs/data-sources.md) · [docs/articles-and-methods.md](../../docs/articles-and-methods.md)
