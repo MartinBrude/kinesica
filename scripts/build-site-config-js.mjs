@@ -13,6 +13,10 @@ import {
 } from "./google-place.mjs";
 import { BUSINESS_ID } from "./schema-local-business.mjs";
 import { CONTACT, SOCIALS } from "./site-contact.mjs";
+import {
+  GA4_MEASUREMENT_ID,
+  GTM_CONTAINER_ID,
+} from "./site-analytics.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = path.join(ROOT, "js/site-config.js");
@@ -22,9 +26,13 @@ const GOOGLE_PLACES_API_KEY = "AIzaSyA6qg_adYYVgTZG3iUjxY-8EuXK5H2HmpE";
 
 const content = [
   "/** Global site configuration. AUTO-GENERATED — do not edit.",
-  " * Source of truth: scripts/site-contact.mjs (contact + socials)",
+  " * Sources: site-contact.mjs, google-place.mjs, site-analytics.mjs",
   " */",
   "window.KINESICA_SITE = {",
+  "  /** Google Tag Manager container. */",
+  `  gtmContainerId: ${JSON.stringify(GTM_CONTAINER_ID)},`,
+  "  /** GA4 measurement ID (via GTM Google Tag + conversion events). */",
+  `  ga4MeasurementId: ${JSON.stringify(GA4_MEASUREMENT_ID)},`,
   "  /** Google Maps short link (same as Google Business Profile listing). */",
   `  googleMapsUrl: ${JSON.stringify(CONTACT.mapsUrl)},`,
   "  /** Google Business Profile place ID (Charcas 3889). */",

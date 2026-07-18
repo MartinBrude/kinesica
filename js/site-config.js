@@ -1,7 +1,11 @@
 /** Global site configuration. AUTO-GENERATED — do not edit.
- * Source of truth: scripts/site-contact.mjs (contact + socials)
+ * Sources: site-contact.mjs, google-place.mjs, site-analytics.mjs
  */
 window.KINESICA_SITE = {
+  /** Google Tag Manager container. */
+  gtmContainerId: "GTM-NVDTCTXM",
+  /** GA4 measurement ID (via GTM Google Tag + conversion events). */
+  ga4MeasurementId: "G-T5WJMBPGJ3",
   /** Google Maps short link (same as Google Business Profile listing). */
   googleMapsUrl: "https://maps.app.goo.gl/urpkh4HYe7dSdjPS9",
   /** Google Business Profile place ID (Charcas 3889). */

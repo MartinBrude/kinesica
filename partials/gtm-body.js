@@ -1,4 +1,6 @@
-/* GTM noscript fallback. Loaded with <script src>; works from file:// */
+/* GTM noscript fallback. Loaded with <script src>; works from file://
+ * Container ID must match scripts/site-analytics.mjs → GTM_CONTAINER_ID.
+ */
 window.__KINESICA_GTM_BODY_SNIPPET = `
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NVDTCTXM" height="0" width="0"
     style="display: none; visibility: hidden"></iframe></noscript>

@@ -1,4 +1,6 @@
-/* Google Tag Manager (head). Loaded with <script src>; works from file:// */
+/* Google Tag Manager (head). Loaded with <script src>; works from file://
+ * Container ID must match scripts/site-analytics.mjs → GTM_CONTAINER_ID.
+ */
 (function (w, d, s, l, i) {
   w[l] = w[l] || [];
   w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
