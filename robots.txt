@@ -1,3 +1,20 @@
+# AI / LLM crawlers — explicitly allowed to index public content
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: Google-Extended
+Allow: /
+
+# Build tooling and non-public fragments
+Disallow: /scripts/
+Disallow: /partials/
+
+# Error handlers (noindex pages; avoid crawl budget on duplicates)
+Disallow: /404-router.html
+Disallow: /404.html
+Disallow: /en/404.html
+Disallow: /fr/404.html
+Disallow: /pt/404.html
+
 User-agent: *
 Allow: /
 
@@ -15,5 +32,5 @@ Disallow: /pt/404.html
 Sitemap: https://www.kinesica.com.ar/sitemap.xml
 
 # LLM-friendly site map (https://llmstxt.org/)
-# https://www.kinesica.com.ar/llms.txt
-# https://www.kinesica.com.ar/llms-full.txt
+https://www.kinesica.com.ar/llms.txt
+https://www.kinesica.com.ar/llms-full.txt
