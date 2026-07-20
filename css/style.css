@@ -1715,8 +1715,8 @@ main:focus {
 
 .footer-widget li a {
   color: #9ca3af;
-  font-size: 1.125rem;
-  line-height: 36px;
+  font-size: 1.25rem;
+  line-height: 38px;
   transition: color 0.2s ease;
 }
 
@@ -1732,7 +1732,7 @@ main:focus {
 
 /*
   Narrow desktop / tablet (columns still side-by-side):
-  allow title wrap; keep titles clearly above link text (1.125rem).
+  allow title wrap; keep titles clearly above link text (1.25rem).
 */
 @media (max-width: 1199.98px) and (min-width: 768px) {
   .footer-social .widget-title {
