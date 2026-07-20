@@ -1,12 +1,22 @@
 /** AUTO-GENERATED — no editar. Fuente: npm run reviews:fetch */
 window.KINESICA_GOOGLE_REVIEWS = {
   "placeId": "ChIJZ2mPW9K1vJUR3J5kGRi5gws",
-  "fetchedAt": "2026-06-13T13:32:35.084Z",
+  "fetchedAt": "2026-07-20T22:37:49.917Z",
   "displayName": "Kinesica",
   "googleMapsUri": "https://maps.google.com/?cid=829710269522681564&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA",
   "rating": 5,
   "userRatingCount": 22,
   "reviews": [
+    {
+      "author": "Susana Mühlmann",
+      "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWUfGXN593tTwuhxuqVKOEWUIvavQjTlY93VeBQWBCQXFlW3nY=s128-c0x00000000-cc-rp-mo",
+      "authorProfile": "https://www.google.com/maps/contrib/107592515738110590238/reviews",
+      "rating": 5,
+      "text": "La consulta con el Klgo. Norberto Brude fue excelente. Me atiende desde hace más de treinta años, conoce mi cuerpo y temas de salud de importancia, y trabaja en función de lo que necesito y puedo hacer. Cómo se me dificulta ir al consultorio, vino a mi casa y, después de tener un cuadro de situación, me dejó ejercicios que primero practicamos, para hacer sola, orientados a un fortalecimiento que elimine dolores y mejore mi calidad de vida integralmente. De igual manera, respondíó con premura a nuevos dolores que le informé posteriormente, para ver cómo proseguir. Además de un excelente profesional, es una gran persona. Altamente recomendable.",
+      "language": "es",
+      "relativeTime": "Hace 3 meses",
+      "publishTime": "2026-03-27T19:20:10.553212148Z"
+    },
     {
       "author": "Vanina González",
       "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJeKmoG6AUSPkgQpcNlbTwxMFmCa7VESjKEJuzqBjOUKlBRLfGC=s128-c0x00000000-cc-rp-mo-ba2",
@@ -14,38 +24,28 @@ window.KINESICA_GOOGLE_REVIEWS = {
       "rating": 5,
       "text": "Yo llegué a la primera consulta con el brazo izquierdo bastante comprometido.No tenía movimiento prácticamente.Y con el correr de las sesiones y los ejercicios en casa he mejorado muchísimo.Ya puedo atarme el pelo y vestirme sola.Ahora voy camino a la recuperación total.",
       "language": "es",
-      "relativeTime": "Hace 4 meses",
+      "relativeTime": "Hace 5 meses",
       "publishTime": "2026-02-04T00:47:12.102112469Z"
     },
     {
-      "author": "MIGUEL IGNACIO",
-      "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJei1fFDfL1eYsBYwdKKsmQTRJmwheq5Wnsuq_RPdlysjHk2w=s128-c0x00000000-cc-rp-mo-ba3",
-      "authorProfile": "https://www.google.com/maps/contrib/103814092121174805825/reviews",
+      "author": "Martin Figueroa",
+      "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWH1NIssF8Mao5RzMLHufdWDcctM9XzC6a9okzyyojbh9m-22pw=s128-c0x00000000-cc-rp-mo",
+      "authorProfile": "https://www.google.com/maps/contrib/114835887772282675184/reviews",
       "rating": 5,
-      "text": "Excelente atención!  Te evalúan cuidadosamente y luego aplican osteopatia, rpg, cadenas miofasciales, un lujo lo que saben ! No se consigue ni en el mejor plan de osde, lo super recomiendo. Primero fue mi Sra y luego yo. Atención muy cálida!",
+      "text": "Excelente atención del doctor Brude en cada sesión. Explica con claridad y genera mucha confianza. Se nota el compromiso con la recuperación del paciente. Su trato es muy amable y personalizado.",
       "language": "es",
-      "relativeTime": "Hace un año",
-      "publishTime": "2024-10-18T12:33:09.152035Z"
+      "relativeTime": "Hace 4 meses",
+      "publishTime": "2026-03-18T19:26:52.862442188Z"
     },
     {
-      "author": "Osiris Gonzalez",
-      "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWv8ywb5tSMuMqGIsToGFF4mEGAHn2EMZ7Ej78pQ7nSzI0_mjk=s128-c0x00000000-cc-rp-mo",
-      "authorProfile": "https://www.google.com/maps/contrib/106707412887871919945/reviews",
+      "author": "Mirta Clinis",
+      "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocKMekeEtxEm7RZ3MbUfphFho9XZBB3jwjs3tsfaIgzt9FQ4xg=s128-c0x00000000-cc-rp-mo",
+      "authorProfile": "https://www.google.com/maps/contrib/108447294487908467296/reviews",
       "rating": 5,
-      "text": "Un profesional espectacular. Fui con un dolor punzante en el pulmón, pasé por una bocha de médicos que pensaban que era una pulmonía/neumonia. Lloraba todos los días. Fui con Norberto y me lo sacó, realmente me devolvió la felicidad.",
+      "text": "Excelente profesional... recomendable. En la primer sesión ya me alivió un dolor muy fuerte que tenía en la espalda.",
       "language": "es",
-      "relativeTime": "Hace un año",
-      "publishTime": "2025-01-07T14:54:12.408692Z"
-    },
-    {
-      "author": "cecilia laura",
-      "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjVr0S7qzO5gtYmQCOWYPPsvcK-niRmDqaJaEiJTYvV2R0rEBUHAPg=s128-c0x00000000-cc-rp-mo",
-      "authorProfile": "https://www.google.com/maps/contrib/117503263252731869486/reviews",
-      "rating": 5,
-      "text": "Muy bueno el lugar, exelente la atención. Saben un montón y útilizan diferentes técnicas según la patología. Gracias, super recomendado.",
-      "language": "es",
-      "relativeTime": "Hace un año",
-      "publishTime": "2024-11-27T23:01:21.875709Z"
+      "relativeTime": "Hace 4 meses",
+      "publishTime": "2026-03-18T16:47:46.069011478Z"
     },
     {
       "author": "sofia suarez",
@@ -54,12 +54,22 @@ window.KINESICA_GOOGLE_REVIEWS = {
       "rating": 5,
       "text": "Excelente profesional. Atencion 100% personalizada. Super recomiendo",
       "language": "es",
-      "relativeTime": "Hace 4 meses",
+      "relativeTime": "Hace 5 meses",
       "publishTime": "2026-01-28T12:10:38.282391852Z"
     }
   ],
   "byLang": {
     "es": [
+      {
+        "author": "Susana Mühlmann",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWUfGXN593tTwuhxuqVKOEWUIvavQjTlY93VeBQWBCQXFlW3nY=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/107592515738110590238/reviews",
+        "rating": 5,
+        "text": "La consulta con el Klgo. Norberto Brude fue excelente. Me atiende desde hace más de treinta años, conoce mi cuerpo y temas de salud de importancia, y trabaja en función de lo que necesito y puedo hacer. Cómo se me dificulta ir al consultorio, vino a mi casa y, después de tener un cuadro de situación, me dejó ejercicios que primero practicamos, para hacer sola, orientados a un fortalecimiento que elimine dolores y mejore mi calidad de vida integralmente. De igual manera, respondíó con premura a nuevos dolores que le informé posteriormente, para ver cómo proseguir. Además de un excelente profesional, es una gran persona. Altamente recomendable.",
+        "language": "es",
+        "relativeTime": "Hace 3 meses",
+        "publishTime": "2026-03-27T19:20:10.553212148Z"
+      },
       {
         "author": "Vanina González",
         "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJeKmoG6AUSPkgQpcNlbTwxMFmCa7VESjKEJuzqBjOUKlBRLfGC=s128-c0x00000000-cc-rp-mo-ba2",
@@ -67,38 +77,28 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Yo llegué a la primera consulta con el brazo izquierdo bastante comprometido.No tenía movimiento prácticamente.Y con el correr de las sesiones y los ejercicios en casa he mejorado muchísimo.Ya puedo atarme el pelo y vestirme sola.Ahora voy camino a la recuperación total.",
         "language": "es",
-        "relativeTime": "Hace 4 meses",
+        "relativeTime": "Hace 5 meses",
         "publishTime": "2026-02-04T00:47:12.102112469Z"
       },
       {
-        "author": "MIGUEL IGNACIO",
-        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJei1fFDfL1eYsBYwdKKsmQTRJmwheq5Wnsuq_RPdlysjHk2w=s128-c0x00000000-cc-rp-mo-ba3",
-        "authorProfile": "https://www.google.com/maps/contrib/103814092121174805825/reviews",
+        "author": "Martin Figueroa",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWH1NIssF8Mao5RzMLHufdWDcctM9XzC6a9okzyyojbh9m-22pw=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/114835887772282675184/reviews",
         "rating": 5,
-        "text": "Excelente atención!  Te evalúan cuidadosamente y luego aplican osteopatia, rpg, cadenas miofasciales, un lujo lo que saben ! No se consigue ni en el mejor plan de osde, lo super recomiendo. Primero fue mi Sra y luego yo. Atención muy cálida!",
+        "text": "Excelente atención del doctor Brude en cada sesión. Explica con claridad y genera mucha confianza. Se nota el compromiso con la recuperación del paciente. Su trato es muy amable y personalizado.",
         "language": "es",
-        "relativeTime": "Hace un año",
-        "publishTime": "2024-10-18T12:33:09.152035Z"
+        "relativeTime": "Hace 4 meses",
+        "publishTime": "2026-03-18T19:26:52.862442188Z"
       },
       {
-        "author": "Osiris Gonzalez",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWv8ywb5tSMuMqGIsToGFF4mEGAHn2EMZ7Ej78pQ7nSzI0_mjk=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/106707412887871919945/reviews",
+        "author": "Mirta Clinis",
+        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocKMekeEtxEm7RZ3MbUfphFho9XZBB3jwjs3tsfaIgzt9FQ4xg=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/108447294487908467296/reviews",
         "rating": 5,
-        "text": "Un profesional espectacular. Fui con un dolor punzante en el pulmón, pasé por una bocha de médicos que pensaban que era una pulmonía/neumonia. Lloraba todos los días. Fui con Norberto y me lo sacó, realmente me devolvió la felicidad.",
+        "text": "Excelente profesional... recomendable. En la primer sesión ya me alivió un dolor muy fuerte que tenía en la espalda.",
         "language": "es",
-        "relativeTime": "Hace un año",
-        "publishTime": "2025-01-07T14:54:12.408692Z"
-      },
-      {
-        "author": "cecilia laura",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjVr0S7qzO5gtYmQCOWYPPsvcK-niRmDqaJaEiJTYvV2R0rEBUHAPg=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/117503263252731869486/reviews",
-        "rating": 5,
-        "text": "Muy bueno el lugar, exelente la atención. Saben un montón y útilizan diferentes técnicas según la patología. Gracias, super recomendado.",
-        "language": "es",
-        "relativeTime": "Hace un año",
-        "publishTime": "2024-11-27T23:01:21.875709Z"
+        "relativeTime": "Hace 4 meses",
+        "publishTime": "2026-03-18T16:47:46.069011478Z"
       },
       {
         "author": "sofia suarez",
@@ -107,40 +107,40 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Excelente profesional. Atencion 100% personalizada. Super recomiendo",
         "language": "es",
-        "relativeTime": "Hace 4 meses",
+        "relativeTime": "Hace 5 meses",
         "publishTime": "2026-01-28T12:10:38.282391852Z"
       }
     ],
     "en": [
       {
-        "author": "MIGUEL IGNACIO",
-        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJei1fFDfL1eYsBYwdKKsmQTRJmwheq5Wnsuq_RPdlysjHk2w=s128-c0x00000000-cc-rp-mo-ba3",
-        "authorProfile": "https://www.google.com/maps/contrib/103814092121174805825/reviews",
+        "author": "Susana Mühlmann",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWUfGXN593tTwuhxuqVKOEWUIvavQjTlY93VeBQWBCQXFlW3nY=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/107592515738110590238/reviews",
         "rating": 5,
-        "text": "Excellent service! They evaluate you carefully and then apply osteopathy, RPG (Postural Re-education), and myofascial release techniques—their expertise is truly exceptional! You can't find this even with the best health insurance plan. I highly recommend it. My wife went first, and then I went too. Very warm and welcoming service!",
+        "text": "My consultation with physiotherapist Norberto Brude was excellent. He has been treating me for over thirty years, knows my body and important health issues, and works according to my needs and abilities. Since it's difficult for me to go to the office, he came to my house and, after assessing my situation, gave me exercises to do on my own. These exercises, which we initially practiced together, were designed to strengthen my muscles, eliminate pain, and improve my overall quality of life. He also responded promptly to any new pains I reported later, to discuss how to proceed. In addition to being an excellent professional, he is a wonderful person. Highly recommended.",
         "language": "en",
-        "relativeTime": "a year ago",
-        "publishTime": "2024-10-18T12:33:09.152035Z"
+        "relativeTime": "3 months ago",
+        "publishTime": "2026-03-27T19:20:10.553212148Z"
       },
       {
-        "author": "Vanina González",
-        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJeKmoG6AUSPkgQpcNlbTwxMFmCa7VESjKEJuzqBjOUKlBRLfGC=s128-c0x00000000-cc-rp-mo-ba2",
-        "authorProfile": "https://www.google.com/maps/contrib/117841718928738144707/reviews",
+        "author": "Martin Figueroa",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWH1NIssF8Mao5RzMLHufdWDcctM9XzC6a9okzyyojbh9m-22pw=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/114835887772282675184/reviews",
         "rating": 5,
-        "text": "I arrived at the first appointment with my left arm quite compromised. I had practically no movement. And with each session and the exercises at home, I've improved tremendously. I can already tie my hair and dress myself. Now I'm on the road to a full recovery.",
+        "text": "Dr. Brude provides excellent care at every session. He explains things clearly and inspires a lot of confidence. His commitment to the patient's recovery is evident. His approach is very kind and personalized.",
         "language": "en",
         "relativeTime": "4 months ago",
-        "publishTime": "2026-02-04T00:47:12.102112469Z"
+        "publishTime": "2026-03-18T19:26:52.862442188Z"
       },
       {
-        "author": "Osiris Gonzalez",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWv8ywb5tSMuMqGIsToGFF4mEGAHn2EMZ7Ej78pQ7nSzI0_mjk=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/106707412887871919945/reviews",
+        "author": "Mirta Clinis",
+        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocKMekeEtxEm7RZ3MbUfphFho9XZBB3jwjs3tsfaIgzt9FQ4xg=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/108447294487908467296/reviews",
         "rating": 5,
-        "text": "A spectacular professional. I went in with a sharp pain in my lung, and I'd seen a bunch of doctors who all thought it was pneumonia. I cried every day. I went to Norberto and he cured it; he truly brought me back to happiness.",
+        "text": "Excellent professional... highly recommended. In the first session, she relieved a very severe back pain I had.",
         "language": "en",
-        "relativeTime": "a year ago",
-        "publishTime": "2025-01-07T14:54:12.408692Z"
+        "relativeTime": "4 months ago",
+        "publishTime": "2026-03-18T16:47:46.069011478Z"
       },
       {
         "author": "sofia suarez",
@@ -149,7 +149,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Excellent professional. 100% personalized attention. Highly recommend.",
         "language": "en",
-        "relativeTime": "4 months ago",
+        "relativeTime": "5 months ago",
         "publishTime": "2026-01-28T12:10:38.282391852Z"
       },
       {
@@ -165,14 +165,14 @@ window.KINESICA_GOOGLE_REVIEWS = {
     ],
     "fr": [
       {
-        "author": "MIGUEL IGNACIO",
-        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJei1fFDfL1eYsBYwdKKsmQTRJmwheq5Wnsuq_RPdlysjHk2w=s128-c0x00000000-cc-rp-mo-ba3",
-        "authorProfile": "https://www.google.com/maps/contrib/103814092121174805825/reviews",
+        "author": "Susana Mühlmann",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWUfGXN593tTwuhxuqVKOEWUIvavQjTlY93VeBQWBCQXFlW3nY=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/107592515738110590238/reviews",
         "rating": 5,
-        "text": "Service excellent ! Ils vous évaluent minutieusement puis appliquent des techniques d'ostéopathie, de rééducation posturale et de relâchement myofascial – leur expertise est vraiment exceptionnelle ! On ne trouve pas ce genre de service, même avec la meilleure assurance maladie. Je le recommande vivement. Ma femme y est allée la première, puis j'ai suivi. Accueil très chaleureux et convivial !",
+        "text": "Ma consultation avec le physiothérapeute Norberto Brude a été excellente. Il me suit depuis plus de trente ans, connaît parfaitement mon corps et mes principaux problèmes de santé, et adapte son travail à mes besoins et à mes capacités. Comme il m'est difficile de me déplacer à son cabinet, il est venu à mon domicile et, après avoir évalué ma situation, m'a donné des exercices à faire chez moi. Ces exercices, que nous avons d'abord pratiqués ensemble, visaient à renforcer mes muscles, à soulager mes douleurs et à améliorer ma qualité de vie. Il a également répondu rapidement à toutes les nouvelles douleurs que j'ai signalées par la suite, afin de discuter de la marche à suivre. En plus d'être un excellent professionnel, c'est une personne formidable. Je le recommande vivement.",
         "language": "fr",
-        "relativeTime": "il y a un an",
-        "publishTime": "2024-10-18T12:33:09.152035Z"
+        "relativeTime": "il y a 3 mois",
+        "publishTime": "2026-03-27T19:20:10.553212148Z"
       },
       {
         "author": "Vanina González",
@@ -181,28 +181,28 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Je suis arrivée à mon premier rendez-vous avec le bras gauche très handicapé. Je ne pouvais pratiquement pas le bouger. Mais grâce à chaque séance et aux exercices à faire à la maison, j'ai fait d'énormes progrès. Je peux déjà m'attacher les cheveux et m'habiller toute seule. Je suis maintenant en voie de guérison complète.",
         "language": "fr",
-        "relativeTime": "il y a 4 mois",
+        "relativeTime": "il y a 5 mois",
         "publishTime": "2026-02-04T00:47:12.102112469Z"
       },
       {
-        "author": "Osiris Gonzalez",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWv8ywb5tSMuMqGIsToGFF4mEGAHn2EMZ7Ej78pQ7nSzI0_mjk=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/106707412887871919945/reviews",
+        "author": "Martin Figueroa",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWH1NIssF8Mao5RzMLHufdWDcctM9XzC6a9okzyyojbh9m-22pw=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/114835887772282675184/reviews",
         "rating": 5,
-        "text": "Un professionnel exceptionnel. Je suis arrivée avec une douleur aiguë au poumon, et j'avais consulté de nombreux médecins qui pensaient tous à une pneumonie. Je pleurais tous les jours. Je suis allée voir Norberto et il m'a guérie ; il m'a vraiment redonné le sourire.",
+        "text": "Le Dr Brude prodigue d'excellents soins à chaque séance. Ses explications sont claires et il inspire confiance. Son engagement envers le rétablissement du patient est manifeste. Son approche est empreinte de bienveillance et personnalisée.",
         "language": "fr",
-        "relativeTime": "il y a un an",
-        "publishTime": "2025-01-07T14:54:12.408692Z"
+        "relativeTime": "il y a 4 mois",
+        "publishTime": "2026-03-18T19:26:52.862442188Z"
       },
       {
-        "author": "cecilia laura",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjVr0S7qzO5gtYmQCOWYPPsvcK-niRmDqaJaEiJTYvV2R0rEBUHAPg=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/117503263252731869486/reviews",
+        "author": "Mirta Clinis",
+        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocKMekeEtxEm7RZ3MbUfphFho9XZBB3jwjs3tsfaIgzt9FQ4xg=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/108447294487908467296/reviews",
         "rating": 5,
-        "text": "L'endroit est super et le service excellent. Ils sont très compétents et utilisent différentes techniques selon l'état du patient. Merci, je recommande vivement.",
+        "text": "Excellente professionnelle… je la recommande vivement. Dès la première séance, elle a soulagé une très forte douleur au dos dont je souffrais.",
         "language": "fr",
-        "relativeTime": "il y a un an",
-        "publishTime": "2024-11-27T23:01:21.875709Z"
+        "relativeTime": "il y a 4 mois",
+        "publishTime": "2026-03-18T16:47:46.069011478Z"
       },
       {
         "author": "sofia suarez",
@@ -211,20 +211,20 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Excellent professionnel. Accompagnement 100 % personnalisé. Je le recommande vivement.",
         "language": "fr",
-        "relativeTime": "il y a 4 mois",
+        "relativeTime": "il y a 5 mois",
         "publishTime": "2026-01-28T12:10:38.282391852Z"
       }
     ],
     "pt": [
       {
-        "author": "MIGUEL IGNACIO",
-        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJei1fFDfL1eYsBYwdKKsmQTRJmwheq5Wnsuq_RPdlysjHk2w=s128-c0x00000000-cc-rp-mo-ba3",
-        "authorProfile": "https://www.google.com/maps/contrib/103814092121174805825/reviews",
+        "author": "Susana Mühlmann",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWUfGXN593tTwuhxuqVKOEWUIvavQjTlY93VeBQWBCQXFlW3nY=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/107592515738110590238/reviews",
         "rating": 5,
-        "text": "Serviço excelente! Eles fazem uma avaliação cuidadosa e aplicam técnicas de osteopatia, RPG (Reeducação Postural) e liberação miofascial — a expertise deles é realmente excepcional! Você não encontra isso nem com o melhor plano de saúde. Recomendo muito. Minha esposa foi primeiro e depois eu também. Atendimento muito acolhedor e atencioso!",
+        "text": "Minha consulta com o fisioterapeuta Norberto Brude foi excelente. Ele me trata há mais de trinta anos, conhece meu corpo e meus problemas de saúde, e trabalha de acordo com minhas necessidades e capacidades. Como tenho dificuldade para ir ao consultório, ele veio até minha casa e, após avaliar minha situação, me passou exercícios para fazer sozinha. Esses exercícios, que praticamos juntos inicialmente, foram elaborados para fortalecer meus músculos, eliminar a dor e melhorar minha qualidade de vida em geral. Ele também respondeu prontamente a qualquer nova dor que relatei posteriormente, para discutir como proceder. Além de ser um excelente profissional, ele é uma pessoa maravilhosa. Recomendo muito.",
         "language": "pt",
-        "relativeTime": "há um ano",
-        "publishTime": "2024-10-18T12:33:09.152035Z"
+        "relativeTime": "há 3 meses",
+        "publishTime": "2026-03-27T19:20:10.553212148Z"
       },
       {
         "author": "Vanina González",
@@ -233,28 +233,28 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Cheguei à primeira consulta com o braço esquerdo bastante debilitado. Praticamente não conseguia movimentá-lo. Mas a cada sessão e com os exercícios em casa, minha recuperação tem sido tremenda. Já consigo prender o cabelo e me vestir sozinha. Agora estou a caminho da recuperação completa.",
         "language": "pt",
-        "relativeTime": "há 4 meses",
+        "relativeTime": "há 5 meses",
         "publishTime": "2026-02-04T00:47:12.102112469Z"
       },
       {
-        "author": "Osiris Gonzalez",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWv8ywb5tSMuMqGIsToGFF4mEGAHn2EMZ7Ej78pQ7nSzI0_mjk=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/106707412887871919945/reviews",
+        "author": "Martin Figueroa",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWH1NIssF8Mao5RzMLHufdWDcctM9XzC6a9okzyyojbh9m-22pw=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/114835887772282675184/reviews",
         "rating": 5,
-        "text": "Um profissional espetacular. Cheguei com uma dor aguda no pulmão e já tinha consultado vários médicos, todos achando que era pneumonia. Eu chorava todos os dias. Fui ao Norberto e ele me curou; ele realmente me devolveu a felicidade.",
+        "text": "O Dr. Brude oferece um atendimento excelente em todas as sessões. Ele explica tudo com clareza e inspira muita confiança. Seu comprometimento com a recuperação do paciente é evidente. Sua abordagem é muito gentil e personalizada.",
         "language": "pt",
-        "relativeTime": "há um ano",
-        "publishTime": "2025-01-07T14:54:12.408692Z"
+        "relativeTime": "há 4 meses",
+        "publishTime": "2026-03-18T19:26:52.862442188Z"
       },
       {
-        "author": "cecilia laura",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjVr0S7qzO5gtYmQCOWYPPsvcK-niRmDqaJaEiJTYvV2R0rEBUHAPg=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/117503263252731869486/reviews",
+        "author": "Mirta Clinis",
+        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocKMekeEtxEm7RZ3MbUfphFho9XZBB3jwjs3tsfaIgzt9FQ4xg=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/108447294487908467296/reviews",
         "rating": 5,
-        "text": "O lugar é ótimo e o atendimento é excelente. Eles são muito experientes e usam técnicas diferentes dependendo da situação. Obrigado, recomendo muito.",
+        "text": "Excelente profissional... altamente recomendada. Na primeira sessão, ela aliviou uma dor nas costas muito forte que eu tinha.",
         "language": "pt",
-        "relativeTime": "há um ano",
-        "publishTime": "2024-11-27T23:01:21.875709Z"
+        "relativeTime": "há 4 meses",
+        "publishTime": "2026-03-18T16:47:46.069011478Z"
       },
       {
         "author": "sofia suarez",
@@ -263,7 +263,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Excelente profissional. Atendimento 100% personalizado. Recomendo muito.",
         "language": "pt",
-        "relativeTime": "há 4 meses",
+        "relativeTime": "há 5 meses",
         "publishTime": "2026-01-28T12:10:38.282391852Z"
       }
     ]
