@@ -1697,6 +1697,8 @@ main:focus {
 .footer-widget .widget-title {
   color: #fff;
   font-weight: 700;
+  /* Explicit size: do not inherit giant h2 (2.25rem) in the footer */
+  font-size: 1.25rem;
   letter-spacing: 0.5px;
   border-bottom: 1px solid #374151;
   padding-bottom: 20px;
@@ -1713,6 +1715,7 @@ main:focus {
 
 .footer-widget li a {
   color: #9ca3af;
+  font-size: 1rem;
   line-height: 34px;
   transition: color 0.2s ease;
 }
@@ -1727,13 +1730,25 @@ main:focus {
   white-space: nowrap;
 }
 
-@media (max-width: 1199.98px) {
+/*
+  Narrow desktop / tablet (columns still side-by-side):
+  allow title wrap to avoid overlap, but keep title > body text.
+  Do not shrink titles here — that made resized browsers look broken.
+*/
+@media (max-width: 1199.98px) and (min-width: 768px) {
+  .footer-social .widget-title {
+    white-space: normal;
+  }
+}
+
+/* True mobile (stacked full-width columns): slightly larger titles */
+@media (max-width: 767.98px) {
   .footer-social .widget-title {
     white-space: normal;
   }
 
   .footer-widget .widget-title {
-    font-size: 1.05rem;
+    font-size: 1.375rem;
   }
 }
 
