@@ -1711,12 +1711,16 @@ main:focus {
 
 .footer-widget ul {}
 
-.footer-widget li {}
+.footer-widget li {
+  margin: 0;
+  padding: 0.35em 0;
+}
 
 .footer-widget li a {
   color: #9ca3af;
   font-size: 1.5rem;
-  line-height: 1.7;
+  line-height: 1.45;
+  display: inline-block;
   transition: color 0.2s ease;
 }
 
