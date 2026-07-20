@@ -1715,8 +1715,8 @@ main:focus {
 
 .footer-widget li a {
   color: #9ca3af;
-  font-size: 1.25rem;
-  line-height: 38px;
+  font-size: 1.5rem;
+  line-height: 1.7;
   transition: color 0.2s ease;
 }
 
@@ -1732,7 +1732,7 @@ main:focus {
 
 /*
   Narrow desktop / tablet (columns still side-by-side):
-  allow title wrap; keep titles clearly above link text (1.25rem).
+  allow title wrap; keep titles clearly above link text (1.5rem).
 */
 @media (max-width: 1199.98px) and (min-width: 768px) {
   .footer-social .widget-title {
@@ -1740,7 +1740,7 @@ main:focus {
   }
 
   .footer-widget .widget-title {
-    font-size: 1.375rem;
+    font-size: 1.625rem;
   }
 }
 
@@ -1751,7 +1751,7 @@ main:focus {
   }
 
   .footer-widget .widget-title {
-    font-size: 1.5rem;
+    font-size: 1.625rem;
   }
 }
 
