@@ -12,9 +12,14 @@ import { fileURLToPath } from "url";
 import { GOOGLE_PLACE_ID } from "./google-place.mjs";
 import {
   REVIEW_LANG_CODES,
+  applyReviewOverrides,
   pickReviews,
   placesLanguageCode,
 } from "./google-reviews-pick.mjs";
+import {
+  EXCLUDE_AUTHORS,
+  SUPPLEMENT_REVIEWS,
+} from "./google-reviews-overrides.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT_PARTIAL = path.join(ROOT, "partials/google-reviews-data.js");
@@ -110,15 +115,18 @@ async function fetchLangFromPlacesApi(apiKey, lang) {
     throw err;
   }
 
+  const fromApi = (body.reviews || []).map(normalizeReview);
+  const curated = applyReviewOverrides(fromApi, {
+    excludeAuthors: EXCLUDE_AUTHORS,
+    supplements: SUPPLEMENT_REVIEWS[lang] || [],
+  });
+
   return {
     displayName: body.displayName?.text,
     googleMapsUri: body.googleMapsUri,
     rating: body.rating,
     userRatingCount: body.userRatingCount,
-    reviews: pickReviews(
-      (body.reviews || []).map(normalizeReview),
-      MAX_REVIEWS,
-    ),
+    reviews: pickReviews(curated, MAX_REVIEWS),
   };
 }
 

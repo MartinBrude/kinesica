@@ -43,6 +43,10 @@ HTML / partials / js/site-config.js (AUTO-GENERADOS — no editar a mano)
 | `GOOGLE_MAPS_URL` | Footer, schema `hasMap`, `sameAs` |
 | `googleReviewWriteUrl()` / `googleReviewsListUrl()` | Home, reviews |
 
+### `scripts/google-reviews-overrides.mjs`
+
+Curación manual cuando Places API no trae reseñas nuevas de Maps: `EXCLUDE_AUTHORS` + `SUPPLEMENT_REVIEWS`. Luego `npm run reviews:refresh`.
+
 **Excepción:** el iframe del mapa en home usa `MAP_EMBED_BASE` en `scripts/home-content.mjs` (encuadre distinto al pin de schema).
 
 ## Copy de UI vs datos estructurados

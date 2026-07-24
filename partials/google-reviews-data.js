@@ -1,12 +1,22 @@
 /** AUTO-GENERATED — no editar. Fuente: npm run reviews:fetch */
 window.KINESICA_GOOGLE_REVIEWS = {
   "placeId": "ChIJZ2mPW9K1vJUR3J5kGRi5gws",
-  "fetchedAt": "2026-07-24T21:02:11.233Z",
+  "fetchedAt": "2026-07-24T21:07:56.618Z",
   "displayName": "Kinesica",
   "googleMapsUri": "https://maps.google.com/?cid=829710269522681564&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA",
   "rating": 5,
   "userRatingCount": 26,
   "reviews": [
+    {
+      "author": "Gabriel Rotman",
+      "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjU1sZgbUvf5_hu4GC95IP3lszyj_ugBsPntmjHporpoV7pMUC2sNg=s128-c0x00000000-cc-rp-mo-ba12",
+      "authorProfile": "https://www.google.com/maps/contrib/111063243092495440410/reviews",
+      "rating": 5,
+      "text": "Increíblemente sorprendido para bien, llevo 3 años con un dolor por epicondilitis, en apenas 2 sesiones con el kinesiologo Norberto Brude no tengo dolor, pude volver a entrenar, me despertaba con la mano dormida, no me volvió a suceder! Sinceramente un profesional fuera de serie, y sobre todo supo llevar calma cuando más lo necesitaba.",
+      "language": "es",
+      "publishTime": "2026-07-23T02:00:00.000Z",
+      "relativeTime": "Hace 19 horas"
+    },
     {
       "author": "Susana Mühlmann",
       "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWUfGXN593tTwuhxuqVKOEWUIvavQjTlY93VeBQWBCQXFlW3nY=s128-c0x00000000-cc-rp-mo",
@@ -16,16 +26,6 @@ window.KINESICA_GOOGLE_REVIEWS = {
       "language": "es",
       "relativeTime": "Hace 3 meses",
       "publishTime": "2026-03-27T19:20:10.553212148Z"
-    },
-    {
-      "author": "Vanina González",
-      "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJeKmoG6AUSPkgQpcNlbTwxMFmCa7VESjKEJuzqBjOUKlBRLfGC=s128-c0x00000000-cc-rp-mo-ba2",
-      "authorProfile": "https://www.google.com/maps/contrib/117841718928738144707/reviews",
-      "rating": 5,
-      "text": "Yo llegué a la primera consulta con el brazo izquierdo bastante comprometido.No tenía movimiento prácticamente.Y con el correr de las sesiones y los ejercicios en casa he mejorado muchísimo.Ya puedo atarme el pelo y vestirme sola.Ahora voy camino a la recuperación total.",
-      "language": "es",
-      "relativeTime": "Hace 5 meses",
-      "publishTime": "2026-02-04T00:47:12.102112469Z"
     },
     {
       "author": "Martin Figueroa",
@@ -48,18 +48,28 @@ window.KINESICA_GOOGLE_REVIEWS = {
       "publishTime": "2026-03-18T16:47:46.069011478Z"
     },
     {
-      "author": "sofia suarez",
-      "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWiZho8c_0RBVjZ-_M-SB-mKJSdMo3D7Z0eDPD8VWPYacOuhvBfVQ=s128-c0x00000000-cc-rp-mo",
-      "authorProfile": "https://www.google.com/maps/contrib/117256241490862743488/reviews",
+      "author": "Vanina González",
+      "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJeKmoG6AUSPkgQpcNlbTwxMFmCa7VESjKEJuzqBjOUKlBRLfGC=s128-c0x00000000-cc-rp-mo-ba2",
+      "authorProfile": "https://www.google.com/maps/contrib/117841718928738144707/reviews",
       "rating": 5,
-      "text": "Excelente profesional. Atencion 100% personalizada. Super recomiendo",
+      "text": "Yo llegué a la primera consulta con el brazo izquierdo bastante comprometido.No tenía movimiento prácticamente.Y con el correr de las sesiones y los ejercicios en casa he mejorado muchísimo.Ya puedo atarme el pelo y vestirme sola.Ahora voy camino a la recuperación total.",
       "language": "es",
       "relativeTime": "Hace 5 meses",
-      "publishTime": "2026-01-28T12:10:38.282391852Z"
+      "publishTime": "2026-02-04T00:47:12.102112469Z"
     }
   ],
   "byLang": {
     "es": [
+      {
+        "author": "Gabriel Rotman",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjU1sZgbUvf5_hu4GC95IP3lszyj_ugBsPntmjHporpoV7pMUC2sNg=s128-c0x00000000-cc-rp-mo-ba12",
+        "authorProfile": "https://www.google.com/maps/contrib/111063243092495440410/reviews",
+        "rating": 5,
+        "text": "Increíblemente sorprendido para bien, llevo 3 años con un dolor por epicondilitis, en apenas 2 sesiones con el kinesiologo Norberto Brude no tengo dolor, pude volver a entrenar, me despertaba con la mano dormida, no me volvió a suceder! Sinceramente un profesional fuera de serie, y sobre todo supo llevar calma cuando más lo necesitaba.",
+        "language": "es",
+        "publishTime": "2026-07-23T02:00:00.000Z",
+        "relativeTime": "Hace 19 horas"
+      },
       {
         "author": "Susana Mühlmann",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWUfGXN593tTwuhxuqVKOEWUIvavQjTlY93VeBQWBCQXFlW3nY=s128-c0x00000000-cc-rp-mo",
@@ -69,16 +79,6 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "language": "es",
         "relativeTime": "Hace 3 meses",
         "publishTime": "2026-03-27T19:20:10.553212148Z"
-      },
-      {
-        "author": "Vanina González",
-        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJeKmoG6AUSPkgQpcNlbTwxMFmCa7VESjKEJuzqBjOUKlBRLfGC=s128-c0x00000000-cc-rp-mo-ba2",
-        "authorProfile": "https://www.google.com/maps/contrib/117841718928738144707/reviews",
-        "rating": 5,
-        "text": "Yo llegué a la primera consulta con el brazo izquierdo bastante comprometido.No tenía movimiento prácticamente.Y con el correr de las sesiones y los ejercicios en casa he mejorado muchísimo.Ya puedo atarme el pelo y vestirme sola.Ahora voy camino a la recuperación total.",
-        "language": "es",
-        "relativeTime": "Hace 5 meses",
-        "publishTime": "2026-02-04T00:47:12.102112469Z"
       },
       {
         "author": "Martin Figueroa",
@@ -101,17 +101,27 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "publishTime": "2026-03-18T16:47:46.069011478Z"
       },
       {
-        "author": "sofia suarez",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWiZho8c_0RBVjZ-_M-SB-mKJSdMo3D7Z0eDPD8VWPYacOuhvBfVQ=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/117256241490862743488/reviews",
+        "author": "Vanina González",
+        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJeKmoG6AUSPkgQpcNlbTwxMFmCa7VESjKEJuzqBjOUKlBRLfGC=s128-c0x00000000-cc-rp-mo-ba2",
+        "authorProfile": "https://www.google.com/maps/contrib/117841718928738144707/reviews",
         "rating": 5,
-        "text": "Excelente profesional. Atencion 100% personalizada. Super recomiendo",
+        "text": "Yo llegué a la primera consulta con el brazo izquierdo bastante comprometido.No tenía movimiento prácticamente.Y con el correr de las sesiones y los ejercicios en casa he mejorado muchísimo.Ya puedo atarme el pelo y vestirme sola.Ahora voy camino a la recuperación total.",
         "language": "es",
         "relativeTime": "Hace 5 meses",
-        "publishTime": "2026-01-28T12:10:38.282391852Z"
+        "publishTime": "2026-02-04T00:47:12.102112469Z"
       }
     ],
     "en": [
+      {
+        "author": "Gabriel Rotman",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjU1sZgbUvf5_hu4GC95IP3lszyj_ugBsPntmjHporpoV7pMUC2sNg=s128-c0x00000000-cc-rp-mo-ba12",
+        "authorProfile": "https://www.google.com/maps/contrib/111063243092495440410/reviews",
+        "rating": 5,
+        "text": "Increíblemente sorprendido para bien, llevo 3 años con un dolor por epicondilitis, en apenas 2 sesiones con el kinesiologo Norberto Brude no tengo dolor, pude volver a entrenar, me despertaba con la mano dormida, no me volvió a suceder! Sinceramente un profesional fuera de serie, y sobre todo supo llevar calma cuando más lo necesitaba.",
+        "language": "es",
+        "publishTime": "2026-07-23T02:00:00.000Z",
+        "relativeTime": "19 hours ago"
+      },
       {
         "author": "Susana Mühlmann",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWUfGXN593tTwuhxuqVKOEWUIvavQjTlY93VeBQWBCQXFlW3nY=s128-c0x00000000-cc-rp-mo",
@@ -143,16 +153,6 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "publishTime": "2026-03-18T16:47:46.069011478Z"
       },
       {
-        "author": "sofia suarez",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWiZho8c_0RBVjZ-_M-SB-mKJSdMo3D7Z0eDPD8VWPYacOuhvBfVQ=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/117256241490862743488/reviews",
-        "rating": 5,
-        "text": "Excellent professional. 100% personalized attention. Highly recommend.",
-        "language": "en",
-        "relativeTime": "5 months ago",
-        "publishTime": "2026-01-28T12:10:38.282391852Z"
-      },
-      {
         "author": "Jack Grantham",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWSSbjYSLBV4mxom-l1D8K58_Mnko-xAxdA_PJ6irzmVMwrBTQvzg=s128-c0x00000000-cc-rp-mo",
         "authorProfile": "https://www.google.com/maps/contrib/116757338678492155627/reviews",
@@ -165,6 +165,16 @@ window.KINESICA_GOOGLE_REVIEWS = {
     ],
     "fr": [
       {
+        "author": "Gabriel Rotman",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjU1sZgbUvf5_hu4GC95IP3lszyj_ugBsPntmjHporpoV7pMUC2sNg=s128-c0x00000000-cc-rp-mo-ba12",
+        "authorProfile": "https://www.google.com/maps/contrib/111063243092495440410/reviews",
+        "rating": 5,
+        "text": "Increíblemente sorprendido para bien, llevo 3 años con un dolor por epicondilitis, en apenas 2 sesiones con el kinesiologo Norberto Brude no tengo dolor, pude volver a entrenar, me despertaba con la mano dormida, no me volvió a suceder! Sinceramente un profesional fuera de serie, y sobre todo supo llevar calma cuando más lo necesitaba.",
+        "language": "es",
+        "publishTime": "2026-07-23T02:00:00.000Z",
+        "relativeTime": "il y a 19 heures"
+      },
+      {
         "author": "Susana Mühlmann",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWUfGXN593tTwuhxuqVKOEWUIvavQjTlY93VeBQWBCQXFlW3nY=s128-c0x00000000-cc-rp-mo",
         "authorProfile": "https://www.google.com/maps/contrib/107592515738110590238/reviews",
@@ -173,16 +183,6 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "language": "fr",
         "relativeTime": "il y a 3 mois",
         "publishTime": "2026-03-27T19:20:10.553212148Z"
-      },
-      {
-        "author": "Vanina González",
-        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJeKmoG6AUSPkgQpcNlbTwxMFmCa7VESjKEJuzqBjOUKlBRLfGC=s128-c0x00000000-cc-rp-mo-ba2",
-        "authorProfile": "https://www.google.com/maps/contrib/117841718928738144707/reviews",
-        "rating": 5,
-        "text": "Je suis arrivée à mon premier rendez-vous avec le bras gauche très handicapé. Je ne pouvais pratiquement pas le bouger. Mais grâce à chaque séance et aux exercices à faire à la maison, j'ai fait d'énormes progrès. Je peux déjà m'attacher les cheveux et m'habiller toute seule. Je suis maintenant en voie de guérison complète.",
-        "language": "fr",
-        "relativeTime": "il y a 5 mois",
-        "publishTime": "2026-02-04T00:47:12.102112469Z"
       },
       {
         "author": "Martin Figueroa",
@@ -205,17 +205,27 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "publishTime": "2026-03-18T16:47:46.069011478Z"
       },
       {
-        "author": "sofia suarez",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWiZho8c_0RBVjZ-_M-SB-mKJSdMo3D7Z0eDPD8VWPYacOuhvBfVQ=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/117256241490862743488/reviews",
+        "author": "Vanina González",
+        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJeKmoG6AUSPkgQpcNlbTwxMFmCa7VESjKEJuzqBjOUKlBRLfGC=s128-c0x00000000-cc-rp-mo-ba2",
+        "authorProfile": "https://www.google.com/maps/contrib/117841718928738144707/reviews",
         "rating": 5,
-        "text": "Excellent professionnel. Accompagnement 100 % personnalisé. Je le recommande vivement.",
+        "text": "Je suis arrivée à mon premier rendez-vous avec le bras gauche très handicapé. Je ne pouvais pratiquement pas le bouger. Mais grâce à chaque séance et aux exercices à faire à la maison, j'ai fait d'énormes progrès. Je peux déjà m'attacher les cheveux et m'habiller toute seule. Je suis maintenant en voie de guérison complète.",
         "language": "fr",
         "relativeTime": "il y a 5 mois",
-        "publishTime": "2026-01-28T12:10:38.282391852Z"
+        "publishTime": "2026-02-04T00:47:12.102112469Z"
       }
     ],
     "pt": [
+      {
+        "author": "Gabriel Rotman",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjU1sZgbUvf5_hu4GC95IP3lszyj_ugBsPntmjHporpoV7pMUC2sNg=s128-c0x00000000-cc-rp-mo-ba12",
+        "authorProfile": "https://www.google.com/maps/contrib/111063243092495440410/reviews",
+        "rating": 5,
+        "text": "Increíblemente sorprendido para bien, llevo 3 años con un dolor por epicondilitis, en apenas 2 sesiones con el kinesiologo Norberto Brude no tengo dolor, pude volver a entrenar, me despertaba con la mano dormida, no me volvió a suceder! Sinceramente un profesional fuera de serie, y sobre todo supo llevar calma cuando más lo necesitaba.",
+        "language": "es",
+        "publishTime": "2026-07-23T02:00:00.000Z",
+        "relativeTime": "há 19 horas"
+      },
       {
         "author": "Susana Mühlmann",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWUfGXN593tTwuhxuqVKOEWUIvavQjTlY93VeBQWBCQXFlW3nY=s128-c0x00000000-cc-rp-mo",
@@ -225,16 +235,6 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "language": "pt",
         "relativeTime": "há 3 meses",
         "publishTime": "2026-03-27T19:20:10.553212148Z"
-      },
-      {
-        "author": "Vanina González",
-        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJeKmoG6AUSPkgQpcNlbTwxMFmCa7VESjKEJuzqBjOUKlBRLfGC=s128-c0x00000000-cc-rp-mo-ba2",
-        "authorProfile": "https://www.google.com/maps/contrib/117841718928738144707/reviews",
-        "rating": 5,
-        "text": "Cheguei à primeira consulta com o braço esquerdo bastante debilitado. Praticamente não conseguia movimentá-lo. Mas a cada sessão e com os exercícios em casa, minha recuperação tem sido tremenda. Já consigo prender o cabelo e me vestir sozinha. Agora estou a caminho da recuperação completa.",
-        "language": "pt",
-        "relativeTime": "há 5 meses",
-        "publishTime": "2026-02-04T00:47:12.102112469Z"
       },
       {
         "author": "Martin Figueroa",
@@ -257,14 +257,14 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "publishTime": "2026-03-18T16:47:46.069011478Z"
       },
       {
-        "author": "sofia suarez",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWiZho8c_0RBVjZ-_M-SB-mKJSdMo3D7Z0eDPD8VWPYacOuhvBfVQ=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/117256241490862743488/reviews",
+        "author": "Vanina González",
+        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJeKmoG6AUSPkgQpcNlbTwxMFmCa7VESjKEJuzqBjOUKlBRLfGC=s128-c0x00000000-cc-rp-mo-ba2",
+        "authorProfile": "https://www.google.com/maps/contrib/117841718928738144707/reviews",
         "rating": 5,
-        "text": "Excelente profissional. Atendimento 100% personalizado. Recomendo muito.",
+        "text": "Cheguei à primeira consulta com o braço esquerdo bastante debilitado. Praticamente não conseguia movimentá-lo. Mas a cada sessão e com os exercícios em casa, minha recuperação tem sido tremenda. Já consigo prender o cabelo e me vestir sozinha. Agora estou a caminho da recuperação completa.",
         "language": "pt",
         "relativeTime": "há 5 meses",
-        "publishTime": "2026-01-28T12:10:38.282391852Z"
+        "publishTime": "2026-02-04T00:47:12.102112469Z"
       }
     ]
   }

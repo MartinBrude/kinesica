@@ -168,6 +168,9 @@
         var ratingA = Number(a.rating) || 0;
         var ratingB = Number(b.rating) || 0;
         if (ratingB !== ratingA) return ratingB - ratingA;
+        var timeA = a.publishTime ? Date.parse(a.publishTime) : 0;
+        var timeB = b.publishTime ? Date.parse(b.publishTime) : 0;
+        if (timeB !== timeA) return timeB - timeA;
         return b.text.length - a.text.length;
       })
       .slice(0, MAX_REVIEWS);
