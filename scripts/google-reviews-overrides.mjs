@@ -30,7 +30,8 @@ const GABRIEL_ROTMAN = {
   rating: 5,
   text: "Increíblemente sorprendido para bien, llevo 3 años con un dolor por epicondilitis, en apenas 2 sesiones con el kinesiologo Norberto Brude no tengo dolor, pude volver a entrenar, me despertaba con la mano dormida, no me volvió a suceder! Sinceramente un profesional fuera de serie, y sobre todo supo llevar calma cuando más lo necesitaba.",
   language: "es",
-  publishTime: "2026-07-23T02:00:00.000Z",
+  // Approx. from Maps “Hace 19 horas” at scrape (~2026-07-24T21:05Z).
+  publishTime: "2026-07-24T02:05:02.000Z",
 };
 
 export const SUPPLEMENT_REVIEWS = {

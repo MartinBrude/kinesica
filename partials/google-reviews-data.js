@@ -1,7 +1,7 @@
 /** AUTO-GENERATED — no editar. Fuente: npm run reviews:fetch */
 window.KINESICA_GOOGLE_REVIEWS = {
   "placeId": "ChIJZ2mPW9K1vJUR3J5kGRi5gws",
-  "fetchedAt": "2026-07-24T21:07:56.618Z",
+  "fetchedAt": "2026-07-24T21:15:54.028Z",
   "displayName": "Kinesica",
   "googleMapsUri": "https://maps.google.com/?cid=829710269522681564&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA",
   "rating": 5,
@@ -14,8 +14,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
       "rating": 5,
       "text": "Increíblemente sorprendido para bien, llevo 3 años con un dolor por epicondilitis, en apenas 2 sesiones con el kinesiologo Norberto Brude no tengo dolor, pude volver a entrenar, me despertaba con la mano dormida, no me volvió a suceder! Sinceramente un profesional fuera de serie, y sobre todo supo llevar calma cuando más lo necesitaba.",
       "language": "es",
-      "publishTime": "2026-07-23T02:00:00.000Z",
-      "relativeTime": "Hace 19 horas"
+      "publishTime": "2026-07-24T02:05:02.000Z"
     },
     {
       "author": "Susana Mühlmann",
@@ -67,8 +66,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Increíblemente sorprendido para bien, llevo 3 años con un dolor por epicondilitis, en apenas 2 sesiones con el kinesiologo Norberto Brude no tengo dolor, pude volver a entrenar, me despertaba con la mano dormida, no me volvió a suceder! Sinceramente un profesional fuera de serie, y sobre todo supo llevar calma cuando más lo necesitaba.",
         "language": "es",
-        "publishTime": "2026-07-23T02:00:00.000Z",
-        "relativeTime": "Hace 19 horas"
+        "publishTime": "2026-07-24T02:05:02.000Z"
       },
       {
         "author": "Susana Mühlmann",
@@ -119,8 +117,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Increíblemente sorprendido para bien, llevo 3 años con un dolor por epicondilitis, en apenas 2 sesiones con el kinesiologo Norberto Brude no tengo dolor, pude volver a entrenar, me despertaba con la mano dormida, no me volvió a suceder! Sinceramente un profesional fuera de serie, y sobre todo supo llevar calma cuando más lo necesitaba.",
         "language": "es",
-        "publishTime": "2026-07-23T02:00:00.000Z",
-        "relativeTime": "19 hours ago"
+        "publishTime": "2026-07-24T02:05:02.000Z"
       },
       {
         "author": "Susana Mühlmann",
@@ -171,8 +168,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Increíblemente sorprendido para bien, llevo 3 años con un dolor por epicondilitis, en apenas 2 sesiones con el kinesiologo Norberto Brude no tengo dolor, pude volver a entrenar, me despertaba con la mano dormida, no me volvió a suceder! Sinceramente un profesional fuera de serie, y sobre todo supo llevar calma cuando más lo necesitaba.",
         "language": "es",
-        "publishTime": "2026-07-23T02:00:00.000Z",
-        "relativeTime": "il y a 19 heures"
+        "publishTime": "2026-07-24T02:05:02.000Z"
       },
       {
         "author": "Susana Mühlmann",
@@ -223,8 +219,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Increíblemente sorprendido para bien, llevo 3 años con un dolor por epicondilitis, en apenas 2 sesiones con el kinesiologo Norberto Brude no tengo dolor, pude volver a entrenar, me despertaba con la mano dormida, no me volvió a suceder! Sinceramente un profesional fuera de serie, y sobre todo supo llevar calma cuando más lo necesitaba.",
         "language": "es",
-        "publishTime": "2026-07-23T02:00:00.000Z",
-        "relativeTime": "há 19 horas"
+        "publishTime": "2026-07-24T02:05:02.000Z"
       },
       {
         "author": "Susana Mühlmann",
