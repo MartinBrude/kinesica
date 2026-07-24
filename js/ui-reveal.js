@@ -17,10 +17,19 @@
     el.classList.add("ui-reveal");
   });
 
+  function reveal(el) {
+    el.classList.add("is-visible");
+  }
+
+  function isInViewport(el) {
+    var rect = el.getBoundingClientRect();
+    var vh = window.innerHeight || document.documentElement.clientHeight;
+    var vw = window.innerWidth || document.documentElement.clientWidth;
+    return rect.bottom > 0 && rect.right > 0 && rect.top < vh && rect.left < vw;
+  }
+
   if (!("IntersectionObserver" in window)) {
-    targets.forEach(function (el) {
-      el.classList.add("is-visible");
-    });
+    targets.forEach(reveal);
     return;
   }
 
@@ -30,7 +39,7 @@
         if (!entry.isIntersecting) {
           return;
         }
-        entry.target.classList.add("is-visible");
+        reveal(entry.target);
         observer.unobserve(entry.target);
       });
     },
@@ -40,4 +49,17 @@
   targets.forEach(function (el) {
     observer.observe(el);
   });
+
+  // Above-the-fold blocks (e.g. home therapies) often sit just inside the
+  // observer's shrunk root and never fire until the user scrolls. Reveal any
+  // still-hidden in-viewport targets shortly after load.
+  window.setTimeout(function () {
+    targets.forEach(function (el) {
+      if (el.classList.contains("is-visible") || !isInViewport(el)) {
+        return;
+      }
+      reveal(el);
+      observer.unobserve(el);
+    });
+  }, 1000);
 })();
