@@ -134,12 +134,62 @@
         null,
       rating: review.rating ?? null,
       text: String(text).trim(),
+      publishTime: review.publishTime || null,
       relativeTime:
         review.relativePublishTimeDescription ||
         review.relative_time_description ||
         review.relativeTime ||
         "",
     };
+  }
+
+  function relativeTimeLocale(lang) {
+    if (lang === "es") return "es";
+    if (lang === "fr") return "fr";
+    if (lang === "pt") return "pt";
+    return "en";
+  }
+
+  /** Live label from publishTime so static snapshots do not go stale. */
+  function formatRelativeTime(publishTime, lang) {
+    var then = Date.parse(publishTime);
+    if (!Number.isFinite(then)) return "";
+    var diffMs = then - Date.now();
+    var abs = Math.abs(diffMs);
+    var divisions = [
+      { amount: 31536000000, unit: "year" },
+      { amount: 2629800000, unit: "month" },
+      { amount: 604800000, unit: "week" },
+      { amount: 86400000, unit: "day" },
+      { amount: 3600000, unit: "hour" },
+      { amount: 60000, unit: "minute" },
+      { amount: 1000, unit: "second" },
+    ];
+    var unit = "second";
+    var value = 0;
+    for (var i = 0; i < divisions.length; i++) {
+      var d = divisions[i];
+      if (abs >= d.amount || d.unit === "second") {
+        unit = d.unit;
+        value = Math.round(diffMs / d.amount);
+        break;
+      }
+    }
+    try {
+      return new Intl.RelativeTimeFormat(relativeTimeLocale(lang), {
+        numeric: "always",
+      }).format(value, unit);
+    } catch (err) {
+      return "";
+    }
+  }
+
+  function reviewTimeLabel(review, lang) {
+    return (
+      formatRelativeTime(review.publishTime, lang) ||
+      review.relativeTime ||
+      ""
+    );
   }
 
   /** Keep in sync with scripts/google-reviews-pick.mjs */
@@ -229,7 +279,7 @@
     container.appendChild(summary);
   }
 
-  function renderCard(review) {
+  function renderCard(review, lang) {
     var card = document.createElement("article");
     card.className = "google-review-card";
 
@@ -259,11 +309,10 @@
     var ratingRow = document.createElement("p");
     ratingRow.className = "google-review-rating";
     ratingRow.innerHTML = stars(review.rating);
-    if (review.relativeTime) {
+    var timeLabel = reviewTimeLabel(review, lang);
+    if (timeLabel) {
       ratingRow.innerHTML +=
-        '<span class="google-review-time">' +
-        esc(review.relativeTime) +
-        "</span>";
+        '<span class="google-review-time">' + esc(timeLabel) + "</span>";
     }
     meta.appendChild(ratingRow);
     head.appendChild(meta);
@@ -328,7 +377,7 @@
     balanceReviewOrder(data.reviews)
       .slice(0, DISPLAY_REVIEWS)
       .forEach(function (review) {
-        grid.appendChild(renderCard(review));
+        grid.appendChild(renderCard(review, copy.lang || "es"));
       });
   }
 
@@ -348,6 +397,7 @@
 
     var lang = section.getAttribute("data-reviews-lang") || "es";
     var copy = COPY[lang] || COPY.es;
+    copy.lang = lang;
     copy.langAttr = lang === "es" ? "es-AR" : lang;
 
     var hasStatic = !!staticPayload(lang);

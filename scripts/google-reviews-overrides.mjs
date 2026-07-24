@@ -3,12 +3,13 @@
  * Use this when Maps has newer reviews we want on the home, or to drop one.
  *
  * Applied by `npm run reviews:fetch` before pick.
+ * Relative time labels are computed at render from `publishTime`.
  */
 export const EXCLUDE_AUTHORS = ["sofia suarez"];
 
 /**
  * Extra reviews (usually newer than the Places subset). Spanish body is kept
- * for all langs; only relativeTime is localized.
+ * for all langs; UI time comes from publishTime in the browser.
  *
  * @type {Record<string, Array<{
  *   author: string,
@@ -17,7 +18,6 @@ export const EXCLUDE_AUTHORS = ["sofia suarez"];
  *   rating: number,
  *   text: string,
  *   language: string,
- *   relativeTime: string,
  *   publishTime: string|null,
  * }>>}
  */
@@ -34,8 +34,8 @@ const GABRIEL_ROTMAN = {
 };
 
 export const SUPPLEMENT_REVIEWS = {
-  es: [{ ...GABRIEL_ROTMAN, relativeTime: "Hace 19 horas" }],
-  en: [{ ...GABRIEL_ROTMAN, relativeTime: "19 hours ago" }],
-  fr: [{ ...GABRIEL_ROTMAN, relativeTime: "il y a 19 heures" }],
-  pt: [{ ...GABRIEL_ROTMAN, relativeTime: "há 19 horas" }],
+  es: [GABRIEL_ROTMAN],
+  en: [GABRIEL_ROTMAN],
+  fr: [GABRIEL_ROTMAN],
+  pt: [GABRIEL_ROTMAN],
 };
