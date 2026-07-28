@@ -47,6 +47,18 @@ HTML / partials / js/site-config.js (AUTO-GENERADOS — no editar a mano)
 
 Curación manual cuando Places API no trae reseñas nuevas de Maps: `EXCLUDE_AUTHORS` + `SUPPLEMENT_REVIEWS`. Luego `npm run reviews:refresh`.
 
+### Reseñas en el home (cron diario)
+
+Las cards del index leen `partials/google-reviews-data.js` (bundle `js/reviews.min.js`).
+
+| Comando | Uso |
+|---------|-----|
+| `npm run reviews:fetch` | Siempre reescribe el partial |
+| `npm run reviews:sync` | Chequea count → fetch → actualiza partial + bundle **solo si** cambió rating/count/reseñas mostradas |
+| `npm run reviews:refresh` | Fetch forzoso + `assets:build` completo |
+
+CI: `.github/workflows/reviews-daily.yml` corre `reviews:sync` cada día (12:00 UTC) y hace commit si hay cambios. Requiere el secret de repo `GOOGLE_PLACES_SERVER_KEY`. Tras el commit, subir a Hostinger los `.js` regenerados (o el próximo deploy).
+
 **Excepción:** el iframe del mapa en home usa `MAP_EMBED_BASE` en `scripts/home-content.mjs` (encuadre distinto al pin de schema).
 
 ## Copy de UI vs datos estructurados

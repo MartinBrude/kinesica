@@ -1,0 +1,53 @@
+name: Sync Google reviews
+
+on:
+  schedule:
+    # 12:00 UTC ≈ 09:00 Argentina
+    - cron: "0 12 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Needed so the bot can push a commit back to main.
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Sync reviews (fetch only if content should update)
+        env:
+          GOOGLE_PLACES_SERVER_KEY: ${{ secrets.GOOGLE_PLACES_SERVER_KEY }}
+        run: npm run reviews:sync
+
+      - name: Commit and push if changed
+        run: |
+          if git diff --quiet -- \
+            partials/google-reviews-data.js \
+            partials/google-reviews-data.min.js \
+            js/reviews.min.js; then
+            echo "No file changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            partials/google-reviews-data.js \
+            partials/google-reviews-data.min.js \
+            js/reviews.min.js
+          git commit -m "$(cat <<'EOF'
+          chore(reviews): sync Google reviews for home
+
+          EOF
+          )"
+          git push

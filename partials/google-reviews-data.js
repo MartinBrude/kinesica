@@ -1,11 +1,11 @@
 /** AUTO-GENERATED — no editar. Fuente: npm run reviews:fetch */
 window.KINESICA_GOOGLE_REVIEWS = {
   "placeId": "ChIJZ2mPW9K1vJUR3J5kGRi5gws",
-  "fetchedAt": "2026-07-24T21:15:54.028Z",
+  "fetchedAt": "2026-07-28T14:37:53.349Z",
   "displayName": "Kinesica",
   "googleMapsUri": "https://maps.google.com/?cid=829710269522681564&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA",
   "rating": 5,
-  "userRatingCount": 26,
+  "userRatingCount": 27,
   "reviews": [
     {
       "author": "Gabriel Rotman",
@@ -23,7 +23,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
       "rating": 5,
       "text": "La consulta con el Klgo. Norberto Brude fue excelente. Me atiende desde hace más de treinta años, conoce mi cuerpo y temas de salud de importancia, y trabaja en función de lo que necesito y puedo hacer. Cómo se me dificulta ir al consultorio, vino a mi casa y, después de tener un cuadro de situación, me dejó ejercicios que primero practicamos, para hacer sola, orientados a un fortalecimiento que elimine dolores y mejore mi calidad de vida integralmente. De igual manera, respondíó con premura a nuevos dolores que le informé posteriormente, para ver cómo proseguir. Además de un excelente profesional, es una gran persona. Altamente recomendable.",
       "language": "es",
-      "relativeTime": "Hace 3 meses",
+      "relativeTime": "Hace 4 meses",
       "publishTime": "2026-03-27T19:20:10.553212148Z"
     },
     {
@@ -75,7 +75,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "La consulta con el Klgo. Norberto Brude fue excelente. Me atiende desde hace más de treinta años, conoce mi cuerpo y temas de salud de importancia, y trabaja en función de lo que necesito y puedo hacer. Cómo se me dificulta ir al consultorio, vino a mi casa y, después de tener un cuadro de situación, me dejó ejercicios que primero practicamos, para hacer sola, orientados a un fortalecimiento que elimine dolores y mejore mi calidad de vida integralmente. De igual manera, respondíó con premura a nuevos dolores que le informé posteriormente, para ver cómo proseguir. Además de un excelente profesional, es una gran persona. Altamente recomendable.",
         "language": "es",
-        "relativeTime": "Hace 3 meses",
+        "relativeTime": "Hace 4 meses",
         "publishTime": "2026-03-27T19:20:10.553212148Z"
       },
       {
@@ -126,7 +126,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "My consultation with physiotherapist Norberto Brude was excellent. He has been treating me for over thirty years, knows my body and important health issues, and works according to my needs and abilities. Since it's difficult for me to go to the office, he came to my house and, after assessing my situation, gave me exercises to do on my own. These exercises, which we initially practiced together, were designed to strengthen my muscles, eliminate pain, and improve my overall quality of life. He also responded promptly to any new pains I reported later, to discuss how to proceed. In addition to being an excellent professional, he is a wonderful person. Highly recommended.",
         "language": "en",
-        "relativeTime": "3 months ago",
+        "relativeTime": "4 months ago",
         "publishTime": "2026-03-27T19:20:10.553212148Z"
       },
       {
@@ -177,7 +177,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Ma consultation avec le physiothérapeute Norberto Brude a été excellente. Il me suit depuis plus de trente ans, connaît parfaitement mon corps et mes principaux problèmes de santé, et adapte son travail à mes besoins et à mes capacités. Comme il m'est difficile de me déplacer à son cabinet, il est venu à mon domicile et, après avoir évalué ma situation, m'a donné des exercices à faire chez moi. Ces exercices, que nous avons d'abord pratiqués ensemble, visaient à renforcer mes muscles, à soulager mes douleurs et à améliorer ma qualité de vie. Il a également répondu rapidement à toutes les nouvelles douleurs que j'ai signalées par la suite, afin de discuter de la marche à suivre. En plus d'être un excellent professionnel, c'est une personne formidable. Je le recommande vivement.",
         "language": "fr",
-        "relativeTime": "il y a 3 mois",
+        "relativeTime": "il y a 4 mois",
         "publishTime": "2026-03-27T19:20:10.553212148Z"
       },
       {
@@ -228,7 +228,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Minha consulta com o fisioterapeuta Norberto Brude foi excelente. Ele me trata há mais de trinta anos, conhece meu corpo e meus problemas de saúde, e trabalha de acordo com minhas necessidades e capacidades. Como tenho dificuldade para ir ao consultório, ele veio até minha casa e, após avaliar minha situação, me passou exercícios para fazer sozinha. Esses exercícios, que praticamos juntos inicialmente, foram elaborados para fortalecer meus músculos, eliminar a dor e melhorar minha qualidade de vida em geral. Ele também respondeu prontamente a qualquer nova dor que relatei posteriormente, para discutir como proceder. Além de ser um excelente profissional, ele é uma pessoa maravilhosa. Recomendo muito.",
         "language": "pt",
-        "relativeTime": "há 3 meses",
+        "relativeTime": "há 4 meses",
         "publishTime": "2026-03-27T19:20:10.553212148Z"
       },
       {

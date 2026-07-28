@@ -172,6 +172,9 @@ npm run seo:audit     # auditoría final
 | `npm run build:seo` | Schema + partials schema + llms + minify |
 | `npm run build:pt` | Pipeline completo de contenido portugués |
 | `npm run verify` | Verificaciones PT, schema e i18n |
+| `npm run reviews:sync` | Cron/CI: fetch Google reviews y actualiza el home solo si cambió el contenido mostrado |
+| `npm run reviews:fetch` | Reescribe `partials/google-reviews-data.js` (siempre) |
+| `npm run reviews:refresh` | Fetch + `assets:build` completo |
 
 Scripts `migrate:*` en `package.json` son utilidades puntuales de migración; no forman parte del flujo habitual.
 
