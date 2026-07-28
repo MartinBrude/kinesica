@@ -81,7 +81,7 @@
 
   function staticPayload(lang) {
     var data = window.KINESICA_GOOGLE_REVIEWS;
-    var reviews = reviewsForLang(data, lang);
+    var reviews = pickReviews(reviewsForLang(data, lang));
     if (!reviews.length) return null;
     return {
       placeId: data.placeId,
@@ -209,10 +209,13 @@
     });
   }
 
+  /** Keep in sync with scripts/google-reviews-pick.mjs MIN_REVIEW_RATING. */
+  var MIN_REVIEW_RATING = 4;
+
   function pickReviews(reviews) {
     return reviews
       .filter(function (r) {
-        return r.text;
+        return r.text && Number(r.rating) >= MIN_REVIEW_RATING;
       })
       .sort(function (a, b) {
         var ratingA = Number(a.rating) || 0;

@@ -49,10 +49,18 @@ export function applyReviewOverrides(
   return out;
 }
 
-/** Pick best reviews: highest rating, then newest, then longest text. */
+/** Never show reviews below this rating (inclusive). */
+export const MIN_REVIEW_RATING = 4;
+
+/** Pick best reviews: ≥4★, then highest rating, newest, longest text. */
 export function pickReviews(reviews, max = 5) {
   return [...(reviews || [])]
-    .filter((r) => r && String(r.text || "").trim())
+    .filter(
+      (r) =>
+        r &&
+        String(r.text || "").trim() &&
+        Number(r.rating) >= MIN_REVIEW_RATING,
+    )
     .sort((a, b) => {
       const ratingA = Number(a.rating) || 0;
       const ratingB = Number(b.rating) || 0;
