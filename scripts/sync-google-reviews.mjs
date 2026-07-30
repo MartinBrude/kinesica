@@ -5,6 +5,7 @@
  *   npm run reviews:sync
  */
 import { syncGoogleReviews } from "./fetch-google-reviews.mjs";
+import { bumpReviewsCache } from "./bump-reviews-cache.mjs";
 import { spawnSync } from "child_process";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -30,6 +31,10 @@ async function main() {
   }
   console.log("Rebuilding js/reviews.min.js…");
   rebuildReviewsAssets();
+  const { version, updated } = bumpReviewsCache();
+  if (updated.length) {
+    console.log(`Cache-bust reviews.min.js ?v=${version} → ${updated.join(", ")}`);
+  }
   console.log("reviews:sync — listo.");
 }
 

@@ -2,8 +2,11 @@ name: Sync Google reviews
 
 on:
   schedule:
-    # 12:00 UTC ≈ 09:00 Argentina
+    # 12:00 UTC ≈ 14:00 CEST / 09:00 Argentina
     - cron: "0 12 * * *"
+    # 21:00 UTC ≈ 23:00 CEST / 18:00 Argentina — second chance if Places lags
+    # or GitHub delays the morning schedule.
+    - cron: "0 21 * * *"
   workflow_dispatch:
 
 permissions:
@@ -26,17 +29,36 @@ jobs:
         run: npm ci
 
       - name: Sync reviews (fetch only if content should update)
+        id: sync
         env:
           GOOGLE_PLACES_SERVER_KEY: ${{ secrets.GOOGLE_PLACES_SERVER_KEY }}
         run: npm run reviews:sync
 
+      - name: Job summary
+        run: |
+          {
+            echo "## Google reviews sync"
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Stored count | \`${{ steps.sync.outputs.stored_count }}\` |"
+            echo "| Live count | \`${{ steps.sync.outputs.live_count }}\` |"
+            echo "| Partial updated | \`${{ steps.sync.outputs.changed }}\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Commit and push if changed
+        id: commit
         run: |
           if git diff --quiet -- \
             partials/google-reviews-data.js \
             partials/google-reviews-data.min.js \
-            js/reviews.min.js; then
+            js/reviews.min.js \
+            index.html \
+            en/index.html \
+            fr/index.html \
+            pt/index.html; then
             echo "No file changes to commit."
+            echo "pushed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           git config user.name "github-actions[bot]"
@@ -44,10 +66,31 @@ jobs:
           git add \
             partials/google-reviews-data.js \
             partials/google-reviews-data.min.js \
-            js/reviews.min.js
+            js/reviews.min.js \
+            index.html \
+            en/index.html \
+            fr/index.html \
+            pt/index.html
           git commit -m "$(cat <<'EOF'
           chore(reviews): sync Google reviews for home
 
           EOF
           )"
           git push
+          echo "pushed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy review assets to Hostinger
+        env:
+          FTP_HOST: ${{ secrets.HOSTINGER_FTP_HOST }}
+          FTP_USER: ${{ secrets.HOSTINGER_FTP_USER }}
+          FTP_PASS: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
+          FTP_REMOTE_DIR: ${{ secrets.HOSTINGER_FTP_REMOTE_DIR }}
+          FTP_SECURE: ${{ secrets.HOSTINGER_FTP_SECURE }}
+          CHANGED: ${{ steps.sync.outputs.changed }}
+        run: |
+          if [ "$CHANGED" != "true" ]; then
+            echo "No review asset changes — skip deploy."
+            exit 0
+          fi
+          chmod +x scripts/deploy-reviews-ftp.sh
+          scripts/deploy-reviews-ftp.sh

@@ -57,7 +57,20 @@ Las cards del index leen `partials/google-reviews-data.js` (bundle `js/reviews.m
 | `npm run reviews:sync` | Chequea count → fetch → actualiza partial + bundle **solo si** cambió rating/count/reseñas mostradas |
 | `npm run reviews:refresh` | Fetch forzoso + `assets:build` completo |
 
-CI: `.github/workflows/reviews-daily.yml` corre `reviews:sync` cada día (12:00 UTC) y hace commit si hay cambios. Requiere el secret de repo `GOOGLE_PLACES_SERVER_KEY`. Tras el commit, subir a Hostinger los `.js` regenerados (o el próximo deploy).
+CI: `.github/workflows/reviews-daily.yml` corre `reviews:sync` **dos veces al día** (`0 12 * * *` y `0 21 * * *` UTC) + `workflow_dispatch`. Si hay cambios: commit en `main`, bump de `?v=` en las 4 homes, y deploy FTP a Hostinger (si hay secrets).
+
+Secrets de repo:
+
+| Secret | Uso |
+|--------|-----|
+| `GOOGLE_PLACES_SERVER_KEY` | Places API (recomendado; si falta, cae al key de `site-config.js`) |
+| `HOSTINGER_FTP_HOST` | Host FTP (sin `ftp://`) |
+| `HOSTINGER_FTP_USER` | Usuario FTP |
+| `HOSTINGER_FTP_PASSWORD` | Contraseña FTP |
+| `HOSTINGER_FTP_REMOTE_DIR` | Opcional. Raíz del sitio en el servidor (p. ej. `public_html`). Default: `.` |
+| `HOSTINGER_FTP_SECURE` | Opcional. `true` para FTPS explícito |
+
+Sin los secrets FTP, el Action igual commitea en GitHub y deja un notice: el sitio público no se actualiza hasta el próximo deploy manual.
 
 **Excepción:** el iframe del mapa en home usa `MAP_EMBED_BASE` en `scripts/home-content.mjs` (encuadre distinto al pin de schema).
 
