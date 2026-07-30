@@ -21,6 +21,17 @@ export const EXCLUDE_AUTHORS = ["sofia suarez"];
  *   publishTime: string|null,
  * }>>}
  */
+const MARIANA_GONZALEZ_CADAHIA = {
+  author: "Mariana González Cadahía",
+  authorPhoto: null,
+  authorProfile: null,
+  rating: 5,
+  text: "Hace años que concurro, la atención de Norberto es excelente. Sabe escuchar para poder determinar sobre que puntos focalizar el trabajo y conoce diversas técnicas que utiliza según la necesidad del paciente. Siempre salí de la consulta sintiéndome mejor que al inicio. Lo recomiendo muchísimo!!!!!",
+  language: "es",
+  // Approx. from Maps “Hace 15 horas” at scrape (~2026-07-30T13:10Z).
+  publishTime: "2026-07-29T22:10:00.000Z",
+};
+
 const GABRIEL_ROTMAN = {
   author: "Gabriel Rotman",
   authorPhoto:
@@ -35,8 +46,8 @@ const GABRIEL_ROTMAN = {
 };
 
 export const SUPPLEMENT_REVIEWS = {
-  es: [GABRIEL_ROTMAN],
-  en: [GABRIEL_ROTMAN],
-  fr: [GABRIEL_ROTMAN],
-  pt: [GABRIEL_ROTMAN],
+  es: [MARIANA_GONZALEZ_CADAHIA, GABRIEL_ROTMAN],
+  en: [MARIANA_GONZALEZ_CADAHIA, GABRIEL_ROTMAN],
+  fr: [MARIANA_GONZALEZ_CADAHIA, GABRIEL_ROTMAN],
+  pt: [MARIANA_GONZALEZ_CADAHIA, GABRIEL_ROTMAN],
 };

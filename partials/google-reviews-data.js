@@ -1,12 +1,21 @@
 /** AUTO-GENERATED — no editar. Fuente: npm run reviews:fetch */
 window.KINESICA_GOOGLE_REVIEWS = {
   "placeId": "ChIJZ2mPW9K1vJUR3J5kGRi5gws",
-  "fetchedAt": "2026-07-30T12:59:28.896Z",
+  "fetchedAt": "2026-07-30T13:11:21.134Z",
   "displayName": "Kinesica",
   "googleMapsUri": "https://maps.google.com/?cid=829710269522681564&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA",
   "rating": 5,
   "userRatingCount": 28,
   "reviews": [
+    {
+      "author": "Mariana González Cadahía",
+      "authorPhoto": null,
+      "authorProfile": null,
+      "rating": 5,
+      "text": "Hace años que concurro, la atención de Norberto es excelente. Sabe escuchar para poder determinar sobre que puntos focalizar el trabajo y conoce diversas técnicas que utiliza según la necesidad del paciente. Siempre salí de la consulta sintiéndome mejor que al inicio. Lo recomiendo muchísimo!!!!!",
+      "language": "es",
+      "publishTime": "2026-07-29T22:10:00.000Z"
+    },
     {
       "author": "Gabriel Rotman",
       "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjU1sZgbUvf5_hu4GC95IP3lszyj_ugBsPntmjHporpoV7pMUC2sNg=s128-c0x00000000-cc-rp-mo-ba12",
@@ -45,20 +54,19 @@ window.KINESICA_GOOGLE_REVIEWS = {
       "language": "es",
       "relativeTime": "Hace 4 meses",
       "publishTime": "2026-03-18T16:47:46.069011478Z"
-    },
-    {
-      "author": "Vanina González",
-      "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJeKmoG6AUSPkgQpcNlbTwxMFmCa7VESjKEJuzqBjOUKlBRLfGC=s128-c0x00000000-cc-rp-mo-ba2",
-      "authorProfile": "https://www.google.com/maps/contrib/117841718928738144707/reviews",
-      "rating": 5,
-      "text": "Yo llegué a la primera consulta con el brazo izquierdo bastante comprometido.No tenía movimiento prácticamente.Y con el correr de las sesiones y los ejercicios en casa he mejorado muchísimo.Ya puedo atarme el pelo y vestirme sola.Ahora voy camino a la recuperación total.",
-      "language": "es",
-      "relativeTime": "Hace 5 meses",
-      "publishTime": "2026-02-04T00:47:12.102112469Z"
     }
   ],
   "byLang": {
     "es": [
+      {
+        "author": "Mariana González Cadahía",
+        "authorPhoto": null,
+        "authorProfile": null,
+        "rating": 5,
+        "text": "Hace años que concurro, la atención de Norberto es excelente. Sabe escuchar para poder determinar sobre que puntos focalizar el trabajo y conoce diversas técnicas que utiliza según la necesidad del paciente. Siempre salí de la consulta sintiéndome mejor que al inicio. Lo recomiendo muchísimo!!!!!",
+        "language": "es",
+        "publishTime": "2026-07-29T22:10:00.000Z"
+      },
       {
         "author": "Gabriel Rotman",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjU1sZgbUvf5_hu4GC95IP3lszyj_ugBsPntmjHporpoV7pMUC2sNg=s128-c0x00000000-cc-rp-mo-ba12",
@@ -97,19 +105,18 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "language": "es",
         "relativeTime": "Hace 4 meses",
         "publishTime": "2026-03-18T16:47:46.069011478Z"
-      },
-      {
-        "author": "Vanina González",
-        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJeKmoG6AUSPkgQpcNlbTwxMFmCa7VESjKEJuzqBjOUKlBRLfGC=s128-c0x00000000-cc-rp-mo-ba2",
-        "authorProfile": "https://www.google.com/maps/contrib/117841718928738144707/reviews",
-        "rating": 5,
-        "text": "Yo llegué a la primera consulta con el brazo izquierdo bastante comprometido.No tenía movimiento prácticamente.Y con el correr de las sesiones y los ejercicios en casa he mejorado muchísimo.Ya puedo atarme el pelo y vestirme sola.Ahora voy camino a la recuperación total.",
-        "language": "es",
-        "relativeTime": "Hace 5 meses",
-        "publishTime": "2026-02-04T00:47:12.102112469Z"
       }
     ],
     "en": [
+      {
+        "author": "Mariana González Cadahía",
+        "authorPhoto": null,
+        "authorProfile": null,
+        "rating": 5,
+        "text": "Hace años que concurro, la atención de Norberto es excelente. Sabe escuchar para poder determinar sobre que puntos focalizar el trabajo y conoce diversas técnicas que utiliza según la necesidad del paciente. Siempre salí de la consulta sintiéndome mejor que al inicio. Lo recomiendo muchísimo!!!!!",
+        "language": "es",
+        "publishTime": "2026-07-29T22:10:00.000Z"
+      },
       {
         "author": "Gabriel Rotman",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjU1sZgbUvf5_hu4GC95IP3lszyj_ugBsPntmjHporpoV7pMUC2sNg=s128-c0x00000000-cc-rp-mo-ba12",
@@ -148,19 +155,18 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "language": "en",
         "relativeTime": "4 months ago",
         "publishTime": "2026-03-18T16:47:46.069011478Z"
-      },
-      {
-        "author": "Jack Grantham",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWSSbjYSLBV4mxom-l1D8K58_Mnko-xAxdA_PJ6irzmVMwrBTQvzg=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/116757338678492155627/reviews",
-        "rating": 5,
-        "text": "Amazing person! He is a healer.\nThank you very much.",
-        "language": "en",
-        "relativeTime": "a year ago",
-        "publishTime": "2025-01-21T04:07:42.347641Z"
       }
     ],
     "fr": [
+      {
+        "author": "Mariana González Cadahía",
+        "authorPhoto": null,
+        "authorProfile": null,
+        "rating": 5,
+        "text": "Hace años que concurro, la atención de Norberto es excelente. Sabe escuchar para poder determinar sobre que puntos focalizar el trabajo y conoce diversas técnicas que utiliza según la necesidad del paciente. Siempre salí de la consulta sintiéndome mejor que al inicio. Lo recomiendo muchísimo!!!!!",
+        "language": "es",
+        "publishTime": "2026-07-29T22:10:00.000Z"
+      },
       {
         "author": "Gabriel Rotman",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjU1sZgbUvf5_hu4GC95IP3lszyj_ugBsPntmjHporpoV7pMUC2sNg=s128-c0x00000000-cc-rp-mo-ba12",
@@ -199,19 +205,18 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "language": "fr",
         "relativeTime": "il y a 4 mois",
         "publishTime": "2026-03-18T16:47:46.069011478Z"
-      },
-      {
-        "author": "Vanina González",
-        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJeKmoG6AUSPkgQpcNlbTwxMFmCa7VESjKEJuzqBjOUKlBRLfGC=s128-c0x00000000-cc-rp-mo-ba2",
-        "authorProfile": "https://www.google.com/maps/contrib/117841718928738144707/reviews",
-        "rating": 5,
-        "text": "Je suis arrivée à mon premier rendez-vous avec le bras gauche très handicapé. Je ne pouvais pratiquement pas le bouger. Mais grâce à chaque séance et aux exercices à faire à la maison, j'ai fait d'énormes progrès. Je peux déjà m'attacher les cheveux et m'habiller toute seule. Je suis maintenant en voie de guérison complète.",
-        "language": "fr",
-        "relativeTime": "il y a 5 mois",
-        "publishTime": "2026-02-04T00:47:12.102112469Z"
       }
     ],
     "pt": [
+      {
+        "author": "Mariana González Cadahía",
+        "authorPhoto": null,
+        "authorProfile": null,
+        "rating": 5,
+        "text": "Hace años que concurro, la atención de Norberto es excelente. Sabe escuchar para poder determinar sobre que puntos focalizar el trabajo y conoce diversas técnicas que utiliza según la necesidad del paciente. Siempre salí de la consulta sintiéndome mejor que al inicio. Lo recomiendo muchísimo!!!!!",
+        "language": "es",
+        "publishTime": "2026-07-29T22:10:00.000Z"
+      },
       {
         "author": "Gabriel Rotman",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjU1sZgbUvf5_hu4GC95IP3lszyj_ugBsPntmjHporpoV7pMUC2sNg=s128-c0x00000000-cc-rp-mo-ba12",
@@ -250,16 +255,6 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "language": "pt",
         "relativeTime": "há 4 meses",
         "publishTime": "2026-03-18T16:47:46.069011478Z"
-      },
-      {
-        "author": "Vanina González",
-        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJeKmoG6AUSPkgQpcNlbTwxMFmCa7VESjKEJuzqBjOUKlBRLfGC=s128-c0x00000000-cc-rp-mo-ba2",
-        "authorProfile": "https://www.google.com/maps/contrib/117841718928738144707/reviews",
-        "rating": 5,
-        "text": "Cheguei à primeira consulta com o braço esquerdo bastante debilitado. Praticamente não conseguia movimentá-lo. Mas a cada sessão e com os exercícios em casa, minha recuperação tem sido tremenda. Já consigo prender o cabelo e me vestir sozinha. Agora estou a caminho da recuperação completa.",
-        "language": "pt",
-        "relativeTime": "há 5 meses",
-        "publishTime": "2026-02-04T00:47:12.102112469Z"
       }
     ]
   }
