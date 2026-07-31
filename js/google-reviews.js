@@ -12,18 +12,22 @@
     es: {
       countOne: " reseña",
       countMany: " reseñas",
+      countLinkTitle: "Ver todas nuestras valoraciones en Google",
     },
     en: {
       countOne: " review",
       countMany: " reviews",
+      countLinkTitle: "See all our Google reviews",
     },
     fr: {
       countOne: " avis",
       countMany: " avis",
+      countLinkTitle: "Voir toutes nos évaluations sur Google",
     },
     pt: {
       countOne: " avaliação",
       countMany: " avaliações",
+      countLinkTitle: "Ver todas as nossas avaliações no Google",
     },
   };
 
@@ -59,6 +63,14 @@
     var cfg = siteConfig();
     var data = window.KINESICA_GOOGLE_REVIEWS || {};
     return cfg.googlePlaceId || data.placeId || "ChIJZ2mPW9K1vJUR3J5kGRi5gws";
+  }
+
+  function reviewsListUrl() {
+    var cfg = siteConfig();
+    return (
+      cfg.googleReviewsListUrl ||
+      "https://search.google.com/local/reviews?placeid=" + placeId()
+    );
   }
 
   function placesLanguageCode(lang) {
@@ -263,10 +275,17 @@
   function renderSummary(container, data, copy) {
     if (data.rating == null) return;
     var count = data.userRatingCount;
-    var countLabel = "";
+    var countHtml = "";
     if (count != null) {
-      countLabel =
-        " · " + count + (count === 1 ? copy.countOne : copy.countMany);
+      var countText = count + (count === 1 ? copy.countOne : copy.countMany);
+      countHtml =
+        ' · <a href="' +
+        esc(reviewsListUrl()) +
+        '" class="google-reviews-summary-count" target="_blank" rel="noopener noreferrer" title="' +
+        esc(copy.countLinkTitle) +
+        '">' +
+        esc(countText) +
+        "</a>";
     }
 
     var summary = document.createElement("p");
@@ -276,9 +295,7 @@
       esc(String(data.rating)) +
       "</span>" +
       stars(data.rating) +
-      '<span class="google-reviews-summary-count">' +
-      esc(countLabel) +
-      "</span>";
+      countHtml;
     container.appendChild(summary);
   }
 

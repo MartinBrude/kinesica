@@ -2100,6 +2100,19 @@ main:focus {
 
 .google-reviews-summary-count {
   font-size: 0.875rem;
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.google-reviews-summary-count:hover,
+.google-reviews-summary-count:focus {
+  color: var(--primary-color);
+  border-bottom-color: rgba(0, 95, 153, 0.45);
+  text-decoration: none;
 }
 
 .google-reviews-grid {
