@@ -41,9 +41,8 @@ Fuente única: **`scripts/methods-content.mjs`**.
 
 | Tarea | Editar | Regenerar |
 |-------|--------|-----------|
-| Teléfono / email / dirección | `site-contact.mjs` | `build:partials` → `seo:schema` → `schema:partials` → `seo:llms` → `assets:build` |
-| Horario header (texto UI) | `partials-strings.mjs` → `schedule` | `build:partials` → `inject-static-shell` → `assets:build` |
-| Horario schema / llms | `site-contact.mjs` → `OPENING_HOURS` | + `seo:schema`, `seo:llms` |
+| Teléfono / email / dirección | `site-contact.mjs` | `build:partials` → `inject-local-schema` → `schema:partials` → `seo:llms` → `assets:build` |
+| Horario (header + schema + llms) | `site-contact.mjs` → `OPENING_HOURS` | `build:partials` → `inject-static-shell` → `inject-local-schema` → `schema:partials` → `seo:llms` → `assets:build` |
 | Redes sociales | `site-contact.mjs` → `SOCIALS` | `build:partials` → `assets:build` |
 
 ## QA obligatorio

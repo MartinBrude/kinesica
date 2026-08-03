@@ -5,7 +5,7 @@ window.__KINESICA_HEADER_SNIPPET_EN = `
       <div class="row">
         <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
           <span class="text-block time-block">
-            <span class="time-text">Monday to Friday: <strong>10 a.m. to 8 p.m.</strong></span>
+            <span class="time-text">Monday to Friday: <strong>8 a.m. to 7 p.m.</strong></span>
           </span>
         </div>
         <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">

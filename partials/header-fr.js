@@ -5,7 +5,7 @@ window.__KINESICA_HEADER_SNIPPET_FR = `
       <div class="row">
         <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
           <span class="text-block time-block">
-            <span class="time-text">Lundi au vendredi : <strong>10 h à 20 h</strong></span>
+            <span class="time-text">Lundi au vendredi : <strong>8 h à 19 h</strong></span>
           </span>
         </div>
         <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">

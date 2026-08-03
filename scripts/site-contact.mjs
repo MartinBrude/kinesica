@@ -36,15 +36,65 @@ export const FOUNDER = {
   shortName: "Norberto Brude",
 };
 
-/** Opening hours — schema + llms.txt. UI copy per language lives in partials-strings.mjs. */
+/**
+ * Opening hours — single source for schema, llms.txt, and header UI.
+ * Change only `opens` / `closes` (and `days` if needed); derived fields follow.
+ */
 export const OPENING_HOURS = {
-  opens: "10:00",
-  closes: "20:00",
+  opens: "08:00",
+  closes: "19:00",
   days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-  schemaShort: "Mo-Fr 10:00-20:00",
-  /** Plain Spanish line for llms.txt and similar. */
-  llmsLine: "lunes a viernes, 10:00–20:00",
 };
+
+Object.assign(OPENING_HOURS, {
+  schemaShort: `Mo-Fr ${OPENING_HOURS.opens}-${OPENING_HOURS.closes}`,
+  /** Plain Spanish line for llms.txt and similar. */
+  llmsLine: `lunes a viernes, ${OPENING_HOURS.opens}–${OPENING_HOURS.closes}`,
+});
+
+/** Parse "HH:MM" → { hour, minute }. */
+function parseHm(hm) {
+  const [hour, minute] = String(hm).split(":").map(Number);
+  return { hour, minute };
+}
+
+/** 24h clock label without leading zero when minutes are :00 (e.g. 8, 19). */
+function hour24(hm) {
+  const { hour, minute } = parseHm(hm);
+  return minute === 0 ? String(hour) : `${hour}:${String(minute).padStart(2, "0")}`;
+}
+
+/** English 12h clock (e.g. 8 a.m., 7 p.m.). */
+function hourEn12(hm) {
+  const { hour, minute } = parseHm(hm);
+  const suffix = hour < 12 || hour === 24 ? "a.m." : "p.m.";
+  let h12 = hour % 12;
+  if (h12 === 0) h12 = 12;
+  const time = minute === 0 ? String(h12) : `${h12}:${String(minute).padStart(2, "0")}`;
+  return `${time} ${suffix}`;
+}
+
+/**
+ * Header schedule HTML per language, derived from OPENING_HOURS.
+ * @param {"es"|"en"|"fr"|"pt"} lang
+ */
+export function scheduleHeaderHtml(lang) {
+  const open = OPENING_HOURS.opens;
+  const close = OPENING_HOURS.closes;
+  const o24 = hour24(open);
+  const c24 = hour24(close);
+  switch (lang) {
+    case "en":
+      return `Monday to Friday: <strong>${hourEn12(open)} to ${hourEn12(close)}</strong>`;
+    case "fr":
+      return `Lundi au vendredi : <strong>${o24} h à ${c24} h</strong>`;
+    case "pt":
+      return `Segunda a sexta: <strong>${o24} h às ${c24} h</strong>`;
+    case "es":
+    default:
+      return `Lunes a viernes: <strong>${o24} a ${c24} h</strong>`;
+  }
+}
 
 export const SOCIALS = {
   instagramBusiness: "https://www.instagram.com/kinesicabrude/",

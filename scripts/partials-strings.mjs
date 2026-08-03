@@ -1,7 +1,11 @@
 /**
  * UI strings for generated partials (header, nav, footer, CTA, WhatsApp).
  * Edit here, then: npm run build:partials && npm run assets:build
+ *
+ * Schedule hours come from site-contact.mjs (OPENING_HOURS) — do not hardcode times here.
  */
+import { scheduleHeaderHtml } from "./site-contact.mjs";
+
 /** Bootstrap column for footer social block (same width in all locales). */
 export const FOOTER_SOCIAL_COL_CLASS =
   "col-lg-3 col-md-4 col-sm-4 col-xs-12";
@@ -19,7 +23,7 @@ export const PARTIAL_STRINGS = {
   es: {
     headerComment:
       "Spanish site header — lang picker filled at runtime by js/lang-picker.js",
-    schedule: "Lunes a viernes: <strong>10 a 20 h</strong>",
+    schedule: scheduleHeaderHtml("es"),
     homeHref: "/",
     logoSrc: "images/logo.svg",
     logoAlt: "Kinésica — inicio",
@@ -54,7 +58,7 @@ export const PARTIAL_STRINGS = {
   en: {
     headerComment:
       "English site header — lang picker filled by js/header-include.js",
-    schedule: "Monday to Friday: <strong>10 a.m. to 8 p.m.</strong>",
+    schedule: scheduleHeaderHtml("en"),
     homeHref: "/en/",
     logoSrc: "../images/logo.svg",
     logoAlt: "Kinésica — home",
@@ -92,7 +96,7 @@ export const PARTIAL_STRINGS = {
   fr: {
     headerComment:
       "French site header — lang picker filled by js/header-include.js",
-    schedule: "Lundi au vendredi : <strong>10 h à 20 h</strong>",
+    schedule: scheduleHeaderHtml("fr"),
     homeHref: "/fr/",
     logoSrc: "../images/logo.svg",
     logoAlt: "Kinésica — accueil",
@@ -130,7 +134,7 @@ export const PARTIAL_STRINGS = {
   },
   pt: {
     headerComment: "Portuguese site header",
-    schedule: "Segunda a sexta: <strong>10 h às 20 h</strong>",
+    schedule: scheduleHeaderHtml("pt"),
     homeHref: "/pt/",
     logoSrc: "../images/logo.svg",
     logoAlt: "Kinésica — início",

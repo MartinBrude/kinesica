@@ -10,7 +10,7 @@ Guía para cambiar datos del sitio sin duplicar ni romper generadores. Leer esto
 scripts/site-contact.mjs     ← teléfono, email, dirección, geo, horarios (schema), founder, redes
 scripts/google-place.mjs     ← Place ID, link Maps, URLs de reseñas Google
 scripts/i18n-urls.mjs        ← dominio SITE, URLs absolutas, stems, paths por idioma
-scripts/partials-strings.mjs ← horario legible en header + copy CTA/footer (×4 idiomas)
+scripts/partials-strings.mjs ← copy CTA/footer/nav (×4 idiomas); horario UI derivado de site-contact
 scripts/schema-local-business.mjs ← JSON-LD clínica/FAQ (importa site-contact; no hardcodear contacto)
          ↓ generadores
 HTML / partials / js/site-config.js (AUTO-GENERADOS — no editar a mano)
@@ -30,7 +30,7 @@ HTML / partials / js/site-config.js (AUTO-GENERADOS — no editar a mano)
 | `CONTACT.geo` | Schema `GeoCoordinates` |
 | `CONTACT.mapsUrl` | Enlace Maps (reexporta `google-place.mjs`) |
 | `FOUNDER.name` / `shortName` | Schema, artículos, CV, llms.txt |
-| `OPENING_HOURS` | Schema + `llms.txt` (horario estructurado) |
+| `OPENING_HOURS` | Fuente única de horario (`opens`/`closes`) → schema, `llms.txt`, header UI |
 | `SOCIALS` + `SOCIALS.handles` | URLs e handles en footer |
 | `waMeUrl()`, `telUrl()`, `mailtoUrl()` | Helpers para generadores |
 | `postalAddressSchema()`, `openingHoursSpecification()`, `geoCoordinatesSchema()` | Bloques schema reutilizables |
@@ -78,8 +78,7 @@ Sin los secrets FTP, el Action igual commitea en GitHub y deja un notice: el sit
 
 | Qué cambiar | Dónde editar |
 |-------------|--------------|
-| Horario en header («Lunes a viernes: 10 a 20 h») | `scripts/partials-strings.mjs` → `schedule` (es/en/fr/pt) |
-| Horario en schema / Google / llms | `scripts/site-contact.mjs` → `OPENING_HOURS` |
+| Horario (header, schema, llms) | Solo `scripts/site-contact.mjs` → `OPENING_HOURS.opens` / `.closes` |
 | Texto CTA strip («Contáctanos y reserva…») | `scripts/partials-strings.mjs` → `ctaTitle`, `ctaText`, `ctaButton` |
 | Teléfono / email / dirección | Solo `site-contact.mjs` |
 
@@ -87,12 +86,11 @@ Sin los secrets FTP, el Action igual commitea en GitHub y deja un notice: el sit
 
 | Cambiaste | Comandos (en orden) |
 |-----------|---------------------|
-| Teléfono, email, dirección, founder, horarios schema, redes | `npm run build:partials` → `npm run seo:schema` → `npm run schema:partials` → `npm run seo:llms` → `npm run assets:build` |
-| Solo horario header (copy UI) | `npm run build:partials` → `node scripts/inject-static-shell.mjs` → `npm run assets:build` |
+| Teléfono, email, dirección, founder, horario, redes | `npm run build:partials` → `node scripts/inject-static-shell.mjs` → `node scripts/inject-local-schema.mjs` → `npm run schema:partials` → `npm run seo:llms` → `npm run assets:build` |
 | Home (hero, mapa, botones WA) | Editar `scripts/home-content.mjs` → `npm run build:home` |
 | CV | Editar `scripts/cv-content.mjs` → `npm run build:cv` |
 | Patologías (autor = founder) | `npm run build:pathologies` (rebuild incluye schema) |
-| Google Place ID / Maps link | `google-place.mjs` → `npm run assets:build` → `npm run seo:schema` → `npm run reviews:fetch` (si aplica) |
+| Google Place ID / Maps link | `google-place.mjs` → `npm run assets:build` → `node scripts/inject-local-schema.mjs` → `npm run reviews:fetch` (si aplica) |
 
 **Siempre al cerrar:**
 
@@ -128,7 +126,7 @@ Los bundles shell (`js/shell-footer-*.min.js`) incluyen `site-config` + footer.
 - **No** hardcodear `5491161564311`, `Charcas 3889` ni `norberto1712@gmail.com` en `scripts/*.mjs` (salvo `site-contact.mjs`). `npm run seo:audit` lo detecta.
 - **No** editar HTML de contacto a mano en decenas de páginas — usar generadores.
 - **No** editar `js/site-config.js` ni `partials/*.min.js` — regenerar con `assets:build` / `build:partials`.
-- **No** usar `npm run seo:og` para schema — solo limpia OG; schema = `npm run seo:schema`.
+- **No** usar `npm run seo:og` para schema — solo limpia OG; schema = `node scripts/inject-local-schema.mjs`.
 
 ## Investigar duplicación
 
