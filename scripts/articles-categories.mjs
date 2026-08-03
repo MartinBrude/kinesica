@@ -18,6 +18,8 @@ export const ARTICLE_CATEGORIES = [
       "dolor-sacroiliaco",
       "ciatalgia",
       "radiculopatia",
+      "rectificacion",
+      "artrosis-artritis",
     ],
     es: {
       title: "Columna y espalda",
@@ -50,6 +52,8 @@ export const ARTICLE_CATEGORIES = [
       "bruxismo",
       "desplazamiento-disco-atm",
       "artrosis-atm",
+      "torticolis",
+      "oclusion-dental",
     ],
     es: {
       title: "Cabeza, cuello y mandíbula",
@@ -86,6 +90,9 @@ export const ARTICLE_CATEGORIES = [
       "pies-planos",
       "ciatalgia",
       "dolor-sacroiliaco",
+      "coxalgia",
+      "artrosis-artritis",
+      "contracturas-desgarros",
     ],
     es: {
       title: "Miembro inferior",
@@ -118,6 +125,9 @@ export const ARTICLE_CATEGORIES = [
       "impingement-subacromial",
       "manguito-rotador",
       "radiculopatia",
+      "hombro-congelado",
+      "tunel-carpiano",
+      "contracturas-desgarros",
     ],
     es: {
       title: "Miembro superior",

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="bg-coxalgia" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="hsl(205 42% 99%)"/>
+      <stop offset="55%" stop-color="hsl(205 38% 96%)"/>
+      <stop offset="100%" stop-color="hsl(205 48% 90%)"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg-coxalgia)"/>
+  <g transform="translate(0, 4)"><circle cx="268" cy="165" r="6" fill="#2ebfa5"/>
+    <circle cx="268" cy="195" r="8" fill="#2ebfa5"/>
+    <circle cx="268" cy="225" r="8" fill="#2ebfa5"/>
+    <circle cx="295" cy="218" r="7" fill="#2ebfa5"/>
+    <circle cx="345" cy="218" r="7" fill="#2ebfa5"/>
+    <circle cx="320" cy="248" r="8" fill="#2ebfa5"/>
+    <path d="M280 200 Q320 175 360 200 Q320 255 280 230 Q320 200 360 230" fill="none" stroke="#2ebfa5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></g>
+</svg>

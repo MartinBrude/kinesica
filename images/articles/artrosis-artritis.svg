@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="bg-artrosis-artritis" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="hsl(165 42% 99%)"/>
+      <stop offset="55%" stop-color="hsl(165 38% 96%)"/>
+      <stop offset="100%" stop-color="hsl(165 48% 90%)"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg-artrosis-artritis)"/>
+  <g transform="translate(0, 4)"><circle cx="292" cy="108" r="6" fill="#2ebfa5"/>
+    <circle cx="292" cy="148" r="7" fill="#2ebfa5"/>
+    <circle cx="292" cy="188" r="8" fill="#2ebfa5"/>
+    <circle cx="292" cy="228" r="7" fill="#2ebfa5"/>
+    <circle cx="368" cy="218" r="9" fill="#2ebfa5"/>
+    <circle cx="378" cy="238" r="7" fill="#2ebfa5"/>
+    <path d="M310 95 Q315 175 308 255 M308 200 Q355 195 375 225 Q355 255 325 252" fill="none" stroke="#2ebfa5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></g>
+</svg>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="bg-oclusion-dental" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="hsl(178 42% 99%)"/>
+      <stop offset="55%" stop-color="hsl(178 38% 96%)"/>
+      <stop offset="100%" stop-color="hsl(178 48% 90%)"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg-oclusion-dental)"/>
+  <g transform="translate(0, 4)"><circle cx="285" cy="82" r="6" fill="#2ebfa5"/>
+    <circle cx="302" cy="68" r="8" fill="#2ebfa5"/>
+    <circle cx="322" cy="65" r="9" fill="#2ebfa5"/>
+    <circle cx="342" cy="75" r="7" fill="#2ebfa5"/>
+    <circle cx="352" cy="95" r="6" fill="#2ebfa5"/>
+    <circle cx="318" cy="175" r="10" fill="#2ebfa5"/>
+    <circle cx="318" cy="188" r="8" fill="#2ebfa5"/>
+    <circle cx="358" cy="195" r="7" fill="#2ebfa5"/>
+    <circle cx="368" cy="212" r="6" fill="#2ebfa5"/>
+    <circle cx="275" cy="252" r="6" fill="#2ebfa5"/>
+    <circle cx="282" cy="272" r="5" fill="#2ebfa5"/>
+    <path d="M292 90 Q312 140 300 195 Q292 235 285 265 M300 175 Q338 168 368 198 Q338 218 300 210" fill="none" stroke="#2ebfa5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></g>
+</svg>

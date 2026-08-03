@@ -40,6 +40,14 @@ export const THUMBNAIL_BY_STEM = {
   bruxismo: "jaw-muscles",
   "desplazamiento-disco-atm": "jaw-disc",
   "artrosis-atm": "jaw-joint",
+  torticolis: "neck",
+  "artrosis-artritis": "knee",
+  "hombro-congelado": "shoulder",
+  "contracturas-desgarros": "torso-upper",
+  "tunel-carpiano": "elbow",
+  coxalgia: "groin",
+  "oclusion-dental": "jaw-joint",
+  rectificacion: "spine-flat",
 };
 
 function dot(cx, cy, r, fill = TEAL) {
