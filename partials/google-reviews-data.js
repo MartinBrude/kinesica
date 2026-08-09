@@ -1,7 +1,7 @@
 /** AUTO-GENERATED — no editar. Fuente: npm run reviews:fetch */
 window.KINESICA_GOOGLE_REVIEWS = {
   "placeId": "ChIJZ2mPW9K1vJUR3J5kGRi5gws",
-  "fetchedAt": "2026-08-05T22:14:41.295Z",
+  "fetchedAt": "2026-08-09T21:36:36.968Z",
   "displayName": "Kinesica",
   "googleMapsUri": "https://maps.google.com/?cid=829710269522681564&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA",
   "rating": 5,
@@ -15,6 +15,16 @@ window.KINESICA_GOOGLE_REVIEWS = {
       "text": "Hace años que concurro, la atención de Norberto es excelente. Sabe escuchar para poder determinar sobre que puntos focalizar el trabajo y conoce diversas técnicas que utiliza según la necesidad del paciente. Siempre salí de la consulta sintiéndome mejor que al inicio. Lo recomiendo muchísimo!!!!!",
       "language": "es",
       "publishTime": "2026-07-29T22:10:00.000Z"
+    },
+    {
+      "author": "Nelida Di Rienzo",
+      "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJ9Zy_Ttaczio3vbFaCTKU10xKZ3ZSZrQa3e0fR6qFuw82TkQ=s128-c0x00000000-cc-rp-mo",
+      "authorProfile": "https://www.google.com/maps/contrib/102253558605214190307/reviews",
+      "rating": 5,
+      "text": "Atención super recomendable!!! Combina enorme experiencia, formación en la implementación de técnicas diversas, adecuación a cada necesidad,  atención cálida y responsable!!!!",
+      "language": "es",
+      "relativeTime": "Hace 2 semanas",
+      "publishTime": "2026-07-24T20:30:15.073713903Z"
     },
     {
       "author": "Gabriel Rotman",
@@ -44,16 +54,6 @@ window.KINESICA_GOOGLE_REVIEWS = {
       "language": "es",
       "relativeTime": "Hace 4 meses",
       "publishTime": "2026-03-18T19:26:52.862442188Z"
-    },
-    {
-      "author": "Mirta Clinis",
-      "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocKMekeEtxEm7RZ3MbUfphFho9XZBB3jwjs3tsfaIgzt9FQ4xg=s128-c0x00000000-cc-rp-mo",
-      "authorProfile": "https://www.google.com/maps/contrib/108447294487908467296/reviews",
-      "rating": 5,
-      "text": "Excelente profesional... recomendable. En la primer sesión ya me alivió un dolor muy fuerte que tenía en la espalda.",
-      "language": "es",
-      "relativeTime": "Hace 4 meses",
-      "publishTime": "2026-03-18T16:47:46.069011478Z"
     }
   ],
   "byLang": {
@@ -66,6 +66,16 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "text": "Hace años que concurro, la atención de Norberto es excelente. Sabe escuchar para poder determinar sobre que puntos focalizar el trabajo y conoce diversas técnicas que utiliza según la necesidad del paciente. Siempre salí de la consulta sintiéndome mejor que al inicio. Lo recomiendo muchísimo!!!!!",
         "language": "es",
         "publishTime": "2026-07-29T22:10:00.000Z"
+      },
+      {
+        "author": "Nelida Di Rienzo",
+        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJ9Zy_Ttaczio3vbFaCTKU10xKZ3ZSZrQa3e0fR6qFuw82TkQ=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/102253558605214190307/reviews",
+        "rating": 5,
+        "text": "Atención super recomendable!!! Combina enorme experiencia, formación en la implementación de técnicas diversas, adecuación a cada necesidad,  atención cálida y responsable!!!!",
+        "language": "es",
+        "relativeTime": "Hace 2 semanas",
+        "publishTime": "2026-07-24T20:30:15.073713903Z"
       },
       {
         "author": "Gabriel Rotman",
@@ -95,16 +105,6 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "language": "es",
         "relativeTime": "Hace 4 meses",
         "publishTime": "2026-03-18T19:26:52.862442188Z"
-      },
-      {
-        "author": "Mirta Clinis",
-        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocKMekeEtxEm7RZ3MbUfphFho9XZBB3jwjs3tsfaIgzt9FQ4xg=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/108447294487908467296/reviews",
-        "rating": 5,
-        "text": "Excelente profesional... recomendable. En la primer sesión ya me alivió un dolor muy fuerte que tenía en la espalda.",
-        "language": "es",
-        "relativeTime": "Hace 4 meses",
-        "publishTime": "2026-03-18T16:47:46.069011478Z"
       }
     ],
     "en": [
@@ -116,6 +116,16 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "text": "Hace años que concurro, la atención de Norberto es excelente. Sabe escuchar para poder determinar sobre que puntos focalizar el trabajo y conoce diversas técnicas que utiliza según la necesidad del paciente. Siempre salí de la consulta sintiéndome mejor que al inicio. Lo recomiendo muchísimo!!!!!",
         "language": "es",
         "publishTime": "2026-07-29T22:10:00.000Z"
+      },
+      {
+        "author": "Nelida Di Rienzo",
+        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJ9Zy_Ttaczio3vbFaCTKU10xKZ3ZSZrQa3e0fR6qFuw82TkQ=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/102253558605214190307/reviews",
+        "rating": 5,
+        "text": "Atención super recomendable!!! Combina enorme experiencia, formación en la implementación de técnicas diversas, adecuación a cada necesidad,  atención cálida y responsable!!!!",
+        "language": "es",
+        "relativeTime": "2 weeks ago",
+        "publishTime": "2026-07-24T20:30:15.073713903Z"
       },
       {
         "author": "Gabriel Rotman",
@@ -145,16 +155,6 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "language": "en",
         "relativeTime": "4 months ago",
         "publishTime": "2026-03-18T19:26:52.862442188Z"
-      },
-      {
-        "author": "Mirta Clinis",
-        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocKMekeEtxEm7RZ3MbUfphFho9XZBB3jwjs3tsfaIgzt9FQ4xg=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/108447294487908467296/reviews",
-        "rating": 5,
-        "text": "Excellent professional... highly recommended. In the first session, she relieved a very severe back pain I had.",
-        "language": "en",
-        "relativeTime": "4 months ago",
-        "publishTime": "2026-03-18T16:47:46.069011478Z"
       }
     ],
     "fr": [
@@ -166,6 +166,16 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "text": "Hace años que concurro, la atención de Norberto es excelente. Sabe escuchar para poder determinar sobre que puntos focalizar el trabajo y conoce diversas técnicas que utiliza según la necesidad del paciente. Siempre salí de la consulta sintiéndome mejor que al inicio. Lo recomiendo muchísimo!!!!!",
         "language": "es",
         "publishTime": "2026-07-29T22:10:00.000Z"
+      },
+      {
+        "author": "Nelida Di Rienzo",
+        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJ9Zy_Ttaczio3vbFaCTKU10xKZ3ZSZrQa3e0fR6qFuw82TkQ=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/102253558605214190307/reviews",
+        "rating": 5,
+        "text": "Atención super recomendable!!! Combina enorme experiencia, formación en la implementación de técnicas diversas, adecuación a cada necesidad,  atención cálida y responsable!!!!",
+        "language": "es",
+        "relativeTime": "il y a 2 semaines",
+        "publishTime": "2026-07-24T20:30:15.073713903Z"
       },
       {
         "author": "Gabriel Rotman",
@@ -195,16 +205,6 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "language": "fr",
         "relativeTime": "il y a 4 mois",
         "publishTime": "2026-03-18T19:26:52.862442188Z"
-      },
-      {
-        "author": "Mirta Clinis",
-        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocKMekeEtxEm7RZ3MbUfphFho9XZBB3jwjs3tsfaIgzt9FQ4xg=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/108447294487908467296/reviews",
-        "rating": 5,
-        "text": "Excellente professionnelle… je la recommande vivement. Dès la première séance, elle a soulagé une très forte douleur au dos dont je souffrais.",
-        "language": "fr",
-        "relativeTime": "il y a 4 mois",
-        "publishTime": "2026-03-18T16:47:46.069011478Z"
       }
     ],
     "pt": [
@@ -216,6 +216,16 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "text": "Hace años que concurro, la atención de Norberto es excelente. Sabe escuchar para poder determinar sobre que puntos focalizar el trabajo y conoce diversas técnicas que utiliza según la necesidad del paciente. Siempre salí de la consulta sintiéndome mejor que al inicio. Lo recomiendo muchísimo!!!!!",
         "language": "es",
         "publishTime": "2026-07-29T22:10:00.000Z"
+      },
+      {
+        "author": "Nelida Di Rienzo",
+        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJ9Zy_Ttaczio3vbFaCTKU10xKZ3ZSZrQa3e0fR6qFuw82TkQ=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/102253558605214190307/reviews",
+        "rating": 5,
+        "text": "Atención super recomendable!!! Combina enorme experiencia, formación en la implementación de técnicas diversas, adecuación a cada necesidad,  atención cálida y responsable!!!!",
+        "language": "es",
+        "relativeTime": "há 2 semanas",
+        "publishTime": "2026-07-24T20:30:15.073713903Z"
       },
       {
         "author": "Gabriel Rotman",
@@ -245,16 +255,6 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "language": "pt",
         "relativeTime": "há 4 meses",
         "publishTime": "2026-03-18T19:26:52.862442188Z"
-      },
-      {
-        "author": "Mirta Clinis",
-        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocKMekeEtxEm7RZ3MbUfphFho9XZBB3jwjs3tsfaIgzt9FQ4xg=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/108447294487908467296/reviews",
-        "rating": 5,
-        "text": "Excelente profissional... altamente recomendada. Na primeira sessão, ela aliviou uma dor nas costas muito forte que eu tinha.",
-        "language": "pt",
-        "relativeTime": "há 4 meses",
-        "publishTime": "2026-03-18T16:47:46.069011478Z"
       }
     ]
   }
