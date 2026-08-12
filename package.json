@@ -15,6 +15,7 @@
     "reviews:refresh": "npm run reviews:fetch && npm run assets:build",
     "reviews:sync": "node scripts/sync-google-reviews.mjs",
     "images:hero": "node scripts/generate-hero-images.mjs",
+    "images:webp": "node scripts/generate-webp-images.mjs",
     "seo:lang": "node scripts/apply-lang-meta.mjs",
     "seo:og": "node scripts/fix-og-schema-seo.mjs",
     "schema:partials": "node scripts/build-schema-partials.mjs",

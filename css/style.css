@@ -856,7 +856,10 @@ html:not(.js) .lang-picker__option[aria-current="true"] {
 @media (min-width: 992px) {
   .hero-section {
     background-image: linear-gradient(rgba(0, 30, 60, 0.7), rgba(0, 30, 60, 0.7)),
-      url(../images/hero-img.jpg);
+      image-set(
+        url(../images/hero-img.webp) type("image/webp"),
+        url(../images/hero-img.jpg) type("image/jpeg")
+      );
   }
 }
 

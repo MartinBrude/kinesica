@@ -79,7 +79,7 @@ export function headPreconnectGtm() {
 export function headHeroImagePreload(prefix) {
   return (
     `  <link rel="preload" as="image" href="${prefix}images/hero-img-mobile.webp" type="image/webp" media="(max-width: 991px)" fetchpriority="high" />\n` +
-    `  <link rel="preload" as="image" href="${prefix}images/hero-img.jpg" media="(min-width: 992px)" fetchpriority="high" />\n`
+    `  <link rel="preload" as="image" href="${prefix}images/hero-img.webp" type="image/webp" media="(min-width: 992px)" fetchpriority="high" />\n`
   );
 }
 

@@ -112,7 +112,8 @@ function renderBody(data) {
 function buildPage(lang, data) {
   const prefix = assetPrefixForLang(lang);
   const canonical = absoluteUrl(lang, "cv");
-  const profileImage = `${SITE}/images/noberto-brude-kinesiologo-osteopata.jpg`;
+  const profileImageJpg = `${SITE}/images/noberto-brude-kinesiologo-osteopata.jpg`;
+  const profileImageWebp = `${prefix}images/noberto-brude-kinesiologo-osteopata.webp`;
 
   const personSchema = JSON.stringify(
     {
@@ -123,7 +124,7 @@ function buildPage(lang, data) {
       email: CV_EMAIL,
       telephone: CONTACT.phoneSchema,
       url: canonical,
-      image: profileImage,
+      image: profileImageJpg,
       worksFor: {
         "@type": "MedicalClinic",
         name: "Kinésica",
@@ -164,7 +165,7 @@ ${headLangDeferScripts(prefix)}${headSeoBlock({
     title: data.title,
     description: data.description,
     type: "profile",
-    image: profileImage,
+    image: profileImageJpg,
     canonical,
   })}
 ${headStandardStylesheets(prefix)}${syncCssLink(asset(prefix, "css/cv.css"))}  <script src="${asset(prefix, "partials/gtm-head.js")}" defer></script>
@@ -178,7 +179,7 @@ ${bodyShellTop(prefix)}${headerShellMarkup(lang, prefix)}
     <section class="cv-hero">
       <div class="container">
         <div class="cv-hero-inner">
-          <img src="${prefix}images/noberto-brude-kinesiologo-osteopata.jpg" alt="${escHtml(FOUNDER.shortName)}" class="cv-photo" width="140" height="140" loading="eager" />
+          <img src="${profileImageWebp}" alt="${escHtml(FOUNDER.shortName)}" class="cv-photo" width="140" height="140" loading="eager" />
           <div class="cv-hero-text">
             <h1>${escHtml(FOUNDER.shortName)}</h1>
             <p class="cv-role">${escHtml(data.role)}</p>
