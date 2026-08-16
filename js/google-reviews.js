@@ -279,7 +279,7 @@
     if (count != null) {
       var countText = count + (count === 1 ? copy.countOne : copy.countMany);
       countHtml =
-        ' · <a href="' +
+        '<a href="' +
         esc(reviewsListUrl()) +
         '" class="google-reviews-summary-count" target="_blank" rel="noopener noreferrer" title="' +
         esc(copy.countLinkTitle) +
@@ -291,11 +291,10 @@
     var summary = document.createElement("p");
     summary.className = "google-reviews-summary";
     summary.innerHTML =
-      '<span class="google-reviews-summary-score">' +
-      esc(String(data.rating)) +
-      "</span>" +
+      countHtml +
+      '<span class="google-reviews-summary-stars">' +
       stars(data.rating) +
-      countHtml;
+      "</span>";
     container.appendChild(summary);
   }
 

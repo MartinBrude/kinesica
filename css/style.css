@@ -2086,19 +2086,19 @@ main:focus {
 
 .google-reviews-summary {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 0.35rem 0.5rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
   margin: 0 0 0.75rem;
   font-size: 0.95rem;
   color: var(--text-muted, #5a6578);
 }
 
-.google-reviews-summary-score {
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: var(--primary-color);
+.google-reviews-summary-stars {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  line-height: 1;
 }
 
 .google-reviews-summary-count {
