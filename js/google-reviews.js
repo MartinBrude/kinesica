@@ -8,29 +8,6 @@
   var DISPLAY_REVIEWS = 3;
   var FETCH_TIMEOUT_MS = 15000;
 
-  var COPY = {
-    es: {
-      countOne: " reseña",
-      countMany: " reseñas",
-      countLinkTitle: "Ver todas nuestras valoraciones en Google",
-    },
-    en: {
-      countOne: " review",
-      countMany: " reviews",
-      countLinkTitle: "See all our Google reviews",
-    },
-    fr: {
-      countOne: " avis",
-      countMany: " avis",
-      countLinkTitle: "Voir toutes nos évaluations sur Google",
-    },
-    pt: {
-      countOne: " avaliação",
-      countMany: " avaliações",
-      countLinkTitle: "Ver todas as nossas avaliações no Google",
-    },
-  };
-
   function esc(text) {
     var d = document.createElement("div");
     d.textContent = text == null ? "" : String(text);
@@ -63,14 +40,6 @@
     var cfg = siteConfig();
     var data = window.KINESICA_GOOGLE_REVIEWS || {};
     return cfg.googlePlaceId || data.placeId || "ChIJZ2mPW9K1vJUR3J5kGRi5gws";
-  }
-
-  function reviewsListUrl() {
-    var cfg = siteConfig();
-    return (
-      cfg.googleReviewsListUrl ||
-      "https://search.google.com/local/reviews?placeid=" + placeId()
-    );
   }
 
   function placesLanguageCode(lang) {
@@ -272,32 +241,6 @@
     });
   }
 
-  function renderSummary(container, data, copy) {
-    if (data.rating == null) return;
-    var count = data.userRatingCount;
-    var countHtml = "";
-    if (count != null) {
-      var countText = count + (count === 1 ? copy.countOne : copy.countMany);
-      countHtml =
-        '<a href="' +
-        esc(reviewsListUrl()) +
-        '" class="google-reviews-summary-count" target="_blank" rel="noopener noreferrer" title="' +
-        esc(copy.countLinkTitle) +
-        '">' +
-        esc(countText) +
-        "</a>";
-    }
-
-    var summary = document.createElement("p");
-    summary.className = "google-reviews-summary";
-    summary.innerHTML =
-      countHtml +
-      '<span class="google-reviews-summary-stars">' +
-      stars(data.rating) +
-      "</span>";
-    container.appendChild(summary);
-  }
-
   function renderCard(review, lang) {
     var card = document.createElement("article");
     card.className = "google-review-card";
@@ -387,10 +330,7 @@
     showSection(section);
 
     var summarySlot = section.querySelector(".google-reviews-summary-slot");
-    if (summarySlot) {
-      summarySlot.innerHTML = "";
-      renderSummary(summarySlot, data, copy);
-    }
+    if (summarySlot) summarySlot.remove();
 
     clearLoading(grid);
     balanceReviewOrder(data.reviews)
@@ -415,9 +355,10 @@
     if (!section || !grid) return;
 
     var lang = section.getAttribute("data-reviews-lang") || "es";
-    var copy = COPY[lang] || COPY.es;
-    copy.lang = lang;
-    copy.langAttr = lang === "es" ? "es-AR" : lang;
+    var copy = {
+      lang: lang,
+      langAttr: lang === "es" ? "es-AR" : lang,
+    };
 
     var hasStatic = !!staticPayload(lang);
     if (!hasStatic && mapsApiKey()) {

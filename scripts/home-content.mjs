@@ -230,7 +230,6 @@ export function googleReviewsBlock(lang) {
     "            <div class=\"map-reviews-aside\" hidden>",
     "              <div class=\"google-reviews-wrap\">",
     `              <section id="google-reviews-section" class="google-reviews" data-reviews-lang="${lang}" hidden>`,
-    "                <div class=\"google-reviews-summary-slot\"></div>",
     "                <div id=\"google-reviews-grid\" class=\"google-reviews-grid\"></div>",
     "              </section>",
     "              <script src=\"__PREFIX__js/reviews.min.js\" defer></script>",
