@@ -1,7 +1,7 @@
 /** AUTO-GENERATED — no editar. Fuente: npm run reviews:fetch */
 window.KINESICA_GOOGLE_REVIEWS = {
   "placeId": "ChIJZ2mPW9K1vJUR3J5kGRi5gws",
-  "fetchedAt": "2026-08-13T21:51:09.550Z",
+  "fetchedAt": "2026-08-17T12:44:09.889Z",
   "displayName": "Kinesica",
   "googleMapsUri": "https://maps.google.com/?cid=829710269522681564&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA",
   "rating": 5,
@@ -17,16 +17,6 @@ window.KINESICA_GOOGLE_REVIEWS = {
       "publishTime": "2026-07-29T22:10:00.000Z"
     },
     {
-      "author": "Nelida Di Rienzo",
-      "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJ9Zy_Ttaczio3vbFaCTKU10xKZ3ZSZrQa3e0fR6qFuw82TkQ=s128-c0x00000000-cc-rp-mo",
-      "authorProfile": "https://www.google.com/maps/contrib/102253558605214190307/reviews",
-      "rating": 5,
-      "text": "Atención super recomendable!!! Combina enorme experiencia, formación en la implementación de técnicas diversas, adecuación a cada necesidad,  atención cálida y responsable!!!!",
-      "language": "es",
-      "relativeTime": "Hace 2 semanas",
-      "publishTime": "2026-07-24T20:30:15.073713903Z"
-    },
-    {
       "author": "Gabriel Rotman",
       "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjU1sZgbUvf5_hu4GC95IP3lszyj_ugBsPntmjHporpoV7pMUC2sNg=s128-c0x00000000-cc-rp-mo-ba12",
       "authorProfile": "https://www.google.com/maps/contrib/111063243092495440410/reviews",
@@ -34,6 +24,16 @@ window.KINESICA_GOOGLE_REVIEWS = {
       "text": "Increíblemente sorprendido para bien, llevo 3 años con un dolor por epicondilitis, en apenas 2 sesiones con el kinesiologo Norberto Brude no tengo dolor, pude volver a entrenar, me despertaba con la mano dormida, no me volvió a suceder! Sinceramente un profesional fuera de serie, y sobre todo supo llevar calma cuando más lo necesitaba.",
       "language": "es",
       "publishTime": "2026-07-24T02:05:02.000Z"
+    },
+    {
+      "author": "Claudia Rothschild",
+      "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjV7zjR9a6k2KK0-ciZ60piNXJdtemgzlxd8EAGV2FdBnpfcV7wcWA=s128-c0x00000000-cc-rp-mo",
+      "authorProfile": "https://www.google.com/maps/contrib/118351524349714047042/reviews",
+      "rating": 5,
+      "text": "Norberto Brude es excelente. Por  varios problemas en la columna, rodilla, cuello que me producen permanentes dolores  hace años que hice varios intentos con otros profesionales pero recién con su tratamiento siento un considerable alivio- Lo recomiendo!!!",
+      "language": "es",
+      "relativeTime": "Hace 3 semanas",
+      "publishTime": "2026-07-21T22:41:19.944949311Z"
     },
     {
       "author": "Susana Mühlmann",
@@ -52,7 +52,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
       "rating": 5,
       "text": "Excelente atención del doctor Brude en cada sesión. Explica con claridad y genera mucha confianza. Se nota el compromiso con la recuperación del paciente. Su trato es muy amable y personalizado.",
       "language": "es",
-      "relativeTime": "Hace 4 meses",
+      "relativeTime": "Hace 5 meses",
       "publishTime": "2026-03-18T19:26:52.862442188Z"
     }
   ],
@@ -68,16 +68,6 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "publishTime": "2026-07-29T22:10:00.000Z"
       },
       {
-        "author": "Nelida Di Rienzo",
-        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJ9Zy_Ttaczio3vbFaCTKU10xKZ3ZSZrQa3e0fR6qFuw82TkQ=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/102253558605214190307/reviews",
-        "rating": 5,
-        "text": "Atención super recomendable!!! Combina enorme experiencia, formación en la implementación de técnicas diversas, adecuación a cada necesidad,  atención cálida y responsable!!!!",
-        "language": "es",
-        "relativeTime": "Hace 2 semanas",
-        "publishTime": "2026-07-24T20:30:15.073713903Z"
-      },
-      {
         "author": "Gabriel Rotman",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjU1sZgbUvf5_hu4GC95IP3lszyj_ugBsPntmjHporpoV7pMUC2sNg=s128-c0x00000000-cc-rp-mo-ba12",
         "authorProfile": "https://www.google.com/maps/contrib/111063243092495440410/reviews",
@@ -85,6 +75,16 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "text": "Increíblemente sorprendido para bien, llevo 3 años con un dolor por epicondilitis, en apenas 2 sesiones con el kinesiologo Norberto Brude no tengo dolor, pude volver a entrenar, me despertaba con la mano dormida, no me volvió a suceder! Sinceramente un profesional fuera de serie, y sobre todo supo llevar calma cuando más lo necesitaba.",
         "language": "es",
         "publishTime": "2026-07-24T02:05:02.000Z"
+      },
+      {
+        "author": "Claudia Rothschild",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjV7zjR9a6k2KK0-ciZ60piNXJdtemgzlxd8EAGV2FdBnpfcV7wcWA=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/118351524349714047042/reviews",
+        "rating": 5,
+        "text": "Norberto Brude es excelente. Por  varios problemas en la columna, rodilla, cuello que me producen permanentes dolores  hace años que hice varios intentos con otros profesionales pero recién con su tratamiento siento un considerable alivio- Lo recomiendo!!!",
+        "language": "es",
+        "relativeTime": "Hace 3 semanas",
+        "publishTime": "2026-07-21T22:41:19.944949311Z"
       },
       {
         "author": "Susana Mühlmann",
@@ -103,7 +103,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Excelente atención del doctor Brude en cada sesión. Explica con claridad y genera mucha confianza. Se nota el compromiso con la recuperación del paciente. Su trato es muy amable y personalizado.",
         "language": "es",
-        "relativeTime": "Hace 4 meses",
+        "relativeTime": "Hace 5 meses",
         "publishTime": "2026-03-18T19:26:52.862442188Z"
       }
     ],
@@ -118,16 +118,6 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "publishTime": "2026-07-29T22:10:00.000Z"
       },
       {
-        "author": "Nelida Di Rienzo",
-        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJ9Zy_Ttaczio3vbFaCTKU10xKZ3ZSZrQa3e0fR6qFuw82TkQ=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/102253558605214190307/reviews",
-        "rating": 5,
-        "text": "Atención super recomendable!!! Combina enorme experiencia, formación en la implementación de técnicas diversas, adecuación a cada necesidad,  atención cálida y responsable!!!!",
-        "language": "es",
-        "relativeTime": "2 weeks ago",
-        "publishTime": "2026-07-24T20:30:15.073713903Z"
-      },
-      {
         "author": "Gabriel Rotman",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjU1sZgbUvf5_hu4GC95IP3lszyj_ugBsPntmjHporpoV7pMUC2sNg=s128-c0x00000000-cc-rp-mo-ba12",
         "authorProfile": "https://www.google.com/maps/contrib/111063243092495440410/reviews",
@@ -135,6 +125,16 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "text": "Increíblemente sorprendido para bien, llevo 3 años con un dolor por epicondilitis, en apenas 2 sesiones con el kinesiologo Norberto Brude no tengo dolor, pude volver a entrenar, me despertaba con la mano dormida, no me volvió a suceder! Sinceramente un profesional fuera de serie, y sobre todo supo llevar calma cuando más lo necesitaba.",
         "language": "es",
         "publishTime": "2026-07-24T02:05:02.000Z"
+      },
+      {
+        "author": "Claudia Rothschild",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjV7zjR9a6k2KK0-ciZ60piNXJdtemgzlxd8EAGV2FdBnpfcV7wcWA=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/118351524349714047042/reviews",
+        "rating": 5,
+        "text": "Norberto Brude is excellent. I've had several problems with my spine, knees, and neck that have caused me constant pain for years. I tried several other professionals, but only with his treatment have I felt considerable relief. I highly recommend him!",
+        "language": "en",
+        "relativeTime": "3 weeks ago",
+        "publishTime": "2026-07-21T22:41:19.944949311Z"
       },
       {
         "author": "Susana Mühlmann",
@@ -147,14 +147,14 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "publishTime": "2026-03-27T19:20:10.553212148Z"
       },
       {
-        "author": "Martin Figueroa",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWH1NIssF8Mao5RzMLHufdWDcctM9XzC6a9okzyyojbh9m-22pw=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/114835887772282675184/reviews",
+        "author": "Jack Grantham",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWSSbjYSLBV4mxom-l1D8K58_Mnko-xAxdA_PJ6irzmVMwrBTQvzg=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/116757338678492155627/reviews",
         "rating": 5,
-        "text": "Dr. Brude provides excellent care at every session. He explains things clearly and inspires a lot of confidence. His commitment to the patient's recovery is evident. His approach is very kind and personalized.",
+        "text": "Amazing person! He is a healer.\nThank you very much.",
         "language": "en",
-        "relativeTime": "4 months ago",
-        "publishTime": "2026-03-18T19:26:52.862442188Z"
+        "relativeTime": "a year ago",
+        "publishTime": "2025-01-21T04:07:42.347641Z"
       }
     ],
     "fr": [
@@ -168,16 +168,6 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "publishTime": "2026-07-29T22:10:00.000Z"
       },
       {
-        "author": "Nelida Di Rienzo",
-        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJ9Zy_Ttaczio3vbFaCTKU10xKZ3ZSZrQa3e0fR6qFuw82TkQ=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/102253558605214190307/reviews",
-        "rating": 5,
-        "text": "Atención super recomendable!!! Combina enorme experiencia, formación en la implementación de técnicas diversas, adecuación a cada necesidad,  atención cálida y responsable!!!!",
-        "language": "es",
-        "relativeTime": "il y a 2 semaines",
-        "publishTime": "2026-07-24T20:30:15.073713903Z"
-      },
-      {
         "author": "Gabriel Rotman",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjU1sZgbUvf5_hu4GC95IP3lszyj_ugBsPntmjHporpoV7pMUC2sNg=s128-c0x00000000-cc-rp-mo-ba12",
         "authorProfile": "https://www.google.com/maps/contrib/111063243092495440410/reviews",
@@ -185,6 +175,16 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "text": "Increíblemente sorprendido para bien, llevo 3 años con un dolor por epicondilitis, en apenas 2 sesiones con el kinesiologo Norberto Brude no tengo dolor, pude volver a entrenar, me despertaba con la mano dormida, no me volvió a suceder! Sinceramente un profesional fuera de serie, y sobre todo supo llevar calma cuando más lo necesitaba.",
         "language": "es",
         "publishTime": "2026-07-24T02:05:02.000Z"
+      },
+      {
+        "author": "Claudia Rothschild",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjV7zjR9a6k2KK0-ciZ60piNXJdtemgzlxd8EAGV2FdBnpfcV7wcWA=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/118351524349714047042/reviews",
+        "rating": 5,
+        "text": "Norberto Brude est excellent. Je souffre de problèmes de dos, de genoux et de cou qui me causent des douleurs constantes depuis des années. J'ai consulté plusieurs autres praticiens, mais seul son traitement m'a apporté un soulagement considérable. Je le recommande vivement !",
+        "language": "fr",
+        "relativeTime": "il y a 3 semaines",
+        "publishTime": "2026-07-21T22:41:19.944949311Z"
       },
       {
         "author": "Susana Mühlmann",
@@ -203,7 +203,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Le Dr Brude prodigue d'excellents soins à chaque séance. Ses explications sont claires et il inspire confiance. Son engagement envers le rétablissement du patient est manifeste. Son approche est empreinte de bienveillance et personnalisée.",
         "language": "fr",
-        "relativeTime": "il y a 4 mois",
+        "relativeTime": "il y a 5 mois",
         "publishTime": "2026-03-18T19:26:52.862442188Z"
       }
     ],
@@ -218,16 +218,6 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "publishTime": "2026-07-29T22:10:00.000Z"
       },
       {
-        "author": "Nelida Di Rienzo",
-        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJ9Zy_Ttaczio3vbFaCTKU10xKZ3ZSZrQa3e0fR6qFuw82TkQ=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/102253558605214190307/reviews",
-        "rating": 5,
-        "text": "Atención super recomendable!!! Combina enorme experiencia, formación en la implementación de técnicas diversas, adecuación a cada necesidad,  atención cálida y responsable!!!!",
-        "language": "es",
-        "relativeTime": "há 2 semanas",
-        "publishTime": "2026-07-24T20:30:15.073713903Z"
-      },
-      {
         "author": "Gabriel Rotman",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjU1sZgbUvf5_hu4GC95IP3lszyj_ugBsPntmjHporpoV7pMUC2sNg=s128-c0x00000000-cc-rp-mo-ba12",
         "authorProfile": "https://www.google.com/maps/contrib/111063243092495440410/reviews",
@@ -235,6 +225,16 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "text": "Increíblemente sorprendido para bien, llevo 3 años con un dolor por epicondilitis, en apenas 2 sesiones con el kinesiologo Norberto Brude no tengo dolor, pude volver a entrenar, me despertaba con la mano dormida, no me volvió a suceder! Sinceramente un profesional fuera de serie, y sobre todo supo llevar calma cuando más lo necesitaba.",
         "language": "es",
         "publishTime": "2026-07-24T02:05:02.000Z"
+      },
+      {
+        "author": "Claudia Rothschild",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjV7zjR9a6k2KK0-ciZ60piNXJdtemgzlxd8EAGV2FdBnpfcV7wcWA=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/118351524349714047042/reviews",
+        "rating": 5,
+        "text": "Norberto Brude é excelente. Sofri com diversos problemas na coluna, joelhos e pescoço que me causaram dores constantes por anos. Consultei vários outros profissionais, mas somente com o tratamento dele senti um alívio considerável. Recomendo-o fortemente!",
+        "language": "pt",
+        "relativeTime": "há 3 semanas",
+        "publishTime": "2026-07-21T22:41:19.944949311Z"
       },
       {
         "author": "Susana Mühlmann",
@@ -253,7 +253,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "O Dr. Brude oferece um atendimento excelente em todas as sessões. Ele explica tudo com clareza e inspira muita confiança. Seu comprometimento com a recuperação do paciente é evidente. Sua abordagem é muito gentil e personalizada.",
         "language": "pt",
-        "relativeTime": "há 4 meses",
+        "relativeTime": "há 5 meses",
         "publishTime": "2026-03-18T19:26:52.862442188Z"
       }
     ]
