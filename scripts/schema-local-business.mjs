@@ -511,7 +511,7 @@ export function buildFaqPage(lang) {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     "@id": `${COPY[lang].homeUrl}#faq`,
-    inLanguage: lang === "fr" ? "fr" : lang === "en" ? "en" : "es-AR",
+    inLanguage: HTML_LANG[lang] ?? lang,
     mainEntityOfPage: COPY[lang].homeUrl,
     mainEntity: t.faqs.map((item) => ({
       "@type": "Question",

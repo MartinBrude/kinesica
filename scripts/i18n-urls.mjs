@@ -1,5 +1,5 @@
 /**
- * Canonical URL helpers for /, /en/, /fr/ structure.
+ * Canonical URL helpers for /, /en/, /fr/, /pt/ structure.
  */
 import path from "path";
 import { PATHOLOGY_STEMS } from "./pathology-content.mjs";

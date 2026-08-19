@@ -6,10 +6,15 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { STEMS, absoluteUrl, repoPath } from "./i18n-urls.mjs";
+import { STEMS, absoluteUrl, repoPath, HREFLANG } from "./i18n-urls.mjs";
 import { LANG_CODES } from "./languages.mjs";
+import { PATHOLOGIES } from "./pathology-content.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+
+const PATHOLOGY_UPDATED_AT = new Map(
+  PATHOLOGIES.filter((p) => p.updatedAt).map((p) => [p.stem, p.updatedAt]),
+);
 
 function priority(lang, stem) {
   if (stem === "index") return lang === "es" ? "1.00" : "0.80";
@@ -18,10 +23,23 @@ function priority(lang, stem) {
 }
 
 function lastmod(lang, stem) {
+  const fromContent = PATHOLOGY_UPDATED_AT.get(stem);
+  if (fromContent) return fromContent;
   const rel = repoPath(lang, stem);
   const full = path.join(ROOT, rel);
   const mtime = fs.statSync(full).mtime;
   return mtime.toISOString().slice(0, 10);
+}
+
+function xhtmlLinks(stem) {
+  const alts = LANG_CODES.map(
+    (code) =>
+      `    <xhtml:link rel="alternate" hreflang="${HREFLANG[code]}" href="${absoluteUrl(code, stem)}" />`,
+  );
+  alts.push(
+    `    <xhtml:link rel="alternate" hreflang="x-default" href="${absoluteUrl("es", stem)}" />`,
+  );
+  return alts.join("\n");
 }
 
 /** Stems that must not appear in the public sitemap (error/noindex pages). */
@@ -40,6 +58,7 @@ for (const stem of STEMS) {
       loc: absoluteUrl(lang, stem),
       lastmod: lastmod(lang, stem),
       priority: priority(lang, stem),
+      stem,
     });
   }
 }
@@ -52,12 +71,14 @@ const body = entries
   <loc>${e.loc}</loc>
   <lastmod>${e.lastmod}</lastmod>
   <priority>${e.priority}</priority>
+${xhtmlLinks(e.stem)}
 </url>`,
   )
   .join("\n");
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
 ${body}
 </urlset>
 `;

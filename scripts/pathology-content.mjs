@@ -61,9 +61,6 @@ export const UI = {
     techniquesTitle: "Abordaje en Kinésica",
     techniquesLead:
       "Según la evaluación, integramos distintas técnicas de terapia manual para abordar la causa y no solo el síntoma.",
-    ctaTitle: "Contáctanos y reserva un turno",
-    ctaText: "Antes de la primera sesión hacemos una llamada para aclarar dudas.",
-    ctaButton: "Contacto",
     homeLabel: "Inicio",
     pathologiesBreadcrumb: "Patologías",
     relatedTitle: "Condiciones relacionadas",
@@ -76,9 +73,6 @@ export const UI = {
     techniquesTitle: "Approach at Kinésica",
     techniquesLead:
       "Based on your assessment, we integrate different manual therapy techniques to address the cause—not only the symptom.",
-    ctaTitle: "Contact us and book an appointment",
-    ctaText: "Before the first session we can chat to clarify any questions.",
-    ctaButton: "Contact",
     homeLabel: "Home",
     pathologiesBreadcrumb: "Conditions",
     relatedTitle: "Related conditions",
@@ -91,9 +85,6 @@ export const UI = {
     techniquesTitle: "Approche chez Kinésica",
     techniquesLead:
       "Selon le bilan, nous intégrons différentes techniques de thérapie manuelle pour traiter la cause, pas seulement le symptôme.",
-    ctaTitle: "Contactez-nous et prenez rendez-vous",
-    ctaText: "Avant la première séance, nous pouvons échanger pour répondre à vos questions.",
-    ctaButton: "Contact",
     homeLabel: "Accueil",
     pathologiesBreadcrumb: "Pathologies",
     relatedTitle: "Pathologies associées",
@@ -105,9 +96,6 @@ export const UI = {
     complicationsTitle: "Complicações relacionadas",
     techniquesTitle: "Abordagem na Kinésica",
     techniquesLead: "De acordo com sua avaliação, combinamos técnicas de terapia manual para tratar a causa — não apenas o sintoma.",
-    ctaTitle: "Fale conosco e agende",
-    ctaText: "Antes da primeira sessão podemos ligar para tirar dúvidas.",
-    ctaButton: "Contato",
     homeLabel: "Início",
     pathologiesBreadcrumb: "Condições",
     relatedTitle: "Condições relacionadas",
@@ -1849,12 +1837,13 @@ export const PATHOLOGIES = [
   {
     stem: "epicondilitis-lateral",
     image: "hero-img.jpg",
+    updatedAt: "2026-08-20",
     techniques: ["manipulaciones", "osteopatia", "cadenas"],
     es: {
       title: "Epicondilitis lateral: codo de tenista",
       breadcrumb: "Epicondilitis lateral",
       metaDescription:
-        "Epicondilitis lateral en Kinésica (Buenos Aires). Terapia manual y ejercicio para dolor en codo, mejorar fuerza de antebrazo y volver a usar la mano sin molestias.",
+        "Epicondilitis lateral en Kinésica (Buenos Aires). Terapia manual y ejercicio para dolor de codo, fuerza de antebrazo y uso de la mano.",
       h1: "Epicondilitis lateral",
       lead: "El “codo de tenista” no es solo para deportistas: también aparece por sobreuso en teclado, herramientas o carga repetida del antebrazo.",
       paragraphs: [
@@ -2137,12 +2126,13 @@ export const PATHOLOGIES = [
   {
     stem: "manguito-rotador",
     image: "hero-img.jpg",
+    updatedAt: "2026-08-20",
     techniques: ["osteopatia", "manipulaciones", "cadenas", "rpg"],
     es: {
       title: "Manguito rotador: dolor y fuerza de hombro",
       breadcrumb: "Manguito rotador",
       metaDescription:
-        "Manguito rotador en Kinésica (Buenos Aires). Evaluación, terapia manual y ejercicio para dolor de hombro, fuerza y control escapular en actividades diarias y deporte.",
+        "Manguito rotador en Kinésica (Buenos Aires). Evaluación, terapia manual y ejercicio para dolor de hombro, fuerza y control escapular.",
       h1: "Manguito rotador",
       lead: "El manguito rotador estabiliza el hombro. Cuando se sobrecarga, aparece dolor y pérdida de fuerza, sobre todo al elevar o rotar el brazo.",
       paragraphs: [
@@ -2617,7 +2607,7 @@ export const PATHOLOGIES = [
   {
     stem: "bruxismo",
     image: "hero-img.jpg",
-    updatedAt: "2026-07-14",
+    updatedAt: "2026-08-20",
     techniques: ["atm", "osteopatia", "manipulaciones", "rpg"],
     es: {
       title: "Bruxismo y dolor miofascial de la ATM",
@@ -2669,7 +2659,7 @@ export const PATHOLOGIES = [
       title: "Bruxisme et douleur myofasciale de l’ATM",
       breadcrumb: "Bruxisme",
       metaDescription:
-        "Bruxisme et douleur myofasciale mandibulaire chez Kinésica (Buenos Aires). Bilan des muscles masticateurs, de l’ATM et de la posture pour soulager tension et récidives.",
+        "Bruxisme et douleur myofasciale chez Kinésica (Buenos Aires). Bilan des muscles masticateurs, de l’ATM et de la posture.",
       h1: "Bruxisme et douleur myofasciale",
       lead: "Le bruxisme et la tension des muscles masticateurs sont la cause la plus fréquente de douleur à l’ATM. Une prise en charge globale réduit la surcharge et l’irradiation vers l’oreille, la tempe ou le cou.",
       paragraphs: [
@@ -2716,13 +2706,13 @@ export const PATHOLOGIES = [
   {
     stem: "desplazamiento-disco-atm",
     image: "hero-img.jpg",
-    updatedAt: "2026-07-14",
+    updatedAt: "2026-08-20",
     techniques: ["atm", "osteopatia", "manipulaciones"],
     es: {
       title: "Desplazamiento del disco articular de la ATM",
       breadcrumb: "Desplazamiento del disco ATM",
       metaDescription:
-        "Desplazamiento del disco articular de la ATM en Kinésica (Buenos Aires). Evaluamos chasquidos, bloqueos mandibulares y limitación de apertura con terapia manual especializada.",
+        "Desplazamiento del disco de la ATM en Kinésica (Buenos Aires). Evaluamos chasquidos, bloqueos y limitación de apertura con terapia manual.",
       h1: "Desplazamiento del disco articular",
       lead: "Cuando el disco de la ATM se desplaza de su posición, pueden aparecer chasquidos, bloqueos o dificultad para abrir la boca. Una evaluación precisa orienta el tratamiento.",
       paragraphs: [
@@ -2745,7 +2735,7 @@ export const PATHOLOGIES = [
       title: "TMJ disc displacement",
       breadcrumb: "TMJ disc displacement",
       metaDescription:
-        "TMJ disc displacement at Kinésica (Buenos Aires). We assess clicking, jaw locking and limited opening with specialized manual therapy for the temporomandibular joint.",
+        "TMJ disc displacement at Kinésica (Buenos Aires). We assess clicking, jaw locking and limited opening with specialized manual therapy.",
       h1: "Articular disc displacement",
       lead: "When the TMJ disc shifts out of position, clicking, locking or difficulty opening the mouth may appear. A precise assessment guides treatment.",
       paragraphs: [
@@ -2768,7 +2758,7 @@ export const PATHOLOGIES = [
       title: "Déplacement du disque articulaire de l’ATM",
       breadcrumb: "Déplacement du disque ATM",
       metaDescription:
-        "Déplacement du disque de l’ATM chez Kinésica (Buenos Aires). Bilan des claquements, blocages mandibulaires et limitation d’ouverture avec thérapie manuelle spécialisée.",
+        "Déplacement du disque de l’ATM chez Kinésica (Buenos Aires). Bilan des claquements, blocages et limitation d’ouverture.",
       h1: "Déplacement du disque articulaire",
       lead: "Lorsque le disque de l’ATM se déplace, des claquements, blocages ou difficultés d’ouverture peuvent apparaître. Un bilan précis oriente la prise en charge.",
       paragraphs: [
@@ -2791,7 +2781,7 @@ export const PATHOLOGIES = [
       title: "Deslocamento do disco articular da ATM",
       breadcrumb: "Deslocamento do disco ATM",
       metaDescription:
-        "Deslocamento do disco articular da ATM na Kinésica (Buenos Aires). Avaliamos estalos, travamentos mandibulares e limitação de abertura com terapia manual especializada.",
+        "Deslocamento do disco da ATM na Kinésica (Buenos Aires). Avaliamos estalos, travamentos e limitação de abertura com terapia manual.",
       h1: "Deslocamento do disco articular",
       lead: "Quando o disco da ATM se desloca, podem surgir estalos, travamentos ou dificuldade para abrir a boca. Uma avaliação precisa orienta o tratamento.",
       paragraphs: [
@@ -3013,7 +3003,7 @@ export const PATHOLOGIES = [
   {
     stem: "artrosis-artritis",
     image: "hero-img.jpg",
-    updatedAt: "2026-08-03",
+    updatedAt: "2026-08-20",
     techniques: ["osteopatia", "manipulaciones", "cadenas", "rpg"],
     es: {
       title: "Artrosis y artritis: dolor articular",
@@ -3065,7 +3055,7 @@ export const PATHOLOGIES = [
       title: "Arthrose et arthrite : douleur articulaire",
       breadcrumb: "Arthrose et arthrite",
       metaDescription:
-        "Arthrose et arthrite chez Kinésica (Buenos Aires). Thérapie manuelle et exercice pour réduire la douleur, améliorer la mobilité et soutenir la fonction quotidienne.",
+        "Arthrose et arthrite chez Kinésica (Buenos Aires). Thérapie manuelle et exercice pour réduire la douleur et soutenir la fonction quotidienne.",
       h1: "Arthrose et arthrite",
       lead: "L’usure et l’inflammation articulaire entraînent douleur et raideur. Un plan de mouvement dosé aide à préserver fonction et qualité de vie.",
       paragraphs: [
@@ -3409,13 +3399,13 @@ export const PATHOLOGIES = [
   {
     stem: "coxalgia",
     image: "hero-img.jpg",
-    updatedAt: "2026-08-03",
+    updatedAt: "2026-08-20",
     techniques: ["osteopatia", "manipulaciones", "cadenas", "rpg"],
     es: {
       title: "Coxalgia: dolor de cadera",
       breadcrumb: "Coxalgia",
       metaDescription:
-        "Dolor de cadera (coxalgia) en Kinésica (Buenos Aires). Evaluación de cadera, pelvis y columna. Terapia manual y ejercicio para caminar y moverte con menos dolor.",
+        "Dolor de cadera (coxalgia) en Kinésica (Buenos Aires). Evaluación de cadera, pelvis y columna. Terapia manual y ejercicio para caminar con menos dolor.",
       h1: "Coxalgia",
       lead: "El dolor de cadera puede nacer en la articulación, en tejidos blandos o por compensación de pelvis y lumbar. Un abordaje global mejora función y tolerancia.",
       paragraphs: [
@@ -3461,7 +3451,7 @@ export const PATHOLOGIES = [
       title: "Coxalgie : douleur de hanche",
       breadcrumb: "Coxalgie",
       metaDescription:
-        "Douleur de hanche (coxalgie) chez Kinésica (Buenos Aires). Bilan hanche, bassin et colonne. Thérapie manuelle et exercice pour marcher et bouger avec moins de douleur.",
+        "Douleur de hanche (coxalgie) chez Kinésica (Buenos Aires). Bilan hanche, bassin et colonne. Thérapie manuelle et exercice pour marcher avec moins de douleur.",
       h1: "Coxalgie",
       lead: "La douleur de hanche peut venir de l’articulation, des tissus mous ou d’une compensation du bassin et du lombaires. Une approche globale améliore fonction et tolérance.",
       paragraphs: [
@@ -3508,7 +3498,7 @@ export const PATHOLOGIES = [
   {
     stem: "oclusion-dental",
     image: "hero-img.jpg",
-    updatedAt: "2026-08-03",
+    updatedAt: "2026-08-20",
     techniques: ["atm", "osteopatia", "manipulaciones", "rpg"],
     es: {
       title: "Oclusión dental y trastornos de la ATM",
@@ -3560,7 +3550,7 @@ export const PATHOLOGIES = [
       title: "Occlusion dentaire et troubles de l’ATM",
       breadcrumb: "Occlusion dentaire",
       metaDescription:
-        "Occlusion dentaire et ATM chez Kinésica (Buenos Aires). Bilan de l’occlusion, de la mâchoire et de la posture. Thérapie manuelle pour douleur, tension et fonction mandibulaire.",
+        "Occlusion dentaire et ATM chez Kinésica (Buenos Aires). Bilan de l’occlusion, de la mâchoire et de la posture. Thérapie manuelle pour la douleur et la fonction.",
       h1: "Occlusion dentaire et ATM",
       lead: "Les problèmes d’occlusion peuvent tendre la mâchoire, le cou et la posture. Une approche ATM intégrée restaure confort et fonction.",
       paragraphs: [
@@ -3607,7 +3597,7 @@ export const PATHOLOGIES = [
   {
     stem: "rectificacion",
     image: "hero-img.jpg",
-    updatedAt: "2026-08-03",
+    updatedAt: "2026-08-20",
     techniques: ["rpg", "cadenas", "osteopatia", "manipulaciones"],
     es: {
       title: "Rectificación cervical y lumbar",
@@ -3659,7 +3649,7 @@ export const PATHOLOGIES = [
       title: "Rectification cervicale et lombaire",
       breadcrumb: "Rectification",
       metaDescription:
-        "Rectification cervicale et lombaire chez Kinésica (Buenos Aires). RPG et thérapie manuelle pour retrouver courbures physiologiques, mobilité et confort postural.",
+        "Rectification cervicale et lombaire chez Kinésica (Buenos Aires). RPG et thérapie manuelle pour retrouver courbures, mobilité et confort postural.",
       h1: "Rectification cervicale et lombaire",
       lead: "La perte de lordose cervicale ou lombaire rigidifie la colonne et peut générer de la douleur. La rééducation posturale aide à retrouver mobilité et contrôle.",
       paragraphs: [

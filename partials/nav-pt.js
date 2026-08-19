@@ -7,12 +7,15 @@ window.__KINESICA_NAV_SNIPPET_PT = `
   <li class="has-sub">
     <button type="button" class="nav-parent" title="Métodos e técnicas" aria-haspopup="true" aria-expanded="false">Métodos e técnicas</button>
     <ul>
+      <li><a href="kinesiologia.html" title="Fisioterapia">Fisioterapia</a></li>
       <li><a href="rpg.html" title="RPG">RPG</a></li>
       <li><a href="osteopatia.html" title="Osteopatia">Osteopatia</a></li>
       <li><a href="cadenas.html" title="Cadeias fisiológicas">Cadeias fisiológicas</a></li>
       <li><a href="manipulaciones.html" title="Manipulações viscerais">Manipulações viscerais</a></li>
       <li><a href="neurodinamia.html" title="Neurodinâmica">Neurodinâmica</a></li>
       <li><a href="atm.html" title="ATM">ATM</a></li>
+      <li><a href="acupuntura.html" title="Acupuntura">Acupuntura</a></li>
+      <li><a href="posturologia-clinica.html" title="Posturologia clínica">Posturologia clínica</a></li>
     </ul>
   </li>
 </ul>

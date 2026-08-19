@@ -69,7 +69,45 @@ export function patchPageMeta(html, { title, description, pageTitle } = {}) {
       `<meta name="twitter:description" content="${escHtml(description)}" />`,
     );
   }
-  return out;
+  return ensureTwitterTags(out);
+}
+
+/**
+ * Insert Twitter Card tags when OG exists but twitter:* is missing
+ * (patched pages such as articulos.html).
+ */
+export function ensureTwitterTags(html) {
+  if (/name="twitter:card"/.test(html)) return html;
+  const title = html.match(/property="og:title" content="([^"]*)"/)?.[1];
+  if (!title) return html;
+  const desc =
+    html.match(/property="og:description"[\s\S]*?content="([^"]*)"/)?.[1] ??
+    html.match(/name="description"[\s\S]*?content="([^"]*)"/)?.[1];
+  const image = html.match(/property="og:image" content="([^"]*)"/)?.[1];
+  const lines = [
+    `  <meta name="twitter:card" content="summary_large_image" />`,
+    `  <meta name="twitter:title" content="${title}" />`,
+  ];
+  if (desc) {
+    lines.push(`  <meta name="twitter:description" content="${desc}" />`);
+  }
+  if (image) {
+    lines.push(`  <meta name="twitter:image" content="${image}" />`);
+  }
+  const block = lines.join("\n");
+  if (/property="og:locale"/.test(html)) {
+    return html.replace(
+      /(<meta property="og:locale" content="[^"]*"\s*\/?>)/,
+      `$1\n${block}`,
+    );
+  }
+  if (/property="og:site_name"/.test(html)) {
+    return html.replace(
+      /(<meta property="og:site_name" content="[^"]*"\s*\/?>)/,
+      `$1\n${block}`,
+    );
+  }
+  return html;
 }
 
 /** Schema.org BreadcrumbList from ordered { name, item } entries. */

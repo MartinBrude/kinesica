@@ -10,8 +10,8 @@ Implementar cambios mínimos, reutilizando convenciones del repo.
 
 ## HTML y partials
 
-- ES en raíz; EN en `en/`; FR en `fr/`. Prefijo de assets: `assetPrefixForLang()` (`../` fuera de ES).
-- Header/footer vía partials + `*-include.js`; lang switcher con 3 banderas y rutas de `sitePath()`.
+- ES en raíz; EN en `en/`; FR en `fr/`; PT en `pt/`. Prefijo de assets: `assetPrefixForLang()` (`../` fuera de ES).
+- Header/footer vía partials + `*-include.js`; lang switcher con 4 opciones y rutas de `sitePath()`.
 - Scripts de sitio con `defer`; includes de partials minificados (`.min.js`) en producción.
 - `data-footer-lang` debe coincidir con el idioma de la página.
 
@@ -30,7 +30,7 @@ Implementar cambios mínimos, reutilizando convenciones del repo.
 ## Ejemplo DRY — nueva patología
 
 ```javascript
-// ❌ Crear cefalea.html, en/cefalea.html, fr/cefalea.html a mano
+// ❌ Crear cefalea.html, en/cefalea.html, fr/cefalea.html, pt/cefalea.html a mano
 // ✅ Añadir entrada en pathology-content.mjs + stem en PATHOLOGY_STEMS
 //    npm run build:pathologies
 ```

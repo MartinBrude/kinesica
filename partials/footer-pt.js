@@ -7,14 +7,15 @@ window.__KINESICA_FOOTER_SNIPPET_PT = `
         <div class="footer-widget">
           <h2 class="widget-title">Métodos e técnicas</h2>
           <ul class="listnone">
+            <li><a href="/pt/kinesiologia.html">Fisioterapia</a></li>
             <li><a href="/pt/rpg.html">RPG</a></li>
             <li><a href="/pt/osteopatia.html">Osteopatia</a></li>
             <li><a href="/pt/cadenas.html">Cadeias fisiológicas</a></li>
-            <li>
-              <a href="/pt/manipulaciones.html">Manipulações viscerais</a>
-            </li>
+            <li><a href="/pt/manipulaciones.html">Manipulações viscerais</a></li>
             <li><a href="/pt/neurodinamia.html">Neurodinâmica</a></li>
             <li><a href="/pt/atm.html">ATM</a></li>
+            <li><a href="/pt/acupuntura.html">Acupuntura</a></li>
+            <li><a href="/pt/posturologia-clinica.html">Posturologia clínica</a></li>
           </ul>
         </div>
       </div>

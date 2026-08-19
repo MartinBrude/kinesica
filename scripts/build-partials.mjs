@@ -12,6 +12,7 @@ import {
   PARTIAL_STRINGS,
   TECHNIQUE_NAV_STEMS,
 } from "./partials-strings.mjs";
+import { METHODS } from "./methods-content.mjs";
 import { escAttr, escHtml } from "./html-utils.mjs";
 import { CONTACT, SOCIALS, waMeUrl } from "./site-contact.mjs";
 
@@ -73,10 +74,18 @@ function buildHeader(lang, s) {
   );
 }
 
+function techniqueNavLabel(lang, stem) {
+  const name = METHODS[stem]?.[lang]?.breadcrumb;
+  if (!name) {
+    throw new Error(`Missing method breadcrumb for ${stem}/${lang}`);
+  }
+  return name;
+}
+
 function buildNav(lang, s) {
   const techniqueItems = TECHNIQUE_NAV_STEMS.map((stem) => {
-    const t = s.techniques[stem];
-    return `      <li><a href="${stem}.html" title="${escAttr(t.title)}">${escHtml(t.label)}</a></li>`;
+    const label = techniqueNavLabel(lang, stem);
+    return `      <li><a href="${stem}.html" title="${escAttr(label)}">${escHtml(label)}</a></li>`;
   }).join("\n");
 
   return writePartial(
@@ -100,14 +109,9 @@ ${techniqueItems}
 function buildFooter(lang, s) {
   const prefix = footerPrefix(lang);
   const techniqueLinks = TECHNIQUE_NAV_STEMS.map((stem) => {
-    const t = s.techniques[stem];
+    const label = techniqueNavLabel(lang, stem);
     const href = `${prefix}/${stem}.html`;
-    if (stem === "manipulaciones") {
-      return `            <li>
-              <a href="${href}">${t.label}</a>
-            </li>`;
-    }
-    return `            <li><a href="${href}">${t.label}</a></li>`;
+    return `            <li><a href="${href}">${escHtml(label)}</a></li>`;
   }).join("\n");
 
   return writePartial(

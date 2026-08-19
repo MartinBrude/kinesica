@@ -38,6 +38,12 @@ const METHOD_SECTION_TITLES = {
   pt: "Métodos e técnicas",
 };
 
+const PATHOLOGY_SECTION_TITLES = {
+  en: "Conditions (English)",
+  fr: "Pathologies (français)",
+  pt: "Patologias (português)",
+};
+
 function metaDescription(lang, stem) {
   const rel = repoPath(lang, stem);
   const full = path.join(ROOT, rel);
@@ -194,9 +200,6 @@ const ptMainLines = [
 const optionalLines = [
   `- [Documentación extendida](${SITE}/llms-full.txt): resúmenes con párrafos clave de métodos y patologías (es/en/fr/pt).`,
   `- [Sitemap](${SITE}/sitemap.xml): all public HTML URLs (es/en/fr/pt).`,
-  ...pathologyLines("en"),
-  ...pathologyLines("fr"),
-  ...pathologyLines("pt"),
 ];
 
 function buildLlmsTxt() {
@@ -212,10 +215,13 @@ ${section("Métodos y técnicas", techniqueLines("es"))}
 ${section("Patologías y dolencias", pathologyLines("es"))}
 ${section("English", enMainLines)}
 ${section(METHOD_SECTION_TITLES.en, techniqueLines("en"))}
+${section(PATHOLOGY_SECTION_TITLES.en, pathologyLines("en"))}
 ${section("Français", frMainLines)}
 ${section(METHOD_SECTION_TITLES.fr, techniqueLines("fr"))}
+${section(PATHOLOGY_SECTION_TITLES.fr, pathologyLines("fr"))}
 ${section("Português", ptMainLines)}
 ${section(METHOD_SECTION_TITLES.pt, techniqueLines("pt"))}
+${section(PATHOLOGY_SECTION_TITLES.pt, pathologyLines("pt"))}
 ${section("Optional", optionalLines)}
 `.trimEnd() + "\n";
 }

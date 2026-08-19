@@ -3,7 +3,7 @@
  */
 import path from "path";
 import { fileURLToPath } from "url";
-import { absoluteUrl, HTML_LANG } from "./i18n-urls.mjs";
+import { SITE, absoluteUrl, HTML_LANG } from "./i18n-urls.mjs";
 import { faviconCacheQuery } from "./favicon-version.mjs";
 import { OG_LOCALE, ogLocaleFor, partialLang } from "./languages.mjs";
 import { escHtml, hreflangLinks } from "./html-utils.mjs";
@@ -18,14 +18,13 @@ export const ROBOTO_STYLESHEET = "css/roboto.min.css";
 /** Open Graph / Twitter share image (1200×630). Generated from hero-img.jpg. */
 export const OG_IMAGE_WIDTH = 1200;
 export const OG_IMAGE_HEIGHT = 630;
-export const SITE_OG_IMAGE =
-  "https://www.kinesica.com.ar/images/og-image.jpg";
+export const SITE_OG_IMAGE = `${SITE}/images/og-image.jpg`;
 
 /** Map legacy hero art to the correct social preview asset. */
 export function socialImageUrl(filename) {
   const file =
     !filename || filename === "hero-img.jpg" ? "og-image.jpg" : filename;
-  return `https://www.kinesica.com.ar/images/${file}`;
+  return `${SITE}/images/${file}`;
 }
 
 export function socialImageDimensions(imageUrl) {
@@ -183,8 +182,10 @@ export function headSeoBlock({
   title,
   description,
   ogDescription,
+  twitterDescription,
   type = "website",
   image,
+  imageAlt,
   imageWidth,
   imageHeight,
   canonical,
@@ -192,6 +193,8 @@ export function headSeoBlock({
   const url = canonical ?? absoluteUrl(lang, stem);
   const locale = OG_LOCALE[lang] ?? ogLocaleFor(lang);
   const ogDesc = ogDescription ?? description;
+  const twDesc = twitterDescription ?? ogDesc;
+  const twAlt = imageAlt ?? title;
   const lines = [
     `  <meta name="description" content="${escHtml(description)}" />`,
     `  <title>${escHtml(title)}</title>`,
@@ -202,6 +205,9 @@ export function headSeoBlock({
   ];
   if (image) {
     lines.push(`  <meta property="og:image" content="${image}" />`);
+    if (twAlt) {
+      lines.push(`  <meta property="og:image:alt" content="${escHtml(twAlt)}" />`);
+    }
     const dims =
       imageWidth && imageHeight
         ? { width: imageWidth, height: imageHeight }
@@ -218,6 +224,12 @@ export function headSeoBlock({
     `  <meta property="og:type" content="${type}" />`,
     `  <meta property="og:site_name" content="Kinésica" />`,
     `  <meta property="og:locale" content="${locale}" />`,
+    headTwitterBlock({
+      title,
+      description: twDesc,
+      image,
+      imageAlt: twAlt,
+    }),
   );
   return lines.join("\n");
 }

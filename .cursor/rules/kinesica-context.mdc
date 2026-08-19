@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Kinésica — Contexto del proyecto
 
-Sitio estático multilingüe (ES raíz, EN `/en/`, FR `/fr/`) para un centro de kinesiología en Palermo. Simple, rápido y orientado a conversión (WhatsApp, turnos).
+Sitio estático multilingüe (ES raíz, EN `/en/`, FR `/fr/`, PT `/pt/`) para un centro de kinesiología en Palermo. Simple, rápido y orientado a conversión (WhatsApp, turnos).
 
 ## Stack
 
@@ -19,7 +19,7 @@ Sitio estático multilingüe (ES raíz, EN `/en/`, FR `/fr/`) para un centro de 
 2. **DRY**: contenido y shell en módulos; generar páginas, no copiar HTML entre idiomas.
 3. **SEO y performance**: canonical, hreflang, schema, critical CSS, scripts `defer`, assets minificados.
 4. **i18n consistente**: `HTML_LANG`, `HREFLANG` y `SCHEMA_LANGUAGE` alineados en `i18n-urls.mjs`.
-5. **Tres idiomas siempre**: toda página pública existe en ES, EN y FR.
+5. **Cuatro idiomas siempre**: toda página pública existe en ES, EN, FR y PT.
 
 ## Roles del agente
 

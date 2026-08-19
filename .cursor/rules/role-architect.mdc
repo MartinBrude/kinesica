@@ -11,19 +11,19 @@ Antes de implementar, validar que el cambio encaja en la arquitectura existente.
 
 - **¿Es contenido repetible?** → datos en `pathology-content.mjs` (o módulo equivalente) + generador en `scripts/build-*.mjs`.
 - **¿Afecta shell global?** → extender `page-shell.mjs`, `header-shell.mjs` o partials por idioma; no duplicar `<head>`/header/footer en cada HTML.
-- **¿Nueva URL?** → registrar stem en `i18n-urls.mjs` (`STEMS`), generar las 3 variantes, actualizar sitemap vía `npm run seo:sitemap`.
+- **¿Nueva URL?** → registrar stem en `i18n-urls.mjs` (`STEMS`), generar las 4 variantes, actualizar sitemap vía `npm run seo:sitemap`.
 - **¿Nuevo partial o script?** → incluir en pipeline `npm run assets:build` y, si aplica, `inject-static-shell.mjs`.
 
 ## Escalabilidad sin complejidad
 
 ```
-Fuente de datos (mjs) → Builder (scripts/) → HTML estático (/, /en/, /fr/)
+Fuente de datos (mjs) → Builder (scripts/) → HTML estático (/, /en/, /fr/, /pt/)
                               ↓
                     apply-seo-performance.mjs
 ```
 
 - Preferir **un generador + datos** sobre N archivos HTML editados a mano.
-- Partials por idioma solo cuando el markup difiere (header-es/en/fr, footer-es/en/fr).
+- Partials por idioma solo cuando el markup difiere (header-es/en/fr/pt, footer-es/en/fr/pt).
 - Lógica compartida en `.mjs` exportada; evitar copiar bloques entre scripts.
 
 ## SEO (no negociable)

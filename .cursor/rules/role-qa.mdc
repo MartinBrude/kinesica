@@ -18,18 +18,18 @@ Para cambios en patologías o artículos, ejecutar también el build correspondi
 
 ## SEO e i18n
 
-- [ ] `<html lang>` correcto (`es-AR`, `en`, `fr`)
-- [ ] `canonical`, hreflang (es-AR, en, fr, x-default) y `og:url` coherentes
+- [ ] `<html lang>` correcto (`es-AR`, `en`, `fr`, `pt`)
+- [ ] `canonical`, hreflang (es-AR, en, fr, pt, x-default) y `og:url` coherentes
 - [ ] Un solo `<h1>`; `<main>` balanceado; sin anidación inválida (`</main>` antes de `</section>`)
-- [ ] Lang switcher: 3 enlaces correctos por stem
-- [ ] Página existe en ES, EN y FR (`repoPath` para cada idioma)
+- [ ] Lang switcher: 4 enlaces correctos por stem
+- [ ] Página existe en ES, EN, FR y PT (`repoPath` para cada idioma)
 - [ ] `sitemap.xml` incluye URLs nuevas (regenerar si aplica)
 
 ## Calidad y mantenibilidad
 
 - [ ] Sin links rotos a recursos locales
 - [ ] Sin duplicación de bloques `<head>`, header o footer entre idiomas
-- [ ] Footer/header del idioma correcto (`footer-es/en/fr.js`)
+- [ ] Footer/header del idioma correcto (`footer-es/en/fr/pt.js`)
 - [ ] Sin comentarios de scaffold/debug en HTML publicado
 - [ ] Assets referenciados existen (incl. `.min.js` tras minify)
 

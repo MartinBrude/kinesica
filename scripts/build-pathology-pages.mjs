@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Generate pathology detail pages (ES / EN / FR) from pathology-content.mjs.
+ * Generate pathology detail pages (ES / EN / FR / PT) from pathology-content.mjs.
  * Run: node scripts/build-pathology-pages.mjs
  */
 import fs from "fs";
@@ -156,12 +156,17 @@ function buildHtml(pathology, lang) {
 
   const articleSchema = {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": "MedicalWebPage",
     headline: data.h1,
+    name: data.h1,
     description: data.metaDescription,
     image: imgUrl,
     url: canonical,
     mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
+    about: {
+      "@type": "MedicalCondition",
+      name: data.h1,
+    },
     inLanguage: SCHEMA_LANGUAGE[lang],
     author: { "@type": "Person", name: FOUNDER.name },
     publisher: {
@@ -193,6 +198,7 @@ ${headLangDeferScripts(p)}${headSeoBlock({
     description: data.metaDescription,
     type: "article",
     image: imgUrl,
+    imageAlt: data.title,
     canonical,
   })}
 ${headStandardStylesheets(p)}  <script src="${p}partials/gtm-head.min.js" defer></script>

@@ -1,6 +1,6 @@
 # Kinésica — Cursor Rules
 
-Sitio estático multilingüe (ES / EN / FR). Reglas detalladas en `.cursor/rules/`.
+Sitio estático multilingüe (ES / EN / FR / PT). Reglas detalladas en `.cursor/rules/`.
 
 ## Roles
 
@@ -15,7 +15,7 @@ Actúa según la tarea con uno o más roles:
 - Simple y funcional: no sobre-ingeniería ni frameworks innecesarios
 - DRY: datos en `scripts/*.mjs`, páginas generadas, shell compartido (`page-shell.mjs`, partials)
 - SEO: canonical, hreflang, schema, performance (critical CSS, defer, minify)
-- i18n: toda página pública en los 3 idiomas; URLs vía `i18n-urls.mjs`
+- i18n: toda página pública en los 4 idiomas; URLs vía `i18n-urls.mjs`
 
 ## Fuentes de verdad
 
@@ -24,7 +24,7 @@ Actúa según la tarea con uno o más roles:
 | `i18n-urls.mjs` | URLs, stems, paths por idioma |
 | `page-shell.mjs` | `<head>`, CSS, scripts de shell |
 | `header-shell.mjs` | Header y nav compartidos |
-| `pathology-content.mjs` | Copy de patologías ES/EN/FR |
+| `pathology-content.mjs` | Copy de patologías ES/EN/FR/PT |
 | `methods-content.mjs` | Copy de métodos (RPG, osteopatía, …) — ver docs/articles-and-methods.md |
 | `site-contact.mjs` | Teléfono, email, dirección, horarios schema, founder, redes — ver [docs/data-sources.md](docs/data-sources.md) |
 | `google-place.mjs` | Google Place ID, Maps, URLs de reseñas |

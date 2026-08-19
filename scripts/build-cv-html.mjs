@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Generate cv.html, en/cv.html, fr/cv.html from scripts/cv-content.mjs
+ * Generate cv.html, en/cv.html, fr/cv.html, pt/cv.html from scripts/cv-content.mjs
  * Run: node scripts/build-cv-html.mjs
  */
 import fs from "fs";
@@ -166,6 +166,7 @@ ${headLangDeferScripts(prefix)}${headSeoBlock({
     description: data.description,
     type: "profile",
     image: profileImageJpg,
+    imageAlt: data.title,
     canonical,
   })}
 ${headStandardStylesheets(prefix)}${syncCssLink(asset(prefix, "css/cv.css"))}  <script src="${asset(prefix, "partials/gtm-head.js")}" defer></script>

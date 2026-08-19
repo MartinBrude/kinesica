@@ -5,19 +5,14 @@
  * Schedule hours come from site-contact.mjs (OPENING_HOURS) — do not hardcode times here.
  */
 import { scheduleHeaderHtml } from "./site-contact.mjs";
+import { METHOD_STEMS } from "./methods-content.mjs";
 
 /** Bootstrap column for footer social block (same width in all locales). */
 export const FOOTER_SOCIAL_COL_CLASS =
   "col-lg-3 col-md-4 col-sm-4 col-xs-12";
 
-export const TECHNIQUE_NAV_STEMS = [
-  "rpg",
-  "osteopatia",
-  "cadenas",
-  "manipulaciones",
-  "neurodinamia",
-  "atm",
-];
+/** Nav + footer method links — same order as published method pages. */
+export const TECHNIQUE_NAV_STEMS = METHOD_STEMS;
 
 export const PARTIAL_STRINGS = {
   es: {
@@ -30,17 +25,6 @@ export const PARTIAL_STRINGS = {
     navComment: "Spanish header nav — relative links from site root.",
     articles: { label: "Artículos", title: "Artículos" },
     methodsMenu: { label: "Métodos y Técnicas", title: "Métodos y Técnicas" },
-    techniques: {
-      rpg: { label: "RPG", title: "RPG" },
-      osteopatia: { label: "Osteopatía", title: "Osteopatía" },
-      cadenas: { label: "Cadenas Fisiológicas", title: "Cadenas Fisiológicas" },
-      manipulaciones: {
-        label: "Manipulaciones viscerales",
-        title: "Manipulaciones viscerales",
-      },
-      neurodinamia: { label: "Neurodinamia", title: "Neurodinamia" },
-      atm: { label: "ATM", title: "ATM" },
-    },
     footerComment:
       "Spanish footer — root-absolute links (/rpg.html). file:// adjusted in footer-include.js.",
     methodsTitle: "Métodos y Técnicas",
@@ -65,20 +49,6 @@ export const PARTIAL_STRINGS = {
     navComment: "English header nav — relative links from en/ directory.",
     articles: { label: "Articles", title: "Articles" },
     methodsMenu: { label: "Methods & Techniques", title: "Methods & Techniques" },
-    techniques: {
-      rpg: { label: "RPG", title: "RPG" },
-      osteopatia: { label: "Osteopathy", title: "Osteopathy" },
-      cadenas: {
-        label: "Physiological Chains",
-        title: "Physiological Chains",
-      },
-      manipulaciones: {
-        label: "Visceral Manipulations",
-        title: "Visceral Manipulations",
-      },
-      neurodinamia: { label: "Neurodynamics", title: "Neurodynamics" },
-      atm: { label: "ATM (TMJ)", title: "ATM (TMJ)" },
-    },
     footerComment:
       "English footer — /en/… links. file:// adjusted in footer-include.js.",
     methodsTitle: "Methods & Techniques",
@@ -103,20 +73,6 @@ export const PARTIAL_STRINGS = {
     navComment: "French header nav — relative links from fr/ directory.",
     articles: { label: "Articles", title: "Articles" },
     methodsMenu: { label: "Méthodes et techniques", title: "Méthodes et techniques" },
-    techniques: {
-      rpg: { label: "RPG", title: "RPG" },
-      osteopatia: { label: "Ostéopathie", title: "Ostéopathie" },
-      cadenas: {
-        label: "Chaînes physiologiques",
-        title: "Chaînes physiologiques",
-      },
-      manipulaciones: {
-        label: "Manipulations viscérales",
-        title: "Manipulations viscérales",
-      },
-      neurodinamia: { label: "Neurodynamique", title: "Neurodynamique" },
-      atm: { label: "ATM", title: "ATM" },
-    },
     footerComment:
       "French footer — /fr/… links. file:// adjusted in footer-include.js.",
     methodsTitle: "Méthodes et techniques",
@@ -141,20 +97,6 @@ export const PARTIAL_STRINGS = {
     navComment: "Portuguese header nav — relative links from pt/ directory.",
     articles: { label: "Artigos", title: "Artigos" },
     methodsMenu: { label: "Métodos e técnicas", title: "Métodos e técnicas" },
-    techniques: {
-      rpg: { label: "RPG", title: "RPG" },
-      osteopatia: { label: "Osteopatia", title: "Osteopatia" },
-      cadenas: {
-        label: "Cadeias fisiológicas",
-        title: "Cadeias fisiológicas",
-      },
-      manipulaciones: {
-        label: "Manipulações viscerais",
-        title: "Manipulações viscerais",
-      },
-      neurodinamia: { label: "Neurodinâmica", title: "Neurodinâmica" },
-      atm: { label: "ATM", title: "ATM" },
-    },
     footerComment: "Portuguese footer — /pt/… links.",
     methodsTitle: "Métodos e técnicas",
     socialTitle: "Redes sociais",

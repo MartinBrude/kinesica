@@ -25,7 +25,6 @@ import {
   headSeoBlock,
   headStandardStylesheets,
   headHeroImagePreload,
-  headTwitterBlock,
 } from "./page-shell.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -66,12 +65,8 @@ ${headLangDeferScripts(p)}${headSeoBlock({
     title: copy.title,
     description: copy.description,
     ogDescription: copy.ogDescription,
+    twitterDescription: copy.twitterDescription,
     type: "website",
-    image: HOME_HERO_IMAGE,
-  })}
-${headTwitterBlock({
-    title: copy.title,
-    description: copy.twitterDescription,
     image: HOME_HERO_IMAGE,
     imageAlt: copy.twitterImageAlt,
   })}

@@ -119,6 +119,7 @@ ${headLangDeferScripts(p)}${headSeoBlock({
     description: data.metaDescription,
     type: "website",
     image: imgUrl,
+    imageAlt: data.metaTitle,
     canonical,
   })}
 ${headStandardStylesheets(p)}  <script src="${p}partials/gtm-head.min.js" defer></script>

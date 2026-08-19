@@ -181,7 +181,7 @@
     "@context": "https://schema.org",
     "@type": "FAQPage",
     "@id": "https://www.kinesica.com.ar/pt/#faq",
-    "inLanguage": "es-AR",
+    "inLanguage": "pt",
     "mainEntityOfPage": "https://www.kinesica.com.ar/pt/",
     "mainEntity": [
       {
