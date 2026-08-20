@@ -8,9 +8,9 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { SITE, repoPath } from "./i18n-urls.mjs";
+import { SITE, repoPath, sitePath } from "./i18n-urls.mjs";
 import { LANG_CODES, SUBDIR_PREFIXES } from "./languages.mjs";
-import { HOME } from "./home-content.mjs";
+import { HOME, HOME_METHOD_CARD_STEMS } from "./home-content.mjs";
 import { ARTICLES_INDEX_UI } from "./articles-index-content.mjs";
 import { FAQ_UI, FAQS, faqsForSchema } from "./faq-content.mjs";
 import { METHOD_STEMS } from "./methods-content.mjs";
@@ -109,12 +109,22 @@ function auditHomeFaqSource() {
       "FAQ accordion markup must live in faq-content.mjs (use __FAQ_ACCORDION__)",
     );
   }
+  if (!src.includes("renderHomeMethodCards") || !src.includes("sitePath")) {
+    add(
+      "error",
+      rel,
+      "method cards must be rendered via renderHomeMethodCards() + sitePath()",
+    );
+  }
+  if (/href=\\"rpg\.html\\"/.test(src)) {
+    add("error", rel, "hardcoded rpg.html — use sitePath(lang, stem) in renderHomeMethodCards()");
+  }
   for (const prefix of SUBDIR_PREFIXES) {
     if (src.includes(`href="/${prefix}/`) || src.includes(`href=\\"/${prefix}/`)) {
       add(
         "error",
         rel,
-        `lang-prefixed href "/${prefix}/…" — use relative stem.html (page lives in that lang dir)`,
+        `lang-prefixed href "/${prefix}/…" hardcoded — call sitePath(lang, stem)`,
       );
     }
   }
@@ -191,14 +201,15 @@ function auditGeneratedHomes() {
         );
       }
     }
-    if (lang === "es") continue;
-    const needle = `href="/${lang}/`;
-    if (html.includes(needle)) {
-      add(
-        "error",
-        rel,
-        `internal href "/${lang}/…" — use relative stem.html in this language directory`,
-      );
+    for (const stem of HOME_METHOD_CARD_STEMS) {
+      const href = sitePath(lang, stem);
+      if (!html.includes(`href="${href}"`)) {
+        add(
+          "error",
+          rel,
+          `method card missing sitePath href ${href}`,
+        );
+      }
     }
   }
 }

@@ -23,6 +23,7 @@ Va incluido en `npm run verify` (CI en cada push/PR a `main`).
 | Métodos | `methods-content.mjs` (`TECHNIQUE_NAV_STEMS = METHOD_STEMS`) |
 | Índice articulos | `articles-index-content.mjs` + `build-articulos-pages.mjs` (page-shell, no parche HTML) |
 | Home accordion FAQ | placeholder `__FAQ_ACCORDION__` en `home-content.mjs` |
-| Hrefs en homes EN/FR/PT | relativos (`rpg.html`), no `/en/…` |
+| Hrefs de cards de métodos en home | `sitePath(lang, stem)` vía `renderHomeMethodCards()` |
+| Hrefs FAQ / CV en home | relativos (`stem.html`) |
 
 Si `seo:dry` falla, corregir la fuente y regenerar; no parchear el HTML publicado.
