@@ -75,6 +75,28 @@ export function readExistingPayload() {
   }
 }
 
+/** Schema.org AggregateRating from the last Places fetch, or null if missing. */
+export function googleReviewsAggregateRating() {
+  const payload = readExistingPayload();
+  const ratingValue = Number(payload.rating);
+  const ratingCount = Number(payload.userRatingCount);
+  if (
+    !Number.isFinite(ratingValue) ||
+    ratingValue <= 0 ||
+    !Number.isFinite(ratingCount) ||
+    ratingCount < 1
+  ) {
+    return null;
+  }
+  return {
+    "@type": "AggregateRating",
+    ratingValue,
+    bestRating: 5,
+    worstRating: 1,
+    ratingCount,
+  };
+}
+
 /** Stable fingerprint of what the home shows (ignore fetchedAt + relativeTime drift). */
 export function reviewsContentKey(payload) {
   const byLang = {};

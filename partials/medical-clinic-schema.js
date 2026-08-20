@@ -342,7 +342,14 @@
       "https://www.instagram.com/kinesicabrude/",
       "https://www.instagram.com/kinesio_mariagulin/",
       "https://maps.app.goo.gl/urpkh4HYe7dSdjPS9"
-    ]
+    ],
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": 5,
+      "bestRating": 5,
+      "worstRating": 1,
+      "ratingCount": 30
+    }
   },
   "en": {
     "@context": "https://schema.org",
@@ -680,7 +687,14 @@
       "https://www.instagram.com/kinesicabrude/",
       "https://www.instagram.com/kinesio_mariagulin/",
       "https://maps.app.goo.gl/urpkh4HYe7dSdjPS9"
-    ]
+    ],
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": 5,
+      "bestRating": 5,
+      "worstRating": 1,
+      "ratingCount": 30
+    }
   },
   "fr": {
     "@context": "https://schema.org",
@@ -1018,7 +1032,14 @@
       "https://www.instagram.com/kinesicabrude/",
       "https://www.instagram.com/kinesio_mariagulin/",
       "https://maps.app.goo.gl/urpkh4HYe7dSdjPS9"
-    ]
+    ],
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": 5,
+      "bestRating": 5,
+      "worstRating": 1,
+      "ratingCount": 30
+    }
   },
   "pt": {
     "@context": "https://schema.org",
@@ -1352,7 +1373,14 @@
       "https://www.instagram.com/kinesicabrude/",
       "https://www.instagram.com/kinesio_mariagulin/",
       "https://maps.app.goo.gl/urpkh4HYe7dSdjPS9"
-    ]
+    ],
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": 5,
+      "bestRating": 5,
+      "worstRating": 1,
+      "ratingCount": 30
+    }
   }
 };
   var schema = schemas[lang] || schemas.es;

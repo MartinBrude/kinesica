@@ -35,9 +35,13 @@ for (const stem of PATHOLOGY_STEMS) {
     }
     for (const targetLang of LANG_CODES) {
       const expected = absoluteUrl(targetLang, stem);
-      if (!html.includes(`href="${expected}"`)) {
-        errors.push(`${file}: missing hreflang ${expected}`);
-      }
+    if (!html.includes(`href="${expected}"`)) {
+      errors.push(`${file}: missing hreflang ${expected}`);
+    }
+    const authorUrl = absoluteUrl(targetLang, "cv");
+    if (targetLang === lang && !html.includes(`"url": "${authorUrl}"`)) {
+      errors.push(`${file}: MedicalWebPage author missing url ${authorUrl}`);
+    }
     }
   }
 }

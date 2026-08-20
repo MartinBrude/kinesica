@@ -8,6 +8,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import {
   PATHOLOGIES,
+  PATHOLOGY_DEFAULT_PUBLISHED_AT,
   PATHOLOGY_DEFAULT_UPDATED_AT,
   PATHOLOGY_RELATED,
   PATHOLOGY_STEMS,
@@ -168,7 +169,11 @@ function buildHtml(pathology, lang) {
       name: data.h1,
     },
     inLanguage: SCHEMA_LANGUAGE[lang],
-    author: { "@type": "Person", name: FOUNDER.name },
+    author: {
+      "@type": "Person",
+      name: FOUNDER.name,
+      url: absoluteUrl(lang, "cv"),
+    },
     publisher: {
       "@type": "Organization",
       name: "Kinésica",
@@ -177,8 +182,11 @@ function buildHtml(pathology, lang) {
         url: `${SITE}/images/logo.svg`,
       },
     },
-    datePublished: "2024-06-01",
-    dateModified: pathology.updatedAt ?? PATHOLOGY_DEFAULT_UPDATED_AT,
+    datePublished: pathology.publishedAt ?? PATHOLOGY_DEFAULT_PUBLISHED_AT,
+    dateModified:
+      pathology.updatedAt ??
+      pathology.publishedAt ??
+      PATHOLOGY_DEFAULT_UPDATED_AT,
   };
 
   return `<!doctype html>

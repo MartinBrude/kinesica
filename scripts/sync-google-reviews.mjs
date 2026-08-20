@@ -4,7 +4,10 @@
  *
  *   npm run reviews:sync
  */
-import { syncGoogleReviews } from "./fetch-google-reviews.mjs";
+import {
+  readExistingPayload,
+  syncGoogleReviews,
+} from "./fetch-google-reviews.mjs";
 import { bumpReviewsCache } from "./bump-reviews-cache.mjs";
 import { spawnSync } from "child_process";
 import path from "path";
@@ -12,9 +15,8 @@ import { fileURLToPath } from "url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-function rebuildReviewsAssets() {
-  const script = path.join(ROOT, "scripts/rebuild-reviews-assets.mjs");
-  const result = spawnSync(process.execPath, [script], {
+function runNode(rel) {
+  const result = spawnSync(process.execPath, [path.join(ROOT, rel)], {
     cwd: ROOT,
     stdio: "inherit",
   });
@@ -24,16 +26,25 @@ function rebuildReviewsAssets() {
 }
 
 async function main() {
-  const { changed } = await syncGoogleReviews({ ifChanged: true });
+  const existing = readExistingPayload();
+  const { changed, payload } = await syncGoogleReviews({ ifChanged: true });
   if (!changed) {
     console.log("reviews:sync — nada que publicar en el index.");
     return;
   }
   console.log("Rebuilding js/reviews.min.js…");
-  rebuildReviewsAssets();
+  runNode("scripts/rebuild-reviews-assets.mjs");
   const { version, updated } = bumpReviewsCache();
   if (updated.length) {
     console.log(`Cache-bust reviews.min.js ?v=${version} → ${updated.join(", ")}`);
+  }
+  const ratingChanged =
+    existing.rating !== payload?.rating ||
+    existing.userRatingCount !== payload?.userRatingCount;
+  if (ratingChanged) {
+    console.log("Rating/count changed — refreshing local business schema…");
+    runNode("scripts/inject-local-schema.mjs");
+    runNode("scripts/build-schema-partials.mjs");
   }
   console.log("reviews:sync — listo.");
 }

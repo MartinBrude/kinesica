@@ -2,9 +2,12 @@
  * Kinésica — Pathology landing/page copy (ES/EN/FR/PT).
  * - Keep paragraph counts exact (5).
  * - Keep complications list length 4–6.
- * - Bump `updatedAt` on a stem when its copy changes (Article schema dateModified).
+ * - `datePublished` is the original publish date (`publishedAt` or this default).
+ * - Bump `updatedAt` on a stem when its copy changes (schema dateModified).
+ *   Do not bump dates without a copy change.
  */
-export const PATHOLOGY_DEFAULT_UPDATED_AT = "2024-06-01";
+export const PATHOLOGY_DEFAULT_PUBLISHED_AT = "2024-06-01";
+export const PATHOLOGY_DEFAULT_UPDATED_AT = PATHOLOGY_DEFAULT_PUBLISHED_AT;
 export const PATHOLOGY_STEMS = [
   "cefalea",
   "dorsalgia",

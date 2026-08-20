@@ -13,6 +13,7 @@ import { LANG_CODES, SUBDIR_PREFIXES } from "./languages.mjs";
 import { HOME, HOME_METHOD_CARD_STEMS } from "./home-content.mjs";
 import { ARTICLES_INDEX_UI } from "./articles-index-content.mjs";
 import { FAQ_UI, FAQS, faqsForSchema } from "./faq-content.mjs";
+import { googleReviewsAggregateRating } from "./fetch-google-reviews.mjs";
 import { METHOD_STEMS } from "./methods-content.mjs";
 import { TECHNIQUE_NAV_STEMS } from "./partials-strings.mjs";
 
@@ -136,6 +137,13 @@ function auditFaqSchemaSource() {
   if (!src.includes("faqsForSchema")) {
     add("error", rel, "FAQ JSON-LD must import faqsForSchema from faq-content.mjs");
   }
+  if (!src.includes("googleReviewsAggregateRating")) {
+    add(
+      "error",
+      rel,
+      "clinic schema must import googleReviewsAggregateRating from fetch-google-reviews.mjs",
+    );
+  }
   if (/\bfaqs:\s*\[/.test(src)) {
     add("error", rel, "COPY.faqs duplicates faq-content.mjs — remove and use faqsForSchema()");
   }
@@ -210,6 +218,9 @@ function auditGeneratedHomes() {
           `method card missing sitePath href ${href}`,
         );
       }
+    }
+    if (googleReviewsAggregateRating() && !html.includes('"AggregateRating"')) {
+      add("error", rel, "home schema missing AggregateRating from Google reviews payload");
     }
   }
 }

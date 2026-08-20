@@ -16,6 +16,7 @@ import {
   waMeUrl,
 } from "./site-contact.mjs";
 import { faqsForSchema } from "./faq-content.mjs";
+import { googleReviewsAggregateRating } from "./fetch-google-reviews.mjs";
 
 export const BUSINESS_ID = `${SITE}/#kinesica`;
 
@@ -318,7 +319,7 @@ export function buildPhysiotherapyClinic(lang) {
           ? ["English", "Spanish", "French", "Portuguese"]
           : ["Spanish", "English", "French", "Portuguese"];
 
-  return {
+  const clinic = {
     "@context": "https://schema.org",
     "@type": ["LocalBusiness", "Physiotherapy", "MedicalClinic"],
     "@id": BUSINESS_ID,
@@ -400,6 +401,11 @@ export function buildPhysiotherapyClinic(lang) {
       MAPS_URL,
     ],
   };
+  const aggregateRating = googleReviewsAggregateRating();
+  if (aggregateRating) {
+    clinic.aggregateRating = aggregateRating;
+  }
+  return clinic;
 }
 
 export function buildFaqPage(lang) {

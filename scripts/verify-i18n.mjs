@@ -98,6 +98,19 @@ for (const stem of STEMS) {
   }
 }
 
+check("robots.txt", (text) => {
+  if (!/User-agent:\s*GPTBot/i.test(text))
+    errors.push("robots.txt: missing User-agent GPTBot");
+  if (!/User-agent:\s*ClaudeBot/i.test(text))
+    errors.push("robots.txt: missing User-agent ClaudeBot");
+  if (!/User-agent:\s*Google-Extended/i.test(text))
+    errors.push("robots.txt: missing User-agent Google-Extended");
+  if (!/^https:\/\/www\.kinesica\.com\.ar\/llms\.txt$/m.test(text))
+    errors.push("robots.txt: llms.txt link must be uncommented");
+  if (!/^https:\/\/www\.kinesica\.com\.ar\/llms-full\.txt$/m.test(text))
+    errors.push("robots.txt: llms-full.txt link must be uncommented");
+});
+
 check("llms.txt", (text) => {
   if (!text.startsWith("# Kinésica")) errors.push("llms.txt: missing H1 title");
   if (!text.includes("## Optional")) errors.push("llms.txt: missing Optional section");
