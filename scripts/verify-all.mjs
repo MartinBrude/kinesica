@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Run all site verification scripts (i18n, PT copy, schema, SEO audit).
+ * Run all site verification scripts (i18n, PT copy, schema, DRY, SEO audit).
  * Run: npm run verify
  */
 import { spawnSync } from "child_process";
@@ -16,6 +16,7 @@ const steps = [
   ["node", ["scripts/verify-pathology-pages.mjs"]],
   ["node", ["scripts/verify-method-pages.mjs"]],
   ["node", ["scripts/verify-home-pages.mjs"]],
+  ["node", ["scripts/audit-dry.mjs"]],
   ["node", ["scripts/audit-site.mjs"]],
 ];
 

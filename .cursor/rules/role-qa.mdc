@@ -11,8 +11,11 @@ Antes de considerar un cambio terminado, verificar impacto en SEO, i18n y calida
 
 ```bash
 npm run seo:audit          # links, hreflang, lang switcher, estructura HTML
+npm run seo:dry            # DRY: fuentes de verdad, FAQ, URLs, contacto
 npm run assets:build       # si se tocó js/, partials/ o css/ fuente
 ```
+
+`npm run verify` corre ambos audits (y el resto). Es el cierre recomendado.
 
 Para cambios en patologías o artículos, ejecutar también el build correspondiente y re-auditar.
 
@@ -29,6 +32,7 @@ Para cambios en patologías o artículos, ejecutar también el build correspondi
 
 - [ ] Sin links rotos a recursos locales
 - [ ] Sin duplicación de bloques `<head>`, header o footer entre idiomas
+- [ ] `npm run seo:dry` sin errores (FAQ, contacto, URLs, builders)
 - [ ] Footer/header del idioma correcto (`footer-es/en/fr/pt.js`)
 - [ ] Sin comentarios de scaffold/debug en HTML publicado
 - [ ] Assets referenciados existen (incl. `.min.js` tras minify)
@@ -41,4 +45,4 @@ Para cambios en patologías o artículos, ejecutar también el build correspondi
 
 ## Criterio de cierre
 
-Si `seo:audit` reporta **ERRORS**, corregir antes de entregar. Warnings: evaluar si el cambio los introduce; no acumular deuda SEO.
+Si `seo:audit` o `seo:dry` reportan **ERRORS**, corregir antes de entregar. Warnings: evaluar si el cambio los introduce; no acumular deuda SEO ni DRY.

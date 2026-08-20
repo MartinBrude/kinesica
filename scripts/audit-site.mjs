@@ -331,45 +331,7 @@ for (const stem of STEMS) {
   }
 }
 
-/** Contact data must live in site-contact.mjs — not hardcoded in generators. */
-const CONTACT_SOURCE = "scripts/site-contact.mjs";
-const CONTACT_FORBIDDEN = [
-  { pattern: /5491161564311/, label: "WhatsApp digits" },
-  { pattern: /Charcas 3889/, label: "street address" },
-  { pattern: /norberto1712@gmail\.com/, label: "email" },
-];
-const CONTACT_SCAN_DIRS = ["scripts"];
-const CONTACT_ALLOW = new Set([
-  CONTACT_SOURCE,
-  "scripts/google-place.mjs",
-  "scripts/audit-site.mjs",
-  "scripts/build-site-config-js.mjs",
-  "js/site-config.js",
-]);
-
-function scanContactHardcodes() {
-  for (const dir of CONTACT_SCAN_DIRS) {
-    const fullDir = path.join(ROOT, dir);
-    if (!fs.existsSync(fullDir)) continue;
-    for (const name of fs.readdirSync(fullDir)) {
-      if (!name.endsWith(".mjs")) continue;
-      const rel = `${dir}/${name}`;
-      if (CONTACT_ALLOW.has(rel)) continue;
-      const text = fs.readFileSync(path.join(fullDir, name), "utf8");
-      for (const { pattern, label } of CONTACT_FORBIDDEN) {
-        if (pattern.test(text)) {
-          add(
-            "error",
-            rel,
-            `Hardcoded ${label} — import from ${CONTACT_SOURCE}`,
-          );
-          break;
-        }
-      }
-    }
-  }
-}
-scanContactHardcodes();
+/** Contact / FAQ / URL duplication: `npm run seo:dry` (included in `npm run verify`). */
 
 console.log("=== ERRORS (" + issues.length + ") ===");
 issues.forEach((i) => console.log(`[${i.file}] ${i.msg}`));

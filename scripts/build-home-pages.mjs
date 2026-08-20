@@ -10,6 +10,7 @@ import { fileURLToPath } from "url";
 import { HTML_LANG, repoPath } from "./i18n-urls.mjs";
 import { LANG_CODES } from "./languages.mjs";
 import { HOME, HOME_HERO_IMAGE, googleReviewsBlock } from "./home-content.mjs";
+import { renderFaqSection } from "./faq-content.mjs";
 import { headerShellMarkup } from "./header-shell.mjs";
 import {
   LOCALE,
@@ -36,6 +37,7 @@ function buildMainHtml(lang, prefix) {
     .replace(/__PREFIX__/g, prefix);
   let body = copy.mainHtml
     .replace("__GOOGLE_REVIEWS_PLACEHOLDER__", reviewsMarkup)
+    .replace("__FAQ_ACCORDION__", renderFaqSection(lang))
     .replace(/__PREFIX__/g, prefix)
     .replace(
       "__CTA_PLACEHOLDER__",

@@ -22,6 +22,7 @@ description: >-
 |-------|--------|-----------|
 | Copy de una patología | `pathology-content.mjs` (+ bump `updatedAt`) | `npm run build:pathologies` |
 | Índice / categorías articulos | `articles-index-content.mjs`, `articles-categories.mjs` | `npm run build:articulos` |
+| FAQ del home | `faq-content.mjs` | `npm run build:home` |
 | **Nueva** patología | `PATHOLOGY_STEMS`, `PATHOLOGIES`, `PATHOLOGY_RELATED`, `articles-categories.mjs`, `article-thumbnail-icons.mjs` | `npm run build:pathologies` |
 
 Fuente única: **`scripts/pathology-content.mjs`**. Stems → `i18n-urls.mjs` automático.
@@ -49,8 +50,11 @@ Fuente única: **`scripts/methods-content.mjs`**.
 
 ```bash
 npm run seo:audit
-npm run assets:build   # si tocó js/, partials/ o css/ fuente
+npm run seo:dry            # DRY: contacto, FAQ, URLs, builders
+npm run assets:build       # si tocó js/, partials/ o css/ fuente
 ```
+
+Cierre completo: `npm run verify` (incluye dry + seo:audit; CI en cada push/PR).
 
 ## Árbol de decisión
 
@@ -69,8 +73,11 @@ npm run assets:build   # si tocó js/, partials/ o css/ fuente
 ¿Header, footer, CTA, nav global?
   → partials-strings.mjs → build:partials
 
-¿Home?
+¿Home (hero, mapa, reseñas)?
   → home-content.mjs → build:home
+
+¿FAQ del home (preguntas, indumentaria, ejemplos)?
+  → faq-content.mjs → build:home
 
 ¿URL del sitio?
   → i18n-urls.mjs

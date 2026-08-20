@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Rebuild articulos.html index body: expandable category panels for pathologies.
+ * Generate articulos.html index pages (ES / EN / FR / PT) from page-shell.
  * Run: node scripts/build-articulos-pages.mjs
  */
 import fs from "fs";
@@ -13,18 +13,41 @@ import {
   articleCountLabel,
 } from "./articles-categories.mjs";
 import { cardHue } from "./article-thumbnail-icons.mjs";
-import { repoPath } from "./i18n-urls.mjs";
-import { LANG_CODES } from "./languages.mjs";
-import { escHtml, patchPageMeta } from "./html-utils.mjs";
 import {
+  absoluteUrl,
+  HTML_LANG,
+  repoPath,
+  SCHEMA_LANGUAGE,
+  sitePath,
+  SITE,
+} from "./i18n-urls.mjs";
+import { LANG_CODES } from "./languages.mjs";
+import { headerShellMarkup } from "./header-shell.mjs";
+import { breadcrumbListSchema, escHtml } from "./html-utils.mjs";
+import {
+  LOCALE,
   assetPrefixForLang,
+  bodyFooterAndUiScripts,
+  bodyShellTop,
+  ctaStripPlaceholder,
+  headCriticalCss,
+  headFavicon,
+  headJsClassScript,
   headLangDeferScripts,
+  headSeoBlock,
+  headStandardStylesheets,
+  pageBreadcrumbSection,
   pageCaptionMarkup,
+  pageHeaderSection,
+  socialImageUrl,
 } from "./page-shell.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const ARTICLES_OG_IMAGE = "post-img.jpg";
 
-const pathologyByStem = new Map(PATHOLOGIES.map((p, i) => [p.stem, { pathology: p, index: i }]));
+const pathologyByStem = new Map(
+  PATHOLOGIES.map((p, i) => [p.stem, { pathology: p, index: i }]),
+);
 
 function articleThumbSrc(stem, lang) {
   const rel = `images/articles/${stem}.svg`;
@@ -114,94 +137,95 @@ function buildMain(lang) {
 ${categories}
         </div>
         <blockquote class="articles-index-quote ui-reveal">
-          <p>“${ui.quote}”</p>
-          <footer>— ${ui.quoteAuthor}</footer>
+          <p>“${escHtml(ui.quote)}”</p>
+          <footer>— ${escHtml(ui.quoteAuthor)}</footer>
         </blockquote>
       </div>
     </section>`;
 }
 
-function ensureHeadLangBundle(html, lang) {
-  if (html.includes("head-lang")) {
-    return html;
-  }
-  const tag = headLangDeferScripts(assetPrefixForLang(lang));
-  return html.replace(
-    /(<meta name="theme-color"[^>]*\/>\s*\n)/,
-    `$1${tag}`,
-  );
-}
-
-/** EN/FR articulos historically omitted </main> before the CTA strip. */
-function ensureMainClosedBeforeCta(html) {
-  if (!/<main id="main"/.test(html) || /<\/main>/.test(html)) {
-    return html;
-  }
-  return html.replace(
-    /(<section class="content articles-index">[\s\S]*?<\/section>)\s*(?=<div id="site-cta-strip-root")/,
-    "$1\n</main>\n",
-  );
-}
-
-function replaceContentBlock(html, main) {
-  const articlesIndexRe =
-    /[ \t]*<section class="content articles-index">[\s\S]*?<\/section>\s*(?=<div id="site-cta-strip-root")/;
-  if (articlesIndexRe.test(html)) {
-    return html.replace(articlesIndexRe, `${main}\n`);
-  }
-  const patterns = [
-    /<section class="content[^"]*">[\s\S]*?<\/section>\s*(?=<div id="site-cta-strip-root")/,
-    /<div class="content">[\s\S]*?<\/div>\s*(?=<div id="site-cta-strip-root")/,
-    /<section class="content[^"]*">[\s\S]*?<\/section>\s*(?=<\/main>)/,
-    /<div class="content">[\s\S]*?<\/div>\s*(?=<\/main>)/,
-  ];
-  for (const re of patterns) {
-    if (re.test(html)) {
-      return html.replace(re, `${main}\n`);
-    }
-  }
-  return null;
-}
-
-function patchArticulosFile(rel, lang) {
-  const full = path.join(ROOT, rel);
-  let html = fs.readFileSync(full, "utf8");
+function buildHtml(lang) {
   const ui = ARTICLES_INDEX_UI[lang];
+  const p = assetPrefixForLang(lang);
+  const stem = "articulos";
+  const canonical = absoluteUrl(lang, stem);
+  const imgUrl = socialImageUrl(ARTICLES_OG_IMAGE);
+  const imageAlt = ui.twitterImageAlt ?? ui.metaTitle;
 
-  const main = buildMain(lang);
-  const patched = replaceContentBlock(html, main);
-  if (!patched) {
-    console.warn("skip (no content section):", rel);
-    return false;
-  }
-  html = patched;
+  const breadcrumbSchema = breadcrumbListSchema([
+    { name: ui.homeLabel, item: absoluteUrl(lang, "index") },
+    { name: ui.breadcrumb, item: canonical },
+  ]);
 
-  html = html.replace(
-    /<div class="page-caption">\s*(?:<span class="page-header-word"[^>]*>[^<]*<\/span>|<h1 class="page-title[^"]*">[^<]*<\/h1>)\s*<\/div>/,
-    pageCaptionMarkup(ui.pageTitle, { variant: "title" }).trim(),
-  );
+  const collectionSchema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: ui.pageTitle,
+    headline: ui.pageTitle,
+    description: ui.metaDescription,
+    image: imgUrl,
+    url: canonical,
+    mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
+    inLanguage: SCHEMA_LANGUAGE[lang],
+    isPartOf: { "@type": "WebSite", name: "Kinésica", url: SITE },
+  };
 
-  const homeHref = lang === "es" ? "index.html" : "index.html";
-  html = html.replace(
-    /<li><a href="[^"]*">[^<]*<\/a><\/li>\s*<li class="active">[^<]*<\/li>/,
-    `<li><a href="${homeHref}">${ui.homeLabel}</a></li>\n            <li class="active">${ui.breadcrumb}</li>`,
-  );
+  return `<!doctype html>
+<html lang="${HTML_LANG[lang]}">
 
-  html = patchPageMeta(html, {
+<head>
+${headFavicon(p)}  <meta charset="utf-8" />
+${headJsClassScript()}${headCriticalCss(p)}  <meta http-equiv="content-language" content="${LOCALE[lang]}" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="theme-color" content="#005f99" />
+${headLangDeferScripts(p)}${headSeoBlock({
+    lang,
+    stem,
     title: ui.metaTitle,
     description: ui.metaDescription,
-    pageTitle: ui.pageTitle,
-  });
+    type: "website",
+    image: imgUrl,
+    imageAlt,
+    canonical,
+  })}
+${headStandardStylesheets(p)}  <script src="${p}partials/gtm-head.min.js" defer></script>
+  <script type="application/ld+json">
+${JSON.stringify(breadcrumbSchema, null, 6).replace(/^/gm, "      ")}
+    </script>
+  <script type="application/ld+json">
+${JSON.stringify(collectionSchema, null, 6).replace(/^/gm, "      ")}
+    </script>
+</head>
 
-  html = ensureMainClosedBeforeCta(html);
-  html = ensureHeadLangBundle(html, lang);
+<body>
+${bodyShellTop(p)}${headerShellMarkup(lang, p)}
+  <main id="main" tabindex="-1">
+${pageHeaderSection(pageCaptionMarkup(ui.pageTitle, { variant: "title" }))}
+${pageBreadcrumbSection({
+    homeHref: sitePath(lang, "index"),
+    homeLabel: ui.homeLabel,
+    activeLabel: ui.breadcrumb,
+  })}
+${buildMain(lang)}
+  </main>
+${ctaStripPlaceholder(lang, p)}
+${bodyFooterAndUiScripts(lang, p)}
+</body>
 
-  fs.writeFileSync(full, html);
-  return true;
+</html>
+`;
 }
 
-let n = 0;
+let written = 0;
 for (const lang of LANG_CODES) {
-  if (patchArticulosFile(repoPath(lang, "articulos"), lang)) n++;
+  const rel = repoPath(lang, "articulos");
+  const full = path.join(ROOT, rel);
+  fs.mkdirSync(path.dirname(full), { recursive: true });
+  fs.writeFileSync(full, buildHtml(lang));
+  written++;
+  console.log("wrote:", rel);
 }
-console.log(`Rebuilt ${n} articulos index page(s).`);
+
+console.log(`Done. ${written} articulos index page(s).`);

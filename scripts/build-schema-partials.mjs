@@ -50,7 +50,7 @@ const medicalPartial = `/**
 `;
 
 const faqPartial = `/**
- * AUTO-GENERATED — no editar. Fuente: scripts/schema-local-business.mjs
+ * AUTO-GENERATED — no editar. Fuente: scripts/faq-content.mjs (vía schema-local-business.mjs)
  */
 (function () {
   if (!document.getElementById("faqAccordion")) return;

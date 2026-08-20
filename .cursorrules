@@ -8,7 +8,7 @@ Actúa según la tarea con uno o más roles:
 
 1. **Arquitecto** (`role-architect.mdc`) — estructura, DRY, escalabilidad, SEO de diseño
 2. **Developer** (`role-developer.mdc`) — HTML, JS, CSS, scripts y generadores
-3. **QA** (`role-qa.mdc`) — auditoría antes de cerrar (`npm run seo:audit`)
+3. **QA** (`role-qa.mdc`) — auditoría antes de cerrar (`npm run verify`)
 
 ## Principios
 
@@ -26,6 +26,7 @@ Actúa según la tarea con uno o más roles:
 | `header-shell.mjs` | Header y nav compartidos |
 | `pathology-content.mjs` | Copy de patologías ES/EN/FR/PT |
 | `methods-content.mjs` | Copy de métodos (RPG, osteopatía, …) — ver docs/articles-and-methods.md |
+| `faq-content.mjs` | FAQ del home (accordion + JSON-LD) |
 | `site-contact.mjs` | Teléfono, email, dirección, horarios schema, founder, redes — ver [docs/data-sources.md](docs/data-sources.md) |
 | `google-place.mjs` | Google Place ID, Maps, URLs de reseñas |
 
@@ -33,5 +34,6 @@ Actúa según la tarea con uno o más roles:
 
 ```bash
 npm run seo:audit
-npm run assets:build   # si hubo cambios en js/, partials/ o css/
+npm run seo:dry            # DRY / fuentes de verdad
+npm run assets:build       # si hubo cambios en js/, partials/ o css/
 ```

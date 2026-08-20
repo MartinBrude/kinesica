@@ -15,6 +15,7 @@ import {
   postalAddressSchema,
   waMeUrl,
 } from "./site-contact.mjs";
+import { faqsForSchema } from "./faq-content.mjs";
 
 export const BUSINESS_ID = `${SITE}/#kinesica`;
 
@@ -88,32 +89,6 @@ const COPY = {
         description: "Tratamiento según cadenas musculares y fasciales.",
       },
     },
-    faqs: [
-      {
-        q: "¿Cuál es la duración del tratamiento?",
-        a: "Dependerá del objetivo, la situación del paciente y la evolución del tratamiento.",
-      },
-      {
-        q: "¿Cuánto dura la sesión?",
-        a: "El tiempo de duración de una sesión es variable según el caso y la metodología que se necesite. Tomamos como un tiempo estándar 1 hora por sesión.",
-      },
-      {
-        q: "¿Frecuencia de las sesiones?",
-        a: "Varía según los casos y los métodos a emplear. En algunas modalidades las sesiones son semanales y en otras pueden espaciarse cada 2 o 3 semanas.",
-      },
-      {
-        q: "¿Qué necesito llevar a la primera sesión?",
-        a: "Tus inquietudes y estudios complementarios si los tuvieses; ropa cómoda. Si sos menor, vení acompañado/a por un mayor.",
-      },
-      {
-        q: "¿Atienden a través de Prepagas u Obras Sociales?",
-        a: "Podés solicitar reintegros a tu obra social o prepaga.",
-      },
-      {
-        q: "¿A quiénes sirven estos tratamientos?",
-        a: "A personas con dolores, alteraciones de la sensibilidad, mareos, cambios posturales, lesiones traumáticas o deportivas, entre otros.",
-      },
-    ],
   },
   en: {
     homeUrl: `${SITE}/en/`,
@@ -175,32 +150,6 @@ const COPY = {
         description: "Treatment based on muscular and fascial chains.",
       },
     },
-    faqs: [
-      {
-        q: "What is the duration of the treatment?",
-        a: "It depends on the objective, the patient's condition, and the evolution of the treatment.",
-      },
-      {
-        q: "How long does a session last?",
-        a: "The duration of a session varies depending on the case and the methodology required. As a standard time, we consider 1 hour per session.",
-      },
-      {
-        q: "How often are sessions scheduled?",
-        a: "It varies by case and methods. Some modalities are weekly; others may be spaced every 2 or 3 weeks.",
-      },
-      {
-        q: "What should I bring to the first session?",
-        a: "Your questions and any complementary studies; comfortable clothing. Minors should come with an adult.",
-      },
-      {
-        q: "Do you accept prepaid health plans or insurance?",
-        a: "You can request reimbursements from your health insurance provider.",
-      },
-      {
-        q: "Who can benefit from these treatments?",
-        a: "People with pain, sensitivity disorders, dizziness, posture issues, traumatic or sports injuries, among others.",
-      },
-    ],
   },
   fr: {
     homeUrl: `${SITE}/fr/`,
@@ -262,32 +211,6 @@ const COPY = {
         description: "Traitement selon les chaînes musculaires et fasciales.",
       },
     },
-    faqs: [
-      {
-        q: "Quelle est la durée du traitement ?",
-        a: "Cela dépend de l'objectif, de l'état du patient et de l'évolution du traitement.",
-      },
-      {
-        q: "Combien de temps dure une séance ?",
-        a: "La durée varie selon le cas et la méthode utilisée. En règle générale, nous prévoyons environ une heure par séance.",
-      },
-      {
-        q: "À quelle fréquence ont lieu les séances ?",
-        a: "Cela varie selon le cas et les méthodes. Certaines modalités sont hebdomadaires ; d'autres, espacées de 2 ou 3 semaines.",
-      },
-      {
-        q: "Que dois-je apporter à la première séance ?",
-        a: "Vos questions et examens complémentaires si vous en avez ; tenue confortable. Les mineurs doivent être accompagnés d'un adulte.",
-      },
-      {
-        q: "Acceptez-vous les mutuelles ou assurances ?",
-        a: "Vous pouvez demander un remboursement auprès de votre assurance ou mutuelle.",
-      },
-      {
-        q: "Qui peut bénéficier de ces traitements ?",
-        a: "Les personnes souffrant de douleur, troubles de sensibilité, vertiges, troubles posturaux, blessures traumatiques ou sportives, entre autres.",
-      },
-    ],
   },
   pt: {
     homeUrl: `${SITE}/pt/`,
@@ -348,32 +271,6 @@ const COPY = {
         description: "Tratamento baseado em cadeias musculares e fasciais.",
       },
     },
-    faqs: [
-      {
-        q: "Qual é a duração do tratamento?",
-        a: "Depende do objetivo, da condição do paciente e da evolução do tratamento.",
-      },
-      {
-        q: "Quanto tempo dura cada sessão?",
-        a: "A duração varia conforme o caso e a metodologia. Como referência, reservamos cerca de 1 hora por sessão.",
-      },
-      {
-        q: "Com que frequência são as sessões?",
-        a: "Varia conforme o caso e os métodos. Algumas modalidades são semanais; outras, a cada 2 ou 3 semanas.",
-      },
-      {
-        q: "O que devo levar na primeira sessão?",
-        a: "Suas dúvidas e exames complementares, se tiver; roupa confortável. Menores devem vir acompanhados de um adulto.",
-      },
-      {
-        q: "Vocês aceitam planos de saúde ou reembolso?",
-        a: "Você pode solicitar reembolso junto ao seu plano ou seguro de saúde.",
-      },
-      {
-        q: "Quem pode se beneficiar desses tratamentos?",
-        a: "Pessoas com dor, alterações de sensibilidade, tontura, distúrbios posturais, lesões traumáticas ou esportivas, entre outras.",
-      },
-    ],
   },
 };
 
@@ -506,14 +403,14 @@ export function buildPhysiotherapyClinic(lang) {
 }
 
 export function buildFaqPage(lang) {
-  const t = COPY[lang];
+  const homeUrl = COPY[lang].homeUrl;
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    "@id": `${COPY[lang].homeUrl}#faq`,
+    "@id": `${homeUrl}#faq`,
     inLanguage: HTML_LANG[lang] ?? lang,
-    mainEntityOfPage: COPY[lang].homeUrl,
-    mainEntity: t.faqs.map((item) => ({
+    mainEntityOfPage: homeUrl,
+    mainEntity: faqsForSchema(lang).map((item) => ({
       "@type": "Question",
       name: item.q,
       acceptedAnswer: {

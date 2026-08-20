@@ -66,10 +66,11 @@ Fuente de datos (.mjs)  →  Builder (scripts/)  →  HTML estático
 | `scripts/header-shell.mjs` | Header estático, lang picker |
 | `scripts/pathology-content.mjs` | Copy de patologías ES/EN/FR |
 | `scripts/articles-index-content.mjs` | Copy del índice `articulos.html` |
+| `scripts/faq-content.mjs` | FAQ del home (accordion + JSON-LD) |
 | `scripts/methods-content.mjs` | Meta y breadcrumb de métodos (RPG, osteopatía, etc.) |
 | `scripts/cv-content.mjs` | Copy del CV |
 | `scripts/partials-strings.mjs` | Textos de header/nav/footer por idioma |
-| `scripts/schema-local-business.mjs` | JSON-LD clínica / FAQ |
+| `scripts/schema-local-business.mjs` | JSON-LD clínica (FAQ desde `faq-content.mjs`) |
 | `scripts/site-contact.mjs` | Contacto, horarios schema, founder, redes |
 | `scripts/google-place.mjs` | Google Place ID, Maps, reseñas |
 
@@ -85,6 +86,7 @@ Antes de cerrar un cambio:
 
 ```bash
 npm run seo:audit          # obligatorio: links, hreflang, estructura
+npm run seo:dry            # DRY: fuentes de verdad
 npm run assets:build       # si tocaste css/, js/ o partials/ fuente
 ```
 
@@ -135,7 +137,7 @@ npm run assets:build
 1. Datos estructurados: `scripts/site-contact.mjs` (y `scripts/google-place.mjs` si cambia Google).
 2. Horario legible en header: `scripts/partials-strings.mjs` → `schedule`.
 3. Regenerar según [docs/data-sources.md](docs/data-sources.md#qué-regenerar-según-el-cambio).
-4. `npm run seo:audit`.
+4. `npm run seo:audit` y `npm run seo:dry` (o `npm run verify`).
 
 ### Cambiar header, nav o footer
 
@@ -156,7 +158,8 @@ npm run seo:schema    # JSON-LD fisioterapia en todas las páginas
 npm run seo:sitemap   # sitemap.xml
 npm run seo:llms      # llms.txt
 npm run seo:apply     # assets + apply-seo-performance (critical CSS, etc.)
-npm run seo:audit     # auditoría final
+npm run seo:audit     # auditoría HTML
+npm run seo:dry       # DRY / fuentes de verdad
 ```
 
 ## Scripts npm (referencia)
@@ -165,13 +168,14 @@ npm run seo:audit     # auditoría final
 |---------|-------------|
 | `npm run assets:build` | Minifica CSS/JS propios y sincroniza refs `.min` en HTML |
 | `npm run seo:audit` | Auditoría de links, hreflang, lang picker, estructura |
+| `npm run seo:dry` | DRY: fuentes de verdad, FAQ, URLs hardcodeadas, builders |
 | `npm run build:pathologies` | Pipeline completo de patologías |
 | `npm run build:articulos` | Índice artículos + nav + shell |
 | `npm run patch:methods-seo` | Meta, breadcrumb y schema MedicalTherapy en páginas de métodos |
 | `npm run build:partials` | Genera `partials/header-*`, `nav-*`, `footer-*`… |
 | `npm run build:seo` | Schema + partials schema + llms + minify |
 | `npm run build:pt` | Pipeline completo de contenido portugués |
-| `npm run verify` | Verificaciones PT, schema e i18n |
+| `npm run verify` | i18n, PT, schema, home, DRY y seo:audit (CI en `main`) |
 | `npm run reviews:sync` | Cron/CI: fetch Google reviews y actualiza el home solo si cambió el contenido mostrado |
 | `npm run reviews:fetch` | Reescribe `partials/google-reviews-data.js` (siempre) |
 | `npm run reviews:refresh` | Fetch + `assets:build` completo |
@@ -193,7 +197,7 @@ No hace falta ejecutar Node en el servidor. Tras cambios de estilo, asegurate de
 
 - **Una sola `<h1>`** por página; jerarquía semántica (`main`, `section`, `nav`).
 - **Canonical = og:url**; hreflang absolutos desde `absoluteUrl()`.
-- **No hardcodear URLs** del sitio fuera de `i18n-urls.mjs`.
+- **No** hardcodear URLs del sitio fuera de `i18n-urls.mjs` (`npm run seo:dry`).
 - **No editar `*.min.*`** ni decenas de HTML a mano si existe un builder.
 - **Scripts con `defer`**; CSS crítico solo vía pipeline SEO.
 

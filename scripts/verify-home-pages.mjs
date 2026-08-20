@@ -56,6 +56,9 @@ for (const lang of LANG_CODES) {
   if (!html.includes('fetchpriority="high"')) {
     fail(rel, "hero preload missing");
   }
+  if (!html.includes('id="faqAccordion"')) {
+    fail(rel, "FAQ accordion missing");
+  }
   if (!html.includes('id="kinesica-local-schema"')) {
     fail(rel, "local schema block missing (run inject-local-schema)");
   }

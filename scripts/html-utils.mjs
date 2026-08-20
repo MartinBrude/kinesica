@@ -73,8 +73,7 @@ export function patchPageMeta(html, { title, description, pageTitle } = {}) {
 }
 
 /**
- * Insert Twitter Card tags when OG exists but twitter:* is missing
- * (patched pages such as articulos.html).
+ * Insert Twitter Card tags when OG exists but twitter:* is missing.
  */
 export function ensureTwitterTags(html) {
   if (/name="twitter:card"/.test(html)) return html;

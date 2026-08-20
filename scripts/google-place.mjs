@@ -1,4 +1,4 @@
-/** Google Business Profile — Kinésica, Charcas 3889 (Palermo). */
+/** Google Business Profile — Kinésica (Palermo). */
 export const GOOGLE_PLACE_ID = "ChIJZ2mPW9K1vJUR3J5kGRi5gws";
 
 export const GOOGLE_MAPS_URL = "https://maps.app.goo.gl/urpkh4HYe7dSdjPS9";

@@ -90,8 +90,9 @@ const out = `/**
  * Refresh from HTML: node scripts/extract-home-content.mjs
  */
 import { LANG_CODES } from "./languages.mjs";
+import { SITE } from "./i18n-urls.mjs";
 
-export const HOME_HERO_IMAGE = "https://www.kinesica.com.ar/images/og-image.jpg";
+export const HOME_HERO_IMAGE = \`\${SITE}/images/og-image.jpg\`;
 
 /** @type {Record<import("./languages.mjs").LangCode, HomeLang>} */
 export const HOME = {

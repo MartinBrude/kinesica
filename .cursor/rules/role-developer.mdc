@@ -20,6 +20,7 @@ Implementar cambios mínimos, reutilizando convenciones del repo.
 - Importar helpers desde `i18n-urls.mjs` y `page-shell.mjs`; no reimplementar URLs o `<head>`.
 - Nuevo contenido multilingüe: objeto por idioma en el módulo de datos, no strings sueltos en el builder.
 - Tras editar fuentes o generadores relevantes, ejecutar el script de build correspondiente (`build:pathologies`, `build:articulos`, `seo:apply`, etc.).
+- Cerrar con `npm run seo:dry` si se tocó copy, FAQ, URLs o builders.
 
 ## CSS y JS
 

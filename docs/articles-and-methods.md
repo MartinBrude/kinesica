@@ -17,7 +17,8 @@ scripts/articles-categories.mjs  ← categorías del índice (qué stems van en 
 scripts/article-thumbnail-icons.mjs ← icono SVG por stem (THUMBNAIL_BY_STEM)
          ↓
 build-pathology-pages.mjs  → 26 stems × 4 idiomas = 104 páginas
-build-articulos-pages.mjs  → articulos.html × 4
+build-articulos-pages.mjs  → articulos.html × 4 (page-shell completo)
+generate-article-thumbnails.mjs → images/articles/{stem}.svg
 generate-article-thumbnails.mjs → images/articles/{stem}.svg
          ↓
 inject-local-schema.mjs, inject-static-shell.mjs, sitemap, llms (vía npm run build:pathologies)

@@ -35,7 +35,7 @@ const content = [
   `  ga4MeasurementId: ${JSON.stringify(GA4_MEASUREMENT_ID)},`,
   "  /** Google Maps short link (same as Google Business Profile listing). */",
   `  googleMapsUrl: ${JSON.stringify(CONTACT.mapsUrl)},`,
-  "  /** Google Business Profile place ID (Charcas 3889). */",
+  "  /** Google Business Profile place ID. */",
   `  googlePlaceId: ${JSON.stringify(GOOGLE_PLACE_ID)},`,
   "  /** Direct link to leave a Google review (place ID). */",
   `  googleReviewUrl: ${JSON.stringify(googleReviewWriteUrl())},`,

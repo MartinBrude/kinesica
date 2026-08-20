@@ -11,7 +11,8 @@ scripts/site-contact.mjs     ← teléfono, email, dirección, geo, horarios (sc
 scripts/google-place.mjs     ← Place ID, link Maps, URLs de reseñas Google
 scripts/i18n-urls.mjs        ← dominio SITE, URLs absolutas, stems, paths por idioma
 scripts/partials-strings.mjs ← copy CTA/footer/nav (×4 idiomas); horario UI derivado de site-contact
-scripts/schema-local-business.mjs ← JSON-LD clínica/FAQ (importa site-contact; no hardcodear contacto)
+scripts/faq-content.mjs      ← FAQ del home (accordion HTML + JSON-LD)
+scripts/schema-local-business.mjs ← JSON-LD clínica (FAQ vía faq-content.mjs; importa site-contact)
          ↓ generadores
 HTML / partials / js/site-config.js (AUTO-GENERADOS — no editar a mano)
 ```
@@ -88,6 +89,7 @@ Sin los secrets FTP, el Action igual commitea en GitHub y deja un notice: el sit
 |-----------|---------------------|
 | Teléfono, email, dirección, founder, horario, redes | `npm run build:partials` → `node scripts/inject-static-shell.mjs` → `node scripts/inject-local-schema.mjs` → `npm run schema:partials` → `npm run seo:llms` → `npm run assets:build` |
 | Home (hero, mapa, botones WA) | Editar `scripts/home-content.mjs` → `npm run build:home` |
+| FAQ del home (accordion + JSON-LD) | Editar `scripts/faq-content.mjs` → `npm run build:home` (+ `npm run schema:partials` si hace falta) |
 | CV | Editar `scripts/cv-content.mjs` → `npm run build:cv` |
 | Patologías (autor = founder) | `npm run build:pathologies` (rebuild incluye schema) |
 | Google Place ID / Maps link | `google-place.mjs` → `npm run assets:build` → `node scripts/inject-local-schema.mjs` → `npm run reviews:fetch` (si aplica) |
@@ -123,12 +125,18 @@ Los bundles shell (`js/shell-footer-*.min.js`) incluyen `site-config` + footer.
 
 ## Anti-patrones
 
-- **No** hardcodear `5491161564311`, `Charcas 3889` ni `norberto1712@gmail.com` en `scripts/*.mjs` (salvo `site-contact.mjs`). `npm run seo:audit` lo detecta.
+- **No** hardcodear `5491161564311`, `Charcas 3889` ni `norberto1712@gmail.com` en `scripts/*.mjs` (salvo `site-contact.mjs`). `npm run seo:dry` lo detecta.
 - **No** editar HTML de contacto a mano en decenas de páginas — usar generadores.
 - **No** editar `js/site-config.js` ni `partials/*.min.js` — regenerar con `assets:build` / `build:partials`.
 - **No** usar `npm run seo:og` para schema — solo limpia OG; schema = `node scripts/inject-local-schema.mjs`.
 
 ## Investigar duplicación
+
+```bash
+npm run seo:dry
+```
+
+Chequea contacto hardcodeado, FAQ duplicada, hrefs `/en|/fr|/pt/` en el home, `SITE` fuera de `i18n-urls.mjs`, y que articulos/FAQ se generen desde su módulo.
 
 ```bash
 # Teléfono / email / dirección fuera de fuente autorizada

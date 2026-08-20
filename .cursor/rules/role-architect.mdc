@@ -25,6 +25,7 @@ Fuente de datos (mjs) → Builder (scripts/) → HTML estático (/, /en/, /fr/, 
 - Preferir **un generador + datos** sobre N archivos HTML editados a mano.
 - Partials por idioma solo cuando el markup difiere (header-es/en/fr/pt, footer-es/en/fr/pt).
 - Lógica compartida en `.mjs` exportada; evitar copiar bloques entre scripts.
+- Tras tocar generadores o módulos de copy, `npm run seo:dry` debe pasar.
 
 ## SEO (no negociable)
 

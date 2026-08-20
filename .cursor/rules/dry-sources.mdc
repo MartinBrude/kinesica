@@ -1,0 +1,28 @@
+---
+description: DRY — fuentes de verdad y audit seo:dry al editar generadores
+globs: scripts/**/*.mjs
+alwaysApply: false
+---
+
+# DRY (generadores)
+
+No duplicar datos entre módulos. Tras cambios en `scripts/*-content.mjs`, builders o schema:
+
+```bash
+npm run seo:dry
+```
+
+Va incluido en `npm run verify` (CI en cada push/PR a `main`).
+
+| Dato | Fuente |
+|------|--------|
+| Teléfono, email, dirección, horario | `site-contact.mjs` |
+| URLs / stems | `i18n-urls.mjs` (`SITE`, `absoluteUrl`) |
+| FAQ home (HTML + JSON-LD) | `faq-content.mjs` |
+| Patologías | `pathology-content.mjs` |
+| Métodos | `methods-content.mjs` (`TECHNIQUE_NAV_STEMS = METHOD_STEMS`) |
+| Índice articulos | `articles-index-content.mjs` + `build-articulos-pages.mjs` (page-shell, no parche HTML) |
+| Home accordion FAQ | placeholder `__FAQ_ACCORDION__` en `home-content.mjs` |
+| Hrefs en homes EN/FR/PT | relativos (`rpg.html`), no `/en/…` |
+
+Si `seo:dry` falla, corregir la fuente y regenerar; no parchear el HTML publicado.
