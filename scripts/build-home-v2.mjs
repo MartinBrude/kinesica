@@ -35,12 +35,19 @@ function v2q() {
   }
 }
 
+function markFeaturedMethodCard(html) {
+  return html.replace(
+    '<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">\n            <div class="service-block">',
+    '<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 service-col--featured">\n            <div class="service-block">',
+  );
+}
+
 function buildMainHtml(lang, prefix) {
   const copy = HOME[lang];
   const reviewsMarkup = googleReviewsBlock(lang)
     .join("\n")
     .replace(/__PREFIX__/g, prefix);
-  return copy.mainHtml
+  const html = copy.mainHtml
     .replace("__GOOGLE_REVIEWS_PLACEHOLDER__", reviewsMarkup)
     .replace("__FAQ_ACCORDION__", renderFaqSection(lang))
     .replace(/__PREFIX__/g, prefix)
@@ -48,6 +55,7 @@ function buildMainHtml(lang, prefix) {
       "__CTA_PLACEHOLDER__",
       ctaStripPlaceholder(lang, prefix, { insideMain: true }),
     );
+  return markFeaturedMethodCard(html);
 }
 
 function buildHtml() {
