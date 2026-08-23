@@ -554,7 +554,8 @@ body.page-home-v2 .map-block {
   grid-template-columns: 1fr;
   grid-template-areas:
     "map"
-    "aside";
+    "aside"
+    "reviews";
   gap: 1.25rem;
 }
 
@@ -564,8 +565,19 @@ body.page-home-v2 .map-reviews-map {
   display: contents;
 }
 
-body.page-home-v2 .map-reviews-aside {
+body.page-home-v2 .map-reviews-aside[hidden] {
   display: none !important;
+}
+
+body.page-home-v2 .map-reviews-aside:not([hidden]) {
+  display: flex;
+  flex-direction: column;
+  grid-area: reviews;
+  min-width: 0;
+  background: #fff;
+  border-radius: var(--home-radius);
+  box-shadow: var(--home-shadow);
+  padding: 1.25rem 1.25rem 1.15rem;
 }
 
 body.page-home-v2 .map-embed-frame {
@@ -670,9 +682,19 @@ body.page-home-v2 .map-block .map-review-cta .map-review-cta-inner {
 @media (min-width: 768px) {
   body.page-home-v2 .map-block {
     grid-template-columns: minmax(0, 3fr) minmax(16rem, 2fr);
-    grid-template-areas: "map aside";
+    grid-template-areas:
+      "map aside"
+      "reviews reviews";
     gap: 1.5rem;
     align-items: stretch;
+  }
+
+  body.page-home-v2 #google-reviews-grid.google-reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.85rem;
+    flex-direction: unset;
+    overflow-x: visible;
   }
 
   body.page-home-v2 .map-reviews-panel {
@@ -736,6 +758,19 @@ body.page-home-v2 .panel-title a {
 body.page-home-v2 .panel-body {
   border: 0;
   padding: 0 1.25rem 1.2rem;
+}
+
+body.page-home-v2 .panel-group .panel-heading + .panel-collapse > .panel-body {
+  border-top: 0;
+}
+
+body.page-home-v2 .panel-group .panel-heading + .panel-collapse > .panel-body::before {
+  content: "";
+  display: block;
+  width: 86%;
+  height: 1px;
+  margin: 0.2rem auto 1rem;
+  background: rgba(3, 28, 66, 0.12);
 }
 
 body.page-home-v2 .panel-body > strong {
