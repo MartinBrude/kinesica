@@ -18,6 +18,7 @@ const CSS_SOURCES = [
   "css/style.css",
   "css/whatsapp.css",
   "css/cv.css",
+  "css/home-v2.css",
 ];
 
 /** JS de terceros o ya minificados — no regenerar. */

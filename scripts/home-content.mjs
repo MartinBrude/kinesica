@@ -68,10 +68,10 @@ const MAP_REVIEWS_COPY = {
 
 const TEAM_ABOUT = {
   es: {
-    eyebrow: "Profesionales",
-    title: "Sobre nosotros",
+    eyebrow: "Sobre nosotros",
+    title: "Profesionales dedicados a tu bienestar",
     lead:
-      "Somos kinesiólogos que nos perfeccionamos permanentemente, aprendiendo nuevos métodos para poder ayudarte. Una persona tiene muchos aspectos, y buscamos distintas miradas para comprenderla. Nuestro abordaje es la <span class=\"text-highlight\">Terapia Manual</span>: utilizamos los métodos de tratamiento según la necesidad de cada paciente y la problemática que presente. No te acostumbres a vivir con dolor; podemos encontrar juntos un camino para que vivas mejor. Para ayudarte armamos Kinésica, un centro de atención en kinesiología, osteopatía, RPG y ATM en Palermo.",
+      "Somos kinesiólogos en constante formación, dedicados a la <span class=\"text-highlight\">Terapia Manual</span> para abordar a cada paciente de forma integral. Buscamos el tratamiento específico que necesitás para dejar de vivir con dolor.",
     members: [
       {
         name: "Norberto Brude",
@@ -92,10 +92,10 @@ const TEAM_ABOUT = {
     ],
   },
   en: {
-    eyebrow: "Professionals",
-    title: "About us",
+    eyebrow: "About us",
+    title: "Professionals dedicated to your wellbeing",
     lead:
-      "We are kinesiologists who continuously refine our skills by learning new methods to better assist you. A person has many aspects, and we seek different perspectives to understand them. Our approach is <span class=\"text-highlight\">Manual Therapy</span>: we apply treatment methods according to each patient's needs and specific condition. Don't get used to living with pain; together we can find a path for you to live better. To help you, we created Kinésica, a clinic for kinesiology, osteopathy, RPG, and TMJ in Palermo.",
+      "We are kinesiologists in ongoing training, dedicated to <span class=\"text-highlight\">Manual Therapy</span> for a whole-person approach. We look for the specific treatment you need so you can stop living with pain.",
     members: [
       {
         name: "Norberto Brude",
@@ -116,10 +116,10 @@ const TEAM_ABOUT = {
     ],
   },
   fr: {
-    eyebrow: "Praticiens",
-    title: "À propos de nous",
+    eyebrow: "À propos",
+    title: "Des praticiens dédiés à votre bien-être",
     lead:
-      "Nous sommes kinésithérapeutes et affinons continuellement nos compétences pour mieux vous accompagner. Une personne a de nombreuses dimensions : nous cherchons plusieurs perspectives pour les comprendre. Notre approche est la <span class=\"text-highlight\">thérapie manuelle</span> : nous adaptons les techniques aux besoins et à l'état de chaque patient. N'habituez pas votre corps à la douleur ; ensemble, nous pouvons trouver un chemin vers un mieux-être. Pour vous aider, nous avons créé Kinésica, un cabinet de kinésithérapie, ostéopathie, RPG et ATM à Palermo.",
+      "Nous sommes kinésithérapeutes en formation continue, dédiés à la <span class=\"text-highlight\">thérapie manuelle</span> pour une prise en charge globale. Nous cherchons le traitement adapté pour que vous cessiez de vivre avec la douleur.",
     members: [
       {
         name: "Norberto Brude",
@@ -140,10 +140,10 @@ const TEAM_ABOUT = {
     ],
   },
   pt: {
-    eyebrow: "Profissionais",
-    title: "Sobre nós",
+    eyebrow: "Sobre nós",
+    title: "Profissionais dedicados ao seu bem-estar",
     lead:
-      "Somos fisioterapeutas e aprimoramos continuamente nossas habilidades, incorporando novos métodos para cuidar melhor de você. Uma pessoa tem muitos aspectos, e buscamos diferentes perspectivas para compreendê-la. Nossa abordagem é a <span class=\"text-highlight\">terapia manual</span>: aplicamos cada técnica conforme a necessidade e a condição de cada paciente. Não se acostume a viver com dor; podemos encontrar juntos um caminho para você viver melhor. Para ajudá-lo, criamos a Kinésica, um centro de fisioterapia, osteopatia, RPG e ATM em Palermo.",
+      "Somos fisioterapeutas em formação contínua, dedicados à <span class=\"text-highlight\">terapia manual</span> para um cuidado integral. Buscamos o tratamento específico para você deixar de viver com dor.",
     members: [
       {
         name: "Norberto Brude",
@@ -191,25 +191,25 @@ const HOME_METHOD_CARDS = {
       title: "RPG",
       imgTitle: "rpg",
       imgAlt: "Sesión de Reeducación Postural Global (RPG)",
-      lead: "Trabaja sobre la flexibilización de los músculos estáticos.",
+      lead: "Flexibilización de los músculos estáticos.",
     },
     en: {
       title: "RPG",
       imgTitle: "RPG",
       imgAlt: "Global Postural Reeducation (RPG) session",
-      lead: "Focuses on the flexibility of static muscles.",
+      lead: "Flexibility work on static muscles.",
     },
     fr: {
       title: "RPG",
       imgTitle: "RPG",
       imgAlt: "Séance de rééducation posturale globale (RPG)",
-      lead: "Axé sur la souplesse des muscles statiques.",
+      lead: "Assouplissement des muscles statiques.",
     },
     pt: {
       title: "RPG",
       imgTitle: "RPG",
       imgAlt: "Sessão de Reeducação Postural Global (RPG)",
-      lead: "Foca na flexibilidade dos músculos estáticos.",
+      lead: "Flexibilização dos músculos estáticos.",
     },
   },
   osteopatia: {
@@ -217,25 +217,25 @@ const HOME_METHOD_CARDS = {
       title: "Osteopatía",
       imgTitle: "osteopatía",
       imgAlt: "Tratamiento de Osteopatía manual",
-      lead: "Busca la movilidad de los tejidos para restablecer la salud.",
+      lead: "Movilidad de los tejidos para restablecer la salud.",
     },
     en: {
       title: "Osteopathy",
       imgTitle: "Osteopathy",
       imgAlt: "Manual Osteopathy treatment",
-      lead: "Aims to restore health by improving tissue mobility.",
+      lead: "Tissue mobility to restore health.",
     },
     fr: {
       title: "Ostéopathie",
       imgTitle: "Ostéopathie",
       imgAlt: "Traitement d'ostéopathie manuelle",
-      lead: "Vise à restaurer la santé en améliorant la mobilité des tissus.",
+      lead: "Mobilité des tissus pour rétablir la santé.",
     },
     pt: {
       title: "Osteopatia",
       imgTitle: "Osteopatia",
       imgAlt: "Tratamento de osteopatia manual",
-      lead: "Busca restaurar a saúde melhorando a mobilidade dos tecidos.",
+      lead: "Mobilidade dos tecidos para restabelecer a saúde.",
     },
   },
   cadenas: {
@@ -243,25 +243,25 @@ const HOME_METHOD_CARDS = {
       title: "Cadenas Fisiológicas",
       imgTitle: "Cadenas Fisiológicas",
       imgAlt: "Tratamiento de Cadenas Fisiológicas",
-      lead: "Define la relación entre la estructura corporal y el contenido visceral para comprender cómo funcionamos en la estática y el movimiento",
+      lead: "Estructura y vísceras en la estática y el movimiento.",
     },
     en: {
       title: "Physiological Chains",
       imgTitle: "Physiological Chains",
       imgAlt: "Physiological Chains treatment",
-      lead: "Defines the relationship between body structure and visceral content to understand how we function in both static and movement.",
+      lead: "Body structure and viscera in stance and movement.",
     },
     fr: {
       title: "Chaînes physiologiques",
       imgTitle: "Chaînes physiologiques",
       imgAlt: "Traitement des chaînes physiologiques",
-      lead: "Définit la relation entre la structure corporelle et les fonctions viscérales pour comprendre notre fonctionnement au repos et en mouvement.",
+      lead: "Structure et viscères, en statique et en mouvement.",
     },
     pt: {
       title: "Cadeias fisiológicas",
       imgTitle: "Cadeias fisiológicas",
       imgAlt: "Tratamento de cadeias fisiológicas",
-      lead: "Define a relação entre a estrutura corporal e as funções viscerais para entender como funcionamos no repouso e no movimento.",
+      lead: "Estrutura e vísceras na estática e no movimento.",
     },
   },
   manipulaciones: {
@@ -269,25 +269,25 @@ const HOME_METHOD_CARDS = {
       title: "Manipulaciones viscerales",
       imgTitle: "Manipulaciones Viscerales",
       imgAlt: "Terapia de manipulaciones viscerales",
-      lead: "Las tensiones viscerales se transmiten al aparato locomotor condicionando su función.",
+      lead: "Tensiones viscerales que condicionan el aparato locomotor.",
     },
     en: {
       title: "Visceral Manipulations",
       imgTitle: "Visceral manipulations",
       imgAlt: "Visceral manipulations therapy",
-      lead: "Visceral tensions are transmitted to the locomotor system, affecting its function.",
+      lead: "Visceral tension that conditions the locomotor system.",
     },
     fr: {
       title: "Manipulations viscérales",
       imgTitle: "Manipulations viscérales",
       imgAlt: "Thérapie par manipulations viscérales",
-      lead: "Les tensions viscérales se transmettent à l'appareil locomoteur et affectent sa fonction.",
+      lead: "Tensions viscérales qui conditionnent l'appareil locomoteur.",
     },
     pt: {
       title: "Manipulações viscerais",
       imgTitle: "Manipulações viscerais",
       imgAlt: "Terapia por manipulações viscerais",
-      lead: "Tensões viscerais se transmitem ao sistema locomotor e afetam sua função.",
+      lead: "Tensões viscerais que condicionam o aparelho locomotor.",
     },
   },
   neurodinamia: {
@@ -295,25 +295,25 @@ const HOME_METHOD_CARDS = {
       title: "Neurodinamia",
       imgTitle: "Neurodinamia",
       imgAlt: "Tratamiento de Neurodinamia",
-      lead: "Estudia y trata los trastornos del sistema nervioso, enfocándose en cómo los nervios se deslizan y responden al estrés físico, buscando aliviar el dolor y mejorar la función neurológica.",
+      lead: "Deslizamiento nervioso para aliviar el dolor.",
     },
     en: {
       title: "Neurodynamics",
       imgTitle: "Neurodynamics",
       imgAlt: "Neurodynamics treatment",
-      lead: "Studies and treats nervous system disorders, focusing on how nerves glide and respond to physical stress, aiming to relieve pain and improve neurological function.",
+      lead: "Nerve gliding to relieve pain.",
     },
     fr: {
       title: "Neurodynamique",
       imgTitle: "Neurodynamique",
       imgAlt: "Traitement neurodynamique",
-      lead: "Étudie et traite les troubles nerveux, en particulier la glisse des nerfs et leur réponse au stress physique, pour soulager la douleur et améliorer la fonction neurologique.",
+      lead: "Glissement nerveux pour soulager la douleur.",
     },
     pt: {
       title: "Neurodinâmica",
       imgTitle: "Neurodinâmica",
       imgAlt: "Tratamento de neurodinâmica",
-      lead: "Estuda e trata distúrbios do sistema nervoso, focando em como os nervos deslizam e respondem ao estresse físico, aliviando dor e melhorando a função neurológica.",
+      lead: "Deslizamento nervoso para aliviar a dor.",
     },
   },
   atm: {
@@ -321,25 +321,25 @@ const HOME_METHOD_CARDS = {
       title: "ATM",
       imgTitle: "ATM",
       imgAlt: "Tratamiento de ATM – articulación temporomandibular",
-      lead: "ATM (Articulación Temporomandibular) es una especialidad que trata las disfunciones de la mandíbula, aliviando dolor, chasquidos y bruxismo mediante terapia manual, ejercicios y reeducación postural.",
+      lead: "Tratamiento de bruxismo y disfunción de ATM.",
     },
     en: {
       title: "TMJ",
       imgTitle: "TMJ",
       imgAlt: "TMJ temporomandibular joint treatment",
-      lead: "TMJ (Temporomandibular Joint) is a specialty that treats jaw dysfunctions, relieving pain, clicking and bruxism through manual therapy, exercises and postural re-education.",
+      lead: "Treatment for bruxism and TMJ dysfunction.",
     },
     fr: {
       title: "ATM",
       imgTitle: "ATM",
       imgAlt: "Traitement de l'ATM (articulation temporomandibulaire)",
-      lead: "L'ATM (articulation temporomandibulaire) est une spécialité qui traite les dysfonctions de la mâchoire : douleur, claquements et bruxisme, par thérapie manuelle, exercices et rééducation posturale.",
+      lead: "Traitement du bruxisme et des troubles de l'ATM.",
     },
     pt: {
       title: "ATM",
       imgTitle: "ATM",
       imgAlt: "Tratamento de ATM (articulação temporomandibular)",
-      lead: "A ATM (articulação temporomandibular) trata disfunções da mandíbula, aliviando dor, estalos e bruxismo com terapia manual, exercícios e reeducação postural.",
+      lead: "Tratamento de bruxismo e disfunção da ATM.",
     },
   },
 };
@@ -919,6 +919,27 @@ export const HOME = {
 
 export function homeForLang(lang) {
   return HOME[lang] ?? null;
+}
+
+/** Team copy for experimental layouts (index_2). */
+export function homeTeamAbout(lang) {
+  return TEAM_ABOUT[lang] || TEAM_ABOUT.es;
+}
+
+/** Method cards with hrefs for experimental layouts (index_2). */
+export function homeMethodCardsForLang(lang) {
+  return HOME_METHOD_CARD_STEMS.map((stem) => {
+    const card = HOME_METHOD_CARDS[stem][lang];
+    return {
+      stem,
+      href: sitePath(lang, stem),
+      image: HOME_METHOD_CARD_IMAGES[stem],
+      title: card.title,
+      imgTitle: card.imgTitle,
+      imgAlt: card.imgAlt,
+      lead: card.lead,
+    };
+  });
 }
 
 export { LANG_CODES };

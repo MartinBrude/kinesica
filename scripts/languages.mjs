@@ -102,10 +102,18 @@ export function expectedLangFromFile(file) {
   return DEFAULT_LANG;
 }
 
+/** Prototypes not in sitemap / SEO audit (e.g. index_2.html). */
+const SKIP_HTML = new Set(["index_2.html"]);
+
 export function listHtmlFiles(root, { skipCv = true } = {}) {
   const files = fs
     .readdirSync(root)
-    .filter((f) => f.endsWith(".html") && !(skipCv && f.startsWith("cv-")));
+    .filter(
+      (f) =>
+        f.endsWith(".html") &&
+        !SKIP_HTML.has(f) &&
+        !(skipCv && f.startsWith("cv-")),
+    );
   for (const prefix of SUBDIR_PREFIXES) {
     const dir = path.join(root, prefix);
     if (!fs.existsSync(dir)) continue;
