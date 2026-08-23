@@ -35,11 +35,20 @@ function v2q() {
   }
 }
 
-function markFeaturedMethodCard(html) {
-  return html.replace(
-    '<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">\n            <div class="service-block">',
-    '<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 service-col--featured">\n            <div class="service-block">',
-  );
+function markBentoMethodCards(html) {
+  const open =
+    '<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">\n            <div class="service-block">';
+  let n = 0;
+  return html.replaceAll(open, () => {
+    n += 1;
+    const extra =
+      n === 1
+        ? " service-col--featured service-col--wide"
+        : n === 4
+          ? " service-col--wide"
+          : "";
+    return `<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12${extra}">\n            <div class="service-block">`;
+  });
 }
 
 function buildMainHtml(lang, prefix) {
@@ -55,7 +64,7 @@ function buildMainHtml(lang, prefix) {
       "__CTA_PLACEHOLDER__",
       ctaStripPlaceholder(lang, prefix, { insideMain: true }),
     );
-  return markFeaturedMethodCard(html);
+  return markBentoMethodCards(html);
 }
 
 function buildHtml() {

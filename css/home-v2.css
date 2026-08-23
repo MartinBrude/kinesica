@@ -221,13 +221,14 @@ body.page-home-v2 .section-intro .text-highlight {
   color: var(--primary-color);
 }
 
-/* —— 2. Asymmetric therapy grid —— */
+/* —— 2. Bento therapy grid —— */
 @media (min-width: 992px) {
   body.page-home-v2 .section-intro--band .container {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     column-gap: 1.25rem;
     row-gap: 1.35rem;
+    align-items: start;
   }
 
   body.page-home-v2 .section-intro--band .container > .row:first-of-type {
@@ -251,34 +252,45 @@ body.page-home-v2 .section-intro .text-highlight {
   }
 
   body.page-home-v2 .section-intro--band .container > .row:has(.service-block) > [class*="col-"] {
+    display: block;
     float: none;
     width: auto;
     max-width: none;
+    min-width: 0;
+    height: auto;
     padding-left: 0;
     padding-right: 0;
   }
 
-  body.page-home-v2 .section-intro--band .service-col--featured {
+  body.page-home-v2 .section-intro--band .service-col--wide {
     grid-column: span 2;
   }
 
-  body.page-home-v2 .section-intro--band .service-col--featured .service-block {
-    min-height: 100%;
-    padding: 1.75rem 1.75rem 1.65rem;
+  body.page-home-v2 .section-intro--band .service-col--wide .service-block {
+    display: grid;
+    grid-template-columns: 40% 1fr;
+    column-gap: 1.25rem;
+    align-items: center;
   }
 
-  body.page-home-v2 .section-intro--band .service-col--featured .service-content p {
-    -webkit-line-clamp: 2;
+  body.page-home-v2 .section-intro--band .service-col--wide .service-img {
+    margin-bottom: 0;
+  }
+
+  body.page-home-v2 .section-intro--band .service-col--wide .service-content p {
+    -webkit-line-clamp: 3;
   }
 }
 
 body.page-home-v2 .section-intro--band .service-block {
   position: relative;
   overflow: hidden;
-  height: 100%;
-  padding: var(--home-inset);
+  display: block;
+  flex: none;
+  height: auto;
+  padding: 24px;
   border: 0;
-  border-radius: var(--home-radius);
+  border-radius: 20px;
   box-shadow: var(--home-shadow);
   background: #fff;
   transition: transform 0.22s ease, box-shadow 0.22s ease;
@@ -309,11 +321,26 @@ body.page-home-v2 .section-intro--band .service-block:hover::after {
 }
 
 body.page-home-v2 .section-intro--band .service-img {
+  height: 200px;
   margin-bottom: 0.9rem;
+  overflow: hidden;
+  border-radius: 14px;
 }
 
-body.page-home-v2 .section-intro--band .service-img a,
+body.page-home-v2 .section-intro--band .service-img a {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
 body.page-home-v2 .section-intro--band .service-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
   border-radius: 14px;
 }
 
@@ -327,7 +354,7 @@ body.page-home-v2 .section-intro .service-content p {
   font-size: 1.0625rem;
   line-height: 1.4;
   display: -webkit-box;
-  -webkit-line-clamp: 1;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
