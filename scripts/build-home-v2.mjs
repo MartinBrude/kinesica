@@ -35,28 +35,12 @@ function v2q() {
   }
 }
 
-function markBentoMethodCards(html) {
-  const open =
-    '<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">\n            <div class="service-block">';
-  let n = 0;
-  return html.replaceAll(open, () => {
-    n += 1;
-    const extra =
-      n === 1
-        ? " service-col--featured service-col--wide"
-        : n === 4
-          ? " service-col--wide"
-          : "";
-    return `<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12${extra}">\n            <div class="service-block">`;
-  });
-}
-
 function buildMainHtml(lang, prefix) {
   const copy = HOME[lang];
   const reviewsMarkup = googleReviewsBlock(lang)
     .join("\n")
     .replace(/__PREFIX__/g, prefix);
-  const html = copy.mainHtml
+  return copy.mainHtml
     .replace("__GOOGLE_REVIEWS_PLACEHOLDER__", reviewsMarkup)
     .replace("__FAQ_ACCORDION__", renderFaqSection(lang))
     .replace(/__PREFIX__/g, prefix)
@@ -64,7 +48,6 @@ function buildMainHtml(lang, prefix) {
       "__CTA_PLACEHOLDER__",
       ctaStripPlaceholder(lang, prefix, { insideMain: true }),
     );
-  return markBentoMethodCards(html);
 }
 
 function buildHtml() {
