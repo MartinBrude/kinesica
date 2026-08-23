@@ -26,10 +26,18 @@ body.page-home.page-home-v2 {
   overflow-x: hidden;
 }
 
-body.page-home-v2 .header,
+body.page-home-v2 #site-header-root {
+  z-index: 10000;
+}
+
 body.page-home-v2 .header-top {
   position: relative;
-  z-index: 6;
+  z-index: 2;
+}
+
+body.page-home-v2 .header {
+  position: relative;
+  z-index: 1;
 }
 
 /* —— 1. Hero: photo + organic shapes connecting copy and image —— */
