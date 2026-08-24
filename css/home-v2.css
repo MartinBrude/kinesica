@@ -87,7 +87,6 @@ body.page-home-v2 .hero-section {
   isolation: isolate;
   overflow: hidden;
   background-color: #031c42;
-  padding-bottom: 4.75rem;
 }
 
 body.page-home-v2 .hero-section::before {
@@ -129,20 +128,6 @@ body.page-home-v2 .hero-section::after {
 body.page-home-v2 .hero-section .container {
   position: relative;
   z-index: 2;
-}
-
-body.page-home-v2 .hero-section .container::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: -1px;
-  z-index: 3;
-  width: 100vw;
-  height: 4.75rem;
-  transform: translateX(-50%);
-  pointer-events: none;
-  background: #f6f9fb;
-  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
 }
 
 body.page-home-v2 .hero-title,
@@ -837,14 +822,6 @@ body.page-home-v2 .panel-body ul:has(> li > a[href$=".html"]) a:focus {
     --home-space: 2.75rem;
     --home-space-sm: 2rem;
     --home-gap: 1.35rem;
-  }
-
-  body.page-home-v2 .hero-section {
-    padding-bottom: 3.75rem;
-  }
-
-  body.page-home-v2 .hero-section .container::after {
-    height: 3.75rem;
   }
 
   body.page-home-v2 .hero-section::before {
