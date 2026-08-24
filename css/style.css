@@ -3144,8 +3144,8 @@ Pathology detail pages (FAQ dolencias)
     grid-template-columns: minmax(0, 1.35fr) minmax(14rem, 22rem);
     grid-template-areas:
       "intro media"
-      "body body";
-    gap: 1.75rem 2.5rem;
+      "body media";
+    gap: 0.5rem 2.5rem;
     align-items: start;
   }
 
@@ -3857,9 +3857,10 @@ html {
     transition: none !important;
   }
 
-  /* Invisible hover bridge: margin-top on the submenu is not part of the
-     hit target, so moving the pointer from the label into the list closes it. */
-  #navigation > ul > li.has-sub::after {
+  /* Hover bridge: the 6px margin-top gap is not part of the hit target.
+     The pseudo-element only exists while the item is hovered, so it does
+     not steal clicks when the menu is closed. */
+  #navigation > ul > li.has-sub:hover::after {
     content: "";
     position: absolute;
     left: 0;

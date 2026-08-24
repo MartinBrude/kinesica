@@ -123,7 +123,7 @@ export const METHODS = {
         h1: "RPG – Reeducación postural global",
         lead: "La Reeducación Postural Global es un Método de Tratamiento creado en 1980 por el fisioterapeuta PH Souchard. Investigando en la organización postural concluyó que la Postura depende de la tensión de los músculos estáticos (los que se oponen a la acción de la Fuerza de Gravedad). Definió la forma en que se organizan estos músculos con el nombre de Cadenas Musculares.",
         blocks: [
-          { type: "p", text: "Definió la forma en que se organizan estos músculos con el nombre de Cadenas Musculares. Se realiza una evaluación donde se define cuáles son las cadenas que más se acortaron y se relacionan con el motivo de consulta. Utiliza posturas de tratamiento para estirarlas en forma suave, progresiva y sostenida. Son posturas activas donde el terapeuta guía el estiramiento y corrige las compensaciones. Busca remontar del síntoma a la causa primaria en el desalineamiento postural. Se trabaja en sesiones individuales. La frecuencia de las sesiones es generalmente semanal." },
+          { type: "p", text: "Se realiza una evaluación donde se define cuáles son las cadenas que más se acortaron y se relacionan con el motivo de consulta. Utiliza posturas de tratamiento para estirarlas en forma suave, progresiva y sostenida. Son posturas activas donde el terapeuta guía el estiramiento y corrige las compensaciones. Busca remontar del síntoma a la causa primaria en el desalineamiento postural. Se trabaja en sesiones individuales. La frecuencia de las sesiones es generalmente semanal." },
         ],
       },
       en: {
