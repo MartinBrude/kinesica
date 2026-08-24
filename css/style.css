@@ -3144,8 +3144,8 @@ Pathology detail pages (FAQ dolencias)
     grid-template-columns: minmax(0, 1.35fr) minmax(14rem, 22rem);
     grid-template-areas:
       "intro media"
-      "body media";
-    gap: 0.5rem 2.5rem;
+      "body body";
+    gap: 1.75rem 2.5rem;
     align-items: start;
   }
 
@@ -3155,8 +3155,6 @@ Pathology detail pages (FAQ dolencias)
 
   .method-figure {
     grid-area: media;
-    position: sticky;
-    top: 1.5rem;
   }
 
   .method-page-body {
@@ -3857,5 +3855,27 @@ html {
 
   #navigation li:hover > ul > li {
     transition: none !important;
+  }
+
+  /* Invisible hover bridge: margin-top on the submenu is not part of the
+     hit target, so moving the pointer from the label into the list closes it. */
+  #navigation > ul > li.has-sub::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    height: 12px;
+    z-index: 1;
+  }
+
+  #navigation ul ul {
+    top: 100%;
+    z-index: 2;
+    min-width: 100%;
+  }
+
+  #navigation ul ul li a {
+    width: 100%;
   }
 }
