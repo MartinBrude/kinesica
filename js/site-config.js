@@ -8,7 +8,7 @@ window.KINESICA_SITE = {
   ga4MeasurementId: "G-T5WJMBPGJ3",
   /** Google Maps short link (same as Google Business Profile listing). */
   googleMapsUrl: "https://maps.app.goo.gl/urpkh4HYe7dSdjPS9",
-  /** Google Business Profile place ID (Charcas 3889). */
+  /** Google Business Profile place ID. */
   googlePlaceId: "ChIJZ2mPW9K1vJUR3J5kGRi5gws",
   /** Direct link to leave a Google review (place ID). */
   googleReviewUrl: "https://search.google.com/local/writereview?placeid=ChIJZ2mPW9K1vJUR3J5kGRi5gws",

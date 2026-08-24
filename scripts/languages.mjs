@@ -102,8 +102,8 @@ export function expectedLangFromFile(file) {
   return DEFAULT_LANG;
 }
 
-/** Prototypes not in sitemap / SEO audit (e.g. index_2.html). */
-const SKIP_HTML = new Set(["index_2.html"]);
+/** HTML files excluded from sitemap / SEO audit (prototypes, drafts). */
+const SKIP_HTML = new Set();
 
 export function listHtmlFiles(root, { skipCv = true } = {}) {
   const files = fs

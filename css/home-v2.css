@@ -1,6 +1,5 @@
 /**
- * Home prototype (index_2.html): fluid, organic, integrated layout.
- * Production home is unchanged until this direction is approved.
+ * Home layout (body.page-home-v2): fluid, organic, integrated background.
  */
 
 html:has(body.page-home-v2) {

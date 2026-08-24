@@ -921,12 +921,12 @@ export function homeForLang(lang) {
   return HOME[lang] ?? null;
 }
 
-/** Team copy for experimental layouts (index_2). */
+/** Team copy for home about block. */
 export function homeTeamAbout(lang) {
   return TEAM_ABOUT[lang] || TEAM_ABOUT.es;
 }
 
-/** Method cards with hrefs for experimental layouts (index_2). */
+/** Method cards with hrefs for home method grid. */
 export function homeMethodCardsForLang(lang) {
   return HOME_METHOD_CARD_STEMS.map((stem) => {
     const card = HOME_METHOD_CARDS[stem][lang];

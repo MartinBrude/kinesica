@@ -155,6 +155,21 @@ function auditHomeBuilder() {
   if (!src.includes("renderFaqSection")) {
     add("error", rel, "must replace __FAQ_ACCORDION__ via renderFaqSection()");
   }
+  if (!src.includes("headSeoBlock") || !src.includes("headLocalBusinessSchema")) {
+    add("error", rel, "home pages must keep headSeoBlock + headLocalBusinessSchema");
+  }
+  if (!src.includes("page-home-v2") || !src.includes("home-v2.min.css")) {
+    add("error", rel, "home pages must ship page-home-v2 + css/home-v2.min.css");
+  }
+  if (!src.includes('content="index, follow')) {
+    add("error", rel, "home robots must remain index, follow");
+  }
+  if (/noindex/.test(src)) {
+    add("error", rel, "production home builder must not emit noindex");
+  }
+  if (!src.includes("gtm-head.min.js")) {
+    add("error", rel, "home pages must keep GTM head snippet");
+  }
 }
 
 function auditArticulosBuilder() {

@@ -72,11 +72,12 @@ ${headLangDeferScripts(p)}${headSeoBlock({
     image: HOME_HERO_IMAGE,
     imageAlt: copy.twitterImageAlt,
   })}
-${headStandardStylesheets(p)}  <script src="${p}partials/gtm-head.min.js" defer></script>
+${headStandardStylesheets(p)}  <link href="${p}css/home-v2.min.css" rel="stylesheet" />
+  <script src="${p}partials/gtm-head.min.js" defer></script>
 ${headLocalBusinessSchema(lang, { home: true })}
 </head>
 
-<body class="page-home">
+<body class="page-home page-home-v2">
 ${bodyShellTop(p)}${headerShellMarkup(lang, p)}  <main id="main" tabindex="-1">
 ${buildMainHtml(lang, p)}
   </main>
