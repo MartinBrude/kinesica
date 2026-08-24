@@ -26,8 +26,11 @@ for (const stem of METHOD_STEMS) {
       continue;
     }
     const html = fs.readFileSync(full, "utf8");
-    if (!html.includes('class="content"')) {
-      errors.push(`${file}: missing content section`);
+    if (!html.includes("method-page")) {
+      errors.push(`${file}: missing method-page section`);
+    }
+    if (!html.includes("method-figure")) {
+      errors.push(`${file}: missing method figure`);
     }
     if (!/<h1\b/.test(html)) {
       errors.push(`${file}: missing <h1>`);

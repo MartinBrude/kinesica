@@ -57,7 +57,15 @@ function methodTherapySchema(lang, stem, service) {
   };
 }
 
-function buildMain(data) {
+function methodImageSrc(image, prefix) {
+  const webpName = image.replace(/\.jpe?g$/i, ".webp");
+  const fileName = fs.existsSync(path.join(ROOT, "images", webpName))
+    ? webpName
+    : image;
+  return `${prefix}images/${fileName}`;
+}
+
+function buildMain(data, ui, imageSrc) {
   const blocks = (data.blocks ?? [])
     .map((block) => {
       if (block.type === "h2") {
@@ -67,12 +75,18 @@ function buildMain(data) {
     })
     .join("\n");
 
-  return `    <section class="content">
+  return `    <section class="content method-page">
       <div class="container">
-        <div class="row">
-          <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
+        <div class="method-page-layout">
+          <div class="method-page-intro">
+            <p class="method-eyebrow">${escHtml(ui.eyebrow)}</p>
             <h1>${escHtml(data.h1)}</h1>
             <p class="lead">${escHtml(data.lead)}</p>
+          </div>
+          <figure class="method-figure">
+            <img src="${escHtml(imageSrc)}" alt="${escHtml(data.h1)}" width="640" height="800" decoding="async" />
+          </figure>
+          <div class="method-page-body">
 ${blocks}
           </div>
         </div>
@@ -96,6 +110,7 @@ function buildHtml(stem, lang) {
   const p = assetPrefixForLang(lang);
   const canonical = absoluteUrl(lang, stem);
   const imgUrl = socialImageUrl(method.image);
+  const pageImageSrc = methodImageSrc(method.image, p);
   const breadcrumbSchema = breadcrumbListSchema([
     { name: ui.homeLabel, item: absoluteUrl(lang, "index") },
     { name: data.breadcrumb, item: canonical },
@@ -140,7 +155,7 @@ ${pageBreadcrumbSection({
       homeLabel: ui.homeLabel,
       activeLabel: data.breadcrumb,
     })}
-${buildMain(data)}
+${buildMain(data, ui, pageImageSrc)}
   </main>
 ${ctaStripPlaceholder(lang, p)}
 ${bodyFooterAndUiScripts(lang, p)}

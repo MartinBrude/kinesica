@@ -129,6 +129,7 @@ function buildMain(lang) {
       <div class="container">
         <div class="articles-index-intro section-intro section-intro--compact">
           <div class="section-title mb60 text-center">
+            <p class="section-eyebrow">${escHtml(ui.breadcrumb)}</p>
             <h2 class="heading-line-center">${escHtml(ui.introTitle)}</h2>
             <p class="section-lead">${renderIntro(ui)}</p>
           </div>

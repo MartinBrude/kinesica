@@ -17,19 +17,23 @@ export const METHOD_STEMS = [
 export const METHOD_UI = {
   "es": {
     "homeLabel": "Inicio",
-    "homeHref": "index.html"
+    "homeHref": "index.html",
+    "eyebrow": "Métodos y técnicas"
   },
   "en": {
     "homeLabel": "Home",
-    "homeHref": "/en/"
+    "homeHref": "/en/",
+    "eyebrow": "Methods and techniques"
   },
   "fr": {
     "homeLabel": "Accueil",
-    "homeHref": "/fr/"
+    "homeHref": "/fr/",
+    "eyebrow": "Méthodes et techniques"
   },
   "pt": {
     "homeLabel": "Início",
-    "homeHref": "/pt/"
+    "homeHref": "/pt/",
+    "eyebrow": "Métodos e técnicas"
   }
 };
 
