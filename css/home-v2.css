@@ -87,7 +87,7 @@ body.page-home-v2 .hero-section {
   isolation: isolate;
   overflow: hidden;
   background-color: #031c42;
-  padding-bottom: 7.5rem;
+  padding-bottom: 4.75rem;
 }
 
 body.page-home-v2 .hero-section::before {
@@ -135,10 +135,10 @@ body.page-home-v2 .hero-section .container::after {
   content: "";
   position: absolute;
   left: 50%;
-  bottom: -6.6rem;
-  z-index: 0;
-  width: 150%;
-  height: 6rem;
+  bottom: -1px;
+  z-index: 3;
+  width: 100vw;
+  height: 4.75rem;
   transform: translateX(-50%);
   pointer-events: none;
   background: #f6f9fb;
@@ -840,7 +840,11 @@ body.page-home-v2 .panel-body ul:has(> li > a[href$=".html"]) a:focus {
   }
 
   body.page-home-v2 .hero-section {
-    padding-bottom: 5.5rem;
+    padding-bottom: 3.75rem;
+  }
+
+  body.page-home-v2 .hero-section .container::after {
+    height: 3.75rem;
   }
 
   body.page-home-v2 .hero-section::before {
