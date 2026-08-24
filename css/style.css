@@ -1041,6 +1041,12 @@ main:focus {
 #navigation ul ul {
   position: absolute;
   left: -9999px;
+  overflow: hidden;
+  margin-top: 6px;
+  border-radius: 16px 8px 16px 8px;
+  box-shadow:
+    0 12px 28px rgba(3, 28, 66, 0.22),
+    0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 #navigation.align-right ul ul {
@@ -1209,6 +1215,9 @@ main:focus {
   width: 100%;
   margin: 0;
   text-align: left;
+  overflow: visible;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 #navigation.small-screen>ul>li.has-sub>a:after,
