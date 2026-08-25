@@ -173,14 +173,15 @@ function examplesHtml(lang) {
           `<li><a href="${stem}.html">${escHtml(faqLinkLabel(stem, lang))}</a></li>`,
       )
       .join("\n                      ");
-    return `<strong>${escHtml(group.title[lang])}:</strong>
+    return `<div class="faq-example-group">
+                    <strong>${escHtml(group.title[lang])}:</strong>
                     <ul>
                       ${items}
-                    </ul>`;
+                    </ul>
+                    </div>`;
   }).join("\n                    ");
-  return `${escHtml(FAQS[5].a[lang])}
-                    ${escHtml(EXAMPLE_LEAD[lang])}
-                    <br />
+  return `<p class="faq-examples-lead">${escHtml(FAQS[5].a[lang])}
+                    ${escHtml(EXAMPLE_LEAD[lang])}</p>
                     ${groups}`;
 }
 

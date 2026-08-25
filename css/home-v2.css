@@ -772,9 +772,18 @@ body.page-home-v2 .panel-group .panel-heading + .panel-collapse > .panel-body::b
   background: rgba(3, 28, 66, 0.06);
 }
 
-body.page-home-v2 .panel-body > strong {
+body.page-home-v2 .faq-examples-lead {
+  margin: 0;
+}
+
+body.page-home-v2 .faq-example-group {
+  margin-top: 1.25rem;
+}
+
+body.page-home-v2 .panel-body > strong,
+body.page-home-v2 .faq-example-group > strong {
   display: block;
-  margin: 0.9rem 0 0.55rem;
+  margin: 0 0 0.55rem;
   font-size: 0.8125rem;
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -787,7 +796,7 @@ body.page-home-v2 .panel-body ul:has(> li > a[href$=".html"]) {
   flex-wrap: wrap;
   gap: 8px;
   list-style: none;
-  margin: 0 0 1rem;
+  margin: 0;
   padding: 0;
 }
 
