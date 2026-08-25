@@ -3124,7 +3124,7 @@ Pathology detail pages (FAQ dolencias)
   display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 4 / 3;
   object-fit: cover;
   object-position: center;
 }
@@ -3133,15 +3133,9 @@ Pathology detail pages (FAQ dolencias)
   margin-top: 0;
 }
 
-@media (max-width: 991px) {
-  .method-figure img {
-    aspect-ratio: 16 / 10;
-  }
-}
-
 @media (min-width: 992px) {
   .method-page-layout {
-    grid-template-columns: minmax(0, 1.35fr) minmax(14rem, 22rem);
+    grid-template-columns: minmax(0, 1.35fr) 22em;
     grid-template-areas:
       "intro media"
       "body media";

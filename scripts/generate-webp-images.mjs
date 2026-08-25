@@ -22,6 +22,8 @@ const CONTENT_JPGS = [
   "manipulaciones_viscerales.jpg",
   "neurodinamia.jpg",
   "atm.jpg",
+  "acupuntura.jpg",
+  "posturologia.jpg",
   "maria.jpg",
   "noberto-brude-kinesiologo-osteopata.jpg",
 ];

@@ -84,7 +84,7 @@ function buildMain(data, ui, imageSrc) {
             <p class="lead">${escHtml(data.lead)}</p>
           </div>
           <figure class="method-figure">
-            <img src="${escHtml(imageSrc)}" alt="${escHtml(data.h1)}" width="640" height="800" decoding="async" />
+            <img src="${escHtml(imageSrc)}" alt="${escHtml(data.h1)}" width="1536" height="1024" decoding="async" fetchpriority="high" />
           </figure>
           <div class="method-page-body">
 ${blocks}

@@ -449,7 +449,7 @@ export const METHODS = {
       }
     },
     "acupuntura": {
-      image: "osteopatia.jpg",
+      image: "acupuntura.jpg",
       es: {
         metaTitle: "Acupuntura | Kinésica",
         metaDescription: "Acupuntura en Kinésica (Buenos Aires). Medicina tradicional china integrada al abordaje del dolor y el estrés en Palermo.",
@@ -496,7 +496,7 @@ export const METHODS = {
       }
     },
     "posturologia-clinica": {
-      image: "osteopatia.jpg",
+      image: "posturologia.jpg",
       es: {
         metaTitle: "Posturología Clínica | Kinésica",
         metaDescription: "Posturología clínica en Kinésica (Buenos Aires). Evaluación de postura, equilibrio y apoyo plantar en Palermo.",
