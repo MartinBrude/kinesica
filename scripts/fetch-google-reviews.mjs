@@ -14,11 +14,13 @@ import { GOOGLE_PLACE_ID } from "./google-place.mjs";
 import {
   REVIEW_LANG_CODES,
   applyReviewOverrides,
+  localizeReviews,
   pickReviews,
   placesLanguageCode,
 } from "./google-reviews-pick.mjs";
 import {
   EXCLUDE_AUTHORS,
+  REVIEW_BODY_BY_AUTHOR,
   SUPPLEMENT_REVIEWS,
 } from "./google-reviews-overrides.mjs";
 
@@ -35,6 +37,7 @@ export function emptyPayload() {
     userRatingCount: null,
     reviews: [],
     byLang: {},
+    translations: {},
   };
 }
 
@@ -195,13 +198,14 @@ async function fetchLangFromPlacesApi(apiKey, lang) {
     excludeAuthors: EXCLUDE_AUTHORS,
     supplements: SUPPLEMENT_REVIEWS[lang] || [],
   });
+  const localized = localizeReviews(curated, lang, REVIEW_BODY_BY_AUTHOR);
 
   return {
     displayName: body.displayName?.text,
     googleMapsUri: body.googleMapsUri,
     rating: body.rating,
     userRatingCount: body.userRatingCount,
-    reviews: pickReviews(curated, MAX_REVIEWS),
+    reviews: pickReviews(localized, MAX_REVIEWS),
   };
 }
 
@@ -232,6 +236,7 @@ export async function fetchAllLanguages(apiKey) {
     userRatingCount: meta?.userRatingCount ?? null,
     reviews: byLang.es || [],
     byLang,
+    translations: REVIEW_BODY_BY_AUTHOR,
   };
 }
 

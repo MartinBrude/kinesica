@@ -52,6 +52,44 @@ export function applyReviewOverrides(
 /** Never show reviews below this rating (inclusive). */
 export const MIN_REVIEW_RATING = 4;
 
+/** Primary language tag from a review (`es-AR` → `es`). */
+export function reviewLanguage(review) {
+  return String(review?.language || "")
+    .trim()
+    .toLowerCase()
+    .split("-")[0];
+}
+
+/**
+ * True when the review is already in the page language.
+ * Unknown language is treated as a match (live Places payloads sometimes omit the tag).
+ */
+export function reviewMatchesLang(review, lang) {
+  if (!lang) return true;
+  const code = reviewLanguage(review);
+  if (!code) return true;
+  return code === lang;
+}
+
+/**
+ * If a review is not in `lang`, swap in a known translation. Never drop it.
+ *
+ * @param {object} review
+ * @param {string|null} lang
+ * @param {Record<string, Record<string, string>>} [bodiesByAuthor]
+ */
+export function localizeReviewText(review, lang, bodiesByAuthor = {}) {
+  if (!review || !lang || reviewMatchesLang(review, lang)) return review;
+  const body = bodiesByAuthor[normalizeAuthorKey(review.author)]?.[lang];
+  if (!body) return review;
+  return { ...review, text: body, language: lang };
+}
+
+/** @param {object[]} reviews */
+export function localizeReviews(reviews, lang, bodiesByAuthor = {}) {
+  return (reviews || []).map((r) => localizeReviewText(r, lang, bodiesByAuthor));
+}
+
 /** Pick best reviews: ≥4★, then highest rating, newest, longest text. */
 export function pickReviews(reviews, max = 5) {
   return [...(reviews || [])]

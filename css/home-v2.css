@@ -421,13 +421,13 @@ body.page-home-v2 .section-intro .service-content p {
   }
 }
 
-/* —— CTA: overlapping card between therapies and about —— */
+/* —— CTA: overlaps therapies above; keep clear air before About —— */
 body.page-home-v2 .site-cta-strip.bg-primary {
   position: relative;
   z-index: 4;
   isolation: isolate;
   max-width: min(var(--home-container), calc(100% - 28px));
-  margin: -52px auto -20px;
+  margin: -52px auto 56px;
   padding: 28px 32px 30px;
   overflow: visible;
   background-color: var(--primary-color);
@@ -460,11 +460,12 @@ body.page-home-v2 .site-cta-strip .btn-white:focus {
 }
 
 /* —— About / professionals: editorial cards + credential pills —— */
-body.page-home-v2 .section-intro--about {
+body.page-home-v2 .section-intro--about,
+body.page-home-v2 .section-intro--about.space-medium {
   position: relative;
   isolation: isolate;
   margin-top: 0;
-  padding-top: calc(var(--home-space) + 36px);
+  padding-top: calc(var(--home-space) + 16px);
 }
 
 body.page-home-v2 .team-grid .team-block {
@@ -836,13 +837,14 @@ body.page-home-v2 .panel-body ul:has(> li > a[href$=".html"]) a:focus {
   body.page-home-v2 .site-cta-strip.bg-primary {
     max-width: calc(100% - 1.25rem);
     margin-top: -36px;
-    margin-bottom: -8px;
+    margin-bottom: 32px;
     padding: 22px 18px 24px;
     border-radius: 22px 14px 22px 14px;
   }
 
-  body.page-home-v2 .section-intro--about {
-    padding-top: calc(var(--home-space) + 1.75rem);
+  body.page-home-v2 .section-intro--about,
+  body.page-home-v2 .section-intro--about.space-medium {
+    padding-top: calc(var(--home-space) + 1.25rem);
   }
 
   body.page-home-v2 .section-intro--about .section-title {

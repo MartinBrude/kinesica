@@ -54,7 +54,7 @@
     if (data.byLang && data.byLang[lang] && data.byLang[lang].length) {
       return data.byLang[lang];
     }
-    if (data.reviews && data.reviews.length) {
+    if (lang === "es" && data.reviews && data.reviews.length) {
       return data.reviews;
     }
     return [];
@@ -62,7 +62,7 @@
 
   function staticPayload(lang) {
     var data = window.KINESICA_GOOGLE_REVIEWS;
-    var reviews = pickReviews(reviewsForLang(data, lang));
+    var reviews = pickReviews(localizeReviews(reviewsForLang(data, lang), lang, data && data.translations));
     if (!reviews.length) return null;
     return {
       placeId: data.placeId,
@@ -115,6 +115,11 @@
         null,
       rating: review.rating ?? null,
       text: String(text).trim(),
+      language:
+        review.language ||
+        (review.text && review.text.languageCode) ||
+        (review.originalText && review.originalText.languageCode) ||
+        null,
       publishTime: review.publishTime || null,
       relativeTime:
         review.relativePublishTimeDescription ||
@@ -193,6 +198,43 @@
   /** Keep in sync with scripts/google-reviews-pick.mjs MIN_REVIEW_RATING. */
   var MIN_REVIEW_RATING = 4;
 
+  function reviewLanguage(review) {
+    return String((review && review.language) || "")
+      .trim()
+      .toLowerCase()
+      .split("-")[0];
+  }
+
+  function reviewMatchesLang(review, lang) {
+    if (!lang) return true;
+    var code = reviewLanguage(review);
+    if (!code) return true;
+    return code === lang;
+  }
+
+  function normalizeAuthorKey(name) {
+    return String(name || "")
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/\p{M}/gu, "");
+  }
+
+  function localizeReviewText(review, lang, bodiesByAuthor) {
+    if (!review || !lang || reviewMatchesLang(review, lang)) return review;
+    var map = bodiesByAuthor || {};
+    var texts = map[normalizeAuthorKey(review.author)];
+    var body = texts && texts[lang];
+    if (!body) return review;
+    return Object.assign({}, review, { text: body, language: lang });
+  }
+
+  function localizeReviews(reviews, lang, bodiesByAuthor) {
+    return (reviews || []).map(function (r) {
+      return localizeReviewText(r, lang, bodiesByAuthor);
+    });
+  }
+
   function pickReviews(reviews) {
     return reviews
       .filter(function (r) {
@@ -235,7 +277,9 @@
           placeId: placeId(),
           rating: body.rating ?? null,
           userRatingCount: body.userRatingCount ?? null,
-          reviews: pickReviews((body.reviews || []).map(normalizeReview)),
+          reviews: pickReviews(
+            localizeReviews((body.reviews || []).map(normalizeReview), lang, (window.KINESICA_GOOGLE_REVIEWS || {}).translations),
+          ),
         };
       });
     });
