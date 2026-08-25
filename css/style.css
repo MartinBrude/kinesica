@@ -1102,10 +1102,6 @@ main:focus {
 }
 
 #navigation li:hover>ul>li {
-  height: 47px;
-}
-
-#navigation li:hover>ul>li:last-child {
   height: auto;
 }
 
@@ -1120,15 +1116,17 @@ main:focus {
 }
 
 #navigation ul ul li a {
-  padding: 16px;
+  padding: 16px 16px 18px;
   width: 170px;
   font-size: 14px;
+  line-height: 1.35;
   text-decoration: none;
   color: #fff;
   font-weight: 500;
   background: var(--secondary-color);
   text-transform: uppercase;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  white-space: normal;
   transition: background-color 0.15s ease !important;
 }
 
