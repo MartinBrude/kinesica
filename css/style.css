@@ -1129,6 +1129,7 @@ main:focus {
   background: var(--secondary-color);
   text-transform: uppercase;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background-color 0.15s ease !important;
 }
 
 #navigation ul ul li:last-child>a {
@@ -1137,9 +1138,10 @@ main:focus {
 }
 
 #navigation ul ul li:hover>a,
-#navigation ul ul li a:hover {
+#navigation ul ul li a:hover,
+#navigation ul ul li a:focus-visible {
   color: #ffffff;
-  background-color: #031c42;
+  background-color: color-mix(in srgb, var(--secondary-color) 72%, var(--primary-color));
 }
 
 #navigation ul ul li.has-sub>a:after {
@@ -1238,8 +1240,11 @@ main:focus {
 }
 
 #navigation.small-screen ul ul li:hover>a,
+#navigation.small-screen ul ul li a:hover,
+#navigation.small-screen ul ul li a:focus-visible,
 #navigation.small-screen ul ul li.active>a {
   color: #474747;
+  background-color: var(--pill-bg);
 }
 
 #navigation.small-screen ul ul,
