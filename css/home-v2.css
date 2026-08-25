@@ -548,6 +548,7 @@ body.page-home-v2 .team-designation a {
 body.page-home-v2 .team-meta:has(a) .team-designation {
   background: transparent;
   border: 1px solid color-mix(in srgb, var(--primary-color) 28%, transparent);
+  transition: background-color 0.15s ease, transform 0.15s ease;
 }
 
 body.page-home-v2 .section-intro--about::before {
@@ -820,7 +821,9 @@ body.page-home-v2 .panel-body ul:has(> li > a[href$=".html"]) a {
 }
 
 body.page-home-v2 .panel-body ul:has(> li > a[href$=".html"]) a:hover,
-body.page-home-v2 .panel-body ul:has(> li > a[href$=".html"]) a:focus {
+body.page-home-v2 .panel-body ul:has(> li > a[href$=".html"]) a:focus,
+body.page-home-v2 .team-meta:has(a) .team-designation:hover,
+body.page-home-v2 .team-meta:has(a) .team-designation:focus-within {
   background: #dceaf1;
   text-decoration: none;
   transform: translateY(-1px);
@@ -875,7 +878,9 @@ body.page-home-v2 .panel-body ul:has(> li > a[href$=".html"]) a:focus {
 
 @media (prefers-reduced-motion: reduce) {
   body.page-home-v2 .section-intro--band .service-block:hover,
-  body.page-home-v2 .panel-body ul:has(> li > a[href$=".html"]) a:hover {
+  body.page-home-v2 .panel-body ul:has(> li > a[href$=".html"]) a:hover,
+  body.page-home-v2 .team-meta:has(a) .team-designation:hover,
+  body.page-home-v2 .team-meta:has(a) .team-designation:focus-within {
     transform: none;
   }
 
