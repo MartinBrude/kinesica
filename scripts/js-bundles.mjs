@@ -26,7 +26,11 @@ export const SHARED_BUNDLES = {
     "js/articles-categories.js",
     "js/sticky-header.js",
   ],
-  "js/ui-home.min.js": ["js/faq-accordion.js", "js/map-embed-facade.js"],
+  "js/ui-home.min.js": [
+    "js/faq-accordion.js",
+    "js/map-embed-facade.js",
+    "js/methods-scroller.js",
+  ],
   "js/reviews.min.js": [
     "partials/google-reviews-data.js",
     "js/google-reviews.js",

@@ -165,7 +165,7 @@ const TEAM_ABOUT = {
   },
 };
 
-/** Home method cards (order and copy as published). Not all METHOD_STEMS. */
+/** Home method cards (featured 6, then extras in the scroller). Not all METHOD_STEMS. */
 export const HOME_METHOD_CARD_STEMS = [
   "rpg",
   "osteopatia",
@@ -173,6 +173,8 @@ export const HOME_METHOD_CARD_STEMS = [
   "manipulaciones",
   "neurodinamia",
   "atm",
+  "acupuntura",
+  "posturologia-clinica",
 ];
 
 const HOME_METHOD_CARD_IMAGES = {
@@ -182,6 +184,31 @@ const HOME_METHOD_CARD_IMAGES = {
   manipulaciones: "manipulaciones_viscerales.webp",
   neurodinamia: "neurodinamia.webp",
   atm: "atm.webp",
+  acupuntura: "acupuntura.webp",
+  "posturologia-clinica": "posturologia.webp",
+};
+
+const HOME_METHOD_SCROLL_UI = {
+  es: {
+    region: "Métodos y técnicas",
+    next: "Ver dos métodos más",
+    prev: "Volver a los métodos anteriores",
+  },
+  en: {
+    region: "Methods and techniques",
+    next: "See two more methods",
+    prev: "Back to previous methods",
+  },
+  fr: {
+    region: "Méthodes et techniques",
+    next: "Voir deux méthodes de plus",
+    prev: "Revenir aux méthodes précédentes",
+  },
+  pt: {
+    region: "Métodos e técnicas",
+    next: "Ver mais dois métodos",
+    prev: "Voltar aos métodos anteriores",
+  },
 };
 
 /** Visible card copy — keep in sync with current home UI. */
@@ -342,6 +369,58 @@ const HOME_METHOD_CARDS = {
       lead: "Tratamento de bruxismo e disfunção da ATM.",
     },
   },
+  acupuntura: {
+    es: {
+      title: "Acupuntura",
+      imgTitle: "Acupuntura",
+      imgAlt: "Sesión de acupuntura",
+      lead: "Estimulación de puntos para modular el dolor y la tensión.",
+    },
+    en: {
+      title: "Acupuncture",
+      imgTitle: "Acupuncture",
+      imgAlt: "Acupuncture session",
+      lead: "Point stimulation to modulate pain and tension.",
+    },
+    fr: {
+      title: "Acupuncture",
+      imgTitle: "Acupuncture",
+      imgAlt: "Séance d'acupuncture",
+      lead: "Stimulation de points pour moduler douleur et tension.",
+    },
+    pt: {
+      title: "Acupuntura",
+      imgTitle: "Acupuntura",
+      imgAlt: "Sessão de acupuntura",
+      lead: "Estimulação de pontos para modular dor e tensão.",
+    },
+  },
+  "posturologia-clinica": {
+    es: {
+      title: "Posturología clínica",
+      imgTitle: "Posturología clínica",
+      imgAlt: "Evaluación de posturología clínica",
+      lead: "Evaluación de postura, equilibrio y apoyo plantar.",
+    },
+    en: {
+      title: "Clinical posturology",
+      imgTitle: "Clinical posturology",
+      imgAlt: "Clinical posturology assessment",
+      lead: "Assessment of posture, balance and plantar support.",
+    },
+    fr: {
+      title: "Posturologie clinique",
+      imgTitle: "Posturologie clinique",
+      imgAlt: "Évaluation de posturologie clinique",
+      lead: "Évaluation de la posture, de l'équilibre et de l'appui plantaire.",
+    },
+    pt: {
+      title: "Posturologia clínica",
+      imgTitle: "Posturologia clínica",
+      imgAlt: "Avaliação de posturologia clínica",
+      lead: "Avaliação de postura, equilíbrio e apoio plantar.",
+    },
+  },
 };
 
 function homeMethodCard(lang, stem) {
@@ -349,32 +428,36 @@ function homeMethodCard(lang, stem) {
   const image = HOME_METHOD_CARD_IMAGES[stem];
   const card = HOME_METHOD_CARDS[stem][lang];
   return [
-    "          <div class=\"col-lg-4 col-md-4 col-sm-12 col-xs-12\">",
-    "            <div class=\"service-block\">",
-    "              <div class=\"service-img mb20\">",
-    `                <a href="${escAttr(href)}"><img src="__PREFIX__images/${image}" title="${escAttr(card.imgTitle)}"`,
-    `                    alt="${escAttr(card.imgAlt)}" class="img-responsive" loading="lazy" /></a>`,
+    "            <article class=\"methods-card\">",
+    "              <div class=\"service-block\">",
+    "                <div class=\"service-img mb20\">",
+    `                  <a href="${escAttr(href)}"><img src="__PREFIX__images/${image}" title="${escAttr(card.imgTitle)}"`,
+    `                      alt="${escAttr(card.imgAlt)}" class="img-responsive" loading="lazy" /></a>`,
+    "                </div>",
+    "                <div class=\"service-content\">",
+    `                  <h2><a href="${escAttr(href)}" class="title">${escHtml(card.title)}</a></h2>`,
+    `                  <p>${escHtml(card.lead)}</p>`,
+    "                </div>",
     "              </div>",
-    "              <div class=\"service-content\">",
-    `                <h2><a href="${escAttr(href)}" class="title">${escHtml(card.title)}</a></h2>`,
-    `                <p>${escHtml(card.lead)}</p>`,
-    "              </div>",
-    "            </div>",
-    "          </div>",
+    "            </article>",
   ];
 }
 
-/** Two rows of three method cards; hrefs via sitePath(lang, stem). */
+/** Horizontal 2-row scroller; hrefs via sitePath(lang, stem). */
 export function renderHomeMethodCards(lang) {
-  const row1 = HOME_METHOD_CARD_STEMS.slice(0, 3);
-  const row2 = HOME_METHOD_CARD_STEMS.slice(3);
+  const ui = HOME_METHOD_SCROLL_UI[lang] || HOME_METHOD_SCROLL_UI.es;
   return [
-    "        <div class=\"row\">",
-    ...row1.flatMap((stem) => homeMethodCard(lang, stem)),
-    "        </div>",
-    "        <br />",
-    "        <div class=\"row\">",
-    ...row2.flatMap((stem) => homeMethodCard(lang, stem)),
+    "        <div class=\"methods-scroller-wrap\">",
+    `          <div class=\"methods-scroller\" id=\"methods-scroller\" role=\"region\" aria-label=\"${escAttr(ui.region)}\">`,
+    "            <div class=\"methods-track\">",
+    ...HOME_METHOD_CARD_STEMS.flatMap((stem) => homeMethodCard(lang, stem)),
+    "            </div>",
+    "          </div>",
+    `          <button type=\"button\" class=\"methods-scroll-btn\" aria-controls=\"methods-scroller\" aria-expanded=\"false\" data-label-next=\"${escAttr(ui.next)}\" data-label-prev=\"${escAttr(ui.prev)}\" aria-label=\"${escAttr(ui.next)}\">`,
+    "            <svg viewBox=\"0 0 24 48\" fill=\"none\" aria-hidden=\"true\" focusable=\"false\">",
+    "              <path d=\"M6 4l14 20L6 44\" stroke=\"currentColor\" stroke-width=\"2.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></path>",
+    "            </svg>",
+    "          </button>",
     "        </div>",
   ];
 }
