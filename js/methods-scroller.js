@@ -72,21 +72,18 @@
   }
 
   function cycleWidth(track) {
-    var first = track.querySelector(".methods-card:not(.is-clone)");
-    if (!first) {
-      return 0;
-    }
-    var cycle = first.offsetLeft;
-    return cycle > 8 ? cycle : 0;
+    var step = pageSize(track);
+    return step > 8 ? step * 4 : 0;
   }
 
   function pageSize(track) {
-    var card = track.querySelector(".methods-card");
-    if (!card) {
-      return 0;
-    }
+    var col = parseFloat(track.style.getPropertyValue("--methods-col"));
     var gap = parseFloat(window.getComputedStyle(track).columnGap) || 0;
-    return card.getBoundingClientRect().width + gap;
+    if (!(col > 0)) {
+      var card = track.querySelector(".methods-card");
+      col = card ? card.getBoundingClientRect().width : 0;
+    }
+    return col + gap;
   }
 
   function initMethodsScroller(root) {
@@ -128,6 +125,15 @@
       }
     }
 
+    function snapDest(from) {
+      var step = pageSize(track);
+      var cycle = cycleWidth(track);
+      if (step <= 8 || cycle <= 8) {
+        return from;
+      }
+      return cycle + Math.round((from - cycle) / step) * step;
+    }
+
     function paint() {
       wrapOffset();
       track.style.transform = "translate3d(" + -offset + "px,0,0)";
@@ -155,7 +161,7 @@
       window.cancelAnimationFrame(animFrame);
       wrapOffset();
       if (reduceMotion) {
-        offset = dest;
+        offset = snapDest(dest);
         paint();
         animating = false;
         return;
@@ -177,7 +183,7 @@
         if (t < 1) {
           animFrame = window.requestAnimationFrame(frame);
         } else {
-          offset = dest;
+          offset = snapDest(dest);
           paint();
           animating = false;
         }
@@ -195,12 +201,27 @@
         return;
       }
       wrapOffset();
+      offset = snapDest(offset);
       var dest = offset + direction * page;
       if (direction > 0 && dest > cycle * 2) {
         dest = cycle * 2;
       }
       if (direction < 0 && dest < 0) {
         dest = 0;
+      }
+      animateTo(dest);
+    }
+
+    function settle() {
+      if (!canLoop() || animating) {
+        return;
+      }
+      wrapOffset();
+      var dest = snapDest(offset);
+      if (Math.abs(dest - offset) < 1) {
+        offset = dest;
+        paint();
+        return;
       }
       animateTo(dest);
     }
@@ -223,12 +244,34 @@
       advance(event.key === "ArrowRight" ? 1 : -1);
     });
 
+    var wheelTimer = 0;
+    scroller.addEventListener(
+      "wheel",
+      function (event) {
+        if (!canLoop() || btn.hidden) {
+          return;
+        }
+        if (Math.abs(event.deltaX) <= Math.abs(event.deltaY)) {
+          return;
+        }
+        event.preventDefault();
+        if (animating) {
+          return;
+        }
+        offset += event.deltaX;
+        paint();
+        window.clearTimeout(wheelTimer);
+        wheelTimer = window.setTimeout(settle, 80);
+      },
+      { passive: false },
+    );
+
     enableDrag(scroller, function () {
       return offset;
     }, function (value) {
       offset = value;
       paint();
-    }, canLoop);
+    }, canLoop, settle);
 
     window.addEventListener("resize", function () {
       if (canLoop()) {
@@ -248,7 +291,7 @@
     sync();
   }
 
-  function enableDrag(scroller, getOffset, setOffset, canLoop) {
+  function enableDrag(scroller, getOffset, setOffset, canLoop, onEnd) {
     var startX = 0;
     var startOffset = 0;
     var pointerId = null;
@@ -297,10 +340,14 @@
       if (!tracking || (event && event.pointerId !== pointerId)) {
         return;
       }
+      var wasDragging = dragging;
       tracking = false;
       dragging = false;
       pointerId = null;
       scroller.classList.remove("is-dragging");
+      if (wasDragging && typeof onEnd === "function") {
+        onEnd();
+      }
     }
 
     scroller.addEventListener("pointerup", stopDrag);
