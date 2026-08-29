@@ -3,7 +3,17 @@
  */
 
 html:has(body.page-home-v2) {
-  background: #f6f9fb;
+  background-color: var(--surface-canvas-bottom);
+  background-image: linear-gradient(
+    180deg,
+    var(--surface-canvas-top) 0%,
+    var(--surface-canvas-top) 50%,
+    var(--surface-canvas-bottom) 50%,
+    var(--surface-canvas-bottom) 100%
+  );
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-attachment: fixed;
 }
 
 body.page-home.page-home-v2 {
@@ -30,7 +40,7 @@ body.page-home.page-home-v2 {
     linear-gradient(180deg, #f3f7f9 0%, #f7fafb 38%, #f4f8fa 72%, #f7fafb 100%);
   background-attachment: scroll;
   color: var(--home-muted);
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body.page-home-v2 #site-header-root {
@@ -1035,6 +1045,10 @@ body.page-home-v2 .team-meta:has(a) .team-designation:focus-within {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html:has(body.page-home-v2) {
+    background-attachment: scroll;
+  }
+
   body.page-home-v2 .section-intro--band .service-block:hover,
   body.page-home-v2 .panel-body ul:has(> li > a[href$=".html"]) a:hover,
   body.page-home-v2 .team-meta:has(a) .team-designation:hover,

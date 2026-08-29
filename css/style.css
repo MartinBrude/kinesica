@@ -43,8 +43,8 @@
 
 html {
   min-height: 100%;
-  /* Overscroll superior: mismo tono que .header-top */
-  background-color: var(--secondary-color);
+  /* Bounce inferior: mismo tono que .footer / .tiny-footer */
+  background-color: var(--surface-canvas-bottom);
   background-image: linear-gradient(
     180deg,
     var(--surface-canvas-top) 0%,
