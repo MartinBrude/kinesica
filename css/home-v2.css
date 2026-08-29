@@ -725,7 +725,7 @@ body.page-home-v2 .section-intro--about::before {
       color-mix(in srgb, var(--primary-color) 8%, transparent),
       transparent 72%
     );
-  border-radius: 58% 42% 48% 62%;
+  border-radius: 58% 55% 48% 62% / 42% 92% 28% 58%;
 }
 
 body.page-home-v2 .section-intro--about .container {
