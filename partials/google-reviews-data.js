@@ -1,11 +1,11 @@
 /** AUTO-GENERATED — no editar. Fuente: npm run reviews:fetch */
 window.KINESICA_GOOGLE_REVIEWS = {
   "placeId": "ChIJZ2mPW9K1vJUR3J5kGRi5gws",
-  "fetchedAt": "2026-09-01T23:09:37.616Z",
+  "fetchedAt": "2026-09-05T14:43:54.832Z",
   "displayName": "Kinesica",
   "googleMapsUri": "https://maps.google.com/?cid=829710269522681564&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA",
   "rating": 5,
-  "userRatingCount": 31,
+  "userRatingCount": 32,
   "reviews": [
     {
       "author": "Mariana González Cadahía",
