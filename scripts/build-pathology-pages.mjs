@@ -179,7 +179,7 @@ function buildHtml(pathology, lang) {
       name: "Kinésica",
       logo: {
         "@type": "ImageObject",
-        url: `${SITE}/images/logo.svg`,
+        url: `${SITE}/images/logo.png`,
       },
     },
     datePublished: pathology.publishedAt ?? PATHOLOGY_DEFAULT_PUBLISHED_AT,

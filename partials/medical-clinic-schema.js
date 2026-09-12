@@ -21,10 +21,10 @@
     "inLanguage": "es-AR",
     "description": "Centro de fisioterapia y kinesiología en Palermo, Buenos Aires: kinesiología, osteopatía, RPG, ATM y terapias manuales personalizadas.",
     "image": [
-      "https://www.kinesica.com.ar/images/logo.svg",
+      "https://www.kinesica.com.ar/images/logo.png",
       "https://www.kinesica.com.ar/images/og-image.jpg"
     ],
-    "logo": "https://www.kinesica.com.ar/images/logo.svg",
+    "logo": "https://www.kinesica.com.ar/images/logo.png",
     "telephone": "+54-11-6156-4311",
     "email": "norberto1712@gmail.com",
     "address": {
@@ -349,7 +349,7 @@
       "ratingValue": 5,
       "bestRating": 5,
       "worstRating": 1,
-      "ratingCount": 30
+      "ratingCount": 32
     }
   },
   "en": {
@@ -367,10 +367,10 @@
     "inLanguage": "en",
     "description": "Physiotherapy and kinesiology clinic in Palermo, Buenos Aires: kinesiology, osteopathy, RPG, TMJ, and personalized manual therapy.",
     "image": [
-      "https://www.kinesica.com.ar/images/logo.svg",
+      "https://www.kinesica.com.ar/images/logo.png",
       "https://www.kinesica.com.ar/images/og-image.jpg"
     ],
-    "logo": "https://www.kinesica.com.ar/images/logo.svg",
+    "logo": "https://www.kinesica.com.ar/images/logo.png",
     "telephone": "+54-11-6156-4311",
     "email": "norberto1712@gmail.com",
     "address": {
@@ -695,7 +695,7 @@
       "ratingValue": 5,
       "bestRating": 5,
       "worstRating": 1,
-      "ratingCount": 30
+      "ratingCount": 32
     }
   },
   "fr": {
@@ -713,10 +713,10 @@
     "inLanguage": "fr",
     "description": "Centre de kinésithérapie et physiothérapie à Palermo, Buenos Aires : kinésithérapie, ostéopathie, RPG, ATM et thérapies manuelles personnalisées.",
     "image": [
-      "https://www.kinesica.com.ar/images/logo.svg",
+      "https://www.kinesica.com.ar/images/logo.png",
       "https://www.kinesica.com.ar/images/og-image.jpg"
     ],
-    "logo": "https://www.kinesica.com.ar/images/logo.svg",
+    "logo": "https://www.kinesica.com.ar/images/logo.png",
     "telephone": "+54-11-6156-4311",
     "email": "norberto1712@gmail.com",
     "address": {
@@ -1041,7 +1041,7 @@
       "ratingValue": 5,
       "bestRating": 5,
       "worstRating": 1,
-      "ratingCount": 30
+      "ratingCount": 32
     }
   },
   "pt": {
@@ -1059,10 +1059,10 @@
     "inLanguage": "pt",
     "description": "Clínica de fisioterapia em Palermo, Buenos Aires: fisioterapia, osteopatia, RPG, ATM e terapia manual personalizada.",
     "image": [
-      "https://www.kinesica.com.ar/images/logo.svg",
+      "https://www.kinesica.com.ar/images/logo.png",
       "https://www.kinesica.com.ar/images/og-image.jpg"
     ],
-    "logo": "https://www.kinesica.com.ar/images/logo.svg",
+    "logo": "https://www.kinesica.com.ar/images/logo.png",
     "telephone": "+54-11-6156-4311",
     "email": "norberto1712@gmail.com",
     "address": {
@@ -1383,7 +1383,7 @@
       "ratingValue": 5,
       "bestRating": 5,
       "worstRating": 1,
-      "ratingCount": 30
+      "ratingCount": 32
     }
   }
 };
