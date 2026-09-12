@@ -18,6 +18,10 @@ import { CONTACT, SOCIALS, waMeUrl } from "./site-contact.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = path.join(ROOT, "partials");
+const LOGO_FILE = path.join(ROOT, "images/logo.png");
+const LOGO_VERSION = fs.existsSync(LOGO_FILE)
+  ? String(Math.floor(fs.statSync(LOGO_FILE).mtimeMs / 1000))
+  : String(Math.floor(Date.now() / 1000));
 
 function writePartial(name, lang, comment, body) {
   const key = lang.toUpperCase();
@@ -60,7 +64,7 @@ function buildHeader(lang, s) {
     <div class="container">
       <div class="row">
         <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-          <a href="${s.homeHref}"><img src="${s.logoSrc}" alt="${s.logoAlt}" width="216" height="72"
+          <a href="${s.homeHref}"><img src="${s.logoSrc}?v=${LOGO_VERSION}" alt="${s.logoAlt}" width="300" height="100"
               loading="eager" /></a>
         </div>
         <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">

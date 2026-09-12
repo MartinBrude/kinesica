@@ -20,7 +20,7 @@ window.__KINESICA_HEADER_SNIPPET_FR = `
     <div class="container">
       <div class="row">
         <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-          <a href="/fr/"><img src="../images/logo.png" alt="Kinésica — accueil" width="216" height="72"
+          <a href="/fr/"><img src="../images/logo.png?v=1789196967" alt="Kinésica — accueil" width="300" height="100"
               loading="eager" /></a>
         </div>
         <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
