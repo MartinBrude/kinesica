@@ -1,7 +1,7 @@
 /** AUTO-GENERATED — no editar. Fuente: npm run reviews:fetch */
 window.KINESICA_GOOGLE_REVIEWS = {
   "placeId": "ChIJZ2mPW9K1vJUR3J5kGRi5gws",
-  "fetchedAt": "2026-09-05T14:43:54.832Z",
+  "fetchedAt": "2026-09-12T15:08:32.836Z",
   "displayName": "Kinesica",
   "googleMapsUri": "https://maps.google.com/?cid=829710269522681564&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA",
   "rating": 5,
@@ -137,14 +137,14 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "publishTime": "2026-07-21T22:41:19.944949311Z"
       },
       {
-        "author": "Susana Mühlmann",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWUfGXN593tTwuhxuqVKOEWUIvavQjTlY93VeBQWBCQXFlW3nY=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/107592515738110590238/reviews",
+        "author": "Martin Figueroa",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWH1NIssF8Mao5RzMLHufdWDcctM9XzC6a9okzyyojbh9m-22pw=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/114835887772282675184/reviews",
         "rating": 5,
-        "text": "My consultation with physiotherapist Norberto Brude was excellent. He has been treating me for over thirty years, knows my body and important health issues, and works according to my needs and abilities. Since it's difficult for me to go to the office, he came to my house and, after assessing my situation, gave me exercises to do on my own. These exercises, which we initially practiced together, were designed to strengthen my muscles, eliminate pain, and improve my overall quality of life. He also responded promptly to any new pains I reported later, to discuss how to proceed. In addition to being an excellent professional, he is a wonderful person. Highly recommended.",
+        "text": "Dr. Brude provides excellent care at every session. He explains things clearly and inspires a lot of confidence. His commitment to the patient's recovery is evident. His approach is very kind and personalized.",
         "language": "en",
         "relativeTime": "5 months ago",
-        "publishTime": "2026-03-27T19:20:10.553212148Z"
+        "publishTime": "2026-03-18T19:26:52.862442188Z"
       },
       {
         "author": "Jack Grantham",
