@@ -58,7 +58,7 @@ const COPY = {
         description: "Método de RPG para flexibilizar musculatura estática y reeducar la postura.",
       },
       neurodinamia: {
-        name: "Neurodinámia",
+        name: "Neurodinamia",
         description: "Tratamiento de tensiones nerviosas y movilización neural.",
       },
       manipulaciones: {

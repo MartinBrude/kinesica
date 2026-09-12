@@ -18,6 +18,7 @@ export const CONTACT = {
   /** Clinic address (UI + schema). */
   address: {
     streetAddress: "Charcas 3889",
+    addressNeighborhood: "Palermo",
     addressLocality: "Ciudad Autónoma de Buenos Aires",
     addressRegion: "CABA",
     postalCode: "C1425",

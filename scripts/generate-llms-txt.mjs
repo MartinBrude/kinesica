@@ -28,7 +28,7 @@ Información útil para asistentes y crawlers:
 - **Inglés:** \`/en/\` · **Francés:** \`/fr/\` · **Português:** \`/pt/\`
 - **Turnos:** WhatsApp [${CONTACT.phoneDisplay}](${waMeUrl()})
 - **Horario:** ${OPENING_HOURS.llmsLine}
-- **Ubicación:** Palermo, CABA (ver mapa en la home)
+- **Ubicación:** ${CONTACT.address.streetAddress}, ${CONTACT.address.addressNeighborhood}, ${CONTACT.address.addressRegion} (${CONTACT.address.postalCode})
 - **Profesional:** ${FOUNDER.name} — kinesiólogo y osteópata`;
 
 const METHOD_SECTION_TITLES = {

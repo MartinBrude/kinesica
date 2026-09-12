@@ -105,10 +105,12 @@ check("robots.txt", (text) => {
     errors.push("robots.txt: missing User-agent ClaudeBot");
   if (!/User-agent:\s*Google-Extended/i.test(text))
     errors.push("robots.txt: missing User-agent Google-Extended");
-  if (!/^https:\/\/www\.kinesica\.com\.ar\/llms\.txt$/m.test(text))
-    errors.push("robots.txt: llms.txt link must be uncommented");
-  if (!/^https:\/\/www\.kinesica\.com\.ar\/llms-full\.txt$/m.test(text))
-    errors.push("robots.txt: llms-full.txt link must be uncommented");
+  if (!/#\s*https:\/\/www\.kinesica\.com\.ar\/llms\.txt$/m.test(text))
+    errors.push("robots.txt: missing commented llms.txt link");
+  if (!/#\s*https:\/\/www\.kinesica\.com\.ar\/llms-full\.txt$/m.test(text))
+    errors.push("robots.txt: missing commented llms-full.txt link");
+  if (/^https:\/\/www\.kinesica\.com\.ar\/llms/m.test(text))
+    errors.push("robots.txt: llms URLs must be comments, not bare robots directives");
 });
 
 check("llms.txt", (text) => {

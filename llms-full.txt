@@ -8,7 +8,7 @@ Información útil para asistentes y crawlers:
 - **Inglés:** `/en/` · **Francés:** `/fr/` · **Português:** `/pt/`
 - **Turnos:** WhatsApp [+54 (11) 6156-4311](https://wa.me/5491161564311)
 - **Horario:** lunes a viernes, 08:00–19:00
-- **Ubicación:** Palermo, CABA (ver mapa en la home)
+- **Ubicación:** Charcas 3889, Palermo, CABA (C1425)
 - **Profesional:** Norberto Silvio Brude — kinesiólogo y osteópata
 
 Versión resumida: [llms.txt](https://www.kinesica.com.ar/llms.txt)

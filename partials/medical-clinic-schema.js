@@ -30,6 +30,7 @@
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Charcas 3889",
+      "addressNeighborhood": "Palermo",
       "addressLocality": "Ciudad Autónoma de Buenos Aires",
       "addressRegion": "CABA",
       "postalCode": "C1425",
@@ -221,7 +222,7 @@
           "itemOffered": {
             "@type": "Service",
             "@id": "https://www.kinesica.com.ar/neurodinamia.html#service",
-            "name": "Neurodinámia",
+            "name": "Neurodinamia",
             "description": "Tratamiento de tensiones nerviosas y movilización neural.",
             "url": "https://www.kinesica.com.ar/neurodinamia.html",
             "provider": {
@@ -375,6 +376,7 @@
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Charcas 3889",
+      "addressNeighborhood": "Palermo",
       "addressLocality": "Ciudad Autónoma de Buenos Aires",
       "addressRegion": "CABA",
       "postalCode": "C1425",
@@ -720,6 +722,7 @@
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Charcas 3889",
+      "addressNeighborhood": "Palermo",
       "addressLocality": "Ciudad Autónoma de Buenos Aires",
       "addressRegion": "CABA",
       "postalCode": "C1425",
@@ -1065,6 +1068,7 @@
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Charcas 3889",
+      "addressNeighborhood": "Palermo",
       "addressLocality": "Ciudad Autónoma de Buenos Aires",
       "addressRegion": "CABA",
       "postalCode": "C1425",

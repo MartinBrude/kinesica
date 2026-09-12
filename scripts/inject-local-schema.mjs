@@ -45,7 +45,8 @@ function inject(html, file) {
   out = out.replace(/\n{3,}/g, "\n\n");
 
   if (out.includes("</head>")) {
-    out = out.replace("</head>", `${block}\n</head>`);
+    // Function replacer: a string replacement would collapse JSON "$$" → "$".
+    out = out.replace("</head>", () => `${block}\n</head>`);
   } else {
     throw new Error(`No </head> in ${file}`);
   }
