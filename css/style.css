@@ -179,8 +179,14 @@ a:focus {
 }
 
 a:focus-visible {
-  outline: 2px solid rgba(0, 95, 153, 0.4);
-  outline-offset: 2px;
+  outline: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  a:focus-visible {
+    outline: 2px solid rgba(0, 95, 153, 0.4);
+    outline-offset: 2px;
+  }
 }
 
 a:hover {
@@ -1812,6 +1818,7 @@ main:focus {
 
 .footer-widget li a:hover,
 .footer-widget li a:focus,
+.footer-widget li a:focus-visible,
 .footer-widget li a:active {
   color: #fff;
   background-color: transparent;
@@ -1820,9 +1827,11 @@ main:focus {
   opacity: 1;
 }
 
-.footer-widget li a:focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.5);
-  outline-offset: 3px;
+@media (hover: hover) and (pointer: fine) {
+  .footer-widget li a:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.5);
+    outline-offset: 3px;
+  }
 }
 
 .footer-social {}
@@ -1921,6 +1930,7 @@ main:focus {
 
 .tiny-footer a:hover,
 .tiny-footer a:focus,
+.tiny-footer a:focus-visible,
 .tiny-footer a:active {
   color: #fff;
   background-color: transparent;
@@ -1929,9 +1939,11 @@ main:focus {
   opacity: 1;
 }
 
-.tiny-footer a:focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.5);
-  outline-offset: 3px;
+@media (hover: hover) and (pointer: fine) {
+  .tiny-footer a:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.5);
+    outline-offset: 3px;
+  }
 }
 
 .copyright-content {
