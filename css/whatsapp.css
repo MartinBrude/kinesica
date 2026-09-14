@@ -17,6 +17,10 @@
   animation:
     bounceIn 1s ease-out,
     pulse 3s infinite ease-in-out;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 .whatsapp-float:hover {
   transform: scale(1.1);

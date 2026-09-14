@@ -57,6 +57,7 @@ html {
   background-repeat: no-repeat;
   background-size: 100% 100vh;
   background-attachment: fixed;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html:has(body.page-home) {
@@ -760,6 +761,10 @@ body:has(main .page-header):not(.page-home) .site-cta-strip .btn-white {
   transition:
     background 0.2s ease,
     box-shadow 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .lang-picker__trigger:hover,
@@ -814,6 +819,10 @@ body:has(main .page-header):not(.page-home) .site-cta-strip .btn-white {
   text-decoration: none;
   font-size: 14px;
   white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .lang-picker__option:hover,
@@ -1751,6 +1760,14 @@ main:focus {
   padding-bottom: 40px;
   color: #d1d5db;
   /* Gray 300 */
+  -webkit-tap-highlight-color: transparent;
+}
+
+.footer .widget-title,
+.tiny-footer .copyright-content {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .footer-widget p {
@@ -1784,11 +1801,28 @@ main:focus {
   font-size: 1.5rem;
   line-height: 1.45;
   display: inline-block;
+  max-width: 100%;
+  background-color: transparent;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
   transition: color 0.2s ease;
 }
 
-.footer-widget li a:hover {
+.footer-widget li a:hover,
+.footer-widget li a:focus,
+.footer-widget li a:active {
   color: #fff;
+  background-color: transparent;
+  outline: none;
+  box-shadow: none;
+  opacity: 1;
+}
+
+.footer-widget li a:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 3px;
 }
 
 .footer-social {}
@@ -1819,6 +1853,11 @@ main:focus {
 
   .footer-widget .widget-title {
     font-size: 1.625rem;
+  }
+
+  .footer-widget li a {
+    display: block;
+    width: fit-content;
   }
 }
 
@@ -1867,16 +1906,32 @@ main:focus {
   color: #9ca3af;
   text-align: center;
   text-transform: uppercase;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .tiny-footer a {
   color: #d1d5db;
+  background-color: transparent;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
   transition: color 0.2s ease;
 }
 
 .tiny-footer a:hover,
-.tiny-footer a:focus {
+.tiny-footer a:focus,
+.tiny-footer a:active {
   color: #fff;
+  background-color: transparent;
+  outline: none;
+  box-shadow: none;
+  opacity: 1;
+}
+
+.tiny-footer a:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 3px;
 }
 
 .copyright-content {
@@ -3807,6 +3862,9 @@ html {
   background: transparent !important;
   border: none !important;
   -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 #navigation > ul > li > .nav-parent {
