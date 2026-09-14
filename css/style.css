@@ -43,6 +43,7 @@
 
 html {
   min-height: 100%;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   /* Bounce inferior: mismo tono que .footer / .tiny-footer */
   background-color: var(--surface-canvas-bottom);
   background-image: linear-gradient(
@@ -57,7 +58,6 @@ html {
   background-repeat: no-repeat;
   background-size: 100% 100vh;
   background-attachment: fixed;
-  -webkit-tap-highlight-color: transparent;
 }
 
 html:has(body.page-home) {
@@ -1766,14 +1766,18 @@ main:focus {
   padding-bottom: 40px;
   color: #d1d5db;
   /* Gray 300 */
-  -webkit-tap-highlight-color: transparent;
-}
-
-.footer .widget-title,
-.tiny-footer .copyright-content {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
+}
+
+.footer ::selection,
+.footer *::selection,
+.tiny-footer ::selection,
+.tiny-footer *::selection {
+  background: transparent;
+  color: inherit;
 }
 
 .footer-widget p {
@@ -1808,11 +1812,16 @@ main:focus {
   line-height: 1.45;
   display: inline-block;
   max-width: 100%;
-  background-color: transparent;
-  -webkit-tap-highlight-color: transparent;
+  background-color: #111827;
+  border-radius: 4px;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
+  -webkit-user-drag: none;
+  touch-action: manipulation;
+  outline: none !important;
+  box-shadow: none !important;
   transition: color 0.2s ease;
 }
 
@@ -1821,17 +1830,10 @@ main:focus {
 .footer-widget li a:focus-visible,
 .footer-widget li a:active {
   color: #fff;
-  background-color: transparent;
-  outline: none;
-  box-shadow: none;
+  background-color: #111827;
+  outline: none !important;
+  box-shadow: none !important;
   opacity: 1;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .footer-widget li a:focus-visible {
-    outline: 2px solid rgba(255, 255, 255, 0.5);
-    outline-offset: 3px;
-  }
 }
 
 .footer-social {}
@@ -1915,16 +1917,21 @@ main:focus {
   color: #9ca3af;
   text-align: center;
   text-transform: uppercase;
-  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .tiny-footer a {
   color: #d1d5db;
-  background-color: transparent;
-  -webkit-tap-highlight-color: transparent;
+  background-color: #111827;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
+  -webkit-user-drag: none;
+  touch-action: manipulation;
+  outline: none !important;
   transition: color 0.2s ease;
 }
 
@@ -1933,17 +1940,10 @@ main:focus {
 .tiny-footer a:focus-visible,
 .tiny-footer a:active {
   color: #fff;
-  background-color: transparent;
-  outline: none;
-  box-shadow: none;
+  background-color: #111827;
+  outline: none !important;
+  box-shadow: none !important;
   opacity: 1;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .tiny-footer a:focus-visible {
-    outline: 2px solid rgba(255, 255, 255, 0.5);
-    outline-offset: 3px;
-  }
 }
 
 .copyright-content {

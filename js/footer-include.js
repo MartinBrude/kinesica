@@ -53,6 +53,21 @@
     window.kinesicaApplyWhatsAppContact();
   }
 
+  root.addEventListener("contextmenu", function (event) {
+    if (event.target.closest("a")) {
+      event.preventDefault();
+    }
+  });
+  function blurFooterLink(event) {
+    var link = event.target.closest("a");
+    if (link && typeof link.blur === "function") {
+      link.blur();
+    }
+  }
+  root.addEventListener("pointerup", blurFooterLink, true);
+  root.addEventListener("pointercancel", blurFooterLink, true);
+  root.addEventListener("touchend", blurFooterLink, true);
+
   if (!window.__KINESICA_GTM_EVENTS_LOADED) {
     var gtmEventsSrc = jsSiblingScript("gtm-events.js");
     if (gtmEventsSrc) {
