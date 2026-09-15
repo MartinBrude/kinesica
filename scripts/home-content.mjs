@@ -12,6 +12,12 @@ import {
 } from "./google-place.mjs";
 import { SITE_OG_IMAGE } from "./page-shell.mjs";
 import { waMeUrl } from "./site-contact.mjs";
+import { readExistingPayload } from "./fetch-google-reviews.mjs";
+import {
+  balanceReviewOrder,
+  localizeReviews,
+  pickReviews,
+} from "./google-reviews-pick.mjs";
 
 export const HOME_OG_IMAGE = SITE_OG_IMAGE;
 /** @deprecated Use HOME_OG_IMAGE for social previews. */
@@ -521,15 +527,109 @@ function teamAboutSection(lang) {
   ];
 }
 
-/** Google review cards (Places API → npm run reviews:fetch or js/google-reviews.js). */
+function reviewStarsHtml(rating) {
+  const n = Math.max(0, Math.min(5, Math.round(Number(rating) || 0)));
+  let html = "";
+  for (let i = 1; i <= 5; i++) {
+    html += `<span class="google-review-star${i <= n ? " google-review-star--on" : ""}" aria-hidden="true"><i class="fa fa-star"></i></span>`;
+  }
+  return html;
+}
+
+function relativeTimeLocale(lang) {
+  if (lang === "es") return "es";
+  if (lang === "fr") return "fr";
+  if (lang === "pt") return "pt";
+  return "en";
+}
+
+function formatRelativeTime(publishTime, lang) {
+  if (!publishTime) return "";
+  const then = Date.parse(publishTime);
+  if (!Number.isFinite(then)) return "";
+  const diffMs = then - Date.now();
+  const abs = Math.abs(diffMs);
+  const divisions = [
+    { amount: 31536000000, unit: "year" },
+    { amount: 2629800000, unit: "month" },
+    { amount: 604800000, unit: "week" },
+    { amount: 86400000, unit: "day" },
+    { amount: 3600000, unit: "hour" },
+    { amount: 60000, unit: "minute" },
+    { amount: 1000, unit: "second" },
+  ];
+  let unit = "second";
+  let value = 0;
+  for (const d of divisions) {
+    if (abs >= d.amount || d.unit === "second") {
+      unit = d.unit;
+      value = Math.round(diffMs / d.amount);
+      break;
+    }
+  }
+  try {
+    return new Intl.RelativeTimeFormat(relativeTimeLocale(lang), {
+      numeric: "always",
+    }).format(value, unit);
+  } catch {
+    return "";
+  }
+}
+
+function reviewTimeLabel(review, lang) {
+  return (
+    formatRelativeTime(review.publishTime, lang) ||
+    review.relativeTime ||
+    ""
+  );
+}
+
+function renderReviewCard(review, lang) {
+  const avatarHtml = review.authorPhoto
+    ? `\n                    <img class="google-review-avatar" src="${escAttr(review.authorPhoto)}" alt="" width="40" height="40" loading="lazy" decoding="async" referrerpolicy="no-referrer" />`
+    : "";
+  const timeLabel = reviewTimeLabel(review, lang);
+  const timeHtml = timeLabel
+    ? `<span class="google-review-time">${escHtml(timeLabel)}</span>`
+    : "";
+
+  return [
+    "                  <article class=\"google-review-card\">",
+    "                    <header class=\"google-review-card-head\">",
+    avatarHtml ? `  ${avatarHtml}` : "",
+    "                      <div class=\"google-review-meta\">",
+    `                        <p class=\"google-review-author\">${escHtml(review.author)}</p>`,
+    `                        <p class=\"google-review-rating\">${reviewStarsHtml(review.rating)}${timeHtml}</p>`,
+    "                      </div>",
+    "                    </header>",
+    `                    <p class=\"google-review-text\">${escHtml(review.text)}</p>`,
+    "                  </article>",
+  ].filter(Boolean).join("\n");
+}
+
+export function getStaticReviews(lang, count = 3) {
+  const payload = readExistingPayload();
+  const list =
+    payload.byLang?.[lang] || (lang === "es" ? payload.reviews : []) || [];
+  const localized = localizeReviews(list, lang, payload.translations);
+  const picked = pickReviews(localized, 5);
+  return balanceReviewOrder(picked).slice(0, count);
+}
+
+/** Google review cards (Places API → static HTML + js/google-reviews.js). */
 export function googleReviewsBlock(lang) {
   const copy = MAP_REVIEWS_COPY[lang] || MAP_REVIEWS_COPY.es;
   const listUrl = googleReviewsListUrl();
+  const reviews = getStaticReviews(lang, 3);
+  const cardsHtml = reviews.length
+    ? reviews.map((r) => renderReviewCard(r, lang)).join("\n")
+    : "";
+  const langAttr = lang === "es" ? "es-AR" : lang;
   return [
-    "            <div class=\"map-reviews-aside\" hidden>",
+    "            <div class=\"map-reviews-aside\">",
     "              <div class=\"google-reviews-wrap\">",
-    `              <section id="google-reviews-section" class="google-reviews" data-reviews-lang="${lang}" hidden>`,
-    "                <div id=\"google-reviews-grid\" class=\"google-reviews-grid\"></div>",
+    `              <section id="google-reviews-section" class="google-reviews" data-reviews-lang="${lang}" lang="${langAttr}">`,
+    `                <div id="google-reviews-grid" class="google-reviews-grid">${cardsHtml ? "\n" + cardsHtml + "\n                " : ""}</div>`,
     "              </section>",
     "              <script src=\"__PREFIX__js/reviews.min.js\" defer></script>",
     "              </div>",
@@ -543,7 +643,7 @@ export function googleReviewsBlock(lang) {
 /** @type {Record<import("./languages.mjs").LangCode, HomeLang>} */
 export const HOME = {
   es: {
-    title: "Kinésica - Kinesiología, Osteopatía, RPG y ATM",
+    title: "Kinésica - Kinesiología, Osteopatía, RPG y ATM en Palermo, Buenos Aires",
     description: "Kinésica es un centro de kinesiología, osteopatía, RPG y ATM en Palermo. Terapias manuales personalizadas.",
     ogDescription: "Kinésica es un centro de kinesiología, osteopatía, RPG y ATM en Palermo. Terapias manuales personalizadas.",
     twitterDescription: "Kinésica es un centro de kinesiología, osteopatía, RPG y ATM en Palermo. Terapias manuales personalizadas.",
@@ -657,7 +757,7 @@ export const HOME = {
     ].join("\n"),
   },
   en: {
-    title: "Kinésica - Kinesiology, Osteopathy, RPG and TMJ",
+    title: "Kinésica - Kinesiology, Osteopathy, RPG and TMJ in Palermo, Buenos Aires",
     description: "Kinésica is a clinic for kinesiology, osteopathy, RPG, and TMJ in Palermo offering personalized manual therapy.",
     ogDescription: "Kinésica is a clinic for kinesiology, osteopathy, RPG, and TMJ in Palermo offering personalized manual therapy.",
     twitterDescription: "Kinésica is a clinic for kinesiology, osteopathy, RPG, and TMJ in Palermo offering personalized manual therapy.",
@@ -771,7 +871,7 @@ export const HOME = {
     ].join("\n"),
   },
   fr: {
-    title: "Kinésica — Kinésithérapie, ostéopathie, RPG et ATM",
+    title: "Kinésica — Kinésithérapie, ostéopathie, RPG et ATM à Palermo, Buenos Aires",
     description: "Kinésica est un centre de kinésithérapie, ostéopathie, RPG et ATM à Palermo. Thérapies manuelles personnalisées.",
     ogDescription: "Kinésica est un centre de kinésithérapie, ostéopathie, RPG et ATM à Palermo. Thérapies manuelles personnalisées.",
     twitterDescription: "Kinésica est un centre de kinésithérapie, ostéopathie, RPG et ATM à Palermo. Thérapies manuelles personnalisées.",
@@ -884,7 +984,7 @@ export const HOME = {
     ].join("\n"),
   },
   pt: {
-    title: "Kinésica — Fisioterapia, osteopatia, RPG e ATM",
+    title: "Kinésica — Fisioterapia, osteopatia, RPG e ATM em Palermo, Buenos Aires",
     description: "Kinésica é um centro de fisioterapia, osteopatia, RPG e ATM em Palermo com terapias manuais personalizadas.",
     ogDescription: "Kinésica é um centro de fisioterapia, osteopatia, RPG e ATM em Palermo com terapias manuais personalizadas.",
     twitterDescription: "Kinésica é um centro de fisioterapia, osteopatia, RPG e ATM em Palermo com terapias manuais personalizadas.",

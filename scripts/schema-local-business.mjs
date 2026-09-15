@@ -16,7 +16,15 @@ import {
   waMeUrl,
 } from "./site-contact.mjs";
 import { faqsForSchema } from "./faq-content.mjs";
-import { googleReviewsAggregateRating } from "./fetch-google-reviews.mjs";
+import {
+  googleReviewsAggregateRating,
+  readExistingPayload,
+} from "./fetch-google-reviews.mjs";
+import {
+  balanceReviewOrder,
+  localizeReviews,
+  pickReviews,
+} from "./google-reviews-pick.mjs";
 
 export const BUSINESS_ID = `${SITE}/#kinesica`;
 
@@ -307,7 +315,7 @@ function buildOfferCatalog(lang) {
 }
 
 /** Clínica de fisioterapia — entidad local principal. */
-export function buildPhysiotherapyClinic(lang) {
+export function buildPhysiotherapyClinic(lang, { includeReviews = false } = {}) {
   const t = COPY[lang];
   const langCode = HTML_LANG[lang] ?? lang;
   const contactLanguages =
@@ -405,7 +413,42 @@ export function buildPhysiotherapyClinic(lang) {
   if (aggregateRating) {
     clinic.aggregateRating = aggregateRating;
   }
+  if (includeReviews) {
+    const reviews = getReviewsForSchema(lang, 3);
+    if (reviews.length) {
+      clinic.review = reviews;
+    }
+  }
   return clinic;
+}
+
+export function getReviewsForSchema(lang, count = 3) {
+  const payload = readExistingPayload();
+  const list =
+    payload.byLang?.[lang] || (lang === "es" ? payload.reviews : []) || [];
+  const localized = localizeReviews(list, lang, payload.translations);
+  const picked = pickReviews(localized, 5);
+  const balanced = balanceReviewOrder(picked).slice(0, count);
+  return balanced.map((r) => {
+    const item = {
+      "@type": "Review",
+      author: {
+        "@type": "Person",
+        name: r.author,
+      },
+      reviewRating: {
+        "@type": "Rating",
+        ratingValue: Number(r.rating) || 5,
+        bestRating: 5,
+        worstRating: 1,
+      },
+      reviewBody: r.text,
+    };
+    if (r.publishTime) {
+      item.datePublished = String(r.publishTime).slice(0, 10);
+    }
+    return item;
+  });
 }
 
 export function buildFaqPage(lang) {
@@ -430,12 +473,15 @@ export function buildFaqPage(lang) {
 export function buildHomeGraph(lang) {
   return {
     "@context": "https://schema.org",
-    "@graph": [buildPhysiotherapyClinic(lang), buildFaqPage(lang)],
+    "@graph": [
+      buildPhysiotherapyClinic(lang, { includeReviews: true }),
+      buildFaqPage(lang),
+    ],
   };
 }
 
 export function buildClinicOnly(lang) {
-  return buildPhysiotherapyClinic(lang);
+  return buildPhysiotherapyClinic(lang, { includeReviews: false });
 }
 
 export function langFromHtmlFile(file) {

@@ -175,6 +175,28 @@ export function pageBreadcrumbSection({
     </section>`;
 }
 
+/**
+ * SEO title for pathology landing pages across languages.
+ * Includes treatment, condition name, location (Palermo, Buenos Aires) and brand.
+ *
+ * @param {string} conditionName - e.g. "Lumbalgia"
+ * @param {"es"|"en"|"fr"|"pt"} lang
+ */
+export function formatPathologySeoTitle(conditionName, lang) {
+  const name = String(conditionName || "").trim();
+  switch (lang) {
+    case "en":
+      return `Treatment of ${name} in Palermo, Buenos Aires | Kinésica`;
+    case "fr":
+      return `Traitement de : ${name} à Palermo, Buenos Aires | Kinésica`;
+    case "pt":
+      return `Tratamento de ${name} em Palermo, Buenos Aires | Kinésica`;
+    case "es":
+    default:
+      return `Tratamiento de ${name} en Palermo, Buenos Aires | Kinésica`;
+  }
+}
+
 /** Title, description, canonical, hreflang and Open Graph tags for page builders. */
 export function headSeoBlock({
   lang,

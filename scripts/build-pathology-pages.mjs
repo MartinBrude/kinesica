@@ -15,6 +15,7 @@ import {
   TECHNIQUE_LABELS,
   UI,
   pathologyForStem,
+  pathologySeoTitle,
 } from "./pathology-content.mjs";
 import {
   absoluteUrl,
@@ -189,6 +190,8 @@ function buildHtml(pathology, lang) {
       PATHOLOGY_DEFAULT_UPDATED_AT,
   };
 
+  const seoTitle = pathologySeoTitle(pathology, lang);
+
   return `<!doctype html>
 <html lang="${HTML_LANG[lang]}">
 
@@ -202,11 +205,11 @@ ${headJsClassScript()}${headCriticalCss(p)}  <meta http-equiv="content-language"
 ${headLangDeferScripts(p)}${headSeoBlock({
     lang,
     stem,
-    title: data.title,
+    title: seoTitle,
     description: data.metaDescription,
     type: "article",
     image: imgUrl,
-    imageAlt: data.title,
+    imageAlt: seoTitle,
     canonical,
   })}
 ${headStandardStylesheets(p)}  <script src="${p}partials/gtm-head.min.js" defer></script>

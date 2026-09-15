@@ -405,7 +405,7 @@
     };
 
     var hasStatic = !!staticPayload(lang);
-    if (!hasStatic && mapsApiKey()) {
+    if (!hasStatic && mapsApiKey() && grid.children.length === 0) {
       showLoading(grid);
       showSection(section);
     }
@@ -415,7 +415,9 @@
         renderReviews(section, grid, data, copy);
         return;
       }
-      hideSection(section);
+      if (grid.children.length === 0) {
+        hideSection(section);
+      }
     });
   }
 

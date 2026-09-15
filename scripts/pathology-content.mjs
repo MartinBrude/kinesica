@@ -3745,3 +3745,27 @@ export function pathologyForStem(stem) {
   return pathologyByStem.get(stem);
 }
 
+/**
+ * Return SEO-optimized page title for a pathology in a given language.
+ * Format: "Tratamiento de [Condición] en Palermo, Buenos Aires | Kinésica"
+ *
+ * @param {object} pathology - entry from PATHOLOGIES
+ * @param {"es"|"en"|"fr"|"pt"} lang
+ */
+export function pathologySeoTitle(pathology, lang) {
+  const data = pathology[lang];
+  if (!data) return "";
+  if (data.metaTitle) return data.metaTitle;
+  const name = String(data.breadcrumb || data.h1 || pathology.stem || "").trim();
+  switch (lang) {
+    case "en":
+      return `Treatment of ${name} in Palermo, Buenos Aires | Kinésica`;
+    case "fr":
+      return `Traitement de : ${name} à Palermo, Buenos Aires | Kinésica`;
+    case "pt":
+      return `Tratamento de ${name} em Palermo, Buenos Aires | Kinésica`;
+    case "es":
+    default:
+      return `Tratamiento de ${name} en Palermo, Buenos Aires | Kinésica`;
+  }
+}
