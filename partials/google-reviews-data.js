@@ -1,12 +1,22 @@
 /** AUTO-GENERATED — no editar. Fuente: npm run reviews:fetch */
 window.KINESICA_GOOGLE_REVIEWS = {
   "placeId": "ChIJZ2mPW9K1vJUR3J5kGRi5gws",
-  "fetchedAt": "2026-09-12T15:08:32.836Z",
+  "fetchedAt": "2026-09-16T16:17:54.004Z",
   "displayName": "Kinesica",
   "googleMapsUri": "https://maps.google.com/?cid=829710269522681564&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA",
   "rating": 5,
   "userRatingCount": 32,
   "reviews": [
+    {
+      "author": "Mailín Schneeberger",
+      "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjX7x83prghHbR_UiPIGfbc95mu8jcrTxPiT4RzDjyGFhI869U5DzQ=s128-c0x00000000-cc-rp-mo-ba2",
+      "authorProfile": "https://www.google.com/maps/contrib/112780727533746305420/reviews",
+      "rating": 5,
+      "text": "Muy contenta con la atención. Norberto destaca por su profesionalismo, puntualidad y trato cercano. Me ayudó mucho con mi recuperación mediante un tratamiento personalizado. Totalmente recomendable si buscás un especialista de confianza.",
+      "language": "es",
+      "relativeTime": "Hace una semana",
+      "publishTime": "2026-09-05T09:51:49.661002767Z"
+    },
     {
       "author": "Mariana González Cadahía",
       "authorPhoto": null,
@@ -36,28 +46,28 @@ window.KINESICA_GOOGLE_REVIEWS = {
       "publishTime": "2026-07-21T22:41:19.944949311Z"
     },
     {
-      "author": "Susana Mühlmann",
-      "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWUfGXN593tTwuhxuqVKOEWUIvavQjTlY93VeBQWBCQXFlW3nY=s128-c0x00000000-cc-rp-mo",
-      "authorProfile": "https://www.google.com/maps/contrib/107592515738110590238/reviews",
-      "rating": 5,
-      "text": "La consulta con el Klgo. Norberto Brude fue excelente. Me atiende desde hace más de treinta años, conoce mi cuerpo y temas de salud de importancia, y trabaja en función de lo que necesito y puedo hacer. Cómo se me dificulta ir al consultorio, vino a mi casa y, después de tener un cuadro de situación, me dejó ejercicios que primero practicamos, para hacer sola, orientados a un fortalecimiento que elimine dolores y mejore mi calidad de vida integralmente. De igual manera, respondíó con premura a nuevos dolores que le informé posteriormente, para ver cómo proseguir. Además de un excelente profesional, es una gran persona. Altamente recomendable.",
-      "language": "es",
-      "relativeTime": "Hace 5 meses",
-      "publishTime": "2026-03-27T19:20:10.553212148Z"
-    },
-    {
       "author": "Martin Figueroa",
       "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWH1NIssF8Mao5RzMLHufdWDcctM9XzC6a9okzyyojbh9m-22pw=s128-c0x00000000-cc-rp-mo",
       "authorProfile": "https://www.google.com/maps/contrib/114835887772282675184/reviews",
       "rating": 5,
       "text": "Excelente atención del doctor Brude en cada sesión. Explica con claridad y genera mucha confianza. Se nota el compromiso con la recuperación del paciente. Su trato es muy amable y personalizado.",
       "language": "es",
-      "relativeTime": "Hace 5 meses",
+      "relativeTime": "Hace 6 meses",
       "publishTime": "2026-03-18T19:26:52.862442188Z"
     }
   ],
   "byLang": {
     "es": [
+      {
+        "author": "Mailín Schneeberger",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjX7x83prghHbR_UiPIGfbc95mu8jcrTxPiT4RzDjyGFhI869U5DzQ=s128-c0x00000000-cc-rp-mo-ba2",
+        "authorProfile": "https://www.google.com/maps/contrib/112780727533746305420/reviews",
+        "rating": 5,
+        "text": "Muy contenta con la atención. Norberto destaca por su profesionalismo, puntualidad y trato cercano. Me ayudó mucho con mi recuperación mediante un tratamiento personalizado. Totalmente recomendable si buscás un especialista de confianza.",
+        "language": "es",
+        "relativeTime": "Hace una semana",
+        "publishTime": "2026-09-05T09:51:49.661002767Z"
+      },
       {
         "author": "Mariana González Cadahía",
         "authorPhoto": null,
@@ -87,27 +97,27 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "publishTime": "2026-07-21T22:41:19.944949311Z"
       },
       {
-        "author": "Susana Mühlmann",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWUfGXN593tTwuhxuqVKOEWUIvavQjTlY93VeBQWBCQXFlW3nY=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/107592515738110590238/reviews",
-        "rating": 5,
-        "text": "La consulta con el Klgo. Norberto Brude fue excelente. Me atiende desde hace más de treinta años, conoce mi cuerpo y temas de salud de importancia, y trabaja en función de lo que necesito y puedo hacer. Cómo se me dificulta ir al consultorio, vino a mi casa y, después de tener un cuadro de situación, me dejó ejercicios que primero practicamos, para hacer sola, orientados a un fortalecimiento que elimine dolores y mejore mi calidad de vida integralmente. De igual manera, respondíó con premura a nuevos dolores que le informé posteriormente, para ver cómo proseguir. Además de un excelente profesional, es una gran persona. Altamente recomendable.",
-        "language": "es",
-        "relativeTime": "Hace 5 meses",
-        "publishTime": "2026-03-27T19:20:10.553212148Z"
-      },
-      {
         "author": "Martin Figueroa",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWH1NIssF8Mao5RzMLHufdWDcctM9XzC6a9okzyyojbh9m-22pw=s128-c0x00000000-cc-rp-mo",
         "authorProfile": "https://www.google.com/maps/contrib/114835887772282675184/reviews",
         "rating": 5,
         "text": "Excelente atención del doctor Brude en cada sesión. Explica con claridad y genera mucha confianza. Se nota el compromiso con la recuperación del paciente. Su trato es muy amable y personalizado.",
         "language": "es",
-        "relativeTime": "Hace 5 meses",
+        "relativeTime": "Hace 6 meses",
         "publishTime": "2026-03-18T19:26:52.862442188Z"
       }
     ],
     "en": [
+      {
+        "author": "Mailín Schneeberger",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjX7x83prghHbR_UiPIGfbc95mu8jcrTxPiT4RzDjyGFhI869U5DzQ=s128-c0x00000000-cc-rp-mo-ba2",
+        "authorProfile": "https://www.google.com/maps/contrib/112780727533746305420/reviews",
+        "rating": 5,
+        "text": "I'm very happy with the service. Norberto stands out for his professionalism, punctuality, and friendly approach. He greatly helped my recovery with a personalized treatment plan. I highly recommend him if you're looking for a trustworthy specialist.",
+        "language": "en",
+        "relativeTime": "a week ago",
+        "publishTime": "2026-09-05T09:51:49.661002767Z"
+      },
       {
         "author": "Mariana González Cadahía",
         "authorPhoto": null,
@@ -137,16 +147,6 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "publishTime": "2026-07-21T22:41:19.944949311Z"
       },
       {
-        "author": "Martin Figueroa",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWH1NIssF8Mao5RzMLHufdWDcctM9XzC6a9okzyyojbh9m-22pw=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/114835887772282675184/reviews",
-        "rating": 5,
-        "text": "Dr. Brude provides excellent care at every session. He explains things clearly and inspires a lot of confidence. His commitment to the patient's recovery is evident. His approach is very kind and personalized.",
-        "language": "en",
-        "relativeTime": "5 months ago",
-        "publishTime": "2026-03-18T19:26:52.862442188Z"
-      },
-      {
         "author": "Jack Grantham",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWSSbjYSLBV4mxom-l1D8K58_Mnko-xAxdA_PJ6irzmVMwrBTQvzg=s128-c0x00000000-cc-rp-mo",
         "authorProfile": "https://www.google.com/maps/contrib/116757338678492155627/reviews",
@@ -158,6 +158,16 @@ window.KINESICA_GOOGLE_REVIEWS = {
       }
     ],
     "fr": [
+      {
+        "author": "Mailín Schneeberger",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjX7x83prghHbR_UiPIGfbc95mu8jcrTxPiT4RzDjyGFhI869U5DzQ=s128-c0x00000000-cc-rp-mo-ba2",
+        "authorProfile": "https://www.google.com/maps/contrib/112780727533746305420/reviews",
+        "rating": 5,
+        "text": "Je suis très satisfait du service. Norberto se distingue par son professionnalisme, sa ponctualité et sa gentillesse. Il a grandement contribué à ma guérison grâce à un plan de traitement personnalisé. Je le recommande vivement si vous recherchez un spécialiste de confiance.",
+        "language": "fr",
+        "relativeTime": "il y a une semaine",
+        "publishTime": "2026-09-05T09:51:49.661002767Z"
+      },
       {
         "author": "Mariana González Cadahía",
         "authorPhoto": null,
@@ -187,27 +197,27 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "publishTime": "2026-07-21T22:41:19.944949311Z"
       },
       {
-        "author": "Susana Mühlmann",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWUfGXN593tTwuhxuqVKOEWUIvavQjTlY93VeBQWBCQXFlW3nY=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/107592515738110590238/reviews",
-        "rating": 5,
-        "text": "Ma consultation avec le physiothérapeute Norberto Brude a été excellente. Il me suit depuis plus de trente ans, connaît parfaitement mon corps et mes principaux problèmes de santé, et adapte son travail à mes besoins et à mes capacités. Comme il m'est difficile de me déplacer à son cabinet, il est venu à mon domicile et, après avoir évalué ma situation, m'a donné des exercices à faire chez moi. Ces exercices, que nous avons d'abord pratiqués ensemble, visaient à renforcer mes muscles, à soulager mes douleurs et à améliorer ma qualité de vie. Il a également répondu rapidement à toutes les nouvelles douleurs que j'ai signalées par la suite, afin de discuter de la marche à suivre. En plus d'être un excellent professionnel, c'est une personne formidable. Je le recommande vivement.",
-        "language": "fr",
-        "relativeTime": "il y a 5 mois",
-        "publishTime": "2026-03-27T19:20:10.553212148Z"
-      },
-      {
         "author": "Martin Figueroa",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWH1NIssF8Mao5RzMLHufdWDcctM9XzC6a9okzyyojbh9m-22pw=s128-c0x00000000-cc-rp-mo",
         "authorProfile": "https://www.google.com/maps/contrib/114835887772282675184/reviews",
         "rating": 5,
         "text": "Le Dr Brude prodigue d'excellents soins à chaque séance. Ses explications sont claires et il inspire confiance. Son engagement envers le rétablissement du patient est manifeste. Son approche est empreinte de bienveillance et personnalisée.",
         "language": "fr",
-        "relativeTime": "il y a 5 mois",
+        "relativeTime": "il y a 6 mois",
         "publishTime": "2026-03-18T19:26:52.862442188Z"
       }
     ],
     "pt": [
+      {
+        "author": "Mailín Schneeberger",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjX7x83prghHbR_UiPIGfbc95mu8jcrTxPiT4RzDjyGFhI869U5DzQ=s128-c0x00000000-cc-rp-mo-ba2",
+        "authorProfile": "https://www.google.com/maps/contrib/112780727533746305420/reviews",
+        "rating": 5,
+        "text": "Estou muito satisfeita com o serviço. Norberto se destaca pelo profissionalismo, pontualidade e cordialidade. Ele contribuiu muito para a minha recuperação com um plano de tratamento personalizado. Recomendo-o fortemente se você procura um especialista de confiança.",
+        "language": "pt",
+        "relativeTime": "há uma semana",
+        "publishTime": "2026-09-05T09:51:49.661002767Z"
+      },
       {
         "author": "Mariana González Cadahía",
         "authorPhoto": null,
@@ -237,23 +247,13 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "publishTime": "2026-07-21T22:41:19.944949311Z"
       },
       {
-        "author": "Susana Mühlmann",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWUfGXN593tTwuhxuqVKOEWUIvavQjTlY93VeBQWBCQXFlW3nY=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/107592515738110590238/reviews",
-        "rating": 5,
-        "text": "Minha consulta com o fisioterapeuta Norberto Brude foi excelente. Ele me trata há mais de trinta anos, conhece meu corpo e meus problemas de saúde, e trabalha de acordo com minhas necessidades e capacidades. Como tenho dificuldade para ir ao consultório, ele veio até minha casa e, após avaliar minha situação, me passou exercícios para fazer sozinha. Esses exercícios, que praticamos juntos inicialmente, foram elaborados para fortalecer meus músculos, eliminar a dor e melhorar minha qualidade de vida em geral. Ele também respondeu prontamente a qualquer nova dor que relatei posteriormente, para discutir como proceder. Além de ser um excelente profissional, ele é uma pessoa maravilhosa. Recomendo muito.",
-        "language": "pt",
-        "relativeTime": "há 5 meses",
-        "publishTime": "2026-03-27T19:20:10.553212148Z"
-      },
-      {
         "author": "Martin Figueroa",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWH1NIssF8Mao5RzMLHufdWDcctM9XzC6a9okzyyojbh9m-22pw=s128-c0x00000000-cc-rp-mo",
         "authorProfile": "https://www.google.com/maps/contrib/114835887772282675184/reviews",
         "rating": 5,
         "text": "O Dr. Brude oferece um atendimento excelente em todas as sessões. Ele explica tudo com clareza e inspira muita confiança. Seu comprometimento com a recuperação do paciente é evidente. Sua abordagem é muito gentil e personalizada.",
         "language": "pt",
-        "relativeTime": "há 5 meses",
+        "relativeTime": "há 6 meses",
         "publishTime": "2026-03-18T19:26:52.862442188Z"
       }
     ]
