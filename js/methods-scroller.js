@@ -94,6 +94,14 @@
       return;
     }
 
+    track.querySelectorAll(".methods-card .service-block").forEach(function (el) {
+      el.classList.add("is-visible");
+    });
+    track.querySelectorAll(".methods-card img").forEach(function (img) {
+      img.removeAttribute("loading");
+      img.loading = "eager";
+    });
+
     var offset = 0;
     var animating = false;
     var animFrame = 0;

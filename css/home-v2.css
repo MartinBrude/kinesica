@@ -465,6 +465,8 @@ body.page-home-v2 .section-intro--band .service-block {
   background: transparent;
   box-shadow: none;
   font-size: 16px;
+  opacity: 1;
+  transform: none;
 }
 
 body.page-home-v2 .section-intro--band .service-block:hover {

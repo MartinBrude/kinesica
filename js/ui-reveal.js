@@ -7,7 +7,10 @@
     ".service-block, .section-title, .feature, .team-img, .articles-category, .articles-index-quote",
   );
   var targets = Array.prototype.filter.call(nodes, function (el) {
-    return !(el.classList.contains("section-title") && el.closest(".articles-index-intro"));
+    return !(
+      (el.classList.contains("section-title") && el.closest(".articles-index-intro")) ||
+      el.closest(".methods-scroller")
+    );
   });
   if (!targets.length) {
     return;
