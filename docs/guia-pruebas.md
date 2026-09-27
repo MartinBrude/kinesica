@@ -64,6 +64,9 @@ Antes de iniciar una nueva simulación o cuando quieras probar como si fueras un
 | **TC-40** | **Indumentaria para la Consulta ("¿Qué ropa llevo?")** | *"Hola Clara, para la sesión de kinesiología, ¿tengo que llevar alguna ropa en especial o cómo voy?"* | **Pauta oficial del consultorio:** Clara detalla con sobriedad y profesionalismo las pautas de indumentaria (varones: ropa interior o pantalón corto; mujeres: ropa interior, malla de 2 piezas o calza corta) para permitir la evaluación física y de movilidad. *(Solo se informa si el paciente lo pregunta explícitamente).* |
 | **TC-41** | **Envío de Estudio Médico / Radiografía / Orden (PDF o Foto)** | *(Enviar al chat una foto o PDF de un estudio médico, ej. radiografía o resonancia con epígrafe "Te paso mi resonancia de rodilla")* | Clara acusa recibo inmediatamente con calidez, confirma que queda a disposición de Norberto para la consulta y dispara una alerta prioritaria al WhatsApp de Norberto con el contacto y enlace directo `wa.me/...` para abrir el chat y ver el archivo. |
 | **TC-42** | **Envío de Comprobante de Transferencia Bancaria** | *(Enviar una foto o PDF de comprobante de pago bancario con epígrafe "Acá te mando el comprobante de la transferencia")* | Clara reconoce el comprobante de pago, agradece el envío y avisa que queda registrado para administración. Dispara la alerta `💳 *COMPROBANTE DE TRANSFERENCIA RECIBIDO*` a Norberto con el enlace `wa.me/...` directo. |
+| **TC-43** | **Pedido de Hablar Personalmente con María** | *"Hola Clara, quería hablar personalmente con la kinesióloga María por un tema de mi espalda."* | Clara responde con calidez informando que ya le pasa su mensaje a la Lic. María Gulín para que se contacte con él/ella a la brevedad. **Dispara la alerta por WhatsApp directamente a María (`11 2853-1224`)** con el contacto y enlace directo `wa.me/...`. |
+| **TC-44** | **Pedido de Hablar Personalmente con Norberto** | *"Hola Clara, quisiera hablar personalmente con Norberto Brude para hacerle una consulta antes del turno."* | Clara responde informando que le pasa su mensaje a Norberto Brude para que se contacte a la brevedad. **Dispara la alerta por WhatsApp directamente a Norberto (`+54 11 6156-4311`)** con el contacto y enlace directo. |
+| **TC-45** | **Pedido de Hablar con Norberto o María (Dual)** | *"Hola Clara, ¿puedo hablar personalmente con Norberto o María? Tengo una duda específica de mi patología."* | Clara responde que pasa la consulta a Norberto y María para que se contacten a la brevedad. **Dispara la alerta a ambos profesionales simultáneamente**. |
 
 ---
 
@@ -78,7 +81,7 @@ Para verificar que las acciones impactan correctamente en la agenda del consulto
 flowchart LR
     A["Mensaje en WhatsApp"] --> B["Clara (IA + n8n)"]
     B --> C["Google Calendar ('consultorio')"]
-    B --> D["Alerta WhatsApp a Norberto (+54 116 156 4311)"]
+    B --> D["Alerta WhatsApp a Norberto o María"]
 ```
 
 ### ✅ A. Al CREAR un turno o llamada:
@@ -104,13 +107,13 @@ flowchart LR
 
 ---
 
-## 📲 3. Cómo Verificar las Alertas en el WhatsApp de Norberto
+## 📲 3. Cómo Verificar las Alertas en el WhatsApp de Norberto y María
 
-Cada vez que Clara genera un cambio en la agenda o recibe un archivo relevante, **Norberto recibe una notificación automática en su WhatsApp (`+54 116 156 4311`)**.
+Cada vez que Clara genera un cambio en la agenda, recibe un archivo relevante o un paciente solicita hablar con un profesional, **se envía una notificación automática al WhatsApp del destinatario respectivo** (`+54 11 6156-4311` para Norberto; `11 2853-1224` para María).
 
-Verificar que le llegue el mensaje con el formato correspondiente:
+Verificar que llegue el mensaje con el formato correspondiente:
 
-> **Ejemplo 1 — Nuevo Turno o Llamada:**  
+> **Ejemplo 1 — Nuevo Turno o Llamada (a Norberto):**  
 > 📌 \*NUEVO TURNO / LLAMADA EN KINÉSICA\*  
 > • \*Paciente:\* Martín Brude  
 > • \*WhatsApp:\* wa.me/34658444935  
@@ -139,7 +142,27 @@ Verificar que le llegue el mensaje con el formato correspondiente:
 >  
 > *(Tocando el enlace `wa.me/...`, Norberto o administración pueden verificar el comprobante al instante).*
 
-*(Si el paciente solo hace preguntas informativas o aranceles, a Norberto **no le llega nada**, evitando saturar su celular).*
+> **Ejemplo 4 — Consulta Personal Derivada a María (al WhatsApp de María `11 2853-1224`):**  
+> ⚠️ \*CONSULTA DERIVADA A LA LIC. MARÍA GULÍN\*  
+> • \*Paciente:\* Lucía Álvarez  
+> • \*WhatsApp:\* wa.me/5491155667788  
+> • \*Mensaje del paciente:\* *"Hola Clara, quería hablar personalmente con María por un tema de mi espalda."*  
+> • \*Respuesta de Clara:\* *"Hola Lucía, buen día. Le paso tu mensaje a la Lic. María Gulín para que se contacte con vos a la brevedad."*  
+> • \*Acción requerida:\* El paciente solicitó hablar con vos y espera tu contacto directo.  
+>  
+> *(María toca el enlace `wa.me/...` y le responde o llama a Lucía con un solo toque).*
+
+> **Ejemplo 5 — Consulta Personal Derivada a Norberto (al WhatsApp de Norberto `+54 11 6156-4311`):**  
+> ⚠️ \*CONSULTA DERIVADA A NORBERTO\*  
+> • \*Paciente:\* Ignacio López  
+> • \*WhatsApp:\* wa.me/5491144332211  
+> • \*Mensaje del paciente:\* *"Hola Clara, quisiera hablar personalmente con Norberto antes del turno."*  
+> • \*Respuesta de Clara:\* *"Para poder ayudarte con esto, le paso tu mensaje a Norberto Brude para que se contacte con vos a la brevedad."*  
+> • \*Acción requerida:\* El paciente solicitó hablar con vos y espera tu contacto directo.  
+>  
+> *(Norberto toca el enlace `wa.me/...` y contacta al paciente directamente).*
+
+*(Si el paciente solo hace preguntas informativas o aranceles, a Norberto y a María **no les llega nada**, evitando saturar sus celulares).*
 
 ---
 

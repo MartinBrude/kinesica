@@ -38,6 +38,7 @@ Clara fue configurada con el estilo de una **secretaria médica real de Buenos A
 * **Paciente nuevo vs. Paciente habitual:** Si el paciente menciona que ya se atiende en el consultorio (ej: *"ya me atiendo con Norberto"*, *"soy paciente de RPG"*), Clara saltea automáticamente la llamada previa de orientación de 15 minutos y pasa directamente a ofrecer turnos presenciales de 1 hora.
 * **Indumentaria para la sesión (solo si el paciente pregunta):** Si el paciente consulta cómo vestir o qué ropa llevar, Clara responde exactamente con la pauta oficial del consultorio: varones con ropa interior o pantalón corto; mujeres con ropa interior, malla de 2 piezas o calza corta (para permitir una evaluación postural y de movilidad óptima).
 * **Recepción y reenvío de archivos adjuntos (fotos y PDFs):** Si un paciente envía fotos de órdenes médicas, estudios, radiografías o comprobantes de pago, Clara acusa recibo al instante y se lo reenvía a Norberto con todo el contexto del paciente.
+* **Contacto personal con Norberto o María:** Si un paciente pide hablar personalmente con Norberto o con María, Clara le avisa con calidez que el profesional respectivo se contactará a la brevedad y le dispara la alerta por WhatsApp directamente a esa persona (`+54 11 6156-4311` o `11 2853-1224`).
 * **Privacidad estricta:** Clara jamás revela nombres ni horarios de otros pacientes. Si alguien pregunta *"¿a qué hora tiene turno mi marido?"* o *"¿quién está a las 16 hs?"*, Clara responde con firmeza profesional que por confidencialidad médica no puede brindar datos de terceros.
 
 ---
@@ -70,11 +71,11 @@ flowchart LR
 
 ---
 
-## 🔔 4. ¿Qué notificaciones le llegan a Norberto a su celular?
+## 🔔 4. ¿Qué notificaciones le llegan a Norberto y a María a su celular?
 
-Para no llenarle el WhatsApp de mensajes innecesarios, **Clara no le avisa a Norberto cuando un paciente solo hace preguntas informativas**.
+Para no llenarle el WhatsApp de mensajes innecesarios, **Clara no avisa cuando un paciente solo hace preguntas informativas**.
 
-**Solo le envía una alerta automática cuando hay algo importante que requiere atención:**
+**Solo envía una alerta automática cuando hay algo importante que requiere atención:**
 
 1. 📌 **Nuevo turno o llamada confirmada:**  
    > *📌 NUEVO TURNO / LLAMADA EN KINÉSICA*  
@@ -86,12 +87,14 @@ Para no llenarle el WhatsApp de mensajes innecesarios, **Clara no le avisa a Nor
    Avisa si un paciente movió su cita a otro día u horario.
 3. 🚨 **Cancelación urgente del mismo día:**  
    Si alguien avisa a último momento que no puede ir a su turno de hoy, Clara dispara una alerta prioritaria avisando que **se liberó un hueco para hoy** e indica si hay alguien en lista de espera disponible para ocuparlo.
-4. ⚠️ **Consultas especiales o derivaciones:**  
-   Si un paciente plantea un caso médico complejo, un pedido legal o pide hablar con un responsable humano, Clara le dice al paciente que Norberto se contactará con él y le pasa el mensaje completo a Norberto.
+4. ⚠️ **Consultas personales y derivaciones (Norberto o María):**  
+   - Si un paciente pide hablar personalmente con **Norberto** (o plantea un caso médico complejo / consulta general), Clara le avisa al paciente que Norberto se contactará con él/ella a la brevedad y le pasa el mensaje completo a **Norberto (`+54 11 6156-4311`)**.
+   - Si un paciente pide hablar personalmente con **María** (Lic. María Gulín), Clara le avisa al paciente que María se contactará con él/ella a la brevedad y le dispara la alerta por WhatsApp directamente a **María (`11 2853-1224`)**.
+   - Si piden hablar con ambos (*"con Norberto o María"*), la alerta le llega a los dos profesionales simultáneamente.
 5. 📎 **Archivos adjuntos (estudios médicos, órdenes o comprobantes):**  
    Cuando un paciente manda una foto o PDF, Clara acusa recibo y le envía a Norberto una alerta inmediata con el nombre, mensaje, tipo de archivo y el enlace directo `wa.me/...` para abrir el chat del paciente y ver o descargar el original con un solo toque.
 
-*(En todos los avisos, Norberto puede presionar directamente el enlace azul `wa.me/...` para escribirle o llamarlo con un solo toque).*
+*(En todos los avisos, Norberto y María pueden presionar directamente el enlace azul `wa.me/...` para escribirle o llamarlo con un solo toque).*
 
 ---
 
