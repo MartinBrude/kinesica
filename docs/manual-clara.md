@@ -83,7 +83,9 @@ flowchart LR
 * **Si el paciente cancela:** Clara lo elimina de la agenda, liberando el espacio para otra persona.
 
 ### ⏰ Recordatorios automáticos (24h previas) y Regla de Oro del Calendario:
-El sistema envía recordatorios automáticos por WhatsApp a los pacientes con citas al día siguiente (a las 10:00 AM hora de Argentina).
+El sistema envía recordatorios automáticos por WhatsApp a los pacientes con citas programadas para el día siguiente en horarios diferenciados:
+* **Domingos a las 18:00 hs:** Para los turnos del día lunes (respetando el descanso dominical durante la mañana y tarde temprana).
+* **Lunes a Sábados a las 10:00 hs:** Para los turnos de los días restantes de la semana.
 
 > [!IMPORTANT]
 > **El calendario es la única fuente de información:**  
