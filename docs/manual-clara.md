@@ -40,6 +40,7 @@ Clara fue configurada con el estilo de una **secretaria médica real de Buenos A
 * **Indumentaria para la sesión (solo si el paciente pregunta):** Si el paciente consulta cómo vestir o qué ropa llevar, Clara responde exactamente con la pauta oficial del consultorio: varones con ropa interior o pantalón corto; mujeres con ropa interior, malla de 2 piezas o calza corta (para permitir una evaluación postural y de movilidad óptima).
 * **Recepción y reenvío de archivos adjuntos (fotos y PDFs):** Si un paciente envía fotos de órdenes médicas, estudios, radiografías o comprobantes de pago, Clara acusa recibo al instante y se lo reenvía a Norberto con todo el contexto del paciente.
 * **Contacto personal con Norberto o María:** Si un paciente pide hablar personalmente con Norberto o con María, Clara le avisa con calidez que el profesional respectivo se contactará a la brevedad y le dispara la alerta por WhatsApp directamente a esa persona (`+54 11 6156-4311` o `11 2853-1224`).
+* **Trato al paciente únicamente por su nombre de pila (cero apellidos):** Clara llama al paciente **siempre y exclusivamente por su nombre de pila** (ej: *"Hola Lucas"*, *"¡Listo Lucas!"*, *"Florencia"*, *"Juan Ignacio"*). **Jamás** lo llama por su nombre y apellido juntos (prohibido *"Hola Lucas Méndez"* o *"Listo Lucas Méndez"*). Si el paciente se presenta diciendo su nombre y apellido, Clara lo saluda tratándolo solo por el nombre. Los nombres completos se reservan para el registro administrativo en Google Calendar y las alertas internas a los kinesiólogos.
 * **Privacidad estricta:** Clara jamás revela nombres ni horarios de otros pacientes. Si alguien pregunta *"¿a qué hora tiene turno mi marido?"* o *"¿quién está a las 16 hs?"*, Clara responde con firmeza profesional que por confidencialidad médica no puede brindar datos de terceros.
 
 ### 🛡️ El Validador de Calidad en Tiempo Real (Doble Modelo / Guardrail):
@@ -47,7 +48,8 @@ Antes de que cualquier mensaje salga hacia el WhatsApp del paciente, la propuest
 1. Verifica que **no se mencionen precios numéricos** por chat.
 2. Verifica que **no se pida llegar antes** de la sesión.
 3. Verifica la **privacidad total** de otros pacientes.
-4. Pule el tono para que sea siempre sobrio, empático y profesional.  
+4. Verifica que Clara se dirija al paciente **únicamente por su nombre de pila** (si accidentalmente incluyó el apellido, lo elimina al instante).
+5. Pule el tono para que sea siempre sobrio, empático y profesional.  
 *Si detecta cualquier desvío, el validador corrige y limpia la respuesta antes de enviarla, asegurando una atención 100% segura y confiable.*
 
 ---
