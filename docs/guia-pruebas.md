@@ -61,6 +61,9 @@ Antes de iniciar una nueva simulación o cuando quieras probar como si fueras un
 | **TC-37** | **Paciente Habitual (Salteo de llamada previa de 15 min)** | *"Hola Clara, ya me atiendo con Norberto en RPG los jueves. Quería coordinar mi sesión para este jueves a las 17 hs."* | **Reconocimiento de paciente recurrente:** Clara saltea automáticamente la llamada previa de orientación de 15 min y busca directamente un turno presencial de 1 hora libre, confirmando con calidez y brevedad. |
 | **TC-38** | **Consulta de Alias / CBU para Transferencia Bancaria** | *"Hola, ¿a qué alias les transfiero la sesión?"* | Brinda los datos oficiales de transferencia bancaria (Alias, CBU, Titular) y solicita el envío del comprobante por el chat. (Nunca los envía si el paciente no los pide). |
 | **TC-39** | **Confirmación de Asistencia y Actualización en Calendar** | *(Tras recibir recordatorio)*: *"Hola Clara, confirmo mi turno para mañana a las 16 hs. Soy Lucas."* | Clara actualiza el evento en Google Calendar anteponiendo `[CONFIRMADO]` al título (`🩺 [CONFIRMADO] Lucas`) y confirma cordialmente al paciente. Norberto y María ven el estado confirmado en su calendario. |
+| **TC-40** | **Indumentaria para la Consulta ("¿Qué ropa llevo?")** | *"Hola Clara, para la sesión de kinesiología, ¿tengo que llevar alguna ropa en especial o cómo voy?"* | **Pauta oficial del consultorio:** Clara detalla con sobriedad y profesionalismo las pautas de indumentaria (varones: ropa interior o pantalón corto; mujeres: ropa interior, malla de 2 piezas o calza corta) para permitir la evaluación física y de movilidad. *(Solo se informa si el paciente lo pregunta explícitamente).* |
+| **TC-41** | **Envío de Estudio Médico / Radiografía / Orden (PDF o Foto)** | *(Enviar al chat una foto o PDF de un estudio médico, ej. radiografía o resonancia con epígrafe "Te paso mi resonancia de rodilla")* | Clara acusa recibo inmediatamente con calidez, confirma que queda a disposición de Norberto para la consulta y dispara una alerta prioritaria al WhatsApp de Norberto con el contacto y enlace directo `wa.me/...` para abrir el chat y ver el archivo. |
+| **TC-42** | **Envío de Comprobante de Transferencia Bancaria** | *(Enviar una foto o PDF de comprobante de pago bancario con epígrafe "Acá te mando el comprobante de la transferencia")* | Clara reconoce el comprobante de pago, agradece el envío y avisa que queda registrado para administración. Dispara la alerta `💳 *COMPROBANTE DE TRANSFERENCIA RECIBIDO*` a Norberto con el enlace `wa.me/...` directo. |
 
 ---
 
@@ -103,11 +106,11 @@ flowchart LR
 
 ## 📲 3. Cómo Verificar las Alertas en el WhatsApp de Norberto
 
-Cada vez que Clara genera un cambio en la agenda, **Norberto recibe una notificación automática en su WhatsApp (`+54 116 156 4311`)**.
+Cada vez que Clara genera un cambio en la agenda o recibe un archivo relevante, **Norberto recibe una notificación automática en su WhatsApp (`+54 116 156 4311`)**.
 
 Verificar que le llegue el mensaje con el formato correspondiente:
 
-> **Ejemplo de Nuevo Turno:**  
+> **Ejemplo 1 — Nuevo Turno o Llamada:**  
 > 📌 \*NUEVO TURNO / LLAMADA EN KINÉSICA\*  
 > • \*Paciente:\* Martín Brude  
 > • \*WhatsApp:\* wa.me/34658444935  
@@ -115,6 +118,26 @@ Verificar que le llegue el mensaje con el formato correspondiente:
 > • \*Respuesta de Clara:\* *"¡Listo, Martín! Ya te agendé la llamada para este viernes a las 17:00 hs..."*  
 >  
 > *(Norberto puede tocar directamente el enlace `wa.me/...` para escribirle o llamarlo con un solo toque).*
+
+> **Ejemplo 2 — Archivo Adjunto (Estudio Médico / Radiografía / Orden):**  
+> 📎 \*NUEVO ARCHIVO ADJUNTO RECIBIDO EN KINÉSICA\*  
+> • \*Paciente:\* Florencia Gómez  
+> • \*WhatsApp:\* wa.me/5491144556677  
+> • \*Tipo:\* 📷 Imagen / Foto (o 📄 Documento PDF)  
+> • \*Nota/Detalle:\* *"Te paso mi resonancia de rodilla"*  
+> • \*Respuesta de Clara:\* *"Muchas gracias, Florencia. Ya recibí el archivo y queda a disposición de Norberto..."*  
+>  
+> *(Tocando el enlace `wa.me/...`, Norberto abre directamente el chat de Florencia para ver o descargar el estudio original en alta resolución).*
+
+> **Ejemplo 3 — Comprobante de Transferencia Bancaria:**  
+> 💳 \*COMPROBANTE DE TRANSFERENCIA RECIBIDO EN KINÉSICA\*  
+> • \*Paciente:\* Carlos Pérez  
+> • \*WhatsApp:\* wa.me/5491199887766  
+> • \*Tipo:\* 📷 Imagen / Foto  
+> • \*Nota/Detalle:\* *"Adjunto el comprobante de la sesión de hoy"*  
+> • \*Respuesta de Clara:\* *"Muchas gracias Carlos, comprobante recibido y registrado para administración 🙌"*  
+>  
+> *(Tocando el enlace `wa.me/...`, Norberto o administración pueden verificar el comprobante al instante).*
 
 *(Si el paciente solo hace preguntas informativas o aranceles, a Norberto **no le llega nada**, evitando saturar su celular).*
 

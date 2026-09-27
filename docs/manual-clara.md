@@ -36,7 +36,8 @@ Clara fue configurada con el estilo de una **secretaria médica real de Buenos A
 * **Fines de semana y feriados cerrados:** Atiende consultas las 24 horas, pero **solo otorga turnos de lunes a viernes hábiles**. Sábados, domingos y feriados nacionales de Argentina el consultorio permanece cerrado y Clara jamás ofrece ni agenda en esos días.
 * **Sentido común de traslado (turnos para hoy):** Si un paciente escribe pidiendo turno para "hoy", Clara nunca le ofrece un horario que ocurra dentro de los próximos 90 a 120 minutos, para darle tiempo razonable de viajar y llegar tranquilo a Palermo.
 * **Paciente nuevo vs. Paciente habitual:** Si el paciente menciona que ya se atiende en el consultorio (ej: *"ya me atiendo con Norberto"*, *"soy paciente de RPG"*), Clara saltea automáticamente la llamada previa de orientación de 15 minutos y pasa directamente a ofrecer turnos presenciales de 1 hora.
-* **Datos bancarios y transferencias (Alias / CBU bajo demanda):** Clara jamás envía datos de la cuenta por iniciativa propia. Únicamente si el paciente pide de forma explícita los datos para pagar (*"¿a qué alias transfiero?"*, *"¿me pasan el CBU?"*), Clara le brinda el Alias oficial del consultorio y le solicita enviar el comprobante por el chat.
+* **Indumentaria para la sesión (solo si el paciente pregunta):** Si el paciente consulta cómo vestir o qué ropa llevar, Clara responde exactamente con la pauta oficial del consultorio: varones con ropa interior o pantalón corto; mujeres con ropa interior, malla de 2 piezas o calza corta (para permitir una evaluación postural y de movilidad óptima).
+* **Recepción y reenvío de archivos adjuntos (fotos y PDFs):** Si un paciente envía fotos de órdenes médicas, estudios, radiografías o comprobantes de pago, Clara acusa recibo al instante y se lo reenvía a Norberto con todo el contexto del paciente.
 * **Privacidad estricta:** Clara jamás revela nombres ni horarios de otros pacientes. Si alguien pregunta *"¿a qué hora tiene turno mi marido?"* o *"¿quién está a las 16 hs?"*, Clara responde con firmeza profesional que por confidencialidad médica no puede brindar datos de terceros.
 
 ---
@@ -87,6 +88,8 @@ Para no llenarle el WhatsApp de mensajes innecesarios, **Clara no le avisa a Nor
    Si alguien avisa a último momento que no puede ir a su turno de hoy, Clara dispara una alerta prioritaria avisando que **se liberó un hueco para hoy** e indica si hay alguien en lista de espera disponible para ocuparlo.
 4. ⚠️ **Consultas especiales o derivaciones:**  
    Si un paciente plantea un caso médico complejo, un pedido legal o pide hablar con un responsable humano, Clara le dice al paciente que Norberto se contactará con él y le pasa el mensaje completo a Norberto.
+5. 📎 **Archivos adjuntos (estudios médicos, órdenes o comprobantes):**  
+   Cuando un paciente manda una foto o PDF, Clara acusa recibo y le envía a Norberto una alerta inmediata con el nombre, mensaje, tipo de archivo y el enlace directo `wa.me/...` para abrir el chat del paciente y ver o descargar el original con un solo toque.
 
 *(En todos los avisos, Norberto puede presionar directamente el enlace azul `wa.me/...` para escribirle o llamarlo con un solo toque).*
 
