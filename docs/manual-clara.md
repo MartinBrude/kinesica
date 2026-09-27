@@ -80,6 +80,16 @@ flowchart LR
 * **Si el paciente pide cambiar de horario:** Clara busca su turno anterior en Google Calendar y lo mueve al nuevo horario acordado (no crea duplicados).
 * **Si el paciente cancela:** Clara lo elimina de la agenda, liberando el espacio para otra persona.
 
+### ⏰ Recordatorios automáticos (24h previas) y Regla de Oro del Calendario:
+El sistema envía recordatorios automáticos por WhatsApp a los pacientes con citas al día siguiente (a las 10:00 AM hora de Argentina).
+
+> [!IMPORTANT]
+> **El calendario es la única fuente de información:**  
+> Antes de enviar un recordatorio, el sistema verifica obligatoriamente el estado de la cita en Google Calendar:
+> * Si por algún motivo la cita **fue anulada o cancelada por Norberto, María o Clara en otro momento** (ya sea porque el evento fue eliminado de Google Calendar, o porque figura en título o descripción como `[ANULADO]`, `[CANCELADO]`, `[SUSPENDIDO]`, `[BAJA]`, etc.), **el recordatorio NO se envía bajo ninguna circunstancia**.
+> * Los bloqueos de horario (`🚫 [BLOQUEADO]`), recesos de vacaciones (`🏖️ [VACACIONES]`), feriados y pacientes en lista de espera (`⏳ [LISTA DE ESPERA]`) quedan automáticamente excluidos de los recordatorios.
+> * No se asume la vigencia de ninguna cita por chats previos: si no está activa en el calendario, no hay recordatorio.
+
 ---
 
 ## 🔔 4. ¿Qué notificaciones le llegan a Norberto y a María a su celular?
@@ -133,6 +143,10 @@ Cuando alguno de los dos le escribe a Clara, ella los saluda por su nombre (*"Ho
 * **Qué escribirle:** `"pausar bot"`, `"lo atiendo yo"` o `"silencio"`.
 * **Qué hace Clara:** Responde *"Entendido [Norberto/María], pausado. Te dejo la conversación a vos 🙌"* y deja de intervenir en la conversación para que puedan chatear directamente.
 
+### ❌ E. Anular o cancelar un turno de un paciente
+* **Qué escribirle:** `"cancelá el turno de Lucas Méndez"`, `"anulá la cita de mañana a las 16 hs"`.
+* **Qué hace Clara:** Busca la cita en Google Calendar y la elimina de la agenda, liberando el lugar y asegurando que no se dispare ningún recordatorio para ese turno.
+
 *(Las acciones que piden Norberto o María no generan auto-alertas molestas).*
 
 ---
@@ -177,6 +191,7 @@ Guardá esta tablita a mano para usar con Clara en el chat:
 | **Ver la agenda de mañana o de otro día** | `"agenda mañana"` o `"agenda del viernes"` |
 | **Cerrar un hueco específico** | `"bloquear jueves de 16 a 18"` |
 | **Cerrar por vacaciones** | `"vacaciones del 15 al 25 de octubre"` |
+| **Anular o cancelar el turno de un paciente** | `"cancelá el turno de Lucas"` o `"anulá la cita de las 16"` |
 | **Hablar vos con un paciente sin que Clara responda** | `"pausar bot"` o `"lo atiendo yo"` |
 | **Empezar una prueba de cero como paciente** | `/restart` |
 
