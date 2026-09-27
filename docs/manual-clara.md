@@ -1,10 +1,11 @@
 # 🌿 Manual de Clara: La Asistente y Secretaria Virtual de Kinésica
-### Guía práctica, no técnica, para Norberto y María
+### Guía práctica y operativa del consultorio
 
 > **¿Qué es este documento?**  
-> Una explicación simple y clara de cómo funciona **Clara**, cómo atiende a los pacientes que escriben al WhatsApp del consultorio, cómo se organiza con la agenda de Google Calendar y cómo Norberto y María pueden pedirle cosas directamente desde su propio celular.  
+> Una explicación simple y clara de cómo funciona **Clara**, cómo atiende a los pacientes que escriben al WhatsApp del consultorio, cómo se organiza con la agenda de Google Calendar y cómo los profesionales del equipo pueden pedirle cosas directamente desde su propio celular.  
 > 
-> 🔗 *Este enlace se actualiza automáticamente con cada mejora del sistema.*
+> 🔗 **Enlace permanente en GitHub:** [https://github.com/MartinBrude/kinesica/blob/main/docs/manual-clara.md](https://github.com/MartinBrude/kinesica/blob/main/docs/manual-clara.md)  
+> *(Este enlace se actualiza automáticamente con cada mejora del sistema).*
 
 ---
 
@@ -87,9 +88,9 @@ Para no llenarle el WhatsApp de mensajes innecesarios, **Clara no le avisa a Nor
 
 ---
 
-## 👑 5. El "Modo Administrador": ¿Cómo le hablan Norberto y María?
+## 👑 5. El "Modo Administrador": ¿Cómo le hablan los profesionales a Clara?
 
-Clara reconoce automáticamente los celulares de **Norberto** y de **María**:
+Clara reconoce automáticamente los celulares del equipo profesional:
 * Celular de Norberto: `+54 11 6156-4311`
 * Celulares de María: `11 2853-1224` y `+54 9 2236 80-7252`
 
@@ -142,7 +143,7 @@ Para probar el funcionamiento como si fueras un paciente nuevo:
 
 ---
 
-## 📌 8. "Machete" rápido de comandos para Norberto y María
+## 📌 8. "Machete" rápido de comandos para los profesionales
 
 Guardá esta tablita a mano para usar con Clara en el chat:
 
@@ -157,4 +158,4 @@ Guardá esta tablita a mano para usar con Clara en el chat:
 
 ---
 
-*Cualquier sugerencia, ajuste de palabras o cambio en las reglas de atención que Norberto o María quieran hacer, se puede ajustar en cuestión de minutos.*
+*Cualquier sugerencia, ajuste de palabras o cambio en las reglas de atención que se quiera hacer, se puede ajustar en cuestión de minutos.*
