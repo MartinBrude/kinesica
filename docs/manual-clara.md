@@ -35,6 +35,8 @@ Clara fue configurada con el estilo de una **secretaria médica real de Buenos A
 * **Dirección exacta del consultorio:** Solo informa la dirección (`Charcas 3889, Piso 5º, Dpto B, Palermo`) una vez que el turno presencial está confirmado o si el paciente la pide directamente, recordando llevar estudios previos si los tienen (sin pedirles que lleguen con anticipación).
 * **Fines de semana y feriados cerrados:** Atiende consultas las 24 horas, pero **solo otorga turnos de lunes a viernes hábiles**. Sábados, domingos y feriados nacionales de Argentina el consultorio permanece cerrado y Clara jamás ofrece ni agenda en esos días.
 * **Sentido común de traslado (turnos para hoy):** Si un paciente escribe pidiendo turno para "hoy", Clara nunca le ofrece un horario que ocurra dentro de los próximos 90 a 120 minutos, para darle tiempo razonable de viajar y llegar tranquilo a Palermo.
+* **Paciente nuevo vs. Paciente habitual:** Si el paciente menciona que ya se atiende en el consultorio (ej: *"ya me atiendo con Norberto"*, *"soy paciente de RPG"*), Clara saltea automáticamente la llamada previa de orientación de 15 minutos y pasa directamente a ofrecer turnos presenciales de 1 hora.
+* **Datos bancarios y transferencias (Alias / CBU bajo demanda):** Clara jamás envía datos de la cuenta por iniciativa propia. Únicamente si el paciente pide de forma explícita los datos para pagar (*"¿a qué alias transfiero?"*, *"¿me pasan el CBU?"*), Clara le brinda el Alias oficial del consultorio y le solicita enviar el comprobante por el chat.
 * **Privacidad estricta:** Clara jamás revela nombres ni horarios de otros pacientes. Si alguien pregunta *"¿a qué hora tiene turno mi marido?"* o *"¿quién está a las 16 hs?"*, Clara responde con firmeza profesional que por confidencialidad médica no puede brindar datos de terceros.
 
 ---
@@ -60,7 +62,8 @@ flowchart LR
 3. **Datos de contacto en cada cita:**  
    Al tocar cualquier evento en Google Calendar, en la descripción siempre figura el teléfono con el enlace de WhatsApp listo para tocar y escribirle al paciente.
 
-### Cambios y cancelaciones:
+### Cambios, cancelaciones y confirmaciones:
+* **Si el paciente confirma su turno (cierre de recordatorios):** Cuando el paciente responde *"Confirmo"*, *"Sí, voy"* o *"Ahí estaré"*, Clara actualiza automáticamente el título del evento en Google Calendar agregando `[CONFIRMADO]` (ej: `🩺 [CONFIRMADO] Lucas Méndez`). Esto permite ver en el calendario qué pacientes del día ya confirmaron asistencia.
 * **Si el paciente pide cambiar de horario:** Clara busca su turno anterior en Google Calendar y lo mueve al nuevo horario acordado (no crea duplicados).
 * **Si el paciente cancela:** Clara lo elimina de la agenda, liberando el espacio para otra persona.
 
