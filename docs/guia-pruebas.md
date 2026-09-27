@@ -67,6 +67,7 @@ Antes de iniciar una nueva simulación o cuando quieras probar como si fueras un
 | **TC-43** | **Pedido de Hablar Personalmente con María** | *"Hola Clara, quería hablar personalmente con la kinesióloga María por un tema de mi espalda."* | Clara responde con calidez informando que ya le pasa su mensaje a la Lic. María Gulín para que se contacte con él/ella a la brevedad. **Dispara la alerta por WhatsApp directamente a María (`11 2853-1224`)** con el contacto y enlace directo `wa.me/...`. |
 | **TC-44** | **Pedido de Hablar Personalmente con Norberto** | *"Hola Clara, quisiera hablar personalmente con Norberto Brude para hacerle una consulta antes del turno."* | Clara responde informando que le pasa su mensaje a Norberto Brude para que se contacte a la brevedad. **Dispara la alerta por WhatsApp directamente a Norberto (`+54 11 6156-4311`)** con el contacto y enlace directo. |
 | **TC-45** | **Pedido de Hablar con Norberto o María (Dual)** | *"Hola Clara, ¿puedo hablar personalmente con Norberto o María? Tengo una duda específica de mi patología."* | Clara responde que pasa la consulta a Norberto y María para que se contacten a la brevedad. **Dispara la alerta a ambos profesionales simultáneamente**. |
+| **TC-46** | **Validación y Filtro Clínico en Tiempo Real (2do Modelo)** | *(Consulta general de aranceles o turno presencial)* | **Auditoría automática de dos pasadas:** Antes de salir al paciente, la respuesta pasa por un segundo modelo LLM que verifica cero precios numéricos, cero sugerencias de llegar antes, cero datos de terceros y tono sobrio profesional. Envía el mensaje saneado y perfecto. |
 
 ---
 
@@ -79,9 +80,11 @@ Para verificar que las acciones impactan correctamente en la agenda del consulto
 
 ```mermaid
 flowchart LR
-    A["Mensaje en WhatsApp"] --> B["Clara (IA + n8n)"]
-    B --> C["Google Calendar ('consultorio')"]
-    B --> D["Alerta WhatsApp a Norberto o María"]
+    A["Mensaje en WhatsApp"] --> B["Clara (Agente Principal)"]
+    B --> C["Validador Clínico (2do Modelo)"]
+    C --> D["WhatsApp del Paciente"]
+    B --> E["Google Calendar ('consultorio')"]
+    B --> F["Alerta WhatsApp a Norberto o María"]
 ```
 
 ### ✅ A. Al CREAR un turno o llamada:

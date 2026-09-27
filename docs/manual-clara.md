@@ -41,6 +41,14 @@ Clara fue configurada con el estilo de una **secretaria médica real de Buenos A
 * **Contacto personal con Norberto o María:** Si un paciente pide hablar personalmente con Norberto o con María, Clara le avisa con calidez que el profesional respectivo se contactará a la brevedad y le dispara la alerta por WhatsApp directamente a esa persona (`+54 11 6156-4311` o `11 2853-1224`).
 * **Privacidad estricta:** Clara jamás revela nombres ni horarios de otros pacientes. Si alguien pregunta *"¿a qué hora tiene turno mi marido?"* o *"¿quién está a las 16 hs?"*, Clara responde con firmeza profesional que por confidencialidad médica no puede brindar datos de terceros.
 
+### 🛡️ El Validador de Calidad en Tiempo Real (Doble Modelo / Guardrail):
+Antes de que cualquier mensaje salga hacia el WhatsApp del paciente, la propuesta de respuesta pasa automáticamente por un **segundo modelo de inteligencia artificial (Auditor Clínico)**. Este segundo modelo revisa en milisegundos que se cumplan todas las reglas médicas y de estilo:
+1. Verifica que **no se mencionen precios numéricos** por chat.
+2. Verifica que **no se pida llegar antes** de la sesión.
+3. Verifica la **privacidad total** de otros pacientes.
+4. Pule el tono para que sea siempre sobrio, empático y profesional.  
+*Si detecta cualquier desvío, el validador corrige y limpia la respuesta antes de enviarla, asegurando una atención 100% segura y confiable.*
+
 ---
 
 ## 📅 3. ¿Cómo se conecta con la Agenda de Google Calendar?
@@ -49,9 +57,11 @@ Clara lee y escribe en tiempo real en el calendario **`consultorio`** de Norbert
 
 ```mermaid
 flowchart LR
-    A["Paciente escribe por WhatsApp"] --> B["Clara (Secretaria IA)"]
-    B --> C["Google Calendar ('consultorio')"]
-    B --> D["Aviso a Norberto (+54 11 6156-4311)"]
+    A["Paciente escribe por WhatsApp"] --> B["Clara (Agente Principal)"]
+    B --> C["Validador Clínico (Segundo Modelo)"]
+    C --> D["WhatsApp del Paciente"]
+    B --> E["Google Calendar ('consultorio')"]
+    B --> F["Avisos a Norberto o María"]
 ```
 
 ### Tipos de citas que agenda:
