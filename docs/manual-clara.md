@@ -53,7 +53,7 @@ flowchart LR
 1. **Llamadas telefónicas de orientación previa (15 minutos):**  
    Aparecen en el calendario como: `📞 [LLAMADA 15m] Nombre Paciente`  
    Sirven para que el kinesiólogo converse brevemente con el paciente antes de que asista al consultorio.
-2. **Turnos presenciales en consultorio (50 minutos):**  
+2. **Turnos presenciales en consultorio (1 hora / 60 minutos):**  
    Aparecen en el calendario como: `🩺 [TURNO] Nombre Paciente`  
    Si es para un hijo o menor de edad, Clara registra: `🩺 [TURNO - MENOR] Nombre Menor (Familiar: Nombre)` y recuerda que deben venir acompañados por un adulto.
 3. **Datos de contacto en cada cita:**  
