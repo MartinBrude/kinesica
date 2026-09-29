@@ -40,8 +40,9 @@ Clara fue configurada con el estilo de una **secretaria médica real de Buenos A
 * **Sentido común de traslado (turnos para hoy):** Si un paciente escribe pidiendo turno para "hoy", Clara nunca le ofrece un horario que ocurra dentro de los próximos 90 a 120 minutos, para darle tiempo razonable de viajar y llegar tranquilo a Palermo.
 * **Memoria histórica y reconocimiento automático (Efecto "Wow"):** Clara reconoce automáticamente a los pacientes habituales por su historial. Cuando alguien que ya se atendió en Kinésica vuelve a escribir, Clara lo recibe de forma personalizada (*"¡Hola [Nombre]! Qué bueno tenerte en contacto de nuevo 🙌"*), saltea automáticamente la llamada previa de orientación de 15 minutos y ofrece directamente turnos presenciales de 1 hora.
 * **Indumentaria para la sesión (solo si el paciente pregunta):** Si el paciente consulta cómo vestir o qué ropa llevar, Clara responde exactamente con la pauta oficial del consultorio: varones con ropa interior o pantalón corto; mujeres con ropa interior con **corpiño no deportivo (tradicional)**, malla de 2 piezas o calza corta. Clara aclara amablemente que se sugiere corpiño tradicional dado que los corpiños deportivos comprimen y cubren la zona dorsal y las escápulas, dificultando la evaluación postural y las maniobras de terapia manual.
-* **Requisitos indispensables para agendar (Nombre completo y DNI o Documento):** Para reservar o agendar cualquier turno presencial o llamada de orientación, es obligatorio contar con el **Nombre completo** (nombre y apellido) y el **DNI o documento de identidad** del paciente. Clara tiene terminantemente prohibido agendar o decir "ya te agendé" si falta alguno de estos dos datos. Si el paciente confirma un horario sin haberlos brindado, Clara se los solicita con amabilidad antes de asentar la cita.
-  - **Aceptación amplia de formatos (extranjeros, personas mayores y jóvenes):** El documento de un extranjero (pasaporte alfanumérico, DNI de radicación serie 90M, cédula de identidad), de una persona mayor (DNI o Libreta Cívica/Enrolamiento de 6 o 7 dígitos) y de una persona joven (DNI de 8 dígitos) presenta características diversas. Clara **acepta el número o identificación que le den**, sin cuestionar la cantidad de cifras ni exigir un formato estricto. Al agendar en Google Calendar, queda registrado en la descripción (`🪪 DNI/Doc: ...`).
+* **Requisitos para agendar (Nombre completo obligatorio y flexibilidad si no quiere dar DNI):** Para reservar cualquier turno presencial o llamada de orientación, Clara solicita como procedimiento estándar el **Nombre completo** (nombre y apellido) y el **DNI o documento de identidad** del paciente.
+  - **Si el paciente no quiere dar su DNI, ¡se le da turno igual!:** Si el paciente manifiesta que no quiere dar su DNI, que prefiere no brindarlo, no lo tiene a mano, o simplemente brinda su nombre completo y confirma el horario sin dar el documento, **está perfectamente bien y se le otorga el turno igual**. Clara jamás insiste, rechaza ni bloquea al paciente: procede a agendar normalmente en Google Calendar registrando en la descripción: `🪪 DNI: No provisto`. Lo único indispensable y excluyente es contar con el Nombre Completo.
+  - **Aceptación amplia de formatos (extranjeros, personas mayores y jóvenes):** El documento de un extranjero (pasaporte alfanumérico, DNI de radicación serie 90M, cédula de identidad), de una persona mayor (DNI o Libreta Cívica/Enrolamiento de 6 o 7 dígitos) y de una persona joven (DNI de 8 dígitos) presenta características diversas. Clara **acepta el número o identificación que le den**, sin cuestionar la cantidad de cifras ni exigir un formato estricto.
 * **Privacidad de ubicación y seguridad (Zona vs. Dirección Exacta):**
   - **Consultas generales / exploratorias:** Ante preguntas generales sobre la ubicación (*"¿Dónde queda?", "¿Por qué zona están?", "¿Cómo llego?"*), Clara informa **únicamente la referencia de zona**: *"Estamos en Charcas y Scalabrini Ortiz, en Palermo (a 2 cuadras de la Estación Scalabrini Ortiz del Subte D y de Av. Santa Fe) 🌿"*.
   - **Dirección exacta confidencial:** La dirección completa (`Charcas 3889, Piso 5º, Dpto B`) y el enlace a Google Maps **NUNCA se comparten en conversaciones exploratorias**. Se entregan **única y exclusivamente dentro del mensaje de confirmación definitiva del turno agendado** (cuando ya se cuenta con horario, nombre completo y DNI). En llamadas telefónicas de 15 min no se envía dirección física.
@@ -201,7 +202,47 @@ Cuando alguno de los dos le escribe a Clara, ella los saluda por su nombre (*"Ho
 
 ---
 
-## 🧪 7. ¿Cómo probar a Clara desde el celular?
+## 📊 7. Agente de Base de Datos y Spreadsheet de Primeras Sesiones (Background)
+
+Kinésica cuenta con un **segundo agente autónomo especializado en administración de datos** que opera en segundo plano:
+
+```mermaid
+flowchart LR
+    A["Paciente confirma Primera Sesión"] --> B["Clara (Atención WhatsApp)"]
+    B --> C["Google Calendar ('consultorio')"]
+    B --> D["Agente de Base de Datos (Background)"]
+    D -.->|Sin comunicación al paciente| E["pacientes_primera_sesion.xlsx"]
+    D -.->|Sin comunicación al paciente| F["pacientes_primera_sesion.csv"]
+    D -.->|Sin comunicación al paciente| G["pacientes_kinesica.db"]
+```
+
+### 🔒 Regla Estricta de Aislamiento:
+- Este agente **NUNCA se comunica con el paciente**. Su única tarea es estructurar, auditar y mantener actualizada la base de datos de pacientes que concretaron una primera sesión (presencial o llamada de orientación).
+
+### 📋 Campos Registrados en la Planilla y Base de Datos:
+1. **Nombre y Apellido:** Nombre completo del paciente o titular.
+2. **DNI / Documento:** Número de DNI o documento facilitado (o `No provisto` si el paciente decidió no brindarlo).
+3. **Teléfono:** Número de WhatsApp con formato internacional.
+4. **Fecha Primera Sesión:** Día y horario acordado para la primera consulta.
+5. **Motivo de Consulta:** Motivo clínico inferido de la conversación (ej: *ATM / Bruxismo y dolor mandibular*, *Lumbalgia / Ciática*, *RPG / Postura*, *Cervicalgia*, etc.).
+6. **Tipo de Cita:** `Turno Presencial (1 hora)` o `Llamada de Orientación (15m)`.
+7. **Estado:** `Agendado`, `Confirmado` o `Realizado`.
+8. **Fecha de Registro:** Timestamp exacto de creación.
+
+### 📁 Archivos Disponibles:
+- **Planilla Excel Oficial:** [`docs/pacientes_primera_sesion.xlsx`](pacientes_primera_sesion.xlsx) (con diseño verde Kinésica, cabeceras fijas y auto-ajuste).
+- **Planilla CSV Universal:** [`docs/pacientes_primera_sesion.csv`](pacientes_primera_sesion.csv) (con codificación UTF-8 BOM para apertura directa en Excel).
+- **Base de Datos SQLite:** `pacientes_kinesica.db` (base relacional indexada).
+
+### 💻 Comando del Agente en Terminal:
+Podés consultar o regenerar la planilla en cualquier momento ejecutando:
+```bash
+python3 agente_base_datos.py
+```
+
+---
+
+## 🧪 8. ¿Cómo probar a Clara desde el celular?
 
 Para probar el funcionamiento como si fueras un paciente nuevo:
 
@@ -217,7 +258,7 @@ Para probar el funcionamiento como si fueras un paciente nuevo:
 
 ---
 
-## 📌 8. "Machete" rápido de comandos para los profesionales
+## 📌 9. "Machete" rápido de comandos para los profesionales
 
 Guardá esta tablita a mano para usar con Clara en el chat:
 
