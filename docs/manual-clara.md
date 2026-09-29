@@ -232,14 +232,32 @@ flowchart LR
 4. **Fecha Primera Sesión:** Día y horario acordado para la primera consulta presencial.
 5. **Motivo de Consulta:** Motivo clínico inferido de la conversación (ej: *ATM / Bruxismo y dolor mandibular*, *Lumbalgia / Ciática*, *RPG / Postura*, *Cervicalgia*, etc.).
 
+### 🔄 Identificación Automática de Pacientes Habituales (Cero Repetición de Datos):
+- **Memoria de Pacientes:** Si un paciente que ya tuvo su primera sesión o está en el registro histórico vuelve a escribir:
+  - Clara lo **reconoce de inmediato por su número de teléfono**.
+  - Lo saluda amistosamente por su nombre de pila.
+  - **No ofrece llamada previa de 10 min** (la llamada de evaluación es exclusivamente para nuevos pacientes que consultan aranceles o evaluación por primera vez).
+  - **JAMÁS le vuelve a pedir el nombre ni el DNI**: Al agendar un turno presencial posterior, Clara recupera automáticamente el nombre completo registrado (`🩺 [TURNO] Nombre Completo`) sin hacerle perder tiempo al paciente ni generarle la frustración de tener que identificarse de nuevo.
+
+### ✏️ Corrección de Nombre y Sincronización en Google Drive:
+- Si el paciente le indica a Clara que su nombre está incompleto o desea corregirlo (ej: *"En realidad me llamo Juan Lucas, no Lucas"* o *"Anotame con mi segundo nombre"*):
+  1. **Clara acepta el cambio con calidez:** Confirma al instante que ya quedó actualizado en su ficha.
+  2. **Actualización de Memoria Interna:** Actualiza la memoria de n8n (`staticData.patientHistory` y `firstSessionsDB`).
+  3. **Impacto en Google Sheets (Drive):** El agente background envía un webhook con `action: "update_name"`, localizando la fila por teléfono y modificando el valor de la columna *Nombre y Apellido* en Google Drive.
+  4. **Base Local y Excel:** Actualiza la base SQLite y regenera la planilla [`docs/pacientes_primera_sesion.xlsx`](pacientes_primera_sesion.xlsx).
+
 ### 📁 Acceso a las Planillas:
 - **Google Sheets en Vivo (Google Drive):** [Abrir en Google Drive](https://docs.google.com/spreadsheets/d/1kyGkYea0Iu_OrXxF-yONqhs2rG1O8YUWbbSmQe37GCk/edit)
 - **Planilla Excel Oficial Offline:** [`docs/pacientes_primera_sesion.xlsx`](pacientes_primera_sesion.xlsx) (con diseño verde Kinésica `#1B4332`, cabeceras fijas, bordes, auto-ajuste de columnas y filas cebradas).
 
 ### 💻 Comando del Agente en Terminal:
-Podés consultar o regenerar la planilla local o forzar sincronización con Google Sheets ejecutando:
+Podés consultar o regenerar la planilla local, forzar sincronización con Google Sheets o actualizar nombres manualmente ejecutando:
 ```bash
+# Sincronizar con Google Sheets
 python3 agente_base_datos.py --sync-sheets
+
+# Corregir nombre de un paciente
+python3 agente_base_datos.py --update-name 5491144556677 "Nuevo Nombre Completo"
 ```
 
 ---
