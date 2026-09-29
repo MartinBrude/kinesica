@@ -135,11 +135,12 @@ flowchart LR
 - El evento debe **desaparecer** por completo de la cuadrícula del calendario.
 - Si querés verificar que se borró correctamente, en Google Calendar podés ir a **Configuración ➡️ Papelera** y verás allí el evento eliminado con su hora de cancelación.
 
-### 📊 D. Al REGISTRAR un nuevo paciente de primera sesión (Spreadsheet Excel):
-- **Archivo generado:** `docs/pacientes_primera_sesion.xlsx` (exclusivamente Excel con diseño verde Kinésica).
+### 📊 D. Al REGISTRAR un nuevo paciente de primera sesión (Google Sheets en Drive y Excel):
+- **Destino en la nube:** [Google Sheet en Drive](https://docs.google.com/spreadsheets/d/1kyGkYea0Iu_OrXxF-yONqhs2rG1O8YUWbbSmQe37GCk/edit) (actualización en tiempo real vía Webhook).
+- **Archivo offline generado:** `docs/pacientes_primera_sesion.xlsx` (Excel con diseño verde Kinésica).
 - **Campos verificados (5 columnas exactas):** `Nombre y Apellido`, `DNI / Documento` (o `No provisto`), `Teléfono`, `Fecha Primera Sesión`, `Motivo de Consulta`.
 - **Filtro estricto:** Excluye llamadas de orientación telefónica de 15 min; sólo ingresan pacientes con turno de primera sesión presencial. Sin columna de estado.
-- **Aislamiento:** El nodo de fondo en n8n no posee conexiones de salida salientes hacia el nodo de envío de WhatsApp (`output: []`), asegurando que jamás envía mensajes al paciente.
+- **Aislamiento:** El nodo de envío a Google Sheets en n8n no posee conexiones de salida salientes hacia el nodo de envío de WhatsApp (`output: []`), asegurando que jamás envía mensajes al paciente.
 
 ---
 

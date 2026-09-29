@@ -211,29 +211,31 @@ flowchart LR
     A["Paciente confirma Primera Sesión Presencial"] --> B["Clara (Atención WhatsApp)"]
     B --> C["Google Calendar ('consultorio')"]
     B --> D["Agente de Base de Datos (Background)"]
-    D -.->|Sin comunicación al paciente| E["pacientes_primera_sesion.xlsx"]
+    D -.->|Sin comunicación al paciente| E["Google Sheets en Google Drive (Tiempo Real)"]
+    D -.->|Sin comunicación al paciente| F["pacientes_primera_sesion.xlsx"]
 ```
 
 ### 🔒 Regla Estricta de Aislamiento y Alcance:
 - **Cero comunicación con el paciente:** Este agente **NUNCA se comunica con el paciente**. Su única tarea es estructurar, auditar y mantener actualizada la base de datos de pacientes.
 - **SÓLO Primera Sesión Presencial:** Registra **únicamente** a los pacientes que concretaron un turno para su primera sesión presencial en el consultorio. **Excluye deliberadamente llamadas de orientación** de 15 minutos.
 - **Sin Estado:** No se registra el estado del turno; solo los datos identificatorios, de contacto, fecha y clínicos requeridos.
-- **Formato Exclusivo:** Generación **únicamente en Excel (`.xlsx`)** con el formato estético corporativo de Kinésica.
+- **Sincronización en Tiempo Real:** Cada nuevo agendamiento se envía de forma inmediata a la hoja de Google Sheets en Google Drive.
 
-### 📋 Columnas de la Planilla Excel (`pacientes_primera_sesion.xlsx`):
+### 📋 Columnas de la Planilla (`pacientes_primera_sesion.xlsx` y Google Sheets):
 1. **Nombre y Apellido:** Nombre completo del paciente o titular.
 2. **DNI / Documento:** Número de DNI o documento facilitado (o `No provisto` si el paciente decidió no brindarlo).
 3. **Teléfono:** Número de WhatsApp con formato internacional.
 4. **Fecha Primera Sesión:** Día y horario acordado para la primera consulta presencial.
 5. **Motivo de Consulta:** Motivo clínico inferido de la conversación (ej: *ATM / Bruxismo y dolor mandibular*, *Lumbalgia / Ciática*, *RPG / Postura*, *Cervicalgia*, etc.).
 
-### 📁 Archivo Disponible:
-- **Planilla Excel Oficial:** [`docs/pacientes_primera_sesion.xlsx`](pacientes_primera_sesion.xlsx) (con diseño verde Kinésica `#1B4332`, cabeceras fijas, bordes, auto-ajuste de columnas y filas cebradas).
+### 📁 Acceso a las Planillas:
+- **Google Sheets en Vivo (Google Drive):** [Abrir en Google Drive](https://docs.google.com/spreadsheets/d/1kyGkYea0Iu_OrXxF-yONqhs2rG1O8YUWbbSmQe37GCk/edit)
+- **Planilla Excel Oficial Offline:** [`docs/pacientes_primera_sesion.xlsx`](pacientes_primera_sesion.xlsx) (con diseño verde Kinésica `#1B4332`, cabeceras fijas, bordes, auto-ajuste de columnas y filas cebradas).
 
 ### 💻 Comando del Agente en Terminal:
-Podés consultar o regenerar la planilla en cualquier momento ejecutando:
+Podés consultar o regenerar la planilla local o forzar sincronización con Google Sheets ejecutando:
 ```bash
-python3 agente_base_datos.py
+python3 agente_base_datos.py --sync-sheets
 ```
 
 ---
