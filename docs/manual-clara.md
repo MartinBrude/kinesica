@@ -107,9 +107,13 @@ flowchart LR
 
 > [!CAUTION]
 > **Regla Crítica de Cero Superposiciones (Unicidad del Profesional):**  
-> El kinesiólogo es una única persona física: no puede atender el teléfono mientras está en medio de una sesión presencial en consultorio.  
-> Por este motivo, **una llamada telefónica y un turno presencial jamás pueden coincidir ni solaparse** (ni siquiera por 5 minutos).  
-> CUALQUIER evento registrado en Google Calendar (incluso citas recurrentes o manuales que solo lleven el nombre del paciente sin prefijo `[TURNO]`, o bloqueos) bloquea el 100% de la disponibilidad del consultorio durante todo su intervalo de horario. Clara tiene terminantemente prohibido ofrecer o agendar turnos o llamadas en intervalos ocupados.
+> El kinesiólogo es una única persona física: atiende personalmente las sesiones presenciales y las llamadas telefónicas de orientación.  
+> Por este motivo, **la llamada de 10 minutos no debe colisionar bajo ninguna circunstancia con**:  
+> 1. **Un turno presencial (sesión de 1 hora):** El kinesiólogo está con un paciente en el consultorio y no puede atender el teléfono. No se puede agendar una llamada que comience dentro de la sesión o que la solape (debe terminar a las :00 antes del turno o comenzar después a las :00).  
+> 2. **Otros eventos del calendario:** Bloqueos administrativos (`🚫 [BLOQUEADO]`), eventos personales del profesional (almuerzos, trámites médicos), notas, vacaciones o pacientes anotados manualmente. CUALQUIER evento en Google Calendar bloquea el 100% de la disponibilidad de inicio a fin.  
+> 3. **Otras llamadas telefónicas (10 minutos):** Si ya hay una llamada agendada (ej: 11:00 a 11:10 hs), no puede agendarse otra llamada en ese intervalo. Debe ser posterior (11:10 a 11:20 hs) o previa (10:50 a 11:00 hs).  
+> Asimismo, un turno presencial de 1 hora tampoco puede pisar una llamada existente.  
+> Clara y el Validador Clínico verifican obligatoriamente la agenda antes de ofrecer o agendar cualquier horario.
 
 ### ⏰ Recordatorios automáticos (24h previas en días hábiles) y Regla de Oro del Calendario:
 El sistema envía recordatorios automáticos por WhatsApp con 24 horas de antelación en días hábiles, con horarios programados para no perturbar descansos:
