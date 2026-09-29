@@ -157,12 +157,26 @@ const mainPagesEs = [
     "cv",
     "Kinesiólogo y osteópata; formación y experiencia profesional.",
   ],
+  [
+    "Política de privacidad",
+    "es",
+    "privacidad",
+    "Protección de datos personales y procedimiento para solicitar eliminación de información.",
+  ],
+  [
+    "Condiciones del servicio",
+    "es",
+    "condiciones",
+    "Términos de uso del sitio web, pautas de atención kinesiológica y aviso de salud.",
+  ],
 ];
 
 const enMainLines = [
   link("Home (English)", "en", "index", metaDescription("en", "index")),
   link("Articles & conditions", "en", "articulos", metaDescription("en", "articulos")),
   link(`CV — ${FOUNDER.name}`, "en", "cv", "Physiotherapist and osteopath profile."),
+  link("Privacy policy", "en", "privacidad", "Personal data protection and deletion request procedure."),
+  link("Terms of service", "en", "condiciones", "Website terms of use, physical therapy care guidelines, and health disclaimer."),
 ];
 
 const frMainLines = [
@@ -179,6 +193,18 @@ const frMainLines = [
     "cv",
     "Profil du kinésithérapeute et ostéopathe.",
   ),
+  link(
+    "Politique de confidentialité",
+    "fr",
+    "privacidad",
+    "Protection des données personnelles et demande de suppression d'informations.",
+  ),
+  link(
+    "Conditions de service",
+    "fr",
+    "condiciones",
+    "Conditions d'utilisation du site, modalités de soins et avertissement médical.",
+  ),
 ];
 
 const ptMainLines = [
@@ -194,6 +220,18 @@ const ptMainLines = [
     "pt",
     "cv",
     "Perfil do fisioterapeuta e osteopata.",
+  ),
+  link(
+    "Política de privacidade",
+    "pt",
+    "privacidad",
+    "Proteção de dados pessoais e procedimento para solicitar a eliminação de informações.",
+  ),
+  link(
+    "Condições do serviço",
+    "pt",
+    "condiciones",
+    "Regras de uso do site, diretrizes de atendimento fisioterapêutico e aviso de saúde.",
   ),
 ];
 

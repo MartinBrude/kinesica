@@ -16,6 +16,8 @@ Información útil para asistentes y crawlers:
 - [Inicio (español, Argentina)](https://www.kinesica.com.ar/): Kinésica es un centro de kinesiología, osteopatía, RPG y ATM en Palermo. Terapias manuales personalizadas.
 - [Artículos y patologías](https://www.kinesica.com.ar/articulos.html): Artículos sobre kinesiología, osteopatía y terapia manual. Información sobre cervicalgia, lumbalgia y tratamientos en Palermo.
 - [CV — Norberto Silvio Brude](https://www.kinesica.com.ar/cv.html): Kinesiólogo y osteópata; formación y experiencia profesional.
+- [Política de privacidad](https://www.kinesica.com.ar/privacidad.html): Protección de datos personales y procedimiento para solicitar eliminación de información.
+- [Condiciones del servicio](https://www.kinesica.com.ar/condiciones.html): Términos de uso del sitio web, pautas de atención kinesiológica y aviso de salud.
 
 ## Métodos y técnicas
 
@@ -74,6 +76,8 @@ Información útil para asistentes y crawlers:
 - [Home (English)](https://www.kinesica.com.ar/en/): Kinésica is a clinic for kinesiology, osteopathy, RPG, and TMJ in Palermo offering personalized manual therapy.
 - [Articles & conditions](https://www.kinesica.com.ar/en/articulos.html): Articles about kinesiology, osteopathy, and manual therapy. Information about cervical pain, low back pain, and treatments in Palermo.
 - [CV — Norberto Silvio Brude](https://www.kinesica.com.ar/en/cv.html): Physiotherapist and osteopath profile.
+- [Privacy policy](https://www.kinesica.com.ar/en/privacidad.html): Personal data protection and deletion request procedure.
+- [Terms of service](https://www.kinesica.com.ar/en/condiciones.html): Website terms of use, physical therapy care guidelines, and health disclaimer.
 
 ## Methods & techniques (English)
 
@@ -132,6 +136,8 @@ Información útil para asistentes y crawlers:
 - [Accueil (français)](https://www.kinesica.com.ar/fr/): Kinésica est un centre de kinésithérapie, ostéopathie, RPG et ATM à Palermo. Thérapies manuelles personnalisées.
 - [Articles et pathologies](https://www.kinesica.com.ar/fr/articulos.html): Articles sur la kinésithérapie, l'ostéopathie et la thérapie manuelle : douleur cervicale, lombalgie et traitements à Palermo.
 - [CV — Norberto Silvio Brude](https://www.kinesica.com.ar/fr/cv.html): Profil du kinésithérapeute et ostéopathe.
+- [Politique de confidentialité](https://www.kinesica.com.ar/fr/privacidad.html): Protection des données personnelles et demande de suppression d'informations.
+- [Conditions de service](https://www.kinesica.com.ar/fr/condiciones.html): Conditions d'utilisation du site, modalités de soins et avertissement médical.
 
 ## Méthodes et techniques
 
@@ -190,6 +196,8 @@ Información útil para asistentes y crawlers:
 - [Início (português)](https://www.kinesica.com.ar/pt/): Kinésica é um centro de fisioterapia, osteopatia, RPG e ATM em Palermo com terapias manuais personalizadas.
 - [Artigos e condições](https://www.kinesica.com.ar/pt/articulos.html): Artigos sobre fisioterapia, osteopatia e terapia manual: dor cervical, lombalgia e tratamentos em Palermo.
 - [Currículo — Norberto Silvio Brude](https://www.kinesica.com.ar/pt/cv.html): Perfil do fisioterapeuta e osteopata.
+- [Política de privacidade](https://www.kinesica.com.ar/pt/privacidad.html): Proteção de dados pessoais e procedimento para solicitar a eliminação de informações.
+- [Condições do serviço](https://www.kinesica.com.ar/pt/condiciones.html): Regras de uso do site, diretrizes de atendimento fisioterapêutico e aviso de saúde.
 
 ## Métodos e técnicas
 

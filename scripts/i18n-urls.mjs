@@ -39,6 +39,8 @@ export const STEMS = [
   "kinesiologia",
   "posturologia-clinica",
   "rpg",
+  "privacidad",
+  "condiciones",
   ...PATHOLOGY_STEMS,
 ];
 

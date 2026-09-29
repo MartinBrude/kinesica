@@ -63,7 +63,13 @@ window.__KINESICA_FOOTER_SNIPPET_ES = `
     <div class="row">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="copyright-content">
-          © Kinésica — Todos los derechos reservados
+          <span class="copyright-text">© Kinésica — Todos los derechos reservados</span>
+          <span class="tiny-footer-links">
+            <span class="tiny-footer-sep" aria-hidden="true">·</span>
+            <a href="/privacidad.html" class="tiny-footer-link" title="Política de privacidad">Política de privacidad</a>
+            <span class="tiny-footer-sep" aria-hidden="true">·</span>
+            <a href="/condiciones.html" class="tiny-footer-link" title="Condiciones del servicio">Condiciones del servicio</a>
+          </span>
         </div>
       </div>
     </div>

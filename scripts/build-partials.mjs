@@ -177,7 +177,13 @@ ${techniqueLinks}
     <div class="row">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="copyright-content">
-          ${s.copyright}
+          <span class="copyright-text">${s.copyright}</span>
+          <span class="tiny-footer-links">
+            <span class="tiny-footer-sep" aria-hidden="true">·</span>
+            <a href="${prefix}/privacidad.html" class="tiny-footer-link" title="${escAttr(s.privacyPolicy)}">${escHtml(s.privacyPolicy)}</a>
+            <span class="tiny-footer-sep" aria-hidden="true">·</span>
+            <a href="${prefix}/condiciones.html" class="tiny-footer-link" title="${escAttr(s.termsOfService)}">${escHtml(s.termsOfService)}</a>
+          </span>
         </div>
       </div>
     </div>
