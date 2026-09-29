@@ -93,7 +93,7 @@ Antes de iniciar una nueva simulación o cuando quieras probar como si fueras un
 | **TC-69** | **Recordatorios 24h: Exclusión de Sábados y Sin Mismo Día a las 10:00 hs** | *(Verificación de cron de recordatorios)*: Consultar programación del trigger automático. | **Cron blindado:** El trigger está configurado exclusivamente en `0 10 * * 1-4` (lunes a jueves 10 hs) y `0 18 * * 0` (domingos 18 hs). Cero ejecuciones los sábados, cero recordatorios para los sábados y cero ejecuciones a las 10:00 am del mismo día. |
 | **TC-70** | **Diversidad de Documentos / Aceptación sin Restricciones (Extranjeros, Mayores y Jóvenes)** | *(Paciente brinda pasaporte o DNI no estándar)*: *"Hola Clara, me sirve el martes a las 11 hs. Soy John Smith, mi pasaporte es A1234567"* o *"Soy Marta Gómez, mi DNI es 543210"*. | **Aceptación incondicional del documento provisto:** Clara acepta el número o identificación provista sin cuestionar la cantidad de dígitos ni exigir un formato específico (acepta DNI de 6 o 7 cifras, pasaportes con letras, serie 90M, etc.) y procede a registrar la cita en Google Calendar incluyendo la identificación en la descripción. |
 | **TC-71** | **Flexibilidad ante Negativa a dar DNI ("Se le da turno igual")** | *"Hola Clara, dale agendame para el jueves a las 15 hs. Me llamo Carlos Ruiz pero prefiero no dar mi DNI / no quiero dar mi DNI."* | **Cero bloqueo y agendamiento garantizado:** Si el paciente no desea brindar su documento, Clara **NO** insiste ni le niega el turno. El único requisito bloqueante es el nombre completo. Procede inmediatamente a agendar el turno en Google Calendar registrando en las notas `🪪 DNI: No provisto (paciente prefirió no indicarlo)`. |
-| **TC-72** | **Agente Background de Base de Datos y Spreadsheet de Primera Sesión** | *(Concreción de un turno de primera sesión presencial)* | **Aislamiento total y registro silencioso:** El agente secundario en segundo plano detecta la confirmación del nuevo paciente y actualiza el spreadsheet (`pacientes_primera_sesion.xlsx` / `.csv`) y la base de datos relacional (`pacientes_kinesica.db`) con: Nombre, DNI/Documento, Teléfono, Fecha de primera sesión y Motivo de consulta. **Regla de oro:** Este agente JAMÁS interactúa con el paciente ni le envía mensajes de WhatsApp. |
+| **TC-72** | **Agente Background de Base de Datos y Spreadsheet de Primera Sesión Presencial** | *(Concreción de un turno de primera sesión presencial)* | **Aislamiento total, solo presencial, sin estado y solo Excel:** El agente secundario en segundo plano detecta la confirmación del nuevo paciente presencial y actualiza exclusivamente la planilla Excel (`pacientes_primera_sesion.xlsx`) con 5 columnas: Nombre y Apellido, DNI/Documento, Teléfono, Fecha de primera sesión y Motivo de consulta. **Reglas de oro:** Excluye llamadas telefónicas de 15 min, no registra estado, genera solo `.xlsx` y JAMÁS interactúa con el paciente ni le envía mensajes de WhatsApp. |
 
 ---
 
@@ -111,7 +111,7 @@ flowchart LR
     C --> D["WhatsApp del Paciente"]
     B --> E["Google Calendar ('consultorio')"]
     B --> F["Alerta WhatsApp a Norberto o María"]
-    B -.-> G["Agente Background (Base de Datos / Spreadsheet)"]
+    B -.-> G["Agente Background (Spreadsheet Excel)"]
 ```
 
 ### ✅ A. Al CREAR un turno o llamada:
@@ -135,9 +135,10 @@ flowchart LR
 - El evento debe **desaparecer** por completo de la cuadrícula del calendario.
 - Si querés verificar que se borró correctamente, en Google Calendar podés ir a **Configuración ➡️ Papelera** y verás allí el evento eliminado con su hora de cancelación.
 
-### 📊 D. Al REGISTRAR un nuevo paciente de primera sesión (Base de Datos / Spreadsheet):
-- **Archivos generados:** `docs/pacientes_primera_sesion.xlsx` (Excel con formato visual Kinésica) y `docs/pacientes_primera_sesion.csv` (CSV compatible universal).
-- **Campos verificados:** `Nombre y Apellido`, `DNI/Documento` (o `No provisto`), `Teléfono`, `Fecha de primera sesión`, `Motivo de consulta` (si se conoce).
+### 📊 D. Al REGISTRAR un nuevo paciente de primera sesión (Spreadsheet Excel):
+- **Archivo generado:** `docs/pacientes_primera_sesion.xlsx` (exclusivamente Excel con diseño verde Kinésica).
+- **Campos verificados (5 columnas exactas):** `Nombre y Apellido`, `DNI / Documento` (o `No provisto`), `Teléfono`, `Fecha Primera Sesión`, `Motivo de Consulta`.
+- **Filtro estricto:** Excluye llamadas de orientación telefónica de 15 min; sólo ingresan pacientes con turno de primera sesión presencial. Sin columna de estado.
 - **Aislamiento:** El nodo de fondo en n8n no posee conexiones de salida salientes hacia el nodo de envío de WhatsApp (`output: []`), asegurando que jamás envía mensajes al paciente.
 
 ---

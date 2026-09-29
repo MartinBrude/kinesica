@@ -208,31 +208,27 @@ Kinésica cuenta con un **segundo agente autónomo especializado en administraci
 
 ```mermaid
 flowchart LR
-    A["Paciente confirma Primera Sesión"] --> B["Clara (Atención WhatsApp)"]
+    A["Paciente confirma Primera Sesión Presencial"] --> B["Clara (Atención WhatsApp)"]
     B --> C["Google Calendar ('consultorio')"]
     B --> D["Agente de Base de Datos (Background)"]
     D -.->|Sin comunicación al paciente| E["pacientes_primera_sesion.xlsx"]
-    D -.->|Sin comunicación al paciente| F["pacientes_primera_sesion.csv"]
-    D -.->|Sin comunicación al paciente| G["pacientes_kinesica.db"]
 ```
 
-### 🔒 Regla Estricta de Aislamiento:
-- Este agente **NUNCA se comunica con el paciente**. Su única tarea es estructurar, auditar y mantener actualizada la base de datos de pacientes que concretaron una primera sesión (presencial o llamada de orientación).
+### 🔒 Regla Estricta de Aislamiento y Alcance:
+- **Cero comunicación con el paciente:** Este agente **NUNCA se comunica con el paciente**. Su única tarea es estructurar, auditar y mantener actualizada la base de datos de pacientes.
+- **SÓLO Primera Sesión Presencial:** Registra **únicamente** a los pacientes que concretaron un turno para su primera sesión presencial en el consultorio. **Excluye deliberadamente llamadas de orientación** de 15 minutos.
+- **Sin Estado:** No se registra el estado del turno; solo los datos identificatorios, de contacto, fecha y clínicos requeridos.
+- **Formato Exclusivo:** Generación **únicamente en Excel (`.xlsx`)** con el formato estético corporativo de Kinésica.
 
-### 📋 Campos Registrados en la Planilla y Base de Datos:
+### 📋 Columnas de la Planilla Excel (`pacientes_primera_sesion.xlsx`):
 1. **Nombre y Apellido:** Nombre completo del paciente o titular.
 2. **DNI / Documento:** Número de DNI o documento facilitado (o `No provisto` si el paciente decidió no brindarlo).
 3. **Teléfono:** Número de WhatsApp con formato internacional.
-4. **Fecha Primera Sesión:** Día y horario acordado para la primera consulta.
+4. **Fecha Primera Sesión:** Día y horario acordado para la primera consulta presencial.
 5. **Motivo de Consulta:** Motivo clínico inferido de la conversación (ej: *ATM / Bruxismo y dolor mandibular*, *Lumbalgia / Ciática*, *RPG / Postura*, *Cervicalgia*, etc.).
-6. **Tipo de Cita:** `Turno Presencial (1 hora)` o `Llamada de Orientación (15m)`.
-7. **Estado:** `Agendado`, `Confirmado` o `Realizado`.
-8. **Fecha de Registro:** Timestamp exacto de creación.
 
-### 📁 Archivos Disponibles:
-- **Planilla Excel Oficial:** [`docs/pacientes_primera_sesion.xlsx`](pacientes_primera_sesion.xlsx) (con diseño verde Kinésica, cabeceras fijas y auto-ajuste).
-- **Planilla CSV Universal:** [`docs/pacientes_primera_sesion.csv`](pacientes_primera_sesion.csv) (con codificación UTF-8 BOM para apertura directa en Excel).
-- **Base de Datos SQLite:** `pacientes_kinesica.db` (base relacional indexada).
+### 📁 Archivo Disponible:
+- **Planilla Excel Oficial:** [`docs/pacientes_primera_sesion.xlsx`](pacientes_primera_sesion.xlsx) (con diseño verde Kinésica `#1B4332`, cabeceras fijas, bordes, auto-ajuste de columnas y filas cebradas).
 
 ### 💻 Comando del Agente en Terminal:
 Podés consultar o regenerar la planilla en cualquier momento ejecutando:
