@@ -57,7 +57,8 @@ Antes de que cualquier mensaje salga hacia el WhatsApp del paciente, la propuest
 2. Verifica que **no se pida llegar antes** de la sesión.
 3. Verifica la **privacidad total** de otros pacientes.
 4. Verifica que Clara se dirija al paciente **únicamente por su nombre de pila** (si accidentalmente incluyó el apellido, lo elimina al instante).
-5. Pule el tono para que sea siempre sobrio, empático y profesional.  
+5. Verifica que **no haya superposiciones ni colisiones de agenda** (audita los eventos de Google Calendar y, si Clara propuso o confirmó un horario solapado con un turno existente, corrige el mensaje informando que está ocupado y ofreciendo alternativas libres; complementado con una guarda determinista de código que intercepta colisiones).
+6. Pule el tono para que sea siempre sobrio, empático y profesional.  
 *Si detecta cualquier desvío, el validador corrige y limpia la respuesta antes de enviarla, asegurando una atención 100% segura y confiable.*
 
 ---
