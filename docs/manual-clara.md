@@ -39,7 +39,15 @@ Clara fue configurada con el estilo de una **secretaria médica real de Buenos A
 * **Proactividad de agenda (ofrecer siempre 2 opciones concretas):** Cuando el paciente pide disponibilidad para la semana, Clara no repregunta pasivamente "¿en qué horario podés?", sino que consulta la agenda y propone proactivamente 2 huecos disponibles (ej: *"este miércoles a las 10:00 hs o el jueves a las 16:30 hs"*), reduciendo mensajes y acelerando la confirmación.
 * **Sentido común de traslado (turnos para hoy):** Si un paciente escribe pidiendo turno para "hoy", Clara nunca le ofrece un horario que ocurra dentro de los próximos 90 a 120 minutos, para darle tiempo razonable de viajar y llegar tranquilo a Palermo.
 * **Memoria histórica y reconocimiento automático (Efecto "Wow"):** Clara reconoce automáticamente a los pacientes habituales por su historial. Cuando alguien que ya se atendió en Kinésica vuelve a escribir, Clara lo recibe de forma personalizada (*"¡Hola [Nombre]! Qué bueno tenerte en contacto de nuevo 🙌"*), saltea automáticamente la llamada previa de orientación de 15 minutos y ofrece directamente turnos presenciales de 1 hora.
-* **Indumentaria para la sesión (solo si el paciente pregunta):** Si el paciente consulta cómo vestir o qué ropa llevar, Clara responde exactamente con la pauta oficial del consultorio: varones con ropa interior o pantalón corto; mujeres con ropa interior, malla de 2 piezas o calza corta (para permitir una evaluación postural y de movilidad óptima).
+* **Indumentaria para la sesión (solo si el paciente pregunta):** Si el paciente consulta cómo vestir o qué ropa llevar, Clara responde exactamente con la pauta oficial del consultorio: varones con ropa interior o pantalón corto; mujeres con ropa interior con **corpiño no deportivo (tradicional)**, malla de 2 piezas o calza corta. Clara aclara amablemente que se sugiere corpiño tradicional dado que los corpiños deportivos comprimen y cubren la zona dorsal y las escápulas, dificultando la evaluación postural y las maniobras de terapia manual.
+* **Requisitos indispensables para agendar (Nombre completo y DNI):** Para reservar o agendar cualquier turno presencial o llamada de orientación, es obligatorio contar con el **Nombre completo** (nombre y apellido) y el **DNI** del paciente. Clara tiene terminantemente prohibido agendar o decir "ya te agendé" si falta alguno de estos dos datos. Si el paciente confirma un horario sin haberlos brindado, Clara se los solicita con amabilidad antes de asentar la cita. Al agendar en Google Calendar, el DNI queda registrado en la descripción (`🪪 DNI: ...`).
+* **Privacidad de ubicación y seguridad (Zona vs. Dirección Exacta):**
+  - **Consultas generales / exploratorias:** Ante preguntas generales sobre la ubicación (*"¿Dónde queda?", "¿Por qué zona están?", "¿Cómo llego?"*), Clara informa **únicamente la referencia de zona**: *"Estamos en Charcas y Scalabrini Ortiz, en Palermo (a 2 cuadras de la Estación Scalabrini Ortiz del Subte D y de Av. Santa Fe) 🌿"*.
+  - **Dirección exacta confidencial:** La dirección completa (`Charcas 3889, Piso 5º, Dpto B`) y el enlace a Google Maps **NUNCA se comparten en conversaciones exploratorias**. Se entregan **única y exclusivamente dentro del mensaje de confirmación definitiva del turno agendado** (cuando ya se cuenta con horario, nombre completo y DNI). En llamadas telefónicas de 15 min no se envía dirección física.
+* **Condiciones del espacio, puntualidad y acompañantes:**
+  - **Sin sala de espera:** El consultorio no cuenta con sala de espera.
+  - **No asistir con acompañantes:** Se solicita a los pacientes asistir solos (salvo menores de edad, que deben concurrir con un adulto responsable, o pacientes que requieran asistencia directa para movilizarse).
+  - **Puntualidad estricta:** Se enfatiza la puntualidad estricta para evitar esperas en la entrada o en la calle. Clara jamás solicita llegar con 10 o 15 minutos de anticipación.
 * **Recepción y reenvío de archivos adjuntos (fotos y PDFs):** Si un paciente envía fotos de órdenes médicas, estudios, radiografías o comprobantes de pago, Clara acusa recibo al instante y se lo reenvía a Norberto con todo el contexto del paciente.
 * **Contacto personal con Norberto o María (Gestión de Horario):** Si un paciente pide hablar personalmente con Norberto o María:
   - En horario de atención (08:00 a 20:00 hs hábiles): avisa que el profesional se contactará a la brevedad.
@@ -58,7 +66,11 @@ Antes de que cualquier mensaje salga hacia el WhatsApp del paciente, la propuest
 3. Verifica la **privacidad total** de otros pacientes.
 4. Verifica que Clara se dirija al paciente **únicamente por su nombre de pila** (si accidentalmente incluyó el apellido, lo elimina al instante).
 5. Verifica que **no haya superposiciones ni colisiones de agenda** (audita los eventos de Google Calendar y, si Clara propuso o confirmó un horario solapado con un turno existente, corrige el mensaje informando que está ocupado y ofreciendo alternativas libres; complementado con una guarda determinista de código que intercepta colisiones).
-6. Pule el tono para que sea siempre sobrio, empático y profesional.  
+6. Verifica la **indumentaria sugerida** (corpiño no deportivo en mujeres solo si el paciente preguntó).
+7. Verifica la **privacidad de ubicación** (censura numeración, piso o departamento en consultas exploratorias, dejando solo la referencia de zona).
+8. Verifica que la confirmación contenga las **condiciones del espacio y puntualidad estricta** (sin sala de espera ni acompañantes).
+9. Verifica los **requisitos de agendamiento**: si Clara confirma un turno sin Nombre Completo y DNI, el validador frena la confirmación y solicita los datos faltantes.
+10. Pule el tono para que sea siempre sobrio, empático y profesional.  
 *Si detecta cualquier desvío, el validador corrige y limpia la respuesta antes de enviarla, asegurando una atención 100% segura y confiable.*
 
 ---
@@ -97,10 +109,13 @@ flowchart LR
 > Por este motivo, **una llamada telefónica y un turno presencial jamás pueden coincidir ni solaparse** (ni siquiera por 5 minutos).  
 > CUALQUIER evento registrado en Google Calendar (incluso citas recurrentes o manuales que solo lleven el nombre del paciente sin prefijo `[TURNO]`, o bloqueos) bloquea el 100% de la disponibilidad del consultorio durante todo su intervalo de horario. Clara tiene terminantemente prohibido ofrecer o agendar turnos o llamadas en intervalos ocupados.
 
-### ⏰ Recordatorios automáticos (24h previas) y Regla de Oro del Calendario:
-El sistema envía recordatorios automáticos por WhatsApp a los pacientes con citas programadas para el día siguiente en horarios diferenciados:
-* **Domingos a las 18:00 hs:** Para los turnos del día lunes (respetando el descanso dominical durante la mañana y tarde temprana).
-* **Lunes a Sábados a las 10:00 hs:** Para los turnos de los días restantes de la semana.
+### ⏰ Recordatorios automáticos (24h previas en días hábiles) y Regla de Oro del Calendario:
+El sistema envía recordatorios automáticos por WhatsApp con 24 horas de antelación en días hábiles, con horarios programados para no perturbar descansos:
+* **Domingos a las 18:00 hs:** Para los turnos del día lunes (respetando el descanso dominical durante la mañana y tarde).
+* **Lunes a Jueves a las 10:00 hs:** Para los turnos de los días restantes de la semana (martes a viernes).
+* **Cero recordatorios en sábados o para sábados:** El consultorio atiende de lunes a viernes hábiles; no se envían recordatorios los sábados ni los viernes a las 10 hs para el fin de semana.
+* **Desactivación de recordatorios a las 10:00 am del mismo día:** Los recordatorios se ejecutan exclusivamente el día hábil previo (24h antes). Jamás se envían recordatorios el mismo día del turno por la mañana.
+* **Condiciones del espacio incorporadas:** Cada recordatorio incluye automáticamente el aviso de que el espacio no cuenta con sala de espera, solicitando puntualidad estricta y no asistir con acompañantes.
 
 > [!IMPORTANT]
 > **El calendario es la única fuente de información:**  
