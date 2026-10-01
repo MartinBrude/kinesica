@@ -13,7 +13,11 @@ function pl(lang) {
 
 /** Shared bundles (all pages). */
 export const SHARED_BUNDLES = {
-  "js/head-lang.min.js": ["js/lang-preference.js", "js/redirect.js"],
+  "js/head-lang.min.js": [
+    "js/lang-routes.js",
+    "js/lang-preference.js",
+    "js/redirect.js",
+  ],
   "js/shell-top.min.js": [
     "partials/skip-link.js",
     "js/skip-link-include.js",
@@ -25,6 +29,7 @@ export const SHARED_BUNDLES = {
     "js/ui-reveal.js",
     "js/articles-categories.js",
     "js/sticky-header.js",
+    "js/gtm-events.js",
   ],
   "js/ui-home.min.js": [
     "js/faq-accordion.js",

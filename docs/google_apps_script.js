@@ -17,7 +17,7 @@
 function doPost(e) {
   try {
     if (!e || !e.postData || !e.postData.contents) {
-      return createJsonResponse({ status: "error", message: "No post data received" }, 400);
+      return createJsonResponse({ status: "error", message: "No post data received" });
     }
 
     const payload = JSON.parse(e.postData.contents);
@@ -33,7 +33,7 @@ function doPost(e) {
     }
 
   } catch (err) {
-    return createJsonResponse({ status: "error", message: err.toString() }, 500);
+    return createJsonResponse({ status: "error", message: err.toString() });
   }
 }
 
@@ -47,7 +47,7 @@ function handleUpdateName(sheet, payload) {
   const nuevoNombre = (payload.nuevo_nombre || payload.nombre_apellido || "").trim();
 
   if (!nuevoNombre) {
-    return createJsonResponse({ status: "error", message: "Nuevo nombre no proporcionado" }, 400);
+    return createJsonResponse({ status: "error", message: "Nuevo nombre no proporcionado" });
   }
 
   const data = sheet.getDataRange().getValues();
@@ -92,7 +92,7 @@ function handleInsertPatient(sheet, payload) {
   const motivo = (payload.motivo_consulta || "Consulta general").trim();
 
   if (!nombre) {
-    return createJsonResponse({ status: "error", message: "Nombre no proporcionado" }, 400);
+    return createJsonResponse({ status: "error", message: "Nombre no proporcionado" });
   }
 
   const data = sheet.getDataRange().getValues();
@@ -144,6 +144,11 @@ function doGet(e) {
   });
 }
 
+/**
+ * Genera la salida JSON para la Web App de Google Apps Script.
+ * Nota: ContentService siempre responde con HTTP 200 en Apps Script;
+ * el estado lógico se comunica mediante la propiedad "status" del cuerpo JSON.
+ */
 function createJsonResponse(data) {
   return ContentService.createTextOutput(JSON.stringify(data))
     .setMimeType(ContentService.MimeType.JSON);

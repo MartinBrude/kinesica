@@ -44,6 +44,7 @@
         validationErr:
           "Por favor, ingresa al menos tu nombre y un correo electrónico o teléfono para procesar la solicitud.",
         copiedSuccess: "¡Texto de la solicitud copiado al portapapeles con éxito!",
+        copiedError: "No se pudo copiar automáticamente al portapapeles.",
         mailSuccess: "Se ha abierto tu cliente de correo con la solicitud pre-redactada.",
         waSuccess: "Se ha abierto WhatsApp con la solicitud pre-redactada.",
         waIntro: "Hola Kinésica, deseo solicitar la eliminación de mis datos personales:",
@@ -62,6 +63,7 @@
         validationErr:
           "Please enter at least your name and an email address or phone number to process the request.",
         copiedSuccess: "Request text copied to clipboard successfully!",
+        copiedError: "Could not copy to clipboard automatically.",
         mailSuccess: "Your email client has opened with the pre-formatted request.",
         waSuccess: "WhatsApp has opened with the pre-formatted request.",
         waIntro: "Hello Kinésica, I would like to formally request the erasure of my personal data:",
@@ -76,10 +78,11 @@
         details: "Détails complémentaires",
         notProvided: "Non précisé",
         statement:
-          "Par la présente, je demande formellement l'effacement définitif de toute donnée personnelle me concernant de vos bases de contact, carnets d'adresses et messageries.",
+          "Par la presente, je demande formellement l'effacement définitif de toute donnée personnelle me concernant de vos bases de contact, carnets d'adresses et messageries.",
         validationErr:
           "Veuillez renseigner au minimum votre nom et une adresse e-mail ou un numéro de téléphone.",
         copiedSuccess: "Texte de la demande copié dans le presse-papiers !",
+        copiedError: "Impossible de copier automatiquement dans le presse-papiers.",
         mailSuccess: "Votre messagerie s'est ouverte avec la demande pré-remplie.",
         waSuccess: "WhatsApp s'est ouvert avec la demande pré-remplie.",
         waIntro: "Bonjour Kinésica, je souhaite demander la suppression de mes données personnelles :",
@@ -98,6 +101,7 @@
         validationErr:
           "Por favor, preencha ao menos seu nome e um e-mail ou telefone para processar a solicitação.",
         copiedSuccess: "Texto da solicitação copiado com sucesso!",
+        copiedError: "Não foi possível copiar automaticamente para a área de transferência.",
         mailSuccess: "Seu aplicativo de e-mail foi aberto com a solicitação preenchida.",
         waSuccess: "O WhatsApp foi aberto com a solicitação preenchida.",
         waIntro: "Olá Kinésica, gostaria de solicitar a eliminação dos meus dados pessoais:",
@@ -258,7 +262,7 @@
             showAlert(t.copiedSuccess, false);
           })
           .catch(function () {
-            showAlert(t.copiedSuccess, false);
+            showAlert(t.copiedError || "Error al copiar", true);
           });
       });
     }

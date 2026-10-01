@@ -53,11 +53,6 @@
     window.kinesicaApplyWhatsAppContact();
   }
 
-  root.addEventListener("contextmenu", function (event) {
-    if (event.target.closest("a")) {
-      event.preventDefault();
-    }
-  });
   function blurFooterLink(event) {
     var link = event.target.closest("a");
     if (link && typeof link.blur === "function") {

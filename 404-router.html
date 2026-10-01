@@ -3,9 +3,12 @@
 
 <head>
   <meta charset="utf-8" />
-<link href="css/critical.min.css?v=1790673263" rel="stylesheet" />
-<script>document.documentElement.classList.add("js");</script>
-                <meta http-equiv="content-language" content="es-AR" />  <title>404</title>
+  <script>document.documentElement.classList.add("js");</script>
+  <meta http-equiv="content-language" content="es-AR" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="Página no encontrada - Kinésica" />
+  <title>404 - Kinésica</title>
   <link rel="preload" href="fonts/roboto/roboto-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preconnect" href="https://www.googletagmanager.com" />
   <link href="css/bootstrap.min.css" rel="stylesheet" />
@@ -15,20 +18,34 @@
   <link href="css/style.min.css" rel="stylesheet" />
 <link rel="preload" href="css/whatsapp.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
   <noscript><link href="css/whatsapp.min.css" rel="stylesheet" /></noscript>
+  <link href="css/critical.min.css?v=1790885799" rel="stylesheet" />
   <meta name="robots" content="noindex, nofollow" />
-  <script src="js/lang-routes.min.js?v=1790673263" defer></script>
-  <script src="js/lang-preference.min.js?v=1790673263" defer></script>
+  <script src="js/lang-routes.min.js?v=1790885799"></script>
+  <script src="js/lang-preference.min.js?v=1790885799" defer></script>
   <script>
     (function () {
       var routes = window.KINESICA_LANG_ROUTES;
+      var path = (window.location.pathname || "").toLowerCase();
       var pref =
         typeof window.kinesicaGetLangPreference === "function"
           ? window.kinesicaGetLangPreference()
-          : null;
+          : (function () {
+              try { return localStorage.getItem("kinesica_lang"); } catch (e) { return null; }
+            })();
       var nav = (navigator.language || navigator.userLanguage || "").toLowerCase();
       var lang = "es";
-      if (pref === "en" || pref === "fr" || pref === "pt" || pref === "es") {
+
+      // 1. Inspect URL pathname first
+      if (path.indexOf("/pt/") === 0 || path === "/pt") {
+        lang = "pt";
+      } else if (path.indexOf("/fr/") === 0 || path === "/fr") {
+        lang = "fr";
+      } else if (path.indexOf("/en/") === 0 || path === "/en") {
+        lang = "en";
+      // 2. Saved user preference
+      } else if (pref === "en" || pref === "fr" || pref === "pt" || pref === "es") {
         lang = pref;
+      // 3. Browser language
       } else if (nav.indexOf("pt") === 0) {
         lang = "pt";
       } else if (nav.indexOf("fr") === 0) {
@@ -36,6 +53,7 @@
       } else if (nav.indexOf("en") === 0) {
         lang = "en";
       }
+
       var target;
       if (routes && routes.isFileProtocol && routes.isFileProtocol()) {
         target =

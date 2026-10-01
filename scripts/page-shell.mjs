@@ -100,7 +100,7 @@ export function headFavicon(prefix) {
     path.resolve(path.dirname(fileURLToPath(import.meta.url)), ".."),
   );
   return (
-    `  <link rel="icon" type="image/svg" href="${prefix}images/favicon.svg${q}" />\n` +
+    `  <link rel="icon" type="image/svg+xml" href="${prefix}images/favicon.svg${q}" />\n` +
     `  <link rel="apple-touch-icon" href="${prefix}images/apple-touch-icon.png${q}" />\n`
   );
 }

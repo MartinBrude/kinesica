@@ -121,8 +121,8 @@ function buildHtml(stem, lang) {
 <html lang="${HTML_LANG[lang]}">
 
 <head>
-${headFavicon(p)}  <meta charset="utf-8" />
-${headJsClassScript()}${headCriticalCss(p)}  <meta http-equiv="content-language" content="${LOCALE[lang]}" />
+  <meta charset="utf-8" />
+${headFavicon(p)}${headJsClassScript()}${headCriticalCss(p)}  <meta http-equiv="content-language" content="${LOCALE[lang]}" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="robots" content="index, follow, max-image-preview:large" />

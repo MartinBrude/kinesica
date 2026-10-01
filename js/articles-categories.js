@@ -140,4 +140,26 @@
       }
     });
   });
+
+  function openCategoryFromHash() {
+    var raw = (window.location.hash || "").replace(/^#/, "");
+    if (!raw) return;
+    for (var i = 0; i < categories.length; i++) {
+      var cat = categories[i];
+      var catSlug = cat.getAttribute("data-category");
+      var panel = cat.querySelector(".articles-category-panel");
+      var panelId = panel ? panel.id : "";
+      if (catSlug === raw || panelId === raw) {
+        closeOthers(cat);
+        setOpen(cat, true);
+        whenCategoryOpened(cat, function () {
+          scrollCategoryHeader(cat);
+        });
+        break;
+      }
+    }
+  }
+
+  openCategoryFromHash();
+  window.addEventListener("hashchange", openCategoryFromHash);
 })();

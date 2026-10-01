@@ -47,7 +47,7 @@ window.__KINESICA_FOOTER_SNIPPET_ES = `
                 title="Ver Kinésica en Google Maps"><i class="fa fa-map-marker" aria-hidden="true"></i> Charcas 3889, CABA</a>
             </li>
             <li>
-              <a href="#" class="dynamic-whatsapp-link" target="_blank" rel="noopener noreferrer">
+              <a href="https://wa.me/5491161564311" class="dynamic-whatsapp-link" target="_blank" rel="noopener noreferrer">
                 <i class="fa fa-phone" aria-hidden="true"></i>
                 <span class="dynamic-whatsapp-text">+54 (11) 6156-4311</span>
               </a>

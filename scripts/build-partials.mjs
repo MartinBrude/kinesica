@@ -161,7 +161,7 @@ ${techniqueLinks}
                 title="${escAttr(s.mapsTitle)}"><i class="fa fa-map-marker" aria-hidden="true"></i> ${CONTACT.address.shortLine}</a>
             </li>
             <li>
-              <a href="#" class="dynamic-whatsapp-link" target="_blank" rel="noopener noreferrer">
+              <a href="${waMeUrl(CONTACT.whatsappDigits)}" class="dynamic-whatsapp-link" target="_blank" rel="noopener noreferrer">
                 <i class="fa fa-phone" aria-hidden="true"></i>
                 <span class="dynamic-whatsapp-text">${CONTACT.phoneDisplay}</span>
               </a>

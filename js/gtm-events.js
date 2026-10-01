@@ -10,6 +10,7 @@
  * IDs: scripts/site-analytics.mjs → js/site-config.js (KINESICA_SITE).
  */
 (function () {
+  window.__KINESICA_GTM_EVENTS_LOADED = true;
   window.dataLayer = window.dataLayer || [];
 
   var GA4_EVENTS = {
