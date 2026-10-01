@@ -125,6 +125,8 @@ ${headLangDeferScripts(prefix)}${headSeoBlock({
     title: copy.title,
     description: copy.description,
     type: "website",
+    image: `${SITE}/images/og-image.jpg`,
+    imageAlt: copy.title,
     canonical,
   })}
 ${headStandardStylesheets(prefix)}  <script src="${prefix}partials/gtm-head.min.js" defer></script>
