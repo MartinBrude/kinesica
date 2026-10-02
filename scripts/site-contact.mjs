@@ -13,6 +13,8 @@ export const CONTACT = {
   phoneSchema: "+54-11-6156-4311",
   /** Primary email for contact. */
   email: "norberto1712@gmail.com",
+  /** Web3Forms Access Key for static forms delivery. */
+  web3formsKey: "6f3383f7-9d3c-4b37-88eb-b029427a6540",
   /** Google Maps short link (same as Google Business Profile listing). */
   mapsUrl: GOOGLE_MAPS_URL,
   /** Clinic address (UI + schema). */

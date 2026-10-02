@@ -87,7 +87,7 @@ export const PRIVACY = {
         highlight: true,
         paragraphs: [
           "**Cualquier persona puede solicitar la eliminación de toda información referida a ella.**",
-          "El trámite es **totalmente gratuito**, no requiere intermediarios ni formalismos complejos. Para ejercer este derecho de supresión, ponemos a tu disposición el siguiente formulario interactivo que genera de forma automática tu solicitud formal por correo electrónico.",
+          "El trámite es **totalmente gratuito**, no requiere intermediarios ni formalismos complejos. Para ejercer este derecho de supresión, ponemos a tu disposición el siguiente formulario para enviar tu solicitud formal.",
         ],
       },
       {
@@ -108,7 +108,7 @@ export const PRIVACY = {
     form: {
       title: "Solicitud interactiva de eliminación de datos",
       instructions:
-        "Completa los datos a continuación para generar y enviar tu solicitud formal de supresión por correo electrónico.",
+        "Completa los datos a continuación para enviar tu solicitud formal de supresión de datos personales.",
       nameLabel: "Nombre y apellido completo",
       namePlaceholder: "Ej. Juan Pérez",
       emailLabel: "Correo electrónico asociado",
@@ -125,8 +125,10 @@ export const PRIVACY = {
       detailsLabel: "Detalles adicionales o aclaraciones (opcional)",
       detailsPlaceholder:
         "Indica cualquier dato adicional que nos permita identificar con precisión la información a eliminar...",
-      btnEmail: "Enviar solicitud por correo",
-      feedbackSent: "Se ha abierto tu cliente de correo electrónico con la solicitud pre-redactada.",
+      btnSubmit: "Enviar solicitud",
+      feedbackSending: "Enviando solicitud...",
+      feedbackSent: "¡Solicitud enviada con éxito! Nos pondremos en contacto a la brevedad dentro del plazo legal.",
+      feedbackFailed: "Ocurrió un error al enviar la solicitud. Por favor intenta nuevamente o contáctanos por correo.",
       feedbackError: "Por favor, completa al menos tu nombre y un correo electrónico o teléfono de contacto.",
       legalNotice:
         "Plazo de respuesta: responderemos a tu solicitud en un plazo máximo de 5 días hábiles conforme al Art. 16 de la Ley 25.326 (o hasta 30 días para solicitudes bajo el RGPD/LGPD).",
@@ -211,7 +213,7 @@ export const PRIVACY = {
         highlight: true,
         paragraphs: [
           "**Any individual may request the deletion of all personal information referring to them.**",
-          "The process is **completely free of charge**, requires no legal formalities, and is straightforward. You may use our interactive form below to generate and submit your formal data deletion request via email.",
+          "The process is **completely free of charge**, requires no legal formalities, and is straightforward. You may use our interactive form below to submit your formal data deletion request.",
         ],
       },
       {
@@ -232,7 +234,7 @@ export const PRIVACY = {
     form: {
       title: "Interactive Data Deletion Request Form",
       instructions:
-        "Fill out the details below to generate and submit your formal data erasure request via email.",
+        "Fill out the details below to submit your formal data erasure request.",
       nameLabel: "Full Name",
       namePlaceholder: "e.g., John Smith",
       emailLabel: "Associated Email Address",
@@ -249,8 +251,10 @@ export const PRIVACY = {
       detailsLabel: "Additional Details or Clarifications (optional)",
       detailsPlaceholder:
         "Please provide any additional details that will help us locate and delete your records...",
-      btnEmail: "Send Request via Email",
-      feedbackSent: "Your email client has opened with the pre-formatted request.",
+      btnSubmit: "Submit Request",
+      feedbackSending: "Sending request...",
+      feedbackSent: "Request submitted successfully! We will get in touch with you within the legal timeframe.",
+      feedbackFailed: "An error occurred while sending the request. Please try again or contact us directly.",
       feedbackError: "Please provide at least your full name and an email address or phone number.",
       legalNotice:
         "Response timeframe: we will reply within the legal period of 5 business days under Law 25,326 (or up to 30 calendar days under GDPR/LGPD).",
@@ -335,7 +339,7 @@ export const PRIVACY = {
         highlight: true,
         paragraphs: [
           "**Toute personne peut demander la suppression de l'ensemble des informations la concernant.**",
-          "Cette démarche est **entièrement gratuite** et ne requiert aucun formalisme particulier. Utilisez notre formulaire ci-dessous pour composer et transmettre votre demande formelle par e-mail.",
+          "Cette démarche est **entièrement gratuite** et ne requiert aucun formalisme particulier. Utilisez notre formulaire ci-dessous pour transmettre votre demande formelle d'effacement.",
         ],
       },
       {
@@ -356,7 +360,7 @@ export const PRIVACY = {
     form: {
       title: "Formulaire interactif de suppression des données",
       instructions:
-        "Renseignez les champs ci-dessous pour préparer et transmettre votre demande d'effacement par e-mail.",
+        "Renseignez les champs ci-dessous pour transmettre votre demande d'effacement.",
       nameLabel: "Nom et prénom",
       namePlaceholder: "Ex. Pierre Dupont",
       emailLabel: "Adresse e-mail associée",
@@ -373,8 +377,10 @@ export const PRIVACY = {
       detailsLabel: "Détails complémentaires (optionnel)",
       detailsPlaceholder:
         "Indiquez toute précision utile pour nous aider à identifier vos données...",
-      btnEmail: "Envoyer la demande par e-mail",
-      feedbackSent: "Votre messagerie s'est ouverte avec la demande pré-remplie.",
+      btnSubmit: "Envoyer la demande",
+      feedbackSending: "Envoi en cours...",
+      feedbackSent: "Votre demande a été envoyée avec succès ! Nous vous répondrons dans le délai légal.",
+      feedbackFailed: "Une erreur est survenue lors de l'envoi. Veuillez réessayer ou nous contacter directement.",
       feedbackError: "Veuillez renseigner au minimum votre nom et un e-mail ou numéro de téléphone.",
       legalNotice:
         "Délai de réponse : nous répondrons sous 5 jours ouvrés selon la Loi 25.326 (ou 30 jours au titre du RGPD).",
@@ -459,7 +465,7 @@ export const PRIVACY = {
         highlight: true,
         paragraphs: [
           "**Qualquer pessoa pode solicitar a eliminação de qualquer informação referida a si.**",
-          "O procedimento é **completamente gratuito**, sem burocracia ou intermediários. Você pode preencher o formulário abaixo para gerar e enviar seu pedido formal de exclusão por e-mail.",
+          "O procedimento é **completamente gratuito**, sem burocracia ou intermediários. Você pode preencher o formulário abaixo para enviar seu pedido formal de exclusão.",
         ],
       },
       {
@@ -480,7 +486,7 @@ export const PRIVACY = {
     form: {
       title: "Formulário interativo para exclusão de dados",
       instructions:
-        "Preencha as informações a seguir para formalizar e enviar seu pedido de exclusão de dados pessoais por e-mail.",
+        "Preencha as informações a seguir para enviar seu pedido formal de exclusão de dados pessoais.",
       nameLabel: "Nome completo",
       namePlaceholder: "Ex. João Silva",
       emailLabel: "E-mail associado",
@@ -497,8 +503,10 @@ export const PRIVACY = {
       detailsLabel: "Detalhes adicionais ou observações (opcional)",
       detailsPlaceholder:
         "Informe qualquer dado que nos ajude a identificar e excluir seus registros...",
-      btnEmail: "Enviar solicitação por e-mail",
-      feedbackSent: "Seu aplicativo de e-mail foi aberto com o pedido preenchido.",
+      btnSubmit: "Enviar solicitação",
+      feedbackSending: "Enviando solicitação...",
+      feedbackSent: "Solicitação enviada com sucesso! Entraremos em contato dentro do prazo legal.",
+      feedbackFailed: "Ocorreu um erro ao enviar a solicitação. Por favor tente novamente ou entre em contato diretamente.",
       feedbackError: "Por favor, informe ao menos seu nome e um e-mail ou telefone para contato.",
       legalNotice:
         "Prazo de resposta: responderemos no prazo legal de 5 dias úteis pela Lei 25.326 (ou até 30 dias sob a LGPD/RGPD).",
