@@ -65,9 +65,7 @@ function renderDeletionCard(sec, form, lang, copy) {
 
             <form class="privacy-request-form" data-lang="${escAttr(
               lang,
-            )}" data-email="${escAttr(CONTACT.email)}" data-whatsapp="${escAttr(
-    CONTACT.whatsappDigits,
-  )}" novalidate>
+            )}" data-email="${escAttr(CONTACT.email)}" novalidate>
               <div class="privacy-form-grid">
                 <div class="privacy-form-group">
                   <label for="priv-name">${escHtml(form.nameLabel)} *</label>
@@ -109,16 +107,6 @@ ${optionsHtml}
                 <button type="button" class="privacy-btn privacy-btn-primary" data-action="send-email">
                   <i class="fa fa-envelope" aria-hidden="true"></i> ${escHtml(
                     form.btnEmail,
-                  )}
-                </button>
-                <button type="button" class="privacy-btn privacy-btn-whatsapp" data-action="send-whatsapp">
-                  <i class="fa fa-whatsapp" aria-hidden="true"></i> ${escHtml(
-                    form.btnWhatsapp,
-                  )}
-                </button>
-                <button type="button" class="privacy-btn privacy-btn-secondary" data-action="copy-text">
-                  <i class="fa fa-clipboard" aria-hidden="true"></i> ${escHtml(
-                    form.btnCopy,
                   )}
                 </button>
               </div>

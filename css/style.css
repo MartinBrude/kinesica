@@ -4200,30 +4200,6 @@ Privacy Policy & Data Deletion
   box-shadow: var(--shadow-sm);
 }
 
-.privacy-btn-whatsapp {
-  background-color: #25d366;
-  color: #ffffff;
-}
-
-.privacy-btn-whatsapp:hover,
-.privacy-btn-whatsapp:focus {
-  background-color: #1eb956;
-  color: #ffffff;
-  box-shadow: var(--shadow-sm);
-}
-
-.privacy-btn-secondary {
-  background-color: #f3f4f6;
-  color: #374151;
-  border-color: #d1d5db;
-}
-
-.privacy-btn-secondary:hover,
-.privacy-btn-secondary:focus {
-  background-color: #e5e7eb;
-  color: #111827;
-}
-
 .privacy-form-alert {
   display: none;
   margin-top: 18px;
