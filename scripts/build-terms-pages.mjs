@@ -49,17 +49,6 @@ function renderSection(sec) {
   for (const p of sec.paragraphs || []) {
     html += `            <p>${formatText(p)}</p>\n`;
   }
-  if (sec.contactList) {
-    html += `            <ul class="terms-contact-links">\n`;
-    for (const c of sec.contactList) {
-      html += `              <li><a href="${escAttr(c.href)}" ${
-        c.href.startsWith("http")
-          ? 'target="_blank" rel="noopener noreferrer"'
-          : ""
-      }>${escHtml(c.label)}: <strong>${escHtml(c.value)}</strong></a></li>\n`;
-    }
-    html += `            </ul>\n`;
-  }
   if (sec.bullets) {
     html += `            <ul>\n`;
     for (const b of sec.bullets) {

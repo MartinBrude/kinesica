@@ -33,11 +33,6 @@ export const TERMS = {
           `Ubicación del consultorio: **${CONTACT.address.streetAddress}**, ${CONTACT.address.addressNeighborhood}, ${CONTACT.address.addressLocality}, ${CONTACT.address.addressCountry}.`,
           "El objetivo del sitio web es brindar información clara y rigurosa sobre los métodos de tratamiento kinésico y osteopático que aplicamos (como RPG, osteopatía, terapia de ATM, neurodinamia, cadenas musculares), así como facilitar un canal directo de contacto y solicitud de turnos.",
         ],
-        contactList: [
-          { label: "Correo electrónico", value: CONTACT.email, href: mailtoUrl(CONTACT.email) },
-          { label: "Teléfono / WhatsApp", value: CONTACT.phoneDisplay, href: waMeUrl() },
-          { label: "Ubicación", value: `${CONTACT.address.shortLine}, ${CONTACT.address.addressCountry}`, href: CONTACT.mapsUrl },
-        ],
       },
       {
         id: "naturaleza-informativa",
@@ -145,11 +140,6 @@ export const TERMS = {
           `This website is operated by **Kinésica**, a physical therapy and osteopathy clinic founded and directed by **${FOUNDER.name}** (Licensed Physical Therapist and Osteopath).`,
           `Clinic location: **${CONTACT.address.streetAddress}**, ${CONTACT.address.addressNeighborhood}, ${CONTACT.address.addressLocality}, ${CONTACT.address.addressCountry}.`,
           "The purpose of this website is to provide clear, reliable information regarding the therapeutic methods we apply (including RPG, osteopathy, TMJ therapy, neurodynamics, and muscle chains), as well as to offer a direct communication channel for booking appointments.",
-        ],
-        contactList: [
-          { label: "Email", value: CONTACT.email, href: mailtoUrl(CONTACT.email) },
-          { label: "Phone / WhatsApp", value: CONTACT.phoneDisplay, href: waMeUrl() },
-          { label: "Location", value: `${CONTACT.address.shortLine}, ${CONTACT.address.addressCountry}`, href: CONTACT.mapsUrl },
         ],
       },
       {
@@ -259,11 +249,6 @@ export const TERMS = {
           `Adresse du cabinet : **${CONTACT.address.streetAddress}**, ${CONTACT.address.addressNeighborhood}, ${CONTACT.address.addressLocality}, ${CONTACT.address.addressCountry}.`,
           "Le site a pour but d'informer avec précision sur les thérapies appliquées (telles que la RPG, l'ostéopathie, le traitement de l'ATM, la neurodynamique et les chaînes musculaires) et de faciliter la prise de contact pour convenir de séances.",
         ],
-        contactList: [
-          { label: "Courrier électronique", value: CONTACT.email, href: mailtoUrl(CONTACT.email) },
-          { label: "Téléphone / WhatsApp", value: CONTACT.phoneDisplay, href: waMeUrl() },
-          { label: "Adresse", value: `${CONTACT.address.shortLine}, ${CONTACT.address.addressCountry}`, href: CONTACT.mapsUrl },
-        ],
       },
       {
         id: "naturaleza-informativa",
@@ -369,11 +354,6 @@ export const TERMS = {
           `Este site pertence à **Kinésica**, consultório de fisioterapia e osteopatia sob responsabilidade de **${FOUNDER.name}** (Fisioterapeuta e Osteopata).`,
           `Localização do consultório: **${CONTACT.address.streetAddress}**, ${CONTACT.address.addressNeighborhood}, ${CONTACT.address.addressLocality}, ${CONTACT.address.addressCountry}.`,
           "O objetivo deste espaço é apresentar informações claras sobre abordagens terapêuticas (como RPG, osteopatia, tratamento de ATM, neurodinâmica e cadeias musculares), além de disponibilizar um canal direto para tirar dúvidas e agendar sessões.",
-        ],
-        contactList: [
-          { label: "Correio eletrônico", value: CONTACT.email, href: mailtoUrl(CONTACT.email) },
-          { label: "Telefone / WhatsApp", value: CONTACT.phoneDisplay, href: waMeUrl() },
-          { label: "Localização", value: `${CONTACT.address.shortLine}, ${CONTACT.address.addressCountry}`, href: CONTACT.mapsUrl },
         ],
       },
       {

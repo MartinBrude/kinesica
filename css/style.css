@@ -4064,36 +4064,6 @@ Privacy Policy & Data Deletion
   margin-bottom: 10px;
 }
 
-.privacy-contact-links {
-  list-style: none !important;
-  padding-left: 0 !important;
-  margin-top: 14px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.privacy-contact-links li a {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: #fff;
-  border: 1px solid var(--panel-border);
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-weight: 500;
-  color: var(--primary-color);
-  transition: all 0.2s ease;
-  font-size: 1.45rem;
-}
-
-.privacy-contact-links li a:hover {
-  background: var(--primary-color);
-  color: #fff;
-  text-decoration: none;
-  box-shadow: var(--shadow-sm);
-}
-
 /* Deletion Request Highlight Box */
 .privacy-deletion-card {
   background: #ffffff;
@@ -4269,25 +4239,6 @@ Privacy Policy & Data Deletion
   font-style: italic;
 }
 
-.privacy-direct-card {
-  margin-top: 26px;
-  padding-top: 20px;
-  border-top: 1px dashed #d1d5db;
-}
-
-.privacy-direct-card h4 {
-  font-size: 1.6rem;
-  font-weight: 600;
-  color: var(--heading-color);
-  margin-bottom: 8px;
-}
-
-.privacy-direct-card p {
-  font-size: 1.45rem;
-  color: var(--text-color);
-  margin-bottom: 12px;
-}
-
 /*-----------------------------------
 Terms of Service Page
 -------------------------------------*/
@@ -4373,35 +4324,4 @@ Terms of Service Page
 .terms-section-block li {
   margin-bottom: 10px;
 }
-
-.terms-contact-links {
-  list-style: none !important;
-  padding-left: 0 !important;
-  margin-top: 14px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.terms-contact-links li a {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: #fff;
-  border: 1px solid var(--panel-border);
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-weight: 500;
-  color: var(--primary-color);
-  transition: all 0.2s ease;
-  font-size: 1.45rem;
-}
-
-.terms-contact-links li a:hover {
-  background: var(--primary-color);
-  color: #fff;
-  text-decoration: none;
-  box-shadow: var(--shadow-sm);
-}
-
 

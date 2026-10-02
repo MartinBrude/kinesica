@@ -26,12 +26,7 @@ export const PRIVACY = {
         paragraphs: [
           `El responsable del tratamiento de los datos personales recopilados a través de este sitio web es **Kinésica**, centro de kinesiología y osteopatía, a cargo del profesional **${FOUNDER.name}** (Kinesiólogo, Fisioterapeuta y Osteópata).`,
           `Domicilio del consultorio: **${CONTACT.address.streetAddress}**, ${CONTACT.address.addressNeighborhood}, ${CONTACT.address.addressLocality}, ${CONTACT.address.addressCountry}.`,
-          `Canales oficiales de contacto para asuntos de privacidad:`,
-        ],
-        contactList: [
-          { label: "Correo electrónico", value: CONTACT.email, href: mailtoUrl(CONTACT.email) },
-          { label: "Teléfono / WhatsApp", value: CONTACT.phoneDisplay, href: waMeUrl() },
-          { label: "Sitio web", value: SITE, href: SITE },
+          `Para consultas sobre privacidad o ejercicio de derechos, puedes escribir a **${CONTACT.email}** o utilizar el formulario de solicitud dispuesto a continuación.`,
         ],
       },
       {
@@ -140,9 +135,6 @@ export const PRIVACY = {
       legalNotice:
         "Plazo de respuesta: responderemos a tu solicitud en un plazo máximo de 5 días hábiles conforme al Art. 16 de la Ley 25.326 (o hasta 30 días para solicitudes bajo el RGPD/LGPD).",
     },
-    directContactTitle: "Canales directos de solicitud",
-    directContactText:
-      "También puedes enviar tu solicitud por escrito sin utilizar el formulario, comunicándote directamente a través de cualquiera de estos canales:",
   },
 
   en: {
@@ -162,12 +154,7 @@ export const PRIVACY = {
         paragraphs: [
           `The data controller for personal data collected through this website is **Kinésica**, a physical therapy and osteopathy clinic directed by **${FOUNDER.name}** (Licensed Physical Therapist and Osteopath).`,
           `Clinic address: **${CONTACT.address.streetAddress}**, ${CONTACT.address.addressNeighborhood}, ${CONTACT.address.addressLocality}, ${CONTACT.address.addressCountry}.`,
-          `Official contact channels for privacy matters:`,
-        ],
-        contactList: [
-          { label: "Email", value: CONTACT.email, href: mailtoUrl(CONTACT.email) },
-          { label: "Phone / WhatsApp", value: CONTACT.phoneDisplay, href: waMeUrl() },
-          { label: "Website", value: SITE, href: absoluteUrl("en", "index") },
+          `For privacy-related inquiries or requests, you may contact us by email at **${CONTACT.email}** or use the request form below.`,
         ],
       },
       {
@@ -275,9 +262,6 @@ export const PRIVACY = {
       legalNotice:
         "Response timeframe: we will reply within the legal period of 5 business days under Law 25,326 (or up to 30 calendar days under GDPR/LGPD).",
     },
-    directContactTitle: "Direct Channels for Requests",
-    directContactText:
-      "You may also send a written request without using this form by reaching out to our official contact points:",
   },
 
   fr: {
@@ -297,12 +281,7 @@ export const PRIVACY = {
         paragraphs: [
           `Le responsable du traitement des données collectées sur ce site est **Kinésica**, cabinet de kinésithérapie et d'ostéopathie dirigé par **${FOUNDER.name}** (Kinésithérapeute et Ostéopathe).`,
           `Adresse du cabinet : **${CONTACT.address.streetAddress}**, ${CONTACT.address.addressNeighborhood}, ${CONTACT.address.addressLocality}, ${CONTACT.address.addressCountry}.`,
-          `Canaux officiels pour toute question relative à la confidentialité :`,
-        ],
-        contactList: [
-          { label: "Courrier électronique", value: CONTACT.email, href: mailtoUrl(CONTACT.email) },
-          { label: "Téléphone / WhatsApp", value: CONTACT.phoneDisplay, href: waMeUrl() },
-          { label: "Site web", value: SITE, href: absoluteUrl("fr", "index") },
+          `Pour toute question relative à la vie privée ou à l'exercice de vos droits, vous pouvez nous écrire à **${CONTACT.email}** ou utiliser le formulaire de demande ci-dessous.`,
         ],
       },
       {
@@ -410,9 +389,6 @@ export const PRIVACY = {
       legalNotice:
         "Délai de réponse : nous répondrons sous 5 jours ouvrés selon la Loi 25.326 (ou 30 jours au titre du RGPD).",
     },
-    directContactTitle: "Canaux directs de contact",
-    directContactText:
-      "Vous pouvez également adresser votre demande sans passer par ce formulaire en nous écrivant directement :",
   },
 
   pt: {
@@ -432,12 +408,7 @@ export const PRIVACY = {
         paragraphs: [
           `O responsável pelo tratamento dos dados pessoais coletados por este site é a **Kinésica**, consultório de fisioterapia e osteopatia, sob responsabilidade do profissional **${FOUNDER.name}** (Fisioterapeuta e Osteopata).`,
           `Endereço do consultório: **${CONTACT.address.streetAddress}**, ${CONTACT.address.addressNeighborhood}, ${CONTACT.address.addressLocality}, ${CONTACT.address.addressCountry}.`,
-          `Canais oficiais de contato para assuntos de privacidade:`,
-        ],
-        contactList: [
-          { label: "Correio eletrônico", value: CONTACT.email, href: mailtoUrl(CONTACT.email) },
-          { label: "Telefone / WhatsApp", value: CONTACT.phoneDisplay, href: waMeUrl() },
-          { label: "Site oficial", value: SITE, href: absoluteUrl("pt", "index") },
+          `Para dúvidas sobre privacidade ou exercício de direitos, entre em contato pelo e-mail **${CONTACT.email}** ou utilize o formulário de solicitação abaixo.`,
         ],
       },
       {
@@ -545,8 +516,5 @@ export const PRIVACY = {
       legalNotice:
         "Prazo de resposta: responderemos no prazo legal de 5 dias úteis pela Lei 25.326 (ou até 30 dias sob a LGPD/RGPD).",
     },
-    directContactTitle: "Canais diretos de atendimento",
-    directContactText:
-      "Você também pode enviar sua manifestação por escrito diretamente aos nossos canais oficiais:",
   },
 };

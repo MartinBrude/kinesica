@@ -50,48 +50,6 @@ function renderDeletionCard(sec, form, lang, copy) {
     )
     .join("\n");
 
-  const directLabels = {
-    es: { email: "Correo electrónico", wa: "WhatsApp", address: "Consultorio" },
-    en: { email: "Email", wa: "WhatsApp", address: "Clinic" },
-    fr: { email: "Courrier électronique", wa: "WhatsApp", address: "Cabinet" },
-    pt: { email: "Correio eletrônico", wa: "WhatsApp", address: "Consultório" },
-  };
-  const dLabel = directLabels[lang] || directLabels.es;
-
-  const directContacts = [
-    {
-      label: dLabel.email,
-      value: CONTACT.email,
-      href: mailtoUrl(CONTACT.email),
-      icon: "fa-envelope",
-    },
-    {
-      label: dLabel.wa,
-      value: CONTACT.phoneDisplay,
-      href: waMeUrl(),
-      icon: "fa-whatsapp",
-    },
-    {
-      label: dLabel.address,
-      value: `${CONTACT.address.shortLine}, ${CONTACT.address.addressCountry}`,
-      href: CONTACT.mapsUrl,
-      icon: "fa-map-marker",
-    },
-  ];
-
-  const directListHtml = directContacts
-    .map(
-      (c) =>
-        `            <li><a href="${escAttr(c.href)}" ${
-          c.href.startsWith("http")
-            ? 'target="_blank" rel="noopener noreferrer"'
-            : ""
-        }><i class="fa ${c.icon}" aria-hidden="true"></i> ${escHtml(
-          c.label,
-        )}: <strong>${escHtml(c.value)}</strong></a></li>`,
-    )
-    .join("\n");
-
   return `
           <div class="privacy-deletion-card" id="${sec.id}">
             <div class="privacy-card-header">
@@ -172,14 +130,6 @@ ${optionsHtml}
                   form.legalNotice,
                 )}
               </p>
-
-              <div class="privacy-direct-card">
-                <h4>${escHtml(copy.directContactTitle)}</h4>
-                <p>${escHtml(copy.directContactText)}</p>
-                <ul class="privacy-contact-links">
-${directListHtml}
-                </ul>
-              </div>
             </form>
           </div>`;
 }
@@ -193,17 +143,6 @@ function renderSection(sec, lang, copy) {
   html += `            <h2>${escHtml(sec.title)}</h2>\n`;
   for (const p of sec.paragraphs || []) {
     html += `            <p>${formatText(p)}</p>\n`;
-  }
-  if (sec.contactList) {
-    html += `            <ul class="privacy-contact-links">\n`;
-    for (const c of sec.contactList) {
-      html += `              <li><a href="${escAttr(c.href)}" ${
-        c.href.startsWith("http")
-          ? 'target="_blank" rel="noopener noreferrer"'
-          : ""
-      }>${escHtml(c.label)}: <strong>${escHtml(c.value)}</strong></a></li>\n`;
-    }
-    html += `            </ul>\n`;
   }
   if (sec.bullets) {
     html += `            <ul>\n`;
