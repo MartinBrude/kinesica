@@ -84,16 +84,8 @@ export const TERMS = {
         ],
       },
       {
-        id: "enlaces-terceros",
-        title: "7. Enlaces y servicios de terceros",
-        paragraphs: [
-          "El sitio web contiene enlaces que dirigen a servicios externos provistos por terceros, tales como WhatsApp (Meta), Google Maps (Google LLC) y perfiles en redes sociales.",
-          "Dichos servicios operan bajo sus propios términos y políticas de privacidad, ajenos a Kinésica. Recomendamos a los usuarios revisar las condiciones de dichas plataformas al interactuar con ellas.",
-        ],
-      },
-      {
         id: "privacidad-datos",
-        title: "8. Privacidad y eliminación de datos",
+        title: "7. Privacidad y eliminación de datos",
         paragraphs: [
           `El tratamiento de datos personales y la privacidad de nuestros usuarios y pacientes se encuentra detallado en nuestra **[Política de Privacidad](${sitePath("es", "privacidad")})**.`,
           "Recordamos que cualquier persona tiene derecho a solicitar de forma gratuita e inmediata la eliminación de cualquier dato personal referido a ella, a través de nuestro formulario interactivo o mediante comunicación directa.",
@@ -101,14 +93,14 @@ export const TERMS = {
       },
       {
         id: "modificaciones",
-        title: "9. Modificaciones de las condiciones",
+        title: "8. Modificaciones de las condiciones",
         paragraphs: [
           "Kinésica se reserva el derecho de actualizar o modificar estas Condiciones del Servicio cuando resulte necesario para reflejar cambios normativos, técnicos u operativos del consultorio. Las modificaciones entrarán en vigencia desde su publicación en este sitio web.",
         ],
       },
       {
         id: "jurisdiccion",
-        title: "10. Ley aplicable y jurisdicción",
+        title: "9. Ley aplicable y jurisdicción",
         paragraphs: [
           "Las presentes condiciones se interpretan y rigen conforme a las leyes de la República Argentina.",
           "Para cualquier controversia que pudiera derivarse del uso de este sitio web o de la relación informativa, las partes acuerdan someterse a la jurisdicción de los Tribunales Ordinarios de la Ciudad Autónoma de Buenos Aires (CABA), renunciando a cualquier otro fuero que pudiera corresponder.",
@@ -192,16 +184,8 @@ export const TERMS = {
         ],
       },
       {
-        id: "enlaces-terceros",
-        title: "7. Third-Party Services and External Links",
-        paragraphs: [
-          "This website contains links to external platforms such as WhatsApp (Meta), Google Maps (Google LLC), and social media networks.",
-          "These third-party platforms function under their own terms and privacy notices, independent of Kinésica.",
-        ],
-      },
-      {
         id: "privacidad-datos",
-        title: "8. Privacy and Personal Data Deletion",
+        title: "7. Privacy and Personal Data Deletion",
         paragraphs: [
           `Personal data handling and privacy commitments are detailed in our **[Privacy Policy](${sitePath("en", "privacidad")})**.`,
           "Any individual has the right to request the prompt, free-of-charge deletion of any personal data relating to them via our interactive deletion form or direct communication.",
@@ -209,14 +193,14 @@ export const TERMS = {
       },
       {
         id: "modificaciones",
-        title: "9. Amendments to Terms",
+        title: "8. Amendments to Terms",
         paragraphs: [
           "Kinésica reserves the right to modify these Terms of Service to reflect statutory, technical, or clinic operational updates. Updated terms become effective upon publication on this website.",
         ],
       },
       {
         id: "jurisdiccion",
-        title: "10. Governing Law and Jurisdiction",
+        title: "9. Governing Law and Jurisdiction",
         paragraphs: [
           "These terms are governed by and construed in accordance with the laws of the Argentine Republic.",
           "Any dispute arising in connection with website use or services shall be subject to the jurisdiction of the ordinary courts of the Autonomous City of Buenos Aires (CABA).",
@@ -300,15 +284,8 @@ export const TERMS = {
         ],
       },
       {
-        id: "enlaces-terceros",
-        title: "7. Services tiers et liens externes",
-        paragraphs: [
-          "Le site contient des liens vers des services externes (WhatsApp, Google Maps, réseaux sociaux). L'utilisation de ces outils est régie par les conditions propres à leurs éditeurs respectifs.",
-        ],
-      },
-      {
         id: "privacidad-datos",
-        title: "8. Protection des données personnelles",
+        title: "7. Protection des données personnelles",
         paragraphs: [
           `Les modalités de traitement des données personnelles sont consultables dans notre **[Politique de confidentialité](${sitePath("fr", "privacidad")})**.`,
           "Chaque personne peut demander sans frais la suppression définitive de toute information la concernant.",
@@ -316,14 +293,14 @@ export const TERMS = {
       },
       {
         id: "modificaciones",
-        title: "9. Modifications des conditions",
+        title: "8. Modifications des conditions",
         paragraphs: [
           "Kinésica se réserve la possibilité d'adapter ces conditions pour tenir compte de l'évolution des réglementations ou des pratiques du cabinet.",
         ],
       },
       {
         id: "jurisdiccion",
-        title: "10. Droit applicable et juridiction",
+        title: "9. Droit applicable et juridiction",
         paragraphs: [
           "Les présentes conditions sont soumises aux lois de la République argentine. Tout litige relatif à leur application relève de la compétence des juridictions de la Ville Autonome de Buenos Aires (CABA).",
         ],
@@ -406,15 +383,8 @@ export const TERMS = {
         ],
       },
       {
-        id: "enlaces-terceros",
-        title: "7. Plataformas externas",
-        paragraphs: [
-          "O site inclui conexões para serviços de terceiros (WhatsApp, Google Maps e redes sociais), cujos termos de uso são geridos por suas respectivas empresas.",
-        ],
-      },
-      {
         id: "privacidad-datos",
-        title: "8. Proteção de dados e privacidade",
+        title: "7. Proteção de dados e privacidade",
         paragraphs: [
           `As regras completas sobre privacidade estão descritas em nossa **[Política de Privacidade](${sitePath("pt", "privacidad")})**.`,
           "Qualquer pessoa pode solicitar a eliminação gratuita de qualquer dado pessoal de forma rápida por nossos canais de atendimento.",
@@ -422,14 +392,14 @@ export const TERMS = {
       },
       {
         id: "modificaciones",
-        title: "9. Atualizações destas condições",
+        title: "8. Atualizações destas condições",
         paragraphs: [
           "A Kinésica reserva-se o direito de atualizar estas condições para refletir mudanças regulamentares ou operacionais do consultório.",
         ],
       },
       {
         id: "jurisdiccion",
-        title: "10. Legislação aplicável e foro",
+        title: "9. Legislação aplicável e foro",
         paragraphs: [
           "Estas condições são regidas pelas leis da República Argentina. Fica eleito o foro da Cidade Autônoma de Buenos Aires (CABA) para dirimir eventuais controvérsias decorrentes deste site.",
         ],
