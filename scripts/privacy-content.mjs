@@ -38,7 +38,7 @@ export const PRIVACY = {
         bullets: [
           "**Datos de contacto y coordinación:** Nombre, apellido, número de teléfono/WhatsApp y correo electrónico facilitados voluntariamente al solicitar un turno o realizar una consulta previa a la sesión.",
           "**Historial de comunicaciones:** Mensajes intercambiados por WhatsApp o correo electrónico para resolver dudas sobre síntomas, disponibilidad horaria o indicaciones terapéuticas.",
-          "**Datos técnicos mínimos de navegación:** Direcciones IP anonimizadas, datos del navegador y cookies técnicas indispensables para la correcta carga y seguridad del sitio web.",
+          "**Documentación clínica y asistencial:** Motivo de consulta, antecedentes de salud relevantes, estudios médicos aportados por el paciente y registro de evolución de las sesiones terapéuticas, resguardados bajo estricto secreto profesional.",
         ],
         note:
           "Kinésica no comercializa, no vende, no alquila ni cede datos personales a empresas de publicidad ni a ningún tercero con fines comerciales.",
@@ -166,7 +166,7 @@ export const PRIVACY = {
         bullets: [
           "**Contact and appointment coordination details:** Full name, phone/WhatsApp number, and email address provided voluntarily when scheduling a session or asking questions beforehand.",
           "**Communication history:** Messages sent via WhatsApp or email to clarify symptoms, schedule availability, or therapeutic guidance.",
-          "**Technical browsing information:** Anonymized IP addresses, browser information, and necessary technical cookies required for website security and reliable display.",
+          "**Clinical and healthcare documentation:** Reason for consultation, relevant health history, medical reports or imaging provided by the patient, and progress notes from therapeutic sessions, protected under professional medical confidentiality.",
         ],
         note:
           "Kinésica never sells, rents, leases, or transfers personal data to marketing companies or third parties for commercial gain.",
@@ -293,7 +293,7 @@ export const PRIVACY = {
         bullets: [
           "**Coordonnées et prise de rendez-vous :** Nom, prénom, numéro de téléphone/WhatsApp et adresse e-mail transmis volontairement pour convenir d'un rendez-vous ou poser une question.",
           "**Historique des échanges :** Messages transmis par WhatsApp ou e-mail pour clarifier des symptômes, convenir d'horaires ou obtenir des conseils thérapeutiques.",
-          "**Données techniques de navigation :** Adresses IP anonymisées et témoins techniques nécessaires au bon fonctionnement et à la sécurité du site.",
+          "**Dossier clinique et suivi des soins :** Motif de consultation, antécédents médicaux pertinents, examens complémentaires apportés par le patient et notes d'évolution des séances thérapeutiques, protégés par le secret professionnel.",
         ],
         note:
           "Kinésica ne vend, ne loue, ne cède et ne transmet aucune donnée personnelle à des fins commerciales ou publicitaires.",
@@ -420,7 +420,7 @@ export const PRIVACY = {
         bullets: [
           "**Dados de contato e agendamento:** Nome completo, telefone/WhatsApp e endereço eletrônico fornecidos voluntariamente para agendamento de consultas ou esclarecimento de dúvidas.",
           "**Histórico de mensagens:** Troca de mensagens por WhatsApp ou correio eletrônico sobre sintomas, disponibilidade e recomendações terapêuticas.",
-          "**Dados técnicos de navegação:** Registros anônimos de conexão e cookies estritamente técnicos para a segurança do site.",
+          "**Documentação clínica e assistencial:** Motivo da consulta, histórico de saúde relevante, exames complementares trazidos pelo paciente e registro de evolução das sessões terapêuticas, protegidos por rigoroso sigilo profissional.",
         ],
         note:
           "A Kinésica não comercializa, não aluga e não compartilha dados pessoais com terceiros para fins de publicidade.",
