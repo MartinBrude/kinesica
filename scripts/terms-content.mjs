@@ -87,7 +87,7 @@ export const TERMS = {
         id: "privacidad-datos",
         title: "7. Privacidad y eliminación de datos",
         paragraphs: [
-          `El tratamiento de datos personales y la privacidad de nuestros usuarios y pacientes se encuentra detallado en nuestra **[Política de Privacidad](${sitePath("es", "privacidad")})**.`,
+          `El tratamiento de datos personales y la privacidad de nuestros pacientes se encuentra detallado en nuestra **[Política de Privacidad](${sitePath("es", "privacidad")})**.`,
           "Recordamos que cualquier persona tiene derecho a solicitar de forma gratuita e inmediata la eliminación de cualquier dato personal referido a ella, a través de nuestro formulario interactivo o mediante comunicación directa.",
         ],
       },

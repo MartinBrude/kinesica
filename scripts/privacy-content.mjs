@@ -53,7 +53,7 @@ export const PRIVACY = {
           "**República Argentina:** Ley Nacional Nº 25.326 de Protección de los Datos Personales (Habeas Data) y su Decreto Reglamentario Nº 1558/2001.",
           "**Unión Europea:** Reglamento General de Protección de Datos (RGPD / GDPR - Reglamento UE 2016/679).",
           "**Brasil:** Lei Geral de Proteção de Dados (LGPD - Lei nº 13.709/2018).",
-          "**Consentimiento libre e informado:** El usuario o paciente presta su consentimiento voluntario al contactarse o solicitar un turno asistencial.",
+          "**Consentimiento libre e informado:** El paciente presta su consentimiento voluntario al contactarse o solicitar un turno asistencial.",
         ],
       },
       {
@@ -102,7 +102,6 @@ export const PRIVACY = {
         title: "8. Autoridad de control",
         paragraphs: [
           `En la República Argentina, el órgano de control de la Ley Nº 25.326 es la **Agencia de Acceso a la Información Pública (AAIP)**. Los titulares de datos tienen la atribución de ejercer el derecho de acceso en forma gratuita a intervalos no inferiores a seis meses, salvo que se acredite un interés legítimo al efecto (artículo 14, inciso 3 de la Ley Nº 25.326).`,
-          "Para usuarios residentes en la Unión Europea o Brasil, se reconoce el derecho a presentar una reclamación ante la autoridad de control local competente (CNIL, AEPD, ANPD u organismo homólogo).",
         ],
       },
     ],
@@ -224,9 +223,9 @@ export const PRIVACY = {
       },
       {
         id: "autoridad",
-        title: "8. Supervisory Authorities",
+        title: "8. Supervisory Authority",
         paragraphs: [
-          `In Argentina, the enforcement agency for Law No. 25,326 is the **Agencia de Acceso a la Información Pública (AAIP)**. For individuals residing in the European Union or Brazil, complaints may also be lodged with the relevant national supervisory authority (e.g., CNIL, ICO, ANPD).`,
+          `In Argentina, the enforcement agency for Law No. 25,326 is the **Agencia de Acceso a la Información Pública (AAIP)**. Data subjects have the right to exercise their right of access free of charge at intervals of no less than six months, unless a legitimate interest is substantiated (Article 14, Paragraph 3 of Law No. 25,326).`,
         ],
       },
     ],
@@ -348,9 +347,9 @@ export const PRIVACY = {
       },
       {
         id: "autoridad",
-        title: "8. Autorités de contrôle",
+        title: "8. Autorité de contrôle",
         paragraphs: [
-          `En Argentine, l'autorité de contrôle est l'**Agencia de Acceso a la Información Pública (AAIP)**. Pour les résidents de l'Union européenne, vous pouvez également vous adresser à la CNIL (France) ou à l'autorité compétente de votre pays.`,
+          `En Argentine, l'autorité de contrôle de la Loi Nº 25.326 est l'**Agencia de Acceso a la Información Pública (AAIP)**. Les titulaires de données ont le droit d'exercer gratuitement leur droit d'accès à des intervalles d'au moins six mois, sauf intérêt légitime démontré (article 14, paragraphe 3 de la Loi Nº 25.326).`,
         ],
       },
     ],
@@ -472,9 +471,9 @@ export const PRIVACY = {
       },
       {
         id: "autoridad",
-        title: "8. Autoridades de controle",
+        title: "8. Autoridade de controle",
         paragraphs: [
-          `Na Argentina, a autoridade fiscalizadora é a **Agencia de Acceso a la Información Pública (AAIP)**. No Brasil, o titular pode contatar a **Autoridade Nacional de Proteção de Dados (ANPD)**. Na União Europeia, aplica-se a autoridade de proteção de dados competente.`,
+          `Na Argentina, a autoridade fiscalizadora da Lei Nº 25.326 é a **Agencia de Acceso a la Información Pública (AAIP)**. Os titulares têm o direito de exercer gratuitamente o acesso aos dados em intervalos não inferiores a seis meses, salvo interesse legítimo demonstrado (artigo 14, inciso 3 da Lei Nº 25.326).`,
         ],
       },
     ],
