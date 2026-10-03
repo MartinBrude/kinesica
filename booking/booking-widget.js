@@ -204,6 +204,37 @@
 
                 <div class="kb-summary-box" id="kb-success-summary"></div>
 
+                <!-- Opciones para agregar a la agenda / calendario personal -->
+                <div class="kb-calendar-sync-box" id="kb-calendar-sync-box">
+                  <div class="kb-calendar-sync-header">
+                    <span class="kb-calendar-sync-icon" aria-hidden="true">📅</span>
+                    <div>
+                      <div class="kb-calendar-sync-title">¿Querés guardar el turno en tu agenda?</div>
+                      <div class="kb-calendar-sync-subtitle">Agregalo con un clic a tu calendario para tener el recordatorio en tu celular:</div>
+                    </div>
+                  </div>
+                  <div class="kb-calendar-sync-actions">
+                    <a href="#" target="_blank" rel="noopener noreferrer" class="kb-btn-cal kb-btn-cal-google" id="kb-btn-cal-google">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6c0-1.11-.89-2-2-2zm0 16H5V9h14v11z" fill="#4285F4"/>
+                        <rect x="7" y="11" width="3" height="3" fill="#EA4335"/>
+                        <rect x="11" y="11" width="3" height="3" fill="#FBBC05"/>
+                        <rect x="15" y="11" width="3" height="3" fill="#34A853"/>
+                      </svg>
+                      <span>Google Calendar</span>
+                    </a>
+                    <button type="button" class="kb-btn-cal kb-btn-cal-ics" id="kb-btn-cal-ics">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                      </svg>
+                      <span id="kb-btn-cal-ics-text">Apple / Outlook (.ics)</span>
+                    </button>
+                  </div>
+                </div>
+
                 <!-- Normas del consultorio para turnos presenciales -->
                 <div class="kb-clinic-rules" id="kb-success-clinic-rules" style="display: none;">
                   <h4>📍 Información Importante para tu Asistencia al Consultorio:</h4>
@@ -534,6 +565,51 @@
         subtitle.innerHTML = `El kinesiólogo se comunicará puntualmente a tu teléfono <strong>${payload.telefono}</strong> el <strong>${payload.date} a las ${payload.time} hs</strong> para evaluar tu caso e informarte los honorarios.`;
       } else {
         subtitle.innerHTML = `Tu cita quedó reservada en la agenda del consultorio para el <strong>${payload.date} a las ${payload.time} hs</strong>.`;
+      }
+
+      this.setupCalendarButtons(payload, result);
+    }
+
+    setupCalendarButtons(payload, result) {
+      const q = (sel) => this.container.querySelector(sel);
+      const data = engine && engine.generateCalendarExportData
+        ? engine.generateCalendarExportData(payload, result && result.eventId)
+        : null;
+
+      if (!data) return;
+
+      const gcalBtn = q("#kb-btn-cal-google");
+      if (gcalBtn) {
+        gcalBtn.href = data.googleCalendarUrl;
+      }
+
+      const icsBtn = q("#kb-btn-cal-ics");
+      if (icsBtn) {
+        icsBtn.onclick = (e) => {
+          e.preventDefault();
+          try {
+            const blob = new Blob([data.icsContent], { type: "text/calendar;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = data.filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 2000);
+
+            const txt = q("#kb-btn-cal-ics-text");
+            if (txt) {
+              const orig = txt.textContent;
+              txt.textContent = "✓ Descargado";
+              setTimeout(() => {
+                txt.textContent = orig;
+              }, 2500);
+            }
+          } catch (err) {
+            console.error("Error al generar archivo .ics:", err);
+          }
+        };
       }
     }
 

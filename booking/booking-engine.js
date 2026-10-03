@@ -284,6 +284,84 @@
     return parts.join(" | ");
   }
 
+  /**
+   * Genera los datos para sincronización con calendarios personales del paciente
+   * (Google Calendar e iCal/.ics para Apple Calendar y Outlook).
+   */
+  function generateCalendarExportData(payload, eventId) {
+    const isCall = payload.appointmentType === "call";
+    const durationMinutes = isCall ? CALL_DURATION_MINUTES : SESSION_DURATION_MINUTES;
+
+    const [year, month, day] = (payload.date || "").split("-").map(Number);
+    const [hour, minute] = (payload.time || "").split(":").map(Number);
+
+    // Horario local de Argentina: UTC-3
+    const startUtc = new Date(Date.UTC(year, month - 1, day, hour + 3, minute));
+    const endUtc = new Date(startUtc.getTime() + durationMinutes * 60 * 1000);
+
+    const title = isCall
+      ? "Llamada inicial - Kinésica Palermo"
+      : "Turno Kinesiología - Kinésica Palermo";
+
+    const location = isCall
+      ? `Llamada telefónica a ${payload.telefono ? payload.telefono.trim() : ""}`
+      : "Charcas 3889, Piso 5º B, Palermo, CABA (entre Scalabrini Ortiz y Aráoz)";
+
+    const description = isCall
+      ? `Llamada de orientación previa con el kinesiólogo (Kinésica Palermo).\nEl profesional te llamará a tu teléfono: ${payload.telefono ? payload.telefono.trim() : ""}.\nDuración: 10 minutos.`
+      : `Turno en consultorio con Lic. Norberto en Kinésica Palermo.\nDirección: Charcas 3889, Piso 5º B, Palermo (entre Scalabrini Ortiz y Aráoz).\n\nInformación importante:\n- Te pedimos que llegues a la hora de la sesión, ni antes ni después, por características del espacio (sin sala de espera).\n- Asistir sin acompañantes (salvo necesidad directa o menores).\n- Traer estudios médicos previos si contás con ellos.`;
+
+    const toCompactUtc = (d) =>
+      d.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+
+    const startCompact = toCompactUtc(startUtc);
+    const endCompact = toCompactUtc(endUtc);
+
+    const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${startCompact}/${endCompact}&details=${encodeURIComponent(description)}&location=${encodeURIComponent(location)}`;
+
+    const escapeIcs = (str) =>
+      (str || "")
+        .replace(/\\/g, "\\\\")
+        .replace(/;/g, "\\;")
+        .replace(/,/g, "\\,")
+        .replace(/\r?\n/g, "\\n");
+
+    const nowCompact = toCompactUtc(new Date());
+    const uid = eventId || `kinesica-${Date.now()}@kinesica.com.ar`;
+
+    const icsContent = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "PRODID:-//Kinesica//Consultorio Kinesiologia//ES",
+      "CALSCALE:GREGORIAN",
+      "METHOD:PUBLISH",
+      "BEGIN:VEVENT",
+      `UID:${uid}`,
+      `DTSTAMP:${nowCompact}`,
+      `DTSTART:${startCompact}`,
+      `DTEND:${endCompact}`,
+      `SUMMARY:${escapeIcs(title)}`,
+      `DESCRIPTION:${escapeIcs(description)}`,
+      `LOCATION:${escapeIcs(location)}`,
+      "STATUS:CONFIRMED",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\r\n");
+
+    return {
+      title,
+      location,
+      description,
+      startUtc,
+      endUtc,
+      startCompact,
+      endCompact,
+      googleCalendarUrl,
+      icsContent,
+      filename: `kinesica-${isCall ? "llamada" : "turno"}-${payload.date}.ics`,
+    };
+  }
+
   return {
     CALL_DURATION_MINUTES: CALL_DURATION_MINUTES,
     SESSION_DURATION_MINUTES: SESSION_DURATION_MINUTES,
@@ -295,6 +373,7 @@
     validateBookingRequest: validateBookingRequest,
     formatCalendarSummary: formatCalendarSummary,
     formatCalendarDescription: formatCalendarDescription,
+    generateCalendarExportData: generateCalendarExportData,
     formatDateIso: formatDateIso,
     parseLocalDate: parseLocalDate,
   };

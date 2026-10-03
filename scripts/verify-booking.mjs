@@ -7,12 +7,14 @@
 
 import assert from "node:assert";
 import engine from "../booking/booking-engine.js";
+import { CONTACT } from "./site-contact.mjs";
 
 const {
   calculateAvailableSlots,
   validateBookingRequest,
   formatCalendarSummary,
   formatCalendarDescription,
+  generateCalendarExportData,
   isBusinessDay,
   DEFAULT_ARGENTINA_HOLIDAYS,
 } = engine;
@@ -222,6 +224,69 @@ test("REGLA 5: Títulos y descripciones cumplen el estándar exacto de Kinésica
   assert.ok(description.includes("📱 WhatsApp: +54 9 11 6156-4311"));
   assert.ok(description.includes("🪪 DNI: 35123456"));
   assert.ok(description.includes("📋 Motivo: Dolor cervical y contractura"));
+});
+
+// ---------------------------------------------------------------------------
+// 6. GENERACIÓN DE ENLACES Y ARCHIVOS PARA CALENDARIOS PERSONALES (GOOGLE CALENDAR E .ICS)
+// ---------------------------------------------------------------------------
+test("REGLA 6A: Sincronización para turno presencial de 1h calcula horario UTC-3 y genera enlaces válidos", () => {
+  const exportData = generateCalendarExportData(
+    {
+      appointmentType: "session",
+      date: "2026-10-15",
+      time: "14:00",
+      telefono: "+54 9 11 6156-4311",
+    },
+    "kinesica-test-evt-1"
+  );
+
+  // 14:00 en Argentina (UTC-3) = 17:00 UTC
+  // Turno presencial = 60 minutos -> finaliza a las 18:00 UTC
+  assert.strictEqual(exportData.startCompact, "20261015T170000Z");
+  assert.strictEqual(exportData.endCompact, "20261015T180000Z");
+  assert.strictEqual(exportData.title, "Turno Kinesiología - Kinésica Palermo");
+  assert.ok(exportData.location.includes(CONTACT.address.streetAddress));
+  assert.ok(exportData.location.includes("Piso 5º B, Palermo"));
+
+  // Verificación de URL de Google Calendar
+  assert.ok(exportData.googleCalendarUrl.startsWith("https://calendar.google.com/calendar/render?action=TEMPLATE"));
+  assert.ok(exportData.googleCalendarUrl.includes("dates=20261015T170000Z/20261015T180000Z"));
+  assert.ok(exportData.googleCalendarUrl.includes(encodeURIComponent("Turno Kinesiología - Kinésica Palermo")));
+
+  // Verificación de formato RFC 5545 para .ics
+  assert.ok(exportData.icsContent.includes("BEGIN:VCALENDAR"));
+  assert.ok(exportData.icsContent.includes("VERSION:2.0"));
+  assert.ok(exportData.icsContent.includes("BEGIN:VEVENT"));
+  assert.ok(exportData.icsContent.includes("UID:kinesica-test-evt-1"));
+  assert.ok(exportData.icsContent.includes("DTSTART:20261015T170000Z"));
+  assert.ok(exportData.icsContent.includes("DTEND:20261015T180000Z"));
+  assert.ok(exportData.icsContent.includes("SUMMARY:Turno Kinesiología - Kinésica Palermo"));
+  assert.ok(exportData.icsContent.includes("END:VEVENT"));
+  assert.ok(exportData.icsContent.includes("END:VCALENDAR"));
+  assert.strictEqual(exportData.filename, "kinesica-turno-2026-10-15.ics");
+});
+
+test("REGLA 6B: Sincronización para llamada de 10 min calcula duración exacta de 10 minutos", () => {
+  const exportData = generateCalendarExportData(
+    {
+      appointmentType: "call",
+      date: "2026-10-15",
+      time: "10:30",
+      telefono: "+54 9 11 5555-4444",
+    },
+    "kinesica-test-call-2"
+  );
+
+  // 10:30 en Argentina (UTC-3) = 13:30 UTC
+  // Llamada = 10 minutos -> finaliza a las 13:40 UTC
+  assert.strictEqual(exportData.startCompact, "20261015T133000Z");
+  assert.strictEqual(exportData.endCompact, "20261015T134000Z");
+  assert.strictEqual(exportData.title, "Llamada inicial - Kinésica Palermo");
+  assert.ok(exportData.location.includes("+54 9 11 5555-4444"));
+  assert.ok(exportData.googleCalendarUrl.includes("dates=20261015T133000Z/20261015T134000Z"));
+  assert.ok(exportData.icsContent.includes("DTSTART:20261015T133000Z"));
+  assert.ok(exportData.icsContent.includes("DTEND:20261015T134000Z"));
+  assert.strictEqual(exportData.filename, "kinesica-llamada-2026-10-15.ics");
 });
 
 console.log(`\n🎉 Resultado: ${passed}/${total} tests superados con éxito.\n`);
