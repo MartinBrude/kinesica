@@ -50,6 +50,8 @@
   padding: 28px 24px;
   text-align: center;
   position: relative;
+  border-top-left-radius: var(--kin-radius);
+  border-top-right-radius: var(--kin-radius);
 }
 
 .kb-header h2 {
@@ -674,13 +676,15 @@
   max-height: 92vh;
   display: flex;
   flex-direction: column;
-  background: #ffffff;
+  background: transparent;
   border-radius: 16px;
   box-shadow: 0 25px 60px rgba(3, 28, 66, 0.35), 0 4px 16px rgba(0, 95, 153, 0.12);
   overflow: hidden;
   transform: translateY(16px) scale(0.98);
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   z-index: 2;
+  -webkit-backface-visibility: hidden;
+  isolation: isolate;
 }
 
 .kinesica-booking-modal-overlay.is-open .kinesica-booking-modal-dialog {
@@ -690,11 +694,18 @@
 .kinesica-booking-modal-dialog .kinesica-booking-container {
   border: none;
   box-shadow: none;
-  border-radius: 0;
+  border-radius: 16px;
+  background: #ffffff;
+  overflow: hidden;
   max-width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
+}
+
+.kinesica-booking-modal-dialog .kb-header {
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
 }
 
 .kinesica-booking-modal-dialog .kb-body {
@@ -714,7 +725,11 @@
     height: 100vh;
     border-radius: 0;
   }
+  .kinesica-booking-modal-dialog .kinesica-booking-container {
+    border-radius: 0;
+  }
   .kinesica-booking-modal-dialog .kb-header {
+    border-radius: 0;
     padding-top: max(20px, env(safe-area-inset-top, 20px));
   }
   .kinesica-booking-modal-dialog .kb-body {
