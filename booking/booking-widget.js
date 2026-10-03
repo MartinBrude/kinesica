@@ -482,7 +482,7 @@
 
       const btnSubmit = q("#kb-btn-submit");
       btnSubmit.disabled = true;
-      btnSubmit.textContent = "Registrando en Calendar...";
+      btnSubmit.textContent = "Registrando...";
 
       try {
         const result = await this.client.bookAppointment(payload);
