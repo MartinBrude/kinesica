@@ -36,6 +36,7 @@ const dynamicSafelist = [
   "dynamic-whatsapp-link",
   "dynamic-tel-link",
   "whatsapp-icon",
+  "whatsapp-float--hero-hide",
   "sticky-wrapper",
   "lang-picker",
   "is-open",

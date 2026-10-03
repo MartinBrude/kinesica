@@ -13,7 +13,10 @@
   font-size: 28px;
   box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
   z-index: 9999;
-  transition: transform 0.2s ease-in-out;
+  transition:
+    transform 0.25s ease-in-out,
+    opacity 0.25s ease-in-out,
+    visibility 0.25s ease-in-out;
   animation:
     bounceIn 1s ease-out,
     pulse 3s infinite ease-in-out;
@@ -29,6 +32,40 @@
 }
 .whatsapp-icon {
   margin-top: 16px;
+}
+
+/* En mobile, cuando conviven los botones de agendar y contacto en el hero,
+   se oculta el botón flotante de WhatsApp hasta que el usuario scrollea. */
+@media (max-width: 767px) {
+  body.page-home .whatsapp-float,
+  .whatsapp-float--hero-hide {
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.7);
+    pointer-events: none;
+    animation: none;
+  }
+
+  body.page-home .whatsapp-float.is-visible,
+  .whatsapp-float--hero-hide.is-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+    pointer-events: auto;
+    animation: pulse 3s infinite ease-in-out;
+  }
+
+  body.page-home .whatsapp-float.is-visible:hover,
+  .whatsapp-float--hero-hide.is-visible:hover {
+    transform: scale(1.1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .whatsapp-float {
+    animation: none !important;
+    transition: none !important;
+  }
 }
 
 @keyframes bounceIn {
