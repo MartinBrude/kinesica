@@ -29,6 +29,11 @@ import { LANG_CODES } from "./languages.mjs";
 import { headerShellMarkup } from "./header-shell.mjs";
 import { breadcrumbListSchema, escHtml } from "./html-utils.mjs";
 import { ARTICLES_INDEX_UI } from "./articles-index-content.mjs";
+import { PATHOLOGY_MEDICAL_METADATA } from "./pathology-medical-metadata.mjs";
+import {
+  PATHOLOGY_FAQS,
+  PATHOLOGY_FAQ_UI,
+} from "./pathology-faq-content.mjs";
 import {
   LOCALE,
   assetPrefixForLang,
@@ -139,7 +144,39 @@ ${complications}
         </div>
       </div>
     </section>
+${buildFaqSection(pathology, lang)}
 ${buildRelatedSection(pathology, lang)}`;
+}
+
+function buildFaqSection(pathology, lang) {
+  const faqs = PATHOLOGY_FAQS[pathology.stem]?.[lang];
+  if (!faqs?.length) return "";
+  const uiTitle = PATHOLOGY_FAQ_UI[lang]?.title || "Preguntas frecuentes";
+  const items = faqs
+    .map(
+      (faq) => `            <details class="pathology-faq-item">
+              <summary class="pathology-faq-question">
+                <span class="pathology-faq-q-text">${escHtml(faq.q)}</span>
+              </summary>
+              <div class="pathology-faq-answer">
+                <p>${escHtml(faq.a)}</p>
+              </div>
+            </details>`,
+    )
+    .join("\n");
+
+  return `    <section class="pathology-faq space-medium">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12">
+            <h2>${escHtml(uiTitle)}</h2>
+            <div class="pathology-faq-list">
+${items}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>`;
 }
 
 function buildHtml(pathology, lang) {
@@ -156,6 +193,31 @@ function buildHtml(pathology, lang) {
     { name: data.breadcrumb, item: canonical },
   ]);
 
+  const medMeta = PATHOLOGY_MEDICAL_METADATA[stem];
+  const possibleTreatments = (pathology.techniques || []).map((t) => ({
+    "@type": "MedicalTherapy",
+    name: TECHNIQUE_LABELS[t]?.[lang] || t,
+    url: absoluteUrl(lang, t),
+  }));
+
+  const conditionSchema = {
+    "@type": "MedicalCondition",
+    name: data.h1,
+  };
+  if (medMeta?.icd10) {
+    conditionSchema.code = {
+      "@type": "MedicalCode",
+      code: medMeta.icd10,
+      codingSystem: "ICD-10",
+    };
+  }
+  if (medMeta?.wikidata) {
+    conditionSchema.sameAs = medMeta.wikidata;
+  }
+  if (possibleTreatments.length) {
+    conditionSchema.possibleTreatment = possibleTreatments;
+  }
+
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "MedicalWebPage",
@@ -165,10 +227,7 @@ function buildHtml(pathology, lang) {
     image: imgUrl,
     url: canonical,
     mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
-    about: {
-      "@type": "MedicalCondition",
-      name: data.h1,
-    },
+    about: conditionSchema,
     inLanguage: SCHEMA_LANGUAGE[lang],
     author: {
       "@type": "Person",
@@ -189,6 +248,27 @@ function buildHtml(pathology, lang) {
       pathology.publishedAt ??
       PATHOLOGY_DEFAULT_UPDATED_AT,
   };
+
+  const faqs = PATHOLOGY_FAQS[stem]?.[lang] || [];
+  let faqSchemaScript = "";
+  if (faqs.length) {
+    const faqSchema = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "@id": `${canonical}#faq`,
+      inLanguage: SCHEMA_LANGUAGE[lang],
+      mainEntityOfPage: canonical,
+      mainEntity: faqs.map((f) => ({
+        "@type": "Question",
+        name: f.q,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: f.a,
+        },
+      })),
+    };
+    faqSchemaScript = `  <script type="application/ld+json">\n${JSON.stringify(faqSchema, null, 6).replace(/^/gm, "      ")}\n    </script>\n`;
+  }
 
   const seoTitle = pathologySeoTitle(pathology, lang);
 
@@ -219,7 +299,7 @@ ${JSON.stringify(breadcrumbSchema, null, 6).replace(/^/gm, "      ")}
   <script type="application/ld+json">
 ${JSON.stringify(articleSchema, null, 6).replace(/^/gm, "      ")}
     </script>
-</head>
+${faqSchemaScript}</head>
 
 <body>
 ${bodyShellTop(p)}${headerShellMarkup(lang, p)}

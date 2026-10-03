@@ -30,6 +30,18 @@ for (const stem of PATHOLOGY_STEMS) {
     if (!html.includes("pathology-related")) {
       errors.push(`${file}: missing pathology-related section`);
     }
+    if (!html.includes("pathology-faq")) {
+      errors.push(`${file}: missing pathology-faq section`);
+    }
+    if (!html.includes('"@type": "FAQPage"')) {
+      errors.push(`${file}: missing FAQPage schema`);
+    }
+    if (!html.includes('"possibleTreatment"')) {
+      errors.push(`${file}: missing possibleTreatment in MedicalCondition`);
+    }
+    if (!html.includes('"codingSystem": "ICD-10"')) {
+      errors.push(`${file}: missing ICD-10 code in MedicalCondition`);
+    }
     if (!html.includes("site-cta-strip-root")) {
       errors.push(`${file}: missing site-cta-strip-root`);
     }

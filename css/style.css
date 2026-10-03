@@ -3208,6 +3208,84 @@ Pathology detail pages (FAQ dolencias)
   padding-bottom: 48px;
 }
 
+.pathology-faq {
+  padding-top: 40px;
+  padding-bottom: 40px;
+  border-top: 1px solid #edf2f7;
+}
+
+.pathology-faq h2 {
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.pathology-faq h2::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 36px;
+  height: 3px;
+  background: var(--color-primary, #005f99);
+}
+
+.pathology-faq-list {
+  margin-top: 20px;
+}
+
+.pathology-faq-item {
+  margin-bottom: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pathology-faq-item[open] {
+  border-color: #005f99;
+  box-shadow: 0 2px 8px rgba(0, 95, 153, 0.08);
+}
+
+.pathology-faq-question {
+  padding: 16px 20px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #2c3e50;
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pathology-faq-question::-webkit-details-marker {
+  display: none;
+}
+
+.pathology-faq-question::after {
+  content: "+";
+  font-size: 1.4rem;
+  font-weight: 300;
+  color: #005f99;
+  margin-left: 12px;
+  line-height: 1;
+}
+
+.pathology-faq-item[open] .pathology-faq-question::after {
+  content: "−";
+}
+
+.pathology-faq-answer {
+  padding: 0 20px 16px 20px;
+  color: #4a5568;
+  line-height: 1.6;
+}
+
+.pathology-faq-answer p {
+  margin: 0;
+}
+
 @media screen and (max-width: 991px) {
   .pathology-aside {
     margin-top: 2rem;
