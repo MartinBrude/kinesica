@@ -89,11 +89,13 @@ function getKinesicaCalendar() {
     // Continuar si no se pudo acceder por ID
   }
 
-  // 2. Intentar por nombre ("consultorio")
-  const calendarName = props.getProperty("CALENDAR_NAME") || "consultorio";
-  const calendars = CalendarApp.getCalendarsByName(calendarName);
-  if (calendars && calendars.length > 0) {
-    return calendars[0];
+  // 2. Intentar por nombre ("consultorio" insensible a mayúsculas)
+  const calendarName = (props.getProperty("CALENDAR_NAME") || "consultorio").toLowerCase();
+  const allCals = CalendarApp.getAllCalendars();
+  for (let i = 0; i < allCals.length; i++) {
+    if (allCals[i].getName().toLowerCase() === calendarName) {
+      return allCals[i];
+    }
   }
 
   // 3. Fallback al calendario por defecto de la cuenta
@@ -114,6 +116,16 @@ function getPatientsSheet() {
   }
 }
 
+const ARG_OFFSET = "-03:00"; // Argentina (America/Argentina/Buenos_Aires) no tiene horario de verano, siempre es UTC-3
+
+/**
+ * Parsea una fecha y hora asegurando que se interprete estrictamente en la zona horaria de Argentina.
+ */
+function parseArgentinaDate(dateStr, timeStr) {
+  const time = timeStr ? (timeStr.length === 5 ? timeStr + ":00" : timeStr) : "00:00:00";
+  return new Date(dateStr + "T" + time + ARG_OFFSET);
+}
+
 /**
  * Endpoint GET: Devuelve los horarios libres para un día y tipo de turno.
  */
@@ -126,11 +138,9 @@ function handleGetSlots(params) {
     return createJsonResponse({ status: "error", message: "Parámetro 'date' inválido (requerido YYYY-MM-DD)" });
   }
 
-  const parts = dateStr.split("-");
-  const targetDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
-
-  // 1. Validar fin de semana o feriado
-  const dayOfWeek = targetDate.getDay();
+  // 1. Validar fin de semana o feriado nacional en Argentina
+  const targetDate = parseArgentinaDate(dateStr, "12:00");
+  const dayOfWeek = targetDate.getUTCDay(); // a las 12:00 Arg (15:00 UTC), el día UTC coincide con Argentina
   if (dayOfWeek === 0 || dayOfWeek === 6 || ARGENTINA_HOLIDAYS.indexOf(dateStr) !== -1) {
     return createJsonResponse({
       status: "success",
@@ -141,65 +151,64 @@ function handleGetSlots(params) {
     });
   }
 
-  // 2. Consultar Google Calendar
+  // 2. Consultar Google Calendar en el rango 08:00 a 19:00 hora de Argentina
   const cal = getKinesicaCalendar();
-  const dayStart = new Date(targetDate);
-  dayStart.setHours(DAY_START_HOUR, 0, 0, 0);
-
-  const dayEnd = new Date(targetDate);
-  dayEnd.setHours(DAY_END_HOUR, 0, 0, 0);
+  const dayStart = parseArgentinaDate(dateStr, "08:00");
+  const dayEnd = parseArgentinaDate(dateStr, "19:00");
 
   const events = cal.getEvents(dayStart, dayEnd);
   const busy = events.map(function(ev) {
     return {
+      title: ev.getTitle(),
       start: ev.getStartTime().getTime(),
       end: ev.getEndTime().getTime()
     };
   });
 
-  // 3. Buffer para reservas del mismo día (mínimo 2 horas)
+  // 3. Buffer para reservas del mismo día (mínimo 2 horas desde ahora en Argentina)
   const now = new Date();
-  const isToday = (
-    now.getFullYear() === targetDate.getFullYear() &&
-    now.getMonth() === targetDate.getMonth() &&
-    now.getDate() === targetDate.getDate()
-  );
+  const todayInArg = Utilities.formatDate(now, "America/Argentina/Buenos_Aires", "yyyy-MM-dd");
+  const isToday = (todayInArg === dateStr);
   const minAllowedTime = isToday ? (now.getTime() + SAME_DAY_BUFFER_HOURS * 3600 * 1000) : dayStart.getTime();
 
   // 4. Calcular slots libres
   const step = type === "call" ? 10 : 30; // pasos de evaluación
   const availableSlots = [];
-  let current = new Date(dayStart);
 
-  while (true) {
-    const slotStart = current.getTime();
-    const slotEnd = slotStart + duration * 60 * 1000;
+  for (let h = DAY_START_HOUR; h < DAY_END_HOUR; h++) {
+    for (let m = 0; m < 60; m += step) {
+      const hh = ("0" + h).slice(-2);
+      const mm = ("0" + m).slice(-2);
+      const timeSlotStr = hh + ":" + mm;
 
-    if (slotEnd > dayEnd.getTime()) break;
+      const slotStart = parseArgentinaDate(dateStr, timeSlotStr).getTime();
+      const slotEnd = slotStart + duration * 60 * 1000;
 
-    if (slotStart >= minAllowedTime) {
-      const hasCollision = busy.some(function(b) {
-        return slotStart < b.end && slotEnd > b.start;
-      });
+      // El turno no debe exceder las 19:00 hs en Argentina
+      if (slotEnd > dayEnd.getTime()) break;
 
-      if (!hasCollision) {
-        const h = ("0" + current.getHours()).slice(-2);
-        const m = ("0" + current.getMinutes()).slice(-2);
-        availableSlots.push({
-          time: h + ":" + m,
-          startIso: new Date(slotStart).toISOString(),
-          endIso: new Date(slotEnd).toISOString()
+      if (slotStart >= minAllowedTime) {
+        const hasCollision = busy.some(function(b) {
+          return slotStart < b.end && slotEnd > b.start;
         });
+
+        if (!hasCollision) {
+          availableSlots.push({
+            time: timeSlotStr,
+            startIso: new Date(slotStart).toISOString(),
+            endIso: new Date(slotEnd).toISOString()
+          });
+        }
       }
     }
-
-    current = new Date(current.getTime() + step * 60 * 1000);
   }
 
   return createJsonResponse({
     status: "success",
     date: dateStr,
     type: type,
+    calendarUsed: cal.getName(),
+    busyEventsFound: busy.length,
     availableSlots: availableSlots
   });
 }
@@ -270,17 +279,7 @@ function handleBookAppointment(payload) {
   }
 
   const duration = appointmentType === "session" ? SESSION_DURATION_MINUTES : CALL_DURATION_MINUTES;
-  const parts = dateStr.split("-");
-  const timeParts = timeStr.split(":");
-
-  const startTime = new Date(
-    parseInt(parts[0], 10),
-    parseInt(parts[1], 10) - 1,
-    parseInt(parts[2], 10),
-    parseInt(timeParts[0], 10),
-    parseInt(timeParts[1], 10),
-    0
-  );
+  const startTime = parseArgentinaDate(dateStr, timeStr);
   const endTime = new Date(startTime.getTime() + duration * 60 * 1000);
 
   // 1. Verificación atómica anti-colisión en Google Calendar
