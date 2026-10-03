@@ -264,11 +264,7 @@
                   </div>
                 </div>
 
-                <div style="margin-top: 24px;">
-                  <button class="kb-btn kb-btn-secondary" id="kb-btn-new-booking">
-                    Agendar otra consulta
-                  </button>
-                </div>
+
               </div>
             </div>
 
@@ -353,15 +349,7 @@
       // Envío final
       q("#kb-btn-submit").addEventListener("click", () => this.handleBookingSubmit());
 
-      // Botón reiniciar
-      q("#kb-btn-new-booking").addEventListener("click", () => {
-        this.state.step = 1;
-        this.state.selectedDate = null;
-        this.state.selectedTime = null;
-        this.state.confirmedBooking = null;
-        this.clearError();
-        this.setStep(1);
-      });
+
     }
 
     updateDniRequirement() {
