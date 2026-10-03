@@ -80,7 +80,7 @@
           <div class="kb-header">
             ${this.options.isModal ? '<button type="button" class="kb-close-btn" aria-label="Cerrar ventana de reservas" data-action="close-modal">&times;</button>' : ''}
             <h2>Agendar</h2>
-            <p>Consultorio de Kinesiología y RPG en Palermo, CABA</p>
+            <p>Consultorio de Kinesiología, Osteopatía, RPG y ATM en Palermo, CABA</p>
           </div>
 
           <div class="kb-stepper">
@@ -134,9 +134,7 @@
             <!-- PASO 2: DÍA Y HORA -->
             <div class="kb-step-panel" id="kb-step-2">
               <div class="kb-section-title">Elige el día y horario</div>
-              <div class="kb-section-desc" id="kb-slots-subtitle">
-                Atención de lunes a viernes entre las 08:00 y las 19:00 hs.
-              </div>
+              <div class="kb-section-desc" id="kb-slots-subtitle" style="display: none;"></div>
 
               <label class="kb-slots-label">Días disponibles:</label>
               <div class="kb-date-scroll" id="kb-date-carousel"></div>
@@ -346,8 +344,10 @@
       if (subtitle) {
         if (this.state.appointmentType === "call") {
           subtitle.textContent = "Llamada previa de orientación de 10 min (Lunes a viernes 08:00 a 19:00 hs).";
+          subtitle.style.display = "block";
         } else {
-          subtitle.textContent = "Turno presencial de 1 hora en consultorio (Lunes a viernes 08:00 a 19:00 hs).";
+          subtitle.textContent = "";
+          subtitle.style.display = "none";
         }
       }
     }
