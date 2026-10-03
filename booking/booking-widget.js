@@ -145,7 +145,7 @@
               <div id="kb-slots-container">
                 <div id="kb-slots-loading" class="kb-state-box" style="display: none;">
                   <div class="kb-spinner"></div>
-                  <span>Consultando disponibilidad en Google Calendar...</span>
+                  <span>Consultando disponibilidad...</span>
                 </div>
                 <div id="kb-slots-empty" class="kb-state-box" style="display: none;">
                   <span>No hay horarios disponibles para esta fecha.<br>Por favor selecciona otro día en el calendario superior.</span>
