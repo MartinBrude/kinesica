@@ -27,13 +27,10 @@ const MIME_TYPES = {
 
 const server = http.createServer((req, res) => {
   let reqPath = req.url.split("?")[0];
-  if (reqPath === "/" || reqPath === "/booking") {
-    res.writeHead(302, { Location: "/booking/" });
+  if (reqPath === "/" || reqPath === "/booking" || reqPath === "/booking/") {
+    res.writeHead(302, { Location: "/turnos.html" });
     res.end();
     return;
-  }
-  if (reqPath === "/booking/") {
-    reqPath = "/booking/index.html";
   }
 
   const filePath = path.join(ROOT, reqPath);

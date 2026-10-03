@@ -102,8 +102,8 @@ export function expectedLangFromFile(file) {
   return DEFAULT_LANG;
 }
 
-/** HTML files excluded from sitemap / SEO audit (prototypes, drafts). */
-const SKIP_HTML = new Set();
+/** HTML files excluded from sitemap / SEO audit (prototypes, drafts, standalone modules). */
+const SKIP_HTML = new Set(["turnos.html"]);
 
 export function listHtmlFiles(root, { skipCv = true } = {}) {
   const files = fs

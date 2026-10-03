@@ -1,7 +1,7 @@
 /* Spanish header nav — relative links from site root. */
 window.__KINESICA_NAV_SNIPPET_ES = `
 <ul>
-                <li>
+        <li>
     <a href="articulos.html" title="Artículos">Artículos</a>
   </li>
   <li class="has-sub">
@@ -17,6 +17,9 @@ window.__KINESICA_NAV_SNIPPET_ES = `
       <li><a href="acupuntura.html" title="Acupuntura">Acupuntura</a></li>
       <li><a href="posturologia-clinica.html" title="Posturología Clínica">Posturología Clínica</a></li>
     </ul>
+  </li>
+  <li class="nav-item-booking">
+    <a href="turnos.html" class="btn-nav-booking" title="Agendar turno o consulta online">Agendar</a>
   </li>
 </ul>
 `.trim();
