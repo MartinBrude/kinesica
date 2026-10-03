@@ -47,9 +47,6 @@
           nombre: "",
           telefono: "",
           dni: "",
-          isMenor: false,
-          nombreFamiliar: "",
-          notas: "",
         },
         confirmedBooking: null,
       };
@@ -189,27 +186,6 @@
               </div>
 
 
-
-              <div class="kb-form-group">
-                <label class="kb-checkbox-label">
-                  <input type="checkbox" id="kb-check-menor">
-                  El turno es para un menor de edad (hijo/a o familiar)
-                </label>
-              </div>
-
-              <div class="kb-form-group" id="kb-group-familiar" style="display: none;">
-                <label for="kb-input-familiar">Nombre del Adulto Responsable / Acompañante *</label>
-                <input type="text" id="kb-input-familiar" placeholder="Ej: Adulto Responsable (Padre / Madre)">
-                <small style="color: var(--kin-text-muted); display: block; margin-top: 4px;">
-                  Nota: Los menores de edad deben asistir obligatoriamente acompañados por un adulto.
-                </small>
-              </div>
-
-              <div class="kb-form-group">
-                <label for="kb-input-notas">Comentarios adicionales o dolencia (opcional)</label>
-                <textarea id="kb-input-notas" rows="2" placeholder="Detalles de tu dolencia o si traés estudios médicos previos (opcional)"></textarea>
-              </div>
-
               <div class="kb-actions">
                 <button class="kb-btn kb-btn-secondary" id="kb-btn-prev-3">← Volver</button>
                 <button class="kb-btn kb-btn-primary" id="kb-btn-submit">
@@ -280,11 +256,7 @@
         this.renderDateCarousel();
       });
 
-      // Checkbox menor
-      q("#kb-check-menor").addEventListener("change", (e) => {
-        this.state.formData.isMenor = e.target.checked;
-        q("#kb-group-familiar").style.display = e.target.checked ? "block" : "none";
-      });
+
 
       // Navegación Stepper
       q("#kb-btn-next-1").addEventListener("click", () => {
@@ -478,9 +450,6 @@
       const nombre = q("#kb-input-nombre").value.trim();
       const telefono = q("#kb-input-telefono").value.trim();
       const dni = q("#kb-input-dni").value.trim();
-      const isMenor = q("#kb-check-menor").checked;
-      const nombreFamiliar = q("#kb-input-familiar").value.trim();
-      const notas = q("#kb-input-notas").value.trim();
 
       const payload = {
         tipo: this.state.tipo,
@@ -491,9 +460,9 @@
         telefono: telefono,
         dni: dni,
         motivo: "",
-        isMenor: isMenor,
-        nombreFamiliar: nombreFamiliar,
-        notas: notas,
+        isMenor: false,
+        nombreFamiliar: "",
+        notas: "",
       };
 
       const btnSubmit = q("#kb-btn-submit");
@@ -526,7 +495,7 @@
         <div style="font-weight: 700; color: var(--kin-green-deep); margin-bottom: 8px;">
           ${isCall ? "📞 Llamada de Orientación Telefónica (10 min)" : "🩺 Turno Presencial en Consultorio (1 hora)"}
         </div>
-        <div><strong>Paciente:</strong> ${payload.nombre} ${payload.isMenor && payload.nombreFamiliar ? `(Menor - Acompañante: ${payload.nombreFamiliar})` : ""}</div>
+        <div><strong>Paciente:</strong> ${payload.nombre}</div>
         <div><strong>Fecha y Hora:</strong> ${payload.date} a las ${payload.time} hs</div>
         <div><strong>WhatsApp / Contacto:</strong> ${payload.telefono}</div>
         <div style="margin-top: 6px; font-size: 12px; color: var(--kin-text-muted);">
