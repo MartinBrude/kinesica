@@ -22,9 +22,8 @@
 
   // Pacientes de prueba precargados para verificar el reconocimiento
   const MOCK_HABITUAL_PATIENTS = [
-    { telefono: "5491161564311", nombre: "Martín Brude" },
-    { telefono: "5491140001111", nombre: "Lucía Fernández" },
-    { telefono: "5491155558888", nombre: "Santiago Rossi" },
+    { telefono: "5491100001111", nombre: "Paciente Demo Uno" },
+    { telefono: "5491100002222", nombre: "Paciente Demo Dos" },
   ];
 
   function getMockEvents() {

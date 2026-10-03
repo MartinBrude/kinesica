@@ -181,17 +181,17 @@
 
               <div class="kb-form-group">
                 <label for="kb-input-nombre">Nombre y Apellido Completo *</label>
-                <input type="text" id="kb-input-nombre" placeholder="Ej: Lucas Gabriel Méndez" required>
+                <input type="text" id="kb-input-nombre" placeholder="Ej: Juan Pérez" required>
               </div>
 
               <div class="kb-form-row">
                 <div class="kb-form-group">
                   <label for="kb-input-telefono">Teléfono / WhatsApp *</label>
-                  <input type="tel" id="kb-input-telefono" placeholder="Ej: +54 9 11 6156-4311" required>
+                  <input type="tel" id="kb-input-telefono" placeholder="Ej: +54 9 11 0000-0000" required>
                 </div>
                 <div class="kb-form-group">
                   <label for="kb-input-dni" id="kb-label-dni">DNI / Documento</label>
-                  <input type="text" id="kb-input-dni" placeholder="Ej: 32456789">
+                  <input type="text" id="kb-input-dni" placeholder="Ej: 00.000.000">
                 </div>
               </div>
 
@@ -218,7 +218,7 @@
 
               <div class="kb-form-group" id="kb-group-familiar" style="display: none;">
                 <label for="kb-input-familiar">Nombre del Adulto Responsable / Acompañante *</label>
-                <input type="text" id="kb-input-familiar" placeholder="Ej: Marcela Gómez (Madre)">
+                <input type="text" id="kb-input-familiar" placeholder="Ej: Adulto Responsable (Padre / Madre)">
                 <small style="color: var(--kin-text-muted); display: block; margin-top: 4px;">
                   Nota: Los menores de edad deben asistir obligatoriamente acompañados por un adulto.
                 </small>
@@ -226,7 +226,7 @@
 
               <div class="kb-form-group">
                 <label for="kb-input-notas">Comentarios adicionales o dolencia (opcional)</label>
-                <textarea id="kb-input-notas" rows="2" placeholder="¿Desde cuándo sentís la molestia? ¿Tenés estudios médicos previos?"></textarea>
+                <textarea id="kb-input-notas" rows="2" placeholder="Detalles de tu dolencia o si traés estudios médicos previos (opcional)"></textarea>
               </div>
 
               <div class="kb-actions">
