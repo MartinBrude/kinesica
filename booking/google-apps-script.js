@@ -74,14 +74,29 @@ function doPost(e) {
 
 /**
  * Obtiene el calendario 'consultorio' de Google Calendar.
+ * Usa por defecto el ID oficial del consultorio configurado en Clara (n8n).
  */
 function getKinesicaCalendar() {
+  const OFFICIAL_CALENDAR_ID = "5b93aq89h77fvfsh28tgufligc@group.calendar.google.com";
   const props = PropertiesService.getScriptProperties();
+  const calendarId = props.getProperty("CALENDAR_ID") || OFFICIAL_CALENDAR_ID;
+
+  // 1. Intentar por ID exacto
+  try {
+    const calById = CalendarApp.getCalendarById(calendarId);
+    if (calById) return calById;
+  } catch (err) {
+    // Continuar si no se pudo acceder por ID
+  }
+
+  // 2. Intentar por nombre ("consultorio")
   const calendarName = props.getProperty("CALENDAR_NAME") || "consultorio";
   const calendars = CalendarApp.getCalendarsByName(calendarName);
   if (calendars && calendars.length > 0) {
     return calendars[0];
   }
+
+  // 3. Fallback al calendario por defecto de la cuenta
   return CalendarApp.getDefaultCalendar();
 }
 
