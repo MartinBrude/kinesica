@@ -309,7 +309,7 @@
 
     const description = isCall
       ? `Llamada de orientación previa con el kinesiólogo (Kinésica Palermo).\nEl profesional te llamará a tu teléfono: ${payload.telefono ? payload.telefono.trim() : ""}.\nDuración: 10 minutos.`
-      : `Dirección: Charcas 3889, Piso 5º B, Palermo (entre Scalabrini Ortiz y Aráoz).\n\nInformación importante:\n- Te pedimos que llegues a la hora de la sesión, ni antes ni después, por características del espacio y la organización.\n- Asistir sin acompañantes (salvo necesidad directa o menores).\n- Traer estudios médicos previos si contás con ellos.`;
+      : `Información importante:\n- Te pedimos que llegues a la hora de la sesión, ni antes ni después, por características del espacio y la organización.\n- Asistir sin acompañantes (salvo necesidad directa o menores).\n- Traer estudios médicos previos si contás con ellos.`;
 
     const toCompactUtc = (d) =>
       d.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
