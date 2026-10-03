@@ -19,6 +19,7 @@ const CSS_SOURCES = [
   "css/whatsapp.css",
   "css/cv.css",
   "css/home-v2.css",
+  "booking/booking-widget.css",
 ];
 
 /** JS de terceros o ya minificados — no regenerar. */
@@ -31,7 +32,7 @@ const JS_SKIP = new Set([
 
 function discoverJsSources() {
   const files = [];
-  for (const dir of ["js", "partials"]) {
+  for (const dir of ["js", "partials", "booking"]) {
     const full = path.join(ROOT, dir);
     if (!fs.existsSync(full)) continue;
     for (const name of fs.readdirSync(full)) {

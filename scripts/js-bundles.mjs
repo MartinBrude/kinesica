@@ -40,6 +40,12 @@ export const SHARED_BUNDLES = {
     "partials/google-reviews-data.js",
     "js/google-reviews.js",
   ],
+  "booking/booking-bundle.min.js": [
+    "booking/booking-engine.js",
+    "booking/booking-api-client.js",
+    "booking/booking-widget.js",
+    "booking/booking-modal.js",
+  ],
 };
 
 /** @param {string} lang */

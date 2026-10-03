@@ -424,6 +424,10 @@ label {}
   margin-top: 20px;
 }
 
+.mr10 {
+  margin-right: 10px;
+}
+
 /*----- less margin space from top --*/
 
 /*-----------------------
@@ -4037,6 +4041,28 @@ html {
 #navigation.small-screen > ul > li > a::after,
 #navigation.small-screen > ul > li > .nav-parent::after {
   display: none !important;
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 25px;
+}
+
+.site-cta-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 767px) {
+  .site-cta-buttons {
+    justify-content: flex-start;
+  }
 }
 
 @media (min-width: 769px) {

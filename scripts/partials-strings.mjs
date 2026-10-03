@@ -25,6 +25,7 @@ export const PARTIAL_STRINGS = {
     navComment: "Spanish header nav — relative links from site root.",
     articles: { label: "Artículos", title: "Artículos" },
     methodsMenu: { label: "Métodos y Técnicas", title: "Métodos y Técnicas" },
+    booking: { label: "Agendar", title: "Agendar turno o consulta online" },
     footerComment:
       "Spanish footer — root-absolute links (/rpg.html). file:// adjusted in footer-include.js.",
     methodsTitle: "Métodos y Técnicas",
@@ -51,6 +52,7 @@ export const PARTIAL_STRINGS = {
     navComment: "English header nav — relative links from en/ directory.",
     articles: { label: "Articles", title: "Articles" },
     methodsMenu: { label: "Methods & Techniques", title: "Methods & Techniques" },
+    booking: { label: "Agendar", title: "Agendar turno o consulta online" },
     footerComment:
       "English footer — /en/… links. file:// adjusted in footer-include.js.",
     methodsTitle: "Methods & Techniques",
@@ -77,6 +79,7 @@ export const PARTIAL_STRINGS = {
     navComment: "French header nav — relative links from fr/ directory.",
     articles: { label: "Articles", title: "Articles" },
     methodsMenu: { label: "Méthodes et techniques", title: "Méthodes et techniques" },
+    booking: { label: "Agendar", title: "Agendar turno o consulta online" },
     footerComment:
       "French footer — /fr/… links. file:// adjusted in footer-include.js.",
     methodsTitle: "Méthodes et techniques",
@@ -103,6 +106,7 @@ export const PARTIAL_STRINGS = {
     navComment: "Portuguese header nav — relative links from pt/ directory.",
     articles: { label: "Artigos", title: "Artigos" },
     methodsMenu: { label: "Métodos e técnicas", title: "Métodos e técnicas" },
+    booking: { label: "Agendar", title: "Agendar turno o consulta online" },
     footerComment: "Portuguese footer — /pt/… links.",
     methodsTitle: "Métodos e técnicas",
     socialTitle: "Redes sociais",
