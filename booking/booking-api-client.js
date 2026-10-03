@@ -98,11 +98,25 @@
         };
       }
 
-      // Conexión real a Google Apps Script Webhook
+      // Conexión real a Google Apps Script Webhook con timeout de 15 segundos
       const url = `${this.apiUrl}?action=get_slots&date=${encodeURIComponent(dateStr)}&type=${encodeURIComponent(appointmentType)}`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
-      return await res.json();
+      const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+      const timeoutId = controller ? setTimeout(() => controller.abort(), 15000) : null;
+
+      try {
+        const res = await fetch(url, {
+          signal: controller ? controller.signal : undefined
+        });
+        if (timeoutId) clearTimeout(timeoutId);
+        if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
+        return await res.json();
+      } catch (err) {
+        if (timeoutId) clearTimeout(timeoutId);
+        if (err.name === "AbortError") {
+          throw new Error("La consulta a Google Calendar demoró demasiado. Por favor intenta recargar la página.");
+        }
+        throw err;
+      }
     }
 
     /**

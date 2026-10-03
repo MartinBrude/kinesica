@@ -85,18 +85,18 @@ function getKinesicaCalendar() {
   try {
     const calById = CalendarApp.getCalendarById(calendarId);
     if (calById) return calById;
-  } catch (err) {
-    // Continuar si no se pudo acceder por ID
-  }
+  } catch (err) {}
 
-  // 2. Intentar por nombre ("consultorio" insensible a mayúsculas)
-  const calendarName = (props.getProperty("CALENDAR_NAME") || "consultorio").toLowerCase();
-  const allCals = CalendarApp.getAllCalendars();
-  for (let i = 0; i < allCals.length; i++) {
-    if (allCals[i].getName().toLowerCase() === calendarName) {
-      return allCals[i];
-    }
-  }
+  // 2. Intentar por nombre directo (rápido sin escanear todos los calendarios)
+  try {
+    const calsLower = CalendarApp.getCalendarsByName("consultorio");
+    if (calsLower && calsLower.length > 0) return calsLower[0];
+  } catch (e) {}
+
+  try {
+    const calsUpper = CalendarApp.getCalendarsByName("Consultorio");
+    if (calsUpper && calsUpper.length > 0) return calsUpper[0];
+  } catch (e) {}
 
   // 3. Fallback al calendario por defecto de la cuenta
   return CalendarApp.getDefaultCalendar();
