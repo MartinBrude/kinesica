@@ -25,8 +25,65 @@ const MIME_TYPES = {
   ".ico": "image/x-icon",
 };
 
+const GAS_WEBHOOK_URL =
+  "https://script.google.com/macros/s/AKfycbzO3WZtQ4E3e0mZskicMs8unys26bPiNR3pvRpjbV78AUM9CCpWRGnALPGBqGl4fEBAbw/exec";
+
 const server = http.createServer((req, res) => {
   let reqPath = req.url.split("?")[0];
+
+  // Proxy local de desarrollo hacia Google Apps Script (elimina problemas de CORS y 302 en navegadores)
+  if (reqPath === "/api/booking" || reqPath === "/api/booking/") {
+    if (req.method === "OPTIONS") {
+      res.writeHead(204, {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      });
+      res.end();
+      return;
+    }
+
+    const incomingUrl = new URL(req.url, `http://${req.headers.host || "localhost:3000"}`);
+    const targetUrl = new URL(GAS_WEBHOOK_URL);
+    incomingUrl.searchParams.forEach((v, k) => targetUrl.searchParams.set(k, v));
+
+    const chunks = [];
+    req.on("data", (chunk) => chunks.push(chunk));
+    req.on("end", async () => {
+      const bodyBuffer = Buffer.concat(chunks);
+      try {
+        const fetchOptions = {
+          method: req.method,
+          redirect: "follow",
+          headers: {
+            "Content-Type": req.headers["content-type"] || "text/plain;charset=utf-8",
+          },
+        };
+        if (req.method !== "GET" && req.method !== "HEAD" && bodyBuffer.length > 0) {
+          fetchOptions.body = bodyBuffer.toString("utf-8");
+        }
+
+        const gasResponse = await fetch(targetUrl.toString(), fetchOptions);
+        const text = await gasResponse.text();
+
+        res.writeHead(gasResponse.status, {
+          "Content-Type": "application/json; charset=utf-8",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type",
+        });
+        res.end(text);
+      } catch (err) {
+        res.writeHead(502, {
+          "Content-Type": "application/json; charset=utf-8",
+          "Access-Control-Allow-Origin": "*",
+        });
+        res.end(JSON.stringify({ status: "error", message: err.message }));
+      }
+    });
+    return;
+  }
+
   if (reqPath === "/booking" || reqPath === "/booking/") {
     res.writeHead(302, { Location: "/#agendar" });
     res.end();

@@ -75,6 +75,27 @@
       this.isMock = force;
     }
 
+    getEffectiveApiUrl() {
+      // Si options.apiUrl se pasó explícitamente y no es la default de GAS, respetarla
+      if (
+        this.options &&
+        this.options.apiUrl &&
+        typeof window !== "undefined" &&
+        this.options.apiUrl !== (window.KINESICA_SITE && window.KINESICA_SITE.bookingApiUrl)
+      ) {
+        return this.apiUrl;
+      }
+      // En servidor local de pruebas (puerto 3000), usar el proxy local transparente
+      if (
+        typeof window !== "undefined" &&
+        (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") &&
+        window.location.port === "3000"
+      ) {
+        return "/api/booking";
+      }
+      return this.apiUrl;
+    }
+
     /**
      * Consulta horarios disponibles para una fecha y tipo.
      */
@@ -97,18 +118,26 @@
         };
       }
 
-      // Conexión real a Google Apps Script Webhook con timeout de 15 segundos
-      const url = `${this.apiUrl}?action=get_slots&date=${encodeURIComponent(dateStr)}&type=${encodeURIComponent(appointmentType)}`;
+      // Conexión a Google Apps Script / Proxy local con timeout de 15 segundos
+      const effectiveUrl = this.getEffectiveApiUrl();
+      const url = `${effectiveUrl}?action=get_slots&date=${encodeURIComponent(dateStr)}&type=${encodeURIComponent(appointmentType)}`;
       const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
       const timeoutId = controller ? setTimeout(() => controller.abort(), 15000) : null;
 
       try {
         const res = await fetch(url, {
+          method: "GET",
+          mode: "cors",
+          redirect: "follow",
           signal: controller ? controller.signal : undefined
         });
         if (timeoutId) clearTimeout(timeoutId);
         if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
-        return await res.json();
+        const json = await res.json();
+        if (json.status === "error") {
+          throw new Error(json.message || "Error al obtener disponibilidad");
+        }
+        return json;
       } catch (err) {
         if (timeoutId) clearTimeout(timeoutId);
         if (err.name === "AbortError") {
@@ -134,8 +163,16 @@
         return { status: "success", is_habitual: false, nombre: null, source: "mock" };
       }
 
-      const res = await fetch(this.apiUrl, {
+      const effectiveUrl = this.getEffectiveApiUrl();
+      const query = new URLSearchParams({
+        action: "check_patient",
+        telefono: phone,
+      });
+      const url = `${effectiveUrl}?${query.toString()}`;
+      const res = await fetch(url, {
         method: "POST",
+        mode: "cors",
+        redirect: "follow",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify({ action: "check_patient", telefono: phone }),
       });
@@ -198,13 +235,39 @@
         };
       }
 
-      // Enviar a Google Apps Script
+      // Enviar a Google Apps Script / Proxy local
+      // Enviamos tanto en la query string (garantiza supervivencia si un navegador degrada 302 a GET)
+      // como en el cuerpo POST en formato JSON
+      const effectiveUrl = this.getEffectiveApiUrl();
+      const query = new URLSearchParams({
+        action: "book",
+        tipo: data.tipo || "",
+        appointmentType: data.appointmentType || "",
+        date: data.date || "",
+        time: data.time || "",
+        nombre: data.nombre || "",
+        telefono: data.telefono || "",
+        dni: data.dni || "",
+        motivo: data.motivo || "",
+        isMenor: data.isMenor ? "true" : "false",
+        nombreFamiliar: data.nombreFamiliar || "",
+        notas: data.notas || "",
+      });
+
+      const url = `${effectiveUrl}?${query.toString()}`;
       const payload = Object.assign({ action: "book" }, data);
-      const res = await fetch(this.apiUrl, {
+
+      const res = await fetch(url, {
         method: "POST",
+        mode: "cors",
+        redirect: "follow",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify(payload),
       });
+
+      if (!res.ok) {
+        throw new Error(`Error de comunicación con el servidor (${res.status})`);
+      }
 
       const json = await res.json();
       if (json.status !== "success") {

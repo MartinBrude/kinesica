@@ -388,8 +388,9 @@
         checkDate.setDate(checkDate.getDate() + 1);
       }
 
-      if (firstAvailable && !this.state.selectedDate) {
-        this.selectDate(firstAvailable);
+      const dateToSelect = this.state.selectedDate || firstAvailable;
+      if (dateToSelect) {
+        this.selectDate(dateToSelect);
       }
     }
 
@@ -461,6 +462,12 @@
     async handleBookingSubmit() {
       this.clearError();
       const q = (sel) => this.container.querySelector(sel);
+
+      if (!this.state.selectedDate || !this.state.selectedTime) {
+        this.showError("Por favor selecciona un día y horario antes de continuar.");
+        this.setStep(2);
+        return;
+      }
 
       const nombre = q("#kb-input-nombre").value.trim();
       const telefono = q("#kb-input-telefono").value.trim();

@@ -48,6 +48,10 @@ function doGet(e) {
         version: "v2-timezone-fixed",
         calendarName: getKinesicaCalendar().getName()
       });
+    } else if (action === "book") {
+      return handleBookAppointment(params);
+    } else if (action === "check_patient") {
+      return handleCheckPatient(params);
     }
 
     return createJsonResponse({ status: "error", message: "Acción no reconocida en GET" }, 400);
@@ -58,17 +62,33 @@ function doGet(e) {
 
 function doPost(e) {
   try {
-    if (!e || !e.postData || !e.postData.contents) {
-      return createJsonResponse({ status: "error", message: "No post data received" }, 400);
+    let payload = {};
+    if (e && e.postData && e.postData.contents) {
+      try {
+        payload = JSON.parse(e.postData.contents);
+      } catch (err) {
+        payload = {};
+      }
+    }
+    if (e && e.parameter) {
+      payload = Object.assign({}, e.parameter, payload);
     }
 
-    const payload = JSON.parse(e.postData.contents);
     const action = payload.action || "book";
 
     if (action === "check_patient") {
       return handleCheckPatient(payload);
     } else if (action === "book") {
       return handleBookAppointment(payload);
+    } else if (action === "get_slots") {
+      return handleGetSlots(payload);
+    } else if (action === "ping") {
+      return createJsonResponse({
+        status: "online",
+        service: "Kinésica Calendar Booking API",
+        version: "v2-timezone-fixed",
+        calendarName: getKinesicaCalendar().getName()
+      });
     }
 
     return createJsonResponse({ status: "error", message: "Acción no reconocida en POST" }, 400);
@@ -279,6 +299,10 @@ function handleBookAppointment(payload) {
       status: "error",
       message: "Para pacientes de primera vez es requisito coordinar una llamada de orientación de 10 minutos antes de agendar un turno presencial."
     }, 400);
+  }
+
+  if (!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr) || !timeStr) {
+    return createJsonResponse({ status: "error", message: "Fecha (YYYY-MM-DD) y hora (HH:mm) son requeridas para la reserva." }, 400);
   }
 
   if (!nombre || nombre.length < 3) {
