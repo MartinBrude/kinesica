@@ -22,42 +22,42 @@ export const PATHOLOGY_FAQS = {
   "cefalea": {
     "es": [
       {
-        "q": "¿Cómo puede la kinesiología y la terapia manual aliviar los dolores de cabeza?",
-        "a": "Muchas cefaleas tensionales se originan en contracturas de los músculos suboccipitales, rigidez cervical o apretamiento de la mandíbula (ATM). La terapia manual y la osteopatía normalizan el tono muscular y la movilidad articular, reduciendo la frecuencia e intensidad del dolor."
+        "q": "¿Cómo se relaciona la postura cervical y la mandíbula con los dolores de cabeza?",
+        "a": "Gran parte de las cefaleas tensionales se originan en contracturas de los músculos suboccipitales, rigidez de las vértebras cervicales altas o apretamiento mandibular (ATM), que irritan las terminaciones nerviosas craneales."
       },
       {
-        "q": "¿Cuántas sesiones se suelen necesitar para notar mejoría en la cefalea?",
-        "a": "Tras una evaluación inicial integral, la mayoría de los pacientes percibe una reducción notable de los episodios y de la rigidez en las primeras 3 a 5 sesiones, combinando tratamiento manual en camilla y pautas ergonómicas."
+        "q": "¿Cuáles son las diferencias entre una cefalea tensional y una migraña?",
+        "a": "La cefalea tensional produce una sensación de opresión constante en banda o en la nuca, suele ser bilateral y no presenta náuseas. La migraña, en cambio, suele ser punzante, unilateral y se acompaña de hipersensibilidad a la luz y al sonido."
       }
     ],
     "en": [
       {
-        "q": "How can physiotherapy and manual therapy relieve headaches?",
-        "a": "Many tension headaches originate from tightness in the suboccipital muscles, cervical joint stiffness, or jaw clenching (TMJ). Manual therapy and osteopathy restore joint mobility and relax muscle tissue, significantly reducing pain frequency and intensity."
+        "q": "How are cervical posture and the jaw linked to headaches?",
+        "a": "Many tension-type headaches stem from deep suboccipital muscle tightness, upper cervical joint restrictions, or jaw clenching (TMJ) that irritate cranial nerve pathways."
       },
       {
-        "q": "How many sessions are typically needed to see improvement?",
-        "a": "Following an initial assessment, most patients notice a clear reduction in headache frequency and neck tension within 3 to 5 sessions, combining hands-on treatment with tailored postural guidance."
+        "q": "What is the difference between a tension headache and a migraine?",
+        "a": "Tension headaches create a steady, band-like tightening around the head or neck, are usually bilateral, and lack nausea. Migraines are typically throbbing, one-sided, and accompanied by sensitivity to light and sound."
       }
     ],
     "fr": [
       {
-        "q": "Comment la kinésithérapie et la thérapie manuelle soulagent-elles les céphalées ?",
-        "a": "De nombreuses céphalées de tension proviennent de contractures sous-occipitales, de raideurs cervicales ou de serrement de la mâchoire (ATM). La thérapie manuelle et l'ostéopathie restaurent la mobilité articulaire et détendent les tissus, réduisant la fréquence et l'intensité des crises."
+        "q": "Quel est le lien entre la posture cervicale, la mâchoire et les maux de tête ?",
+        "a": "De nombreuses céphalées de tension proviennent de contractures des muscles sous-occipitaux, de raideurs des vertèbres cervicales hautes ou de serrement de l'ATM qui irritent les nerfs crâniens."
       },
       {
-        "q": "Combien de séances sont généralement nécessaires pour constater une amélioration ?",
-        "a": "Après un bilan initial approfondi, la plupart des patients constatent une nette diminution des maux de tête en 3 à 5 séances, associant soins au cabinet et conseils posturaux personnalisés."
+        "q": "Quelle est la différence entre une céphalée de tension et une migraine ?",
+        "a": "La céphalée de tension produit une sensation de serrement en casque ou dans la nuque, bilatérale et sans nausées. La migraine est généralement pulsatile, unilatérale et accompagnée d'hypersensibilité à la lumière et au bruit."
       }
     ],
     "pt": [
       {
-        "q": "Como a fisioterapia e a terapia manual ajudam a aliviar dores de cabeça?",
-        "a": "Muitas cefaleias tensionais têm origem em contraturas suboccipitais, rigidez cervical ou apertamento mandibular (ATM). A terapia manual e a osteopatia equilibram o tônus muscular e a mobilidade articular, reduzindo a frequência e a intensidade da dor."
+        "q": "Como a postura cervical e a mandíbula se relacionam com as dores de cabeça?",
+        "a": "Grande parte das cefaleias tensionais origina-se em contraturas dos músculos suboccipitais, rigidez cervical alta ou apertamento na ATM, que irritam as terminações nervosas cranianas."
       },
       {
-        "q": "Quantas sessões costumam ser necessárias para notar alívio?",
-        "a": "Após a avaliação inicial, a maioria dos pacientes percebe melhora expressiva nos episódios e na tensão cervical nas primeiras 3 a 5 sessões, combinando atendimento individual e orientações posturais."
+        "q": "Quais as diferenças entre uma cefaleia tensional e uma enxaqueca?",
+        "a": "A cefaleia tensional gera sensação de aperto constante em faixa na cabeça ou nuca, bilateral e sem náuseas. A enxaqueca costuma ser pulsátil, unilateral e associada a intolerância à luz e ao som."
       }
     ]
   },
@@ -65,1091 +65,1091 @@ export const PATHOLOGY_FAQS = {
     "es": [
       {
         "q": "¿Por qué suele doler la espalda alta o entre los omóplatos?",
-        "a": "La dorsalgia suele deberse a posturas estáticas prolongadas (como el trabajo de oficina), bloqueos articulares en vértebras dorsales o costillas, y sobrecarga de las cadenas miofasciales posteriores."
+        "a": "La dorsalgia suele deberse a posturas estáticas prolongadas frente a pantallas, bloqueos en las articulaciones costovertebrales y fatiga de los músculos fijadores de la escápula."
       },
       {
-        "q": "¿Cómo ayuda el método RPG y la terapia manual en el dolor dorsal?",
-        "a": "La Reeducación Postural Global (RPG) estira de forma activa y progresiva las cadenas musculares acortadas, mientras que las maniobras osteopáticas devuelven movilidad a la caja torácica y mejoran la mecánica respiratoria."
+        "q": "¿Qué hábitos diarios o posturas empeoran el dolor dorsal?",
+        "a": "Trabajar con los brazos suspendidos sin apoyo en el escritorio, inclinar la cabeza hacia adelante al usar el celular y mantener una respiración torácica superficial sobrecargan continuamente la zona dorsal."
       }
     ],
     "en": [
       {
-        "q": "Why does pain occur in the upper back or between the shoulder blades?",
-        "a": "Upper back pain (dorsalgia) is commonly triggered by prolonged static desk postures, joint restrictions in thoracic vertebrae or ribs, and postural muscle overload along the posterior kinetic chain."
+        "q": "Why does pain commonly occur in the upper back or between the shoulder blades?",
+        "a": "Mid-back pain (dorsalgia) is typically triggered by prolonged static desk postures, costovertebral joint restrictions, and fatigue of scapular stabilizer muscles."
       },
       {
-        "q": "How do RPG and manual therapy help thoracic back pain?",
-        "a": "Global Postural Re-education (RPG) actively elongates shortened muscle chains, while gentle osteopathic mobilizations restore rib and thoracic mobility, easing stiffness and improving breathing mechanics."
+        "q": "What daily habits or postures aggravate thoracic back pain?",
+        "a": "Typing with unsupported forearms, looking down continuously at smartphones (text neck), and shallow chest breathing constantly strain the dorsal spine and ribs."
       }
     ],
     "fr": [
       {
         "q": "Pourquoi la douleur survient-elle dans le haut du dos ou entre les omoplates ?",
-        "a": "La dorsalgie est souvent liée à des postures statiques prolongées (travail sur écran), à des blocages vertébraux thoraciques ou costaux, et à une surcharge des chaînes musculaires postérieures."
+        "a": "La dorsalgie est souvent causée par des postures statiques devant l'ordinateur, des blocages des articulations costo-vertébrales et la fatigue des muscles fixateurs de l'omoplate."
       },
       {
-        "q": "Comment la méthode RPG et la thérapie manuelle soulagent-elles la dorsalgie ?",
-        "a": "La Rééducation Posturale Globale (RPG) étire activement les chaînes raccourcies, tandis que les mobilisations ostéopathiques redonnent de la souplesse à la cage thoracique et libèrent la respiration."
+        "q": "Quelles habitudes quotidiennes aggravent la dorsalgie ?",
+        "a": "Travailler les bras sans appui, pencher la tête vers l'écran de smartphone et adopter une respiration thoracique courte surchargent en continu la colonne dorsale."
       }
     ],
     "pt": [
       {
         "q": "Por que costuma doer a parte alta das costas ou entre as escápulas?",
-        "a": "A dorsalgia decorre frequentemente de posturas estáticas prolongadas no computador, bloqueios articulares torácicos ou costais e sobrecarga postural nas cadeias musculares posteriores."
+        "a": "A dorsalgia decorre frequentemente de posturas estáticas prolongadas diante de telas, bloqueios nas articulações costovertebrais e fadiga dos músculos escapulares."
       },
       {
-        "q": "Como o método RPG e a terapia manual tratam a dor dorsal?",
-        "a": "A Reeducação Postural Global (RPG) alonga ativamente as cadeias encurtadas, enquanto as manobras osteopáticas devolvem mobilidade à caixa torácica e melhoram a respiração."
+        "q": "Quais hábitos diários ou posturas pioram a dor dorsal?",
+        "a": "Trabalhar sem apoio para os antebraços, olhar continuamente para o celular com a cabeça baixa e respirar de forma superficial sobrecarregam a região torácica."
       }
     ]
   },
   "lumbalgia": {
     "es": [
       {
-        "q": "¿Cuánto tiempo tarda en aliviarse la lumbalgia con kinesiología?",
-        "a": "En la mayoría de los casos agudos o subagudos, se percibe un alivio notable dentro de las primeras 3 a 5 sesiones al combinar terapia manual, osteopatía y reeducación del movimiento progresivo."
+        "q": "¿Cuáles son las causas más habituales del dolor lumbar?",
+        "a": "La lumbalgia se relaciona con sobrecarga de las articulaciones facetarias, contracturas de paravertebrales, rigidez de cadera (psoas e isquiotibiales) y debilidad en los estabilizadores profundos del tronco."
       },
       {
-        "q": "¿Es necesario hacer reposo absoluto si tengo dolor lumbar?",
-        "a": "No. La evidencia médica actual desaconseja el reposo en cama prolongado. El movimiento adaptado, la descompresión articular y los ejercicios guiados aceleran la desinflamación y previenen la rigidez."
+        "q": "¿Por qué el dolor lumbar suele empeorar al levantarse de una silla o tras estar sentado?",
+        "a": "Estar sentado mucho tiempo aumenta la presión sobre los discos vertebrales y acorta los flexores de cadera. Al incorporarse, la columna sufre una tracción brusca que dispara espasmos musculares protectores."
       }
     ],
     "en": [
       {
-        "q": "How long does it take to relieve low back pain with physiotherapy?",
-        "a": "In most acute and subacute cases, noticeable relief is achieved within the first 3 to 5 sessions by combining manual therapy, osteopathic care, and progressive movement re-education."
+        "q": "What are the most frequent causes of lower back pain?",
+        "a": "Lower back pain is commonly linked to facet joint stress, lumbar muscle guarding, hip stiffness (tight psoas and hamstrings), and poor endurance in deep core stabilizing muscles."
       },
       {
-        "q": "Is strict bed rest recommended for low back pain?",
-        "a": "No. Modern medical evidence strongly advises against prolonged bed rest. Safe, guided movement, gentle spinal decompression, and targeted exercises speed up recovery and prevent chronic stiffness."
+        "q": "Why does low back pain worsen when standing up after prolonged sitting?",
+        "a": "Prolonged sitting elevates intradiscal pressure and shortens hip flexors. Upon standing, the lumbar spine experiences sudden compressive tension that triggers reactive muscle spasms."
       }
     ],
     "fr": [
       {
-        "q": "En combien de temps la lombalgie s'atténue-t-elle avec la kinésithérapie ?",
-        "a": "Dans la plupart des cas, un soulagement net est ressenti dès les 3 à 5 premières séances grâce à l'association de thérapie manuelle, d'ostéopathie et de rééducation active du mouvement."
+        "q": "Quelles sont les causes les plus courantes de la lombalgie ?",
+        "a": "Le mal de dos est lié à la surcharge des facettes articulaires, aux contractures musculaires, à la raideur des hanches (psoas) et à la faiblesse des muscles stabilisateurs profonds."
       },
       {
-        "q": "Le repos complet au lit est-il recommandé en cas de mal de dos ?",
-        "a": "Non. Les recommandations médicales actuelles déconseillent l'alitement prolongé. Un mouvement guidé et adapté, associé à une décompression articulaire, favorise une guérison plus rapide."
+        "q": "Pourquoi le bas du dos fait-il plus mal en se levant d'une chaise ?",
+        "a": "La position assise prolongée comprime les disques et raccourcit les fléchisseurs de hanche. En se redressant, la colonne subit une traction brutale qui déclenche des spasmes réflexes."
       }
     ],
     "pt": [
       {
-        "q": "Quanto tempo leva para aliviar a lombalgia com fisioterapia?",
-        "a": "Na maioria dos casos, nota-se alívio expressivo nas primeiras 3 a 5 sessões através da combinação de terapia manual, osteopatia e exercícios progressivos sem dor."
+        "q": "Quais são as causas mais frequentes da dor lombar?",
+        "a": "A lombalgia relaciona-se à sobrecarga nas articulações facetárias, contraturas musculares paravertebrais, rigidez no quadril e fraqueza nos músculos estabilizadores do tronco."
       },
       {
-        "q": "É necessário repouso absoluto em caso de dor lombar?",
-        "a": "Não. As evidências científicas desaconselham repouso prolongado. Movimento adaptado, descompressão articular e exercícios guiados aceleram a recuperação e evitam a rigidez."
+        "q": "Por que a dor lombar piora ao levantar da cadeira após ficar muito tempo sentado?",
+        "a": "Ficar sentado eleva a pressão nos discos e encurta os flexores do quadril. Ao ficar em pé, a coluna sofre uma tração repentina que desencadeia espasmos musculares de proteção."
       }
     ]
   },
   "ciatalgia": {
     "es": [
       {
-        "q": "¿En qué consiste la neurodinamia para el dolor del nervio ciático?",
-        "a": "La neurodinamia evalúa y trata la movilidad y deslizamiento del nervio ciático respecto a los tejidos que lo rodean. Alivia el atrapamiento y la inflamación sin maniobras agresivas."
+        "q": "¿Por qué el dolor de ciática suele bajar por detrás del muslo hasta la pierna o el pie?",
+        "a": "Porque el nervio ciático es el más largo y grueso del cuerpo, naciendo en las raíces lumbares y sacras. Cualquier irritación o compresión mecánica en su trayecto se proyecta a lo largo de su distribución anatómica."
       },
       {
-        "q": "¿Se puede solucionar la ciática sin cirugía ni infiltraciones?",
-        "a": "Sí. Más del 90% de los casos de ciatalgia responden con éxito al tratamiento conservador de kinesiología, osteopatía y reeducación postural cuando se aborda la causa discal o muscular."
+        "q": "¿Cuál es la diferencia entre una ciática discal y el síndrome piramidal?",
+        "a": "La ciática discal se origina por compresión de la raíz nerviosa en la columna lumbar (hernia o protrusión); el síndrome piramidal es un atrapamiento del nervio a nivel del glúteo por tensión del músculo piriforme."
       }
     ],
     "en": [
       {
-        "q": "What does neurodynamics involve for sciatic nerve pain?",
-        "a": "Neurodynamics assesses and restores the sliding and gliding capacity of the sciatic nerve relative to surrounding tissues, relieving compression and nerve irritation safely without aggressive maneuvers."
+        "q": "Why does sciatic nerve pain radiate down the back of the thigh to the leg and foot?",
+        "a": "The sciatic nerve is the body's longest nerve, formed by lumbar and sacral nerve roots. Mechanical compression or chemical irritation anywhere along its path refers pain down its entire anatomical pathway."
       },
       {
-        "q": "Can sciatica be resolved without surgery or injections?",
-        "a": "Yes. Over 90% of sciatica cases resolve successfully with conservative manual therapy, osteopathy, and postural rehabilitation by addressing the underlying spinal or muscular cause."
+        "q": "What is the difference between true disc sciatica and piriformis syndrome?",
+        "a": "Disc-related sciatica involves nerve root impingement at the lumbar spine; piriformis syndrome is an entrapment of the nerve lower down in the buttock caused by a tight piriformis muscle."
       }
     ],
     "fr": [
       {
-        "q": "En quoi consiste la neurodynamique pour la sciatique ?",
-        "a": "La neurodynamique évalue et rétablit le glissement du nerf sciatique par rapport aux tissus environnants, soulageant l'irritation et la compression sans manœuvres brusques."
+        "q": "Pourquoi la sciatique irradie-t-elle derrière la cuisse jusqu'au pied ?",
+        "a": "Le nerf sciatique est le plus long du corps, naissant des racines lombaires et sacrées. Toute compression ou irritation le long de son trajet se propage sur l'ensemble de son territoire anatomique."
       },
       {
-        "q": "Peut-on guérir une sciatique sans chirurgie ni infiltration ?",
-        "a": "Oui. Plus de 90 % des sciatiques réagissent très favorablement au traitement conservateur en kinésithérapie, ostéopathie et RPG en traitant la cause mécanique sous-jacente."
+        "q": "Quelle est la différence entre une vraie sciatique et le syndrome du piriforme ?",
+        "a": "La sciatique discale résulte d'un conflit de la racine nerveuse dans le dos (hernie discale) ; le syndrome du piriforme est un coincement du nerf au niveau de la fesse par contracture musculaire."
       }
     ],
     "pt": [
       {
-        "q": "O que é a neurodinâmica para a dor no nervo ciático?",
-        "a": "A neurodinâmica avalia e restaura o deslizamento do nervo ciático em relação aos tecidos vizinhos, aliviando a irritação neural e a compressão sem manobras agressivas."
+        "q": "Por que a dor ciática irradia pela parte de trás da coxa até a perna ou pé?",
+        "a": "O nervo ciático é o maior do corpo e se origina nas raízes lombares e sacrais. Qualquer compressão ou inflamação mecânica projeta dor e formigamento por todo o seu trajeto anatômico."
       },
       {
-        "q": "É possível tratar a ciática sem cirurgia ou infiltrações?",
-        "a": "Sim. Mais de 90% dos casos de ciatalgia respondem com sucesso ao tratamento conservador de fisioterapia, osteopatia e RPG, tratando a causa biomecânica de raiz."
+        "q": "Qual a diferença entre ciática discal e síndrome do piriforme?",
+        "a": "A ciática discal decorre da compressão na raiz nervosa da coluna (hérnia ou protusão); a síndrome do piriforme é o encarceramento do nervo no glúteo pela contração do músculo piriforme."
       }
     ]
   },
   "cervicobraquialgia": {
     "es": [
       {
-        "q": "¿Por qué el dolor de cuello se irradia hacia el brazo y la mano?",
-        "a": "Ocurre cuando una raíz nerviosa cervical se ve comprimida o irritada por una hernia, protrusión o contractura muscular profunda en el desfiladero torácico, generando hormigueo o dolor descendente."
+        "q": "¿Cuáles son los síntomas característicos de la cervicobraquialgia?",
+        "a": "Dolor en el cuello que irradia hacia el hombro, brazo o dedos de la mano, acompañado frecuentemente de sensaciones de hormigueo, pinchazos, adormecimiento o pérdida de fuerza para sujetar objetos."
       },
       {
-        "q": "¿Cómo se trata la cervicobraquialgia en Kinésica?",
-        "a": "Combinamos descompresión articular cervical suave, técnicas de movilización neural (neurodinamia) para liberar el plexo braquial y RPG para corregir la postura de hombros y cabeza adelantada."
+        "q": "¿Qué movimientos del cuello o posturas suelen intensificar el dolor en el brazo?",
+        "a": "Inclinar o rotar la cabeza hacia el lado afectado y mirar hacia arriba estrecha el espacio por donde sale la raíz nerviosa, aumentando de inmediato la descarga dolorosa o el adormecimiento en el brazo."
       }
     ],
     "en": [
       {
-        "q": "Why does neck pain radiate down into the arm and hand?",
-        "a": "It occurs when a cervical nerve root is irritated or compressed by a disc bulge, herniation, or muscle entrapment around the thoracic outlet, causing radiating pain, tingling, or weakness."
+        "q": "What are the hallmark symptoms of cervicobrachial pain?",
+        "a": "Neck pain radiating down into the shoulder, arm, or fingers, often accompanied by pins and needles, numbness, burning sensations, or reduced grip strength."
       },
       {
-        "q": "How is cervicobrachial pain treated at Kinésica?",
-        "a": "We combine gentle cervical joint decompression, neurodynamic nerve-gliding techniques for the brachial plexus, and RPG to correct forward head and rounded shoulder posture."
+        "q": "Which neck movements or postures exacerbate arm pain?",
+        "a": "Tilting or rotating the head toward the symptomatic side and extending backward narrows the neural foramen, instantly reproducing tingling or electric-like radiating pain down the arm."
       }
     ],
     "fr": [
       {
-        "q": "Pourquoi la douleur cervicale irradie-t-elle dans le bras et la main ?",
-        "a": "Elle apparaît lorsqu'une racine nerveuse cervicale est comprimée ou irritée par une hernie discale, une saillie ou une contracture musculaire, provoquant des picotements ou des engourdissements."
+        "q": "Quels sont les symptômes typiques de la névralgie cervico-brachiale ?",
+        "a": "Une douleur du cou qui descend dans l'épaule, le bras ou les doigts, souvent accompagnée de fourmillements, d'engourdissements ou d'une perte de force de préhension."
       },
       {
-        "q": "Comment traite-t-on la névralgie cervico-brachiale chez Kinésica ?",
-        "a": "Nous associons décompression cervicale douce, mobilisation neurale du plexus brachial et RPG pour corriger l'avancée de la tête et des épaules."
+        "q": "Quels mouvements du cou augmentent la douleur dans le bras ?",
+        "a": "Tourner ou pencher la tête du côté douloureux et regarder vers le haut rétrécit le canal de sortie de la racine nerveuse, accentuant les décharges électriques dans le bras."
       }
     ],
     "pt": [
       {
-        "q": "Por que a dor cervical irradia para o braço e a mão?",
-        "a": "Ocorre quando uma raiz nervosa cervical é comprimida ou irritada por hérnia, protusão ou tensão muscular no desfiladeiro torácico, causando formigamento ou queimação."
+        "q": "Quais são os sintomas típicos da cervicobraquialgia?",
+        "a": "Dor no pescoço que irradia para o ombro, braço ou dedos, frequentemente acompanhada de formigamento, queimação, perda de sensibilidade ou fraqueza na mão."
       },
       {
-        "q": "Como a cervicobraquialgia é tratada na Kinésica?",
-        "a": "Combinamos descompressão cervical suave, neurodinâmica para o plexo braquial e RPG para corrigir a projeção anterior da cabeça e ombros."
+        "q": "Que movimentos ou posturas do pescoço costumam piorar a dor no braço?",
+        "a": "Inclinar ou girar a cabeça para o lado dolorido e olhar para cima reduz o espaço de saída da raiz nervosa, intensificando a dormência e a dor irradiada."
       }
     ]
   },
   "pubalgia": {
     "es": [
       {
-        "q": "¿Por qué se produce la pubalgia y a quiénes afecta más?",
-        "a": "Es un síndrome doloroso de la sínfisis púbica por sobrecarga y desbalance muscular entre los aductores de la cadera y los rectos del abdomen, frecuente en deportistas y personas con asimetría pélvica."
+        "q": "¿Por qué se produce la pubalgia y qué músculos están involucrados?",
+        "a": "Es una sobrecarga inflamatoria en la sínfisis púbica por un desbalance de fuerzas entre los músculos aductores de la cadera (que traccionan hacia abajo) y los abdominales (que traccionan hacia arriba)."
       },
       {
-        "q": "¿Cuál es el tratamiento kinésico para volver a entrenar sin dolor?",
-        "a": "Se reequilibra la pelvis con osteopatía articular, se descargan los aductores con terapia manual y se prescribe un programa progresivo de fuerza excéntrica y control lumbopélvico."
+        "q": "¿Qué factores deportivos o anatómicos aumentan el riesgo de sufrir pubalgia?",
+        "a": "Los cambios bruscos de dirección en carrera, remates repetitivos, superficies de juego duras, acortamiento de isquiotibiales y asimetrías o bloqueos en la pelvis son los principales detonantes."
       }
     ],
     "en": [
       {
-        "q": "What causes athletic pubalgia and who is most prone to it?",
-        "a": "It is a groin and pelvic pain syndrome caused by a muscular imbalance between the hip adductors and abdominal wall muscles, common in runners, soccer players, and athletes with pelvic torsion."
+        "q": "What triggers athletic pubalgia and which muscles are involved?",
+        "a": "It is an overuse inflammatory condition of the pubic symphysis caused by opposing shear forces between the hip adductors pulling downward and the lower abdominals pulling upward."
       },
       {
-        "q": "What is the physical therapy approach to return to sports pain-free?",
-        "a": "We balance the pelvic ring with osteopathic techniques, release tense adductor muscles manually, and implement progressive eccentric strengthening and core-pelvic stability drills."
+        "q": "What athletic or anatomical factors increase the risk of groin strain?",
+        "a": "Sudden acceleration and deceleration cuts, repetitive kicking, hard playing surfaces, tight hamstrings, and sacroiliac or pelvic torsions are primary risk factors."
       }
     ],
     "fr": [
       {
-        "q": "Quelles sont les causes de la pubalgie ?",
-        "a": "C'est un syndrome douloureux du pubis causé par un déséquilibre musculaire entre les adducteurs et les abdominaux, très fréquent chez les sportifs ou en cas de torsion du bassin."
+        "q": "Comment se déclenche la pubalgie et quels muscles sont concernés ?",
+        "a": "C'est une inflammation de la symphyse pubienne liée à un conflit de forces entre les adducteurs de la cuisse (qui tirent vers le bas) et les abdominaux (qui tirent vers le haut)."
       },
       {
-        "q": "Quelle est l'approche en kinésithérapie pour reprendre le sport sans douleur ?",
-        "a": "Nous rééquilibrons le bassin en ostéopathie, relâchons les adducteurs en thérapie manuelle et guidons un renforcement excentrique progressif du caisson abdominal."
+        "q": "Quels facteurs sportifs augmentent le risque de pubalgie ?",
+        "a": "Les accélérations et changements de direction brutaux, les frappes répétées au football, les terrains durs et le manque de souplesse du bassin en sont les causes majeures."
       }
     ],
     "pt": [
       {
-        "q": "O que causa a pubalgia e quem costuma ser mais afetado?",
-        "a": "É uma dor na região do púbis provocada por desequilíbrio de força entre os músculos adutores da coxa e o abdômen, comum em corredores, atletas e pessoas com assimetria pélvica."
+        "q": "Como ocorre a pubalgia e quais músculos estão envolvidos?",
+        "a": "Trata-se de uma inflamação por sobrecarga na sínfise púbica gerada pelo descompasso de forças entre os adutores da coxa (tração inferior) e o abdômen (tração superior)."
       },
       {
-        "q": "Qual é o tratamento fisioterapêutico para voltar ao esporte sem dor?",
-        "a": "Reequilibramos a pelve com osteopatia, relaxamos os adutores com terapia manual e aplicamos fortalecimento excêntrico e estabilidade lumbopélvica progressiva."
+        "q": "Quais fatores aumentam o risco de desenvolver pubalgia no esporte?",
+        "a": "Mudanças bruscas de direção, chutes repetidos, pisos rígidos de treino, encurtamento da musculatura posterior e desalinhamento na bacia são os principais gatilhos."
       }
     ]
   },
   "gonalgia": {
     "es": [
       {
-        "q": "¿Por qué duele la rodilla si las radiografías no muestran lesiones graves?",
-        "a": "Muchas gonalgias se deben a fallas biomecánicas: falta de control en la cadera (glúteo medio), mala amortiguación en el pie o tensiones de la rótula que sobrecargan la articulación."
+        "q": "¿Cuáles son las causas más frecuentes de dolor en la rodilla sin traumatismo previo?",
+        "a": "El síndrome femororrotuliano, la tendinopatía rotuliana o cuadricipital y la sobrecarga del compartimento interno por alteraciones mecánicas son las causas no traumáticas más habituales."
       },
       {
-        "q": "¿Cómo se aborda el dolor de rodilla en Kinésica?",
-        "a": "Evaluamos toda la cadena del miembro inferior (pie, rodilla y cadera), liberamos tensiones miofasciales y prescribimos ejercicio terapéutico para estabilizar el tracking rotuliano."
+        "q": "¿Por qué la debilidad de la cadera o el pie plano influyen en el dolor de rodilla?",
+        "a": "La rodilla es una articulación intermedia. Si el glúteo medio no sostiene la cadera o el pie cae en pronación, el fémur rota hacia adentro, desalineando la rótula y aumentando el roce del cartílago."
       }
     ],
     "en": [
       {
-        "q": "Why does the knee hurt if imaging shows no major damage?",
-        "a": "Many knee pains result from functional biomechanical faults: poor hip stability (gluteus medius weakness), foot pronation issues, or patellar tracking imbalances placing excess stress on the joint."
+        "q": "What are the most frequent causes of non-traumatic knee pain?",
+        "a": "Patellofemoral pain syndrome, patellar tendinopathy, and asymmetric joint compartment loading driven by lower-limb biomechanical faults are the most common non-impact triggers."
       },
       {
-        "q": "How is knee pain treated at Kinésica?",
-        "a": "We evaluate the entire lower kinetic chain (foot, knee, and hip), release myofascial restrictions, and prescribe targeted exercises to restore proper patellar alignment and joint loading."
+        "q": "Why do hip weakness or flat feet directly affect the knee joint?",
+        "a": "The knee sits between the hip and foot. Weak hip abductors or excessive foot pronation cause internal femoral rotation, disrupting patellar tracking and overloading cartilage."
       }
     ],
     "fr": [
       {
-        "q": "Pourquoi le genou fait-il mal si la radio ne montre pas de lésion grave ?",
-        "a": "La gonalgie est souvent le résultat de déséquilibres fonctionnels : déficit de contrôle de la hanche, mauvais amorti du pied ou mauvaise trajectoire de la rotule provoquant des frottements."
+        "q": "Quelles sont les causes courantes de douleur au genou sans traumatisme ?",
+        "a": "Le syndrome fémoro-patellaire, les tendinopathies rotuliennes et la surcharge du compartiment interne liée à des déséquilibres mécaniques sont les origines les plus fréquentes."
       },
       {
-        "q": "Comment traite-t-on le mal de genou chez Kinésica ?",
-        "a": "Nous analysons l'ensemble du membre inférieur, libérons les tensions myoaponévrotiques et prescrivons des exercices thérapeutiques de recentrage rotulien."
+        "q": "Pourquoi la faiblesse de la hanche ou les pieds plats influent-ils sur le genou ?",
+        "a": "Le genou est pris en étau : si le moyen fessier est faible ou si le pied s'affaisse, le fémur tourne vers l'intérieur, désaxant la rotule et augmentant les frottements."
       }
     ],
     "pt": [
       {
-        "q": "Por que o joelho dói se os exames não mostram lesões graves?",
-        "a": "Muitas dores no joelho decorrem de falhas biomecânicas: fraqueza nos estabilizadores do quadril, pisada desalinhada ou desvio na patela que sobrecarrega a cartilagem."
+        "q": "Quais são as causas mais comuns de dor no joelho sem trauma prévio?",
+        "a": "Síndrome femoropatelar, tendinopatia patelar e sobrecarga nos compartimentos articulares por desvios na pisada são os motivos não traumáticos mais frequentes."
       },
       {
-        "q": "Como a dor no joelho é tratada na Kinésica?",
-        "a": "Avaliamos pé, joelho e quadril de forma integrada, liberamos tensões fasciais e prescrevemos exercícios específicos para estabilizar o movimento da articulação."
+        "q": "Por que a fraqueza no quadril ou o pé plano causam dor no joelho?",
+        "a": "O joelho é uma articulação intermediária. Se o quadril perde estabilidade ou o pé cai para dentro, o fêmur roda internamente, desalinhando a patela e irritando a cartilagem."
       }
     ]
   },
   "talalgia": {
     "es": [
       {
-        "q": "¿Qué provoca el dolor en el talón al levantarse de la cama?",
-        "a": "Suele ser síntoma de fascitis plantar, sobrecarga del tendón de Aquiles o tensión en la cadena muscular posterior, que genera tracción sobre el hueso calcáneo durante el reposo nocturno."
+        "q": "¿Qué provoca el dolor punzante en el talón al levantarse de la cama?",
+        "a": "Se debe comúnmente a la rigidez y microtracción de la fascia plantar y del tendón de Aquiles sobre el hueso calcáneo, que se tensan bruscamente tras el reposo nocturno."
       },
       {
-        "q": "¿Cómo ayuda la kinesiología a resolver la talalgia?",
-        "a": "Trabajamos con terapia manual sobre el pie y la pantorrilla, flexibilizamos la cadena posterior con RPG y adaptamos la carga de impacto para que el tejido cicatrice sin dolor."
+        "q": "¿Tener un espolón calcáneo en una radiografía es siempre el causante del dolor?",
+        "a": "No. En muchos casos el espolón es un hallazgo casual asintomático. El dolor real proviene de la inflamación o sobretensión de la fascia plantar y los músculos cortos del pie, no del hueso en sí."
       }
     ],
     "en": [
       {
-        "q": "What causes sharp heel pain when taking the first steps in the morning?",
-        "a": "Morning heel pain is typically indicative of plantar fasciitis, Achilles tendon strain, or tightness in the posterior muscle chain pulling on the calcaneus after overnight rest."
+        "q": "What causes sharp heel pain when taking the first steps out of bed?",
+        "a": "It is typically triggered by microtrauma and stiffness in the plantar fascia and Achilles insertion at the calcaneus, which suddenly stretch after being contracted overnight."
       },
       {
-        "q": "How does physical therapy resolve heel pain?",
-        "a": "We apply manual techniques to the foot and calf musculature, lengthen the posterior kinetic chain using RPG, and guide progressive loading to help the tendon and fascia heal."
+        "q": "Is a calcaneal spur visible on an X-ray always the root cause of heel pain?",
+        "a": "No. Heel spurs are frequently asymptomatic incidental findings. The real pain source is almost always inflammation or strain within the plantar fascia and surrounding soft tissues."
       }
     ],
     "fr": [
       {
-        "q": "Qu'est-ce qui cause la douleur au talon lors des premiers pas du matin ?",
-        "a": "C'est souvent le signe d'une aponévrosite plantaire, d'une tendinopathie d'Achille ou d'une raideur de la chaîne postérieure tirant sur le calcanéum au réveil."
+        "q": "Qu'est-ce qui provoque la vive douleur au talon lors des premiers pas du matin ?",
+        "a": "Elle résulte de la mise en tension brutale du fascia plantaire et du tendon d'Achille sur le calcanéum après plusieurs heures d'immobilité nocturne."
       },
       {
-        "q": "Comment la kinésithérapie traite-t-elle la talalgie ?",
-        "a": "Nous travaillons manuellement le pied et le mollet, étirons la chaîne postérieure en RPG et adaptons les charges de marche pour permettre la guérison des tissus."
+        "q": "Une épine calcanéenne vue à la radio est-elle forcément la cause de la douleur ?",
+        "a": "Non. L'épine est souvent une découverte fortuite indolore. La vraie source de la douleur réside dans l'inflammation des tissus mous et de l'aponévrose plantaire."
       }
     ],
     "pt": [
       {
-        "q": "O que causa a dor no calcanhar ao dar os primeiros passos pela manhã?",
-        "a": "Costuma indicar fascite plantar, sobrecarga do tendão de Aquiles ou encurtamento da cadeia posterior que traciona o calcâneo durante a noite."
+        "q": "O que causa a dor aguda no calcanhar ao dar os primeiros passos pela manhã?",
+        "a": "Decorre da tração súbita da fáscia plantar e do tendão de Aquiles sobre o calcâneo, que encurtam durante o repouso noturno e sofrem tensão brusca ao apoiar o pé."
       },
       {
-        "q": "Como a fisioterapia trata a dor no calcanhar (talalgia)?",
-        "a": "Aplicamos terapia manual no pé e na panturrilha, flexibilizamos a cadeia posterior com RPG e organizamos a distribuição de impacto na pisada."
+        "q": "Ter um esporão de calcâneo no raio-X é sempre o motivo da dor?",
+        "a": "Não. Em muitos casos o esporão é um achado sem dor. O incômodo real provém da sobrecarga e inflamação na fáscia plantar e nos tecidos vizinhos, não do osso."
       }
     ]
   },
   "dolor-sacroiliaco": {
     "es": [
       {
-        "q": "¿Cómo diferenciar el dolor sacroilíaco de una hernia lumbar o ciática?",
-        "a": "El dolor sacroilíaco se localiza en la parte baja de la espalda hacia un glúteo, empeora al levantarse de una silla o subir escaleras, y no suele irradiar por debajo de la rodilla."
+        "q": "¿Cómo se localiza el dolor de la articulación sacroilíaca?",
+        "a": "Suele sentirse en la parte baja de la espalda hacia un glúteo, a menudo en el punto óseo de la espina ilíaca, pudiendo referirse a la ingle o a la parte posterior del muslo."
       },
       {
-        "q": "¿Cómo ayuda la osteopatía en la articulación sacroilíaca?",
-        "a": "Mediante manipulaciones articulares suaves y liberación miofascial, se restaura el micromovimiento de la pelvis y se equilibra la tensión entre ligamentos pélvicos y columna."
+        "q": "¿Qué movimientos o posturas cotidianas provocan mayor dolor sacroilíaco?",
+        "a": "Subir escaleras, girar en la cama, pararse tras estar sentado mucho tiempo o apoyarse sobre una sola pierna generan torsión en la pelvis y aumentan el dolor."
       }
     ],
     "en": [
       {
-        "q": "How is sacroiliac joint pain distinguished from a lumbar disc herniation?",
-        "a": "SI joint pain is typically felt deep in the lower back or gluteal region, worsens when rising from a chair or climbing stairs, and rarely radiates below the knee."
+        "q": "Where is sacroiliac joint pain typically felt?",
+        "a": "It is located deep in the low back near the upper buttock, often localized over the posterior superior iliac spine, and can refer pain into the groin or upper posterior thigh."
       },
       {
-        "q": "How does osteopathy help sacroiliac dysfunction?",
-        "a": "Through gentle pelvic mobilizations and myofascial release, osteopathy restores normal physiological motion to the sacroiliac joint and relieves strain on pelvic ligaments."
+        "q": "Which everyday movements or postures provoke sacroiliac pain?",
+        "a": "Climbing stairs, rolling over in bed, standing up from a low chair, and single-leg weight-bearing create asymmetric pelvic shear stresses that trigger sharp pain."
       }
     ],
     "fr": [
       {
-        "q": "Comment distinguer la douleur sacro-iliaque d'une hernie discale ?",
-        "a": "La douleur sacro-iliaque se situe bas dans le dos ou dans la fesse, augmente lors du passage assis-debout ou dans les escaliers, et n'irradie généralement pas sous le genou."
+        "q": "Où se situe précisément la douleur de l'articulation sacro-iliaque ?",
+        "a": "Elle est ressentie en bas du dos vers le haut de la fesse, souvent centrée sur l'épine iliaque, et peut irradier vers l'aine ou l'arrière de la cuisse."
       },
       {
-        "q": "Comment l'ostéopathie aide-t-elle l'articulation sacro-iliaque ?",
-        "a": "Par des mobilisations douces et un relâchement myofascial, l'ostéopathie restaure les micromouvements du bassin et harmonise les tensions ligamentaires."
+        "q": "Quels mouvements du quotidien réveillent la douleur sacro-iliaque ?",
+        "a": "Monter des escaliers, se retourner dans le lit, se lever d'un siège bas ou se tenir sur une seule jambe imposent une torsion du bassin qui irrite l'articulation."
       }
     ],
     "pt": [
       {
-        "q": "Como diferenciar a dor sacroilíaca de uma hérnia de disco lombar?",
-        "a": "A dor sacroilíaca concentra-se na base da coluna ou no glúteo, piora ao levantar da cadeira ou subir escadas, e raramente ultrapassa a linha do joelho."
+        "q": "Onde costuma se localizar a dor na articulação sacroilíaca?",
+        "a": "Geralmente é sentida na base da coluna perto da parte alta do glúteo, podendo irradiar para a virilha ou para a parte de trás da coxa sem descer abaixo do joelho."
       },
       {
-        "q": "Como a osteopatia atua na articulação sacroilíaca?",
-        "a": "Com mobilizações articulares suaves e liberação miofascial, restabelece os micromovimentos da pelve e alivia a tensão nos ligamentos pélvicos."
+        "q": "Quais movimentos do dia a dia mais provocam a dor sacroilíaca?",
+        "a": "Subir escadas, virar de lado na cama, levantar da cadeira ou apoiar todo o peso em uma perna só geram torção na bacia e despertam a dor."
       }
     ]
   },
   "hernia-disco": {
     "es": [
       {
-        "q": "¿Es posible recuperarse de una hernia de disco sin cirugía?",
-        "a": "Sí. La gran mayoría de las hernias discales responden exitosamente al tratamiento conservador de kinesiología, osteopatía y reeducación postural (RPG), desinflamando el nervio y reabsorbiendo el tejido."
+        "q": "¿Cuáles son los síntomas más frecuentes de una hernia de disco en la columna?",
+        "a": "Dolor lumbar o cervical que puede acompañarse de irradiación (ciática o braquialgia), sensación de adormecimiento, pérdida de reflejos o debilidad en piernas o brazos."
       },
       {
-        "q": "¿Qué rol cumple el método RPG en la hernia discal?",
-        "a": "El RPG descomprime los espacios intervertebrales al estirar de forma global las cadenas musculares acortadas, reduciendo la presión mecánica constante sobre el disco."
+        "q": "¿Una hernia de disco vista en resonancia magnética siempre requiere cirugía?",
+        "a": "No. Numerosos estudios demuestran que más del 90% de las hernias discales mejoran favorablemente de forma conservadora y que el organismo tiene capacidad de reabsorber el material discal extruido."
       }
     ],
     "en": [
       {
-        "q": "Can you recover from a herniated disc without surgery?",
-        "a": "Yes. The vast majority of disc herniations heal successfully with conservative care: specialized manual therapy, osteopathy, and RPG, allowing nerve inflammation to subside."
+        "q": "What are the most common symptoms of an intervertebral disc herniation?",
+        "a": "Localized spine pain often accompanied by sharp radiating pain along a limb (sciatica or cervical radiculopathy), numbness, tingling, or localized muscular weakness."
       },
       {
-        "q": "What role does RPG play in disc herniation treatment?",
-        "a": "Global Postural Re-education (RPG) opens and decompresses intervertebral spaces by releasing retrained muscle chains, directly lowering intradiscal pressure."
+        "q": "Does a disc herniation visible on an MRI always require surgical intervention?",
+        "a": "No. Scientific evidence shows that over 90% of herniations heal successfully with conservative management, as the body naturally resorbs extruded disc fragments over time."
       }
     ],
     "fr": [
       {
-        "q": "Peut-on guérir d'une hernie discale sans chirurgie ?",
-        "a": "Oui. La très grande majorité des hernies discales régressent favorablement avec un traitement conservateur associant kinésithérapie, ostéopathie et RPG, sans acte chirurgical."
+        "q": "Quels sont les symptômes les plus fréquents d'une hernie discale ?",
+        "a": "Une douleur vertébrale souvent associée à une irradiation vive le long d'un membre (sciatique ou névralgie), des engourdissements ou une faiblesse musculaire ciblée."
       },
       {
-        "q": "Quel est le rôle de la méthode RPG dans le traitement de la hernie discale ?",
-        "a": "La RPG décomprime les disques intervertébraux en étirant les chaînes musculaires raccourcies, soulageant ainsi durablement la pression sur les racines nerveuses."
+        "q": "Une hernie discale visible à l'IRM nécessite-t-elle forcément une opération ?",
+        "a": "Non. Plus de 90 % des hernies discales évoluent très positivement sans chirurgie grâce à une prise en charge conservatrice et à la résorption spontanée des tissus."
       }
     ],
     "pt": [
       {
-        "q": "É possível se recuperar de uma hérnia de disco sem cirurgia?",
-        "a": "Sim. A grande maioria das hérnias de disco responde muito bem ao tratamento conservador de fisioterapia, osteopatia e RPG, aliviando a inflamação e permitindo a reabsorção."
+        "q": "Quais são os sintomas mais frequentes de uma hérnia de disco?",
+        "a": "Dor na coluna acompanhada de irradiação pelo braço ou perna (ciática), sensação de formigamento, dormência ou perda de força muscular nos membros."
       },
       {
-        "q": "Qual o papel do RPG no tratamento da hérnia de disco?",
-        "a": "O RPG descomprime os espaços intervertebrais ao alongar globalmente as cadeias musculares tensionadas, reduzindo a pressão contínua sobre os discos da coluna."
+        "q": "Toda hérnia de disco identificada na ressonância precisa de cirurgia?",
+        "a": "Não. Estudos científicos comprovam que mais de 90% das hérnias de disco melhoram com tratamento conservador e que o corpo pode reabsorver o fragmento herniado naturalmente."
       }
     ]
   },
   "protrusion-discal": {
     "es": [
       {
-        "q": "¿Cuál es la diferencia entre una protrusión discal y una hernia de disco?",
-        "a": "En la protrusión, las fibras externas del anillo discal se abomban sin romperse del todo; en la hernia, el anillo se fisura y el núcleo pulposo sale. Ambas se benefician de la descompresión kinésica."
+        "q": "¿Cuál es la diferencia biomecánica entre una protrusión discal y una hernia?",
+        "a": "En la protrusión discal las fibras externas del anillo fibroso se deforman hacia afuera pero permanecen continuas; en la hernia, el anillo se rompe y el núcleo pulposo se extruye."
       },
       {
-        "q": "¿Puedo seguir haciendo actividad física si tengo una protrusión?",
-        "a": "Sí, pero adaptando la carga. En Kinésica te enseñamos qué ejercicios fortalecen la faja abdominal y lumbar sin comprimir los discos, permitiéndote entrenar de forma segura."
+        "q": "¿Qué posturas o movimientos suelen sobrecargar una protrusión discal?",
+        "a": "La flexión repetida del tronco hacia adelante al levantar peso con las piernas rectas y sentarse encorvado durante horas aumentan la presión que empuja el disco hacia atrás."
       }
     ],
     "en": [
       {
-        "q": "What is the difference between a disc bulge (protrusion) and a herniation?",
-        "a": "In a protrusion, the outer annular fibers bulge without complete tearing; in a herniation, the ring ruptures and inner material extrudes. Both respond well to spinal decompression therapy."
+        "q": "What is the biomechanical difference between a disc protrusion and a herniation?",
+        "a": "In a disc protrusion (bulge), outer annular fibers are stretched and deform outward intact; in a herniation, the fibrous ring tears and inner disc material extrudes."
       },
       {
-        "q": "Can I continue exercising with a disc protrusion?",
-        "a": "Yes, with appropriate exercise modifications. We guide you on core stabilization and functional movement patterns that protect your spine while maintaining active fitness."
+        "q": "Which postures or movements put the greatest strain on a bulging disc?",
+        "a": "Bending forward while lifting heavy objects with straight knees and prolonged slouched sitting dramatically elevate intradiscal pressure, pushing the disc backward."
       }
     ],
     "fr": [
       {
-        "q": "Quelle est la différence entre une protrusion discale et une hernie discale ?",
-        "a": "Dans la protrusion, le disque se déforme et fait saillie sans rupture complète de l'anneau fibreux. Dans la hernie, l'anneau est fissuré. Les deux bénéficient d'une décompression manuelle ciblée."
+        "q": "Quelle est la différence biomécanique entre une protrusion et une hernie discale ?",
+        "a": "Dans la protrusion, l'anneau fibreux est déformé vers l'extérieur mais intact ; dans la hernie, l'anneau se déchire et le noyau gélatineux s'extériorise."
       },
       {
-        "q": "Peut-on continuer le sport avec une protrusion discale ?",
-        "a": "Oui, en adaptant les mouvements. Nous vous apprenons à gainer et stabiliser votre colonne pour bouger et vous entraîner en toute sécurité sans comprimer le disque."
+        "q": "Quelles postures aggravent la pression sur une protrusion discale ?",
+        "a": "Soulever des charges le dos rond jambes tendues et rester assis avachi pendant des heures augmentent la pression qui pousse le disque vers l'arrière."
       }
     ],
     "pt": [
       {
-        "q": "Qual a diferença entre abaulamento (protusão) e hérnia de disco?",
-        "a": "Na protusão, o disco se deforma e projeta sem rompimento total do anel fibroso; na hérnia há extravasamento do núcleo. Ambas melhoram significativamente com fisioterapia descompressiva."
+        "q": "Qual a diferença mecânica entre protusão discal e hérnia de disco?",
+        "a": "Na protusão (abaulamento) o anel fibroso se deforma para fora mas permanece contínuo; na hérnia, o anel rompe e o núcleo interno escapa para o canal."
       },
       {
-        "q": "Posso continuar praticando esportes se tiver protusão discal?",
-        "a": "Sim, adaptando as cargas. Na Kinésica orientamos exercícios que fortalecem o core e protegem a coluna, permitindo uma rotina ativa e segura."
+        "q": "Que posturas ou movimentos mais sobrecarregam uma protusão discal?",
+        "a": "Dobrar o tronco para a frente com as pernas esticadas para pegar peso e sentar-se curvado aumentam a pressão interna que empurra o disco para trás."
       }
     ]
   },
   "hipercifosis": {
     "es": [
       {
-        "q": "¿Se puede corregir o mejorar la postura encorvada en la adultez?",
-        "a": "Sí. Aunque la estructura ósea esté madura, la componente postural y miofascial responde muy bien. El tratamiento flexibiliza la musculatura anterior y activa los erectores dorsales."
+        "q": "¿Qué factores originan la postura encorvada o hipercifosis dorsal?",
+        "a": "Suele originarse en el acortamiento de las cadenas musculares anteriores (pectorales e inspiratorios), debilidad de los erectores espinales dorsales y hábitos posturales sostenidos."
       },
       {
-        "q": "¿Cómo trabaja el RPG sobre la espalda redondeada o joroba?",
-        "a": "El RPG utiliza posturas de elongación activa que abren el tórax, estiran la cadena inspiratoria y corrigen la tendencia de hombros y cabeza hacia adelante."
+        "q": "¿Qué consecuencias tiene la curvatura dorsal aumentada sobre la respiración y el cuello?",
+        "a": "Reduce el volumen de expansión de las costillas y obliga a la columna cervical a hiperextenderse para mantener la mirada al frente, provocando rigidez y dolores de cabeza frecuentes."
       }
     ],
     "en": [
       {
-        "q": "Can hyperkyphosis (rounded upper back) be improved in adulthood?",
-        "a": "Yes. Even after bone maturity, the postural and myofascial components respond remarkably well. Treatment restores chest expansion and strengthens dorsal spinal extensors."
+        "q": "What causes an exaggerated rounded upper back (hyperkyphosis)?",
+        "a": "It typically results from tightness in anterior muscle chains (pectoralis and inspiratory muscles), weakness in thoracic extensors, and habitual prolonged forward-slumped sitting."
       },
       {
-        "q": "How does RPG correct rounded shoulders and thoracic kyphosis?",
-        "a": "Global Postural Re-education (RPG) uses active stretching postures that open the rib cage, lengthen tight anterior myofascial chains, and reposition the head and shoulders."
+        "q": "How does thoracic hyperkyphosis impact breathing mechanics and the neck?",
+        "a": "It restricts rib cage expansion, lowering lung capacity, and forces the cervical spine into chronic hyperextension to keep the head level, triggering neck strain and headaches."
       }
     ],
     "fr": [
       {
-        "q": "Peut-on améliorer une posture voûtée (hypercyphose) à l'âge adulte ?",
-        "a": "Oui. Bien que les vertèbres soient formées, la composante musculaire et posturale est très adaptable. Le travail manuel redresse le haut du dos et libère la cage thoracique."
+        "q": "Qu'est-ce qui cause le dos voûté ou l'hypercyphose dorsale ?",
+        "a": "Elle provient du raccourcissement des chaînes musculaires antérieures (pectoraux), de la faiblesse des érecteurs du dos et de mauvaises postures de travail prolongées."
       },
       {
-        "q": "Comment la méthode RPG agit-elle sur le dos rond ?",
-        "a": "La RPG utilise des postures actives d'étirement global qui ouvrent la poitrine, allongent les chaînes musculaires antérieures et corrigent l'enroulement des épaules."
+        "q": "Quel impact l'hypercyphose a-t-elle sur la respiration et les cervicales ?",
+        "a": "Elle réduit l'amplitude de la cage thoracique et oblige le cou à se cambrer exagérément pour garder le regard droit, provoquant des tensions cervicales et maux de tête."
       }
     ],
     "pt": [
       {
-        "q": "É possível melhorar a postura corcunda (hipercifose) na idade adulta?",
-        "a": "Sim. Mesmo após a maturidade óssea, os componentes musculares e fasciais respondem muito bem ao tratamento, aliviando a sobrecarga e melhorando a estética postural."
+        "q": "O que causa a postura corcunda ou hipercifose dorsal?",
+        "a": "Costuma decorrer do encurtamento das cadeias musculares anteriores (peitorais), fraqueza dos músculos extensores das costas e posturas mantidas no dia a dia."
       },
       {
-        "q": "Como o RPG atua nas costas arredondadas?",
-        "a": "O RPG aplica posturas ativas que abrem a caixa torácica, alongam as cadeias anteriores encurtadas e reposicionam a cabeça e os ombros alinhados."
+        "q": "Que consequências o aumento da curvatura dorsal traz para a respiração e o pescoço?",
+        "a": "Limita a expansão das costelas e força a coluna cervical a uma hiperextensão contínua para olhar para a frente, provocando dores no pescoço e na cabeça."
       }
     ]
   },
   "hiperlordosis": {
     "es": [
       {
-        "q": "¿Tener una curva lumbar muy marcada siempre provoca dolor?",
-        "a": "No siempre, pero suele predisponer a sobrecarga de las carillas articulares posteriores y fatiga de los músculos paravertebrales, generando dolor al estar mucho tiempo de pie."
+        "q": "¿Por qué se produce una curva lumbar excesivamente marcada (hiperlordosis)?",
+        "a": "Suele deberse a una báscula anterior de la pelvis (anteversión) provocada por acortamiento del psoas y cuádriceps, junto con falta de tono en glúteos y faja abdominal."
       },
       {
-        "q": "¿Cómo ayuda la kinesiología a balancear la pelvis y la zona lumbar?",
-        "a": "Trabajamos flexibilizando el psoas y los cuádriceps que traccionan la pelvis hacia adelante (anteversión), y activamos el abdomen y los glúteos para recentrar la postura."
+        "q": "¿Qué molestias y sobrecargas articulares genera la hiperlordosis?",
+        "a": "Aumenta la compresión en las carillas articulares posteriores lumbares (síndrome facetario), favorece la inflamación por choque óseo y provoca fatiga muscular en la zona baja de la espalda."
       }
     ],
     "en": [
       {
-        "q": "Does an exaggerated low back curve (hyperlordosis) always cause pain?",
-        "a": "Not always, but it frequently predisposes individuals to posterior facet joint overload and lumbar muscle fatigue, especially during prolonged standing."
+        "q": "Why does an exaggerated low back curve (hyperlordosis) develop?",
+        "a": "It is often driven by an anterior pelvic tilt caused by tight hip flexors (psoas and rectus femoris) combined with weak abdominals and underactive gluteal muscles."
       },
       {
-        "q": "How does physical therapy balance the pelvis and lumbar spine?",
-        "a": "We release tight hip flexors (psoas and rectus femoris) that pull the pelvis into anterior tilt, while strengthening the abdominal and gluteal muscles to restore neutral alignment."
+        "q": "What joint stresses and discomforts are caused by lumbar hyperlordosis?",
+        "a": "It excessively compresses the posterior lumbar facet joints, leads to bone-on-bone impingement, and creates constant muscular fatigue in the lower back paravertebrals."
       }
     ],
     "fr": [
       {
-        "q": "Une cambrure lombaire excessive (hyperlordose) est-elle forcément douloureuse ?",
-        "a": "Pas toujours, mais elle surcharge les facettes articulaires postérieures et fatigue les muscles du bas du dos, provoquant souvent des douleurs en position debout prolongée."
+        "q": "Pourquoi développe-t-on une cambrure lombaire excessive (hyperlordose) ?",
+        "a": "Elle est liée à une bascule du bassin vers l'avant (antéversion) causée par la rétraction du psoas et des quadriceps, couplée à un manque de tonus abdominal et fessier."
       },
       {
-        "q": "Comment la kinésithérapie rééquilibre-t-elle le bassin et les lombaires ?",
-        "a": "Nous étirons le psoas et les fléchisseurs de hanche qui basculent le bassin vers l'avant, et renforçons les abdominaux profonds et les fessiers pour stabiliser la zone."
+        "q": "Quelles contraintes articulaires l'hyperlordose engendre-t-elle ?",
+        "a": "Elle comprime fortement les facettes articulaires lombaires postérieures, accélère l'usure prématurée et entretient une fatigue musculaire douloureuse dans le bas du dos."
       }
     ],
     "pt": [
       {
-        "q": "A curvatura lombar aumentada (hiperlordose) sempre causa dor?",
-        "a": "Não necessariamente, mas sobrecarrega as articulações posteriores da coluna e fadiga a musculatura lombar, gerando dor ao ficar em pé por muito tempo."
+        "q": "Por que se desenvolve uma curvatura lombar muito acentuada (hiperlordose)?",
+        "a": "Decorre frequentemente da inclinação da bacia para a frente (anteversão) pelo encurtamento do psoas, combinada à fraqueza dos músculos abdominais e glúteos."
       },
       {
-        "q": "Como a fisioterapia equilibra a pelve e a coluna lombar?",
-        "a": "Flexibilizamos os flexores de quadril (como o psoas) que puxam a bacia para a frente e fortalecemos o abdômen e os glúteos para restaurar a postura neutra."
+        "q": "Que incômodos e sobrecargas a hiperlordose gera na coluna?",
+        "a": "Aumenta a compressão nas articulações posteriores da coluna (síndrome facetária) e gera fadiga muscular contínua na região lombar ao ficar em pé."
       }
     ]
   },
   "dorso-plano": {
     "es": [
       {
-        "q": "¿Qué problemas puede generar la pérdida de la curvatura dorsal fisiológica?",
-        "a": "El dorso plano reduce la capacidad natural de la columna para amortiguar impactos verticales, aumentando la rigidez torácica, la tensión interescapular y la dificultad respiratoria."
+        "q": "¿En qué consiste la alteración postural de dorso plano?",
+        "a": "Es la disminución o pérdida de la curva cifótica normal en la columna dorsal, haciendo que la espalda se vea rígida y excesivamente recta en la vista de perfil."
       },
       {
-        "q": "¿Qué técnicas kinésicas se emplean para devolver movilidad a la espalda plana?",
-        "a": "Se combinan movilizaciones osteopáticas de vértebras y costillas con RPG y ejercicios miofasciales que flexibilizan los ligamentos vertebrales y mejoran la expansión pulmonar."
+        "q": "¿Por qué la espalda plana se fatiga más rápido ante esfuerzos verticales?",
+        "a": "Al perder la curvatura fisiológica en resorte, la columna pierde gran parte de su amortiguación natural, transmitiendo el impacto vertical directamente a discos y articulaciones."
       }
     ],
     "en": [
       {
-        "q": "What complications arise from a loss of normal thoracic curvature (flat back)?",
-        "a": "A flat back significantly diminishes the spine's shock-absorbing capacity, creating thoracic stiffness, interscapular muscular strain, and restricted rib cage breathing mechanics."
+        "q": "What is flat back postural alteration?",
+        "a": "It is the flattening or complete loss of the natural thoracic kyphotic curvature, causing the mid-back to appear unnaturally straight, stiff, and rigid on profile."
       },
       {
-        "q": "Which manual techniques help restore motion to a flat thoracic spine?",
-        "a": "We combine gentle osteopathic rib and vertebral mobilizations with RPG and myofascial release to soften spinal tension and enhance chest mobility."
+        "q": "Why does a flat thoracic spine fatigue faster under gravitational loads?",
+        "a": "Without natural shock-absorbing curves, the spine loses up to 90% of its vertical dampening capacity, transferring compression directly to discs and facet joints."
       }
     ],
     "fr": [
       {
-        "q": "Quelles conséquences entraîne un dos plat ?",
-        "a": "Le dos plat réduit la capacité naturelle d'amortissement de la colonne vertébrale, augmentant la raideur thoracique, les contractures entre les omoplates et limitant la respiration."
+        "q": "En quoi consiste l'anomalie posturale du dos plat ?",
+        "a": "C'est l'effacement de la courbure cyphotique normale du thorax, donnant à la colonne un aspect raide, droit et dépourvu de sa souplesse naturelle de profil."
       },
       {
-        "q": "Quelles techniques permettent de redonner de la mobilité au dos plat ?",
-        "a": "Nous associons mobilisations ostéopathiques costovertébrales et RPG pour assouplir les chaînes postérieures et stimuler une meilleure expansion thoracique."
+        "q": "Pourquoi le dos plat se fatigue-t-il plus vite lors des efforts debout ?",
+        "a": "En perdant son élasticité en ressort naturel, la colonne n'amortit plus les impacts verticaux, reportant toute la pression sur les disques et provoquant une fatigue précoce."
       }
     ],
     "pt": [
       {
-        "q": "Que problemas a perda da curvatura dorsal natural (dorso plano) pode trazer?",
-        "a": "O dorso plano reduz a capacidade de absorção de impactos da coluna, gerando rigidez torácica, tensão contínua entre as escápulas e restrição na expansão respiratória."
+        "q": "O que caracteriza a alteração postural de dorso plano?",
+        "a": "É a redução ou perda da curvatura dorsal natural (cifose), fazendo com que as costas pareçam retificadas, rígidas e sem amortecimento quando vistas de lado."
       },
       {
-        "q": "Como a fisioterapia trata o dorso plano?",
-        "a": "Combinamos mobilizações articulares osteopáticas nas vértebras e costelas com RPG para devolver maleabilidade e melhorar a mecânica do tronco."
+        "q": "Por que as costas planas cansam mais rápido em atividades em pé?",
+        "a": "Sem as curvaturas fisiológicas que funcionam como mola, a coluna perde capacidade de absorver impactos, transmitindo o peso diretamente para as articulações."
       }
     ]
   },
   "genu-valgo": {
     "es": [
       {
-        "q": "¿El genu valgo (rodillas hacia adentro en 'X') desgasta las articulaciones?",
-        "a": "Sí. Al estar las rodillas desviadas hacia la línea media, se sobrecarga el compartimento externo y se incrementa el roce en la rótula, predisponiendo a dolor y artrosis precoz."
+        "q": "¿Cuáles son las causas biomecánicas del genu valgo (rodillas juntas o en 'X')?",
+        "a": "Puede tener origen constitucional genético o derivar de debilidad en glúteos y rotadores externos de cadera, asociada a una caída del arco interno del pie."
       },
       {
-        "q": "¿Cómo se trata el valgo de rodilla en adolescentes y adultos?",
-        "a": "Se fortalece el control rotador y abductor de la cadera (glúteo medio), se mejora el apoyo plantar con terapia manual y ejercicios propioceptivos de alineación articular."
+        "q": "¿Qué articulaciones vecinas sufren más por el valgo de rodilla?",
+        "a": "Los pies (que colapsan en pronación), la articulación femororrotuliana (por desviación externa de la rótula) y el menisco externo de la rodilla por sobrecarga compresiva."
       }
     ],
     "en": [
       {
-        "q": "Does genu valgum (knock-knees) accelerate joint wear and tear?",
-        "a": "Yes. An inward deviation of the knees increases compressive stress on the lateral compartment and creates abnormal patellar tracking, potentially causing premature cartilage wear."
+        "q": "What are the biomechanical causes of knock-knees (genu valgum)?",
+        "a": "It can be developmental or arise from weakness in the hip abductors and external rotators, compounded by excessive inward foot pronation."
       },
       {
-        "q": "How is genu valgum managed through physical therapy?",
-        "a": "Treatment focuses on strengthening hip external rotators and abductors (gluteus medius), addressing foot overpronation, and retraining lower limb kinetic alignment."
+        "q": "Which neighboring joints suffer most from knee valgus alignment?",
+        "a": "The feet (forced into pronation), the patellofemoral joint (due to lateral patellar tracking), and the lateral meniscus under elevated compressive loads."
       }
     ],
     "fr": [
       {
-        "q": "Le genu valgum (genoux en X) use-t-il les articulations ?",
-        "a": "Oui. L'alignement vers l'intérieur augmente la pression sur le compartiment fémoro-tibial externe et perturbe la rotule, prédisposant aux douleurs et à l'arthrose précoce."
+        "q": "Quelles sont les causes biomécaniques du genu valgum (genoux en X) ?",
+        "a": "Il peut être morphologique ou découler d'un manque de force des rotateurs de hanche associé à un affaissement de la voûte plantaire."
       },
       {
-        "q": "Comment prend-on en charge le genu valgum en kinésithérapie ?",
-        "a": "Nous renforçons les stabilisateurs de hanche (moyen fessier), rééquilibrons l'appui du pied et rééduquons l'axe du membre inférieur par des exercices proprioceptifs."
+        "q": "Quelles articulations souffrent le plus du genu valgum ?",
+        "a": "Les pieds (en pronation forcée), la rotule (qui frotte sur le compartiment externe) et le ménisque latéral comprimé en permanence."
       }
     ],
     "pt": [
       {
-        "q": "O joelho valgo (joelhos para dentro em 'X') causa desgaste articular?",
-        "a": "Sim. O desvio para dentro concentra sobrecarga no compartimento externo do joelho e altera o deslizamento da patela, podendo acelerar o desgaste."
+        "q": "Quais são as causas biomecânicas do genu valgo (joelhos em 'X')?",
+        "a": "Pode ser congênito ou decorrer de fraqueza nos músculos estabilizadores do quadril (glúteos), agravada pelo desabamento do arco medial do pé."
       },
       {
-        "q": "Como a fisioterapia atua no genu valgo?",
-        "a": "Fortalecemos os músculos estabilizadores do quadril (glúteo médio), corrigimos o apoio do pé e reeducamos o alinhamento corporal em movimento."
+        "q": "Que outras articulações sofrem com o joelho valgo?",
+        "a": "Os pés (que sofrem pronação excessiva), a patela (que é puxada para fora) e o menisco externo do joelho por excesso de compressão."
       }
     ]
   },
   "genu-varo": {
     "es": [
       {
-        "q": "¿Por qué las rodillas arqueadas hacia afuera (en paréntesis) suelen doler en la cara interna?",
-        "a": "El genu varo concentra la mayor parte del peso corporal en el compartimento interno de la rodilla, desgastando el menisco medial y el cartílago articular."
+        "q": "¿Cómo influye el genu varo (rodillas separadas en paréntesis) en el desgaste articular?",
+        "a": "Desvía el vector de carga hacia el compartimento interno de la rodilla, multiplicando la presión sobre el menisco medial y el cartílago fémoro-tibial interno."
       },
       {
-        "q": "¿Qué abordaje kinésico frena el avance del dolor en genu varo?",
-        "a": "La terapia manual descomprime la articulación, mientras que el RPG y el ejercicio funcional optimizan el eje de carga de cadera a tobillo para distribuir las fuerzas uniformemente."
+        "q": "¿Qué síntomas iniciales suelen advertir las personas con genu varo?",
+        "a": "Dolor sordo en la cara interna de la rodilla tras caminatas prolongadas, sensación de pesadez articular y rigidez al empezar a caminar después del reposo."
       }
     ],
     "en": [
       {
-        "q": "Why do bow-legs (genu varum) cause pain on the inner knee?",
-        "a": "Genu varum directs an excessive proportion of body weight through the medial knee compartment, putting elevated strain on the medial meniscus and joint cartilage."
+        "q": "How does genu varum (bow-legs) accelerate joint wear?",
+        "a": "It shifts the mechanical axis of the lower limb inward, multiplying compressive stresses on the medial meniscus and medial tibial cartilage."
       },
       {
-        "q": "What physical therapy approach prevents progressive joint damage?",
-        "a": "Manual therapy decompresses joint tension, while RPG and functional biomechanical exercises align forces from hip to ankle to balance weight distribution."
+        "q": "What early symptoms do people with bow-legs typically experience?",
+        "a": "A dull ache on the inner border of the knee following long walks, joint stiffness upon standing after rest, and progressive difficulty with impact sports."
       }
     ],
     "fr": [
       {
-        "q": "Pourquoi les jambes arquées (genu varum) font-elles mal à la face interne du genou ?",
-        "a": "Le genu varum concentre le poids du corps sur le compartiment interne, augmentant l'usure du ménisque médial et du cartilage articulaire."
+        "q": "Comment le genu varum (jambes arquées) influence-t-il l'usure articulaire ?",
+        "a": "Il déplace l'axe de charge vers l'intérieur, concentrant la pression sur le ménisque médial et le cartilage fémoro-tibial interne."
       },
       {
-        "q": "Comment la kinésithérapie freine-t-elle les douleurs en cas de genu varum ?",
-        "a": "La thérapie manuelle décomprime l'articulation, tandis que la RPG et le renforcement fonctionnel rééquilibrent l'axe de charge de la hanche à la cheville."
+        "q": "Quels premiers signes ressentent les personnes ayant un genu varum ?",
+        "a": "Une gêne sourde à la face interne du genou après la marche, une sensation de raideur lors de la reprise d'appui et une fatigue articulaire."
       }
     ],
     "pt": [
       {
-        "q": "Por que os joelhos arqueados para fora (genu varo) costumam doer na parte interna?",
-        "a": "O genu varo concentra a carga corporal no compartimento medial do joelho, desgastando o menisco interno e a cartilagem articular ao caminhar."
+        "q": "Como o genu varo (pernas arqueadas em parênteses) acelera o desgaste do joelho?",
+        "a": "Ele desvia a linha de peso para a borda interna da articulação, multiplicando a pressão sobre o menisco medial e a cartilagem femoral interna."
       },
       {
-        "q": "Qual o tratamento fisioterapêutico para o genu varo?",
-        "a": "A terapia manual alivia a compressão articular, enquanto o RPG e exercícios funcionais otimizam a distribuição de peso do quadril ao tornozelo."
+        "q": "Quais os primeiros sintomas percebidos por quem tem genu varo?",
+        "a": "Dor incômoda na parte interna do joelho após caminhar, rigidez ao levantar-se após períodos sentado e sensação de cansaço articular."
       }
     ]
   },
   "pies-planos": {
     "es": [
       {
-        "q": "¿Tener pie plano siempre requiere el uso de plantillas?",
-        "a": "No siempre. En muchos casos, un pie plano flexible responde muy bien al entrenamiento de la musculatura intrínseca del pie, movilización articular y control de la cadena posterior."
+        "q": "¿Cuáles son las causas del pie plano en la edad adulta?",
+        "a": "Puede deberse a laxitud ligamentosa constitucional, sobrepeso, calzado inadecuado o insuficiencia del tendón tibial posterior que sostiene el arco medial."
       },
       {
-        "q": "¿Qué aporta la posturología clínica en los pies planos?",
-        "a": "Evalúa cómo la caída del arco plantar repercute en las rodillas, la pelvis y la columna, permitiendo diseñar un tratamiento postural integral para evitar dolores ascendentes."
+        "q": "¿Qué dolores a distancia puede provocar la caída del arco del pie?",
+        "a": "Al colapsar el apoyo, se genera rotación interna tibial que sobrecarga la rodilla, tensión en la pelvis y descompensaciones lumbares al caminar."
       }
     ],
     "en": [
       {
-        "q": "Do flat feet always require orthotic insoles?",
-        "a": "Not necessarily. Many flexible flat feet improve significantly through targeted strengthening of intrinsic foot muscles, joint mobilizations, and posterior chain retraining."
+        "q": "What causes adult-acquired flat feet?",
+        "a": "It can stem from constitutional ligamentous laxity, excess weight, unsupportive footwear, or dysfunction in the posterior tibial tendon that supports the medial arch."
       },
       {
-        "q": "What does clinical posturology contribute to flat feet management?",
-        "a": "It assesses how the collapsed arch alters biomechanical loads on the knees, pelvis, and lumbar spine, enabling comprehensive postural correction."
+        "q": "What compensatory pains can collapsed foot arches trigger further up the body?",
+        "a": "Arch collapse forces inward tibial rotation, leading to inner knee strain, pelvic torsion, and compensatory low back pain during prolonged walking."
       }
     ],
     "fr": [
       {
-        "q": "Les pieds plats nécessitent-ils toujours des semelles orthopédiques ?",
-        "a": "Pas toujours. Un pied plat flexible réagit très bien au renforcement des muscles intrinsèques du pied, aux mobilisations articulaires et à la rééducation posturale."
+        "q": "Quelles sont les causes des pieds plats à l'âge adulte ?",
+        "a": "Une hyperlaxité ligamentaire, le surpoids, des chaussures inadaptées ou une défaillance du tendon tibial postérieur soutenant l'arche interne du pied."
       },
       {
-        "q": "Qu'apporte la posturologie clinique en cas de pieds plats ?",
-        "a": "Elle analyse les répercussions de l'affaissement de la voûte plantaire sur les genoux, le bassin et le dos, traitant la cause mécanique globale des douleurs."
+        "q": "Quelles douleurs à distance un affaissement de la voûte plantaire peut-il causer ?",
+        "a": "Il entraîne une rotation interne du tibia qui fatigue le genou, déséquilibre le bassin et provoque des tensions lombaires compensatoires."
       }
     ],
     "pt": [
       {
-        "q": "Pé plano sempre exige o uso de palmilhas ortopédicas?",
-        "a": "Nem sempre. Em muitos casos, o pé plano flexível melhora muito com fortalecimento dos músculos da sola do pé, mobilidade do tornozelo e reeducação postural."
+        "q": "Quais as causas do pé plano na fase adulta?",
+        "a": "Pode ocorrer por frouxidão ligamentar, calçados sem suporte, sobrepeso ou insuficiência do tendão tibial posterior que sustenta o arco do pé."
       },
       {
-        "q": "O que a posturologia clínica oferece para quem tem pé plano?",
-        "a": "Avalia como a queda do arco plantar afeta os joelhos, o quadril e a coluna, permitindo um tratamento que evita dores em todo o corpo."
+        "q": "Que dores em outras partes do corpo o pé plano pode provocar?",
+        "a": "A queda do arco gera rotação interna na perna, sobrecarregando o joelho, desalinhando o quadril e causando dores na coluna lombar."
       }
     ]
   },
   "escoliosis": {
     "es": [
       {
-        "q": "¿El método RPG es efectivo para frenar o tratar la escoliosis?",
-        "a": "Sí. El RPG es uno de los métodos de referencia mundial para la escoliosis, ya que trabaja posturas de tracción tridimensional que estiran las concavidades y fortalecen la musculatura correctora."
+        "q": "¿Cuáles son los signos visibles característicos de una escoliosis?",
+        "a": "Asimetría en la altura de los hombros, un omóplato más sobresaliente que el otro, desnivel en la cintura o pelvis y una giba dorsal visible al inclinarse hacia adelante."
       },
       {
-        "q": "¿La escoliosis en personas adultas puede dejar de doler?",
-        "a": "Totalmente. El dolor en la escoliosis adulta suele deberse a sobrecarga asimétrica y fatiga muscular. La terapia manual y el RPG eliminan las tensiones y estabilizan la columna."
+        "q": "¿Por qué la escoliosis en adultos puede comenzar a doler aunque la curva esté estable?",
+        "a": "Porque con los años la fatiga muscular acumulada por el desbalance, la sobrecarga en las articulaciones del lado cóncavo y el desgaste asimétrico de los discos provocan dolor."
       }
     ],
     "en": [
       {
-        "q": "Is the RPG method effective for treating and stabilizing scoliosis?",
-        "a": "Yes. Global Postural Re-education (RPG) is an internationally recognized conservative standard for scoliosis, applying three-dimensional elongation postures to correct asymmetry."
+        "q": "What are the hallmark visible signs of scoliosis?",
+        "a": "Uneven shoulder heights, one shoulder blade protruding more prominently, an asymmetrical waistline or pelvic tilt, and a rib hump when bending forward."
       },
       {
-        "q": "Can scoliosis in adults become completely pain-free?",
-        "a": "Absolutely. Adult scoliosis pain typically stems from asymmetric muscle overload and joint stiffness. Manual therapy and RPG alleviate compensations and bring lasting relief."
+        "q": "Why does adult scoliosis often begin causing pain even when the curve is no longer progressing?",
+        "a": "Because cumulative asymmetric muscle fatigue, facet joint compression on the curve's concavity, and uneven disc loading eventually generate chronic pain."
       }
     ],
     "fr": [
       {
-        "q": "La méthode RPG est-elle efficace pour traiter la scoliose ?",
-        "a": "Oui. La Rééducation Posturale Globale (RPG) est une référence mondiale pour la scoliose, utilisant des postures tridimensionnelles d'étirement pour réaligner les courbures."
+        "q": "Quels sont les signes visibles caractéristiques d'une scoliose ?",
+        "a": "Une asymétrie de hauteur des épaules, une omoplate plus saillante, un pli de taille décalé et une gibbosité dorsale visible en se penchant en avant."
       },
       {
-        "q": "La scoliose de l'adulte peut-elle cesser de faire mal ?",
-        "a": "Absolument. La douleur est souvent due aux tensions musculaires asymétriques. La thérapie manuelle et la RPG soulagent les compressions et stabilisent la colonne."
+        "q": "Pourquoi la scoliose de l'adulte devient-elle douloureuse même si la courbure est stable ?",
+        "a": "Car l'effort musculaire asymétrique prolongé fatigue les tissus, tandis que la pression continue use prématurément les disques et les articulations."
       }
     ],
     "pt": [
       {
-        "q": "O método RPG é eficaz no tratamento da escoliose?",
-        "a": "Sim. O RPG é referência mundial para escoliose por utilizar posturas tridimensionais que alongam as concavidades encurtadas e corrigem as assimetrias posturais."
+        "q": "Quais são os sinais visíveis típicos de uma escoliose?",
+        "a": "Diferença na altura dos ombros, uma escápula mais saltada, desnível na cintura e uma proeminência nas costelas visível ao inclinar o tronco para a frente."
       },
       {
-        "q": "A escoliose em adultos pode parar de doer?",
-        "a": "Com certeza. A dor decorre da sobrecarga muscular e articular assimétrica. A terapia manual e o RPG eliminam as compensações e restauram o conforto."
+        "q": "Por que a escoliose no adulto pode começar a doer mesmo que os graus não aumentem?",
+        "a": "Porque a sobrecarga muscular assimétrica crônica gera fadiga e o desgaste desigual nos discos e articulações da coluna desperta dor mecânica."
       }
     ]
   },
   "epicondilitis-lateral": {
     "es": [
       {
-        "q": "¿Cuánto tiempo tarda en recuperarse el codo de tenista?",
-        "a": "Con un plan estructurado de terapia manual, descompresión cervical y carga excéntrica progresiva de los extensores de muñeca, la mejoría suele notarse entre 4 y 8 semanas."
+        "q": "¿Por qué se produce el codo de tenista y qué tendones afecta?",
+        "a": "Se produce por microtraumatismos repetitivos en la inserción de los tendones extensores de muñeca y dedos en el epicóndilo lateral, provocando una tendinopatía por sobreuso."
       },
       {
-        "q": "¿Por qué muchas veces no se cura solo con reposo y medicación?",
-        "a": "Porque es una tendinopatía por desorganización del colágeno, no una inflamación pasajera. Requiere estímulo de carga guiada y corrección mecánica de hombro y cuello."
+        "q": "¿Por qué duele el codo de tenista al agarrar una taza o girar una llave?",
+        "a": "Porque al cerrar la mano o sujetar objetos, los músculos extensores de la muñeca deben contraerse para estabilizar la articulación, traccionando directamente de la zona irritada."
       }
     ],
     "en": [
       {
-        "q": "How long does it take to recover from tennis elbow (lateral epicondylitis)?",
-        "a": "With a structured plan of manual therapy, cervical assessment, and progressive eccentric loading for wrist extensors, significant relief is usually achieved within 4 to 8 weeks."
+        "q": "What causes tennis elbow and which tendons are affected?",
+        "a": "It is an overuse tendinopathy caused by repetitive micro-strains at the common origin of the wrist and finger extensor tendons on the lateral epicondyle."
       },
       {
-        "q": "Why does tennis elbow often fail to heal with rest and painkillers alone?",
-        "a": "Because it involves tendon degeneration (tendinopathy) rather than simple inflammation. It requires targeted mechanical loading, tendon remodeling, and shoulder-neck alignment."
+        "q": "Why does tennis elbow hurt when lifting a coffee cup or turning a doorknob?",
+        "a": "Because gripping objects requires co-contraction of wrist extensors to stabilize the wrist joint, directly pulling on the irritated epicondylar tendon insertion."
       }
     ],
     "fr": [
       {
-        "q": "Combien de temps faut-il pour guérir d'un tennis elbow ?",
-        "a": "Avec une prise en charge combinant thérapie manuelle, bilan cervical et renforcement excentrique progressif, l'amélioration se ressent généralement en 4 à 8 semaines."
+        "q": "Qu'est-ce qui cause le tennis elbow et quels tendons sont touchés ?",
+        "a": "C'est une tendinopathie de surutilisation due à des microtraumatismes répétés sur les tendons extenseurs du poignet et des doigts insérés sur l'épicondyle externe."
       },
       {
-        "q": "Pourquoi le repos et les anti-inflammatoires ne suffisent-ils souvent pas ?",
-        "a": "Car il s'agit d'une tendinopathie avec désorganisation du tendon et non d'une simple inflammation. Une réadaptation mécanique et du travail en charge guidée sont indispensables."
+        "q": "Pourquoi le tennis elbow fait-il mal en tenant une tasse ou en tournant une clé ?",
+        "a": "Parce que serrer la main nécessite la contraction des extenseurs pour stabiliser le poignet, ce qui tire immédiatement sur l'insertion tendineuse enflammée."
       }
     ],
     "pt": [
       {
-        "q": "Quanto tempo leva para curar o cotovelo de tenista (epicondilite lateral)?",
-        "a": "Com terapia manual, avaliação cervical e exercícios excêntricos progressivos para o punho, a recuperação consolida-se geralmente entre 4 e 8 semanas."
+        "q": "O que provoca o cotovelo de tenista e quais tendões são afetados?",
+        "a": "Surge por microrrupturas e sobrecarga repetitiva na origem dos tendões extensores do punho e dedos no epicôndilo lateral do cotovelo."
       },
       {
-        "q": "Por que a epicondilite nem sempre melhora apenas com repouso?",
-        "a": "Porque é uma tendinopatia estrutural do tendão, não apenas inflamação passageira. Requer estímulo mecânico adequado e correção funcional do ombro e cervical."
+        "q": "Por que o cotovelo de tenista dói ao segurar uma xícara ou girar uma chave?",
+        "a": "Porque ao fechar a mão os músculos extensores precisam se contrair para estabilizar o punho, tracionando diretamente o tendão lesionado."
       }
     ]
   },
   "epicondilitis-medial": {
     "es": [
       {
-        "q": "¿Qué diferencia hay entre el codo de golfista y el codo de tenista?",
-        "a": "El codo de tenista afecta la cara externa y los músculos extensores; el codo de golfista (epicondilitis medial) duele en la cara interna por sobrecarga de los flexores y pronadores de muñeca."
+        "q": "¿Qué diferencia anatómica hay entre la epicondilitis medial y la lateral?",
+        "a": "La epicondilitis lateral afecta la cara externa del codo (extensores); la epicondilitis medial o codo de golfista afecta la cara interna, donde se insertan los músculos flexores y pronadores."
       },
       {
-        "q": "¿Cómo se rehabilita la epicondilitis medial en Kinésica?",
-        "a": "Se realiza liberación fascial en el antebrazo, movilización neural del nervio mediano/cubital y ejercicios de remodelación del tendón combinados con ergonomía laboral y deportiva."
+        "q": "¿Qué actividades cotidianas o deportivas desencadenan el codo de golfista?",
+        "a": "Movimientos repetitivos de flexión de muñeca y torsión del antebrazo, como el lanzamiento, uso intensivo de herramientas manuales, levantamiento de pesas o teclear sin apoyo."
       }
     ],
     "en": [
       {
-        "q": "What is the difference between golfer's elbow and tennis elbow?",
-        "a": "Tennis elbow affects the outer elbow and wrist extensors; golfer's elbow (medial epicondylitis) causes pain on the inner elbow due to repetitive stress on wrist flexors and pronators."
+        "q": "What is the anatomical difference between medial and lateral epicondylitis?",
+        "a": "Lateral epicondylitis affects the outer elbow extensor tendons; medial epicondylitis (golfer's elbow) affects the inner elbow where the wrist flexors and pronators attach."
       },
       {
-        "q": "How is medial epicondylitis rehabilitated at Kinésica?",
-        "a": "We apply forearm myofascial release, neurodynamic mobilization of median/ulnar nerves, and progressive tendon loading alongside ergonomic coaching."
+        "q": "What activities typically trigger golfer's elbow?",
+        "a": "Repetitive wrist flexion and forearm pronation tasks, such as throwing, heavy resistance training, manual tool use (hammers, screwdrivers), or prolonged typing."
       }
     ],
     "fr": [
       {
-        "q": "Quelle est la différence entre le coude du golfeur et le tennis elbow ?",
-        "a": "Le tennis elbow touche la face externe du coude ; le coude du golfeur (épicondylite médiale) fait mal à la face interne par surmenage des fléchisseurs du poignet et des doigts."
+        "q": "Quelle est la différence anatomique entre épicondylite médiale et latérale ?",
+        "a": "L'épicondylite latérale touche les extenseurs sur la face externe ; l'épicondylite médiale (coude du golfeur) touche les fléchisseurs et pronateurs sur la face interne du coude."
       },
       {
-        "q": "Comment rééduque-t-on l'épicondylite médiale chez Kinésica ?",
-        "a": "Nous combinons relâchement myofascial de l'avant-bras, mobilisation neurale et renforcement guidé du tendon pour restaurer la force de préhension sans douleur."
+        "q": "Quelles activités déclenchent le coude du golfeur ?",
+        "a": "Les mouvements répétés de flexion du poignet et de torsion de l'avant-bras : sports de lancer, musculation, bricolage ou utilisation intensive de la souris."
       }
     ],
     "pt": [
       {
-        "q": "Qual a diferença entre cotovelo de golfista e de tenista?",
-        "a": "O cotovelo de tenista afeta a face externa; o cotovelo de golfista (epicondilite medial) dói na parte interna do cotovelo por sobrecarga dos flexores do punho e dedos."
+        "q": "Qual a diferença anatômica entre epicondilite medial e lateral?",
+        "a": "A lateral afeta os extensores na face externa do cotovelo; a medial (cotovelo de golfista) afeta os flexores e pronadores na face interna do cotovelo."
       },
       {
-        "q": "Como é tratada a epicondilite medial na Kinésica?",
-        "a": "Realizamos liberação miofascial no antebraço, mobilização dos nervos mediano e ulnar e exercícios progressivos para restaurar a força sem dor."
+        "q": "Que atividades costumam desencadear a epicondilite medial?",
+        "a": "Movimentos contínuos de flexão do punho e rotação do antebraço, como musculação, esportes com raquete, uso de ferramentas manuais ou digitação sem apoio."
       }
     ]
   },
   "impingement-subacromial": {
     "es": [
       {
-        "q": "¿Por qué se produce el pinzamiento o roce en el hombro al elevar el brazo?",
-        "a": "Se produce por una reducción del espacio subacromial, donde los tendones del manguito rotador y la bursa quedan comprimidos bajo el acromion por falta de rotación hacia arriba de la escápula."
+        "q": "¿Por qué se produce el pinzamiento o roce subacromial en el hombro?",
+        "a": "Ocurre cuando el espacio entre la cabeza del húmero y el acromion se estrecha, comprimiendo los tendones del manguito rotador y la bursa serosa al elevar el brazo."
       },
       {
-        "q": "¿Se puede evitar la cirugía de descompresión subacromial con kinesiología?",
-        "a": "En la gran mayoría de los casos sí. Al mejorar la mecánica escapular, centrar la cabeza humeral y desinflamar los tejidos con terapia manual, el dolor desaparece sin necesidad de operar."
+        "q": "¿En qué rango de movimiento del hombro se manifiesta el llamado 'arco doloroso'?",
+        "a": "El dolor suele ser más intenso entre los 60° y los 120° de elevación lateral del brazo, momento en el que el tendón supraespinoso se desliza justo por debajo del hueso acromial."
       }
     ],
     "en": [
       {
-        "q": "Why does shoulder impingement cause sharp pain when raising the arm?",
-        "a": "It occurs when the subacromial space narrows, pinching the rotator cuff tendons and bursa against the acromion, usually due to poor scapular rhythm and humeral head translation."
+        "q": "Why does subacromial impingement occur in the shoulder?",
+        "a": "It occurs when the space beneath the acromion narrows, compressing the rotator cuff tendons and subacromial bursa as the arm is elevated."
       },
       {
-        "q": "Can shoulder impingement surgery be avoided through physical therapy?",
-        "a": "In the vast majority of cases, yes. Retraining scapular upward rotation, centering the humeral head, and soft-tissue manual therapy reliably resolve symptoms conservatively."
+        "q": "What range of arm motion defines the 'painful arc' in impingement?",
+        "a": "Pain is typically sharpest between 60° and 120° of arm abduction, which is the exact mechanical window where the supraspinatus tendon slides under the acromial arch."
       }
     ],
     "fr": [
       {
-        "q": "Pourquoi le conflit sous-acromial fait-il mal en levant le bras ?",
-        "a": "L'espace sous-acromial se rétrécit, pinçant les tendons de la coiffe des rotateurs et la bourse sous l'acromion à cause d'un mauvais rythme scapulo-huméral."
+        "q": "Pourquoi le conflit sous-acromial se produit-il à l'épaule ?",
+        "a": "Il survient lorsque l'espace sous l'acromion se réduit, pinçant les tendons de la coiffe des rotateurs et la bourse lors de l'élévation du bras."
       },
       {
-        "q": "Peut-on éviter la chirurgie du conflit sous-acromial grâce à la kinésithérapie ?",
-        "a": "Dans la majorité des cas, oui. En rééquilibrant les muscles de l'omoplate et en recentrant la tête de l'humérus, l'espace se libère et la douleur disparaît."
+        "q": "Dans quelle amplitude de mouvement apparaît l'arc douloureux ?",
+        "a": "La douleur est maximale entre 60° et 120° d'élévation latérale du bras, moment précis où le supra-épineux frotte sous la voûte osseuse de l'acromion."
       }
     ],
     "pt": [
       {
-        "q": "Por que o impacto subacromial dói ao levantar o braço?",
-        "a": "Ocorre pela redução do espaço sob o acrômio, comprimindo os tendões do manguito rotador devido ao mau posicionamento da escápula durante o movimento."
+        "q": "Por que ocorre o impacto ou pinçamento subacromial no ombro?",
+        "a": "Acontece quando o espaço sob o acrômio fica reduzido, comprimindo os tendões do manguito rotador e a bursa toda vez que o braço é elevado."
       },
       {
-        "q": "É possível evitar cirurgia de impacto subacromial com fisioterapia?",
-        "a": "Na maioria expressiva dos casos, sim. Ao recentrar a cabeça do úmero e restabelecer o movimento correto da escápula, o atrito cessa sem necessidade de cirurgia."
+        "q": "Em qual ângulo de movimento do ombro ocorre o chamado 'arco doloroso'?",
+        "a": "A dor costuma ser mais intensa entre 60° e 120° de elevação lateral do braço, quando o tendão supraespinhal desliza exatamente sob o osso acromial."
       }
     ]
   },
   "manguito-rotador": {
     "es": [
       {
-        "q": "¿Qué hacer ante una tendinopatía o rotura parcial del manguito rotador?",
-        "a": "El abordaje de primera línea es la rehabilitación kinesiológica. Se reentrena la función de los músculos intactos, se desinflama la zona y se recupera la fuerza para levantar el brazo sin compensaciones."
+        "q": "¿Qué músculos componen el manguito rotador y cuál es su función?",
+        "a": "Está formado por el supraespinoso, infraespinoso, redondo menor y subescapular. Su función primordial es mantener centrada la cabeza del húmero en la cavidad glenoidea durante el movimiento."
       },
       {
-        "q": "¿Cuánto dura la recuperación del manguito rotador en Kinésica?",
-        "a": "Depende de la severidad, pero habitualmente en 6 a 12 semanas de tratamiento individual y ejercicios guiados se restablece la función articular y la fuerza necesaria para la vida diaria."
+        "q": "¿Cuáles son las diferencias entre una tendinitis, una tendinosis y un desgarro del manguito rotador?",
+        "a": "La tendinitis es una inflamación inicial; la tendinosis es una degeneración crónica del tejido colágeno; el desgarro implica una rotura parcial o total de las fibras del tendón."
       }
     ],
     "en": [
       {
-        "q": "What is the best approach for a rotator cuff tendinopathy or partial tear?",
-        "a": "First-line management is targeted physical therapy. We optimize surrounding muscle recruitment, reduce local inflammation, and restore pain-free active overhead motion."
+        "q": "Which muscles form the rotator cuff and what is their role?",
+        "a": "It is composed of the supraspinatus, infraspinatus, teres minor, and subscapularis. Their critical role is to stabilize and center the humeral head in the glenoid socket during all arm movements."
       },
       {
-        "q": "How long does rotator cuff rehabilitation take at Kinésica?",
-        "a": "Depending on severity, patients typically regain joint function, strength, and full daily mobility within 6 to 12 weeks of individualized treatment and home exercises."
+        "q": "What is the difference between rotator cuff tendinitis, tendinosis, and a tear?",
+        "a": "Tendinitis is acute inflammation; tendinosis involves chronic non-inflammatory collagen degeneration; a tear means a partial or full-thickness structural disruption of tendon fibers."
       }
     ],
     "fr": [
       {
-        "q": "Que faire en cas de tendinopathie ou de rupture partielle de la coiffe des rotateurs ?",
-        "a": "La rééducation en kinésithérapie est le traitement de première intention. Elle renforce les muscles sains, soulage la douleur et rétablit l'élévation du bras sans compensation."
+        "q": "Quels muscles composent la coiffe des rotateurs et quel est leur rôle ?",
+        "a": "Elle comprend le supra-épineux, l'infra-épineux, le petit rond et le subscapulaire. Leur mission est de stabiliser et recentrer la tête de l'humérus lors de tous les mouvements du bras."
       },
       {
-        "q": "Combien de temps dure la rééducation de la coiffe des rotateurs ?",
-        "a": "Généralement entre 6 et 12 semaines de séances individuelles et d'exercices ciblés pour retrouver une épaule stable, mobile et indolore au quotidien."
+        "q": "Quelle est la différence entre tendinite, tendinose et rupture de la coiffe ?",
+        "a": "La tendinite est une inflammation aiguë ; la tendinose est une usure dégénérative du collagène ; la rupture correspond à une déchirure partielle ou complète du tendon."
       }
     ],
     "pt": [
       {
-        "q": "Como tratar uma lesão ou tendinopatia do manguito rotador?",
-        "a": "A fisioterapia especializada é a indicação prioritária. Fortalecemos os músculos estabilizadores, aliviamos a dor e recuperamos o movimento sem sobrecarga."
+        "q": "Quais músculos formam o manguito rotador e qual sua função no ombro?",
+        "a": "É composto por supraespinhal, infraespinhal, redondo menor e subescapular. Sua função principal é manter a cabeça do úmero centralizada e estável na articulação."
       },
       {
-        "q": "Quanto tempo dura a recuperação do manguito rotador na Kinésica?",
-        "a": "Normalmente entre 6 e 12 semanas de atendimento personalizado e exercícios terapêuticos para retomar a mobilidade e as forças completas do ombro."
+        "q": "Qual a diferença entre tendinite, tendinose e ruptura do manguito rotador?",
+        "a": "Tendinite é inflamação inicial; tendinose é degeneração do colágeno por sobrecarga contínua; ruptura é a perda de continuidade parcial ou total das fibras tendíneas."
       }
     ]
   },
   "radiculopatia": {
     "es": [
       {
-        "q": "¿Cuáles son los síntomas característicos de una radiculopatía?",
-        "a": "Dolor punzante o quemante que sigue el trayecto de una raíz nerviosa hacia el brazo o la pierna, acompañado con frecuencia de hormigueo, adormecimiento o pérdida de fuerza."
+        "q": "¿Qué es una radiculopatía y cómo se diferencia de un dolor muscular común?",
+        "a": "Es la irritación o compresión de una raíz nerviosa al salir de la columna. A diferencia del dolor muscular localizado, la radiculopatía viaja en un dermatoma específico con ardor u hormigueo."
       },
       {
-        "q": "¿Cómo actúa la neurodinamia sobre la raíz nerviosa comprimida?",
-        "a": "Mediante tensiones y deslizamientos graduados, restaura la perfusión sanguínea y la movilidad intraneural, disminuyendo la hipersensibilidad del nervio sin provocar dolor."
+        "q": "¿Qué signos de alarma neurológicos requieren consulta médica urgente en una radiculopatía?",
+        "a": "La pérdida progresiva de fuerza motora (como dificultad para levantar la punta del pie o sostener objetos), anestesia en 'silla de montar' o alteraciones en el control de esfínteres."
       }
     ],
     "en": [
       {
-        "q": "What are the hallmark symptoms of cervical or lumbar radiculopathy?",
-        "a": "Sharp, shooting, or burning pain traveling along a specific nerve pathway down the arm or leg, frequently accompanied by numbness, pins-and-needles, or muscle weakness."
+        "q": "What is a radiculopathy and how does it differ from ordinary muscle soreness?",
+        "a": "It is the compression or chemical irritation of a spinal nerve root. Unlike localized muscle ache, radiculopathy follows a specific dermatome, causing sharp shooting pain and paresthesia."
       },
       {
-        "q": "How does neurodynamics help a compressed nerve root?",
-        "a": "Through gentle neural gliding and mobilization, it restores intraneural blood flow, reduces nerve hypoxia, and desensitizes irritated nerve roots without triggering pain."
+        "q": "What neurological red flag symptoms require immediate medical attention?",
+        "a": "Rapidly progressive muscle weakness (such as foot drop or dropped objects), saddle anesthesia (numbness in the groin/perineum), or changes in bowel or bladder function."
       }
     ],
     "fr": [
       {
-        "q": "Quels sont les symptômes typiques d'une radiculopathie ?",
-        "a": "Une douleur vive qui descend le long du trajet d'une racine nerveuse vers le bras ou la jambe, souvent accompagnée d'engourdissements, de picotements ou de perte de force."
+        "q": "Qu'est-ce qu'une radiculopathie et comment la distinguer d'une douleur musculaire ?",
+        "a": "C'est l'irritation d'une racine nerveuse à sa sortie de la colonne. Contrairement à une courbature, elle suit un trajet précis avec décharges électriques, brûlures et engourdissements."
       },
       {
-        "q": "Comment la neurodynamique agit-elle sur la racine comprimée ?",
-        "a": "Par des glissements doux et progressifs du nerf, elle réactive la vascularisation et réduit l'hypersensibilité nerveuse sans provoquer de douleur."
+        "q": "Quels signes d'alarme neurologiques imposent une consultation urgente ?",
+        "a": "Une perte de force rapide (pied qui bute au sol, lâchage d'objets), une perte de sensibilité au niveau du périnée ou des troubles sphinctériens."
       }
     ],
     "pt": [
       {
-        "q": "Quais os sintomas típicos de uma radiculopatia cervical ou lombar?",
-        "a": "Dor em pontada ou queimação que desce pelo trajeto do nervo até o braço ou a perna, frequentemente acompanhada de formigamento, dormência ou perda de força."
+        "q": "O que é uma radiculopatia e como se diferencia de uma dor muscular comum?",
+        "a": "É a compressão ou inflamação de uma raiz nervosa ao sair da coluna. Diferente de uma dor muscular localizada, ela percorre um trajeto específico com queimação ou choques."
       },
       {
-        "q": "Como a neurodinâmica atua no nervo comprimido?",
-        "a": "Através de deslizamentos neurais suaves, restaura a oxigenação e a mobilidade do nervo, reduzindo a hipersensibilidade sem gerar desconforto."
+        "q": "Quais sinais de alarme neurológicos exigem avaliação médica urgente?",
+        "a": "Perda progressiva de força (como dificuldade para levantar a ponta do pé ou segurar objetos), dormência na região íntima ou alteração no controle da bexiga e intestino."
       }
     ]
   },
   "meniscopatia": {
     "es": [
       {
-        "q": "¿Una lesión meniscal siempre requiere operación de rodilla?",
-        "a": "No. En lesiones degenerativas o pequeñas roturas meniscales, el tratamiento kinésico conservador muestra resultados a largo plazo equivalentes o superiores a la cirugía artroscópica."
+        "q": "¿Qué diferencias existen entre una lesión de menisco traumática y una degenerativa?",
+        "a": "La traumática surge por un giro brusco de la rodilla en deportistas; la degenerativa ocurre por desgaste progresivo del tejido fibrocartilaginoso en personas de mediana o avanzada edad sin golpe previo."
       },
       {
-        "q": "¿En qué consiste la rehabilitación de un menisco en Kinésica?",
-        "a": "Se enfoca en drenar la hinchazón articular, descompresión manual femorotibial y fortalecimiento de cuádriceps, isquiotibiales y cadera para absorber las cargas de la marcha."
+        "q": "¿Qué síntomas sugieren una rotura o daño en el menisco?",
+        "a": "Dolor localizado en la interlínea de la rodilla al agacharse o girar, sensación de resalto o chasquido articular y episodios de hinchazón tras actividades de impacto."
       }
     ],
     "en": [
       {
-        "q": "Does a meniscus tear always require knee surgery?",
-        "a": "No. For degenerative tears and stable lesions, conservative physical therapy produces long-term clinical outcomes comparable or superior to arthroscopic surgery."
+        "q": "What is the difference between a traumatic and a degenerative meniscus tear?",
+        "a": "Traumatic tears occur from sudden twisting sports injuries; degenerative tears result from natural wear and age-related tissue dehydration without any obvious single trauma."
       },
       {
-        "q": "What does meniscus rehabilitation at Kinésica entail?",
-        "a": "It focuses on reducing joint swelling, manual femorotibial decompression, and targeted strengthening of the quadriceps, hamstrings, and hip stabilizers to absorb impact."
+        "q": "What symptoms suggest a possible meniscus tear in the knee?",
+        "a": "Joint-line pain aggravated by squatting or twisting, sensations of clicking or catching, and recurrent swelling following prolonged weight-bearing."
       }
     ],
     "fr": [
       {
-        "q": "Une lésion du ménisque nécessite-t-elle toujours une opération ?",
-        "a": "Non. Pour les lésions dégénératives, la rééducation en kinésithérapie offre d'aussi bons résultats à long terme que l'arthroscopie, sans les risques chirurgicaux."
+        "q": "Quelle est la différence entre une déchirure méniscale traumatique et dégénérative ?",
+        "a": "La lésion traumatique survient lors d'une torsion brutale chez le sportif ; la lésion dégénérative découle de l'usure naturelle du fibrocartilage au fil des années sans choc précis."
       },
       {
-        "q": "En quoi consiste la rééducation méniscale chez Kinésica ?",
-        "a": "Nous diminuons l'épanchement articulaire, décomprimons le genou manuellement et renforçons les cuisses et les fessiers pour absorber les chocs de la marche."
+        "q": "Quels symptômes révèlent une lésion du ménisque ?",
+        "a": "Une douleur précise sur le côté du genou en s'accroupissant ou en pivotant, des claquements articulaires et des gonflements à l'effort."
       }
     ],
     "pt": [
       {
-        "q": "Lesão no menisco sempre exige cirurgia no joelho?",
-        "a": "Não. Em lesões degenerativas ou estáveis, a fisioterapia conservadora apresenta resultados a longo prazo tão bons ou melhores que a cirurgia artroscópica."
+        "q": "Qual a diferença entre uma lesão meniscal traumática e uma degenerativa?",
+        "a": "A traumática ocorre por torção repentina no esporte; a degenerativa resulta do desgaste natural do fibrocartilagem ao longo dos anos, sem necessidade de queda ou impacto."
       },
       {
-        "q": "Como é a reabilitação de menisco na Kinésica?",
-        "a": "Trabalhamos na drenagem do inchaço, descompressão articular com terapia manual e fortalecimento muscular da coxa e quadril para absorver os impactos."
+        "q": "Quais sintomas indicam uma possível lesão no menisco?",
+        "a": "Dor na linha da articulação ao agachar ou girar o corpo, sensação de estalo ou travamento leve e episódios de inchaço após caminhadas."
       }
     ]
   },
   "fascitis-plantar": {
     "es": [
       {
-        "q": "¿Por qué la fascitis plantar suele volverse crónica y rebelde al reposo?",
-        "a": "Porque no es una inflamación aguda sino una sobretensión sostenida de la fascia con rigidez del tendón de Aquiles y la cadena posterior, que no se repara solo descansando."
+        "q": "¿Qué es la fascia plantar y cuál es su función anatómica?",
+        "a": "Es una banda gruesa de tejido conectivo fibroso que conecta el talón con la base de los dedos, funcionando como un tirante elástico que sostiene el arco plantar y amortigua cada paso."
       },
       {
-        "q": "¿Qué tratamiento kinésico es más efectivo para curar la fascitis plantar?",
-        "a": "La combinación de terapia manual descontracturante en pantorrilla y pie, estiramientos globales con RPG y un protocolo de carga progresiva para regenerar el tejido fascial."
+        "q": "¿Qué factores de riesgo predisponen a sufrir fascitis plantar?",
+        "a": "El uso de calzado sin soporte adecuado, el sobrepeso, permanecer muchas horas de pie en pisos rígidos, el acortamiento del tendón de Aquiles y cambios bruscos en el entrenamiento."
       }
     ],
     "en": [
       {
-        "q": "Why does plantar fasciitis frequently become chronic and resistant to rest?",
-        "a": "Because it is a degenerative overload condition (fasciopathy) tied to Achilles tendon stiffness and posterior chain tightness, which rest alone cannot remodel."
+        "q": "What is the plantar fascia and what is its biomechanical function?",
+        "a": "It is a thick fibrous band of connective tissue running from the heel bone to the base of the toes, serving as a dynamic shock-absorbing bowstring that supports the foot arch."
       },
       {
-        "q": "What physical therapy techniques are most effective for plantar fasciitis?",
-        "a": "A combination of deep manual therapy on calf and plantar tissues, global chain lengthening with RPG, and progressive loading exercises to rebuild tissue capacity."
+        "q": "What primary risk factors predispose individuals to plantar fasciitis?",
+        "a": "Unsupportive flat footwear, excess body weight, prolonged standing on hard surfaces, tight calf and Achilles tendons, and sudden spikes in running volume."
       }
     ],
     "fr": [
       {
-        "q": "Pourquoi la fasciite plantaire devient-elle souvent chronique ?",
-        "a": "Parce qu'il s'agit d'une surcharge mécanique continue liée à la raideur du tendon d'Achille et de la chaîne postérieure, qui ne se résout pas simplement par le repos."
+        "q": "Qu'est-ce que l'aponévrose plantaire et quel est son rôle biomécanique ?",
+        "a": "C'est une membrane fibreuse épaisse reliant le talon aux orteils, agissant comme un élastique amortisseur pour soutenir la voûte du pied lors de la marche."
       },
       {
-        "q": "Quelles techniques de kinésithérapie guérissent l'aponévrosite plantaire ?",
-        "a": "Le relâchement manuel du mollet et du pied, les étirements globaux en RPG et des exercices de mise en charge progressive pour stimuler la guérison du fascia."
+        "q": "Quels sont les facteurs de risque favorisant la fasciite plantaire ?",
+        "a": "Le port de chaussures plates sans soutien, le surpoids, le piétinement prolongé sur sol dur, le manque de souplesse du mollet et les augmentations brutales d'entraînement."
       }
     ],
     "pt": [
       {
-        "q": "Por que a fascite plantar costuma se tornar crônica com facilidade?",
-        "a": "Porque se trata de uma sobrecarga mecânica contínua com encurtamento do tendão de Aquiles e da panturrilha, que o repouso isolado não resolve."
+        "q": "O que é a fáscia plantar e qual sua função biomecânica?",
+        "a": "É uma faixa fibrosa e resistente que liga o calcanhar aos dedos do pé, funcionando como um amortecedor elástico que mantém a curvatura do arco plantar."
       },
       {
-        "q": "Qual o tratamento fisioterapêutico ideal para fascite plantar?",
-        "a": "Terapia manual na musculatura da perna e pé, alongamento global com RPG e exercícios graduais de carga para regenerar o tecido da fáscia."
+        "q": "Quais fatores de risco predispõem à fascite plantar?",
+        "a": "Calçados sem amortecimento, sobrepeso, ficar em pé por longos períodos em piso duro, panturrilha encurtada e aumento súbito na intensidade de exercícios."
       }
     ]
   },
   "cervicalgia": {
     "es": [
       {
-        "q": "¿Qué causa el dolor y la rigidez persistente en el cuello?",
-        "a": "Se asocia a sobrecarga postural frente a pantallas, falta de movilidad en vértebras cervicales y dorsales, estrés y bruxismo que tensionan trapecios y elevadores de la escápula."
+        "q": "¿Qué factores mecánicos causan la cervicalgia o dolor de cuello recurrente?",
+        "a": "La sobrecarga muscular en trapecios y elevadores de la escápula, la rigidez en vértebras cervicales y dorsales, y el mantenimiento prolongado de la cabeza adelantada frente a pantallas."
       },
       {
-        "q": "¿Cómo ayuda la osteopatía y el RPG en el dolor cervical?",
-        "a": "La osteopatía desbloquea las articulaciones cervicales y la base del cráneo, mientras que el RPG reeduca la postura global para evitar que el cuello soporte exceso de peso."
+        "q": "¿Por qué el dolor de cuello suele acompañarse de pesadez en la cabeza o mareos?",
+        "a": "Los músculos cervicales profundos tienen numerosos receptores de posición y equilibrio que se comunican con los centros visuales y vestibulares; la tensión muscular excesiva altera estas señales."
       }
     ],
     "en": [
       {
-        "q": "What causes persistent neck pain and stiffness?",
-        "a": "It is commonly driven by prolonged screen posture, thoracic and cervical joint stiffness, stress, and jaw clenching creating chronic upper trapezius and levator tension."
+        "q": "What mechanical factors trigger recurrent neck pain (cervicalgia)?",
+        "a": "Muscular fatigue in upper trapezius and levator scapulae, upper thoracic joint hypomobility, and sustained forward-head postures during computer or smartphone work."
       },
       {
-        "q": "How do osteopathy and RPG relieve neck pain?",
-        "a": "Osteopathy gently releases cervical spinal restrictions and the cranial base, while RPG re-educates global posture to eliminate excess gravitational load on the neck."
+        "q": "Why does chronic neck tightness often trigger lightheadedness or head pressure?",
+        "a": "Deep cervical suboccipital muscles are rich in balance receptors linked to the vestibular and visual systems; intense cervical tension can distort equilibrium inputs."
       }
     ],
     "fr": [
       {
-        "q": "Quelles sont les causes des douleurs et raideurs du cou ?",
-        "a": "Elles sont favorisées par le travail sur écran, le manque de mobilité des vertèbres cervicales et dorsales, le stress et le serrement des dents qui contractent les trapèzes."
+        "q": "Quels facteurs mécaniques provoquent la cervicalgie récurrente ?",
+        "a": "La contracture des trapèzes, le manque de mobilité des vertèbres dorsales et cervicales et le maintien prolongé de la tête penchée en avant devant les écrans."
       },
       {
-        "q": "Comment l'ostéopathie et la RPG soulagent-elles la cervicalgie ?",
-        "a": "L'ostéopathie libère les blocages vertébraux et la base du crâne, tandis que la RPG réaligne la posture pour éviter que le cou ne subisse de compressions permanentes."
+        "q": "Pourquoi les tensions cervicales s'accompagnent-elles parfois de vertiges légers ?",
+        "a": "Les muscles profonds du cou sont saturés de récepteurs d'équilibre connectés à l'oreille interne et à la vue ; les contractures perturbent ces informations spatiales."
       }
     ],
     "pt": [
       {
-        "q": "O que provoca a dor e rigidez constante no pescoço?",
-        "a": "Costuma decorrer de postura prolongada diante de telas, falta de mobilidade cervical e torácica, estresse e bruxismo que tensionam os músculos trapézios."
+        "q": "Quais fatores mecânicos causam a dor cervical frequente?",
+        "a": "Sobrecarga nos músculos trapézios, rigidez nas vértebras cervicais e torácicas e a postura mantida com a cabeça projetada para a frente em telas."
       },
       {
-        "q": "Como a osteopatia e o RPG tratam a dor cervical?",
-        "a": "A osteopatia desbloqueia as vértebras cervicais e a base da cabeça, enquanto o RPG reeduca a postura corporal para evitar sobrecargas no pescoço."
+        "q": "Por que a tensão no pescoço costuma vir acompanhada de tontura ou peso na cabeça?",
+        "a": "Os músculos profundos do pescoço possuem receptores de equilíbrio que se comunicam com a visão e o labirinto; a tensão muscular constante altera esses sinais."
       }
     ]
   },
   "bruxismo": {
     "es": [
       {
-        "q": "¿Cómo complementa la kinesiología al uso de la placa de descanso odontológica?",
-        "a": "La placa protege los dientes del desgaste, pero la kinesiología trata la causa muscular: relaja los músculos maseteros y pterigoideos, desbloquea la ATM y corrige la postura del cuello."
+        "q": "¿Qué señales indican que una persona aprieta o rechina los dientes de noche?",
+        "a": "Despertarse con dolor o cansancio en la mandíbula, rigidez en sienes y nuca, desgaste o fisuras dentarias y sensación de tensión matinal en los músculos masticatorios."
       },
       {
-        "q": "¿Qué ejercicios ayudan a relajar la mandíbula durante el día?",
-        "a": "Técnicas de respiración diafragmática, masajes intra y extraorales suaves, y ejercicios de reposo lingual en el paladar para evitar el contacto dentario involuntario."
+        "q": "¿Por qué el bruxismo puede desencadenar dolores en el cuello y los oídos?",
+        "a": "Los músculos de la masticación (maseteros y pterigoideos) comparten vías nerviosas con los músculos cervicales y la zona auricular; la sobreactividad nocturna irradia dolor a toda la región."
       }
     ],
     "en": [
       {
-        "q": "How does physiotherapy complement a dental night guard for bruxism?",
-        "a": "While a night guard protects dental enamel, physiotherapy targets the underlying muscular trigger: releasing masseter/pterygoid tension, normalizing TMJ mechanics, and fixing neck posture."
+        "q": "What early signs indicate nocturnal teeth clenching or grinding (bruxism)?",
+        "a": "Waking with jaw stiffness, temporal headaches, neck tension, sensitive or worn tooth enamel, and palpable morning tenderness in the masseter muscles."
       },
       {
-        "q": "What exercises help relax the jaw throughout the day?",
-        "a": "Diaphragmatic breathing, gentle intraoral and facial myofascial releases, and resting tongue posture against the palate to prevent involuntary teeth clenching."
+        "q": "Why does bruxism frequently cause referred pain into the ears and neck?",
+        "a": "The masticatory and cervical musculature share neural connections via the trigeminal-cervical complex; excessive clenching radiates tension directly into the ears and neck."
       }
     ],
     "fr": [
       {
-        "q": "Comment la kinésithérapie complète-t-elle la gouttière dentaire contre le bruxisme ?",
-        "a": "La gouttière protège les dents, mais la kinésithérapie traite la cause musculaire : elle détend les masséters et ptérygoïdiens, libère l'ATM et rééquilibre les cervicales."
+        "q": "Quels signes indiquent que l'on serre ou grince des dents la nuit ?",
+        "a": "Se réveiller avec la mâchoire fatiguée, des tensions aux tempes, une raideur dans la nuque et une usure anormale des dents signalent du bruxisme nocturne."
       },
       {
-        "q": "Quels exercices aident à relâcher la mâchoire dans la journée ?",
-        "a": "La respiration diaphragmatique, l'automassage doux des joues et le positionnement de la langue au palais pour garder les dents desserrées au repos."
+        "q": "Pourquoi le bruxisme provoque-t-il des douleurs aux oreilles et au cou ?",
+        "a": "Les muscles de la mastication partagent des relais nerveux avec les cervicales et l'oreille ; l'hyperactivité nocturne diffuse des tensions douloureuses dans toute la zone."
       }
     ],
     "pt": [
       {
-        "q": "Como a fisioterapia complementa a placa de bruxismo do dentista?",
-        "a": "A placa protege os dentes do desgaste, enquanto a fisioterapia atua nos músculos: relaxa masseteres e pterigóideos, desbloqueia a ATM e corrige a postura do pescoço."
+        "q": "Quais sinais indicam que a pessoa aperta ou range os dentes à noite?",
+        "a": "Acordar com a mandíbula cansada, dor nas têmporas, rigidez na nuca, desgaste nos dentes e tensão visível nos músculos mastigatórios ao acordar."
       },
       {
-        "q": "Que exercícios ajudam a relaxar a mandíbula no dia a dia?",
-        "a": "Respiração diafragmática, automassagem suave na face e posicionamento correto da língua no céu da boca para evitar que os dentes se toquem durante o repouso."
+        "q": "Por que o bruxismo causa dores no pescoço e nos ouvidos?",
+        "a": "Os músculos mastigatórios compartilham inervação com a região cervical e os ouvidos; o aperto noturno projeta tensão dolorosa para toda essa área."
       }
     ]
   },
@@ -1157,209 +1157,209 @@ export const PATHOLOGY_FAQS = {
     "es": [
       {
         "q": "¿Por qué hace 'clic' o chasquido la mandíbula al masticar o abrir la boca?",
-        "a": "El chasquido ocurre cuando el disco articular de la ATM se desplaza hacia adelante y vuelve a colocarse sobre el cóndilo mandibular al realizar el movimiento de apertura."
+        "a": "El chasquido ocurre cuando el menisco o disco articular de la ATM está adelantado en reposo y es recapturado sobre la cabeza condilar al realizar la apertura bucal."
       },
       {
-        "q": "¿Cómo ayuda la terapia manual a recuperar el movimiento normal de la mandíbula?",
-        "a": "Con maniobras intraorales de tracción y descompresión, reeducación de la apertura guiada y relajación de los músculos pterigoideos se normaliza el trayecto del disco articular."
+        "q": "¿Qué consecuencias puede tener dejar un chasquido mandibular sin tratamiento?",
+        "a": "Con el tiempo el disco puede no volver a colocarse (desplazamiento sin reducción), lo que provoca episodios de bloqueo articular (mandíbula trabada) y desgaste del cartílago."
       }
     ],
     "en": [
       {
-        "q": "Why does the jaw click or pop when chewing or opening wide?",
-        "a": "Clicking occurs when the temporomandibular joint disc is displaced forward at rest and recaptured back onto the mandibular condyle as the mouth opens."
+        "q": "Why does the jaw pop or click during chewing or opening wide?",
+        "a": "The click happens when the articular disc sits displaced forward at rest and momentarily pops back onto the condyle as the mouth opens (reducing disc displacement)."
       },
       {
-        "q": "How does manual therapy restore proper jaw movement?",
-        "a": "Gentle intraoral joint distraction, guided translation drills, and releasing pterygoid muscle tension help recenter the disc and eliminate painful clicking."
+        "q": "What can happen if a clicking jaw joint is left untreated over time?",
+        "a": "The disc can eventually fail to recapture (non-reducing displacement), resulting in painful jaw locking, restricted mouth opening, and premature joint wear."
       }
     ],
     "fr": [
       {
-        "q": "Pourquoi la mâchoire claque-t-elle en mâchant ou en ouvrant la bouche ?",
-        "a": "Le claquement survient lorsque le disque de l'ATM est déplacé vers l'avant au repos et se replace sur le condyle mandibulaire lors de l'ouverture buccale."
+        "q": "Pourquoi la mâchoire claque-t-elle lors de l'ouverture ou de la mastication ?",
+        "a": "Le claquement survient lorsque le disque articulaire de l'ATM est déplacé vers l'avant au repos et se replace brutalement sur le condyle à l'ouverture de la bouche."
       },
       {
-        "q": "Comment la thérapie manuelle aide-t-elle à retrouver un mouvement sans claquement ?",
-        "a": "Des mobilisations intra-buccales douces, la décompression articulaire et la détente des muscles ptérygoïdiens permettent de recentrer le disque et de normaliser l'ouverture."
+        "q": "Que risque-t-on à laisser un claquement de mâchoire sans soins ?",
+        "a": "Le disque peut cesser de se replacer, entraînant un blocage douloureux de la mâchoire (fermeture ou ouverture limitée) et une usure cartilagineuse précoce."
       }
     ],
     "pt": [
       {
-        "q": "Por que a mandíbula estala ou faz clique ao mastigar e abrir a boca?",
-        "a": "O estalo acontece quando o disco articular da ATM se desloca para a frente no repouso e volta a encaixar no côndilo mandibular durante o movimento de abertura."
+        "q": "Por que a mandíbula estala ao abrir a boca ou mastigar?",
+        "a": "O estalo acontece quando o disco articular da ATM fica deslocado para a frente em repouso e volta a se encaixar no côndilo durante a abertura da boca."
       },
       {
-        "q": "Como a fisioterapia trata o estalo e deslocamento de disco na ATM?",
-        "a": "Com tração e descompressão intraoral suave, exercícios de abertura orientada e liberação dos músculos mastigatórios para recuperar o alinhamento do disco."
+        "q": "Quais as consequências de deixar um estalo na mandíbula sem tratamento?",
+        "a": "O disco pode perder a capacidade de voltar ao lugar, provocando travamento da boca (limitação de abertura) e acelerando o desgaste da articulação."
       }
     ]
   },
   "artrosis-atm": {
     "es": [
       {
-        "q": "¿Qué síntomas produce el desgaste o artrosis en la mandíbula?",
-        "a": "Sensación de arenilla o crepitación al masticar, dolor sordo cerca del oído, rigidez matinal al abrir la boca y dificultad para masticar alimentos duros."
+        "q": "¿Qué síntomas produce el desgaste o artrosis en la articulación de la mandíbula?",
+        "a": "Sensación de arenilla o crepitación al masticar, dolor sordo cerca del oído, rigidez al abrir la boca por las mañanas y dificultad para comer alimentos duros."
       },
       {
-        "q": "¿Cómo ayuda la terapia manual en la artrosis de ATM?",
-        "a": "La movilización articular suave aumenta la lubricación sinovial, reduce la rigidez capsular y relaja los músculos hipertónicos, recuperando la función masticatoria sin dolor."
+        "q": "¿Qué diferencias hay entre un problema muscular mandibular y la artrosis de ATM?",
+        "a": "El dolor muscular es difuso en mejillas y sienes y fluctúa con el estrés; la artrosis produce un sonido áspero intraarticular, pérdida de apertura y cambios visibles en radiografías."
       }
     ],
     "en": [
       {
-        "q": "What are the common symptoms of osteoarthritis in the jaw (TMJ)?",
-        "a": "Coarse crepitus (grating/crunching sensation), dull pain around the ear, morning jaw stiffness, and restricted ability to chew firm foods."
+        "q": "What symptoms are typical of osteoarthritis in the temporomandibular joint?",
+        "a": "Grating or crunching sounds (crepitus) during chewing, dull preauricular pain, morning stiffness, and difficulty opening wide to bite firm foods."
       },
       {
-        "q": "How does manual therapy benefit TMJ osteoarthritis?",
-        "a": "Gentle joint mobilizations enhance synovial fluid circulation, reduce capsular restriction, and alleviate muscle guarding to restore functional chewing comfortably."
+        "q": "How does TMJ osteoarthritis differ from simple masticatory muscle fatigue?",
+        "a": "Muscle tension is diffuse across the cheeks and temples; osteoarthritis features true intra-articular grating noises, localized bone tenderness, and radiographic bony remodeling."
       }
     ],
     "fr": [
       {
         "q": "Quels sont les symptômes de l'arthrose de la mâchoire (ATM) ?",
-        "a": "Des crépitations (bruit de sable), une douleur sourde devant l'oreille, une raideur matinale et une gêne pour mastiquer des aliments fermes."
+        "a": "Un bruit de frottement ou de sable à la mastication, une douleur sourde devant l'oreille, une raideur matinale et une gêne pour ouvrir grand la bouche."
       },
       {
-        "q": "Comment la thérapie manuelle soulage-t-elle l'arthrose de l'ATM ?",
-        "a": "Des mobilisations douces stimulent la lubrification articulaire, assouplissent la capsule et détendent les muscles pour retrouver une mastication confortable."
+        "q": "Quelle est la différence entre une douleur musculaire de la mâchoire et l'arthrose de l'ATM ?",
+        "a": "La douleur musculaire est diffuse dans les joues ; l'arthrose produit des crépitations articulaires nettes, une perte d'amplitude et des remaniements osseux."
       }
     ],
     "pt": [
       {
-        "q": "Quais os sintomas de desgaste ou artrose na mandíbula (ATM)?",
-        "a": "Sensação de areia ou crepitação ao mastigar, dor incômoda perto do ouvido, rigidez matinal e dificuldade para mastigar alimentos mais consistentes."
+        "q": "Quais os sintomas de artrose na articulação da mandíbula (ATM)?",
+        "a": "Sensação de areia ou crepitação ao mastigar, dor surda perto do ouvido, rigidez ao abrir a boca de manhã e dificuldade para mastigar alimentos consistentes."
       },
       {
-        "q": "Como a fisioterapia ajuda na artrose da ATM?",
-        "a": "Mobilizações articulares suaves aumentam a lubrificação da articulação, reduzem a rigidez e relaxam os músculos para mastigar com conforto."
+        "q": "Qual a diferença entre dor muscular na face e artrose da ATM?",
+        "a": "A dor muscular é difusa nas bochechas e têmporas; a artrose produz crepitação áspera dentro da articulação e perda progressiva na amplitude de abertura."
       }
     ]
   },
   "torticolis": {
     "es": [
       {
-        "q": "¿Qué hacer ante un episodio de tortícolis aguda con el cuello bloqueado?",
-        "a": "Evitar forzar el cuello. Aplicar calor suave para relajar la musculatura y acudir a una sesión kinésica donde se aplican técnicas osteopáticas suaves e indoloras para desbloquear la zona."
+        "q": "¿Cuáles son las causas más habituales de una tortícolis aguda al despertar?",
+        "a": "Suele deberse a un espasmo muscular reactivo del esternocleidomastoideo y los escalenos provocado por una mala postura al dormir, corrientes de aire frío o un bloqueo articular súbito."
       },
       {
-        "q": "¿Cuánto tiempo tarda en resolverse una tortícolis con tratamiento?",
-        "a": "Con maniobras osteopáticas inhibitorias y terapia manual suave, la mayoría de los casos recupera gran parte del rango de movimiento en 24 a 48 horas."
+        "q": "¿Por qué se produce la inclinación involuntaria y el bloqueo del cuello?",
+        "a": "Es una respuesta neurológica refleja de defensa: el cuerpo contrae fuertemente los músculos de un lado para inmovilizar una articulación cervical irritada y evitar más dolor."
       }
     ],
     "en": [
       {
-        "q": "What should you do during an acute bout of torticollis (wry neck)?",
-        "a": "Avoid forcing your neck into painful directions. Apply gentle warmth and consult a physical therapist for gentle osteopathic and soft-tissue release to unlock the restriction painlessly."
+        "q": "What are the common triggers of acute torticollis (wry neck) upon waking?",
+        "a": "It is typically triggered by a sudden reactive muscle spasm in the sternocleidomastoid or scalenes due to an awkward sleeping posture, cold drafts, or a minor facet joint lock."
       },
       {
-        "q": "How quickly does acute torticollis resolve with treatment?",
-        "a": "With gentle osteopathic muscle energy techniques and myofascial release, most patients regain significant pain-free range of motion within 24 to 48 hours."
+        "q": "Why does the head involuntarily tilt and lock to one side?",
+        "a": "It is a protective neurological reflex: the nervous system locks the surrounding neck muscles into contracture to splint and protect an irritated cervical joint."
       }
     ],
     "fr": [
       {
-        "q": "Que faire en cas de torticolis aigu et de cou complètement bloqué ?",
-        "a": "Ne forcez pas le mouvement. Appliquez une chaleur douce et consultez un kinésithérapeute pour des techniques ostéopathiques douces qui débloquent le cou sans douleur."
+        "q": "Quelles sont les causes fréquentes d'un torticolis aigu au réveil ?",
+        "a": "Il résulte souvent d'un spasme réflexe du sterno-cléido-mastoïdien provoqué par une mauvaise position de sommeil, un coup de froid ou un blocage articulaire cervical."
       },
       {
-        "q": "Combien de temps faut-il pour guérir d'un torticolis avec traitement ?",
-        "a": "Grâce à des manœuvres douces et indolores de relâchement musculaire, la mobilité cervicale est généralement récupérée en 24 à 48 heures."
+        "q": "Pourquoi la tête se retrouve-t-elle bloquée et penchée d'un côté ?",
+        "a": "C'est un réflexe de défense neurologique : le système nerveux contracte intensément les muscles pour immobiliser la vertèbre irritée et limiter la douleur."
       }
     ],
     "pt": [
       {
-        "q": "O que fazer em uma crise de torcicolo com o pescoço travado?",
-        "a": "Não force o pescoço. Aplique calor local suave e procure atendimento de fisioterapia para manobras osteopáticas indolores que desbloqueiam o movimento."
+        "q": "Quais são as causas mais frequentes do torcicolo agudo ao acordar?",
+        "a": "Geralmente ocorre por um espasmo muscular reflexo do esternocleidomastóideo devido a uma posição desconfortável durante o sono, corrente de ar frio ou bloqueio articular."
       },
       {
-        "q": "Em quanto tempo o torcicolo costuma passar com fisioterapia?",
-        "a": "Com técnicas manuais suaves e inibição muscular, a maioria dos pacientes recupera boa parte do movimento em 24 a 48 horas."
+        "q": "Por que a cabeça fica inclinada e travada para um lado no torcicolo?",
+        "a": "É uma reação de proteção neurológica: o organismo contrai a musculatura de um lado para imobilizar a articulação cervical inflamada e impedir o movimento doloroso."
       }
     ]
   },
   "artrosis-artritis": {
     "es": [
       {
-        "q": "¿Cuál es la diferencia entre artrosis y artritis en kinesiología?",
-        "a": "La artrosis es el desgaste mecánico y progresivo del cartílago articular; la artritis es una inflamación articular activa. Ambas se benefician de la terapia manual suave y la dosificación de movimiento."
+        "q": "¿Cuáles son las características clínicas que diferencian la artrosis de la artritis?",
+        "a": "La artrosis es un desgaste degenerativo mecánico del cartílago, frecuente con la edad. La artritis es una inflamación activa de la membrana sinovial con calor, hinchazón y enrojecimiento articular."
       },
       {
-        "q": "¿Hacer kinesiología o ejercicio desgasta más una articulación con artrosis?",
-        "a": "No. El movimiento controlado y sin impacto es fundamental para nutrir el cartílago, mantener la fuerza periarticular y evitar que la articulación se anquilose."
+        "q": "¿Cómo influyen el reposo prolongado y la humedad en el dolor articular?",
+        "a": "El reposo excesivo espesa el líquido sinovial y aumenta la rigidez al reiniciar el movimiento; los cambios barométricos y de humedad alteran la presión interna de cápsulas ya sensibilizadas."
       }
     ],
     "en": [
       {
-        "q": "What is the difference between osteoarthritis and arthritis in therapy?",
-        "a": "Osteoarthritis is gradual mechanical cartilage wear; arthritis involves active inflammatory joint flare-ups. Both benefit from gentle manual mobilization and graded exercise."
+        "q": "What clinical features distinguish osteoarthritis from inflammatory arthritis?",
+        "a": "Osteoarthritis is gradual mechanical wear of joint cartilage related to age and load. Arthritis is an active autoimmune or inflammatory synovitis presenting with joint warmth and swelling."
       },
       {
-        "q": "Does movement or exercise cause further wear to arthritic joints?",
-        "a": "No. Controlled, low-impact therapeutic movement is essential to circulate synovial fluid, nourish cartilage, and preserve supportive joint strength."
+        "q": "How do prolonged immobility and weather changes affect arthritic joint stiffness?",
+        "a": "Inactivity thickens synovial fluid, worsening morning start-up stiffness; barometric pressure drops alter intra-articular pressure within sensitized joint capsules."
       }
     ],
     "fr": [
       {
-        "q": "Quelle est la différence entre arthrose et arthrite en kinésithérapie ?",
-        "a": "L'arthrose est une usure mécanique du cartilage ; l'arthrite est une poussée inflammatoire de l'articulation. Toutes deux bénéficient d'une thérapie manuelle adaptée et de mobilisations douces."
+        "q": "Quelles sont les différences cliniques entre arthrose et arthrite ?",
+        "a": "L'arthrose est une usure mécanique du cartilage articulaire. L'arthrite est une maladie inflammatoire de la membrane synoviale provoquant gonflement, chaleur et rougeur."
       },
       {
-        "q": "L'exercice use-t-il davantage une articulation arthrosique ?",
-        "a": "Non. Le mouvement adapté et guidé est indispensable pour nourrir le cartilage par le liquide synovial, maintenir la force et préserver l'autonomie."
+        "q": "Pourquoi le repos prolongé et l'humidité réveillent-ils les raideurs articulaires ?",
+        "a": "L'immobilité épaissit le liquide synovial, ce qui grippe l'articulation au réveil, tandis que les variations météo modifient la pression interne des capsules fragilisées."
       }
     ],
     "pt": [
       {
-        "q": "Qual a diferença entre artrose e artrite no tratamento fisioterapêutico?",
-        "a": "A artrose é o desgaste mecânico da cartilagem; a artrite envolve inflamação articular ativa. Ambas respondem muito bem à terapia manual suave e exercícios controlados."
+        "q": "Quais são as características clínicas que diferenciam artrose e artrite?",
+        "a": "A artrose é o desgaste mecânico progressivo da cartilagem articular. A artrite é uma inflamação ativa da membrana sinovial, apresentando calor, inchaço e vermelhidão."
       },
       {
-        "q": "Exercício físico desgasta mais a articulação com artrose?",
-        "a": "Não. O movimento controlado e sem impacto é indispensável para nutrir a cartilagem articular, fortalecer os músculos de apoio e manter a mobilidade."
+        "q": "Como o repouso prolongado e o clima afetam a rigidez das articulações?",
+        "a": "A falta de movimento torna o líquido sinovial mais viscoso, aumentando a rigidez matinal, enquanto quedas na pressão atmosférica sensibilizam cápsulas inflamadas."
       }
     ]
   },
   "hombro-congelado": {
     "es": [
       {
-        "q": "¿Cuánto dura una capsulitis adhesiva u hombro congelado?",
-        "a": "Puede extenderse varios meses pasando por fases de dolor, congelamiento y descongelamiento. El tratamiento kinésico acorta significativamente los tiempos y previene la pérdida permanente de movilidad."
+        "q": "¿Cuáles son las tres fases clínicas típicas de la capsulitis adhesiva u hombro congelado?",
+        "a": "La fase dolorosa inicial (inflamatoria), la fase de congelamiento (pérdida progresiva y marcada de movilidad) y la fase de descongelamiento (recuperación lenta del rango articular)."
       },
       {
-        "q": "¿Cómo se trabaja en Kinésica sin generar dolor excesivo?",
-        "a": "Se priorizan movilizaciones rítmicas de bajo grado, terapia fascial suave, trabajo escapular y ejercicios en rangos indoloros para no irritar la cápsula articular."
+        "q": "¿Qué movimientos del hombro se pierden primero en un hombro congelado?",
+        "a": "La rotación externa (dificultad para peinarse o llevar la mano hacia afuera) y la rotación interna (incapacidad para abrocharse la ropa detrás de la espalda), seguidas de la elevación lateral."
       }
     ],
     "en": [
       {
-        "q": "How long does frozen shoulder (adhesive capsulitis) last?",
-        "a": "Without treatment it can span 12 to 24 months through freezing, frozen, and thawing phases. Specialized therapy markedly shortens recovery and prevents permanent stiffness."
+        "q": "What are the three distinct clinical stages of frozen shoulder (adhesive capsulitis)?",
+        "a": "The freezing stage (severe progressive pain), the frozen stage (stiffness predominates while acute pain lessens), and the thawing stage (gradual recovery of range of motion)."
       },
       {
-        "q": "How is frozen shoulder treated without causing intolerable pain?",
-        "a": "We prioritize gentle low-grade joint oscillations, scapular mobilization, myofascial release, and pain-free range exercises to respect the sensitive capsule."
+        "q": "Which specific shoulder movements are lost first in adhesive capsulitis?",
+        "a": "External rotation (struggling to reach behind the head) and internal rotation (unable to reach the lower back), followed closely by active overhead abduction."
       }
     ],
     "fr": [
       {
-        "q": "Combien de temps dure une capsulite rétractile (épaule gelée) ?",
-        "a": "Elle peut durer plusieurs mois en passant par des phases de douleur, d'enraidissement puis de récupération. La kinésithérapie raccourcit nettement cette durée."
+        "q": "Quelles sont les trois phases cliniques d'une capsulite rétractile (épaule gelée) ?",
+        "a": "La phase d'enraidissement douloureux, la phase de blocage (perte sévère des amplitudes articulaires) et la phase de récupération lente de la mobilité."
       },
       {
-        "q": "Comment travaille-t-on sans provoquer de douleurs excessives ?",
-        "a": "Nous utilisons des mobilisations passives très douces, la libération des tissus péri-scapulaires et des mouvements dans les amplitudes indolores pour respecter la capsule."
+        "q": "Quels mouvements de l'épaule sont perdus en premier ?",
+        "a": "La rotation externe (difficulté pour se coiffer) et la rotation interne (mettre la main dans le dos), suivies par l'élévation du bras."
       }
     ],
     "pt": [
       {
-        "q": "Quanto tempo dura o ombro congelado (capsulite adesiva)?",
-        "a": "Pode durar meses passando por fases inflamatória, de rigidez e de descongelamento. A fisioterapia encurta esse tempo e evita perda definitiva de movimento."
+        "q": "Quais são as três fases clínicas do ombro congelado (capsulite adesiva)?",
+        "a": "A fase dolorosa inicial, a fase de congelamento (rigidez acentuada e perda de movimento) e a fase de descongelamento (recuperação lenta da mobilidade)."
       },
       {
-        "q": "Como a fisioterapia trata o ombro congelado sem gerar dor excessiva?",
-        "a": "Utilizamos mobilizações articulares suaves, liberação miofascial e exercícios dentro da amplitude confortável, respeitando a sensibilidade da cápsula."
+        "q": "Quais movimentos do ombro são perdidos primeiro no ombro congelado?",
+        "a": "A rotação externa (dificuldade para pentear o cabelo) e a rotação interna (levar a mão às costas), seguidas pela elevação lateral do braço."
       }
     ]
   },
@@ -1367,167 +1367,167 @@ export const PATHOLOGY_FAQS = {
     "es": [
       {
         "q": "¿Cómo diferenciar una contractura muscular de un desgarro?",
-        "a": "La contractura es una tensión muscular difusa que suele aparecer progresivamente; el desgarro produce un dolor agudo y repentino (sensación de 'pedrada') e incapacidad inmediata de contraer el músculo."
+        "a": "La contractura es una tensión difusa y sostenida que aparece paulatinamente; el desgarro produce un dolor agudo y repentino (sensación de pedrada) con incapacidad inmediata de contraer el músculo."
       },
       {
-        "q": "¿Cuándo conviene aplicar calor o frío en una lesión muscular?",
-        "a": "En las primeras 48 horas de un desgarro se aplica frío para frenar el sangrado. En contracturas o tras la fase aguda del desgarro, el calor y la terapia manual favorecen la circulación y reparación."
+        "q": "¿Por qué un músculo previamente acortado o contracturado tiene mayor riesgo de desgarrarse?",
+        "a": "Las fibras acortadas pierden elasticidad y adaptabilidad. Ante una aceleración, desaceleración o sobreesfuerzo, la zona rígida no puede elongarse y se rompe en la unión miotendinosa."
       }
     ],
     "en": [
       {
-        "q": "How do you distinguish a muscle contracture from a muscle tear (strain)?",
-        "a": "A contracture develops gradually as generalized stiffness; a muscle tear causes sudden, sharp stabbing pain with immediate loss of contraction ability and possible bruising."
+        "q": "How can you tell a muscle spasm (contracture) apart from an actual muscle tear?",
+        "a": "A spasm builds gradually as a dull, tight ache; a muscle tear happens instantaneously with sharp, stabbing pain (often described as being hit by a stone) and loss of power."
       },
       {
-        "q": "When should ice or heat be applied to a muscle injury?",
-        "a": "Use ice during the first 48 hours following an acute tear to control bleeding and swelling. For chronic spasms or post-acute tear recovery, heat and manual therapy enhance tissue healing."
+        "q": "Why does a chronically tight muscle face a higher risk of tearing?",
+        "a": "Hypertonic, shortened muscle fibers lack shock absorption and flexibility; during sudden explosive movements, the rigid segment cannot elongate safely and tears."
       }
     ],
     "fr": [
       {
         "q": "Comment différencier une contracture musculaire d'une déchirure ?",
-        "a": "La contracture s'installe progressivement avec une sensation de raideur ; la déchirure provoque une douleur brutale et aiguë en coup de poignard avec impotence immédiate."
+        "a": "La contracture s'installe progressivement sous forme d'une raideur douloureuse ; la déchirure survient d'un coup avec une douleur en coup de poignard et une impotence immédiate."
       },
       {
-        "q": "Faut-il appliquer du chaud ou du froid sur un muscle blessé ?",
-        "a": "Du froid les premières 48 heures en cas de déchirure pour limiter le saignement. Pour une contracture ou après la phase aiguë, la chaleur et la thérapie manuelle stimulent la guérison."
+        "q": "Pourquoi un muscle contracturé risque-t-il davantage de se déchirer ?",
+        "a": "Les fibres raccourcies manquent d'élasticité. Lors d'un démarrage rapide ou d'un freinage, la zone tendue ne peut pas s'allonger et subit une rupture mécanique."
       }
     ],
     "pt": [
       {
-        "q": "Como diferenciar uma contratura de um estiramento ou estiramento muscular?",
-        "a": "A contratura surge progressivamente como uma tensão difusa; a lesão por estiramento ou ruptura gera dor aguda e imediata (sensação de 'pedrada'), impedindo a contração."
+        "q": "Como diferenciar uma contratura muscular de um estiramento ou ruptura?",
+        "a": "A contratura surge aos poucos como uma tensão muscular difusa; a ruptura provoca dor súbita e aguda (sensação de pedrada) impedindo a continuidade do esforço."
       },
       {
-        "q": "Quando usar gelo ou calor em uma lesão muscular?",
-        "a": "Gelo nas primeiras 48 horas após uma ruptura aguda para conter o inchaço. Para contraturas ou após a fase aguda, calor e terapia manual favorecem a circulação e regeneração."
+        "q": "Por que um músculo previamente tenso tem maior risco de sofrer ruptura?",
+        "a": "Fibras encurtadas perdem elasticidade e capacidade de amortecimento. Em movimentos rápidos ou frenagens bruscas, a área rígida não se alonga e se rompe."
       }
     ]
   },
   "tunel-carpiano": {
     "es": [
       {
-        "q": "¿El síndrome del túnel carpiano siempre requiere cirugía?",
-        "a": "No. La gran mayoría de los casos leves y moderados mejora notablemente con kinesiología, terapia manual, neurodinamia para deslizar el nervio mediano y férulas de descanso nocturnas."
+        "q": "¿Qué estructura anatómica se comprime en el síndrome del túnel carpiano?",
+        "a": "Se comprime el nervio mediano a su paso por el canal del carpo en la muñeca, rodeado por los tendones flexores de los dedos y el ligamento anular anterior."
       },
       {
-        "q": "¿Cómo ayuda la neurodinamia en el túnel carpiano?",
-        "a": "Libera las adherencias del nervio mediano a lo largo de todo su recorrido desde el cuello hasta la muñeca, disminuyendo la presión interna y aliviando el hormigueo en los dedos."
+        "q": "¿Por qué los síntomas de hormigueo en los dedos suelen empeorar de noche?",
+        "a": "Al dormir la muñeca tiende a doblarse involuntariamente, aumentando la presión interna en el túnel, y la posición horizontal favorece una mayor congestión venosa local."
       }
     ],
     "en": [
       {
-        "q": "Does carpal tunnel syndrome always require surgical release?",
-        "a": "No. The vast majority of mild to moderate cases improve significantly with physical therapy: manual retinaculum release, median nerve neurodynamics, and nighttime splinting."
+        "q": "Which anatomical structure is pinched in carpal tunnel syndrome?",
+        "a": "The median nerve is compressed as it passes through the narrow carpal tunnel at the wrist, surrounded by the finger flexor tendons and the rigid transverse carpal ligament."
       },
       {
-        "q": "How does neurodynamics relieve hand tingling from carpal tunnel?",
-        "a": "It restores longitudinal gliding along the entire course of the median nerve from neck to wrist, alleviating intraneural pressure and resolving finger numbness."
+        "q": "Why do tingling and numbness in the fingers frequently wake people up at night?",
+        "a": "Unconscious wrist flexion during sleep dramatically elevates tunnel pressure, while lying flat increases fluid redistribution and local venous congestion."
       }
     ],
     "fr": [
       {
-        "q": "Le syndrome du canal carpien nécessite-t-il obligatoirement une chirurgie ?",
-        "a": "Non. La plupart des cas légers à modérés guérissent très bien avec la kinésithérapie, la mobilisation neurale du nerf médian et le port d'une attelle de repos la nuit."
+        "q": "Quelle structure anatomique est comprimée dans le canal carpien ?",
+        "a": "C'est le nerf médian qui se retrouve comprimé dans le défilé du carpe au poignet, entre les tendons fléchisseurs des doigts et le ligament annulaire antérieur."
       },
       {
-        "q": "Comment la neurodynamique soulage-t-elle les fourmillements dans les mains ?",
-        "a": "Elle libère le nerf médian des tensions tout au long de son trajet du cou jusqu'au poignet, réduisant la pression dans le canal carpien et redonnant de la sensibilité."
+        "q": "Pourquoi les fourmillements dans les doigts s'accentuent-ils la nuit ?",
+        "a": "Durant le sommeil, le poignet fléchit spontanément, ce qui augmente la pression dans le canal, et la position allongée favorise la stase veineuse locale."
       }
     ],
     "pt": [
       {
-        "q": "A síndrome do túnel do carpo sempre exige cirurgia?",
-        "a": "Não. A grande maioria dos casos leves a moderados melhora significativamente com fisioterapia manual, neurodinâmica para o nervo mediano e uso de tala noturna."
+        "q": "Qual estrutura anatômica é comprimida na síndrome do túnel do carpo?",
+        "a": "O nervo mediano é comprimido ao passar pelo canal carpiano no punho, cercado pelos tendões flexores dos dedos e pelo ligamento transverso do carpo."
       },
       {
-        "q": "Como a neurodinâmica ajuda no formigamento das mãos?",
-        "a": "Ela libera o deslizamento do nervo mediano desde o pescoço até o punho, diminuindo a compressão no canal do carpo e eliminando a dormência nos dedos."
+        "q": "Por que os formigamentos nos dedos costumam piorar durante a noite?",
+        "a": "Ao dormir, o punho tende a dobrar-se involuntariamente elevando a pressão no canal, enquanto a posição deitada aumenta a congestão de fluidos no local."
       }
     ]
   },
   "coxalgia": {
     "es": [
       {
-        "q": "¿Por qué puede doler la cadera en la ingle o en la parte lateral?",
-        "a": "El dolor inguinal suele originarse dentro de la articulación (choque femoroacetabular, artrosis); el dolor lateral se relaciona más frecuentemente con bursitis o tendinopatía glútea."
+        "q": "¿Cuáles son las causas más habituales de dolor en la articulación de la cadera?",
+        "a": "El pinzamiento femoroacetabular, el desgaste del cartílago (artrosis de cadera), la tendinopatía de los glúteos y la bursitis trocantérea son las causas más frecuentes."
       },
       {
-        "q": "¿Cómo se trata la disfunción de cadera con kinesiología y osteopatía?",
-        "a": "Evaluamos la movilidad pélvica y lumbar, liberamos la cápsula articular con terapia manual y prescribimos ejercicios de estabilización lumbopélvica para descomprimir la cadera."
+        "q": "¿Cómo distinguir si un dolor proviene de la cadera o de la columna lumbar?",
+        "a": "El dolor de cadera suele sentirse en la ingle y empeora al cruzar las piernas o rotar el muslo; el dolor lumbar se localiza en la zona baja de la espalda o glúteos y varía con la flexión del tronco."
       }
     ],
     "en": [
       {
-        "q": "Why does hip pain occur in the groin versus on the outer lateral side?",
-        "a": "Groin pain typically stems from intra-articular pathology (femoroacetabular impingement, osteoarthritis), whereas lateral hip pain usually involves trochanteric bursitis or gluteal tendinopathy."
+        "q": "What are the most common causes of hip joint pain (coxalgia)?",
+        "a": "Femoroacetabular impingement (FAI), hip osteoarthritis, gluteal tendinopathy, and trochanteric bursitis are the primary non-traumatic triggers."
       },
       {
-        "q": "How is hip dysfunction treated with physiotherapy and osteopathy?",
-        "a": "We evaluate lumbar-pelvic mechanics, release capsular restrictions manually, and prescribe targeted pelvic stabilizers to unload excessive stress from the hip joint."
+        "q": "How can you tell whether pain originates from the hip joint or the lumbar spine?",
+        "a": "True hip pain typically centers deep in the groin and worsens when crossing legs or rotating the thigh; lumbar pain is felt in the back or buttock and alters with spinal bending."
       }
     ],
     "fr": [
       {
-        "q": "Pourquoi la hanche fait-elle mal dans l'aine ou sur le côté ?",
-        "a": "La douleur dans l'aine vient souvent de l'articulation elle-même (conflit de hanche, arthrose) ; la douleur latérale est plus fréquemment liée à une tendinopathie du moyen fessier."
+        "q": "Quelles sont les causes fréquentes de douleurs à la hanche (coxalgie) ?",
+        "a": "Le conflit fémoro-acétabulaire, l'arthrose de hanche (coxarthrose), la tendinopathie des fessiers et la bursite trochantérienne sont les motifs les plus courants."
       },
       {
-        "q": "Comment traite-t-on les douleurs de hanche chez Kinésica ?",
-        "a": "Nous évaluons le bassin et la colonne lombaire, libérons l'articulation par thérapie manuelle et renforçons les muscles profonds pour décharger la hanche."
+        "q": "Comment savoir si la douleur provient de la hanche ou des lombaires ?",
+        "a": "La douleur de hanche est ressentie dans l'aine et augmente en croisant les jambes ; la douleur lombaire siège dans le bas du dos ou la fesse et réagit aux mouvements du tronc."
       }
     ],
     "pt": [
       {
-        "q": "Por que a dor no quadril (coxalgia) pode doer na virilha ou na lateral?",
-        "a": "Dor na virilha costuma ter origem dentro da articulação (impacto femoroacetabular, artrose); dor na lateral costuma indicar bursite trocantérica ou tendinopatia glútea."
+        "q": "Quais são as causas mais comuns de dor no quadril (coxalgia)?",
+        "a": "Impacto femoroacetabular, desgaste da cartilagem (artrose de quadril), tendinopatia glútea e bursite trocantérica são as origens mais frequentes."
       },
       {
-        "q": "Como a fisioterapia e a osteopatia tratam o quadril?",
-        "a": "Avaliamos a pelve e a coluna lombar, liberamos a articulação com terapia manual e prescrevemos exercícios para estabilizar o quadril sem impacto."
+        "q": "Como diferenciar se a dor vem do quadril ou da coluna lombar?",
+        "a": "A dor do quadril costuma se manifestar na virilha e piora ao cruzar as pernas; a dor lombar fica na parte baixa das costas ou glúteo e varia ao dobrar o tronco."
       }
     ]
   },
   "oclusion-dental": {
     "es": [
       {
-        "q": "¿Cómo se relaciona una mala mordida u oclusión con dolores de cuello y espalda?",
-        "a": "La oclusión dental determina la posición de la mandíbula, la cual está biomecánicamente conectada con las vértebras cervicales y las cadenas musculares posturales de todo el cuerpo."
+        "q": "¿Qué tipos de maloclusión existen y cómo se conectan con la postura?",
+        "a": "Mordidas cruzadas, abiertas o sobremordidas alteran el apoyo de la mandíbula; mediante las cadenas musculares y el sistema fascial, esta asimetría influye en el cuello y la cintura escapular."
       },
       {
-        "q": "¿Cómo trabaja la kinesiología en conjunto con el odontólogo u ortodoncista?",
-        "a": "Equilibramos el tono muscular masticatorio y cervical antes, durante y después del tratamiento odontológico o uso de brackets, asegurando que la nueva mordida se asiente sin dolor."
+        "q": "¿Por qué una mala mordida puede provocar dolores de cuello o cabeza recurrentes?",
+        "a": "Al no encajar armónicamente los dientes, los músculos masticatorios y cervicales se ven forzados a realizar microajustes continuos para tragar y mantener la cabeza nivelada, generando fatiga muscular."
       }
     ],
     "en": [
       {
-        "q": "How is dental malocclusion linked to neck and back pain?",
-        "a": "Dental occlusion sets jaw position, which is directly connected via myofascial chains to the upper cervical spine, shoulder girdle, and global postural balance."
+        "q": "What types of malocclusion exist and how do they connect to posture?",
+        "a": "Crossbites, open bites, and deep overbites alter jaw positioning; through fascial connections and myofascial chains, these bite imbalances affect cervical alignment."
       },
       {
-        "q": "How does physiotherapy collaborate with dentists and orthodontists?",
-        "a": "We balance masticatory and cervical muscle tone before, during, and after dental or orthodontic interventions, ensuring the bite stabilizes comfortably without pain."
+        "q": "Why does dental malocclusion frequently provoke recurrent neck pain or headaches?",
+        "a": "Uneven tooth contact forces masticatory and suboccipital muscles into continuous compensatory contractions to swallow comfortably and balance head posture."
       }
     ],
     "fr": [
       {
-        "q": "Quel est le lien entre une mauvaise occlusion dentaire et le mal de dos ou de cou ?",
-        "a": "L'occlusion détermine la position de la mâchoire, biomécaniquement liée aux vertèbres cervicales et aux chaînes musculaires posturales de l'ensemble du corps."
+        "q": "Quels types de malocclusions existent et comment influent-ils sur la posture ?",
+        "a": "Les occlusions croisées, béances et surocclusions modifient la position de la mâchoire, impactant par les chaînes musculaires l'équilibre des cervicales et des épaules."
       },
       {
-        "q": "Comment la kinésithérapie collabore-t-elle avec le dentiste ou l'orthodontiste ?",
-        "a": "Nous équilibrons les tensions des muscles masticateurs et du cou pendant les soins dentaires ou l'orthodontie, garantissant une occlusion stable et indolore."
+        "q": "Pourquoi une mauvaise occlusion peut-elle déclencher des maux de tête ou de cou ?",
+        "a": "L'engrènement dentaire asymétrique oblige les muscles masticateurs et cervicaux à compenser en permanence lors de la déglutition, provoquant une fatigue musculaire chronique."
       }
     ],
     "pt": [
       {
-        "q": "Como uma mordida desalinhada (má oclusão) afeta o pescoço e as costas?",
-        "a": "A oclusão dentária define a posição da mandíbula, conectada diretamente pelas cadeias musculares às vértebras cervicais e ao equilíbrio postural do corpo."
+        "q": "Que tipos de má oclusão existem e como afetam a postura?",
+        "a": "Mordidas cruzadas, abertas ou sobremordidas alteram a posição da mandíbula; pelas cadeias musculares fasciais, essas assimetrias repercutem no pescoço e ombros."
       },
       {
-        "q": "Como a fisioterapia trabalha em conjunto com dentistas e ortodontistas?",
-        "a": "Equilibramos a musculatura mastigatória e cervical antes, durante e após tratamentos ortodônticos, garantindo que a nova mordida estabilize sem dor."
+        "q": "Por que uma mordida desalinhada pode causar dores de cabeça e pescoço frequentes?",
+        "a": "Dentes mal posicionados forçam os músculos da mastigação e da nuca a microcontrações contínuas para engolir e manter a cabeça reta, gerando fadiga crônica."
       }
     ]
   },
@@ -1535,41 +1535,41 @@ export const PATHOLOGY_FAQS = {
     "es": [
       {
         "q": "¿Qué significa tener rectificación de la columna cervical?",
-        "a": "Significa que la curvatura lordótica natural del cuello se ha aplanado, generalmente por contractura crónica de los músculos anteriores o traumatismos como el latigazo cervical."
+        "a": "Significa que la curvatura lordótica natural del cuello se ha aplanado o perdido, alineando las vértebras cervicales en una línea vertical rígida."
       },
       {
-        "q": "¿Cómo ayuda el método RPG y la terapia manual en la rectificación cervical?",
-        "a": "Flexibiliza las cadenas musculares inspiratorias y cervicales que fijan la rectificación, aliviando la sensación de peso constante sobre los hombros y devolviendo movilidad al cuello."
+        "q": "¿Qué síntomas suelen acompañar a la rectificación cervical en el día a día?",
+        "a": "Sensación de fatiga y pesadez constante en hombros y nuca, limitación al girar el cuello, dolores de cabeza tensionales al final de la jornada y fatiga visual."
       }
     ],
     "en": [
       {
         "q": "What does cervical spine rectification (loss of lordosis) mean?",
-        "a": "It means the natural forward curve of the cervical spine has flattened, typically due to chronic deep muscular tension, prolonged screen use, or whiplash injuries."
+        "a": "It means the natural C-shaped forward curve (lordosis) of the neck has flattened into an abnormally straight, rigid vertical alignment."
       },
       {
-        "q": "How do RPG and manual therapy help a straightened cervical spine?",
-        "a": "They lengthen tight anterior and inspiratory muscle chains holding the neck rigid, relieving heavy shoulder fatigue and restoring fluid cervical rotation and extension."
+        "q": "What symptoms commonly accompany cervical rectification in daily life?",
+        "a": "A persistent sensation of heavy stiffness across the shoulders and neck, restricted rotation, tension headaches by day's end, and visual fatigue."
       }
     ],
     "fr": [
       {
-        "q": "Que signifie une rectitude de la colonne cervicale (perte de lordose) ?",
-        "a": "Cela signifie que la courbure naturelle du cou s'est effacée, souvent à cause de contractures chroniques, d'une mauvaise posture d'écran ou d'un traumatisme en coup du lapin."
+        "q": "Que signifie la rectitude de la colonne cervicale (perte de lordose) ?",
+        "a": "Cela indique que la courbure naturelle en C du cou s'est effacée, plaçant les vertèbres cervicales dans un alignement vertical anormalement rigide."
       },
       {
-        "q": "Comment la RPG et la thérapie manuelle traitent-elles la rectitude cervicale ?",
-        "a": "Elles étirent les chaînes musculaires antérieures qui figent le cou, soulageant le poids permanent sur les épaules et redonnant de la souplesse cervicale."
+        "q": "Quels symptômes accompagnent la rectitude cervicale au quotidien ?",
+        "a": "Une sensation de lourdeur constante dans les épaules et la nuque, une gêne pour tourner la tête et des maux de tête de fin de journée."
       }
     ],
     "pt": [
       {
         "q": "O que significa ter retificação da coluna cervical?",
-        "a": "Significa que a curvatura natural do pescoço foi perdida ou retificada, frequentemente por contraturas musculares profundas, postura diante de telas ou efeito chicote."
+        "a": "Significa que a curvatura natural em 'C' do pescoço foi perdida, deixando as vértebras cervicais alinhadas em uma linha vertical rígida."
       },
       {
-        "q": "Como o RPG e a terapia manual ajudam na retificação cervical?",
-        "a": "Alongam as cadeias musculares que mantêm o pescoço rígido, aliviando a sensação de peso nos ombros e devolvendo o movimento confortável da cabeça."
+        "q": "Quais sintomas costumam acompanhar a retificação cervical no dia a dia?",
+        "a": "Sensação constante de peso e rigidez nos ombros e na nuca, dificuldade para girar o pescoço e dores de cabeça tensionais no final do dia."
       }
     ]
   }
