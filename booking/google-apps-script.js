@@ -42,7 +42,12 @@ function doGet(e) {
     if (action === "get_slots") {
       return handleGetSlots(params);
     } else if (action === "ping") {
-      return createJsonResponse({ status: "online", service: "Kinésica Calendar Booking API" });
+      return createJsonResponse({
+        status: "online",
+        service: "Kinésica Calendar Booking API",
+        version: "v2-timezone-fixed",
+        calendarName: getKinesicaCalendar().getName()
+      });
     }
 
     return createJsonResponse({ status: "error", message: "Acción no reconocida en GET" }, 400);
@@ -160,6 +165,8 @@ function handleGetSlots(params) {
   const busy = events.map(function(ev) {
     return {
       title: ev.getTitle(),
+      startStr: Utilities.formatDate(ev.getStartTime(), "America/Argentina/Buenos_Aires", "HH:mm"),
+      endStr: Utilities.formatDate(ev.getEndTime(), "America/Argentina/Buenos_Aires", "HH:mm"),
       start: ev.getStartTime().getTime(),
       end: ev.getEndTime().getTime()
     };
@@ -205,10 +212,14 @@ function handleGetSlots(params) {
 
   return createJsonResponse({
     status: "success",
+    version: "v2-timezone-fixed",
     date: dateStr,
     type: type,
-    calendarUsed: cal.getName(),
-    busyEventsFound: busy.length,
+    calendarName: cal.getName(),
+    calendarId: cal.getId(),
+    eventsDetected: busy.map(function(b) {
+      return b.title + " (" + b.startStr + " a " + b.endStr + " hs)";
+    }),
     availableSlots: availableSlots
   });
 }
