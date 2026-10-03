@@ -78,6 +78,7 @@
       this.container.innerHTML = `
         <div class="kinesica-booking-container">
           <div class="kb-header">
+            ${this.options.isModal ? '<button type="button" class="kb-close-btn" aria-label="Cerrar ventana de reservas" data-action="close-modal">&times;</button>' : ''}
             <h2>Reserva tu Turno en Kinésica</h2>
             <p>Consultorio de Kinesiología y RPG en Palermo, CABA</p>
           </div>
@@ -221,6 +222,13 @@
                   </div>
                 </div>
 
+                ${this.options.isModal ? `
+                  <div style="margin-top: 22px; text-align: center;">
+                    <button type="button" class="kb-btn kb-btn-secondary" data-action="close-modal" style="width: auto; padding: 10px 28px; font-weight: 600;">
+                      ✓ Listo, finalizar y cerrar
+                    </button>
+                  </div>
+                ` : ""}
 
               </div>
             </div>
@@ -232,6 +240,13 @@
 
     bindEvents() {
       const q = (sel) => this.container.querySelector(sel);
+
+      // Eventos de cierre de modal si aplica
+      if (this.options.onClose) {
+        this.container.querySelectorAll('[data-action="close-modal"]').forEach((btn) => {
+          btn.addEventListener("click", () => this.options.onClose());
+        });
+      }
 
       // Selección Primera Vez vs Habitual
       q("#kb-choice-primera-vez").addEventListener("click", () => {

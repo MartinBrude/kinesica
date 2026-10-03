@@ -91,7 +91,8 @@ export function headStandardStylesheets(prefix, { gtm = true } = {}) {
     headRobotoStylesheet(prefix) +
     asyncCssLink(`${prefix}css/font-awesome.min.css`) +
     syncCssLink(`${prefix}css/style.min.css`) +
-    asyncCssLink(`${prefix}css/whatsapp.min.css`)
+    asyncCssLink(`${prefix}css/whatsapp.min.css`) +
+    asyncCssLink(`${prefix}booking/booking-widget.min.css`)
   );
 }
 
@@ -309,6 +310,7 @@ export function bodyFooterAndUiScripts(
     `  <div id="site-whatsapp-root" data-whatsapp-lang="${lang}"></div>`,
     `  <script src="${prefix}js/shell-whatsapp-${l}.min.js" defer></script>`,
     `  <script src="${prefix}js/ui-core.min.js" defer></script>`,
+    `  <script src="${prefix}booking/booking-bundle.min.js" defer></script>`,
   ];
   if (faqAccordion || mapEmbedFacade) {
     lines.push(`  <script src="${prefix}js/ui-home.min.js" defer></script>`);

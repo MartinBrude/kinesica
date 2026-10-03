@@ -193,7 +193,6 @@ ${techniqueLinks}
 }
 
 function buildCtaStrip(lang, s) {
-  const bookingHref = lang === "es" ? "turnos.html" : "../turnos.html";
   return writePartial(
     "cta-strip",
     lang,
@@ -207,7 +206,7 @@ function buildCtaStrip(lang, s) {
           </div>
           <div class="col-lg-5 col-sm-5 col-md-5 col-xs-12">
             <div class="site-cta-buttons">
-              <a href="${bookingHref}" class="btn btn-white btn-lg mt20 mr10">${escHtml(s.booking.label)}</a>
+              <a href="#agendar" class="btn btn-white btn-lg mt20 mr10 js-booking-open" data-booking-open>${escHtml(s.booking.label)}</a>
               <a href="${waMeUrl(CONTACT.whatsappDigits)}" target="_blank" class="btn btn-white btn-lg mt20 dynamic-whatsapp-url"
                 rel="noopener noreferrer">${s.ctaButton}</a>
             </div>
