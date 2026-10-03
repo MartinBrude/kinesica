@@ -122,7 +122,7 @@
               <!-- Cartel informativo y avance para primera vez -->
               <div id="kb-info-primera-vez" class="kb-alert-box" style="display: none; margin-top: 20px;">
                 <strong>📞 Llamada previa de orientación (10 minutos):</strong><br>
-                Para pacientes nuevos, el primer paso es coordinar una breve llamada telefónica sin cargo con el kinesiólogo. De esta manera evaluamos tu caso clínico en detalle y te informamos los honorarios correspondientes antes de que asistas al consultorio.
+                Para pacientes nuevos, el primer paso es coordinar una breve llamada telefónica sin cargo con el kinesiólogo. De esta manera evaluamos tu caso clínico en detalle, vemos si te podemos ayudar y te informamos los honorarios.
                 <div style="margin-top: 16px; text-align: right;">
                   <button class="kb-btn kb-btn-primary" id="kb-btn-next-1">
                     Continuar a Horarios de Llamada →
