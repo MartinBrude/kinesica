@@ -244,14 +244,15 @@ test("REGLA 6A: Sincronización para turno presencial de 1h calcula horario UTC-
   // Turno presencial = 60 minutos -> finaliza a las 18:00 UTC
   assert.strictEqual(exportData.startCompact, "20261015T170000Z");
   assert.strictEqual(exportData.endCompact, "20261015T180000Z");
-  assert.strictEqual(exportData.title, "Turno Kinesiología - Kinésica Palermo");
+  assert.strictEqual(exportData.title, "Turno en Kinésica");
   assert.ok(exportData.location.includes(CONTACT.address.streetAddress));
   assert.ok(exportData.location.includes("Piso 5º B, Palermo"));
+  assert.ok(exportData.description.includes("características del espacio y la organización"));
 
   // Verificación de URL de Google Calendar
   assert.ok(exportData.googleCalendarUrl.startsWith("https://calendar.google.com/calendar/render?action=TEMPLATE"));
   assert.ok(exportData.googleCalendarUrl.includes("dates=20261015T170000Z/20261015T180000Z"));
-  assert.ok(exportData.googleCalendarUrl.includes(encodeURIComponent("Turno Kinesiología - Kinésica Palermo")));
+  assert.ok(exportData.googleCalendarUrl.includes(encodeURIComponent("Turno en Kinésica")));
 
   // Verificación de formato RFC 5545 para .ics
   assert.ok(exportData.icsContent.includes("BEGIN:VCALENDAR"));
@@ -260,7 +261,7 @@ test("REGLA 6A: Sincronización para turno presencial de 1h calcula horario UTC-
   assert.ok(exportData.icsContent.includes("UID:kinesica-test-evt-1"));
   assert.ok(exportData.icsContent.includes("DTSTART:20261015T170000Z"));
   assert.ok(exportData.icsContent.includes("DTEND:20261015T180000Z"));
-  assert.ok(exportData.icsContent.includes("SUMMARY:Turno Kinesiología - Kinésica Palermo"));
+  assert.ok(exportData.icsContent.includes("SUMMARY:Turno en Kinésica"));
   assert.ok(exportData.icsContent.includes("END:VEVENT"));
   assert.ok(exportData.icsContent.includes("END:VCALENDAR"));
   assert.strictEqual(exportData.filename, "kinesica-turno-2026-10-15.ics");
