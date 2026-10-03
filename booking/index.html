@@ -79,8 +79,8 @@
     <div class="demo-controls">
       <label for="demo-mode-select">Modo:</label>
       <select id="demo-mode-select">
-        <option value="mock" selected>⚡ Modo Mock Local (Simulador)</option>
-        <option value="live">🌐 Google Calendar Real (Apps Script Webhook)</option>
+        <option value="live" selected>🌐 Google Calendar Real (En Vivo)</option>
+        <option value="mock">⚡ Modo Mock Local (Simulador)</option>
       </select>
       <button id="demo-reset-btn" title="Limpia los turnos simulados en memoria">↺ Reset Turnos Mock</button>
     </div>
@@ -104,6 +104,9 @@
     <div id="kinesica-booking-widget"></div>
   </div>
 
+  <!-- Configuración Global del Sitio -->
+  <script src="../js/site-config.js"></script>
+
   <!-- Scripts del Módulo -->
   <script src="./booking-engine.js"></script>
   <script src="./booking-api-client.js"></script>
@@ -112,32 +115,21 @@
   <script>
     // Inicializar el Widget
     let widgetInstance = null;
+    const LIVE_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzO3WZtQ4E3e0mZskicMs8unys26bPiNR3pvRpjbV78AUM9CCpWRGnALPGBqGl4fEBAbw/exec";
 
     function initWidget(forceMock) {
       widgetInstance = new KinesicaBookingWidget("kinesica-booking-widget", {
         forceMock: forceMock,
-        // Si tienes la URL desplegada en Google Apps Script, puedes colocarla aquí:
-        apiUrl: window.KINESICA_BOOKING_API_URL || null
+        apiUrl: forceMock ? null : LIVE_WEBHOOK_URL
       });
     }
 
-    // Inicializar en modo mock para testing inmediato
-    initWidget(true);
+    // Inicializar en modo LIVE con el Google Calendar real conectado
+    initWidget(false);
 
     // Selector de modo
     document.getElementById("demo-mode-select").addEventListener("change", function(e) {
       const isMock = e.target.value === "mock";
-      if (!isMock && !window.KINESICA_BOOKING_API_URL) {
-        const url = prompt("Ingresa la URL del Webhook de Google Apps Script publicada:\n(Si aún no la desplegaste, podés seguir usando el Modo Mock)", "");
-        if (url) {
-          window.KINESICA_BOOKING_API_URL = url;
-          initWidget(false);
-          return;
-        } else {
-          e.target.value = "mock";
-          return;
-        }
-      }
       initWidget(isMock);
     });
 

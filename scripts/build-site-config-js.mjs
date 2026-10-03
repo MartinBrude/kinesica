@@ -58,6 +58,8 @@ const content = [
   `    instagramMaria: ${JSON.stringify(SOCIALS.instagramMaria)},`,
   `    facebookBusiness: ${JSON.stringify(SOCIALS.facebookBusiness)},`,
   "  },",
+  "  /** Webhook oficial de Google Apps Script para reservas y Google Calendar. */",
+  '  bookingApiUrl: "https://script.google.com/macros/s/AKfycbzO3WZtQ4E3e0mZskicMs8unys26bPiNR3pvRpjbV78AUM9CCpWRGnALPGBqGl4fEBAbw/exec",',
   "};",
   "",
 ].join("\n");
