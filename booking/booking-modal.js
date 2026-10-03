@@ -34,7 +34,7 @@
     modalEl.className = "kinesica-booking-modal-overlay";
     modalEl.setAttribute("role", "dialog");
     modalEl.setAttribute("aria-modal", "true");
-    modalEl.setAttribute("aria-label", "Reservar turno online en Kinésica");
+    modalEl.setAttribute("aria-label", "Agendar");
     modalEl.setAttribute("aria-hidden", "true");
 
     modalEl.innerHTML = `

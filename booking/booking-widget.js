@@ -79,7 +79,7 @@
         <div class="kinesica-booking-container">
           <div class="kb-header">
             ${this.options.isModal ? '<button type="button" class="kb-close-btn" aria-label="Cerrar ventana de reservas" data-action="close-modal">&times;</button>' : ''}
-            <h2>Reserva tu Turno en Kinésica</h2>
+            <h2>Agendar</h2>
             <p>Consultorio de Kinesiología y RPG en Palermo, CABA</p>
           </div>
 
