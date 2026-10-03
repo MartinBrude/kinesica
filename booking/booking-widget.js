@@ -37,8 +37,8 @@
       // Estado del flujo
       this.state = {
         step: 1,
-        tipo: "primera_vez", // 'primera_vez' | 'habitual'
-        appointmentType: "call", // 'call' (10m) | 'session' (60m)
+        tipo: null, // 'primera_vez' | 'habitual'
+        appointmentType: null, // 'call' (10m) | 'session' (60m)
         selectedDate: null,
         selectedTime: null,
         availableSlots: [],
@@ -61,6 +61,20 @@
     init() {
       this.renderSkeleton();
       this.bindEvents();
+
+      // Si el enlace incluye ?tipo=habitual o #habitual, ir directo a reservar sesión de 1 hora
+      try {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("tipo") === "habitual" || window.location.hash === "#habitual") {
+          this.state.tipo = "habitual";
+          this.state.appointmentType = "session";
+          this.updateDniRequirement();
+          this.setStep(2);
+          this.renderDateCarousel();
+          return;
+        }
+      } catch (e) {}
+
       this.setStep(1);
     }
 
@@ -96,47 +110,27 @@
               <div class="kb-section-desc">Selecciona la opción que mejor describa tu situación para mostrarte las opciones de atención correspondientes.</div>
 
               <div class="kb-choice-grid">
-                <div class="kb-choice-card selected" id="kb-choice-primera-vez" data-tipo="primera_vez">
+                <div class="kb-choice-card" id="kb-choice-primera-vez" data-tipo="primera_vez">
                   <span class="kb-badge kb-badge-blue">Nuevo Paciente</span>
                   <h3>Es mi primera vez</h3>
-                  <p>Aún no he tenido consultas ni sesiones en el consultorio.</p>
+                  <p>Llamada previa de orientación (10 min) sin cargo para evaluar tu caso.</p>
                 </div>
                 <div class="kb-choice-card" id="kb-choice-habitual" data-tipo="habitual">
                   <span class="kb-badge kb-badge-teal">Paciente Habitual</span>
                   <h3>Ya soy paciente</h3>
-                  <p>Ya he realizado sesiones presenciales en Kinésica.</p>
+                  <p>Turno presencial de 1 hora en consultorio (Kinesiología, RPG, Osteopatía).</p>
                 </div>
               </div>
 
-              <!-- Cartel informativo para primera vez -->
-              <div id="kb-info-primera-vez" class="kb-alert-box">
+              <!-- Cartel informativo y avance para primera vez -->
+              <div id="kb-info-primera-vez" class="kb-alert-box" style="display: none; margin-top: 20px;">
                 <strong>📞 Llamada previa de orientación (10 minutos):</strong><br>
                 Para pacientes nuevos, el primer paso es coordinar una breve llamada telefónica sin cargo con el kinesiólogo. De esta manera evaluamos tu caso clínico en detalle y te informamos los honorarios correspondientes antes de que asistas al consultorio.
-              </div>
-
-              <!-- Opciones adicionales para paciente habitual -->
-              <div id="kb-options-habitual" style="display: none; margin-bottom: 24px;">
-                <label style="font-weight: 700; color: var(--kin-text-heading); display: block; margin-bottom: 10px;">
-                  ¿Qué tipo de turno deseas coordinar?
-                </label>
-                <div class="kb-choice-grid">
-                  <div class="kb-choice-card selected" id="kb-choice-session" data-apptype="session">
-                    <span class="kb-badge kb-badge-blue">Presencial (60 min)</span>
-                    <h3>Turno en Consultorio</h3>
-                    <p>Sesión completa de 1 hora de Kinesiología, RPG u Osteopatía.</p>
-                  </div>
-                  <div class="kb-choice-card" id="kb-choice-call" data-apptype="call">
-                    <span class="kb-badge kb-badge-teal">Telefónica (10 min)</span>
-                    <h3>Llamada de Orientación</h3>
-                    <p>Breve llamada de 10 minutos para consultas puntuales.</p>
-                  </div>
+                <div style="margin-top: 16px; text-align: right;">
+                  <button class="kb-btn kb-btn-primary" id="kb-btn-next-1">
+                    Continuar a Horarios de Llamada →
+                  </button>
                 </div>
-              </div>
-
-              <div class="kb-actions" style="justify-content: flex-end;">
-                <button class="kb-btn kb-btn-primary" id="kb-btn-next-1">
-                  Continuar a Horarios →
-                </button>
               </div>
             </div>
 
@@ -283,35 +277,20 @@
         q("#kb-choice-primera-vez").classList.add("selected");
         q("#kb-choice-habitual").classList.remove("selected");
         q("#kb-info-primera-vez").style.display = "block";
-        q("#kb-options-habitual").style.display = "none";
         this.updateDniRequirement();
       });
 
+      // Si ya es paciente, llevarlo DIRECTO a reservar turno de una hora
       q("#kb-choice-habitual").addEventListener("click", () => {
         this.state.tipo = "habitual";
-        this.state.appointmentType = "session"; // Habitual = Sesión por defecto
+        this.state.appointmentType = "session"; // Paciente habitual: turno presencial de 1 hora directo
         q("#kb-choice-habitual").classList.add("selected");
         q("#kb-choice-primera-vez").classList.remove("selected");
         q("#kb-info-primera-vez").style.display = "none";
-        q("#kb-options-habitual").style.display = "block";
-        q("#kb-choice-session").classList.add("selected");
-        q("#kb-choice-call").classList.remove("selected");
         this.updateDniRequirement();
-      });
-
-      // Selección de sub-tipo en habitual
-      q("#kb-choice-session").addEventListener("click", () => {
-        this.state.appointmentType = "session";
-        q("#kb-choice-session").classList.add("selected");
-        q("#kb-choice-call").classList.remove("selected");
-        this.updateDniRequirement();
-      });
-
-      q("#kb-choice-call").addEventListener("click", () => {
-        this.state.appointmentType = "call";
-        q("#kb-choice-call").classList.add("selected");
-        q("#kb-choice-session").classList.remove("selected");
-        this.updateDniRequirement();
+        this.clearError();
+        this.setStep(2);
+        this.renderDateCarousel();
       });
 
       // Checkbox menor
@@ -379,7 +358,16 @@
         }
       });
 
-      // Subtítulo paso 2
+      // Título y subtítulo paso 2
+      const step2Title = this.container.querySelector("#kb-step-2 .kb-section-title");
+      if (step2Title) {
+        if (this.state.appointmentType === "session") {
+          step2Title.textContent = "Elige el día y horario de tu sesión (1 hora)";
+        } else {
+          step2Title.textContent = "Elige el día y horario de tu llamada de orientación (10 min)";
+        }
+      }
+
       const subtitle = this.container.querySelector("#kb-slots-subtitle");
       if (subtitle) {
         if (this.state.appointmentType === "call") {
