@@ -110,14 +110,44 @@
           KinesicaBookingModal.open();
         }
       });
+
+      // Precalentamiento al pasar el cursor o posar el dedo sobre el botón de reserva
+      document.addEventListener(
+        "pointerover",
+        function (e) {
+          const trigger = e.target.closest && e.target.closest(
+            'a[href="#agendar"], a[href$="turnos.html"], a[href$="/turnos.html"], .js-booking-open, [data-booking-open]'
+          );
+          if (trigger) {
+            KinesicaBookingModal.prewarm();
+          }
+        },
+        { passive: true }
+      );
     },
 
     isOpen() {
       return modalEl ? modalEl.classList.contains("is-open") : false;
     },
 
+    prewarm() {
+      if (typeof window === "undefined") return;
+      if (widgetInstance && widgetInstance.client && typeof widgetInstance.client.prewarm === "function") {
+        widgetInstance.client.prewarm();
+      } else if (!window.__kinesicaPrewarmed) {
+        window.__kinesicaPrewarmed = true;
+        const apiUrl = getApiUrl();
+        if (apiUrl) {
+          try {
+            fetch(`${apiUrl}?action=ping`, { method: "GET", mode: "cors", redirect: "follow", cache: "no-store" }).catch(() => {});
+          } catch (e) {}
+        }
+      }
+    },
+
     open(options) {
       options = options || {};
+      this.prewarm();
       previousActiveElement = document.activeElement;
 
       createModalDOM();

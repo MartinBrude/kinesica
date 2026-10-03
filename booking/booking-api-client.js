@@ -64,15 +64,38 @@
         (typeof window !== "undefined" && window.KINESICA_SITE && window.KINESICA_SITE.bookingApiUrl) ||
         null;
       this.isMock = !this.apiUrl || this.options.forceMock === true;
+      this._slotsCache = {};
+      this._inFlightSlots = {};
+      this._prewarmed = false;
     }
 
     setApiUrl(url) {
       this.apiUrl = url;
       this.isMock = !url;
+      this._slotsCache = {};
     }
 
     setForceMock(force) {
       this.isMock = force;
+    }
+
+    /**
+     * Precalienta la conexión con Google Apps Script en segundo plano (fire-and-forget).
+     * Reduce drásticamente la latencia de cold-start antes de que el usuario elija fecha.
+     */
+    prewarm() {
+      if (this.isMock || this._prewarmed) return;
+      this._prewarmed = true;
+      const effectiveUrl = this.getEffectiveApiUrl();
+      if (!effectiveUrl) return;
+      try {
+        fetch(`${effectiveUrl}?action=ping`, {
+          method: "GET",
+          mode: "cors",
+          redirect: "follow",
+          cache: "no-store",
+        }).catch(() => {});
+      } catch (e) {}
     }
 
     getEffectiveApiUrl() {
@@ -97,9 +120,15 @@
     }
 
     /**
-     * Consulta horarios disponibles para una fecha y tipo.
+     * Consulta horarios disponibles para una fecha y tipo con reintentos automáticos y caché en memoria.
+     * Si el servidor de Google Apps Script está en "cold start", reintenta de forma transparente
+     * antes de arrojar error en la interfaz.
      */
-    async getAvailableSlots(dateStr, appointmentType) {
+    async getAvailableSlots(dateStr, appointmentType, options) {
+      options = options || {};
+      const forceRefresh = options.forceRefresh === true;
+      const maxRetries = typeof options.maxRetries === "number" ? options.maxRetries : 2; // hasta 3 intentos
+
       if (this.isMock) {
         // Simular latencia de red (150ms)
         await new Promise((r) => setTimeout(r, 150));
@@ -118,33 +147,82 @@
         };
       }
 
-      // Conexión a Google Apps Script / Proxy local con timeout de 15 segundos
+      const cacheKey = `${dateStr}_${appointmentType}`;
+
+      // 1. Revisar caché en memoria (validez 2 minutos para respuesta instantánea)
+      this._slotsCache = this._slotsCache || {};
+      const cached = this._slotsCache[cacheKey];
+      if (!forceRefresh && cached && Date.now() - cached.timestamp < 120000) {
+        return cached.data;
+      }
+
+      // 2. Si ya hay una petición idéntica en vuelo, reutilizar la misma Promise (anti-duplicación)
+      this._inFlightSlots = this._inFlightSlots || {};
+      if (!forceRefresh && this._inFlightSlots[cacheKey]) {
+        return this._inFlightSlots[cacheKey];
+      }
+
       const effectiveUrl = this.getEffectiveApiUrl();
       const url = `${effectiveUrl}?action=get_slots&date=${encodeURIComponent(dateStr)}&type=${encodeURIComponent(appointmentType)}`;
-      const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
-      const timeoutId = controller ? setTimeout(() => controller.abort(), 15000) : null;
 
-      try {
-        const res = await fetch(url, {
-          method: "GET",
-          mode: "cors",
-          redirect: "follow",
-          signal: controller ? controller.signal : undefined
-        });
-        if (timeoutId) clearTimeout(timeoutId);
-        if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
-        const json = await res.json();
-        if (json.status === "error") {
-          throw new Error(json.message || "Error al obtener disponibilidad");
+      const fetchWithRetry = async (attempt) => {
+        // En el primer intento damos 20s para permitir que el cold start de GAS despierte
+        const timeoutMs = attempt === 0 ? 20000 : 15000;
+        const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+        const timeoutId = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
+
+        try {
+          const res = await fetch(url, {
+            method: "GET",
+            mode: "cors",
+            redirect: "follow",
+            signal: controller ? controller.signal : undefined,
+          });
+          if (timeoutId) clearTimeout(timeoutId);
+          if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
+          const json = await res.json();
+          if (json.status === "error") {
+            throw new Error(json.message || "Error al obtener disponibilidad");
+          }
+          return json;
+        } catch (err) {
+          if (timeoutId) clearTimeout(timeoutId);
+
+          const isAbort = err.name === "AbortError";
+          const isTransientError =
+            isAbort ||
+            err instanceof TypeError ||
+            (err.message && (err.message.includes("Failed to fetch") || err.message.includes("HTTP Error 5")));
+
+          // Si falla por cold-start o corte transitorio y quedan reintentos, reintentar automáticamente
+          if (attempt < maxRetries && isTransientError) {
+            const delay = (attempt + 1) * 600; // 600ms, 1200ms
+            await new Promise((r) => setTimeout(r, delay));
+            return fetchWithRetry(attempt + 1);
+          }
+
+          if (isAbort) {
+            throw new Error("La consulta a Google Calendar demoró demasiado. Por favor intenta recargar la página.");
+          }
+          throw err;
         }
-        return json;
-      } catch (err) {
-        if (timeoutId) clearTimeout(timeoutId);
-        if (err.name === "AbortError") {
-          throw new Error("La consulta a Google Calendar demoró demasiado. Por favor intenta recargar la página.");
+      };
+
+      const reqPromise = (async () => {
+        try {
+          const result = await fetchWithRetry(0);
+          this._slotsCache[cacheKey] = {
+            data: result,
+            timestamp: Date.now(),
+          };
+          return result;
+        } finally {
+          delete this._inFlightSlots[cacheKey];
         }
-        throw err;
-      }
+      })();
+
+      this._inFlightSlots[cacheKey] = reqPromise;
+      return reqPromise;
     }
 
     /**

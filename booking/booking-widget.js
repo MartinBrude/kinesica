@@ -57,6 +57,9 @@
     init() {
       this.renderSkeleton();
       this.bindEvents();
+      if (this.client && typeof this.client.prewarm === "function") {
+        this.client.prewarm();
+      }
 
       // Si el enlace incluye ?tipo=habitual o #habitual, ir directo a reservar sesión de 1 hora
       try {
@@ -438,7 +441,10 @@
       await this.loadSlotsForDate(dateIso);
     }
 
-    async loadSlotsForDate(dateIso) {
+    async loadSlotsForDate(dateIso, forceRefresh = false) {
+      this._slotReqSeq = (this._slotReqSeq || 0) + 1;
+      const currentReq = this._slotReqSeq;
+
       const loading = this.container.querySelector("#kb-slots-loading");
       const empty = this.container.querySelector("#kb-slots-empty");
       const errorBox = this.container.querySelector("#kb-slots-error");
@@ -451,7 +457,9 @@
       grid.innerHTML = "";
 
       try {
-        const res = await this.client.getAvailableSlots(dateIso, this.state.appointmentType);
+        const res = await this.client.getAvailableSlots(dateIso, this.state.appointmentType, { forceRefresh });
+        if (currentReq !== this._slotReqSeq) return;
+
         loading.style.display = "none";
         const slots = res.availableSlots || [];
         this.state.availableSlots = slots;
@@ -480,12 +488,13 @@
           grid.appendChild(chip);
         });
       } catch (err) {
+        if (currentReq !== this._slotReqSeq) return;
         loading.style.display = "none";
         errorBox.style.display = "flex";
         this.container.querySelector("#kb-slots-error-text").textContent = `Error al consultar disponibilidad: ${err.message}`;
         const retryBtn = this.container.querySelector("#kb-btn-retry-slots");
         if (retryBtn) {
-          retryBtn.onclick = () => this.loadSlotsForDate(dateIso);
+          retryBtn.onclick = () => this.loadSlotsForDate(dateIso, true);
         }
       }
     }
