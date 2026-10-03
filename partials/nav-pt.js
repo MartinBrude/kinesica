@@ -18,8 +18,5 @@ window.__KINESICA_NAV_SNIPPET_PT = `
       <li><a href="posturologia-clinica.html" title="Posturologia clínica">Posturologia clínica</a></li>
     </ul>
   </li>
-  <li class="nav-item-booking">
-    <a href="../turnos.html" class="btn-nav-booking" title="Agendar turno o consulta online">Agendar</a>
-  </li>
 </ul>
 `.trim();

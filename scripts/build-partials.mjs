@@ -92,8 +92,6 @@ function buildNav(lang, s) {
     return `      <li><a href="${stem}.html" title="${escAttr(label)}">${escHtml(label)}</a></li>`;
   }).join("\n");
 
-  const bookingHref = lang === "es" ? "turnos.html" : "../turnos.html";
-
   return writePartial(
     "nav",
     lang,
@@ -107,9 +105,6 @@ function buildNav(lang, s) {
     <ul>
 ${techniqueItems}
     </ul>
-  </li>
-  <li class="nav-item-booking">
-    <a href="${bookingHref}" class="btn-nav-booking" title="${escAttr(s.booking.title)}">${escHtml(s.booking.label)}</a>
   </li>
 </ul>`,
   );
