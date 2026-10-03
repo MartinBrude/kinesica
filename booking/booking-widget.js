@@ -97,12 +97,12 @@
 
               <div class="kb-choice-grid">
                 <div class="kb-choice-card selected" id="kb-choice-primera-vez" data-tipo="primera_vez">
-                  <span class="kb-badge kb-badge-mint">Nuevo Paciente</span>
+                  <span class="kb-badge kb-badge-blue">Nuevo Paciente</span>
                   <h3>Es mi primera vez</h3>
                   <p>Aún no he tenido consultas ni sesiones en el consultorio.</p>
                 </div>
                 <div class="kb-choice-card" id="kb-choice-habitual" data-tipo="habitual">
-                  <span class="kb-badge kb-badge-gold">Paciente Habitual</span>
+                  <span class="kb-badge kb-badge-teal">Paciente Habitual</span>
                   <h3>Ya soy paciente</h3>
                   <p>Ya he realizado sesiones presenciales en Kinésica.</p>
                 </div>
@@ -116,17 +116,17 @@
 
               <!-- Opciones adicionales para paciente habitual -->
               <div id="kb-options-habitual" style="display: none; margin-bottom: 24px;">
-                <label style="font-weight: 700; color: var(--kin-green-deep); display: block; margin-bottom: 10px;">
+                <label style="font-weight: 700; color: var(--kin-text-heading); display: block; margin-bottom: 10px;">
                   ¿Qué tipo de turno deseas coordinar?
                 </label>
                 <div class="kb-choice-grid">
                   <div class="kb-choice-card selected" id="kb-choice-session" data-apptype="session">
-                    <span class="kb-badge kb-badge-mint">Presencial (60 min)</span>
+                    <span class="kb-badge kb-badge-blue">Presencial (60 min)</span>
                     <h3>Turno en Consultorio</h3>
                     <p>Sesión completa de 1 hora de Kinesiología, RPG u Osteopatía.</p>
                   </div>
                   <div class="kb-choice-card" id="kb-choice-call" data-apptype="call">
-                    <span class="kb-badge kb-badge-gold">Telefónica (10 min)</span>
+                    <span class="kb-badge kb-badge-teal">Telefónica (10 min)</span>
                     <h3>Llamada de Orientación</h3>
                     <p>Breve llamada de 10 minutos para consultas puntuales.</p>
                   </div>
@@ -150,8 +150,19 @@
               <label class="kb-slots-label">Días disponibles:</label>
               <div class="kb-date-scroll" id="kb-date-carousel"></div>
 
-              <label class="kb-slots-label" id="kb-slots-grid-title">Horarios libres:</label>
+              <label class="kb-slots-label" id="kb-slots-grid-title">Horarios disponibles:</label>
               <div id="kb-slots-container">
+                <div id="kb-slots-loading" class="kb-state-box" style="display: none;">
+                  <div class="kb-spinner"></div>
+                  <span>Consultando disponibilidad en Google Calendar...</span>
+                </div>
+                <div id="kb-slots-empty" class="kb-state-box" style="display: none;">
+                  <span>No hay horarios disponibles para esta fecha.<br>Por favor selecciona otro día en el calendario superior.</span>
+                </div>
+                <div id="kb-slots-error" class="kb-state-box" style="display: none; border-color: var(--kin-danger); color: var(--kin-danger);">
+                  <span id="kb-slots-error-text"></span>
+                  <button class="kb-btn kb-btn-secondary" id="kb-btn-retry-slots" style="margin-top: 6px; font-size: 13px; padding: 6px 14px;">↺ Reintentar</button>
+                </div>
                 <div class="kb-slots-grid" id="kb-slots-grid"></div>
               </div>
 
@@ -446,24 +457,29 @@
     }
 
     async loadSlotsForDate(dateIso) {
+      const loading = this.container.querySelector("#kb-slots-loading");
+      const empty = this.container.querySelector("#kb-slots-empty");
+      const errorBox = this.container.querySelector("#kb-slots-error");
       const grid = this.container.querySelector("#kb-slots-grid");
-      grid.innerHTML = '<div class="kb-no-slots">Consultando disponibilidad en Google Calendar...</div>';
+
+      loading.style.display = "flex";
+      empty.style.display = "none";
+      errorBox.style.display = "none";
+      grid.style.display = "none";
+      grid.innerHTML = "";
 
       try {
         const res = await this.client.getAvailableSlots(dateIso, this.state.appointmentType);
+        loading.style.display = "none";
         const slots = res.availableSlots || [];
         this.state.availableSlots = slots;
 
         if (slots.length === 0) {
-          grid.innerHTML = `
-            <div class="kb-no-slots" style="grid-column: 1 / -1;">
-              No hay horarios disponibles para esta fecha.<br>
-              Por favor selecciona otro día en el calendario superior.
-            </div>
-          `;
+          empty.style.display = "flex";
           return;
         }
 
+        grid.style.display = "grid";
         grid.innerHTML = "";
         slots.forEach((slot) => {
           const chip = document.createElement("div");
@@ -482,7 +498,13 @@
           grid.appendChild(chip);
         });
       } catch (err) {
-        grid.innerHTML = `<div class="kb-no-slots" style="grid-column: 1 / -1; color: var(--kin-danger);">Error al consultar disponibilidad: ${err.message}</div>`;
+        loading.style.display = "none";
+        errorBox.style.display = "flex";
+        this.container.querySelector("#kb-slots-error-text").textContent = `Error al consultar disponibilidad: ${err.message}`;
+        const retryBtn = this.container.querySelector("#kb-btn-retry-slots");
+        if (retryBtn) {
+          retryBtn.onclick = () => this.loadSlotsForDate(dateIso);
+        }
       }
     }
 
