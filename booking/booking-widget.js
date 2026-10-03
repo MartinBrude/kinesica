@@ -47,7 +47,6 @@
           nombre: "",
           telefono: "",
           dni: "",
-          motivo: "Columna / Lumbalgia o Ciática",
           isMenor: false,
           nombreFamiliar: "",
           notas: "",
@@ -189,19 +188,7 @@
                 </div>
               </div>
 
-              <div class="kb-form-group">
-                <label for="kb-input-motivo">Motivo Principal de Consulta *</label>
-                <select id="kb-input-motivo">
-                  <option value="Columna / Lumbalgia o Ciática">Columna / Lumbalgia o Ciática</option>
-                  <option value="Cervicalgia / Dolor de cuello o mareos">Cervicalgia / Dolor de cuello o mareos</option>
-                  <option value="ATM / Bruxismo y dolor mandibular">ATM / Bruxismo y dolor mandibular</option>
-                  <option value="RPG / Reeducación Postural Global">RPG / Reeducación Postural Global</option>
-                  <option value="Hombro / Manguito rotador">Hombro / Manguito rotador o tendinopatía</option>
-                  <option value="Posturología Clínica / Pisada">Posturología Clínica / Pisada</option>
-                  <option value="Rehabilitación Traumatológica">Rehabilitación Traumatológica / Desgarro</option>
-                  <option value="Otra consulta clínica">Otra consulta clínica</option>
-                </select>
-              </div>
+
 
               <div class="kb-form-group">
                 <label class="kb-checkbox-label">
@@ -491,7 +478,6 @@
       const nombre = q("#kb-input-nombre").value.trim();
       const telefono = q("#kb-input-telefono").value.trim();
       const dni = q("#kb-input-dni").value.trim();
-      const motivo = q("#kb-input-motivo").value;
       const isMenor = q("#kb-check-menor").checked;
       const nombreFamiliar = q("#kb-input-familiar").value.trim();
       const notas = q("#kb-input-notas").value.trim();
@@ -504,7 +490,7 @@
         nombre: nombre,
         telefono: telefono,
         dni: dni,
-        motivo: motivo,
+        motivo: "",
         isMenor: isMenor,
         nombreFamiliar: nombreFamiliar,
         notas: notas,
@@ -543,7 +529,6 @@
         <div><strong>Paciente:</strong> ${payload.nombre} ${payload.isMenor && payload.nombreFamiliar ? `(Menor - Acompañante: ${payload.nombreFamiliar})` : ""}</div>
         <div><strong>Fecha y Hora:</strong> ${payload.date} a las ${payload.time} hs</div>
         <div><strong>WhatsApp / Contacto:</strong> ${payload.telefono}</div>
-        <div><strong>Motivo:</strong> ${payload.motivo}</div>
         <div style="margin-top: 6px; font-size: 12px; color: var(--kin-text-muted);">
           Identificador de cita: <code>${result.eventId || "CONFIRMADO"}</code>
         </div>

@@ -271,8 +271,10 @@
       `📱 WhatsApp: ${data.telefono.trim()}`,
       `🪪 DNI: ${data.dni ? data.dni.trim() : "No provisto"}`,
       `🌿 Origen: Reserva Web Oficial Kinésica`,
-      `📋 Motivo: ${data.motivo || "Consulta general"}`,
     ];
+    if (data.motivo && data.motivo.trim()) {
+      parts.push(`📋 Motivo: ${data.motivo.trim()}`);
+    }
     if (data.isMenor && data.nombreFamiliar) {
       parts.push(`👥 Adulto Responsable: ${data.nombreFamiliar.trim()}`);
     }
