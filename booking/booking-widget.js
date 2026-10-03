@@ -210,8 +210,8 @@
                 <div class="kb-clinic-rules" id="kb-success-clinic-rules" style="display: none;">
                   <h4>📍 Información Importante para tu Asistencia al Consultorio:</h4>
                   <ul>
-                    <li><strong>Dirección:</strong> Charcas 3889, Piso 5º, Depto B, Palermo (entre Salguero y Vidt).</li>
-                    <li><strong>Sin sala de espera:</strong> El espacio no cuenta con sala de espera. Te pedimos <strong>puntualidad exacta</strong> al horario acordado para evitar esperas en la entrada o palier.</li>
+                    <li><strong>Dirección:</strong> Charcas 3889, Piso 5º, Depto B, Palermo (entre Scalabrini Ortiz y Aráoz).</li>
+                    <li>Te pedimos que llegues a la hora de la sesión, ni antes ni después, por características del espacio.</li>
                     <li><strong>Sin acompañantes:</strong> La sesión es personalizada. Rogamos no asistir con acompañantes (salvo menores de edad o personas que requieran asistencia directa).</li>
                     <li><strong>Estudios previos:</strong> Si contás con radiografías, resonancias o informes médicos, por favor traelos a la sesión.</li>
                   </ul>

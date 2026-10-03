@@ -19,7 +19,7 @@ Este módulo implementa el sistema de reservas web conectado a **Google Calendar
 5. **Margen de Traslado (Same-Day Buffer):**
    - Para reservas en el mismo día, se excluyen horarios con menos de **2 horas de anticipación** para permitir el viaje al consultorio.
 6. **Privacidad de Ubicación y Normas del Consultorio:**
-   - La dirección exacta (**Charcas 3889, Piso 5º B, Palermo**) y las indicaciones (*sin sala de espera, puntualidad estricta, sin acompañantes, traer estudios previos*) solo se muestran al confirmar un **Turno Presencial**.
+   - La dirección exacta (**Charcas 3889, Piso 5º B, Palermo, entre Scalabrini Ortiz y Aráoz**) y las indicaciones (*llegar a la hora de la sesión ni antes ni después por características del espacio, sin acompañantes, traer estudios previos*) solo se muestran al confirmar un **Turno Presencial**.
 
 ---
 
