@@ -200,15 +200,13 @@ function buildCtaStrip(lang, s) {
     `    <section class="space-small bg-primary site-cta-strip">
       <div class="container">
         <div class="row">
-          <div class="col-lg-7 col-sm-7 col-md-7 col-xs-12">
+          <div class="col-lg-8 col-sm-8 col-md-8 col-xs-12">
             <h2 class="cta-title">${s.ctaTitle}</h2>
             <p class="cta-text">${s.ctaText}</p>
           </div>
-          <div class="col-lg-5 col-sm-5 col-md-5 col-xs-12">
-            <div class="site-cta-buttons">
-              <a href="${waMeUrl(CONTACT.whatsappDigits)}" target="_blank" class="btn btn-white btn-lg mt20 dynamic-whatsapp-url"
-                rel="noopener noreferrer">${s.ctaButton}</a>
-            </div>
+          <div class="col-lg-4 col-sm-4 col-md-4 col-xs-12">
+            <a href="${waMeUrl(CONTACT.whatsappDigits)}" target="_blank" class="btn btn-white btn-lg mt20 dynamic-whatsapp-url"
+              rel="noopener noreferrer">${s.ctaButton}</a>
           </div>
         </div>
       </div>
