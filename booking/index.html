@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kinésica - Módulo de Turnos y Google Calendar (Demo)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./booking-widget.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f0f4f2;
+      font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #212529;
+    }
+    .demo-topbar {
+      background: #1B4332;
+      color: #ffffff;
+      padding: 12px 20px;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .demo-badge {
+      background: #52B788;
+      color: #081C15;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 11px;
+    }
+    .demo-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .demo-controls select, .demo-controls button {
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      border: 1px solid #52B788;
+      background: #ffffff;
+      cursor: pointer;
+    }
+    .demo-wrapper {
+      padding: 40px 16px 80px 16px;
+    }
+    .demo-info-card {
+      max-width: 720px;
+      margin: 0 auto 24px auto;
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 18px 24px;
+      border: 1px solid #d8f3dc;
+      font-size: 13.5px;
+      line-height: 1.5;
+    }
+    .demo-info-card h1 {
+      font-size: 18px;
+      margin: 0 0 8px 0;
+      color: #1B4332;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barra de control de pruebas -->
+  <div class="demo-topbar">
+    <div>
+      <span class="demo-badge">RAMA DE PRUEBAS</span>
+      <strong>Kinésica Web Booking Module</strong> — Conexión Google Calendar
+    </div>
+    <div class="demo-controls">
+      <label for="demo-mode-select">Modo:</label>
+      <select id="demo-mode-select">
+        <option value="mock" selected>⚡ Modo Mock Local (Simulador)</option>
+        <option value="live">🌐 Google Calendar Real (Apps Script Webhook)</option>
+      </select>
+      <button id="demo-reset-btn" title="Limpia los turnos simulados en memoria">↺ Reset Turnos Mock</button>
+    </div>
+  </div>
+
+  <div class="demo-wrapper">
+    <div class="demo-info-card">
+      <h1>🩺 Prototipo Interactivo de Agenda y Reglas Clínicas</h1>
+      <p style="margin: 0; color: #495057;">
+        Este módulo valida en vivo las reglas de negocio de <strong>kinesica-bot</strong>:
+        <br>
+        1. <strong>Primera Vez:</strong> Requiere obligatoriamente <em>Llamada previa de orientación de 10 min</em> (bloquea turnos presenciales directos).
+        <br>
+        2. <strong>Paciente Habitual:</strong> Permite agendar <em>Turno Presencial de 1 hora</em> o llamada.
+        <br>
+        3. <strong>Anti-Colisión:</strong> Ninguna cita puede solaparse con eventos existentes en la agenda (08:00 a 19:00 hs, lunes a viernes).
+      </p>
+    </div>
+
+    <!-- Contenedor del Widget -->
+    <div id="kinesica-booking-widget"></div>
+  </div>
+
+  <!-- Scripts del Módulo -->
+  <script src="./booking-engine.js"></script>
+  <script src="./booking-api-client.js"></script>
+  <script src="./booking-widget.js"></script>
+
+  <script>
+    // Inicializar el Widget
+    let widgetInstance = null;
+
+    function initWidget(forceMock) {
+      widgetInstance = new KinesicaBookingWidget("kinesica-booking-widget", {
+        forceMock: forceMock,
+        // Si tienes la URL desplegada en Google Apps Script, puedes colocarla aquí:
+        apiUrl: window.KINESICA_BOOKING_API_URL || null
+      });
+    }
+
+    // Inicializar en modo mock para testing inmediato
+    initWidget(true);
+
+    // Selector de modo
+    document.getElementById("demo-mode-select").addEventListener("change", function(e) {
+      const isMock = e.target.value === "mock";
+      if (!isMock && !window.KINESICA_BOOKING_API_URL) {
+        const url = prompt("Ingresa la URL del Webhook de Google Apps Script publicada:\n(Si aún no la desplegaste, podés seguir usando el Modo Mock)", "");
+        if (url) {
+          window.KINESICA_BOOKING_API_URL = url;
+          initWidget(false);
+          return;
+        } else {
+          e.target.value = "mock";
+          return;
+        }
+      }
+      initWidget(isMock);
+    });
+
+    // Reset turnos mock
+    document.getElementById("demo-reset-btn").addEventListener("click", function() {
+      localStorage.removeItem("kinesica_mock_calendar_events");
+      alert("Memoria de turnos mock reseteada.");
+      initWidget(true);
+    });
+  </script>
+</body>
+</html>
