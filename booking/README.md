@@ -71,10 +71,14 @@ El archivo [`google-apps-script.js`](file:///Users/martinbrude/Documents/kinesic
 3. En **Configuración del proyecto** → **Propiedades de la secuencia de comandos**:
    - `CALENDAR_NAME`: `consultorio`
    - `SPREADSHEET_ID`: `1kyGkYea0Iu_OrXxF-yONqhs2rG1O8YUWbbSmQe37GCk`
+   - `WHATSAPP_TOKEN`: Token Bearer de Meta WhatsApp Cloud API (para enviar la alerta inmediata por WhatsApp a Norberto ante cada nueva reserva web).
+   - `NORBERTO_PHONE`: `541161564311` (opcional, configurado por defecto).
+   - `WHATSAPP_PHONE_NUMBER_ID`: `1362220846964898` (opcional, configurado por defecto).
+   - `N8N_ALERT_WEBHOOK_URL`: (Opcional) Si preferís despachar la alerta mediante un webhook de n8n.
 4. Hacé clic en **Implementar** → **Nueva implementación** → Tipo: **Aplicación web**:
    - *Ejecutar como:* **Yo**
    - *Quién tiene acceso:* **Cualquier persona**
-5. Copiá la URL del Webhook generada y agregala en tu configuración o en el selector del prototipo. ¡Listo! El módulo leerá y escribirá directamente en el Google Calendar `consultorio`.
+5. Copiá la URL del Webhook generada y agregala en tu configuración o en el selector del prototipo. ¡Listo! El módulo leerá y escribirá directamente en el Google Calendar `consultorio` y le notificará a Norberto a su WhatsApp personal.
 
 ---
 

@@ -393,6 +393,25 @@ function handleBookAppointment(payload) {
     }
   }
 
+  // 6. Notificar a Norberto por WhatsApp informando la situación
+  try {
+    notifyNorbertoNewWebBooking({
+      appointmentType: appointmentType,
+      nombre: nombre,
+      telefono: telefono,
+      dni: dni,
+      date: dateStr,
+      time: timeStr,
+      motivo: motivo,
+      isMenor: isMenor,
+      nombreFamiliar: nombreFamiliar,
+      notas: notas,
+      summary: summary
+    });
+  } catch (errNotify) {
+    console.error("Error al notificar a Norberto: " + errNotify);
+  }
+
   return createJsonResponse({
     status: "success",
     appointmentType: appointmentType,
@@ -404,6 +423,128 @@ function handleBookAppointment(payload) {
       ? "Tu llamada de orientación ha sido agendada con éxito."
       : "Tu turno presencial ha sido agendado con éxito."
   });
+}
+
+/**
+ * Envía un mensaje de WhatsApp a Norberto ante un nuevo evento agendado desde la web.
+ * Soporta despacho directo mediante Meta WhatsApp Cloud API (Graph v21.0) y/o webhook de n8n,
+ * con fallback automático por correo electrónico (norberto1712@gmail.com) para garantizar Zero-Ghosting.
+ */
+function notifyNorbertoNewWebBooking(data) {
+  const props = PropertiesService.getScriptProperties();
+  const token = props.getProperty("WHATSAPP_TOKEN") || props.getProperty("META_ACCESS_TOKEN");
+  const phoneId = props.getProperty("WHATSAPP_PHONE_NUMBER_ID") || "1362220846964898";
+  const norbertoPhone = props.getProperty("NORBERTO_PHONE") || "541161564311";
+  const n8nWebhookUrl = props.getProperty("N8N_ALERT_WEBHOOK_URL");
+
+  const tipoDetalle = data.appointmentType === "session"
+    ? "🩺 Turno presencial en consultorio (60 min)"
+    : "📞 Llamada de orientación previa (10 min)";
+
+  const cleanPhone = String(data.telefono || "").replace(/[^0-9]/g, "");
+  const waLink = cleanPhone ? ("wa.me/" + cleanPhone) : "No provisto";
+  const fechaAmigable = formatFriendlyDate(data.date);
+
+  let message = "📌 *NUEVA RESERVA DESDE LA WEB EN KINÉSICA*\n" +
+    "• *Tipo:* " + tipoDetalle + "\n" +
+    "• *Paciente:* " + data.nombre + "\n" +
+    "• *Fecha y Hora:* " + fechaAmigable + " a las " + data.time + " hs\n" +
+    "• *WhatsApp:* " + waLink + "\n" +
+    "• *DNI:* " + (data.dni || "No provisto") + "\n" +
+    "• *Motivo de consulta:* " + (data.motivo || "Consulta general");
+
+  if (data.isMenor && data.nombreFamiliar) {
+    message += "\n• *Adulto Responsable (Menor):* " + data.nombreFamiliar;
+  }
+  if (data.notas) {
+    message += "\n• *Notas del paciente:* " + data.notas;
+  }
+  message += "\n\n*(Agendado automáticamente a través de kinesica.com.ar/turnos.html)*";
+
+  let sent = false;
+
+  // 1. Envío directo mediante Meta WhatsApp Cloud API (Graph v21.0)
+  if (token) {
+    try {
+      const url = "https://graph.facebook.com/v21.0/" + phoneId + "/messages";
+      const res = UrlFetchApp.fetch(url, {
+        method: "post",
+        contentType: "application/json",
+        headers: {
+          "Authorization": "Bearer " + token
+        },
+        payload: JSON.stringify({
+          messaging_product: "whatsapp",
+          recipient_type: "individual",
+          to: norbertoPhone,
+          type: "text",
+          text: { body: message }
+        }),
+        muteHttpExceptions: true
+      });
+      const code = res.getResponseCode();
+      if (code >= 200 && code < 300) {
+        sent = true;
+      } else {
+        console.warn("Meta WhatsApp Cloud API devolvió código " + code + ": " + res.getContentText());
+      }
+    } catch (e) {
+      console.error("Excepción al despachar WhatsApp directo a Norberto: " + e.toString());
+    }
+  }
+
+  // 2. Envío secundario mediante Webhook n8n (si está configurado N8N_ALERT_WEBHOOK_URL)
+  if (!sent && n8nWebhookUrl) {
+    try {
+      const res = UrlFetchApp.fetch(n8nWebhookUrl, {
+        method: "post",
+        contentType: "application/json",
+        payload: JSON.stringify({
+          action: "web_booking_alert",
+          to: norbertoPhone,
+          body: message,
+          booking: data
+        }),
+        muteHttpExceptions: true
+      });
+      if (res.getResponseCode() >= 200 && res.getResponseCode() < 300) {
+        sent = true;
+      }
+    } catch (e) {
+      console.error("Excepción al despachar webhook de n8n: " + e.toString());
+    }
+  }
+
+  // 3. Resguardo por Correo Electrónico (Zero-Ghosting garantizado si WhatsApp no estuviese disponible)
+  if (!sent) {
+    try {
+      const cleanSubject = "📌 [KINÉSICA] Nueva Reserva Web: " + data.nombre + " - " + fechaAmigable + " " + data.time + " hs";
+      const plainBody = message.replace(/\*([^*]+)\*/g, "$1");
+      MailApp.sendEmail({
+        to: "norberto1712@gmail.com",
+        subject: cleanSubject,
+        body: plainBody
+      });
+    } catch (e) {
+      console.error("Excepción en MailApp fallback: " + e.toString());
+    }
+  }
+
+  return sent;
+}
+
+/**
+ * Formatea una fecha YYYY-MM-DD en texto legible en español (ej: "Jueves 08/10")
+ */
+function formatFriendlyDate(dateStr) {
+  try {
+    const parts = dateStr.split("-");
+    const d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+    const dias = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+    return dias[d.getDay()] + " " + parts[2] + "/" + parts[1];
+  } catch (e) {
+    return dateStr;
+  }
 }
 
 function createJsonResponse(data, statusCode) {
