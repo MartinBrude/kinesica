@@ -10,6 +10,10 @@
  * 3. En Configuración del proyecto -> Propiedades de la secuencia de comandos:
  *    - CALENDAR_NAME: "consultorio" (o dejar vacío para usar el calendario principal).
  *    - SPREADSHEET_ID: "1kyGkYea0Iu_OrXxF-yONqhs2rG1O8YUWbbSmQe37GCk"
+ *    - WHATSAPP_TOKEN: Token de Meta WhatsApp Cloud API para enviar alertas por WhatsApp a Norberto.
+ *    - NORBERTO_PHONE: "541161564311" (opcional, valor por defecto).
+ *    - WHATSAPP_PHONE_NUMBER_ID: "1362220846964898" (opcional, valor por defecto).
+ *    - N8N_ALERT_WEBHOOK_URL: (Opcional) URL de webhook n8n para despacho vía n8n.
  * 4. Implementar -> Nueva implementación -> Tipo: "Aplicación web":
  *    - Ejecutar como: "Yo" (tu cuenta de Google con acceso al calendario).
  *    - Quién tiene acceso: "Cualquier persona" (para permitir peticiones desde la web).
@@ -21,7 +25,9 @@ const CALL_DURATION_MINUTES = 10;
 const SESSION_DURATION_MINUTES = 60;
 const DAY_START_HOUR = 8;
 const DAY_END_HOUR = 19;
-const SAME_DAY_BUFFER_HOURS = 2;
+const CALL_BUFFER_HOURS = 1; // Para llamadas de 10m: mínimo 1 hora de anticipación (no ofrecer nada en la siguiente hora)
+const SESSION_BUFFER_HOURS = 2; // Para turnos presenciales de 1h: mínimo 2 horas de margen de traslado
+const SAME_DAY_BUFFER_HOURS = 2; // Compatibilidad retroactiva
 
 // Feriados Oficiales de Argentina
 const ARGENTINA_HOLIDAYS = [
@@ -192,11 +198,14 @@ function handleGetSlots(params) {
     };
   });
 
-  // 3. Buffer para reservas del mismo día (mínimo 2 horas desde ahora en Argentina)
+  // 3. Buffer para reservas del mismo día:
+  // - Llamadas (10 min): mínimo 1 hora de anticipación (no ofrecer nada en la siguiente hora)
+  // - Turnos presenciales (60 min): mínimo 2 horas de margen de traslado
   const now = new Date();
   const todayInArg = Utilities.formatDate(now, "America/Argentina/Buenos_Aires", "yyyy-MM-dd");
   const isToday = (todayInArg === dateStr);
-  const minAllowedTime = isToday ? (now.getTime() + SAME_DAY_BUFFER_HOURS * 3600 * 1000) : dayStart.getTime();
+  const bufferHours = type === "call" ? CALL_BUFFER_HOURS : SESSION_BUFFER_HOURS;
+  const minAllowedTime = isToday ? (now.getTime() + bufferHours * 3600 * 1000) : dayStart.getTime();
 
   // 4. Calcular slots libres
   const step = type === "call" ? 10 : 30; // pasos de evaluación
@@ -317,7 +326,22 @@ function handleBookAppointment(payload) {
   const startTime = parseArgentinaDate(dateStr, timeStr);
   const endTime = new Date(startTime.getTime() + duration * 60 * 1000);
 
-  // 1. Verificación atómica anti-colisión en Google Calendar
+  // 1. Verificación de anticipación mínima para el mismo día
+  const now = new Date();
+  const todayInArg = Utilities.formatDate(now, "America/Argentina/Buenos_Aires", "yyyy-MM-dd");
+  const isToday = (todayInArg === dateStr);
+  const bufferHours = appointmentType === "call" ? CALL_BUFFER_HOURS : SESSION_BUFFER_HOURS;
+  const minAllowedTime = isToday ? (now.getTime() + bufferHours * 3600 * 1000) : parseArgentinaDate(dateStr, "08:00").getTime();
+  if (startTime.getTime() < minAllowedTime) {
+    return createJsonResponse({
+      status: "error",
+      message: appointmentType === "call"
+        ? "Las llamadas deben reservarse con al menos 1 hora de anticipación."
+        : "Los turnos presenciales deben reservarse con al menos 2 horas de anticipación."
+    }, 400);
+  }
+
+  // 2. Verificación atómica anti-colisión en Google Calendar
   const cal = getKinesicaCalendar();
   const existingEvents = cal.getEvents(startTime, endTime);
   if (existingEvents.length > 0) {

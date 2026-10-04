@@ -16,8 +16,9 @@ Este módulo implementa el sistema de reservas web conectado a **Google Calendar
    - Sábados, domingos y feriados nacionales de Argentina están **bloqueados determinísticamente** (0 slots).
 4. **Anti-Colisión Determinista (Unicidad del Profesional):**
    - El profesional atiende de forma individual: una llamada de 10 min no colisiona con un turno de 60 min, ni con citas previas ni con bloqueos administrativos (`🚫 [BLOQUEADO]`).
-5. **Margen de Traslado (Same-Day Buffer):**
-   - Para reservas en el mismo día, se excluyen horarios con menos de **2 horas de anticipación** para permitir el viaje al consultorio.
+5. **Margen de Anticipación y Traslado (Same-Day Buffer):**
+   - **Llamadas telefónicas de orientación (10 min):** Para reservas en el mismo día, se excluyen horarios dentro de la **siguiente hora** (mínimo 1 hora de anticipación).
+   - **Turnos presenciales (60 min):** Para reservas en el mismo día, se excluyen horarios con menos de **2 horas de anticipación** para permitir el viaje al consultorio.
 6. **Privacidad de Ubicación y Normas del Consultorio:**
    - La dirección exacta (**Charcas 3889, Piso 5º B, Palermo, entre Scalabrini Ortiz y Aráoz**) y las indicaciones (*llegar a la hora de la sesión ni antes ni después por características del espacio, sin acompañantes, traer estudios previos*) solo se muestran al confirmar un **Turno Presencial**.
 

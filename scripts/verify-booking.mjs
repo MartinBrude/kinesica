@@ -174,13 +174,33 @@ test("REGLA 3B: Un turno presencial de 1h bloquea todas las llamadas intermedias
 });
 
 // ---------------------------------------------------------------------------
-// 4. BUFFER DE TRASLADO EN EL MISMO DÍA (2 HORAS)
+// 4. BUFFER DE ANTICIPACIÓN Y TRASLADO EN EL MISMO DÍA
 // ---------------------------------------------------------------------------
-test("REGLA 4: Si se consulta para hoy, no se ofrecen turnos antes de now + 2hs", () => {
+test("REGLA 4A: Para llamadas en el mismo día, no se ofrece nada en la siguiente hora (now + 1h)", () => {
   const simulatedNow = new Date(2026, 9, 7, 10, 15); // Hoy a las 10:15
   const slots = calculateAvailableSlots({
     date: new Date(2026, 9, 7),
     appointmentType: "call",
+    now: simulatedNow,
+  });
+
+  // Para llamadas no se debe ofrecer nada en la siguiente hora (antes de 11:15)
+  const tooEarly = slots.some((s) => {
+    const [h, m] = s.time.split(":").map(Number);
+    return h < 11 || (h === 11 && m < 15);
+  });
+  assert.strictEqual(tooEarly, false, "No debe ofrecer llamadas en la siguiente hora desde now");
+
+  // El primer slot disponible para llamadas debe ser a partir de 11:20
+  assert.ok(slots.length > 0, "Debe haber slots disponibles para llamadas luego de 1h");
+  assert.strictEqual(slots[0].time, "11:20", "Primer horario de llamada libre debe ser 11:20");
+});
+
+test("REGLA 4B: Para turnos presenciales en el mismo día, se mantiene margen de traslado de 2 horas (now + 2h)", () => {
+  const simulatedNow = new Date(2026, 9, 7, 10, 15); // Hoy a las 10:15
+  const slots = calculateAvailableSlots({
+    date: new Date(2026, 9, 7),
+    appointmentType: "session",
     now: simulatedNow,
   });
 
@@ -189,7 +209,11 @@ test("REGLA 4: Si se consulta para hoy, no se ofrecen turnos antes de now + 2hs"
     const [h, m] = s.time.split(":").map(Number);
     return h < 12 || (h === 12 && m < 15);
   });
-  assert.strictEqual(tooEarly, false, "No debe ofrecer turnos en menos de 2 horas desde now");
+  assert.strictEqual(tooEarly, false, "No debe ofrecer turnos presenciales en menos de 2 horas desde now");
+
+  // El primer turno de sesión presencial (pasos de 30m) debe ser a las 12:30
+  assert.ok(slots.length > 0, "Debe haber turnos disponibles luego de 2h");
+  assert.strictEqual(slots[0].time, "12:30", "Primer horario de turno presencial libre debe ser 12:30");
 });
 
 // ---------------------------------------------------------------------------

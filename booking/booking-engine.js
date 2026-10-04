@@ -25,7 +25,9 @@
   const SESSION_DURATION_MINUTES = 60;
   const DAY_START_HOUR = 8;
   const DAY_END_HOUR = 19;
-  const SAME_DAY_BUFFER_HOURS = 2;
+  const CALL_BUFFER_HOURS = 1; // Para llamadas de 10m: mínimo 1 hora de anticipación (no ofrecer nada en la siguiente hora)
+  const SESSION_BUFFER_HOURS = 2; // Para turnos presenciales de 1h: mínimo 2 horas de margen de traslado
+  const SAME_DAY_BUFFER_HOURS = 2; // Compatibilidad retroactiva
 
   // Lista oficial de Feriados Nacionales de Argentina (YYYY-MM-DD)
   // Incluye inamovibles, trasladables y puentes turísticos oficiales
@@ -143,10 +145,14 @@
     const windowEnd = new Date(baseDate);
     windowEnd.setHours(DAY_END_HOUR, 0, 0, 0);
 
-    // Buffer de 2 horas si es para el mismo día
+    // Buffer según tipo de atención si es para el mismo día:
+    // - Llamadas (10 min): 1 hora de anticipación mínima (no ofrecer nada en la siguiente hora)
+    // - Turnos presenciales (60 min): 2 horas de margen de traslado al consultorio
+    const bufferHours =
+      appointmentType === "call" ? CALL_BUFFER_HOURS : SESSION_BUFFER_HOURS;
     const isToday = formatDateIso(baseDate) === formatDateIso(now);
     const minAllowedTime = isToday
-      ? now.getTime() + SAME_DAY_BUFFER_HOURS * 60 * 60 * 1000
+      ? now.getTime() + bufferHours * 60 * 60 * 1000
       : windowStart.getTime();
 
     const slots = [];
@@ -367,6 +373,9 @@
     SESSION_DURATION_MINUTES: SESSION_DURATION_MINUTES,
     DAY_START_HOUR: DAY_START_HOUR,
     DAY_END_HOUR: DAY_END_HOUR,
+    CALL_BUFFER_HOURS: CALL_BUFFER_HOURS,
+    SESSION_BUFFER_HOURS: SESSION_BUFFER_HOURS,
+    SAME_DAY_BUFFER_HOURS: SAME_DAY_BUFFER_HOURS,
     DEFAULT_ARGENTINA_HOLIDAYS: DEFAULT_ARGENTINA_HOLIDAYS,
     isBusinessDay: isBusinessDay,
     calculateAvailableSlots: calculateAvailableSlots,

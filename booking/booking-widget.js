@@ -461,7 +461,8 @@
         if (currentReq !== this._slotReqSeq) return;
 
         loading.style.display = "none";
-        const slots = res.availableSlots || [];
+        let slots = res.availableSlots || [];
+        slots = this.filterSlotsWithBuffer(slots, dateIso, this.state.appointmentType);
         this.state.availableSlots = slots;
 
         if (slots.length === 0) {
@@ -497,6 +498,51 @@
           retryBtn.onclick = () => this.loadSlotsForDate(dateIso, true);
         }
       }
+    }
+
+    /**
+     * Filtra los turnos garantizando el margen de anticipación cuando la consulta es para hoy:
+     * - Llamadas (10 min): No ofrecer nada en la siguiente hora (mínimo 1 hora / 60 min de anticipación).
+     * - Turnos presenciales (60 min): Mínimo 2 horas / 120 min de margen de traslado al consultorio.
+     */
+    filterSlotsWithBuffer(slots, dateIso, appointmentType) {
+      if (!Array.isArray(slots) || slots.length === 0) return [];
+
+      let todayArg = "";
+      try {
+        todayArg = new Intl.DateTimeFormat("en-CA", {
+          timeZone: "America/Argentina/Buenos_Aires",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        }).format(new Date());
+      } catch (e) {
+        const d = new Date(Date.now() - 3 * 3600 * 1000);
+        todayArg = d.toISOString().slice(0, 10);
+      }
+
+      // Si no es para la fecha de hoy en Argentina, no se aplica buffer relativo a now
+      if (dateIso !== todayArg) {
+        return slots;
+      }
+
+      // Regla de anticipación: 1h para llamadas, 2h para turnos presenciales
+      const bufferHours =
+        appointmentType === "call"
+          ? (engine.CALL_BUFFER_HOURS || 1)
+          : (engine.SESSION_BUFFER_HOURS || 2);
+      const minAllowedTimestamp = Date.now() + bufferHours * 3600 * 1000;
+
+      return slots.filter((slot) => {
+        let slotTimestamp = 0;
+        if (slot.startIso) {
+          slotTimestamp = new Date(slot.startIso).getTime();
+        } else if (slot.time) {
+          // Buenos Aires siempre es UTC-3
+          slotTimestamp = new Date(`${dateIso}T${slot.time}:00-03:00`).getTime();
+        }
+        return slotTimestamp >= minAllowedTimestamp;
+      });
     }
 
     async handleBookingSubmit() {
