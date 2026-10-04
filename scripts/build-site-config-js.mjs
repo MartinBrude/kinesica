@@ -59,7 +59,7 @@ const content = [
   `    facebookBusiness: ${JSON.stringify(SOCIALS.facebookBusiness)},`,
   "  },",
   "  /** Webhook oficial de Google Apps Script para reservas y Google Calendar. */",
-  '  bookingApiUrl: "https://script.google.com/macros/s/AKfycbzO3WZtQ4E3e0mZskicMs8unys26bPiNR3pvRpjbV78AUM9CCpWRGnALPGBqGl4fEBAbw/exec",',
+  '  bookingApiUrl: "https://script.google.com/macros/s/AKfycbziFcZejUUlY8cdOTCyENzACIu27soawUul0Ti1lKjpIDg9CuqEB31wwDI6WpZjTmAEpQ/exec",',
   "};",
   "",
 ].join("\n");

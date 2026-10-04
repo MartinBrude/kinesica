@@ -25,6 +25,49 @@ export const HOME_HERO_IMAGE = HOME_OG_IMAGE;
 
 const HOME_WHATSAPP_HREF = waMeUrl();
 
+/**
+ * Control de visibilidad del botón de agendar en el Hero.
+ * La feature completa de turnos/reservas está preservada y operativa a través de /#agendar y turnos.html.
+ * Cuando se decida reactivar el botón visual en el sitio, cambiar a `true`.
+ */
+export const SHOW_HERO_BOOKING_BUTTON = false;
+
+/**
+ * Renderiza los botones de acción del Hero.
+ * @param {import("./languages.mjs").LangCode} lang
+ * @param {string} [bookingHref="#agendar"]
+ */
+export function renderHeroActions(lang, bookingHref = "#agendar") {
+  if (SHOW_HERO_BOOKING_BUTTON) {
+    const contactText = {
+      es: "Contacto",
+      en: "Contact",
+      fr: "Contact",
+      pt: "Contato",
+    }[lang];
+    return [
+      "            <div class=\"hero-actions\">",
+      `              <a href="${bookingHref}" class="btn btn-primary mr10 js-booking-open" data-booking-open>Agendar</a>`,
+      `              <a href="${HOME_WHATSAPP_HREF}" target="_blank" class="btn btn-default dynamic-whatsapp-url"`,
+      `                rel="noopener noreferrer">${contactText}</a>`,
+      "            </div>",
+    ];
+  }
+
+  // Estado original: botón único de contacto y turnos a WhatsApp
+  const contactText = {
+    es: "Contacto y turnos",
+    en: "Contact & Appointments",
+    fr: "Contact et rendez-vous",
+    pt: "Contato e agendamento",
+  }[lang];
+
+  return [
+    `            <a href="${HOME_WHATSAPP_HREF}" target="_blank" class="btn btn-default dynamic-whatsapp-url"`,
+    `              rel="noopener noreferrer">${contactText}</a>`,
+  ];
+}
+
 /** Kinesica + estación Scalabrini Ortiz (D) visibles al cargar. Regenerar: Maps → encuadrar → Compartir → Insertar mapa. */
 const MAP_EMBED_BASE =
   "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d5720.6828547033!2d-58.421280!3d-34.586220!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcb5d25b8f6967%3A0xb83b91819649edc!2sKinesica!5e0!3m2!1";
@@ -658,11 +701,7 @@ export const HOME = {
       "              No te acostumbres a vivir con dolor, podemos encontrar juntos un",
       "              camino para que vivas mejor.",
       "            </p>",
-      "            <div class=\"hero-actions\">",
-      "              <a href=\"#agendar\" class=\"btn btn-primary mr10 js-booking-open\" data-booking-open>Agendar</a>",
-      `              <a href="${HOME_WHATSAPP_HREF}" target="_blank" class="btn btn-default dynamic-whatsapp-url"`,
-      "                rel=\"noopener noreferrer\">Contacto</a>",
-      "            </div>",
+      ...renderHeroActions("es"),
       "</div>",
       "        </div>",
       "      </div>",
@@ -775,11 +814,7 @@ export const HOME = {
       "              Don't get used to living in pain. Together, we can find a way for",
       "              you to live better.",
       "            </p>",
-      "            <div class=\"hero-actions\">",
-      "              <a href=\"#agendar\" class=\"btn btn-primary mr10 js-booking-open\" data-booking-open>Agendar</a>",
-      `              <a href="${HOME_WHATSAPP_HREF}" target="_blank" class="btn btn-default dynamic-whatsapp-url"`,
-      "                rel=\"noopener noreferrer\">Contact</a>",
-      "            </div>",
+      ...renderHeroActions("en"),
       "</div>",
       "        </div>",
       "      </div>",
@@ -891,11 +926,7 @@ export const HOME = {
       "            <p class=\"hero-text\">",
       "              N'habituez pas votre corps à la douleur. Ensemble, nous pouvons trouver une façon de mieux vivre.",
       "            </p>",
-      "            <div class=\"hero-actions\">",
-      "              <a href=\"#agendar\" class=\"btn btn-primary mr10 js-booking-open\" data-booking-open>Agendar</a>",
-      `              <a href="${HOME_WHATSAPP_HREF}" target="_blank" class="btn btn-default dynamic-whatsapp-url"`,
-      "                rel=\"noopener noreferrer\">Contact</a>",
-      "            </div>",
+      ...renderHeroActions("fr"),
       "</div>",
       "        </div>",
       "      </div>",
@@ -1007,11 +1038,7 @@ export const HOME = {
       "            <p class=\"hero-text\">",
       "              Não se acostume a viver com dor. Juntos, podemos encontrar um caminho para você viver melhor.",
       "            </p>",
-      "            <div class=\"hero-actions\">",
-      "              <a href=\"#agendar\" class=\"btn btn-primary mr10 js-booking-open\" data-booking-open>Agendar</a>",
-      `              <a href="${HOME_WHATSAPP_HREF}" target="_blank" class="btn btn-default dynamic-whatsapp-url"`,
-      "                rel=\"noopener noreferrer\">Contato</a>",
-      "            </div>",
+      ...renderHeroActions("pt"),
       "</div>",
       "        </div>",
       "      </div>",

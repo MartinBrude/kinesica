@@ -551,3 +551,25 @@ function createJsonResponse(data, statusCode) {
   return ContentService.createTextOutput(JSON.stringify(data))
     .setMimeType(ContentService.MimeType.JSON);
 }
+
+/**
+ * Función de prueba para verificar el envío desde el editor de Google Apps Script:
+ * 1. Seleccioná "testNotifyNorberto" en el menú desplegable superior.
+ * 2. Hacé clic en "Ejecutar".
+ * 3. En el Registro de ejecución verás si el WhatsApp llegó con éxito o el error exacto de Meta.
+ */
+function testNotifyNorberto() {
+  const result = notifyNorbertoNewWebBooking({
+    appointmentType: "call",
+    nombre: "Paciente de Prueba",
+    telefono: "5491161564311",
+    dni: "12345678",
+    date: "2026-10-15",
+    time: "10:00",
+    motivo: "Prueba de notificación WhatsApp Norberto",
+    isMenor: false,
+    nombreFamiliar: "",
+    notas: "Mensaje de prueba generado desde el editor de Apps Script"
+  });
+  console.log("Resultado del test: " + (result ? "✅ ENVIADO POR WHATSAPP EXITOSAMENTE" : "⚠️ NO SE PUDO ENVIAR POR WHATSAPP (Se activó el email de contingencia)"));
+}

@@ -26,7 +26,7 @@ const MIME_TYPES = {
 };
 
 const GAS_WEBHOOK_URL =
-  "https://script.google.com/macros/s/AKfycbzO3WZtQ4E3e0mZskicMs8unys26bPiNR3pvRpjbV78AUM9CCpWRGnALPGBqGl4fEBAbw/exec";
+  "https://script.google.com/macros/s/AKfycbziFcZejUUlY8cdOTCyENzACIu27soawUul0Ti1lKjpIDg9CuqEB31wwDI6WpZjTmAEpQ/exec";
 
 const server = http.createServer((req, res) => {
   let reqPath = req.url.split("?")[0];

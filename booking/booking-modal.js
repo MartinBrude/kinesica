@@ -22,7 +22,7 @@
     return (
       (typeof window !== "undefined" && window.__KINESICA_CONFIG__ && window.__KINESICA_CONFIG__.bookingApiUrl) ||
       (typeof window !== "undefined" && window.KINESICA_SITE && window.KINESICA_SITE.bookingApiUrl) ||
-      "https://script.google.com/macros/s/AKfycbzO3WZtQ4E3e0mZskicMs8unys26bPiNR3pvRpjbV78AUM9CCpWRGnALPGBqGl4fEBAbw/exec"
+      "https://script.google.com/macros/s/AKfycbziFcZejUUlY8cdOTCyENzACIu27soawUul0Ti1lKjpIDg9CuqEB31wwDI6WpZjTmAEpQ/exec"
     );
   }
 

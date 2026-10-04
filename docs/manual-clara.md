@@ -40,13 +40,15 @@ Clara fue configurada con el estilo de una **secretaria médica real de Buenos A
 * **Sentido común de traslado (turnos para hoy):** Si un paciente escribe pidiendo turno para "hoy", Clara nunca le ofrece un horario que ocurra dentro de los próximos 90 a 120 minutos, para darle tiempo razonable de viajar y llegar tranquilo a Palermo.
 * **Memoria histórica y reconocimiento automático (Efecto "Wow"):** Clara reconoce automáticamente a los pacientes habituales por su historial. Cuando alguien que ya se atendió en Kinésica vuelve a escribir, Clara lo recibe de forma personalizada (*"¡Hola [Nombre]! Qué bueno tenerte en contacto de nuevo 🙌"*), saltea automáticamente la llamada previa sin cargo de 10 minutos para evaluar el caso e informar honorarios y ofrece directamente turnos presenciales de 1 hora.
 * **Indumentaria para la sesión (solo si el paciente pregunta):** Si el paciente consulta cómo vestir o qué ropa llevar, Clara responde exactamente con la pauta oficial del consultorio: varones con ropa interior o pantalón corto; mujeres con ropa interior con **corpiño no deportivo (tradicional)**, malla de 2 piezas o calza corta. Clara aclara amablemente que se sugiere corpiño tradicional dado que los corpiños deportivos comprimen y cubren la zona dorsal y las escápulas, dificultando la evaluación postural y las maniobras de terapia manual.
-* **Requisitos para agendar (Nombre completo obligatorio y flexibilidad si no quiere dar DNI):** Para reservar cualquier turno presencial o llamada de orientación, Clara solicita como procedimiento estándar el **Nombre completo** (nombre y apellido) y el **DNI o documento de identidad** del paciente.
+* **Requisitos para agendar y privacidad del nombre de WhatsApp:** Clara **nunca toma ni asume el nombre de perfil o apodo de WhatsApp del paciente**. A los pacientes nuevos los saluda cordialmente sin nombre (*"Hola, buen día. Soy Clara de Kinésica 🌿"*) y les solicita su **Nombre completo** (nombre y apellido) y su **DNI o documento de identidad** al momento de coordinar la cita.
   - **Si el paciente no quiere dar su DNI, ¡se le da turno igual!:** Si el paciente manifiesta que no quiere dar su DNI, que prefiere no brindarlo, no lo tiene a mano, o simplemente brinda su nombre completo y confirma el horario sin dar el documento, **está perfectamente bien y se le otorga el turno igual**. Clara jamás insiste, rechaza ni bloquea al paciente: procede a agendar normalmente en Google Calendar registrando en la descripción: `🪪 DNI: No provisto`. Lo único indispensable y excluyente es contar con el Nombre Completo.
   - **Aceptación amplia de formatos (extranjeros, personas mayores y jóvenes):** El documento de un extranjero (pasaporte alfanumérico, DNI de radicación serie 90M, cédula de identidad), de una persona mayor (DNI o Libreta Cívica/Enrolamiento de 6 o 7 dígitos) y de una persona joven (DNI de 8 dígitos) presenta características diversas. Clara **acepta el número o identificación que le den**, sin cuestionar la cantidad de cifras ni exigir un formato estricto.
 * **Privacidad de ubicación y seguridad (Zona vs. Dirección Exacta):**
   - **Consultas generales / exploratorias:** Ante preguntas generales sobre la ubicación (*"¿Dónde queda?", "¿Por qué zona están?", "¿Cómo llego?"*), Clara informa **únicamente la referencia de zona**: *"Estamos en Charcas y Scalabrini Ortiz, en Palermo (a 2 cuadras de la Estación Scalabrini Ortiz del Subte D y de Av. Santa Fe) 🌿"*.
   - **Dirección exacta confidencial:** La dirección completa (`Charcas 3889, Piso 5º, Dpto B`) y el enlace a Google Maps **NUNCA se comparten en conversaciones exploratorias**. Se entregan **única y exclusivamente dentro del mensaje de confirmación definitiva del turno agendado** (cuando ya se cuenta con horario, nombre completo y DNI). En llamadas telefónicas de 10 min no se envía dirección física.
-* **Condiciones del espacio, puntualidad y acompañantes:**
+* **Confirmación de agendamiento, desear buen día y condiciones del espacio:**
+  - **Certeza y seguridad del agendamiento:** Al asentar la cita en Google Calendar, Clara le informa explícitamente al paciente que el evento ya quedó **AGENDADO** en la agenda oficial (*"¡Listo [Nombre]! Ya quedó agendado tu turno para este [Día] a las [Hora] hs en el consultorio"*), brindándole total tranquilidad.
+  - **Despedida cálida:** En el cierre del mensaje de confirmación, Clara siempre le desea cordialmente un buen día (*"¡Que tengas un muy lindo día y te esperamos! 🙌"*).
   - **Sin sala de espera:** El consultorio no cuenta con sala de espera.
   - **No asistir con acompañantes:** Se solicita a los pacientes asistir solos (salvo menores de edad, que deben concurrir con un adulto responsable, o pacientes que requieran asistencia directa para movilizarse).
   - **Puntualidad estricta:** Se enfatiza la puntualidad estricta para evitar esperas en la entrada o en la calle. Clara jamás solicita llegar con 10 o 15 minutos de anticipación.
@@ -56,7 +58,10 @@ Clara fue configurada con el estilo de una **secretaria médica real de Buenos A
   - Fuera de horario (noches después de las 20 hs, madrugadas, fines de semana o feriados): aclara con calidez que ya les transmitió la consulta y que se estarán comunicando **al comenzar el próximo día hábil por la mañana**, evitando que el paciente espere una llamada en plena noche.
 * **Trato al paciente únicamente por su nombre de pila (cero apellidos):** Clara llama al paciente **siempre y exclusivamente por su nombre de pila** (ej: *"Hola Lucas"*, *"¡Listo Lucas!"*, *"Florencia"*, *"Juan Ignacio"*). **Jamás** lo llama por su nombre y apellido juntos (prohibido *"Hola Lucas Méndez"* o *"Listo Lucas Méndez"*). Si el paciente se presenta diciendo su nombre y apellido, Clara lo saluda tratándolo solo por el nombre. Los nombres completos se reservan para el registro administrativo en Google Calendar y las alertas internas a los kinesiólogos.
 * **Privacidad estricta:** Clara jamás revela nombres ni horarios de otros pacientes. Si alguien pregunta *"¿a qué hora tiene turno mi marido?"* o *"¿quién está a las 16 hs?"*, Clara responde con firmeza profesional que por confidencialidad médica no puede brindar datos de terceros.
-* **Recordatorios interactivos con botones de WhatsApp:** Los recordatorios de 24h incluyen botones nativos (`[✅ Confirmo]`, `[🔄 Reprogramar]`) para que el paciente confirme su asistencia con un solo toque y Clara actualice Google Calendar al instante con `[CONFIRMADO]`.
+* **Recordatorios interactivos con 3 botones de WhatsApp:** Los recordatorios de 24h se envían como Plantilla Oficial de Meta (*Message Template* de Utilidad) e incluyen tres botones nativos de respuesta rápida:
+  - `[✅ Confirmo]`: Actualiza Google Calendar automáticamente a `[CONFIRMADO]`.
+  - `[🔄 Reprogramar]`: Abre la renegociación cordial de la cita, ofreciendo dos nuevas opciones disponibles.
+  - `[❌ Cancelar]`: Anula y libera el turno en Google Calendar al instante, notifica a Norberto y verifica automáticamente la Lista de Espera Inteligente si hay pacientes aguardando ese hueco.
 * **Registro interno de turnos ofrecidos y retención de 10 minutos (Anti-Colisión):** Clara evita activamente ofrecer el mismo horario a dos pacientes en simultáneo. Cuando Clara propone opciones de horarios a un paciente, guarda un registro interno y bloquea temporalmente esos turnos durante **10 minutos** para que ninguna otra persona pueda tomarlos mientras decide. Si el primer paciente confirma o declina, la retención se actualiza de inmediato. Si pasan más de 10 minutos sin respuesta, la retención expira y el horario vuelve a quedar libre. Si durante ese lapso otro paciente reservó el turno y el primer paciente vuelve más tarde solicitándolo, Clara **disculpa cordialmente el inconveniente, le explica que otro paciente tomó ese turno durante la espera** y le ofrece de inmediato nuevas opciones disponibles.
 * **Integración de técnicas en las sesiones (solo si el paciente pregunta):** En Kinésica no se contrata una técnica u otra de forma aislada. En cada sesión es posible y habitual que los kinesiólogos utilicen y combinen diversas herramientas (RPG, osteopatía, terapias manuales, abordaje postural) empleando todos sus recursos terapéuticos para el bienestar y evolución del paciente. Clara tiene esto muy claro, pero **lo aclara únicamente si el paciente lo consulta expresamente** (ej: si pregunta si puede elegir técnica o si se contratan por separado). **Jamás lo dice porque sí ni por iniciativa propia**.
 * **Solicitud de atención con kinesióloga mujer (Derivación a María vía Norberto):** Si un paciente manifiesta preferencia o pide atenderse específicamente con una profesional mujer o kinesióloga mujer, Clara le informa cordialmente que no hay ningún inconveniente (*"¡Por supuesto, no hay ningún problema! 🙌 En el equipo contamos con la Lic. María Gulín. Ya le paso tu consulta a Norberto para que coordine la derivación con María y se contacten directamente con vos a la brevedad."*). Clara dispara de inmediato una alerta automática a Norberto para que gestione la derivación interna con María y se contacte con el paciente.
@@ -130,6 +135,10 @@ El sistema envía recordatorios automáticos por WhatsApp con 24 horas de antela
 > * Los bloqueos de horario (`🚫 [BLOQUEADO]`), recesos de vacaciones (`🏖️ [VACACIONES]`), feriados y pacientes en lista de espera (`⏳ [LISTA DE ESPERA]`) quedan automáticamente excluidos de los recordatorios.
 > * No se asume la vigencia de ninguna cita por chats previos: si no está activa en el calendario, no hay recordatorio.
 
+> [!NOTE]
+> **Política de Ventana de 24 Horas de Meta (WhatsApp Cloud API):**  
+> De acuerdo con las políticas oficiales de Meta WhatsApp Cloud API, los mensajes interactivos de texto libre con botones solo pueden entregarse dentro de una ventana de 24 horas desde el último mensaje enviado por el paciente. Si el paciente no interactuó recientemente, el envío de un mensaje interactivo directo arroja el error de Meta `131047`. Para envíos programados fuera de dicha ventana en producción, WhatsApp requiere el uso de plantillas de mensaje preaprobadas (*WhatsApp Message Templates*, categoría *Utility*).
+
 ---
 
 ## 🔔 4. ¿Qué notificaciones le llegan a Norberto y a María a su celular?
@@ -155,8 +164,23 @@ Para no llenarle el WhatsApp de mensajes innecesarios, **Clara no avisa cuando u
    - Si un paciente pide atenderse con una **kinesióloga mujer**: Clara le confirma amablemente que no hay ningún problema (*"¡Por supuesto, no hay ningún problema! En el equipo contamos con la Lic. María Gulín..."*), y le envía la alerta a **Norberto (`+54 11 6156-4311`)** bajo el título `👩‍⚕️ SOLICITUD DE ATENCIÓN CON KINESIÓLOGA MUJER (MARÍA)` para que Norberto coordine la derivación interna con María y se contacte con el paciente.
 5. 📎 **Archivos adjuntos (estudios médicos, órdenes o comprobantes):**  
    Cuando un paciente manda una foto o PDF, Clara acusa recibo y le envía a Norberto una alerta inmediata con el nombre, mensaje, tipo de archivo y el enlace directo `wa.me/...` para abrir el chat del paciente y ver o descargar el original con un solo toque.
+6. 🌐 **Nueva reserva realizada desde la web (`turnos.html`):**  
+   Cuando un paciente agenda directamente a través del motor de reservas del sitio web ([`kinesica.com.ar/turnos.html`](https://www.kinesica.com.ar/turnos.html)), Google Apps Script crea el evento en Google Calendar y le envía automáticamente a Norberto una alerta por WhatsApp con el tipo de cita (Llamada 10m o Turno 1h), datos del paciente, DNI, motivo y notas.
 
 *(En todos los avisos, Norberto y María pueden presionar directamente el enlace azul `wa.me/...` para escribirle o llamarlo con un solo toque).*
+
+### 📧 Contingencia por Caída de WhatsApp (Fallback Automático a Correo Electrónico)
+Si por algún motivo el servicio de Meta WhatsApp se interrumpe, se cae o falla al entregar un mensaje, Clara activa automáticamente un **circuito de respaldo por correo electrónico**:
+* **Destinatario oficial:** `norberto1712@gmail.com`
+* **Cuándo se activa:**
+  1. Si falla el envío de cualquier alerta operativa a Norberto (turnos nuevos, reprogramaciones, cancelaciones del día, archivos adjuntos, derivaciones).
+  2. Si WhatsApp cae y no se pudo entregar la respuesta de Clara al paciente (Norberto recibe el nombre del paciente, su WhatsApp y el mensaje para responderle manualmente).
+  3. Si ocurre una contingencia técnica en el bot y WhatsApp no puede despachar el aviso.
+  4. Si el sistema de recordatorios de las 24 hs no puede entregar una alerta a Norberto por WhatsApp.
+* **Canal de envío:** Despacho nativo a través del Webhook de Google Apps Script (`MailApp`), sin intermediarios y con entrega instantánea a la casilla de Norberto.
+* **Seguridad y Blindaje del Webhook:** Para prevenir usos no autorizados y eliminar cualquier riesgo de intermediación o relay no deseado, la integración cuenta con:
+  1. **Destinatario estricto en servidor:** El script de Google Apps Script fuerza el destino exclusivo a `norberto1712@gmail.com`, ignorando cualquier intento de override externo.
+  2. **Validación de secreto compartido:** Cada solicitud enviada desde n8n y desde el Agente de Base de Datos incluye el token de seguridad secreto (`secret`). Las llamadas no autorizadas son rechazadas con HTTP 403.
 
 ---
 
@@ -180,13 +204,24 @@ Cuando alguno de los dos le escribe a Clara, ella los saluda por su nombre (*"Ho
 * **Qué escribirle:** `"vacaciones del 15 al 25 de octubre, cerrá la agenda"`.
 * **Qué hace Clara:** Marca en el calendario `🏖️ [VACACIONES CONSULTORIO - CERRADO]` cubriendo todos esos días. Si un paciente escribe en ese período pidiendo turno, Clara le explica con amabilidad que el consultorio se encuentra en receso y le ofrece agendar un turno para cuando regresen.
 
-### ⏸️ D. Atender el chat personalmente (Pausar a Clara)
-* **Qué escribirle:** `"pausar bot"`, `"lo atiendo yo"` o `"silencio"`.
-* **Qué hace Clara:** Responde *"Entendido [Norberto/María], pausado. Te dejo la conversación a vos 🙌"* y deja de intervenir en la conversación para que puedan chatear directamente.
+### ⏸️ D. Atender el chat personalmente (Pausar y Reanudar a Clara)
+* **Pausar el bot:**
+  - **Qué escribirle:** `"pausar bot"`, `"lo atiendo yo"` o `"silencio"`.
+  - **Qué hace Clara:** Responde *"Entendido [Norberto/María], pausado. Te dejo la conversación a vos 🙌"* y activa el **silenciamiento total** del flujo hacia los pacientes. A partir de ese momento, ningún mensaje de un paciente recibirá respuesta automática de Clara, permitiendo a los profesionales chatear con tranquilidad.
+  - **Acceso administrativo mientras está en pausa:** Norberto y María pueden seguir consultando la agenda (`"agenda hoy"`) o bloqueando turnos normalmente sin que Clara deje de responderles a ellos.
+* **Reanudar el bot:**
+  - **Qué escribirle:** `"reanudar bot"`, `"activar bot"` o `"retomar bot"`.
+  - **Qué hace Clara:** Responde *"¡Listo [Norberto/María]! Vuelvo a estar activa y atenta a las consultas 🌿"* y retoma de inmediato la atención automática a los pacientes.
+* **Despausa automática de seguridad (Timeout de 8 horas):** Si por olvido nadie envía `"reanudar bot"`, el sistema levanta automáticamente la pausa tras 8 horas de inactividad para evitar que el consultorio quede desatendido.
 
 ### ❌ E. Anular o cancelar un turno de un paciente
 * **Qué escribirle:** `"cancelá el turno de Lucas Méndez"`, `"anulá la cita de mañana a las 16 hs"`.
 * **Qué hace Clara:** Busca la cita en Google Calendar y la elimina de la agenda, liberando el lugar y asegurando que no se dispare ningún recordatorio para ese turno.
+
+### 🩺 F. Los kinesiólogos no son pacientes (solicitud de turnos o llamadas)
+* **Qué pasa si Norberto o María le piden un turno a Clara:** (ej: `"Clara, agendame un turno para mañana a las 15 hs"` o `"quiero un turno"`).
+* **Qué hace Clara:** Clara reconoce que no son pacientes sino los profesionales del consultorio. No les pide DNI ni datos médicos, y les aclara cordialmente:  
+  > *"¡Hola [Norberto/María]! Los turnos y llamadas son para los pacientes, ¡no para los kinesiólogos de Kinésica! 🩺 Si querés bloquear ese horario en la agenda para que nadie lo tome, avisame y lo marco como no disponible 🙌."*
 
 *(Las acciones que piden Norberto o María no generan auto-alertas molestas).*
 
@@ -221,7 +256,7 @@ flowchart LR
 
 ### 🔒 Regla Estricta de Aislamiento y Alcance:
 - **Cero comunicación con el paciente:** Este agente **NUNCA se comunica con el paciente**. Su única tarea es estructurar, auditar y mantener actualizada la base de datos de pacientes.
-- **SÓLO Primera Sesión Presencial:** Registra **únicamente** a los pacientes que concretaron un turno para su primera sesión presencial en el consultorio. **Excluye deliberadamente llamadas de orientación** de 15 minutos.
+- **SÓLO Primera Sesión Presencial:** Registra **únicamente** a los pacientes que concretaron un turno para su primera sesión presencial en el consultorio. **Excluye deliberadamente llamadas de orientación** de 10 minutos.
 - **Sin Estado:** No se registra el estado del turno; solo los datos identificatorios, de contacto, fecha y clínicos requeridos.
 - **Sincronización en Tiempo Real:** Cada nuevo agendamiento se envía de forma inmediata a la hoja de Google Sheets en Google Drive.
 
@@ -242,9 +277,8 @@ flowchart LR
 ### ✏️ Corrección de Nombre y Sincronización en Google Drive:
 - Si el paciente le indica a Clara que su nombre está incompleto o desea corregirlo (ej: *"En realidad me llamo Juan Lucas, no Lucas"* o *"Anotame con mi segundo nombre"*):
   1. **Clara acepta el cambio con calidez:** Confirma al instante que ya quedó actualizado en su ficha.
-  2. **Actualización de Memoria Interna:** Actualiza la memoria de n8n (`staticData.patientHistory` y `firstSessionsDB`).
-  3. **Impacto en Google Sheets (Drive):** El agente background envía un webhook con `action: "update_name"`, localizando la fila por teléfono y modificando el valor de la columna *Nombre y Apellido* en Google Drive.
-  4. **Base Local y Excel:** Actualiza la base SQLite y regenera la planilla [`docs/pacientes_primera_sesion.xlsx`](pacientes_primera_sesion.xlsx).
+  2. **Actualización de la ficha:** Actualiza `staticData.patientHistory` en n8n. Esa es la única base que Clara consulta.
+  3. **Seguimiento en Google Sheets (Drive):** El mismo paso envía un webhook con `action: "update_name"`. Si Drive no responde, el turno y el saludo siguen igual.
 
 ### 📁 Acceso a las Planillas:
 - **Google Sheets en Vivo (Google Drive):** [Abrir en Google Drive](https://docs.google.com/spreadsheets/d/1kyGkYea0Iu_OrXxF-yONqhs2rG1O8YUWbbSmQe37GCk/edit)
@@ -290,6 +324,7 @@ Guardá esta tablita a mano para usar con Clara en el chat:
 | **Cerrar por vacaciones** | `"vacaciones del 15 al 25 de octubre"` |
 | **Anular o cancelar el turno de un paciente** | `"cancelá el turno de Lucas"` o `"anulá la cita de las 16"` |
 | **Hablar vos con un paciente sin que Clara responda** | `"pausar bot"` o `"lo atiendo yo"` |
+| **Reanudar la atención de Clara tras una pausa** | `"reanudar bot"` o `"activar bot"` |
 | **Empezar una prueba de cero como paciente** | `/restart` |
 
 ---
