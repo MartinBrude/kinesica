@@ -54,12 +54,12 @@ export function renderHeroActions(lang, bookingHref = "#agendar") {
     ];
   }
 
-  // Estado original: botón único de contacto y turnos a WhatsApp
+  // Botón único de contacto a WhatsApp
   const contactText = {
-    es: "Contacto y turnos",
-    en: "Contact & Appointments",
-    fr: "Contact et rendez-vous",
-    pt: "Contato e agendamento",
+    es: "Contacto",
+    en: "Contact",
+    fr: "Contact",
+    pt: "Contato",
   }[lang];
 
   return [
