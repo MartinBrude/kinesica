@@ -135,7 +135,8 @@
         link.classList.contains("dynamic-whatsapp-url") ||
         link.classList.contains("dynamic-whatsapp-link") ||
         link.id === "whatsapp-link" ||
-        /wa\.me/i.test(href)
+        /wa\.me/i.test(href) ||
+        /^whatsapp:/i.test(href)
       ) {
         pushEvent("kinesica_whatsapp_click", {
           link_url: href,
