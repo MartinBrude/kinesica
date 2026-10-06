@@ -8,9 +8,9 @@ Este módulo implementa el sistema de reservas web conectado a **Google Calendar
 
 1. **Solo turnos presenciales de 1 hora.** Ya no se agendan llamadas de orientación.
 2. **Técnica y profesional:**
-   - Osteopatía y manipulaciones viscerales: Norberto.
+   - Osteopatía: Norberto.
    - Acupuntura y posturología: María.
-   - RPG, neurodinamia y Barral: ambos.
+   - RPG, neurodinamia y manipulaciones viscerales (método Barral): ambos.
    - Los horarios de cada uno viven en `PRACTITIONER_HOURS` (`booking-engine.js`). Mientras estén en `null`, se ofrece lun–vie 08:00–19:00.
 3. **Franja Horaria y Días de Atención:**
    - Lunes a viernes hábiles entre las **08:00 y las 19:00 hs** (zona horaria `America/Argentina/Buenos_Aires`).

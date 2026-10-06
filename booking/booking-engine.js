@@ -38,10 +38,10 @@
     { id: "acupuntura", label: "Acupuntura", practitioners: ["maria"] },
     { id: "rpg", label: "RPG", practitioners: ["norberto", "maria"] },
     { id: "neurodinamia", label: "Neurodinamia", practitioners: ["norberto", "maria"] },
-    { id: "barral", label: "Barral", practitioners: ["norberto", "maria"] },
+    { id: "viscerales", label: "Manipulaciones viscerales (Barral)", practitioners: ["norberto", "maria"] },
     { id: "posturologia", label: "Posturología", practitioners: ["maria"] },
-    { id: "viscerales", label: "Manipulaciones viscerales", practitioners: ["norberto"] },
     { id: "no-se", label: "No sé", bySchedule: true, practitioners: ["norberto", "maria"] },
+    { id: "paciente", label: "Paciente en tratamiento", internal: true, practitioners: ["norberto", "maria"] },
   ];
 
   // Horario semanal por profesional. Clave = día JS (0 domingo … 6 sábado).
@@ -359,7 +359,7 @@
       `🪪 DNI: ${data.dni ? data.dni.trim() : "No provisto"}`,
       `🌿 Origen: Reserva Web Oficial Kinésica`,
     ];
-    if (technique && !technique.bySchedule) parts.push(`🤲 Técnica: ${technique.label}`);
+    if (technique && !technique.bySchedule && !technique.internal) parts.push(`🤲 Técnica: ${technique.label}`);
     if (who) parts.push(`👤 Profesional: ${who.name}`);
     if (data.motivo && data.motivo.trim()) {
       parts.push(`📋 Motivo: ${data.motivo.trim()}`);
@@ -389,7 +389,7 @@
 
     const technique = getTechnique(payload.techniqueId);
     const who = PRACTITIONERS[payload.practitionerId];
-    const title = technique
+    const title = technique && !technique.internal
       ? `Turno en Kinésica — ${technique.label}`
       : "Turno en Kinésica";
 
@@ -400,7 +400,7 @@
       "- Te pedimos que llegues a la hora de la sesión, ni antes ni después, por características del espacio y la organización.",
       "- Asistir sin acompañantes (salvo necesidad directa o menores).",
       "- Traer estudios médicos previos si contás con ellos.",
-      technique && !technique.bySchedule ? `Técnica: ${technique.label}.` : "",
+      technique && !technique.bySchedule && !technique.internal ? `Técnica: ${technique.label}.` : "",
       who ? `Profesional: ${who.name}.` : "",
     ].filter(Boolean).join("\n");
 

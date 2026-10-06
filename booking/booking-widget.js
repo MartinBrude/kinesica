@@ -2,7 +2,7 @@
  * Kinésica - Componente Interactivo de Reservas Web
  * ===================================================
  * Gestiona el flujo paso a paso con validaciones en tiempo real:
- * - Paso 1: Técnica y profesional
+ * - Paso 1: ¿Ya sos paciente? → profesional o técnica
  * - Paso 2: Calendario y Horarios disponibles
  * - Paso 3: Formulario de datos clínicos y contacto
  * - Paso 4: Confirmación oficial con normas del consultorio
@@ -39,6 +39,7 @@
         step: 1,
         tipo: "session",
         appointmentType: "session",
+        existingPatient: null,
         techniqueId: null,
         practitionerId: null,
         selectedDate: null,
@@ -77,7 +78,7 @@
 
           <div class="kb-stepper">
             <div class="kb-step-item active" data-step-indicator="1">
-              <span class="kb-step-num">1</span> Técnica
+              <span class="kb-step-num">1</span> Inicio
             </div>
             <div class="kb-step-item" data-step-indicator="2">
               <span class="kb-step-num">2</span> Día y Horario
@@ -93,16 +94,24 @@
           <div class="kb-body">
             <div id="kb-error-banner" class="kb-error-banner"></div>
 
-            <!-- PASO 1: TÉCNICA Y PROFESIONAL -->
+            <!-- PASO 1: PACIENTE → PROFESIONAL O TÉCNICA -->
             <div class="kb-step-panel active" id="kb-step-1">
-              <div class="kb-section-title">¿Qué técnica querés reservar?</div>
-              <div class="kb-section-desc">Turno presencial de 1 hora. Los horarios dependen de quién atiende esa técnica.</div>
+              <div class="kb-section-title">¿Ya sos paciente?</div>
+              <div class="kb-section-desc">Turno presencial de 1 hora.</div>
+              <div class="kb-choice-grid" id="kb-patient-grid"></div>
 
-              <div class="kb-choice-grid" id="kb-technique-grid"></div>
+              <div id="kb-existing-box" style="display: none; margin-top: 18px;">
+                <div class="kb-section-title" style="font-size: 1.05rem;">¿Quién te atiende?</div>
+                <div class="kb-choice-grid" id="kb-existing-practitioner-grid"></div>
+              </div>
 
-              <div id="kb-practitioner-box" style="display: none; margin-top: 18px;">
-                <div class="kb-section-title" style="font-size: 1.05rem;">¿Con quién preferís atenderte?</div>
-                <div class="kb-choice-grid" id="kb-practitioner-grid"></div>
+              <div id="kb-new-box" style="display: none; margin-top: 18px;">
+                <div class="kb-section-title" style="font-size: 1.05rem;">¿Buscás alguna técnica en particular?</div>
+                <div class="kb-choice-grid" id="kb-technique-grid"></div>
+                <div id="kb-practitioner-box" style="display: none; margin-top: 18px;">
+                  <div class="kb-section-title" style="font-size: 1.05rem;">¿Con quién preferís atenderte?</div>
+                  <div class="kb-choice-grid" id="kb-practitioner-grid"></div>
+                </div>
               </div>
 
               <div style="margin-top: 16px; text-align: right;">
@@ -258,12 +267,17 @@
         });
       }
 
+      this.renderPatientChoices();
       this.renderTechniqueChoices();
 
       q("#kb-btn-next-1").addEventListener("click", () => {
         const technique = engine.getTechnique(this.state.techniqueId);
-        if (!technique || (!technique.bySchedule && !this.state.practitionerId)) {
-          this.showError("Elegí la técnica y el profesional para ver los horarios.");
+        if (this.state.existingPatient === true && !this.state.practitionerId) {
+          this.showError("Elegí quién te atiende para ver los horarios.");
+          return;
+        }
+        if (this.state.existingPatient !== true && (!technique || (!technique.bySchedule && !this.state.practitionerId))) {
+          this.showError("Elegí la técnica para ver los horarios.");
           return;
         }
         this.clearError();
@@ -298,10 +312,68 @@
 
     }
 
+    renderPatientChoices() {
+      const grid = this.container.querySelector("#kb-patient-grid");
+      grid.innerHTML = "";
+      [
+        { value: true, label: "Sí" },
+        { value: false, label: "No" },
+      ].forEach((option) => {
+        const card = document.createElement("div");
+        card.className = "kb-choice-card";
+        card.dataset.patient = option.value ? "yes" : "no";
+        card.innerHTML = `<h3>${option.label}</h3>`;
+        card.addEventListener("click", () => this.selectExistingPatient(option.value));
+        grid.appendChild(card);
+      });
+      this.renderExistingPractitionerChoices();
+    }
+
+    selectExistingPatient(isExisting) {
+      this.state.existingPatient = isExisting;
+      this.state.techniqueId = null;
+      this.state.practitionerId = null;
+      this.container.querySelectorAll("#kb-patient-grid .kb-choice-card").forEach((card) => {
+        const yes = card.dataset.patient === "yes";
+        card.classList.toggle("selected", yes === isExisting);
+      });
+      const existingBox = this.container.querySelector("#kb-existing-box");
+      const newBox = this.container.querySelector("#kb-new-box");
+      existingBox.style.display = isExisting ? "block" : "none";
+      newBox.style.display = isExisting ? "none" : "block";
+      this.container.querySelectorAll("#kb-existing-practitioner-grid .kb-choice-card, #kb-technique-grid .kb-choice-card").forEach((card) => {
+        card.classList.remove("selected");
+      });
+      const practitionerBox = this.container.querySelector("#kb-practitioner-box");
+      if (practitionerBox) practitionerBox.style.display = "none";
+      this.syncStep1Continue();
+    }
+
+    renderExistingPractitionerChoices() {
+      const grid = this.container.querySelector("#kb-existing-practitioner-grid");
+      grid.innerHTML = "";
+      Object.keys(engine.PRACTITIONERS).forEach((id) => {
+        const person = engine.PRACTITIONERS[id];
+        const card = document.createElement("div");
+        card.className = "kb-choice-card";
+        card.dataset.practitioner = id;
+        card.innerHTML = `<h3>${person.name}</h3>`;
+        card.addEventListener("click", () => {
+          this.state.practitionerId = id;
+          this.state.techniqueId = "paciente";
+          grid.querySelectorAll(".kb-choice-card").forEach((c) => {
+            c.classList.toggle("selected", c.dataset.practitioner === id);
+          });
+          this.syncStep1Continue();
+        });
+        grid.appendChild(card);
+      });
+    }
+
     renderTechniqueChoices() {
       const grid = this.container.querySelector("#kb-technique-grid");
       grid.innerHTML = "";
-      engine.TECHNIQUES.forEach((technique) => {
+      engine.TECHNIQUES.filter((technique) => !technique.internal).forEach((technique) => {
         const card = document.createElement("div");
         card.className = "kb-choice-card";
         card.dataset.technique = technique.id;
@@ -358,7 +430,9 @@
     syncStep1Continue() {
       const btn = this.container.querySelector("#kb-btn-next-1");
       const technique = engine.getTechnique(this.state.techniqueId);
-      const ready = technique && (technique.bySchedule || this.state.practitionerId);
+      const ready = this.state.existingPatient === true
+        ? Boolean(this.state.practitionerId)
+        : technique && (technique.bySchedule || this.state.practitionerId);
       if (btn) btn.disabled = !ready;
     }
 
@@ -672,7 +746,7 @@
         <div style="font-weight: 700; color: var(--kin-green-deep); margin-bottom: 8px;">
           🩺 Turno presencial de 1 hora
         </div>
-        ${technique && !technique.bySchedule ? `<div><strong>Técnica:</strong> ${technique.label}</div>` : ""}
+        ${technique && !technique.bySchedule && !technique.internal ? `<div><strong>Técnica:</strong> ${technique.label}</div>` : ""}
         <div><strong>Profesional:</strong> ${person ? person.name : "Según el horario de atención"}</div>
         <div><strong>Paciente:</strong> ${payload.nombre}</div>
         <div><strong>Fecha y Hora:</strong> ${payload.date} a las ${payload.time} hs</div>

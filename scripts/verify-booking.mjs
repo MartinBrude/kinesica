@@ -101,6 +101,8 @@ test("REGLA 1C: Acupuntura solo la atiende María y RPG la atienden ambos", () =
   assert.strictEqual(engine.practitionerOffersTechnique("norberto", "rpg"), true);
   assert.strictEqual(engine.practitionerOffersTechnique("maria", "posturologia"), true);
   assert.strictEqual(engine.practitionerOffersTechnique("norberto", "viscerales"), true);
+  assert.strictEqual(engine.practitionerOffersTechnique("maria", "viscerales"), true);
+  assert.strictEqual(engine.getTechnique("barral"), null);
 });
 
 // ---------------------------------------------------------------------------
