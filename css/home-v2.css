@@ -929,6 +929,31 @@ body.page-home-v2 .panel-group .panel + .panel {
   margin-top: 0;
 }
 
+body.page-home-v2 .section-intro--compact:has(#faqAccordion) {
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
+}
+
+body.page-home-v2 .section-intro--compact:has(#faqAccordion)::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 10%;
+  top: 6%;
+  width: 18rem;
+  height: 16rem;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--home-accent) 28%, transparent);
+  border-radius: 48% 52% 38% 62%;
+  filter: blur(64px);
+}
+
+body.page-home-v2 .section-intro--compact:has(#faqAccordion) .container {
+  position: relative;
+  z-index: 1;
+}
+
 body.page-home-v2 .panel-heading {
   background: transparent;
   border: 0;
