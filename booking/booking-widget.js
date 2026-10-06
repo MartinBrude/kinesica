@@ -391,7 +391,7 @@
         const technique = engine.getTechnique(this.state.techniqueId);
         const person = engine.PRACTITIONERS[this.state.practitionerId];
         step2Title.textContent = technique && technique.bySchedule
-          ? "No sé — según el horario de atención"
+          ? "Elegir el horario de la sesión"
           : technique && person
             ? `${technique.label} con ${person.name}`
             : "Elige el día y horario de tu sesión (1 hora)";
@@ -401,7 +401,7 @@
       if (subtitle) {
         const techniqueForSub = engine.getTechnique(this.state.techniqueId);
         subtitle.textContent = techniqueForSub && techniqueForSub.bySchedule
-          ? "Sesión presencial de 1 hora en un horario en el que haya atención."
+          ? "Sesión presencial de una hora"
           : "Sesión presencial de 1 hora, en los días en que atiende ese profesional.";
         subtitle.style.display = "block";
       }
@@ -638,7 +638,7 @@
         <div style="font-weight: 700; color: var(--kin-green-deep); margin-bottom: 8px;">
           🩺 Turno presencial de 1 hora
         </div>
-        <div><strong>Técnica:</strong> ${technique ? technique.label : ""}</div>
+        ${technique && !technique.bySchedule ? `<div><strong>Técnica:</strong> ${technique.label}</div>` : ""}
         <div><strong>Profesional:</strong> ${person ? person.name : "Según el horario de atención"}</div>
         <div><strong>Paciente:</strong> ${payload.nombre}</div>
         <div><strong>Fecha y Hora:</strong> ${payload.date} a las ${payload.time} hs</div>
