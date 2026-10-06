@@ -388,13 +388,7 @@
       // Título y subtítulo paso 2
       const step2Title = this.container.querySelector("#kb-step-2 .kb-section-title");
       if (step2Title) {
-        const technique = engine.getTechnique(this.state.techniqueId);
-        const person = engine.PRACTITIONERS[this.state.practitionerId];
-        step2Title.textContent = technique && technique.bySchedule
-          ? "Elegir el horario de la sesión"
-          : technique && person
-            ? `${technique.label} con ${person.name}`
-            : "Elige el día y horario de tu sesión (1 hora)";
+        step2Title.textContent = "Elegí el horario de la sesión";
       }
 
       const subtitle = this.container.querySelector("#kb-slots-subtitle");
@@ -407,50 +401,93 @@
       }
     }
 
-    renderDateCarousel() {
+    dayHasAttendance(date) {
+      const technique = engine.getTechnique(this.state.techniqueId);
+      const works = technique && technique.bySchedule
+        ? Object.keys(engine.PRACTITIONERS).some((id) => engine.getWorkingWindows(id, date).length > 0)
+        : engine.getWorkingWindows(this.state.practitionerId, date).length > 0;
+      return engine.isBusinessDay(date) && works;
+    }
+
+    async renderDateCarousel() {
+      this._carouselSeq = (this._carouselSeq || 0) + 1;
+      const seq = this._carouselSeq;
       const carousel = this.container.querySelector("#kb-date-carousel");
       carousel.innerHTML = "";
+
+      const loading = this.container.querySelector("#kb-slots-loading");
+      const empty = this.container.querySelector("#kb-slots-empty");
+      const grid = this.container.querySelector("#kb-slots-grid");
+      if (loading) loading.style.display = "flex";
+      if (empty) empty.style.display = "none";
+      if (grid) grid.style.display = "none";
 
       const today = new Date();
       let added = 0;
       let checkDate = new Date(today);
+      let scanned = 0;
       let firstAvailable = null;
 
-      // Buscar los próximos 10 días hábiles
-      while (added < 10) {
+      while (added < 10 && scanned < 45) {
+        scanned += 1;
         const iso = engine.formatDateIso(checkDate);
-        const technique = engine.getTechnique(this.state.techniqueId);
-        const works = technique && technique.bySchedule
-          ? Object.keys(engine.PRACTITIONERS).some((id) => engine.getWorkingWindows(id, checkDate).length > 0)
-          : engine.getWorkingWindows(this.state.practitionerId, checkDate).length > 0;
-        const isBiz = engine.isBusinessDay(checkDate) && works;
-
-        if (isBiz) {
-          const card = document.createElement("div");
-          card.className = "kb-date-card";
-          card.dataset.date = iso;
-          card.innerHTML = `
-            <div class="kb-date-dow">${DOW_NAMES[checkDate.getDay()]}</div>
-            <div class="kb-date-day">${checkDate.getDate()}</div>
-            <div class="kb-date-month">${MONTH_NAMES[checkDate.getMonth()]}</div>
-          `;
-
-          card.addEventListener("click", () => {
-            this.selectDate(iso);
-          });
-
-          carousel.appendChild(card);
-          if (!firstAvailable) firstAvailable = iso;
-          added++;
-        }
-
+        const current = new Date(checkDate);
         checkDate.setDate(checkDate.getDate() + 1);
+        if (!this.dayHasAttendance(current)) continue;
+
+        let slots = [];
+        let failed = false;
+        try {
+          slots = await this.fetchFilteredSlots(iso);
+        } catch (err) {
+          if (seq !== this._carouselSeq) return;
+          failed = true;
+        }
+        if (seq !== this._carouselSeq) return;
+        if (!failed && !slots.length) continue;
+
+        const card = document.createElement("div");
+        card.className = "kb-date-card";
+        card.dataset.date = iso;
+        card.innerHTML = `
+          <div class="kb-date-dow">${DOW_NAMES[current.getDay()]}</div>
+          <div class="kb-date-day">${current.getDate()}</div>
+          <div class="kb-date-month">${MONTH_NAMES[current.getMonth()]}</div>
+        `;
+        card.addEventListener("click", () => {
+          this.selectDate(iso);
+        });
+        carousel.appendChild(card);
+        if (!firstAvailable) firstAvailable = iso;
+        added += 1;
       }
 
-      const dateToSelect = this.state.selectedDate || firstAvailable;
-      if (dateToSelect) {
-        this.selectDate(dateToSelect);
+      if (seq !== this._carouselSeq) return;
+      if (!firstAvailable) {
+        if (loading) loading.style.display = "none";
+        if (empty) {
+          empty.style.display = "flex";
+          empty.querySelector("span").textContent = "No hay días con horarios disponibles en las próximas semanas.";
+        }
+        return;
       }
+      this.selectDate(this.state.selectedDate && carousel.querySelector(`[data-date="${this.state.selectedDate}"]`)
+        ? this.state.selectedDate
+        : firstAvailable);
+    }
+
+    async fetchFilteredSlots(dateIso, forceRefresh = false) {
+      const res = await this.client.getAvailableSlots(dateIso, "session", {
+        forceRefresh,
+        practitionerId: this.state.practitionerId,
+        techniqueId: this.state.techniqueId,
+      });
+      let slots = this.filterSlotsWithBuffer(res.availableSlots || [], dateIso, this.state.appointmentType);
+      const chosen = engine.getTechnique(this.state.techniqueId);
+      if (chosen && chosen.bySchedule) {
+        slots = slots.filter((slot) => engine.practitionersAt(dateIso, slot.time).length > 0);
+      }
+      return slots;
     }
 
     async selectDate(dateIso) {
@@ -482,23 +519,20 @@
       grid.innerHTML = "";
 
       try {
-        const res = await this.client.getAvailableSlots(dateIso, "session", {
-          forceRefresh,
-          practitionerId: this.state.practitionerId,
-          techniqueId: this.state.techniqueId,
-        });
+        const slots = await this.fetchFilteredSlots(dateIso, forceRefresh);
         if (currentReq !== this._slotReqSeq) return;
 
         loading.style.display = "none";
-        let slots = res.availableSlots || [];
-        slots = this.filterSlotsWithBuffer(slots, dateIso, this.state.appointmentType);
-        const chosen = engine.getTechnique(this.state.techniqueId);
-        if (chosen && chosen.bySchedule) {
-          slots = slots.filter((slot) => engine.practitionersAt(dateIso, slot.time).length > 0);
-        }
         this.state.availableSlots = slots;
 
         if (slots.length === 0) {
+          const card = this.container.querySelector(`.kb-date-card[data-date="${dateIso}"]`);
+          const next = card && card.nextElementSibling;
+          if (card) card.remove();
+          if (next && next.dataset.date) {
+            this.selectDate(next.dataset.date);
+            return;
+          }
           empty.style.display = "flex";
           return;
         }
