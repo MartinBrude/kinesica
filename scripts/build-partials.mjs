@@ -193,6 +193,7 @@ ${techniqueLinks}
 }
 
 function buildCtaStrip(lang, s) {
+  const textHtml = s.ctaText ? `\n            <p class="cta-text">${s.ctaText}</p>` : "";
   return writePartial(
     "cta-strip",
     lang,
@@ -201,8 +202,7 @@ function buildCtaStrip(lang, s) {
       <div class="container">
         <div class="row">
           <div class="col-lg-8 col-sm-8 col-md-8 col-xs-12">
-            <h2 class="cta-title">${s.ctaTitle}</h2>
-            <p class="cta-text">${s.ctaText}</p>
+            <h2 class="cta-title">${s.ctaTitle}</h2>${textHtml}
           </div>
           <div class="col-lg-4 col-sm-4 col-md-4 col-xs-12">
             <a href="${waMeUrl(CONTACT.whatsappDigits)}" target="_blank" class="btn btn-white btn-lg mt20 dynamic-whatsapp-url"

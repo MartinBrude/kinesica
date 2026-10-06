@@ -36,7 +36,7 @@ export const PARTIAL_STRINGS = {
     privacyPolicy: "Política de privacidad",
     termsOfService: "Condiciones del servicio",
     ctaTitle: "Contáctanos y reserva un turno",
-    ctaText: "Antes de la primera sesión hacemos una llamada para aclarar dudas.",
+    ctaText: "",
     ctaButton: "Contacto",
     whatsappComment:
       "Spanish WhatsApp float button. Loaded with <script src>; works from file://",
@@ -63,7 +63,7 @@ export const PARTIAL_STRINGS = {
     privacyPolicy: "Privacy Policy",
     termsOfService: "Terms of Service",
     ctaTitle: "Contact us and book an appointment",
-    ctaText: "Before the first session we can chat to clarify any questions.",
+    ctaText: "",
     ctaButton: "Contact",
     whatsappComment:
       "English WhatsApp float button. Loaded with <script src>; works from file://",
@@ -90,8 +90,7 @@ export const PARTIAL_STRINGS = {
     privacyPolicy: "Politique de confidentialité",
     termsOfService: "Conditions de service",
     ctaTitle: "Contactez-nous et prenez rendez-vous",
-    ctaText:
-      "Avant la première séance, nous pouvons échanger pour répondre à vos questions.",
+    ctaText: "",
     ctaButton: "Contact",
     whatsappComment:
       "French WhatsApp float button. Loaded with <script src>; works from file://",
@@ -116,7 +115,7 @@ export const PARTIAL_STRINGS = {
     privacyPolicy: "Política de privacidade",
     termsOfService: "Condições do serviço",
     ctaTitle: "Fale conosco e agende",
-    ctaText: "Antes da primeira sessão podemos ligar para tirar dúvidas.",
+    ctaText: "",
     ctaButton: "Contato",
     whatsappComment: "Portuguese WhatsApp float button.",
     whatsappAria: "Contato pelo WhatsApp",

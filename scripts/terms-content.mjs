@@ -49,7 +49,6 @@ export const TERMS = {
           "Para brindar una atención personalizada y de calidad, aplicamos las siguientes pautas de funcionamiento:",
         ],
         bullets: [
-          "**Contacto previo:** Antes de la primera sesión realizamos un intercambio o llamada telefónica para conocer el motivo de consulta, responder dudas iniciales y evaluar la indicación del tratamiento.",
           "**Sesiones individuales:** Cada sesión se desarrolla de forma individual y personalizada, con dedicación exclusiva del profesional durante el tiempo asignado.",
           "**Puntualidad:** Agradecemos concurrir en el horario pautado para aprovechar el tiempo completo de tratamiento y respetar los turnos de los demás pacientes.",
           "**Cancelación y reprogramación:** En caso de necesitar modificar o cancelar un turno, solicitamos avisar con al menos 24 horas de antelación para poder disponer del espacio para otra persona que lo necesite.",
@@ -149,7 +148,6 @@ export const TERMS = {
           "To provide high-quality, dedicated professional care, we observe the following clinic guidelines:",
         ],
         bullets: [
-          "**Initial chat:** Before scheduling the first session, we hold a brief phone conversation or chat to understand your consultation reason, address questions, and verify treatment suitability.",
           "**One-on-one sessions:** Each session is conducted individually with dedicated therapist attention throughout the reserved time slot.",
           "**Punctuality:** We kindly request arriving on time to maximize your therapeutic time and respect subsequent patient appointments.",
           "**Rescheduling and cancellations:** If you need to alter or cancel an appointment, please notify us at least 24 hours in advance so the time slot may be offered to someone in need.",
@@ -249,7 +247,6 @@ export const TERMS = {
           "Afin d'assurer un suivi attentif et individualisé, nous appliquons les principes suivants :",
         ],
         bullets: [
-          "**Échange préalable :** Avant toute première consultation, nous effectuons un échange pour cerner le motif de consultation et confirmer la pertinence du traitement.",
           "**Séances individuelles :** Chaque séance est effectuée en prise en charge individuelle avec l'attention continue du praticien.",
           "**Ponctualité :** Nous vous invitons à respecter les horaires convenus afin de profiter de l'intégralité du temps de soin.",
           "**Annulation et modification :** En cas d'empêchement, merci de nous prévenir au moins 24 heures à l'avance pour permettre à un autre patient de bénéficier du créneau.",
@@ -348,7 +345,6 @@ export const TERMS = {
           "Para proporcionar atendimento atencioso e de qualidade, seguimos as seguintes diretrizes:",
         ],
         bullets: [
-          "**Conversa inicial:** Antes da primeira sessão realizamos uma conversa telefônica ou por mensagem para entender o motivo da consulta e esclarecer dúvidas.",
           "**Atendimento individualizado:** Cada sessão é conduzida de forma exclusiva, com total atenção do profissional ao paciente durante todo o período reservado.",
           "**Pontualidade:** Solicitamos pontualidade para o melhor aproveitamento do tempo de tratamento e respeito aos horários seguintes.",
           "**Remarcações e cancelamentos:** Caso precise alterar ou desmarcar um horário, solicitamos aviso prévio de ao menos 24 horas de antecedência.",
