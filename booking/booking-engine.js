@@ -41,6 +41,7 @@
     { id: "barral", label: "Barral", practitioners: ["norberto", "maria"] },
     { id: "posturologia", label: "Posturología", practitioners: ["maria"] },
     { id: "viscerales", label: "Manipulaciones viscerales", practitioners: ["norberto"] },
+    { id: "no-se", label: "No sé", bySchedule: true, practitioners: ["norberto", "maria"] },
   ];
 
   // Horario semanal por profesional. Clave = día JS (0 domingo … 6 sábado).
@@ -121,7 +122,18 @@
 
   function practitionerOffersTechnique(practitionerId, techniqueId) {
     const technique = getTechnique(techniqueId);
-    return !!(technique && technique.practitioners.indexOf(practitionerId) !== -1);
+    if (!technique || !PRACTITIONERS[practitionerId]) return false;
+    if (technique.bySchedule) return true;
+    return technique.practitioners.indexOf(practitionerId) !== -1;
+  }
+
+  function practitionersAt(dateInput, timeHm) {
+    const timeMin = parseHmToMinutes(timeHm);
+    return Object.keys(PRACTITIONERS).filter(function (id) {
+      return getWorkingWindows(id, dateInput).some(function (w) {
+        return timeMin >= w.startMin && timeMin + SESSION_DURATION_MINUTES <= w.endMin;
+      });
+    });
   }
 
   function parseHmToMinutes(hm) {
@@ -282,11 +294,24 @@
     const technique = getTechnique(req.techniqueId);
     if (!technique) {
       errors.push("Elegí la técnica de la sesión.");
+    } else if (technique.bySchedule) {
+      if (req.practitionerId && !PRACTITIONERS[req.practitionerId]) {
+        errors.push("Elegí un horario de atención.");
+      } else if (req.date && req.time && practitionersAt(req.date, req.time).length === 0) {
+        errors.push("Ese horario está fuera del día de atención.");
+      }
     } else if (!PRACTITIONERS[req.practitionerId] || !practitionerOffersTechnique(req.practitionerId, req.techniqueId)) {
       errors.push("Esa técnica no la atiende el profesional elegido.");
     }
 
-    if (req.date && req.time && req.practitionerId && PRACTITIONERS[req.practitionerId]) {
+    if (
+      technique &&
+      !technique.bySchedule &&
+      req.date &&
+      req.time &&
+      req.practitionerId &&
+      PRACTITIONERS[req.practitionerId]
+    ) {
       const windows = getWorkingWindows(req.practitionerId, req.date);
       const timeMin = parseHmToMinutes(req.time);
       const fits = windows.some(function (w) {
@@ -316,11 +341,11 @@
     const familiar = (data.nombreFamiliar || "").trim();
 
     const who = PRACTITIONERS[data.practitionerId];
-    const whoTag = who ? ` [${who.name}]` : "";
+    const whoTag = who ? `[${who.name.toUpperCase()}] ` : "";
     if (isMenor && familiar) {
-      return `🩺 [TURNO - MENOR]${whoTag} ${nombre} (Familiar: ${familiar})`;
+      return `🩺 ${whoTag}[TURNO - MENOR] ${nombre} (Familiar: ${familiar})`;
     }
-    return `🩺 [TURNO]${whoTag} ${nombre}`;
+    return `🩺 ${whoTag}[TURNO] ${nombre}`;
   }
 
   /**
@@ -442,6 +467,7 @@
     DEFAULT_ARGENTINA_HOLIDAYS: DEFAULT_ARGENTINA_HOLIDAYS,
     isBusinessDay: isBusinessDay,
     getTechnique: getTechnique,
+    practitionersAt: practitionersAt,
     getWorkingWindows: getWorkingWindows,
     practitionerOffersTechnique: practitionerOffersTechnique,
     calculateAvailableSlots: calculateAvailableSlots,

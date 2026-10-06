@@ -74,6 +74,9 @@ El archivo [`google-apps-script.js`](file:///Users/martinbrude/Documents/kinesic
    - `SPREADSHEET_ID`: `1kyGkYea0Iu_OrXxF-yONqhs2rG1O8YUWbbSmQe37GCk`
    - `WHATSAPP_TOKEN`: Token Bearer de Meta WhatsApp Cloud API (para enviar la alerta inmediata por WhatsApp a Norberto ante cada nueva reserva web).
    - `NORBERTO_PHONE`: `541161564311` (opcional, configurado por defecto).
+   - `NORBERTO_EMAIL`: `norberto1712@gmail.com` (opcional).
+   - `MARIA_PHONE`: `541128531224` (11 2853-1224; opcional, configurado por defecto).
+   - `MARIA_EMAIL`: `manosmagicas7116@gmail.com` (opcional, configurado por defecto). Se invita al evento y se usa si WhatsApp no sale.
    - `WHATSAPP_PHONE_NUMBER_ID`: `1362220846964898` (opcional, configurado por defecto).
    - `N8N_ALERT_WEBHOOK_URL`: (Opcional) Si preferís despachar la alerta mediante un webhook de n8n.
 4. Hacé clic en **Implementar** → **Nueva implementación** → Tipo: **Aplicación web**:

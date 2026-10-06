@@ -347,28 +347,35 @@ function handleBookAppointment(payload) {
   }
 
   // 2. Construir título normalizado Kinésica
+  const practitionerId = payload.practitionerId || "";
   const practitionerNames = { norberto: "Norberto", maria: "María" };
-  const whoName = practitionerNames[payload.practitionerId] || "";
-  const whoTag = whoName ? " [" + whoName + "]" : "";
+  const whoName = practitionerNames[practitionerId] || "";
+  const whoTag = whoName ? "[" + whoName.toUpperCase() + "] " : "";
   const summary = (isMenor && nombreFamiliar)
-    ? "🩺 [TURNO - MENOR]" + whoTag + " " + nombre + " (Familiar: " + nombreFamiliar + ")"
-    : "🩺 [TURNO]" + whoTag + " " + nombre;
+    ? "🩺 " + whoTag + "[TURNO - MENOR] " + nombre + " (Familiar: " + nombreFamiliar + ")"
+    : "🩺 " + whoTag + "[TURNO] " + nombre;
 
   // 3. Construir descripción normalizada
-  const descParts = [
+  const descParts = [];
+  if (whoName) descParts.push("👤 Profesional: " + whoName);
+  descParts.push(
     "📱 WhatsApp: " + telefono,
     "🪪 DNI: " + dni,
     "🌿 Origen: Reserva Web Oficial Kinésica",
     "📋 Motivo: " + motivo
-  ];
+  );
   if (isMenor && nombreFamiliar) descParts.push("👥 Adulto Responsable: " + nombreFamiliar);
   if (notas) descParts.push("💬 Notas: " + notas);
   const description = descParts.join(" | ");
 
   // 4. Crear evento en Google Calendar
-  const event = cal.createEvent(summary, startTime, endTime, {
-    description: description
-  });
+  const practitionerContact = resolvePractitionerContact(practitionerId);
+  const eventOptions = { description: description };
+  if (practitionerContact.email) {
+    eventOptions.guests = practitionerContact.email;
+    eventOptions.sendInvites = true;
+  }
+  const event = cal.createEvent(summary, startTime, endTime, eventOptions);
 
   // 5. Si es Primera Sesión Presencial, registrar en Google Sheets
   if (appointmentType === "session") {
@@ -384,9 +391,9 @@ function handleBookAppointment(payload) {
     }
   }
 
-  // 6. Notificar a Norberto por WhatsApp informando la situación
+  // 6. Avisar por WhatsApp (y mail de respaldo) solo al profesional del turno
   try {
-    notifyNorbertoNewWebBooking({
+    notifyPractitionerNewWebBooking(practitionerId, {
       appointmentType: appointmentType,
       nombre: nombre,
       telefono: telefono,
@@ -397,10 +404,11 @@ function handleBookAppointment(payload) {
       isMenor: isMenor,
       nombreFamiliar: nombreFamiliar,
       notas: notas,
-      summary: summary
+      summary: summary,
+      practitionerName: whoName
     });
   } catch (errNotify) {
-    console.error("Error al notificar a Norberto: " + errNotify);
+    console.error("Error al notificar al profesional: " + errNotify);
   }
 
   return createJsonResponse({
@@ -417,15 +425,35 @@ function handleBookAppointment(payload) {
 }
 
 /**
- * Envía un mensaje de WhatsApp a Norberto ante un nuevo evento agendado desde la web.
- * Soporta despacho directo mediante Meta WhatsApp Cloud API (Graph v21.0) y/o webhook de n8n,
- * con fallback automático por correo electrónico (norberto1712@gmail.com) para garantizar Zero-Ghosting.
+ * Teléfono y mail del profesional que atiende el turno.
+ * María se configura en las propiedades del script: MARIA_PHONE y MARIA_EMAIL.
  */
-function notifyNorbertoNewWebBooking(data) {
+function resolvePractitionerContact(practitionerId) {
+  const props = PropertiesService.getScriptProperties();
+  if (practitionerId === "maria") {
+    return {
+      id: "maria",
+      name: "María",
+      phone: props.getProperty("MARIA_PHONE") || "541128531224",
+      email: props.getProperty("MARIA_EMAIL") || "manosmagicas7116@gmail.com"
+    };
+  }
+  return {
+    id: "norberto",
+    name: "Norberto",
+    phone: props.getProperty("NORBERTO_PHONE") || "541161564311",
+    email: props.getProperty("NORBERTO_EMAIL") || "norberto1712@gmail.com"
+  };
+}
+
+/**
+ * Avisa al profesional del turno por WhatsApp y, si no sale, por mail.
+ */
+function notifyPractitionerNewWebBooking(practitionerId, data) {
+  const contact = resolvePractitionerContact(practitionerId);
   const props = PropertiesService.getScriptProperties();
   const token = props.getProperty("WHATSAPP_TOKEN") || props.getProperty("META_ACCESS_TOKEN");
   const phoneId = props.getProperty("WHATSAPP_PHONE_NUMBER_ID") || "1362220846964898";
-  const norbertoPhone = props.getProperty("NORBERTO_PHONE") || "541161564311";
   const n8nWebhookUrl = props.getProperty("N8N_ALERT_WEBHOOK_URL");
 
   const tipoDetalle = data.appointmentType === "session"
@@ -436,7 +464,8 @@ function notifyNorbertoNewWebBooking(data) {
   const waLink = cleanPhone ? ("wa.me/" + cleanPhone) : "No provisto";
   const fechaAmigable = formatFriendlyDate(data.date);
 
-  let message = "📌 *NUEVA RESERVA DESDE LA WEB EN KINÉSICA*\n" +
+  let message = "📌 *NUEVA RESERVA PARA " + contact.name.toUpperCase() + "*\n" +
+    "• *Profesional:* " + contact.name + "\n" +
     "• *Tipo:* " + tipoDetalle + "\n" +
     "• *Paciente:* " + data.nombre + "\n" +
     "• *Fecha y Hora:* " + fechaAmigable + " a las " + data.time + " hs\n" +
@@ -455,7 +484,7 @@ function notifyNorbertoNewWebBooking(data) {
   let sent = false;
 
   // 1. Envío directo mediante Meta WhatsApp Cloud API (Graph v21.0)
-  if (token) {
+  if (token && contact.phone) {
     try {
       const url = "https://graph.facebook.com/v21.0/" + phoneId + "/messages";
       const res = UrlFetchApp.fetch(url, {
@@ -467,7 +496,7 @@ function notifyNorbertoNewWebBooking(data) {
         payload: JSON.stringify({
           messaging_product: "whatsapp",
           recipient_type: "individual",
-          to: norbertoPhone,
+          to: contact.phone,
           type: "text",
           text: { body: message }
         }),
@@ -480,7 +509,7 @@ function notifyNorbertoNewWebBooking(data) {
         console.warn("Meta WhatsApp Cloud API devolvió código " + code + ": " + res.getContentText());
       }
     } catch (e) {
-      console.error("Excepción al despachar WhatsApp directo a Norberto: " + e.toString());
+      console.error("Excepción al despachar WhatsApp a " + contact.name + ": " + e.toString());
     }
   }
 
@@ -492,7 +521,7 @@ function notifyNorbertoNewWebBooking(data) {
         contentType: "application/json",
         payload: JSON.stringify({
           action: "web_booking_alert",
-          to: norbertoPhone,
+          to: contact.phone,
           body: message,
           booking: data
         }),
@@ -509,13 +538,17 @@ function notifyNorbertoNewWebBooking(data) {
   // 3. Resguardo por Correo Electrónico (Zero-Ghosting garantizado si WhatsApp no estuviese disponible)
   if (!sent) {
     try {
-      const cleanSubject = "📌 [KINÉSICA] Nueva Reserva Web: " + data.nombre + " - " + fechaAmigable + " " + data.time + " hs";
+      if (!contact.email) {
+        console.error("Sin mail de respaldo para " + contact.name + ". Configurá MARIA_EMAIL o NORBERTO_EMAIL.");
+      } else {
+      const cleanSubject = "📌 [KINÉSICA] Reserva para " + contact.name + ": " + data.nombre + " - " + fechaAmigable + " " + data.time + " hs";
       const plainBody = message.replace(/\*([^*]+)\*/g, "$1");
       MailApp.sendEmail({
-        to: "norberto1712@gmail.com",
+        to: contact.email,
         subject: cleanSubject,
         body: plainBody
       });
+      }
     } catch (e) {
       console.error("Excepción en MailApp fallback: " + e.toString());
     }
@@ -550,7 +583,7 @@ function createJsonResponse(data, statusCode) {
  * 3. En el Registro de ejecución verás si el WhatsApp llegó con éxito o el error exacto de Meta.
  */
 function testNotifyNorberto() {
-  const result = notifyNorbertoNewWebBooking({
+  const result = notifyPractitionerNewWebBooking("norberto", {
     appointmentType: "call",
     nombre: "Paciente de Prueba",
     telefono: "5491161564311",

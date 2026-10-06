@@ -81,6 +81,20 @@ test("REGLA 1B: Osteopatía solo la atiende Norberto", () => {
   assert.strictEqual(accepted.isValid, true);
 });
 
+test("REGLA 1D: No sé acepta un horario de atención sin técnica fija", () => {
+  const result = validateBookingRequest({
+    appointmentType: "session",
+    techniqueId: "no-se",
+    nombre: "Juan Pérez",
+    telefono: "+5491112345678",
+    dni: "30123456",
+    date: "2026-10-07",
+    time: "10:00",
+  });
+  assert.strictEqual(result.isValid, true);
+  assert.ok(engine.practitionersAt("2026-10-07", "10:00").length > 0);
+});
+
 test("REGLA 1C: Acupuntura solo la atiende María y RPG la atienden ambos", () => {
   assert.strictEqual(engine.practitionerOffersTechnique("maria", "acupuntura"), true);
   assert.strictEqual(engine.practitionerOffersTechnique("norberto", "acupuntura"), false);
@@ -200,7 +214,7 @@ test("REGLA 5: Títulos y descripciones cumplen el estándar exacto de Kinésica
     practitionerId: "norberto",
     nombre: "Lucas Méndez",
   });
-  assert.strictEqual(sessionSummary, "🩺 [TURNO] [Norberto] Lucas Méndez");
+  assert.strictEqual(sessionSummary, "🩺 [NORBERTO] [TURNO] Lucas Méndez");
 
   const menorSummary = formatCalendarSummary({
     appointmentType: "session",

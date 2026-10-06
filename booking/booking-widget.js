@@ -261,7 +261,8 @@
       this.renderTechniqueChoices();
 
       q("#kb-btn-next-1").addEventListener("click", () => {
-        if (!this.state.techniqueId || !this.state.practitionerId) {
+        const technique = engine.getTechnique(this.state.techniqueId);
+        if (!technique || (!technique.bySchedule && !this.state.practitionerId)) {
           this.showError("Elegí la técnica y el profesional para ver los horarios.");
           return;
         }
@@ -304,9 +305,9 @@
         const card = document.createElement("div");
         card.className = "kb-choice-card";
         card.dataset.technique = technique.id;
-        const names = technique.practitioners
-          .map((id) => engine.PRACTITIONERS[id].name)
-          .join(" y ");
+        const names = technique.bySchedule
+          ? "Según el horario de atención"
+          : technique.practitioners.map((id) => engine.PRACTITIONERS[id].name).join(" y ");
         card.innerHTML = `<h3>${technique.label}</h3><p>${names}</p>`;
         card.addEventListener("click", () => this.selectTechnique(technique.id));
         grid.appendChild(card);
@@ -316,7 +317,11 @@
     selectTechnique(techniqueId) {
       const technique = engine.getTechnique(techniqueId);
       this.state.techniqueId = techniqueId;
-      this.state.practitionerId = technique.practitioners.length === 1 ? technique.practitioners[0] : null;
+      this.state.practitionerId = technique.bySchedule
+        ? null
+        : technique.practitioners.length === 1
+          ? technique.practitioners[0]
+          : null;
       this.container.querySelectorAll("#kb-technique-grid .kb-choice-card").forEach((card) => {
         card.classList.toggle("selected", card.dataset.technique === techniqueId);
       });
@@ -328,7 +333,7 @@
       const box = this.container.querySelector("#kb-practitioner-box");
       const grid = this.container.querySelector("#kb-practitioner-grid");
       grid.innerHTML = "";
-      if (technique.practitioners.length < 2) {
+      if (technique.bySchedule || technique.practitioners.length < 2) {
         box.style.display = "none";
         return;
       }
@@ -352,7 +357,9 @@
 
     syncStep1Continue() {
       const btn = this.container.querySelector("#kb-btn-next-1");
-      if (btn) btn.disabled = !(this.state.techniqueId && this.state.practitionerId);
+      const technique = engine.getTechnique(this.state.techniqueId);
+      const ready = technique && (technique.bySchedule || this.state.practitionerId);
+      if (btn) btn.disabled = !ready;
     }
 
     updateDniRequirement() {
@@ -383,14 +390,19 @@
       if (step2Title) {
         const technique = engine.getTechnique(this.state.techniqueId);
         const person = engine.PRACTITIONERS[this.state.practitionerId];
-        step2Title.textContent = technique && person
-          ? `${technique.label} con ${person.name}`
-          : "Elige el día y horario de tu sesión (1 hora)";
+        step2Title.textContent = technique && technique.bySchedule
+          ? "No sé — según el horario de atención"
+          : technique && person
+            ? `${technique.label} con ${person.name}`
+            : "Elige el día y horario de tu sesión (1 hora)";
       }
 
       const subtitle = this.container.querySelector("#kb-slots-subtitle");
       if (subtitle) {
-        subtitle.textContent = "Sesión presencial de 1 hora, en los días en que atiende ese profesional.";
+        const techniqueForSub = engine.getTechnique(this.state.techniqueId);
+        subtitle.textContent = techniqueForSub && techniqueForSub.bySchedule
+          ? "Sesión presencial de 1 hora en un horario en el que haya atención."
+          : "Sesión presencial de 1 hora, en los días en que atiende ese profesional.";
         subtitle.style.display = "block";
       }
     }
@@ -407,7 +419,10 @@
       // Buscar los próximos 10 días hábiles
       while (added < 10) {
         const iso = engine.formatDateIso(checkDate);
-        const works = engine.getWorkingWindows(this.state.practitionerId, checkDate).length > 0;
+        const technique = engine.getTechnique(this.state.techniqueId);
+        const works = technique && technique.bySchedule
+          ? Object.keys(engine.PRACTITIONERS).some((id) => engine.getWorkingWindows(id, checkDate).length > 0)
+          : engine.getWorkingWindows(this.state.practitionerId, checkDate).length > 0;
         const isBiz = engine.isBusinessDay(checkDate) && works;
 
         if (isBiz) {
@@ -477,6 +492,10 @@
         loading.style.display = "none";
         let slots = res.availableSlots || [];
         slots = this.filterSlotsWithBuffer(slots, dateIso, this.state.appointmentType);
+        const chosen = engine.getTechnique(this.state.techniqueId);
+        if (chosen && chosen.bySchedule) {
+          slots = slots.filter((slot) => engine.practitionersAt(dateIso, slot.time).length > 0);
+        }
         this.state.availableSlots = slots;
 
         if (slots.length === 0) {
@@ -489,11 +508,17 @@
         slots.forEach((slot) => {
           const chip = document.createElement("div");
           chip.className = "kb-slot-chip";
-          chip.textContent = `${slot.time} hs`;
+          const onDuty = engine.getTechnique(this.state.techniqueId) && engine.getTechnique(this.state.techniqueId).bySchedule
+            ? engine.practitionersAt(dateIso, slot.time)
+            : [];
+          const dutyLabel = onDuty.length === 1 ? ` · ${engine.PRACTITIONERS[onDuty[0]].name}` : "";
+          chip.textContent = `${slot.time} hs${dutyLabel}`;
           chip.dataset.time = slot.time;
 
           chip.addEventListener("click", () => {
             this.state.selectedTime = slot.time;
+            if (onDuty.length === 1) this.state.practitionerId = onDuty[0];
+            else if (onDuty.length > 1) this.state.practitionerId = null;
             const chips = grid.querySelectorAll(".kb-slot-chip");
             chips.forEach((ch) => ch.classList.remove("selected"));
             chip.classList.add("selected");
@@ -614,7 +639,7 @@
           🩺 Turno presencial de 1 hora
         </div>
         <div><strong>Técnica:</strong> ${technique ? technique.label : ""}</div>
-        <div><strong>Profesional:</strong> ${person ? person.name : ""}</div>
+        <div><strong>Profesional:</strong> ${person ? person.name : "Según el horario de atención"}</div>
         <div><strong>Paciente:</strong> ${payload.nombre}</div>
         <div><strong>Fecha y Hora:</strong> ${payload.date} a las ${payload.time} hs</div>
         <div><strong>WhatsApp / Contacto:</strong> ${payload.telefono}</div>
