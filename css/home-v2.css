@@ -594,7 +594,7 @@ body.page-home-v2 .site-cta-strip.bg-primary {
   isolation: isolate;
   max-width: min(var(--home-container), calc(100% - 28px));
   margin: 20px auto 56px;
-  padding: 28px 32px 30px;
+  padding: 28px 32px;
   overflow: visible;
   background-color: var(--primary-color);
   background-image:
@@ -608,6 +608,26 @@ body.page-home-v2 .site-cta-strip.bg-primary {
 body.page-home-v2 .site-cta-strip.bg-primary::before,
 body.page-home-v2 .site-cta-strip.bg-primary::after {
   display: none;
+}
+
+body.page-home-v2 .site-cta-strip .container {
+  width: 100%;
+  max-width: 100%;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+body.page-home-v2 .site-cta-strip .row {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+body.page-home-v2 .site-cta-strip [class*="col-"]:first-child {
+  padding-left: 0;
+}
+
+body.page-home-v2 .site-cta-strip [class*="col-"]:last-child {
+  padding-right: 0;
 }
 
 body.page-home-v2 .site-cta-strip .btn-white {
@@ -1017,7 +1037,7 @@ body.page-home-v2 .team-meta:has(a) .team-designation:focus-within {
     max-width: calc(100% - 1.25rem);
     margin-top: 16px;
     margin-bottom: 32px;
-    padding: 22px 18px 24px;
+    padding: 22px 18px;
     border-radius: 22px 14px 22px 14px;
   }
 

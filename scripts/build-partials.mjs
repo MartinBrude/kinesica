@@ -205,7 +205,7 @@ function buildCtaStrip(lang, s) {
             <h2 class="cta-title">${s.ctaTitle}</h2>${textHtml}
           </div>
           <div class="col-lg-4 col-sm-4 col-md-4 col-xs-12">
-            <a href="${waMeUrl(CONTACT.whatsappDigits)}" target="_blank" class="btn btn-white btn-lg mt20 dynamic-whatsapp-url"
+            <a href="${waMeUrl(CONTACT.whatsappDigits)}" target="_blank" class="btn btn-white btn-lg dynamic-whatsapp-url"
               rel="noopener noreferrer">${s.ctaButton}</a>
           </div>
         </div>

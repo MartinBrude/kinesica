@@ -7,7 +7,7 @@ window.__KINESICA_CTA_STRIP_SNIPPET_FR = `
             <h2 class="cta-title">Contactez-nous et prenez rendez-vous</h2>
           </div>
           <div class="col-lg-4 col-sm-4 col-md-4 col-xs-12">
-            <a href="https://wa.me/5491161564311" target="_blank" class="btn btn-white btn-lg mt20 dynamic-whatsapp-url"
+            <a href="https://wa.me/5491161564311" target="_blank" class="btn btn-white btn-lg dynamic-whatsapp-url"
               rel="noopener noreferrer">Contact</a>
           </div>
         </div>

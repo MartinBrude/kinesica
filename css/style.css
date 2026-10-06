@@ -619,12 +619,48 @@ label {}
 4.7 Call to actions 
 ----------------------------------*/
 
-.cta-title {
+.site-cta-strip .row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.site-cta-strip .row::before,
+.site-cta-strip .row::after {
+  display: none;
+}
+
+.site-cta-strip .cta-title {
   font-size: 32px;
   font-weight: 700;
   letter-spacing: -1px;
   color: #fff;
-  margin-bottom: 10px;
+  margin: 0;
+}
+
+.site-cta-strip .cta-text {
+  font-size: 1.5rem;
+  line-height: 1.55;
+  color: #bae6fd;
+  margin: 6px 0 0;
+}
+
+.site-cta-strip .btn {
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .site-cta-strip [class*="col-"]:last-child {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+}
+
+@media (max-width: 767px) {
+  .site-cta-strip [class*="col-"]:last-child {
+    margin-top: 16px;
+  }
 }
 
 body:has(main .page-header):not(.page-home) .site-cta-strip.bg-primary {
@@ -638,13 +674,6 @@ body:has(main .page-header):not(.page-home) .site-cta-strip.bg-primary {
 body:has(main .page-header):not(.page-home) .site-cta-strip .btn-white {
   border-radius: 999px;
   border-color: #fff;
-}
-
-.cta-text {
-  font-size: 1.5rem;
-  line-height: 1.55;
-  color: #bae6fd;
-  /* Light blue text */
 }
 
 /*--------------------------------
