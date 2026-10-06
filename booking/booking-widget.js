@@ -2,7 +2,7 @@
  * Kinésica - Componente Interactivo de Reservas Web
  * ===================================================
  * Gestiona el flujo paso a paso con validaciones en tiempo real:
- * - Paso 1: ¿Ya sos paciente? → profesional o técnica
+ * - Paso 1: ¿Ya te has atendido con nosotros? → profesional o técnica
  * - Paso 2: Calendario y Horarios disponibles
  * - Paso 3: Formulario de datos clínicos y contacto
  * - Paso 4: Confirmación oficial con normas del consultorio
@@ -96,7 +96,7 @@
 
             <!-- PASO 1: PACIENTE → PROFESIONAL O TÉCNICA -->
             <div class="kb-step-panel active" id="kb-step-1">
-              <div class="kb-section-title">¿Ya sos paciente?</div>
+              <div class="kb-section-title">¿Ya te has atendido con nosotros?</div>
               <div class="kb-choice-grid" id="kb-patient-grid"></div>
 
               <div id="kb-existing-box" style="display: none; margin-top: 18px;">
@@ -496,44 +496,56 @@
       if (grid) grid.style.display = "none";
 
       const today = new Date();
-      let added = 0;
       let checkDate = new Date(today);
       let scanned = 0;
-      let firstAvailable = null;
+      const days = [];
+      this._prefetchedSlots = {};
 
-      while (added < 10 && scanned < 45) {
-        scanned += 1;
-        const iso = engine.formatDateIso(checkDate);
-        const current = new Date(checkDate);
-        checkDate.setDate(checkDate.getDate() + 1);
-        if (!this.dayHasAttendance(current)) continue;
-
-        let slots = [];
-        let failed = false;
-        try {
-          slots = await this.fetchFilteredSlots(iso);
-        } catch (err) {
-          if (seq !== this._carouselSeq) return;
-          failed = true;
+      while (days.length < 10 && scanned < 45) {
+        const batch = [];
+        while (batch.length < 10 && scanned < 45) {
+          scanned += 1;
+          const iso = engine.formatDateIso(checkDate);
+          const current = new Date(checkDate);
+          checkDate.setDate(checkDate.getDate() + 1);
+          if (!this.dayHasAttendance(current)) continue;
+          batch.push({ iso, current });
         }
-        if (seq !== this._carouselSeq) return;
-        if (!failed && !slots.length) continue;
+        if (!batch.length) break;
 
+        const settled = await Promise.all(batch.map(async (day) => {
+          try {
+            return { ...day, slots: await this.fetchFilteredSlots(day.iso), failed: false };
+          } catch (err) {
+            return { ...day, slots: [], failed: true };
+          }
+        }));
+        if (seq !== this._carouselSeq) return;
+
+        settled.forEach((day) => {
+          if (days.length >= 10) return;
+          if (!day.failed && !day.slots.length) return;
+          if (!day.failed) this._prefetchedSlots[day.iso] = day.slots;
+          days.push(day);
+        });
+      }
+
+      let firstAvailable = null;
+      days.forEach((day) => {
         const card = document.createElement("div");
         card.className = "kb-date-card";
-        card.dataset.date = iso;
+        card.dataset.date = day.iso;
         card.innerHTML = `
-          <div class="kb-date-dow">${DOW_NAMES[current.getDay()]}</div>
-          <div class="kb-date-day">${current.getDate()}</div>
-          <div class="kb-date-month">${MONTH_NAMES[current.getMonth()]}</div>
+          <div class="kb-date-dow">${DOW_NAMES[day.current.getDay()]}</div>
+          <div class="kb-date-day">${day.current.getDate()}</div>
+          <div class="kb-date-month">${MONTH_NAMES[day.current.getMonth()]}</div>
         `;
         card.addEventListener("click", () => {
-          this.selectDate(iso);
+          this.selectDate(day.iso);
         });
         carousel.appendChild(card);
-        if (!firstAvailable) firstAvailable = iso;
-        added += 1;
-      }
+        if (!firstAvailable) firstAvailable = day.iso;
+      });
 
       if (seq !== this._carouselSeq) return;
       if (!firstAvailable) {
@@ -585,14 +597,15 @@
       const errorBox = this.container.querySelector("#kb-slots-error");
       const grid = this.container.querySelector("#kb-slots-grid");
 
-      loading.style.display = "flex";
+      const cached = !forceRefresh && this._prefetchedSlots && this._prefetchedSlots[dateIso];
+      loading.style.display = cached ? "none" : "flex";
       empty.style.display = "none";
       errorBox.style.display = "none";
       grid.style.display = "none";
       grid.innerHTML = "";
 
       try {
-        const slots = await this.fetchFilteredSlots(dateIso, forceRefresh);
+        const slots = cached ? this._prefetchedSlots[dateIso] : await this.fetchFilteredSlots(dateIso, forceRefresh);
         if (currentReq !== this._slotReqSeq) return;
 
         loading.style.display = "none";
