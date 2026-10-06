@@ -331,13 +331,26 @@
       const url = `${effectiveUrl}?${query.toString()}`;
       const payload = Object.assign({ action: "book" }, data);
 
-      const res = await fetch(url, {
-        method: "POST",
-        mode: "cors",
-        redirect: "follow",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload),
-      });
+      const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+      const timeoutId = controller ? setTimeout(() => controller.abort(), 25000) : null;
+      let res;
+      try {
+        res = await fetch(url, {
+          method: "POST",
+          mode: "cors",
+          redirect: "follow",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload),
+          signal: controller ? controller.signal : undefined,
+        });
+      } catch (err) {
+        if (err && err.name === "AbortError") {
+          throw new Error("La reserva tardó demasiado. Revisá el calendario antes de intentar de nuevo: el turno puede haber quedado agendado.");
+        }
+        throw err;
+      } finally {
+        if (timeoutId) clearTimeout(timeoutId);
+      }
 
       if (!res.ok) {
         throw new Error(`Error de comunicación con el servidor (${res.status})`);

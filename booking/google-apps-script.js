@@ -370,12 +370,16 @@ function handleBookAppointment(payload) {
 
   // 4. Crear evento en Google Calendar
   const practitionerContact = resolvePractitionerContact(practitionerId);
-  const eventOptions = { description: description };
+  const event = cal.createEvent(summary, startTime, endTime, {
+    description: description
+  });
   if (practitionerContact.email) {
-    eventOptions.guests = practitionerContact.email;
-    eventOptions.sendInvites = true;
+    try {
+      event.addGuest(practitionerContact.email);
+    } catch (guestErr) {
+      console.error("No se pudo invitar a " + practitionerContact.email + ": " + guestErr);
+    }
   }
-  const event = cal.createEvent(summary, startTime, endTime, eventOptions);
 
   // 5. Si es Primera Sesión Presencial, registrar en Google Sheets
   if (appointmentType === "session") {
@@ -500,7 +504,8 @@ function notifyPractitionerNewWebBooking(practitionerId, data) {
           type: "text",
           text: { body: message }
         }),
-        muteHttpExceptions: true
+        muteHttpExceptions: true,
+        deadline: 8
       });
       const code = res.getResponseCode();
       if (code >= 200 && code < 300) {
@@ -525,7 +530,8 @@ function notifyPractitionerNewWebBooking(practitionerId, data) {
           body: message,
           booking: data
         }),
-        muteHttpExceptions: true
+        muteHttpExceptions: true,
+        deadline: 8
       });
       if (res.getResponseCode() >= 200 && res.getResponseCode() < 300) {
         sent = true;
