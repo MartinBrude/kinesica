@@ -19,10 +19,308 @@
 })(typeof self !== "undefined" ? self : this, function (engine, clientModule) {
   "use strict";
 
-  const MONTH_NAMES = [
-    "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"
-  ];
-  const DOW_NAMES = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+  function pageLang(explicit) {
+    const raw = String(explicit || (typeof document !== "undefined" && document.documentElement.lang) || "es").toLowerCase();
+    if (raw.indexOf("en") === 0) return "en";
+    if (raw.indexOf("fr") === 0) return "fr";
+    if (raw.indexOf("pt") === 0) return "pt";
+    return "es";
+  }
+
+  const COPY = {
+    es: {
+      months: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+      dows: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
+      close: "Cerrar ventana de reservas",
+      title: "Agendar",
+      subtitle: "Consultorio de Kinesiología, Osteopatía, RPG y ATM en Palermo, CABA",
+      step1: "Inicio", step2: "Día y Horario", step3: "Tus Datos", step4: "Confirmación",
+      qPatient: "¿Ya te has atendido con nosotros?",
+      qWho: "¿Quién te atiende?",
+      qTechnique: "¿Buscás alguna técnica en particular?",
+      qPrefer: "¿Con quién preferís atenderte?",
+      yes: "Sí", no: "No",
+      seeSlots: "Ver horarios disponibles →",
+      pickDay: "Elige el día y horario",
+      daysLabel: "Días disponibles:",
+      slotsLabel: "Horarios disponibles:",
+      loading: "Consultando disponibilidad...",
+      emptyDay: "No hay horarios disponibles para esta fecha.<br>Por favor selecciona otro día en el calendario superior.",
+      retry: "↺ Reintentar",
+      back: "← Volver",
+      toData: "Continuar a tus Datos →",
+      dataTitle: "Completa tus datos de contacto",
+      dataDesc: "Esta información nos permite asentar tu reserva y contactarte puntualmente.",
+      name: "Nombre y Apellido Completo *",
+      namePh: "Ej: Juan Pérez",
+      phone: "Teléfono / WhatsApp *",
+      phonePh: "Ej: +54 9 11 0000-0000",
+      dni: "DNI / Documento *",
+      dniPh: "Ej: 00.000.000",
+      confirm: "Confirmar Reserva 🌿",
+      saving: "Registrando...",
+      success: "¡Turno Presencial Confirmado!",
+      saved: "Tu cita ya quedó registrada oficialmente en Google Calendar.",
+      saveCal: "¿Querés guardar el turno en tu agenda?",
+      saveCalSub: "Agregalo con un clic a tu calendario para tener el recordatorio en tu celular:",
+      downloaded: "✓ Descargado",
+      rulesTitle: "📍 Información importante para tu asistencia al consultorio:",
+      rulesAddr: "<strong>Dirección:</strong> Charcas 3889, Piso 5º, Depto B, Palermo (entre Scalabrini Ortiz y Aráoz).",
+      rulesTime: "Te pedimos que llegues a la hora de la sesión, ni antes ni después, por características del espacio y la organización.",
+      rulesCompany: "<strong>Sin acompañantes:</strong> La sesión es personalizada. Rogamos no asistir con acompañantes (salvo menores de edad o personas que requieran asistencia directa).",
+      rulesStudies: "<strong>Estudios previos:</strong> Si contás con radiografías, resonancias o informes médicos, por favor traelos a la sesión.",
+      maps: "🗺️ Abrir en Google Maps",
+      done: "✓ Listo, finalizar y cerrar",
+      errWho: "Elegí quién te atiende para ver los horarios.",
+      errTechnique: "Elegí la técnica para ver los horarios.",
+      errSlot: "Por favor selecciona un día y horario antes de continuar.",
+      bySchedule: "Según el horario de atención",
+      sessionHour: "Sesión presencial de una hora",
+      sessionPro: "Sesión presencial de 1 hora, en los días en que atiende ese profesional.",
+      noDays: "No hay días con horarios disponibles en las próximas semanas.",
+      slotTitle: "Elegí el horario de la sesión",
+      slotError: "Error al consultar disponibilidad:",
+      summaryKind: "🩺 Turno presencial de 1 hora",
+      technique: "Técnica",
+      practitioner: "Profesional",
+      patient: "Paciente",
+      when: "Fecha y Hora",
+      contact: "WhatsApp / Contacto",
+      bySchedulePro: "Según el horario de atención",
+      bookedFor: "Tu cita quedó reservada para el",
+      at: "a las",
+      hs: "hs",
+      eventId: "Identificador de cita:",
+      techniques: {
+        osteopatia: "Osteopatía",
+        acupuntura: "Acupuntura",
+        rpg: "RPG",
+        neurodinamia: "Neurodinamia",
+        posturologia: "Posturología",
+        viscerales: "Manipulaciones viscerales (Barral)",
+        "no-se": "No sé",
+      },
+    },
+    en: {
+      months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+      dows: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+      close: "Close booking window",
+      title: "Book",
+      subtitle: "Physiotherapy, osteopathy, RPG and TMJ clinic in Palermo, Buenos Aires",
+      step1: "Start", step2: "Day & time", step3: "Your details", step4: "Confirmation",
+      qPatient: "Have you been treated with us before?",
+      qWho: "Who is your practitioner?",
+      qTechnique: "Are you looking for a particular technique?",
+      qPrefer: "Who would you prefer to see?",
+      yes: "Yes", no: "No",
+      seeSlots: "See available times →",
+      pickDay: "Choose a day and time",
+      daysLabel: "Available days:",
+      slotsLabel: "Available times:",
+      loading: "Checking availability...",
+      emptyDay: "No times available on this date.<br>Please choose another day above.",
+      retry: "↺ Retry",
+      back: "← Back",
+      toData: "Continue to your details →",
+      dataTitle: "Your contact details",
+      dataDesc: "We use this to register your booking and reach you if needed.",
+      name: "Full name *",
+      namePh: "e.g. Jane Smith",
+      phone: "Phone / WhatsApp *",
+      phonePh: "e.g. +54 9 11 0000-0000",
+      dni: "ID document *",
+      dniPh: "e.g. 00.000.000",
+      confirm: "Confirm booking 🌿",
+      saving: "Saving...",
+      success: "In-person appointment confirmed",
+      saved: "Your appointment is now on the clinic calendar.",
+      saveCal: "Save this appointment to your calendar?",
+      saveCalSub: "Add it in one tap so you have the reminder on your phone:",
+      downloaded: "✓ Downloaded",
+      rulesTitle: "📍 Before you come to the clinic:",
+      rulesAddr: "<strong>Address:</strong> Charcas 3889, 5th floor, Apt B, Palermo (between Scalabrini Ortiz and Aráoz).",
+      rulesTime: "Please arrive at the session time, neither early nor late, because of how the space is organized.",
+      rulesCompany: "<strong>No companions:</strong> The session is one-to-one. Please do not bring companions (except minors or people who need direct assistance).",
+      rulesStudies: "<strong>Previous studies:</strong> If you have X-rays, MRI scans or medical reports, please bring them.",
+      maps: "🗺️ Open in Google Maps",
+      done: "✓ Done, close",
+      errWho: "Choose who treats you to see available times.",
+      errTechnique: "Choose a technique to see available times.",
+      errSlot: "Please choose a day and time before continuing.",
+      bySchedule: "Depends on the available time",
+      sessionHour: "One-hour in-person session",
+      sessionPro: "One-hour in-person session, on the days that practitioner works.",
+      noDays: "No days with available times in the coming weeks.",
+      slotTitle: "Choose a session time",
+      slotError: "Could not check availability:",
+      summaryKind: "🩺 One-hour in-person session",
+      technique: "Technique",
+      practitioner: "Practitioner",
+      patient: "Patient",
+      when: "Date and time",
+      contact: "WhatsApp / contact",
+      bySchedulePro: "Depends on the available time",
+      bookedFor: "Your appointment is booked for",
+      at: "at",
+      hs: "",
+      eventId: "Booking reference:",
+      techniques: {
+        osteopatia: "Osteopathy",
+        acupuntura: "Acupuncture",
+        rpg: "RPG",
+        neurodinamia: "Neurodynamics",
+        posturologia: "Clinical posturology",
+        viscerales: "Visceral manipulation (Barral)",
+        "no-se": "I'm not sure",
+      },
+    },
+    fr: {
+      months: ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Aoû", "Sep", "Oct", "Nov", "Déc"],
+      dows: ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"],
+      close: "Fermer la fenêtre de réservation",
+      title: "Réserver",
+      subtitle: "Cabinet de kinésithérapie, ostéopathie, RPG et ATM à Palermo, Buenos Aires",
+      step1: "Début", step2: "Jour et horaire", step3: "Vos données", step4: "Confirmation",
+      qPatient: "Avez-vous déjà été suivi chez nous ?",
+      qWho: "Qui vous reçoit ?",
+      qTechnique: "Cherchez-vous une technique en particulier ?",
+      qPrefer: "Avec qui préférez-vous être suivi ?",
+      yes: "Oui", no: "Non",
+      seeSlots: "Voir les horaires disponibles →",
+      pickDay: "Choisissez le jour et l'horaire",
+      daysLabel: "Jours disponibles :",
+      slotsLabel: "Horaires disponibles :",
+      loading: "Vérification des disponibilités...",
+      emptyDay: "Aucun horaire pour cette date.<br>Veuillez choisir un autre jour ci-dessus.",
+      retry: "↺ Réessayer",
+      back: "← Retour",
+      toData: "Continuer vers vos données →",
+      dataTitle: "Vos coordonnées",
+      dataDesc: "Ces informations permettent d'enregistrer votre réservation et de vous contacter.",
+      name: "Nom et prénom *",
+      namePh: "Ex. : Jeanne Dupont",
+      phone: "Téléphone / WhatsApp *",
+      phonePh: "Ex. : +54 9 11 0000-0000",
+      dni: "Pièce d'identité *",
+      dniPh: "Ex. : 00.000.000",
+      confirm: "Confirmer la réservation 🌿",
+      saving: "Enregistrement...",
+      success: "Rendez-vous en cabinet confirmé",
+      saved: "Votre rendez-vous est enregistré dans l'agenda du cabinet.",
+      saveCal: "Enregistrer le rendez-vous dans votre agenda ?",
+      saveCalSub: "Ajoutez-le en un clic pour avoir le rappel sur votre téléphone :",
+      downloaded: "✓ Téléchargé",
+      rulesTitle: "📍 Informations importantes pour votre venue au cabinet :",
+      rulesAddr: "<strong>Adresse :</strong> Charcas 3889, 5e étage, app. B, Palermo (entre Scalabrini Ortiz et Aráoz).",
+      rulesTime: "Merci d'arriver à l'heure de la séance, ni avant ni après, en raison de l'organisation de l'espace.",
+      rulesCompany: "<strong>Sans accompagnant :</strong> la séance est individuelle. Merci de ne pas venir accompagné (sauf mineurs ou personnes nécessitant une assistance directe).",
+      rulesStudies: "<strong>Examens antérieurs :</strong> si vous avez des radiographies, IRM ou comptes rendus, merci de les apporter.",
+      maps: "🗺️ Ouvrir dans Google Maps",
+      done: "✓ Terminé, fermer",
+      errWho: "Choisissez qui vous reçoit pour voir les horaires.",
+      errTechnique: "Choisissez une technique pour voir les horaires.",
+      errSlot: "Veuillez choisir un jour et un horaire avant de continuer.",
+      bySchedule: "Selon l'horaire disponible",
+      sessionHour: "Séance en cabinet d'une heure",
+      sessionPro: "Séance d'une heure, les jours où ce praticien reçoit.",
+      noDays: "Aucun jour avec des horaires disponibles dans les prochaines semaines.",
+      slotTitle: "Choisissez l'horaire de la séance",
+      slotError: "Erreur lors de la consultation des disponibilités :",
+      summaryKind: "🩺 Séance en cabinet d'une heure",
+      technique: "Technique",
+      practitioner: "Praticien",
+      patient: "Patient",
+      when: "Date et heure",
+      contact: "WhatsApp / contact",
+      bySchedulePro: "Selon l'horaire disponible",
+      bookedFor: "Votre rendez-vous est réservé pour le",
+      at: "à",
+      hs: "",
+      eventId: "Référence :",
+      techniques: {
+        osteopatia: "Ostéopathie",
+        acupuntura: "Acupuncture",
+        rpg: "RPG",
+        neurodinamia: "Neurodynamique",
+        posturologia: "Posturologie clinique",
+        viscerales: "Manipulations viscérales (Barral)",
+        "no-se": "Je ne sais pas",
+      },
+    },
+    pt: {
+      months: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"],
+      dows: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"],
+      close: "Fechar a janela de reservas",
+      title: "Agendar",
+      subtitle: "Consultório de fisioterapia, osteopatia, RPG e ATM em Palermo, Buenos Aires",
+      step1: "Início", step2: "Dia e horário", step3: "Seus dados", step4: "Confirmação",
+      qPatient: "Você já se atendeu conosco?",
+      qWho: "Quem te atende?",
+      qTechnique: "Procura alguma técnica em particular?",
+      qPrefer: "Com quem prefere se atender?",
+      yes: "Sim", no: "Não",
+      seeSlots: "Ver horários disponíveis →",
+      pickDay: "Escolha o dia e o horário",
+      daysLabel: "Dias disponíveis:",
+      slotsLabel: "Horários disponíveis:",
+      loading: "Consultando disponibilidade...",
+      emptyDay: "Não há horários disponíveis nesta data.<br>Escolha outro dia acima.",
+      retry: "↺ Tentar de novo",
+      back: "← Voltar",
+      toData: "Continuar para seus dados →",
+      dataTitle: "Complete seus dados de contato",
+      dataDesc: "Usamos estes dados para registrar a reserva e entrar em contato se for preciso.",
+      name: "Nome e sobrenome *",
+      namePh: "Ex.: João Silva",
+      phone: "Telefone / WhatsApp *",
+      phonePh: "Ex.: +54 9 11 0000-0000",
+      dni: "Documento *",
+      dniPh: "Ex.: 00.000.000",
+      confirm: "Confirmar reserva 🌿",
+      saving: "Registrando...",
+      success: "Consulta presencial confirmada",
+      saved: "Sua consulta já ficou registrada na agenda do consultório.",
+      saveCal: "Quer salvar o horário na sua agenda?",
+      saveCalSub: "Adicione com um toque para ter o lembrete no celular:",
+      downloaded: "✓ Baixado",
+      rulesTitle: "📍 Informações importantes para a sua ida ao consultório:",
+      rulesAddr: "<strong>Endereço:</strong> Charcas 3889, 5º andar, apto B, Palermo (entre Scalabrini Ortiz e Aráoz).",
+      rulesTime: "Pedimos que chegue no horário da sessão, nem antes nem depois, pelas características do espaço.",
+      rulesCompany: "<strong>Sem acompanhantes:</strong> a sessão é individual. Pedimos não vir com acompanhantes (exceto menores ou quem precise de assistência direta).",
+      rulesStudies: "<strong>Exames anteriores:</strong> se tiver radiografias, ressonâncias ou laudos, traga-os para a sessão.",
+      maps: "🗺️ Abrir no Google Maps",
+      done: "✓ Pronto, fechar",
+      errWho: "Escolha quem te atende para ver os horários.",
+      errTechnique: "Escolha a técnica para ver os horários.",
+      errSlot: "Escolha um dia e um horário antes de continuar.",
+      bySchedule: "Conforme o horário de atendimento",
+      sessionHour: "Sessão presencial de uma hora",
+      sessionPro: "Sessão presencial de 1 hora, nos dias em que esse profissional atende.",
+      noDays: "Não há dias com horários disponíveis nas próximas semanas.",
+      slotTitle: "Escolha o horário da sessão",
+      slotError: "Erro ao consultar a disponibilidade:",
+      summaryKind: "🩺 Sessão presencial de 1 hora",
+      technique: "Técnica",
+      practitioner: "Profissional",
+      patient: "Paciente",
+      when: "Data e hora",
+      contact: "WhatsApp / contato",
+      bySchedulePro: "Conforme o horário de atendimento",
+      bookedFor: "Sua consulta ficou reservada para",
+      at: "às",
+      hs: "h",
+      eventId: "Identificador:",
+      techniques: {
+        osteopatia: "Osteopatia",
+        acupuntura: "Acupuntura",
+        rpg: "RPG",
+        neurodinamia: "Neurodinâmica",
+        posturologia: "Posturologia clínica",
+        viscerales: "Manipulações viscerais (Barral)",
+        "no-se": "Não sei",
+      },
+    },
+  };
 
   class BookingWidget {
     constructor(containerId, options) {
@@ -32,6 +330,8 @@
       }
 
       this.options = options || {};
+      this.lang = pageLang(this.options.lang);
+      this.copy = COPY[this.lang] || COPY.es;
       this.client = new clientModule.BookingClient(options);
 
       // Estado del flujo
@@ -57,6 +357,18 @@
       this.init();
     }
 
+    t(key) {
+      const value = this.copy[key];
+      if (value != null) return value;
+      return COPY.es[key] != null ? COPY.es[key] : key;
+    }
+
+    techniqueLabel(technique) {
+      if (!technique) return "";
+      const labels = this.copy.techniques || {};
+      return labels[technique.id] || technique.label;
+    }
+
     init() {
       this.renderSkeleton();
       this.bindEvents();
@@ -71,23 +383,23 @@
       this.container.innerHTML = `
         <div class="kinesica-booking-container">
           <div class="kb-header">
-            ${this.options.isModal ? '<button type="button" class="kb-close-btn" aria-label="Cerrar ventana de reservas" data-action="close-modal">&times;</button>' : ''}
-            <h2>Agendar</h2>
-            <p>Consultorio de Kinesiología, Osteopatía, RPG y ATM en Palermo, CABA</p>
+            ${this.options.isModal ? `<button type="button" class="kb-close-btn" aria-label="${this.t("close")}" data-action="close-modal">&times;</button>` : ''}
+            <h2>${this.t("title")}</h2>
+            <p>${this.t("subtitle")}</p>
           </div>
 
           <div class="kb-stepper">
             <div class="kb-step-item active" data-step-indicator="1">
-              <span class="kb-step-num">1</span> Inicio
+              <span class="kb-step-num">1</span> ${this.t("step1")}
             </div>
             <div class="kb-step-item" data-step-indicator="2">
-              <span class="kb-step-num">2</span> Día y Horario
+              <span class="kb-step-num">2</span> ${this.t("step2")}
             </div>
             <div class="kb-step-item" data-step-indicator="3">
-              <span class="kb-step-num">3</span> Tus Datos
+              <span class="kb-step-num">3</span> ${this.t("step3")}
             </div>
             <div class="kb-step-item" data-step-indicator="4">
-              <span class="kb-step-num">4</span> Confirmación
+              <span class="kb-step-num">4</span> ${this.t("step4")}
             </div>
           </div>
 
@@ -96,88 +408,88 @@
 
             <!-- PASO 1: PACIENTE → PROFESIONAL O TÉCNICA -->
             <div class="kb-step-panel active" id="kb-step-1">
-              <div class="kb-section-title">¿Ya te has atendido con nosotros?</div>
+              <div class="kb-section-title">${this.t("qPatient")}</div>
               <div class="kb-choice-grid" id="kb-patient-grid"></div>
 
               <div id="kb-existing-box" style="display: none; margin-top: 18px;">
-                <div class="kb-section-title" style="font-size: 1.05rem;">¿Quién te atiende?</div>
+                <div class="kb-section-title" style="font-size: 1.05rem;">${this.t("qWho")}</div>
                 <div class="kb-choice-grid" id="kb-existing-practitioner-grid"></div>
               </div>
 
               <div id="kb-new-box" style="display: none; margin-top: 18px;">
-                <div class="kb-section-title" style="font-size: 1.05rem;">¿Buscás alguna técnica en particular?</div>
+                <div class="kb-section-title" style="font-size: 1.05rem;">${this.t("qTechnique")}</div>
                 <div class="kb-choice-grid" id="kb-technique-grid"></div>
                 <div id="kb-practitioner-box" style="display: none; margin-top: 18px;">
-                  <div class="kb-section-title" style="font-size: 1.05rem;">¿Con quién preferís atenderte?</div>
+                  <div class="kb-section-title" style="font-size: 1.05rem;">${this.t("qPrefer")}</div>
                   <div class="kb-choice-grid" id="kb-practitioner-grid"></div>
                 </div>
               </div>
 
               <div style="margin-top: 16px; text-align: right;">
                 <button class="kb-btn kb-btn-primary" id="kb-btn-next-1" disabled>
-                  Ver horarios disponibles →
+                  ${this.t("seeSlots")}
                 </button>
               </div>
             </div>
 
             <!-- PASO 2: DÍA Y HORA -->
             <div class="kb-step-panel" id="kb-step-2">
-              <div class="kb-section-title">Elige el día y horario</div>
+              <div class="kb-section-title">${this.t("pickDay")}</div>
               <div class="kb-section-desc" id="kb-slots-subtitle" style="display: none;"></div>
 
-              <label class="kb-slots-label">Días disponibles:</label>
+              <label class="kb-slots-label">${this.t("daysLabel")}</label>
               <div class="kb-date-scroll" id="kb-date-carousel"></div>
 
-              <label class="kb-slots-label" id="kb-slots-grid-title">Horarios disponibles:</label>
+              <label class="kb-slots-label" id="kb-slots-grid-title">${this.t("slotsLabel")}</label>
               <div id="kb-slots-container">
                 <div id="kb-slots-loading" class="kb-state-box" style="display: none;">
                   <div class="kb-spinner"></div>
-                  <span>Consultando disponibilidad...</span>
+                  <span>${this.t("loading")}</span>
                 </div>
                 <div id="kb-slots-empty" class="kb-state-box" style="display: none;">
-                  <span>No hay horarios disponibles para esta fecha.<br>Por favor selecciona otro día en el calendario superior.</span>
+                  <span>${this.t("emptyDay")}</span>
                 </div>
                 <div id="kb-slots-error" class="kb-state-box" style="display: none; border-color: var(--kin-danger); color: var(--kin-danger);">
                   <span id="kb-slots-error-text"></span>
-                  <button class="kb-btn kb-btn-secondary" id="kb-btn-retry-slots" style="margin-top: 6px; font-size: 13px; padding: 6px 14px;">↺ Reintentar</button>
+                  <button class="kb-btn kb-btn-secondary" id="kb-btn-retry-slots" style="margin-top: 6px; font-size: 13px; padding: 6px 14px;">${this.t("retry")}</button>
                 </div>
                 <div class="kb-slots-grid" id="kb-slots-grid"></div>
               </div>
 
               <div class="kb-actions">
-                <button class="kb-btn kb-btn-secondary" id="kb-btn-prev-2">← Volver</button>
+                <button class="kb-btn kb-btn-secondary" id="kb-btn-prev-2">${this.t("back")}</button>
                 <button class="kb-btn kb-btn-primary" id="kb-btn-next-2" disabled>
-                  Continuar a tus Datos →
+                  ${this.t("toData")}
                 </button>
               </div>
             </div>
 
             <!-- PASO 3: FORMULARIO -->
             <div class="kb-step-panel" id="kb-step-3">
-              <div class="kb-section-title">Completa tus datos de contacto</div>
-              <div class="kb-section-desc">Esta información nos permite asentar tu reserva y contactarte puntualmente.</div>
+              <div class="kb-section-title">${this.t("dataTitle")}</div>
+              <div class="kb-section-desc">${this.t("dataDesc")}</div>
 
               <div class="kb-form-group">
-                <label for="kb-input-nombre">Nombre y Apellido Completo *</label>
-                <input type="text" id="kb-input-nombre" placeholder="Ej: Juan Pérez" required>
+                <label for="kb-input-nombre">${this.t("name")}</label>
+                <input type="text" id="kb-input-nombre" placeholder="${this.t("namePh")}" required>
               </div>
 
               <div class="kb-form-row">
                 <div class="kb-form-group">
-                  <label for="kb-input-telefono">Teléfono / WhatsApp *</label>
-                  <input type="tel" id="kb-input-telefono" placeholder="Ej: +54 9 11 0000-0000" required>
+                  <label for="kb-input-telefono">${this.t("phone")}</label>
+                  <input type="tel" id="kb-input-telefono" placeholder="${this.t("phonePh")}" required>
                 </div>
                 <div class="kb-form-group">
-                  <label for="kb-input-dni" id="kb-label-dni">DNI / Documento</label>
-                  <input type="text" id="kb-input-dni" placeholder="Ej: 00.000.000">
+                  <label for="kb-input-dni" id="kb-label-dni">${this.t("dni")}</label>
+                  <input type="text" id="kb-input-dni" placeholder="${this.t("dniPh")}">
                 </div>
               </div>
 
 
               <div class="kb-actions">
-                <button class="kb-btn kb-btn-secondary" id="kb-btn-prev-3">← Volver</button>
+                <button class="kb-btn kb-btn-secondary" id="kb-btn-prev-3">${this.t("back")}</button>
                 <button class="kb-btn kb-btn-primary" id="kb-btn-submit">
-                  Confirmar Reserva 🌿
+                  ${this.t("confirm")}
                 </button>
               </div>
             </div>
@@ -186,9 +498,9 @@
             <div class="kb-step-panel" id="kb-step-4">
               <div class="kb-success-card">
                 <div class="kb-success-icon">✓</div>
-                <div class="kb-success-title" id="kb-success-title">¡Reserva Confirmada!</div>
+                <div class="kb-success-title" id="kb-success-title">${this.t("success")}</div>
                 <p id="kb-success-subtitle" style="color: var(--kin-text-muted);">
-                  Tu cita ya quedó registrada oficialmente en Google Calendar.
+                  ${this.t("saved")}
                 </p>
 
                 <div class="kb-summary-box" id="kb-success-summary"></div>
@@ -198,8 +510,8 @@
                   <div class="kb-calendar-sync-header">
                     <span class="kb-calendar-sync-icon" aria-hidden="true">📅</span>
                     <div>
-                      <div class="kb-calendar-sync-title">¿Querés guardar el turno en tu agenda?</div>
-                      <div class="kb-calendar-sync-subtitle">Agregalo con un clic a tu calendario para tener el recordatorio en tu celular:</div>
+                      <div class="kb-calendar-sync-title">${this.t("saveCal")}</div>
+                      <div class="kb-calendar-sync-subtitle">${this.t("saveCalSub")}</div>
                     </div>
                   </div>
                   <div class="kb-calendar-sync-actions">
@@ -226,16 +538,16 @@
 
                 <!-- Normas del consultorio para turnos presenciales -->
                 <div class="kb-clinic-rules" id="kb-success-clinic-rules" style="display: none;">
-                  <h4>📍 Información Importante para tu Asistencia al Consultorio:</h4>
+                  <h4>${this.t("rulesTitle")}</h4>
                   <ul>
-                    <li><strong>Dirección:</strong> Charcas 3889, Piso 5º, Depto B, Palermo (entre Scalabrini Ortiz y Aráoz).</li>
-                    <li>Te pedimos que llegues a la hora de la sesión, ni antes ni después, por características del espacio y la organización.</li>
-                    <li><strong>Sin acompañantes:</strong> La sesión es personalizada. Rogamos no asistir con acompañantes (salvo menores de edad o personas que requieran asistencia directa).</li>
-                    <li><strong>Estudios previos:</strong> Si contás con radiografías, resonancias o informes médicos, por favor traelos a la sesión.</li>
+                    <li>${this.t("rulesAddr")}</li>
+                    <li>${this.t("rulesTime")}</li>
+                    <li>${this.t("rulesCompany")}</li>
+                    <li>${this.t("rulesStudies")}</li>
                   </ul>
                   <div style="margin-top: 14px; text-align: center;">
                     <a href="https://maps.app.goo.gl/urpkh4HYe7dSdjPS9" target="_blank" rel="noopener" class="kb-btn kb-btn-primary" style="display: inline-flex; text-decoration: none;">
-                      🗺️ Abrir en Google Maps
+                      ${this.t("maps")}
                     </a>
                   </div>
                 </div>
@@ -243,7 +555,7 @@
                 ${this.options.isModal ? `
                   <div style="margin-top: 22px; text-align: center;">
                     <button type="button" class="kb-btn kb-btn-secondary" data-action="close-modal" style="width: auto; padding: 10px 28px; font-weight: 600;">
-                      ✓ Listo, finalizar y cerrar
+                      ${this.t("done")}
                     </button>
                   </div>
                 ` : ""}
@@ -272,11 +584,11 @@
       q("#kb-btn-next-1").addEventListener("click", () => {
         const technique = engine.getTechnique(this.state.techniqueId);
         if (this.state.existingPatient === true && !this.state.practitionerId) {
-          this.showError("Elegí quién te atiende para ver los horarios.");
+          this.showError(this.t("errWho"));
           return;
         }
         if (this.state.existingPatient !== true && (!technique || (!technique.bySchedule && !this.state.practitionerId))) {
-          this.showError("Elegí la técnica para ver los horarios.");
+          this.showError(this.t("errTechnique"));
           return;
         }
         this.clearError();
@@ -293,7 +605,7 @@
 
       q("#kb-btn-next-2").addEventListener("click", () => {
         if (!this.state.selectedDate || !this.state.selectedTime) {
-          this.showError("Por favor selecciona un día y horario antes de continuar.");
+          this.showError(this.t("errSlot"));
           return;
         }
         this.clearError();
@@ -315,8 +627,8 @@
       const grid = this.container.querySelector("#kb-patient-grid");
       grid.innerHTML = "";
       [
-        { value: true, label: "Sí" },
-        { value: false, label: "No" },
+        { value: true, label: this.t("yes") },
+        { value: false, label: this.t("no") },
       ].forEach((option) => {
         const card = document.createElement("div");
         card.className = "kb-choice-card";
@@ -377,9 +689,9 @@
         card.className = "kb-choice-card";
         card.dataset.technique = technique.id;
         const names = technique.bySchedule
-          ? "Según el horario de atención"
-          : technique.practitioners.map((id) => engine.PRACTITIONERS[id].name).join(" y ");
-        card.innerHTML = `<h3>${technique.label}</h3><p>${names}</p>`;
+          ? this.t("bySchedule")
+          : technique.practitioners.map((id) => engine.PRACTITIONERS[id].name).join(" · ");
+        card.innerHTML = `<h3>${this.techniqueLabel(technique)}</h3><p>${names}</p>`;
         card.addEventListener("click", () => this.selectTechnique(technique.id));
         grid.appendChild(card);
       });
@@ -437,7 +749,7 @@
 
     updateDniRequirement() {
       const label = this.container.querySelector("#kb-label-dni");
-      if (label) label.innerHTML = "DNI / Documento *";
+      if (label) label.innerHTML = this.t("dni");
     }
 
     setStep(stepNumber) {
@@ -461,15 +773,15 @@
       // Título y subtítulo paso 2
       const step2Title = this.container.querySelector("#kb-step-2 .kb-section-title");
       if (step2Title) {
-        step2Title.textContent = "Elegí el horario de la sesión";
+        step2Title.textContent = this.t("slotTitle");
       }
 
       const subtitle = this.container.querySelector("#kb-slots-subtitle");
       if (subtitle) {
         const techniqueForSub = engine.getTechnique(this.state.techniqueId);
         subtitle.textContent = techniqueForSub && techniqueForSub.bySchedule
-          ? "Sesión presencial de una hora"
-          : "Sesión presencial de 1 hora, en los días en que atiende ese profesional.";
+          ? this.t("sessionHour")
+          : this.t("sessionPro");
         subtitle.style.display = "block";
       }
     }
@@ -536,9 +848,9 @@
         card.className = "kb-date-card";
         card.dataset.date = day.iso;
         card.innerHTML = `
-          <div class="kb-date-dow">${DOW_NAMES[day.current.getDay()]}</div>
+          <div class="kb-date-dow">${this.copy.dows[day.current.getDay()]}</div>
           <div class="kb-date-day">${day.current.getDate()}</div>
-          <div class="kb-date-month">${MONTH_NAMES[day.current.getMonth()]}</div>
+          <div class="kb-date-month">${this.copy.months[day.current.getMonth()]}</div>
         `;
         card.addEventListener("click", () => {
           this.selectDate(day.iso);
@@ -552,7 +864,7 @@
         if (loading) loading.style.display = "none";
         if (empty) {
           empty.style.display = "flex";
-          empty.querySelector("span").textContent = "No hay días con horarios disponibles en las próximas semanas.";
+          empty.querySelector("span").textContent = this.t("noDays");
         }
         return;
       }
@@ -632,7 +944,8 @@
             ? engine.practitionersAt(dateIso, slot.time)
             : [];
           const dutyLabel = onDuty.length === 1 ? ` · ${engine.PRACTITIONERS[onDuty[0]].name}` : "";
-          chip.textContent = `${slot.time} hs${dutyLabel}`;
+          const hs = this.t("hs");
+          chip.textContent = `${slot.time}${hs ? " " + hs : ""}${dutyLabel}`;
           chip.dataset.time = slot.time;
 
           chip.addEventListener("click", () => {
@@ -651,7 +964,7 @@
         if (currentReq !== this._slotReqSeq) return;
         loading.style.display = "none";
         errorBox.style.display = "flex";
-        this.container.querySelector("#kb-slots-error-text").textContent = `Error al consultar disponibilidad: ${err.message}`;
+        this.container.querySelector("#kb-slots-error-text").textContent = `${this.t("slotError")} ${err.message}`;
         const retryBtn = this.container.querySelector("#kb-btn-retry-slots");
         if (retryBtn) {
           retryBtn.onclick = () => this.loadSlotsForDate(dateIso, true);
@@ -704,7 +1017,7 @@
       const q = (sel) => this.container.querySelector(sel);
 
       if (!this.state.selectedDate || !this.state.selectedTime) {
-        this.showError("Por favor selecciona un día y horario antes de continuar.");
+        this.showError(this.t("errSlot"));
         this.setStep(2);
         return;
       }
@@ -731,7 +1044,7 @@
 
       const btnSubmit = q("#kb-btn-submit");
       btnSubmit.disabled = true;
-      btnSubmit.textContent = "Registrando...";
+      btnSubmit.textContent = this.t("saving");
 
       try {
         const result = await this.client.bookAppointment(payload);
@@ -742,7 +1055,7 @@
         this.showError(err.message);
       } finally {
         btnSubmit.disabled = false;
-        btnSubmit.textContent = "Confirmar Reserva 🌿";
+        btnSubmit.textContent = this.t("confirm");
       }
     }
 
@@ -751,20 +1064,20 @@
 
       const technique = engine.getTechnique(payload.techniqueId);
       const person = engine.PRACTITIONERS[payload.practitionerId];
-      q("#kb-success-title").textContent = "¡Turno Presencial Confirmado!";
+      q("#kb-success-title").textContent = this.t("success");
 
       const summaryBox = q("#kb-success-summary");
       summaryBox.innerHTML = `
         <div style="font-weight: 700; color: var(--kin-green-deep); margin-bottom: 8px;">
-          🩺 Turno presencial de 1 hora
+          ${this.t("summaryKind")}
         </div>
-        ${technique && !technique.bySchedule && !technique.internal ? `<div><strong>Técnica:</strong> ${technique.label}</div>` : ""}
-        <div><strong>Profesional:</strong> ${person ? person.name : "Según el horario de atención"}</div>
-        <div><strong>Paciente:</strong> ${payload.nombre}</div>
-        <div><strong>Fecha y Hora:</strong> ${payload.date} a las ${payload.time} hs</div>
-        <div><strong>WhatsApp / Contacto:</strong> ${payload.telefono}</div>
+        ${technique && !technique.bySchedule && !technique.internal ? `<div><strong>${this.t("technique")}:</strong> ${this.techniqueLabel(technique)}</div>` : ""}
+        <div><strong>${this.t("practitioner")}:</strong> ${person ? person.name : this.t("bySchedulePro")}</div>
+        <div><strong>${this.t("patient")}:</strong> ${payload.nombre}</div>
+        <div><strong>${this.t("when")}:</strong> ${payload.date} ${this.t("at")} ${payload.time}${this.t("hs") ? " " + this.t("hs") : ""}</div>
+        <div><strong>${this.t("contact")}:</strong> ${payload.telefono}</div>
         <div style="margin-top: 6px; font-size: 12px; color: var(--kin-text-muted);">
-          Identificador de cita: <code>${result.eventId || "CONFIRMADO"}</code>
+          ${this.t("eventId")} <code>${result.eventId || "OK"}</code>
         </div>
       `;
 
@@ -773,7 +1086,7 @@
       clinicRules.style.display = "block";
 
       const subtitle = q("#kb-success-subtitle");
-      subtitle.innerHTML = `Tu cita quedó reservada para el <strong>${payload.date} a las ${payload.time} hs</strong>.`;
+      subtitle.innerHTML = `${this.t("bookedFor")} <strong>${payload.date} ${this.t("at")} ${payload.time}${this.t("hs") ? " " + this.t("hs") : ""}</strong>.`;
 
       this.setupCalendarButtons(payload, result);
     }
@@ -809,7 +1122,7 @@
             const txt = q("#kb-btn-cal-ics-text");
             if (txt) {
               const orig = txt.textContent;
-              txt.textContent = "✓ Descargado";
+              txt.textContent = this.t("downloaded");
               setTimeout(() => {
                 txt.textContent = orig;
               }, 2500);

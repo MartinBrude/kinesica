@@ -34,7 +34,9 @@
     modalEl.className = "kinesica-booking-modal-overlay";
     modalEl.setAttribute("role", "dialog");
     modalEl.setAttribute("aria-modal", "true");
-    modalEl.setAttribute("aria-label", "Agendar");
+    const lang = (document.documentElement.lang || "es").toLowerCase();
+    const aria = lang.indexOf("en") === 0 ? "Book" : lang.indexOf("fr") === 0 ? "Réserver" : lang.indexOf("pt") === 0 ? "Agendar" : "Agendar";
+    modalEl.setAttribute("aria-label", aria);
     modalEl.setAttribute("aria-hidden", "true");
 
     modalEl.innerHTML = `
@@ -160,6 +162,7 @@
             apiUrl: getApiUrl(),
             forceMock: false,
             isModal: true,
+            lang: document.documentElement.lang,
             onClose: () => KinesicaBookingModal.close(),
           });
         }
