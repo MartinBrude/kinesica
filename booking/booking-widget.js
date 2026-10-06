@@ -2,7 +2,7 @@
  * Kinésica - Componente Interactivo de Reservas Web
  * ===================================================
  * Gestiona el flujo paso a paso con validaciones en tiempo real:
- * - Paso 1: Triaje (Primera vez vs Habitual)
+ * - Paso 1: Técnica y profesional
  * - Paso 2: Calendario y Horarios disponibles
  * - Paso 3: Formulario de datos clínicos y contacto
  * - Paso 4: Confirmación oficial con normas del consultorio
@@ -37,8 +37,10 @@
       // Estado del flujo
       this.state = {
         step: 1,
-        tipo: null, // 'primera_vez' | 'habitual'
-        appointmentType: null, // 'call' (10m) | 'session' (60m)
+        tipo: "session",
+        appointmentType: "session",
+        techniqueId: null,
+        practitionerId: null,
         selectedDate: null,
         selectedTime: null,
         availableSlots: [],
@@ -61,19 +63,6 @@
         this.client.prewarm();
       }
 
-      // Si el enlace incluye ?tipo=habitual o #habitual, ir directo a reservar sesión de 1 hora
-      try {
-        const params = new URLSearchParams(window.location.search);
-        if (params.get("tipo") === "habitual" || window.location.hash === "#habitual") {
-          this.state.tipo = "habitual";
-          this.state.appointmentType = "session";
-          this.updateDniRequirement();
-          this.setStep(2);
-          this.renderDateCarousel();
-          return;
-        }
-      } catch (e) {}
-
       this.setStep(1);
     }
 
@@ -88,7 +77,7 @@
 
           <div class="kb-stepper">
             <div class="kb-step-item active" data-step-indicator="1">
-              <span class="kb-step-num">1</span> Tipo de Consulta
+              <span class="kb-step-num">1</span> Técnica
             </div>
             <div class="kb-step-item" data-step-indicator="2">
               <span class="kb-step-num">2</span> Día y Horario
@@ -104,33 +93,22 @@
           <div class="kb-body">
             <div id="kb-error-banner" class="kb-error-banner"></div>
 
-            <!-- PASO 1: TRIAJE -->
+            <!-- PASO 1: TÉCNICA Y PROFESIONAL -->
             <div class="kb-step-panel active" id="kb-step-1">
-              <div class="kb-section-title">¿Es tu primera vez en Kinésica?</div>
-              <div class="kb-section-desc">Selecciona la opción que mejor describa tu situación para mostrarte las opciones de atención correspondientes.</div>
+              <div class="kb-section-title">¿Qué técnica querés reservar?</div>
+              <div class="kb-section-desc">Turno presencial de 1 hora. Los horarios dependen de quién atiende esa técnica.</div>
 
-              <div class="kb-choice-grid">
-                <div class="kb-choice-card" id="kb-choice-primera-vez" data-tipo="primera_vez">
-                  <span class="kb-badge kb-badge-blue">Nuevo Paciente</span>
-                  <h3>Es mi primera vez</h3>
-                  <p>Llamada previa de orientación (10 min) sin cargo para evaluar tu caso.</p>
-                </div>
-                <div class="kb-choice-card" id="kb-choice-habitual" data-tipo="habitual">
-                  <span class="kb-badge kb-badge-teal">Paciente Habitual</span>
-                  <h3>Ya soy paciente</h3>
-                  <p>Turno presencial de 1 hora en consultorio (Kinesiología, RPG, Osteopatía).</p>
-                </div>
+              <div class="kb-choice-grid" id="kb-technique-grid"></div>
+
+              <div id="kb-practitioner-box" style="display: none; margin-top: 18px;">
+                <div class="kb-section-title" style="font-size: 1.05rem;">¿Con quién preferís atenderte?</div>
+                <div class="kb-choice-grid" id="kb-practitioner-grid"></div>
               </div>
 
-              <!-- Cartel informativo y avance para primera vez -->
-              <div id="kb-info-primera-vez" class="kb-alert-box" style="display: none; margin-top: 20px;">
-                <strong>📞 Llamada previa de orientación (10 minutos):</strong><br>
-                Para pacientes nuevos, el primer paso es coordinar una breve llamada telefónica sin cargo con el kinesiólogo. De esta manera evaluamos tu caso clínico en detalle, vemos si te podemos ayudar y te informamos los honorarios.
-                <div style="margin-top: 16px; text-align: right;">
-                  <button class="kb-btn kb-btn-primary" id="kb-btn-next-1">
-                    Continuar a Horarios de Llamada →
-                  </button>
-                </div>
+              <div style="margin-top: 16px; text-align: right;">
+                <button class="kb-btn kb-btn-primary" id="kb-btn-next-1" disabled>
+                  Ver horarios disponibles →
+                </button>
               </div>
             </div>
 
@@ -280,34 +258,16 @@
         });
       }
 
-      // Selección Primera Vez vs Habitual
-      q("#kb-choice-primera-vez").addEventListener("click", () => {
-        this.state.tipo = "primera_vez";
-        this.state.appointmentType = "call"; // REGLA: Primera vez = LLAMADA
-        q("#kb-choice-primera-vez").classList.add("selected");
-        q("#kb-choice-habitual").classList.remove("selected");
-        q("#kb-info-primera-vez").style.display = "block";
-        this.updateDniRequirement();
-      });
+      this.renderTechniqueChoices();
 
-      // Si ya es paciente, llevarlo DIRECTO a reservar turno de una hora
-      q("#kb-choice-habitual").addEventListener("click", () => {
-        this.state.tipo = "habitual";
-        this.state.appointmentType = "session"; // Paciente habitual: turno presencial de 1 hora directo
-        q("#kb-choice-habitual").classList.add("selected");
-        q("#kb-choice-primera-vez").classList.remove("selected");
-        q("#kb-info-primera-vez").style.display = "none";
-        this.updateDniRequirement();
-        this.clearError();
-        this.setStep(2);
-        this.renderDateCarousel();
-      });
-
-
-
-      // Navegación Stepper
       q("#kb-btn-next-1").addEventListener("click", () => {
+        if (!this.state.techniqueId || !this.state.practitionerId) {
+          this.showError("Elegí la técnica y el profesional para ver los horarios.");
+          return;
+        }
         this.clearError();
+        this.state.selectedDate = null;
+        this.state.selectedTime = null;
         this.renderDateCarousel();
         this.setStep(2);
       });
@@ -337,13 +297,67 @@
 
     }
 
+    renderTechniqueChoices() {
+      const grid = this.container.querySelector("#kb-technique-grid");
+      grid.innerHTML = "";
+      engine.TECHNIQUES.forEach((technique) => {
+        const card = document.createElement("div");
+        card.className = "kb-choice-card";
+        card.dataset.technique = technique.id;
+        const names = technique.practitioners
+          .map((id) => engine.PRACTITIONERS[id].name)
+          .join(" y ");
+        card.innerHTML = `<h3>${technique.label}</h3><p>${names}</p>`;
+        card.addEventListener("click", () => this.selectTechnique(technique.id));
+        grid.appendChild(card);
+      });
+    }
+
+    selectTechnique(techniqueId) {
+      const technique = engine.getTechnique(techniqueId);
+      this.state.techniqueId = techniqueId;
+      this.state.practitionerId = technique.practitioners.length === 1 ? technique.practitioners[0] : null;
+      this.container.querySelectorAll("#kb-technique-grid .kb-choice-card").forEach((card) => {
+        card.classList.toggle("selected", card.dataset.technique === techniqueId);
+      });
+      this.renderPractitionerChoices(technique);
+      this.syncStep1Continue();
+    }
+
+    renderPractitionerChoices(technique) {
+      const box = this.container.querySelector("#kb-practitioner-box");
+      const grid = this.container.querySelector("#kb-practitioner-grid");
+      grid.innerHTML = "";
+      if (technique.practitioners.length < 2) {
+        box.style.display = "none";
+        return;
+      }
+      box.style.display = "block";
+      technique.practitioners.forEach((id) => {
+        const person = engine.PRACTITIONERS[id];
+        const card = document.createElement("div");
+        card.className = "kb-choice-card";
+        card.dataset.practitioner = id;
+        card.innerHTML = `<h3>${person.name}</h3>`;
+        card.addEventListener("click", () => {
+          this.state.practitionerId = id;
+          grid.querySelectorAll(".kb-choice-card").forEach((c) => {
+            c.classList.toggle("selected", c.dataset.practitioner === id);
+          });
+          this.syncStep1Continue();
+        });
+        grid.appendChild(card);
+      });
+    }
+
+    syncStep1Continue() {
+      const btn = this.container.querySelector("#kb-btn-next-1");
+      if (btn) btn.disabled = !(this.state.techniqueId && this.state.practitionerId);
+    }
+
     updateDniRequirement() {
       const label = this.container.querySelector("#kb-label-dni");
-      if (this.state.appointmentType === "session") {
-        label.innerHTML = "DNI / Documento *";
-      } else {
-        label.innerHTML = "DNI / Documento (opcional)";
-      }
+      if (label) label.innerHTML = "DNI / Documento *";
     }
 
     setStep(stepNumber) {
@@ -367,22 +381,17 @@
       // Título y subtítulo paso 2
       const step2Title = this.container.querySelector("#kb-step-2 .kb-section-title");
       if (step2Title) {
-        if (this.state.appointmentType === "session") {
-          step2Title.textContent = "Elige el día y horario de tu sesión (1 hora)";
-        } else {
-          step2Title.textContent = "Elige el día y horario de tu llamada de orientación (10 min)";
-        }
+        const technique = engine.getTechnique(this.state.techniqueId);
+        const person = engine.PRACTITIONERS[this.state.practitionerId];
+        step2Title.textContent = technique && person
+          ? `${technique.label} con ${person.name}`
+          : "Elige el día y horario de tu sesión (1 hora)";
       }
 
       const subtitle = this.container.querySelector("#kb-slots-subtitle");
       if (subtitle) {
-        if (this.state.appointmentType === "call") {
-          subtitle.textContent = "Llamada previa de orientación de 10 min (Lunes a viernes 08:00 a 19:00 hs).";
-          subtitle.style.display = "block";
-        } else {
-          subtitle.textContent = "";
-          subtitle.style.display = "none";
-        }
+        subtitle.textContent = "Sesión presencial de 1 hora, en los días en que atiende ese profesional.";
+        subtitle.style.display = "block";
       }
     }
 
@@ -398,7 +407,8 @@
       // Buscar los próximos 10 días hábiles
       while (added < 10) {
         const iso = engine.formatDateIso(checkDate);
-        const isBiz = engine.isBusinessDay(checkDate);
+        const works = engine.getWorkingWindows(this.state.practitionerId, checkDate).length > 0;
+        const isBiz = engine.isBusinessDay(checkDate) && works;
 
         if (isBiz) {
           const card = document.createElement("div");
@@ -457,7 +467,11 @@
       grid.innerHTML = "";
 
       try {
-        const res = await this.client.getAvailableSlots(dateIso, this.state.appointmentType, { forceRefresh });
+        const res = await this.client.getAvailableSlots(dateIso, "session", {
+          forceRefresh,
+          practitionerId: this.state.practitionerId,
+          techniqueId: this.state.techniqueId,
+        });
         if (currentReq !== this._slotReqSeq) return;
 
         loading.style.display = "none";
@@ -502,8 +516,7 @@
 
     /**
      * Filtra los turnos garantizando el margen de anticipación cuando la consulta es para hoy:
-     * - Llamadas (10 min): No ofrecer nada en la siguiente hora (mínimo 1 hora / 60 min de anticipación).
-     * - Turnos presenciales (60 min): Mínimo 2 horas / 120 min de margen de traslado al consultorio.
+     * Turnos presenciales (60 min): mínimo 2 horas de margen de traslado al consultorio.
      */
     filterSlotsWithBuffer(slots, dateIso, appointmentType) {
       if (!Array.isArray(slots) || slots.length === 0) return [];
@@ -526,11 +539,7 @@
         return slots;
       }
 
-      // Regla de anticipación: 1h para llamadas, 2h para turnos presenciales
-      const bufferHours =
-        appointmentType === "call"
-          ? (engine.CALL_BUFFER_HOURS || 1)
-          : (engine.SESSION_BUFFER_HOURS || 2);
+      const bufferHours = engine.SESSION_BUFFER_HOURS || 2;
       const minAllowedTimestamp = Date.now() + bufferHours * 3600 * 1000;
 
       return slots.filter((slot) => {
@@ -560,8 +569,10 @@
       const dni = q("#kb-input-dni").value.trim();
 
       const payload = {
-        tipo: this.state.tipo,
-        appointmentType: this.state.appointmentType,
+        tipo: "session",
+        appointmentType: "session",
+        techniqueId: this.state.techniqueId,
+        practitionerId: this.state.practitionerId,
         date: this.state.selectedDate,
         time: this.state.selectedTime,
         nombre: nombre,
@@ -593,16 +604,17 @@
     renderConfirmation(payload, result) {
       const q = (sel) => this.container.querySelector(sel);
 
-      const isCall = payload.appointmentType === "call";
-      q("#kb-success-title").textContent = isCall
-        ? "¡Llamada Previa Agendada!"
-        : "¡Turno Presencial Confirmado!";
+      const technique = engine.getTechnique(payload.techniqueId);
+      const person = engine.PRACTITIONERS[payload.practitionerId];
+      q("#kb-success-title").textContent = "¡Turno Presencial Confirmado!";
 
       const summaryBox = q("#kb-success-summary");
       summaryBox.innerHTML = `
         <div style="font-weight: 700; color: var(--kin-green-deep); margin-bottom: 8px;">
-          ${isCall ? "📞 Llamada de Orientación Telefónica (10 min)" : "🩺 Turno Presencial en Consultorio (1 hora)"}
+          🩺 Turno presencial de 1 hora
         </div>
+        <div><strong>Técnica:</strong> ${technique ? technique.label : ""}</div>
+        <div><strong>Profesional:</strong> ${person ? person.name : ""}</div>
         <div><strong>Paciente:</strong> ${payload.nombre}</div>
         <div><strong>Fecha y Hora:</strong> ${payload.date} a las ${payload.time} hs</div>
         <div><strong>WhatsApp / Contacto:</strong> ${payload.telefono}</div>
@@ -613,14 +625,10 @@
 
       // Reglas del consultorio sólo si es presencial
       const clinicRules = q("#kb-success-clinic-rules");
-      clinicRules.style.display = isCall ? "none" : "block";
+      clinicRules.style.display = "block";
 
       const subtitle = q("#kb-success-subtitle");
-      if (isCall) {
-        subtitle.innerHTML = `El kinesiólogo se comunicará puntualmente a tu teléfono <strong>${payload.telefono}</strong> el <strong>${payload.date} a las ${payload.time} hs</strong> para evaluar tu caso e informarte los honorarios.`;
-      } else {
-        subtitle.innerHTML = `Tu cita quedó reservada en la agenda del consultorio para el <strong>${payload.date} a las ${payload.time} hs</strong>.`;
-      }
+      subtitle.innerHTML = `Tu cita quedó reservada para el <strong>${payload.date} a las ${payload.time} hs</strong>.`;
 
       this.setupCalendarButtons(payload, result);
     }

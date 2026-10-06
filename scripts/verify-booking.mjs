@@ -40,46 +40,53 @@ function test(description, fn) {
 // ---------------------------------------------------------------------------
 // 1. REGLA ESTRICTA DE PRIMERA VEZ (LLAMADA OBLIGATORIA)
 // ---------------------------------------------------------------------------
-test("REGLA 1: Paciente de primera vez NO puede reservar turno presencial directo", () => {
+test("REGLA 1: Ya no se aceptan llamadas", () => {
   const result = validateBookingRequest({
-    tipo: "primera_vez",
-    appointmentType: "session",
+    appointmentType: "call",
+    techniqueId: "rpg",
+    practitionerId: "norberto",
     nombre: "Juan Pérez",
     telefono: "+5491112345678",
     dni: "30123456",
     date: "2026-10-07",
     time: "10:00",
   });
-  assert.strictEqual(result.isValid, false, "Debe rechazar turno presencial para primera vez");
-  assert.ok(
-    result.errors.some((e) => e.includes("llamada previa de orientación")),
-    "Debe explicar el requisito de llamada previa en los errores"
-  );
+  assert.strictEqual(result.isValid, false);
+  assert.ok(result.errors.some((e) => e.includes("Ya no se agendan llamadas")));
 });
 
-test("REGLA 1B: Paciente de primera vez SÍ puede reservar llamada de 10 min", () => {
-  const result = validateBookingRequest({
-    tipo: "primera_vez",
-    appointmentType: "call",
+test("REGLA 1B: Osteopatía solo la atiende Norberto", () => {
+  const rejected = validateBookingRequest({
+    appointmentType: "session",
+    techniqueId: "osteopatia",
+    practitionerId: "maria",
     nombre: "Juan Pérez",
     telefono: "+5491112345678",
+    dni: "30123456",
     date: "2026-10-07",
     time: "10:00",
   });
-  assert.strictEqual(result.isValid, true, "Debe aceptar llamada de 10 min para primera vez");
+  assert.strictEqual(rejected.isValid, false);
+
+  const accepted = validateBookingRequest({
+    appointmentType: "session",
+    techniqueId: "osteopatia",
+    practitionerId: "norberto",
+    nombre: "Juan Pérez",
+    telefono: "+5491112345678",
+    dni: "30123456",
+    date: "2026-10-07",
+    time: "10:00",
+  });
+  assert.strictEqual(accepted.isValid, true);
 });
 
-test("REGLA 1C: Paciente habitual SÍ puede reservar turno presencial de 1h", () => {
-  const result = validateBookingRequest({
-    tipo: "habitual",
-    appointmentType: "session",
-    nombre: "María Gomez",
-    telefono: "+5491198765432",
-    dni: "28111222",
-    date: "2026-10-07",
-    time: "14:00",
-  });
-  assert.strictEqual(result.isValid, true, "Paciente habitual debe poder agendar sesión");
+test("REGLA 1C: Acupuntura solo la atiende María y RPG la atienden ambos", () => {
+  assert.strictEqual(engine.practitionerOffersTechnique("maria", "acupuntura"), true);
+  assert.strictEqual(engine.practitionerOffersTechnique("norberto", "acupuntura"), false);
+  assert.strictEqual(engine.practitionerOffersTechnique("norberto", "rpg"), true);
+  assert.strictEqual(engine.practitionerOffersTechnique("maria", "posturologia"), true);
+  assert.strictEqual(engine.practitionerOffersTechnique("norberto", "viscerales"), true);
 });
 
 // ---------------------------------------------------------------------------
@@ -95,7 +102,7 @@ test("REGLA 2B: Feriados nacionales no son días hábiles y devuelven 0 slots", 
   assert.strictEqual(isBusinessDay("2026-05-25"), false, "25 de Mayo debe ser feriado");
   const slots = calculateAvailableSlots({
     date: "2026-05-25",
-    appointmentType: "call",
+    practitionerId: "norberto",
   });
   assert.strictEqual(slots.length, 0, "No debe haber turnos en feriados");
 });
@@ -148,54 +155,22 @@ test("REGLA 3A: Una llamada existente bloquea turnos presenciales que la solapen
   assert.strictEqual(has1030am, true, "El slot 10:30-11:30 no colisiona con 10:10-10:20");
 });
 
-test("REGLA 3B: Un turno presencial de 1h bloquea todas las llamadas intermedias", () => {
-  // Hay un turno presencial de 15:00 a 16:00
-  const busyLocal = [
-    {
-      start: new Date(2026, 9, 7, 15, 0).getTime(),
-      end: new Date(2026, 9, 7, 16, 0).getTime(),
-    },
-  ];
-
-  const callSlots = calculateAvailableSlots({
-    date: new Date(2026, 9, 7),
-    appointmentType: "call",
-    busyIntervals: busyLocal,
-  });
-
-  const slotsInBlock = callSlots.filter((s) => {
-    const [h] = s.time.split(":").map(Number);
-    return h === 15;
-  });
-  assert.strictEqual(slotsInBlock.length, 0, "No debe haber llamadas entre 15:00 y 16:00");
-
-  const has1600 = callSlots.some((s) => s.time === "16:00");
-  assert.strictEqual(has1600, true, "La llamada a las 16:00 justo al terminar el turno sí debe estar libre");
+test("REGLA 3B: Los horarios del profesional recortan los turnos de ese día", () => {
+  engine.PRACTITIONER_HOURS.maria = { 3: [{ start: "10:00", end: "13:00" }] };
+  try {
+    const slots = calculateAvailableSlots({
+      date: new Date(2026, 9, 7),
+      practitionerId: "maria",
+    });
+    assert.deepStrictEqual(slots.map((s) => s.time), ["10:00", "10:30", "11:00", "11:30", "12:00"]);
+  } finally {
+    engine.PRACTITIONER_HOURS.maria = null;
+  }
 });
 
 // ---------------------------------------------------------------------------
 // 4. BUFFER DE ANTICIPACIÓN Y TRASLADO EN EL MISMO DÍA
 // ---------------------------------------------------------------------------
-test("REGLA 4A: Para llamadas en el mismo día, no se ofrece nada en la siguiente hora (now + 1h)", () => {
-  const simulatedNow = new Date(2026, 9, 7, 10, 15); // Hoy a las 10:15
-  const slots = calculateAvailableSlots({
-    date: new Date(2026, 9, 7),
-    appointmentType: "call",
-    now: simulatedNow,
-  });
-
-  // Para llamadas no se debe ofrecer nada en la siguiente hora (antes de 11:15)
-  const tooEarly = slots.some((s) => {
-    const [h, m] = s.time.split(":").map(Number);
-    return h < 11 || (h === 11 && m < 15);
-  });
-  assert.strictEqual(tooEarly, false, "No debe ofrecer llamadas en la siguiente hora desde now");
-
-  // El primer slot disponible para llamadas debe ser a partir de 11:20
-  assert.ok(slots.length > 0, "Debe haber slots disponibles para llamadas luego de 1h");
-  assert.strictEqual(slots[0].time, "11:20", "Primer horario de llamada libre debe ser 11:20");
-});
-
 test("REGLA 4B: Para turnos presenciales en el mismo día, se mantiene margen de traslado de 2 horas (now + 2h)", () => {
   const simulatedNow = new Date(2026, 9, 7, 10, 15); // Hoy a las 10:15
   const slots = calculateAvailableSlots({
@@ -220,17 +195,12 @@ test("REGLA 4B: Para turnos presenciales en el mismo día, se mantiene margen de
 // 5. FORMATO DE TÍTULOS Y DESCRIPCIONES PARA GOOGLE CALENDAR
 // ---------------------------------------------------------------------------
 test("REGLA 5: Títulos y descripciones cumplen el estándar exacto de Kinésica", () => {
-  const callSummary = formatCalendarSummary({
-    appointmentType: "call",
-    nombre: "Lucas Méndez",
-  });
-  assert.strictEqual(callSummary, "📞 [LLAMADA 10m] Lucas Méndez");
-
   const sessionSummary = formatCalendarSummary({
     appointmentType: "session",
+    practitionerId: "norberto",
     nombre: "Lucas Méndez",
   });
-  assert.strictEqual(sessionSummary, "🩺 [TURNO] Lucas Méndez");
+  assert.strictEqual(sessionSummary, "🩺 [TURNO] [Norberto] Lucas Méndez");
 
   const menorSummary = formatCalendarSummary({
     appointmentType: "session",
@@ -291,27 +261,24 @@ test("REGLA 6A: Sincronización para turno presencial de 1h calcula horario UTC-
   assert.strictEqual(exportData.filename, "kinesica-turno-2026-10-15.ics");
 });
 
-test("REGLA 6B: Sincronización para llamada de 10 min calcula duración exacta de 10 minutos", () => {
+test("REGLA 6B: El título del calendario del paciente incluye la técnica", () => {
   const exportData = generateCalendarExportData(
     {
-      appointmentType: "call",
+      appointmentType: "session",
+      techniqueId: "acupuntura",
+      practitionerId: "maria",
       date: "2026-10-15",
       time: "10:30",
       telefono: "+54 9 11 5555-4444",
     },
-    "kinesica-test-call-2"
+    "kinesica-test-session-2"
   );
 
-  // 10:30 en Argentina (UTC-3) = 13:30 UTC
-  // Llamada = 10 minutos -> finaliza a las 13:40 UTC
   assert.strictEqual(exportData.startCompact, "20261015T133000Z");
-  assert.strictEqual(exportData.endCompact, "20261015T134000Z");
-  assert.strictEqual(exportData.title, "Llamada inicial - Kinésica Palermo");
-  assert.ok(exportData.location.includes("+54 9 11 5555-4444"));
-  assert.ok(exportData.googleCalendarUrl.includes("dates=20261015T133000Z/20261015T134000Z"));
-  assert.ok(exportData.icsContent.includes("DTSTART:20261015T133000Z"));
-  assert.ok(exportData.icsContent.includes("DTEND:20261015T134000Z"));
-  assert.strictEqual(exportData.filename, "kinesica-llamada-2026-10-15.ics");
+  assert.strictEqual(exportData.endCompact, "20261015T143000Z");
+  assert.strictEqual(exportData.title, "Turno en Kinésica — Acupuntura");
+  assert.ok(exportData.description.includes("María"));
+  assert.strictEqual(exportData.filename, "kinesica-turno-2026-10-15.ics");
 });
 
 console.log(`\n🎉 Resultado: ${passed}/${total} tests superados con éxito.\n`);

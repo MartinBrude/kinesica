@@ -2,11 +2,11 @@
  * Kinésica - Motor de Reservas y Reglas de Negocio
  * ==================================================
  * Implementa las reglas estrictas de agenda de Kinésica (Palermo, CABA):
- * 1. Primera Vez: Requiere OBLIGATORIAMENTE llamada previa de orientación de 10 min.
- * 2. Paciente Habitual: Habilitado para Turno Presencial de 60 min o llamada de 10 min.
- * 3. Franja horaria: Lunes a viernes de 08:00 a 19:00 hs (America/Argentina/Buenos_Aires).
+ * 1. Solo turnos presenciales de 60 min. No hay llamadas de orientación.
+ * 2. Cada técnica la atiende Norberto, María o ambos.
+ * 3. Los horarios de cada profesional restringen los turnos ofrecidos.
  * 4. Feriados y fines de semana bloqueados.
- * 5. Anti-colisión estricta (unicidad del profesional): una llamada no colisiona con un turno.
+ * 5. Un turno de un profesional no pisa otro turno de la misma persona.
  * 6. Buffer de traslado de 2 horas para turnos en el mismo día.
  */
 
@@ -21,13 +21,34 @@
 })(typeof self !== "undefined" ? self : this, function () {
   "use strict";
 
-  const CALL_DURATION_MINUTES = 10;
   const SESSION_DURATION_MINUTES = 60;
   const DAY_START_HOUR = 8;
   const DAY_END_HOUR = 19;
-  const CALL_BUFFER_HOURS = 1; // Para llamadas de 10m: mínimo 1 hora de anticipación (no ofrecer nada en la siguiente hora)
-  const SESSION_BUFFER_HOURS = 2; // Para turnos presenciales de 1h: mínimo 2 horas de margen de traslado
-  const SAME_DAY_BUFFER_HOURS = 2; // Compatibilidad retroactiva
+  const SESSION_BUFFER_HOURS = 2; // Turnos presenciales: mínimo 2 horas de margen de traslado
+  const SAME_DAY_BUFFER_HOURS = 2;
+  const SLOT_STEP_MINUTES = 30;
+
+  const PRACTITIONERS = {
+    norberto: { id: "norberto", name: "Norberto" },
+    maria: { id: "maria", name: "María" },
+  };
+
+  const TECHNIQUES = [
+    { id: "osteopatia", label: "Osteopatía", practitioners: ["norberto"] },
+    { id: "acupuntura", label: "Acupuntura", practitioners: ["maria"] },
+    { id: "rpg", label: "RPG", practitioners: ["norberto", "maria"] },
+    { id: "neurodinamia", label: "Neurodinamia", practitioners: ["norberto", "maria"] },
+    { id: "barral", label: "Barral", practitioners: ["norberto", "maria"] },
+    { id: "posturologia", label: "Posturología", practitioners: ["maria"] },
+    { id: "viscerales", label: "Manipulaciones viscerales", practitioners: ["norberto"] },
+  ];
+
+  // Horario semanal por profesional. Clave = día JS (0 domingo … 6 sábado).
+  // null = todavía sin confirmar: se usa la franja general del consultorio (lun–vie 08:00–19:00).
+  const PRACTITIONER_HOURS = {
+    norberto: null,
+    maria: null,
+  };
 
   // Lista oficial de Feriados Nacionales de Argentina (YYYY-MM-DD)
   // Incluye inamovibles, trasladables y puentes turísticos oficiales
@@ -94,6 +115,43 @@
     return `${y}-${m}-${d}`;
   }
 
+  function getTechnique(techniqueId) {
+    return TECHNIQUES.find(function (t) { return t.id === techniqueId; }) || null;
+  }
+
+  function practitionerOffersTechnique(practitionerId, techniqueId) {
+    const technique = getTechnique(techniqueId);
+    return !!(technique && technique.practitioners.indexOf(practitionerId) !== -1);
+  }
+
+  function parseHmToMinutes(hm) {
+    const parts = String(hm || "").split(":");
+    return parseInt(parts[0], 10) * 60 + parseInt(parts[1] || "0", 10);
+  }
+
+  /**
+   * Ventanas de trabajo de un profesional en una fecha.
+   * Si sus horarios aún no fueron cargados, usa lun–vie 08:00–19:00.
+   */
+  function getWorkingWindows(practitionerId, dateInput) {
+    const d = typeof dateInput === "string" ? parseLocalDate(dateInput) : new Date(dateInput);
+    const dow = d.getDay();
+    const hours = PRACTITIONER_HOURS[practitionerId];
+    if (!hours) {
+      if (dow === 0 || dow === 6) return [];
+      return [{ startMin: DAY_START_HOUR * 60, endMin: DAY_END_HOUR * 60 }];
+    }
+    const ranges = hours[dow] || [];
+    return ranges.map(function (range) {
+      return { startMin: parseHmToMinutes(range.start), endMin: parseHmToMinutes(range.end) };
+    });
+  }
+
+  function eventBlocksPractitioner() {
+    // Un solo consultorio: cualquier turno ocupa el horario para los dos.
+    return true;
+  }
+
   function formatTime(date) {
     const h = String(date.getHours()).padStart(2, "0");
     const m = String(date.getMinutes()).padStart(2, "0");
@@ -117,16 +175,15 @@
    * Genera los slots disponibles para una fecha dada.
    * @param {Object} options
    * @param {string|Date} options.date - Fecha objetivo (YYYY-MM-DD o Date)
-   * @param {string} options.appointmentType - 'call' (10 min) o 'session' (60 min)
-   * @param {Array} [options.busyIntervals] - Eventos ocupados [{start, end}]
+   * @param {string} [options.practitionerId] - 'norberto' | 'maria'
+   * @param {Array} [options.busyIntervals] - Eventos ocupados [{start, end, practitioner?, title?}]
    * @param {Date} [options.now] - Fecha/hora actual para cálculo de buffer
    * @param {Array} [options.holidays] - Lista opcional de feriados
    * @returns {Array<{ time: string, startIso: string, endIso: string }>}
    */
   function calculateAvailableSlots(options) {
-    const appointmentType = options.appointmentType || "call";
-    const durationMinutes =
-      appointmentType === "session" ? SESSION_DURATION_MINUTES : CALL_DURATION_MINUTES;
+    const durationMinutes = SESSION_DURATION_MINUTES;
+    const practitionerId = options.practitionerId || null;
 
     const baseDate =
       typeof options.date === "string" ? parseLocalDate(options.date) : new Date(options.date);
@@ -135,58 +192,50 @@
       return [];
     }
 
+    const windows = practitionerId
+      ? getWorkingWindows(practitionerId, baseDate)
+      : [{ startMin: DAY_START_HOUR * 60, endMin: DAY_END_HOUR * 60 }];
+    if (!windows.length) return [];
+
     const now = options.now ? new Date(options.now) : new Date();
-    const busy = normalizeBusyIntervals(options.busyIntervals);
+    const rawBusy = Array.isArray(options.busyIntervals) ? options.busyIntervals : [];
+    const relevantBusy = rawBusy.filter(function (ev) {
+      return eventBlocksPractitioner(ev, practitionerId);
+    });
+    const busy = normalizeBusyIntervals(relevantBusy);
 
-    // Inicio y fin de la franja (08:00 a 19:00 hs)
-    const windowStart = new Date(baseDate);
-    windowStart.setHours(DAY_START_HOUR, 0, 0, 0);
-
-    const windowEnd = new Date(baseDate);
-    windowEnd.setHours(DAY_END_HOUR, 0, 0, 0);
-
-    // Buffer según tipo de atención si es para el mismo día:
-    // - Llamadas (10 min): 1 hora de anticipación mínima (no ofrecer nada en la siguiente hora)
-    // - Turnos presenciales (60 min): 2 horas de margen de traslado al consultorio
-    const bufferHours =
-      appointmentType === "call" ? CALL_BUFFER_HOURS : SESSION_BUFFER_HOURS;
     const isToday = formatDateIso(baseDate) === formatDateIso(now);
     const minAllowedTime = isToday
-      ? now.getTime() + bufferHours * 60 * 60 * 1000
-      : windowStart.getTime();
+      ? now.getTime() + SESSION_BUFFER_HOURS * 60 * 60 * 1000
+      : 0;
 
     const slots = [];
-    const stepMinutes = appointmentType === "call" ? 10 : 30; // saltos de 10 min o 30 min para ofrecer turnos
 
-    let current = new Date(windowStart);
-    while (true) {
-      const slotStart = current.getTime();
-      const slotEnd = slotStart + durationMinutes * 60 * 1000;
+    windows.forEach(function (windowRange) {
+      let minute = windowRange.startMin;
+      while (minute + durationMinutes <= windowRange.endMin) {
+        const current = new Date(baseDate);
+        current.setHours(Math.floor(minute / 60), minute % 60, 0, 0);
+        const slotStart = current.getTime();
+        const slotEnd = slotStart + durationMinutes * 60 * 1000;
 
-      // No exceder las 19:00 hs
-      if (slotEnd > windowEnd.getTime()) {
-        break;
-      }
-
-      // Debe cumplir el buffer si es hoy
-      if (slotStart >= minAllowedTime) {
-        // Verificar no-solapamiento con eventos existentes
-        const overlaps = busy.some(function (b) {
-          return slotStart < b.end && slotEnd > b.start;
-        });
-
-        if (!overlaps) {
-          slots.push({
-            time: formatTime(current),
-            startIso: new Date(slotStart).toISOString(),
-            endIso: new Date(slotEnd).toISOString(),
-            durationMinutes: durationMinutes,
+        if (slotStart >= minAllowedTime) {
+          const overlaps = busy.some(function (b) {
+            return slotStart < b.end && slotEnd > b.start;
           });
+          if (!overlaps) {
+            slots.push({
+              time: formatTime(current),
+              startIso: new Date(slotStart).toISOString(),
+              endIso: new Date(slotEnd).toISOString(),
+              durationMinutes: durationMinutes,
+              practitionerId: practitionerId,
+            });
+          }
         }
+        minute += SLOT_STEP_MINUTES;
       }
-
-      current = new Date(current.getTime() + stepMinutes * 60 * 1000);
-    }
+    });
 
     return slots;
   }
@@ -194,8 +243,8 @@
   /**
    * Valida una solicitud de reserva asegurando el cumplimiento de todas las reglas.
    * @param {Object} req
-   * @param {string} req.tipo - 'primera_vez' | 'habitual'
-   * @param {string} req.appointmentType - 'call' | 'session'
+   * @param {string} req.techniqueId
+   * @param {string} req.practitionerId - 'norberto' | 'maria'
    * @param {string} req.nombre - Nombre completo
    * @param {string} req.telefono - Teléfono / WhatsApp
    * @param {string} [req.dni] - DNI / Documento
@@ -226,19 +275,29 @@
       }
     }
 
-    // =========================================================================
-    // REGLA CRÍTICA DE PRIMERA VEZ (KINESICA-BOT):
-    // Si es primera vez, REQUIERE OBLIGATORIAMENTE llamada de 10 min previa.
-    // No se permite agendar turno presencial directo sin la llamada inicial.
-    // =========================================================================
-    if (req.tipo === "primera_vez" && req.appointmentType === "session") {
-      errors.push(
-        "Para tu primera atención en Kinésica es requisito realizar antes una llamada previa de orientación sin cargo de 10 minutos con el profesional para evaluar tu caso e informarte los honorarios."
-      );
+    if (req.appointmentType === "call") {
+      errors.push("Ya no se agendan llamadas. Elegí un turno presencial de 1 hora.");
     }
 
-    // Para turnos presenciales de habituales, requerir DNI si está disponible
-    if (req.appointmentType === "session" && (!req.dni || req.dni.trim().length < 5)) {
+    const technique = getTechnique(req.techniqueId);
+    if (!technique) {
+      errors.push("Elegí la técnica de la sesión.");
+    } else if (!PRACTITIONERS[req.practitionerId] || !practitionerOffersTechnique(req.practitionerId, req.techniqueId)) {
+      errors.push("Esa técnica no la atiende el profesional elegido.");
+    }
+
+    if (req.date && req.time && req.practitionerId && PRACTITIONERS[req.practitionerId]) {
+      const windows = getWorkingWindows(req.practitionerId, req.date);
+      const timeMin = parseHmToMinutes(req.time);
+      const fits = windows.some(function (w) {
+        return timeMin >= w.startMin && timeMin + SESSION_DURATION_MINUTES <= w.endMin;
+      });
+      if (!fits) {
+        errors.push("Ese horario está fuera del día de atención del profesional.");
+      }
+    }
+
+    if (!req.dni || req.dni.trim().length < 5) {
       errors.push("Para turnos presenciales se requiere el número de DNI o documento.");
     }
 
@@ -256,28 +315,27 @@
     const nombre = data.nombre.trim();
     const familiar = (data.nombreFamiliar || "").trim();
 
-    if (data.appointmentType === "call") {
-      if (isMenor && familiar) {
-        return `📞 [LLAMADA 10m - MENOR] ${nombre} (Familiar: ${familiar})`;
-      }
-      return `📞 [LLAMADA 10m] ${nombre}`;
-    } else {
-      if (isMenor && familiar) {
-        return `🩺 [TURNO - MENOR] ${nombre} (Familiar: ${familiar})`;
-      }
-      return `🩺 [TURNO] ${nombre}`;
+    const who = PRACTITIONERS[data.practitionerId];
+    const whoTag = who ? ` [${who.name}]` : "";
+    if (isMenor && familiar) {
+      return `🩺 [TURNO - MENOR]${whoTag} ${nombre} (Familiar: ${familiar})`;
     }
+    return `🩺 [TURNO]${whoTag} ${nombre}`;
   }
 
   /**
    * Genera la descripción normalizada para Google Calendar.
    */
   function formatCalendarDescription(data) {
+    const technique = getTechnique(data.techniqueId);
+    const who = PRACTITIONERS[data.practitionerId];
     const parts = [
       `📱 WhatsApp: ${data.telefono.trim()}`,
       `🪪 DNI: ${data.dni ? data.dni.trim() : "No provisto"}`,
       `🌿 Origen: Reserva Web Oficial Kinésica`,
     ];
+    if (technique) parts.push(`🤲 Técnica: ${technique.label}`);
+    if (who) parts.push(`👤 Profesional: ${who.name}`);
     if (data.motivo && data.motivo.trim()) {
       parts.push(`📋 Motivo: ${data.motivo.trim()}`);
     }
@@ -295,8 +353,7 @@
    * (Google Calendar e iCal/.ics para Apple Calendar y Outlook).
    */
   function generateCalendarExportData(payload, eventId) {
-    const isCall = payload.appointmentType === "call";
-    const durationMinutes = isCall ? CALL_DURATION_MINUTES : SESSION_DURATION_MINUTES;
+    const durationMinutes = SESSION_DURATION_MINUTES;
 
     const [year, month, day] = (payload.date || "").split("-").map(Number);
     const [hour, minute] = (payload.time || "").split(":").map(Number);
@@ -305,17 +362,22 @@
     const startUtc = new Date(Date.UTC(year, month - 1, day, hour + 3, minute));
     const endUtc = new Date(startUtc.getTime() + durationMinutes * 60 * 1000);
 
-    const title = isCall
-      ? "Llamada inicial - Kinésica Palermo"
+    const technique = getTechnique(payload.techniqueId);
+    const who = PRACTITIONERS[payload.practitionerId];
+    const title = technique
+      ? `Turno en Kinésica — ${technique.label}`
       : "Turno en Kinésica";
 
-    const location = isCall
-      ? `Llamada telefónica a ${payload.telefono ? payload.telefono.trim() : ""}`
-      : "Charcas 3889, Piso 5º B, Palermo, CABA (entre Scalabrini Ortiz y Aráoz)";
+    const location = "Charcas 3889, Piso 5º B, Palermo, CABA (entre Scalabrini Ortiz y Aráoz)";
 
-    const description = isCall
-      ? `Llamada de orientación previa con el kinesiólogo (Kinésica Palermo).\nEl profesional te llamará a tu teléfono: ${payload.telefono ? payload.telefono.trim() : ""}.\nDuración: 10 minutos.`
-      : `Información importante:\n- Te pedimos que llegues a la hora de la sesión, ni antes ni después, por características del espacio y la organización.\n- Asistir sin acompañantes (salvo necesidad directa o menores).\n- Traer estudios médicos previos si contás con ellos.`;
+    const description = [
+      "Información importante:",
+      "- Te pedimos que llegues a la hora de la sesión, ni antes ni después, por características del espacio y la organización.",
+      "- Asistir sin acompañantes (salvo necesidad directa o menores).",
+      "- Traer estudios médicos previos si contás con ellos.",
+      technique ? `Técnica: ${technique.label}.` : "",
+      who ? `Profesional: ${who.name}.` : "",
+    ].filter(Boolean).join("\n");
 
     const toCompactUtc = (d) =>
       d.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
@@ -364,20 +426,24 @@
       endCompact,
       googleCalendarUrl,
       icsContent,
-      filename: `kinesica-${isCall ? "llamada" : "turno"}-${payload.date}.ics`,
+      filename: `kinesica-turno-${payload.date}.ics`,
     };
   }
 
   return {
-    CALL_DURATION_MINUTES: CALL_DURATION_MINUTES,
     SESSION_DURATION_MINUTES: SESSION_DURATION_MINUTES,
     DAY_START_HOUR: DAY_START_HOUR,
     DAY_END_HOUR: DAY_END_HOUR,
-    CALL_BUFFER_HOURS: CALL_BUFFER_HOURS,
     SESSION_BUFFER_HOURS: SESSION_BUFFER_HOURS,
     SAME_DAY_BUFFER_HOURS: SAME_DAY_BUFFER_HOURS,
+    PRACTITIONERS: PRACTITIONERS,
+    TECHNIQUES: TECHNIQUES,
+    PRACTITIONER_HOURS: PRACTITIONER_HOURS,
     DEFAULT_ARGENTINA_HOLIDAYS: DEFAULT_ARGENTINA_HOLIDAYS,
     isBusinessDay: isBusinessDay,
+    getTechnique: getTechnique,
+    getWorkingWindows: getWorkingWindows,
+    practitionerOffersTechnique: practitionerOffersTechnique,
     calculateAvailableSlots: calculateAvailableSlots,
     validateBookingRequest: validateBookingRequest,
     formatCalendarSummary: formatCalendarSummary,

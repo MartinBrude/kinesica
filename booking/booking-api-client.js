@@ -135,7 +135,7 @@
         const events = getMockEvents();
         const slots = engine.calculateAvailableSlots({
           date: dateStr,
-          appointmentType: appointmentType,
+          practitionerId: options.practitionerId,
           busyIntervals: events,
         });
         return {
@@ -147,7 +147,7 @@
         };
       }
 
-      const cacheKey = `${dateStr}_${appointmentType}`;
+      const cacheKey = `${dateStr}_${appointmentType}_${options.practitionerId || ""}`;
 
       // 1. Revisar caché en memoria (validez 2 minutos para respuesta instantánea)
       this._slotsCache = this._slotsCache || {};
@@ -163,7 +163,7 @@
       }
 
       const effectiveUrl = this.getEffectiveApiUrl();
-      const url = `${effectiveUrl}?action=get_slots&date=${encodeURIComponent(dateStr)}&type=${encodeURIComponent(appointmentType)}`;
+      const url = `${effectiveUrl}?action=get_slots&date=${encodeURIComponent(dateStr)}&type=session&practitioner=${encodeURIComponent(options.practitionerId || "")}&technique=${encodeURIComponent(options.techniqueId || "")}`;
 
       const fetchWithRetry = async (attempt) => {
         // En el primer intento damos 20s para permitir que el cold start de GAS despierte
@@ -270,10 +270,7 @@
 
       if (this.isMock) {
         await new Promise((r) => setTimeout(r, 300));
-        const duration =
-          data.appointmentType === "session"
-            ? engine.SESSION_DURATION_MINUTES
-            : engine.CALL_DURATION_MINUTES;
+        const duration = engine.SESSION_DURATION_MINUTES;
 
         const parts = data.date.split("-");
         const timeParts = data.time.split(":");
@@ -295,7 +292,7 @@
         }
 
         const summary = engine.formatCalendarSummary(data);
-        events.push({ start, end, title: summary });
+        events.push({ start, end, title: summary, practitioner: data.practitionerId });
         saveMockEvents(events);
 
         return {
@@ -305,10 +302,7 @@
           date: data.date,
           time: data.time,
           eventId: `mock_evt_${Date.now()}`,
-          message:
-            data.appointmentType === "call"
-              ? "Tu llamada de orientación ha sido agendada con éxito."
-              : "Tu turno presencial ha sido agendado con éxito.",
+          message: "Tu turno presencial ha sido agendado con éxito.",
           source: "mock",
         };
       }
@@ -326,6 +320,8 @@
         nombre: data.nombre || "",
         telefono: data.telefono || "",
         dni: data.dni || "",
+        techniqueId: data.techniqueId || "",
+        practitionerId: data.practitionerId || "",
         motivo: data.motivo || "",
         isMenor: data.isMenor ? "true" : "false",
         nombreFamiliar: data.nombreFamiliar || "",

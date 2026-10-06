@@ -162,8 +162,8 @@ function parseArgentinaDate(dateStr, timeStr) {
  */
 function handleGetSlots(params) {
   const dateStr = params.date; // YYYY-MM-DD
-  const type = params.type || "call"; // 'call' (10 min) o 'session' (60 min)
-  const duration = type === "session" ? SESSION_DURATION_MINUTES : CALL_DURATION_MINUTES;
+  const type = "session";
+  const duration = SESSION_DURATION_MINUTES;
 
   if (!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
     return createJsonResponse({ status: "error", message: "Parámetro 'date' inválido (requerido YYYY-MM-DD)" });
@@ -204,11 +204,11 @@ function handleGetSlots(params) {
   const now = new Date();
   const todayInArg = Utilities.formatDate(now, "America/Argentina/Buenos_Aires", "yyyy-MM-dd");
   const isToday = (todayInArg === dateStr);
-  const bufferHours = type === "call" ? CALL_BUFFER_HOURS : SESSION_BUFFER_HOURS;
+  const bufferHours = SESSION_BUFFER_HOURS;
   const minAllowedTime = isToday ? (now.getTime() + bufferHours * 3600 * 1000) : dayStart.getTime();
 
   // 4. Calcular slots libres
-  const step = type === "call" ? 10 : 30; // pasos de evaluación
+  const step = 30;
   const availableSlots = [];
 
   for (let h = DAY_START_HOUR; h < DAY_END_HOUR; h++) {
@@ -289,7 +289,7 @@ function handleCheckPatient(payload) {
  */
 function handleBookAppointment(payload) {
   const tipo = payload.tipo || "primera_vez"; // 'primera_vez' | 'habitual'
-  const appointmentType = payload.appointmentType || "call"; // 'call' | 'session'
+  const appointmentType = payload.appointmentType || "session";
   const nombre = (payload.nombre || "").trim();
   const telefono = String(payload.telefono || "").trim();
   const dni = (payload.dni || "No provisto").trim();
@@ -300,13 +300,10 @@ function handleBookAppointment(payload) {
   const nombreFamiliar = (payload.nombreFamiliar || "").trim();
   const notas = (payload.notas || "").trim();
 
-  // =========================================================================
-  // REGLA DE NEGOCIO KINÉSICA: PRIMERA VEZ REQUIERE LLAMADA PREVIA
-  // =========================================================================
-  if (tipo === "primera_vez" && appointmentType === "session") {
+  if (appointmentType === "call") {
     return createJsonResponse({
       status: "error",
-      message: "Para pacientes de primera vez es requisito coordinar una llamada de orientación de 10 minutos antes de agendar un turno presencial."
+      message: "Ya no se agendan llamadas. Elegí un turno presencial de 1 hora."
     }, 400);
   }
 
@@ -322,7 +319,7 @@ function handleBookAppointment(payload) {
     return createJsonResponse({ status: "error", message: "Teléfono válido es requerido" }, 400);
   }
 
-  const duration = appointmentType === "session" ? SESSION_DURATION_MINUTES : CALL_DURATION_MINUTES;
+  const duration = SESSION_DURATION_MINUTES;
   const startTime = parseArgentinaDate(dateStr, timeStr);
   const endTime = new Date(startTime.getTime() + duration * 60 * 1000);
 
@@ -330,14 +327,12 @@ function handleBookAppointment(payload) {
   const now = new Date();
   const todayInArg = Utilities.formatDate(now, "America/Argentina/Buenos_Aires", "yyyy-MM-dd");
   const isToday = (todayInArg === dateStr);
-  const bufferHours = appointmentType === "call" ? CALL_BUFFER_HOURS : SESSION_BUFFER_HOURS;
+  const bufferHours = SESSION_BUFFER_HOURS;
   const minAllowedTime = isToday ? (now.getTime() + bufferHours * 3600 * 1000) : parseArgentinaDate(dateStr, "08:00").getTime();
   if (startTime.getTime() < minAllowedTime) {
     return createJsonResponse({
       status: "error",
-      message: appointmentType === "call"
-        ? "Las llamadas deben reservarse con al menos 1 hora de anticipación."
-        : "Los turnos presenciales deben reservarse con al menos 2 horas de anticipación."
+      message: "Los turnos presenciales deben reservarse con al menos 2 horas de anticipación."
     }, 400);
   }
 
@@ -352,16 +347,12 @@ function handleBookAppointment(payload) {
   }
 
   // 2. Construir título normalizado Kinésica
-  let summary = "";
-  if (appointmentType === "call") {
-    summary = (isMenor && nombreFamiliar)
-      ? "📞 [LLAMADA 10m - MENOR] " + nombre + " (Familiar: " + nombreFamiliar + ")"
-      : "📞 [LLAMADA 10m] " + nombre;
-  } else {
-    summary = (isMenor && nombreFamiliar)
-      ? "🩺 [TURNO - MENOR] " + nombre + " (Familiar: " + nombreFamiliar + ")"
-      : "🩺 [TURNO] " + nombre;
-  }
+  const practitionerNames = { norberto: "Norberto", maria: "María" };
+  const whoName = practitionerNames[payload.practitionerId] || "";
+  const whoTag = whoName ? " [" + whoName + "]" : "";
+  const summary = (isMenor && nombreFamiliar)
+    ? "🩺 [TURNO - MENOR]" + whoTag + " " + nombre + " (Familiar: " + nombreFamiliar + ")"
+    : "🩺 [TURNO]" + whoTag + " " + nombre;
 
   // 3. Construir descripción normalizada
   const descParts = [

@@ -6,11 +6,12 @@ Este módulo implementa el sistema de reservas web conectado a **Google Calendar
 
 ## 📌 1. Reglas de Negocio Implementadas
 
-1. **Regla de Primera Vez (Llamada Obligatoria):**
-   - Los pacientes nuevos **NO pueden agendar turno presencial directo**.
-   - Se les asigna de forma obligatoria una **Llamada telefónica de orientación de 10 minutos** (`📞 [LLAMADA 10m] Nombre`), explicando con calidez que el kinesiólogo evalúa el caso clínico e informa los honorarios correspondientes antes de concurrir.
-2. **Pacientes Habituales:**
-   - Pueden elegir entre **Turno Presencial en Consultorio de 1 hora** (`🩺 [TURNO] Nombre`) o llamada telefónica de 10 min.
+1. **Solo turnos presenciales de 1 hora.** Ya no se agendan llamadas de orientación.
+2. **Técnica y profesional:**
+   - Osteopatía y manipulaciones viscerales: Norberto.
+   - Acupuntura y posturología: María.
+   - RPG, neurodinamia y Barral: ambos.
+   - Los horarios de cada uno viven en `PRACTITIONER_HOURS` (`booking-engine.js`). Mientras estén en `null`, se ofrece lun–vie 08:00–19:00.
 3. **Franja Horaria y Días de Atención:**
    - Lunes a viernes hábiles entre las **08:00 y las 19:00 hs** (zona horaria `America/Argentina/Buenos_Aires`).
    - Sábados, domingos y feriados nacionales de Argentina están **bloqueados determinísticamente** (0 slots).
