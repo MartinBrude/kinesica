@@ -97,7 +97,6 @@
             <!-- PASO 1: PACIENTE → PROFESIONAL O TÉCNICA -->
             <div class="kb-step-panel active" id="kb-step-1">
               <div class="kb-section-title">¿Ya sos paciente?</div>
-              <div class="kb-section-desc">Turno presencial de 1 hora.</div>
               <div class="kb-choice-grid" id="kb-patient-grid"></div>
 
               <div id="kb-existing-box" style="display: none; margin-top: 18px;">
