@@ -56,6 +56,45 @@
     } catch (e) {}
   }
 
+  const RANGE_STORAGE_KEY = "kinesica_slots_range_v1";
+  const RANGE_TTL_MS = 180000;
+
+  function readStoredRange() {
+    try {
+      const raw = sessionStorage.getItem(RANGE_STORAGE_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (!parsed || !parsed.days || Date.now() - parsed.at > RANGE_TTL_MS) return null;
+      return parsed;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function writeStoredRange(from, to, days) {
+    try {
+      sessionStorage.setItem(RANGE_STORAGE_KEY, JSON.stringify({ at: Date.now(), from, to, days }));
+    } catch (e) {}
+  }
+
+  function storedRangeCovers(stored, from, to) {
+    return stored && stored.from <= from && stored.to >= to;
+  }
+
+  function applyStoredDays(cache, days, timestamp) {
+    Object.keys(days).forEach((dateStr) => {
+      cache[`${dateStr}_session`] = {
+        data: {
+          status: "success",
+          date: dateStr,
+          type: "session",
+          availableSlots: days[dateStr] || [],
+        },
+        timestamp: timestamp,
+      };
+    });
+  }
+
   class BookingClient {
     constructor(options) {
       this.options = options || {};
@@ -169,11 +208,17 @@
         return this._inFlightSlots[cacheKey];
       }
 
-      if (!forceRefresh && this._rangeInFlight && this._rangeInFlight.dates[dateStr]) {
-        await this._rangeInFlight.promise;
+      const rangePromise = typeof window !== "undefined" ? window.__kinesicaSlotsRangePromise : null;
+      if (!forceRefresh && rangePromise) {
+        await rangePromise;
         const warmed = this._slotsCache[cacheKey];
-        if (warmed && Date.now() - warmed.timestamp < 120000) {
+        if (warmed && Date.now() - warmed.timestamp < RANGE_TTL_MS) {
           return warmed.data;
+        }
+        const stored = readStoredRange();
+        if (stored && stored.days[dateStr]) {
+          applyStoredDays(this._slotsCache, stored.days, stored.at);
+          return this._slotsCache[cacheKey].data;
         }
       }
 
@@ -252,14 +297,21 @@
         return true;
       }
       if (this._rangeUnsupported) return false;
-      if (this._rangeInFlight) return this._rangeInFlight.promise;
 
       const from = dates[0];
       const to = dates[dates.length - 1];
-      const datesMap = {};
-      dates.forEach((dateStr) => {
-        datesMap[dateStr] = true;
-      });
+      const stored = readStoredRange();
+      if (storedRangeCovers(stored, from, to)) {
+        applyStoredDays(this._slotsCache, stored.days, stored.at);
+        return true;
+      }
+      if (typeof window !== "undefined" && window.__kinesicaSlotsRangePromise) {
+        const ok = await window.__kinesicaSlotsRangePromise;
+        const shared = readStoredRange();
+        if (shared) applyStoredDays(this._slotsCache, shared.days, shared.at);
+        return ok && storedRangeCovers(shared, from, to);
+      }
+
       const effectiveUrl = this.getEffectiveApiUrl();
       const url = `${effectiveUrl}?action=get_slots_range&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
 
@@ -281,27 +333,20 @@
             return false;
           }
           const now = Date.now();
-          Object.keys(json.days).forEach((dateStr) => {
-            this._slotsCache[`${dateStr}_session`] = {
-              data: {
-                status: "success",
-                date: dateStr,
-                type: "session",
-                availableSlots: json.days[dateStr] || [],
-              },
-              timestamp: now,
-            };
-          });
+          applyStoredDays(this._slotsCache, json.days, now);
+          writeStoredRange(from, to, json.days);
           return true;
         } catch (err) {
           if (timeoutId) clearTimeout(timeoutId);
           return false;
         } finally {
+          if (typeof window !== "undefined") window.__kinesicaSlotsRangePromise = null;
           this._rangeInFlight = null;
         }
       })();
 
-      this._rangeInFlight = { dates: datesMap, promise };
+      if (typeof window !== "undefined") window.__kinesicaSlotsRangePromise = promise;
+      this._rangeInFlight = { promise };
       return promise;
     }
 

@@ -127,7 +127,26 @@
         { passive: true }
       );
 
-      KinesicaBookingModal.prewarm();
+      KinesicaBookingModal.warmAgenda();
+    },
+
+    warmAgenda() {
+      const Client = typeof window !== "undefined" ? window.KinesicaBookingClient : null;
+      if (!Client) {
+        this.prewarm();
+        return;
+      }
+      const dates = [];
+      const start = new Date();
+      for (let i = 0; i < 18; i += 1) {
+        const day = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+        const y = day.getFullYear();
+        const m = String(day.getMonth() + 1).padStart(2, "0");
+        const d = String(day.getDate()).padStart(2, "0");
+        dates.push(`${y}-${m}-${d}`);
+      }
+      const client = new Client({ apiUrl: getApiUrl() });
+      client.getSlotsRange(dates);
     },
 
     isOpen() {
@@ -136,6 +155,7 @@
 
     prewarm() {
       if (typeof window === "undefined") return;
+      if (window.__kinesicaSlotsRangePromise) return;
       if (widgetInstance && widgetInstance.client && typeof widgetInstance.client.prewarm === "function") {
         widgetInstance.client.prewarm();
         return;
