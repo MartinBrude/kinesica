@@ -770,6 +770,9 @@
       this._prefetchedSlots = this._prefetchedSlots || {};
       const days = this.collectAttendanceDays(10);
       const run = async () => {
+        if (this.client && typeof this.client.getSlotsRange === "function") {
+          await this.client.getSlotsRange(days.map((day) => day.iso));
+        }
         for (let i = 0; i < days.length; i += 1) {
           const day = days[i];
           if (this._prefetchedSlots[day.iso]) continue;

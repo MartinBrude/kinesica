@@ -47,6 +47,8 @@ function doGet(e) {
 
     if (action === "get_slots") {
       return handleGetSlots(params);
+    } else if (action === "get_slots_range") {
+      return handleGetSlotsRange(params);
     } else if (action === "ping") {
       return createJsonResponse({
         status: "online",
@@ -88,6 +90,8 @@ function doPost(e) {
       return handleBookAppointment(payload);
     } else if (action === "get_slots") {
       return handleGetSlots(payload);
+    } else if (action === "get_slots_range") {
+      return handleGetSlotsRange(payload);
     } else if (action === "ping") {
       return createJsonResponse({
         status: "online",
@@ -251,6 +255,92 @@ function handleGetSlots(params) {
     }),
     availableSlots: availableSlots
   });
+}
+
+/**
+ * Una sola lectura del calendario para varios días (from/to, YYYY-MM-DD).
+ */
+function handleGetSlotsRange(params) {
+  const fromStr = params.from;
+  const toStr = params.to;
+  if (!fromStr || !toStr || !/^\d{4}-\d{2}-\d{2}$/.test(fromStr) || !/^\d{4}-\d{2}-\d{2}$/.test(toStr)) {
+    return createJsonResponse({ status: "error", message: "Parámetros 'from' y 'to' inválidos (YYYY-MM-DD)" });
+  }
+
+  const fromMs = parseArgentinaDate(fromStr, "12:00").getTime();
+  const toMs = parseArgentinaDate(toStr, "12:00").getTime();
+  if (toMs < fromMs || (toMs - fromMs) > 45 * 24 * 3600 * 1000) {
+    return createJsonResponse({ status: "error", message: "Rango de fechas inválido" });
+  }
+
+  const cal = getKinesicaCalendar();
+  const rangeStart = parseArgentinaDate(fromStr, "08:00");
+  const rangeEnd = parseArgentinaDate(toStr, "19:00");
+  const events = cal.getEvents(rangeStart, rangeEnd);
+  const busy = events.map(function(ev) {
+    return {
+      start: ev.getStartTime().getTime(),
+      end: ev.getEndTime().getTime()
+    };
+  });
+
+  const now = new Date();
+  const todayInArg = Utilities.formatDate(now, "America/Argentina/Buenos_Aires", "yyyy-MM-dd");
+  const days = {};
+  let cursor = fromStr;
+  while (cursor <= toStr) {
+    days[cursor] = computeDaySlots(cursor, busy, now, todayInArg);
+    cursor = nextIsoDate(cursor);
+  }
+
+  return createJsonResponse({
+    status: "success",
+    version: "v3-slots-range",
+    from: fromStr,
+    to: toStr,
+    days: days
+  });
+}
+
+function nextIsoDate(dateStr) {
+  const d = parseArgentinaDate(dateStr, "12:00");
+  d.setUTCDate(d.getUTCDate() + 1);
+  return Utilities.formatDate(d, "America/Argentina/Buenos_Aires", "yyyy-MM-dd");
+}
+
+function computeDaySlots(dateStr, busy, now, todayInArg) {
+  const targetDate = parseArgentinaDate(dateStr, "12:00");
+  const dayOfWeek = targetDate.getUTCDay();
+  if (dayOfWeek === 0 || dayOfWeek === 6 || ARGENTINA_HOLIDAYS.indexOf(dateStr) !== -1) {
+    return [];
+  }
+
+  const dayStart = parseArgentinaDate(dateStr, "08:00");
+  const dayEnd = parseArgentinaDate(dateStr, "19:00");
+  const isToday = todayInArg === dateStr;
+  const minAllowedTime = isToday ? (now.getTime() + SESSION_BUFFER_HOURS * 3600 * 1000) : dayStart.getTime();
+  const availableSlots = [];
+
+  for (let h = DAY_START_HOUR; h < DAY_END_HOUR; h++) {
+    for (let m = 0; m < 60; m += 30) {
+      const timeSlotStr = ("0" + h).slice(-2) + ":" + ("0" + m).slice(-2);
+      const slotStart = parseArgentinaDate(dateStr, timeSlotStr).getTime();
+      const slotEnd = slotStart + SESSION_DURATION_MINUTES * 60 * 1000;
+      if (slotEnd > dayEnd.getTime()) break;
+      if (slotStart < minAllowedTime) continue;
+      const hasCollision = busy.some(function(b) {
+        return slotStart < b.end && slotEnd > b.start;
+      });
+      if (!hasCollision) {
+        availableSlots.push({
+          time: timeSlotStr,
+          startIso: new Date(slotStart).toISOString(),
+          endIso: new Date(slotEnd).toISOString()
+        });
+      }
+    }
+  }
+  return availableSlots;
 }
 
 /**

@@ -66,6 +66,8 @@
       this.isMock = !this.apiUrl || this.options.forceMock === true;
       this._slotsCache = {};
       this._inFlightSlots = {};
+      this._rangeInFlight = null;
+      this._rangeUnsupported = false;
       this._prewarmedAt = 0;
     }
 
@@ -167,6 +169,14 @@
         return this._inFlightSlots[cacheKey];
       }
 
+      if (!forceRefresh && this._rangeInFlight && this._rangeInFlight.dates[dateStr]) {
+        await this._rangeInFlight.promise;
+        const warmed = this._slotsCache[cacheKey];
+        if (warmed && Date.now() - warmed.timestamp < 120000) {
+          return warmed.data;
+        }
+      }
+
       const effectiveUrl = this.getEffectiveApiUrl();
       const url = `${effectiveUrl}?action=get_slots&date=${encodeURIComponent(dateStr)}&type=session&practitioner=${encodeURIComponent(options.practitionerId || "")}&technique=${encodeURIComponent(options.techniqueId || "")}`;
 
@@ -228,6 +238,71 @@
 
       this._inFlightSlots[cacheKey] = reqPromise;
       return reqPromise;
+    }
+
+    /**
+     * Una sola ida al script para varios días. Llena la misma caché que getAvailableSlots.
+     * Si la implementación publicada todavía no tiene la acción, devuelve false.
+     */
+    async getSlotsRange(dateList) {
+      const dates = (dateList || []).filter(Boolean);
+      if (!dates.length) return false;
+      if (this.isMock) {
+        await Promise.all(dates.map((dateStr) => this.getAvailableSlots(dateStr, "session")));
+        return true;
+      }
+      if (this._rangeUnsupported) return false;
+      if (this._rangeInFlight) return this._rangeInFlight.promise;
+
+      const from = dates[0];
+      const to = dates[dates.length - 1];
+      const datesMap = {};
+      dates.forEach((dateStr) => {
+        datesMap[dateStr] = true;
+      });
+      const effectiveUrl = this.getEffectiveApiUrl();
+      const url = `${effectiveUrl}?action=get_slots_range&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
+
+      const promise = (async () => {
+        const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+        const timeoutId = controller ? setTimeout(() => controller.abort(), 25000) : null;
+        try {
+          const res = await fetch(url, {
+            method: "GET",
+            mode: "cors",
+            redirect: "follow",
+            signal: controller ? controller.signal : undefined,
+          });
+          if (timeoutId) clearTimeout(timeoutId);
+          const json = await res.json();
+          if (!json || json.status === "error" || !json.days) {
+            const message = json && json.message ? json.message : "";
+            if (message.indexOf("no reconocida") !== -1) this._rangeUnsupported = true;
+            return false;
+          }
+          const now = Date.now();
+          Object.keys(json.days).forEach((dateStr) => {
+            this._slotsCache[`${dateStr}_session`] = {
+              data: {
+                status: "success",
+                date: dateStr,
+                type: "session",
+                availableSlots: json.days[dateStr] || [],
+              },
+              timestamp: now,
+            };
+          });
+          return true;
+        } catch (err) {
+          if (timeoutId) clearTimeout(timeoutId);
+          return false;
+        } finally {
+          this._rangeInFlight = null;
+        }
+      })();
+
+      this._rangeInFlight = { dates: datesMap, promise };
+      return promise;
     }
 
     /**
