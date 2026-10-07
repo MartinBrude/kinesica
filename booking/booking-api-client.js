@@ -151,7 +151,8 @@
         };
       }
 
-      const cacheKey = `${dateStr}_${appointmentType}_${options.practitionerId || ""}`;
+      // El webhook ignora profesional y técnica: un solo calendario del consultorio.
+      const cacheKey = `${dateStr}_${appointmentType}`;
 
       // 1. Revisar caché en memoria (validez 2 minutos para respuesta instantánea)
       this._slotsCache = this._slotsCache || {};

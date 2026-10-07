@@ -375,6 +375,7 @@
       if (this.client && typeof this.client.prewarm === "function") {
         this.client.prewarm();
       }
+      this.prefetchUpcomingDays();
 
       this.setStep(1);
     }
@@ -745,7 +746,6 @@
         ? Boolean(this.state.practitionerId)
         : technique && (technique.bySchedule || this.state.practitionerId);
       if (btn) btn.disabled = !ready;
-      if (ready) this.prefetchAgenda();
     }
 
     collectAttendanceDays(limit) {
@@ -764,21 +764,21 @@
       return days;
     }
 
-    prefetchAgenda() {
-      const key = `${this.state.practitionerId || ""}|${this.state.techniqueId || ""}`;
-      if (this._prefetchKey === key) return;
-      this._prefetchKey = key;
-      this._prefetchedSlots = {};
-      const days = this.collectAttendanceDays(3);
-      days.forEach((day, index) => {
-        setTimeout(() => {
-          if (this._prefetchKey !== key) return;
-          this.fetchFilteredSlots(day.iso).then((slots) => {
-            if (this._prefetchKey !== key) return;
-            this._prefetchedSlots[day.iso] = slots;
-          }).catch(() => {});
-        }, index * 120);
-      });
+    prefetchUpcomingDays() {
+      if (this._prefetchRun) return;
+      this._prefetchRun = true;
+      this._prefetchedSlots = this._prefetchedSlots || {};
+      const days = this.collectAttendanceDays(10);
+      const run = async () => {
+        for (let i = 0; i < days.length; i += 1) {
+          const day = days[i];
+          if (this._prefetchedSlots[day.iso]) continue;
+          try {
+            this._prefetchedSlots[day.iso] = await this.fetchFilteredSlots(day.iso);
+          } catch (err) {}
+        }
+      };
+      run();
     }
 
     updateDniRequirement() {
