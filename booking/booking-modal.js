@@ -127,12 +127,7 @@
         { passive: true }
       );
 
-      const warm = () => KinesicaBookingModal.prewarm();
-      if (typeof requestIdleCallback === "function") {
-        requestIdleCallback(warm, { timeout: 2500 });
-      } else {
-        setTimeout(warm, 1500);
-      }
+      KinesicaBookingModal.prewarm();
     },
 
     isOpen() {
@@ -143,15 +138,16 @@
       if (typeof window === "undefined") return;
       if (widgetInstance && widgetInstance.client && typeof widgetInstance.client.prewarm === "function") {
         widgetInstance.client.prewarm();
-      } else if (!window.__kinesicaPrewarmed) {
-        window.__kinesicaPrewarmed = true;
-        const apiUrl = getApiUrl();
-        if (apiUrl) {
-          try {
-            fetch(`${apiUrl}?action=ping`, { method: "GET", mode: "cors", redirect: "follow", cache: "no-store" }).catch(() => {});
-          } catch (e) {}
-        }
+        return;
       }
+      const now = Date.now();
+      if (window.__kinesicaPrewarmAt && now - window.__kinesicaPrewarmAt < 90000) return;
+      window.__kinesicaPrewarmAt = now;
+      const apiUrl = getApiUrl();
+      if (!apiUrl) return;
+      try {
+        fetch(`${apiUrl}?action=ping`, { method: "GET", mode: "cors", redirect: "follow", cache: "no-store" }).catch(() => {});
+      } catch (e) {}
     },
 
     open(options) {

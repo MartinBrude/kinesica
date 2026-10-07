@@ -66,7 +66,7 @@
       this.isMock = !this.apiUrl || this.options.forceMock === true;
       this._slotsCache = {};
       this._inFlightSlots = {};
-      this._prewarmed = false;
+      this._prewarmedAt = 0;
     }
 
     setApiUrl(url) {
@@ -84,8 +84,12 @@
      * Reduce drásticamente la latencia de cold-start antes de que el usuario elija fecha.
      */
     prewarm() {
-      if (this.isMock || this._prewarmed) return;
-      this._prewarmed = true;
+      if (this.isMock) return;
+      const now = Date.now();
+      const last = typeof window !== "undefined" ? window.__kinesicaPrewarmAt || 0 : this._prewarmedAt || 0;
+      if (now - last < 90000) return;
+      if (typeof window !== "undefined") window.__kinesicaPrewarmAt = now;
+      this._prewarmedAt = now;
       const effectiveUrl = this.getEffectiveApiUrl();
       if (!effectiveUrl) return;
       try {
