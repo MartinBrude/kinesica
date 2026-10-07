@@ -126,6 +126,13 @@
         },
         { passive: true }
       );
+
+      const warm = () => KinesicaBookingModal.prewarm();
+      if (typeof requestIdleCallback === "function") {
+        requestIdleCallback(warm, { timeout: 2500 });
+      } else {
+        setTimeout(warm, 1500);
+      }
     },
 
     isOpen() {

@@ -745,6 +745,40 @@
         ? Boolean(this.state.practitionerId)
         : technique && (technique.bySchedule || this.state.practitionerId);
       if (btn) btn.disabled = !ready;
+      if (ready) this.prefetchAgenda();
+    }
+
+    collectAttendanceDays(limit) {
+      const today = new Date();
+      let checkDate = new Date(today);
+      let scanned = 0;
+      const days = [];
+      while (days.length < limit && scanned < 45) {
+        scanned += 1;
+        const iso = engine.formatDateIso(checkDate);
+        const current = new Date(checkDate);
+        checkDate.setDate(checkDate.getDate() + 1);
+        if (!this.dayHasAttendance(current)) continue;
+        days.push({ iso, current });
+      }
+      return days;
+    }
+
+    prefetchAgenda() {
+      const key = `${this.state.practitionerId || ""}|${this.state.techniqueId || ""}`;
+      if (this._prefetchKey === key) return;
+      this._prefetchKey = key;
+      this._prefetchedSlots = {};
+      const days = this.collectAttendanceDays(3);
+      days.forEach((day, index) => {
+        setTimeout(() => {
+          if (this._prefetchKey !== key) return;
+          this.fetchFilteredSlots(day.iso).then((slots) => {
+            if (this._prefetchKey !== key) return;
+            this._prefetchedSlots[day.iso] = slots;
+          }).catch(() => {});
+        }, index * 120);
+      });
     }
 
     updateDniRequirement() {
@@ -807,40 +841,8 @@
       if (empty) empty.style.display = "none";
       if (grid) grid.style.display = "none";
 
-      const today = new Date();
-      let checkDate = new Date(today);
-      let scanned = 0;
-      const days = [];
-      this._prefetchedSlots = {};
-
-      while (days.length < 10 && scanned < 45) {
-        const batch = [];
-        while (batch.length < 10 && scanned < 45) {
-          scanned += 1;
-          const iso = engine.formatDateIso(checkDate);
-          const current = new Date(checkDate);
-          checkDate.setDate(checkDate.getDate() + 1);
-          if (!this.dayHasAttendance(current)) continue;
-          batch.push({ iso, current });
-        }
-        if (!batch.length) break;
-
-        const settled = await Promise.all(batch.map(async (day) => {
-          try {
-            return { ...day, slots: await this.fetchFilteredSlots(day.iso), failed: false };
-          } catch (err) {
-            return { ...day, slots: [], failed: true };
-          }
-        }));
-        if (seq !== this._carouselSeq) return;
-
-        settled.forEach((day) => {
-          if (days.length >= 10) return;
-          if (!day.failed && !day.slots.length) return;
-          if (!day.failed) this._prefetchedSlots[day.iso] = day.slots;
-          days.push(day);
-        });
-      }
+      this._prefetchedSlots = this._prefetchedSlots || {};
+      const days = this.collectAttendanceDays(10);
 
       let firstAvailable = null;
       days.forEach((day) => {
@@ -868,9 +870,29 @@
         }
         return;
       }
-      this.selectDate(this.state.selectedDate && carousel.querySelector(`[data-date="${this.state.selectedDate}"]`)
+      const selected = this.state.selectedDate && carousel.querySelector(`[data-date="${this.state.selectedDate}"]`)
         ? this.state.selectedDate
-        : firstAvailable);
+        : firstAvailable;
+      this.selectDate(selected);
+      this.pruneEmptyDays(days.filter((day) => day.iso !== selected), seq);
+    }
+
+    async pruneEmptyDays(days, seq) {
+      for (let i = 0; i < days.length; i += 3) {
+        if (seq !== this._carouselSeq) return;
+        const batch = days.slice(i, i + 3);
+        await Promise.all(batch.map(async (day) => {
+          try {
+            const slots = await this.fetchFilteredSlots(day.iso);
+            if (seq !== this._carouselSeq) return;
+            this._prefetchedSlots[day.iso] = slots;
+            if (!slots.length) {
+              const card = this.container.querySelector(`.kb-date-card[data-date="${day.iso}"]`);
+              if (card && !card.classList.contains("selected")) card.remove();
+            }
+          } catch (err) {}
+        }));
+      }
     }
 
     async fetchFilteredSlots(dateIso, forceRefresh = false) {
