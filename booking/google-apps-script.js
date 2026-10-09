@@ -445,9 +445,21 @@ function handleBookAppointment(payload) {
     ? "🩺 " + whoTag + "[TURNO - MENOR] " + nombre + " (Familiar: " + nombreFamiliar + ")"
     : "🩺 " + whoTag + "[TURNO] " + nombre;
 
+  const techniqueLabels = {
+    osteopatia: "Osteopatía",
+    acupuntura: "Acupuntura",
+    rpg: "RPG",
+    neurodinamia: "Neurodinamia",
+    viscerales: "Manipulaciones viscerales (Barral)",
+    posturologia: "Posturología"
+  };
+  const techniqueId = String(payload.techniqueId || "");
+  const techniqueLabel = techniqueLabels[techniqueId] || "";
+
   // 3. Construir descripción normalizada
   const descParts = [];
   if (whoName) descParts.push("👤 Profesional: " + whoName);
+  if (techniqueLabel) descParts.push("🤲 Técnica: " + techniqueLabel);
   descParts.push(
     "📱 WhatsApp: " + telefono,
     "🪪 DNI: " + dni,
@@ -463,7 +475,7 @@ function handleBookAppointment(payload) {
   const event = cal.createEvent(summary, startTime, endTime, {
     description: description
   });
-  if (practitionerContact.email) {
+  if (practitionerId && practitionerContact.email) {
     try {
       event.addGuest(practitionerContact.email);
     } catch (guestErr) {
@@ -478,16 +490,19 @@ function handleBookAppointment(payload) {
       if (sheet) {
         const phoneFormatted = telefono.startsWith("'") ? telefono : "'" + telefono;
         const fechaHora = dateStr + " " + timeStr + " hs";
-        sheet.appendRow([nombre, dni, phoneFormatted, fechaHora, motivo]);
+        sheet.appendRow([nombre, dni, phoneFormatted, fechaHora, motivo, techniqueLabel]);
       }
     } catch (e) {
       // No bloquea la respuesta si la planilla falla
     }
   }
 
-  // 6. Avisar por WhatsApp (y mail de respaldo) solo al profesional del turno
+  // 6. Avisar por WhatsApp (y mail de respaldo) al profesional del turno.
+  // Si puede atender cualquiera de los dos, avisar a ambos.
   try {
-    notifyPractitionerNewWebBooking(practitionerId, {
+    const notifyIds = practitionerId ? [practitionerId] : ["norberto", "maria"];
+    notifyIds.forEach(function (id) {
+      notifyPractitionerNewWebBooking(id, {
       appointmentType: appointmentType,
       nombre: nombre,
       telefono: telefono,
@@ -499,7 +514,9 @@ function handleBookAppointment(payload) {
       nombreFamiliar: nombreFamiliar,
       notas: notas,
       summary: summary,
-      practitionerName: whoName
+      practitionerName: whoName,
+      technique: techniqueLabel
+    });
     });
   } catch (errNotify) {
     console.error("Error al notificar al profesional: " + errNotify);
@@ -566,6 +583,10 @@ function notifyPractitionerNewWebBooking(practitionerId, data) {
     "• *WhatsApp:* " + waLink + "\n" +
     "• *DNI:* " + (data.dni || "No provisto") + "\n" +
     "• *Motivo de consulta:* " + (data.motivo || "Consulta general");
+
+  if (data.technique) {
+    message += "\n• *Técnica:* " + data.technique;
+  }
 
   if (data.isMenor && data.nombreFamiliar) {
     message += "\n• *Adulto Responsable (Menor):* " + data.nombreFamiliar;

@@ -38,7 +38,9 @@
       qPatient: "¿Ya te has atendido con nosotros?",
       qWho: "¿Quién te atiende?",
       qTechnique: "¿Buscás alguna técnica en particular?",
-      qPrefer: "¿Con quién preferís atenderte?",
+      qPrefer: "¿Preferís un profesional hombre o mujer?",
+      proMale: "Hombre",
+      proFemale: "Mujer",
       yes: "Sí", no: "No",
       seeSlots: "Ver horarios disponibles →",
       pickDay: "Elige el día y horario",
@@ -111,7 +113,9 @@
       qPatient: "Have you been treated with us before?",
       qWho: "Who is your practitioner?",
       qTechnique: "Are you looking for a particular technique?",
-      qPrefer: "Who would you prefer to see?",
+      qPrefer: "Would you prefer a male or female practitioner?",
+      proMale: "Male",
+      proFemale: "Female",
       yes: "Yes", no: "No",
       seeSlots: "See available times →",
       pickDay: "Choose a day and time",
@@ -184,7 +188,9 @@
       qPatient: "Avez-vous déjà été suivi chez nous ?",
       qWho: "Qui vous reçoit ?",
       qTechnique: "Cherchez-vous une technique en particulier ?",
-      qPrefer: "Avec qui préférez-vous être suivi ?",
+      qPrefer: "Préférez-vous un praticien ou une praticienne ?",
+      proMale: "Homme",
+      proFemale: "Femme",
       yes: "Oui", no: "Non",
       seeSlots: "Voir les horaires disponibles →",
       pickDay: "Choisissez le jour et l'horaire",
@@ -257,7 +263,9 @@
       qPatient: "Você já se atendeu conosco?",
       qWho: "Quem te atende?",
       qTechnique: "Procura alguma técnica em particular?",
-      qPrefer: "Com quem prefere se atender?",
+      qPrefer: "Prefere um profissional homem ou mulher?",
+      proMale: "Homem",
+      proFemale: "Mulher",
       yes: "Sim", no: "Não",
       seeSlots: "Ver horários disponíveis →",
       pickDay: "Escolha o dia e o horário",
@@ -361,6 +369,12 @@
       const value = this.copy[key];
       if (value != null) return value;
       return COPY.es[key] != null ? COPY.es[key] : key;
+    }
+
+    practitionerGenderLabel(id) {
+      if (id === "norberto") return this.t("proMale");
+      if (id === "maria") return this.t("proFemale");
+      return "";
     }
 
     techniqueLabel(technique) {
@@ -588,7 +602,7 @@
           this.showError(this.t("errWho"));
           return;
         }
-        if (this.state.existingPatient !== true && (!technique || (!technique.bySchedule && !this.state.practitionerId))) {
+        if (this.state.existingPatient !== true && !technique) {
           this.showError(this.t("errTechnique"));
           return;
         }
@@ -665,11 +679,10 @@
       const grid = this.container.querySelector("#kb-existing-practitioner-grid");
       grid.innerHTML = "";
       Object.keys(engine.PRACTITIONERS).forEach((id) => {
-        const person = engine.PRACTITIONERS[id];
         const card = document.createElement("div");
         card.className = "kb-choice-card";
         card.dataset.practitioner = id;
-        card.innerHTML = `<h3>${person.name}</h3>`;
+        card.innerHTML = `<h3>${this.practitionerGenderLabel(id)}</h3>`;
         card.addEventListener("click", () => {
           this.state.practitionerId = id;
           this.state.techniqueId = "paciente";
@@ -689,10 +702,7 @@
         const card = document.createElement("div");
         card.className = "kb-choice-card";
         card.dataset.technique = technique.id;
-        const names = technique.bySchedule
-          ? this.t("bySchedule")
-          : technique.practitioners.map((id) => engine.PRACTITIONERS[id].name).join(" · ");
-        card.innerHTML = `<h3>${this.techniqueLabel(technique)}</h3><p>${names}</p>`;
+        card.innerHTML = `<h3>${this.techniqueLabel(technique)}</h3>`;
         card.addEventListener("click", () => this.selectTechnique(technique.id));
         grid.appendChild(card);
       });
@@ -717,21 +727,21 @@
       const box = this.container.querySelector("#kb-practitioner-box");
       const grid = this.container.querySelector("#kb-practitioner-grid");
       grid.innerHTML = "";
-      if (technique.bySchedule || technique.practitioners.length < 2) {
+      if (technique.practitioners.length < 2) {
         box.style.display = "none";
         return;
       }
       box.style.display = "block";
       technique.practitioners.forEach((id) => {
-        const person = engine.PRACTITIONERS[id];
         const card = document.createElement("div");
         card.className = "kb-choice-card";
         card.dataset.practitioner = id;
-        card.innerHTML = `<h3>${person.name}</h3>`;
+        card.innerHTML = `<h3>${this.practitionerGenderLabel(id)}</h3>`;
         card.addEventListener("click", () => {
-          this.state.practitionerId = id;
+          const nextId = this.state.practitionerId === id ? null : id;
+          this.state.practitionerId = nextId;
           grid.querySelectorAll(".kb-choice-card").forEach((c) => {
-            c.classList.toggle("selected", c.dataset.practitioner === id);
+            c.classList.toggle("selected", c.dataset.practitioner === nextId);
           });
           this.syncStep1Continue();
         });
@@ -744,7 +754,7 @@
       const technique = engine.getTechnique(this.state.techniqueId);
       const ready = this.state.existingPatient === true
         ? Boolean(this.state.practitionerId)
-        : technique && (technique.bySchedule || this.state.practitionerId);
+        : Boolean(technique);
       if (btn) btn.disabled = !ready;
     }
 
@@ -825,9 +835,10 @@
 
     dayHasAttendance(date) {
       const technique = engine.getTechnique(this.state.techniqueId);
-      const works = technique && technique.bySchedule
-        ? Object.keys(engine.PRACTITIONERS).some((id) => engine.getWorkingWindows(id, date).length > 0)
-        : engine.getWorkingWindows(this.state.practitionerId, date).length > 0;
+      const ids = this.state.practitionerId
+        ? [this.state.practitionerId]
+        : (technique && technique.practitioners) || Object.keys(engine.PRACTITIONERS);
+      const works = ids.some((id) => engine.getWorkingWindows(id, date).length > 0);
       return engine.isBusinessDay(date) && works;
     }
 
@@ -968,15 +979,17 @@
           const onDuty = engine.getTechnique(this.state.techniqueId) && engine.getTechnique(this.state.techniqueId).bySchedule
             ? engine.practitionersAt(dateIso, slot.time)
             : [];
-          const dutyLabel = onDuty.length === 1 ? ` · ${engine.PRACTITIONERS[onDuty[0]].name}` : "";
+          const dutyLabel = onDuty.length === 1 ? ` · ${this.practitionerGenderLabel(onDuty[0])}` : "";
           const hs = this.t("hs");
           chip.textContent = `${slot.time}${hs ? " " + hs : ""}${dutyLabel}`;
           chip.dataset.time = slot.time;
 
           chip.addEventListener("click", () => {
             this.state.selectedTime = slot.time;
-            if (onDuty.length === 1) this.state.practitionerId = onDuty[0];
-            else if (onDuty.length > 1) this.state.practitionerId = null;
+            const chosen = engine.getTechnique(this.state.techniqueId);
+            const keptChoice = chosen && chosen.practitioners.length > 1 && this.state.practitionerId;
+            if (!keptChoice && onDuty.length === 1) this.state.practitionerId = onDuty[0];
+            else if (!keptChoice && onDuty.length > 1) this.state.practitionerId = null;
             const chips = grid.querySelectorAll(".kb-slot-chip");
             chips.forEach((ch) => ch.classList.remove("selected"));
             chip.classList.add("selected");
@@ -1088,7 +1101,7 @@
       const q = (sel) => this.container.querySelector(sel);
 
       const technique = engine.getTechnique(payload.techniqueId);
-      const person = engine.PRACTITIONERS[payload.practitionerId];
+      const gender = this.practitionerGenderLabel(payload.practitionerId);
       q("#kb-success-title").textContent = this.t("success");
 
       const summaryBox = q("#kb-success-summary");
@@ -1097,7 +1110,7 @@
           ${this.t("summaryKind")}
         </div>
         ${technique && !technique.bySchedule && !technique.internal ? `<div><strong>${this.t("technique")}:</strong> ${this.techniqueLabel(technique)}</div>` : ""}
-        <div><strong>${this.t("practitioner")}:</strong> ${person ? person.name : this.t("bySchedulePro")}</div>
+        <div><strong>${this.t("practitioner")}:</strong> ${gender || this.t("bySchedulePro")}</div>
         <div><strong>${this.t("patient")}:</strong> ${payload.nombre}</div>
         <div><strong>${this.t("when")}:</strong> ${payload.date} ${this.t("at")} ${payload.time}${this.t("hs") ? " " + this.t("hs") : ""}</div>
         <div><strong>${this.t("contact")}:</strong> ${payload.telefono}</div>

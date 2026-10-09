@@ -81,6 +81,19 @@ test("REGLA 1B: Osteopatía solo la atiende Norberto", () => {
   assert.strictEqual(accepted.isValid, true);
 });
 
+test("REGLA 1E: Si la técnica la atienden los dos, el profesional es opcional", () => {
+  const result = validateBookingRequest({
+    appointmentType: "session",
+    techniqueId: "rpg",
+    nombre: "Juan Pérez",
+    telefono: "+5491112345678",
+    dni: "30123456",
+    date: "2026-10-07",
+    time: "10:00",
+  });
+  assert.strictEqual(result.isValid, true);
+});
+
 test("REGLA 1D: No sé acepta un horario de atención sin técnica fija", () => {
   const result = validateBookingRequest({
     appointmentType: "session",
@@ -293,7 +306,7 @@ test("REGLA 6B: El título del calendario del paciente incluye la técnica", () 
   assert.strictEqual(exportData.startCompact, "20261015T133000Z");
   assert.strictEqual(exportData.endCompact, "20261015T143000Z");
   assert.strictEqual(exportData.title, "Turno en Kinésica — Acupuntura");
-  assert.ok(exportData.description.includes("María"));
+  assert.ok(exportData.description.includes("Profesional: mujer"));
   assert.strictEqual(exportData.filename, "kinesica-turno-2026-10-15.ics");
 });
 

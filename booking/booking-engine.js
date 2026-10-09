@@ -300,8 +300,10 @@
       } else if (req.date && req.time && practitionersAt(req.date, req.time).length === 0) {
         errors.push("Ese horario está fuera del día de atención.");
       }
-    } else if (!PRACTITIONERS[req.practitionerId] || !practitionerOffersTechnique(req.practitionerId, req.techniqueId)) {
+    } else if (req.practitionerId && (!PRACTITIONERS[req.practitionerId] || !practitionerOffersTechnique(req.practitionerId, req.techniqueId))) {
       errors.push("Esa técnica no la atiende el profesional elegido.");
+    } else if (!req.practitionerId && technique.practitioners.length < 2) {
+      errors.push("Elegí el profesional de la sesión.");
     }
 
     if (
@@ -401,7 +403,7 @@
       "- Asistir sin acompañantes (salvo necesidad directa o menores).",
       "- Traer estudios médicos previos si contás con ellos.",
       technique && !technique.bySchedule && !technique.internal ? `Técnica: ${technique.label}.` : "",
-      who ? `Profesional: ${who.name}.` : "",
+      who ? `Profesional: ${who.id === "maria" ? "mujer" : "hombre"}.` : "",
     ].filter(Boolean).join("\n");
 
     const toCompactUtc = (d) =>
