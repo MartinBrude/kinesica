@@ -99,10 +99,13 @@
   color: var(--navy);
 }
 
+.compare-banner-meta,
+.compare-banner-tags,
 .compare-banner-right {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .compare-tag-pill {
@@ -266,6 +269,8 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .cmp-change-header {
@@ -287,6 +292,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  flex-wrap: wrap;
 }
 
 .cmp-change-label {
@@ -294,6 +300,7 @@
   font-weight: 700;
   color: var(--navy);
   margin-bottom: 10px;
+  word-break: break-word;
 }
 
 .cmp-change-transition {
@@ -310,6 +317,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .cmp-trans-meta {
@@ -324,6 +332,8 @@
   font-size: 13.5px;
   font-weight: 500;
   color: var(--navy);
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .cmp-trans-prev .cmp-trans-val {
@@ -340,6 +350,7 @@
   font-weight: 700;
   font-size: 16px;
   padding: 0 4px;
+  flex-shrink: 0;
 }
 
 /* Badges semánticos de tendencia */
@@ -425,6 +436,10 @@
   grid-template-columns: 1fr;
 }
 
+.cmp-panel-grid > * {
+  min-width: 0;
+}
+
 .cmp-field-box {
   background: white;
   border: 1px solid var(--line);
@@ -434,6 +449,8 @@
   flex-direction: column;
   justify-content: space-between;
   gap: 8px;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .cmp-field-box.is-changed {
@@ -447,6 +464,15 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cmp-field-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
 }
 
 .cmp-field-title {
@@ -455,6 +481,7 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--navy);
+  word-break: break-word;
 }
 
 .cmp-pill-same {
@@ -464,6 +491,7 @@
   padding: 2px 8px;
   border-radius: 999px;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .cmp-pill-changed {
@@ -473,6 +501,7 @@
   padding: 2px 8px;
   border-radius: 999px;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .cmp-field-val-box {
@@ -480,28 +509,185 @@
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
+  word-break: break-word;
 }
 
 .cmp-field-prev {
   font-size: 13.5px;
   color: var(--muted);
   text-decoration: line-through;
+  word-break: break-word;
 }
 
 .cmp-field-arrow {
   color: var(--accent-deep);
   font-weight: 700;
   font-size: 13px;
+  flex-shrink: 0;
 }
 
 .cmp-field-curr {
   font-size: 14px;
   font-weight: 700;
   color: var(--navy);
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .cmp-field-static {
   font-size: 13.5px;
   color: var(--ink);
   font-weight: 500;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   ADAPTACIONES RESPONSIVAS MOBILE / TABLET PARA COMPARADOR
+   ========================================================= */
+
+@media (max-width: 800px) {
+  .compare-sheet {
+    padding: 14px 12px;
+    border-radius: 16px;
+  }
+
+  .compare-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .compare-title-block h2 {
+    font-size: 16px;
+  }
+
+  .compare-header .sheet-tools {
+    width: 100%;
+    margin-bottom: 0;
+  }
+
+  .compare-header .sheet-tools .btn {
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  .compare-session-picker {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+
+  .session-picker-col {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .session-picker-col select {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    font-size: 13px;
+    padding: 9px 11px;
+    text-overflow: ellipsis;
+  }
+
+  .compare-swap-btn {
+    margin-top: 0;
+    align-self: center;
+    width: auto;
+    font-size: 12px;
+    padding: 6px 14px;
+    height: 36px;
+  }
+
+  .compare-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 12px 14px;
+    font-size: 13px;
+  }
+
+  .compare-banner-tags,
+  .compare-banner-meta {
+    width: 100%;
+  }
+
+  .compare-steps {
+    border-radius: 14px;
+    padding: 6px;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .compare-steps button {
+    flex: 1 1 calc(50% - 6px);
+    text-align: center;
+    font-size: 11.5px;
+    padding: 8px 6px;
+    border-radius: 10px;
+  }
+
+  .compare-steps button[data-compare-tab="all"] {
+    flex: 1 1 100%;
+  }
+
+  .cmp-kpis-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .cmp-changes-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .cmp-change-item {
+    padding: 12px 14px;
+  }
+
+  .cmp-change-header {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .cmp-panel {
+    padding: 14px 12px;
+    margin-bottom: 14px;
+    border-radius: 12px;
+  }
+
+  .cmp-panel h2 {
+    font-size: 12px;
+    margin-bottom: 12px;
+  }
+
+  .cmp-panel-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .cmp-field-box {
+    padding: 12px 14px;
+  }
+}
+
+@media (max-width: 600px) {
+  .cmp-change-transition {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    padding: 10px 12px;
+  }
+
+  .cmp-trans-arrow {
+    text-align: center;
+    transform: rotate(90deg);
+    padding: 0;
+  }
 }

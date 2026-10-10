@@ -8,9 +8,9 @@ import {
   compareFichas,
   patientKey,
   CLINICIAN_DETAILS,
-} from "../ficha-rules.mjs?v=50";
-import { formatDate } from "./api.js?v=50";
-import { escapeHtml, node } from "./dom.js?v=50";
+} from "../ficha-rules.mjs?v=53";
+import { formatDate } from "./api.js?v=53";
+import { escapeHtml, node } from "./dom.js?v=53";
 
 const compareView = document.querySelector("#view-compare");
 const libraryView = document.querySelector("#view-library");
@@ -43,6 +43,8 @@ let activeSessionUserGetter = null;
  */
 export function showCompare(pKey, preferredXId, preferredYId, fromView = null) {
   comparePreviousView = fromView || (formView && !formView.hidden ? "form" : "library");
+  const gateView = document.querySelector("#view-gate");
+  if (gateView) gateView.hidden = true;
   if (libraryView) libraryView.hidden = true;
   if (formView) formView.hidden = true;
   if (compareView) compareView.hidden = false;
@@ -57,6 +59,17 @@ export function showCompare(pKey, preferredXId, preferredYId, fromView = null) {
   }
 
   comparePatient = resolvedKey;
+  try {
+    sessionStorage.setItem(
+      "kinesica_admin_view",
+      JSON.stringify({
+        view: "compare",
+        pKey: resolvedKey,
+        xId: preferredXId || null,
+        yId: preferredYId || null,
+      })
+    );
+  } catch {}
   populateCompareSessions(resolvedKey, preferredXId, preferredYId);
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -185,18 +198,32 @@ export function renderCompareContent() {
       const countText =
         res.totalChanged === 1 ? "1 cambio registrado" : `${res.totalChanged} cambios registrados`;
       compareBanner.innerHTML = `
-        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <div class="compare-banner-meta" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
           <span>Comparando <strong>Sesión del ${formatDate(
             sessionX.fechaSesion
           )}</strong> vs <strong>Sesión del ${formatDate(sessionY.fechaSesion)}</strong></span>
         </div>
-        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <div class="compare-banner-tags" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
           <span class="compare-tag-pill">📅 ${daysText}</span>
           <span class="compare-tag-pill ${res.totalChanged > 0 ? 'accent' : ''}">⚡ ${countText}</span>
         </div>
       `;
     }
   }
+
+  try {
+    if (compareSelectX && compareSelectY && comparePatient) {
+      sessionStorage.setItem(
+        "kinesica_admin_view",
+        JSON.stringify({
+          view: "compare",
+          pKey: comparePatient,
+          xId: compareSelectX.value,
+          yId: compareSelectY.value,
+        })
+      );
+    }
+  } catch {}
 
   renderCompareTab(activeCompareTab, res);
 }
@@ -327,7 +354,7 @@ export function renderCompareTab(tabKey, res) {
         box.innerHTML = `
           <div class="cmp-field-top">
             <span class="cmp-field-title">${escapeHtml(f.label)}</span>
-            <div style="display:flex; align-items:center; gap:6px;">
+            <div class="cmp-field-badges" style="display:flex; align-items:center; gap:6px;">
               <span class="cmp-pill-changed">Cambió</span>
               <span class="cmp-trend-tag ${trendClass}">${trendLabel}</span>
             </div>
@@ -544,6 +571,12 @@ export function initCompare({ getAllFichas, getSessionUser, onBackToLibrary, onB
   if (compareBackBtn) {
     compareBackBtn.addEventListener("click", () => {
       if (compareView) compareView.hidden = true;
+      try {
+        sessionStorage.setItem(
+          "kinesica_admin_view",
+          JSON.stringify({ view: comparePreviousView || "library" })
+        );
+      } catch {}
       if (comparePreviousView === "form") {
         if (typeof onBackToForm === "function") onBackToForm();
       } else {

@@ -130,3 +130,18 @@
 .gate-note {
   color: var(--primary);
 }
+
+@media (max-width: 800px) {
+  #view-gate {
+    min-height: calc(100vh - 120px);
+    padding: 16px 0;
+  }
+
+  #view-gate .gate-card {
+    width: 100%;
+    max-width: 100%;
+    padding: 24px 18px;
+    border-radius: 16px;
+    margin: 0;
+  }
+}

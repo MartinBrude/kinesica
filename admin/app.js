@@ -27,13 +27,13 @@ import {
   compareFichas,
   daysBetween,
   matchFichaSearch,
-} from "./ficha-rules.mjs?v=50";
+} from "./ficha-rules.mjs?v=53";
 
 import {
   api,
   setAuthRequiredHandler,
   formatDate,
-} from "./modules/api.js?v=50";
+} from "./modules/api.js?v=53";
 
 import {
   escapeHtml,
@@ -46,7 +46,7 @@ import {
   formatParts,
   add,
   debounce,
-} from "./modules/dom.js?v=50";
+} from "./modules/dom.js?v=53";
 
 import {
   getSessionUser,
@@ -55,7 +55,7 @@ import {
   hideGate,
   setGateMessage,
   initAuth,
-} from "./modules/auth.js?v=50";
+} from "./modules/auth.js?v=53";
 
 import {
   todayISO,
@@ -74,7 +74,7 @@ import {
   getCurrentId,
   setCurrentId,
   initForm,
-} from "./modules/form.js?v=50";
+} from "./modules/form.js?v=53";
 
 import {
   loadAll,
@@ -87,12 +87,12 @@ import {
   syncMineButton,
   downloadJSON,
   initLibrary,
-} from "./modules/library.js?v=50";
+} from "./modules/library.js?v=53";
 
 import {
   buildSheet,
   printItems,
-} from "./modules/print.js?v=50";
+} from "./modules/print.js?v=53";
 
 import {
   showCompare,
@@ -102,7 +102,7 @@ import {
   buildComparePrintSheet,
   printCompare,
   initCompare,
-} from "./modules/compare.js?v=50";
+} from "./modules/compare.js?v=53";
 
 // Re-exportar utilidades esenciales para interoperabilidad y pruebas
 export {
@@ -164,9 +164,47 @@ async function refresh() {
   const me = await api("me.php");
   setSessionUser(me);
   hideGate();
+
+  const formView = document.querySelector("#view-form");
+  const compareView = document.querySelector("#view-compare");
+  let saved = null;
+  try {
+    saved = JSON.parse(sessionStorage.getItem("kinesica_admin_view") || "null");
+  } catch {}
+
+  if ((!formView || formView.hidden) && (!compareView || compareView.hidden)) {
+    if (saved?.view === "compare" && saved.pKey) {
+      showCompare(saved.pKey, saved.xId, saved.yId);
+    } else if (saved?.view !== "form") {
+      showLibrary();
+    }
+  }
+
   const items = await api("fichas.php");
   setCache(items);
-  renderLibrary();
+
+  if (formView && !formView.hidden) {
+    if (saved?.view === "form" && saved.id) {
+      const ficha = items.find((f) => f.id === saved.id);
+      if (ficha) fillForm(ficha, items);
+    }
+    return;
+  }
+  if (compareView && !compareView.hidden) {
+    renderCompareContent();
+    return;
+  }
+
+  if (saved?.view === "form" && saved.id) {
+    const ficha = items.find((f) => f.id === saved.id);
+    if (ficha) {
+      fillForm(ficha, items);
+      showForm();
+      return;
+    }
+  }
+
+  showLibrary();
 }
 
 // Configurar manejador de sesión expirada (HTTP 401)
@@ -183,6 +221,9 @@ initAuth({
   },
   onLogout: () => {
     setCache([]);
+    try {
+      sessionStorage.removeItem("kinesica_admin_view");
+    } catch {}
   },
 });
 

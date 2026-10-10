@@ -13,7 +13,7 @@ import {
   REQUIRED_FIELDS,
   exampleFicha,
   patientKey,
-} from "../ficha-rules.mjs?v=50";
+} from "../ficha-rules.mjs?v=53";
 
 const form = document.querySelector("#ficha");
 const formView = document.querySelector("#view-form");
@@ -246,9 +246,14 @@ export function showStep(index) {
 export function showForm() {
   const libraryView = document.querySelector("#view-library");
   const compareView = document.querySelector("#view-compare");
+  const gateView = document.querySelector("#view-gate");
+  if (gateView) gateView.hidden = true;
   if (libraryView) libraryView.hidden = true;
   if (compareView) compareView.hidden = true;
   if (formView) formView.hidden = false;
+  try {
+    sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "form", id: currentId }));
+  } catch {}
   showStep(step);
   formBaseline = formState();
 }

@@ -12,10 +12,10 @@ import {
   coerceFicha,
   missingFields,
   exampleFicha,
-} from "../ficha-rules.mjs?v=50";
-import { formatDate } from "./api.js?v=50";
-import { debounce } from "./dom.js?v=50";
-import { todayISO } from "./form.js?v=50";
+} from "../ficha-rules.mjs?v=53";
+import { formatDate } from "./api.js?v=53";
+import { debounce } from "./dom.js?v=53";
+import { todayISO } from "./form.js?v=53";
 
 const libraryView = document.querySelector("#view-library");
 const listEl = document.querySelector("#library-list");
@@ -99,9 +99,14 @@ export function setCache(items) {
 export function showLibrary() {
   const formView = document.querySelector("#view-form");
   const compareView = document.querySelector("#view-compare");
+  const gateView = document.querySelector("#view-gate");
+  if (gateView) gateView.hidden = true;
   if (formView) formView.hidden = true;
   if (compareView) compareView.hidden = true;
   if (libraryView) libraryView.hidden = false;
+  try {
+    sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "library" }));
+  } catch {}
   renderLibrary();
 }
 
