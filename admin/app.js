@@ -72,6 +72,7 @@ function showGate(data) {
   document.querySelector("#view-form").hidden = true;
   document.querySelector("#view-gate").hidden = false;
   document.querySelector("#btn-logout").hidden = true;
+  document.querySelector("#session-name").hidden = true;
   const enroll = Boolean(data && data.enroll);
   const forgot = Boolean(data && data.forgot);
   const reset = Boolean(data && data.reset);
@@ -86,9 +87,14 @@ function showGate(data) {
   }
 }
 
+const SESSION_NAMES = { martin: "Martín", maria: "María", norberto: "Norberto" };
+
 function hideGate() {
   document.querySelector("#view-gate").hidden = true;
   document.querySelector("#btn-logout").hidden = false;
+  const name = document.querySelector("#session-name");
+  name.textContent = SESSION_NAMES[sessionUser?.username] || sessionUser?.name || "";
+  name.hidden = !name.textContent;
 }
 
 async function refresh() {

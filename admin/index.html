@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=28">
+  <link rel="stylesheet" href="/admin/styles.css?v=29">
 </head>
 <body>
   <header class="topbar">
@@ -16,7 +16,10 @@
       <img src="/admin/logo.png?v=22" alt="Kinésica" width="190" height="50">
     </a>
     <div class="top-actions">
-      <button type="button" class="btn ghost" id="btn-logout" hidden>Salir</button>
+      <div class="session-box">
+        <span id="session-name" class="session-name" hidden></span>
+        <button type="button" class="btn ghost" id="btn-logout" hidden>Salir</button>
+      </div>
     </div>
   </header>
 
@@ -383,6 +386,6 @@
   </main>
 
   <div id="print-root"></div>
-  <script type="module" src="/admin/app.js?v=34"></script>
+  <script type="module" src="/admin/app.js?v=35"></script>
 </body>
 </html>
