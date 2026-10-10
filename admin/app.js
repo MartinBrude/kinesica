@@ -1160,13 +1160,37 @@ function buildComparePrintSheet(res) {
   table.append(tbody);
   tableSection.append(table);
 
+  const profKey = res.sessionY?.profesional || (sessionUser?.username === "maria" ? "maria" : "norberto");
+  const details = CLINICIAN_DETAILS[profKey] || {
+    nombre: res.sessionY?.profesionalNombre || "Lic. Norberto Brude",
+    titulo: "Kinesiólogo Fisiatra · Osteopatía",
+    matricula: "M.N. 4930 · M.P. 518",
+    signatureFile: `/admin/signatures/${profKey}.png`,
+  };
+
+  const sigBox = node("div", "pf-signature");
+  const sigImg = document.createElement("img");
+  sigImg.className = "pf-sig-image";
+  sigImg.alt = `Firma digital ${details.nombre}`;
+  sigImg.src = details.signatureFile;
+  sigImg.onerror = () => { sigImg.classList.add("pf-sig-missing"); };
+
+  const sigStamp = node("div", "pf-sig-stamp");
+  sigStamp.append(
+    node("span", "pf-sig-rule"),
+    node("strong", "pf-sig-name", details.nombre),
+    node("span", "pf-sig-title", details.titulo),
+    details.matricula ? node("span", "pf-sig-mat", details.matricula) : null,
+  );
+  sigBox.append(sigImg, sigStamp);
+
   const foot = node("footer", "pf-foot");
   foot.append(
     node("span", "", "Informe comparativo de evolución clínica · Kinésica ATM"),
     node("span", "", "Charcas 3889, Palermo, CABA · +54 (11) 6156-4311"),
   );
 
-  sheet.append(head, who, kpiSection, tableSection, foot);
+  sheet.append(head, who, kpiSection, tableSection, sigBox, foot);
   return sheet;
 }
 

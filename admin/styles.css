@@ -1085,7 +1085,7 @@ input[type="range"] {
     max-height: 55px;
     max-width: 190px;
     object-fit: contain;
-    margin-bottom: 4px;
+    margin-bottom: -4px;
   }
   .pf-sig-image.pf-sig-missing {
     display: none;
