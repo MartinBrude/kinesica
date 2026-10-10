@@ -9,6 +9,7 @@ import {
   emptyFicha,
   exampleFicha,
   missingFields,
+  ownsFicha,
 } from "../admin/ficha-rules.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -43,6 +44,10 @@ assert.equal(assignProfesional("norberto", ""), "norberto");
 assert.equal(assignProfesional("martin", ""), "norberto");
 assert.equal(assignProfesional("otro", ""), "norberto");
 assert.equal(assignProfesional("martin", "maria"), "maria", "Editar no cambia el profesional");
+assert.equal(ownsFicha({ profesional: "maria" }, "maria"), true);
+assert.equal(ownsFicha({ profesional: "norberto" }, "maria"), false);
+assert.match(html, /id="only-mine" checked/);
+assert.match(app, /onlyMineInput\.checked = sessionUser\.username === "norberto" \|\| sessionUser\.username === "maria"/);
 assert.equal(CLINICIANS.martin, undefined);
 
 const sample = exampleFicha();

@@ -20,6 +20,10 @@ export function missingFields(data) {
     .map(([, label]) => label);
 }
 
+export function ownsFicha(item, username) {
+  return (item?.profesional || "") === username;
+}
+
 export function assignProfesional(username, previous) {
   if (previous) return String(previous);
   if (username === "maria") return "maria";

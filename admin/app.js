@@ -1,4 +1,4 @@
-import { exampleFicha, missingFields, emptyFicha } from "./ficha-rules.mjs";
+import { exampleFicha, missingFields, emptyFicha, ownsFicha } from "./ficha-rules.mjs";
 
 let cache = [];
 let authed = false;
@@ -20,10 +20,12 @@ const formView = document.querySelector("#view-form");
 const listEl = document.querySelector("#library-list");
 const patientSelect = document.querySelector("#pdf-patient");
 const searchInput = document.querySelector("#search");
+const onlyMineInput = document.querySelector("#only-mine");
 const eva = form.elements.eva;
 const evaValue = document.querySelector("#eva-value");
 
 let step = 0;
+let mineDefaultApplied = false;
 let currentId = null;
 const singles = {};
 
@@ -73,6 +75,10 @@ function hideGate() {
 
 async function refresh() {
   sessionUser = await api("me.php");
+  if (!mineDefaultApplied) {
+    onlyMineInput.checked = sessionUser.username === "norberto" || sessionUser.username === "maria";
+    mineDefaultApplied = true;
+  }
   cache = await api("fichas.php");
   authed = true;
   hideGate();
@@ -177,17 +183,22 @@ function patientKey(item) {
   return `${(item.nombre || "").trim().toLowerCase()}|${(item.dni || "").trim()}`;
 }
 
-function renderLibrary() {
+function visibleFichas() {
   const q = searchInput.value.trim().toLowerCase();
-  const items = loadAll()
+  return loadAll()
+    .filter((item) => !onlyMineInput.checked || ownsFicha(item, sessionUser?.username))
     .filter((item) => {
       const blob = `${item.nombre} ${item.dni}`.toLowerCase();
       return !q || blob.includes(q);
     })
     .sort((a, b) => (b.fechaSesion || "").localeCompare(a.fechaSesion || ""));
+}
+
+function renderLibrary() {
+  const items = visibleFichas();
 
   const patients = new Map();
-  for (const item of loadAll()) {
+  for (const item of items) {
     const key = patientKey(item);
     if (!patients.has(key)) patients.set(key, item.nombre || "Sin nombre");
   }
@@ -203,7 +214,9 @@ function renderLibrary() {
 
   listEl.innerHTML = "";
   if (!items.length) {
-    listEl.innerHTML = '<p class="empty">Todavía no hay fichas. Creá una nueva o abrí un archivo .json.</p>';
+    listEl.innerHTML = onlyMineInput.checked
+      ? '<p class="empty">No hay fichas tuyas. Destildá «Ver solo mis pacientes» para ver todas.</p>'
+      : '<p class="empty">Todavía no hay fichas. Creá una nueva o abrí un archivo .json.</p>';
     return;
   }
   for (const item of items) {
@@ -435,9 +448,9 @@ function printItems(items) {
 }
 
 function itemsForPdf() {
-  const all = loadAll();
-  if (patientSelect.value === "__all__") return all;
-  return all.filter((item) => patientKey(item) === patientSelect.value);
+  const visible = visibleFichas();
+  if (patientSelect.value === "__all__") return visible;
+  return visible.filter((item) => patientKey(item) === patientSelect.value);
 }
 
 document.querySelectorAll("[data-single]").forEach((group) => {
@@ -487,6 +500,7 @@ document.querySelector("#btn-new").addEventListener("click", () => {
 document.querySelector("#btn-prev").addEventListener("click", () => showStep(Math.max(0, step - 1)));
 document.querySelector("#btn-next").addEventListener("click", () => showStep(Math.min(4, step + 1)));
 searchInput.addEventListener("input", renderLibrary);
+onlyMineInput.addEventListener("change", renderLibrary);
 
 document.querySelector("#btn-clear").addEventListener("click", () => {
   const id = currentId;
@@ -565,6 +579,7 @@ document.querySelector("#enroll-form").addEventListener("submit", async (event) 
 document.querySelector("#btn-logout").addEventListener("click", async () => {
   await api("logout.php", { method: "POST" }).catch(() => {});
   cache = [];
+  mineDefaultApplied = false;
   showGate({ login: true });
 });
 
