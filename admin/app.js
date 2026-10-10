@@ -341,7 +341,20 @@ function renderLibrary() {
         page = 0;
         renderLibrary();
       });
-      row.querySelector(".row-controls").append(open);
+      const del = document.createElement("button");
+      del.type = "button";
+      del.className = "btn ghost";
+      del.textContent = "Quitar todas";
+      del.addEventListener("click", () => {
+        const all = loadAll().filter((item) => patientKey(item) === key);
+        const name = latest.nombre || "este paciente";
+        const count = all.length === 1 ? "la ficha" : `las ${all.length} fichas`;
+        if (!window.confirm(`¿Quitar ${count} de ${name}? Esta acción no se puede deshacer.`)) return;
+        Promise.all(all.map((item) => api(`fichas.php?id=${encodeURIComponent(item.id)}`, { method: "DELETE" })))
+          .then(() => refresh())
+          .catch((error) => { if (!error.auth) window.alert(error.message); });
+      });
+      row.querySelector(".row-controls").append(open, del);
       row.addEventListener("click", (event) => {
         if (event.target.closest("button")) return;
         focusedPatient = key;
