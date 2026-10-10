@@ -1,4 +1,4 @@
-import { exampleFicha, missingFields, emptyFicha, ownsFicha, nextSession } from "./ficha-rules.mjs?v=23";
+import { exampleFicha, missingFields, emptyFicha, ownsFicha, nextSession, ageOn, REQUIRED_FIELDS, CLINICIAN_DETAILS } from "./ficha-rules.mjs?v=25";
 
 let cache = [];
 let authed = false;
@@ -174,7 +174,40 @@ function fillForm(data) {
     if (data[key]) singles[key] = data[key];
   });
   syncFollowups();
-  evaValue.textContent = `${eva.value} / 10`;
+  syncEva();
+  updateStepValidation();
+}
+
+function syncAge() {
+  const birth = form.elements.nacimiento?.value;
+  const session = form.elements.fechaSesion?.value || todayISO();
+  if (birth) {
+    const calculated = ageOn(birth, session);
+    if (calculated) {
+      form.elements.edad.value = calculated;
+    }
+  }
+}
+
+function updateStepValidation() {
+  const data = readForm();
+  const missing = missingFields(data);
+  const dot = document.querySelector('.steps button[data-step="0"] .step-dot');
+  if (dot) dot.hidden = missing.length === 0;
+}
+
+function evaMeta(val) {
+  const n = Number(val) || 0;
+  if (n === 0) return { label: "0 / 10 · Sin dolor", level: "zero" };
+  if (n <= 3) return { label: `${n} / 10 · Dolor leve`, level: "mild" };
+  if (n <= 6) return { label: `${n} / 10 · Dolor moderado`, level: "moderate" };
+  return { label: `${n} / 10 · Dolor severo`, level: "severe" };
+}
+
+function syncEva() {
+  const meta = evaMeta(eva.value);
+  evaValue.textContent = meta.label;
+  evaValue.dataset.level = meta.level;
 }
 
 function syncFollowups() {
@@ -513,16 +546,31 @@ function buildSheet(item) {
     ["Nacimiento", [formatDate(item.nacimiento), item.lugarNac].filter((part) => part && part !== "Sin fecha").join(" · ")],
     ["Motivo de consulta", item.motivo],
   ]));
+  // FEATURE-OPTIONAL: habitos-bruxismo
+  const habitosList = [
+    item.habitoApretamiento ? "Apretamiento diurno" : "",
+    item.habitoBruxismo ? "Bruxismo nocturno" : "",
+    item.habitoMasticacionUni ? "Masticación unilateral" : "",
+    item.habitoOnicofagia ? "Onicofagia / mordisqueo" : "",
+  ].filter(Boolean).join(", ");
+  if (habitosList) add(who, grid([["Hábitos / bruxismo", habitosList]]));
+  // /FEATURE-OPTIONAL: habitos-bruxismo
   add(who, prose("Antecedentes clínicos", item.antecedentes));
 
   const atm = section("Articulación temporomandibular");
   const fases = [item.faseApertura ? "apertura" : "", item.faseCierre ? "cierre" : ""].filter(Boolean).join(" y ");
+  // FEATURE-OPTIONAL: tipo-ruido
+  const tiposRuido = [item.ruidoClic ? "clic / chasquido" : "", item.ruidoCrep ? "crepitación" : ""].filter(Boolean).join(" y ");
+  // /FEATURE-OPTIONAL: tipo-ruido
+  // FEATURE-OPTIONAL: patron-desviacion
+  const patronDesv = [item.desvCorregida ? "corregida en S" : "", item.deflexion ? "deflexión" : ""].filter(Boolean).join(" · ");
+  // /FEATURE-OPTIONAL: patron-desviacion
   add(atm, grid([
-    ["Ruidos articulares", item.ruidos === "Sí" ? [item.ruidos, side(item.ruidosIzq, item.ruidosDer), fases && `en ${fases}`].filter((part) => part && part !== "—").join(" · ") : (item.ruidos || "")],
+    ["Ruidos articulares", item.ruidos === "Sí" ? [item.ruidos, side(item.ruidosIzq, item.ruidosDer), fases && `en ${fases}`, tiposRuido && `(${tiposRuido})`].filter((part) => part && part !== "—").join(" · ") : (item.ruidos || "")],
     ["Dolor condilar", item.dolorCondilar === "Sí" ? [item.dolorCondilar, side(item.condilarIzq, item.condilarDer)].filter((part) => part && part !== "—").join(" · ") : (item.dolorCondilar || "")],
     ["Apertura libre de dolor", item.aperturaLibre ? `${item.aperturaLibre} mm` : ""],
     ["Apertura con dolor", item.aperturaDolor ? `${item.aperturaDolor} mm` : ""],
-    ["Desviación de trayectoria", item.desviacion === "Sí" ? [item.desviacion, side(item.desvIzq, item.desvDer)].filter((part) => part && part !== "—").join(" · ") : (item.desviacion || "")],
+    ["Desviación de trayectoria", item.desviacion === "Sí" ? [item.desviacion, side(item.desvIzq, item.desvDer), patronDesv && `(${patronDesv})`].filter((part) => part && part !== "—").join(" · ") : (item.desviacion || "")],
     ["Protrusión", item.protrusion ? `${item.protrusion} mm` : ""],
     ["Lateralidades", [
       item.latIzq ? `Izq ${item.latIzq} mm` : "",
@@ -539,6 +587,16 @@ function buildSheet(item) {
     ["Disco con recaptura", side(item.discoConIzq, item.discoConDer)],
     ["Disco sin recaptura", side(item.discoSinIzq, item.discoSinDer)],
   ]));
+
+  // FEATURE-OPTIONAL: correlacion-cervical
+  const cerv = section("Correlación cervical y postural");
+  add(cerv, grid([
+    ["Trapecio superior", side(item.trapecioIzq, item.trapecioDer)],
+    ["ECOM", side(item.ecomIzq, item.ecomDer)],
+    ["Suboccipitales", side(item.suboccipitalIzq, item.suboccipitalDer)],
+  ]));
+  add(cerv, prose("Observaciones cervicales / postura", item.obsCervical));
+  // /FEATURE-OPTIONAL: correlacion-cervical
 
   const pain = section("Dolor y oclusión");
   const eva = Math.max(0, Math.min(10, Number(item.eva) || 0));
@@ -574,6 +632,30 @@ function buildSheet(item) {
   if (plan) notes.append(plan);
   if (notes.childElementCount) cdi.append(notes);
 
+  const profKey = item.profesional || (sessionUser?.username === "maria" ? "maria" : "norberto");
+  const details = CLINICIAN_DETAILS[profKey] || {
+    nombre: item.profesionalNombre || "Profesional actuante",
+    titulo: "Kinesiólogo/a Fisiatra",
+    matricula: "",
+    signatureFile: `/admin/signatures/${profKey}.png`,
+  };
+
+  const sigBox = node("div", "pf-signature");
+  const sigImg = document.createElement("img");
+  sigImg.className = "pf-sig-image";
+  sigImg.alt = `Firma digital ${details.nombre}`;
+  sigImg.src = details.signatureFile;
+  sigImg.onerror = () => { sigImg.classList.add("pf-sig-missing"); };
+
+  const sigStamp = node("div", "pf-sig-stamp");
+  sigStamp.append(
+    node("span", "pf-sig-rule"),
+    node("strong", "pf-sig-name", details.nombre),
+    node("span", "pf-sig-title", details.titulo),
+    details.matricula ? node("span", "pf-sig-mat", details.matricula) : null,
+  );
+  sigBox.append(sigImg, sigStamp);
+
   const foot = node("footer", "pf-foot");
   foot.append(
     node("span", "", "Documento clínico confidencial · Kinésica"),
@@ -581,10 +663,10 @@ function buildSheet(item) {
   );
 
   sheet.append(head, who);
-  for (const block of [atm, mus, pain, cdi]) {
+  for (const block of [atm, mus, cerv, pain, cdi]) {
     if (block.querySelector(".pf-grid, .pf-prose, .pf-eva, .pf-chip, .pf-empty")) sheet.append(block);
   }
-  sheet.append(foot);
+  sheet.append(sigBox, foot);
   return sheet;
 }
 
@@ -640,8 +722,21 @@ document.querySelectorAll(".steps button").forEach((btn) => {
   btn.addEventListener("click", () => showStep(Number(btn.dataset.step)));
 });
 
-eva.addEventListener("input", () => {
-  evaValue.textContent = `${eva.value} / 10`;
+eva.addEventListener("input", syncEva);
+
+form.elements.nacimiento?.addEventListener("change", () => {
+  syncAge();
+  updateStepValidation();
+});
+form.elements.fechaSesion?.addEventListener("change", () => {
+  syncAge();
+  updateStepValidation();
+});
+form.addEventListener("input", (e) => {
+  if (e.target.classList.contains("input-error") && e.target.value.trim()) {
+    e.target.classList.remove("input-error");
+  }
+  updateStepValidation();
 });
 
 form.addEventListener("submit", async (event) => {
@@ -705,7 +800,26 @@ document.querySelector("#btn-new").addEventListener("click", () => {
 });
 
 document.querySelector("#btn-prev").addEventListener("click", () => showStep(Math.max(0, step - 1)));
-document.querySelector("#btn-next").addEventListener("click", () => showStep(Math.min(4, step + 1)));
+document.querySelector("#btn-next").addEventListener("click", () => {
+  if (step === 0) {
+    const data = readForm();
+    const missing = missingFields(data);
+    if (missing.length) {
+      for (const [key] of REQUIRED_FIELDS) {
+        const el = form.elements[key];
+        if (el && !String(data[key] ?? "").trim()) {
+          el.classList.add("input-error");
+        } else if (el) {
+          el.classList.remove("input-error");
+        }
+      }
+      const firstMissing = form.querySelector(".input-error");
+      if (firstMissing) firstMissing.focus();
+      return;
+    }
+  }
+  showStep(Math.min(4, step + 1));
+});
 searchInput.addEventListener("input", () => { page = 0; renderLibrary(); });
 pageSizeSelect.addEventListener("change", () => { page = 0; renderLibrary(); });
 mineButton.addEventListener("click", () => {

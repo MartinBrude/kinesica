@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=29">
+  <link rel="stylesheet" href="/admin/styles.css?v=30">
 </head>
 <body>
   <header class="topbar">
@@ -118,7 +118,7 @@
         <button type="button" class="btn ghost" id="btn-back">← Fichas</button>
       </div>
       <nav class="steps" aria-label="Secciones de la ficha">
-        <button type="button" data-step="0">1. Paciente</button>
+        <button type="button" data-step="0">1. Paciente<span class="step-dot" title="Campos obligatorios incompletos" hidden></span></button>
         <button type="button" data-step="1">2. ATM palpación y rango</button>
         <button type="button" data-step="2">3. Músculos craneales</button>
         <button type="button" data-step="3">4. Dolor y oclusión</button>
@@ -165,6 +165,17 @@
               <button type="button" data-value="Pos Quirúrgico">Pos Quirúrgico</button>
             </div>
           </fieldset>
+          <!-- FEATURE-OPTIONAL: habitos-bruxismo -->
+          <fieldset class="habitos-block">
+            <legend>Hábitos parafuncionales y bruxismo</legend>
+            <div class="habit-grid">
+              <label class="check"><input type="checkbox" name="habitoApretamiento"> Apretamiento diurno</label>
+              <label class="check"><input type="checkbox" name="habitoBruxismo"> Bruxismo nocturno</label>
+              <label class="check"><input type="checkbox" name="habitoMasticacionUni"> Masticación unilateral</label>
+              <label class="check"><input type="checkbox" name="habitoOnicofagia"> Onicofagia / mordisqueo</label>
+            </div>
+          </fieldset>
+          <!-- /FEATURE-OPTIONAL: habitos-bruxismo -->
           <label>Descripción de antecedentes clínicos
             <textarea name="antecedentes" rows="4" placeholder="Coloca la sintomatología inicial, hábitos o incidentes traumáticos reportados por el paciente" required></textarea>
           </label>
@@ -185,6 +196,11 @@
                 <span class="inline-label">Fase del ruido:</span>
                 <label class="check"><input type="checkbox" name="faseApertura"> Apertura</label>
                 <label class="check"><input type="checkbox" name="faseCierre"> Cierre</label>
+                <!-- FEATURE-OPTIONAL: tipo-ruido -->
+                <span class="inline-label">Tipo:</span>
+                <label class="check"><input type="checkbox" name="ruidoClic"> Clic / Chasquido</label>
+                <label class="check"><input type="checkbox" name="ruidoCrep"> Crepitación</label>
+                <!-- /FEATURE-OPTIONAL: tipo-ruido -->
               </span>
             </div>
           </div>
@@ -223,6 +239,11 @@
                   <span class="follow" data-follow="desviacion" hidden>
                     <label class="check"><input type="checkbox" name="desvIzq"> Izq</label>
                     <label class="check"><input type="checkbox" name="desvDer"> Der</label>
+                    <!-- FEATURE-OPTIONAL: patron-desviacion -->
+                    <span class="inline-label">Patrón:</span>
+                    <label class="check"><input type="checkbox" name="desvCorregida"> Desviación corregida (en S)</label>
+                    <label class="check"><input type="checkbox" name="deflexion"> Deflexión (no corregida)</label>
+                    <!-- /FEATURE-OPTIONAL: patron-desviacion -->
                   </span>
                 </div>
               </div>
@@ -283,18 +304,43 @@
               </div>
             </div>
           </div>
+          <!-- FEATURE-OPTIONAL: correlacion-cervical -->
+          <div class="block">
+            <h3>3. Correlación cervical y postural (osteopatía / RPG)</h3>
+            <div class="muscle-grid">
+              <div class="muscle">
+                <span>Trapecio superior</span>
+                <label class="check"><input type="checkbox" name="trapecioIzq"> Izq</label>
+                <label class="check"><input type="checkbox" name="trapecioDer"> Der</label>
+              </div>
+              <div class="muscle">
+                <span>Esternocleidomastoideo (ECOM)</span>
+                <label class="check"><input type="checkbox" name="ecomIzq"> Izq</label>
+                <label class="check"><input type="checkbox" name="ecomDer"> Der</label>
+              </div>
+              <div class="muscle">
+                <span>Musculatura suboccipital</span>
+                <label class="check"><input type="checkbox" name="suboccipitalIzq"> Izq</label>
+                <label class="check"><input type="checkbox" name="suboccipitalDer"> Der</label>
+              </div>
+            </div>
+            <label style="margin-top: 12px;">Observaciones cervicales y posturales
+              <input name="obsCervical" placeholder="Ej: Rectificación cervical, sobrecarga bilateral suboccipital">
+            </label>
+          </div>
+          <!-- /FEATURE-OPTIONAL: correlacion-cervical -->
         </div>
 
         <div class="panel" data-panel="3" hidden>
           <div class="block eva-block">
             <div class="eva-head">
               <h3>Valoración de dolor (EVA)</h3>
-              <strong id="eva-value">0 / 10</strong>
+              <strong id="eva-value" class="eva-badge">0 / 10 · Sin dolor</strong>
             </div>
             <input type="range" name="eva" min="0" max="10" value="0" step="1">
             <div class="eva-scale">
               <span>Sin dolor (0)</span>
-              <span>Dolor soportable</span>
+              <span>Dolor moderado (4-6)</span>
               <span>Inconmensurable (10)</span>
             </div>
           </div>
@@ -386,6 +432,6 @@
   </main>
 
   <div id="print-root"></div>
-  <script type="module" src="/admin/app.js?v=36"></script>
+  <script type="module" src="/admin/app.js?v=37"></script>
 </body>
 </html>

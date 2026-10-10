@@ -125,4 +125,25 @@ assert.match(php, /\$profesional = 'norberto'/);
 assert.doesNotMatch(php, /'martin' => 'Martín'/);
 assert.match(php, /implode\(', ', \$missing\)/);
 
+// Verificación de las 4 features opcionales y etiquetas
+assert.match(html, /<!-- FEATURE-OPTIONAL: habitos-bruxismo -->/);
+assert.match(html, /<!-- FEATURE-OPTIONAL: tipo-ruido -->/);
+assert.match(html, /<!-- FEATURE-OPTIONAL: patron-desviacion -->/);
+assert.match(html, /<!-- FEATURE-OPTIONAL: correlacion-cervical -->/);
+
+assert.match(app, /\/\/ FEATURE-OPTIONAL: habitos-bruxismo/);
+assert.match(app, /\/\/ FEATURE-OPTIONAL: tipo-ruido/);
+assert.match(app, /\/\/ FEATURE-OPTIONAL: patron-desviacion/);
+assert.match(app, /\/\/ FEATURE-OPTIONAL: correlacion-cervical/);
+
+// Verificación de autocálculo de edad y validación suave
+assert.match(app, /syncAge/);
+assert.match(app, /updateStepValidation/);
+assert.match(app, /syncEva/);
+assert.match(html, /class="step-dot"/);
+
+// Verificación de bloque de firma profesional
+assert.match(app, /pf-signature/);
+assert.match(app, /CLINICIAN_DETAILS/);
+
 console.log("fichas ATM: ok");

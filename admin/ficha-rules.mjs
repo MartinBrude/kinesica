@@ -14,6 +14,21 @@ export const CLINICIANS = {
   maria: "María",
 };
 
+export const CLINICIAN_DETAILS = {
+  norberto: {
+    nombre: "Lic. Norberto Brude",
+    titulo: "Kinesiólogo Fisiatra · Osteopatía",
+    matricula: "M.N. 4930 · M.P. 518",
+    signatureFile: "/admin/signatures/norberto.png",
+  },
+  maria: {
+    nombre: "Lic. María",
+    titulo: "Kinesióloga Fisiatra",
+    matricula: "M.N. · M.P.",
+    signatureFile: "/admin/signatures/maria.png",
+  },
+};
+
 export function missingFields(data) {
   return REQUIRED_FIELDS
     .filter(([key]) => !String(data?.[key] ?? "").trim())
@@ -58,12 +73,22 @@ export function emptyFicha() {
     edad: "",
     lugarNac: "",
     motivo: "",
+    // FEATURE-OPTIONAL: habitos-bruxismo
+    habitoApretamiento: false,
+    habitoBruxismo: false,
+    habitoMasticacionUni: false,
+    habitoOnicofagia: false,
+    // /FEATURE-OPTIONAL: habitos-bruxismo
     antecedentes: "",
     ruidos: "",
     ruidosIzq: false,
     ruidosDer: false,
     faseApertura: false,
     faseCierre: false,
+    // FEATURE-OPTIONAL: tipo-ruido
+    ruidoClic: false,
+    ruidoCrep: false,
+    // /FEATURE-OPTIONAL: tipo-ruido
     dolorCondilar: "",
     condilarIzq: false,
     condilarDer: false,
@@ -72,6 +97,10 @@ export function emptyFicha() {
     desviacion: "",
     desvIzq: false,
     desvDer: false,
+    // FEATURE-OPTIONAL: patron-desviacion
+    desvCorregida: false,
+    deflexion: false,
+    // /FEATURE-OPTIONAL: patron-desviacion
     protrusion: "",
     latIzq: "",
     latDer: "",
@@ -87,6 +116,15 @@ export function emptyFicha() {
     discoConDer: false,
     discoSinIzq: false,
     discoSinDer: false,
+    // FEATURE-OPTIONAL: correlacion-cervical
+    trapecioIzq: false,
+    trapecioDer: false,
+    ecomIzq: false,
+    ecomDer: false,
+    suboccipitalIzq: false,
+    suboccipitalDer: false,
+    obsCervical: "",
+    // /FEATURE-OPTIONAL: correlacion-cervical
     eva: 0,
     zona: "",
     caracteristicas: "",
@@ -110,12 +148,22 @@ export function exampleFicha() {
     edad: "34",
     lugarNac: "Córdoba",
     motivo: "No Traumático",
+    // FEATURE-OPTIONAL: habitos-bruxismo
+    habitoApretamiento: true,
+    habitoBruxismo: true,
+    habitoMasticacionUni: true,
+    habitoOnicofagia: false,
+    // /FEATURE-OPTIONAL: habitos-bruxismo
     antecedentes: "Dolor en la sien y delante del oído desde hace 8 meses, sin golpe ni cirugía. Apretamiento nocturno y masticación unilateral. Empeora con chicle y pan duro.",
     ruidos: "Sí",
     ruidosIzq: true,
     ruidosDer: false,
     faseApertura: true,
     faseCierre: false,
+    // FEATURE-OPTIONAL: tipo-ruido
+    ruidoClic: true,
+    ruidoCrep: false,
+    // /FEATURE-OPTIONAL: tipo-ruido
     dolorCondilar: "Sí",
     condilarIzq: false,
     condilarDer: true,
@@ -124,6 +172,10 @@ export function exampleFicha() {
     desviacion: "Sí",
     desvIzq: true,
     desvDer: false,
+    // FEATURE-OPTIONAL: patron-desviacion
+    desvCorregida: true,
+    deflexion: false,
+    // /FEATURE-OPTIONAL: patron-desviacion
     protrusion: "8",
     latIzq: "10",
     latDer: "10",
@@ -139,6 +191,15 @@ export function exampleFicha() {
     discoConDer: false,
     discoSinIzq: false,
     discoSinDer: false,
+    // FEATURE-OPTIONAL: correlacion-cervical
+    trapecioIzq: true,
+    trapecioDer: false,
+    ecomIzq: true,
+    ecomDer: false,
+    suboccipitalIzq: true,
+    suboccipitalDer: true,
+    obsCervical: "Rectificación cervical con sobrecarga bilateral suboccipital.",
+    // /FEATURE-OPTIONAL: correlacion-cervical
     eva: 6,
     zona: "Fosa temporal anterior e intraauricular",
     caracteristicas: "Sordo, opresivo, continuo, punzante",
