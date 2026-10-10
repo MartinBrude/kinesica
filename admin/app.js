@@ -331,7 +331,7 @@ function buildSheet(item) {
   const head = node("header", "pf-head");
   const brand = node("div", "pf-brand");
   const logo = document.createElement("img");
-  logo.src = "logo.png";
+  logo.src = document.querySelector(".brand img")?.currentSrc || "/admin/logo.png";
   logo.alt = "Kinésica";
   const titles = node("div", "pf-titles");
   titles.append(
@@ -362,8 +362,10 @@ function buildSheet(item) {
     ["Apertura con dolor", item.aperturaDolor ? `${item.aperturaDolor} mm` : ""],
     ["Desviación de trayectoria", [item.desviacion, side(item.desvIzq, item.desvDer)].filter((part) => part && part !== "—").join(" · ")],
     ["Protrusión", item.protrusion ? `${item.protrusion} mm` : ""],
-    ["Lateralidad izquierda", item.latIzq ? `${item.latIzq} mm` : ""],
-    ["Lateralidad derecha", item.latDer ? `${item.latDer} mm` : ""],
+    ["Lateralidades", [
+      item.latIzq ? `Izq ${item.latIzq} mm` : "",
+      item.latDer ? `Der ${item.latDer} mm` : "",
+    ].filter(Boolean).join(" · ")],
   ]));
 
   const mus = section("Músculos craneales y disco articular");
@@ -424,7 +426,7 @@ function buildSheet(item) {
   return sheet;
 }
 
-function printItems(items) {
+async function printItems(items) {
   const root = document.querySelector("#print-root");
   root.replaceChildren();
   const groups = new Map();
@@ -443,6 +445,7 @@ function printItems(items) {
   const who = names.length === 1 ? names[0] : "Fichas ATM";
   const when = dates.length ? (dates.length === 1 ? dates[0].replaceAll("/", "-") : `${dates[0].replaceAll("/", "-")} a ${dates[dates.length - 1].replaceAll("/", "-")}`) : "";
   document.title = [who, when].filter(Boolean).join(" ");
+  await Promise.all([...root.querySelectorAll("img")].map((img) => (img.decode ? img.decode() : Promise.resolve()).catch(() => {})));
   window.print();
   setTimeout(() => { document.title = previousTitle; }, 1000);
 }

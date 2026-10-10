@@ -380,13 +380,20 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
     color: #005f99;
   }
 
+  .pf-head,
+  .pf-who,
+  .pf-section,
+  .pf-foot {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
   .pf-who,
   .pf-section {
     background: #f2f7fa;
     border: 1px solid #c5d8e6;
     border-radius: 14px;
-    padding: 14px 16px 16px;
-    margin: 0 0 12px;
+    padding: 12px 14px 14px;
+    margin: 0 0 10px;
   }
   .pf-name {
     margin: 0 0 10px;
