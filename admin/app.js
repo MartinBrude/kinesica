@@ -106,7 +106,6 @@ async function refresh() {
   }
   const onlyMartin = sessionUser.username !== "martin";
   document.querySelector("#btn-seed").hidden = onlyMartin;
-  document.querySelector("#btn-example").hidden = onlyMartin;
   cache = await api("fichas.php");
   authed = true;
   hideGate();
@@ -736,7 +735,6 @@ document.querySelector("#btn-clear").addEventListener("click", () => {
 });
 
 document.querySelector("#btn-example").addEventListener("click", () => {
-  if (sessionUser?.username !== "martin") return;
   const sample = blank();
   sample.id = currentId || sample.id;
   Object.assign(sample, exampleFicha());
