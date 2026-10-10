@@ -228,8 +228,15 @@ export function fichaRow(item, { onOpen, onNewSession, onPdf, onDelete, onDownlo
 
   const del = document.createElement("button");
   del.type = "button";
-  del.className = "btn ghost";
-  del.textContent = "Quitar";
+  del.className = "btn ghost btn-icon-del";
+  del.title = "Quitar ficha";
+  del.setAttribute("aria-label", "Quitar ficha");
+  del.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <polyline points="3 6 5 6 21 6"></polyline>
+    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+    <line x1="10" y1="11" x2="10" y2="17"></line>
+    <line x1="14" y1="11" x2="14" y2="17"></line>
+  </svg>`;
   del.addEventListener("click", () => {
     const name = item.nombre || "esta ficha";
     if (!window.confirm(`¿Quitar la ficha de ${name} del ${formatDate(item.fechaSesion)}? Esta acción no se puede deshacer.`)) {
@@ -382,8 +389,13 @@ export function renderLibrary() {
 
         const del = document.createElement("button");
         del.type = "button";
-        del.className = "btn ghost";
-        del.textContent = "Quitar todas";
+        del.className = "btn ghost btn-icon-del-text";
+        del.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;margin-right:4px;">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          <line x1="10" y1="11" x2="10" y2="17"></line>
+          <line x1="14" y1="11" x2="14" y2="17"></line>
+        </svg>Quitar todas`;
         del.addEventListener("click", () => {
           const all = loadAll().filter((item) => patientKey(item) === key);
           const name = latest.nombre || "este paciente";
@@ -550,7 +562,9 @@ export function initLibrary({
     });
   }
 
-  document.querySelector("#file-open").addEventListener("change", async (event) => {
+  const fileOpen = document.querySelector("#file-open");
+  if (fileOpen) {
+    fileOpen.addEventListener("change", async (event) => {
       const file = event.target.files[0];
       event.target.value = "";
       if (!file) return;
@@ -588,7 +602,6 @@ export function initLibrary({
 
       const data = coerceFicha({ ...blank(), ...parsed, id: parsed.id || crypto.randomUUID() });
       fillForm(data);
-      step = 0;
       showForm();
       const missing = missingFields(data);
       if (missing.length) {

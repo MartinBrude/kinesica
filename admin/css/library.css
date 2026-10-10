@@ -107,6 +107,26 @@
   color: var(--primary);
 }
 
+.btn-icon-del {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 8px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.btn-icon-del:hover {
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.08);
+}
+
+.btn-icon-del-text:hover {
+  color: #dc2626;
+}
+
 .row-controls {
   display: flex;
   flex-wrap: wrap;

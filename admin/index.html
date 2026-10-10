@@ -25,7 +25,7 @@
 
   <main>
     <section id="view-gate" class="view">
-      <form id="login-form" class="hero-card gate-card">
+      <form id="login-form" class="hero-card gate-card" method="POST">
         <div class="gate-fields">
           <label>Usuario
             <input name="username" autocomplete="username" required>
@@ -41,7 +41,7 @@
           <button type="button" class="btn ghost" id="btn-forgot">Olvidé mi contraseña</button>
         </div>
       </form>
-      <form id="forgot-form" class="hero-card gate-card" hidden>
+      <form id="forgot-form" class="hero-card gate-card" method="POST" hidden>
         <div class="gate-fields">
           <p>Te mandamos un enlace para elegir una contraseña nueva. Dura 30 minutos.</p>
           <label>Usuario
@@ -52,7 +52,7 @@
           <button type="button" class="btn ghost" id="btn-forgot-back">Volver</button>
         </div>
       </form>
-      <form id="reset-form" class="hero-card gate-card" hidden>
+      <form id="reset-form" class="hero-card gate-card" method="POST" hidden>
         <div class="gate-fields">
           <p>Elegí una contraseña de al menos 10 caracteres.</p>
           <label>Contraseña nueva
@@ -65,7 +65,7 @@
           <button type="submit" class="btn green">Guardar contraseña</button>
         </div>
       </form>
-      <form id="enroll-form" class="hero-card gate-card" hidden>
+      <form id="enroll-form" class="hero-card gate-card" method="POST" hidden>
         <div>
           <h1>Código del celular</h1>
           <p>En Google Authenticator o similar, elegí “ingresar clave”. Cuenta: <strong id="enroll-account"></strong></p>
@@ -487,6 +487,6 @@
   </main>
 
   <div id="print-root"></div>
-  <script type="module" src="/admin/app.js?v=47"></script>
+  <script type="module" src="/admin/app.js?v=48"></script>
 </body>
 </html>
