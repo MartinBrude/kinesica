@@ -1,5 +1,18 @@
 Options -Indexes
-AddType application/javascript .mjs
-<Files "config.php">
+AddType application/javascript .mjs .js
+
+# Bloquear acceso directo a archivos de configuración, credenciales y copias
+<FilesMatch "^(config.*\.php|mail\.php|\.env.*|\.git.*)$">
   Require all denied
-</Files>
+</FilesMatch>
+
+<FilesMatch "\.(sql|bak|old|log)$">
+  Require all denied
+</FilesMatch>
+
+# Cabeceras de seguridad HTTP
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>

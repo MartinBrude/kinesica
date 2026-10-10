@@ -1,0 +1,138 @@
+/**
+ * Kinésica Admin - Biblioteca de Fichas y Pacientes
+ * Estilos para listado general, agrupación por paciente, búsqueda y paginación.
+ */
+
+.hero-card,
+.sheet,
+.card-row {
+  background: white;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 24px 8px 24px 8px;
+  box-shadow: var(--shadow);
+}
+
+.hero-card {
+  display: flex;
+  gap: 28px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 32px;
+}
+
+.hero-copy {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  max-width: 620px;
+}
+
+.hero-copy p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+  font-size: 15px;
+}
+
+.hero-copy code {
+  color: var(--navy);
+}
+
+.doc-icon {
+  flex: 0 0 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--pill);
+  border: 2px solid var(--accent);
+}
+
+.hero-actions,
+.sheet-tools,
+.library-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: end;
+}
+
+.library-toolbar {
+  margin: 22px 4px 12px;
+  color: var(--navy);
+  align-items: center;
+}
+
+.library-toolbar select.page-size {
+  min-width: 0;
+  width: auto;
+}
+
+.library-toolbar select,
+.library-toolbar input[type="search"] {
+  min-width: 240px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: white;
+  color: var(--ink);
+}
+
+.library-list {
+  display: grid;
+  gap: 10px;
+}
+
+.card-row {
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  border-radius: 12px;
+}
+
+.card-row h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  color: var(--navy);
+}
+
+.card-row p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.card-row .btn.ghost {
+  color: var(--primary);
+}
+
+.row-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: center;
+}
+
+.library-pager {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 4px 0;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.library-pager button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+@media (max-width: 800px) {
+  .hero-card {
+    display: grid;
+    grid-template-columns: 1fr;
+    padding: 20px 16px;
+  }
+}

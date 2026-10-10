@@ -4,9 +4,7 @@ declare(strict_types=1);
 require __DIR__ . '/lib.php';
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-if ($method !== 'GET') {
-    require_header();
-}
+require_header();
 $auth = require_auth();
 $pdo = db();
 

@@ -8,7 +8,8 @@ Este documento describe las funcionalidades incorporadas al módulo de administr
 
 Cada una de estas 4 características clínicas cuenta con comentarios delimitadores uniformes:
 - En HTML (`admin/index.html`): `<!-- FEATURE-OPTIONAL: <nombre> --> ... <!-- /FEATURE-OPTIONAL: <nombre> -->`
-- En JavaScript (`admin/ficha-rules.mjs` y `admin/app.js`): `// FEATURE-OPTIONAL: <nombre> ... // /FEATURE-OPTIONAL: <nombre>`
+- En JavaScript (`admin/ficha-rules.mjs`, `admin/modules/print.js` y `admin/modules/form.js`): `// FEATURE-OPTIONAL: <nombre> ... // /FEATURE-OPTIONAL: <nombre>`
+- Para la guía completa de la arquitectura modular y seguridad, consultar [ARCHITECTURE.md](file:///Users/martinbrude/Documents/kinesica/admin/ARCHITECTURE.md).
 
 ### A. Tipo de Ruido Articular (Clic vs. Crepitación)
 - **Etiqueta:** `FEATURE-OPTIONAL: tipo-ruido`

@@ -24,8 +24,33 @@ import {
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const html = fs.readFileSync(path.join(root, "admin/index.html"), "utf8");
 const php = fs.readFileSync(path.join(root, "admin/api/fichas.php"), "utf8");
-const app = fs.readFileSync(path.join(root, "admin/app.js"), "utf8");
-const css = fs.readFileSync(path.join(root, "admin/styles.css"), "utf8");
+function loadAdminJs(entryPath) {
+  const content = fs.readFileSync(entryPath, "utf8");
+  const modulesDir = path.join(path.dirname(entryPath), "modules");
+  if (!fs.existsSync(modulesDir)) return content;
+  const order = [
+    "dom.js",
+    "print.js",
+    "compare.js",
+    "form.js",
+    "library.js",
+    "auth.js",
+    "api.js",
+  ];
+  const moduleContents = order
+    .map((file) => path.join(modulesDir, file))
+    .filter((file) => fs.existsSync(file))
+    .map((file) => fs.readFileSync(file, "utf8"));
+  return [content, ...moduleContents].join("\n");
+}
+const app = loadAdminJs(path.join(root, "admin/app.js"));
+function loadCss(filePath) {
+  const content = fs.readFileSync(filePath, "utf8");
+  return content.replace(/@import\s+["'](\.[^"']+)["'];/g, (_, rel) => {
+    return loadCss(path.resolve(path.dirname(filePath), rel));
+  });
+}
+const css = loadCss(path.join(root, "admin/styles.css"));
 
 const empty = missingFields({});
 assert.deepEqual(

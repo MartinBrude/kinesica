@@ -1,0 +1,338 @@
+/**
+ * Kinésica Admin - Formulario Clínico de ATM
+ * Estilos para el formulario por pasos, paneles diagnósticos, escala EVA y controles.
+ */
+
+.form-nav {
+  margin: 0 0 12px;
+}
+
+.form-nav .btn.ghost {
+  color: var(--primary);
+  padding-left: 0;
+}
+
+.steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+
+.steps button {
+  position: relative;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.steps button.active {
+  background: var(--primary);
+  color: white;
+}
+
+.step-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ef4444;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.step-dot[hidden] {
+  display: none;
+}
+
+.input-error {
+  border-color: #ef4444 !important;
+  background-color: #fef2f2 !important;
+}
+
+.sheet {
+  padding: 18px;
+}
+
+.sheet h2,
+.block h3,
+fieldset legend,
+.field-label {
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+.sheet h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0 14px;
+  font-size: 13px;
+  color: var(--navy);
+}
+
+.panel,
+.block,
+fieldset.cdi {
+  background: var(--sky);
+  color: var(--navy);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px 18px 18px;
+  margin-bottom: 12px;
+}
+
+.block h3,
+fieldset legend {
+  font-weight: 700;
+  margin: 0 0 12px;
+  color: var(--navy);
+}
+
+fieldset {
+  border: 0;
+  margin: 0 0 22px;
+  padding: 0;
+  min-width: 0;
+}
+
+.panel > fieldset + label {
+  margin-top: 6px;
+}
+
+.grid-2,
+.grid-3,
+.muscle-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.grid-2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.grid-3 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.muscle-grid {
+  grid-template-columns: 1fr 1fr;
+}
+
+.panel > label,
+.panel .grid-2 > label,
+.panel .grid-3 > label,
+.block > label {
+  display: grid;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  color: var(--navy);
+}
+
+label.check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0;
+  color: var(--ink);
+}
+
+input[type="text"],
+input[type="password"],
+input[type="date"],
+input:not([type]),
+textarea,
+input[inputmode] {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: white;
+  border-radius: 12px;
+  padding: 11px 12px;
+  color: var(--ink);
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+  font-size: 14px;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pills button {
+  border: 1px solid var(--line);
+  background: white;
+  color: var(--navy);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 14px;
+}
+
+.pills button.on {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.follow {
+  display: contents;
+}
+
+.follow[hidden] {
+  display: none;
+}
+
+.inline-label,
+.field-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.habitos-block {
+  margin-bottom: 12px;
+}
+
+.habit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.muscle {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #d5e4ee;
+}
+
+.muscle span {
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.eva-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.eva-head strong {
+  font-size: 14px;
+}
+
+.eva-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.eva-badge[data-level="zero"] {
+  background: #e6f7f3;
+  color: #0d9488;
+}
+
+.eva-badge[data-level="mild"] {
+  background: #e6f7f3;
+  color: #10b981;
+}
+
+.eva-badge[data-level="moderate"] {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.eva-badge[data-level="severe"] {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+input[type="range"] {
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(to right, #10b981 0%, #2ebfa5 30%, #f59e0b 60%, #dc2626 100%);
+  accent-color: var(--navy);
+  margin: 10px 0 8px;
+}
+
+.eva-scale {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.cdi .check {
+  margin: 8px 0;
+}
+
+.form-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.sheet-tools {
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+.sheet .btn.ghost {
+  color: var(--primary);
+}
+
+@media (max-width: 800px) {
+  .grid-2,
+  .grid-3,
+  .muscle-grid {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+  .steps {
+    border-radius: 16px;
+  }
+}

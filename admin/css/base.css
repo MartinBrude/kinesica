@@ -1,0 +1,219 @@
+/**
+ * Kinésica Admin - Base & Design System Tokens
+ * Define las variables CSS, reset, tipografía, topbar y componentes genéricos (botones, badges).
+ */
+
+:root {
+  --primary: #005f99;
+  --navy: #031c42;
+  --accent: #2ebfa5;
+  --accent-deep: #249a85;
+  --ink: #1f2937;
+  --muted: #4b5563;
+  --line: #c5d8e6;
+  --sky: #f2f7fa;
+  --pill: #e8f2f6;
+  --white: #fff;
+  --radius: 12px;
+  --font: "Roboto", sans-serif;
+  --shadow: 0 4px 24px rgba(0, 60, 95, 0.1), 0 1px 4px rgba(0, 40, 70, 0.05);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font);
+  color: var(--ink);
+  background: linear-gradient(180deg, #c8dce8 0%, #dce9f2 28%, #f6f9fb 62%, #fff 100%);
+  background-attachment: fixed;
+}
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 58% 42% 48% 52%;
+  filter: blur(72px);
+}
+
+body::before {
+  top: 6%;
+  left: -16%;
+  width: min(42rem, 78vw);
+  height: 26rem;
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+body::after {
+  top: 46%;
+  right: -18%;
+  width: min(36rem, 68vw);
+  height: 24rem;
+  background: color-mix(in srgb, var(--primary) 18%, transparent);
+  border-radius: 42% 58% 38% 62%;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-height: 84px;
+  padding: 14px max(20px, calc((100% - 1080px) / 2)) 16px;
+  background: #fff;
+  box-shadow: 0 1px 0 #e5eef4;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+}
+
+.brand img {
+  display: block;
+  width: 190px;
+  height: 50px;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.top-title {
+  margin: 0;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.top-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.session-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.session-name {
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.btn,
+.file-btn {
+  border: 0;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.btn.ghost {
+  background: transparent;
+  color: var(--primary);
+}
+
+.btn.solid,
+.btn.green {
+  background: var(--accent);
+  color: white;
+}
+
+.btn.green:hover,
+.btn.solid:hover {
+  background: var(--accent-deep);
+}
+
+.btn.light {
+  background: white;
+  color: var(--primary);
+  border: 1px solid #e5e7eb;
+}
+
+.btn.light:hover {
+  background: var(--pill);
+}
+
+.icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 0;
+  background: transparent;
+  color: var(--primary);
+  font-size: 18px;
+}
+
+.file-btn {
+  display: inline-flex;
+  align-items: center;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+main {
+  position: relative;
+  z-index: 5;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 36px 20px 64px;
+}
+
+.bar {
+  width: 3px;
+  height: 16px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+.empty {
+  color: var(--muted);
+  padding: 12px;
+}
+
+@media (max-width: 800px) {
+  .topbar {
+    padding-inline: 14px;
+  }
+  .top-title {
+    display: none;
+  }
+  .brand img {
+    width: 150px;
+    height: 40px;
+  }
+}
