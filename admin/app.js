@@ -10,7 +10,9 @@ import {
   CLINICIAN_DETAILS,
   patientKey,
   coerceFicha,
-} from "./ficha-rules.mjs?v=26";
+  compareFichas,
+  daysBetween,
+} from "./ficha-rules.mjs?v=27";
 
 let cache = [];
 let authed = false;
@@ -29,6 +31,7 @@ const CDI_LABELS = {
 const form = document.querySelector("#ficha");
 const libraryView = document.querySelector("#view-library");
 const formView = document.querySelector("#view-form");
+const compareView = document.querySelector("#view-compare");
 const listEl = document.querySelector("#library-list");
 const patientSelect = document.querySelector("#pdf-patient");
 const searchInput = document.querySelector("#search");
@@ -38,11 +41,29 @@ const mineButton = document.querySelector("#btn-mine");
 const eva = form.elements.eva;
 const evaValue = document.querySelector("#eva-value");
 
+const compareSelectX = document.querySelector("#compare-select-x");
+const compareSelectY = document.querySelector("#compare-select-y");
+const compareSwapBtn = document.querySelector("#btn-compare-swap");
+const compareBackBtn = document.querySelector("#btn-compare-back");
+const comparePdfBtn = document.querySelector("#btn-compare-pdf");
+const compareFilterBtn = document.querySelector("#btn-compare-only-changed");
+const comparePatientName = document.querySelector("#compare-patient-name");
+const comparePatientMeta = document.querySelector("#compare-patient-meta");
+const compareBanner = document.querySelector("#compare-banner");
+const compareKpis = document.querySelector("#compare-kpis");
+const compareSections = document.querySelector("#compare-sections");
+const compareFormBtn = document.querySelector("#btn-compare-form");
+
 let step = 0;
 let mineDefaultApplied = false;
 let onlyMine = false;
 let currentId = null;
 const singles = {};
+
+let comparePatient = null;
+let comparePreviousView = "library";
+let compareFilterOnlyChanged = false;
+let currentCompareResult = null;
 
 let grouped = false;
 let focusedPatient = null;
@@ -82,6 +103,7 @@ function setGateMessage(el, text, info) {
 function showGate(data) {
   document.querySelector("#view-library").hidden = true;
   document.querySelector("#view-form").hidden = true;
+  if (compareView) compareView.hidden = true;
   document.querySelector("#view-gate").hidden = false;
   document.querySelector("#btn-logout").hidden = true;
   document.querySelector("#session-name").hidden = true;
@@ -186,6 +208,12 @@ function fillForm(data) {
   syncFollowups();
   syncEva();
   updateStepValidation();
+  const pSessions = (data.dni || data.nombre)
+    ? loadAll().filter((f) => patientKey(f) === patientKey(data))
+    : [];
+  if (compareFormBtn) {
+    compareFormBtn.hidden = pSessions.length < 2;
+  }
 }
 
 function syncAge() {
@@ -249,6 +277,7 @@ function showStep(index) {
 
 function showLibrary() {
   formView.hidden = true;
+  if (compareView) compareView.hidden = true;
   libraryView.hidden = false;
   renderLibrary();
 }
@@ -264,6 +293,7 @@ function formState() {
 
 function showForm() {
   libraryView.hidden = true;
+  if (compareView) compareView.hidden = true;
   formView.hidden = false;
   showStep(step);
   formBaseline = formState();
@@ -334,7 +364,18 @@ function fichaRow(item) {
   json.className = "btn light";
   json.textContent = "JSON";
   json.addEventListener("click", () => downloadJSON(item));
-  actions.append(open, again, json, pdf, del);
+  const allPatientSessions = loadAll().filter((f) => patientKey(f) === patientKey(item));
+  if (allPatientSessions.length >= 2) {
+    const comp = document.createElement("button");
+    comp.type = "button";
+    comp.className = "btn light";
+    comp.textContent = "Comparar";
+    comp.title = "Comparar evolución de este paciente";
+    comp.addEventListener("click", () => showCompare(patientKey(item), item.id));
+    actions.append(open, again, comp, json, pdf, del);
+  } else {
+    actions.append(open, again, json, pdf, del);
+  }
   return row;
 }
 
@@ -361,6 +402,10 @@ function renderLibrary() {
 
   listEl.innerHTML = "";
   if (focusedPatient) {
+    const bar = document.createElement("div");
+    bar.style.display = "flex";
+    bar.style.gap = "8px";
+    bar.style.marginBottom = "14px";
     const back = document.createElement("button");
     back.type = "button";
     back.className = "btn light";
@@ -370,7 +415,18 @@ function renderLibrary() {
       page = 0;
       renderLibrary();
     });
-    listEl.append(back);
+    bar.append(back);
+
+    const fSessions = loadAll().filter((f) => patientKey(f) === focusedPatient);
+    if (fSessions.length >= 2) {
+      const comp = document.createElement("button");
+      comp.type = "button";
+      comp.className = "btn light";
+      comp.textContent = "Comparar evolución";
+      comp.addEventListener("click", () => showCompare(focusedPatient));
+      bar.append(comp);
+    }
+    listEl.append(bar);
   }
   pageSizeSelect.hidden = items.length <= 20;
   if (items.length <= 20) page = 0;
@@ -420,7 +476,20 @@ function renderLibrary() {
           .then(() => refresh())
           .catch((error) => { if (!error.auth) window.alert(error.message); });
       });
-      row.querySelector(".row-controls").append(open, del);
+      if (sessions.length >= 2) {
+        const comp = document.createElement("button");
+        comp.type = "button";
+        comp.className = "btn light";
+        comp.textContent = "Comparar";
+        comp.title = "Comparar evolución de este paciente";
+        comp.addEventListener("click", (e) => {
+          e.stopPropagation();
+          showCompare(key);
+        });
+        row.querySelector(".row-controls").append(open, comp, del);
+      } else {
+        row.querySelector(".row-controls").append(open, del);
+      }
       row.addEventListener("click", (event) => {
         if (event.target.closest("button")) return;
         focusedPatient = key;
@@ -725,6 +794,389 @@ function syncMineButton() {
   mineButton.textContent = onlyMine ? "Ver todos los pacientes" : "Ver solo mis pacientes";
   mineButton.classList.toggle("green", onlyMine);
   mineButton.classList.toggle("light", !onlyMine);
+}
+
+function escapeHtml(str) {
+  if (str == null) return "";
+  return String(str)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function showCompare(pKey, preferredXId, preferredYId) {
+  comparePreviousView = formView.hidden ? "library" : "form";
+  libraryView.hidden = true;
+  formView.hidden = true;
+  if (compareView) compareView.hidden = false;
+  comparePatient = pKey;
+  populateCompareSessions(pKey, preferredXId, preferredYId);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function populateCompareSessions(pKey, preferredXId, preferredYId) {
+  const patientSessions = loadAll()
+    .filter((f) => patientKey(f) === pKey)
+    .sort((a, b) => (a.fechaSesion || "").localeCompare(b.fechaSesion || ""));
+
+  if (!patientSessions.length) {
+    if (compareBanner) {
+      compareBanner.className = "compare-banner is-same-session";
+      compareBanner.textContent = "No se encontraron sesiones para este paciente.";
+    }
+    if (compareKpis) compareKpis.innerHTML = "";
+    if (compareSections) compareSections.innerHTML = "";
+    return;
+  }
+
+  const latestSession = patientSessions[patientSessions.length - 1];
+  const patientName = latestSession.nombre || "Paciente";
+  const patientDni = latestSession.dni || "—";
+  if (comparePatientName) {
+    comparePatientName.innerHTML = `<span class="bar"></span>Evolución: ${escapeHtml(patientName)}`;
+  }
+  if (comparePatientMeta) {
+    comparePatientMeta.textContent = `DNI ${patientDni} · ${patientSessions.length} ${patientSessions.length === 1 ? "sesión registrada" : "sesiones registradas"}`;
+  }
+
+  if (compareSelectX) compareSelectX.innerHTML = "";
+  if (compareSelectY) compareSelectY.innerHTML = "";
+
+  patientSessions.forEach((s, idx) => {
+    const label = `Sesión ${idx + 1} (${formatDate(s.fechaSesion)}) - ${s.profesionalNombre || "Sin prof."}`;
+    const optX = document.createElement("option");
+    optX.value = s.id;
+    optX.textContent = label;
+    if (compareSelectX) compareSelectX.append(optX);
+
+    const optY = document.createElement("option");
+    optY.value = s.id;
+    optY.textContent = label;
+    if (compareSelectY) compareSelectY.append(optY);
+  });
+
+  if (patientSessions.length >= 2) {
+    if (preferredXId && preferredYId) {
+      if (compareSelectX) compareSelectX.value = preferredXId;
+      if (compareSelectY) compareSelectY.value = preferredYId;
+    } else if (preferredXId) {
+      const idx = patientSessions.findIndex((s) => s.id === preferredXId);
+      if (idx > 0) {
+        if (compareSelectX) compareSelectX.value = patientSessions[idx - 1].id;
+        if (compareSelectY) compareSelectY.value = preferredXId;
+      } else {
+        if (compareSelectX) compareSelectX.value = preferredXId;
+        if (compareSelectY) compareSelectY.value = patientSessions[patientSessions.length - 1].id;
+      }
+    } else {
+      if (compareSelectX) compareSelectX.value = patientSessions[0].id;
+      if (compareSelectY) compareSelectY.value = patientSessions[patientSessions.length - 1].id;
+    }
+  } else {
+    if (compareSelectX) compareSelectX.value = patientSessions[0].id;
+    if (compareSelectY) compareSelectY.value = patientSessions[0].id;
+  }
+
+  renderCompareContent();
+}
+
+function renderCompareContent() {
+  if (!compareSelectX || !compareSelectY) return;
+  const idX = compareSelectX.value;
+  const idY = compareSelectY.value;
+  const sessionX = loadAll().find((f) => f.id === idX);
+  const sessionY = loadAll().find((f) => f.id === idY);
+
+  if (!sessionX || !sessionY) {
+    if (compareBanner) {
+      compareBanner.className = "compare-banner is-same-session";
+      compareBanner.textContent = "Seleccioná dos sesiones para comparar.";
+    }
+    if (compareKpis) compareKpis.innerHTML = "";
+    if (compareSections) compareSections.innerHTML = "";
+    return;
+  }
+
+  const isSame = idX === idY;
+  const res = compareFichas(sessionX, sessionY);
+  currentCompareResult = res;
+
+  if (compareBanner) {
+    if (isSame) {
+      compareBanner.className = "compare-banner is-same-session";
+      compareBanner.innerHTML = `<span><strong>Misma sesión seleccionada (${formatDate(sessionX.fechaSesion)}):</strong> Elegí una sesión distinta en «Sesión base» o «Sesión comparada» para ver la evolución.</span>`;
+    } else {
+      compareBanner.className = "compare-banner";
+      const daysLabel = res.daysBetween != null ? `Lapso transcurrido: <strong>${res.daysBetween} días</strong>` : "Sin fechas comparables";
+      const changesLabel = res.totalChanged === 0
+        ? "<strong>Sin modificaciones registradas entre ambas sesiones</strong>"
+        : `<strong>${res.totalChanged} ${res.totalChanged === 1 ? "cambio registrado" : "cambios registrados"}</strong>`;
+      compareBanner.innerHTML = `
+        <span>Comparando <strong>Sesión del ${formatDate(res.sessionX.fechaSesion)}</strong> (base) vs <strong>Sesión del ${formatDate(res.sessionY.fechaSesion)}</strong> (comparada)</span>
+        <span>${daysLabel} · ${changesLabel}</span>
+      `;
+    }
+  }
+
+  renderCompareKpis(res);
+  renderCompareSections(res);
+}
+
+function renderCompareKpis(res) {
+  if (!compareKpis) return;
+  compareKpis.innerHTML = "";
+  const kpis = [
+    { title: "Dolor (EVA)", data: res.kpis.eva, isEva: true },
+    { title: "Apertura libre", data: res.kpis.aperturaLibre, unit: "mm" },
+    { title: "Apertura con dolor", data: res.kpis.aperturaDolor, unit: "mm" },
+    { title: "Ruidos articulares", data: res.kpis.ruidos },
+  ];
+
+  kpis.forEach(({ title, data, unit = "", isEva }) => {
+    if (!data) return;
+    const card = document.createElement("div");
+    card.className = "compare-kpi-card";
+
+    const prevStr = data.previous || "—";
+    const currStr = data.current || "—";
+    const deltaStr = data.delta != null ? ` (${data.delta > 0 ? "+" : ""}${data.delta} ${unit})` : "";
+
+    let trendClass = "same";
+    let trendText = "Sin variación";
+    if (data.trend === "better") {
+      trendClass = "better";
+      trendText = isEva || title.includes("Apertura") ? "Mejora clínica" : "Mejora";
+    } else if (data.trend === "worse") {
+      trendClass = "worse";
+      trendText = "Empeoramiento";
+    }
+
+    card.innerHTML = `
+      <div class="kpi-label">${title}</div>
+      <div class="kpi-values">
+        <span class="kpi-val-prev" title="Sesión base">${escapeHtml(prevStr)}</span>
+        <span class="kpi-arrow">➔</span>
+        <span class="kpi-val-curr" title="Sesión comparada">${escapeHtml(currStr)}</span>
+      </div>
+      <div class="kpi-trend-pill ${trendClass}">${trendText}${deltaStr}</div>
+    `;
+    compareKpis.append(card);
+  });
+}
+
+function renderCompareSections(res) {
+  if (!compareSections) return;
+  compareSections.innerHTML = "";
+
+  res.sections.forEach((sec) => {
+    const secBox = document.createElement("section");
+    secBox.className = "diff-section";
+
+    const changedCount = sec.fields.filter((f) => f.changed).length;
+    const badgeClass = changedCount > 0 ? "has-changes" : "no-changes";
+    const badgeText = changedCount > 0
+      ? `${changedCount} ${changedCount === 1 ? "cambio" : "cambios"}`
+      : "Sin cambios";
+
+    secBox.innerHTML = `
+      <header class="diff-section-head">
+        <h3>${escapeHtml(sec.title)}</h3>
+        <span class="diff-count-badge ${badgeClass}">${badgeText}</span>
+      </header>
+      <div class="diff-rows-list"></div>
+    `;
+
+    const list = secBox.querySelector(".diff-rows-list");
+
+    sec.fields.forEach((field) => {
+      const row = document.createElement("div");
+      row.className = `diff-row ${field.changed ? "is-changed" : "is-same"}`;
+
+      if (field.changed) {
+        const deltaHtml = field.delta != null
+          ? `<span class="diff-delta ${field.trend}">(${field.delta > 0 ? "+" : ""}${field.delta} ${field.unit || ""})</span>`
+          : "";
+        const trendHtml = field.trend === "better"
+          ? `<span class="diff-trend trend-better">Mejora</span>`
+          : (field.trend === "worse" ? `<span class="diff-trend trend-worse">Empeoramiento</span>` : "");
+
+        row.innerHTML = `
+          <div class="diff-field-name">
+            <span>${escapeHtml(field.label)}</span>
+            <span class="diff-badge-changed">Modificado</span>
+          </div>
+          <div class="diff-body">
+            <div class="diff-values">
+              <span class="diff-from" title="Sesión base (X)">${escapeHtml(field.previous || "—")}</span>
+              <span class="diff-arrow">➔</span>
+              <span class="diff-to" title="Sesión comparada (Y)">${escapeHtml(field.current || "—")}</span>
+            </div>
+            ${deltaHtml}
+            ${trendHtml}
+          </div>
+        `;
+      } else {
+        row.innerHTML = `
+          <div class="diff-field-name">
+            <span>${escapeHtml(field.label)}</span>
+          </div>
+          <div class="diff-body">
+            <span class="diff-curr-same">${escapeHtml(field.current || "—")}</span>
+            <span class="diff-same-tag">Sin cambios</span>
+          </div>
+        `;
+      }
+
+      list.append(row);
+    });
+
+    compareSections.append(secBox);
+  });
+}
+
+function buildComparePrintSheet(res) {
+  const sheet = node("article", "print-sheet pf-compare");
+
+  const head = node("header", "pf-head");
+  const brand = node("div", "pf-brand");
+  const logo = document.createElement("img");
+  logo.src = document.querySelector(".brand img")?.currentSrc || "/admin/logo.png";
+  logo.alt = "Kinésica";
+  const titles = node("div", "pf-titles");
+  titles.append(
+    node("h1", "", "Evolución clínica de ATM · Comparativa"),
+    node("p", "pf-sub", `Evaluación comparativa entre sesiones · Lapso: ${res.daysBetween != null ? `${res.daysBetween} días` : "—"}`),
+  );
+  brand.append(logo, titles);
+  const session = node("div", "pf-session");
+  session.append(
+    node("span", "", "Sesión Y vs Sesión X"),
+    node("strong", "", `${formatDate(res.sessionX.fechaSesion)} ➔ ${formatDate(res.sessionY.fechaSesion)}`),
+  );
+  head.append(brand, session);
+
+  const who = node("section", "pf-who");
+  who.append(node("h2", "pf-name", res.patient.nombre || "Sin nombre"));
+  add(who, grid([
+    ["Documento (DNI)", res.patient.dni || "—"],
+    ["Sesión base (X)", `${formatDate(res.sessionX.fechaSesion)} · ${res.sessionX.profesionalNombre || "Sin prof."}`],
+    ["Sesión comparada (Y)", `${formatDate(res.sessionY.fechaSesion)} · ${res.sessionY.profesionalNombre || "Sin prof."}`],
+    ["Cambios detectados", `${res.totalChanged} modificaciones de estado`],
+  ]));
+
+  const kpiSection = node("section", "pf-section");
+  kpiSection.append(node("h2", "", "Indicadores clínicos clave (KPIs)"));
+  const kpiGrid = node("div", "pf-compare-kpi-grid");
+  const kpiItems = [
+    { label: "Dolor (EVA)", val: `${res.kpis.eva.previous} ➔ ${res.kpis.eva.current}` },
+    { label: "Apertura libre", val: `${res.kpis.aperturaLibre.previous} ➔ ${res.kpis.aperturaLibre.current}` },
+    { label: "Apertura con dolor", val: `${res.kpis.aperturaDolor.previous} ➔ ${res.kpis.aperturaDolor.current}` },
+    { label: "Ruidos articulares", val: `${res.kpis.ruidos.previous} ➔ ${res.kpis.ruidos.current}` },
+  ];
+  kpiItems.forEach((it) => {
+    const kpiEl = node("div", "pf-compare-kpi");
+    kpiEl.append(node("span", "", it.label), node("strong", "", it.val));
+    kpiGrid.append(kpiEl);
+  });
+  kpiSection.append(kpiGrid);
+
+  const tableSection = node("section", "pf-section");
+  tableSection.append(node("h2", "", "Detalle comparativo por sección"));
+  const table = node("table", "pf-compare-table");
+  const thead = node("thead");
+  thead.innerHTML = `<tr><th>Sección / Parámetro</th><th>Sesión base (${formatDate(res.sessionX.fechaSesion)})</th><th>Sesión actual (${formatDate(res.sessionY.fechaSesion)})</th><th>Estado</th></tr>`;
+  table.append(thead);
+  const tbody = node("tbody");
+
+  res.sections.forEach((sec) => {
+    const headerRow = node("tr");
+    headerRow.innerHTML = `<td colspan="4" style="background:#f8fafc; font-weight:700; color:#031c42; padding:6px 8px;">${escapeHtml(sec.title)}</td>`;
+    tbody.append(headerRow);
+
+    sec.fields.forEach((f) => {
+      const tr = node("tr", f.changed ? "is-changed" : "");
+      const deltaText = f.delta != null ? ` (${f.delta > 0 ? "+" : ""}${f.delta} ${f.unit || ""})` : "";
+      const statusText = f.changed
+        ? (f.trend === "better" ? `Mejora${deltaText}` : (f.trend === "worse" ? `Empeoramiento${deltaText}` : `Modificado${deltaText}`))
+        : "Sin cambios";
+
+      tr.innerHTML = `
+        <td style="padding-left:14px;">${escapeHtml(f.label)}</td>
+        <td>${escapeHtml(f.previous || "—")}</td>
+        <td>${escapeHtml(f.current || "—")}</td>
+        <td><strong>${statusText}</strong></td>
+      `;
+      tbody.append(tr);
+    });
+  });
+  table.append(tbody);
+  tableSection.append(table);
+
+  const foot = node("footer", "pf-foot");
+  foot.append(
+    node("span", "", "Informe comparativo de evolución clínica · Kinésica ATM"),
+    node("span", "", "Charcas 3889, Palermo, CABA · +54 (11) 6156-4311"),
+  );
+
+  sheet.append(head, who, kpiSection, tableSection, foot);
+  return sheet;
+}
+
+async function printCompare(res) {
+  if (!res) return;
+  const root = document.querySelector("#print-root");
+  root.replaceChildren();
+  root.append(buildComparePrintSheet(res));
+  const previousTitle = document.title;
+  document.title = `Evolución ATM - ${res.patient.nombre || "Paciente"} - ${formatDate(res.sessionX.fechaSesion)} vs ${formatDate(res.sessionY.fechaSesion)}`;
+  await Promise.all([...root.querySelectorAll("img")].map((img) => (img.decode ? img.decode() : Promise.resolve()).catch(() => {})));
+  window.print();
+  setTimeout(() => { document.title = previousTitle; }, 1000);
+}
+
+if (compareSwapBtn) {
+  compareSwapBtn.addEventListener("click", () => {
+    const curX = compareSelectX.value;
+    const curY = compareSelectY.value;
+    compareSelectX.value = curY;
+    compareSelectY.value = curX;
+    renderCompareContent();
+  });
+}
+if (compareSelectX) compareSelectX.addEventListener("change", renderCompareContent);
+if (compareSelectY) compareSelectY.addEventListener("change", renderCompareContent);
+if (compareBackBtn) {
+  compareBackBtn.addEventListener("click", () => {
+    if (compareView) compareView.hidden = true;
+    if (comparePreviousView === "form") {
+      formView.hidden = false;
+    } else {
+      libraryView.hidden = false;
+      renderLibrary();
+    }
+  });
+}
+if (comparePdfBtn) {
+  comparePdfBtn.addEventListener("click", () => {
+    if (currentCompareResult) printCompare(currentCompareResult);
+  });
+}
+if (compareFilterBtn) {
+  compareFilterBtn.addEventListener("click", () => {
+    compareFilterOnlyChanged = !compareFilterOnlyChanged;
+    const compSheet = document.querySelector(".compare-sheet");
+    if (compSheet) compSheet.classList.toggle("filter-only-changed", compareFilterOnlyChanged);
+    compareFilterBtn.textContent = compareFilterOnlyChanged ? "Ver todos los campos" : "Solo cambios";
+    compareFilterBtn.classList.toggle("solid", compareFilterOnlyChanged);
+  });
+}
+if (compareFormBtn) {
+  compareFormBtn.addEventListener("click", () => {
+    const currentItem = readForm();
+    showCompare(patientKey(currentItem), currentId);
+  });
 }
 
 document.querySelectorAll("[data-single]").forEach((group) => {

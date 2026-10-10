@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=30">
+  <link rel="stylesheet" href="/admin/styles.css?v=31">
 </head>
 <body>
   <header class="topbar">
@@ -129,6 +129,7 @@
         <div class="sheet-tools">
           <button type="button" class="btn light" id="btn-example">Cargar ejemplo</button>
           <button type="button" class="btn light" id="btn-clear">Vaciar formulario</button>
+          <button type="button" class="btn light" id="btn-compare-form" hidden>Comparar evolución</button>
           <button type="button" class="btn light" id="btn-export-one">Exportar JSON</button>
           <button type="button" class="btn green" id="btn-pdf-one">Imprimir / Descargar PDF</button>
         </div>
@@ -428,10 +429,47 @@
           <button type="submit" class="btn green">Guardar ficha</button>
         </div>
       </form>
+    <section id="view-compare" class="view" hidden>
+      <div class="form-nav">
+        <button type="button" class="btn ghost" id="btn-compare-back">← Volver</button>
+      </div>
+
+      <div class="sheet compare-sheet">
+        <div class="compare-header">
+          <div class="compare-title-block">
+            <h2 id="compare-patient-name"><span class="bar"></span>Comparativa de evolución</h2>
+            <p id="compare-patient-meta" class="compare-subhead"></p>
+          </div>
+          <div class="sheet-tools">
+            <button type="button" class="btn light" id="btn-compare-only-changed" data-filter="all">Solo cambios</button>
+            <button type="button" class="btn green" id="btn-compare-pdf">Imprimir / Descargar PDF</button>
+          </div>
+        </div>
+
+        <div class="compare-session-picker">
+          <div class="compare-picker-col">
+            <label for="compare-select-x">Sesión base (X)</label>
+            <select id="compare-select-x"></select>
+          </div>
+          <button type="button" class="btn light compare-swap-btn" id="btn-compare-swap" title="Intercambiar sesiones base y comparada" aria-label="Intercambiar sesiones">
+            ⇄ Invertir
+          </button>
+          <div class="compare-picker-col">
+            <label for="compare-select-y">Sesión comparada (Y)</label>
+            <select id="compare-select-y"></select>
+          </div>
+        </div>
+
+        <div id="compare-banner" class="compare-banner"></div>
+
+        <div id="compare-kpis" class="compare-kpis"></div>
+
+        <div id="compare-sections" class="compare-sections"></div>
+      </div>
     </section>
   </main>
 
   <div id="print-root"></div>
-  <script type="module" src="/admin/app.js?v=38"></script>
+  <script type="module" src="/admin/app.js?v=39"></script>
 </body>
 </html>

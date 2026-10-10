@@ -111,3 +111,32 @@ Cada una de estas 4 características clínicas cuenta con comentarios delimitado
 ### D. Seguridad y Autorización en Backend (`admin/api/fichas.php`)
 - **Control de acceso en `DELETE` y `UPDATE`:** Se verifica que el usuario autenticado sea el dueño de la ficha o el administrador (`martin`), mitigando posibles vulnerabilidades de manipulación cruzada de registros (IDOR).
 - **Saneamiento en servidor:** Forzado en PHP para que `eva` sea entero 0..10 y `cdi` sea array estricto antes de guardarse en el payload JSON.
+
+---
+
+## 4. Comparador de Sesión a Sesión (Evolución de Paciente)
+
+- **Propósito:** Permitir al kinesiólogo evaluar la evolución clínica cuantitativa y cualitativa de un paciente comparando cualquier par de sesiones (Sesión X vs. Sesión Y).
+- **Vista dedicada (`#view-compare`):**
+  - Vista independiente que no contamina el formulario de carga ni la biblioteca principal.
+  - Cuenta con selector dinámico de **Sesión base (X)** y **Sesión comparada (Y)**, botón **⇄ Invertir** para alternar origen/destino al instante, y botón **← Volver** para regresar al contexto previo (formulario o biblioteca).
+- **Banner de contexto clínico:**
+  - Informa el lapso transcurrido en días (`daysBetween`) entre ambas sesiones y el total de modificaciones detectadas.
+- **Tarjetas de Indicadores Clave (KPIs):**
+  - **Dolor (EVA):** Muestra el cambio de puntaje sobre 10, la variación numérica $\Delta$ y el badge de tendencia (Mejora clínica en verde si desciende el dolor, o Empeoramiento en rojo si asciende).
+  - **Apertura libre de dolor:** Variación en milímetros y badge de mejoría al aumentar el rango sin dolor.
+  - **Apertura máxima con dolor:** Variación en milímetros.
+  - **Ruidos articulares:** Detección de remisión o aparición de ruidos con su clasificación.
+- **Detalle exhaustivo campo por campo (5 secciones):**
+  - Muestra absolutamente todos los parámetros de la ficha clínica organizados en las 5 secciones estándar.
+  - **Campos modificados:** Se destacan visualmente (`.is-changed`) mostrando el valor previo, flecha de transición `➔`, el valor actual, el delta numérico con su unidad (`mm`, `/10`) y la etiqueta de tendencia (*Mejora* o *Empeoramiento*).
+  - **Campos sin cambios:** Se presentan con su valor actual legible y la indicación *"Sin cambios"*, evitando ruido visual.
+  - **Filtro rápido:** Botón *"Solo cambios"* que permite ocultar instantáneamente los campos sin variación para una lectura rápida.
+- **Informe Impreso / PDF Comparativo:**
+  - Botón **Imprimir / Descargar PDF** que renderiza una hoja institucional de evolución A4 (`.pf-compare`) con encabezado, datos del paciente, resumen de KPIs y tabla comparativa detallada por sección.
+- **Accesos integrados:**
+  - Desde la vista agrupada de pacientes: botón *"Comparar"* en cada paciente con $\ge 2$ sesiones.
+  - Desde el paciente enfocado: botón *"Comparar evolución"* en la barra superior.
+  - Desde cada tarjeta de ficha individual: botón *"Comparar"*.
+  - Desde la barra de herramientas del formulario (`#view-form`): botón *"Comparar evolución"* que se activa automáticamente cuando el paciente en edición cuenta con sesiones históricas.
+

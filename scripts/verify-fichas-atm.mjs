@@ -16,12 +16,15 @@ import {
   coerceFicha,
   normalizeDni,
   patientKey,
+  compareFichas,
+  daysBetween,
 } from "../admin/ficha-rules.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const html = fs.readFileSync(path.join(root, "admin/index.html"), "utf8");
 const php = fs.readFileSync(path.join(root, "admin/api/fichas.php"), "utf8");
 const app = fs.readFileSync(path.join(root, "admin/app.js"), "utf8");
+const css = fs.readFileSync(path.join(root, "admin/styles.css"), "utf8");
 
 const empty = missingFields({});
 assert.deepEqual(
@@ -174,4 +177,80 @@ assert.equal(
 const missingKeys = missingFieldKeys({});
 assert.deepEqual(missingKeys, REQUIRED_FIELDS.map(([k]) => k));
 
+// Verificación de Comparador de Sesiones (Feature sesión a sesión)
+assert.equal(daysBetween("2026-09-01", "2026-09-15"), 14);
+assert.equal(daysBetween("2026-09-15", "2026-09-01"), 14);
+assert.equal(daysBetween("", "2026-09-15"), null);
+
+const sesion1 = {
+  id: "ses-1",
+  nombre: "Carolina Méndez",
+  dni: "34.205.109",
+  fechaSesion: "2026-09-01",
+  eva: 8,
+  aperturaLibre: 28,
+  aperturaDolor: 38,
+  ruidos: "Sí",
+  ruidosDer: true,
+  contacto: "Prematuro anterior",
+  desviacion: "Sí",
+  desvDer: true,
+  cdi: ["I.a", "II.a"],
+};
+
+const sesion2 = {
+  id: "ses-2",
+  nombre: "Carolina Méndez",
+  dni: "34205109",
+  fechaSesion: "2026-09-15",
+  eva: 3,
+  aperturaLibre: 38,
+  aperturaDolor: 44,
+  ruidos: "No",
+  contacto: "Prematuro anterior",
+  desviacion: "No",
+  cdi: ["I.a"],
+};
+
+const diffRes = compareFichas(sesion1, sesion2);
+assert.equal(diffRes.daysBetween, 14);
+assert.equal(diffRes.kpis.eva.delta, -5);
+assert.equal(diffRes.kpis.eva.trend, "better", "Dolor EVA en baja es mejoría clínica");
+assert.equal(diffRes.kpis.aperturaLibre.delta, 10);
+assert.equal(diffRes.kpis.aperturaLibre.trend, "better", "Mayor apertura libre es mejoría clínica");
+assert.equal(diffRes.kpis.ruidos.changed, true);
+assert.equal(diffRes.kpis.ruidos.trend, "better", "Cesación de ruidos es mejoría");
+assert.equal(diffRes.sections.length, 5, "Debe tener las 5 secciones clínicas");
+
+const seccionDolor = diffRes.sections.find((s) => s.id === "dolor");
+assert.ok(seccionDolor, "Debe existir sección dolor y oclusión");
+const campoContacto = seccionDolor.fields.find((f) => f.label === "Contacto dentario");
+assert.ok(campoContacto);
+assert.equal(campoContacto.changed, false, "Contacto dentario no cambió");
+assert.equal(campoContacto.current, "Prematuro anterior", "Debe mantener el valor actual");
+
+// Verificación de interfaz y componentes
+assert.match(html, /id="view-compare"/);
+assert.match(html, /id="compare-select-x"/);
+assert.match(html, /id="compare-select-y"/);
+assert.match(html, /id="btn-compare-swap"/);
+assert.match(html, /id="btn-compare-pdf"/);
+assert.match(html, /id="btn-compare-only-changed"/);
+assert.match(html, /id="compare-kpis"/);
+assert.match(html, /id="compare-sections"/);
+assert.match(html, /id="btn-compare-form"/);
+
+assert.match(css, /\.compare-sheet/);
+assert.match(css, /\.compare-session-picker/);
+assert.match(css, /\.diff-row/);
+assert.match(css, /\.diff-badge-changed/);
+assert.match(css, /\.pf-compare/);
+
+assert.match(app, /compareFichas/);
+assert.match(app, /showCompare/);
+assert.match(app, /renderCompareContent/);
+assert.match(app, /printCompare/);
+assert.match(app, /btn-compare-swap/);
+
 console.log("fichas ATM: ok");
+
