@@ -340,6 +340,8 @@ textarea { resize: vertical; }
 }
 .pills button.on { background: var(--primary); color: white; border-color: var(--primary); }
 .row-controls { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; }
+.follow { display: contents; }
+.follow[hidden] { display: none; }
 .inline-label, .field-label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; }
 .muscle {
   display: grid;

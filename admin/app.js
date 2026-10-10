@@ -98,7 +98,9 @@ async function refresh() {
     mineDefaultApplied = true;
     syncMineButton();
   }
-  document.querySelector("#btn-seed").hidden = sessionUser.username !== "martin";
+  const onlyMartin = sessionUser.username !== "martin";
+  document.querySelector("#btn-seed").hidden = onlyMartin;
+  document.querySelector("#btn-example").hidden = onlyMartin;
   cache = await api("fichas.php");
   authed = true;
   hideGate();
@@ -166,7 +168,16 @@ function fillForm(data) {
     });
     if (data[key]) singles[key] = data[key];
   });
+  syncFollowups();
   evaValue.textContent = `${eva.value} / 10`;
+}
+
+function syncFollowups() {
+  document.querySelectorAll("[data-follow]").forEach((box) => {
+    const show = singles[box.dataset.follow] === "Sí";
+    box.hidden = !show;
+    if (!show) box.querySelectorAll("input").forEach((input) => { input.checked = false; });
+  });
 }
 
 function showStep(index) {
@@ -502,11 +513,11 @@ function buildSheet(item) {
   const atm = section("Articulación temporomandibular");
   const fases = [item.faseApertura ? "apertura" : "", item.faseCierre ? "cierre" : ""].filter(Boolean).join(" y ");
   add(atm, grid([
-    ["Ruidos articulares", [item.ruidos, side(item.ruidosIzq, item.ruidosDer), fases && `en ${fases}`].filter((part) => part && part !== "—").join(" · ")],
-    ["Dolor condilar", [item.dolorCondilar, side(item.condilarIzq, item.condilarDer)].filter((part) => part && part !== "—").join(" · ")],
+    ["Ruidos articulares", item.ruidos === "Sí" ? [item.ruidos, side(item.ruidosIzq, item.ruidosDer), fases && `en ${fases}`].filter((part) => part && part !== "—").join(" · ") : (item.ruidos || "")],
+    ["Dolor condilar", item.dolorCondilar === "Sí" ? [item.dolorCondilar, side(item.condilarIzq, item.condilarDer)].filter((part) => part && part !== "—").join(" · ") : (item.dolorCondilar || "")],
     ["Apertura libre de dolor", item.aperturaLibre ? `${item.aperturaLibre} mm` : ""],
     ["Apertura con dolor", item.aperturaDolor ? `${item.aperturaDolor} mm` : ""],
-    ["Desviación de trayectoria", [item.desviacion, side(item.desvIzq, item.desvDer)].filter((part) => part && part !== "—").join(" · ")],
+    ["Desviación de trayectoria", item.desviacion === "Sí" ? [item.desviacion, side(item.desvIzq, item.desvDer)].filter((part) => part && part !== "—").join(" · ") : (item.desviacion || "")],
     ["Protrusión", item.protrusion ? `${item.protrusion} mm` : ""],
     ["Lateralidades", [
       item.latIzq ? `Izq ${item.latIzq} mm` : "",
@@ -616,6 +627,7 @@ document.querySelectorAll("[data-single]").forEach((group) => {
     const next = singles[key] === btn.dataset.value ? "" : btn.dataset.value;
     singles[key] = next;
     group.querySelectorAll("button").forEach((el) => el.classList.toggle("on", el.dataset.value === next));
+    syncFollowups();
   });
 });
 
@@ -718,6 +730,7 @@ document.querySelector("#btn-clear").addEventListener("click", () => {
 });
 
 document.querySelector("#btn-example").addEventListener("click", () => {
+  if (sessionUser?.username !== "martin") return;
   const sample = blank();
   sample.id = currentId || sample.id;
   Object.assign(sample, exampleFicha());

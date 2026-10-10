@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=27">
+  <link rel="stylesheet" href="/admin/styles.css?v=28">
 </head>
 <body>
   <header class="topbar">
@@ -124,7 +124,7 @@
 
       <form id="ficha" class="sheet" autocomplete="off" novalidate>
         <div class="sheet-tools">
-          <button type="button" class="btn light" id="btn-example">Cargar ejemplo</button>
+          <button type="button" class="btn light" id="btn-example" hidden>Cargar ejemplo</button>
           <button type="button" class="btn light" id="btn-clear">Vaciar formulario</button>
           <button type="button" class="btn light" id="btn-export-one">Exportar JSON</button>
           <button type="button" class="btn green" id="btn-pdf-one">Imprimir / Descargar PDF</button>
@@ -175,12 +175,14 @@
                 <button type="button" data-value="Sí">Sí</button>
                 <button type="button" data-value="No">No</button>
               </div>
-              <span class="inline-label">Lado:</span>
-              <label class="check"><input type="checkbox" name="ruidosIzq"> Izquierdo (Izq)</label>
-              <label class="check"><input type="checkbox" name="ruidosDer"> Derecho (Der)</label>
-              <span class="inline-label">Fase del ruido:</span>
-              <label class="check"><input type="checkbox" name="faseApertura"> Apertura</label>
-              <label class="check"><input type="checkbox" name="faseCierre"> Cierre</label>
+              <span class="follow" data-follow="ruidos" hidden>
+                <span class="inline-label">Lado:</span>
+                <label class="check"><input type="checkbox" name="ruidosIzq"> Izquierdo (Izq)</label>
+                <label class="check"><input type="checkbox" name="ruidosDer"> Derecho (Der)</label>
+                <span class="inline-label">Fase del ruido:</span>
+                <label class="check"><input type="checkbox" name="faseApertura"> Apertura</label>
+                <label class="check"><input type="checkbox" name="faseCierre"> Cierre</label>
+              </span>
             </div>
           </div>
           <div class="block">
@@ -190,9 +192,11 @@
                 <button type="button" data-value="Sí">Sí</button>
                 <button type="button" data-value="No">No</button>
               </div>
-              <span class="inline-label">Lado afectado:</span>
-              <label class="check"><input type="checkbox" name="condilarIzq"> Izquierdo (Izq)</label>
-              <label class="check"><input type="checkbox" name="condilarDer"> Derecho (Der)</label>
+              <span class="follow" data-follow="dolorCondilar" hidden>
+                <span class="inline-label">Lado afectado:</span>
+                <label class="check"><input type="checkbox" name="condilarIzq"> Izquierdo (Izq)</label>
+                <label class="check"><input type="checkbox" name="condilarDer"> Derecho (Der)</label>
+              </span>
             </div>
           </div>
           <div class="block">
@@ -213,8 +217,10 @@
                     <button type="button" data-value="Sí">Sí</button>
                     <button type="button" data-value="No">No</button>
                   </div>
-                  <label class="check"><input type="checkbox" name="desvIzq"> Izq</label>
-                  <label class="check"><input type="checkbox" name="desvDer"> Der</label>
+                  <span class="follow" data-follow="desviacion" hidden>
+                    <label class="check"><input type="checkbox" name="desvIzq"> Izq</label>
+                    <label class="check"><input type="checkbox" name="desvDer"> Der</label>
+                  </span>
                 </div>
               </div>
               <label>Movimiento de protrusión (mm)
@@ -377,6 +383,6 @@
   </main>
 
   <div id="print-root"></div>
-  <script type="module" src="/admin/app.js?v=32"></script>
+  <script type="module" src="/admin/app.js?v=34"></script>
 </body>
 </html>
