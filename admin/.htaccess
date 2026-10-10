@@ -1,6 +1,10 @@
 Options -Indexes
 AddType application/javascript .mjs .js
 
+<FilesMatch "\.(js|mjs)$">
+  Header set Cache-Control "no-cache, must-revalidate"
+</FilesMatch>
+
 # Bloquear acceso directo a archivos de configuración, credenciales y copias
 <FilesMatch "^(config.*\.php|mail\.php|\.env.*|\.git.*)$">
   Require all denied

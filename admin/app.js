@@ -27,13 +27,13 @@ import {
   compareFichas,
   daysBetween,
   matchFichaSearch,
-} from "./ficha-rules.mjs";
+} from "./ficha-rules.mjs?v=50";
 
 import {
   api,
   setAuthRequiredHandler,
   formatDate,
-} from "./modules/api.js";
+} from "./modules/api.js?v=50";
 
 import {
   escapeHtml,
@@ -46,7 +46,7 @@ import {
   formatParts,
   add,
   debounce,
-} from "./modules/dom.js";
+} from "./modules/dom.js?v=50";
 
 import {
   getSessionUser,
@@ -55,7 +55,7 @@ import {
   hideGate,
   setGateMessage,
   initAuth,
-} from "./modules/auth.js";
+} from "./modules/auth.js?v=50";
 
 import {
   todayISO,
@@ -74,7 +74,7 @@ import {
   getCurrentId,
   setCurrentId,
   initForm,
-} from "./modules/form.js";
+} from "./modules/form.js?v=50";
 
 import {
   loadAll,
@@ -87,12 +87,12 @@ import {
   syncMineButton,
   downloadJSON,
   initLibrary,
-} from "./modules/library.js";
+} from "./modules/library.js?v=50";
 
 import {
   buildSheet,
   printItems,
-} from "./modules/print.js";
+} from "./modules/print.js?v=50";
 
 import {
   showCompare,
@@ -102,7 +102,7 @@ import {
   buildComparePrintSheet,
   printCompare,
   initCompare,
-} from "./modules/compare.js";
+} from "./modules/compare.js?v=50";
 
 // Re-exportar utilidades esenciales para interoperabilidad y pruebas
 export {
