@@ -8,15 +8,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=17">
+  <link rel="stylesheet" href="/admin/styles.css?v=18">
 </head>
 <body>
   <div class="navy-bar"></div>
   <header class="topbar">
     <a class="brand" href="/">
-      <img src="/admin/logo.png?v=17" alt="Kinésica" width="190" height="50">
+      <img src="/admin/logo.png?v=18" alt="Kinésica" width="190" height="50">
     </a>
-    <p class="top-title">Fichas ATM</p>
     <div class="top-actions">
       <button type="button" class="btn ghost" id="btn-logout" hidden>Salir</button>
     </div>
@@ -25,13 +24,6 @@
   <main>
     <section id="view-gate" class="view">
       <form id="login-form" class="hero-card gate-card">
-        <div class="hero-copy">
-          <span class="doc-icon" aria-hidden="true"></span>
-          <div>
-            <h1>Fichas ATM</h1>
-            <p>Ingreso del consultorio. Norberto y María, después de la contraseña, ponen el código de la app de autenticación.</p>
-          </div>
-        </div>
         <div class="gate-fields">
           <label>Usuario
             <input name="username" autocomplete="username" required>
@@ -40,7 +32,7 @@
             <input name="password" type="password" autocomplete="current-password" required>
           </label>
           <label>Código
-            <input name="code" inputmode="numeric" autocomplete="one-time-code" placeholder="6 dígitos, solo Norberto y María">
+            <input name="code" inputmode="numeric" autocomplete="one-time-code" placeholder="6 dígitos">
           </label>
           <p id="login-error" class="gate-error" hidden></p>
           <button type="submit" class="btn green">Entrar</button>
@@ -354,6 +346,6 @@
   </main>
 
   <div id="print-root"></div>
-  <script type="module" src="/admin/app.js?v=17"></script>
+  <script type="module" src="/admin/app.js?v=18"></script>
 </body>
 </html>

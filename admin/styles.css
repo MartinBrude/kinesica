@@ -265,7 +265,7 @@ label.check {
   margin: 0;
   color: var(--ink);
 }
-input[type="text"], input[type="date"], input:not([type]), textarea, input[inputmode] {
+input[type="text"], input[type="password"], input[type="date"], input:not([type]), textarea, input[inputmode] {
   width: 100%;
   border: 1px solid var(--line);
   background: white;
