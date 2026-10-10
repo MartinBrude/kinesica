@@ -13,7 +13,7 @@ import {
   REQUIRED_FIELDS,
   exampleFicha,
   patientKey,
-} from "../ficha-rules.mjs?v=53";
+} from "../ficha-rules.mjs?v=54";
 
 const form = document.querySelector("#ficha");
 const formView = document.querySelector("#view-form");

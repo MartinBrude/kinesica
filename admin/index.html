@@ -8,7 +8,21 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=53">
+  <link rel="stylesheet" href="/admin/styles.css?v=54">
+  <script>
+    (function () {
+      try {
+        if (localStorage.getItem("kinesica_logged_in") === "1") {
+          document.documentElement.classList.add("is-authenticated");
+        }
+      } catch (_) {}
+    })();
+  </script>
+  <style>
+    html.is-authenticated #view-gate {
+      display: none !important;
+    }
+  </style>
 </head>
 <body>
   <header class="topbar">
@@ -486,7 +500,39 @@
     </section>
   </main>
 
+  <script>
+    (function () {
+      try {
+        if (localStorage.getItem("kinesica_logged_in") === "1") {
+          var user = localStorage.getItem("kinesica_user_name");
+          if (user) {
+            var nameEl = document.getElementById("session-name");
+            var logoutBtn = document.getElementById("btn-logout");
+            if (nameEl) {
+              nameEl.textContent = user;
+              nameEl.hidden = false;
+            }
+            if (logoutBtn) logoutBtn.hidden = false;
+          }
+          var saved = null;
+          try {
+            saved = JSON.parse(sessionStorage.getItem("kinesica_admin_view") || "null");
+          } catch (_) {}
+          if (!saved || saved.view === "library") {
+            var lib = document.getElementById("view-library");
+            if (lib) lib.hidden = false;
+          } else if (saved.view === "form") {
+            var form = document.getElementById("view-form");
+            if (form) form.hidden = false;
+          } else if (saved.view === "compare") {
+            var comp = document.getElementById("view-compare");
+            if (comp) comp.hidden = false;
+          }
+        }
+      } catch (_) {}
+    })();
+  </script>
   <div id="print-root"></div>
-  <script type="module" src="/admin/app.js?v=53"></script>
+  <script type="module" src="/admin/app.js?v=54"></script>
 </body>
 </html>

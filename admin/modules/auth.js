@@ -4,7 +4,7 @@
  * reseteo seguro y cierre de sesión.
  */
 
-import { api } from "./api.js?v=53";
+import { api } from "./api.js?v=54";
 
 let sessionUser = null;
 let authed = false;
@@ -43,11 +43,27 @@ export function getSessionUser() {
 export function setSessionUser(user) {
   sessionUser = user;
   authed = Boolean(user);
-  if (user && sessionNameEl) {
-    sessionNameEl.textContent = user.name || user.username;
-    sessionNameEl.hidden = false;
-  } else if (sessionNameEl) {
-    sessionNameEl.hidden = true;
+  if (user) {
+    try {
+      localStorage.setItem("kinesica_logged_in", "1");
+      if (user.name || user.username) {
+        localStorage.setItem("kinesica_user_name", user.name || user.username);
+      }
+    } catch (_) {}
+    document.documentElement.classList.add("is-authenticated");
+    if (sessionNameEl) {
+      sessionNameEl.textContent = user.name || user.username;
+      sessionNameEl.hidden = false;
+    }
+  } else {
+    try {
+      localStorage.removeItem("kinesica_logged_in");
+      localStorage.removeItem("kinesica_user_name");
+    } catch (_) {}
+    document.documentElement.classList.remove("is-authenticated");
+    if (sessionNameEl) {
+      sessionNameEl.hidden = true;
+    }
   }
 }
 
@@ -71,6 +87,12 @@ export function setGateMessage(el, text, info = false) {
  */
 export function showGate(data = {}) {
   authed = false;
+  try {
+    localStorage.removeItem("kinesica_logged_in");
+    localStorage.removeItem("kinesica_user_name");
+  } catch (_) {}
+  document.documentElement.classList.remove("is-authenticated");
+
   const libraryView = document.querySelector("#view-library");
   const formView = document.querySelector("#view-form");
   const compareView = document.querySelector("#view-compare");
@@ -117,6 +139,13 @@ export function showGate(data = {}) {
  * Oculta la pantalla de acceso una vez autenticado exitosamente.
  */
 export function hideGate() {
+  document.documentElement.classList.add("is-authenticated");
+  try {
+    localStorage.setItem("kinesica_logged_in", "1");
+    if (sessionUser && (sessionUser.name || sessionUser.username)) {
+      localStorage.setItem("kinesica_user_name", sessionUser.name || sessionUser.username);
+    }
+  } catch (_) {}
   if (viewGate) viewGate.hidden = true;
   if (logoutBtn) logoutBtn.hidden = false;
   if (sessionNameEl && sessionUser) {
@@ -238,6 +267,12 @@ export function initAuth({ onSuccess, onLogout }) {
   if (logoutBtn) {
     logoutBtn.addEventListener("click", async () => {
       await api("logout.php", { method: "POST" }).catch(() => {});
+      try {
+        localStorage.removeItem("kinesica_logged_in");
+        localStorage.removeItem("kinesica_user_name");
+        sessionStorage.removeItem("kinesica_admin_view");
+      } catch (_) {}
+      document.documentElement.classList.remove("is-authenticated");
       setSessionUser(null);
       if (typeof onLogout === "function") onLogout();
       showGate({ login: true });

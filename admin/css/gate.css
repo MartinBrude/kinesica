@@ -10,8 +10,9 @@
   justify-items: center;
 }
 
-#view-gate[hidden] {
-  display: none;
+#view-gate[hidden],
+html.is-authenticated #view-gate {
+  display: none !important;
 }
 
 #view-gate .gate-card[hidden],
