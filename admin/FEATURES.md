@@ -85,3 +85,29 @@ Cada una de estas 4 características clínicas cuenta con comentarios delimitado
   - La imagen se busca en la carpeta `/admin/signatures/` (`norberto.png` y `maria.png`).
   - **Manejo de archivos:** Si la imagen aún no fue depositada en la carpeta, la interfaz oculta la imagen vacía sin mostrar errores ni iconos rotos, manteniendo la línea de firma, aclaración y matrícula listas para impresión.
 - **Ubicación:** `admin/signatures/` (con `README.md` explicativo), `admin/app.js` (en `buildSheet`) y `admin/styles.css` (en `@media print`).
+
+---
+
+## 3. Optimizaciones de Código, Tipado Estricto (DRY) y Seguridad
+
+### A. Tipado Estricto y Coerción Centralizada (`coerceFicha`)
+- **Problema previo:** Al leer del formulario o al importar archivos `.json`, los tipos de datos dependían de cómo venían en el archivo (podían contener strings en campos booleanos, valores de dolor EVA fuera de rango 0..10, o arrays malformados).
+- **Solución:** Se implementó `coerceFicha(input)` en [`admin/ficha-rules.mjs`](file:///Users/martinbrude/Documents/kinesica/admin/ficha-rules.mjs). Coacciona de forma estricta:
+  - Strings limpios con `trim()`.
+  - Booleans forzados a booleanos nativos (`true`/`false`).
+  - `eva` acotado de forma segura como entero entre `0` y `10`.
+  - `cdi` filtrado para contener únicamente strings válidos.
+  - Se aplica tanto en `readForm()` como en la importación de JSON en `#file-open` y en la persistencia del backend.
+
+### B. Normalización de Clave de Paciente (`normalizeDni` y `patientKey`)
+- **Problema previo:** Si una ficha tenía DNI `"34.205.109"` y otra `"34205109"`, se interpretaban como pacientes distintos en la agrupación y en el filtro de PDF.
+- **Solución:** `patientKey(item)` centralizado en [`admin/ficha-rules.mjs`](file:///Users/martinbrude/Documents/kinesica/admin/ficha-rules.mjs) normaliza los dígitos del DNI y el nombre en minúsculas, unificando de forma confiable todas las sesiones del mismo paciente.
+
+### C. Refactor DRY en Validación y Formateo de Texto
+- **Validación DRY:** Función `highlightMissingFields(keys)` unificada entre la navegación paso a paso (`btn-next`), la validación del paso 0 y el submit del formulario.
+- **Formateo DRY:** Helper `formatParts(parts, sep)` para simplificar la concatenación y filtrado de valores vacíos o nulos en el informe impreso.
+- **Agrupación en $O(n)$:** `renderLibrary()` reemplazó bucles anidados `map`/`filter` por un único recorrido lineal con `Map`.
+
+### D. Seguridad y Autorización en Backend (`admin/api/fichas.php`)
+- **Control de acceso en `DELETE` y `UPDATE`:** Se verifica que el usuario autenticado sea el dueño de la ficha o el administrador (`martin`), mitigando posibles vulnerabilidades de manipulación cruzada de registros (IDOR).
+- **Saneamiento en servidor:** Forzado en PHP para que `eva` sea entero 0..10 y `cdi` sea array estricto antes de guardarse en el payload JSON.

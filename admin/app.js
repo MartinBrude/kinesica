@@ -1,4 +1,16 @@
-import { exampleFicha, missingFields, emptyFicha, ownsFicha, nextSession, ageOn, REQUIRED_FIELDS, CLINICIAN_DETAILS } from "./ficha-rules.mjs?v=25";
+import {
+  exampleFicha,
+  missingFields,
+  missingFieldKeys,
+  emptyFicha,
+  ownsFicha,
+  nextSession,
+  ageOn,
+  REQUIRED_FIELDS,
+  CLINICIAN_DETAILS,
+  patientKey,
+  coerceFicha,
+} from "./ficha-rules.mjs?v=26";
 
 let cache = [];
 let authed = false;
@@ -130,23 +142,21 @@ function blank() {
 }
 
 function readForm() {
-  const data = blank();
-  data.id = currentId || data.id;
+  const raw = {
+    id: currentId || crypto.randomUUID(),
+    savedAt: new Date().toISOString(),
+    ...singles,
+  };
   const fd = new FormData(form);
-  for (const [key, value] of fd.entries()) {
-    if (key === "cdi") continue;
-    const el = form.elements[key];
-    if (el && el.type === "checkbox") data[key] = true;
-    else data[key] = value;
+  for (const [key, val] of fd.entries()) {
+    if (key !== "cdi") raw[key] = val;
   }
   for (const el of form.querySelectorAll('input[type="checkbox"]')) {
-    if (el.name !== "cdi") data[el.name] = el.checked;
+    if (el.name && el.name !== "cdi") raw[el.name] = el.checked;
   }
-  data.cdi = [...form.querySelectorAll('input[name="cdi"]:checked')].map((el) => el.value);
-  data.eva = Number(eva.value);
-  Object.assign(data, singles);
-  data.savedAt = new Date().toISOString();
-  return data;
+  raw.cdi = [...form.querySelectorAll('input[name="cdi"]:checked')].map((el) => el.value);
+  raw.eva = eva.value;
+  return coerceFicha(raw);
 }
 
 function fillForm(data) {
@@ -191,9 +201,16 @@ function syncAge() {
 
 function updateStepValidation() {
   const data = readForm();
-  const missing = missingFields(data);
+  const missingKeys = missingFieldKeys(data);
   const dot = document.querySelector('.steps button[data-step="0"] .step-dot');
-  if (dot) dot.hidden = missing.length === 0;
+  if (dot) dot.hidden = missingKeys.length === 0;
+}
+
+function highlightMissingFields(keys = []) {
+  for (const [key] of REQUIRED_FIELDS) {
+    const el = form.elements[key];
+    if (el) el.classList.toggle("input-error", keys.includes(key));
+  }
 }
 
 function evaMeta(val) {
@@ -254,12 +271,8 @@ function showForm() {
 
 function formatDate(iso) {
   if (!iso) return "Sin fecha";
-  const [y, m, d] = iso.slice(0, 10).split("-");
-  return d && m && y ? `${d}/${m}/${y}` : iso;
-}
-
-function patientKey(item) {
-  return `${(item.nombre || "").trim().toLowerCase()}|${(item.dni || "").trim()}`;
+  const [y, m, d] = String(iso).slice(0, 10).split("-");
+  return d && m && y ? `${d}/${m}/${y}` : String(iso);
 }
 
 function visibleFichas() {
@@ -369,9 +382,13 @@ function renderLibrary() {
     return;
   }
   if (grouped && !focusedPatient) {
-    const groups = [...new Map(items.map((item) => [patientKey(item), []])).keys()].map((key) => {
-      return [key, items.filter((item) => patientKey(item) === key)];
-    });
+    const groupMap = new Map();
+    for (const item of items) {
+      const key = patientKey(item);
+      if (!groupMap.has(key)) groupMap.set(key, []);
+      groupMap.get(key).push(item);
+    }
+    const groups = [...groupMap.entries()];
     const slice = pageWindow(groups);
     for (const [key, sessions] of slice) {
       const latest = sessions[0];
@@ -516,6 +533,10 @@ function prose(label, value) {
   return box;
 }
 
+function formatParts(parts, sep = " · ") {
+  return parts.filter((part) => part && part !== "—" && part !== "Sin fecha").join(sep);
+}
+
 function add(parent, child) {
   if (child) parent.append(child);
 }
@@ -543,16 +564,16 @@ function buildSheet(item) {
   add(who, grid([
     ["Documento", item.dni],
     ["Edad", item.edad ? `${item.edad} años` : ""],
-    ["Nacimiento", [formatDate(item.nacimiento), item.lugarNac].filter((part) => part && part !== "Sin fecha").join(" · ")],
+    ["Nacimiento", formatParts([formatDate(item.nacimiento), item.lugarNac])],
     ["Motivo de consulta", item.motivo],
   ]));
   // FEATURE-OPTIONAL: habitos-bruxismo
-  const habitosList = [
+  const habitosList = formatParts([
     item.habitoApretamiento ? "Apretamiento diurno" : "",
     item.habitoBruxismo ? "Bruxismo nocturno" : "",
     item.habitoMasticacionUni ? "Masticación unilateral" : "",
     item.habitoOnicofagia ? "Onicofagia / mordisqueo" : "",
-  ].filter(Boolean).join(", ");
+  ], ", ");
   if (habitosList) add(who, grid([["Hábitos / bruxismo", habitosList]]));
   // /FEATURE-OPTIONAL: habitos-bruxismo
   add(who, prose("Antecedentes clínicos", item.antecedentes));
@@ -566,16 +587,16 @@ function buildSheet(item) {
   const patronDesv = [item.desvCorregida ? "corregida en S" : "", item.deflexion ? "deflexión" : ""].filter(Boolean).join(" · ");
   // /FEATURE-OPTIONAL: patron-desviacion
   add(atm, grid([
-    ["Ruidos articulares", item.ruidos === "Sí" ? [item.ruidos, side(item.ruidosIzq, item.ruidosDer), fases && `en ${fases}`, tiposRuido && `(${tiposRuido})`].filter((part) => part && part !== "—").join(" · ") : (item.ruidos || "")],
-    ["Dolor condilar", item.dolorCondilar === "Sí" ? [item.dolorCondilar, side(item.condilarIzq, item.condilarDer)].filter((part) => part && part !== "—").join(" · ") : (item.dolorCondilar || "")],
+    ["Ruidos articulares", item.ruidos === "Sí" ? formatParts([item.ruidos, side(item.ruidosIzq, item.ruidosDer), fases && `en ${fases}`, tiposRuido && `(${tiposRuido})`]) : (item.ruidos || "")],
+    ["Dolor condilar", item.dolorCondilar === "Sí" ? formatParts([item.dolorCondilar, side(item.condilarIzq, item.condilarDer)]) : (item.dolorCondilar || "")],
     ["Apertura libre de dolor", item.aperturaLibre ? `${item.aperturaLibre} mm` : ""],
     ["Apertura con dolor", item.aperturaDolor ? `${item.aperturaDolor} mm` : ""],
-    ["Desviación de trayectoria", item.desviacion === "Sí" ? [item.desviacion, side(item.desvIzq, item.desvDer), patronDesv && `(${patronDesv})`].filter((part) => part && part !== "—").join(" · ") : (item.desviacion || "")],
+    ["Desviación de trayectoria", item.desviacion === "Sí" ? formatParts([item.desviacion, side(item.desvIzq, item.desvDer), patronDesv && `(${patronDesv})`]) : (item.desviacion || "")],
     ["Protrusión", item.protrusion ? `${item.protrusion} mm` : ""],
-    ["Lateralidades", [
+    ["Lateralidades", formatParts([
       item.latIzq ? `Izq ${item.latIzq} mm` : "",
       item.latDer ? `Der ${item.latDer} mm` : "",
-    ].filter(Boolean).join(" · ")],
+    ])],
   ]));
 
   const mus = section("Músculos craneales y disco articular");
@@ -742,11 +763,13 @@ form.addEventListener("input", (e) => {
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   const data = readForm();
-  const missing = missingFields(data);
-  if (missing.length) {
+  const missingKeys = missingFieldKeys(data);
+  if (missingKeys.length) {
     showStep(0);
-    window.alert(`Falta completar: ${missing.join(", ")}.`);
-    form.elements.nombre.focus();
+    highlightMissingFields(missingKeys);
+    window.alert(`Falta completar: ${missingFields(data).join(", ")}.`);
+    const firstMissing = form.elements[missingKeys[0]];
+    if (firstMissing) firstMissing.focus();
     return;
   }
   try {
@@ -803,17 +826,10 @@ document.querySelector("#btn-prev").addEventListener("click", () => showStep(Mat
 document.querySelector("#btn-next").addEventListener("click", () => {
   if (step === 0) {
     const data = readForm();
-    const missing = missingFields(data);
-    if (missing.length) {
-      for (const [key] of REQUIRED_FIELDS) {
-        const el = form.elements[key];
-        if (el && !String(data[key] ?? "").trim()) {
-          el.classList.add("input-error");
-        } else if (el) {
-          el.classList.remove("input-error");
-        }
-      }
-      const firstMissing = form.querySelector(".input-error");
+    const missingKeys = missingFieldKeys(data);
+    if (missingKeys.length) {
+      highlightMissingFields(missingKeys);
+      const firstMissing = form.elements[missingKeys[0]] || form.querySelector(".input-error");
       if (firstMissing) firstMissing.focus();
       return;
     }
@@ -878,7 +894,7 @@ document.querySelector("#file-open").addEventListener("change", async (event) =>
     }
     try {
       for (const item of fichas) {
-        await upsert({ ...blank(), ...item, id: item.id || crypto.randomUUID() });
+        await upsert(coerceFicha({ ...blank(), ...item, id: item.id || crypto.randomUUID() }));
       }
       showLibrary();
       window.alert(fichas.length === 1 ? "Se cargó 1 ficha." : `Se cargaron ${fichas.length} fichas.`);
@@ -887,7 +903,7 @@ document.querySelector("#file-open").addEventListener("change", async (event) =>
     }
     return;
   }
-  const data = { ...blank(), ...parsed, id: parsed.id || crypto.randomUUID() };
+  const data = coerceFicha({ ...blank(), ...parsed, id: parsed.id || crypto.randomUUID() });
   fillForm(data);
   step = 0;
   showForm();

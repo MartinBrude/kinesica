@@ -29,10 +29,27 @@ export const CLINICIAN_DETAILS = {
   },
 };
 
+export function missingFieldKeys(data) {
+  return REQUIRED_FIELDS
+    .filter(([key]) => !String(data?.[key] ?? "").trim())
+    .map(([key]) => key);
+}
+
 export function missingFields(data) {
   return REQUIRED_FIELDS
     .filter(([key]) => !String(data?.[key] ?? "").trim())
     .map(([, label]) => label);
+}
+
+export function normalizeDni(dni) {
+  const digits = String(dni || "").replace(/\D/g, "");
+  return digits.length >= 4 ? digits : String(dni || "").trim().toLowerCase();
+}
+
+export function patientKey(item) {
+  const dni = normalizeDni(item?.dni);
+  const nombre = String(item?.nombre || "").trim().toLowerCase();
+  return `${nombre}|${dni}`;
 }
 
 export function ownsFicha(item, username) {
@@ -137,6 +154,30 @@ export function emptyFicha() {
     observaciones: "",
     plan: "",
   };
+}
+
+export function coerceFicha(input = {}) {
+  const template = emptyFicha();
+  const out = {};
+  for (const [key, defaultVal] of Object.entries(template)) {
+    const val = input?.[key];
+    if (typeof defaultVal === "boolean") {
+      out[key] = Boolean(val);
+    } else if (typeof defaultVal === "number") {
+      const num = Number(val);
+      out[key] = Number.isFinite(num) ? num : defaultVal;
+    } else if (Array.isArray(defaultVal)) {
+      out[key] = Array.isArray(val) ? val.filter((x) => typeof x === "string") : [];
+    } else {
+      out[key] = val != null ? String(val).trim() : "";
+    }
+  }
+  out.eva = Math.max(0, Math.min(10, Math.round(out.eva || 0)));
+  if (input?.id) out.id = String(input.id);
+  if (input?.savedAt) out.savedAt = String(input.savedAt);
+  if (input?.profesional) out.profesional = String(input.profesional);
+  if (input?.profesionalNombre) out.profesionalNombre = String(input.profesionalNombre);
+  return out;
 }
 
 export function exampleFicha() {

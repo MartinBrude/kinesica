@@ -10,8 +10,12 @@ import {
   ageOn,
   exampleFicha,
   missingFields,
+  missingFieldKeys,
   nextSession,
   ownsFicha,
+  coerceFicha,
+  normalizeDni,
+  patientKey,
 } from "../admin/ficha-rules.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -145,5 +149,29 @@ assert.match(html, /class="step-dot"/);
 // Verificación de bloque de firma profesional
 assert.match(app, /pf-signature/);
 assert.match(app, /CLINICIAN_DETAILS/);
+
+// Verificación de tipado estricto y normalización
+const coerced = coerceFicha({
+  nombre: "  Juan Pérez  ",
+  dni: "34.111.222",
+  eva: "15", // fuera de rango
+  ruidosIzq: "verdad", // string en vez de boolean
+  cdi: ["I.a", 123, null], // array con valores invalidos
+});
+assert.equal(coerced.nombre, "Juan Pérez");
+assert.equal(coerced.eva, 10, "EVA debe estar acotado entre 0 y 10");
+assert.equal(coerced.ruidosIzq, true, "Booleano debe ser estricto");
+assert.deepEqual(coerced.cdi, ["I.a"], "CDI solo debe admitir strings");
+
+assert.equal(normalizeDni("34.205.109"), "34205109");
+assert.equal(normalizeDni(" 34 205 109 "), "34205109");
+assert.equal(
+  patientKey({ nombre: " Carolina Méndez ", dni: "34.205.109" }),
+  patientKey({ nombre: "carolina méndez", dni: "34205109" }),
+  "La clave de paciente debe ser independiente del formato de DNI y mayúsculas"
+);
+
+const missingKeys = missingFieldKeys({});
+assert.deepEqual(missingKeys, REQUIRED_FIELDS.map(([k]) => k));
 
 console.log("fichas ATM: ok");
