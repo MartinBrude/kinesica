@@ -129,3 +129,89 @@ function totp_valid(string $secret, string $code): bool
     }
     return false;
 }
+
+function login_attempt_key(string $username): string
+{
+    $key = strtolower(trim($username));
+    if ($key === '' || strlen($key) > 32) {
+        return '';
+    }
+    return $key;
+}
+
+function ensure_login_attempts(): void
+{
+    static $ready = false;
+    if ($ready) {
+        return;
+    }
+    db()->exec(
+        'CREATE TABLE IF NOT EXISTS login_attempts (
+            username VARCHAR(32) PRIMARY KEY,
+            failures SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+            locked_until DATETIME NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4'
+    );
+    $ready = true;
+}
+
+function login_block_message(): string
+{
+    return 'Demasiados intentos. El acceso queda bloqueado 30 minutos.';
+}
+
+function login_is_locked(string $username): bool
+{
+    $key = login_attempt_key($username);
+    if ($key === '') {
+        return false;
+    }
+    ensure_login_attempts();
+    $stmt = db()->prepare('SELECT locked_until FROM login_attempts WHERE username = :username');
+    $stmt->execute(['username' => $key]);
+    $until = $stmt->fetchColumn();
+    if (!$until) {
+        return false;
+    }
+    if (strtotime($until . ' UTC') > time()) {
+        return true;
+    }
+    db()->prepare('UPDATE login_attempts SET failures = 0, locked_until = NULL WHERE username = :username')
+        ->execute(['username' => $key]);
+    return false;
+}
+
+function login_register_failure(string $username): void
+{
+    $key = login_attempt_key($username);
+    if ($key === '' || login_is_locked($key)) {
+        return;
+    }
+    $pdo = db();
+    $pdo->prepare(
+        'INSERT INTO login_attempts (username, failures, locked_until)
+         VALUES (:username, 1, NULL)
+         ON DUPLICATE KEY UPDATE failures = failures + 1'
+    )->execute(['username' => $key]);
+    $stmt = $pdo->prepare('SELECT failures FROM login_attempts WHERE username = :username');
+    $stmt->execute(['username' => $key]);
+    if ((int) $stmt->fetchColumn() < 5) {
+        return;
+    }
+    $pdo->prepare('UPDATE login_attempts SET locked_until = :until WHERE username = :username')
+        ->execute([
+            'until' => gmdate('Y-m-d H:i:s', time() + 30 * 60),
+            'username' => $key,
+        ]);
+}
+
+function login_clear_failures(string $username): void
+{
+    $key = login_attempt_key($username);
+    if ($key === '') {
+        return;
+    }
+    ensure_login_attempts();
+    db()->prepare('DELETE FROM login_attempts WHERE username = :username')
+        ->execute(['username' => $key]);
+}

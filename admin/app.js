@@ -20,12 +20,13 @@ const formView = document.querySelector("#view-form");
 const listEl = document.querySelector("#library-list");
 const patientSelect = document.querySelector("#pdf-patient");
 const searchInput = document.querySelector("#search");
-const onlyMineInput = document.querySelector("#only-mine");
+const mineButton = document.querySelector("#btn-mine");
 const eva = form.elements.eva;
 const evaValue = document.querySelector("#eva-value");
 
 let step = 0;
 let mineDefaultApplied = false;
+let onlyMine = false;
 let currentId = null;
 const singles = {};
 
@@ -79,8 +80,9 @@ function hideGate() {
 async function refresh() {
   sessionUser = await api("me.php");
   if (!mineDefaultApplied) {
-    onlyMineInput.checked = sessionUser.username === "norberto" || sessionUser.username === "maria";
+    onlyMine = sessionUser.username === "norberto" || sessionUser.username === "maria";
     mineDefaultApplied = true;
+    syncMineButton();
   }
   cache = await api("fichas.php");
   authed = true;
@@ -189,7 +191,7 @@ function patientKey(item) {
 function visibleFichas() {
   const q = searchInput.value.trim().toLowerCase();
   return loadAll()
-    .filter((item) => !onlyMineInput.checked || ownsFicha(item, sessionUser?.username))
+    .filter((item) => !onlyMine || ownsFicha(item, sessionUser?.username))
     .filter((item) => {
       const blob = `${item.nombre} ${item.dni}`.toLowerCase();
       return !q || blob.includes(q);
@@ -240,7 +242,12 @@ function fichaRow(item) {
       .then(() => refresh())
       .catch((error) => { if (!error.auth) window.alert(error.message); });
   });
-  actions.append(open, again, pdf, del);
+  const json = document.createElement("button");
+  json.type = "button";
+  json.className = "btn light";
+  json.textContent = "JSON";
+  json.addEventListener("click", () => downloadJSON(item));
+  actions.append(open, again, json, pdf, del);
   return row;
 }
 
@@ -251,7 +258,7 @@ function renderLibrary() {
     : allVisible;
 
   const patients = new Map();
-  for (const item of items) {
+  for (const item of allVisible) {
     const key = patientKey(item);
     if (!patients.has(key)) patients.set(key, item.nombre || "Sin nombre");
   }
@@ -278,8 +285,8 @@ function renderLibrary() {
     listEl.append(back);
   }
   if (!items.length) {
-    listEl.insertAdjacentHTML("beforeend", onlyMineInput.checked
-      ? '<p class="empty">No hay fichas tuyas. Destildá «Ver solo mis pacientes» para ver todas.</p>'
+    listEl.insertAdjacentHTML("beforeend", onlyMine
+      ? '<p class="empty">No hay fichas tuyas. Tocá «Ver todos los pacientes» para ver el resto.</p>'
       : '<p class="empty">Todavía no hay fichas. Creá una nueva o abrí un archivo .json.</p>');
     return;
   }
@@ -320,8 +327,12 @@ function renderLibrary() {
 }
 
 function downloadJSON(data) {
-  const slug = (data.nombre || "paciente").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-  const name = `atm-${slug || "paciente"}-${(data.dni || "sindni").replace(/\D/g, "")}-${data.fechaSesion || "sinfec"}.json`;
+  const many = Array.isArray(data);
+  const source = many ? data[0] || {} : data;
+  const slug = (source.nombre || "paciente").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  const name = many
+    ? `atm-fichas-${todayISO()}.json`
+    : `atm-${slug || "paciente"}-${(source.dni || "sindni").replace(/\D/g, "")}-${source.fechaSesion || "sinfec"}.json`;
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -520,6 +531,12 @@ function itemsForPdf() {
   return visible.filter((item) => patientKey(item) === patientSelect.value);
 }
 
+function syncMineButton() {
+  mineButton.textContent = onlyMine ? "Ver todos los pacientes" : "Ver solo mis pacientes";
+  mineButton.classList.toggle("green", onlyMine);
+  mineButton.classList.toggle("light", !onlyMine);
+}
+
 document.querySelectorAll("[data-single]").forEach((group) => {
   group.addEventListener("click", (event) => {
     const btn = event.target.closest("button");
@@ -567,7 +584,12 @@ document.querySelector("#btn-new").addEventListener("click", () => {
 document.querySelector("#btn-prev").addEventListener("click", () => showStep(Math.max(0, step - 1)));
 document.querySelector("#btn-next").addEventListener("click", () => showStep(Math.min(4, step + 1)));
 searchInput.addEventListener("input", renderLibrary);
-onlyMineInput.addEventListener("change", renderLibrary);
+mineButton.addEventListener("click", () => {
+  onlyMine = !onlyMine;
+  focusedPatient = null;
+  syncMineButton();
+  renderLibrary();
+});
 document.querySelector("#btn-group").addEventListener("click", () => {
   grouped = !grouped;
   focusedPatient = null;
@@ -659,6 +681,15 @@ document.querySelector("#btn-logout").addEventListener("click", async () => {
   showGate({ login: true });
 });
 
+document.querySelector("#btn-export").addEventListener("click", () => {
+  const items = visibleFichas();
+  if (!items.length) {
+    window.alert("No hay fichas para exportar.");
+    return;
+  }
+  downloadJSON(items.length === 1 ? items[0] : items);
+});
+document.querySelector("#btn-export-one").addEventListener("click", () => downloadJSON(readForm()));
 document.querySelector("#btn-pdf-all").addEventListener("click", () => {
   const items = itemsForPdf();
   if (items.length) printItems(items);

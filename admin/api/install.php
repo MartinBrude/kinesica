@@ -28,6 +28,13 @@ $pdo->exec(
         updated_by VARCHAR(32) NOT NULL
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4'
 );
+$pdo->exec(
+    'CREATE TABLE IF NOT EXISTS login_attempts (
+        username VARCHAR(32) PRIMARY KEY,
+        failures SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+        locked_until DATETIME NULL
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4'
+);
 $column = $pdo->query("SHOW COLUMNS FROM fichas LIKE 'profesional'")->fetch();
 if (!$column) {
     $pdo->exec("ALTER TABLE fichas ADD profesional VARCHAR(32) NOT NULL DEFAULT '' AFTER payload");

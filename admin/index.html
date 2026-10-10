@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=23">
+  <link rel="stylesheet" href="/admin/styles.css?v=24">
 </head>
 <body>
   <header class="topbar">
@@ -63,20 +63,15 @@
             Abrir archivo
             <input type="file" id="file-open" accept="application/json,.json" hidden>
           </label>
+          <button type="button" class="btn light" id="btn-export">Exportar JSON</button>
           <button type="button" class="btn green" id="btn-pdf-all">Imprimir / Descargar PDF</button>
         </div>
       </div>
 
       <div class="library-toolbar">
-        <label>
-          Paciente para el PDF
-          <select id="pdf-patient"></select>
-        </label>
+        <select id="pdf-patient" aria-label="Paciente"></select>
         <input type="search" id="search" placeholder="Buscar por nombre o DNI">
-        <label class="mine-filter">
-          <input type="checkbox" id="only-mine" checked>
-          Ver solo mis pacientes
-        </label>
+        <button type="button" class="btn light" id="btn-mine">Ver solo mis pacientes</button>
         <button type="button" class="btn light" id="btn-group">Agrupar por paciente</button>
       </div>
       <div id="library-list" class="library-list"></div>
@@ -95,6 +90,7 @@
         <div class="sheet-tools" data-panel="0">
           <button type="button" class="btn light" id="btn-example">Cargar ejemplo</button>
           <button type="button" class="btn light" id="btn-clear">Vaciar formulario</button>
+          <button type="button" class="btn light" id="btn-export-one">Exportar JSON</button>
           <button type="button" class="btn green" id="btn-pdf-one">Imprimir / Descargar PDF</button>
         </div>
 
@@ -345,6 +341,6 @@
   </main>
 
   <div id="print-root"></div>
-  <script type="module" src="/admin/app.js?v=22"></script>
+  <script type="module" src="/admin/app.js?v=24"></script>
 </body>
 </html>
