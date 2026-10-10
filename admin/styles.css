@@ -23,11 +23,34 @@ body {
   background: linear-gradient(180deg, #c8dce8 0%, #dce9f2 28%, #f6f9fb 62%, #fff 100%);
   background-attachment: fixed;
 }
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 58% 42% 48% 52%;
+  filter: blur(72px);
+}
+body::before {
+  top: 6%;
+  left: -16%;
+  width: min(42rem, 78vw);
+  height: 26rem;
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+}
+body::after {
+  top: 46%;
+  right: -18%;
+  width: min(36rem, 68vw);
+  height: 24rem;
+  background: color-mix(in srgb, var(--primary) 18%, transparent);
+  border-radius: 42% 58% 38% 62%;
+}
 button, input, textarea, select { font: inherit; }
 button { cursor: pointer; }
 a { color: inherit; }
 
-.navy-bar { height: 8px; background: var(--navy); }
 .topbar {
   position: sticky;
   top: 0;
@@ -345,6 +368,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 
 @media print {
   body { background: #fff; }
+  body::before, body::after { display: none; }
   .topbar, main { display: none !important; }
   #print-root { display: block; }
 
