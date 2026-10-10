@@ -893,6 +893,8 @@ function renderCompareContent() {
 
   const isSame = idX === idY;
   const res = compareFichas(sessionX, sessionY);
+  res.sessionX = sessionX;
+  res.sessionY = sessionY;
   currentCompareResult = res;
 
   if (compareTabCount) {
@@ -915,7 +917,7 @@ function renderCompareContent() {
       const countText = res.totalChanged === 1 ? "1 cambio registrado" : `${res.totalChanged} cambios registrados`;
       compareBanner.innerHTML = `
         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-          <span>Comparando <strong>Sesión del ${formatDate(res.sessionX.fechaSesion)}</strong> vs <strong>Sesión del ${formatDate(res.sessionY.fechaSesion)}</strong></span>
+          <span>Comparando <strong>Sesión del ${formatDate(sessionX.fechaSesion)}</strong> vs <strong>Sesión del ${formatDate(sessionY.fechaSesion)}</strong></span>
         </div>
         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
           <span class="compare-badge-pill">📅 ${daysText}</span>
@@ -933,111 +935,84 @@ function renderCompareTab(tabKey, res) {
   comparePanelsWrap.innerHTML = "";
 
   if (tabKey === "summary") {
-    // 1. KPIs destacados con estética Kinésica
-    const kpisGrid = document.createElement("div");
-    kpisGrid.className = "cmp-kpis-grid";
-
-    const kpiDefs = [
-      { title: "Dolor (EVA)", data: res.kpis.eva },
-      { title: "Apertura libre", data: res.kpis.aperturaLibre },
-      { title: "Apertura con dolor", data: res.kpis.aperturaDolor },
-      { title: "Ruidos articulares", data: res.kpis.ruidos },
-    ];
-
-    kpiDefs.forEach(({ title, data }) => {
-      if (!data) return;
-      const card = document.createElement("div");
-      card.className = "cmp-kpi-card";
-
-      let trendClass = "same";
-      let trendText = "Sin variación";
-      if (data.trend === "better") {
-        trendClass = "better";
-        trendText = "Mejora";
-      } else if (data.trend === "worse") {
-        trendClass = "worse";
-        trendText = "Empeoramiento";
-      }
-
-      const deltaBadge = data.deltaText ? ` (${data.deltaText})` : "";
-
-      card.innerHTML = `
-        <div class="cmp-kpi-title">${title}</div>
-        <div class="cmp-kpi-vals">
-          <span class="cmp-kpi-prev" title="Sesión inicial">${escapeHtml(data.previous || "—")}</span>
-          <span class="cmp-kpi-arrow">➔</span>
-          <span class="cmp-kpi-curr" title="Sesión de control">${escapeHtml(data.current || "—")}</span>
-        </div>
-        <div class="cmp-trend-tag ${trendClass}">${trendText}${deltaBadge}</div>
-      `;
-      kpisGrid.append(card);
-    });
-
-    comparePanelsWrap.append(kpisGrid);
-
-    // 2. Modificaciones detalladas (LO CENTRAL QUE CAMBIÓ)
+    // LO CENTRAL: Únicamente los parámetros que SÍ cambiaron
     const allChanged = res.sections.flatMap((sec) =>
-      sec.fields.filter((f) => f.changed).map((f) => ({ ...f, sectionTitle: sec.title }))
+      sec.fields.filter((f) => f.changed).map((f) => ({
+        ...f,
+        sectionTitle: sec.title.replace(/^\d+\.\s*/, ""),
+      }))
     );
 
-    if (allChanged.length > 0) {
-      const block = document.createElement("div");
-      block.className = "cmp-changes-block";
-      block.innerHTML = `
-        <div class="cmp-changes-block-head">
-          <h3><span class="bar"></span>Lo que cambió entre ambas sesiones (${allChanged.length})</h3>
-          <span style="font-size:12.5px; color:var(--muted);">Parámetros modificados respecto a la sesión inicial</span>
-        </div>
-        <div class="cmp-changes-grid"></div>
-      `;
-
-      const gridEl = block.querySelector(".cmp-changes-grid");
-      allChanged.forEach((f) => {
-        const item = document.createElement("div");
-        item.className = "cmp-change-item";
-
-        let trendClass = "same";
-        let trendLabel = "Modificado";
-        if (f.trend === "better") {
-          trendClass = "better";
-          trendLabel = "Mejora";
-        } else if (f.trend === "worse") {
-          trendClass = "worse";
-          trendLabel = "Empeoramiento";
-        }
-
-        const deltaHtml = f.deltaText
-          ? `<span class="cmp-delta-badge ${trendClass}">${f.deltaText}</span>`
-          : "";
-
-        item.innerHTML = `
-          <div class="cmp-change-info">
-            <span class="cmp-change-sec-tag">${escapeHtml(f.sectionTitle)}</span>
-            <span class="cmp-change-label">${escapeHtml(f.label)}</span>
-          </div>
-          <div class="cmp-change-transition">
-            <div class="cmp-trans-box">
-              <span class="cmp-trans-from" title="Sesión inicial">${escapeHtml(f.previous || "—")}</span>
-              <span class="cmp-trans-arrow">➔</span>
-              <span class="cmp-trans-to" title="Sesión de control">${escapeHtml(f.current || "—")}</span>
-            </div>
-            ${deltaHtml}
-            <span class="cmp-trend-tag ${trendClass}">${trendLabel}</span>
-          </div>
-        `;
-        gridEl.append(item);
-      });
-
-      comparePanelsWrap.append(block);
-    } else {
+    if (allChanged.length === 0) {
       const empty = document.createElement("div");
       empty.className = "cmp-summary-empty";
       empty.innerHTML = `
         <h3>Sin modificaciones registradas</h3>
-        <p>Todos los ítems del formulario mantuvieron el mismo estado. Podés navegar por las pestañas superiores para revisar los valores de cada sección.</p>
+        <p>Todos los parámetros clínicos evaluados mantuvieron el mismo estado entre ambas sesiones. Podés navegar por las pestañas superiores para revisar cada sección de la ficha.</p>
       `;
       comparePanelsWrap.append(empty);
+      return;
     }
+
+    const block = document.createElement("div");
+    block.className = "cmp-changes-block";
+    block.innerHTML = `
+      <div class="cmp-changes-block-head">
+        <div>
+          <h3><span class="bar"></span>Parámetros modificados (${allChanged.length})</h3>
+          <p class="cmp-changes-sub">Evolución clínica detectada entre la sesión inicial y la sesión de control</p>
+        </div>
+      </div>
+      <div class="cmp-changes-grid"></div>
+    `;
+
+    const dateXStr = formatDate(res.sessionX?.fechaSesion);
+    const dateYStr = formatDate(res.sessionY?.fechaSesion);
+    const gridEl = block.querySelector(".cmp-changes-grid");
+
+    allChanged.forEach((f) => {
+      const item = document.createElement("div");
+      item.className = "cmp-change-item";
+
+      let trendClass = "same";
+      let trendLabel = "Modificado";
+      if (f.trend === "better") {
+        trendClass = "better";
+        trendLabel = "Mejoría clínica";
+      } else if (f.trend === "worse") {
+        trendClass = "worse";
+        trendLabel = "Empeoramiento";
+      }
+
+      const deltaHtml = f.deltaText
+        ? `<span class="cmp-delta-badge ${trendClass}">${escapeHtml(f.deltaText)}</span>`
+        : "";
+
+      item.innerHTML = `
+        <div class="cmp-change-header">
+          <span class="cmp-change-sec-tag">${escapeHtml(f.sectionTitle)}</span>
+          <div class="cmp-change-tags">
+            ${deltaHtml}
+            <span class="cmp-trend-tag ${trendClass}">${trendLabel}</span>
+          </div>
+        </div>
+        <div class="cmp-change-label">${escapeHtml(f.label)}</div>
+        <div class="cmp-change-transition">
+          <div class="cmp-trans-col cmp-trans-prev">
+            <span class="cmp-trans-meta">Sesión inicial (${escapeHtml(dateXStr)})</span>
+            <span class="cmp-trans-val">${escapeHtml(f.previous || "—")}</span>
+          </div>
+          <div class="cmp-trans-arrow" aria-hidden="true">➔</div>
+          <div class="cmp-trans-col cmp-trans-curr">
+            <span class="cmp-trans-meta">Sesión de control (${escapeHtml(dateYStr)})</span>
+            <span class="cmp-trans-val">${escapeHtml(f.current || "—")}</span>
+          </div>
+        </div>
+      `;
+      gridEl.append(item);
+    });
+
+    comparePanelsWrap.append(block);
     return;
   }
 
