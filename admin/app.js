@@ -363,18 +363,7 @@ function fichaRow(item) {
   json.className = "btn light";
   json.textContent = "JSON";
   json.addEventListener("click", () => downloadJSON(item));
-  const allPatientSessions = loadAll().filter((f) => patientKey(f) === patientKey(item));
-  if (allPatientSessions.length >= 2) {
-    const comp = document.createElement("button");
-    comp.type = "button";
-    comp.className = "btn light";
-    comp.textContent = "Comparar";
-    comp.title = "Comparar evolución de este paciente";
-    comp.addEventListener("click", () => showCompare(patientKey(item), item.id));
-    actions.append(open, again, comp, json, pdf, del);
-  } else {
-    actions.append(open, again, json, pdf, del);
-  }
+  actions.append(open, again, json, pdf, del);
   return row;
 }
 
