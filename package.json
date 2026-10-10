@@ -4,6 +4,7 @@
   "description": "Static site tooling (CSS purge audit, scripts)",
   "scripts": {
     "booking:test": "node scripts/verify-booking.mjs",
+    "admin:test": "node scripts/verify-fichas-atm.mjs",
     "booking:serve": "node scripts/serve-booking-demo.mjs",
     "css:audit": "node scripts/purge-css.mjs --audit",
     "css:audit:bootstrap": "node scripts/purge-css.mjs --audit --profile=bootstrap",

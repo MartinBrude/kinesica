@@ -1,4 +1,5 @@
 Options -Indexes
+AddType application/javascript .mjs
 <Files "config.php">
   Require all denied
 </Files>
