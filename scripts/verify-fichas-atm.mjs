@@ -160,6 +160,7 @@ for (const [key] of REQUIRED_FIELDS) {
   assert.match(php, new RegExp(`'${key}' =>`));
 }
 assert.match(php, /\$auth\['username'\] === 'maria'/);
+assert.match(php, /\$auth\['username'\] === 'martin'/);
 assert.match(php, /\$profesional = 'norberto'/);
 assert.doesNotMatch(php, /'martin' => 'Martín'/);
 assert.match(php, /implode\(', ', \$missing\)/);
