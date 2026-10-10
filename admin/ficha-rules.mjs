@@ -24,6 +24,24 @@ export function ownsFicha(item, username) {
   return (item?.profesional || "") === username;
 }
 
+export function ageOn(nacimiento, onDate) {
+  const birth = String(nacimiento || "").slice(0, 10).split("-").map(Number);
+  const on = String(onDate || "").slice(0, 10).split("-").map(Number);
+  if (birth.length !== 3 || on.length !== 3 || birth.some((n) => !n) || on.some((n) => !n)) return "";
+  let age = on[0] - birth[0];
+  if (on[1] < birth[1] || (on[1] === birth[1] && on[2] < birth[2])) age -= 1;
+  return age >= 0 ? String(age) : "";
+}
+
+export function nextSession(item, fechaSesion) {
+  const copy = { ...item, fechaSesion };
+  delete copy.id;
+  delete copy.savedAt;
+  const edad = ageOn(item?.nacimiento, fechaSesion);
+  if (edad) copy.edad = edad;
+  return copy;
+}
+
 export function assignProfesional(username, previous) {
   if (previous) return String(previous);
   if (username === "maria") return "maria";

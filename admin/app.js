@@ -1,4 +1,4 @@
-import { exampleFicha, missingFields, emptyFicha, ownsFicha } from "./ficha-rules.mjs?v=16";
+import { exampleFicha, missingFields, emptyFicha, ownsFicha, nextSession } from "./ficha-rules.mjs?v=22";
 
 let cache = [];
 let authed = false;
@@ -214,6 +214,16 @@ function fichaRow(item) {
     step = 0;
     showForm();
   });
+  const again = document.createElement("button");
+  again.type = "button";
+  again.className = "btn light";
+  again.textContent = "Nueva ficha";
+  again.addEventListener("click", () => {
+    const copy = nextSession(item, todayISO());
+    fillForm({ ...copy, id: crypto.randomUUID() });
+    step = 0;
+    showForm();
+  });
   const pdf = document.createElement("button");
   pdf.type = "button";
   pdf.className = "btn green";
@@ -230,7 +240,7 @@ function fichaRow(item) {
       .then(() => refresh())
       .catch((error) => { if (!error.auth) window.alert(error.message); });
   });
-  actions.append(open, pdf, del);
+  actions.append(open, again, pdf, del);
   return row;
 }
 

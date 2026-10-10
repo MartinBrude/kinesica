@@ -7,8 +7,10 @@ import {
   REQUIRED_FIELDS,
   assignProfesional,
   emptyFicha,
+  ageOn,
   exampleFicha,
   missingFields,
+  nextSession,
   ownsFicha,
 } from "../admin/ficha-rules.mjs";
 
@@ -50,6 +52,17 @@ assert.match(html, /id="only-mine" checked/);
 assert.doesNotMatch(html, /id="btn-demo"/);
 assert.match(html, /id="btn-group"/);
 assert.match(html, /Agrupar por paciente/);
+assert.equal(ageOn("1992-03-14", "2026-03-13"), "33");
+assert.equal(ageOn("1992-03-14", "2026-03-14"), "34");
+assert.equal(ageOn("", "2026-03-14"), "");
+const followUp = nextSession({ id: "old", savedAt: "x", nombre: "Ana", nacimiento: "1992-03-14", edad: "30", motivo: "Dolor" }, "2026-03-14");
+assert.equal(followUp.edad, "34");
+assert.equal(followUp.fechaSesion, "2026-03-14");
+assert.equal(followUp.nombre, "Ana");
+assert.equal(followUp.motivo, "Dolor");
+assert.equal(followUp.id, undefined);
+assert.match(app, /textContent = "Nueva ficha"/);
+assert.match(app, /nextSession\(item, todayISO\(\)\)/);
 assert.match(app, /¿Quitar la ficha/);
 assert.match(app, /onlyMineInput\.checked = sessionUser\.username === "norberto" \|\| sessionUser\.username === "maria"/);
 assert.equal(CLINICIANS.martin, undefined);
