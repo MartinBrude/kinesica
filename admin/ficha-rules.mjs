@@ -22,7 +22,7 @@ export const CLINICIAN_DETAILS = {
     signatureFile: "/admin/signatures/norberto.png",
   },
   maria: {
-    nombre: "Lic. María",
+    nombre: "Lic. María Gulín",
     titulo: "Kinesióloga Fisiatra",
     matricula: "M.N. · M.P.",
     signatureFile: "/admin/signatures/maria.png",

@@ -13,7 +13,7 @@ import {
   compareFichas,
   daysBetween,
   matchFichaSearch,
-} from "./ficha-rules.mjs?v=28";
+} from "./ficha-rules.mjs?v=29";
 
 let cache = [];
 let authed = false;
