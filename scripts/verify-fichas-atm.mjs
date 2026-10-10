@@ -71,6 +71,10 @@ for (const name of ["nombre", "dni", "fechaSesion", "nacimiento", "edad", "lugar
 assert.match(html, /type="module" src="\/admin\/app\.js/);
 assert.match(app, /missingFields/);
 assert.match(app, /exampleFicha/);
+const openHandler = app.slice(app.indexOf("#file-open"));
+assert.match(openHandler, /fillForm\(data\)/);
+assert.doesNotMatch(openHandler.slice(0, openHandler.indexOf("login-form")), /upsert\(/);
+assert.match(openHandler, /missingFields\(data\)/);
 
 for (const [key] of REQUIRED_FIELDS) {
   assert.match(php, new RegExp(`'${key}' =>`));

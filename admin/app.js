@@ -507,16 +507,24 @@ document.querySelector("#file-open").addEventListener("change", async (event) =>
   const file = event.target.files[0];
   event.target.value = "";
   if (!file) return;
-  const data = JSON.parse(await file.text());
-  if (!data || typeof data !== "object" || !("nombre" in data)) return;
-  if (!data.id) data.id = crypto.randomUUID();
+  let parsed;
   try {
-    await upsert(data);
-    fillForm(data);
-    step = 0;
-    showForm();
-  } catch (error) {
-    if (!error.auth) window.alert(error.message);
+    parsed = JSON.parse(await file.text());
+  } catch {
+    window.alert("El archivo no es un JSON válido.");
+    return;
+  }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+    window.alert("El archivo no es una ficha.");
+    return;
+  }
+  const data = { ...blank(), ...parsed, id: parsed.id || crypto.randomUUID() };
+  fillForm(data);
+  step = 0;
+  showForm();
+  const missing = missingFields(data);
+  if (missing.length) {
+    window.alert(`El archivo se abrió, pero falta completar: ${missing.join(", ")}.`);
   }
 });
 
