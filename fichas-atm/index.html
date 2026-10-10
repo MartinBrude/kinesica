@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Kinésica — Fichas ATM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="navy-bar"></div>
+  <header class="topbar">
+    <a class="brand" href="/">
+      <img src="logo.png" alt="Kinésica" width="190" height="50">
+    </a>
+    <p class="top-title">Fichas ATM</p>
+    <div class="top-actions">
+      <button type="button" class="btn ghost" id="btn-logout" hidden>Salir</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="view-gate" class="view">
+      <form id="login-form" class="hero-card gate-card">
+        <div class="hero-copy">
+          <span class="doc-icon" aria-hidden="true"></span>
+          <div>
+            <h1>Fichas ATM</h1>
+            <p>Ingreso del consultorio. Después de la contraseña, el código de la app de autenticación.</p>
+          </div>
+        </div>
+        <div class="gate-fields">
+          <label>Usuario
+            <input name="username" autocomplete="username" required>
+          </label>
+          <label>Contraseña
+            <input name="password" type="password" autocomplete="current-password" required>
+          </label>
+          <label>Código
+            <input name="code" inputmode="numeric" autocomplete="one-time-code" placeholder="6 dígitos, si ya lo configuraste">
+          </label>
+          <p id="login-error" class="gate-error" hidden></p>
+          <button type="submit" class="btn green">Entrar</button>
+        </div>
+      </form>
+      <form id="enroll-form" class="hero-card gate-card" hidden>
+        <div>
+          <h1>Código del celular</h1>
+          <p>En Google Authenticator o similar, elegí “ingresar clave”. Cuenta: <strong id="enroll-account"></strong></p>
+          <p class="enroll-secret" id="enroll-secret"></p>
+          <label>Código de 6 dígitos
+            <input name="code" inputmode="numeric" autocomplete="one-time-code" required>
+          </label>
+          <p id="enroll-error" class="gate-error" hidden></p>
+          <button type="submit" class="btn green">Confirmar</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="view-library" class="view" hidden>
+      <div class="hero-card">
+        <div class="hero-copy">
+          <span class="doc-icon" aria-hidden="true"></span>
+          <p>Historia clínica digital de ATM. Una ficha por paciente y por sesión, con criterios CDI-TTM. Al guardar queda en el consultorio. También se puede abrir un archivo <code>.json</code>.</p>
+        </div>
+        <div class="hero-actions">
+          <button type="button" class="btn light" id="btn-new">Nueva ficha</button>
+          <label class="btn light file-btn">
+            Abrir archivo
+            <input type="file" id="file-open" accept="application/json,.json" hidden>
+          </label>
+          <button type="button" class="btn green" id="btn-pdf-all">Imprimir / Descargar PDF</button>
+        </div>
+      </div>
+
+      <div class="library-toolbar">
+        <label>
+          Paciente para el PDF
+          <select id="pdf-patient"></select>
+        </label>
+        <input type="search" id="search" placeholder="Buscar por nombre o DNI">
+      </div>
+      <div id="library-list" class="library-list"></div>
+    </section>
+
+    <section id="view-form" class="view" hidden>
+      <nav class="steps" aria-label="Secciones de la ficha">
+        <button type="button" data-step="0">1. Paciente</button>
+        <button type="button" data-step="1">2. ATM palpación y rango</button>
+        <button type="button" data-step="2">3. Músculos craneales</button>
+        <button type="button" data-step="3">4. Dolor y oclusión</button>
+        <button type="button" data-step="4">5. Criterios CDI-TTM</button>
+      </nav>
+
+      <form id="ficha" class="sheet" autocomplete="off">
+        <div class="sheet-tools" data-panel="0">
+          <button type="button" class="btn light" id="btn-example">Cargar ejemplo</button>
+          <button type="button" class="btn light" id="btn-clear">Vaciar formulario</button>
+          <button type="button" class="btn green" id="btn-pdf-one">Imprimir / Descargar PDF</button>
+        </div>
+
+        <div class="panel" data-panel="0">
+          <h2><span class="bar"></span>Información primaria</h2>
+          <div class="grid-2">
+            <label>Nombre completo
+              <input name="nombre" placeholder="Ej: Carolina Méndez" required>
+            </label>
+            <label>Documento (DNI)
+              <input name="dni" placeholder="Ej: 34.205.109">
+            </label>
+          </div>
+          <div class="grid-3">
+            <label>Fecha de la sesión
+              <input name="fechaSesion" type="date">
+            </label>
+            <label>Fecha de nacimiento
+              <input name="nacimiento" type="date">
+            </label>
+            <label>Edad (años)
+              <input name="edad" inputmode="numeric" placeholder="34">
+            </label>
+          </div>
+          <label>Nacimiento (NAC)
+            <input name="lugarNac" placeholder="Ej: Córdoba">
+          </label>
+          <fieldset>
+            <legend>Profesional</legend>
+            <div class="pills" data-single="profesional">
+              <button type="button" data-value="norberto">Norberto</button>
+              <button type="button" data-value="maria">María</button>
+              <button type="button" data-value="martin">Martín</button>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Motivo de consulta principal</legend>
+            <div class="pills" data-single="motivo">
+              <button type="button" data-value="Traumático">Traumático</button>
+              <button type="button" data-value="No Traumático">No Traumático</button>
+              <button type="button" data-value="Pos Quirúrgico">Pos Quirúrgico</button>
+            </div>
+          </fieldset>
+          <label>Descripción de antecedentes clínicos
+            <textarea name="antecedentes" rows="4" placeholder="Coloca la sintomatología inicial, hábitos o incidentes traumáticos reportados por el paciente"></textarea>
+          </label>
+        </div>
+
+        <div class="panel" data-panel="1" hidden>
+          <div class="block">
+            <h3>1. Ruidos articulares (clic, chasquido o crepitación)</h3>
+            <div class="row-controls">
+              <div class="pills" data-single="ruidos">
+                <button type="button" data-value="Sí">Sí</button>
+                <button type="button" data-value="No">No</button>
+              </div>
+              <span class="inline-label">Lado:</span>
+              <label class="check"><input type="checkbox" name="ruidosIzq"> Izquierdo (Izq)</label>
+              <label class="check"><input type="checkbox" name="ruidosDer"> Derecho (Der)</label>
+              <span class="inline-label">Fase del ruido:</span>
+              <label class="check"><input type="checkbox" name="faseApertura"> Apertura</label>
+              <label class="check"><input type="checkbox" name="faseCierre"> Cierre</label>
+            </div>
+          </div>
+          <div class="block">
+            <h3>2. Dolor condilar a la palpación</h3>
+            <div class="row-controls">
+              <div class="pills" data-single="dolorCondilar">
+                <button type="button" data-value="Sí">Sí</button>
+                <button type="button" data-value="No">No</button>
+              </div>
+              <span class="inline-label">Lado afectado:</span>
+              <label class="check"><input type="checkbox" name="condilarIzq"> Izquierdo (Izq)</label>
+              <label class="check"><input type="checkbox" name="condilarDer"> Derecho (Der)</label>
+            </div>
+          </div>
+          <div class="block">
+            <h3>3. Mediciones y rangos de movimientos mandibulares</h3>
+            <div class="grid-2">
+              <label>Apertura máxima libre de dolor (mm)
+                <input name="aperturaLibre" inputmode="decimal" placeholder="Ej: 35">
+              </label>
+              <label>Apertura máxima con dolor (mm)
+                <input name="aperturaDolor" inputmode="decimal" placeholder="Ej: 46">
+              </label>
+            </div>
+            <div class="grid-2">
+              <div>
+                <span class="field-label">Desviación lateral de la trayectoria</span>
+                <div class="row-controls">
+                  <div class="pills" data-single="desviacion">
+                    <button type="button" data-value="Sí">Sí</button>
+                    <button type="button" data-value="No">No</button>
+                  </div>
+                  <label class="check"><input type="checkbox" name="desvIzq"> Izq</label>
+                  <label class="check"><input type="checkbox" name="desvDer"> Der</label>
+                </div>
+              </div>
+              <label>Movimiento de protrusión (mm)
+                <input name="protrusion" inputmode="decimal" placeholder="Ej: 8">
+              </label>
+            </div>
+            <span class="field-label">Lateralidades mandibulares (mm)</span>
+            <div class="grid-2">
+              <label>Izquierda (Izq)
+                <input name="latIzq" inputmode="decimal" placeholder="10">
+              </label>
+              <label>Derecha (Der)
+                <input name="latDer" inputmode="decimal" placeholder="10">
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" data-panel="2" hidden>
+          <div class="block">
+            <h3>1. Sensibilidad muscular a la palpación bilateral (1 kg o 1,5 kg)</h3>
+            <div class="muscle-grid">
+              <div class="muscle">
+                <span>Músculo masetero</span>
+                <label class="check"><input type="checkbox" name="maseteroIzq"> Izq</label>
+                <label class="check"><input type="checkbox" name="maseteroDer"> Der</label>
+              </div>
+              <div class="muscle">
+                <span>Músculo temporal anterior</span>
+                <label class="check"><input type="checkbox" name="temporalIzq"> Izq</label>
+                <label class="check"><input type="checkbox" name="temporalDer"> Der</label>
+              </div>
+              <div class="muscle">
+                <span>Músculo pterigoideo medial</span>
+                <label class="check"><input type="checkbox" name="pterMedIzq"> Izq</label>
+                <label class="check"><input type="checkbox" name="pterMedDer"> Der</label>
+              </div>
+              <div class="muscle">
+                <span>Estructura pterigoideo lateral</span>
+                <label class="check"><input type="checkbox" name="pterLatIzq"> Izq</label>
+                <label class="check"><input type="checkbox" name="pterLatDer"> Der</label>
+              </div>
+            </div>
+          </div>
+          <div class="block">
+            <h3>2. Disco articular (completar de acuerdo a ruidos)</h3>
+            <div class="muscle-grid">
+              <div class="muscle">
+                <span>Desplazamiento con recaptura</span>
+                <label class="check"><input type="checkbox" name="discoConIzq"> Izq</label>
+                <label class="check"><input type="checkbox" name="discoConDer"> Der</label>
+              </div>
+              <div class="muscle">
+                <span>Desplazamiento sin recaptura</span>
+                <label class="check"><input type="checkbox" name="discoSinIzq"> Izq</label>
+                <label class="check"><input type="checkbox" name="discoSinDer"> Der</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" data-panel="3" hidden>
+          <div class="block eva-block">
+            <div class="eva-head">
+              <h3>Valoración de dolor (EVA)</h3>
+              <strong id="eva-value">0 / 10</strong>
+            </div>
+            <input type="range" name="eva" min="0" max="10" value="0" step="1">
+            <div class="eva-scale">
+              <span>Sin dolor (0)</span>
+              <span>Dolor soportable</span>
+              <span>Inconmensurable (10)</span>
+            </div>
+          </div>
+          <div class="grid-2">
+            <label>Zona / localización del dolor
+              <input name="zona" placeholder="Ej: Fosa temporal anterior e intraauricular">
+            </label>
+            <label>Características principales
+              <input name="caracteristicas" placeholder="Ej: Sordo, opresivo, continuo, punzante">
+            </label>
+          </div>
+          <label>Factores que aumentan o disminuyen el dolor
+            <textarea name="factores" rows="2" placeholder="Ej: Aumenta al masticar chicles, pan duro. Disminuye al usar calor local o relajación muscular."></textarea>
+          </label>
+          <div class="block">
+            <h3>Relaciones oclusales y estructurales</h3>
+            <div class="grid-2">
+              <fieldset>
+                <legend>Contacto dentario</legend>
+                <div class="pills" data-single="contacto">
+                  <button type="button" data-value="Normal">Normal</button>
+                  <button type="button" data-value="Prematuro">Prematuro</button>
+                  <button type="button" data-value="Ausente">Ausente</button>
+                </div>
+              </fieldset>
+              <fieldset>
+                <legend>Estabilidad oclusal</legend>
+                <div class="pills" data-single="estabilidad">
+                  <button type="button" data-value="Normal">Normal</button>
+                  <button type="button" data-value="Irregular">Irregular</button>
+                  <button type="button" data-value="Cruzada">Cruzada</button>
+                </div>
+              </fieldset>
+              <fieldset>
+                <legend>Clasificación de Angle</legend>
+                <div class="pills" data-single="angle">
+                  <button type="button" data-value="Clase I">Clase I</button>
+                  <button type="button" data-value="Clase II">Clase II</button>
+                  <button type="button" data-value="Clase III">Clase III</button>
+                </div>
+              </fieldset>
+              <fieldset>
+                <legend>Configuración esqueletal</legend>
+                <div class="pills" data-single="esqueletal">
+                  <button type="button" data-value="Ortognata">Ortognata</button>
+                  <button type="button" data-value="Retrognata">Retrognata</button>
+                  <button type="button" data-value="Prognata">Prognata</button>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" data-panel="4" hidden>
+          <fieldset class="cdi">
+            <legend>Grupo I: trastornos musculares</legend>
+            <label class="check"><input type="checkbox" name="cdi" value="I.a"> I.a) Dolor miofascial sin limitación de apertura</label>
+            <label class="check"><input type="checkbox" name="cdi" value="I.b"> I.b) Dolor miofascial con limitación de apertura</label>
+          </fieldset>
+          <fieldset class="cdi">
+            <legend>Grupo II: desplazamientos del disco</legend>
+            <label class="check"><input type="checkbox" name="cdi" value="II.a"> II.a) Desplazamiento discal con recaptura</label>
+            <label class="check"><input type="checkbox" name="cdi" value="II.b"> II.b) Desplazamiento discal sin recaptura con limitación de apertura</label>
+            <label class="check"><input type="checkbox" name="cdi" value="II.c"> II.c) Desplazamiento discal sin recaptura sin limitación de apertura</label>
+          </fieldset>
+          <fieldset class="cdi">
+            <legend>Grupo III: artralgia, artrosis y osteoartritis</legend>
+            <label class="check"><input type="checkbox" name="cdi" value="III.a"> III.a) Artralgia</label>
+            <label class="check"><input type="checkbox" name="cdi" value="III.b"> III.b) Artrosis de la ATM</label>
+            <label class="check"><input type="checkbox" name="cdi" value="III.c"> III.c) Osteoartritis de la ATM</label>
+          </fieldset>
+          <div class="grid-2">
+            <label>Observaciones clínicas / diagnósticos diferenciales
+              <textarea name="observaciones" rows="5" placeholder="Notas adicionales, evolución, pruebas complementarias..."></textarea>
+            </label>
+            <label>Plan de tratamiento / recomendaciones
+              <textarea name="plan" rows="5" placeholder="Terapia manual, ejercicios, férula, pautas de autocuidado, derivaciones..."></textarea>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-footer">
+          <button type="button" class="btn ghost" id="btn-prev">← Anterior</button>
+          <button type="button" class="btn light" id="btn-next">Siguiente →</button>
+          <button type="submit" class="btn green">Guardar ficha</button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <div id="print-root"></div>
+  <script src="app.js"></script>
+</body>
+</html>
