@@ -34,7 +34,7 @@ async function api(path, options = {}) {
   if (options.body) headers["Content-Type"] = "application/json";
   const res = await fetch(`api/${path}`, { credentials: "same-origin", ...options, headers });
   const data = await res.json().catch(() => ({}));
-  if (res.status === 401) {
+  if (res.status === 401 && !data.error) {
     authed = false;
     showGate(data);
     const error = new Error("auth");
