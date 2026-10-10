@@ -319,7 +319,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
   .steps { border-radius: 16px; }
 }
 
-@page { size: A4; margin: 18mm 16mm 16mm; }
+@page { size: A4; margin: 0; }
 
 @media print {
   body { background: #fff; }
@@ -328,6 +328,8 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 
   .print-sheet {
     break-after: page;
+    box-sizing: border-box;
+    padding: 14mm 18mm 12mm;
     color: #1f2937;
     font-family: "Roboto", sans-serif;
     font-size: 10.5pt;
