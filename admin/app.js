@@ -811,8 +811,15 @@ function showCompare(pKey, preferredXId, preferredYId) {
   libraryView.hidden = true;
   formView.hidden = true;
   if (compareView) compareView.hidden = false;
-  comparePatient = pKey;
-  populateCompareSessions(pKey, preferredXId, preferredYId);
+  let resolvedKey = pKey;
+  if (typeof pKey === "object" && pKey !== null) {
+    resolvedKey = patientKey(pKey);
+  } else if (pKey && loadAll().some((f) => f.id === pKey)) {
+    const found = loadAll().find((f) => f.id === pKey);
+    resolvedKey = patientKey(found);
+  }
+  comparePatient = resolvedKey;
+  populateCompareSessions(resolvedKey, preferredXId, preferredYId);
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -905,8 +912,14 @@ function renderCompareContent() {
 
   if (compareBanner) {
     if (isSame) {
-      compareBanner.className = "compare-banner is-same-session";
-      compareBanner.innerHTML = `<span><strong>Misma sesión seleccionada (${formatDate(sessionX.fechaSesion)}):</strong> Elegí una sesión distinta en «Sesión base» o «Sesión comparada» para ver la evolución.</span>`;
+      const patientSessions = loadAll().filter((f) => patientKey(f) === patientKey(sessionX));
+      if (patientSessions.length <= 1) {
+        compareBanner.className = "compare-banner is-same-session";
+        compareBanner.innerHTML = `<span><strong>Solo hay 1 sesión registrada (${formatDate(sessionX.fechaSesion)}):</strong> Se necesitan al menos 2 sesiones para contrastar la evolución. Abajo podés ver todos los valores registrados.</span>`;
+      } else {
+        compareBanner.className = "compare-banner is-same-session";
+        compareBanner.innerHTML = `<span><strong>Misma sesión seleccionada (${formatDate(sessionX.fechaSesion)}):</strong> Elegí una sesión distinta en «Sesión base» o «Sesión comparada» para ver la evolución.</span>`;
+      }
     } else {
       compareBanner.className = "compare-banner";
       const daysLabel = res.daysBetween != null ? `Lapso transcurrido: <strong>${res.daysBetween} días</strong>` : "Sin fechas comparables";

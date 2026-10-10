@@ -252,5 +252,13 @@ assert.match(app, /renderCompareContent/);
 assert.match(app, /printCompare/);
 assert.match(app, /btn-compare-swap/);
 
+// Verificación de integridad estructural del DOM
+const openSections = (html.match(/<section/g) || []).length;
+const closeSections = (html.match(/<\/section>/g) || []).length;
+assert.equal(openSections, closeSections, "Todas las secciones deben estar correctamente balanceadas");
+
+const formClosePos = html.indexOf('</section>\n\n    <section id="view-compare"');
+assert.ok(formClosePos > 0, "#view-form debe cerrarse antes de iniciar #view-compare");
+
 console.log("fichas ATM: ok");
 
