@@ -35,6 +35,31 @@
           </label>
           <p id="login-error" class="gate-error" hidden></p>
           <button type="submit" class="btn green">Entrar</button>
+          <button type="button" class="btn ghost" id="btn-forgot">Olvidé mi contraseña</button>
+        </div>
+      </form>
+      <form id="forgot-form" class="hero-card gate-card" hidden>
+        <div class="gate-fields">
+          <p>Te mandamos un enlace para elegir una contraseña nueva. Dura 30 minutos.</p>
+          <label>Usuario
+            <input name="username" autocomplete="username" required>
+          </label>
+          <p id="forgot-error" class="gate-error" hidden></p>
+          <button type="submit" class="btn green">Enviar enlace</button>
+          <button type="button" class="btn ghost" id="btn-forgot-back">Volver</button>
+        </div>
+      </form>
+      <form id="reset-form" class="hero-card gate-card" hidden>
+        <div class="gate-fields">
+          <p>Elegí una contraseña de al menos 10 caracteres.</p>
+          <label>Contraseña nueva
+            <input name="password" type="password" autocomplete="new-password" minlength="10" required>
+          </label>
+          <label>Repetir contraseña
+            <input name="confirm" type="password" autocomplete="new-password" minlength="10" required>
+          </label>
+          <p id="reset-error" class="gate-error" hidden></p>
+          <button type="submit" class="btn green">Guardar contraseña</button>
         </div>
       </form>
       <form id="enroll-form" class="hero-card gate-card" hidden>
@@ -341,6 +366,6 @@
   </main>
 
   <div id="print-root"></div>
-  <script type="module" src="/admin/app.js?v=24"></script>
+  <script type="module" src="/admin/app.js?v=25"></script>
 </body>
 </html>

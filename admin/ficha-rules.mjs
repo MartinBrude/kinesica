@@ -33,12 +33,13 @@ export function ageOn(nacimiento, onDate) {
   return age >= 0 ? String(age) : "";
 }
 
+const PATIENT_FIELDS = ["nombre", "dni", "nacimiento", "lugarNac"];
+
 export function nextSession(item, fechaSesion) {
-  const copy = { ...item, fechaSesion };
-  delete copy.id;
-  delete copy.savedAt;
-  const edad = ageOn(item?.nacimiento, fechaSesion);
-  if (edad) copy.edad = edad;
+  const copy = emptyFicha();
+  for (const key of PATIENT_FIELDS) copy[key] = item?.[key] || "";
+  copy.fechaSesion = fechaSesion || "";
+  copy.edad = ageOn(item?.nacimiento, fechaSesion);
   return copy;
 }
 

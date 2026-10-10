@@ -205,6 +205,39 @@ function login_register_failure(string $username): void
         ]);
 }
 
+function send_mail(string $to, string $subject, string $body): bool
+{
+    $from = (string) (cfg()['mail_from'] ?? '');
+    if ($from === '' || $to === '') {
+        return false;
+    }
+    $encoded = '=?UTF-8?B?' . base64_encode($subject) . '?=';
+    $headers = "From: Kinésica <{$from}>\r\nContent-Type: text/plain; charset=UTF-8\r\n";
+    return mail($to, $encoded, $body, $headers);
+}
+
+function user_email(string $username): string
+{
+    $emails = cfg()['user_emails'] ?? [];
+    return (string) ($emails[$username] ?? '');
+}
+
+function ensure_password_resets(): void
+{
+    static $ready = false;
+    if ($ready) {
+        return;
+    }
+    db()->exec(
+        'CREATE TABLE IF NOT EXISTS password_resets (
+            token_hash CHAR(64) PRIMARY KEY,
+            username VARCHAR(32) NOT NULL,
+            expires_at DATETIME NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4'
+    );
+    $ready = true;
+}
+
 function login_clear_failures(string $username): void
 {
     $key = login_attempt_key($username);

@@ -1,4 +1,4 @@
-import { exampleFicha, missingFields, emptyFicha, ownsFicha, nextSession } from "./ficha-rules.mjs?v=22";
+import { exampleFicha, missingFields, emptyFicha, ownsFicha, nextSession } from "./ficha-rules.mjs?v=23";
 
 let cache = [];
 let authed = false;
@@ -63,8 +63,12 @@ function showGate(data) {
   document.querySelector("#view-gate").hidden = false;
   document.querySelector("#btn-logout").hidden = true;
   const enroll = Boolean(data && data.enroll);
-  document.querySelector("#login-form").hidden = enroll;
+  const forgot = Boolean(data && data.forgot);
+  const reset = Boolean(data && data.reset);
+  document.querySelector("#login-form").hidden = enroll || forgot || reset;
   document.querySelector("#enroll-form").hidden = !enroll;
+  document.querySelector("#forgot-form").hidden = !forgot;
+  document.querySelector("#reset-form").hidden = !reset;
   if (enroll) {
     document.querySelector("#enroll-account").textContent = data.account || "Kinésica";
     const secret = data.secret || "";
@@ -626,8 +630,25 @@ document.querySelector("#file-open").addEventListener("change", async (event) =>
     window.alert("El archivo no es un JSON válido.");
     return;
   }
-  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+  if (!parsed || typeof parsed !== "object") {
     window.alert("El archivo no es una ficha.");
+    return;
+  }
+  if (Array.isArray(parsed)) {
+    const fichas = parsed.filter((item) => item && typeof item === "object" && !Array.isArray(item));
+    if (!fichas.length) {
+      window.alert("El archivo no tiene fichas.");
+      return;
+    }
+    try {
+      for (const item of fichas) {
+        await upsert({ ...blank(), ...item, id: item.id || crypto.randomUUID() });
+      }
+      showLibrary();
+      window.alert(fichas.length === 1 ? "Se cargó 1 ficha." : `Se cargaron ${fichas.length} fichas.`);
+    } catch (error) {
+      if (!error.auth) window.alert(error.message);
+    }
     return;
   }
   const data = { ...blank(), ...parsed, id: parsed.id || crypto.randomUUID() };
@@ -637,6 +658,50 @@ document.querySelector("#file-open").addEventListener("change", async (event) =>
   const missing = missingFields(data);
   if (missing.length) {
     window.alert(`El archivo se abrió, pero falta completar: ${missing.join(", ")}.`);
+  }
+});
+
+document.querySelector("#btn-forgot").addEventListener("click", () => showGate({ forgot: true }));
+document.querySelector("#btn-forgot-back").addEventListener("click", () => showGate({ login: true }));
+document.querySelector("#forgot-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const error = document.querySelector("#forgot-error");
+  error.hidden = true;
+  try {
+    const data = await api("forgot.php", {
+      method: "POST",
+      body: JSON.stringify({ username: event.target.username.value }),
+    });
+    error.textContent = data.message || "Si el usuario tiene correo, te llega un enlace en unos minutos.";
+    error.hidden = false;
+  } catch (err) {
+    error.textContent = err.message;
+    error.hidden = false;
+  }
+});
+document.querySelector("#reset-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const error = document.querySelector("#reset-error");
+  error.hidden = true;
+  const password = event.target.password.value;
+  if (password !== event.target.confirm.value) {
+    error.textContent = "Las contraseñas no coinciden.";
+    error.hidden = false;
+    return;
+  }
+  try {
+    await api("reset.php", {
+      method: "POST",
+      body: JSON.stringify({ token: event.target.dataset.token, password }),
+    });
+    history.replaceState(null, "", location.pathname);
+    showGate({ login: true });
+    const loginError = document.querySelector("#login-error");
+    loginError.textContent = "Contraseña actualizada. Entrá con la nueva.";
+    loginError.hidden = false;
+  } catch (err) {
+    error.textContent = err.message;
+    error.hidden = false;
   }
 });
 
@@ -697,6 +762,12 @@ document.querySelector("#btn-pdf-all").addEventListener("click", () => {
 document.querySelector("#btn-pdf-one").addEventListener("click", () => printItems([readForm()]));
 
 fillForm(blank());
+const resetToken = new URLSearchParams(location.search).get("reset");
+if (resetToken) {
+  document.querySelector("#reset-form").dataset.token = resetToken;
+  showGate({ reset: true });
+}
 refresh().catch((error) => {
+  if (resetToken) return;
   if (!error.auth) showGate({ login: true });
 });
