@@ -160,6 +160,7 @@ input[type="text"],
 input[type="password"],
 input[type="date"],
 input:not([type]),
+select,
 textarea,
 input[inputmode] {
   width: 100%;

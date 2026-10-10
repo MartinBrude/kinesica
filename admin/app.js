@@ -204,6 +204,7 @@ initForm({
   onExportJson: (data) => {
     downloadJSON(data, todayISO());
   },
+  getSessionUser,
 });
 
 // Inicializar la biblioteca de historias clínicas

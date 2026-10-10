@@ -30,6 +30,7 @@ let step = 0;
 let currentId = null;
 let formBaseline = "";
 const singles = {};
+let activeSessionUserGetter = null;
 
 /**
  * Devuelve la fecha de hoy en formato ISO (YYYY-MM-DD).
@@ -75,6 +76,9 @@ export function readForm() {
   }
   raw.cdi = [...form.querySelectorAll('input[name="cdi"]:checked')].map((el) => el.value);
   if (evaInput) raw.eva = evaInput.value;
+  if (document.querySelector("#field-profesional")?.hidden) {
+    delete raw.profesional;
+  }
   return coerceFicha(raw);
 }
 
@@ -126,6 +130,16 @@ export function fillForm(data, allFichas = []) {
   syncFollowups();
   syncEva();
   updateStepValidation();
+
+  const sessionUser = typeof activeSessionUserGetter === "function" ? activeSessionUserGetter() : null;
+  const isAdmin = sessionUser?.username === "martin";
+  const profField = document.querySelector("#field-profesional");
+  if (profField) {
+    profField.hidden = !isAdmin;
+  }
+  if (form.elements.profesional) {
+    form.elements.profesional.value = data.profesional || (sessionUser?.username === "maria" ? "maria" : "norberto");
+  }
 
   const pSessions = (data.dni || data.nombre)
     ? allFichas.filter((f) => patientKey(f) === patientKey(data))
@@ -264,8 +278,9 @@ export function setCurrentId(id) {
  * @param {(items: object[]) => void} callbacks.onPrint Impresión de la ficha actual
  * @param {(data: object) => void} callbacks.onExportJson Exportación JSON de la ficha actual
  */
-export function initForm({ onSave, onBack, onCompare, onPrint, onExportJson }) {
+export function initForm({ onSave, onBack, onCompare, onPrint, onExportJson, getSessionUser }) {
   if (!form) return;
+  activeSessionUserGetter = getSessionUser;
 
   // Botones de selección única (data-single)
   document.querySelectorAll("[data-single]").forEach((group) => {

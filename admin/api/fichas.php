@@ -49,8 +49,17 @@ if ($method === 'POST') {
     $existing = $pdo->prepare('SELECT profesional FROM fichas WHERE id = :id');
     $existing->execute(['id' => $id]);
     $previous = $existing->fetchColumn();
-    if ($previous !== false && $previous !== '') {
-        if ($auth['username'] !== 'martin' && $auth['username'] !== (string) $previous) {
+    if ($auth['username'] === 'martin') {
+        $requested = (string) ($data['profesional'] ?? '');
+        if (isset($clinicians[$requested])) {
+            $profesional = $requested;
+        } elseif ($previous !== false && $previous !== '' && isset($clinicians[(string) $previous])) {
+            $profesional = (string) $previous;
+        } else {
+            $profesional = 'norberto';
+        }
+    } elseif ($previous !== false && $previous !== '') {
+        if ($auth['username'] !== (string) $previous) {
             json_out(403, ['error' => 'No tienes permiso para modificar esta ficha']);
         }
         $profesional = (string) $previous;

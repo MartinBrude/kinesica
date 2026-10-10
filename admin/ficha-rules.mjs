@@ -117,7 +117,10 @@ export function nextSession(item, fechaSesion) {
   return copy;
 }
 
-export function assignProfesional(username, previous) {
+export function assignProfesional(username, previous, requested) {
+  if (username === "martin" && requested && CLINICIANS[requested]) {
+    return requested;
+  }
   if (previous) return String(previous);
   if (username === "maria") return "maria";
   return "norberto";
