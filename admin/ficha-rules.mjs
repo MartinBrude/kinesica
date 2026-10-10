@@ -82,6 +82,26 @@ export function emptyFicha() {
   };
 }
 
+export function demoSessions() {
+  const base = exampleFicha();
+  const sessions = [
+    ["2026-10-10", ["I.a", "II.a"], 6],
+    ["2026-10-03", ["I.a", "II.a"], 5],
+    ["2026-09-26", ["I.a"], 4],
+    ["2026-09-19", ["I.b", "II.a"], 7],
+    ["2026-09-12", ["II.a", "III.a"], 8],
+  ];
+  return sessions.map(([fechaSesion, cdi, eva], index) => ({
+    ...base,
+    id: `demo-${index + 1}`,
+    fechaSesion,
+    cdi,
+    eva,
+    profesional: "norberto",
+    profesionalNombre: "Norberto",
+  }));
+}
+
 export function exampleFicha() {
   return {
     nombre: "Carolina Méndez",

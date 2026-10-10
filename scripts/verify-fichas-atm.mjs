@@ -10,6 +10,7 @@ import {
   exampleFicha,
   missingFields,
   ownsFicha,
+  demoSessions,
 } from "../admin/ficha-rules.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -47,6 +48,10 @@ assert.equal(assignProfesional("martin", "maria"), "maria", "Editar no cambia el
 assert.equal(ownsFicha({ profesional: "maria" }, "maria"), true);
 assert.equal(ownsFicha({ profesional: "norberto" }, "maria"), false);
 assert.match(html, /id="only-mine" checked/);
+assert.match(html, /id="btn-demo"/);
+const demo = demoSessions();
+assert.equal(demo.length, 5);
+assert.equal(new Set(demo.map((item) => item.dni)).size, 1);
 assert.match(app, /onlyMineInput\.checked = sessionUser\.username === "norberto" \|\| sessionUser\.username === "maria"/);
 assert.equal(CLINICIANS.martin, undefined);
 
