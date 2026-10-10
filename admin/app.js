@@ -1,4 +1,4 @@
-import { exampleFicha, missingFields, emptyFicha, ownsFicha } from "./ficha-rules.mjs";
+import { exampleFicha, missingFields, emptyFicha, ownsFicha } from "./ficha-rules.mjs?v=9";
 
 let cache = [];
 let authed = false;
