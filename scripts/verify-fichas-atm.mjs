@@ -49,6 +49,8 @@ assert.equal(ownsFicha({ profesional: "maria" }, "maria"), true);
 assert.equal(ownsFicha({ profesional: "norberto" }, "maria"), false);
 assert.match(html, /id="only-mine" checked/);
 assert.match(html, /id="btn-demo"/);
+assert.match(html, /id="btn-group"/);
+assert.match(html, /Agrupar por paciente/);
 const demo = demoSessions();
 assert.equal(demo.length, 5);
 assert.equal(new Set(demo.map((item) => item.dni)).size, 1);

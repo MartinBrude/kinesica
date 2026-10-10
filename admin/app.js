@@ -30,6 +30,8 @@ let currentId = null;
 const singles = {};
 
 let demoItems = null;
+let grouped = false;
+let focusedPatient = null;
 
 function loadAll() {
   return demoItems || cache;
@@ -196,8 +198,54 @@ function visibleFichas() {
     .sort((a, b) => (b.fechaSesion || "").localeCompare(a.fechaSesion || ""));
 }
 
+function fichaRow(item) {
+  const row = document.createElement("article");
+  row.className = "card-row";
+  const cdi = (item.cdi || []).join(", ") || "Sin criterio CDI";
+  row.innerHTML = `<div><h3></h3><p></p></div><div class="row-controls"></div>`;
+  row.querySelector("h3").textContent = item.nombre || "Sin nombre";
+  row.querySelector("p").textContent = `${item.profesionalNombre || "Sin profesional"} · ${formatDate(item.fechaSesion)} · DNI ${item.dni || "—"} · ${cdi}`;
+  const actions = row.querySelector(".row-controls");
+  const open = document.createElement("button");
+  open.type = "button";
+  open.className = "btn light";
+  open.textContent = "Abrir";
+  open.addEventListener("click", () => {
+    fillForm(item);
+    step = 0;
+    showForm();
+  });
+  const pdf = document.createElement("button");
+  pdf.type = "button";
+  pdf.className = "btn green";
+  pdf.textContent = "PDF";
+  pdf.addEventListener("click", () => printItems([item]));
+  const del = document.createElement("button");
+  del.type = "button";
+  del.className = "btn ghost";
+  del.textContent = "Quitar";
+  del.addEventListener("click", () => {
+    if (demoItems) {
+      demoItems = demoItems.filter((row) => row.id !== item.id);
+      if (!demoItems.length) demoItems = null;
+      const demoBtn = document.querySelector("#btn-demo");
+      if (!demoItems) demoBtn.textContent = "Ver 5 sesiones";
+      renderLibrary();
+      return;
+    }
+    api(`fichas.php?id=${encodeURIComponent(item.id)}`, { method: "DELETE" })
+      .then(() => refresh())
+      .catch((error) => { if (!error.auth) window.alert(error.message); });
+  });
+  actions.append(open, pdf, del);
+  return row;
+}
+
 function renderLibrary() {
-  const items = visibleFichas();
+  const allVisible = visibleFichas();
+  const items = focusedPatient
+    ? allVisible.filter((item) => patientKey(item) === focusedPatient)
+    : allVisible;
 
   const patients = new Map();
   for (const item of items) {
@@ -215,54 +263,57 @@ function renderLibrary() {
   if ([...patientSelect.options].some((o) => o.value === previous)) patientSelect.value = previous;
 
   listEl.innerHTML = "";
+  if (focusedPatient) {
+    const back = document.createElement("button");
+    back.type = "button";
+    back.className = "btn light";
+    back.textContent = "← Todos los pacientes";
+    back.addEventListener("click", () => {
+      focusedPatient = null;
+      renderLibrary();
+    });
+    listEl.append(back);
+  }
   if (!items.length) {
-    listEl.innerHTML = onlyMineInput.checked
+    listEl.insertAdjacentHTML("beforeend", onlyMineInput.checked
       ? '<p class="empty">No hay fichas tuyas. Destildá «Ver solo mis pacientes» para ver todas.</p>'
-      : '<p class="empty">Todavía no hay fichas. Creá una nueva o abrí un archivo .json.</p>';
+      : '<p class="empty">Todavía no hay fichas. Creá una nueva o abrí un archivo .json.</p>');
     return;
   }
-  for (const item of items) {
-    const row = document.createElement("article");
-    row.className = "card-row";
-    const cdi = (item.cdi || []).join(", ") || "Sin criterio CDI";
-    row.innerHTML = `<div><h3></h3><p></p></div><div class="row-controls"></div>`;
-    row.querySelector("h3").textContent = item.nombre || "Sin nombre";
-    row.querySelector("p").textContent = `${item.profesionalNombre || "Sin profesional"} · ${formatDate(item.fechaSesion)} · DNI ${item.dni || "—"} · ${cdi}`;
-    const actions = row.querySelector(".row-controls");
-    const open = document.createElement("button");
-    open.type = "button";
-    open.className = "btn light";
-    open.textContent = "Abrir";
-    open.addEventListener("click", () => {
-      fillForm(item);
-      step = 0;
-      showForm();
-    });
-    const pdf = document.createElement("button");
-    pdf.type = "button";
-    pdf.className = "btn green";
-    pdf.textContent = "PDF";
-    pdf.addEventListener("click", () => printItems([item]));
-    const del = document.createElement("button");
-    del.type = "button";
-    del.className = "btn ghost";
-    del.textContent = "Quitar";
-    del.addEventListener("click", () => {
-      if (demoItems) {
-        demoItems = demoItems.filter((row) => row.id !== item.id);
-        if (!demoItems.length) demoItems = null;
-        const demoBtn = document.querySelector("#btn-demo");
-        if (!demoItems) demoBtn.textContent = "Ver 5 sesiones";
+  if (grouped && !focusedPatient) {
+    const groups = new Map();
+    for (const item of items) {
+      const key = patientKey(item);
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(item);
+    }
+    for (const [key, sessions] of groups) {
+      const latest = sessions[0];
+      const row = document.createElement("article");
+      row.className = "card-row";
+      row.innerHTML = `<div><h3></h3><p></p></div><div class="row-controls"></div>`;
+      row.querySelector("h3").textContent = latest.nombre || "Sin nombre";
+      const count = sessions.length === 1 ? "1 ficha" : `${sessions.length} fichas`;
+      row.querySelector("p").textContent = `${count} · última ${formatDate(latest.fechaSesion)} · DNI ${latest.dni || "—"}`;
+      const open = document.createElement("button");
+      open.type = "button";
+      open.className = "btn light";
+      open.textContent = "Ver fichas";
+      open.addEventListener("click", () => {
+        focusedPatient = key;
         renderLibrary();
-        return;
-      }
-      api(`fichas.php?id=${encodeURIComponent(item.id)}`, { method: "DELETE" })
-        .then(() => refresh())
-        .catch((error) => { if (!error.auth) window.alert(error.message); });
-    });
-    actions.append(open, pdf, del);
-    listEl.append(row);
+      });
+      row.querySelector(".row-controls").append(open);
+      row.addEventListener("click", (event) => {
+        if (event.target.closest("button")) return;
+        focusedPatient = key;
+        renderLibrary();
+      });
+      listEl.append(row);
+    }
+    return;
   }
+  for (const item of items) listEl.append(fichaRow(item));
 }
 
 function downloadJSON(data) {
@@ -526,6 +577,15 @@ document.querySelector("#btn-demo").addEventListener("click", () => {
   showLibrary();
 });
 onlyMineInput.addEventListener("change", renderLibrary);
+document.querySelector("#btn-group").addEventListener("click", () => {
+  grouped = !grouped;
+  focusedPatient = null;
+  const button = document.querySelector("#btn-group");
+  button.textContent = grouped ? "Ver todas las fichas" : "Agrupar por paciente";
+  button.classList.toggle("green", grouped);
+  button.classList.toggle("light", !grouped);
+  renderLibrary();
+});
 
 document.querySelector("#btn-clear").addEventListener("click", () => {
   const id = currentId;
