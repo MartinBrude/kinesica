@@ -31,7 +31,7 @@ a { color: inherit; }
 .topbar {
   position: sticky;
   top: 0;
-  z-index: 5;
+  z-index: 20;
   display: flex;
   align-items: center;
   gap: 18px;
