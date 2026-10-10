@@ -20,6 +20,8 @@ const formView = document.querySelector("#view-form");
 const listEl = document.querySelector("#library-list");
 const patientSelect = document.querySelector("#pdf-patient");
 const searchInput = document.querySelector("#search");
+const pageSizeSelect = document.querySelector("#page-size");
+const libraryPager = document.querySelector("#library-pager");
 const mineButton = document.querySelector("#btn-mine");
 const eva = form.elements.eva;
 const evaValue = document.querySelector("#eva-value");
@@ -32,6 +34,7 @@ const singles = {};
 
 let grouped = false;
 let focusedPatient = null;
+let page = 0;
 
 function loadAll() {
   return cache;
@@ -301,24 +304,26 @@ function renderLibrary() {
     back.textContent = "← Todos los pacientes";
     back.addEventListener("click", () => {
       focusedPatient = null;
+      page = 0;
       renderLibrary();
     });
     listEl.append(back);
   }
+  pageSizeSelect.hidden = items.length <= 20;
+  if (items.length <= 20) page = 0;
   if (!items.length) {
+    libraryPager.hidden = true;
     listEl.insertAdjacentHTML("beforeend", onlyMine
       ? '<p class="empty">No hay fichas tuyas. Tocá «Ver todos los pacientes» para ver el resto.</p>'
       : '<p class="empty">Todavía no hay fichas. Creá una nueva o abrí un archivo .json.</p>');
     return;
   }
   if (grouped && !focusedPatient) {
-    const groups = new Map();
-    for (const item of items) {
-      const key = patientKey(item);
-      if (!groups.has(key)) groups.set(key, []);
-      groups.get(key).push(item);
-    }
-    for (const [key, sessions] of groups) {
+    const groups = [...new Map(items.map((item) => [patientKey(item), []])).keys()].map((key) => {
+      return [key, items.filter((item) => patientKey(item) === key)];
+    });
+    const slice = pageWindow(groups);
+    for (const [key, sessions] of slice) {
       const latest = sessions[0];
       const row = document.createElement("article");
       row.className = "card-row";
@@ -332,19 +337,50 @@ function renderLibrary() {
       open.textContent = "Ver fichas";
       open.addEventListener("click", () => {
         focusedPatient = key;
+        page = 0;
         renderLibrary();
       });
       row.querySelector(".row-controls").append(open);
       row.addEventListener("click", (event) => {
         if (event.target.closest("button")) return;
         focusedPatient = key;
+        page = 0;
         renderLibrary();
       });
       listEl.append(row);
     }
     return;
   }
-  for (const item of items) listEl.append(fichaRow(item));
+  for (const item of pageWindow(items)) listEl.append(fichaRow(item));
+}
+
+function pageWindow(rows) {
+  const size = Number(pageSizeSelect.value);
+  libraryPager.innerHTML = "";
+  if (!size || rows.length <= size) {
+    libraryPager.hidden = true;
+    page = 0;
+    return rows;
+  }
+  const pages = Math.ceil(rows.length / size);
+  if (page > pages - 1) page = pages - 1;
+  libraryPager.hidden = false;
+  const prev = document.createElement("button");
+  prev.type = "button";
+  prev.className = "btn light";
+  prev.textContent = "← Anterior";
+  prev.disabled = page === 0;
+  prev.addEventListener("click", () => { page -= 1; renderLibrary(); });
+  const label = document.createElement("span");
+  label.textContent = `${page + 1} / ${pages}`;
+  const next = document.createElement("button");
+  next.type = "button";
+  next.className = "btn light";
+  next.textContent = "Siguiente →";
+  next.disabled = page >= pages - 1;
+  next.addEventListener("click", () => { page += 1; renderLibrary(); });
+  libraryPager.append(prev, label, next);
+  return rows.slice(page * size, page * size + size);
 }
 
 function downloadJSON(data) {
@@ -609,16 +645,19 @@ document.querySelector("#btn-new").addEventListener("click", () => {
 
 document.querySelector("#btn-prev").addEventListener("click", () => showStep(Math.max(0, step - 1)));
 document.querySelector("#btn-next").addEventListener("click", () => showStep(Math.min(4, step + 1)));
-searchInput.addEventListener("input", renderLibrary);
+searchInput.addEventListener("input", () => { page = 0; renderLibrary(); });
+pageSizeSelect.addEventListener("change", () => { page = 0; renderLibrary(); });
 mineButton.addEventListener("click", () => {
   onlyMine = !onlyMine;
   focusedPatient = null;
+  page = 0;
   syncMineButton();
   renderLibrary();
 });
 document.querySelector("#btn-group").addEventListener("click", () => {
   grouped = !grouped;
   focusedPatient = null;
+  page = 0;
   const button = document.querySelector("#btn-group");
   button.textContent = grouped ? "Ver todas las fichas" : "Agrupar por paciente";
   button.classList.toggle("green", grouped);
