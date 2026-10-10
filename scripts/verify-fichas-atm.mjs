@@ -71,6 +71,8 @@ assert.equal(followUp.id, undefined);
 assert.match(html, /id="btn-export"/);
 assert.match(app, /function downloadJSON/);
 assert.match(app, /textContent = "JSON"/);
+assert.match(html, /id="btn-seed" hidden/);
+assert.match(app, /sessionUser.username !== "martin"/);
 assert.match(app, /textContent = "Nueva ficha"/);
 assert.match(app, /nextSession\(item, todayISO\(\)\)/);
 assert.match(app, /¿Quitar la ficha/);

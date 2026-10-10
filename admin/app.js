@@ -98,6 +98,7 @@ async function refresh() {
     mineDefaultApplied = true;
     syncMineButton();
   }
+  document.querySelector("#btn-seed").hidden = sessionUser.username !== "martin";
   cache = await api("fichas.php");
   authed = true;
   hideGate();
@@ -635,6 +636,36 @@ form.addEventListener("submit", async (event) => {
 document.querySelector("#btn-back").addEventListener("click", () => {
   if (formState() !== formBaseline && !window.confirm("¿Volver a las fichas sin guardar?")) return;
   showLibrary();
+});
+
+const SEED_PEOPLE = [
+  ["Lucía Fernández", "30111201"], ["Mateo Ruiz", "30111202"], ["Sofía Álvarez", "30111203"],
+  ["Benjamín Castro", "30111204"], ["Valentina Díaz", "30111205"], ["Joaquín Romero", "30111206"],
+  ["Emma Suárez", "30111207"], ["Bautista Molina", "30111208"], ["Catalina Vargas", "30111209"],
+  ["Thiago Navarro", "30111210"], ["Olivia Pereyra", "30111211"], ["Santino Acosta", "30111212"],
+  ["Isabella Medina", "30111213"], ["Felipe Cabrera", "30111214"], ["Martina Ríos", "30111215"],
+  ["Gael Paredes", "30111216"], ["Renata Quiroga", "30111217"], ["Ian Ferreyra", "30111218"],
+  ["Zoe Maldonado", "30111219"], ["León Herrera", "30111220"],
+];
+
+document.querySelector("#btn-seed").addEventListener("click", async () => {
+  if (sessionUser?.username !== "martin") return;
+  if (!window.confirm("¿Agregar 20 fichas de prueba?")) return;
+  const button = document.querySelector("#btn-seed");
+  button.disabled = true;
+  try {
+    for (let i = 0; i < SEED_PEOPLE.length; i += 1) {
+      const [nombre, dni] = SEED_PEOPLE[i];
+      const day = String(i + 1).padStart(2, "0");
+      const data = { ...blank(), ...exampleFicha(), id: crypto.randomUUID(), nombre, dni, fechaSesion: `2026-09-${day}` };
+      await upsert(data);
+    }
+    showLibrary();
+  } catch (error) {
+    if (!error.auth) window.alert(error.message);
+  } finally {
+    button.disabled = false;
+  }
 });
 
 document.querySelector("#btn-new").addEventListener("click", () => {
