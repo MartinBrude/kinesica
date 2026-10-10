@@ -1,4 +1,4 @@
-import { exampleFicha, missingFields, emptyFicha, ownsFicha, demoSessions } from "./ficha-rules.mjs?v=14";
+import { exampleFicha, missingFields, emptyFicha, ownsFicha } from "./ficha-rules.mjs?v=16";
 
 let cache = [];
 let authed = false;
@@ -29,12 +29,11 @@ let mineDefaultApplied = false;
 let currentId = null;
 const singles = {};
 
-let demoItems = null;
 let grouped = false;
 let focusedPatient = null;
 
 function loadAll() {
-  return demoItems || cache;
+  return cache;
 }
 
 async function api(path, options = {}) {
@@ -190,7 +189,7 @@ function patientKey(item) {
 function visibleFichas() {
   const q = searchInput.value.trim().toLowerCase();
   return loadAll()
-    .filter((item) => demoItems || !onlyMineInput.checked || ownsFicha(item, sessionUser?.username))
+    .filter((item) => !onlyMineInput.checked || ownsFicha(item, sessionUser?.username))
     .filter((item) => {
       const blob = `${item.nombre} ${item.dni}`.toLowerCase();
       return !q || blob.includes(q);
@@ -225,14 +224,8 @@ function fichaRow(item) {
   del.className = "btn ghost";
   del.textContent = "Quitar";
   del.addEventListener("click", () => {
-    if (demoItems) {
-      demoItems = demoItems.filter((row) => row.id !== item.id);
-      if (!demoItems.length) demoItems = null;
-      const demoBtn = document.querySelector("#btn-demo");
-      if (!demoItems) demoBtn.textContent = "Ver 5 sesiones";
-      renderLibrary();
-      return;
-    }
+    const name = item.nombre || "esta ficha";
+    if (!window.confirm(`¿Quitar la ficha de ${name} del ${formatDate(item.fechaSesion)}? Esta acción no se puede deshacer.`)) return;
     api(`fichas.php?id=${encodeURIComponent(item.id)}`, { method: "DELETE" })
       .then(() => refresh())
       .catch((error) => { if (!error.auth) window.alert(error.message); });
@@ -564,18 +557,6 @@ document.querySelector("#btn-new").addEventListener("click", () => {
 document.querySelector("#btn-prev").addEventListener("click", () => showStep(Math.max(0, step - 1)));
 document.querySelector("#btn-next").addEventListener("click", () => showStep(Math.min(4, step + 1)));
 searchInput.addEventListener("input", renderLibrary);
-document.querySelector("#btn-demo").addEventListener("click", () => {
-  const demoBtn = document.querySelector("#btn-demo");
-  if (demoItems) {
-    demoItems = null;
-    demoBtn.textContent = "Ver 5 sesiones";
-  } else {
-    demoItems = demoSessions();
-    onlyMineInput.checked = false;
-    demoBtn.textContent = "Ocultar demo";
-  }
-  showLibrary();
-});
 onlyMineInput.addEventListener("change", renderLibrary);
 document.querySelector("#btn-group").addEventListener("click", () => {
   grouped = !grouped;
