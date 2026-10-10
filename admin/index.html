@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=25">
+  <link rel="stylesheet" href="/admin/styles.css?v=26">
 </head>
 <body>
   <header class="topbar">
@@ -103,6 +103,9 @@
     </section>
 
     <section id="view-form" class="view" hidden>
+      <div class="form-nav">
+        <button type="button" class="btn ghost" id="btn-back">← Fichas</button>
+      </div>
       <nav class="steps" aria-label="Secciones de la ficha">
         <button type="button" data-step="0">1. Paciente</button>
         <button type="button" data-step="1">2. ATM palpación y rango</button>
@@ -112,7 +115,7 @@
       </nav>
 
       <form id="ficha" class="sheet" autocomplete="off" novalidate>
-        <div class="sheet-tools" data-panel="0">
+        <div class="sheet-tools">
           <button type="button" class="btn light" id="btn-example">Cargar ejemplo</button>
           <button type="button" class="btn light" id="btn-clear">Vaciar formulario</button>
           <button type="button" class="btn light" id="btn-export-one">Exportar JSON</button>
@@ -366,6 +369,6 @@
   </main>
 
   <div id="print-root"></div>
-  <script type="module" src="/admin/app.js?v=27"></script>
+  <script type="module" src="/admin/app.js?v=28"></script>
 </body>
 </html>

@@ -225,6 +225,9 @@ main { position: relative; z-index: 5; max-width: 1080px; margin: 0 auto; paddin
 .card-row .btn.ghost { color: var(--primary); }
 .empty { color: var(--muted); padding: 12px; }
 
+.form-nav { margin: 0 0 12px; }
+.form-nav .btn.ghost { color: var(--primary); padding-left: 0; }
+
 .steps {
   display: flex;
   flex-wrap: wrap;

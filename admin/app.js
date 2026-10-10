@@ -167,7 +167,7 @@ function fillForm(data) {
 
 function showStep(index) {
   step = index;
-  document.querySelectorAll(".panel, .sheet-tools").forEach((panel) => {
+  document.querySelectorAll(".panel").forEach((panel) => {
     panel.hidden = Number(panel.dataset.panel) !== index;
   });
   document.querySelectorAll(".steps button").forEach((btn) => {
@@ -183,10 +183,20 @@ function showLibrary() {
   renderLibrary();
 }
 
+let formBaseline = "";
+
+function formState() {
+  const data = readForm();
+  delete data.id;
+  delete data.savedAt;
+  return JSON.stringify(data);
+}
+
 function showForm() {
   libraryView.hidden = true;
   formView.hidden = false;
   showStep(step);
+  formBaseline = formState();
 }
 
 function formatDate(iso) {
@@ -584,6 +594,11 @@ form.addEventListener("submit", async (event) => {
   } catch (error) {
     if (!error.auth) window.alert(error.message);
   }
+});
+
+document.querySelector("#btn-back").addEventListener("click", () => {
+  if (formState() !== formBaseline && !window.confirm("¿Volver a las fichas sin guardar?")) return;
+  showLibrary();
 });
 
 document.querySelector("#btn-new").addEventListener("click", () => {
