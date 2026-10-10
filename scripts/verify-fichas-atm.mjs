@@ -235,20 +235,22 @@ assert.match(html, /id="compare-select-x"/);
 assert.match(html, /id="compare-select-y"/);
 assert.match(html, /id="btn-compare-swap"/);
 assert.match(html, /id="btn-compare-pdf"/);
-assert.match(html, /id="btn-compare-only-changed"/);
-assert.match(html, /id="compare-kpis"/);
-assert.match(html, /id="compare-sections"/);
+assert.match(html, /class="steps compare-steps"/);
+assert.match(html, /data-compare-tab="summary"/);
+assert.match(html, /id="compare-panels-wrap"/);
 assert.match(html, /id="btn-compare-form"/);
 
 assert.match(css, /\.compare-sheet/);
 assert.match(css, /\.compare-session-picker/);
-assert.match(css, /\.diff-row/);
-assert.match(css, /\.diff-badge-changed/);
+assert.match(css, /\.cmp-kpi-card/);
+assert.match(css, /\.cmp-panel/);
+assert.match(css, /\.cmp-field-box/);
 assert.match(css, /\.pf-compare/);
 
 assert.match(app, /compareFichas/);
 assert.match(app, /showCompare/);
 assert.match(app, /renderCompareContent/);
+assert.match(app, /renderCompareTab/);
 assert.match(app, /printCompare/);
 assert.match(app, /btn-compare-swap/);
 

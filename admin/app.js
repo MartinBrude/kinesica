@@ -46,12 +46,11 @@ const compareSelectY = document.querySelector("#compare-select-y");
 const compareSwapBtn = document.querySelector("#btn-compare-swap");
 const compareBackBtn = document.querySelector("#btn-compare-back");
 const comparePdfBtn = document.querySelector("#btn-compare-pdf");
-const compareFilterBtn = document.querySelector("#btn-compare-only-changed");
 const comparePatientName = document.querySelector("#compare-patient-name");
 const comparePatientMeta = document.querySelector("#compare-patient-meta");
 const compareBanner = document.querySelector("#compare-banner");
-const compareKpis = document.querySelector("#compare-kpis");
-const compareSections = document.querySelector("#compare-sections");
+const compareTabCount = document.querySelector("#compare-tab-count");
+const comparePanelsWrap = document.querySelector("#compare-panels-wrap");
 const compareFormBtn = document.querySelector("#btn-compare-form");
 
 let step = 0;
@@ -62,7 +61,7 @@ const singles = {};
 
 let comparePatient = null;
 let comparePreviousView = "library";
-let compareFilterOnlyChanged = false;
+let activeCompareTab = "summary";
 let currentCompareResult = null;
 
 let grouped = false;
@@ -901,14 +900,17 @@ function renderCompareContent() {
       compareBanner.className = "compare-banner is-same-session";
       compareBanner.textContent = "Seleccioná dos sesiones para comparar.";
     }
-    if (compareKpis) compareKpis.innerHTML = "";
-    if (compareSections) compareSections.innerHTML = "";
+    if (comparePanelsWrap) comparePanelsWrap.innerHTML = "";
     return;
   }
 
   const isSame = idX === idY;
   const res = compareFichas(sessionX, sessionY);
   currentCompareResult = res;
+
+  if (compareTabCount) {
+    compareTabCount.textContent = res.totalChanged;
+  }
 
   if (compareBanner) {
     if (isSame) {
@@ -922,130 +924,199 @@ function renderCompareContent() {
       }
     } else {
       compareBanner.className = "compare-banner";
-      const daysLabel = res.daysBetween != null ? `Lapso transcurrido: <strong>${res.daysBetween} días</strong>` : "Sin fechas comparables";
-      const changesLabel = res.totalChanged === 0
-        ? "<strong>Sin modificaciones registradas entre ambas sesiones</strong>"
-        : `<strong>${res.totalChanged} ${res.totalChanged === 1 ? "cambio registrado" : "cambios registrados"}</strong>`;
+      const daysText = res.daysBetween != null ? `${res.daysBetween} días de diferencia` : "Sin fechas";
+      const countText = res.totalChanged === 1 ? "1 cambio registrado" : `${res.totalChanged} cambios registrados`;
       compareBanner.innerHTML = `
-        <span>Comparando <strong>Sesión del ${formatDate(res.sessionX.fechaSesion)}</strong> (base) vs <strong>Sesión del ${formatDate(res.sessionY.fechaSesion)}</strong> (comparada)</span>
-        <span>${daysLabel} · ${changesLabel}</span>
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <span>Comparando <strong>Sesión del ${formatDate(res.sessionX.fechaSesion)}</strong> vs <strong>Sesión del ${formatDate(res.sessionY.fechaSesion)}</strong></span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <span class="compare-badge-pill">📅 ${daysText}</span>
+          <span class="compare-badge-pill" style="background:${res.totalChanged > 0 ? '#dcfce7' : 'var(--pill)'}; color:${res.totalChanged > 0 ? '#166534' : 'var(--muted)'};">⚡ ${countText}</span>
+        </div>
       `;
     }
   }
 
-  renderCompareKpis(res);
-  renderCompareSections(res);
+  renderCompareTab(activeCompareTab, res);
 }
 
-function renderCompareKpis(res) {
-  if (!compareKpis) return;
-  compareKpis.innerHTML = "";
-  const kpis = [
-    { title: "Dolor (EVA)", data: res.kpis.eva, isEva: true },
-    { title: "Apertura libre", data: res.kpis.aperturaLibre, unit: "mm" },
-    { title: "Apertura con dolor", data: res.kpis.aperturaDolor, unit: "mm" },
-    { title: "Ruidos articulares", data: res.kpis.ruidos },
-  ];
+function renderCompareTab(tabKey, res) {
+  if (!comparePanelsWrap) return;
+  comparePanelsWrap.innerHTML = "";
 
-  kpis.forEach(({ title, data, unit = "", isEva }) => {
-    if (!data) return;
-    const card = document.createElement("div");
-    card.className = "compare-kpi-card";
+  if (tabKey === "summary") {
+    // 1. KPIs destacados con estética Kinésica
+    const kpisGrid = document.createElement("div");
+    kpisGrid.className = "cmp-kpis-grid";
 
-    const prevStr = data.previous || "—";
-    const currStr = data.current || "—";
-    const deltaStr = data.delta != null ? ` (${data.delta > 0 ? "+" : ""}${data.delta} ${unit})` : "";
+    const kpiDefs = [
+      { title: "Dolor (EVA)", data: res.kpis.eva },
+      { title: "Apertura libre", data: res.kpis.aperturaLibre },
+      { title: "Apertura con dolor", data: res.kpis.aperturaDolor },
+      { title: "Ruidos articulares", data: res.kpis.ruidos },
+    ];
 
-    let trendClass = "same";
-    let trendText = "Sin variación";
-    if (data.trend === "better") {
-      trendClass = "better";
-      trendText = isEva || title.includes("Apertura") ? "Mejora clínica" : "Mejora";
-    } else if (data.trend === "worse") {
-      trendClass = "worse";
-      trendText = "Empeoramiento";
-    }
+    kpiDefs.forEach(({ title, data }) => {
+      if (!data) return;
+      const card = document.createElement("div");
+      card.className = "cmp-kpi-card";
 
-    card.innerHTML = `
-      <div class="kpi-label">${title}</div>
-      <div class="kpi-values">
-        <span class="kpi-val-prev" title="Sesión base">${escapeHtml(prevStr)}</span>
-        <span class="kpi-arrow">➔</span>
-        <span class="kpi-val-curr" title="Sesión comparada">${escapeHtml(currStr)}</span>
-      </div>
-      <div class="kpi-trend-pill ${trendClass}">${trendText}${deltaStr}</div>
-    `;
-    compareKpis.append(card);
-  });
-}
+      let trendClass = "same";
+      let trendText = "Sin variación";
+      if (data.trend === "better") {
+        trendClass = "better";
+        trendText = "Mejora";
+      } else if (data.trend === "worse") {
+        trendClass = "worse";
+        trendText = "Empeoramiento";
+      }
 
-function renderCompareSections(res) {
-  if (!compareSections) return;
-  compareSections.innerHTML = "";
+      const deltaBadge = data.deltaText ? ` (${data.deltaText})` : "";
 
-  res.sections.forEach((sec) => {
-    const secBox = document.createElement("section");
-    secBox.className = "diff-section";
+      card.innerHTML = `
+        <div class="cmp-kpi-title">${title}</div>
+        <div class="cmp-kpi-vals">
+          <span class="cmp-kpi-prev" title="Sesión inicial">${escapeHtml(data.previous || "—")}</span>
+          <span class="cmp-kpi-arrow">➔</span>
+          <span class="cmp-kpi-curr" title="Sesión de control">${escapeHtml(data.current || "—")}</span>
+        </div>
+        <div class="cmp-trend-tag ${trendClass}">${trendText}${deltaBadge}</div>
+      `;
+      kpisGrid.append(card);
+    });
 
-    const changedCount = sec.fields.filter((f) => f.changed).length;
-    const badgeClass = changedCount > 0 ? "has-changes" : "no-changes";
-    const badgeText = changedCount > 0
-      ? `${changedCount} ${changedCount === 1 ? "cambio" : "cambios"}`
-      : "Sin cambios";
+    comparePanelsWrap.append(kpisGrid);
 
-    secBox.innerHTML = `
-      <header class="diff-section-head">
-        <h3>${escapeHtml(sec.title)}</h3>
-        <span class="diff-count-badge ${badgeClass}">${badgeText}</span>
-      </header>
-      <div class="diff-rows-list"></div>
-    `;
+    // 2. Modificaciones detalladas (LO CENTRAL QUE CAMBIÓ)
+    const allChanged = res.sections.flatMap((sec) =>
+      sec.fields.filter((f) => f.changed).map((f) => ({ ...f, sectionTitle: sec.title }))
+    );
 
-    const list = secBox.querySelector(".diff-rows-list");
+    if (allChanged.length > 0) {
+      const block = document.createElement("div");
+      block.className = "cmp-changes-block";
+      block.innerHTML = `
+        <div class="cmp-changes-block-head">
+          <h3><span class="bar"></span>Lo que cambió entre ambas sesiones (${allChanged.length})</h3>
+          <span style="font-size:12.5px; color:var(--muted);">Parámetros modificados respecto a la sesión inicial</span>
+        </div>
+        <div class="cmp-changes-grid"></div>
+      `;
 
-    sec.fields.forEach((field) => {
-      const row = document.createElement("div");
-      row.className = `diff-row ${field.changed ? "is-changed" : "is-same"}`;
+      const gridEl = block.querySelector(".cmp-changes-grid");
+      allChanged.forEach((f) => {
+        const item = document.createElement("div");
+        item.className = "cmp-change-item";
 
-      if (field.changed) {
-        const deltaHtml = field.delta != null
-          ? `<span class="diff-delta ${field.trend}">(${field.delta > 0 ? "+" : ""}${field.delta} ${field.unit || ""})</span>`
+        let trendClass = "same";
+        let trendLabel = "Modificado";
+        if (f.trend === "better") {
+          trendClass = "better";
+          trendLabel = "Mejora";
+        } else if (f.trend === "worse") {
+          trendClass = "worse";
+          trendLabel = "Empeoramiento";
+        }
+
+        const deltaHtml = f.deltaText
+          ? `<span class="cmp-delta-badge ${trendClass}">${f.deltaText}</span>`
           : "";
-        const trendHtml = field.trend === "better"
-          ? `<span class="diff-trend trend-better">Mejora</span>`
-          : (field.trend === "worse" ? `<span class="diff-trend trend-worse">Empeoramiento</span>` : "");
 
-        row.innerHTML = `
-          <div class="diff-field-name">
-            <span>${escapeHtml(field.label)}</span>
-            <span class="diff-badge-changed">Modificado</span>
+        item.innerHTML = `
+          <div class="cmp-change-info">
+            <span class="cmp-change-sec-tag">${escapeHtml(f.sectionTitle)}</span>
+            <span class="cmp-change-label">${escapeHtml(f.label)}</span>
           </div>
-          <div class="diff-body">
-            <div class="diff-values">
-              <span class="diff-from" title="Sesión base (X)">${escapeHtml(field.previous || "—")}</span>
-              <span class="diff-arrow">➔</span>
-              <span class="diff-to" title="Sesión comparada (Y)">${escapeHtml(field.current || "—")}</span>
+          <div class="cmp-change-transition">
+            <div class="cmp-trans-box">
+              <span class="cmp-trans-from" title="Sesión inicial">${escapeHtml(f.previous || "—")}</span>
+              <span class="cmp-trans-arrow">➔</span>
+              <span class="cmp-trans-to" title="Sesión de control">${escapeHtml(f.current || "—")}</span>
             </div>
             ${deltaHtml}
-            ${trendHtml}
+            <span class="cmp-trend-tag ${trendClass}">${trendLabel}</span>
+          </div>
+        `;
+        gridEl.append(item);
+      });
+
+      comparePanelsWrap.append(block);
+    } else {
+      const empty = document.createElement("div");
+      empty.className = "cmp-summary-empty";
+      empty.innerHTML = `
+        <h3>Sin modificaciones registradas</h3>
+        <p>Todos los ítems del formulario mantuvieron el mismo estado. Podés navegar por las pestañas superiores para revisar los valores de cada sección.</p>
+      `;
+      comparePanelsWrap.append(empty);
+    }
+    return;
+  }
+
+  // Si es una sección específica (0..4) o "all"
+  const sectionsToRender = tabKey === "all"
+    ? res.sections
+    : [res.sections[Number(tabKey)]].filter(Boolean);
+
+  sectionsToRender.forEach((sec) => {
+    const panel = document.createElement("div");
+    panel.className = "cmp-panel";
+    panel.innerHTML = `
+      <h2><span class="bar"></span>${escapeHtml(sec.title)}</h2>
+      <div class="cmp-panel-grid"></div>
+    `;
+
+    const gridEl = panel.querySelector(".cmp-panel-grid");
+
+    sec.fields.forEach((f) => {
+      const box = document.createElement("div");
+      box.className = `cmp-field-box ${f.changed ? "is-changed" : "is-same"}`;
+
+      if (f.changed) {
+        let trendClass = "same";
+        let trendLabel = "Cambió";
+        if (f.trend === "better") {
+          trendClass = "better";
+          trendLabel = "Mejora";
+        } else if (f.trend === "worse") {
+          trendClass = "worse";
+          trendLabel = "Empeoró";
+        }
+
+        const deltaHtml = f.deltaText
+          ? `<span class="cmp-delta-badge ${trendClass}">${f.deltaText}</span>`
+          : "";
+
+        box.innerHTML = `
+          <div class="cmp-field-top">
+            <span class="cmp-field-title">${escapeHtml(f.label)}</span>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span class="cmp-pill-changed">Cambió</span>
+              <span class="cmp-trend-tag ${trendClass}">${trendLabel}</span>
+            </div>
+          </div>
+          <div class="cmp-field-val-box">
+            <span class="cmp-field-prev" title="Sesión inicial">${escapeHtml(f.previous || "—")}</span>
+            <span class="cmp-field-arrow">➔</span>
+            <span class="cmp-field-curr" title="Sesión de control">${escapeHtml(f.current || "—")}</span>
+            ${deltaHtml}
           </div>
         `;
       } else {
-        row.innerHTML = `
-          <div class="diff-field-name">
-            <span>${escapeHtml(field.label)}</span>
+        box.innerHTML = `
+          <div class="cmp-field-top">
+            <span class="cmp-field-title">${escapeHtml(f.label)}</span>
+            <span class="cmp-pill-same">Sin cambios</span>
           </div>
-          <div class="diff-body">
-            <span class="diff-curr-same">${escapeHtml(field.current || "—")}</span>
-            <span class="diff-same-tag">Sin cambios</span>
-          </div>
+          <div class="cmp-field-static">${escapeHtml(f.current || "—")}</div>
         `;
       }
 
-      list.append(row);
+      gridEl.append(box);
     });
 
-    compareSections.append(secBox);
+    comparePanelsWrap.append(panel);
   });
 }
 
@@ -1110,7 +1181,7 @@ function buildComparePrintSheet(res) {
 
     sec.fields.forEach((f) => {
       const tr = node("tr", f.changed ? "is-changed" : "");
-      const deltaText = f.delta != null ? ` (${f.delta > 0 ? "+" : ""}${f.delta} ${f.unit || ""})` : "";
+      const deltaText = f.deltaText ? ` (${f.deltaText})` : "";
       const statusText = f.changed
         ? (f.trend === "better" ? `Mejora${deltaText}` : (f.trend === "worse" ? `Empeoramiento${deltaText}` : `Modificado${deltaText}`))
         : "Sin cambios";
@@ -1176,15 +1247,17 @@ if (comparePdfBtn) {
     if (currentCompareResult) printCompare(currentCompareResult);
   });
 }
-if (compareFilterBtn) {
-  compareFilterBtn.addEventListener("click", () => {
-    compareFilterOnlyChanged = !compareFilterOnlyChanged;
-    const compSheet = document.querySelector(".compare-sheet");
-    if (compSheet) compSheet.classList.toggle("filter-only-changed", compareFilterOnlyChanged);
-    compareFilterBtn.textContent = compareFilterOnlyChanged ? "Ver todos los campos" : "Solo cambios";
-    compareFilterBtn.classList.toggle("solid", compareFilterOnlyChanged);
+document.querySelectorAll(".compare-steps button").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    activeCompareTab = btn.dataset.compareTab;
+    document.querySelectorAll(".compare-steps button").forEach((b) => {
+      b.classList.toggle("active", b === btn);
+    });
+    if (currentCompareResult) {
+      renderCompareTab(activeCompareTab, currentCompareResult);
+    }
   });
-}
+});
 if (compareFormBtn) {
   compareFormBtn.addEventListener("click", () => {
     const currentItem = readForm();
