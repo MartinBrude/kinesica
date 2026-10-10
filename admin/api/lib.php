@@ -122,7 +122,7 @@ function totp_valid(string $secret, string $code): bool
         return false;
     }
     $now = time();
-    for ($i = -1; $i <= 1; $i++) {
+    for ($i = -2; $i <= 2; $i++) {
         if (hash_equals(totp_code($secret, $now + ($i * 30)), $code)) {
             return true;
         }
