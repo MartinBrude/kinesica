@@ -25,16 +25,41 @@ if ($method === 'GET') {
 if ($method === 'POST') {
     $data = read_json();
     $id = (string) ($data['id'] ?? '');
-    if (!preg_match('/^[0-9a-f-]{36}$/i', $id) || trim((string) ($data['nombre'] ?? '')) === '') {
-        json_out(422, ['error' => 'La ficha necesita un nombre']);
+    if (!preg_match('/^[0-9a-f-]{36}$/i', $id)) {
+        json_out(422, ['error' => 'La ficha no es válida']);
     }
-    $names = ['norberto' => 'Norberto', 'maria' => 'María', 'martin' => 'Martín'];
-    $profesional = (string) ($data['profesional'] ?? '');
-    if (!isset($names[$profesional])) {
-        $profesional = $auth['username'];
+    $required = [
+        'nombre' => 'el nombre completo',
+        'dni' => 'el DNI',
+        'fechaSesion' => 'la fecha de la sesión',
+        'nacimiento' => 'la fecha de nacimiento',
+        'edad' => 'la edad',
+        'lugarNac' => 'el lugar de nacimiento',
+        'motivo' => 'el motivo de consulta',
+        'antecedentes' => 'los antecedentes clínicos',
+    ];
+    $missing = [];
+    foreach ($required as $key => $label) {
+        if (trim((string) ($data[$key] ?? '')) === '') {
+            $missing[] = $label;
+        }
+    }
+    if ($missing) {
+        json_out(422, ['error' => 'Falta completar: ' . implode(', ', $missing) . '.']);
+    }
+    $clinicians = ['norberto' => 'Norberto', 'maria' => 'María'];
+    $existing = $pdo->prepare('SELECT profesional FROM fichas WHERE id = :id');
+    $existing->execute(['id' => $id]);
+    $previous = $existing->fetchColumn();
+    if ($previous) {
+        $profesional = (string) $previous;
+    } elseif ($auth['username'] === 'maria') {
+        $profesional = 'maria';
+    } else {
+        $profesional = 'norberto';
     }
     $data['profesional'] = $profesional;
-    $data['profesionalNombre'] = $names[$profesional];
+    $data['profesionalNombre'] = $clinicians[$profesional] ?? $profesional;
     $data['savedAt'] = gmdate('c');
     $stmt = $pdo->prepare(
         'INSERT INTO fichas (id, payload, profesional, updated_at, updated_by)

@@ -136,9 +136,21 @@ function blank() {
     cdi: [],
     observaciones: "",
     plan: "",
-    profesional: sessionUser?.username || "",
-    profesionalNombre: sessionUser?.name || "",
   };
+}
+
+function missingFields(data) {
+  const checks = [
+    ["nombre", "el nombre completo"],
+    ["dni", "el DNI"],
+    ["fechaSesion", "la fecha de la sesión"],
+    ["nacimiento", "la fecha de nacimiento"],
+    ["edad", "la edad"],
+    ["lugarNac", "el lugar de nacimiento"],
+    ["motivo", "el motivo de consulta"],
+    ["antecedentes", "los antecedentes clínicos"],
+  ];
+  return checks.filter(([key]) => !String(data[key] ?? "").trim()).map(([, label]) => label);
 }
 
 function readForm() {
@@ -507,8 +519,10 @@ eva.addEventListener("input", () => {
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   const data = readForm();
-  if (!data.nombre.trim()) {
+  const missing = missingFields(data);
+  if (missing.length) {
     showStep(0);
+    window.alert(`Falta completar: ${missing.join(", ")}.`);
     form.elements.nombre.focus();
     return;
   }
@@ -545,17 +559,41 @@ document.querySelector("#btn-example").addEventListener("click", () => {
   Object.assign(sample, {
     nombre: "Carolina Méndez",
     dni: "34.205.109",
+    fechaSesion: "2026-10-10",
+    nacimiento: "1992-03-14",
     edad: "34",
     lugarNac: "Córdoba",
     motivo: "No Traumático",
+    antecedentes: "Dolor en la sien y delante del oído desde hace 8 meses, sin golpe ni cirugía. Apretamiento nocturno y masticación unilateral. Empeora con chicle y pan duro.",
+    ruidos: "Sí",
+    ruidosIzq: true,
+    faseApertura: true,
+    dolorCondilar: "Sí",
+    condilarDer: true,
     aperturaLibre: "35",
     aperturaDolor: "46",
+    desviacion: "Sí",
+    desvIzq: true,
     protrusion: "8",
     latIzq: "10",
     latDer: "10",
+    maseteroIzq: true,
+    maseteroDer: true,
+    temporalIzq: true,
+    pterMedDer: true,
+    pterLatIzq: true,
+    discoConIzq: true,
+    eva: 6,
     zona: "Fosa temporal anterior e intraauricular",
     caracteristicas: "Sordo, opresivo, continuo, punzante",
     factores: "Aumenta al masticar chicles, pan duro. Disminuye al usar calor local o relajación muscular.",
+    contacto: "Prematuro",
+    estabilidad: "Irregular",
+    angle: "Clase II",
+    esqueletal: "Retrognata",
+    cdi: ["I.a", "II.a"],
+    observaciones: "Dolor miofascial con clic recíproco a la apertura del lado izquierdo. Sin limitación marcada de la apertura.",
+    plan: "Terapia manual de masetero y temporal, ejercicios de control motor y pauta de no masticar chicle. Valorar férula y control en 4 semanas.",
   });
   fillForm(sample);
 });

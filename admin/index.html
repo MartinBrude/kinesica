@@ -8,13 +8,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=3">
+  <link rel="stylesheet" href="/admin/styles.css?v=5">
 </head>
 <body>
   <div class="navy-bar"></div>
   <header class="topbar">
     <a class="brand" href="/">
-      <img src="/admin/logo.png?v=3" alt="Kinésica" width="190" height="50">
+      <img src="/admin/logo.png?v=5" alt="Kinésica" width="190" height="50">
     </a>
     <p class="top-title">Fichas ATM</p>
     <div class="top-actions">
@@ -95,7 +95,7 @@
         <button type="button" data-step="4">5. Criterios CDI-TTM</button>
       </nav>
 
-      <form id="ficha" class="sheet" autocomplete="off">
+      <form id="ficha" class="sheet" autocomplete="off" novalidate>
         <div class="sheet-tools" data-panel="0">
           <button type="button" class="btn light" id="btn-example">Cargar ejemplo</button>
           <button type="button" class="btn light" id="btn-clear">Vaciar formulario</button>
@@ -109,31 +109,23 @@
               <input name="nombre" placeholder="Ej: Carolina Méndez" required>
             </label>
             <label>Documento (DNI)
-              <input name="dni" placeholder="Ej: 34.205.109">
+              <input name="dni" placeholder="Ej: 34.205.109" required>
             </label>
           </div>
           <div class="grid-3">
             <label>Fecha de la sesión
-              <input name="fechaSesion" type="date">
+              <input name="fechaSesion" type="date" required>
             </label>
             <label>Fecha de nacimiento
-              <input name="nacimiento" type="date">
+              <input name="nacimiento" type="date" required>
             </label>
             <label>Edad (años)
-              <input name="edad" inputmode="numeric" placeholder="34">
+              <input name="edad" inputmode="numeric" placeholder="34" required>
             </label>
           </div>
           <label>Nacimiento (NAC)
-            <input name="lugarNac" placeholder="Ej: Córdoba">
+            <input name="lugarNac" placeholder="Ej: Córdoba" required>
           </label>
-          <fieldset>
-            <legend>Profesional</legend>
-            <div class="pills" data-single="profesional">
-              <button type="button" data-value="norberto">Norberto</button>
-              <button type="button" data-value="maria">María</button>
-              <button type="button" data-value="martin">Martín</button>
-            </div>
-          </fieldset>
           <fieldset>
             <legend>Motivo de consulta principal</legend>
             <div class="pills" data-single="motivo">
@@ -143,7 +135,7 @@
             </div>
           </fieldset>
           <label>Descripción de antecedentes clínicos
-            <textarea name="antecedentes" rows="4" placeholder="Coloca la sintomatología inicial, hábitos o incidentes traumáticos reportados por el paciente"></textarea>
+            <textarea name="antecedentes" rows="4" placeholder="Coloca la sintomatología inicial, hábitos o incidentes traumáticos reportados por el paciente" required></textarea>
           </label>
         </div>
 
@@ -357,6 +349,6 @@
   </main>
 
   <div id="print-root"></div>
-  <script src="/admin/app.js?v=3"></script>
+  <script src="/admin/app.js?v=5"></script>
 </body>
 </html>
