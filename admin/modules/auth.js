@@ -4,7 +4,7 @@
  * reseteo seguro y cierre de sesión.
  */
 
-import { api } from "./api.js?v=54";
+import { api } from "./api.js?v=55";
 
 let sessionUser = null;
 let authed = false;

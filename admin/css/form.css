@@ -112,8 +112,7 @@ fieldset {
 }
 
 .grid-2,
-.grid-3,
-.muscle-grid {
+.grid-3 {
   display: grid;
   gap: 12px;
 }
@@ -127,7 +126,9 @@ fieldset {
 }
 
 .muscle-grid {
+  display: grid;
   grid-template-columns: 1fr 1fr;
+  gap: 10px 16px;
 }
 
 .panel > label,
@@ -231,12 +232,40 @@ textarea {
 }
 
 .muscle {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
-  gap: 12px;
+  display: flex;
   align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid #d5e4ee;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(15, 34, 58, 0.04);
+  transition: all 0.15s ease;
+  min-height: 48px;
+  box-sizing: border-box;
+}
+
+.muscle::after {
+  content: "";
+  flex: 1 1 auto;
+  border-bottom: 1px dotted #cbd5e1;
+  margin: 0 8px;
+  min-width: 12px;
+}
+
+.muscle:hover {
+  border-color: #9ac2dc;
+  box-shadow: 0 2px 4px rgba(15, 34, 58, 0.08);
+}
+
+.muscle:has(input:checked) {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+
+.muscle:has(input:checked)::after {
+  border-bottom-color: #86efac;
 }
 
 .muscle span {
@@ -244,6 +273,51 @@ textarea {
   font-weight: 500;
   text-transform: none;
   letter-spacing: 0;
+  color: var(--navy);
+  flex-shrink: 0;
+}
+
+.muscle-checks {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #f1f6fa;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #d5e4ee;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.muscle:has(input:checked) .muscle-checks {
+  background: white;
+  border-color: #bbf7d0;
+}
+
+.muscle .check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.15s ease;
+  margin: 0;
+}
+
+.muscle .check input[type="checkbox"] {
+  accent-color: var(--accent);
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  margin: 0;
+}
+
+.muscle .check:has(input:checked) {
+  color: var(--accent-deep);
+  font-weight: 700;
 }
 
 .eva-head {
@@ -370,12 +444,25 @@ input[type="range"] {
     flex: 1 1 100%;
   }
 
-  .grid-2,
-  .grid-3,
   .muscle-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .grid-2,
+  .grid-3 {
     grid-template-columns: 1fr;
     display: grid;
     gap: 10px;
+  }
+
+  .muscle {
+    padding: 8px 12px;
+    gap: 8px;
+  }
+
+  .muscle span {
+    font-size: 13px;
   }
 
   .habit-grid {

@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=54">
+  <link rel="stylesheet" href="/admin/styles.css?v=55">
   <script>
     (function () {
       try {
@@ -290,23 +290,31 @@
             <div class="muscle-grid">
               <div class="muscle">
                 <span>Músculo masetero</span>
-                <label class="check"><input type="checkbox" name="maseteroIzq"> Izq</label>
-                <label class="check"><input type="checkbox" name="maseteroDer"> Der</label>
+                <div class="muscle-checks">
+                  <label class="check"><input type="checkbox" name="maseteroIzq"> Izq</label>
+                  <label class="check"><input type="checkbox" name="maseteroDer"> Der</label>
+                </div>
               </div>
               <div class="muscle">
                 <span>Músculo temporal anterior</span>
-                <label class="check"><input type="checkbox" name="temporalIzq"> Izq</label>
-                <label class="check"><input type="checkbox" name="temporalDer"> Der</label>
+                <div class="muscle-checks">
+                  <label class="check"><input type="checkbox" name="temporalIzq"> Izq</label>
+                  <label class="check"><input type="checkbox" name="temporalDer"> Der</label>
+                </div>
               </div>
               <div class="muscle">
                 <span>Músculo pterigoideo medial</span>
-                <label class="check"><input type="checkbox" name="pterMedIzq"> Izq</label>
-                <label class="check"><input type="checkbox" name="pterMedDer"> Der</label>
+                <div class="muscle-checks">
+                  <label class="check"><input type="checkbox" name="pterMedIzq"> Izq</label>
+                  <label class="check"><input type="checkbox" name="pterMedDer"> Der</label>
+                </div>
               </div>
               <div class="muscle">
                 <span>Estructura pterigoideo lateral</span>
-                <label class="check"><input type="checkbox" name="pterLatIzq"> Izq</label>
-                <label class="check"><input type="checkbox" name="pterLatDer"> Der</label>
+                <div class="muscle-checks">
+                  <label class="check"><input type="checkbox" name="pterLatIzq"> Izq</label>
+                  <label class="check"><input type="checkbox" name="pterLatDer"> Der</label>
+                </div>
               </div>
             </div>
           </div>
@@ -315,13 +323,17 @@
             <div class="muscle-grid">
               <div class="muscle">
                 <span>Desplazamiento con recaptura</span>
-                <label class="check"><input type="checkbox" name="discoConIzq"> Izq</label>
-                <label class="check"><input type="checkbox" name="discoConDer"> Der</label>
+                <div class="muscle-checks">
+                  <label class="check"><input type="checkbox" name="discoConIzq"> Izq</label>
+                  <label class="check"><input type="checkbox" name="discoConDer"> Der</label>
+                </div>
               </div>
               <div class="muscle">
                 <span>Desplazamiento sin recaptura</span>
-                <label class="check"><input type="checkbox" name="discoSinIzq"> Izq</label>
-                <label class="check"><input type="checkbox" name="discoSinDer"> Der</label>
+                <div class="muscle-checks">
+                  <label class="check"><input type="checkbox" name="discoSinIzq"> Izq</label>
+                  <label class="check"><input type="checkbox" name="discoSinDer"> Der</label>
+                </div>
               </div>
             </div>
           </div>
@@ -331,18 +343,24 @@
             <div class="muscle-grid">
               <div class="muscle">
                 <span>Trapecio superior</span>
-                <label class="check"><input type="checkbox" name="trapecioIzq"> Izq</label>
-                <label class="check"><input type="checkbox" name="trapecioDer"> Der</label>
+                <div class="muscle-checks">
+                  <label class="check"><input type="checkbox" name="trapecioIzq"> Izq</label>
+                  <label class="check"><input type="checkbox" name="trapecioDer"> Der</label>
+                </div>
               </div>
               <div class="muscle">
                 <span>Esternocleidomastoideo (ECOM)</span>
-                <label class="check"><input type="checkbox" name="ecomIzq"> Izq</label>
-                <label class="check"><input type="checkbox" name="ecomDer"> Der</label>
+                <div class="muscle-checks">
+                  <label class="check"><input type="checkbox" name="ecomIzq"> Izq</label>
+                  <label class="check"><input type="checkbox" name="ecomDer"> Der</label>
+                </div>
               </div>
               <div class="muscle">
                 <span>Musculatura suboccipital</span>
-                <label class="check"><input type="checkbox" name="suboccipitalIzq"> Izq</label>
-                <label class="check"><input type="checkbox" name="suboccipitalDer"> Der</label>
+                <div class="muscle-checks">
+                  <label class="check"><input type="checkbox" name="suboccipitalIzq"> Izq</label>
+                  <label class="check"><input type="checkbox" name="suboccipitalDer"> Der</label>
+                </div>
               </div>
             </div>
             <label style="margin-top: 12px;">Observaciones cervicales y posturales
@@ -533,6 +551,6 @@
     })();
   </script>
   <div id="print-root"></div>
-  <script type="module" src="/admin/app.js?v=54"></script>
+  <script type="module" src="/admin/app.js?v=55"></script>
 </body>
 </html>

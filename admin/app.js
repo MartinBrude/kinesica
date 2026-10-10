@@ -27,13 +27,13 @@ import {
   compareFichas,
   daysBetween,
   matchFichaSearch,
-} from "./ficha-rules.mjs?v=54";
+} from "./ficha-rules.mjs?v=55";
 
 import {
   api,
   setAuthRequiredHandler,
   formatDate,
-} from "./modules/api.js?v=54";
+} from "./modules/api.js?v=55";
 
 import {
   escapeHtml,
@@ -46,7 +46,7 @@ import {
   formatParts,
   add,
   debounce,
-} from "./modules/dom.js?v=54";
+} from "./modules/dom.js?v=55";
 
 import {
   getSessionUser,
@@ -55,7 +55,7 @@ import {
   hideGate,
   setGateMessage,
   initAuth,
-} from "./modules/auth.js?v=54";
+} from "./modules/auth.js?v=55";
 
 import {
   todayISO,
@@ -74,7 +74,7 @@ import {
   getCurrentId,
   setCurrentId,
   initForm,
-} from "./modules/form.js?v=54";
+} from "./modules/form.js?v=55";
 
 import {
   loadAll,
@@ -87,12 +87,12 @@ import {
   syncMineButton,
   downloadJSON,
   initLibrary,
-} from "./modules/library.js?v=54";
+} from "./modules/library.js?v=55";
 
 import {
   buildSheet,
   printItems,
-} from "./modules/print.js?v=54";
+} from "./modules/print.js?v=55";
 
 import {
   showCompare,
@@ -102,7 +102,7 @@ import {
   buildComparePrintSheet,
   printCompare,
   initCompare,
-} from "./modules/compare.js?v=54";
+} from "./modules/compare.js?v=55";
 
 // Re-exportar utilidades esenciales para interoperabilidad y pruebas
 export {
