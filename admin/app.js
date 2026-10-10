@@ -12,7 +12,8 @@ import {
   coerceFicha,
   compareFichas,
   daysBetween,
-} from "./ficha-rules.mjs?v=27";
+  matchFichaSearch,
+} from "./ficha-rules.mjs?v=28";
 
 let cache = [];
 let authed = false;
@@ -305,13 +306,10 @@ function formatDate(iso) {
 }
 
 function visibleFichas() {
-  const q = searchInput.value.trim().toLowerCase();
+  const q = searchInput.value;
   return loadAll()
     .filter((item) => !onlyMine || ownsFicha(item, sessionUser?.username))
-    .filter((item) => {
-      const blob = `${item.nombre} ${item.dni}`.toLowerCase();
-      return !q || blob.includes(q);
-    })
+    .filter((item) => matchFichaSearch(item, q))
     .sort((a, b) => (b.fechaSesion || "").localeCompare(a.fechaSesion || ""));
 }
 

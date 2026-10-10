@@ -46,6 +46,48 @@ export function normalizeDni(dni) {
   return digits.length >= 4 ? digits : String(dni || "").trim().toLowerCase();
 }
 
+export function stripAccents(str) {
+  return String(str || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
+export function matchFichaSearch(item, query) {
+  const q = String(query || "").trim();
+  if (!q) return true;
+
+  const rawNombre = String(item?.nombre || "");
+  const normNombre = stripAccents(rawNombre);
+  const rawDni = String(item?.dni || "");
+  const dniDigits = rawDni.replace(/\D/g, "");
+
+  const normQ = stripAccents(q);
+  // Coincidencia de texto continuo en nombre o DNI tal como se guardó
+  if (normNombre.includes(normQ) || rawDni.toLowerCase().includes(normQ)) {
+    return true;
+  }
+
+  // Búsqueda orientada a DNI: tolera puntos, espacios y guiones en el filtro o en el registro
+  const qDigits = q.replace(/\D/g, "");
+  if (/^[\d.\s-]+$/.test(q) && qDigits.length > 0) {
+    return dniDigits.includes(qDigits);
+  }
+
+  // Búsqueda combinada por términos (ej: "Carolina 34.205" o "Méndez 34.205.109")
+  const terms = q.split(/\s+/).filter(Boolean);
+  return terms.every((term) => {
+    const normTerm = stripAccents(term);
+    if (normNombre.includes(normTerm)) return true;
+    if (rawDni.toLowerCase().includes(normTerm)) return true;
+    const termDigits = term.replace(/\D/g, "");
+    if (termDigits.length > 0 && dniDigits.includes(termDigits)) {
+      return true;
+    }
+    return false;
+  });
+}
+
 export function patientKey(item) {
   const dni = normalizeDni(item?.dni);
   const nombre = String(item?.nombre || "").trim().toLowerCase();

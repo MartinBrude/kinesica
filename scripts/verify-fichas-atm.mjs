@@ -18,6 +18,7 @@ import {
   patientKey,
   compareFichas,
   daysBetween,
+  matchFichaSearch,
 } from "../admin/ficha-rules.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -173,6 +174,21 @@ assert.equal(
   patientKey({ nombre: "carolina méndez", dni: "34205109" }),
   "La clave de paciente debe ser independiente del formato de DNI y mayúsculas"
 );
+
+// Verificación de filtrado y búsqueda con DNI con/sin puntos y acentos
+const fichaPuntos = { nombre: "Carolina Méndez", dni: "34.205.109" };
+const fichaSinPuntos = { nombre: "Carolina Méndez", dni: "34205109" };
+
+assert.equal(matchFichaSearch(fichaSinPuntos, "34.205.109"), true, "DNI con puntos en filtro debe encontrar ficha sin puntos");
+assert.equal(matchFichaSearch(fichaPuntos, "34205109"), true, "DNI sin puntos en filtro debe encontrar ficha con puntos");
+assert.equal(matchFichaSearch(fichaSinPuntos, "34.205"), true, "DNI parcial con puntos debe coincidir");
+assert.equal(matchFichaSearch(fichaPuntos, "34.205"), true, "DNI parcial con puntos debe coincidir con ficha formateada");
+assert.equal(matchFichaSearch(fichaPuntos, "34205"), true, "DNI parcial sin puntos debe coincidir");
+assert.equal(matchFichaSearch(fichaPuntos, "34 205 109"), true, "DNI con espacios debe coincidir");
+assert.equal(matchFichaSearch(fichaPuntos, "40.111.222"), false, "DNI diferente no debe coincidir");
+assert.equal(matchFichaSearch(fichaPuntos, "carolina mendez"), true, "Nombre sin tilde debe encontrar paciente");
+assert.equal(matchFichaSearch(fichaPuntos, "Carolina 34.205.109"), true, "Búsqueda combinada nombre + DNI con puntos");
+assert.equal(matchFichaSearch(fichaPuntos, ""), true, "Búsqueda vacía debe devolver true");
 
 const missingKeys = missingFieldKeys({});
 assert.deepEqual(missingKeys, REQUIRED_FIELDS.map(([k]) => k));
