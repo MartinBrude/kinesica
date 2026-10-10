@@ -57,6 +57,13 @@ async function api(path, options = {}) {
   return data;
 }
 
+function setGateMessage(el, text, info) {
+  el.textContent = text;
+  el.classList.toggle("gate-note", Boolean(info));
+  el.classList.toggle("gate-error", !info);
+  el.hidden = false;
+}
+
 function showGate(data) {
   document.querySelector("#view-library").hidden = true;
   document.querySelector("#view-form").hidden = true;
@@ -672,11 +679,9 @@ document.querySelector("#forgot-form").addEventListener("submit", async (event) 
       method: "POST",
       body: JSON.stringify({ username: event.target.username.value }),
     });
-    error.textContent = data.message || "Si el usuario tiene correo, te llega un enlace en unos minutos.";
-    error.hidden = false;
+    setGateMessage(error, data.message || "Si el usuario tiene correo, te llega un enlace en unos minutos.", true);
   } catch (err) {
-    error.textContent = err.message;
-    error.hidden = false;
+    setGateMessage(error, err.message, false);
   }
 });
 document.querySelector("#reset-form").addEventListener("submit", async (event) => {
@@ -685,8 +690,7 @@ document.querySelector("#reset-form").addEventListener("submit", async (event) =
   error.hidden = true;
   const password = event.target.password.value;
   if (password !== event.target.confirm.value) {
-    error.textContent = "Las contraseñas no coinciden.";
-    error.hidden = false;
+    setGateMessage(error, "Las contraseñas no coinciden.", false);
     return;
   }
   try {
@@ -696,12 +700,9 @@ document.querySelector("#reset-form").addEventListener("submit", async (event) =
     });
     history.replaceState(null, "", location.pathname);
     showGate({ login: true });
-    const loginError = document.querySelector("#login-error");
-    loginError.textContent = "Contraseña actualizada. Entrá con la nueva.";
-    loginError.hidden = false;
+    setGateMessage(document.querySelector("#login-error"), "Contraseña actualizada. Entrá con la nueva.", true);
   } catch (err) {
-    error.textContent = err.message;
-    error.hidden = false;
+    setGateMessage(error, err.message, false);
   }
 });
 
@@ -766,8 +767,8 @@ const resetToken = new URLSearchParams(location.search).get("reset");
 if (resetToken) {
   document.querySelector("#reset-form").dataset.token = resetToken;
   showGate({ reset: true });
+} else {
+  refresh().catch((error) => {
+    if (!error.auth) showGate({ login: true });
+  });
 }
-refresh().catch((error) => {
-  if (resetToken) return;
-  if (!error.auth) showGate({ login: true });
-});

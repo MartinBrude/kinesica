@@ -13,9 +13,23 @@ $generic = 'Si el usuario tiene correo, te llega un enlace en unos minutos.';
 $stmt = db()->prepare('SELECT username FROM users WHERE username = :username LIMIT 1');
 $stmt->execute(['username' => $username]);
 $user = $stmt->fetch();
+if ($username === '' || !isset((cfg()['user_emails'] ?? [])[$username])) {
+    foreach (cfg()['user_emails'] ?? [] as $name => $address) {
+        if (strcasecmp((string) $address, $username) === 0) {
+            $username = (string) $name;
+            $stmt = db()->prepare('SELECT username FROM users WHERE username = :username LIMIT 1');
+            $stmt->execute(['username' => $username]);
+            $user = $stmt->fetch();
+            break;
+        }
+    }
+}
 $email = $user ? user_email($username) : '';
 $from = (string) (cfg()['mail_from'] ?? '');
-if (!$user || $email === '' || $from === '') {
+if ($from === '') {
+    json_out(503, ['error' => 'El correo del consultorio no está configurado.']);
+}
+if (!$user || $email === '') {
     json_out(200, ['ok' => true, 'message' => $generic]);
 }
 

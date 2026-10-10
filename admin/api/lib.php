@@ -6,6 +6,13 @@ function cfg(): array
     static $cfg;
     if ($cfg === null) {
         $cfg = require __DIR__ . '/config.php';
+        $mailFile = __DIR__ . '/mail.php';
+        if (is_file($mailFile)) {
+            $mail = require $mailFile;
+            if (is_array($mail)) {
+                $cfg = array_merge($cfg, $mail);
+            }
+        }
     }
     return $cfg;
 }

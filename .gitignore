@@ -1,6 +1,7 @@
 node_modules/
 .env
 admin/api/config.php
+admin/api/mail.php
 js/site-secrets.js
 js/site-secrets.min.js
 css/dist/

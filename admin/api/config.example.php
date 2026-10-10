@@ -11,6 +11,7 @@ return [
     'mail_from' => 'no-reply@kinesica.com.ar',
     'admin_url' => 'https://www.kinesica.com.ar/admin/',
     'user_emails' => [
+        'martin' => 'martin.brude@gmail.com',
         'norberto' => 'norberto1712@gmail.com',
         'maria' => 'manosmagicas7116@gmail.com',
     ],

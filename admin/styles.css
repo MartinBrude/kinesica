@@ -191,7 +191,9 @@ main { position: relative; z-index: 5; max-width: 1080px; margin: 0 auto; paddin
   border-radius: 12px;
   padding: 12px;
 }
-.gate-error { color: #9b2c2c; font-size: 14px; margin: 0; text-transform: none; letter-spacing: 0; font-weight: 500; }
+.gate-error, .gate-note { font-size: 14px; margin: 0; text-transform: none; letter-spacing: 0; font-weight: 500; }
+.gate-error { color: #9b2c2c; }
+.gate-note { color: var(--primary); }
 .hero-actions, .sheet-tools, .form-footer, .library-toolbar {
   display: flex;
   flex-wrap: wrap;
