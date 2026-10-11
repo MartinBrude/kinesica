@@ -477,5 +477,18 @@ const sofiaGroup = libGroups.find(([key]) => key === patientKey(libraryFichas[3]
 assert.equal(sofiaGroup[1].length, 2, "Sofía tiene 2 sesiones");
 assert.ok(sofiaGroup[1].length > 1, "Sofía debe agruparse por tener > 1 sesión");
 
+// Verificación de directorio centrado en personas y filas de sesión concisas
+assert.match(html, /id="sort-patients"/);
+assert.match(html, /Alfabético \(A-Z\)/);
+assert.match(html, /Última atención/);
+assert.match(app, /export function sessionRow/);
+assert.match(app, /patient-card/);
+assert.match(app, /patient-sessions/);
+assert.match(app, /session-row/);
+assert.match(css, /\.patient-card/);
+assert.match(css, /\.patient-sessions/);
+assert.match(css, /\.session-row/);
+assert.match(css, /\.session-chip/);
+
 console.log("fichas ATM: ok");
 

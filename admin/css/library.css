@@ -153,6 +153,208 @@
   cursor: default;
 }
 
+/* Tarjeta de Paciente y Acordeón de Sesiones */
+.patient-card {
+  background: white;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.patient-card:hover {
+  border-color: #a5c2d6;
+}
+
+.patient-card.is-expanded {
+  border-color: var(--accent);
+  box-shadow: 0 4px 20px rgba(0, 95, 153, 0.12);
+}
+
+.patient-header {
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  background: white;
+  transition: background 0.12s ease;
+}
+
+.patient-header:hover {
+  background: #f8fbfe;
+}
+
+.patient-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.patient-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.patient-title-row h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--navy);
+  letter-spacing: -0.2px;
+}
+
+.patient-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--pill);
+  color: var(--navy);
+  border: 1px solid #d0e4ee;
+  letter-spacing: 0.1px;
+}
+
+.patient-badge.age {
+  background: #f0fdf4;
+  color: #166534;
+  border-color: #bbf7d0;
+}
+
+.patient-meta {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.patient-meta-dot {
+  opacity: 0.45;
+  font-weight: bold;
+}
+
+.btn-toggle-sessions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+  color: var(--primary) !important;
+}
+
+.btn-toggle-sessions .chevron {
+  font-size: 13px;
+  transition: transform 0.2s ease;
+}
+
+.patient-sessions {
+  border-top: 1px solid var(--line);
+  background: #f4f8fb;
+  padding: 10px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.session-row {
+  background: white;
+  border: 1px solid #dbe6ee;
+  border-radius: 10px;
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: border-color 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
+}
+
+.session-row:hover {
+  border-color: #a5c2d6;
+  background: #fafcfe;
+  box-shadow: 0 2px 8px rgba(0, 40, 70, 0.05);
+}
+
+.session-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.session-num {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.session-date {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.session-prof {
+  font-size: 12px;
+  color: #334155;
+  padding: 2px 7px;
+  background: #e2e8f0;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.session-chips {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.session-chip {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: #e8f2f6;
+  color: #1e3a5f;
+}
+
+.session-chip.eva-green {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.session-chip.eva-yellow {
+  background: #fef9c3;
+  color: #854d0e;
+  border: 1px solid #fef08a;
+}
+
+.session-chip.eva-red {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.session-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.session-actions .btn {
+  font-size: 12px;
+  padding: 5px 10px;
+}
+
 @media (max-width: 800px) {
   .hero-card {
     display: grid;
@@ -203,12 +405,25 @@
     box-sizing: border-box;
   }
 
-  .card-row {
+  .card-row,
+  .patient-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 12px;
+  }
+
+  .session-row {
     flex-direction: column;
     align-items: stretch;
     gap: 10px;
-    padding: 12px 14px;
-    border-radius: 12px;
+    padding: 10px 12px;
+  }
+
+  .session-actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
   }
 
   .row-controls {
