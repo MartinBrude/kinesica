@@ -10,8 +10,8 @@ import {
   ageOn,
   formatSessionBadgeText,
   shouldOmitInvariableFields,
-} from "../ficha-rules.mjs?v=76";
-import { formatDate } from "./api.js?v=76";
+} from "../ficha-rules.mjs?v=77";
+import { formatDate } from "./api.js?v=77";
 import {
   node,
   field,
@@ -71,8 +71,8 @@ export function buildSheet(item, sessionUser = null, meta = {}) {
 
   session.append(
     node("span", "pf-session-badge", sessionBadgeText),
-    node("span", "", "Fecha de sesión"),
-    node("strong", "", formatDate(item.fechaSesion))
+    node("span", "pf-session-label", "Fecha de sesión"),
+    node("strong", "pf-session-date", formatDate(item.fechaSesion))
   );
   head.append(brand, session);
 
@@ -247,9 +247,16 @@ export function buildSheet(item, sessionUser = null, meta = {}) {
     const track = node("div", "pf-eva-track");
     const fill = node("div", "pf-eva-fill");
     fill.style.width = `${eva * 10}%`;
+    const evaLevel = eva === 0 ? "zero" : (eva <= 3 ? "mild" : (eva <= 6 ? "moderate" : "severe"));
+    const evaLabel = eva === 0 ? "Sin dolor" : (eva <= 3 ? "Dolor leve" : (eva <= 6 ? "Dolor moderado" : "Dolor severo"));
+    fill.classList.add(`pf-eva-${evaLevel}`);
     track.append(fill);
-    const score = node("strong", "", `${eva} / 10`);
-    evaBox.append(track, score);
+    const scoreBox = node("div", "pf-eva-score");
+    scoreBox.append(
+      node("strong", "", `${eva} / 10`),
+      node("span", "pf-eva-tag", evaLabel)
+    );
+    evaBox.append(track, scoreBox);
     pain.append(evaBox);
     add(pain, painGrid);
     add(pain, painProse);

@@ -18,7 +18,7 @@ import {
   validateStep,
   getUniquePatients,
   getSessionIndex,
-} from "../ficha-rules.mjs?v=76";
+} from "../ficha-rules.mjs?v=77";
 
 const form = document.querySelector("#ficha");
 const formView = document.querySelector("#view-form");

@@ -8,8 +8,15 @@
 }
 
 @media print {
+  @page {
+    size: A4 portrait;
+    margin: 10mm 12mm 10mm 12mm;
+  }
+
   body {
     background: #fff;
+    margin: 0;
+    padding: 0;
   }
   body::before,
   body::after {
@@ -21,21 +28,26 @@
   }
   #print-root {
     display: block;
+    margin: 0;
+    padding: 0;
   }
 
   .print-sheet {
     break-after: page;
+    page-break-after: always;
     box-sizing: border-box;
-    padding: 10mm 14mm 8mm;
-    color: #1f2937;
+    padding: 0;
+    margin: 0;
+    color: #1e293b;
     font-family: "Roboto", sans-serif;
-    font-size: 9.5pt;
-    line-height: 1.35;
+    font-size: 8.5pt;
+    line-height: 1.3;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
   .print-sheet:last-child {
     break-after: auto;
+    page-break-after: auto;
   }
 
   .pf-head {
@@ -43,71 +55,94 @@
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    margin: 0 0 8px;
-    padding: 0 2px 8px;
-    border-bottom: 1px solid #c5d8e6;
+    margin: 0 0 6px;
+    padding: 0 2px 6px;
+    border-bottom: 1.5px solid #d0e1ed;
   }
   .pf-brand {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 14px;
   }
   .pf-head img {
-    width: 148px;
-    height: 40px;
+    width: 136px;
+    height: 36px;
     object-fit: contain;
     object-position: left center;
   }
   .pf-kicker,
-  .pf-k,
-  .pf-session span,
-  .pf-foot span {
+  .pf-k {
     margin: 0;
-    font-size: 8pt;
+    font-size: 7pt;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: #4b5563;
+    color: #5a6e85;
     font-weight: 700;
   }
   .pf-titles h1 {
-    margin: 2px 0 0;
-    font-size: 15pt;
-    line-height: 1.2;
+    margin: 0;
+    font-size: 13pt;
+    line-height: 1.15;
     color: #031c42;
-    font-weight: 500;
+    font-weight: 700;
   }
   .pf-sub {
-    margin: 4px 0 0;
+    margin: 2px 0 0;
     color: #005f99;
-    font-size: 10pt;
+    font-size: 8.5pt;
+    font-weight: 500;
   }
   .pf-session {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
-    background: #e8f2f6;
-    border: 1px solid #c5d8e6;
-    border-radius: 14px;
-    padding: 8px 16px 10px;
-    min-width: 120px;
+    background: #f0f6fa;
+    border: 1px solid #b8d5e8;
+    border-radius: 10px;
+    padding: 6px 14px 7px;
+    min-width: 145px;
+    gap: 2px;
+    flex-shrink: 0;
   }
   .pf-session-badge {
-    display: inline-block;
+    display: block;
     background: #005f99;
     color: #ffffff !important;
     font-size: 7.5pt !important;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    padding: 2px 8px;
-    border-radius: 6px;
-    margin-bottom: 4px;
+    padding: 2.5px 9px;
+    border-radius: 999px;
+    white-space: nowrap;
+    line-height: 1.2;
+    margin: 0;
+    box-shadow: 0 1px 2px rgba(0, 95, 153, 0.15);
   }
+  .pf-session-label {
+    display: block;
+    margin: 0;
+    font-size: 7pt;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #5a6e85;
+    font-weight: 700;
+    white-space: nowrap;
+    line-height: 1.1;
+  }
+  .pf-session-date,
   .pf-session strong {
     display: block;
-    margin-top: 2px;
-    font-size: 12pt;
-    letter-spacing: 0;
+    margin: 0;
+    font-size: 11pt;
+    letter-spacing: -0.01em;
     text-transform: none;
     color: #005f99;
+    font-weight: 700;
+    white-space: nowrap;
+    line-height: 1.2;
   }
 
   .pf-head,
@@ -119,40 +154,42 @@
   }
   .pf-who,
   .pf-section {
-    background: #f2f7fa;
-    border: 1px solid #c5d8e6;
-    border-radius: 10px;
-    padding: 8px 12px 10px;
-    margin: 0 0 8px;
+    background: #f8fafc;
+    border: 1px solid #d8e5ee;
+    border-radius: 8px;
+    padding: 6px 10px 7px;
+    margin: 0 0 6px;
   }
   .pf-name {
-    margin: 0 0 6px;
-    font-size: 14pt;
+    margin: 0 0 4px;
+    font-size: 12pt;
     line-height: 1.2;
     color: #031c42;
     letter-spacing: 0;
     text-transform: none;
-    font-weight: 500;
+    font-weight: 700;
   }
 
   /* Formato compacto para sesiones de seguimiento en PDF multi-sesión */
   .pf-sheet-followup {
-    padding-top: 10mm;
+    padding-top: 0;
   }
   .pf-head-followup {
-    margin: 0 0 10px;
-    padding-bottom: 8px;
+    margin: 0 0 6px;
+    padding-bottom: 6px;
   }
   .pf-who-followup {
-    padding: 8px 12px;
-    margin: 0 0 10px;
-    border-radius: 10px;
+    background: #f0f6fa;
+    border: 1px solid #c5dcee;
+    border-radius: 7px;
+    padding: 5px 10px;
+    margin: 0 0 6px;
   }
   .pf-followup-bar {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
+    gap: 10px;
     flex-wrap: wrap;
   }
   .pf-followup-identity {
@@ -162,86 +199,95 @@
   }
   .pf-name-compact {
     margin: 0;
-    font-size: 13pt;
+    font-size: 11pt;
     font-weight: 700;
     color: #031c42;
     line-height: 1.2;
   }
   .pf-followup-doc {
-    font-size: 9.5pt;
+    font-size: 8.5pt;
     color: #4b5563;
-    font-weight: 500;
+    font-weight: 600;
   }
   .pf-followup-note {
-    font-size: 8pt;
+    font-size: 7.5pt;
     color: #005f99;
     font-style: italic;
+    font-weight: 500;
   }
   .pf-followup-evo {
-    margin-top: 6px;
-    padding-top: 6px;
+    margin-top: 5px;
+    padding-top: 5px;
     border-top: 1px dashed #c5d8e6;
   }
   .pf-followup-evo p {
     margin: 2px 0 0;
-    font-size: 9.5pt;
+    font-size: 8.5pt;
     color: #111827;
     white-space: pre-wrap;
-    line-height: 1.4;
+    line-height: 1.35;
   }
   .pf-section > h2 {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin: 0 0 12px;
-    font-size: 11pt;
+    gap: 7px;
+    margin: 0 0 5px;
+    font-size: 9.5pt;
     letter-spacing: 0;
     text-transform: none;
-    font-weight: 500;
-    color: #031c42;
+    font-weight: 700;
+    color: #0f2d59;
   }
   .pf-section > h2::before {
     content: "";
-    width: 3px;
-    height: 14px;
+    width: 3.5px;
+    height: 12px;
     border-radius: 2px;
-    background: #2ebfa5;
+    background: #0d9488;
   }
 
   .pf-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 6px 10px;
+    gap: 3.5px 8px;
   }
   .pf-field {
-    display: grid;
-    gap: 2px;
-    background: #fff;
-    border-radius: 8px;
-    padding: 5px 8px 6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.5px;
+    background: #ffffff;
+    border: 1px solid #e2ecf3;
+    border-radius: 5px;
+    padding: 3px 7px;
+    min-height: 31px;
+    box-sizing: border-box;
   }
   .pf-v {
-    color: #111827;
-    font-size: 9.5pt;
-    font-weight: 500;
-    line-height: 1.3;
+    color: #0f172a;
+    font-size: 8.5pt;
+    font-weight: 600;
+    line-height: 1.25;
   }
   .pf-prose {
-    margin-top: 8px;
-    background: #fff;
-    border-radius: 8px;
-    padding: 7px 10px;
+    margin-top: 4px;
+    background: #ffffff;
+    border: 1px solid #e2ecf3;
+    border-radius: 5px;
+    padding: 4px 8px;
   }
   .pf-prose p {
-    margin: 2px 0 0;
+    margin: 1.5px 0 0;
     white-space: pre-wrap;
-    line-height: 1.35;
+    line-height: 1.3;
+    font-size: 8.5pt;
+    color: #1e293b;
   }
   .pf-notes {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-top: 8px;
+    gap: 6px;
+    margin-top: 5px;
   }
   .pf-notes .pf-prose {
     margin-top: 0;
@@ -252,43 +298,78 @@
     grid-template-columns: auto 1fr auto;
     gap: 8px;
     align-items: center;
-    background: #fff;
-    border-radius: 8px;
-    padding: 6px 8px;
-    margin-bottom: 8px;
+    background: #ffffff;
+    border: 1px solid #e2ecf3;
+    border-radius: 6px;
+    padding: 4px 8px;
+    margin-bottom: 5px;
   }
   .pf-eva-track {
     height: 8px;
     border-radius: 99px;
-    background: #e8f2f6;
+    background: #e2eef5;
     overflow: hidden;
   }
   .pf-eva-fill {
     height: 100%;
-    background: #2ebfa5;
+    border-radius: 99px;
+    background: #0d9488;
   }
-  .pf-eva strong {
-    color: #005f99;
-    font-size: 12pt;
+  .pf-eva-fill.pf-eva-zero {
+    background: #94a3b8;
+  }
+  .pf-eva-fill.pf-eva-mild {
+    background: #10b981;
+  }
+  .pf-eva-fill.pf-eva-moderate {
+    background: #f59e0b;
+  }
+  .pf-eva-fill.pf-eva-severe {
+    background: #ef4444;
+  }
+  .pf-eva-score {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+  .pf-eva-score strong {
+    color: #031c42;
+    font-size: 11pt;
+    font-weight: 700;
+  }
+  .pf-eva-tag {
+    font-size: 7.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #5a6e85;
   }
 
   .pf-chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 4px 6px;
   }
   .pf-chip {
-    background: #fff;
-    border: 1px solid #c5d8e6;
-    color: #031c42;
+    background: #f0f7fc;
+    border: 1px solid #b8d7eb;
+    color: #004b7a;
+    font-weight: 600;
     border-radius: 999px;
-    padding: 4px 10px;
-    font-size: 8.5pt;
+    padding: 2.5px 8px;
+    font-size: 7.5pt;
+    line-height: 1.25;
+  }
+  .pf-empty {
+    font-size: 8pt;
+    font-style: italic;
+    color: #64748b;
   }
   .pf-signature {
-    margin-top: 14px;
+    margin-top: 8px;
+    margin-bottom: 2px;
     margin-left: auto;
-    width: 250px;
+    width: 220px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -297,10 +378,10 @@
     page-break-inside: avoid;
   }
   .pf-sig-image {
-    max-height: 55px;
-    max-width: 190px;
+    max-height: 40px;
+    max-width: 160px;
     object-fit: contain;
-    margin-bottom: -4px;
+    margin-bottom: -3px;
   }
   .pf-sig-image.pf-sig-missing {
     display: none;
@@ -314,19 +395,19 @@
   }
   .pf-sig-rule {
     display: block;
-    width: 170px;
+    width: 150px;
     height: 1px;
-    background: #4b5563;
-    margin-bottom: 5px;
+    background: #64748b;
+    margin-bottom: 3px;
   }
   .pf-sig-name {
-    font-size: 10pt;
+    font-size: 9.5pt;
     font-weight: 700;
     color: #031c42;
   }
   .pf-sig-title,
   .pf-sig-mat {
-    font-size: 8pt;
+    font-size: 7.5pt;
     color: #4b5563;
   }
 
@@ -335,7 +416,17 @@
     justify-content: space-between;
     gap: 16px;
     margin-top: 6px;
-    padding: 4px 4px 0;
+    padding: 4px 2px 0;
+    border-top: 1px solid #d8e5ee;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .pf-foot span {
+    font-size: 7pt;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #64748b;
+    font-weight: 600;
   }
 
   /* Comparativa en hoja impresa */

@@ -13,10 +13,10 @@ import {
   missingFields,
   exampleFicha,
   ageOn,
-} from "../ficha-rules.mjs?v=76";
-import { formatDate } from "./api.js?v=76";
-import { debounce, escapeHtml } from "./dom.js?v=76";
-import { todayISO } from "./form.js?v=76";
+} from "../ficha-rules.mjs?v=77";
+import { formatDate } from "./api.js?v=77";
+import { debounce, escapeHtml } from "./dom.js?v=77";
+import { todayISO } from "./form.js?v=77";
 
 const libraryView = document.querySelector("#view-library");
 const listEl = document.querySelector("#library-list");
