@@ -176,6 +176,10 @@ input[inputmode] {
   font-size: 14px;
 }
 
+select {
+  padding-right: 42px;
+}
+
 textarea {
   resize: vertical;
 }

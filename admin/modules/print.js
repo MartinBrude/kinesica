@@ -7,8 +7,8 @@
 import {
   CLINICIAN_DETAILS,
   patientKey,
-} from "../ficha-rules.mjs?v=55";
-import { formatDate } from "./api.js?v=55";
+} from "../ficha-rules.mjs?v=56";
+import { formatDate } from "./api.js?v=56";
 import {
   node,
   field,

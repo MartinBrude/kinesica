@@ -72,9 +72,13 @@
   min-width: 240px;
   border: 1px solid var(--line);
   border-radius: 12px;
-  padding: 10px 12px;
+  padding: 10px 14px;
   background: white;
   color: var(--ink);
+}
+
+.library-toolbar select {
+  padding-right: 42px;
 }
 
 .library-list {
