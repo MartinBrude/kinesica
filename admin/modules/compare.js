@@ -8,9 +8,9 @@ import {
   compareFichas,
   patientKey,
   CLINICIAN_DETAILS,
-} from "../ficha-rules.mjs?v=57";
-import { formatDate } from "./api.js?v=57";
-import { escapeHtml, node } from "./dom.js?v=57";
+} from "../ficha-rules.mjs?v=58";
+import { formatDate } from "./api.js?v=58";
+import { escapeHtml, node } from "./dom.js?v=58";
 
 const compareView = document.querySelector("#view-compare");
 const libraryView = document.querySelector("#view-library");
