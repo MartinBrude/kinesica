@@ -11,7 +11,6 @@ import {
   missingFields,
   ageOn,
   REQUIRED_FIELDS,
-  exampleFicha,
   patientKey,
   validateField,
   validateFicha,
@@ -29,8 +28,6 @@ const btnPdfHistory = document.querySelector("#btn-pdf-history");
 const btnBack = document.querySelector("#btn-back");
 const btnPrev = document.querySelector("#btn-prev");
 const btnNext = document.querySelector("#btn-next");
-const btnClear = document.querySelector("#btn-clear");
-const btnExample = document.querySelector("#btn-example");
 
 let step = 0;
 let currentId = null;
@@ -597,9 +594,8 @@ export function setCurrentId(id) {
  * @param {() => void} callbacks.onBack Regreso a la biblioteca
  * @param {(patientKey: string, currentId: string) => void} callbacks.onCompare Solicitud de comparativa
  * @param {(items: object[]) => void} callbacks.onPrint Impresión de la ficha actual
- * @param {(data: object) => void} callbacks.onExportJson Exportación JSON de la ficha actual
  */
-export function initForm({ onSave, onBack, onCompare, onPrint, onExportJson, getSessionUser }) {
+export function initForm({ onSave, onBack, onCompare, onPrint, getSessionUser }) {
   if (!form) return;
   activeSessionUserGetter = getSessionUser;
   setupInputRestrictions(form);
@@ -884,39 +880,12 @@ export function initForm({ onSave, onBack, onCompare, onPrint, onExportJson, get
     });
   }
 
-  if (btnClear) {
-    btnClear.addEventListener("click", () => {
-      const id = currentId;
-      const fresh = blank();
-      fresh.id = id || fresh.id;
-      fillForm(fresh, currentAllFichas);
-      showStep(0);
-    });
-  }
-
-  if (btnExample) {
-    btnExample.addEventListener("click", () => {
-      const sample = blank();
-      sample.id = currentId || sample.id;
-      Object.assign(sample, exampleFicha());
-      fillForm(sample, currentAllFichas);
-      showStep(0);
-    });
-  }
-
   if (compareFormBtn) {
     compareFormBtn.addEventListener("click", () => {
       const currentItem = readForm();
       if (typeof onCompare === "function") {
         onCompare(patientKey(currentItem), currentId);
       }
-    });
-  }
-
-  const btnExportOne = document.querySelector("#btn-export-one");
-  if (btnExportOne) {
-    btnExportOne.addEventListener("click", () => {
-      if (typeof onExportJson === "function") onExportJson(readForm());
     });
   }
 

@@ -246,9 +246,6 @@ initForm({
   onPrint: (items) => {
     printItems(items, getSessionUser());
   },
-  onExportJson: (data) => {
-    downloadJSON(data, todayISO());
-  },
   getSessionUser,
 });
 
