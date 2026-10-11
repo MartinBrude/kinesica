@@ -18,7 +18,7 @@ import {
   validateStep,
   getUniquePatients,
   getSessionIndex,
-} from "../ficha-rules.mjs?v=71";
+} from "../ficha-rules.mjs?v=72";
 
 const form = document.querySelector("#ficha");
 const formView = document.querySelector("#view-form");
@@ -196,6 +196,7 @@ export function setPatientLocked(locked, patientData = null, sessionCount = 0, i
     form?.elements.nombre,
     form?.elements.dni,
     form?.elements.nacimiento,
+    form?.elements.edad,
     form?.elements.lugarNac,
     form?.elements.antecedentes,
   ].filter(Boolean);
