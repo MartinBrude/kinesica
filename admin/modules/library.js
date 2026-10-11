@@ -12,10 +12,10 @@ import {
   coerceFicha,
   missingFields,
   exampleFicha,
-} from "../ficha-rules.mjs?v=61";
-import { formatDate } from "./api.js?v=61";
-import { debounce } from "./dom.js?v=61";
-import { todayISO } from "./form.js?v=61";
+} from "../ficha-rules.mjs?v=62";
+import { formatDate } from "./api.js?v=62";
+import { debounce } from "./dom.js?v=62";
+import { todayISO } from "./form.js?v=62";
 
 const libraryView = document.querySelector("#view-library");
 const listEl = document.querySelector("#library-list");

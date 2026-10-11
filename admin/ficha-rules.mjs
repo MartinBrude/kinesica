@@ -283,11 +283,22 @@ export function ageOn(nacimiento, onDate) {
   return age >= 0 ? String(age) : "";
 }
 
-const PATIENT_FIELDS = ["nombre", "dni", "nacimiento", "lugarNac"];
+const PATIENT_FIELDS = [
+  "nombre",
+  "dni",
+  "nacimiento",
+  "lugarNac",
+  "motivo",
+  "antecedentes",
+  "habitoApretamiento",
+  "habitoBruxismo",
+  "habitoMasticacionUni",
+  "habitoOnicofagia",
+];
 
 export function nextSession(item, fechaSesion) {
   const copy = emptyFicha();
-  for (const key of PATIENT_FIELDS) copy[key] = item?.[key] || "";
+  for (const key of PATIENT_FIELDS) copy[key] = item?.[key] ?? copy[key];
   copy.fechaSesion = fechaSesion || "";
   copy.edad = ageOn(item?.nacimiento, fechaSesion);
   return copy;
@@ -305,6 +316,7 @@ export function getUniquePatients(allFichas = []) {
         dni: f.dni || "",
         nacimiento: f.nacimiento || "",
         lugarNac: f.lugarNac || "",
+        motivo: f.motivo || "",
         habitoApretamiento: Boolean(f.habitoApretamiento),
         habitoBruxismo: Boolean(f.habitoBruxismo),
         habitoMasticacionUni: Boolean(f.habitoMasticacionUni),
@@ -317,6 +329,7 @@ export function getUniquePatients(allFichas = []) {
       p.sessions.push(f);
       if (!p.nacimiento && f.nacimiento) p.nacimiento = f.nacimiento;
       if (!p.lugarNac && f.lugarNac) p.lugarNac = f.lugarNac;
+      if (!p.motivo && f.motivo) p.motivo = f.motivo;
     }
   }
   return Array.from(map.values()).sort((a, b) =>

@@ -108,7 +108,7 @@ assert.equal(followUp.fechaSesion, "2026-03-14");
 assert.equal(followUp.nombre, "Ana");
 assert.equal(followUp.dni, "30111222");
 assert.equal(followUp.lugarNac, "Córdoba");
-assert.equal(followUp.motivo, "");
+assert.equal(followUp.motivo, "Dolor", "nextSession debe heredar el motivo de consulta de la anterior");
 assert.equal(followUp.ruidos, "");
 assert.deepEqual(followUp.cdi, []);
 assert.equal(followUp.id, undefined);
