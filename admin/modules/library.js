@@ -12,10 +12,10 @@ import {
   coerceFicha,
   missingFields,
   exampleFicha,
-} from "../ficha-rules.mjs?v=63";
-import { formatDate } from "./api.js?v=63";
-import { debounce } from "./dom.js?v=63";
-import { todayISO } from "./form.js?v=63";
+} from "../ficha-rules.mjs?v=64";
+import { formatDate } from "./api.js?v=64";
+import { debounce } from "./dom.js?v=64";
+import { todayISO } from "./form.js?v=64";
 
 const libraryView = document.querySelector("#view-library");
 const listEl = document.querySelector("#library-list");
@@ -280,7 +280,7 @@ export function renderLibrary() {
 
   // Sincronizar selector de pacientes para PDF
   if (patientSelect) {
-    const prevPatient = patientSelect.value;
+    const prevPatient = focusedPatient || patientSelect.value;
     patientSelect.innerHTML = '<option value="__all__">Todos los pacientes</option>';
     const seenPatients = new Map();
     for (const item of items) {
@@ -293,9 +293,9 @@ export function renderLibrary() {
         patientSelect.append(opt);
       }
     }
-    patientSelect.value = seenPatients.has(prevPatient) || prevPatient === "__all__"
-      ? prevPatient
-      : "__all__";
+    patientSelect.value = (focusedPatient && seenPatients.has(focusedPatient))
+      ? focusedPatient
+      : (seenPatients.has(prevPatient) || prevPatient === "__all__" ? prevPatient : "__all__");
   }
 
   // Fragment para optimizar inserción en el DOM con un solo repaint
@@ -325,6 +325,20 @@ export function renderLibrary() {
       compBtn.addEventListener("click", () => activeRowCallbacks.onCompare(focusedPatient));
       controls.append(compBtn);
     }
+
+    const printHistoryBtn = document.createElement("button");
+    printHistoryBtn.type = "button";
+    printHistoryBtn.className = "btn light";
+    printHistoryBtn.textContent = pSessions.length > 1
+      ? "Imprimir historial (PDF)"
+      : "Imprimir ficha (PDF)";
+    printHistoryBtn.title = `Imprimir todas las sesiones de ${pName} en un único documento`;
+    printHistoryBtn.addEventListener("click", () => {
+      if (activeRowCallbacks.onPdfAll) {
+        activeRowCallbacks.onPdfAll(pSessions);
+      }
+    });
+    controls.append(printHistoryBtn);
 
     const newSessBtn = document.createElement("button");
     newSessBtn.type = "button";
@@ -437,6 +451,18 @@ export function renderLibrary() {
           }
         });
 
+        const printGroup = document.createElement("button");
+        printGroup.type = "button";
+        printGroup.className = "btn light";
+        printGroup.textContent = "PDF";
+        printGroup.title = `Imprimir historial completo de ${latest.nombre || "este paciente"}`;
+        printGroup.addEventListener("click", (e) => {
+          e.stopPropagation();
+          if (activeRowCallbacks.onPdfAll) {
+            activeRowCallbacks.onPdfAll(sessions);
+          }
+        });
+
         const rowControls = row.querySelector(".row-controls");
         if (sessions.length >= 2 && activeRowCallbacks.onCompare) {
           const comp = document.createElement("button");
@@ -448,9 +474,9 @@ export function renderLibrary() {
             e.stopPropagation();
             activeRowCallbacks.onCompare(key);
           });
-          rowControls.append(open, newSess, comp, del);
+          rowControls.append(open, newSess, printGroup, comp, del);
         } else {
-          rowControls.append(open, newSess, del);
+          rowControls.append(open, newSess, printGroup, del);
         }
 
         row.addEventListener("click", (event) => {
@@ -500,6 +526,7 @@ export function initLibrary({
       onNewSessionFicha({ ...copy, id: crypto.randomUUID() });
     },
     onPdf: (item) => onPdfFicha([item]),
+    onPdfAll: (items) => onPdfFicha(items),
     onDelete: onDeleteFicha,
     onDeleteBatch: onDeleteBatchFichas,
     onCompare: onComparePatient,
@@ -540,6 +567,39 @@ export function initLibrary({
       btnGroup.textContent = grouped ? "Ver todas las fichas" : "Agrupar por paciente";
       btnGroup.classList.toggle("green", grouped);
       btnGroup.classList.toggle("light", !grouped);
+      renderLibrary();
+    });
+  }
+
+  const btnPdfAll = document.querySelector("#btn-pdf-all");
+  if (btnPdfAll) {
+    btnPdfAll.addEventListener("click", () => {
+      const sessionUser = typeof activeSessionUserGetter === "function" ? activeSessionUserGetter() : null;
+      const items = visibleFichas(sessionUser);
+      if (!items.length) {
+        window.alert("No hay fichas para imprimir.");
+        return;
+      }
+      let toPrint = items;
+      if (focusedPatient) {
+        toPrint = items.filter((item) => patientKey(item) === focusedPatient);
+      } else if (patientSelect && patientSelect.value && patientSelect.value !== "__all__") {
+        toPrint = items.filter((item) => patientKey(item) === patientSelect.value);
+      }
+      if (!toPrint.length) {
+        window.alert("No hay fichas para el paciente seleccionado.");
+        return;
+      }
+      if (activeRowCallbacks.onPdfAll) {
+        activeRowCallbacks.onPdfAll(toPrint);
+      }
+    });
+  }
+
+  if (patientSelect) {
+    patientSelect.addEventListener("change", () => {
+      focusedPatient = patientSelect.value === "__all__" ? null : patientSelect.value;
+      page = 0;
       renderLibrary();
     });
   }

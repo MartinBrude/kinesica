@@ -134,6 +134,61 @@
     text-transform: none;
     font-weight: 500;
   }
+
+  /* Formato compacto para sesiones de seguimiento en PDF multi-sesión */
+  .pf-sheet-followup {
+    padding-top: 10mm;
+  }
+  .pf-head-followup {
+    margin: 0 0 10px;
+    padding-bottom: 8px;
+  }
+  .pf-who-followup {
+    padding: 8px 12px;
+    margin: 0 0 10px;
+    border-radius: 10px;
+  }
+  .pf-followup-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .pf-followup-identity {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .pf-name-compact {
+    margin: 0;
+    font-size: 13pt;
+    font-weight: 700;
+    color: #031c42;
+    line-height: 1.2;
+  }
+  .pf-followup-doc {
+    font-size: 9.5pt;
+    color: #4b5563;
+    font-weight: 500;
+  }
+  .pf-followup-note {
+    font-size: 8pt;
+    color: #005f99;
+    font-style: italic;
+  }
+  .pf-followup-evo {
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed #c5d8e6;
+  }
+  .pf-followup-evo p {
+    margin: 2px 0 0;
+    font-size: 9.5pt;
+    color: #111827;
+    white-space: pre-wrap;
+    line-height: 1.4;
+  }
   .pf-section > h2 {
     display: flex;
     align-items: center;

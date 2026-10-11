@@ -8,8 +8,10 @@ import {
   CLINICIAN_DETAILS,
   patientKey,
   ageOn,
-} from "../ficha-rules.mjs?v=63";
-import { formatDate } from "./api.js?v=63";
+  formatSessionBadgeText,
+  shouldOmitInvariableFields,
+} from "../ficha-rules.mjs?v=64";
+import { formatDate } from "./api.js?v=64";
 import {
   node,
   field,
@@ -34,32 +36,38 @@ const CDI_LABELS = {
 
 /**
  * Genera el elemento DOM correspondiente a una hoja impresa individual A4.
+ * En historiales multi-sesión de un paciente, las sesiones de seguimiento (N° > 1)
+ * omiten los datos filiatorios invariables y antecedentes basales para evitar duplicación.
  * @param {object} item Datos clínicos de la ficha
  * @param {object|null} [sessionUser=null] Profesional en sesión activa
- * @param {object} [meta={}] Metadatos contextuales (sessionIndex, totalSessions)
+ * @param {object} [meta={}] Metadatos contextuales (sessionIndex, totalSessions, initialMotivo)
  * @returns {HTMLElement} Elemento article.print-sheet
  */
 export function buildSheet(item, sessionUser = null, meta = {}) {
   const sheet = node("article", "print-sheet");
 
-  const head = node("header", "pf-head");
+  const sIdx = meta.sessionIndex || 1;
+  const sTotal = meta.totalSessions || 1;
+  const isFollowUp = shouldOmitInvariableFields(sIdx, sTotal);
+
+  if (isFollowUp) {
+    sheet.classList.add("pf-sheet-followup");
+  }
+
+  const head = node("header", isFollowUp ? "pf-head pf-head-followup" : "pf-head");
   const brand = node("div", "pf-brand");
   const logo = document.createElement("img");
   logo.src = document.querySelector(".brand img")?.currentSrc || "/admin/logo.png";
   logo.alt = "Kinésica";
   const titles = node("div", "pf-titles");
   titles.append(
-    node("h1", "", "Ficha clínica de ATM"),
+    node("h1", "", isFollowUp ? "Ficha clínica de ATM · Evolución" : "Ficha clínica de ATM"),
     node("p", "pf-sub", "Evaluación según criterios CDI-TTM")
   );
   brand.append(logo, titles);
 
   const session = node("div", "pf-session");
-  const sIdx = meta.sessionIndex || 1;
-  const sTotal = meta.totalSessions || 1;
-  const sessionBadgeText = sIdx === 1 && sTotal === 1
-    ? "Evaluación inicial"
-    : `Sesión N° ${sIdx}${sTotal > 1 ? ` de ${sTotal}` : ""}`;
+  const sessionBadgeText = formatSessionBadgeText(sIdx, sTotal);
 
   session.append(
     node("span", "pf-session-badge", sessionBadgeText),
@@ -68,33 +76,70 @@ export function buildSheet(item, sessionUser = null, meta = {}) {
   );
   head.append(brand, session);
 
-  const who = node("section", "pf-who");
-  who.append(node("h2", "pf-name", item.nombre || "Sin nombre"));
-  const computedAge = item.edad || ageOn(item.nacimiento, item.fechaSesion);
-  add(
-    who,
-    grid([
-      ["Documento", item.dni],
-      ["Edad", computedAge ? `${computedAge} años` : ""],
-      ["Nacimiento", formatParts([formatDate(item.nacimiento), item.lugarNac])],
-      [sIdx > 1 ? "Motivo / Evolución" : "Motivo de consulta", item.motivo],
-    ])
-  );
+  let who;
+  if (!isFollowUp) {
+    // Sesión inicial o impresión individual: incluye ficha filiatoria y anamnesis basal completa
+    who = node("section", "pf-who");
+    who.append(node("h2", "pf-name", item.nombre || "Sin nombre"));
+    const computedAge = item.edad || ageOn(item.nacimiento, item.fechaSesion);
+    add(
+      who,
+      grid([
+        ["Documento", item.dni],
+        ["Edad", computedAge ? `${computedAge} años` : ""],
+        ["Nacimiento", formatParts([formatDate(item.nacimiento), item.lugarNac])],
+        ["Motivo de consulta", item.motivo],
+      ])
+    );
 
-  // FEATURE-OPTIONAL: habitos-bruxismo
-  const habitosList = formatParts(
-    [
-      item.habitoApretamiento ? "Apretamiento diurno" : "",
-      item.habitoBruxismo ? "Bruxismo nocturno" : "",
-      item.habitoMasticacionUni ? "Masticación unilateral" : "",
-      item.habitoOnicofagia ? "Onicofagia / mordisqueo" : "",
-    ],
-    ", "
-  );
-  if (habitosList) add(who, grid([["Hábitos / bruxismo", habitosList]]));
-  // /FEATURE-OPTIONAL: habitos-bruxismo
+    // FEATURE-OPTIONAL: habitos-bruxismo
+    const habitosList = formatParts(
+      [
+        item.habitoApretamiento ? "Apretamiento diurno" : "",
+        item.habitoBruxismo ? "Bruxismo nocturno" : "",
+        item.habitoMasticacionUni ? "Masticación unilateral" : "",
+        item.habitoOnicofagia ? "Onicofagia / mordisqueo" : "",
+      ],
+      ", "
+    );
+    if (habitosList) add(who, grid([["Hábitos / bruxismo", habitosList]]));
+    // /FEATURE-OPTIONAL: habitos-bruxismo
 
-  add(who, prose("Antecedentes clínicos", item.antecedentes));
+    add(who, prose("Antecedentes clínicos", item.antecedentes));
+  } else {
+    // Sesión de seguimiento: cabecera filiatoria compacta que no repite datos invariables
+    who = node("section", "pf-who pf-who-followup");
+    const followupBar = node("div", "pf-followup-bar");
+    const patientIdentity = node("div", "pf-followup-identity");
+    patientIdentity.append(
+      node("span", "pf-k", "Paciente"),
+      node("h2", "pf-name pf-name-compact", item.nombre || "Sin nombre"),
+      node("span", "pf-followup-doc", `DNI ${item.dni || "—"}`)
+    );
+    followupBar.append(patientIdentity);
+
+    const initialMotivo = (meta.initialMotivo || "").trim();
+    const currentMotivo = (item.motivo || "").trim();
+    const hasSpecificEvolution = currentMotivo && currentMotivo !== initialMotivo;
+
+    if (hasSpecificEvolution) {
+      followupBar.append(
+        node("span", "pf-followup-note", "Antecedentes e historia basal en Sesión N° 1")
+      );
+      who.append(followupBar);
+      const evoBox = node("div", "pf-followup-evo");
+      evoBox.append(
+        node("span", "pf-k", "Evolución clínica / Motivo de consulta"),
+        node("p", "", currentMotivo)
+      );
+      who.append(evoBox);
+    } else {
+      followupBar.append(
+        node("span", "pf-followup-note", "Datos filiatorios y antecedentes registrados en Sesión N° 1")
+      );
+      who.append(followupBar);
+    }
+  }
 
   const atm = section("Articulación temporomandibular");
   const fases = [item.faseApertura ? "apertura" : "", item.faseCierre ? "cierre" : ""]
@@ -280,11 +325,13 @@ export async function printItems(items, sessionUser = null) {
 
   for (const group of groups.values()) {
     group.sort((a, b) => (a.fechaSesion || "").localeCompare(b.fechaSesion || ""));
+    const initialMotivo = (group[0]?.motivo || "").trim();
     group.forEach((item, idx) => {
       root.append(
         buildSheet(item, sessionUser, {
           sessionIndex: idx + 1,
           totalSessions: group.length,
+          initialMotivo,
         })
       );
     });
@@ -300,7 +347,8 @@ export async function printItems(items, sessionUser = null) {
         : `${dates[0].replaceAll("/", "-")} a ${dates[dates.length - 1].replaceAll("/", "-")}`)
     : "";
 
-  document.title = [who, when].filter(Boolean).join(" ");
+  const isFullHistory = groups.size === 1 && items.length > 1;
+  document.title = [who, when, isFullHistory ? "Historial Completo" : ""].filter(Boolean).join(" - ");
 
   // Esperar decodificación de sellos e imágenes para evitar impresiones en blanco
   await Promise.all(

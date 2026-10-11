@@ -18,13 +18,14 @@ import {
   validateStep,
   getUniquePatients,
   getSessionIndex,
-} from "../ficha-rules.mjs?v=63";
+} from "../ficha-rules.mjs?v=64";
 
 const form = document.querySelector("#ficha");
 const formView = document.querySelector("#view-form");
 const evaInput = form ? form.elements.eva : null;
 const evaValue = document.querySelector("#eva-value");
 const compareFormBtn = document.querySelector("#btn-compare-form");
+const btnPdfHistory = document.querySelector("#btn-pdf-history");
 const btnBack = document.querySelector("#btn-back");
 const btnPrev = document.querySelector("#btn-prev");
 const btnNext = document.querySelector("#btn-next");
@@ -155,6 +156,9 @@ export function fillForm(data, allFichas = []) {
     : [];
   if (compareFormBtn) {
     compareFormBtn.hidden = pSessions.length < 2;
+  }
+  if (btnPdfHistory) {
+    btnPdfHistory.hidden = pSessions.length < 2;
   }
 
   currentAllFichas = allFichas;
@@ -827,6 +831,18 @@ export function initForm({ onSave, onBack, onCompare, onPrint, onExportJson, get
   if (btnExportOne) {
     btnExportOne.addEventListener("click", () => {
       if (typeof onExportJson === "function") onExportJson(readForm());
+    });
+  }
+
+  const btnPdfHistory = document.querySelector("#btn-pdf-history");
+  if (btnPdfHistory) {
+    btnPdfHistory.addEventListener("click", () => {
+      const currentItem = readForm();
+      const key = patientKey(currentItem);
+      const pSessions = currentAllFichas.filter((f) => patientKey(f) === key);
+      if (typeof onPrint === "function") {
+        onPrint(pSessions.length ? pSessions : [currentItem]);
+      }
     });
   }
 

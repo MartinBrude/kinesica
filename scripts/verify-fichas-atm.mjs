@@ -24,6 +24,8 @@ import {
   validateStep,
   getUniquePatients,
   getSessionIndex,
+  formatSessionBadgeText,
+  shouldOmitInvariableFields,
 } from "../admin/ficha-rules.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -402,6 +404,28 @@ assert.match(css, /\.pf-session-badge/);
 // Verificación de funciones del controlador de formulario y biblioteca
 assert.match(app, /populatePatientPicker/);
 assert.match(app, /setPatientLocked/);
+
+// Verificación de lógica de omisión de datos invariables en PDF multi-sesión
+assert.equal(shouldOmitInvariableFields(1, 1), false, "Sesión única debe incluir datos basales");
+assert.equal(shouldOmitInvariableFields(1, 3), false, "Sesión inicial de historial debe incluir datos basales");
+assert.equal(shouldOmitInvariableFields(2, 3), true, "Sesión de seguimiento 2 debe omitir datos invariables");
+assert.equal(shouldOmitInvariableFields(3, 3), true, "Sesión de seguimiento 3 debe omitir datos invariables");
+
+assert.equal(formatSessionBadgeText(1, 1), "Evaluación inicial");
+assert.equal(formatSessionBadgeText(1, 3), "Sesión N° 1 de 3");
+assert.equal(formatSessionBadgeText(2, 3), "Sesión N° 2 de 3");
+
+// Verificación de componentes de impresión multi-sesión sin duplicación de invariables
+assert.match(html, /id="btn-pdf-history"/);
+assert.match(html, /id="btn-pdf-all"/);
+assert.match(css, /\.pf-sheet-followup/);
+assert.match(css, /\.pf-head-followup/);
+assert.match(css, /\.pf-who-followup/);
+assert.match(css, /\.pf-followup-bar/);
+assert.match(css, /\.pf-followup-note/);
+assert.match(app, /isFollowUp/);
+assert.match(app, /shouldOmitInvariableFields/);
+assert.match(app, /btnPdfHistory/);
 
 console.log("fichas ATM: ok");
 

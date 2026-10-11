@@ -349,6 +349,15 @@ export function getSessionIndex(item, allFichas = []) {
   return pSessions.length + 1;
 }
 
+export function formatSessionBadgeText(sessionIndex = 1, totalSessions = 1) {
+  if (sessionIndex === 1 && totalSessions === 1) return "Evaluación inicial";
+  return `Sesión N° ${sessionIndex}${totalSessions > 1 ? ` de ${totalSessions}` : ""}`;
+}
+
+export function shouldOmitInvariableFields(sessionIndex = 1, totalSessions = 1) {
+  return totalSessions > 1 && sessionIndex > 1;
+}
+
 export function assignProfesional(username, previous, requested) {
   if (username === "martin" && requested && CLINICIANS[requested]) {
     return requested;
