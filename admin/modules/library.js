@@ -447,6 +447,20 @@ export function patientGroupRow(key, sessions, callbacks = {}) {
   });
   controls.append(printGroup);
 
+  // JSON (solo cuando la fila es una única ficha)
+  if (!isMulti) {
+    const jsonBtn = document.createElement("button");
+    jsonBtn.type = "button";
+    jsonBtn.className = "btn ghost";
+    jsonBtn.textContent = "JSON";
+    jsonBtn.title = `Descargar JSON de ${latest.nombre || "este paciente"}`;
+    jsonBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (callbacks.onDownloadJson) callbacks.onDownloadJson(latest);
+    });
+    controls.append(jsonBtn);
+  }
+
   // Comparar (si tiene >= 2 sesiones)
   if (sessions.length >= 2 && callbacks.onCompare) {
     const comp = document.createElement("button");
