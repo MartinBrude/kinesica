@@ -579,3 +579,19 @@
     animation: none;
   }
 }
+
+.hero-copy .hero-title {
+  margin: 0;
+  align-self: center;
+  color: var(--navy);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+@media (max-width: 640px) {
+  .hero-copy .hero-title {
+    font-size: 22px;
+  }
+}
