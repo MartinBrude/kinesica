@@ -31,18 +31,34 @@ export async function api(path, options = {}) {
     headers["Content-Type"] = "application/json";
   }
 
+  const timeout = new AbortController();
+  const timer = setTimeout(() => timeout.abort(), 30000);
+  if (options.signal) {
+    if (options.signal.aborted) timeout.abort();
+    else options.signal.addEventListener("abort", () => timeout.abort(), { once: true });
+  }
+
   let res;
   try {
     res = await fetch(`api/${path}`, {
       credentials: "same-origin",
       ...options,
       headers,
+      signal: timeout.signal,
     });
   } catch (cause) {
-    const error = new Error("Sin conexión con el servidor. Revisá tu internet e intentá de nuevo.");
+    const aborted = cause && (cause.name === "AbortError" || cause.name === "TimeoutError");
+    const error = new Error(
+      aborted
+        ? "El servidor no respondió a tiempo. Intentá de nuevo."
+        : "Sin conexión con el servidor. Revisá tu internet e intentá de nuevo."
+    );
     error.network = true;
+    error.timeout = aborted;
     error.cause = cause;
     throw error;
+  } finally {
+    clearTimeout(timer);
   }
 
   const data = await res.json().catch(() => ({}));

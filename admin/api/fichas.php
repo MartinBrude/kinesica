@@ -172,7 +172,8 @@ if ($method === 'POST') {
     }
 
     $clinicians = ['norberto' => 'Norberto', 'maria' => 'María'];
-    $existing = $pdo->prepare('SELECT profesional FROM fichas WHERE id = :id');
+    $pdo->beginTransaction();
+    $existing = $pdo->prepare('SELECT profesional FROM fichas WHERE id = :id FOR UPDATE');
     $existing->execute(['id' => $id]);
     $previous = $existing->fetchColumn();
     if ($auth['username'] === 'martin') {
@@ -186,6 +187,7 @@ if ($method === 'POST') {
         }
     } elseif ($previous !== false && $previous !== '') {
         if ($auth['username'] !== (string) $previous) {
+            $pdo->rollBack();
             json_out(403, ['error' => 'No tienes permiso para modificar esta ficha']);
         }
         $profesional = (string) $previous;
@@ -200,6 +202,7 @@ if ($method === 'POST') {
     $data['savedAt'] = gmdate('c');
     $payload = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
     if ($payload === false) {
+        $pdo->rollBack();
         json_out(422, ['error' => 'La ficha contiene datos no válidos']);
     }
 
@@ -214,6 +217,7 @@ if ($method === 'POST') {
         'profesional' => $profesional,
         'user' => $auth['username'],
     ]);
+    $pdo->commit();
     json_out(200, $data);
 }
 

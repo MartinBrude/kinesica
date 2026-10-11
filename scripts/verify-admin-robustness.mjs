@@ -256,6 +256,18 @@ await test("api tolera respuestas que no son JSON", async () => {
   assert.deepEqual(await api("me.php"), {});
 });
 
+await test("api convierte un corte por tiempo en un error legible", async () => {
+  mockFetch((_url, options) => {
+    if (options.signal && options.signal.aborted) {
+      const error = new Error("aborted");
+      error.name = "AbortError";
+      throw error;
+    }
+    return jsonResponse(200, { ok: true });
+  });
+  await assert.rejects(api("fichas.php", { signal: AbortSignal.abort() }), (error) => error.timeout === true && error.network === true);
+});
+
 await test("api convierte fallos de red en un error legible", async () => {
   mockFetch(() => {
     throw new TypeError("Failed to fetch");

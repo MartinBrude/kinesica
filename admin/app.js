@@ -89,7 +89,7 @@ import {
   syncMineButton,
   downloadJSON,
   initLibrary,
-} from "./modules/library.js?v=77";
+} from "./modules/library.js?v=78";
 
 import {
   buildSheet,
@@ -135,11 +135,15 @@ export {
  * @param {object} data Datos de la ficha
  * @returns {Promise<object>} Ficha persistida devuelta por la API
  */
+let refreshSeq = 0;
+let localWrites = 0;
+
 async function upsert(data) {
   const saved = await api("fichas.php", {
     method: "POST",
     body: JSON.stringify(data),
   });
+  localWrites += 1;
   const currentCache = loadAll();
   const idx = currentCache.findIndex((f) => f.id === saved.id);
   if (idx >= 0) {
@@ -165,6 +169,8 @@ async function remove(id) {
  * Sincroniza el estado del usuario y la biblioteca completa desde el backend.
  */
 async function refresh() {
+  const seq = ++refreshSeq;
+  const writes = localWrites;
   const me = await api("me.php");
   setSessionUser(me);
   hideGate();
@@ -185,6 +191,7 @@ async function refresh() {
   }
 
   const items = await api("fichas.php");
+  if (seq !== refreshSeq || writes !== localWrites) return;
   setCache(items);
 
   if (formView && !formView.hidden) {
@@ -271,16 +278,27 @@ initLibrary({
     }
   },
   onDeleteBatchFichas: async (items) => {
+    const results = await Promise.allSettled(
+      items.map((item) =>
+        api(`fichas.php?id=${encodeURIComponent(item.id)}`, { method: "DELETE" })
+      )
+    );
+    const failed = results.filter((result) => result.status === "rejected");
     try {
-      await Promise.all(
-        items.map((item) =>
-          api(`fichas.php?id=${encodeURIComponent(item.id)}`, { method: "DELETE" })
-        )
-      );
       await refresh();
     } catch (error) {
       if (!error.auth) window.alert(error.message);
+      return;
     }
+    if (!failed.length) return;
+    const authError = failed.find((result) => result.reason && result.reason.auth);
+    if (authError) return;
+    const message = failed[0].reason && failed[0].reason.message;
+    window.alert(
+      failed.length === items.length
+        ? message || "No se pudieron eliminar las fichas."
+        : `Se eliminaron ${items.length - failed.length} de ${items.length}. ${message || ""}`.trim()
+    );
   },
   onComparePatient: (patientKey) => {
     showCompare(patientKey);

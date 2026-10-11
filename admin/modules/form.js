@@ -818,12 +818,16 @@ export function initForm({ onSave, onBack, onCompare, onPrint, getSessionUser })
       if (firstMissing) firstMissing.focus();
       return;
     }
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) submitBtn.disabled = true;
     try {
       if (typeof onSave === "function") await onSave(data);
       currentId = data.id;
       showStep(0);
     } catch (error) {
       if (!error.auth) window.alert(error.message);
+    } finally {
+      if (submitBtn) submitBtn.disabled = false;
     }
   });
 

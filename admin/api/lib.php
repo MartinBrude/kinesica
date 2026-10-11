@@ -31,10 +31,21 @@ function db(): PDO
         [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES => false,
         ]
     );
     return $pdo;
 }
+
+set_exception_handler(static function (Throwable $error): void {
+    error_log('kinesica admin: ' . $error->getMessage());
+    if (!headers_sent()) {
+        http_response_code(500);
+        header('Content-Type: application/json; charset=utf-8');
+        header('Cache-Control: no-store');
+    }
+    echo json_encode(['error' => 'Error interno. Intentá de nuevo.'], JSON_UNESCAPED_UNICODE);
+});
 
 function start_session(): void
 {
@@ -63,7 +74,15 @@ function json_out(int $status, array $body): void
 
 function read_json(): array
 {
+    $max = 512 * 1024;
+    $length = (int) ($_SERVER['CONTENT_LENGTH'] ?? 0);
+    if ($length > $max) {
+        json_out(413, ['error' => 'La solicitud es demasiado grande']);
+    }
     $raw = file_get_contents('php://input') ?: '';
+    if (strlen($raw) > $max) {
+        json_out(413, ['error' => 'La solicitud es demasiado grande']);
+    }
     $data = json_decode($raw, true);
     return is_array($data) ? $data : [];
 }
@@ -112,6 +131,9 @@ function totp_code(string $secret, int $timestamp): string
     $counter = intdiv($timestamp, 30);
     $bin = pack('N*', 0) . pack('N*', $counter);
     $hash = hash_hmac('sha1', $bin, base32_decode($secret), true);
+    if (!is_string($hash) || strlen($hash) < 20) {
+        return '000000';
+    }
     $offset = ord($hash[19]) & 0x0f;
     $code = (
         ((ord($hash[$offset]) & 0x7f) << 24) |

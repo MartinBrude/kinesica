@@ -75,6 +75,33 @@ function showForm(targetStep = 0) {
   }
 }
 
+const IMPORT_BATCH = 20;
+
+function sessionIdentity(item) {
+  return `${patientKey(item)}|${String(item?.fechaSesion || "")}`;
+}
+
+function planImport(rawItems) {
+  const byId = new Map(cache.filter((ficha) => ficha && ficha.id).map((ficha) => [ficha.id, ficha]));
+  const bySession = new Map();
+  for (const ficha of cache) {
+    const key = sessionIdentity(ficha);
+    if (key !== "|") bySession.set(key, ficha);
+  }
+  const planned = new Map();
+  for (const item of rawItems) {
+    const coerced = coerceFicha({ ...blank(), ...item });
+    const known = (item.id && byId.get(item.id)) || bySession.get(sessionIdentity(coerced));
+    const id = (known && known.id) || (typeof item.id === "string" && item.id) || crypto.randomUUID();
+    const data = { ...coerced, id };
+    planned.set(id, data);
+    byId.set(id, data);
+    const key = sessionIdentity(data);
+    if (key !== "|") bySession.set(key, data);
+  }
+  return [...planned.values()];
+}
+
 const SEED_PEOPLE = [
   ["Lucía Fernández", "30111201"], ["Mateo Ruiz", "30111202"], ["Sofía Álvarez", "30111203"],
   ["Benjamín Castro", "30111204"], ["Valentina Díaz", "30111205"], ["Joaquín Romero", "30111206"],
@@ -844,6 +871,10 @@ export function initLibrary({
       const file = event.target.files[0];
       event.target.value = "";
       if (!file) return;
+      if (file.size > 8 * 1024 * 1024) {
+        window.alert("El archivo supera los 8 MB.");
+        return;
+      }
 
       let parsed;
       try {
@@ -859,24 +890,48 @@ export function initLibrary({
       }
 
       if (Array.isArray(parsed)) {
-        const fichas = parsed.filter((item) => item && typeof item === "object" && !Array.isArray(item));
-        if (!fichas.length) {
+        const raw = parsed.filter((item) => item && typeof item === "object" && !Array.isArray(item));
+        if (!raw.length) {
           window.alert("El archivo no tiene fichas.");
           return;
         }
+        const fichas = planImport(raw);
+        const already = fichas.filter((item) => cache.some((ficha) => ficha.id === item.id)).length;
+        const fileBtn = fileOpen.closest("label");
+        const fileLabel = fileBtn ? fileBtn.childNodes[0] : null;
+        const previousLabel = fileLabel && fileLabel.textContent;
+        if (fileOpen) fileOpen.disabled = true;
+        const failed = [];
         try {
-          for (const item of fichas) {
-            await upsert(coerceFicha({ ...blank(), ...item, id: item.id || crypto.randomUUID() }));
+          for (let offset = 0; offset < fichas.length; offset += IMPORT_BATCH) {
+            const batch = fichas.slice(offset, offset + IMPORT_BATCH);
+            if (fileLabel) {
+              fileLabel.textContent = `Importando ${Math.min(offset + batch.length, fichas.length)}/${fichas.length}… `;
+            }
+            const results = await Promise.allSettled(batch.map((item) => upsert(item)));
+            results.forEach((result) => {
+              if (result.status === "rejected") failed.push(result.reason);
+            });
+            if (failed.some((error) => error && error.auth)) break;
           }
           showLibrary();
-          window.alert(fichas.length === 1 ? "Se cargó 1 ficha." : `Se cargaron ${fichas.length} fichas.`);
-        } catch (error) {
-          if (!error.auth) window.alert(error.message);
+          if (failed.some((error) => error && error.auth)) return;
+          const saved = fichas.length - failed.length;
+          const replaced = already ? ` ${already === 1 ? "1 ya estaba y se actualizó." : `${already} ya estaban y se actualizaron.`}` : "";
+          if (!failed.length) {
+            window.alert((saved === 1 ? "Se importó 1 ficha." : `Se importaron ${saved} fichas.`) + replaced);
+          } else {
+            const message = failed[0] && failed[0].message;
+            window.alert(`Se importaron ${saved} de ${fichas.length}.${replaced} ${message || ""}`.trim());
+          }
+        } finally {
+          if (fileLabel && previousLabel) fileLabel.textContent = previousLabel;
+          fileOpen.disabled = false;
         }
         return;
       }
 
-      const data = coerceFicha({ ...blank(), ...parsed, id: parsed.id || crypto.randomUUID() });
+      const data = planImport([parsed])[0];
       fillForm(data);
       showForm(0);
       const missing = missingFields(data);
