@@ -267,6 +267,95 @@ function ensure_password_resets(): void
     $ready = true;
 }
 
+
+function reset_attempt_key(string $identifier): string
+{
+    $identifier = strtolower(trim($identifier));
+    if ($identifier === '') {
+        $identifier = 'empty';
+    }
+    $ip = (string) ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
+    return hash('sha256', $identifier . '|' . $ip);
+}
+
+function ensure_password_reset_attempts(): void
+{
+    static $ready = false;
+    if ($ready) {
+        return;
+    }
+    db()->exec(
+        'CREATE TABLE IF NOT EXISTS password_reset_attempts (
+            attempt_key CHAR(64) PRIMARY KEY,
+            attempts SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+            window_start DATETIME NOT NULL,
+            locked_until DATETIME NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4'
+    );
+    $ready = true;
+}
+
+function password_reset_block_message(): string
+{
+    return 'Demasiados intentos. Probá de nuevo en 30 minutos.';
+}
+
+function password_reset_is_locked(string $identifier): bool
+{
+    ensure_password_reset_attempts();
+    $key = reset_attempt_key($identifier);
+    $stmt = db()->prepare('SELECT locked_until FROM password_reset_attempts WHERE attempt_key = :attempt_key');
+    $stmt->execute(['attempt_key' => $key]);
+    $until = $stmt->fetchColumn();
+    if (!$until) {
+        return false;
+    }
+    if (strtotime($until . ' UTC') > time()) {
+        return true;
+    }
+    db()->prepare('DELETE FROM password_reset_attempts WHERE attempt_key = :attempt_key')
+        ->execute(['attempt_key' => $key]);
+    return false;
+}
+
+function password_reset_register_attempt(string $identifier): void
+{
+    ensure_password_reset_attempts();
+    $key = reset_attempt_key($identifier);
+    $pdo = db();
+    $windowStart = gmdate('Y-m-d H:i:s', time() - 60 * 60);
+    $pdo->prepare('DELETE FROM password_reset_attempts WHERE window_start < :expired')
+        ->execute(['expired' => $windowStart]);
+    $pdo->prepare(
+        'INSERT INTO password_reset_attempts (attempt_key, attempts, window_start, locked_until)
+         VALUES (:attempt_key, 1, UTC_TIMESTAMP(), NULL)
+         ON DUPLICATE KEY UPDATE
+            attempts = IF(window_start < :window_start, 1, attempts + 1),
+            window_start = IF(window_start < :window_start, UTC_TIMESTAMP(), window_start)'
+    )->execute([
+        'attempt_key' => $key,
+        'window_start' => $windowStart,
+    ]);
+
+    $stmt = $pdo->prepare('SELECT attempts FROM password_reset_attempts WHERE attempt_key = :attempt_key');
+    $stmt->execute(['attempt_key' => $key]);
+    if ((int) $stmt->fetchColumn() <= 3) {
+        return;
+    }
+    $pdo->prepare('UPDATE password_reset_attempts SET locked_until = :until WHERE attempt_key = :attempt_key')
+        ->execute([
+            'until' => gmdate('Y-m-d H:i:s', time() + 30 * 60),
+            'attempt_key' => $key,
+        ]);
+}
+
+function password_reset_clear_attempts(string $identifier): void
+{
+    ensure_password_reset_attempts();
+    db()->prepare('DELETE FROM password_reset_attempts WHERE attempt_key = :attempt_key')
+        ->execute(['attempt_key' => reset_attempt_key($identifier)]);
+}
+
 function login_clear_failures(string $username): void
 {
     $key = login_attempt_key($username);

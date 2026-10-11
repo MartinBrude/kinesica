@@ -32,8 +32,7 @@ session_regenerate_id(true);
 $_SESSION['user'] = $user['username'];
 $_SESSION['name'] = $user['display_name'];
 
-$needsCode = $user['username'] !== 'martin';
-if ($needsCode && !(int) $user['totp_confirmed']) {
+if (!(int) $user['totp_confirmed']) {
     $_SESSION['full'] = false;
     login_clear_failures($username);
     json_out(200, [
@@ -43,7 +42,7 @@ if ($needsCode && !(int) $user['totp_confirmed']) {
     ]);
 }
 
-if ($needsCode && !totp_valid($user['totp_secret'], $code)) {
+if (!totp_valid($user['totp_secret'], $code)) {
     $_SESSION = [];
     login_register_failure($username);
     if (login_is_locked($username)) {

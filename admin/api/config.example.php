@@ -16,6 +16,7 @@ return [
         'maria' => 'manosmagicas7116@gmail.com',
     ],
     'users' => [
+        'martin' => ['name' => 'Martin', 'password' => 'CAMBIAR', 'totp' => 'CAMBIAR'],
         'norberto' => ['name' => 'Norberto', 'password' => 'CAMBIAR', 'totp' => 'CAMBIAR'],
         'maria' => ['name' => 'María', 'password' => 'CAMBIAR', 'totp' => 'CAMBIAR'],
     ],

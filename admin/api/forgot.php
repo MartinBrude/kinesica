@@ -7,7 +7,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     json_out(405, ['error' => 'Método no permitido']);
 }
 require_header();
-$username = strtolower(trim((string) (read_json()['username'] ?? '')));
+$submitted = strtolower(trim((string) (read_json()['username'] ?? '')));
+$username = $submitted;
 $generic = 'Si el usuario tiene correo, te llega un enlace en unos minutos.';
 
 $stmt = db()->prepare('SELECT username FROM users WHERE username = :username LIMIT 1');
@@ -24,6 +25,11 @@ if ($username === '' || !isset((cfg()['user_emails'] ?? [])[$username])) {
         }
     }
 }
+if (password_reset_is_locked($submitted)) {
+    json_out(429, ['error' => password_reset_block_message()]);
+}
+password_reset_register_attempt($submitted);
+
 $email = $user ? user_email($username) : '';
 $from = (string) (cfg()['mail_from'] ?? '');
 if ($from === '') {
@@ -51,5 +57,4 @@ if (!send_mail($email, 'Contraseña de Kinésica', $body)) {
     db()->prepare('DELETE FROM password_resets WHERE username = :username')->execute(['username' => $username]);
     json_out(502, ['error' => 'No se pudo enviar el correo.']);
 }
-
 json_out(200, ['ok' => true, 'message' => $generic]);
