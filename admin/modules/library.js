@@ -12,10 +12,10 @@ import {
   coerceFicha,
   missingFields,
   exampleFicha,
-} from "../ficha-rules.mjs?v=60";
-import { formatDate } from "./api.js?v=60";
-import { debounce } from "./dom.js?v=60";
-import { todayISO } from "./form.js?v=60";
+} from "../ficha-rules.mjs?v=61";
+import { formatDate } from "./api.js?v=61";
+import { debounce } from "./dom.js?v=61";
+import { todayISO } from "./form.js?v=61";
 
 const libraryView = document.querySelector("#view-library");
 const listEl = document.querySelector("#library-list");
@@ -326,6 +326,18 @@ export function renderLibrary() {
       controls.append(compBtn);
     }
 
+    const newSessBtn = document.createElement("button");
+    newSessBtn.type = "button";
+    newSessBtn.className = "btn light";
+    newSessBtn.textContent = "+ Nueva sesión";
+    newSessBtn.title = `Registrar una nueva consulta para ${pName}`;
+    newSessBtn.addEventListener("click", () => {
+      if (activeRowCallbacks.onNewSession && pSessions[0]) {
+        activeRowCallbacks.onNewSession(pSessions[0]);
+      }
+    });
+    controls.append(newSessBtn);
+
     const backBtn = document.createElement("button");
     backBtn.type = "button";
     backBtn.className = "btn light";
@@ -392,6 +404,18 @@ export function renderLibrary() {
           renderLibrary();
         });
 
+        const newSess = document.createElement("button");
+        newSess.type = "button";
+        newSess.className = "btn light";
+        newSess.textContent = "+ Sesión";
+        newSess.title = `Registrar nueva sesión para ${latest.nombre}`;
+        newSess.addEventListener("click", (e) => {
+          e.stopPropagation();
+          if (activeRowCallbacks.onNewSession) {
+            activeRowCallbacks.onNewSession(latest);
+          }
+        });
+
         const del = document.createElement("button");
         del.type = "button";
         del.className = "btn ghost btn-icon-del-text";
@@ -424,9 +448,9 @@ export function renderLibrary() {
             e.stopPropagation();
             activeRowCallbacks.onCompare(key);
           });
-          rowControls.append(open, comp, del);
+          rowControls.append(open, newSess, comp, del);
         } else {
-          rowControls.append(open, del);
+          rowControls.append(open, newSess, del);
         }
 
         row.addEventListener("click", (event) => {

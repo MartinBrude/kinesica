@@ -293,6 +293,49 @@ export function nextSession(item, fechaSesion) {
   return copy;
 }
 
+export function getUniquePatients(allFichas = []) {
+  const map = new Map();
+  for (const f of allFichas) {
+    const key = patientKey(f);
+    if (!key || key === "|") continue;
+    if (!map.has(key)) {
+      map.set(key, {
+        key,
+        nombre: f.nombre || "Sin nombre",
+        dni: f.dni || "",
+        nacimiento: f.nacimiento || "",
+        lugarNac: f.lugarNac || "",
+        habitoApretamiento: Boolean(f.habitoApretamiento),
+        habitoBruxismo: Boolean(f.habitoBruxismo),
+        habitoMasticacionUni: Boolean(f.habitoMasticacionUni),
+        habitoOnicofagia: Boolean(f.habitoOnicofagia),
+        antecedentes: f.antecedentes || "",
+        sessions: [f],
+      });
+    } else {
+      const p = map.get(key);
+      p.sessions.push(f);
+      if (!p.nacimiento && f.nacimiento) p.nacimiento = f.nacimiento;
+      if (!p.lugarNac && f.lugarNac) p.lugarNac = f.lugarNac;
+    }
+  }
+  return Array.from(map.values()).sort((a, b) =>
+    a.nombre.localeCompare(b.nombre, "es", { sensitivity: "base" })
+  );
+}
+
+export function getSessionIndex(item, allFichas = []) {
+  if (!item) return 1;
+  const key = patientKey(item);
+  const pSessions = (allFichas || [])
+    .filter((f) => patientKey(f) === key)
+    .sort((a, b) => (a.fechaSesion || "").localeCompare(b.fechaSesion || ""));
+  if (!pSessions.length) return 1;
+  const idx = pSessions.findIndex((s) => s.id === item.id);
+  if (idx >= 0) return idx + 1;
+  return pSessions.length + 1;
+}
+
 export function assignProfesional(username, previous, requested) {
   if (username === "martin" && requested && CLINICIANS[requested]) {
     return requested;

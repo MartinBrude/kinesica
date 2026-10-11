@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=60">
+  <link rel="stylesheet" href="/admin/styles.css?v=61">
   <script>
     (function () {
       try {
@@ -149,35 +149,68 @@
         </div>
 
         <div class="panel" data-panel="0">
-          <h2><span class="bar"></span>Información primaria</h2>
-          <div class="grid-2">
-            <label>Nombre completo
-              <input name="nombre" placeholder="Ej: Carolina Méndez" required autocomplete="name">
-            </label>
-            <label>DNI / Pasaporte
-              <input name="dni" placeholder="Ej: 34.205.109 o AB123456" required autocomplete="off">
-            </label>
+          <div class="panel-header-row">
+            <h2><span class="bar"></span>Información primaria</h2>
+            <span class="session-badge" id="session-count-badge">1ª Consulta · Evaluación inicial</span>
           </div>
-          <label id="field-profesional" hidden>Profesional asignado
-            <select name="profesional">
-              <option value="norberto">Lic. Norberto Brude</option>
-              <option value="maria">Lic. María Gulín</option>
-            </select>
-          </label>
-          <div class="grid-3">
-            <label>Fecha de la sesión
-              <input name="fechaSesion" type="date" required>
-            </label>
-            <label>Fecha de nacimiento
-              <input name="nacimiento" type="date" required>
-            </label>
-            <label>Edad (años)
-              <input name="edad" type="number" min="1" max="120" step="1" inputmode="numeric" placeholder="34" required>
-            </label>
+
+          <!-- Selector rápido de paciente existente -->
+          <div class="patient-picker-card" id="patient-picker-card">
+            <div class="patient-picker-fields">
+              <label for="patient-quick-select" class="patient-picker-title">
+                ¿Paciente registrado en el consultorio?
+              </label>
+              <div class="patient-picker-controls">
+                <select id="patient-quick-select" class="patient-quick-select" aria-label="Seleccionar paciente registrado">
+                  <option value="">— Cargar nuevo paciente (o seleccionar existente) —</option>
+                </select>
+                <button type="button" class="btn light btn-sm" id="btn-patient-new-toggle" hidden>+ Nuevo paciente</button>
+              </div>
+            </div>
+            <div id="patient-status-banner" class="patient-status-banner" hidden>
+              <span class="patient-status-pill">Filiación confirmada</span>
+              <span class="patient-status-text">Datos fijos vinculados a <strong><span id="patient-status-name"></span></strong> (DNI <span id="patient-status-dni"></span>) · <span id="patient-status-sessions"></span></span>
+              <button type="button" class="btn-unlock-patient" id="btn-unlock-patient" title="Habilitar edición de nombre, DNI o nacimiento">Editar filiación</button>
+            </div>
           </div>
-          <label>Nacimiento (NAC)
-            <input name="lugarNac" placeholder="Ej: Córdoba" required>
-          </label>
+
+          <div class="patient-fixed-section" id="patient-fixed-section">
+            <h3 class="subheading-filiacion">Filiación del paciente (Datos fijos)</h3>
+            <div class="grid-2">
+              <label>Nombre completo
+                <input name="nombre" placeholder="Ej: Carolina Méndez" required autocomplete="name">
+              </label>
+              <label>DNI / Pasaporte
+                <input name="dni" placeholder="Ej: 34.205.109 o AB123456" required autocomplete="off">
+              </label>
+            </div>
+            <div class="grid-2">
+              <label>Fecha de nacimiento
+                <input name="nacimiento" type="date" required>
+              </label>
+              <label>Nacimiento (NAC)
+                <input name="lugarNac" placeholder="Ej: Córdoba" required>
+              </label>
+            </div>
+          </div>
+
+          <div class="session-dynamic-section">
+            <h3 class="subheading-session">Datos de la sesión / consulta</h3>
+            <label id="field-profesional" hidden>Profesional asignado
+              <select name="profesional">
+                <option value="norberto">Lic. Norberto Brude</option>
+                <option value="maria">Lic. María Gulín</option>
+              </select>
+            </label>
+            <div class="grid-2">
+              <label>Fecha de la sesión
+                <input name="fechaSesion" type="date" required>
+              </label>
+              <label>Edad (años) <span class="calc-tag">Autocalculada</span>
+                <input name="edad" type="number" min="1" max="120" step="1" inputmode="numeric" placeholder="34" required readonly class="input-calc">
+              </label>
+            </div>
+          </div>
           <fieldset>
             <legend>Motivo de consulta principal</legend>
             <div class="pills" data-single="motivo">
@@ -564,6 +597,6 @@
     })();
   </script>
   <div id="print-root"></div>
-  <script type="module" src="/admin/app.js?v=60"></script>
+  <script type="module" src="/admin/app.js?v=61"></script>
 </body>
 </html>

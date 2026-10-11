@@ -87,6 +87,19 @@
     border: 1px solid #c5d8e6;
     border-radius: 14px;
     padding: 8px 16px 10px;
+    min-width: 120px;
+  }
+  .pf-session-badge {
+    display: inline-block;
+    background: #005f99;
+    color: #ffffff !important;
+    font-size: 7.5pt !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 2px 8px;
+    border-radius: 6px;
+    margin-bottom: 4px;
   }
   .pf-session strong {
     display: block;

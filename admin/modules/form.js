@@ -16,7 +16,9 @@ import {
   validateField,
   validateFicha,
   validateStep,
-} from "../ficha-rules.mjs?v=60";
+  getUniquePatients,
+  getSessionIndex,
+} from "../ficha-rules.mjs?v=61";
 
 const form = document.querySelector("#ficha");
 const formView = document.querySelector("#view-form");
@@ -34,6 +36,7 @@ let currentId = null;
 let formBaseline = "";
 const singles = {};
 let activeSessionUserGetter = null;
+let currentAllFichas = [];
 
 /**
  * Devuelve la fecha de hoy en formato ISO (YYYY-MM-DD).
@@ -81,6 +84,9 @@ export function readForm() {
   if (evaInput) raw.eva = evaInput.value;
   if (document.querySelector("#field-profesional")?.hidden) {
     delete raw.profesional;
+  }
+  if (!raw.edad && raw.nacimiento) {
+    raw.edad = ageOn(raw.nacimiento, raw.fechaSesion || todayISO());
   }
   return coerceFicha(raw);
 }
@@ -150,6 +156,90 @@ export function fillForm(data, allFichas = []) {
   if (compareFormBtn) {
     compareFormBtn.hidden = pSessions.length < 2;
   }
+
+  currentAllFichas = allFichas;
+  const pKey = (data.dni || data.nombre) ? patientKey(data) : "";
+  populatePatientPicker(allFichas, pKey);
+  if (pKey && pSessions.length > 0) {
+    const isEdit = allFichas.some((f) => f.id === data.id);
+    const sessionIdx = getSessionIndex(data, allFichas);
+    setPatientLocked(true, data, isEdit ? sessionIdx : pSessions.length, isEdit);
+  } else {
+    setPatientLocked(false);
+  }
+}
+
+/**
+ * Bloquea o desbloquea los campos de filiación fija del paciente y actualiza badges de estado.
+ * @param {boolean} locked Si los campos deben quedar protegidos
+ * @param {object|null} patientData Datos del paciente
+ * @param {number} sessionCount Cantidad de sesiones registradas
+ * @param {boolean} isEdit Si se está editando una sesión guardada previamente
+ * @param {boolean} keepValues Si se deben conservar los valores al desbloquear
+ */
+export function setPatientLocked(locked, patientData = null, sessionCount = 0, isEdit = false, keepValues = false) {
+  const fixedSection = document.querySelector("#patient-fixed-section");
+  const banner = document.querySelector("#patient-status-banner");
+  const nameSpan = document.querySelector("#patient-status-name");
+  const dniSpan = document.querySelector("#patient-status-dni");
+  const sessionsSpan = document.querySelector("#patient-status-sessions");
+  const newToggle = document.querySelector("#btn-patient-new-toggle");
+  const sessionBadge = document.querySelector("#session-count-badge");
+
+  const inputs = [
+    form?.elements.nombre,
+    form?.elements.dni,
+    form?.elements.nacimiento,
+    form?.elements.lugarNac,
+  ].filter(Boolean);
+
+  if (locked) {
+    if (fixedSection) fixedSection.classList.add("is-locked");
+    inputs.forEach((input) => (input.readOnly = true));
+    if (banner) banner.hidden = false;
+    if (newToggle) newToggle.hidden = false;
+    if (nameSpan) nameSpan.textContent = patientData?.nombre || form?.elements.nombre?.value || "";
+    if (dniSpan) dniSpan.textContent = patientData?.dni || form?.elements.dni?.value || "—";
+    if (sessionsSpan) {
+      sessionsSpan.textContent = sessionCount > 0
+        ? `${sessionCount} ${sessionCount === 1 ? "sesión registrada" : "sesiones registradas"}`
+        : "Sin sesiones previas";
+    }
+    if (sessionBadge) {
+      if (isEdit) {
+        sessionBadge.textContent = sessionCount > 0 ? `Editando Sesión N° ${sessionCount}` : "Editando ficha";
+      } else {
+        sessionBadge.textContent = sessionCount > 0 ? `Nueva consulta · Sesión N° ${sessionCount + 1}` : "1ª Consulta · Evaluación inicial";
+      }
+    }
+  } else {
+    if (fixedSection) fixedSection.classList.remove("is-locked");
+    inputs.forEach((input) => (input.readOnly = false));
+    if (banner) banner.hidden = true;
+    if (newToggle) newToggle.hidden = true;
+    if (sessionBadge && !keepValues) {
+      sessionBadge.textContent = "1ª Consulta · Evaluación inicial";
+    }
+  }
+}
+
+/**
+ * Llena el selector rápido de pacientes existentes a partir de la lista general de fichas.
+ * @param {Array<object>} allFichas
+ * @param {string} selectedKey
+ */
+export function populatePatientPicker(allFichas = [], selectedKey = "") {
+  const select = document.querySelector("#patient-quick-select");
+  if (!select) return;
+  const patients = getUniquePatients(allFichas);
+  select.innerHTML = '<option value="">— Cargar nuevo paciente (o seleccionar existente) —</option>';
+  for (const p of patients) {
+    const opt = document.createElement("option");
+    opt.value = p.key;
+    opt.textContent = `${p.nombre} (DNI ${p.dni || "—"}) · ${p.sessions.length} ses.`;
+    select.append(opt);
+  }
+  select.value = selectedKey || "";
 }
 
 /**
@@ -489,11 +579,76 @@ export function initForm({ onSave, onBack, onCompare, onPrint, onExportJson, get
     syncAge();
     updateStepValidation();
   });
+  form.elements.nacimiento?.addEventListener("input", () => {
+    syncAge();
+    updateStepValidation();
+  });
 
   form.elements.fechaSesion?.addEventListener("change", () => {
     syncAge();
     updateStepValidation();
   });
+  form.elements.fechaSesion?.addEventListener("input", () => {
+    syncAge();
+    updateStepValidation();
+  });
+
+  const patientSelect = document.querySelector("#patient-quick-select");
+  if (patientSelect) {
+    patientSelect.addEventListener("change", () => {
+      const selectedKey = patientSelect.value;
+      if (!selectedKey) {
+        setPatientLocked(false);
+        form.elements.nombre.value = "";
+        form.elements.dni.value = "";
+        form.elements.nacimiento.value = "";
+        form.elements.lugarNac.value = "";
+        form.elements.edad.value = "";
+        form.elements.nombre.focus();
+        updateStepValidation();
+        return;
+      }
+      const all = currentAllFichas || [];
+      const match = all.find((f) => patientKey(f) === selectedKey);
+      if (match) {
+        form.elements.nombre.value = match.nombre || "";
+        form.elements.dni.value = match.dni || "";
+        form.elements.nacimiento.value = match.nacimiento || "";
+        form.elements.lugarNac.value = match.lugarNac || "";
+        if (!form.elements.antecedentes?.value && match.antecedentes) {
+          form.elements.antecedentes.value = match.antecedentes;
+        }
+        syncAge();
+        const pSessions = all.filter((f) => patientKey(f) === selectedKey);
+        setPatientLocked(true, match, pSessions.length, false);
+        updateStepValidation();
+        form.elements.fechaSesion?.focus();
+      }
+    });
+  }
+
+  const unlockBtn = document.querySelector("#btn-unlock-patient");
+  if (unlockBtn) {
+    unlockBtn.addEventListener("click", () => {
+      setPatientLocked(false, null, 0, false, true);
+      form.elements.nombre?.focus();
+    });
+  }
+
+  const newToggleBtn = document.querySelector("#btn-patient-new-toggle");
+  if (newToggleBtn) {
+    newToggleBtn.addEventListener("click", () => {
+      if (patientSelect) patientSelect.value = "";
+      setPatientLocked(false);
+      form.elements.nombre.value = "";
+      form.elements.dni.value = "";
+      form.elements.nacimiento.value = "";
+      form.elements.lugarNac.value = "";
+      form.elements.edad.value = "";
+      form.elements.nombre?.focus();
+      updateStepValidation();
+    });
+  }
 
   form.addEventListener("input", (e) => {
     if (e.target.classList.contains("input-error") && e.target.value.trim()) {
@@ -604,7 +759,7 @@ export function initForm({ onSave, onBack, onCompare, onPrint, onExportJson, get
       const id = currentId;
       const fresh = blank();
       fresh.id = id || fresh.id;
-      fillForm(fresh);
+      fillForm(fresh, currentAllFichas);
       showStep(0);
     });
   }
@@ -614,7 +769,7 @@ export function initForm({ onSave, onBack, onCompare, onPrint, onExportJson, get
       const sample = blank();
       sample.id = currentId || sample.id;
       Object.assign(sample, exampleFicha());
-      fillForm(sample);
+      fillForm(sample, currentAllFichas);
     });
   }
 

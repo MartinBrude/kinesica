@@ -22,6 +22,8 @@ import {
   validateField,
   validateFicha,
   validateStep,
+  getUniquePatients,
+  getSessionIndex,
 } from "../admin/ficha-rules.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -364,6 +366,42 @@ assert.equal(openSections, closeSections, "Todas las secciones deben estar corre
 
 const formClosePos = html.indexOf('</section>\n\n    <section id="view-compare"');
 assert.ok(formClosePos > 0, "#view-form debe cerrarse antes de iniciar #view-compare");
+
+// Verificación de extracción de pacientes únicos y cálculo de número de sesión
+const testFichas = [
+  { id: "1", nombre: "Carlos Gómez", dni: "25.111.222", nacimiento: "1980-05-10", lugarNac: "Rosario", fechaSesion: "2026-01-10" },
+  { id: "2", nombre: "carlos gómez", dni: "25111222", nacimiento: "1980-05-10", lugarNac: "Rosario", fechaSesion: "2026-02-15" },
+  { id: "3", nombre: "Lucía Paz", dni: "38.999.000", nacimiento: "1994-08-20", lugarNac: "CABA", fechaSesion: "2026-03-01" },
+];
+const uniquePatients = getUniquePatients(testFichas);
+assert.equal(uniquePatients.length, 2, "Debe agrupar por clave normalizada de paciente");
+const carlos = uniquePatients.find((p) => p.dni === "25.111.222" || p.dni === "25111222");
+assert.ok(carlos);
+assert.equal(carlos.sessions.length, 2, "Carlos debe tener 2 sesiones registradas");
+
+assert.equal(getSessionIndex(testFichas[0], testFichas), 1);
+assert.equal(getSessionIndex(testFichas[1], testFichas), 2);
+assert.equal(getSessionIndex({ id: "new-4", nombre: "Carlos Gómez", dni: "25.111.222", fechaSesion: "2026-04-01" }, testFichas), 3, "Nueva sesión debe calcular índice N+1");
+
+// Verificación de autocálculo de edad defensivo en backend PHP
+assert.match(php, /DateTimeImmutable/);
+assert.match(php, /session->diff\(.*birth\)->y/);
+
+// Verificación de componentes de selector de paciente y badges en HTML
+assert.match(html, /id="patient-quick-select"/);
+assert.match(html, /id="patient-status-banner"/);
+assert.match(html, /id="session-count-badge"/);
+assert.match(html, /id="btn-unlock-patient"/);
+assert.match(html, /id="btn-patient-new-toggle"/);
+
+// Verificación de estilos CSS para selector de paciente y badge de sesión en PDF
+assert.match(css, /\.patient-picker-card/);
+assert.match(css, /\.patient-status-banner/);
+assert.match(css, /\.pf-session-badge/);
+
+// Verificación de funciones del controlador de formulario y biblioteca
+assert.match(app, /populatePatientPicker/);
+assert.match(app, /setPatientLocked/);
 
 console.log("fichas ATM: ok");
 

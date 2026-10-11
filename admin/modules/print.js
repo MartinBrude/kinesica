@@ -7,8 +7,9 @@
 import {
   CLINICIAN_DETAILS,
   patientKey,
-} from "../ficha-rules.mjs?v=60";
-import { formatDate } from "./api.js?v=60";
+  ageOn,
+} from "../ficha-rules.mjs?v=61";
+import { formatDate } from "./api.js?v=61";
 import {
   node,
   field,
@@ -35,9 +36,10 @@ const CDI_LABELS = {
  * Genera el elemento DOM correspondiente a una hoja impresa individual A4.
  * @param {object} item Datos clínicos de la ficha
  * @param {object|null} [sessionUser=null] Profesional en sesión activa
+ * @param {object} [meta={}] Metadatos contextuales (sessionIndex, totalSessions)
  * @returns {HTMLElement} Elemento article.print-sheet
  */
-export function buildSheet(item, sessionUser = null) {
+export function buildSheet(item, sessionUser = null, meta = {}) {
   const sheet = node("article", "print-sheet");
 
   const head = node("header", "pf-head");
@@ -51,8 +53,16 @@ export function buildSheet(item, sessionUser = null) {
     node("p", "pf-sub", "Evaluación según criterios CDI-TTM")
   );
   brand.append(logo, titles);
+
   const session = node("div", "pf-session");
+  const sIdx = meta.sessionIndex || 1;
+  const sTotal = meta.totalSessions || 1;
+  const sessionBadgeText = sIdx === 1 && sTotal === 1
+    ? "Evaluación inicial"
+    : `Sesión N° ${sIdx}${sTotal > 1 ? ` de ${sTotal}` : ""}`;
+
   session.append(
+    node("span", "pf-session-badge", sessionBadgeText),
     node("span", "", "Fecha de sesión"),
     node("strong", "", formatDate(item.fechaSesion))
   );
@@ -60,13 +70,14 @@ export function buildSheet(item, sessionUser = null) {
 
   const who = node("section", "pf-who");
   who.append(node("h2", "pf-name", item.nombre || "Sin nombre"));
+  const computedAge = item.edad || ageOn(item.nacimiento, item.fechaSesion);
   add(
     who,
     grid([
       ["Documento", item.dni],
-      ["Edad", item.edad ? `${item.edad} años` : ""],
+      ["Edad", computedAge ? `${computedAge} años` : ""],
       ["Nacimiento", formatParts([formatDate(item.nacimiento), item.lugarNac])],
-      ["Motivo de consulta", item.motivo],
+      [sIdx > 1 ? "Motivo / Evolución" : "Motivo de consulta", item.motivo],
     ])
   );
 
@@ -269,7 +280,14 @@ export async function printItems(items, sessionUser = null) {
 
   for (const group of groups.values()) {
     group.sort((a, b) => (a.fechaSesion || "").localeCompare(b.fechaSesion || ""));
-    for (const item of group) root.append(buildSheet(item, sessionUser));
+    group.forEach((item, idx) => {
+      root.append(
+        buildSheet(item, sessionUser, {
+          sessionIndex: idx + 1,
+          totalSessions: group.length,
+        })
+      );
+    });
   }
 
   const previousTitle = document.title;

@@ -26,6 +26,16 @@ if ($method === 'POST') {
     if (!preg_match('/^[0-9a-f-]{36}$/i', $id)) {
         json_out(422, ['error' => 'La ficha no es válida']);
     }
+    // Autocálculo de resguardo de edad a partir de fecha de nacimiento y fecha de sesión
+    if (trim((string) ($data['edad'] ?? '')) === '' && !empty($data['nacimiento']) && !empty($data['fechaSesion'])) {
+        try {
+            $birth = new DateTimeImmutable((string) $data['nacimiento']);
+            $session = new DateTimeImmutable((string) $data['fechaSesion']);
+            $data['edad'] = (string) $session->diff($birth)->y;
+        } catch (Throwable) {
+            // Ignorar formato inválido para que falle la validación posterior
+        }
+    }
     $required = [
         'nombre' => 'el nombre completo',
         'dni' => 'el DNI / Pasaporte',
