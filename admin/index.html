@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=62">
+  <link rel="stylesheet" href="/admin/styles.css?v=63">
   <script>
     (function () {
       try {
@@ -170,12 +170,12 @@
             <div id="patient-status-banner" class="patient-status-banner" hidden>
               <span class="patient-status-pill">Filiación confirmada</span>
               <span class="patient-status-text">Datos fijos vinculados a <strong><span id="patient-status-name"></span></strong> (DNI <span id="patient-status-dni"></span>) · <span id="patient-status-sessions"></span></span>
-              <button type="button" class="btn-unlock-patient" id="btn-unlock-patient" title="Habilitar edición de nombre, DNI o nacimiento">Editar filiación</button>
+              <button type="button" class="btn-unlock-patient" id="btn-unlock-patient" title="Habilitar edición de filiación y antecedentes">Editar filiación y antecedentes</button>
             </div>
           </div>
 
           <div class="patient-fixed-section" id="patient-fixed-section">
-            <h3 class="subheading-filiacion">Filiación del paciente (Datos fijos)</h3>
+            <h3 class="subheading-filiacion">Filiación y antecedentes basales del paciente (No cambian por sesión)</h3>
             <div class="grid-2">
               <label>Nombre completo
                 <input name="nombre" placeholder="Ej: Carolina Méndez" required autocomplete="name">
@@ -192,10 +192,32 @@
                 <input name="lugarNac" placeholder="Ej: Córdoba" required>
               </label>
             </div>
+            <fieldset>
+              <legend>Motivo de consulta principal</legend>
+              <div class="pills" data-single="motivo">
+                <button type="button" data-value="Traumático">Traumático</button>
+                <button type="button" data-value="No Traumático">No Traumático</button>
+                <button type="button" data-value="Pos Quirúrgico">Pos Quirúrgico</button>
+              </div>
+            </fieldset>
+            <!-- FEATURE-OPTIONAL: habitos-bruxismo -->
+            <fieldset class="habitos-block">
+              <legend>Hábitos parafuncionales y bruxismo</legend>
+              <div class="habit-grid">
+                <label class="check"><input type="checkbox" name="habitoApretamiento"> Apretamiento diurno</label>
+                <label class="check"><input type="checkbox" name="habitoBruxismo"> Bruxismo nocturno</label>
+                <label class="check"><input type="checkbox" name="habitoMasticacionUni"> Masticación unilateral</label>
+                <label class="check"><input type="checkbox" name="habitoOnicofagia"> Onicofagia / mordisqueo</label>
+              </div>
+            </fieldset>
+            <!-- /FEATURE-OPTIONAL: habitos-bruxismo -->
+            <label>Descripción de antecedentes clínicos
+              <textarea name="antecedentes" rows="4" placeholder="Coloca la sintomatología inicial, hábitos o incidentes traumáticos reportados por el paciente" required></textarea>
+            </label>
           </div>
 
           <div class="session-dynamic-section">
-            <h3 class="subheading-session">Datos de la sesión / consulta</h3>
+            <h3 class="subheading-session">Datos de la sesión / consulta actual</h3>
             <label id="field-profesional" hidden>Profesional asignado
               <select name="profesional">
                 <option value="norberto">Lic. Norberto Brude</option>
@@ -211,28 +233,6 @@
               </label>
             </div>
           </div>
-          <fieldset>
-            <legend>Motivo de consulta principal</legend>
-            <div class="pills" data-single="motivo">
-              <button type="button" data-value="Traumático">Traumático</button>
-              <button type="button" data-value="No Traumático">No Traumático</button>
-              <button type="button" data-value="Pos Quirúrgico">Pos Quirúrgico</button>
-            </div>
-          </fieldset>
-          <!-- FEATURE-OPTIONAL: habitos-bruxismo -->
-          <fieldset class="habitos-block">
-            <legend>Hábitos parafuncionales y bruxismo</legend>
-            <div class="habit-grid">
-              <label class="check"><input type="checkbox" name="habitoApretamiento"> Apretamiento diurno</label>
-              <label class="check"><input type="checkbox" name="habitoBruxismo"> Bruxismo nocturno</label>
-              <label class="check"><input type="checkbox" name="habitoMasticacionUni"> Masticación unilateral</label>
-              <label class="check"><input type="checkbox" name="habitoOnicofagia"> Onicofagia / mordisqueo</label>
-            </div>
-          </fieldset>
-          <!-- /FEATURE-OPTIONAL: habitos-bruxismo -->
-          <label>Descripción de antecedentes clínicos
-            <textarea name="antecedentes" rows="4" placeholder="Coloca la sintomatología inicial, hábitos o incidentes traumáticos reportados por el paciente" required></textarea>
-          </label>
         </div>
 
         <div class="panel" data-panel="1" hidden>
@@ -597,6 +597,6 @@
     })();
   </script>
   <div id="print-root"></div>
-  <script type="module" src="/admin/app.js?v=62"></script>
+  <script type="module" src="/admin/app.js?v=63"></script>
 </body>
 </html>

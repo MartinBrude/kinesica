@@ -18,7 +18,7 @@ import {
   validateStep,
   getUniquePatients,
   getSessionIndex,
-} from "../ficha-rules.mjs?v=62";
+} from "../ficha-rules.mjs?v=63";
 
 const form = document.querySelector("#ficha");
 const formView = document.querySelector("#view-form");
@@ -191,11 +191,21 @@ export function setPatientLocked(locked, patientData = null, sessionCount = 0, i
     form?.elements.dni,
     form?.elements.nacimiento,
     form?.elements.lugarNac,
+    form?.elements.antecedentes,
+  ].filter(Boolean);
+
+  const habitChecks = [
+    form?.elements.habitoApretamiento,
+    form?.elements.habitoBruxismo,
+    form?.elements.habitoMasticacionUni,
+    form?.elements.habitoOnicofagia,
   ].filter(Boolean);
 
   if (locked) {
     if (fixedSection) fixedSection.classList.add("is-locked");
     inputs.forEach((input) => (input.readOnly = true));
+    habitChecks.forEach((chk) => (chk.disabled = true));
+    document.querySelectorAll('[data-single="motivo"] button').forEach((btn) => (btn.disabled = true));
     if (banner) banner.hidden = false;
     if (newToggle) newToggle.hidden = false;
     if (nameSpan) nameSpan.textContent = patientData?.nombre || form?.elements.nombre?.value || "";
@@ -215,6 +225,8 @@ export function setPatientLocked(locked, patientData = null, sessionCount = 0, i
   } else {
     if (fixedSection) fixedSection.classList.remove("is-locked");
     inputs.forEach((input) => (input.readOnly = false));
+    habitChecks.forEach((chk) => (chk.disabled = false));
+    document.querySelectorAll('[data-single="motivo"] button').forEach((btn) => (btn.disabled = false));
     if (banner) banner.hidden = true;
     if (newToggle) newToggle.hidden = true;
     if (sessionBadge && !keepValues) {
