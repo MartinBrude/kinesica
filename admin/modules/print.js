@@ -10,8 +10,8 @@ import {
   ageOn,
   formatSessionBadgeText,
   shouldOmitInvariableFields,
-} from "../ficha-rules.mjs?v=75";
-import { formatDate } from "./api.js?v=75";
+} from "../ficha-rules.mjs?v=76";
+import { formatDate } from "./api.js?v=76";
 import {
   node,
   field,

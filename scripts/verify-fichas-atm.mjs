@@ -265,6 +265,64 @@ assert.equal(validateField("aperturaLibre", "500"), null, "Apertura límite supe
 assert.ok(validateField("protrusion", "501"), "Protrusión fuera de rango (>500) debe ser inválida");
 assert.equal(validateField("protrusion", "500"), null, "Protrusión válida hasta 500 debe ser aceptada");
 
+// Validación condicional de lado en Ruidos articulares, Dolor condilar y Desviación de trayectoria
+// 1. Ruidos
+assert.ok(validateField("ruidos", "Sí", { ruidos: "Sí", ruidosIzq: false, ruidosDer: false }), "Ruidos en Sí sin lado debe ser inválido");
+assert.equal(validateField("ruidos", "Sí", { ruidos: "Sí", ruidosIzq: true, ruidosDer: false }), null, "Ruidos en Sí con lado izquierdo debe ser válido");
+assert.equal(validateField("ruidos", "Sí", { ruidos: "Sí", ruidosIzq: false, ruidosDer: true }), null, "Ruidos en Sí con lado derecho debe ser válido");
+assert.equal(validateField("ruidos", "Sí", { ruidos: "Sí", ruidosIzq: true, ruidosDer: true }), null, "Ruidos en Sí bilateral debe ser válido");
+assert.equal(validateField("ruidos", "No", { ruidos: "No", ruidosIzq: false, ruidosDer: false }), null, "Ruidos en No no requiere lado");
+assert.equal(validateField("ruidos", "", { ruidos: "", ruidosIzq: false, ruidosDer: false }), null, "Ruidos sin registrar no requiere lado");
+
+// 2. Dolor condilar a la palpación
+assert.ok(validateField("dolorCondilar", "Sí", { dolorCondilar: "Sí", condilarIzq: false, condilarDer: false }), "Dolor condilar en Sí sin lado debe ser inválido");
+assert.equal(validateField("dolorCondilar", "Sí", { dolorCondilar: "Sí", condilarIzq: true, condilarDer: false }), null, "Dolor condilar en Sí con lado izquierdo debe ser válido");
+assert.equal(validateField("dolorCondilar", "Sí", { dolorCondilar: "Sí", condilarIzq: false, condilarDer: true }), null, "Dolor condilar en Sí con lado derecho debe ser válido");
+assert.equal(validateField("dolorCondilar", "No", { dolorCondilar: "No", condilarIzq: false, condilarDer: false }), null, "Dolor condilar en No no requiere lado");
+assert.equal(validateField("dolorCondilar", "", { dolorCondilar: "", condilarIzq: false, condilarDer: false }), null, "Dolor condilar sin registrar no requiere lado");
+
+// 3. Desviación lateral de la trayectoria
+assert.ok(validateField("desviacion", "Sí", { desviacion: "Sí", desvIzq: false, desvDer: false }), "Desviación en Sí sin lado debe ser inválida");
+assert.equal(validateField("desviacion", "Sí", { desviacion: "Sí", desvIzq: true, desvDer: false }), null, "Desviación en Sí con lado izquierdo debe ser válida");
+assert.equal(validateField("desviacion", "Sí", { desviacion: "Sí", desvIzq: false, desvDer: true }), null, "Desviación en Sí con lado derecho debe ser válida");
+assert.equal(validateField("desviacion", "No", { desviacion: "No", desvIzq: false, desvDer: false }), null, "Desviación en No no requiere lado");
+assert.equal(validateField("desviacion", "", { desviacion: "", desvIzq: false, desvDer: false }), null, "Desviación sin registrar no requiere lado");
+
+// Validación de Paso 1 con validateStep
+const step1Empty = { ruidos: "", dolorCondilar: "", desviacion: "", aperturaLibre: "", aperturaDolor: "", protrusion: "", latIzq: "", latDer: "" };
+assert.equal(validateStep(1, step1Empty).isValid, true, "Paso 1 vacío es válido");
+
+const step1RuidosSinLado = { ...step1Empty, ruidos: "Sí" };
+assert.equal(validateStep(1, step1RuidosSinLado).isValid, false, "Paso 1 con ruidos Sí sin lado debe ser inválido");
+assert.equal(validateStep(1, step1RuidosSinLado).firstErrorKey, "ruidos");
+
+const step1DolorSinLado = { ...step1Empty, dolorCondilar: "Sí" };
+assert.equal(validateStep(1, step1DolorSinLado).isValid, false, "Paso 1 con dolor condilar Sí sin lado debe ser inválido");
+assert.equal(validateStep(1, step1DolorSinLado).firstErrorKey, "dolorCondilar");
+
+const step1DesvSinLado = { ...step1Empty, desviacion: "Sí" };
+assert.equal(validateStep(1, step1DesvSinLado).isValid, false, "Paso 1 con desviación Sí sin lado debe ser inválido");
+assert.equal(validateStep(1, step1DesvSinLado).firstErrorKey, "desviacion");
+
+const step1CompletoConLados = {
+  ...step1Empty,
+  ruidos: "Sí",
+  ruidosIzq: true,
+  dolorCondilar: "Sí",
+  condilarDer: true,
+  desviacion: "Sí",
+  desvIzq: true,
+};
+assert.equal(validateStep(1, step1CompletoConLados).isValid, true, "Paso 1 con lados indicados debe ser válido");
+
+// Backend PHP validation assertions
+assert.match(php, /\$data\['ruidos'\][^=]*===\s*'Sí'\s*&&\s*empty\(\$data\['ruidosIzq'\]\)\s*&&\s*empty\(\$data\['ruidosDer'\]\)/);
+assert.match(php, /\$data\['dolorCondilar'\][^=]*===\s*'Sí'\s*&&\s*empty\(\$data\['condilarIzq'\]\)\s*&&\s*empty\(\$data\['condilarDer'\]\)/);
+assert.match(php, /\$data\['desviacion'\][^=]*===\s*'Sí'\s*&&\s*empty\(\$data\['desvIzq'\]\)\s*&&\s*empty\(\$data\['desvDer'\]\)/);
+
+// CSS assertions
+assert.match(css, /\.follow-group\.input-error/);
+
 // Verificación de atributos HTML de tipos y rangos
 assert.match(html, /name="edad"[^>]*type="number"[^>]*min="1"[^>]*max="120"/);
 assert.match(html, /name="aperturaLibre"[^>]*type="number"[^>]*min="0"[^>]*max="500"/);

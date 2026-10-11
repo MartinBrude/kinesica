@@ -86,6 +86,16 @@ if ($method === 'POST') {
     $data['edad'] = (string) ((int) $edadRaw);
     $data['eva'] = max(0, min(10, (int) ($data['eva'] ?? 0)));
     $data['cdi'] = is_array($data['cdi'] ?? null) ? array_values(array_filter($data['cdi'], 'is_string')) : [];
+
+    if (($data['ruidos'] ?? '') === 'Sí' && empty($data['ruidosIzq']) && empty($data['ruidosDer'])) {
+        json_out(422, ['error' => 'Debe indicar el lado (izquierdo y/o derecho) en los ruidos articulares']);
+    }
+    if (($data['dolorCondilar'] ?? '') === 'Sí' && empty($data['condilarIzq']) && empty($data['condilarDer'])) {
+        json_out(422, ['error' => 'Debe indicar el lado (izquierdo y/o derecho) en el dolor condilar a la palpación']);
+    }
+    if (($data['desviacion'] ?? '') === 'Sí' && empty($data['desvIzq']) && empty($data['desvDer'])) {
+        json_out(422, ['error' => 'Debe indicar el lado (izquierdo y/o derecho) en la desviación lateral de la trayectoria']);
+    }
     $data['profesional'] = $profesional;
     $data['profesionalNombre'] = $clinicians[$profesional] ?? $profesional;
     $data['savedAt'] = gmdate('c');

@@ -18,7 +18,7 @@ import {
   validateStep,
   getUniquePatients,
   getSessionIndex,
-} from "../ficha-rules.mjs?v=75";
+} from "../ficha-rules.mjs?v=76";
 
 const form = document.querySelector("#ficha");
 const formView = document.querySelector("#view-form");
@@ -288,8 +288,12 @@ export function updateStepValidation() {
   const data = readForm();
   const missingKeys = missingFieldKeys(data);
   const step0Val = validateStep(0, data);
-  const dot = document.querySelector('#view-form .steps button[data-step="0"] .step-dot');
-  if (dot) dot.hidden = missingKeys.length === 0 && step0Val.isValid;
+  const dot0 = document.querySelector('#view-form .steps button[data-step="0"] .step-dot');
+  if (dot0) dot0.hidden = missingKeys.length === 0 && step0Val.isValid;
+
+  const step1Val = validateStep(1, data);
+  const dot1 = document.querySelector('#view-form .steps button[data-step="1"] .step-dot');
+  if (dot1) dot1.hidden = step1Val.isValid;
 }
 
 /**
@@ -310,9 +314,24 @@ export function highlightMissingFields(keys = []) {
  */
 export function highlightErrorFields(keys = []) {
   if (!form) return;
+  const sideConfig = {
+    ruidos: { follow: "ruidos", checks: ["ruidosIzq", "ruidosDer"] },
+    dolorCondilar: { follow: "dolorCondilar", checks: ["condilarIzq", "condilarDer"] },
+    desviacion: { follow: "desviacion", checks: ["desvIzq", "desvDer"] },
+  };
+
   keys.forEach((key) => {
     const el = form.elements[key];
     if (el) el.classList.add("input-error");
+
+    if (sideConfig[key]) {
+      const cfg = sideConfig[key];
+      const fg = form.querySelector(`[data-follow="${cfg.follow}"] .follow-group`);
+      if (fg) fg.classList.add("input-error");
+      cfg.checks.forEach((chkName) => {
+        form.elements[chkName]?.classList.add("input-error");
+      });
+    }
   });
 }
 
@@ -501,6 +520,10 @@ export function syncFollowups() {
     if (!show) {
       box.querySelectorAll("input").forEach((input) => {
         input.checked = false;
+        input.classList.remove("input-error");
+      });
+      box.querySelectorAll(".follow-group").forEach((fg) => {
+        fg.classList.remove("input-error");
       });
     }
   });
@@ -593,6 +616,7 @@ export function initForm({ onSave, onBack, onCompare, onPrint, onExportJson, get
         el.classList.toggle("on", el.dataset.value === next);
       });
       syncFollowups();
+      updateStepValidation();
     });
   });
 
@@ -723,6 +747,35 @@ export function initForm({ onSave, onBack, onCompare, onPrint, onExportJson, get
     updateStepValidation();
   });
 
+  form.addEventListener("change", (e) => {
+    const sideMap = {
+      ruidosIzq: "ruidos",
+      ruidosDer: "ruidos",
+      condilarIzq: "dolorCondilar",
+      condilarDer: "dolorCondilar",
+      desvIzq: "desviacion",
+      desvDer: "desviacion",
+    };
+    const key = sideMap[e.target?.name];
+    if (key) {
+      const data = readForm();
+      const err = validateField(key, data[key], data);
+      if (!err) {
+        const sideConfig = {
+          ruidos: { follow: "ruidos", checks: ["ruidosIzq", "ruidosDer"] },
+          dolorCondilar: { follow: "dolorCondilar", checks: ["condilarIzq", "condilarDer"] },
+          desviacion: { follow: "desviacion", checks: ["desvIzq", "desvDer"] },
+        }[key];
+        const fg = form.querySelector(`[data-follow="${sideConfig.follow}"] .follow-group`);
+        if (fg) fg.classList.remove("input-error");
+        sideConfig.checks.forEach((chkName) => {
+          form.elements[chkName]?.classList.remove("input-error");
+        });
+      }
+    }
+    updateStepValidation();
+  });
+
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const data = readForm();
@@ -746,8 +799,11 @@ export function initForm({ onSave, onBack, onCompare, onPrint, onExportJson, get
         lugarNac: 0,
         motivo: 0,
         antecedentes: 0,
+        ruidos: 1,
+        dolorCondilar: 1,
         aperturaLibre: 1,
         aperturaDolor: 1,
+        desviacion: 1,
         protrusion: 1,
         latIzq: 1,
         latDer: 1,
@@ -757,7 +813,12 @@ export function initForm({ onSave, onBack, onCompare, onPrint, onExportJson, get
       showStep(targetStep);
       highlightErrorFields(Object.keys(val.errors));
       window.alert(val.firstError);
-      const firstMissing = form.elements[val.firstErrorKey] || form.querySelector(".input-error");
+      const sideInputs = {
+        ruidos: form.elements.ruidosIzq,
+        dolorCondilar: form.elements.condilarIzq,
+        desviacion: form.elements.desvIzq,
+      };
+      const firstMissing = form.elements[val.firstErrorKey] || sideInputs[val.firstErrorKey] || form.querySelector(".input-error");
       if (firstMissing) firstMissing.focus();
       return;
     }
@@ -809,7 +870,12 @@ export function initForm({ onSave, onBack, onCompare, onPrint, onExportJson, get
         if (!val.isValid) {
           highlightErrorFields(Object.keys(val.errors));
           window.alert(val.firstError);
-          const firstMissing = form.elements[val.firstErrorKey] || form.querySelector(".input-error");
+          const sideInputs = {
+            ruidos: form.elements.ruidosIzq,
+            dolorCondilar: form.elements.condilarIzq,
+            desviacion: form.elements.desvIzq,
+          };
+          const firstMissing = form.elements[val.firstErrorKey] || sideInputs[val.firstErrorKey] || form.querySelector(".input-error");
           if (firstMissing) firstMissing.focus();
           return;
         }

@@ -126,6 +126,33 @@ export function validateField(key, value, allData = {}) {
       }
       return null;
     }
+    case "ruidos":
+    case "ruidosIzq":
+    case "ruidosDer": {
+      const isSi = str === "Sí" || allData.ruidos === "Sí";
+      if (isSi && !allData.ruidosIzq && !allData.ruidosDer) {
+        return "Debe indicar el lado (izquierdo y/o derecho) en los ruidos articulares";
+      }
+      return null;
+    }
+    case "dolorCondilar":
+    case "condilarIzq":
+    case "condilarDer": {
+      const isSi = str === "Sí" || allData.dolorCondilar === "Sí";
+      if (isSi && !allData.condilarIzq && !allData.condilarDer) {
+        return "Debe indicar el lado (izquierdo y/o derecho) en el dolor condilar a la palpación";
+      }
+      return null;
+    }
+    case "desviacion":
+    case "desvIzq":
+    case "desvDer": {
+      const isSi = str === "Sí" || allData.desviacion === "Sí";
+      if (isSi && !allData.desvIzq && !allData.desvDer) {
+        return "Debe indicar el lado (izquierdo y/o derecho) en la desviación lateral de la trayectoria";
+      }
+      return null;
+    }
     case "eva": {
       if (value === "" || value === null || value === undefined) return null;
       const n = Number(value);
@@ -154,8 +181,11 @@ export function validateFicha(data = {}) {
     "lugarNac",
     "motivo",
     "antecedentes",
+    "ruidos",
+    "dolorCondilar",
     "aperturaLibre",
     "aperturaDolor",
+    "desviacion",
     "protrusion",
     "latIzq",
     "latDer",
@@ -188,7 +218,7 @@ export function validateFicha(data = {}) {
 export function validateStep(stepNumber, data = {}) {
   const stepFields = {
     0: ["nombre", "dni", "fechaSesion", "nacimiento", "edad", "motivo", "antecedentes"],
-    1: ["aperturaLibre", "aperturaDolor", "protrusion", "latIzq", "latDer"],
+    1: ["ruidos", "dolorCondilar", "aperturaLibre", "aperturaDolor", "desviacion", "protrusion", "latIzq", "latDer"],
     2: [],
     3: ["eva"],
     4: [],

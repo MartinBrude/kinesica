@@ -247,6 +247,16 @@ textarea {
   border-color: #86efac;
 }
 
+.follow-group.input-error {
+  border-color: #ef4444 !important;
+  background-color: #fef2f2 !important;
+  box-shadow: 0 0 0 1px #ef4444;
+}
+
+.follow-group.input-error .inline-label {
+  color: #dc2626 !important;
+}
+
 .follow-group .inline-label {
   font-size: 11px;
   font-weight: 700;
