@@ -219,11 +219,12 @@ export function syncMineButton() {
  * @param {object|Array<object>} data
  * @param {string} todayStr
  */
-export function downloadJSON(data, todayStr = "") {
+export function downloadJSON(data, todayStr = "", fileStem = "") {
   const isArray = Array.isArray(data);
-  const name = isArray
-    ? "fichas-atm"
-    : `ficha-${(data.nombre || "paciente").replace(/\s+/g, "_")}`;
+  const name = fileStem
+    || (isArray
+      ? "fichas-atm"
+      : `ficha-${(data.nombre || "paciente").replace(/\s+/g, "_")}`);
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
@@ -474,19 +475,22 @@ export function patientGroupRow(key, sessions, callbacks = {}) {
   });
   controls.append(printGroup);
 
-  // JSON (solo cuando la fila es una única ficha)
-  if (!isMulti) {
-    const jsonBtn = document.createElement("button");
-    jsonBtn.type = "button";
-    jsonBtn.className = "btn ghost";
-    jsonBtn.textContent = "JSON";
-    jsonBtn.title = `Descargar JSON de ${latest.nombre || "este paciente"}`;
-    jsonBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      if (callbacks.onDownloadJson) callbacks.onDownloadJson(latest);
-    });
-    controls.append(jsonBtn);
-  }
+  const jsonBtn = document.createElement("button");
+  jsonBtn.type = "button";
+  jsonBtn.className = "btn ghost";
+  jsonBtn.textContent = "JSON";
+  jsonBtn.title = sessions.length > 1
+    ? `Descargar JSON de las ${sessions.length} sesiones de ${latest.nombre || "este paciente"}`
+    : `Descargar JSON de ${latest.nombre || "este paciente"}`;
+  jsonBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (sessions.length > 1 && callbacks.onDownloadJsonAll) {
+      callbacks.onDownloadJsonAll(sessions);
+      return;
+    }
+    if (callbacks.onDownloadJson) callbacks.onDownloadJson(latest);
+  });
+  controls.append(jsonBtn);
 
   // Comparar (si tiene >= 2 sesiones)
   if (sessions.length >= 2 && callbacks.onCompare) {
@@ -749,6 +753,10 @@ export function initLibrary({
     onDeleteBatch: onDeleteBatchFichas,
     onCompare: onComparePatient,
     onDownloadJson: (item) => downloadJSON(item, todayStr),
+    onDownloadJsonAll: (items) => {
+      const stem = `fichas-${(items[0]?.nombre || "paciente").replace(/\s+/g, "_")}`;
+      downloadJSON(items, todayStr, stem);
+    },
     todayStr,
   };
 
