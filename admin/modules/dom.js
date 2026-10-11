@@ -27,7 +27,7 @@ export function escapeHtml(str) {
 export function node(tag, className = "", text = "") {
   const el = document.createElement(tag);
   if (className) el.className = className;
-  if (text) el.textContent = text;
+  if (text !== "" && text !== null && text !== undefined) el.textContent = String(text);
   return el;
 }
 

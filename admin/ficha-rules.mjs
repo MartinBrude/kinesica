@@ -170,6 +170,7 @@ export function validateField(key, value, allData = {}) {
  * @returns {{isValid: boolean, errors: Object<string, string>, errorList: string[], firstErrorKey: string|null, firstError: string|null}}
  */
 export function validateFicha(data = {}) {
+  data = data || {};
   const errors = {};
   const errorList = [];
   const fieldsToCheck = [
@@ -216,6 +217,7 @@ export function validateFicha(data = {}) {
  * @returns {{isValid: boolean, errors: Object<string, string>, errorList: string[], firstErrorKey: string|null, firstError: string|null}}
  */
 export function validateStep(stepNumber, data = {}) {
+  data = data || {};
   const stepFields = {
     0: ["nombre", "dni", "fechaSesion", "nacimiento", "edad", "motivo", "antecedentes"],
     1: ["ruidos", "dolorCondilar", "aperturaLibre", "aperturaDolor", "desviacion", "protrusion", "latIzq", "latDer"],
@@ -302,10 +304,16 @@ export function ownsFicha(item, username) {
   return (item?.profesional || "") === username;
 }
 
+function isRealDate([y, m, d]) {
+  if (!y || !m || !d || m > 12 || d > 31) return false;
+  const date = new Date(Date.UTC(y, m - 1, d));
+  return date.getUTCFullYear() === y && date.getUTCMonth() === m - 1 && date.getUTCDate() === d;
+}
+
 export function ageOn(nacimiento, onDate) {
   const birth = String(nacimiento || "").slice(0, 10).split("-").map(Number);
   const on = String(onDate || "").slice(0, 10).split("-").map(Number);
-  if (birth.length !== 3 || on.length !== 3 || birth.some((n) => !n) || on.some((n) => !n)) return "";
+  if (birth.length !== 3 || on.length !== 3 || !isRealDate(birth) || !isRealDate(on)) return "";
   let age = on[0] - birth[0];
   if (on[1] < birth[1] || (on[1] === birth[1] && on[2] < birth[2])) age -= 1;
   return age >= 0 ? String(age) : "";

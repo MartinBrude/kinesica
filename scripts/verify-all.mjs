@@ -18,6 +18,8 @@ const steps = [
   ["node", ["scripts/verify-home-pages.mjs"]],
   ["node", ["scripts/audit-dry.mjs"]],
   ["node", ["scripts/audit-site.mjs"]],
+  ["node", ["scripts/verify-fichas-atm.mjs"]],
+  ["node", ["scripts/verify-admin-robustness.mjs"]],
 ];
 
 for (const [cmd, args] of steps) {

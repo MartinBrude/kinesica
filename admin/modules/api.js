@@ -19,7 +19,7 @@ export function setAuthRequiredHandler(handler) {
  * @param {string} path Ruta relativa dentro de /admin/api/ (ej: "fichas.php")
  * @param {RequestInit} [options={}] Opciones estándar de fetch
  * @returns {Promise<any>} Respuesta deserializada en JSON
- * @throws {Error} Error estructurado con propiedad .auth en caso de 401
+ * @throws {Error} Error estructurado con propiedad .auth en caso de 401 o .network si no hay conexión
  */
 export async function api(path, options = {}) {
   const headers = {
@@ -31,11 +31,19 @@ export async function api(path, options = {}) {
     headers["Content-Type"] = "application/json";
   }
 
-  const res = await fetch(`api/${path}`, {
-    credentials: "same-origin",
-    ...options,
-    headers,
-  });
+  let res;
+  try {
+    res = await fetch(`api/${path}`, {
+      credentials: "same-origin",
+      ...options,
+      headers,
+    });
+  } catch (cause) {
+    const error = new Error("Sin conexión con el servidor. Revisá tu internet e intentá de nuevo.");
+    error.network = true;
+    error.cause = cause;
+    throw error;
+  }
 
   const data = await res.json().catch(() => ({}));
 
