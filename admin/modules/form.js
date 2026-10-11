@@ -18,7 +18,7 @@ import {
   validateStep,
   getUniquePatients,
   getSessionIndex,
-} from "../ficha-rules.mjs?v=70";
+} from "../ficha-rules.mjs?v=71";
 
 const form = document.querySelector("#ficha");
 const formView = document.querySelector("#view-form");
@@ -172,6 +172,7 @@ export function fillForm(data, allFichas = []) {
   } else {
     setPatientLocked(false);
   }
+  showStep(0);
 }
 
 /**
@@ -533,7 +534,12 @@ export function showForm(targetStep = 0) {
   if (gateView) gateView.hidden = true;
   if (libraryView) libraryView.hidden = true;
   if (compareView) compareView.hidden = true;
-  if (formView) formView.hidden = false;
+  if (formView) {
+    formView.hidden = false;
+    try {
+      window.scrollTo({ top: 0, behavior: "instant" });
+    } catch {}
+  }
   try {
     sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "form", id: currentId }));
   } catch {}
@@ -757,6 +763,7 @@ export function initForm({ onSave, onBack, onCompare, onPrint, onExportJson, get
     try {
       if (typeof onSave === "function") await onSave(data);
       currentId = data.id;
+      showStep(0);
     } catch (error) {
       if (!error.auth) window.alert(error.message);
     }
@@ -767,6 +774,7 @@ export function initForm({ onSave, onBack, onCompare, onPrint, onExportJson, get
       if (formState() !== formBaseline && !window.confirm("¿Volver a las fichas sin guardar?")) {
         return;
       }
+      showStep(0);
       if (typeof onBack === "function") onBack();
     });
   }
@@ -825,6 +833,7 @@ export function initForm({ onSave, onBack, onCompare, onPrint, onExportJson, get
       sample.id = currentId || sample.id;
       Object.assign(sample, exampleFicha());
       fillForm(sample, currentAllFichas);
+      showStep(0);
     });
   }
 

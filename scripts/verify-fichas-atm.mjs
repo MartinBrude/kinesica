@@ -495,6 +495,8 @@ assert.match(app, /#view-form \.panel/, "Paneles deben estar estrictamente delim
 assert.match(app, /#view-form \.steps button/, "Botones de pasos deben estar delimitados a #view-form");
 assert.match(app, /Number\.isInteger\(num\) && num >= 0 && num <= 4/, "showStep debe normalizar defensivamente cualquier valor inválido o NaN");
 assert.match(app, /onNewFichaBlank[\s\S]*showForm\(0\)/, "onNewFichaBlank debe garantizar apertura directa en paso 0");
+assert.match(app, /function fillForm[\s\S]*showStep\(0\)/, "fillForm debe resetear inmediatamente la vista al paso 0");
+assert.match(app, /window\.scrollTo\(\{ top: 0/, "showForm debe posicionar la pantalla en la parte superior");
 
 console.log("fichas ATM: ok");
 
