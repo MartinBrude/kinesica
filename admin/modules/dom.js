@@ -125,6 +125,93 @@ export function add(parent, child) {
  * @param {number} delay Tiempo de espera en milisegundos
  * @returns {(...args: any[]) => void}
  */
+let dialogQueue = Promise.resolve();
+
+function enqueueDialog(task) {
+  const run = dialogQueue.then(task, task);
+  dialogQueue = run.then(() => {}, () => {});
+  return run;
+}
+
+/**
+ * Aviso modal del admin. Reemplaza window.alert.
+ * @param {string} message
+ * @returns {Promise<void>}
+ */
+export function dialogAlert(message) {
+  return enqueueDialog(() => openDialog({ message, confirm: false }));
+}
+
+/**
+ * Confirmación modal del admin. Reemplaza window.confirm.
+ * @param {string} message
+ * @param {{danger?: boolean}} [options]
+ * @returns {Promise<boolean>}
+ */
+export function dialogConfirm(message, options = {}) {
+  return enqueueDialog(() => openDialog({ message, confirm: true, danger: Boolean(options.danger) }));
+}
+
+function openDialog({ message, confirm, danger }) {
+  return new Promise((resolve) => {
+    const root = document.createElement("div");
+    root.className = "app-dialog";
+    root.setAttribute("role", "presentation");
+
+    const card = document.createElement("div");
+    card.className = "app-dialog-card";
+    card.setAttribute("role", confirm ? "dialog" : "alertdialog");
+    card.setAttribute("aria-modal", "true");
+
+    const text = document.createElement("p");
+    text.className = "app-dialog-text";
+    text.textContent = String(message ?? "");
+
+    const actions = document.createElement("div");
+    actions.className = "app-dialog-actions";
+
+    const ok = document.createElement("button");
+    ok.type = "button";
+    ok.className = danger ? "btn danger" : "btn green";
+    ok.textContent = confirm ? (danger ? "Quitar" : "Confirmar") : "Entendido";
+
+    let cancel = null;
+    if (confirm) {
+      cancel = document.createElement("button");
+      cancel.type = "button";
+      cancel.className = "btn light";
+      cancel.textContent = "Cancelar";
+      actions.append(cancel);
+    }
+    actions.append(ok);
+    card.append(text, actions);
+    root.append(card);
+    document.body.append(root);
+
+    const finish = (value) => {
+      document.removeEventListener("keydown", onKey);
+      root.remove();
+      resolve(value);
+    };
+    const onKey = (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        finish(confirm ? false : undefined);
+      } else if (event.key === "Enter") {
+        event.preventDefault();
+        finish(confirm ? true : undefined);
+      }
+    };
+    cancel?.addEventListener("click", () => finish(false));
+    ok.addEventListener("click", () => finish(confirm ? true : undefined));
+    root.addEventListener("click", (event) => {
+      if (event.target === root) finish(confirm ? false : undefined);
+    });
+    document.addEventListener("keydown", onKey);
+    ok.focus();
+  });
+}
+
 export function debounce(fn, delay = 150) {
   let timer = null;
   return (...args) => {

@@ -15,7 +15,7 @@ import {
   ageOn,
 } from "../ficha-rules.mjs?v=79";
 import { formatDate } from "./api.js?v=77";
-import { debounce, escapeHtml } from "./dom.js?v=77";
+import { debounce, dialogAlert, dialogConfirm, escapeHtml } from "./dom.js?v=78";
 import { todayISO } from "./form.js?v=77";
 
 const libraryView = document.querySelector("#view-library");
@@ -321,12 +321,11 @@ export function sessionRow(item, patient, callbacks = {}, sessionIndex = 1, tota
     <line x1="10" y1="11" x2="10" y2="17"></line>
     <line x1="14" y1="11" x2="14" y2="17"></line>
   </svg>`;
-  delBtn.addEventListener("click", (e) => {
+  delBtn.addEventListener("click", async (e) => {
     e.stopPropagation();
     const name = patient?.nombre || item.nombre || "esta ficha";
-    if (!window.confirm(`¿Quitar la ficha de ${name} del ${formatDate(item.fechaSesion)}? Esta acción no se puede deshacer.`)) {
-      return;
-    }
+    const ok = await dialogConfirm(`¿Quitar la ficha de ${name} del ${formatDate(item.fechaSesion)}? Esta acción no se puede deshacer.`, { danger: true });
+    if (!ok) return;
     if (callbacks.onDelete) callbacks.onDelete(item);
   });
 
@@ -495,25 +494,19 @@ export function patientGroupRow(key, sessions, callbacks = {}) {
     <line x1="10" y1="11" x2="10" y2="17"></line>
     <line x1="14" y1="11" x2="14" y2="17"></line>
   </svg>${isMulti ? "Quitar todas" : "Quitar"}`;
-  del.addEventListener("click", (e) => {
+  del.addEventListener("click", async (e) => {
     e.stopPropagation();
     const all = loadAll().filter((item) => patientKey(item) === key);
     const name = latest.nombre || "este paciente";
     if (isMulti) {
       const countStr = all.length === 1 ? "la sesión" : `las ${all.length} sesiones`;
-      if (!window.confirm(`¿Quitar ${countStr} de ${name}? Esta acción no se puede deshacer.`)) {
-        return;
-      }
-      if (callbacks.onDeleteBatch) {
-        callbacks.onDeleteBatch(all);
-      }
+      const ok = await dialogConfirm(`¿Quitar ${countStr} de ${name}? Esta acción no se puede deshacer.`, { danger: true });
+      if (!ok) return;
+      if (callbacks.onDeleteBatch) callbacks.onDeleteBatch(all);
     } else {
-      if (!window.confirm(`¿Quitar la ficha de ${name} del ${formatDate(latest.fechaSesion)}? Esta acción no se puede deshacer.`)) {
-        return;
-      }
-      if (callbacks.onDelete) {
-        callbacks.onDelete(latest);
-      }
+      const ok = await dialogConfirm(`¿Quitar la ficha de ${name} del ${formatDate(latest.fechaSesion)}? Esta acción no se puede deshacer.`, { danger: true });
+      if (!ok) return;
+      if (callbacks.onDelete) callbacks.onDelete(latest);
     }
   });
   controls.append(del);
@@ -791,7 +784,7 @@ export function initLibrary({
     btnSeed.addEventListener("click", async () => {
       const sessionUser = typeof activeSessionUserGetter === "function" ? activeSessionUserGetter() : null;
       if (sessionUser && sessionUser.username !== "martin") return;
-      if (!window.confirm("¿Agregar 20 fichas de prueba?")) return;
+      if (!(await dialogConfirm("¿Agregar 20 fichas de prueba?"))) return;
       btnSeed.disabled = true;
       try {
         for (let i = 0; i < SEED_PEOPLE.length; i += 1) {
@@ -809,7 +802,7 @@ export function initLibrary({
         }
         showLibrary();
       } catch (error) {
-        if (!error.auth) window.alert(error.message);
+        if (!error.auth) dialogAlert(error.message);
       } finally {
         btnSeed.disabled = false;
       }
@@ -821,7 +814,7 @@ export function initLibrary({
       const sessionUser = typeof activeSessionUserGetter === "function" ? activeSessionUserGetter() : null;
       const items = visibleFichas(sessionUser);
       if (!items.length) {
-        window.alert("No hay fichas para exportar.");
+        dialogAlert("No hay fichas para exportar.");
         return;
       }
       downloadJSON(items.length === 1 ? items[0] : items, todayStr);
@@ -835,7 +828,7 @@ export function initLibrary({
       event.target.value = "";
       if (!file) return;
       if (file.size > 8 * 1024 * 1024) {
-        window.alert("El archivo supera los 8 MB.");
+        dialogAlert("El archivo supera los 8 MB.");
         return;
       }
 
@@ -843,19 +836,19 @@ export function initLibrary({
       try {
         parsed = JSON.parse(await file.text());
       } catch {
-        window.alert("El archivo no es un JSON válido.");
+        dialogAlert("El archivo no es un JSON válido.");
         return;
       }
 
       if (!parsed || typeof parsed !== "object") {
-        window.alert("El archivo no es una ficha.");
+        dialogAlert("El archivo no es una ficha.");
         return;
       }
 
       if (Array.isArray(parsed)) {
         const raw = parsed.filter((item) => item && typeof item === "object" && !Array.isArray(item));
         if (!raw.length) {
-          window.alert("El archivo no tiene fichas.");
+          dialogAlert("El archivo no tiene fichas.");
           return;
         }
         const fichas = planImport(raw);
@@ -882,10 +875,10 @@ export function initLibrary({
           const saved = fichas.length - failed.length;
           const replaced = already ? ` ${already === 1 ? "1 ya estaba y se actualizó." : `${already} ya estaban y se actualizaron.`}` : "";
           if (!failed.length) {
-            window.alert((saved === 1 ? "Se importó 1 ficha." : `Se importaron ${saved} fichas.`) + replaced);
+            dialogAlert((saved === 1 ? "Se importó 1 ficha." : `Se importaron ${saved} fichas.`) + replaced);
           } else {
             const message = failed[0] && failed[0].message;
-            window.alert(`Se importaron ${saved} de ${fichas.length}.${replaced} ${message || ""}`.trim());
+            dialogAlert(`Se importaron ${saved} de ${fichas.length}.${replaced} ${message || ""}`.trim());
           }
         } finally {
           if (fileLabel && previousLabel) fileLabel.textContent = previousLabel;
@@ -899,7 +892,7 @@ export function initLibrary({
       showForm(0);
       const missing = missingFields(data);
       if (missing.length) {
-        window.alert(`El archivo se abrió, pero falta completar: ${missing.join(", ")}.`);
+        dialogAlert(`El archivo se abrió, pero falta completar: ${missing.join(", ")}.`);
       }
     });
   }

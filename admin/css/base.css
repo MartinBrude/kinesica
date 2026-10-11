@@ -270,3 +270,48 @@ main {
     padding: 14px 10px 48px;
   }
 }
+
+.app-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  background: rgba(3, 28, 66, 0.42);
+}
+
+.app-dialog-card {
+  width: min(420px, 100%);
+  padding: 22px 22px 18px;
+  border-radius: 16px;
+  background: var(--white);
+  box-shadow: var(--shadow);
+}
+
+.app-dialog-text {
+  margin: 0;
+  color: var(--navy);
+  font-size: 15px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.app-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.btn.danger {
+  background: #9f1239;
+  border-color: #9f1239;
+  color: #fff;
+}
+
+.btn.danger:hover {
+  background: #881337;
+  border-color: #881337;
+}

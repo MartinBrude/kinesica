@@ -23,7 +23,8 @@
     display: none;
   }
   .topbar,
-  main {
+  main,
+  .app-dialog {
     display: none !important;
   }
   #print-root {

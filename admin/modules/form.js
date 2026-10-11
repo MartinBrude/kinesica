@@ -18,6 +18,7 @@ import {
   getUniquePatients,
   getSessionIndex,
 } from "../ficha-rules.mjs?v=79";
+import { dialogAlert, dialogConfirm } from "./dom.js?v=78";
 
 const form = document.querySelector("#ficha");
 const formView = document.querySelector("#view-form");
@@ -790,7 +791,7 @@ export function initForm({ onSave, onBack, onCompare, onPrint, getSessionUser })
     if (missingKeys.length) {
       showStep(0);
       highlightMissingFields(missingKeys);
-      window.alert(`Falta completar: ${missingFields(data).join(", ")}.`);
+      await dialogAlert(`Falta completar: ${missingFields(data).join(", ")}.`);
       const firstMissing = form.elements[missingKeys[0]];
       if (firstMissing) firstMissing.focus();
       return;
@@ -819,7 +820,7 @@ export function initForm({ onSave, onBack, onCompare, onPrint, getSessionUser })
       const targetStep = stepForField[val.firstErrorKey] ?? 0;
       showStep(targetStep);
       highlightErrorFields(Object.keys(val.errors));
-      window.alert(val.firstError);
+      await dialogAlert(val.firstError);
       const sideInputs = {
         ruidos: form.elements.ruidosIzq,
         dolorCondilar: form.elements.condilarIzq,
@@ -838,15 +839,15 @@ export function initForm({ onSave, onBack, onCompare, onPrint, getSessionUser })
       currentId = data.id;
       showStep(0);
     } catch (error) {
-      if (!error.auth) window.alert(error.message);
+      if (!error.auth) await dialogAlert(error.message);
     } finally {
       if (submitBtn) submitBtn.disabled = false;
     }
   });
 
   if (btnBack) {
-    btnBack.addEventListener("click", () => {
-      if (formState() !== formBaseline && !window.confirm("¿Volver a las fichas sin guardar?")) {
+    btnBack.addEventListener("click", async () => {
+      if (formState() !== formBaseline && !(await dialogConfirm("¿Volver a las fichas sin guardar?"))) {
         return;
       }
       showStep(0);
@@ -859,13 +860,13 @@ export function initForm({ onSave, onBack, onCompare, onPrint, getSessionUser })
   }
 
   if (btnNext) {
-    btnNext.addEventListener("click", () => {
+    btnNext.addEventListener("click", async () => {
       const data = readForm();
       if (step === 0) {
         const missingKeys = missingFieldKeys(data);
         if (missingKeys.length) {
           highlightMissingFields(missingKeys);
-          window.alert(`Falta completar: ${missingFields(data).join(", ")}.`);
+          await dialogAlert(`Falta completar: ${missingFields(data).join(", ")}.`);
           const firstMissing = form.elements[missingKeys[0]] || form.querySelector(".input-error");
           if (firstMissing) firstMissing.focus();
           return;
@@ -873,7 +874,7 @@ export function initForm({ onSave, onBack, onCompare, onPrint, getSessionUser })
         const val = validateStep(0, data);
         if (!val.isValid) {
           highlightErrorFields(Object.keys(val.errors));
-          window.alert(val.firstError);
+          await dialogAlert(val.firstError);
           const firstMissing = form.elements[val.firstErrorKey] || form.querySelector(".input-error");
           if (firstMissing) firstMissing.focus();
           return;
@@ -882,7 +883,7 @@ export function initForm({ onSave, onBack, onCompare, onPrint, getSessionUser })
         const val = validateStep(1, data);
         if (!val.isValid) {
           highlightErrorFields(Object.keys(val.errors));
-          window.alert(val.firstError);
+          await dialogAlert(val.firstError);
           const sideInputs = {
             ruidos: form.elements.ruidosIzq,
             dolorCondilar: form.elements.condilarIzq,

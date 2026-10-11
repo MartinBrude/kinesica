@@ -47,7 +47,8 @@ import {
   formatParts,
   add,
   debounce,
-} from "./modules/dom.js?v=77";
+  dialogAlert,
+} from "./modules/dom.js?v=78";
 
 import {
   getSessionUser,
@@ -75,7 +76,7 @@ import {
   getCurrentId,
   setCurrentId,
   initForm,
-} from "./modules/form.js?v=78";
+} from "./modules/form.js?v=79";
 
 import {
   loadAll,
@@ -90,7 +91,7 @@ import {
   syncMineButton,
   downloadJSON,
   initLibrary,
-} from "./modules/library.js?v=82";
+} from "./modules/library.js?v=83";
 
 import {
   buildSheet,
@@ -284,7 +285,7 @@ initLibrary({
     try {
       await remove(item.id);
     } catch (error) {
-      if (!error.auth) window.alert(error.message);
+      if (!error.auth) dialogAlert(error.message);
     }
   },
   onDeleteBatchFichas: async (items) => {
@@ -297,14 +298,14 @@ initLibrary({
     try {
       await refresh();
     } catch (error) {
-      if (!error.auth) window.alert(error.message);
+      if (!error.auth) dialogAlert(error.message);
       return;
     }
     if (!failed.length) return;
     const authError = failed.find((result) => result.reason && result.reason.auth);
     if (authError) return;
     const message = failed[0].reason && failed[0].reason.message;
-    window.alert(
+    dialogAlert(
       failed.length === items.length
         ? message || "No se pudieron eliminar las fichas."
         : `Se eliminaron ${items.length - failed.length} de ${items.length}. ${message || ""}`.trim()
