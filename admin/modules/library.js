@@ -290,16 +290,6 @@ export function sessionRow(item, patient, callbacks = {}, sessionIndex = 1, tota
 
   const actions = row.querySelector(".session-actions");
 
-  const openBtn = document.createElement("button");
-  openBtn.type = "button";
-  openBtn.className = "btn light";
-  openBtn.textContent = "Abrir";
-  openBtn.title = `Abrir ficha del ${formatDate(item.fechaSesion)}`;
-  openBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    if (callbacks.onOpen) callbacks.onOpen(item);
-  });
-
   const pdfBtn = document.createElement("button");
   pdfBtn.type = "button";
   pdfBtn.className = "btn green";
@@ -340,7 +330,7 @@ export function sessionRow(item, patient, callbacks = {}, sessionIndex = 1, tota
     if (callbacks.onDelete) callbacks.onDelete(item);
   });
 
-  actions.append(openBtn, pdfBtn, jsonBtn, delBtn);
+  actions.append(pdfBtn, jsonBtn, delBtn);
 
   row.addEventListener("click", (e) => {
     if (e.target.closest("button")) return;
@@ -428,20 +418,6 @@ export function patientGroupRow(key, sessions, callbacks = {}) {
   // Controles de la cabecera
   const controls = document.createElement("div");
   controls.className = "row-controls";
-
-  // Si tiene 1 sola sesión: botón Abrir directo
-  if (!isMulti) {
-    const openBtn = document.createElement("button");
-    openBtn.type = "button";
-    openBtn.className = "btn light";
-    openBtn.textContent = "Abrir";
-    openBtn.title = `Abrir ficha de ${latest.nombre || "este paciente"}`;
-    openBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      if (callbacks.onOpen) callbacks.onOpen(latest);
-    });
-    controls.append(openBtn);
-  }
 
   // + Nueva sesión (siempre presente a nivel de paciente)
   const newSess = document.createElement("button");
