@@ -12,10 +12,10 @@ import {
   coerceFicha,
   missingFields,
   exampleFicha,
-} from "../ficha-rules.mjs?v=65";
-import { formatDate } from "./api.js?v=65";
-import { debounce } from "./dom.js?v=65";
-import { todayISO } from "./form.js?v=65";
+} from "../ficha-rules.mjs?v=66";
+import { formatDate } from "./api.js?v=66";
+import { debounce } from "./dom.js?v=66";
+import { todayISO } from "./form.js?v=66";
 
 const libraryView = document.querySelector("#view-library");
 const listEl = document.querySelector("#library-list");
@@ -222,7 +222,8 @@ export function fichaRow(item, { onOpen, onNewSession, onPdf, onDelete, onDownlo
   const again = document.createElement("button");
   again.type = "button";
   again.className = "btn light";
-  again.textContent = "Nueva ficha";
+  again.textContent = "+ Nueva sesión";
+  again.title = `Registrar una nueva consulta para ${item.nombre || "este paciente"}`;
   again.addEventListener("click", () => onNewSession(item));
 
   const pdf = document.createElement("button");
@@ -606,6 +607,15 @@ export function initLibrary({
 
   if (btnNew) {
     btnNew.addEventListener("click", () => {
+      const sessionUser = typeof activeSessionUserGetter === "function" ? activeSessionUserGetter() : null;
+      const items = visibleFichas(sessionUser);
+      if (focusedPatient) {
+        const pSessions = items.filter((item) => patientKey(item) === focusedPatient);
+        if (pSessions.length && typeof activeRowCallbacks.onNewSession === "function") {
+          activeRowCallbacks.onNewSession(pSessions[0]);
+          return;
+        }
+      }
       if (typeof onNewFichaBlank === "function") onNewFichaBlank();
     });
   }
