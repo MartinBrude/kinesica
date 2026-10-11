@@ -23,11 +23,12 @@ import {
   REQUIRED_FIELDS,
   CLINICIAN_DETAILS,
   patientKey,
+  PATIENT_FIELDS,
   coerceFicha,
   compareFichas,
   daysBetween,
   matchFichaSearch,
-} from "./ficha-rules.mjs?v=79";
+} from "./ficha-rules.mjs?v=80";
 
 import {
   api,
@@ -74,7 +75,7 @@ import {
   getCurrentId,
   setCurrentId,
   initForm,
-} from "./modules/form.js?v=77";
+} from "./modules/form.js?v=78";
 
 import {
   loadAll,
@@ -240,7 +241,16 @@ initAuth({
 
 // Inicializar el controlador del formulario clínico
 initForm({
-  onSave: async (data) => {
+  onSave: async (data, meta) => {
+    if (meta?.identityKey) {
+      const siblings = loadAll().filter((ficha) => ficha.id !== data.id && patientKey(ficha) === meta.identityKey);
+      for (const sibling of siblings) {
+        const next = { ...sibling };
+        for (const key of PATIENT_FIELDS) next[key] = data[key];
+        next.edad = ageOn(data.nacimiento, sibling.fechaSesion) || sibling.edad;
+        await upsert(next);
+      }
+    }
     await upsert(data);
     showLibrary();
   },

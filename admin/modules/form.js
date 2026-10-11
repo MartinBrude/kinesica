@@ -35,6 +35,8 @@ let formBaseline = "";
 const singles = {};
 let activeSessionUserGetter = null;
 let currentAllFichas = [];
+let identityKey = "";
+let identityEdited = false;
 
 /**
  * Devuelve la fecha de hoy en formato ISO (YYYY-MM-DD).
@@ -193,7 +195,6 @@ export function setPatientLocked(locked, patientData = null, sessionCount = 0, i
     form?.elements.nombre,
     form?.elements.dni,
     form?.elements.nacimiento,
-    form?.elements.edad,
     form?.elements.lugarNac,
     form?.elements.antecedentes,
   ].filter(Boolean);
@@ -205,7 +206,10 @@ export function setPatientLocked(locked, patientData = null, sessionCount = 0, i
     form?.elements.habitoOnicofagia,
   ].filter(Boolean);
 
+  const editBtn = document.querySelector("#btn-edit-primary");
   if (locked) {
+    identityKey = patientKey(patientData || {});
+    identityEdited = false;
     if (fixedSection) fixedSection.classList.add("is-locked");
     inputs.forEach((input) => (input.readOnly = true));
     habitChecks.forEach((chk) => (chk.disabled = true));
@@ -226,6 +230,7 @@ export function setPatientLocked(locked, patientData = null, sessionCount = 0, i
         sessionBadge.textContent = sessionCount > 0 ? `Nueva consulta · Sesión N° ${sessionCount + 1}` : "1ª Consulta · Evaluación inicial";
       }
     }
+    if (editBtn) editBtn.hidden = false;
   } else {
     if (fixedSection) fixedSection.classList.remove("is-locked");
     inputs.forEach((input) => (input.readOnly = false));
@@ -235,6 +240,12 @@ export function setPatientLocked(locked, patientData = null, sessionCount = 0, i
     if (newToggle) newToggle.hidden = true;
     if (sessionBadge && !keepValues) {
       sessionBadge.textContent = "1ª Consulta · Evaluación inicial";
+    }
+    if (editBtn) editBtn.hidden = true;
+    if (keepValues) identityEdited = true;
+    else {
+      identityKey = "";
+      identityEdited = false;
     }
   }
 }
@@ -702,9 +713,9 @@ export function initForm({ onSave, onBack, onCompare, onPrint, getSessionUser })
     });
   }
 
-  const unlockBtn = document.querySelector("#btn-unlock-patient");
-  if (unlockBtn) {
-    unlockBtn.addEventListener("click", () => {
+  const editBtn = document.querySelector("#btn-edit-primary");
+  if (editBtn) {
+    editBtn.addEventListener("click", () => {
       setPatientLocked(false, null, 0, false, true);
       form.elements.nombre?.focus();
     });
@@ -821,7 +832,9 @@ export function initForm({ onSave, onBack, onCompare, onPrint, getSessionUser })
     const submitBtn = form.querySelector('button[type="submit"]');
     if (submitBtn) submitBtn.disabled = true;
     try {
-      if (typeof onSave === "function") await onSave(data);
+      if (typeof onSave === "function") {
+        await onSave(data, identityEdited && identityKey ? { identityKey } : null);
+      }
       currentId = data.id;
       showStep(0);
     } catch (error) {

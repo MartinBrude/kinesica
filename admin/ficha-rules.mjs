@@ -321,7 +321,7 @@ export function ageOn(nacimiento, onDate) {
   return age >= 0 ? String(age) : "";
 }
 
-const PATIENT_FIELDS = [
+export const PATIENT_FIELDS = [
   "nombre",
   "dni",
   "nacimiento",

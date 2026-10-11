@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=81">
+  <link rel="stylesheet" href="/admin/styles.css?v=82">
   <script>
     (function () {
       try {
@@ -165,7 +165,10 @@
         <div class="panel" data-panel="0">
           <div class="panel-header-row">
             <h2><span class="bar"></span>Información primaria</h2>
-            <span class="session-badge" id="session-count-badge">1ª Consulta · Evaluación inicial</span>
+            <div class="panel-header-actions">
+              <button type="button" class="btn light" id="btn-edit-primary" hidden>Editar</button>
+              <span class="session-badge" id="session-count-badge">1ª Consulta · Evaluación inicial</span>
+            </div>
           </div>
 
           <!-- Selector rápido de paciente existente -->
@@ -184,7 +187,6 @@
             <div id="patient-status-banner" class="patient-status-banner" hidden>
               <span class="patient-status-pill">Filiación confirmada</span>
               <span class="patient-status-text">Datos fijos vinculados a <strong><span id="patient-status-name"></span></strong> (DNI <span id="patient-status-dni"></span>) · <span id="patient-status-sessions"></span></span>
-              <button type="button" class="btn-unlock-patient" id="btn-unlock-patient" title="Habilitar edición de filiación y antecedentes">Editar filiación y antecedentes</button>
             </div>
           </div>
 
@@ -617,6 +619,6 @@
     })();
   </script>
   <div id="print-root"></div>
-  <script type="module" src="/admin/app.js?v=82"></script>
+  <script type="module" src="/admin/app.js?v=83"></script>
 </body>
 </html>

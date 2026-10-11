@@ -473,7 +473,8 @@ assert.match(php, /\$birth->diff\(\$session\)->y/);
 assert.match(html, /id="patient-quick-select"/);
 assert.match(html, /id="patient-status-banner"/);
 assert.match(html, /id="session-count-badge"/);
-assert.match(html, /id="btn-unlock-patient"/);
+assert.match(html, /id="btn-edit-primary"/);
+assert.match(html, />Editar</);
 assert.match(html, /id="btn-patient-new-toggle"/);
 
 // Verificación de estilos CSS para selector de paciente y badge de sesión en PDF
