@@ -4,7 +4,7 @@
  * reseteo seguro y cierre de sesión.
  */
 
-import { api } from "./api.js?v=58";
+import { api } from "./api.js?v=59";
 
 let sessionUser = null;
 let authed = false;
@@ -161,6 +161,32 @@ export function hideGate() {
  * @param {() => void} callbacks.onLogout Callback invocado tras desconectar la sesión
  */
 export function initAuth({ onSuccess, onLogout }) {
+  document.querySelectorAll('input[name="code"]').forEach((codeEl) => {
+    codeEl.addEventListener("keydown", (e) => {
+      if (
+        e.key === "Backspace" ||
+        e.key === "Delete" ||
+        e.key === "Tab" ||
+        e.key === "ArrowLeft" ||
+        e.key === "ArrowRight" ||
+        e.key === "Enter" ||
+        e.ctrlKey ||
+        e.metaKey
+      ) {
+        return;
+      }
+      if (!/^\d$/.test(e.key)) {
+        e.preventDefault();
+      }
+    });
+    codeEl.addEventListener("input", () => {
+      const clean = codeEl.value.replace(/\D/g, "").slice(0, 6);
+      if (codeEl.value !== clean) {
+        codeEl.value = clean;
+      }
+    });
+  });
+
   if (btnForgot) {
     btnForgot.addEventListener("click", () => showGate({ forgot: true }));
   }

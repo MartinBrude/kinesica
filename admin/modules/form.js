@@ -13,7 +13,10 @@ import {
   REQUIRED_FIELDS,
   exampleFicha,
   patientKey,
-} from "../ficha-rules.mjs?v=58";
+  validateField,
+  validateFicha,
+  validateStep,
+} from "../ficha-rules.mjs?v=59";
 
 const form = document.querySelector("#ficha");
 const formView = document.querySelector("#view-form");
@@ -159,7 +162,12 @@ export function syncAge() {
   if (birth) {
     const calculated = ageOn(birth, session);
     if (calculated && form.elements.edad) {
-      form.elements.edad.value = calculated;
+      const num = parseInt(calculated, 10);
+      if (Number.isInteger(num) && num >= 1 && num <= 120) {
+        form.elements.edad.value = String(num);
+        form.elements.edad.classList.remove("input-error");
+        form.elements.edad.title = "";
+      }
     }
   }
 }
@@ -170,8 +178,9 @@ export function syncAge() {
 export function updateStepValidation() {
   const data = readForm();
   const missingKeys = missingFieldKeys(data);
+  const step0Val = validateStep(0, data);
   const dot = document.querySelector('.steps button[data-step="0"] .step-dot');
-  if (dot) dot.hidden = missingKeys.length === 0;
+  if (dot) dot.hidden = missingKeys.length === 0 && step0Val.isValid;
 }
 
 /**
@@ -183,6 +192,190 @@ export function highlightMissingFields(keys = []) {
   for (const [key] of REQUIRED_FIELDS) {
     const el = form.elements[key];
     if (el) el.classList.toggle("input-error", keys.includes(key));
+  }
+}
+
+/**
+ * Resalta en rojo suave cualquier campo que presente error de tipo o rango.
+ * @param {string[]} [keys=[]] Lista de identificadores de campos con error
+ */
+export function highlightErrorFields(keys = []) {
+  if (!form) return;
+  keys.forEach((key) => {
+    const el = form.elements[key];
+    if (el) el.classList.add("input-error");
+  });
+}
+
+/**
+ * Configura restricciones en tiempo real para evitar que se ingrese texto en campos numéricos
+ * y garantizar tipos de datos válidos.
+ * @param {HTMLFormElement} formEl Formulario clínico
+ */
+export function setupInputRestrictions(formEl) {
+  if (!formEl) return;
+
+  // 1. Entero estricto: Edad (1 a 120) - No permite texto ni símbolos ni números fuera de rango
+  const edadInput = formEl.elements.edad;
+  if (edadInput) {
+    edadInput.addEventListener("keydown", (e) => {
+      if (
+        e.key === "Backspace" ||
+        e.key === "Delete" ||
+        e.key === "Tab" ||
+        e.key === "ArrowLeft" ||
+        e.key === "ArrowRight" ||
+        e.key === "ArrowUp" ||
+        e.key === "ArrowDown" ||
+        e.key === "Home" ||
+        e.key === "End" ||
+        e.key === "Enter" ||
+        e.ctrlKey ||
+        e.metaKey
+      ) {
+        return;
+      }
+      // Bloquear cualquier tecla que no sea dígito
+      if (!/^\d$/.test(e.key)) {
+        e.preventDefault();
+      }
+    });
+
+    edadInput.addEventListener("input", () => {
+      let clean = edadInput.value.replace(/\D/g, "");
+      if (clean.length > 3) clean = clean.slice(0, 3);
+      if (edadInput.value !== clean) {
+        edadInput.value = clean;
+      }
+      if (clean) {
+        const n = Number(clean);
+        const valid = Number.isInteger(n) && n >= 1 && n <= 120;
+        edadInput.classList.toggle("input-error", !valid);
+        edadInput.title = valid ? "" : "La edad debe ser un número entero entre 1 y 120";
+      } else {
+        edadInput.title = "";
+      }
+    });
+  }
+
+  // 2. Mediciones mandibulares (milímetros: decimal o entero >= 0) - No permiten texto
+  const measurementNames = ["aperturaLibre", "aperturaDolor", "protrusion", "latIzq", "latDer"];
+  measurementNames.forEach((name) => {
+    const el = formEl.elements[name];
+    if (!el) return;
+
+    el.addEventListener("keydown", (e) => {
+      if (
+        e.key === "Backspace" ||
+        e.key === "Delete" ||
+        e.key === "Tab" ||
+        e.key === "ArrowLeft" ||
+        e.key === "ArrowRight" ||
+        e.key === "ArrowUp" ||
+        e.key === "ArrowDown" ||
+        e.key === "Home" ||
+        e.key === "End" ||
+        e.key === "Enter" ||
+        e.ctrlKey ||
+        e.metaKey
+      ) {
+        return;
+      }
+      // Permitir separador decimal solo una vez
+      if (e.key === "." || e.key === ",") {
+        if (el.value.includes(".") || el.value.includes(",")) {
+          e.preventDefault();
+        }
+        return;
+      }
+      // Bloquear texto y otros caracteres
+      if (!/^\d$/.test(e.key)) {
+        e.preventDefault();
+      }
+    });
+
+    el.addEventListener("input", () => {
+      let val = el.value.replace(",", ".");
+      val = val.replace(/[^\d.]/g, "");
+      const parts = val.split(".");
+      if (parts.length > 2) {
+        val = parts[0] + "." + parts.slice(1).join("");
+      }
+      if (el.value !== val) {
+        el.value = val;
+      }
+      if (val) {
+        const maxVal = name === "aperturaLibre" || name === "aperturaDolor" ? 120 : 50;
+        const n = Number(val);
+        const valid = !Number.isNaN(n) && n >= 0 && n <= maxVal;
+        el.classList.toggle("input-error", !valid);
+        el.title = valid ? "" : `Debe ser un número entre 0 y ${maxVal} mm`;
+      } else {
+        el.title = "";
+      }
+    });
+  });
+
+  // 3. Documento (DNI): bloquea letras, permite números y formato (. y -)
+  const dniInput = formEl.elements.dni;
+  if (dniInput) {
+    dniInput.addEventListener("keydown", (e) => {
+      if (
+        e.key === "Backspace" ||
+        e.key === "Delete" ||
+        e.key === "Tab" ||
+        e.key === "ArrowLeft" ||
+        e.key === "ArrowRight" ||
+        e.key === "Home" ||
+        e.key === "End" ||
+        e.key === "Enter" ||
+        e.ctrlKey ||
+        e.metaKey
+      ) {
+        return;
+      }
+      if (/^[a-zA-Z]$/.test(e.key)) {
+        e.preventDefault();
+      }
+    });
+
+    dniInput.addEventListener("input", () => {
+      const clean = dniInput.value.replace(/[a-zA-Z]/g, "");
+      if (dniInput.value !== clean) {
+        dniInput.value = clean;
+      }
+    });
+  }
+
+  // 4. Nombre completo: no permite dígitos
+  const nombreInput = formEl.elements.nombre;
+  if (nombreInput) {
+    nombreInput.addEventListener("keydown", (e) => {
+      if (
+        e.key === "Backspace" ||
+        e.key === "Delete" ||
+        e.key === "Tab" ||
+        e.key === "ArrowLeft" ||
+        e.key === "ArrowRight" ||
+        e.key === "Home" ||
+        e.key === "End" ||
+        e.key === "Enter" ||
+        e.ctrlKey ||
+        e.metaKey
+      ) {
+        return;
+      }
+      if (/^\d$/.test(e.key)) {
+        e.preventDefault();
+      }
+    });
+
+    nombreInput.addEventListener("input", () => {
+      const clean = nombreInput.value.replace(/\d/g, "");
+      if (nombreInput.value !== clean) {
+        nombreInput.value = clean;
+      }
+    });
   }
 }
 
@@ -286,6 +479,7 @@ export function setCurrentId(id) {
 export function initForm({ onSave, onBack, onCompare, onPrint, onExportJson, getSessionUser }) {
   if (!form) return;
   activeSessionUserGetter = getSessionUser;
+  setupInputRestrictions(form);
 
   // Botones de selección única (data-single)
   document.querySelectorAll("[data-single]").forEach((group) => {
@@ -323,7 +517,11 @@ export function initForm({ onSave, onBack, onCompare, onPrint, onExportJson, get
 
   form.addEventListener("input", (e) => {
     if (e.target.classList.contains("input-error") && e.target.value.trim()) {
-      e.target.classList.remove("input-error");
+      const err = validateField(e.target.name, e.target.value, readForm());
+      if (!err) {
+        e.target.classList.remove("input-error");
+        e.target.title = "";
+      }
     }
     updateStepValidation();
   });
@@ -337,6 +535,32 @@ export function initForm({ onSave, onBack, onCompare, onPrint, onExportJson, get
       highlightMissingFields(missingKeys);
       window.alert(`Falta completar: ${missingFields(data).join(", ")}.`);
       const firstMissing = form.elements[missingKeys[0]];
+      if (firstMissing) firstMissing.focus();
+      return;
+    }
+    const val = validateFicha(data);
+    if (!val.isValid) {
+      const stepForField = {
+        nombre: 0,
+        dni: 0,
+        fechaSesion: 0,
+        nacimiento: 0,
+        edad: 0,
+        lugarNac: 0,
+        motivo: 0,
+        antecedentes: 0,
+        aperturaLibre: 1,
+        aperturaDolor: 1,
+        protrusion: 1,
+        latIzq: 1,
+        latDer: 1,
+        eva: 3,
+      };
+      const targetStep = stepForField[val.firstErrorKey] ?? 0;
+      showStep(targetStep);
+      highlightErrorFields(Object.keys(val.errors));
+      window.alert(val.firstError);
+      const firstMissing = form.elements[val.firstErrorKey] || form.querySelector(".input-error");
       if (firstMissing) firstMissing.focus();
       return;
     }
@@ -363,12 +587,30 @@ export function initForm({ onSave, onBack, onCompare, onPrint, onExportJson, get
 
   if (btnNext) {
     btnNext.addEventListener("click", () => {
+      const data = readForm();
       if (step === 0) {
-        const data = readForm();
         const missingKeys = missingFieldKeys(data);
         if (missingKeys.length) {
           highlightMissingFields(missingKeys);
+          window.alert(`Falta completar: ${missingFields(data).join(", ")}.`);
           const firstMissing = form.elements[missingKeys[0]] || form.querySelector(".input-error");
+          if (firstMissing) firstMissing.focus();
+          return;
+        }
+        const val = validateStep(0, data);
+        if (!val.isValid) {
+          highlightErrorFields(Object.keys(val.errors));
+          window.alert(val.firstError);
+          const firstMissing = form.elements[val.firstErrorKey] || form.querySelector(".input-error");
+          if (firstMissing) firstMissing.focus();
+          return;
+        }
+      } else if (step === 1) {
+        const val = validateStep(1, data);
+        if (!val.isValid) {
+          highlightErrorFields(Object.keys(val.errors));
+          window.alert(val.firstError);
+          const firstMissing = form.elements[val.firstErrorKey] || form.querySelector(".input-error");
           if (firstMissing) firstMissing.focus();
           return;
         }

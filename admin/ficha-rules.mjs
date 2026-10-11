@@ -41,6 +41,180 @@ export function missingFields(data) {
     .map(([, label]) => label);
 }
 
+/**
+ * Valida tipos y rangos de un campo individual según las reglas clínicas de Kinésica.
+ * @param {string} key Nombre del campo
+ * @param {*} value Valor a verificar
+ * @param {object} [allData={}] Contexto completo de la ficha para correlaciones
+ * @returns {string|null} Mensaje de error o null si es válido
+ */
+export function validateField(key, value, allData = {}) {
+  const str = String(value ?? "").trim();
+
+  switch (key) {
+    case "edad": {
+      if (!str) return "Falta completar la edad";
+      if (!/^\d+$/.test(str)) {
+        return "La edad no permite texto: debe ser un número entero entre 1 y 120";
+      }
+      const n = Number(str);
+      if (!Number.isInteger(n) || n < 1 || n > 120) {
+        return "La edad debe ser un número entero entre 1 y 120";
+      }
+      return null;
+    }
+    case "nombre": {
+      if (!str) return "Falta completar el nombre completo";
+      if (/\d/.test(str)) return "El nombre no puede contener números";
+      if (str.length < 2) return "El nombre completo debe tener al menos 2 letras";
+      return null;
+    }
+    case "dni": {
+      if (!str) return "Falta completar el DNI";
+      if (/[a-zA-Z]/.test(str)) return "El DNI no puede contener letras";
+      const digits = str.replace(/\D/g, "");
+      if (digits.length < 4) return "El DNI debe tener al menos 4 dígitos";
+      return null;
+    }
+    case "fechaSesion": {
+      if (!str) return "Falta completar la fecha de la sesión";
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(str)) return "La fecha de la sesión debe ser válida (AAAA-MM-DD)";
+      return null;
+    }
+    case "nacimiento": {
+      if (!str) return "Falta completar la fecha de nacimiento";
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(str)) return "La fecha de nacimiento debe ser válida (AAAA-MM-DD)";
+      const session = String(allData.fechaSesion || "").slice(0, 10);
+      if (session && /^\d{4}-\d{2}-\d{2}$/.test(session) && str > session) {
+        return "La fecha de nacimiento no puede ser posterior a la fecha de la sesión";
+      }
+      return null;
+    }
+    case "lugarNac": {
+      if (!str) return "Falta completar el lugar de nacimiento";
+      return null;
+    }
+    case "motivo": {
+      if (!str) return "Falta seleccionar el motivo de consulta";
+      return null;
+    }
+    case "antecedentes": {
+      if (!str) return "Falta completar los antecedentes clínicos";
+      return null;
+    }
+    case "aperturaLibre":
+    case "aperturaDolor": {
+      if (!str) return null;
+      const clean = str.replace(",", ".");
+      if (/[a-zA-Z]/.test(clean) || !/^\d+(\.\d+)?$/.test(clean)) {
+        return "Este campo no permite texto: debe ser un número en milímetros";
+      }
+      const n = Number(clean);
+      if (Number.isNaN(n) || n < 0 || n > 120) {
+        return "El valor de apertura debe estar entre 0 y 120 mm";
+      }
+      return null;
+    }
+    case "protrusion":
+    case "latIzq":
+    case "latDer": {
+      if (!str) return null;
+      const clean = str.replace(",", ".");
+      if (/[a-zA-Z]/.test(clean) || !/^\d+(\.\d+)?$/.test(clean)) {
+        return "Este campo no permite texto: debe ser un número en milímetros";
+      }
+      const n = Number(clean);
+      if (Number.isNaN(n) || n < 0 || n > 50) {
+        return "El valor debe estar entre 0 y 50 mm";
+      }
+      return null;
+    }
+    case "eva": {
+      if (value === "" || value === null || value === undefined) return null;
+      const n = Number(value);
+      if (Number.isNaN(n) || n < 0 || n > 10) return "La escala EVA debe ser un valor entre 0 y 10";
+      return null;
+    }
+    default:
+      return null;
+  }
+}
+
+/**
+ * Valida integralmente la ficha clínica y retorna mapa de errores y estado.
+ * @param {object} data Datos de la ficha
+ * @returns {{isValid: boolean, errors: Object<string, string>, errorList: string[], firstErrorKey: string|null, firstError: string|null}}
+ */
+export function validateFicha(data = {}) {
+  const errors = {};
+  const errorList = [];
+  const fieldsToCheck = [
+    "nombre",
+    "dni",
+    "fechaSesion",
+    "nacimiento",
+    "edad",
+    "lugarNac",
+    "motivo",
+    "antecedentes",
+    "aperturaLibre",
+    "aperturaDolor",
+    "protrusion",
+    "latIzq",
+    "latDer",
+    "eva",
+  ];
+
+  for (const field of fieldsToCheck) {
+    const err = validateField(field, data[field], data);
+    if (err) {
+      errors[field] = err;
+      errorList.push(err);
+    }
+  }
+
+  return {
+    isValid: errorList.length === 0,
+    errors,
+    errorList,
+    firstErrorKey: Object.keys(errors)[0] || null,
+    firstError: errorList[0] || null,
+  };
+}
+
+/**
+ * Valida los campos correspondientes a un paso específico del formulario.
+ * @param {number} stepNumber Número de paso (0 a 4)
+ * @param {object} data Datos del formulario
+ * @returns {{isValid: boolean, errors: Object<string, string>, errorList: string[], firstErrorKey: string|null, firstError: string|null}}
+ */
+export function validateStep(stepNumber, data = {}) {
+  const stepFields = {
+    0: ["nombre", "dni", "fechaSesion", "nacimiento", "edad", "lugarNac", "motivo", "antecedentes"],
+    1: ["aperturaLibre", "aperturaDolor", "protrusion", "latIzq", "latDer"],
+    2: [],
+    3: ["eva"],
+    4: [],
+  };
+  const fields = stepFields[stepNumber] || [];
+  const errors = {};
+  const errorList = [];
+  for (const f of fields) {
+    const err = validateField(f, data[f], data);
+    if (err) {
+      errors[f] = err;
+      errorList.push(err);
+    }
+  }
+  return {
+    isValid: errorList.length === 0,
+    errors,
+    errorList,
+    firstErrorKey: Object.keys(errors)[0] || null,
+    firstError: errorList[0] || null,
+  };
+}
+
 export function normalizeDni(dni) {
   const digits = String(dni || "").replace(/\D/g, "");
   return digits.length >= 4 ? digits : String(dni || "").trim().toLowerCase();
@@ -218,6 +392,23 @@ export function coerceFicha(input = {}) {
     }
   }
   out.eva = Math.max(0, Math.min(10, Math.round(out.eva || 0)));
+
+  // Sanitizar edad como entero entre 1 y 120 (sin texto)
+  if (out.edad) {
+    const cleanEdad = String(out.edad).replace(/\D/g, "");
+    const edadNum = parseInt(cleanEdad, 10);
+    out.edad = Number.isInteger(edadNum) && edadNum >= 1 && edadNum <= 120 ? String(edadNum) : "";
+  }
+
+  // Sanitizar mediciones de ATM: números no negativos en milímetros (sin texto)
+  for (const mKey of ["aperturaLibre", "aperturaDolor", "protrusion", "latIzq", "latDer"]) {
+    if (out[mKey]) {
+      const cleanVal = String(out[mKey]).replace(",", ".").replace(/[^\d.]/g, "");
+      const numVal = Number(cleanVal);
+      out[mKey] = Number.isFinite(numVal) && numVal >= 0 ? cleanVal : "";
+    }
+  }
+
   if (input?.id) out.id = String(input.id);
   if (input?.savedAt) out.savedAt = String(input.savedAt);
   if (input?.profesional) out.profesional = String(input.profesional);

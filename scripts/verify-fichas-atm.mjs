@@ -19,6 +19,9 @@ import {
   compareFichas,
   daysBetween,
   matchFichaSearch,
+  validateField,
+  validateFicha,
+  validateStep,
 } from "../admin/ficha-rules.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -198,6 +201,55 @@ assert.equal(coerced.nombre, "Juan Pérez");
 assert.equal(coerced.eva, 10, "EVA debe estar acotado entre 0 y 10");
 assert.equal(coerced.ruidosIzq, true, "Booleano debe ser estricto");
 assert.deepEqual(coerced.cdi, ["I.a"], "CDI solo debe admitir strings");
+
+// Verificación de coerción y sanitización de campos numéricos (no permiten texto)
+const coercedNumeric = coerceFicha({
+  edad: "34 años",
+  aperturaLibre: "35 mm",
+  aperturaDolor: "texto",
+});
+assert.equal(coercedNumeric.edad, "34", "Debe limpiar texto en edad");
+assert.equal(coercedNumeric.aperturaLibre, "35", "Debe limpiar texto en apertura libre");
+assert.equal(coercedNumeric.aperturaDolor, "", "Texto puro en medición debe quedar vacío");
+
+// Verificación de validación de tipos y rangos: edad 1..120 entero estricto
+assert.equal(validateField("edad", "34"), null, "Edad válida debe retornar null");
+assert.equal(validateField("edad", "1"), null, "Edad límite inferior (1) debe ser válida");
+assert.equal(validateField("edad", "120"), null, "Edad límite superior (120) debe ser válida");
+assert.ok(validateField("edad", "0"), "Edad 0 debe ser inválida");
+assert.ok(validateField("edad", "121"), "Edad 121 debe ser inválida");
+assert.ok(validateField("edad", "-5"), "Edad negativa debe ser inválida");
+assert.ok(validateField("edad", "treinta"), "Edad con texto debe ser inválida");
+assert.ok(validateField("edad", "34.5"), "Edad con decimales debe ser inválida");
+assert.ok(validateField("edad", "34 años"), "Edad con sufijo debe ser inválida");
+
+// Verificación en campos de texto y documento
+assert.ok(validateField("nombre", "Ana 2"), "Nombre con números debe ser inválido");
+assert.equal(validateField("nombre", "Ana María"), null, "Nombre válido debe ser aceptado");
+assert.ok(validateField("dni", "34abc109"), "DNI con letras debe ser inválido");
+assert.ok(validateField("dni", "12"), "DNI con menos de 4 dígitos debe ser inválido");
+assert.equal(validateField("dni", "34.205.109"), null, "DNI formateado válido debe ser aceptado");
+
+// Verificación en mediciones articulares (no permiten texto)
+assert.ok(validateField("aperturaLibre", "35mm"), "Medición con texto debe ser inválida");
+assert.ok(validateField("aperturaLibre", "150"), "Apertura fuera de rango debe ser inválida");
+assert.equal(validateField("aperturaLibre", "35"), null, "Apertura válida debe ser aceptada");
+assert.equal(validateField("aperturaLibre", "35.5"), null, "Apertura decimal válida debe ser aceptada");
+
+assert.ok(validateField("protrusion", "60"), "Protrusión fuera de rango debe ser inválida");
+assert.equal(validateField("protrusion", "8"), null, "Protrusión válida debe ser aceptada");
+
+// Verificación de atributos HTML de tipos y rangos
+assert.match(html, /name="edad"[^>]*type="number"[^>]*min="1"[^>]*max="120"/);
+assert.match(html, /name="aperturaLibre"[^>]*type="number"[^>]*min="0"[^>]*max="120"/);
+assert.match(html, /name="aperturaDolor"[^>]*type="number"[^>]*min="0"[^>]*max="120"/);
+assert.match(html, /name="protrusion"[^>]*type="number"[^>]*min="0"[^>]*max="50"/);
+assert.match(html, /name="latIzq"[^>]*type="number"[^>]*min="0"[^>]*max="50"/);
+assert.match(html, /name="latDer"[^>]*type="number"[^>]*min="0"[^>]*max="50"/);
+
+assert.match(app, /setupInputRestrictions/);
+assert.match(app, /validateStep/);
+assert.match(app, /validateFicha/);
 
 assert.equal(normalizeDni("34.205.109"), "34205109");
 assert.equal(normalizeDni(" 34 205 109 "), "34205109");

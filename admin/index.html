@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=58">
+  <link rel="stylesheet" href="/admin/styles.css?v=59">
   <script>
     (function () {
       try {
@@ -48,7 +48,7 @@
             <input name="password" type="password" autocomplete="current-password" required>
           </label>
           <label>Código
-            <input name="code" inputmode="numeric" autocomplete="one-time-code" placeholder="6 dígitos">
+            <input name="code" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" placeholder="6 dígitos">
           </label>
           <p id="login-error" class="gate-error" hidden></p>
           <button type="submit" class="btn green">Entrar</button>
@@ -85,7 +85,7 @@
           <p>En Google Authenticator o similar, elegí “ingresar clave”. Cuenta: <strong id="enroll-account"></strong></p>
           <p class="enroll-secret" id="enroll-secret"></p>
           <label>Código de 6 dígitos
-            <input name="code" inputmode="numeric" autocomplete="one-time-code" required>
+            <input name="code" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" required>
           </label>
           <p id="enroll-error" class="gate-error" hidden></p>
           <button type="submit" class="btn green">Confirmar</button>
@@ -152,10 +152,10 @@
           <h2><span class="bar"></span>Información primaria</h2>
           <div class="grid-2">
             <label>Nombre completo
-              <input name="nombre" placeholder="Ej: Carolina Méndez" required>
+              <input name="nombre" placeholder="Ej: Carolina Méndez" required autocomplete="name">
             </label>
             <label>Documento (DNI)
-              <input name="dni" placeholder="Ej: 34.205.109" required>
+              <input name="dni" inputmode="numeric" pattern="[0-9.\s-]*" placeholder="Ej: 34.205.109" required>
             </label>
           </div>
           <label id="field-profesional" hidden>Profesional asignado
@@ -172,7 +172,7 @@
               <input name="nacimiento" type="date" required>
             </label>
             <label>Edad (años)
-              <input name="edad" inputmode="numeric" placeholder="34" required>
+              <input name="edad" type="number" min="1" max="120" step="1" inputmode="numeric" placeholder="34" required>
             </label>
           </div>
           <label>Nacimiento (NAC)
@@ -251,10 +251,10 @@
             <h3>3. Mediciones y rangos de movimientos mandibulares</h3>
             <div class="grid-2">
               <label>Apertura máxima libre de dolor (mm)
-              <input name="aperturaLibre" inputmode="decimal" placeholder="Ej: 35">
+              <input name="aperturaLibre" type="number" min="0" max="120" step="any" inputmode="decimal" placeholder="Ej: 35">
               </label>
               <label>Apertura máxima con dolor (mm)
-              <input name="aperturaDolor" inputmode="decimal" placeholder="Ej: 46">
+              <input name="aperturaDolor" type="number" min="0" max="120" step="any" inputmode="decimal" placeholder="Ej: 46">
               </label>
             </div>
             <div class="grid-2">
@@ -282,16 +282,16 @@
                 </div>
               </div>
               <label>Movimiento de protrusión (mm)
-                <input name="protrusion" inputmode="decimal" placeholder="Ej: 8">
+                <input name="protrusion" type="number" min="0" max="50" step="any" inputmode="decimal" placeholder="Ej: 8">
               </label>
             </div>
             <span class="field-label">Lateralidades mandibulares (mm)</span>
             <div class="grid-2">
               <label>Izquierda
-                <input name="latIzq" inputmode="decimal" placeholder="10">
+                <input name="latIzq" type="number" min="0" max="50" step="any" inputmode="decimal" placeholder="10">
               </label>
               <label>Derecha
-                <input name="latDer" inputmode="decimal" placeholder="10">
+                <input name="latDer" type="number" min="0" max="50" step="any" inputmode="decimal" placeholder="10">
               </label>
             </div>
           </div>
@@ -564,6 +564,6 @@
     })();
   </script>
   <div id="print-root"></div>
-  <script type="module" src="/admin/app.js?v=58"></script>
+  <script type="module" src="/admin/app.js?v=59"></script>
 </body>
 </html>

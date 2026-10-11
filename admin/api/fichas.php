@@ -70,6 +70,11 @@ if ($method === 'POST') {
     }
 
     // Asegurar tipos de datos estrictos en el payload
+    $edadRaw = trim((string) ($data['edad'] ?? ''));
+    if (!ctype_digit($edadRaw) || (int) $edadRaw < 1 || (int) $edadRaw > 120) {
+        json_out(422, ['error' => 'La edad debe ser un número entero entre 1 y 120']);
+    }
+    $data['edad'] = (string) ((int) $edadRaw);
     $data['eva'] = max(0, min(10, (int) ($data['eva'] ?? 0)));
     $data['cdi'] = is_array($data['cdi'] ?? null) ? array_values(array_filter($data['cdi'], 'is_string')) : [];
     $data['profesional'] = $profesional;
