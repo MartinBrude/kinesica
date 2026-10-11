@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=73">
+  <link rel="stylesheet" href="/admin/styles.css?v=74">
   <script>
     (function () {
       try {
@@ -180,51 +180,57 @@
           </div>
 
           <div class="patient-fixed-section" id="patient-fixed-section">
-            <h3 class="subheading-filiacion">Filiación y antecedentes basales del paciente (No cambian por sesión)</h3>
-            <div class="grid-2">
-              <label>Nombre completo
-                <input name="nombre" placeholder="Ej: Carolina Méndez" required autocomplete="name">
-              </label>
-              <label>DNI / Pasaporte
-                <input name="dni" placeholder="Ej: 34.205.109 o AB123456" required autocomplete="off">
+            <div class="form-subgroup form-subgroup-first">
+              <h3 class="subheading-filiacion">Filiación e identificación personal (Datos basales)</h3>
+              <div class="grid-2">
+                <label>Nombre completo
+                  <input name="nombre" placeholder="Ej: Carolina Méndez" required autocomplete="name">
+                </label>
+                <label>DNI / Pasaporte
+                  <input name="dni" placeholder="Ej: 34.205.109 o AB123456" required autocomplete="off">
+                </label>
+              </div>
+              <div class="grid-3">
+                <label>Fecha de nacimiento
+                  <input name="nacimiento" type="date" required>
+                </label>
+                <label>Edad (años)
+                  <input name="edad" type="number" min="1" max="120" step="1" inputmode="numeric" placeholder="34" required readonly class="input-calc">
+                </label>
+                <label>Nacimiento (NAC)
+                  <input name="lugarNac" placeholder="Ej: Córdoba" required>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-subgroup">
+              <h3 class="subheading-filiacion">Motivo de consulta y antecedentes basales</h3>
+              <fieldset>
+                <legend>Motivo de consulta principal</legend>
+                <div class="pills" data-single="motivo">
+                  <button type="button" data-value="Traumático">Traumático</button>
+                  <button type="button" data-value="No Traumático">No Traumático</button>
+                  <button type="button" data-value="Pos Quirúrgico">Pos Quirúrgico</button>
+                </div>
+              </fieldset>
+              <!-- FEATURE-OPTIONAL: habitos-bruxismo -->
+              <fieldset class="habitos-block">
+                <legend>Hábitos parafuncionales y bruxismo</legend>
+                <div class="habit-grid">
+                  <label class="check"><input type="checkbox" name="habitoApretamiento"> Apretamiento diurno</label>
+                  <label class="check"><input type="checkbox" name="habitoBruxismo"> Bruxismo nocturno</label>
+                  <label class="check"><input type="checkbox" name="habitoMasticacionUni"> Masticación unilateral</label>
+                  <label class="check"><input type="checkbox" name="habitoOnicofagia"> Onicofagia / mordisqueo</label>
+                </div>
+              </fieldset>
+              <!-- /FEATURE-OPTIONAL: habitos-bruxismo -->
+              <label>Descripción de antecedentes clínicos
+                <textarea name="antecedentes" rows="4" placeholder="Coloca la sintomatología inicial, hábitos o incidentes traumáticos reportados por el paciente" required></textarea>
               </label>
             </div>
-            <div class="grid-3">
-              <label>Fecha de nacimiento
-                <input name="nacimiento" type="date" required>
-              </label>
-              <label>Edad (años)
-                <input name="edad" type="number" min="1" max="120" step="1" inputmode="numeric" placeholder="34" required readonly class="input-calc">
-              </label>
-              <label>Nacimiento (NAC)
-                <input name="lugarNac" placeholder="Ej: Córdoba" required>
-              </label>
-            </div>
-            <fieldset>
-              <legend>Motivo de consulta principal</legend>
-              <div class="pills" data-single="motivo">
-                <button type="button" data-value="Traumático">Traumático</button>
-                <button type="button" data-value="No Traumático">No Traumático</button>
-                <button type="button" data-value="Pos Quirúrgico">Pos Quirúrgico</button>
-              </div>
-            </fieldset>
-            <!-- FEATURE-OPTIONAL: habitos-bruxismo -->
-            <fieldset class="habitos-block">
-              <legend>Hábitos parafuncionales y bruxismo</legend>
-              <div class="habit-grid">
-                <label class="check"><input type="checkbox" name="habitoApretamiento"> Apretamiento diurno</label>
-                <label class="check"><input type="checkbox" name="habitoBruxismo"> Bruxismo nocturno</label>
-                <label class="check"><input type="checkbox" name="habitoMasticacionUni"> Masticación unilateral</label>
-                <label class="check"><input type="checkbox" name="habitoOnicofagia"> Onicofagia / mordisqueo</label>
-              </div>
-            </fieldset>
-            <!-- /FEATURE-OPTIONAL: habitos-bruxismo -->
-            <label>Descripción de antecedentes clínicos
-              <textarea name="antecedentes" rows="4" placeholder="Coloca la sintomatología inicial, hábitos o incidentes traumáticos reportados por el paciente" required></textarea>
-            </label>
           </div>
 
-          <div class="session-dynamic-section">
+          <div class="session-dynamic-section form-subgroup">
             <h3 class="subheading-session">Datos de la sesión / consulta actual</h3>
             <div class="grid-2">
               <label>Fecha de la sesión
@@ -602,6 +608,6 @@
     })();
   </script>
   <div id="print-root"></div>
-  <script type="module" src="/admin/app.js?v=73"></script>
+  <script type="module" src="/admin/app.js?v=74"></script>
 </body>
 </html>
