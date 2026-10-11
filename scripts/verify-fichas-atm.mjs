@@ -490,5 +490,11 @@ assert.match(css, /\.patient-sessions/);
 assert.match(css, /\.session-row/);
 assert.match(css, /\.session-chip/);
 
+// Verificación de reseteo garantizado a Paso 0 y aislamiento del formulario
+assert.match(app, /#view-form \.panel/, "Paneles deben estar estrictamente delimitados a #view-form");
+assert.match(app, /#view-form \.steps button/, "Botones de pasos deben estar delimitados a #view-form");
+assert.match(app, /Number\.isInteger\(num\) && num >= 0 && num <= 4/, "showStep debe normalizar defensivamente cualquier valor inválido o NaN");
+assert.match(app, /onNewFichaBlank[\s\S]*showForm\(0\)/, "onNewFichaBlank debe garantizar apertura directa en paso 0");
+
 console.log("fichas ATM: ok");
 

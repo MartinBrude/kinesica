@@ -27,13 +27,13 @@ import {
   compareFichas,
   daysBetween,
   matchFichaSearch,
-} from "./ficha-rules.mjs?v=69";
+} from "./ficha-rules.mjs?v=70";
 
 import {
   api,
   setAuthRequiredHandler,
   formatDate,
-} from "./modules/api.js?v=69";
+} from "./modules/api.js?v=70";
 
 import {
   escapeHtml,
@@ -46,7 +46,7 @@ import {
   formatParts,
   add,
   debounce,
-} from "./modules/dom.js?v=69";
+} from "./modules/dom.js?v=70";
 
 import {
   getSessionUser,
@@ -55,7 +55,7 @@ import {
   hideGate,
   setGateMessage,
   initAuth,
-} from "./modules/auth.js?v=69";
+} from "./modules/auth.js?v=70";
 
 import {
   todayISO,
@@ -74,7 +74,7 @@ import {
   getCurrentId,
   setCurrentId,
   initForm,
-} from "./modules/form.js?v=69";
+} from "./modules/form.js?v=70";
 
 import {
   loadAll,
@@ -89,12 +89,12 @@ import {
   syncMineButton,
   downloadJSON,
   initLibrary,
-} from "./modules/library.js?v=69";
+} from "./modules/library.js?v=70";
 
 import {
   buildSheet,
   printItems,
-} from "./modules/print.js?v=69";
+} from "./modules/print.js?v=70";
 
 import {
   showCompare,
@@ -104,7 +104,7 @@ import {
   buildComparePrintSheet,
   printCompare,
   initCompare,
-} from "./modules/compare.js?v=69";
+} from "./modules/compare.js?v=70";
 
 // Re-exportar utilidades esenciales para interoperabilidad y pruebas
 export {
@@ -203,7 +203,7 @@ async function refresh() {
     const ficha = items.find((f) => f.id === saved.id);
     if (ficha) {
       fillForm(ficha, items);
-      showForm();
+      showForm(0);
       return;
     }
   }
@@ -257,11 +257,11 @@ initLibrary({
   getSessionUser,
   onOpenFicha: (item) => {
     fillForm(item, loadAll());
-    showForm();
+    showForm(0);
   },
   onNewSessionFicha: (copy) => {
     fillForm(copy, loadAll());
-    showForm();
+    showForm(0);
   },
   onPdfFicha: (items) => {
     printItems(items, getSessionUser());
@@ -290,12 +290,12 @@ initLibrary({
   },
   onNewFichaBlank: () => {
     fillForm(blank(), loadAll());
-    showForm();
+    showForm(0);
   },
   upsertFn: upsert,
   blankFn: blank,
   fillFormFn: (d) => fillForm(d, loadAll()),
-  showFormFn: showForm,
+  showFormFn: (targetStep = 0) => showForm(targetStep),
   todayStr: todayISO(),
 });
 
@@ -307,7 +307,7 @@ initCompare({
     showLibrary();
   },
   onBackToForm: () => {
-    showForm();
+    showForm(0);
   },
 });
 

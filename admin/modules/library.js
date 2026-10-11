@@ -13,10 +13,10 @@ import {
   missingFields,
   exampleFicha,
   ageOn,
-} from "../ficha-rules.mjs?v=69";
-import { formatDate } from "./api.js?v=69";
-import { debounce, escapeHtml } from "./dom.js?v=69";
-import { todayISO } from "./form.js?v=69";
+} from "../ficha-rules.mjs?v=70";
+import { formatDate } from "./api.js?v=70";
+import { debounce, escapeHtml } from "./dom.js?v=70";
+import { todayISO } from "./form.js?v=70";
 
 const libraryView = document.querySelector("#view-library");
 const listEl = document.querySelector("#library-list");
@@ -69,9 +69,9 @@ function fillForm(data) {
   }
 }
 
-function showForm() {
+function showForm(targetStep = 0) {
   if (typeof activeShowForm === "function") {
-    activeShowForm();
+    activeShowForm(targetStep);
   }
 }
 
@@ -890,7 +890,7 @@ export function initLibrary({
 
       const data = coerceFicha({ ...blank(), ...parsed, id: parsed.id || crypto.randomUUID() });
       fillForm(data);
-      showForm();
+      showForm(0);
       const missing = missingFields(data);
       if (missing.length) {
         window.alert(`El archivo se abrió, pero falta completar: ${missing.join(", ")}.`);

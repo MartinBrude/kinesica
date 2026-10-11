@@ -18,7 +18,7 @@ import {
   validateStep,
   getUniquePatients,
   getSessionIndex,
-} from "../ficha-rules.mjs?v=69";
+} from "../ficha-rules.mjs?v=70";
 
 const form = document.querySelector("#ficha");
 const formView = document.querySelector("#view-form");
@@ -111,6 +111,7 @@ export function formState() {
 export function fillForm(data, allFichas = []) {
   if (!form) return;
   currentId = data.id;
+  step = 0;
   form.reset();
   Object.keys(singles).forEach((k) => delete singles[k]);
 
@@ -285,7 +286,7 @@ export function updateStepValidation() {
   const data = readForm();
   const missingKeys = missingFieldKeys(data);
   const step0Val = validateStep(0, data);
-  const dot = document.querySelector('.steps button[data-step="0"] .step-dot');
+  const dot = document.querySelector('#view-form .steps button[data-step="0"] .step-dot');
   if (dot) dot.hidden = missingKeys.length === 0 && step0Val.isValid;
 }
 
@@ -505,24 +506,27 @@ export function syncFollowups() {
 
 /**
  * Muestra el panel correspondiente al índice del paso seleccionado (0..4).
- * @param {number} index Índice del paso
+ * @param {number} [index=0] Índice del paso
  */
-export function showStep(index) {
-  step = index;
-  document.querySelectorAll(".panel").forEach((panel) => {
-    panel.hidden = Number(panel.dataset.panel) !== index;
+export function showStep(index = 0) {
+  const num = Number(index);
+  const validStep = (Number.isInteger(num) && num >= 0 && num <= 4) ? num : 0;
+  step = validStep;
+  document.querySelectorAll("#view-form .panel").forEach((panel) => {
+    panel.hidden = Number(panel.dataset.panel) !== validStep;
   });
-  document.querySelectorAll(".steps button").forEach((btn) => {
-    btn.classList.toggle("active", Number(btn.dataset.step) === index);
+  document.querySelectorAll("#view-form .steps button").forEach((btn) => {
+    btn.classList.toggle("active", Number(btn.dataset.step) === validStep);
   });
-  if (btnPrev) btnPrev.hidden = index === 0;
-  if (btnNext) btnNext.hidden = index === 4;
+  if (btnPrev) btnPrev.hidden = validStep === 0;
+  if (btnNext) btnNext.hidden = validStep === 4;
 }
 
 /**
  * Muestra la vista del formulario clínico y oculta las demás.
+ * @param {number} [targetStep=0] Paso inicial a activar (por defecto 0)
  */
-export function showForm() {
+export function showForm(targetStep = 0) {
   const libraryView = document.querySelector("#view-library");
   const compareView = document.querySelector("#view-compare");
   const gateView = document.querySelector("#view-gate");
@@ -533,7 +537,10 @@ export function showForm() {
   try {
     sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "form", id: currentId }));
   } catch {}
-  showStep(step);
+  const initialStep = (typeof targetStep === "number" && Number.isInteger(targetStep) && targetStep >= 0 && targetStep <= 4)
+    ? targetStep
+    : 0;
+  showStep(initialStep);
   formBaseline = formState();
 }
 
@@ -582,9 +589,12 @@ export function initForm({ onSave, onBack, onCompare, onPrint, onExportJson, get
     });
   });
 
-  // Pestañas de navegación por pasos
-  document.querySelectorAll(".steps button").forEach((btn) => {
-    btn.addEventListener("click", () => showStep(Number(btn.dataset.step)));
+  // Pestañas de navegación por pasos (restringidas al formulario)
+  document.querySelectorAll("#view-form .steps button").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const s = Number(btn.dataset.step);
+      showStep(Number.isInteger(s) ? s : 0);
+    });
   });
 
   if (evaInput) {
