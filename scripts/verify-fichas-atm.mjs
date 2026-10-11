@@ -519,7 +519,8 @@ assert.doesNotMatch(app, /\[object HTMLDivElement\]/);
 
 // Verificación de regla: siempre que haya más de una ficha por paciente agruparlos
 assert.match(app, /export function patientGroupRow/);
-assert.match(app, /Ver sesiones/);
+assert.doesNotMatch(app, /Ver sesiones/);
+assert.match(app, /expandedPatients/);
 assert.match(app, /Quitar todas/);
 assert.match(app, /sessions\.length > 1 \|\| grouped/);
 

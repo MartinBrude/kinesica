@@ -326,19 +326,6 @@
   font-weight: bold;
 }
 
-.btn-toggle-sessions {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-weight: 600;
-  color: var(--primary) !important;
-}
-
-.btn-toggle-sessions .chevron {
-  font-size: 13px;
-  transition: transform 0.2s ease;
-}
-
 .patient-sessions {
   border-top: 1px solid var(--line);
   background: #f4f8fb;

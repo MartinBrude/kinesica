@@ -506,27 +506,6 @@ export function patientGroupRow(key, sessions, callbacks = {}) {
     controls.append(comp);
   }
 
-  // Botón Acordeón para pacientes con múltiples sesiones
-  if (isMulti) {
-    const toggleBtn = document.createElement("button");
-    toggleBtn.type = "button";
-    toggleBtn.className = "btn ghost btn-toggle-sessions";
-    toggleBtn.innerHTML = isExpanded
-      ? `Ocultar sesiones (${sessions.length}) <span class="chevron">▴</span>`
-      : `Ver sesiones (${sessions.length}) <span class="chevron">▾</span>`;
-    toggleBtn.title = isExpanded ? "Plegar sesiones" : "Ver sesiones de este paciente";
-    toggleBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      if (expandedPatients.has(key)) {
-        expandedPatients.delete(key);
-      } else {
-        expandedPatients.add(key);
-      }
-      renderLibrary();
-    });
-    controls.append(toggleBtn);
-  }
-
   // Quitar / Quitar todas
   const del = document.createElement("button");
   del.type = "button";
