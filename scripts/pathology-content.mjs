@@ -304,6 +304,7 @@ export const PATHOLOGIES = [
   {
     stem: "lumbalgia",
     image: "lumbalgia.jpg",
+    updatedAt: "2026-10-11",
     techniques: ["rpg", "osteopatia", "manipulaciones", "cadenas"],
     es: {
       title: "Lumbalgia: dolor lumbar",
@@ -329,7 +330,7 @@ export const PATHOLOGIES = [
       techniquesNote: "Elegimos técnicas y ejercicios según tu etapa, dolor y objetivos.",
     },
     en: {
-      title: "Low back pain (lumbalgia)",
+      title: "Low back pain: assessment and treatment",
       breadcrumb: "Low back pain",
       metaDescription:
         "Low back pain care at Kinésica (Buenos Aires). Assessment plus manual therapy and exercise to relieve pain and rebuild confident movement.",
@@ -352,7 +353,7 @@ export const PATHOLOGIES = [
       techniquesNote: "We tailor techniques and exercises to your stage, pain and goals.",
     },
     fr: {
-      title: "Lombalgie : douleur lombaire",
+      title: "Lombalgie : évaluation et traitement",
       breadcrumb: "Lombalgie",
       metaDescription:
         "Prise en charge de la lombalgie chez Kinésica (Buenos Aires). Bilan, thérapie manuelle et exercice pour soulager et retrouver un mouvement confiant.",
@@ -400,6 +401,7 @@ export const PATHOLOGIES = [
   {
     stem: "ciatalgia",
     image: "hero-img.jpg",
+    updatedAt: "2026-10-11",
     techniques: ["neurodinamia", "osteopatia", "manipulaciones", "rpg"],
     es: {
       title: "Ciatalgia: dolor que baja por la pierna",
@@ -976,6 +978,7 @@ export const PATHOLOGIES = [
   {
     stem: "hernia-disco",
     image: "hero-img.jpg",
+    updatedAt: "2026-10-11",
     techniques: ["neurodinamia", "rpg", "osteopatia", "manipulaciones"],
     es: {
       title: "Hernia de disco: dolor y recuperación",
@@ -2514,6 +2517,7 @@ export const PATHOLOGIES = [
   {
     stem: "cervicalgia",
     image: "cervicalgia.jpg",
+    updatedAt: "2026-10-11",
     techniques: ["rpg", "osteopatia", "manipulaciones", "atm"],
     es: {
       title: "Cervicalgia: dolor de cuello",
@@ -2610,7 +2614,7 @@ export const PATHOLOGIES = [
   {
     stem: "bruxismo",
     image: "hero-img.jpg",
-    updatedAt: "2026-08-20",
+    updatedAt: "2026-10-11",
     techniques: ["atm", "osteopatia", "manipulaciones", "rpg"],
     es: {
       title: "Bruxismo y dolor miofascial de la ATM",
@@ -3759,9 +3763,9 @@ export function pathologySeoTitle(pathology, lang) {
   const name = String(data.breadcrumb || data.h1 || pathology.stem || "").trim();
   switch (lang) {
     case "en":
-      return `Treatment of ${name} in Palermo, Buenos Aires | Kinésica`;
+      return `${name} treatment in Palermo, Buenos Aires | Kinésica`;
     case "fr":
-      return `Traitement de : ${name} à Palermo, Buenos Aires | Kinésica`;
+      return `${name} : évaluation et traitement à Palermo, Buenos Aires | Kinésica`;
     case "pt":
       return `Tratamento de ${name} em Palermo, Buenos Aires | Kinésica`;
     case "es":

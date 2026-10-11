@@ -7,7 +7,14 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { METHOD_STEMS, METHOD_UI, METHODS } from "./methods-content.mjs";
-import { absoluteUrl, HTML_LANG, repoPath, sitePath } from "./i18n-urls.mjs";
+import {
+  absoluteUrl,
+  HTML_LANG,
+  repoPath,
+  SCHEMA_LANGUAGE,
+  sitePath,
+  SITE,
+} from "./i18n-urls.mjs";
 import { LANG_CODES } from "./languages.mjs";
 import { headerShellMarkup } from "./header-shell.mjs";
 import { breadcrumbListSchema, escHtml } from "./html-utils.mjs";
@@ -33,6 +40,7 @@ import {
   BUSINESS_ID,
   getMethodServiceCopy,
 } from "./schema-local-business.mjs";
+import { FOUNDER } from "./site-contact.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -65,8 +73,71 @@ function methodImageSrc(image, prefix) {
   return `${prefix}images/${fileName}`;
 }
 
-function buildMain(data, ui, imageSrc) {
-  const blocks = (data.blocks ?? [])
+const METHOD_PAGE_UI = {
+  es: {
+    summaryTitle: "Respuesta breve",
+    whatIsTitle: (name) => `¿Qué es ${name}?`,
+    authorTitle: "Autor y revisión profesional",
+    authorText:
+      "Contenido elaborado y revisado por Norberto Silvio Brude, kinesiólogo.",
+    profileLabel: "Ver perfil profesional",
+  },
+  en: {
+    summaryTitle: "Quick answer",
+    whatIsTitle: (name) => `What is ${name}?`,
+    authorTitle: "Author and professional review",
+    authorText:
+      "Content written and reviewed by Norberto Silvio Brude, physiotherapist.",
+    profileLabel: "View professional profile",
+  },
+  fr: {
+    summaryTitle: "Réponse rapide",
+    whatIsTitle: (name) => `Qu'est-ce que ${name} ?`,
+    authorTitle: "Auteur et relecture professionnelle",
+    authorText:
+      "Contenu rédigé et relu par Norberto Silvio Brude, kinésithérapeute.",
+    profileLabel: "Voir le profil professionnel",
+  },
+  pt: {
+    summaryTitle: "Resposta rápida",
+    whatIsTitle: (name) => `O que é ${name}?`,
+    authorTitle: "Autoria e revisão profissional",
+    authorText:
+      "Conteúdo elaborado e revisado por Norberto Silvio Brude, fisioterapeuta.",
+    profileLabel: "Ver perfil profissional",
+  },
+};
+
+function buildAuthorReviewSection(lang) {
+  const ui = METHOD_PAGE_UI[lang];
+  const cvHref = sitePath(lang, "cv");
+  return `    <section class="method-author-review space-medium">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12">
+            <h2>${escHtml(ui.authorTitle)}</h2>
+            <p>${escHtml(ui.authorText)} <a href="${cvHref}">${escHtml(ui.profileLabel)}</a>.</p>
+          </div>
+        </div>
+      </div>
+    </section>`;
+}
+
+function methodPhrase(data) {
+  const raw = String(data.breadcrumb || data.h1 || "").trim();
+  if (!raw) return "";
+  if (raw.length <= 5 && raw === raw.toUpperCase()) return raw;
+  const cut = raw.split(/[–—:-]/)[0].trim();
+  if (cut.length <= 5 && cut === cut.toUpperCase()) return cut;
+  return cut.charAt(0).toLowerCase() + cut.slice(1);
+}
+
+function buildMain(data, ui, imageSrc, lang) {
+  const pageUi = METHOD_PAGE_UI[lang];
+  const name = methodPhrase(data);
+  const blocks = data.blocks ?? [];
+  const bodyBlocks = blocks[0]?.type === "h2" ? blocks : [{ type: "h2", text: pageUi.whatIsTitle(name) }, ...blocks];
+  const rendered = bodyBlocks
     .map((block) => {
       if (block.type === "h2") {
         return `            <h2>${escHtml(block.text)}</h2>`;
@@ -81,13 +152,16 @@ function buildMain(data, ui, imageSrc) {
           <div class="method-page-intro">
             <p class="method-eyebrow">${escHtml(ui.eyebrow)}</p>
             <h1>${escHtml(data.h1)}</h1>
-            <p class="lead">${escHtml(data.lead)}</p>
+            <section class="method-answer-first">
+              <h2>${escHtml(pageUi.summaryTitle)}</h2>
+              <p class="lead">${escHtml(data.lead)}</p>
+            </section>
           </div>
           <figure class="method-figure">
             <img src="${escHtml(imageSrc)}" alt="${escHtml(data.h1)}" width="1536" height="1024" decoding="async" fetchpriority="high" />
           </figure>
           <div class="method-page-body">
-${blocks}
+${rendered}
           </div>
         </div>
       </div>
@@ -116,6 +190,43 @@ function buildHtml(stem, lang) {
     { name: data.breadcrumb, item: canonical },
   ]);
   const therapySchema = methodTherapySchema(lang, stem, service);
+  const pageSchema = {
+    "@context": "https://schema.org",
+    "@type": "MedicalWebPage",
+    headline: data.h1,
+    name: data.h1,
+    description: data.metaDescription,
+    image: imgUrl,
+    url: canonical,
+    mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
+    inLanguage: SCHEMA_LANGUAGE[lang],
+    about: {
+      "@type": "MedicalTherapy",
+      "@id": `${canonical}#therapy`,
+      name: service.name,
+      description: service.description,
+      url: canonical,
+    },
+    author: {
+      "@type": "Person",
+      name: FOUNDER.name,
+      url: absoluteUrl(lang, "cv"),
+    },
+    reviewedBy: {
+      "@type": "Person",
+      name: FOUNDER.name,
+      url: absoluteUrl(lang, "cv"),
+    },
+    publisher: {
+      "@type": "Organization",
+      "@id": BUSINESS_ID,
+      name: "Kinésica",
+      logo: {
+        "@type": "ImageObject",
+        url: `${SITE}/images/logo.png`,
+      },
+    },
+  };
 
   return `<!doctype html>
 <html lang="${HTML_LANG[lang]}">
@@ -144,6 +255,9 @@ ${JSON.stringify(breadcrumbSchema, null, 6).replace(/^/gm, "      ")}
   <script type="application/ld+json" id="kinesica-method-therapy">
 ${JSON.stringify(therapySchema, null, 6).replace(/^/gm, "      ")}
     </script>
+  <script type="application/ld+json">
+${JSON.stringify(pageSchema, null, 6).replace(/^/gm, "      ")}
+    </script>
 </head>
 
 <body>
@@ -155,7 +269,8 @@ ${pageBreadcrumbSection({
       homeLabel: ui.homeLabel,
       activeLabel: data.breadcrumb,
     })}
-${buildMain(data, ui, pageImageSrc)}
+${buildMain(data, ui, pageImageSrc, lang)}
+${buildAuthorReviewSection(lang)}
   </main>
 ${ctaStripPlaceholder(lang, p)}
 ${bodyFooterAndUiScripts(lang, p)}

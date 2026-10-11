@@ -53,6 +53,7 @@ import {
   socialImageUrl,
 } from "./page-shell.mjs";
 import { FOUNDER } from "./site-contact.mjs";
+import { BUSINESS_ID } from "./schema-local-business.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -93,8 +94,192 @@ function buildRelatedSection(pathology, lang) {
     </section>`;
 }
 
+const PATHOLOGY_PAGE_UI = {
+  es: {
+    summaryTitle: "Respuesta breve",
+    whatLabel: "Qué es",
+    symptomsLabel: "Síntomas",
+    treatmentLabel: "Cómo se trata",
+    whatIsTitle: (name) => `¿Qué es ${name}?`,
+    symptomsTitle: (name) => `¿Qué síntomas se asocian con ${name}?`,
+    treatmentTitle: (name) => `¿Cómo se trata ${name} en Kinésica?`,
+    evaluationTitle: (name) => `¿Cómo se evalúa ${name}?`,
+    urgentTitle: (name) => `¿Cuándo consultar por ${name}?`,
+    urgentLead:
+      "Esta información es orientativa y no reemplaza una evaluación médica.",
+    urgentList: [
+      "Dolor intenso que no mejora con reposo relativo o empeora rápidamente.",
+      "Pérdida de fuerza progresiva, alteraciones de sensibilidad o dificultad para caminar.",
+      "Traumatismo reciente, fiebre, malestar general o síntomas nuevos no habituales.",
+    ],
+    urgentClose: "Si aparecen estos signos, consultá de forma prioritaria.",
+    urgentLinkLabel: "Condiciones de uso y alcance informativo",
+    authorTitle: "Autor y revisión profesional",
+    authorText:
+      "Contenido elaborado y revisado por Norberto Silvio Brude, kinesiólogo.",
+    profileLabel: "Ver perfil profesional",
+  },
+  en: {
+    summaryTitle: "Quick answer",
+    whatLabel: "What it is",
+    symptomsLabel: "Symptoms",
+    treatmentLabel: "How it is treated",
+    whatIsTitle: (name) => `What is ${name}?`,
+    symptomsTitle: (name) => `What symptoms are linked to ${name}?`,
+    treatmentTitle: (name) => `How is ${name} treated at Kinésica?`,
+    evaluationTitle: (name) => `How is ${name} assessed?`,
+    urgentTitle: (name) => `When should you seek care for ${name}?`,
+    urgentLead:
+      "This information is educational and does not replace medical assessment.",
+    urgentList: [
+      "Severe pain that does not improve with relative rest or worsens quickly.",
+      "Progressive weakness, sensory changes, or difficulty walking.",
+      "Recent trauma, fever, general malaise, or new unusual symptoms.",
+    ],
+    urgentClose: "If these signs appear, seek prompt medical evaluation.",
+    urgentLinkLabel: "Conditions of use and informational scope",
+    authorTitle: "Author and professional review",
+    authorText:
+      "Content written and reviewed by Norberto Silvio Brude, physiotherapist.",
+    profileLabel: "View professional profile",
+  },
+  fr: {
+    summaryTitle: "Réponse rapide",
+    whatLabel: "De quoi s'agit-il",
+    symptomsLabel: "Symptômes",
+    treatmentLabel: "Comment c'est traité",
+    whatIsTitle: (name) => `Qu'est-ce que ${name} ?`,
+    symptomsTitle: (name) => `Quels symptômes accompagnent ${name} ?`,
+    treatmentTitle: (name) => `Quelle prise en charge pour ${name} chez Kinésica ?`,
+    evaluationTitle: (name) => `Comment évalue-t-on ${name} ?`,
+    urgentTitle: (name) => `Quand consulter pour ${name} ?`,
+    urgentLead:
+      "Ces informations sont indicatives et ne remplacent pas un avis médical.",
+    urgentList: [
+      "Douleur intense qui ne s'améliore pas avec le repos relatif ou qui s'aggrave rapidement.",
+      "Perte de force progressive, troubles de la sensibilité ou difficulté à marcher.",
+      "Traumatisme récent, fièvre, malaise général ou symptômes nouveaux inhabituels.",
+    ],
+    urgentClose: "En présence de ces signes, consultez rapidement.",
+    urgentLinkLabel: "Conditions d'utilisation et portée informative",
+    authorTitle: "Auteur et relecture professionnelle",
+    authorText:
+      "Contenu rédigé et relu par Norberto Silvio Brude, kinésithérapeute.",
+    profileLabel: "Voir le profil professionnel",
+  },
+  pt: {
+    summaryTitle: "Resposta rápida",
+    whatLabel: "O que é",
+    symptomsLabel: "Sintomas",
+    treatmentLabel: "Como se trata",
+    whatIsTitle: (name) => `O que é ${name}?`,
+    symptomsTitle: (name) => `Quais sintomas se associam ${ptA(name)}?`,
+    treatmentTitle: (name) => `Como se trata ${name} na Kinésica?`,
+    evaluationTitle: (name) => `Como se avalia ${name}?`,
+    urgentTitle: (name) => `Quando procurar atendimento por ${name}?`,
+    urgentLead:
+      "Este conteúdo é informativo e não substitui avaliação médica.",
+    urgentList: [
+      "Dor intensa que não melhora com repouso relativo ou piora rapidamente.",
+      "Perda progressiva de força, alterações de sensibilidade ou dificuldade para caminhar.",
+      "Trauma recente, febre, mal-estar geral ou sintomas novos incomuns.",
+    ],
+    urgentClose: "Se esses sinais aparecerem, procure avaliação médica prioritária.",
+    urgentLinkLabel: "Condições de uso e escopo informativo",
+    authorTitle: "Autoria e revisão profissional",
+    authorText:
+      "Conteúdo elaborado e revisado por Norberto Silvio Brude, fisioterapeuta.",
+    profileLabel: "Ver perfil profissional",
+  },
+};
+
+function conditionPhrase(data, lang) {
+  const raw = String(data.breadcrumb || data.h1 || "").trim();
+  if (!raw) return "";
+  if (raw.length <= 5 && raw === raw.toUpperCase()) return raw;
+  const name = raw.charAt(0).toLowerCase() + raw.slice(1);
+  return withArticle(lang, name);
+}
+
+function withArticle(lang, name) {
+  const first = name.split(" ")[0];
+  if (lang === "es") {
+    if (first === "contracturas") return `las ${name}`;
+    if (first === "pies") return `los ${name}`;
+    if (/algia$|itis$|osis$|patía$|ía$|ión$|dad$|ura$|sión$|a$/i.test(first)) return `la ${name}`;
+    if (/ismo$|o$|or$/i.test(first)) return `el ${name}`;
+    if (/^túnel$/i.test(first)) return `el ${name}`;
+    return name;
+  }
+  if (lang === "fr") {
+    if (/^[aeiouéèêh]/i.test(first)) return `l'${name}`;
+    if (/isme$|age$|ent$|eau$|al$|os$/i.test(first)) return `le ${name}`;
+    if (/ie$|ose$|ite$|eur$|ion$|ée$|ure$|e$/i.test(first)) return `la ${name}`;
+    return name;
+  }
+  if (lang === "pt") {
+    if (/ão$|a$|gem$|ade$/i.test(first) || /^dor$/i.test(first)) return `a ${name}`;
+    if (/o$|ismo$|or$/i.test(first)) return `o ${name}`;
+    return name;
+  }
+  return name;
+}
+
+function ptA(name) {
+  if (name.startsWith("a ")) return `à ${name.slice(2)}`;
+  if (name.startsWith("o ")) return `ao ${name.slice(2)}`;
+  return `a ${name}`;
+}
+
+function firstSentence(text) {
+  const plain = String(text || "")
+    .replace(/<[^>]+>/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  const match = plain.match(/^.{12,240}?[.!?]/);
+  return match ? match[0] : plain;
+}
+
+function buildUrgentCareSection(lang, name) {
+  const ui = PATHOLOGY_PAGE_UI[lang];
+  const conditionsHref = sitePath(lang, "condiciones");
+  const items = ui.urgentList
+    .map((item) => `              <li>${escHtml(item)}</li>`)
+    .join("\n");
+  return `    <section class="pathology-urgent-care space-medium">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12">
+            <h2>${escHtml(ui.urgentTitle(name))}</h2>
+            <p>${escHtml(ui.urgentLead)}</p>
+            <ul>
+${items}
+            </ul>
+            <p>${escHtml(ui.urgentClose)} <a href="${conditionsHref}">${escHtml(ui.urgentLinkLabel)}</a>.</p>
+          </div>
+        </div>
+      </div>
+    </section>`;
+}
+
+function buildAuthorReviewSection(lang) {
+  const ui = PATHOLOGY_PAGE_UI[lang];
+  const cvHref = sitePath(lang, "cv");
+  return `    <section class="pathology-author-review">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12">
+            <h2>${escHtml(ui.authorTitle)}</h2>
+            <p>${escHtml(ui.authorText)} <a href="${cvHref}">${escHtml(ui.profileLabel)}</a>.</p>
+          </div>
+        </div>
+      </div>
+    </section>`;
+}
+
 function buildMain(pathology, lang) {
   const ui = UI[lang];
+  const pageUi = PATHOLOGY_PAGE_UI[lang];
   const data = pathology[lang];
   const techItems = (pathology.techniques || [])
     .map((t) => {
@@ -104,8 +289,22 @@ function buildMain(pathology, lang) {
     })
     .join("\n              ");
 
-  const paragraphs = data.paragraphs
-    .map((para) => `            <p>${para}</p>`)
+  const p0 = data.paragraphs[0] || "";
+  const p1 = data.paragraphs[1] || "";
+  const p2 = data.paragraphs[2] || "";
+  const p3 = data.paragraphs[3] || "";
+  const p4 = data.paragraphs[4] || "";
+  const name = conditionPhrase(data, lang);
+  const answerPoints = [
+    [pageUi.whatLabel, firstSentence(p0)],
+    [pageUi.symptomsLabel, firstSentence(p1)],
+    [pageUi.treatmentLabel, firstSentence(p3)],
+  ]
+    .filter(([, text]) => text)
+    .map(
+      ([label, text]) =>
+        `                <li><strong>${escHtml(label)}.</strong> ${escHtml(text)}</li>`,
+    )
     .join("\n");
   const complications = data.complications
     .map((c) => `                <li>${c}</li>`)
@@ -117,8 +316,30 @@ function buildMain(pathology, lang) {
           <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
             <p class="pathology-eyebrow">${ui.eyebrow}</p>
             <h1>${data.h1}</h1>
-            <p class="lead">${data.lead}</p>
-${paragraphs}
+            <section class="pathology-answer-first" aria-labelledby="pathology-summary-${pathology.stem}">
+              <h2 id="pathology-summary-${pathology.stem}">${escHtml(pageUi.summaryTitle)}</h2>
+              <p class="lead">${data.lead}</p>
+              <ul>
+${answerPoints}
+              </ul>
+            </section>
+            <section aria-labelledby="pathology-what-is-${pathology.stem}">
+              <h2 id="pathology-what-is-${pathology.stem}">${escHtml(pageUi.whatIsTitle(name))}</h2>
+              <p>${p0}</p>
+            </section>
+            <section aria-labelledby="pathology-symptoms-${pathology.stem}">
+              <h2 id="pathology-symptoms-${pathology.stem}">${escHtml(pageUi.symptomsTitle(name))}</h2>
+              <p>${p1}</p>
+              <p>${p2}</p>
+            </section>
+            <section aria-labelledby="pathology-treatment-${pathology.stem}">
+              <h2 id="pathology-treatment-${pathology.stem}">${escHtml(pageUi.treatmentTitle(name))}</h2>
+              <p>${p3}</p>
+            </section>
+            <section aria-labelledby="pathology-evaluation-${pathology.stem}">
+              <h2 id="pathology-evaluation-${pathology.stem}">${escHtml(pageUi.evaluationTitle(name))}</h2>
+              <p>${p4}</p>
+            </section>
           </div>
           <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
             <aside class="pathology-aside" aria-labelledby="pathology-complications-${pathology.stem}">
@@ -131,6 +352,7 @@ ${complications}
         </div>
       </div>
     </section>
+${buildUrgentCareSection(lang, name)}
     <section class="pathology-techniques space-medium bg-light">
       <div class="container">
         <div class="row">
@@ -144,6 +366,7 @@ ${complications}
         </div>
       </div>
     </section>
+${buildAuthorReviewSection(lang)}
 ${buildFaqSection(pathology, lang)}
 ${buildRelatedSection(pathology, lang)}`;
 }
@@ -220,7 +443,7 @@ function buildHtml(pathology, lang) {
 
   const articleSchema = {
     "@context": "https://schema.org",
-    "@type": "MedicalWebPage",
+    "@type": ["MedicalWebPage", "HealthTopicContent"],
     headline: data.h1,
     name: data.h1,
     description: data.metaDescription,
@@ -234,8 +457,14 @@ function buildHtml(pathology, lang) {
       name: FOUNDER.name,
       url: absoluteUrl(lang, "cv"),
     },
+    reviewedBy: {
+      "@type": "Person",
+      name: FOUNDER.name,
+      url: absoluteUrl(lang, "cv"),
+    },
     publisher: {
       "@type": "Organization",
+      "@id": BUSINESS_ID,
       name: "Kinésica",
       logo: {
         "@type": "ImageObject",

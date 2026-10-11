@@ -123,6 +123,7 @@ export const METHODS = {
         h1: "RPG – Reeducación postural global",
         lead: "La Reeducación Postural Global es un Método de Tratamiento creado en 1980 por el fisioterapeuta PH Souchard. Investigando en la organización postural concluyó que la Postura depende de la tensión de los músculos estáticos (los que se oponen a la acción de la Fuerza de Gravedad). Definió la forma en que se organizan estos músculos con el nombre de Cadenas Musculares.",
         blocks: [
+          { type: "h2", text: "¿Cómo es una sesión de RPG?" },
           { type: "p", text: "Se realiza una evaluación donde se define cuáles son las cadenas que más se acortaron y se relacionan con el motivo de consulta. Utiliza posturas de tratamiento para estirarlas en forma suave, progresiva y sostenida. Son posturas activas donde el terapeuta guía el estiramiento y corrige las compensaciones. Busca remontar del síntoma a la causa primaria en el desalineamiento postural. Se trabaja en sesiones individuales. La frecuencia de las sesiones es generalmente semanal." },
         ],
       },
@@ -133,6 +134,7 @@ export const METHODS = {
         h1: "RPG – Global Postural Reeducation",
         lead: "RPG is a treatment method created in 1980 by physiotherapist PH Souchard. Through his research on postural organization, he concluded that posture depends on the tension of static muscles (those that oppose the action of gravity).",
         blocks: [
+          { type: "h2", text: "How does an RPG session work?" },
           { type: "p", text: "He defined the way these muscles are organized as muscle chains. An evaluation identifies which chains have shortened most and how they relate to your presenting complaint. Treatment postures gently, progressively, and sustainably stretch them. These are active postures where the therapist guides the stretch and corrects compensations. The goal is to address the underlying postural cause behind the symptom. Sessions are one-to-one and usually scheduled weekly." },
         ],
       },
@@ -143,6 +145,7 @@ export const METHODS = {
         h1: "RPG — Rééducation posturale globale",
         lead: "La RPG est une méthode créée en 1980 par le kinésithérapeute PH Souchard. Ses recherches sur l'organisation posturale ont montré que la posture dépend de la tension des muscles statiques (ceux qui s'opposent à la gravité).",
         blocks: [
+          { type: "h2", text: "Comment se déroule une séance de RPG ?" },
           { type: "p", text: "Il a défini leur organisation sous le nom de chaînes musculaires. Une évaluation détermine quelles chaînes sont les plus raccourcies et leur lien avec le motif de consultation. Des postures de traitement étirent ces chaînes en douceur, progressivement et durablement. Ce sont des postures actives : le thérapeute guide l'étirement et corrige les compensations. L'objectif est de remonter du symptôme à la cause posturale. Les séances sont individuelles, en général une fois par semaine." },
         ],
       },
@@ -153,6 +156,7 @@ export const METHODS = {
         h1: "RPG — Reeducação Postural Global",
         lead: "A RPG é um método criado em 1980 pelo fisioterapeuta PH Souchard. Suas pesquisas sobre organização postural mostraram que a postura depende da tensão dos músculos estáticos (aqueles que se opõem à gravidade).",
         blocks: [
+          { type: "h2", text: "Como funciona uma sessão de RPG?" },
           { type: "p", text: "Ele definiu essa organização como cadeias musculares. Uma avaliação identifica quais cadeias estão mais encurtadas e como se relacionam com o motivo da consulta. Posturas terapêuticas alongam essas cadeias de forma suave, progressiva e sustentável. São posturas ativas: o terapeuta orienta o alongamento e corrige compensações. O objetivo é ir do sintoma à causa postural. As sessões são individuais, em geral semanais." },
         ],
       }
@@ -410,7 +414,9 @@ export const METHODS = {
         h1: "ATM – Articulación temporomandibular",
         lead: "Cuando la articulación temporomandibular (ATM) no funciona con normalidad, la persona puede sentir dolor en la mandíbula, ruidos al abrir la boca (como chasquidos), dificultad para masticar o incluso bloqueos al intentar cerrar o abrir del todo. Dependiendo de si el problema está en el hueso, en el disco o en los músculos, el tratamiento se enfocará en devolver el movimiento natural.",
         blocks: [
+          { type: "h2", text: "¿Qué es la ATM y cuándo consultar?" },
           { type: "p", text: "Simplificando la situación, la ATM es la pieza que une la mandíbula con el cráneo y es fundamental para hablar, comer y bostezar. El tratamiento especializado busca evaluar y corregir cómo se mueve esta articulación para que no genere tensión en la cara o el cuello." },
+          { type: "h2", text: "Enfoque terapéutico en Kinésica" },
           { type: "p", text: "Para que todo funcione bien, existe un pequeño disco entre los huesos que debe desplazarse suavemente cada vez que movemos la boca. A veces, por tensión excesiva o por apretar mucho los dientes, este disco se desplaza o los músculos se sobrecargan. Utilizamos técnicas de movilidad y ejercicios suaves para que la mandíbula vuelva a su sitio, los músculos se relajen y la persona pueda volver a sus actividades diarias sin molestias." },
         ],
       },
@@ -421,7 +427,9 @@ export const METHODS = {
         h1: "TMJ – Temporomandibular joint",
         lead: "When the temporomandibular joint (TMJ) does not function normally, a person may experience jaw pain, noises when opening the mouth (such as clicking), difficulty chewing, or even locking when trying to fully close or open. Depending on whether the problem lies in the bone, the disc, or the muscles, treatment will focus on restoring natural movement.",
         blocks: [
+          { type: "h2", text: "What is the TMJ and when should it be assessed?" },
           { type: "p", text: "In simple terms, the TMJ is the joint that connects the jaw to the skull and is essential for speaking, eating, and yawning. Specialized treatment aims to assess and correct how this joint moves so it does not create tension in the face or neck." },
+          { type: "h2", text: "Treatment approach at Kinésica" },
           { type: "p", text: "For everything to work properly, a small disc between the bones must glide smoothly every time we move the mouth. Sometimes, due to excessive tension or teeth clenching, this disc shifts or the muscles become overloaded. We use mobility techniques and gentle exercises so the jaw returns to its proper position, the muscles relax, and the person can return to daily activities without discomfort." },
         ],
       },
@@ -432,7 +440,9 @@ export const METHODS = {
         h1: "ATM — Articulation temporomandibulaire",
         lead: "Lorsque l'articulation temporomandibulaire (ATM) ne fonctionne pas normalement, on peut ressentir de la douleur à la mâchoire, des bruits à l'ouverture (claquements), des difficultés à mâcher ou un blocage. Le traitement vise à restaurer le mouvement naturel selon que l'atteinte est osseuse, discale ou musculaire.",
         blocks: [
+          { type: "h2", text: "Qu'est-ce que l'ATM et quand consulter ?" },
           { type: "p", text: "L'ATM relie la mâchoire au crâne et est essentielle pour parler, manger et bâiller. Le traitement évalue et corrige son mouvement pour éviter les tensions du visage et du cou." },
+          { type: "h2", text: "Approche thérapeutique chez Kinésica" },
           { type: "p", text: "Un petit disque doit glisser à chaque mouvement de la bouche. Sous tension ou bruxisme, il peut se déplacer ou les muscles se surcharger. Techniques de mobilité et exercices doux remettent la mâchoire en place et relâchent les muscles." },
         ],
       },
@@ -443,7 +453,9 @@ export const METHODS = {
         h1: "ATM — Articulação temporomandibular",
         lead: "Quando a articulação temporomandibular (ATM) não funciona normalmente, podem surgir dor na mandíbula, ruídos ao abrir a boca (estalos), dificuldade para mastigar ou sensação de travamento. O tratamento busca restaurar o movimento natural, conforme a origem seja óssea, discal ou muscular.",
         blocks: [
+          { type: "h2", text: "O que é a ATM e quando avaliar?" },
           { type: "p", text: "A ATM liga a mandíbula ao crânio e é essencial para falar, comer e bocejar. O tratamento avalia e corrige seu movimento para evitar tensões no rosto e no pescoço." },
+          { type: "h2", text: "Abordagem terapêutica na Kinésica" },
           { type: "p", text: "Um pequeno disco deve deslizar a cada movimento da boca. Com tensão ou bruxismo, ele pode se deslocar ou os músculos se sobrecarregar. Técnicas de mobilidade e exercícios suaves reposicionam a mandíbula e relaxam os músculos." },
         ],
       }
