@@ -114,10 +114,6 @@ const PATHOLOGY_PAGE_UI = {
     ],
     urgentClose: "Si aparecen estos signos, consultá de forma prioritaria.",
     urgentLinkLabel: "Condiciones de uso y alcance informativo",
-    authorTitle: "Autor y revisión profesional",
-    authorText:
-      "Contenido elaborado y revisado por Norberto Silvio Brude, kinesiólogo.",
-    profileLabel: "Ver perfil profesional",
   },
   en: {
     summaryTitle: "Quick answer",
@@ -138,10 +134,6 @@ const PATHOLOGY_PAGE_UI = {
     ],
     urgentClose: "If these signs appear, seek prompt medical evaluation.",
     urgentLinkLabel: "Conditions of use and informational scope",
-    authorTitle: "Author and professional review",
-    authorText:
-      "Content written and reviewed by Norberto Silvio Brude, physiotherapist.",
-    profileLabel: "View professional profile",
   },
   fr: {
     summaryTitle: "Réponse rapide",
@@ -162,10 +154,6 @@ const PATHOLOGY_PAGE_UI = {
     ],
     urgentClose: "En présence de ces signes, consultez rapidement.",
     urgentLinkLabel: "Conditions d'utilisation et portée informative",
-    authorTitle: "Auteur et relecture professionnelle",
-    authorText:
-      "Contenu rédigé et relu par Norberto Silvio Brude, kinésithérapeute.",
-    profileLabel: "Voir le profil professionnel",
   },
   pt: {
     summaryTitle: "Resposta rápida",
@@ -186,10 +174,6 @@ const PATHOLOGY_PAGE_UI = {
     ],
     urgentClose: "Se esses sinais aparecerem, procure avaliação médica prioritária.",
     urgentLinkLabel: "Condições de uso e escopo informativo",
-    authorTitle: "Autoria e revisão profissional",
-    authorText:
-      "Conteúdo elaborado e revisado por Norberto Silvio Brude, fisioterapeuta.",
-    profileLabel: "Ver perfil profissional",
   },
 };
 
@@ -262,20 +246,6 @@ ${items}
     </section>`;
 }
 
-function buildAuthorReviewSection(lang) {
-  const ui = PATHOLOGY_PAGE_UI[lang];
-  const cvHref = sitePath(lang, "cv");
-  return `    <section class="pathology-author-review">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12">
-            <h2>${escHtml(ui.authorTitle)}</h2>
-            <p>${escHtml(ui.authorText)} <a href="${cvHref}">${escHtml(ui.profileLabel)}</a>.</p>
-          </div>
-        </div>
-      </div>
-    </section>`;
-}
 
 function buildMain(pathology, lang) {
   const ui = UI[lang];
@@ -366,7 +336,6 @@ ${buildUrgentCareSection(lang, name)}
         </div>
       </div>
     </section>
-${buildAuthorReviewSection(lang)}
 ${buildFaqSection(pathology, lang)}
 ${buildRelatedSection(pathology, lang)}`;
 }
@@ -453,11 +422,6 @@ function buildHtml(pathology, lang) {
     about: conditionSchema,
     inLanguage: SCHEMA_LANGUAGE[lang],
     author: {
-      "@type": "Person",
-      name: FOUNDER.name,
-      url: absoluteUrl(lang, "cv"),
-    },
-    reviewedBy: {
       "@type": "Person",
       name: FOUNDER.name,
       url: absoluteUrl(lang, "cv"),
