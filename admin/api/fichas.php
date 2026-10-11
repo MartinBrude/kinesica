@@ -22,20 +22,85 @@ if ($method === 'GET') {
 
 if ($method === 'POST') {
     $data = read_json();
-    $id = (string) ($data['id'] ?? '');
-    if (!preg_match('/^[0-9a-f-]{36}$/i', $id)) {
+    $uuidRe = '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i';
+    if (!is_string($data['id'] ?? null) || !preg_match($uuidRe, $data['id'])) {
         json_out(422, ['error' => 'La ficha no es válida']);
     }
-    // Autocálculo de resguardo de edad a partir de fecha de nacimiento y fecha de sesión
-    if (trim((string) ($data['edad'] ?? '')) === '' && !empty($data['nacimiento']) && !empty($data['fechaSesion'])) {
-        try {
-            $birth = new DateTimeImmutable((string) $data['nacimiento']);
-            $session = new DateTimeImmutable((string) $data['fechaSesion']);
-            $data['edad'] = (string) $session->diff($birth)->y;
-        } catch (Throwable) {
-            // Ignorar formato inválido para que falle la validación posterior
+    $id = $data['id'];
+
+    // Límites generales: tamaño total, claves y longitud de cadenas
+    $checkValue = static function ($value, int $depth = 0) use (&$checkValue): bool {
+        if ($depth > 4) {
+            return false;
+        }
+        if (is_string($value)) {
+            return mb_strlen($value) <= 5000;
+        }
+        if (is_int($value) || is_float($value) || is_bool($value) || $value === null) {
+            return true;
+        }
+        if (is_array($value)) {
+            if (count($value) > 200) {
+                return false;
+            }
+            foreach ($value as $k => $v) {
+                if (is_string($k) && !preg_match('/^[A-Za-z0-9_.-]{1,64}$/', $k)) {
+                    return false;
+                }
+                if (!$checkValue($v, $depth + 1)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    };
+    if (!$checkValue($data)) {
+        json_out(422, ['error' => 'La ficha contiene campos con formato o tamaño no válido']);
+    }
+
+    // Campos de texto obligatorios: deben ser cadenas
+    $textFields = ['nombre', 'dni', 'motivo', 'antecedentes'];
+    foreach ($textFields as $key) {
+        if (isset($data[$key]) && !is_string($data[$key])) {
+            json_out(422, ['error' => 'El campo ' . $key . ' debe ser texto']);
+        }
+        if (isset($data[$key])) {
+            $data[$key] = trim($data[$key]);
         }
     }
+    if (mb_strlen((string) ($data['nombre'] ?? '')) > 200 || mb_strlen((string) ($data['dni'] ?? '')) > 50) {
+        json_out(422, ['error' => 'Nombre o DNI demasiado largo']);
+    }
+
+    // Fechas estrictas (Y-m-d)
+    $parseDate = static function ($value): ?DateTimeImmutable {
+        if (!is_string($value) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $value)) {
+            return null;
+        }
+        $d = DateTimeImmutable::createFromFormat('!Y-m-d', $value);
+        return ($d !== false && $d->format('Y-m-d') === $value) ? $d : null;
+    };
+    $birth = $parseDate($data['nacimiento'] ?? null);
+    $session = $parseDate($data['fechaSesion'] ?? null);
+    $today = new DateTimeImmutable('today');
+    if (($data['nacimiento'] ?? '') !== '' && $birth === null) {
+        json_out(422, ['error' => 'La fecha de nacimiento no es válida']);
+    }
+    if (($data['fechaSesion'] ?? '') !== '' && $session === null) {
+        json_out(422, ['error' => 'La fecha de la sesión no es válida']);
+    }
+    if ($birth !== null && $birth > $today) {
+        json_out(422, ['error' => 'La fecha de nacimiento no puede ser futura']);
+    }
+    if ($birth !== null && $session !== null) {
+        if ($birth > $session) {
+            json_out(422, ['error' => 'La fecha de nacimiento no puede ser posterior a la sesión']);
+        }
+        // La edad se calcula siempre en servidor; no se confía en el cliente
+        $data['edad'] = (string) $birth->diff($session)->y;
+    }
+
     $required = [
         'nombre' => 'el nombre completo',
         'dni' => 'el DNI / Pasaporte',
@@ -47,13 +112,65 @@ if ($method === 'POST') {
     ];
     $missing = [];
     foreach ($required as $key => $label) {
-        if (trim((string) ($data[$key] ?? '')) === '') {
+        $value = $data[$key] ?? '';
+        if (!is_string($value) && !is_int($value)) {
+            $missing[] = $label;
+        } elseif (trim((string) $value) === '') {
             $missing[] = $label;
         }
     }
     if ($missing) {
         json_out(422, ['error' => 'Falta completar: ' . implode(', ', $missing) . '.']);
     }
+
+    $edadRaw = trim((string) $data['edad']);
+    if (!ctype_digit($edadRaw) || (int) $edadRaw > 120) {
+        json_out(422, ['error' => 'La edad debe ser un número entero entre 0 y 120']);
+    }
+    $data['edad'] = (string) ((int) $edadRaw);
+
+    // EVA: entero 0-10 estricto
+    $eva = $data['eva'] ?? 0;
+    if (is_string($eva) && preg_match('/^\d{1,2}$/', $eva)) {
+        $eva = (int) $eva;
+    }
+    if (!is_int($eva) || $eva < 0 || $eva > 10) {
+        json_out(422, ['error' => 'La EVA debe ser un entero entre 0 y 10']);
+    }
+    $data['eva'] = $eva;
+
+    // CDI: solo valores permitidos
+    $cdiAllowed = ['I.a', 'I.b', 'II.a', 'II.b', 'II.c', 'III.a', 'III.b', 'III.c'];
+    $cdi = $data['cdi'] ?? [];
+    if (!is_array($cdi)) {
+        json_out(422, ['error' => 'El campo CDI no es válido']);
+    }
+    foreach ($cdi as $item) {
+        if (!is_string($item) || !in_array($item, $cdiAllowed, true)) {
+            json_out(422, ['error' => 'El campo CDI contiene valores no válidos']);
+        }
+    }
+    $data['cdi'] = array_values(array_unique($cdi));
+
+    // Opciones Sí/No con lado condicional; se limpian los lados obsoletos
+    $conditionals = [
+        'ruidos' => ['ruidosIzq', 'ruidosDer', 'los ruidos articulares'],
+        'dolorCondilar' => ['condilarIzq', 'condilarDer', 'el dolor condilar a la palpación'],
+        'desviacion' => ['desvIzq', 'desvDer', 'la desviación lateral de la trayectoria'],
+    ];
+    foreach ($conditionals as $field => [$left, $right, $label]) {
+        $answer = $data[$field] ?? '';
+        if (!in_array($answer, ['Sí', 'No', ''], true)) {
+            json_out(422, ['error' => 'Valor no válido en ' . $label]);
+        }
+        $data[$field] = $answer;
+        $data[$left] = $answer === 'Sí' && filter_var($data[$left] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $data[$right] = $answer === 'Sí' && filter_var($data[$right] ?? false, FILTER_VALIDATE_BOOLEAN);
+        if ($answer === 'Sí' && !$data[$left] && !$data[$right]) {
+            json_out(422, ['error' => 'Debe indicar el lado (izquierdo y/o derecho) en ' . $label]);
+        }
+    }
+
     $clinicians = ['norberto' => 'Norberto', 'maria' => 'María'];
     $existing = $pdo->prepare('SELECT profesional FROM fichas WHERE id = :id');
     $existing->execute(['id' => $id]);
@@ -78,27 +195,13 @@ if ($method === 'POST') {
         $profesional = 'norberto';
     }
 
-    // Asegurar tipos de datos estrictos en el payload
-    $edadRaw = trim((string) ($data['edad'] ?? ''));
-    if (!ctype_digit($edadRaw) || (int) $edadRaw < 1 || (int) $edadRaw > 120) {
-        json_out(422, ['error' => 'La edad debe ser un número entero entre 1 y 120']);
-    }
-    $data['edad'] = (string) ((int) $edadRaw);
-    $data['eva'] = max(0, min(10, (int) ($data['eva'] ?? 0)));
-    $data['cdi'] = is_array($data['cdi'] ?? null) ? array_values(array_filter($data['cdi'], 'is_string')) : [];
-
-    if (($data['ruidos'] ?? '') === 'Sí' && empty($data['ruidosIzq']) && empty($data['ruidosDer'])) {
-        json_out(422, ['error' => 'Debe indicar el lado (izquierdo y/o derecho) en los ruidos articulares']);
-    }
-    if (($data['dolorCondilar'] ?? '') === 'Sí' && empty($data['condilarIzq']) && empty($data['condilarDer'])) {
-        json_out(422, ['error' => 'Debe indicar el lado (izquierdo y/o derecho) en el dolor condilar a la palpación']);
-    }
-    if (($data['desviacion'] ?? '') === 'Sí' && empty($data['desvIzq']) && empty($data['desvDer'])) {
-        json_out(422, ['error' => 'Debe indicar el lado (izquierdo y/o derecho) en la desviación lateral de la trayectoria']);
-    }
     $data['profesional'] = $profesional;
     $data['profesionalNombre'] = $clinicians[$profesional] ?? $profesional;
     $data['savedAt'] = gmdate('c');
+    $payload = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
+    if ($payload === false) {
+        json_out(422, ['error' => 'La ficha contiene datos no válidos']);
+    }
 
     $stmt = $pdo->prepare(
         'INSERT INTO fichas (id, payload, profesional, updated_at, updated_by)
@@ -107,7 +210,7 @@ if ($method === 'POST') {
     );
     $stmt->execute([
         'id' => $id,
-        'payload' => json_encode($data, JSON_UNESCAPED_UNICODE),
+        'payload' => $payload,
         'profesional' => $profesional,
         'user' => $auth['username'],
     ]);
@@ -116,13 +219,13 @@ if ($method === 'POST') {
 
 if ($method === 'DELETE') {
     $id = (string) ($_GET['id'] ?? '');
-    if (!preg_match('/^[0-9a-f-]{36}$/i', $id)) {
+    if (!preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $id)) {
         json_out(422, ['error' => 'Ficha inválida']);
     }
     $stmt = $pdo->prepare('SELECT profesional FROM fichas WHERE id = :id');
     $stmt->execute(['id' => $id]);
     $owner = $stmt->fetchColumn();
-    if ($owner !== false && $auth['username'] !== 'martin' && $auth['username'] !== (string) $owner) {
+    if ($owner !== false && $owner !== '' && $auth['username'] !== 'martin' && $auth['username'] !== (string) $owner) {
         json_out(403, ['error' => 'No tienes permiso para eliminar esta ficha']);
     }
     $pdo->prepare('DELETE FROM fichas WHERE id = :id')->execute(['id' => $id]);

@@ -489,7 +489,7 @@ export function buildComparePrintSheet(res) {
     res.sessionY?.profesional || (sessionUser?.username === "maria" ? "maria" : "norberto");
   const details = CLINICIAN_DETAILS[profKey] || {
     nombre: res.sessionY?.profesionalNombre || "Lic. Norberto Brude",
-    titulo: "Kinesiólogo Fisiatra · Osteopatía",
+    titulo: "Kinesiólogo Fisiatra",
     matricula: "M.N. 4930 · M.P. 518",
     signatureFile: `/admin/signatures/${profKey}.png`,
   };

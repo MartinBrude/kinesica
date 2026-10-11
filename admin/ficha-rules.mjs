@@ -16,7 +16,7 @@ export const CLINICIANS = {
 export const CLINICIAN_DETAILS = {
   norberto: {
     nombre: "Lic. Norberto Brude",
-    titulo: "Kinesiólogo Fisiatra · Osteopatía",
+    titulo: "Kinesiólogo Fisiatra",
     matricula: "M.N. 4930 · M.P. 518",
     signatureFile: "/admin/signatures/norberto.png",
   },
