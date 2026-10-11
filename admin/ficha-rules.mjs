@@ -4,7 +4,6 @@ export const REQUIRED_FIELDS = [
   ["fechaSesion", "la fecha de la sesión"],
   ["nacimiento", "la fecha de nacimiento"],
   ["edad", "la edad"],
-  ["lugarNac", "el lugar de nacimiento"],
   ["motivo", "el motivo de consulta"],
   ["antecedentes", "los antecedentes clínicos"],
 ];
@@ -90,7 +89,6 @@ export function validateField(key, value, allData = {}) {
       return null;
     }
     case "lugarNac": {
-      if (!str) return "Falta completar el lugar de nacimiento";
       return null;
     }
     case "motivo": {
@@ -189,7 +187,7 @@ export function validateFicha(data = {}) {
  */
 export function validateStep(stepNumber, data = {}) {
   const stepFields = {
-    0: ["nombre", "dni", "fechaSesion", "nacimiento", "edad", "lugarNac", "motivo", "antecedentes"],
+    0: ["nombre", "dni", "fechaSesion", "nacimiento", "edad", "motivo", "antecedentes"],
     1: ["aperturaLibre", "aperturaDolor", "protrusion", "latIzq", "latDer"],
     2: [],
     3: ["eva"],

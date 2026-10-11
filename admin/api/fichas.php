@@ -42,7 +42,6 @@ if ($method === 'POST') {
         'fechaSesion' => 'la fecha de la sesión',
         'nacimiento' => 'la fecha de nacimiento',
         'edad' => 'la edad',
-        'lugarNac' => 'el lugar de nacimiento',
         'motivo' => 'el motivo de consulta',
         'antecedentes' => 'los antecedentes clínicos',
     ];

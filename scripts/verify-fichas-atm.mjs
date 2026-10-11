@@ -152,9 +152,25 @@ assert.equal(missingFields(sample).length, 0);
 assert.match(html, /<form id="ficha"[^>]*novalidate/);
 assert.doesNotMatch(html, /data-single="profesional"/);
 assert.doesNotMatch(html, /data-value="martin"/);
-for (const name of ["nombre", "dni", "fechaSesion", "nacimiento", "edad", "lugarNac", "antecedentes"]) {
+for (const name of ["nombre", "dni", "fechaSesion", "nacimiento", "edad", "antecedentes"]) {
   assert.match(html, new RegExp(`name="${name}"[^>]*required|name="${name}" required`));
 }
+assert.doesNotMatch(html, /name="lugarNac"[^>]*required/);
+assert.equal(validateField("lugarNac", ""), null);
+assert.equal(validateField("lugarNac", "Córdoba"), null);
+
+// Step 0 es válido sin lugar de nacimiento
+const step0DataWithoutLugarNac = {
+  nombre: "Juan Pérez",
+  dni: "30111222",
+  fechaSesion: "2026-04-01",
+  nacimiento: "1990-01-01",
+  edad: "36",
+  lugarNac: "",
+  motivo: "Traumático",
+  antecedentes: "Ninguno",
+};
+assert.equal(validateStep(0, step0DataWithoutLugarNac).isValid, true);
 assert.match(html, /type="module" src="\/admin\/app\.js/);
 assert.match(app, /missingFields/);
 assert.match(app, /exampleFicha/);
