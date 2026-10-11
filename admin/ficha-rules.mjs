@@ -565,6 +565,15 @@ export function sideText(left, right) {
   return "Sin afectación";
 }
 
+export function formatSide(left, right) {
+  const isLeft = Boolean(left && left !== "No" && left !== "0" && left !== "false");
+  const isRight = Boolean(right && right !== "No" && right !== "0" && right !== "false");
+  if (isLeft && isRight) return "Bilateral";
+  if (isLeft) return "Izquierda";
+  if (isRight) return "Derecha";
+  return "";
+}
+
 export function daysBetween(dateA, dateB) {
   if (!dateA || !dateB) return null;
   const tA = new Date(String(dateA).slice(0, 10)).getTime();

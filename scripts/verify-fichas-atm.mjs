@@ -26,6 +26,7 @@ import {
   getSessionIndex,
   formatSessionBadgeText,
   shouldOmitInvariableFields,
+  formatSide,
 } from "../admin/ficha-rules.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -426,6 +427,16 @@ assert.match(css, /\.pf-followup-note/);
 assert.match(app, /isFollowUp/);
 assert.match(app, /shouldOmitInvariableFields/);
 assert.match(app, /btnPdfHistory/);
+
+// Verificación de lateralidades, omisión de campos vacíos y prevención de [object HTMLDivElement]
+assert.equal(formatSide(true, true), "Bilateral");
+assert.equal(formatSide(true, false), "Izquierda");
+assert.equal(formatSide(false, true), "Derecha");
+assert.equal(formatSide(false, false), "", "Sin afectación debe retornar vacío para omitir campo");
+assert.equal(formatSide("Sí", "No"), "Izquierda");
+assert.equal(formatSide("No", "No"), "");
+assert.equal(formatSide(null, undefined), "");
+assert.doesNotMatch(app, /\[object HTMLDivElement\]/);
 
 console.log("fichas ATM: ok");
 

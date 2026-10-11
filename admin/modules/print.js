@@ -10,8 +10,8 @@ import {
   ageOn,
   formatSessionBadgeText,
   shouldOmitInvariableFields,
-} from "../ficha-rules.mjs?v=64";
-import { formatDate } from "./api.js?v=64";
+} from "../ficha-rules.mjs?v=65";
+import { formatDate } from "./api.js?v=65";
 import {
   node,
   field,
@@ -87,7 +87,7 @@ export function buildSheet(item, sessionUser = null, meta = {}) {
       grid([
         ["Documento", item.dni],
         ["Edad", computedAge ? `${computedAge} años` : ""],
-        ["Nacimiento", formatParts([formatDate(item.nacimiento), item.lugarNac])],
+        ["Nacimiento", formatParts([item.nacimiento ? formatDate(item.nacimiento) : "", item.lugarNac])],
         ["Motivo de consulta", item.motivo],
       ])
     );
@@ -170,13 +170,13 @@ export function buildSheet(item, sessionUser = null, meta = {}) {
               fases && `en ${fases}`,
               tiposRuido && `(${tiposRuido})`,
             ])
-          : item.ruidos || "",
+          : (item.ruidos === "No" ? "No" : ""),
       ],
       [
         "Dolor condilar",
         item.dolorCondilar === "Sí"
           ? formatParts([item.dolorCondilar, side(item.condilarIzq, item.condilarDer)])
-          : item.dolorCondilar || "",
+          : (item.dolorCondilar === "No" ? "No" : ""),
       ],
       ["Apertura libre de dolor", item.aperturaLibre ? `${item.aperturaLibre} mm` : ""],
       ["Apertura con dolor", item.aperturaDolor ? `${item.aperturaDolor} mm` : ""],
@@ -188,7 +188,7 @@ export function buildSheet(item, sessionUser = null, meta = {}) {
               side(item.desvIzq, item.desvDer),
               patronDesv && `(${patronDesv})`,
             ])
-          : item.desviacion || "",
+          : (item.desviacion === "No" ? "No" : ""),
       ],
       ["Protrusión", item.protrusion ? `${item.protrusion} mm` : ""],
       [
@@ -228,41 +228,51 @@ export function buildSheet(item, sessionUser = null, meta = {}) {
   // /FEATURE-OPTIONAL: correlacion-cervical
 
   const pain = section("Dolor y oclusión");
-  const eva = Math.max(0, Math.min(10, Number(item.eva) || 0));
-  const evaBox = node("div", "pf-eva");
-  evaBox.append(node("span", "pf-k", "Valoración EVA"));
-  const track = node("div", "pf-eva-track");
-  const fill = node("div", "pf-eva-fill");
-  fill.style.width = `${eva * 10}%`;
-  track.append(fill);
-  const score = node("strong", "", `${eva} / 10`);
-  evaBox.append(track, score);
-  pain.append(evaBox);
-  add(
-    pain,
-    grid([
-      ["Zona", item.zona],
-      ["Características", item.caracteristicas],
-      ["Contacto dentario", item.contacto],
-      ["Estabilidad oclusal", item.estabilidad],
-      ["Clasificación de Angle", item.angle],
-      ["Configuración esqueletal", item.esqueletal],
-    ])
-  );
-  add(pain, prose("Factores que modifican el dolor", item.factores));
+  const evaNum = Number(item.eva);
+  const hasEva = Number.isFinite(evaNum) && evaNum > 0;
+  const painGrid = grid([
+    ["Zona", item.zona],
+    ["Características", item.caracteristicas],
+    ["Contacto dentario", item.contacto],
+    ["Estabilidad oclusal", item.estabilidad],
+    ["Clasificación de Angle", item.angle],
+    ["Configuración esqueletal", item.esqueletal],
+  ]);
+  const painProse = prose("Factores que modifican el dolor", item.factores);
+
+  if (hasEva || painGrid || painProse) {
+    const eva = Math.max(0, Math.min(10, Math.round(evaNum || 0)));
+    const evaBox = node("div", "pf-eva");
+    evaBox.append(node("span", "pf-k", "Valoración EVA"));
+    const track = node("div", "pf-eva-track");
+    const fill = node("div", "pf-eva-fill");
+    fill.style.width = `${eva * 10}%`;
+    track.append(fill);
+    const score = node("strong", "", `${eva} / 10`);
+    evaBox.append(track, score);
+    pain.append(evaBox);
+    add(pain, painGrid);
+    add(pain, painProse);
+  }
 
   const cdi = section("Criterios diagnósticos CDI-TTM");
-  const chips = node("div", "pf-chips");
   const selected = item.cdi || [];
-  if (!selected.length) chips.append(node("span", "pf-empty", "Sin criterios marcados"));
-  for (const id of selected) chips.append(node("span", "pf-chip", CDI_LABELS[id] || id));
-  cdi.append(chips);
-  const notes = node("div", "pf-notes");
   const obs = prose("Observaciones clínicas", item.observaciones);
   const plan = prose("Plan de tratamiento", item.plan);
-  if (obs) notes.append(obs);
-  if (plan) notes.append(plan);
-  if (notes.childElementCount) cdi.append(notes);
+
+  if (selected.length > 0 || obs || plan) {
+    const chips = node("div", "pf-chips");
+    if (selected.length) {
+      for (const id of selected) chips.append(node("span", "pf-chip", CDI_LABELS[id] || id));
+    } else {
+      chips.append(node("span", "pf-empty", "Sin criterios marcados"));
+    }
+    cdi.append(chips);
+    const notes = node("div", "pf-notes");
+    if (obs) notes.append(obs);
+    if (plan) notes.append(plan);
+    if (notes.childElementCount) cdi.append(notes);
+  }
 
   const profKey = item.profesional || (sessionUser?.username === "maria" ? "maria" : "norberto");
   const details = CLINICIAN_DETAILS[profKey] || {

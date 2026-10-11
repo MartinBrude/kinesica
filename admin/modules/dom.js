@@ -44,18 +44,19 @@ export function field(label, value) {
 }
 
 /**
- * Crea un campo comparativo bilateral (Izquierda / Derecha) para el reporte impreso.
- * @param {string} left Valor del lado izquierdo
- * @param {string} right Valor del lado derecho
- * @returns {HTMLElement} Contenedor .pf-field con subcolumnas
+ * Devuelve la descripción de la afectación bilateral o lateralidad.
+ * Si ninguno está seleccionado o el valor es falsy, devuelve "" (vacío) para que no se incluya en el reporte.
+ * @param {boolean|string|null|undefined} left Valor del lado izquierdo
+ * @param {boolean|string|null|undefined} right Valor del lado derecho
+ * @returns {string} "Bilateral", "Izquierda", "Derecha" o "" si no tiene valor
  */
 export function side(left, right) {
-  const box = node("div", "pf-field");
-  box.append(
-    node("span", "pf-k", "Lado"),
-    node("span", "pf-v", `Izq: ${left || "—"} · Der: ${right || "—"}`)
-  );
-  return box;
+  const isLeft = Boolean(left && left !== "No" && left !== "0" && left !== "false");
+  const isRight = Boolean(right && right !== "No" && right !== "0" && right !== "false");
+  if (isLeft && isRight) return "Bilateral";
+  if (isLeft) return "Izquierda";
+  if (isRight) return "Derecha";
+  return "";
 }
 
 /**
@@ -71,9 +72,9 @@ export function section(title) {
 
 /**
  * Construye una cuadrícula .pf-grid a partir de pares [etiqueta, valor].
- * Omite campos vacíos si son opcionales.
+ * Omite campos vacíos si son opcionales y retorna null si no hay ningún campo con valor.
  * @param {Array<[string, string]>} fields Array de tuplas [etiqueta, valor]
- * @returns {HTMLElement} Contenedor .pf-grid
+ * @returns {HTMLElement|null} Contenedor .pf-grid o null si está vacío
  */
 export function grid(fields) {
   const g = node("div", "pf-grid");
@@ -82,7 +83,7 @@ export function grid(fields) {
       g.append(field(k, v));
     }
   }
-  return g;
+  return g.childElementCount > 0 ? g : null;
 }
 
 /**
