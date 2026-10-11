@@ -183,9 +183,8 @@ export function pageWindow(rows) {
  */
 export function syncMineButton() {
   if (!mineButton) return;
-  mineButton.textContent = onlyMine ? "Ver todos los pacientes" : "Ver solo mis pacientes";
-  mineButton.classList.toggle("green", onlyMine);
-  mineButton.classList.toggle("light", !onlyMine);
+  mineButton.setAttribute("aria-pressed", String(onlyMine));
+  mineButton.classList.toggle("is-active", onlyMine);
 }
 
 /**
@@ -758,31 +757,6 @@ export function initLibrary({
       btnGroup.classList.toggle("green", grouped);
       btnGroup.classList.toggle("light", !grouped);
       renderLibrary();
-    });
-  }
-
-  const btnPdfAll = document.querySelector("#btn-pdf-all");
-  if (btnPdfAll) {
-    btnPdfAll.addEventListener("click", () => {
-      const sessionUser = typeof activeSessionUserGetter === "function" ? activeSessionUserGetter() : null;
-      const items = visibleFichas(sessionUser);
-      if (!items.length) {
-        window.alert("No hay fichas para imprimir.");
-        return;
-      }
-      let toPrint = items;
-      if (focusedPatient) {
-        toPrint = items.filter((item) => patientKey(item) === focusedPatient);
-      } else if (patientSelect && patientSelect.value && patientSelect.value !== "__all__") {
-        toPrint = items.filter((item) => patientKey(item) === patientSelect.value);
-      }
-      if (!toPrint.length) {
-        window.alert("No hay fichas para el paciente seleccionado.");
-        return;
-      }
-      if (activeRowCallbacks.onPdfAll) {
-        activeRowCallbacks.onPdfAll(toPrint);
-      }
     });
   }
 

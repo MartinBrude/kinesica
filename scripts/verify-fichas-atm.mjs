@@ -55,7 +55,7 @@ const app = loadAdminJs(path.join(root, "admin/app.js"));
 function loadCss(filePath) {
   const content = fs.readFileSync(filePath, "utf8");
   return content.replace(/@import\s+["'](\.[^"']+)["'];/g, (_, rel) => {
-    return loadCss(path.resolve(path.dirname(filePath), rel));
+    return loadCss(path.resolve(path.dirname(filePath), rel.split("?")[0]));
   });
 }
 const css = loadCss(path.join(root, "admin/styles.css"));
@@ -96,9 +96,9 @@ assert.match(html, /name="profesional"/);
 assert.equal(ownsFicha({ profesional: "maria" }, "maria"), true);
 assert.equal(ownsFicha({ profesional: "norberto" }, "maria"), false);
 assert.match(html, /id="btn-mine"/);
-assert.match(html, /Ver solo mis pacientes/);
+assert.match(html, /Solo mis pacientes/);
 assert.match(html, /id="pdf-patient"/);
-assert.match(html, /placeholder="Buscar por nombre o documento"/);
+assert.match(html, /placeholder="Nombre o documento"/);
 assert.doesNotMatch(html, /Paciente para el PDF/);
 assert.doesNotMatch(html, /id="btn-demo"/);
 assert.match(html, /id="btn-group"/);
@@ -495,7 +495,7 @@ assert.equal(formatSessionBadgeText(2, 3), "Sesión N° 2 de 3");
 
 // Verificación de componentes de impresión multi-sesión sin duplicación de invariables
 assert.match(html, /id="btn-pdf-history"/);
-assert.match(html, /id="btn-pdf-all"/);
+assert.doesNotMatch(html, /id="btn-pdf-all"/);
 assert.match(css, /\.pf-sheet-followup/);
 assert.match(css, /\.pf-head-followup/);
 assert.match(css, /\.pf-who-followup/);
@@ -553,7 +553,7 @@ assert.ok(sofiaGroup[1].length > 1, "Sofía debe agruparse por tener > 1 sesión
 
 // Verificación de directorio centrado en personas y filas de sesión concisas
 assert.match(html, /id="sort-patients"/);
-assert.match(html, /Alfabético \(A-Z\)/);
+assert.match(html, /Nombre \(A-Z\)/);
 assert.match(html, /Última atención/);
 assert.match(app, /export function sessionRow/);
 assert.match(app, /patient-card/);

@@ -674,10 +674,6 @@ input[name="edad"].input-calc {
     padding: 8px 10px;
   }
 
-  .sheet-tools #btn-pdf-one {
-    flex: 1 1 100%;
-  }
-
   .steps {
     border-radius: 14px;
     padding: 6px;

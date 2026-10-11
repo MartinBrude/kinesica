@@ -931,11 +931,4 @@ export function initForm({ onSave, onBack, onCompare, onPrint, onExportJson, get
       }
     });
   }
-
-  const btnPdfOne = document.querySelector("#btn-pdf-one");
-  if (btnPdfOne) {
-    btnPdfOne.addEventListener("click", () => {
-      if (typeof onPrint === "function") onPrint([readForm()]);
-    });
-  }
 }

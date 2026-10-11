@@ -10,7 +10,7 @@
 @media print {
   @page {
     size: A4 portrait;
-    margin: 10mm 12mm 10mm 12mm;
+    margin: 0;
   }
 
   body {
@@ -36,7 +36,10 @@
     break-after: page;
     page-break-after: always;
     box-sizing: border-box;
-    padding: 0;
+    /* Márgenes dentro de la hoja: no dependen de la configuración del diálogo de impresión */
+    width: 210mm;
+    min-height: 296mm;
+    padding: 20mm 24mm;
     margin: 0;
     color: #1e293b;
     font-family: "Roboto", sans-serif;
@@ -55,8 +58,8 @@
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    margin: 0 0 6px;
-    padding: 0 2px 6px;
+    margin: 0 0 12px;
+    padding: 0 2px 12px;
     border-bottom: 1.5px solid #d0e1ed;
   }
   .pf-brand {
@@ -101,9 +104,9 @@
     background: #f0f6fa;
     border: 1px solid #b8d5e8;
     border-radius: 10px;
-    padding: 6px 14px 7px;
-    min-width: 145px;
-    gap: 2px;
+    padding: 9px 18px 10px;
+    min-width: 150px;
+    gap: 4px;
     flex-shrink: 0;
   }
   .pf-session-badge {
@@ -157,11 +160,11 @@
     background: #f8fafc;
     border: 1px solid #d8e5ee;
     border-radius: 8px;
-    padding: 6px 10px 7px;
-    margin: 0 0 6px;
+    padding: 12px 14px 14px;
+    margin: 0 0 12px;
   }
   .pf-name {
-    margin: 0 0 4px;
+    margin: 0 0 9px;
     font-size: 12pt;
     line-height: 1.2;
     color: #031c42;
@@ -231,7 +234,7 @@
     display: flex;
     align-items: center;
     gap: 7px;
-    margin: 0 0 5px;
+    margin: 0 0 9px;
     font-size: 9.5pt;
     letter-spacing: 0;
     text-transform: none;
@@ -249,18 +252,18 @@
   .pf-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 3.5px 8px;
+    gap: 7px 12px;
   }
   .pf-field {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 1.5px;
+    gap: 3px;
     background: #ffffff;
     border: 1px solid #e2ecf3;
-    border-radius: 5px;
-    padding: 3px 7px;
-    min-height: 31px;
+    border-radius: 6px;
+    padding: 6px 10px;
+    min-height: 38px;
     box-sizing: border-box;
   }
   .pf-v {
@@ -270,11 +273,11 @@
     line-height: 1.25;
   }
   .pf-prose {
-    margin-top: 4px;
+    margin-top: 8px;
     background: #ffffff;
     border: 1px solid #e2ecf3;
-    border-radius: 5px;
-    padding: 4px 8px;
+    border-radius: 6px;
+    padding: 7px 10px;
   }
   .pf-prose p {
     margin: 1.5px 0 0;
@@ -286,8 +289,8 @@
   .pf-notes {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 6px;
-    margin-top: 5px;
+    gap: 10px;
+    margin-top: 8px;
   }
   .pf-notes .pf-prose {
     margin-top: 0;
@@ -301,8 +304,8 @@
     background: #ffffff;
     border: 1px solid #e2ecf3;
     border-radius: 6px;
-    padding: 4px 8px;
-    margin-bottom: 5px;
+    padding: 8px 10px;
+    margin-bottom: 8px;
   }
   .pf-eva-track {
     height: 8px;
@@ -366,8 +369,8 @@
     color: #64748b;
   }
   .pf-signature {
-    margin-top: 8px;
-    margin-bottom: 2px;
+    margin-top: 14px;
+    margin-bottom: 4px;
     margin-left: auto;
     width: 220px;
     display: flex;
@@ -415,8 +418,8 @@
     display: flex;
     justify-content: space-between;
     gap: 16px;
-    margin-top: 6px;
-    padding: 4px 2px 0;
+    margin-top: 12px;
+    padding: 8px 2px 0;
     border-top: 1px solid #d8e5ee;
     break-inside: avoid;
     page-break-inside: avoid;
