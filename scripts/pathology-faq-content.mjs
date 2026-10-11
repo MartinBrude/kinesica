@@ -112,6 +112,14 @@ export const PATHOLOGY_FAQS = {
       {
         "q": "¿Por qué el dolor lumbar suele empeorar al levantarse de una silla o tras estar sentado?",
         "a": "Estar sentado mucho tiempo aumenta la presión sobre los discos vertebrales y acorta los flexores de cadera. Al incorporarse, la columna sufre una tracción brusca que dispara espasmos musculares protectores."
+      },
+      {
+        "q": "¿Cómo se evalúa la lumbalgia en Kinésica?",
+        "a": "La evaluación revisa qué movimientos empeoran o alivian el dolor, la movilidad de caderas y columna, el control del tronco y los hábitos diarios para definir un plan progresivo."
+      },
+      {
+        "q": "¿Se puede volver a moverse y entrenar con lumbalgia?",
+        "a": "Sí. El objetivo del tratamiento es recuperar movilidad y fuerza con ejercicio progresivo, ajustar cargas y reducir el miedo al movimiento para retomar actividades con más confianza."
       }
     ],
     "en": [
@@ -122,6 +130,14 @@ export const PATHOLOGY_FAQS = {
       {
         "q": "Why does low back pain worsen when standing up after prolonged sitting?",
         "a": "Prolonged sitting elevates intradiscal pressure and shortens hip flexors. Upon standing, the lumbar spine experiences sudden compressive tension that triggers reactive muscle spasms."
+      },
+      {
+        "q": "How is low back pain assessed at Kinésica?",
+        "a": "Assessment looks at movements that aggravate or ease symptoms, hip and spine mobility, trunk control, and daily habits to build a clear progressive care plan."
+      },
+      {
+        "q": "Can you return to activity and exercise with low back pain?",
+        "a": "Yes. Care focuses on restoring movement and strength with progressive exercise, load adjustment, and practical education to regain confidence in daily activity."
       }
     ],
     "fr": [
@@ -132,6 +148,14 @@ export const PATHOLOGY_FAQS = {
       {
         "q": "Pourquoi le bas du dos fait-il plus mal en se levant d'une chaise ?",
         "a": "La position assise prolongée comprime les disques et raccourcit les fléchisseurs de hanche. En se redressant, la colonne subit une traction brutale qui déclenche des spasmes réflexes."
+      },
+      {
+        "q": "Comment évaluez-vous la lombalgie chez Kinésica ?",
+        "a": "Le bilan analyse les mouvements qui aggravent ou soulagent, la mobilité des hanches et de la colonne, le contrôle du tronc et les habitudes quotidiennes pour proposer un plan progressif."
+      },
+      {
+        "q": "Peut-on reprendre l'activité physique avec une lombalgie ?",
+        "a": "Oui. La prise en charge vise à retrouver mobilité et force avec des exercices progressifs, une adaptation des charges et des repères pour reprendre les activités en confiance."
       }
     ],
     "pt": [
@@ -142,6 +166,14 @@ export const PATHOLOGY_FAQS = {
       {
         "q": "Por que a dor lombar piora ao levantar da cadeira após ficar muito tempo sentado?",
         "a": "Ficar sentado eleva a pressão nos discos e encurta os flexores do quadril. Ao ficar em pé, a coluna sofre uma tração repentina que desencadeia espasmos musculares de proteção."
+      },
+      {
+        "q": "Como a lombalgia é avaliada na Kinésica?",
+        "a": "A avaliação observa os movimentos que pioram ou aliviam, a mobilidade de quadris e coluna, o controle do tronco e os hábitos do dia a dia para definir um plano progressivo."
+      },
+      {
+        "q": "É possível voltar a se movimentar e treinar com lombalgia?",
+        "a": "Sim. O tratamento busca recuperar mobilidade e força com exercícios graduais, ajuste de carga e educação para retomar atividades com mais confiança."
       }
     ]
   },
@@ -154,6 +186,14 @@ export const PATHOLOGY_FAQS = {
       {
         "q": "¿Cuál es la diferencia entre una ciática discal y el síndrome piramidal?",
         "a": "La ciática discal se origina por compresión de la raíz nerviosa en la columna lumbar (hernia o protrusión); el síndrome piramidal es un atrapamiento del nervio a nivel del glúteo por tensión del músculo piriforme."
+      },
+      {
+        "q": "¿La ciatalgia siempre indica una lesión grave?",
+        "a": "No siempre. Puede aparecer por irritación mecánica del nervio y requiere una evaluación clínica para distinguir su origen y definir el abordaje más adecuado."
+      },
+      {
+        "q": "¿Qué incluye la evaluación de ciatalgia en el consultorio?",
+        "a": "Se valoran columna lumbar, cadera, movilidad neural y actividades que reproducen o alivian los síntomas para combinar terapia manual, neurodinamia y ejercicio progresivo."
       }
     ],
     "en": [
@@ -164,6 +204,14 @@ export const PATHOLOGY_FAQS = {
       {
         "q": "What is the difference between true disc sciatica and piriformis syndrome?",
         "a": "Disc-related sciatica involves nerve root impingement at the lumbar spine; piriformis syndrome is an entrapment of the nerve lower down in the buttock caused by a tight piriformis muscle."
+      },
+      {
+        "q": "Does sciatica always mean a serious injury?",
+        "a": "Not always. Sciatic pain can be linked to mechanical irritation and needs a clinical assessment to identify the source and guide treatment decisions."
+      },
+      {
+        "q": "What does a sciatic pain assessment include at Kinésica?",
+        "a": "We assess lumbar spine and hip function, neural mobility, and symptom triggers to combine manual therapy, neurodynamics, and progressive exercise."
       }
     ],
     "fr": [
@@ -174,6 +222,14 @@ export const PATHOLOGY_FAQS = {
       {
         "q": "Quelle est la différence entre une vraie sciatique et le syndrome du piriforme ?",
         "a": "La sciatique discale résulte d'un conflit de la racine nerveuse dans le dos (hernie discale) ; le syndrome du piriforme est un coincement du nerf au niveau de la fesse par contracture musculaire."
+      },
+      {
+        "q": "La sciatique signifie-t-elle toujours une lésion grave ?",
+        "a": "Pas forcément. La douleur peut venir d'une irritation mécanique du nerf et doit être évaluée cliniquement pour préciser l'origine et orienter la prise en charge."
+      },
+      {
+        "q": "Que comprend l'évaluation de la sciatique chez Kinésica ?",
+        "a": "Le bilan étudie la colonne lombaire, la hanche, la mobilité neurale et les mouvements déclencheurs afin d'associer thérapie manuelle, neurodynamique et exercice progressif."
       }
     ],
     "pt": [
@@ -184,6 +240,14 @@ export const PATHOLOGY_FAQS = {
       {
         "q": "Qual a diferença entre ciática discal e síndrome do piriforme?",
         "a": "A ciática discal decorre da compressão na raiz nervosa da coluna (hérnia ou protusão); a síndrome do piriforme é o encarceramento do nervo no glúteo pela contração do músculo piriforme."
+      },
+      {
+        "q": "Ciatalgia sempre significa uma lesão grave?",
+        "a": "Nem sempre. A dor ciática pode ocorrer por irritação mecânica do nervo e precisa de avaliação clínica para identificar a origem e orientar o tratamento."
+      },
+      {
+        "q": "O que inclui a avaliação da ciatalgia na Kinésica?",
+        "a": "Avaliamos coluna lombar, quadril, mobilidade neural e atividades que pioram ou aliviam os sintomas para combinar terapia manual, neurodinâmica e exercícios progressivos."
       }
     ]
   },
@@ -406,6 +470,14 @@ export const PATHOLOGY_FAQS = {
       {
         "q": "¿Una hernia de disco vista en resonancia magnética siempre requiere cirugía?",
         "a": "No. Numerosos estudios demuestran que más del 90% de las hernias discales mejoran favorablemente de forma conservadora y que el organismo tiene capacidad de reabsorber el material discal extruido."
+      },
+      {
+        "q": "¿Qué evalúan en Kinésica cuando hay dolor por hernia de disco?",
+        "a": "Se analizan movilidad de columna y cadera, signos neurológicos, tolerancia a posiciones y actividades diarias para adaptar el tratamiento conservador a cada etapa."
+      },
+      {
+        "q": "¿Cuándo conviene consultar con otro profesional en una hernia de disco?",
+        "a": "Si aparece pérdida de fuerza progresiva, adormecimiento importante, dolor que empeora rápidamente o síntomas nuevos, se indica consulta médica prioritaria para una evaluación complementaria."
       }
     ],
     "en": [
@@ -416,6 +488,14 @@ export const PATHOLOGY_FAQS = {
       {
         "q": "Does a disc herniation visible on an MRI always require surgical intervention?",
         "a": "No. Scientific evidence shows that over 90% of herniations heal successfully with conservative management, as the body naturally resorbs extruded disc fragments over time."
+      },
+      {
+        "q": "What is assessed at Kinésica when disc herniation symptoms are present?",
+        "a": "We evaluate spine and hip mobility, neurological signs, positional tolerance, and daily activity demands to adapt conservative care to each stage."
+      },
+      {
+        "q": "When should you consult another professional for a disc herniation?",
+        "a": "If progressive weakness, significant numbness, rapidly worsening pain, or new unusual symptoms appear, prompt medical evaluation is recommended."
       }
     ],
     "fr": [
@@ -426,6 +506,14 @@ export const PATHOLOGY_FAQS = {
       {
         "q": "Une hernie discale visible à l'IRM nécessite-t-elle forcément une opération ?",
         "a": "Non. Plus de 90 % des hernies discales évoluent très positivement sans chirurgie grâce à une prise en charge conservatrice et à la résorption spontanée des tissus."
+      },
+      {
+        "q": "Que vérifiez-vous chez Kinésica en cas de hernie discale ?",
+        "a": "Nous évaluons la mobilité du rachis et des hanches, les signes neurologiques, la tolérance aux positions et les activités quotidiennes pour adapter la prise en charge conservatrice."
+      },
+      {
+        "q": "Quand faut-il consulter un autre professionnel pour une hernie discale ?",
+        "a": "En cas de perte de force progressive, d'engourdissement marqué, de douleur qui s'aggrave rapidement ou de symptômes nouveaux, une consultation médicale rapide est recommandée."
       }
     ],
     "pt": [
@@ -436,6 +524,14 @@ export const PATHOLOGY_FAQS = {
       {
         "q": "Toda hérnia de disco identificada na ressonância precisa de cirurgia?",
         "a": "Não. Estudos científicos comprovam que mais de 90% das hérnias de disco melhoram com tratamento conservador e que o corpo pode reabsorver o fragmento herniado naturalmente."
+      },
+      {
+        "q": "O que é avaliado na Kinésica quando há sintomas de hérnia de disco?",
+        "a": "Avaliamos mobilidade de coluna e quadril, sinais neurológicos, tolerância às posições e atividades do dia a dia para ajustar o tratamento conservador a cada fase."
+      },
+      {
+        "q": "Quando é importante consultar outro profissional em casos de hérnia de disco?",
+        "a": "Se houver perda progressiva de força, dormência importante, dor que piora rapidamente ou sintomas novos, recomenda-se avaliação médica prioritária."
       }
     ]
   },
@@ -1078,6 +1174,14 @@ export const PATHOLOGY_FAQS = {
       {
         "q": "¿Por qué el dolor de cuello suele acompañarse de pesadez en la cabeza o mareos?",
         "a": "Los músculos cervicales profundos tienen numerosos receptores de posición y equilibrio que se comunican con los centros visuales y vestibulares; la tensión muscular excesiva altera estas señales."
+      },
+      {
+        "q": "¿Qué suele incluir la evaluación de cervicalgia?",
+        "a": "Se revisa movilidad cervical y dorsal, postura, control muscular y hábitos de trabajo para detectar sobrecargas sostenidas y planificar el tratamiento."
+      },
+      {
+        "q": "¿Cuándo conviene consultar además con un médico?",
+        "a": "Si el dolor se acompaña de debilidad progresiva en brazo o mano, pérdida de sensibilidad marcada, fiebre o síntomas neurológicos nuevos, se recomienda consulta médica prioritaria."
       }
     ],
     "en": [
@@ -1088,6 +1192,14 @@ export const PATHOLOGY_FAQS = {
       {
         "q": "Why does chronic neck tightness often trigger lightheadedness or head pressure?",
         "a": "Deep cervical suboccipital muscles are rich in balance receptors linked to the vestibular and visual systems; intense cervical tension can distort equilibrium inputs."
+      },
+      {
+        "q": "What does a neck pain assessment usually include?",
+        "a": "It typically includes cervical and upper thoracic mobility, posture, muscle control, and work habits to identify sustained overload and guide treatment."
+      },
+      {
+        "q": "When should neck pain be reviewed by another professional?",
+        "a": "If neck pain is accompanied by progressive arm weakness, marked sensory loss, fever, or new neurological symptoms, prompt medical review is recommended."
       }
     ],
     "fr": [
@@ -1098,6 +1210,14 @@ export const PATHOLOGY_FAQS = {
       {
         "q": "Pourquoi les tensions cervicales s'accompagnent-elles parfois de vertiges légers ?",
         "a": "Les muscles profonds du cou sont saturés de récepteurs d'équilibre connectés à l'oreille interne et à la vue ; les contractures perturbent ces informations spatiales."
+      },
+      {
+        "q": "Que comprend généralement l'évaluation d'une cervicalgie ?",
+        "a": "Le bilan porte sur la mobilité cervicale et dorsale, la posture, le contrôle musculaire et les habitudes de travail afin d'identifier les surcharges prolongées."
+      },
+      {
+        "q": "Quand faut-il demander un avis médical complémentaire ?",
+        "a": "Si la douleur s'accompagne d'une faiblesse progressive du bras, d'une perte de sensibilité marquée, de fièvre ou de signes neurologiques nouveaux, une consultation médicale rapide est recommandée."
       }
     ],
     "pt": [
@@ -1108,6 +1228,14 @@ export const PATHOLOGY_FAQS = {
       {
         "q": "Por que a tensão no pescoço costuma vir acompanhada de tontura ou peso na cabeça?",
         "a": "Os músculos profundos do pescoço possuem receptores de equilíbrio que se comunicam com a visão e o labirinto; a tensão muscular constante altera esses sinais."
+      },
+      {
+        "q": "O que costuma incluir a avaliação da cervicalgia?",
+        "a": "A avaliação considera mobilidade cervical e torácica, postura, controle muscular e hábitos de trabalho para identificar sobrecargas mantidas e definir o tratamento."
+      },
+      {
+        "q": "Quando vale consultar também um médico?",
+        "a": "Se houver fraqueza progressiva no braço, perda importante de sensibilidade, febre ou sintomas neurológicos novos, recomenda-se avaliação médica prioritária."
       }
     ]
   },
@@ -1120,6 +1248,14 @@ export const PATHOLOGY_FAQS = {
       {
         "q": "¿Por qué el bruxismo puede desencadenar dolores en el cuello y los oídos?",
         "a": "Los músculos de la masticación (maseteros y pterigoideos) comparten vías nerviosas con los músculos cervicales y la zona auricular; la sobreactividad nocturna irradia dolor a toda la región."
+      },
+      {
+        "q": "¿Cómo se evalúa el bruxismo y la ATM en Kinésica?",
+        "a": "Se valoran movilidad mandibular, músculos masticatorios y cervicales, hábitos de apretamiento y síntomas asociados para orientar terapia manual y ejercicios de control."
+      },
+      {
+        "q": "¿Cuándo conviene derivar a odontología u otro profesional?",
+        "a": "Si hay desgaste dentario importante, bloqueos repetidos de mandíbula, dolor persistente o síntomas fuera de lo habitual, se recomienda evaluación odontológica y/o médica complementaria."
       }
     ],
     "en": [
@@ -1130,6 +1266,14 @@ export const PATHOLOGY_FAQS = {
       {
         "q": "Why does bruxism frequently cause referred pain into the ears and neck?",
         "a": "The masticatory and cervical musculature share neural connections via the trigeminal-cervical complex; excessive clenching radiates tension directly into the ears and neck."
+      },
+      {
+        "q": "How are bruxism and TMJ symptoms assessed at Kinésica?",
+        "a": "We assess jaw mobility, masticatory and cervical muscles, clenching habits, and associated symptoms to guide manual therapy and control exercises."
+      },
+      {
+        "q": "When should dental or medical co-management be considered?",
+        "a": "If there is marked tooth wear, repeated jaw locking, persistent pain, or unusual symptoms, dental and/or medical assessment is recommended."
       }
     ],
     "fr": [
@@ -1140,6 +1284,14 @@ export const PATHOLOGY_FAQS = {
       {
         "q": "Pourquoi le bruxisme provoque-t-il des douleurs aux oreilles et au cou ?",
         "a": "Les muscles de la mastication partagent des relais nerveux avec les cervicales et l'oreille ; l'hyperactivité nocturne diffuse des tensions douloureuses dans toute la zone."
+      },
+      {
+        "q": "Comment évaluez-vous le bruxisme et l'ATM chez Kinésica ?",
+        "a": "Nous analysons la mobilité de la mâchoire, les muscles masticateurs et cervicaux, les habitudes de serrage et les symptômes associés pour guider le traitement."
+      },
+      {
+        "q": "Quand faut-il compléter avec un avis dentaire ou médical ?",
+        "a": "En cas d'usure dentaire marquée, de blocages répétés de la mâchoire, de douleur persistante ou de symptômes atypiques, une évaluation complémentaire est recommandée."
       }
     ],
     "pt": [
@@ -1150,6 +1302,14 @@ export const PATHOLOGY_FAQS = {
       {
         "q": "Por que o bruxismo causa dores no pescoço e nos ouvidos?",
         "a": "Os músculos mastigatórios compartilham inervação com a região cervical e os ouvidos; o aperto noturno projeta tensão dolorosa para toda essa área."
+      },
+      {
+        "q": "Como o bruxismo e a ATM são avaliados na Kinésica?",
+        "a": "Avaliamos mobilidade da mandíbula, músculos mastigatórios e cervicais, hábitos de apertamento e sintomas associados para orientar terapia manual e exercícios."
+      },
+      {
+        "q": "Quando é indicado consultar odontologia ou outro profissional?",
+        "a": "Se houver desgaste dentário importante, travamentos repetidos da mandíbula, dor persistente ou sintomas incomuns, recomenda-se avaliação odontológica e/ou médica complementar."
       }
     ]
   },

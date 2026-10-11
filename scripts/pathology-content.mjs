@@ -7,7 +7,7 @@
  *   Do not bump dates without a copy change.
  */
 export const PATHOLOGY_DEFAULT_PUBLISHED_AT = "2024-06-01";
-export const PATHOLOGY_DEFAULT_UPDATED_AT = PATHOLOGY_DEFAULT_PUBLISHED_AT;
+export const PATHOLOGY_DEFAULT_UPDATED_AT = "2026-10-11";
 export const PATHOLOGY_STEMS = [
   "cefalea",
   "dorsalgia",
@@ -329,7 +329,7 @@ export const PATHOLOGIES = [
       techniquesNote: "Elegimos técnicas y ejercicios según tu etapa, dolor y objetivos.",
     },
     en: {
-      title: "Low back pain (lumbalgia)",
+      title: "Low back pain: assessment and treatment",
       breadcrumb: "Low back pain",
       metaDescription:
         "Low back pain care at Kinésica (Buenos Aires). Assessment plus manual therapy and exercise to relieve pain and rebuild confident movement.",
@@ -352,7 +352,7 @@ export const PATHOLOGIES = [
       techniquesNote: "We tailor techniques and exercises to your stage, pain and goals.",
     },
     fr: {
-      title: "Lombalgie : douleur lombaire",
+      title: "Lombalgie : évaluation et traitement",
       breadcrumb: "Lombalgie",
       metaDescription:
         "Prise en charge de la lombalgie chez Kinésica (Buenos Aires). Bilan, thérapie manuelle et exercice pour soulager et retrouver un mouvement confiant.",
@@ -3759,9 +3759,9 @@ export function pathologySeoTitle(pathology, lang) {
   const name = String(data.breadcrumb || data.h1 || pathology.stem || "").trim();
   switch (lang) {
     case "en":
-      return `Treatment of ${name} in Palermo, Buenos Aires | Kinésica`;
+      return `${name} treatment in Palermo, Buenos Aires | Kinésica`;
     case "fr":
-      return `Traitement de : ${name} à Palermo, Buenos Aires | Kinésica`;
+      return `Traitement de ${name} à Palermo, Buenos Aires | Kinésica`;
     case "pt":
       return `Tratamento de ${name} em Palermo, Buenos Aires | Kinésica`;
     case "es":

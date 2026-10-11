@@ -7,7 +7,14 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { METHOD_STEMS, METHOD_UI, METHODS } from "./methods-content.mjs";
-import { absoluteUrl, HTML_LANG, repoPath, sitePath } from "./i18n-urls.mjs";
+import {
+  absoluteUrl,
+  HTML_LANG,
+  repoPath,
+  SCHEMA_LANGUAGE,
+  sitePath,
+  SITE,
+} from "./i18n-urls.mjs";
 import { LANG_CODES } from "./languages.mjs";
 import { headerShellMarkup } from "./header-shell.mjs";
 import { breadcrumbListSchema, escHtml } from "./html-utils.mjs";
@@ -33,6 +40,7 @@ import {
   BUSINESS_ID,
   getMethodServiceCopy,
 } from "./schema-local-business.mjs";
+import { FOUNDER } from "./site-contact.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -65,7 +73,62 @@ function methodImageSrc(image, prefix) {
   return `${prefix}images/${fileName}`;
 }
 
-function buildMain(data, ui, imageSrc) {
+const METHOD_PAGE_UI = {
+  es: {
+    summaryTitle: "Respuesta breve",
+    summaryText:
+      "En esta página explicamos en qué consiste este método, cómo se evalúa y cómo se integra al tratamiento en Kinésica.",
+    authorTitle: "Autor y revisión profesional",
+    authorText:
+      "Contenido elaborado y revisado por Norberto Silvio Brude, kinesiólogo.",
+    profileLabel: "Ver perfil profesional",
+  },
+  en: {
+    summaryTitle: "Quick answer",
+    summaryText:
+      "This page explains what this method is, how assessment is performed, and how it is integrated into treatment at Kinésica.",
+    authorTitle: "Author and professional review",
+    authorText:
+      "Content written and reviewed by Norberto Silvio Brude, physiotherapist.",
+    profileLabel: "View professional profile",
+  },
+  fr: {
+    summaryTitle: "Réponse rapide",
+    summaryText:
+      "Cette page présente cette méthode, son évaluation et son intégration dans la prise en charge chez Kinésica.",
+    authorTitle: "Auteur et relecture professionnelle",
+    authorText:
+      "Contenu rédigé et relu par Norberto Silvio Brude, kinésithérapeute.",
+    profileLabel: "Voir le profil professionnel",
+  },
+  pt: {
+    summaryTitle: "Resposta rápida",
+    summaryText:
+      "Esta página explica em que consiste este método, como avaliamos e como ele é integrado ao tratamento na Kinésica.",
+    authorTitle: "Autoria e revisão profissional",
+    authorText:
+      "Conteúdo elaborado e revisado por Norberto Silvio Brude, fisioterapeuta.",
+    profileLabel: "Ver perfil profissional",
+  },
+};
+
+function buildAuthorReviewSection(lang) {
+  const ui = METHOD_PAGE_UI[lang];
+  const cvHref = sitePath(lang, "cv");
+  return `    <section class="method-author-review space-medium">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12">
+            <h2>${escHtml(ui.authorTitle)}</h2>
+            <p>${escHtml(ui.authorText)} <a href="${cvHref}">${escHtml(ui.profileLabel)}</a>.</p>
+          </div>
+        </div>
+      </div>
+    </section>`;
+}
+
+function buildMain(data, ui, imageSrc, lang) {
+  const pageUi = METHOD_PAGE_UI[lang];
   const blocks = (data.blocks ?? [])
     .map((block) => {
       if (block.type === "h2") {
@@ -81,7 +144,11 @@ function buildMain(data, ui, imageSrc) {
           <div class="method-page-intro">
             <p class="method-eyebrow">${escHtml(ui.eyebrow)}</p>
             <h1>${escHtml(data.h1)}</h1>
-            <p class="lead">${escHtml(data.lead)}</p>
+            <section class="method-answer-first">
+              <h2>${escHtml(pageUi.summaryTitle)}</h2>
+              <p class="lead">${escHtml(data.lead)}</p>
+              <p>${escHtml(pageUi.summaryText)}</p>
+            </section>
           </div>
           <figure class="method-figure">
             <img src="${escHtml(imageSrc)}" alt="${escHtml(data.h1)}" width="1536" height="1024" decoding="async" fetchpriority="high" />
@@ -116,6 +183,41 @@ function buildHtml(stem, lang) {
     { name: data.breadcrumb, item: canonical },
   ]);
   const therapySchema = methodTherapySchema(lang, stem, service);
+  const pageSchema = {
+    "@context": "https://schema.org",
+    "@type": "MedicalWebPage",
+    headline: data.h1,
+    name: data.h1,
+    description: data.metaDescription,
+    image: imgUrl,
+    url: canonical,
+    mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
+    inLanguage: SCHEMA_LANGUAGE[lang],
+    about: {
+      "@type": "MedicalTherapy",
+      name: service.name,
+      description: service.description,
+      url: canonical,
+    },
+    author: {
+      "@type": "Person",
+      name: FOUNDER.name,
+      url: absoluteUrl(lang, "cv"),
+    },
+    reviewedBy: {
+      "@type": "Person",
+      name: FOUNDER.name,
+      url: absoluteUrl(lang, "cv"),
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Kinésica",
+      logo: {
+        "@type": "ImageObject",
+        url: `${SITE}/images/logo.png`,
+      },
+    },
+  };
 
   return `<!doctype html>
 <html lang="${HTML_LANG[lang]}">
@@ -144,6 +246,9 @@ ${JSON.stringify(breadcrumbSchema, null, 6).replace(/^/gm, "      ")}
   <script type="application/ld+json" id="kinesica-method-therapy">
 ${JSON.stringify(therapySchema, null, 6).replace(/^/gm, "      ")}
     </script>
+  <script type="application/ld+json">
+${JSON.stringify(pageSchema, null, 6).replace(/^/gm, "      ")}
+    </script>
 </head>
 
 <body>
@@ -155,7 +260,8 @@ ${pageBreadcrumbSection({
       homeLabel: ui.homeLabel,
       activeLabel: data.breadcrumb,
     })}
-${buildMain(data, ui, pageImageSrc)}
+${buildMain(data, ui, pageImageSrc, lang)}
+${buildAuthorReviewSection(lang)}
   </main>
 ${ctaStripPlaceholder(lang, p)}
 ${bodyFooterAndUiScripts(lang, p)}

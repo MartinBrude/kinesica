@@ -95,11 +95,12 @@ function normalizeHeadStylesheets(html, file) {
     .replace(/<link[^>]*roboto\.min\.css[^>]*>\s*/gi, "")
     .replace(/<link[^>]*font-awesome\.min\.css[^>]*>\s*/gi, "")
     .replace(/<link[^>]*whatsapp\.min\.css[^>]*>\s*/gi, "")
+    .replace(/<link[^>]*booking-widget\.min\.css[^>]*>\s*/gi, "")
     .replace(/<link[^>]*fonts\.googleapis\.com[^>]*>\s*/gi, "")
     .replace(
       /<noscript>(?:\s*<(?:link|noscript)[^>]*>(?:\s*<\/noscript>)?\s*)+<\/noscript>\s*/gi,
       (block) =>
-        /bootstrap|style\.min|font-awesome|whatsapp|fonts\.googleapis/.test(block)
+        /bootstrap|style\.min|font-awesome|whatsapp|booking-widget|fonts\.googleapis/.test(block)
           ? ""
           : block,
     );

@@ -100,7 +100,7 @@ function renderCategory(category, catIndex, lang, ui) {
               <span class="articles-category-trigger-inner">
                 <span class="articles-category-body">
                   <span class="articles-category-heading">
-                    <span class="articles-category-title">${escHtml(copy.title)}</span>
+                    <h2 class="articles-category-title">${escHtml(copy.title)}</h2>
                     <span class="articles-category-count">${escHtml(articleCountLabel(lang, stems.length))}</span>
                   </span>
                   <span class="articles-category-desc">${escHtml(copy.description)}</span>

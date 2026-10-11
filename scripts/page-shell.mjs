@@ -83,7 +83,10 @@ export function headHeroImagePreload(prefix) {
 }
 
 /** Standard site CSS: blocking layout + async icons/WhatsApp. */
-export function headStandardStylesheets(prefix, { gtm = true } = {}) {
+export function headStandardStylesheets(
+  prefix,
+  { gtm = true, bookingWidget = true } = {},
+) {
   return (
     headRobotoPreload(prefix) +
     (gtm ? headPreconnectGtm() : "") +
@@ -92,7 +95,7 @@ export function headStandardStylesheets(prefix, { gtm = true } = {}) {
     asyncCssLink(`${prefix}css/font-awesome.min.css`) +
     syncCssLink(`${prefix}css/style.min.css`) +
     asyncCssLink(`${prefix}css/whatsapp.min.css`) +
-    asyncCssLink(`${prefix}booking/booking-widget.min.css`)
+    (bookingWidget ? asyncCssLink(`${prefix}booking/booking-widget.min.css`) : "")
   );
 }
 
