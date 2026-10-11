@@ -27,13 +27,13 @@ import {
   compareFichas,
   daysBetween,
   matchFichaSearch,
-} from "./ficha-rules.mjs?v=67";
+} from "./ficha-rules.mjs?v=68";
 
 import {
   api,
   setAuthRequiredHandler,
   formatDate,
-} from "./modules/api.js?v=67";
+} from "./modules/api.js?v=68";
 
 import {
   escapeHtml,
@@ -46,7 +46,7 @@ import {
   formatParts,
   add,
   debounce,
-} from "./modules/dom.js?v=67";
+} from "./modules/dom.js?v=68";
 
 import {
   getSessionUser,
@@ -55,7 +55,7 @@ import {
   hideGate,
   setGateMessage,
   initAuth,
-} from "./modules/auth.js?v=67";
+} from "./modules/auth.js?v=68";
 
 import {
   todayISO,
@@ -74,7 +74,7 @@ import {
   getCurrentId,
   setCurrentId,
   initForm,
-} from "./modules/form.js?v=67";
+} from "./modules/form.js?v=68";
 
 import {
   loadAll,
@@ -83,16 +83,17 @@ import {
   visibleFichas,
   renderLibrary,
   fichaRow,
+  patientGroupRow,
   pageWindow,
   syncMineButton,
   downloadJSON,
   initLibrary,
-} from "./modules/library.js?v=67";
+} from "./modules/library.js?v=68";
 
 import {
   buildSheet,
   printItems,
-} from "./modules/print.js?v=67";
+} from "./modules/print.js?v=68";
 
 import {
   showCompare,
@@ -102,7 +103,7 @@ import {
   buildComparePrintSheet,
   printCompare,
   initCompare,
-} from "./modules/compare.js?v=67";
+} from "./modules/compare.js?v=68";
 
 // Re-exportar utilidades esenciales para interoperabilidad y pruebas
 export {
@@ -124,6 +125,7 @@ export {
   todayISO,
   upsert,
   refresh,
+  patientGroupRow,
 };
 
 /**

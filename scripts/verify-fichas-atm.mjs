@@ -441,5 +441,41 @@ assert.equal(formatSide("No", "No"), "");
 assert.equal(formatSide(null, undefined), "");
 assert.doesNotMatch(app, /\[object HTMLDivElement\]/);
 
+// Verificación de regla: siempre que haya más de una ficha por paciente agruparlos
+assert.match(app, /export function patientGroupRow/);
+assert.match(app, /Ver sesiones/);
+assert.match(app, /Quitar todas/);
+assert.match(app, /sessions\.length > 1 \|\| grouped/);
+
+// Simular agrupación de biblioteca con pacientes de múltiples sesiones y de sesión única
+const libraryFichas = [
+  { id: "s1", nombre: "Lucía Fernández", dni: "30.111.201", fechaSesion: "2026-03-01" },
+  { id: "s2", nombre: "Lucía Fernández", dni: "30.111.201", fechaSesion: "2026-03-15" },
+  { id: "s3", nombre: "Mateo Ruiz", dni: "30.111.202", fechaSesion: "2026-03-10" },
+  { id: "s4", nombre: "Sofía Álvarez", dni: "30.111.203", fechaSesion: "2026-03-05" },
+  { id: "s5", nombre: "Sofía Álvarez", dni: "30.111.203", fechaSesion: "2026-03-20" },
+];
+
+const libGroupMap = new Map();
+for (const item of libraryFichas) {
+  const key = patientKey(item);
+  if (!libGroupMap.has(key)) libGroupMap.set(key, []);
+  libGroupMap.get(key).push(item);
+}
+const libGroups = [...libGroupMap.entries()];
+assert.equal(libGroups.length, 3, "Debe haber 3 pacientes únicos");
+
+const luciaGroup = libGroups.find(([key]) => key === patientKey(libraryFichas[0]));
+assert.equal(luciaGroup[1].length, 2, "Lucía tiene 2 sesiones");
+assert.ok(luciaGroup[1].length > 1, "Lucía debe agruparse por tener > 1 sesión");
+
+const mateoGroup = libGroups.find(([key]) => key === patientKey(libraryFichas[2]));
+assert.equal(mateoGroup[1].length, 1, "Mateo tiene 1 sesión");
+assert.equal(mateoGroup[1].length > 1, false, "Mateo con 1 sesión se renderiza directo como fichaRow");
+
+const sofiaGroup = libGroups.find(([key]) => key === patientKey(libraryFichas[3]));
+assert.equal(sofiaGroup[1].length, 2, "Sofía tiene 2 sesiones");
+assert.ok(sofiaGroup[1].length > 1, "Sofía debe agruparse por tener > 1 sesión");
+
 console.log("fichas ATM: ok");
 

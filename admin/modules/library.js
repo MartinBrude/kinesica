@@ -12,10 +12,10 @@ import {
   coerceFicha,
   missingFields,
   exampleFicha,
-} from "../ficha-rules.mjs?v=67";
-import { formatDate } from "./api.js?v=67";
-import { debounce } from "./dom.js?v=67";
-import { todayISO } from "./form.js?v=67";
+} from "../ficha-rules.mjs?v=68";
+import { formatDate } from "./api.js?v=68";
+import { debounce } from "./dom.js?v=68";
+import { todayISO } from "./form.js?v=68";
 
 const libraryView = document.querySelector("#view-library");
 const listEl = document.querySelector("#library-list");
@@ -258,6 +258,114 @@ export function fichaRow(item, { onOpen, onNewSession, onPdf, onDelete, onDownlo
   json.addEventListener("click", () => onDownloadJson(item));
 
   actions.append(open, again, json, pdf, del);
+
+  row.addEventListener("click", (e) => {
+    if (e.target.closest("button")) return;
+    onOpen(item);
+  });
+
+  return row;
+}
+
+/**
+ * Renderiza la tarjeta de un paciente agrupado (con múltiples sesiones).
+ * @param {string} key Clave única del paciente
+ * @param {Array<object>} sessions Lista de fichas del paciente
+ * @param {object} callbacks Callbacks para interactuar con la fila
+ * @returns {HTMLElement}
+ */
+export function patientGroupRow(key, sessions, callbacks = {}) {
+  const latest = sessions[0] || {};
+  const row = document.createElement("article");
+  row.className = "card-row";
+  row.innerHTML = `<div><h3></h3><p></p></div><div class="row-controls"></div>`;
+  row.querySelector("h3").textContent = latest.nombre || "Sin nombre";
+  const count = sessions.length === 1 ? "1 sesión" : `${sessions.length} sesiones`;
+  row.querySelector("p").textContent = `${count} · última ${formatDate(latest.fechaSesion)} · DNI ${latest.dni || "—"}`;
+
+  const open = document.createElement("button");
+  open.type = "button";
+  open.className = "btn light";
+  open.textContent = `Ver sesiones (${sessions.length})`;
+  open.title = `Ver las ${sessions.length} sesiones de ${latest.nombre || "este paciente"}`;
+  open.addEventListener("click", (e) => {
+    e.stopPropagation();
+    focusedPatient = key;
+    page = 0;
+    renderLibrary();
+  });
+
+  const newSess = document.createElement("button");
+  newSess.type = "button";
+  newSess.className = "btn light";
+  newSess.textContent = "+ Nueva sesión";
+  newSess.title = `Registrar una nueva consulta para ${latest.nombre || "este paciente"}`;
+  newSess.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (callbacks.onNewSession) {
+      callbacks.onNewSession(latest);
+    }
+  });
+
+  const printGroup = document.createElement("button");
+  printGroup.type = "button";
+  printGroup.className = "btn green";
+  printGroup.textContent = "PDF";
+  printGroup.title = `Imprimir historial completo de ${latest.nombre || "este paciente"}`;
+  printGroup.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (callbacks.onPdfAll) {
+      callbacks.onPdfAll(sessions);
+    }
+  });
+
+  const rowControls = row.querySelector(".row-controls");
+  rowControls.append(open, newSess, printGroup);
+
+  if (sessions.length >= 2 && callbacks.onCompare) {
+    const comp = document.createElement("button");
+    comp.type = "button";
+    comp.className = "btn light";
+    comp.textContent = "Comparar";
+    comp.title = "Comparar evolución de este paciente";
+    comp.addEventListener("click", (e) => {
+      e.stopPropagation();
+      callbacks.onCompare(key);
+    });
+    rowControls.append(comp);
+  }
+
+  const del = document.createElement("button");
+  del.type = "button";
+  del.className = "btn ghost btn-icon-del-text";
+  del.title = `Eliminar todas las ${sessions.length} sesiones de este paciente`;
+  del.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;margin-right:4px;">
+    <polyline points="3 6 5 6 21 6"></polyline>
+    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+    <line x1="10" y1="11" x2="10" y2="17"></line>
+    <line x1="14" y1="11" x2="14" y2="17"></line>
+  </svg>Quitar todas`;
+  del.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const all = loadAll().filter((item) => patientKey(item) === key);
+    const name = latest.nombre || "este paciente";
+    const countStr = all.length === 1 ? "la sesión" : `las ${all.length} sesiones`;
+    if (!window.confirm(`¿Quitar ${countStr} de ${name}? Esta acción no se puede deshacer.`)) {
+      return;
+    }
+    if (callbacks.onDeleteBatch) {
+      callbacks.onDeleteBatch(all);
+    }
+  });
+  rowControls.append(del);
+
+  row.addEventListener("click", (event) => {
+    if (event.target.closest("button")) return;
+    focusedPatient = key;
+    page = 0;
+    renderLibrary();
+  });
+
   return row;
 }
 
@@ -304,6 +412,11 @@ export function renderLibrary() {
 
   if (focusedPatient) {
     const pSessions = items.filter((item) => patientKey(item) === focusedPatient);
+    if (!pSessions.length) {
+      focusedPatient = null;
+      renderLibrary();
+      return;
+    }
     const pName = pSessions[0]?.nombre || "Paciente";
     const header = document.createElement("div");
     header.className = "card-row";
@@ -312,7 +425,7 @@ export function renderLibrary() {
 
     const titleDiv = document.createElement("div");
     titleDiv.innerHTML = `<h3 style="margin:0;"></h3><p style="margin:4px 0 0; color:var(--muted); font-size:13px;"></p>`;
-    titleDiv.querySelector("h3").textContent = `Fichas de ${pName} (${pSessions.length})`;
+    titleDiv.querySelector("h3").textContent = `Sesiones de ${pName} (${pSessions.length})`;
     titleDiv.querySelector("p").textContent = `DNI: ${pSessions[0]?.dni || "—"}`;
 
     const controls = document.createElement("div");
@@ -370,22 +483,9 @@ export function renderLibrary() {
     for (const item of slice) {
       fragment.append(fichaRow(item, activeRowCallbacks));
     }
-  } else if (!grouped) {
-    if (!items.length) {
-      const p = document.createElement("p");
-      p.className = "empty";
-      p.textContent = searchInput?.value || onlyMine
-        ? "No se encontraron fichas con los filtros actuales."
-        : "No hay fichas guardadas todavía.";
-      fragment.append(p);
-    } else {
-      const slice = pageWindow(items);
-      for (const item of slice) {
-        fragment.append(fichaRow(item, activeRowCallbacks));
-      }
-    }
   } else {
-    // Vista agrupada por paciente
+    // Vista general de biblioteca
+    // Regla: siempre que haya más de una ficha por paciente, agruparlos
     const groupMap = new Map();
     for (const item of items) {
       const key = patientKey(item);
@@ -393,101 +493,22 @@ export function renderLibrary() {
       groupMap.get(key).push(item);
     }
     const groups = [...groupMap.entries()];
+
     if (!groups.length) {
       const p = document.createElement("p");
       p.className = "empty";
-      p.textContent = "No hay pacientes cargados.";
+      p.textContent = searchInput?.value || onlyMine
+        ? "No se encontraron fichas con los filtros actuales."
+        : "No hay fichas guardadas todavía.";
       fragment.append(p);
     } else {
       const slice = pageWindow(groups);
       for (const [key, sessions] of slice) {
-        const latest = sessions[0];
-        const row = document.createElement("article");
-        row.className = "card-row";
-        row.innerHTML = `<div><h3></h3><p></p></div><div class="row-controls"></div>`;
-        row.querySelector("h3").textContent = latest.nombre || "Sin nombre";
-        const count = sessions.length === 1 ? "1 ficha" : `${sessions.length} fichas`;
-        row.querySelector("p").textContent = `${count} · última ${formatDate(latest.fechaSesion)} · DNI ${latest.dni || "—"}`;
-
-        const open = document.createElement("button");
-        open.type = "button";
-        open.className = "btn light";
-        open.textContent = "Ver fichas";
-        open.addEventListener("click", () => {
-          focusedPatient = key;
-          page = 0;
-          renderLibrary();
-        });
-
-        const newSess = document.createElement("button");
-        newSess.type = "button";
-        newSess.className = "btn light";
-        newSess.textContent = "+ Sesión";
-        newSess.title = `Registrar nueva sesión para ${latest.nombre}`;
-        newSess.addEventListener("click", (e) => {
-          e.stopPropagation();
-          if (activeRowCallbacks.onNewSession) {
-            activeRowCallbacks.onNewSession(latest);
-          }
-        });
-
-        const del = document.createElement("button");
-        del.type = "button";
-        del.className = "btn ghost btn-icon-del-text";
-        del.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;margin-right:4px;">
-          <polyline points="3 6 5 6 21 6"></polyline>
-          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-          <line x1="10" y1="11" x2="10" y2="17"></line>
-          <line x1="14" y1="11" x2="14" y2="17"></line>
-        </svg>Quitar todas`;
-        del.addEventListener("click", () => {
-          const all = loadAll().filter((item) => patientKey(item) === key);
-          const name = latest.nombre || "este paciente";
-          const countStr = all.length === 1 ? "la ficha" : `las ${all.length} fichas`;
-          if (!window.confirm(`¿Quitar ${countStr} de ${name}? Esta acción no se puede deshacer.`)) {
-            return;
-          }
-          if (activeRowCallbacks.onDeleteBatch) {
-            activeRowCallbacks.onDeleteBatch(all);
-          }
-        });
-
-        const printGroup = document.createElement("button");
-        printGroup.type = "button";
-        printGroup.className = "btn light";
-        printGroup.textContent = "PDF";
-        printGroup.title = `Imprimir historial completo de ${latest.nombre || "este paciente"}`;
-        printGroup.addEventListener("click", (e) => {
-          e.stopPropagation();
-          if (activeRowCallbacks.onPdfAll) {
-            activeRowCallbacks.onPdfAll(sessions);
-          }
-        });
-
-        const rowControls = row.querySelector(".row-controls");
-        if (sessions.length >= 2 && activeRowCallbacks.onCompare) {
-          const comp = document.createElement("button");
-          comp.type = "button";
-          comp.className = "btn light";
-          comp.textContent = "Comparar";
-          comp.title = "Comparar evolución de este paciente";
-          comp.addEventListener("click", (e) => {
-            e.stopPropagation();
-            activeRowCallbacks.onCompare(key);
-          });
-          rowControls.append(open, newSess, printGroup, comp, del);
+        if (sessions.length > 1 || grouped) {
+          fragment.append(patientGroupRow(key, sessions, activeRowCallbacks));
         } else {
-          rowControls.append(open, newSess, printGroup, del);
+          fragment.append(fichaRow(sessions[0], activeRowCallbacks));
         }
-
-        row.addEventListener("click", (event) => {
-          if (event.target.closest("button")) return;
-          focusedPatient = key;
-          page = 0;
-          renderLibrary();
-        });
-
-        fragment.append(row);
       }
     }
   }
