@@ -76,8 +76,7 @@ function methodImageSrc(image, prefix) {
 const METHOD_PAGE_UI = {
   es: {
     summaryTitle: "Respuesta breve",
-    summaryText:
-      "En esta página explicamos en qué consiste este método, cómo se evalúa y cómo se integra al tratamiento en Kinésica.",
+    whatIsTitle: (name) => `¿Qué es ${name}?`,
     authorTitle: "Autor y revisión profesional",
     authorText:
       "Contenido elaborado y revisado por Norberto Silvio Brude, kinesiólogo.",
@@ -85,8 +84,7 @@ const METHOD_PAGE_UI = {
   },
   en: {
     summaryTitle: "Quick answer",
-    summaryText:
-      "This page explains what this method is, how assessment is performed, and how it is integrated into treatment at Kinésica.",
+    whatIsTitle: (name) => `What is ${name}?`,
     authorTitle: "Author and professional review",
     authorText:
       "Content written and reviewed by Norberto Silvio Brude, physiotherapist.",
@@ -94,8 +92,7 @@ const METHOD_PAGE_UI = {
   },
   fr: {
     summaryTitle: "Réponse rapide",
-    summaryText:
-      "Cette page présente cette méthode, son évaluation et son intégration dans la prise en charge chez Kinésica.",
+    whatIsTitle: (name) => `Qu'est-ce que ${name} ?`,
     authorTitle: "Auteur et relecture professionnelle",
     authorText:
       "Contenu rédigé et relu par Norberto Silvio Brude, kinésithérapeute.",
@@ -103,8 +100,7 @@ const METHOD_PAGE_UI = {
   },
   pt: {
     summaryTitle: "Resposta rápida",
-    summaryText:
-      "Esta página explica em que consiste este método, como avaliamos e como ele é integrado ao tratamento na Kinésica.",
+    whatIsTitle: (name) => `O que é ${name}?`,
     authorTitle: "Autoria e revisão profissional",
     authorText:
       "Conteúdo elaborado e revisado por Norberto Silvio Brude, fisioterapeuta.",
@@ -127,9 +123,21 @@ function buildAuthorReviewSection(lang) {
     </section>`;
 }
 
+function methodPhrase(data) {
+  const raw = String(data.breadcrumb || data.h1 || "").trim();
+  if (!raw) return "";
+  if (raw.length <= 5 && raw === raw.toUpperCase()) return raw;
+  const cut = raw.split(/[–—:-]/)[0].trim();
+  if (cut.length <= 5 && cut === cut.toUpperCase()) return cut;
+  return cut.charAt(0).toLowerCase() + cut.slice(1);
+}
+
 function buildMain(data, ui, imageSrc, lang) {
   const pageUi = METHOD_PAGE_UI[lang];
-  const blocks = (data.blocks ?? [])
+  const name = methodPhrase(data);
+  const blocks = data.blocks ?? [];
+  const bodyBlocks = blocks[0]?.type === "h2" ? blocks : [{ type: "h2", text: pageUi.whatIsTitle(name) }, ...blocks];
+  const rendered = bodyBlocks
     .map((block) => {
       if (block.type === "h2") {
         return `            <h2>${escHtml(block.text)}</h2>`;
@@ -147,14 +155,13 @@ function buildMain(data, ui, imageSrc, lang) {
             <section class="method-answer-first">
               <h2>${escHtml(pageUi.summaryTitle)}</h2>
               <p class="lead">${escHtml(data.lead)}</p>
-              <p>${escHtml(pageUi.summaryText)}</p>
             </section>
           </div>
           <figure class="method-figure">
             <img src="${escHtml(imageSrc)}" alt="${escHtml(data.h1)}" width="1536" height="1024" decoding="async" fetchpriority="high" />
           </figure>
           <div class="method-page-body">
-${blocks}
+${rendered}
           </div>
         </div>
       </div>
@@ -195,6 +202,7 @@ function buildHtml(stem, lang) {
     inLanguage: SCHEMA_LANGUAGE[lang],
     about: {
       "@type": "MedicalTherapy",
+      "@id": `${canonical}#therapy`,
       name: service.name,
       description: service.description,
       url: canonical,
@@ -211,6 +219,7 @@ function buildHtml(stem, lang) {
     },
     publisher: {
       "@type": "Organization",
+      "@id": BUSINESS_ID,
       name: "Kinésica",
       logo: {
         "@type": "ImageObject",

@@ -3765,7 +3765,7 @@ export function pathologySeoTitle(pathology, lang) {
     case "en":
       return `${name} treatment in Palermo, Buenos Aires | Kinésica`;
     case "fr":
-      return `Traitement de ${name} à Palermo, Buenos Aires | Kinésica`;
+      return `${name} : évaluation et traitement à Palermo, Buenos Aires | Kinésica`;
     case "pt":
       return `Tratamento de ${name} em Palermo, Buenos Aires | Kinésica`;
     case "es":

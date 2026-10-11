@@ -53,6 +53,7 @@ import {
   socialImageUrl,
 } from "./page-shell.mjs";
 import { FOUNDER } from "./site-contact.mjs";
+import { BUSINESS_ID } from "./schema-local-business.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -96,12 +97,14 @@ function buildRelatedSection(pathology, lang) {
 const PATHOLOGY_PAGE_UI = {
   es: {
     summaryTitle: "Respuesta breve",
-    summaryLabel: "En esta página encontrarás qué es esta condición, qué señales suelen aparecer y cómo abordamos la evaluación y el tratamiento en Kinésica.",
-    whatIsTitle: "¿Qué es?",
-    symptomsTitle: "Síntomas y factores asociados",
-    treatmentTitle: "Enfoque terapéutico",
-    evaluationTitle: "Evaluación y seguimiento",
-    urgentTitle: "Cuándo consultar de forma prioritaria",
+    whatLabel: "Qué es",
+    symptomsLabel: "Síntomas",
+    treatmentLabel: "Cómo se trata",
+    whatIsTitle: (name) => `¿Qué es ${name}?`,
+    symptomsTitle: (name) => `¿Qué síntomas se asocian con ${name}?`,
+    treatmentTitle: (name) => `¿Cómo se trata ${name} en Kinésica?`,
+    evaluationTitle: (name) => `¿Cómo se evalúa ${name}?`,
+    urgentTitle: (name) => `¿Cuándo consultar por ${name}?`,
     urgentLead:
       "Esta información es orientativa y no reemplaza una evaluación médica.",
     urgentList: [
@@ -118,13 +121,14 @@ const PATHOLOGY_PAGE_UI = {
   },
   en: {
     summaryTitle: "Quick answer",
-    summaryLabel:
-      "This page explains what this condition is, which signs are common, and how assessment and treatment are approached at Kinésica.",
-    whatIsTitle: "What is it?",
-    symptomsTitle: "Symptoms and associated factors",
-    treatmentTitle: "Treatment approach",
-    evaluationTitle: "Assessment and follow-up",
-    urgentTitle: "When to seek prompt medical care",
+    whatLabel: "What it is",
+    symptomsLabel: "Symptoms",
+    treatmentLabel: "How it is treated",
+    whatIsTitle: (name) => `What is ${name}?`,
+    symptomsTitle: (name) => `What symptoms are linked to ${name}?`,
+    treatmentTitle: (name) => `How is ${name} treated at Kinésica?`,
+    evaluationTitle: (name) => `How is ${name} assessed?`,
+    urgentTitle: (name) => `When should you seek care for ${name}?`,
     urgentLead:
       "This information is educational and does not replace medical assessment.",
     urgentList: [
@@ -141,13 +145,14 @@ const PATHOLOGY_PAGE_UI = {
   },
   fr: {
     summaryTitle: "Réponse rapide",
-    summaryLabel:
-      "Cette page explique ce qu'est cette pathologie, les signes fréquents et notre approche d'évaluation et de traitement chez Kinésica.",
-    whatIsTitle: "Qu'est-ce que c'est ?",
-    symptomsTitle: "Symptômes et facteurs associés",
-    treatmentTitle: "Approche thérapeutique",
-    evaluationTitle: "Évaluation et suivi",
-    urgentTitle: "Quand consulter rapidement",
+    whatLabel: "De quoi s'agit-il",
+    symptomsLabel: "Symptômes",
+    treatmentLabel: "Comment c'est traité",
+    whatIsTitle: (name) => `Qu'est-ce que ${name} ?`,
+    symptomsTitle: (name) => `Quels symptômes accompagnent ${name} ?`,
+    treatmentTitle: (name) => `Quelle prise en charge pour ${name} chez Kinésica ?`,
+    evaluationTitle: (name) => `Comment évalue-t-on ${name} ?`,
+    urgentTitle: (name) => `Quand consulter pour ${name} ?`,
     urgentLead:
       "Ces informations sont indicatives et ne remplacent pas un avis médical.",
     urgentList: [
@@ -164,13 +169,14 @@ const PATHOLOGY_PAGE_UI = {
   },
   pt: {
     summaryTitle: "Resposta rápida",
-    summaryLabel:
-      "Esta página explica o que é essa condição, quais sinais são comuns e como fazemos avaliação e tratamento na Kinésica.",
-    whatIsTitle: "O que é?",
-    symptomsTitle: "Sintomas e fatores associados",
-    treatmentTitle: "Abordagem terapêutica",
-    evaluationTitle: "Avaliação e acompanhamento",
-    urgentTitle: "Quando procurar atendimento prioritário",
+    whatLabel: "O que é",
+    symptomsLabel: "Sintomas",
+    treatmentLabel: "Como se trata",
+    whatIsTitle: (name) => `O que é ${name}?`,
+    symptomsTitle: (name) => `Quais sintomas se associam ${ptA(name)}?`,
+    treatmentTitle: (name) => `Como se trata ${name} na Kinésica?`,
+    evaluationTitle: (name) => `Como se avalia ${name}?`,
+    urgentTitle: (name) => `Quando procurar atendimento por ${name}?`,
     urgentLead:
       "Este conteúdo é informativo e não substitui avaliação médica.",
     urgentList: [
@@ -187,7 +193,54 @@ const PATHOLOGY_PAGE_UI = {
   },
 };
 
-function buildUrgentCareSection(lang) {
+function conditionPhrase(data, lang) {
+  const raw = String(data.breadcrumb || data.h1 || "").trim();
+  if (!raw) return "";
+  if (raw.length <= 5 && raw === raw.toUpperCase()) return raw;
+  const name = raw.charAt(0).toLowerCase() + raw.slice(1);
+  return withArticle(lang, name);
+}
+
+function withArticle(lang, name) {
+  const first = name.split(" ")[0];
+  if (lang === "es") {
+    if (first === "contracturas") return `las ${name}`;
+    if (first === "pies") return `los ${name}`;
+    if (/algia$|itis$|osis$|patía$|ía$|ión$|dad$|ura$|sión$|a$/i.test(first)) return `la ${name}`;
+    if (/ismo$|o$|or$/i.test(first)) return `el ${name}`;
+    if (/^túnel$/i.test(first)) return `el ${name}`;
+    return name;
+  }
+  if (lang === "fr") {
+    if (/^[aeiouéèêh]/i.test(first)) return `l'${name}`;
+    if (/isme$|age$|ent$|eau$|al$|os$/i.test(first)) return `le ${name}`;
+    if (/ie$|ose$|ite$|eur$|ion$|ée$|ure$|e$/i.test(first)) return `la ${name}`;
+    return name;
+  }
+  if (lang === "pt") {
+    if (/ão$|a$|gem$|ade$/i.test(first) || /^dor$/i.test(first)) return `a ${name}`;
+    if (/o$|ismo$|or$/i.test(first)) return `o ${name}`;
+    return name;
+  }
+  return name;
+}
+
+function ptA(name) {
+  if (name.startsWith("a ")) return `à ${name.slice(2)}`;
+  if (name.startsWith("o ")) return `ao ${name.slice(2)}`;
+  return `a ${name}`;
+}
+
+function firstSentence(text) {
+  const plain = String(text || "")
+    .replace(/<[^>]+>/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  const match = plain.match(/^.{12,240}?[.!?]/);
+  return match ? match[0] : plain;
+}
+
+function buildUrgentCareSection(lang, name) {
   const ui = PATHOLOGY_PAGE_UI[lang];
   const conditionsHref = sitePath(lang, "condiciones");
   const items = ui.urgentList
@@ -197,7 +250,7 @@ function buildUrgentCareSection(lang) {
       <div class="container">
         <div class="row">
           <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12">
-            <h2>${escHtml(ui.urgentTitle)}</h2>
+            <h2>${escHtml(ui.urgentTitle(name))}</h2>
             <p>${escHtml(ui.urgentLead)}</p>
             <ul>
 ${items}
@@ -241,6 +294,18 @@ function buildMain(pathology, lang) {
   const p2 = data.paragraphs[2] || "";
   const p3 = data.paragraphs[3] || "";
   const p4 = data.paragraphs[4] || "";
+  const name = conditionPhrase(data, lang);
+  const answerPoints = [
+    [pageUi.whatLabel, firstSentence(p0)],
+    [pageUi.symptomsLabel, firstSentence(p1)],
+    [pageUi.treatmentLabel, firstSentence(p3)],
+  ]
+    .filter(([, text]) => text)
+    .map(
+      ([label, text]) =>
+        `                <li><strong>${escHtml(label)}.</strong> ${escHtml(text)}</li>`,
+    )
+    .join("\n");
   const complications = data.complications
     .map((c) => `                <li>${c}</li>`)
     .join("\n");
@@ -254,23 +319,25 @@ function buildMain(pathology, lang) {
             <section class="pathology-answer-first" aria-labelledby="pathology-summary-${pathology.stem}">
               <h2 id="pathology-summary-${pathology.stem}">${escHtml(pageUi.summaryTitle)}</h2>
               <p class="lead">${data.lead}</p>
-              <p>${escHtml(pageUi.summaryLabel)}</p>
+              <ul>
+${answerPoints}
+              </ul>
             </section>
             <section aria-labelledby="pathology-what-is-${pathology.stem}">
-              <h2 id="pathology-what-is-${pathology.stem}">${escHtml(pageUi.whatIsTitle)}</h2>
+              <h2 id="pathology-what-is-${pathology.stem}">${escHtml(pageUi.whatIsTitle(name))}</h2>
               <p>${p0}</p>
             </section>
             <section aria-labelledby="pathology-symptoms-${pathology.stem}">
-              <h2 id="pathology-symptoms-${pathology.stem}">${escHtml(pageUi.symptomsTitle)}</h2>
+              <h2 id="pathology-symptoms-${pathology.stem}">${escHtml(pageUi.symptomsTitle(name))}</h2>
               <p>${p1}</p>
               <p>${p2}</p>
             </section>
             <section aria-labelledby="pathology-treatment-${pathology.stem}">
-              <h2 id="pathology-treatment-${pathology.stem}">${escHtml(pageUi.treatmentTitle)}</h2>
+              <h2 id="pathology-treatment-${pathology.stem}">${escHtml(pageUi.treatmentTitle(name))}</h2>
               <p>${p3}</p>
             </section>
             <section aria-labelledby="pathology-evaluation-${pathology.stem}">
-              <h2 id="pathology-evaluation-${pathology.stem}">${escHtml(pageUi.evaluationTitle)}</h2>
+              <h2 id="pathology-evaluation-${pathology.stem}">${escHtml(pageUi.evaluationTitle(name))}</h2>
               <p>${p4}</p>
             </section>
           </div>
@@ -285,7 +352,7 @@ ${complications}
         </div>
       </div>
     </section>
-${buildUrgentCareSection(lang)}
+${buildUrgentCareSection(lang, name)}
     <section class="pathology-techniques space-medium bg-light">
       <div class="container">
         <div class="row">
@@ -376,7 +443,7 @@ function buildHtml(pathology, lang) {
 
   const articleSchema = {
     "@context": "https://schema.org",
-    "@type": "MedicalWebPage",
+    "@type": ["MedicalWebPage", "HealthTopicContent"],
     headline: data.h1,
     name: data.h1,
     description: data.metaDescription,
@@ -397,6 +464,7 @@ function buildHtml(pathology, lang) {
     },
     publisher: {
       "@type": "Organization",
+      "@id": BUSINESS_ID,
       name: "Kinésica",
       logo: {
         "@type": "ImageObject",
