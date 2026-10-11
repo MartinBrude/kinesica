@@ -10,7 +10,7 @@
 @media print {
   @page {
     size: A4 portrait;
-    margin: 0;
+    margin: 20mm 24mm;
   }
 
   body {
@@ -36,10 +36,10 @@
     break-after: page;
     page-break-after: always;
     box-sizing: border-box;
-    /* Márgenes dentro de la hoja: no dependen de la configuración del diálogo de impresión */
-    width: 210mm;
-    min-height: 296mm;
-    padding: 20mm 24mm;
+    /* El margen vive en @page para que la página 2 y las siguientes también lo tengan */
+    width: auto;
+    min-height: 0;
+    padding: 0;
     margin: 0;
     color: #1e293b;
     font-family: "Roboto", sans-serif;

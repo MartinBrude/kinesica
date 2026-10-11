@@ -364,10 +364,10 @@ await test("las versiones ?v= de CSS/JS en index.html son consistentes", () => {
   assert.ok(versions.length >= 2);
 });
 
-await test("la hoja de impresión mantiene márgenes dentro de .print-sheet", () => {
+await test("cada página impresa, incluida la segunda, tiene margen superior", () => {
   const printCss = fs.readFileSync(path.join(adminDir, "css/print.css"), "utf8");
-  assert.match(printCss, /@page\s*{[^}]*margin:\s*0/);
-  assert.match(printCss, /\.print-sheet\s*{[^}]*padding:\s*\d+mm\s+\d+mm/);
+  assert.match(printCss, /@page\s*{[^}]*margin:\s*20mm\s+24mm/);
+  assert.match(printCss, /\.print-sheet\s*{[^}]*padding:\s*0/);
 });
 
 console.log(`admin robustez: ok (${passed} pruebas)`);
