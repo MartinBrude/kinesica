@@ -110,6 +110,12 @@ if ($method === 'POST') {
         'motivo' => 'el motivo de consulta',
         'antecedentes' => 'los antecedentes clínicos',
     ];
+    $sinDocumento = filter_var($data['sinDocumento'] ?? false, FILTER_VALIDATE_BOOLEAN);
+    $data['sinDocumento'] = $sinDocumento;
+    if ($sinDocumento) {
+        $data['dni'] = '';
+        unset($required['dni']);
+    }
     $missing = [];
     foreach ($required as $key => $label) {
         $value = $data[$key] ?? '';

@@ -15,6 +15,7 @@ import {
   compareFichas,
   daysBetween,
   emptyFicha,
+  missingFieldKeys,
   formatSessionBadgeText,
   getSessionIndex,
   getUniquePatients,
@@ -23,6 +24,7 @@ import {
   normalizeDni,
   patientKey,
   dniNameConflict,
+  validateField,
   validateFicha,
   validateStep,
 } from "../admin/ficha-rules.mjs";
@@ -110,6 +112,13 @@ await test("dniNameConflict rechaza el documento de otra persona y permite corre
     dniNameConflict({ id: "a", nombre: "Carolina Mendez", dni: "34.205.109" }, [carolina, { id: "a2", nombre: "Carolína Méndez", dni: "34205109" }], "doc:34205109"),
     null
   );
+});
+
+await test("sin documento, el DNI deja de ser obligatorio", () => {
+  const data = { ...emptyFicha(), sinDocumento: true, nombre: "Ana", fechaSesion: "2026-10-11", nacimiento: "1990-01-01", edad: "36", motivo: "No Traumático", antecedentes: "Dolor." };
+  assert.ok(!missingFieldKeys(data).includes("dni"));
+  assert.equal(validateField("dni", "", data), null);
+  assert.equal(validateField("dni", "", emptyFicha()), "Falta completar el DNI / Pasaporte");
 });
 
 await test("normalizeDni y patientKey son estables ante formato", () => {

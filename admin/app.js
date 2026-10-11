@@ -28,7 +28,7 @@ import {
   compareFichas,
   daysBetween,
   matchFichaSearch,
-} from "./ficha-rules.mjs?v=81";
+} from "./ficha-rules.mjs?v=82";
 
 import {
   api,
@@ -76,7 +76,7 @@ import {
   getCurrentId,
   setCurrentId,
   initForm,
-} from "./modules/form.js?v=80";
+} from "./modules/form.js?v=81";
 
 import {
   loadAll,
@@ -248,6 +248,7 @@ initForm({
       for (const sibling of siblings) {
         const next = { ...sibling };
         for (const key of PATIENT_FIELDS) next[key] = data[key];
+        next.sinDocumento = Boolean(data.sinDocumento);
         next.edad = ageOn(data.nacimiento, sibling.fechaSesion) || sibling.edad;
         await upsert(next);
       }

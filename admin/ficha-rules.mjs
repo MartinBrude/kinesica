@@ -30,13 +30,19 @@ export const CLINICIAN_DETAILS = {
 
 export function missingFieldKeys(data) {
   return REQUIRED_FIELDS
-    .filter(([key]) => !String(data?.[key] ?? "").trim())
+    .filter(([key]) => {
+      if (key === "dni" && data?.sinDocumento) return false;
+      return !String(data?.[key] ?? "").trim();
+    })
     .map(([key]) => key);
 }
 
 export function missingFields(data) {
   return REQUIRED_FIELDS
-    .filter(([key]) => !String(data?.[key] ?? "").trim())
+    .filter(([key]) => {
+      if (key === "dni" && data?.sinDocumento) return false;
+      return !String(data?.[key] ?? "").trim();
+    })
     .map(([, label]) => label);
 }
 
@@ -69,6 +75,7 @@ export function validateField(key, value, allData = {}) {
       return null;
     }
     case "dni": {
+      if (allData?.sinDocumento) return null;
       if (!str) return "Falta completar el DNI / Pasaporte";
       const alphanum = str.replace(/[^a-zA-Z0-9]/g, "");
       if (alphanum.length < 3) return "El DNI / Pasaporte debe tener al menos 3 caracteres";
@@ -361,6 +368,7 @@ export const PATIENT_FIELDS = [
 export function nextSession(item, fechaSesion) {
   const copy = emptyFicha();
   for (const key of PATIENT_FIELDS) copy[key] = item?.[key] ?? copy[key];
+  copy.sinDocumento = Boolean(item?.sinDocumento);
   copy.fechaSesion = fechaSesion || "";
   copy.edad = ageOn(item?.nacimiento, fechaSesion);
   return copy;
@@ -433,6 +441,7 @@ export function emptyFicha() {
   return {
     nombre: "",
     dni: "",
+    sinDocumento: false,
     fechaSesion: "",
     nacimiento: "",
     edad: "",
@@ -549,6 +558,7 @@ export function exampleFicha() {
   return {
     nombre: "Carolina Méndez",
     dni: "34.205.109",
+    sinDocumento: false,
     fechaSesion: "2026-10-10",
     nacimiento: "1992-03-14",
     edad: "34",

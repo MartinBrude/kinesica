@@ -18,7 +18,7 @@ import {
   validateStep,
   getUniquePatients,
   getSessionIndex,
-} from "../ficha-rules.mjs?v=81";
+} from "../ficha-rules.mjs?v=82";
 import { dialogAlert, dialogConfirm } from "./dom.js?v=78";
 
 const form = document.querySelector("#ficha");
@@ -90,6 +90,9 @@ export function readForm() {
   if (!raw.edad && raw.nacimiento) {
     raw.edad = ageOn(raw.nacimiento, raw.fechaSesion || todayISO());
   }
+  const dniOn = document.querySelector("#btn-dni-power")?.classList.contains("is-on") !== false;
+  raw.sinDocumento = !dniOn;
+  if (!dniOn) raw.dni = "";
   return coerceFicha(raw);
 }
 
@@ -173,7 +176,33 @@ export function fillForm(data, allFichas = []) {
   } else {
     setPatientLocked(false);
   }
+  setDniPower(!data?.sinDocumento);
   showStep(0);
+}
+
+function setDniPower(on, { clear = false } = {}) {
+  const btn = document.querySelector("#btn-dni-power");
+  const input = form?.elements.dni;
+  const locked = document.querySelector("#patient-fixed-section")?.classList.contains("is-locked");
+  if (btn) {
+    btn.classList.toggle("is-on", on);
+    btn.setAttribute("aria-pressed", on ? "true" : "false");
+    btn.title = on
+      ? "Documento obligatorio. Tocá para no pedirlo."
+      : "Sin documento. Tocá para volver a pedirlo.";
+  }
+  if (!input) return;
+  if (!on) {
+    if (clear) input.value = "";
+    input.disabled = true;
+    input.required = false;
+    input.readOnly = true;
+    input.classList.remove("input-error");
+    return;
+  }
+  input.disabled = false;
+  input.required = true;
+  input.readOnly = Boolean(locked);
 }
 
 /**
@@ -250,6 +279,9 @@ export function setPatientLocked(locked, patientData = null, sessionCount = 0, i
       identityEdited = false;
     }
   }
+  const powerBtn = document.querySelector("#btn-dni-power");
+  if (powerBtn) powerBtn.disabled = locked;
+  setDniPower(powerBtn ? powerBtn.classList.contains("is-on") : true);
 }
 
 /**
@@ -665,6 +697,7 @@ export function initForm({ onSave, onBack, onCompare, onPrint, getSessionUser })
       const selectedKey = patientSelect.value;
       if (!selectedKey) {
         setPatientLocked(false);
+        setDniPower(true);
         form.elements.nombre.value = "";
         form.elements.dni.value = "";
         form.elements.nacimiento.value = "";
@@ -708,10 +741,21 @@ export function initForm({ onSave, onBack, onCompare, onPrint, getSessionUser })
         }
         syncAge();
         const pSessions = all.filter((f) => patientKey(f) === selectedKey);
+        setDniPower(!match.sinDocumento, { clear: Boolean(match.sinDocumento) });
         setPatientLocked(true, match, pSessions.length, false);
         updateStepValidation();
         form.elements.fechaSesion?.focus();
       }
+    });
+  }
+
+  const dniPowerBtn = document.querySelector("#btn-dni-power");
+  if (dniPowerBtn) {
+    dniPowerBtn.addEventListener("click", () => {
+      if (dniPowerBtn.disabled) return;
+      const on = dniPowerBtn.classList.contains("is-on");
+      setDniPower(!on, { clear: on });
+      updateStepValidation();
     });
   }
 
@@ -728,6 +772,7 @@ export function initForm({ onSave, onBack, onCompare, onPrint, getSessionUser })
     newToggleBtn.addEventListener("click", () => {
       if (patientSelect) patientSelect.value = "";
       setPatientLocked(false);
+      setDniPower(true);
       form.elements.nombre.value = "";
       form.elements.dni.value = "";
       form.elements.nacimiento.value = "";

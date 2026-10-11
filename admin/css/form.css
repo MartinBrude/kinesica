@@ -497,6 +497,42 @@ input[type="range"] {
   margin: 0;
 }
 
+.dni-label-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dni-power {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #9ca3af;
+  cursor: pointer;
+}
+
+.dni-power.is-on {
+  color: var(--accent-deep);
+}
+
+.dni-power:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+input:disabled,
+textarea:disabled {
+  background: #e8eef3;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
 .panel-header-actions {
   display: flex;
   align-items: center;
