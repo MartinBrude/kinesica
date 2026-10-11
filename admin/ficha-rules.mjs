@@ -302,6 +302,30 @@ export function patientKey(item) {
   return `nombre:${nombre}`;
 }
 
+export function personNameKey(nombre) {
+  return stripAccents(nombre).replace(/\s+/g, " ").trim();
+}
+
+/**
+ * El documento ya está usado por otra persona si el nombre no coincide.
+ * ownKey es la clave del paciente que se está editando: sus sesiones no cuentan.
+ * @returns {object|null} Ficha existente en conflicto
+ */
+export function dniNameConflict(data, allFichas = [], ownKey = "") {
+  const key = patientKey(data);
+  if (!key.startsWith("doc:")) return null;
+  const incoming = personNameKey(data?.nombre);
+  if (!incoming) return null;
+  const other = (allFichas || []).find((ficha) => {
+    if (!ficha || ficha.id === data?.id) return false;
+    if (ownKey && patientKey(ficha) === ownKey) return false;
+    if (patientKey(ficha) !== key) return false;
+    const name = personNameKey(ficha.nombre);
+    return Boolean(name) && name !== incoming;
+  });
+  return other || null;
+}
+
 export function ownsFicha(item, username) {
   return (item?.profesional || "") === username;
 }

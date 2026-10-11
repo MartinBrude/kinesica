@@ -12,12 +12,13 @@ import {
   ageOn,
   REQUIRED_FIELDS,
   patientKey,
+  dniNameConflict,
   validateField,
   validateFicha,
   validateStep,
   getUniquePatients,
   getSessionIndex,
-} from "../ficha-rules.mjs?v=79";
+} from "../ficha-rules.mjs?v=81";
 import { dialogAlert, dialogConfirm } from "./dom.js?v=78";
 
 const form = document.querySelector("#ficha");
@@ -828,6 +829,15 @@ export function initForm({ onSave, onBack, onCompare, onPrint, getSessionUser })
       };
       const firstMissing = form.elements[val.firstErrorKey] || sideInputs[val.firstErrorKey] || form.querySelector(".input-error");
       if (firstMissing) firstMissing.focus();
+      return;
+    }
+    const ownKey = identityKey || patientKey(currentAllFichas.find((ficha) => ficha.id === data.id) || {});
+    const clash = dniNameConflict(data, currentAllFichas, ownKey);
+    if (clash) {
+      showStep(0);
+      form.elements.dni?.classList.add("input-error");
+      await dialogAlert(`El documento ${clash.dni || data.dni} ya corresponde a ${clash.nombre}. No se puede guardar con otro nombre.`);
+      form.elements.dni?.focus();
       return;
     }
     const submitBtn = form.querySelector('button[type="submit"]');

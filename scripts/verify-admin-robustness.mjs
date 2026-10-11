@@ -22,6 +22,7 @@ import {
   nextSession,
   normalizeDni,
   patientKey,
+  dniNameConflict,
   validateFicha,
   validateStep,
 } from "../admin/ficha-rules.mjs";
@@ -97,6 +98,18 @@ await test("ageOn rechaza fechas imposibles, vacías o futuras", () => {
   assert.equal(ageOn("1989-05-28", "2026-10-11"), "37");
   assert.equal(ageOn("1989-10-11", "2026-10-11"), "37");
   assert.equal(ageOn("1989-10-12", "2026-10-11"), "36");
+});
+
+await test("dniNameConflict rechaza el documento de otra persona y permite corregir el propio", () => {
+  const carolina = { id: "a", nombre: "Carolina Méndez", dni: "34.205.109" };
+  const pedro = { id: "b", nombre: "Pedro Gómez", dni: "20.111.222" };
+  const clash = dniNameConflict({ id: "nuevo", nombre: "Ana López", dni: "34.205.109" }, [carolina, pedro]);
+  assert.equal(clash.nombre, "Carolina Méndez");
+  assert.equal(dniNameConflict({ id: "nuevo", nombre: "carolina mendez", dni: "34205109" }, [carolina]), null);
+  assert.equal(
+    dniNameConflict({ id: "a", nombre: "Carolina Mendez", dni: "34.205.109" }, [carolina, { id: "a2", nombre: "Carolína Méndez", dni: "34205109" }], "doc:34205109"),
+    null
+  );
 });
 
 await test("normalizeDni y patientKey son estables ante formato", () => {

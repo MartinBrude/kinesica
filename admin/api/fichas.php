@@ -172,6 +172,52 @@ if ($method === 'POST') {
     }
 
     $clinicians = ['norberto' => 'Norberto', 'maria' => 'María'];
+    $docKey = static function (string $dni): string {
+        $dni = trim($dni);
+        if ($dni === '') {
+            return '';
+        }
+        if (preg_match('/[A-Za-z]/', $dni)) {
+            return strtolower($dni);
+        }
+        $digits = preg_replace('/\D/', '', $dni) ?? '';
+        return strlen($digits) >= 4 ? $digits : strtolower($dni);
+    };
+    $nameKey = static function (string $nombre): string {
+        $nombre = mb_strtolower(trim($nombre));
+        $nombre = strtr($nombre, [
+            'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u', 'ü' => 'u', 'ñ' => 'n',
+        ]);
+        return preg_replace('/\s+/', ' ', $nombre) ?? '';
+    };
+    $prevPayload = $pdo->prepare('SELECT payload FROM fichas WHERE id = :id');
+    $prevPayload->execute(['id' => $id]);
+    $prevRaw = $prevPayload->fetchColumn();
+    $prevItem = is_string($prevRaw) ? json_decode($prevRaw, true) : null;
+    $ownDoc = is_array($prevItem) ? $docKey((string) ($prevItem['dni'] ?? '')) : '';
+    $incomingDoc = $docKey((string) ($data['dni'] ?? ''));
+    $incomingName = $nameKey((string) ($data['nombre'] ?? ''));
+    if ($incomingDoc !== '' && $incomingName !== '') {
+        $others = $pdo->query('SELECT id, payload FROM fichas')->fetchAll();
+        foreach ($others as $row) {
+            if ((string) $row['id'] === $id) {
+                continue;
+            }
+            $item = json_decode((string) $row['payload'], true);
+            if (!is_array($item)) {
+                continue;
+            }
+            $doc = $docKey((string) ($item['dni'] ?? ''));
+            if ($ownDoc !== '' && $doc === $ownDoc) {
+                continue;
+            }
+            $name = $nameKey((string) ($item['nombre'] ?? ''));
+            if ($doc === $incomingDoc && $name !== '' && $name !== $incomingName) {
+                json_out(422, ['error' => 'El documento ya corresponde a ' . $item['nombre'] . '. No se puede guardar con otro nombre.']);
+            }
+        }
+    }
+
     $pdo->beginTransaction();
     $existing = $pdo->prepare('SELECT profesional FROM fichas WHERE id = :id FOR UPDATE');
     $existing->execute(['id' => $id]);
