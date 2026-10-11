@@ -296,8 +296,10 @@ export function matchFichaSearch(item, query) {
 
 export function patientKey(item) {
   const dni = normalizeDni(item?.dni);
+  if (dni) return `doc:${dni}`;
   const nombre = String(item?.nombre || "").trim().toLowerCase();
-  return `${nombre}|${dni}`;
+  if (!nombre) return "";
+  return `nombre:${nombre}`;
 }
 
 export function ownsFicha(item, username) {
@@ -344,7 +346,7 @@ export function getUniquePatients(allFichas = []) {
   const map = new Map();
   for (const f of allFichas) {
     const key = patientKey(f);
-    if (!key || key === "|") continue;
+    if (!key) continue;
     if (!map.has(key)) {
       map.set(key, {
         key,

@@ -104,7 +104,11 @@ await test("normalizeDni y patientKey son estables ante formato", () => {
   assert.equal(normalizeDni(" 34 534 337 "), "34534337");
   assert.equal(normalizeDni(null), "");
   assert.equal(patientKey({ nombre: " Ana  ", dni: "1.234.567" }), patientKey({ nombre: "ana", dni: "1234567" }));
-  assert.equal(patientKey(null), "|");
+  assert.equal(patientKey({ nombre: "Ana López", dni: "1234567" }), patientKey({ nombre: "Ana", dni: "12.345.67" }));
+  assert.notEqual(patientKey({ nombre: "Ana", dni: "111" }), patientKey({ nombre: "Ana", dni: "222" }));
+  assert.equal(patientKey({ nombre: "Ana", dni: "" }), patientKey({ nombre: " ana ", dni: "" }));
+  assert.equal(patientKey(null), "");
+  assert.equal(patientKey({ nombre: "", dni: "" }), "");
 });
 
 await test("matchFichaSearch: acentos, mayúsculas, DNI con puntos y entradas nulas", () => {

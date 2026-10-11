@@ -7,8 +7,9 @@
 import {
   compareFichas,
   patientKey,
+  normalizeDni,
   CLINICIAN_DETAILS,
-} from "../ficha-rules.mjs?v=77";
+} from "../ficha-rules.mjs?v=79";
 import { formatDate } from "./api.js?v=77";
 import { escapeHtml, node } from "./dom.js?v=77";
 
@@ -56,6 +57,12 @@ export function showCompare(pKey, preferredXId, preferredYId, fromView = null) {
   } else if (pKey && allFichas.some((f) => f.id === pKey)) {
     const found = allFichas.find((f) => f.id === pKey);
     resolvedKey = patientKey(found);
+  } else if (typeof pKey === "string" && pKey.includes("|")) {
+    const legacy = allFichas.find((f) => {
+      const nombre = String(f?.nombre || "").trim().toLowerCase();
+      return `${nombre}|${normalizeDni(f?.dni)}` === pKey;
+    });
+    if (legacy) resolvedKey = patientKey(legacy);
   }
 
   comparePatient = resolvedKey;

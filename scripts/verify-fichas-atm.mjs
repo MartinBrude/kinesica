@@ -317,9 +317,10 @@ const step1CompletoConLados = {
 assert.equal(validateStep(1, step1CompletoConLados).isValid, true, "Paso 1 con lados indicados debe ser válido");
 
 // Backend PHP validation assertions
-assert.match(php, /\$data\['ruidos'\][^=]*===\s*'Sí'\s*&&\s*empty\(\$data\['ruidosIzq'\]\)\s*&&\s*empty\(\$data\['ruidosDer'\]\)/);
-assert.match(php, /\$data\['dolorCondilar'\][^=]*===\s*'Sí'\s*&&\s*empty\(\$data\['condilarIzq'\]\)\s*&&\s*empty\(\$data\['condilarDer'\]\)/);
-assert.match(php, /\$data\['desviacion'\][^=]*===\s*'Sí'\s*&&\s*empty\(\$data\['desvIzq'\]\)\s*&&\s*empty\(\$data\['desvDer'\]\)/);
+assert.match(php, /'ruidos' => \['ruidosIzq', 'ruidosDer'/);
+assert.match(php, /'dolorCondilar' => \['condilarIzq', 'condilarDer'/);
+assert.match(php, /'desviacion' => \['desvIzq', 'desvDer'/);
+assert.match(php, /\$answer === 'Sí' && !\$data\[\$left\] && !\$data\[\$right\]/);
 
 // CSS assertions
 assert.match(css, /\.follow-group\.input-error/);
@@ -342,7 +343,7 @@ assert.equal(normalizeDni(" 34 205 109 "), "34205109");
 assert.equal(
   patientKey({ nombre: " Carolina Méndez ", dni: "34.205.109" }),
   patientKey({ nombre: "carolina méndez", dni: "34205109" }),
-  "La clave de paciente debe ser independiente del formato de DNI y mayúsculas"
+  "La clave de paciente es el documento, con el mismo formato"
 );
 
 // Verificación de filtrado y búsqueda con DNI con/sin puntos y acentos
@@ -466,7 +467,7 @@ assert.equal(getSessionIndex({ id: "new-4", nombre: "Carlos Gómez", dni: "25.11
 
 // Verificación de autocálculo de edad defensivo en backend PHP
 assert.match(php, /DateTimeImmutable/);
-assert.match(php, /session->diff\(.*birth\)->y/);
+assert.match(php, /\$birth->diff\(\$session\)->y/);
 
 // Verificación de componentes de selector de paciente y badges en HTML
 assert.match(html, /id="patient-quick-select"/);
