@@ -77,51 +77,21 @@ const METHOD_PAGE_UI = {
   es: {
     summaryTitle: "Respuesta breve",
     whatIsTitle: (name) => `¿Qué es ${name}?`,
-    authorTitle: "Autor y revisión profesional",
-    authorText:
-      "Contenido elaborado y revisado por Norberto Silvio Brude, kinesiólogo.",
-    profileLabel: "Ver perfil profesional",
   },
   en: {
     summaryTitle: "Quick answer",
     whatIsTitle: (name) => `What is ${name}?`,
-    authorTitle: "Author and professional review",
-    authorText:
-      "Content written and reviewed by Norberto Silvio Brude, physiotherapist.",
-    profileLabel: "View professional profile",
   },
   fr: {
     summaryTitle: "Réponse rapide",
     whatIsTitle: (name) => `Qu'est-ce que ${name} ?`,
-    authorTitle: "Auteur et relecture professionnelle",
-    authorText:
-      "Contenu rédigé et relu par Norberto Silvio Brude, kinésithérapeute.",
-    profileLabel: "Voir le profil professionnel",
   },
   pt: {
     summaryTitle: "Resposta rápida",
     whatIsTitle: (name) => `O que é ${name}?`,
-    authorTitle: "Autoria e revisão profissional",
-    authorText:
-      "Conteúdo elaborado e revisado por Norberto Silvio Brude, fisioterapeuta.",
-    profileLabel: "Ver perfil profissional",
   },
 };
 
-function buildAuthorReviewSection(lang) {
-  const ui = METHOD_PAGE_UI[lang];
-  const cvHref = sitePath(lang, "cv");
-  return `    <section class="method-author-review space-medium">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12">
-            <h2>${escHtml(ui.authorTitle)}</h2>
-            <p>${escHtml(ui.authorText)} <a href="${cvHref}">${escHtml(ui.profileLabel)}</a>.</p>
-          </div>
-        </div>
-      </div>
-    </section>`;
-}
 
 function methodPhrase(data) {
   const raw = String(data.breadcrumb || data.h1 || "").trim();
@@ -212,11 +182,6 @@ function buildHtml(stem, lang) {
       name: FOUNDER.name,
       url: absoluteUrl(lang, "cv"),
     },
-    reviewedBy: {
-      "@type": "Person",
-      name: FOUNDER.name,
-      url: absoluteUrl(lang, "cv"),
-    },
     publisher: {
       "@type": "Organization",
       "@id": BUSINESS_ID,
@@ -270,7 +235,6 @@ ${pageBreadcrumbSection({
       activeLabel: data.breadcrumb,
     })}
 ${buildMain(data, ui, pageImageSrc, lang)}
-${buildAuthorReviewSection(lang)}
   </main>
 ${ctaStripPlaceholder(lang, p)}
 ${bodyFooterAndUiScripts(lang, p)}
