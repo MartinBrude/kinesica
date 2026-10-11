@@ -96,11 +96,12 @@ function renderCategory(category, catIndex, lang, ui) {
   const panelId = `articles-cat-${category.id}`;
 
   return `          <div class="articles-category ui-reveal" style="--cat-i: ${catIndex}" data-category="${category.id}">
+            <h2 class="articles-category-heading-title">
             <button type="button" class="articles-category-trigger" aria-expanded="false" aria-controls="${panelId}">
               <span class="articles-category-trigger-inner">
                 <span class="articles-category-body">
                   <span class="articles-category-heading">
-                    <h2 class="articles-category-title">${escHtml(copy.title)}</h2>
+                    <span class="articles-category-title">${escHtml(copy.title)}</span>
                     <span class="articles-category-count">${escHtml(articleCountLabel(lang, stems.length))}</span>
                   </span>
                   <span class="articles-category-desc">${escHtml(copy.description)}</span>
@@ -108,6 +109,7 @@ function renderCategory(category, catIndex, lang, ui) {
                 <span class="articles-category-chevron" aria-hidden="true"></span>
               </span>
             </button>
+            </h2>
             <div id="${panelId}" class="articles-category-panel" aria-hidden="true">
               <div class="articles-category-panel-inner">
                 <div class="articles-index-grid articles-index-grid--nested">

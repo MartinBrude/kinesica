@@ -7,7 +7,7 @@
  *   Do not bump dates without a copy change.
  */
 export const PATHOLOGY_DEFAULT_PUBLISHED_AT = "2024-06-01";
-export const PATHOLOGY_DEFAULT_UPDATED_AT = "2026-10-11";
+export const PATHOLOGY_DEFAULT_UPDATED_AT = PATHOLOGY_DEFAULT_PUBLISHED_AT;
 export const PATHOLOGY_STEMS = [
   "cefalea",
   "dorsalgia",
@@ -304,6 +304,7 @@ export const PATHOLOGIES = [
   {
     stem: "lumbalgia",
     image: "lumbalgia.jpg",
+    updatedAt: "2026-10-11",
     techniques: ["rpg", "osteopatia", "manipulaciones", "cadenas"],
     es: {
       title: "Lumbalgia: dolor lumbar",
@@ -400,6 +401,7 @@ export const PATHOLOGIES = [
   {
     stem: "ciatalgia",
     image: "hero-img.jpg",
+    updatedAt: "2026-10-11",
     techniques: ["neurodinamia", "osteopatia", "manipulaciones", "rpg"],
     es: {
       title: "Ciatalgia: dolor que baja por la pierna",
@@ -976,6 +978,7 @@ export const PATHOLOGIES = [
   {
     stem: "hernia-disco",
     image: "hero-img.jpg",
+    updatedAt: "2026-10-11",
     techniques: ["neurodinamia", "rpg", "osteopatia", "manipulaciones"],
     es: {
       title: "Hernia de disco: dolor y recuperación",
@@ -2514,6 +2517,7 @@ export const PATHOLOGIES = [
   {
     stem: "cervicalgia",
     image: "cervicalgia.jpg",
+    updatedAt: "2026-10-11",
     techniques: ["rpg", "osteopatia", "manipulaciones", "atm"],
     es: {
       title: "Cervicalgia: dolor de cuello",
@@ -2610,7 +2614,7 @@ export const PATHOLOGIES = [
   {
     stem: "bruxismo",
     image: "hero-img.jpg",
-    updatedAt: "2026-08-20",
+    updatedAt: "2026-10-11",
     techniques: ["atm", "osteopatia", "manipulaciones", "rpg"],
     es: {
       title: "Bruxismo y dolor miofascial de la ATM",

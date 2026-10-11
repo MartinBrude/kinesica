@@ -1,7 +1,7 @@
 /* Spanish header nav — relative links from site root. */
 window.__KINESICA_NAV_SNIPPET_ES = `
 <ul>
-        <li>
+          <li>
     <a href="articulos.html" title="Artículos">Artículos</a>
   </li>
   <li class="has-sub">

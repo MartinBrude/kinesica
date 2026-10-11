@@ -3491,6 +3491,12 @@ Pathology detail pages (FAQ dolencias)
   box-shadow: var(--shadow-card);
 }
 
+.articles-category-heading-title {
+  margin: 0;
+  font: inherit;
+  line-height: inherit;
+}
+
 .articles-category-trigger {
   display: block;
   width: 100%;
