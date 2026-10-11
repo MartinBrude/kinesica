@@ -297,6 +297,7 @@ export function initAuth({ onSuccess, onLogout }) {
         localStorage.removeItem("kinesica_logged_in");
         localStorage.removeItem("kinesica_user_name");
         sessionStorage.removeItem("kinesica_admin_view");
+        sessionStorage.removeItem("kinesica_cta_seen");
       } catch (_) {}
       document.documentElement.classList.remove("is-authenticated");
       setSessionUser(null);

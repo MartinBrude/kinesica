@@ -57,7 +57,7 @@ import {
   hideGate,
   setGateMessage,
   initAuth,
-} from "./modules/auth.js?v=77";
+} from "./modules/auth.js?v=78";
 
 import {
   todayISO,
@@ -91,7 +91,7 @@ import {
   syncMineButton,
   downloadJSON,
   initLibrary,
-} from "./modules/library.js?v=83";
+} from "./modules/library.js?v=84";
 
 import {
   buildSheet,

@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=85">
+  <link rel="stylesheet" href="/admin/styles.css?v=86">
   <script>
     (function () {
       try {
@@ -100,13 +100,16 @@
           <p>Historia clínica digital de ATM. Una ficha por paciente y por sesión, con criterios CDI-TTM. Al guardar queda en el consultorio. También se puede abrir un archivo <code>.json</code>.</p>
         </div>
         <div class="hero-actions">
-          <button type="button" class="btn light" id="btn-new">Nueva sesión</button>
+          <button type="button" class="btn green btn-primary-cta" id="btn-new">Nueva sesión</button>
           <button type="button" class="btn light" id="btn-seed" hidden>Agregar 20 fichas</button>
-          <label class="btn light file-btn">
-            Abrir archivo
-            <input type="file" id="file-open" accept="application/json,.json" hidden>
-          </label>
-          <button type="button" class="btn light" id="btn-export">Exportar JSON</button>
+          <div class="hero-secondary">
+            <label class="hero-link file-btn">
+              Abrir archivo
+              <input type="file" id="file-open" accept="application/json,.json" hidden>
+            </label>
+            <span class="hero-sep" aria-hidden="true">·</span>
+            <button type="button" class="hero-link" id="btn-export">Exportar JSON</button>
+          </div>
         </div>
       </div>
 
@@ -628,6 +631,6 @@
     })();
   </script>
   <div id="print-root"></div>
-  <script type="module" src="/admin/app.js?v=87"></script>
+  <script type="module" src="/admin/app.js?v=88"></script>
 </body>
 </html>

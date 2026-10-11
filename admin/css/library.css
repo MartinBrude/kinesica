@@ -524,3 +524,58 @@
     margin-top: 16px;
   }
 }
+
+/* Acción principal de la biblioteca: "Nueva sesión" destacada, el resto discreto */
+.btn-primary-cta {
+  font-size: 17px;
+  font-weight: 700;
+  padding: 14px 32px;
+}
+
+.hero-secondary {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.hero-link {
+  background: none;
+  border: 0;
+  padding: 4px 2px;
+  margin: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.hero-link:hover,
+.hero-link:focus-visible {
+  color: var(--primary);
+}
+
+/* Micro animación de atención tras el login: entrada + 3 pulsos con halo */
+@keyframes cta-pop {
+  0% { transform: translateY(6px) scale(0.96); opacity: 0; }
+  60% { transform: translateY(0) scale(1.04); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes cta-halo {
+  0% { box-shadow: 0 0 0 0 rgba(46, 191, 165, 0.6); }
+  100% { box-shadow: 0 0 0 16px rgba(46, 191, 165, 0); }
+}
+
+.btn-primary-cta.cta-attention {
+  animation: cta-pop 0.5s ease-out both, cta-halo 1.2s ease-out 0.5s 3;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-primary-cta.cta-attention {
+    animation: none;
+  }
+}

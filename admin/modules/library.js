@@ -897,3 +897,38 @@ export function initLibrary({
     });
   }
 }
+
+/**
+ * Micro animación que lleva la atención a "Nueva sesión" una vez por login.
+ * La marca se limpia al cerrar sesión (ver auth.js).
+ */
+(function attentionOnLogin() {
+  const lib = document.querySelector("#view-library");
+  const cta = document.querySelector("#btn-new");
+  if (!lib || !cta) return;
+
+  const KEY = "kinesica_cta_seen";
+  const maybePlay = () => {
+    if (lib.hidden) return;
+    try {
+      if (sessionStorage.getItem(KEY)) return;
+      sessionStorage.setItem(KEY, "1");
+    } catch (_) {}
+    cta.classList.remove("cta-attention");
+    void cta.offsetWidth;
+    cta.classList.add("cta-attention");
+    cta.addEventListener(
+      "animationend",
+      (e) => {
+        if (e.animationName === "cta-halo") cta.classList.remove("cta-attention");
+      },
+      { once: false },
+    );
+  };
+
+  new MutationObserver(maybePlay).observe(lib, {
+    attributes: true,
+    attributeFilter: ["hidden"],
+  });
+  maybePlay();
+})();
