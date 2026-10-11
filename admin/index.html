@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=56">
+  <link rel="stylesheet" href="/admin/styles.css?v=57">
   <script>
     (function () {
       try {
@@ -211,16 +211,22 @@
                 <button type="button" data-value="No">No</button>
               </div>
               <span class="follow" data-follow="ruidos" hidden>
-                <span class="inline-label">Lado:</span>
-                <label class="check"><input type="checkbox" name="ruidosIzq"> Izq</label>
-                <label class="check"><input type="checkbox" name="ruidosDer"> Der</label>
-                <span class="inline-label">Fase del ruido:</span>
-                <label class="check"><input type="checkbox" name="faseApertura"> Apertura</label>
-                <label class="check"><input type="checkbox" name="faseCierre"> Cierre</label>
+                <span class="follow-group">
+                  <span class="inline-label">Lado:</span>
+                  <label class="check"><input type="checkbox" name="ruidosIzq"> Izq</label>
+                  <label class="check"><input type="checkbox" name="ruidosDer"> Der</label>
+                </span>
+                <span class="follow-group">
+                  <span class="inline-label">Fase del ruido:</span>
+                  <label class="check"><input type="checkbox" name="faseApertura"> Apertura</label>
+                  <label class="check"><input type="checkbox" name="faseCierre"> Cierre</label>
+                </span>
                 <!-- FEATURE-OPTIONAL: tipo-ruido -->
-                <span class="inline-label">Tipo:</span>
-                <label class="check"><input type="checkbox" name="ruidoClic"> Clic / Chasquido</label>
-                <label class="check"><input type="checkbox" name="ruidoCrep"> Crepitación</label>
+                <span class="follow-group">
+                  <span class="inline-label">Tipo:</span>
+                  <label class="check"><input type="checkbox" name="ruidoClic"> Clic / Chasquido</label>
+                  <label class="check"><input type="checkbox" name="ruidoCrep"> Crepitación</label>
+                </span>
                 <!-- /FEATURE-OPTIONAL: tipo-ruido -->
               </span>
             </div>
@@ -233,9 +239,11 @@
                 <button type="button" data-value="No">No</button>
               </div>
               <span class="follow" data-follow="dolorCondilar" hidden>
-                <span class="inline-label">Lado afectado:</span>
-                <label class="check"><input type="checkbox" name="condilarIzq"> Izq</label>
-                <label class="check"><input type="checkbox" name="condilarDer"> Der</label>
+                <span class="follow-group">
+                  <span class="inline-label">Lado afectado:</span>
+                  <label class="check"><input type="checkbox" name="condilarIzq"> Izq</label>
+                  <label class="check"><input type="checkbox" name="condilarDer"> Der</label>
+                </span>
               </span>
             </div>
           </div>
@@ -243,10 +251,10 @@
             <h3>3. Mediciones y rangos de movimientos mandibulares</h3>
             <div class="grid-2">
               <label>Apertura máxima libre de dolor (mm)
-                <input name="aperturaLibre" inputmode="decimal" placeholder="Ej: 35">
+              <input name="aperturaLibre" inputmode="decimal" placeholder="Ej: 35">
               </label>
               <label>Apertura máxima con dolor (mm)
-                <input name="aperturaDolor" inputmode="decimal" placeholder="Ej: 46">
+              <input name="aperturaDolor" inputmode="decimal" placeholder="Ej: 46">
               </label>
             </div>
             <div class="grid-2">
@@ -258,12 +266,17 @@
                     <button type="button" data-value="No">No</button>
                   </div>
                   <span class="follow" data-follow="desviacion" hidden>
-                    <label class="check"><input type="checkbox" name="desvIzq"> Izq</label>
-                    <label class="check"><input type="checkbox" name="desvDer"> Der</label>
+                    <span class="follow-group">
+                      <span class="inline-label">Lado:</span>
+                      <label class="check"><input type="checkbox" name="desvIzq"> Izq</label>
+                      <label class="check"><input type="checkbox" name="desvDer"> Der</label>
+                    </span>
                     <!-- FEATURE-OPTIONAL: patron-desviacion -->
-                    <span class="inline-label">Patrón:</span>
-                    <label class="check"><input type="checkbox" name="desvCorregida"> Desviación corregida (en S)</label>
-                    <label class="check"><input type="checkbox" name="deflexion"> Deflexión (no corregida)</label>
+                    <span class="follow-group">
+                      <span class="inline-label">Patrón:</span>
+                      <label class="check"><input type="checkbox" name="desvCorregida"> Desviación corregida (en S)</label>
+                      <label class="check"><input type="checkbox" name="deflexion"> Deflexión (no corregida)</label>
+                    </span>
                     <!-- /FEATURE-OPTIONAL: patron-desviacion -->
                   </span>
                 </div>
@@ -551,6 +564,6 @@
     })();
   </script>
   <div id="print-root"></div>
-  <script type="module" src="/admin/app.js?v=56"></script>
+  <script type="module" src="/admin/app.js?v=57"></script>
 </body>
 </html>

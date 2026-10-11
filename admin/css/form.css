@@ -166,7 +166,7 @@ textarea,
 input[inputmode] {
   width: 100%;
   border: 1px solid var(--line);
-  background: white;
+  background-color: white;
   border-radius: 12px;
   padding: 11px 12px;
   color: var(--ink);
@@ -206,11 +206,70 @@ textarea {
 }
 
 .follow {
-  display: contents;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
 }
 
 .follow[hidden] {
   display: none;
+}
+
+.follow-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 14px;
+  box-shadow: 0 1px 2px rgba(15, 34, 58, 0.04);
+  transition: all 0.15s ease;
+}
+
+.follow-group:hover {
+  border-color: #9ac2dc;
+}
+
+.follow-group:has(input:checked) {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+
+.follow-group .inline-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-right: 2px;
+}
+
+.follow-group .check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  cursor: pointer;
+  user-select: none;
+  margin: 0;
+  transition: color 0.15s ease;
+}
+
+.follow-group .check input[type="checkbox"] {
+  accent-color: var(--accent);
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  margin: 0;
+}
+
+.follow-group .check:has(input:checked) {
+  color: var(--accent-deep);
+  font-weight: 700;
 }
 
 .inline-label,
