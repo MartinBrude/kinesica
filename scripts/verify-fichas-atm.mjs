@@ -223,29 +223,32 @@ assert.ok(validateField("edad", "treinta"), "Edad con texto debe ser inválida")
 assert.ok(validateField("edad", "34.5"), "Edad con decimales debe ser inválida");
 assert.ok(validateField("edad", "34 años"), "Edad con sufijo debe ser inválida");
 
-// Verificación en campos de texto y documento
+// Verificación en campos de texto y documento (DNI / Pasaporte admite letras)
 assert.ok(validateField("nombre", "Ana 2"), "Nombre con números debe ser inválido");
 assert.equal(validateField("nombre", "Ana María"), null, "Nombre válido debe ser aceptado");
-assert.ok(validateField("dni", "34abc109"), "DNI con letras debe ser inválido");
-assert.ok(validateField("dni", "12"), "DNI con menos de 4 dígitos debe ser inválido");
+assert.equal(validateField("dni", "34abc109"), null, "DNI/Pasaporte con letras debe ser válido");
+assert.equal(validateField("dni", "AB 123456"), null, "Pasaporte con letras debe ser válido");
+assert.ok(validateField("dni", "1"), "DNI/Pasaporte muy corto debe ser inválido");
 assert.equal(validateField("dni", "34.205.109"), null, "DNI formateado válido debe ser aceptado");
 
-// Verificación en mediciones articulares (no permiten texto)
+// Verificación en mediciones articulares (no permiten texto, rango 0 a 500 mm)
 assert.ok(validateField("aperturaLibre", "35mm"), "Medición con texto debe ser inválida");
-assert.ok(validateField("aperturaLibre", "150"), "Apertura fuera de rango debe ser inválida");
+assert.ok(validateField("aperturaLibre", "501"), "Apertura fuera de rango (>500) debe ser inválida");
 assert.equal(validateField("aperturaLibre", "35"), null, "Apertura válida debe ser aceptada");
 assert.equal(validateField("aperturaLibre", "35.5"), null, "Apertura decimal válida debe ser aceptada");
+assert.equal(validateField("aperturaLibre", "500"), null, "Apertura límite superior (500) debe ser válida");
 
-assert.ok(validateField("protrusion", "60"), "Protrusión fuera de rango debe ser inválida");
-assert.equal(validateField("protrusion", "8"), null, "Protrusión válida debe ser aceptada");
+assert.ok(validateField("protrusion", "501"), "Protrusión fuera de rango (>500) debe ser inválida");
+assert.equal(validateField("protrusion", "500"), null, "Protrusión válida hasta 500 debe ser aceptada");
 
 // Verificación de atributos HTML de tipos y rangos
 assert.match(html, /name="edad"[^>]*type="number"[^>]*min="1"[^>]*max="120"/);
-assert.match(html, /name="aperturaLibre"[^>]*type="number"[^>]*min="0"[^>]*max="120"/);
-assert.match(html, /name="aperturaDolor"[^>]*type="number"[^>]*min="0"[^>]*max="120"/);
-assert.match(html, /name="protrusion"[^>]*type="number"[^>]*min="0"[^>]*max="50"/);
-assert.match(html, /name="latIzq"[^>]*type="number"[^>]*min="0"[^>]*max="50"/);
-assert.match(html, /name="latDer"[^>]*type="number"[^>]*min="0"[^>]*max="50"/);
+assert.match(html, /name="aperturaLibre"[^>]*type="number"[^>]*min="0"[^>]*max="500"/);
+assert.match(html, /name="aperturaDolor"[^>]*type="number"[^>]*min="0"[^>]*max="500"/);
+assert.match(html, /name="protrusion"[^>]*type="number"[^>]*min="0"[^>]*max="500"/);
+assert.match(html, /name="latIzq"[^>]*type="number"[^>]*min="0"[^>]*max="500"/);
+assert.match(html, /name="latDer"[^>]*type="number"[^>]*min="0"[^>]*max="500"/);
+assert.match(html, /DNI \/ Pasaporte/);
 
 assert.match(app, /setupInputRestrictions/);
 assert.match(app, /validateStep/);

@@ -1,6 +1,6 @@
 export const REQUIRED_FIELDS = [
   ["nombre", "el nombre completo"],
-  ["dni", "el DNI"],
+  ["dni", "el DNI / Pasaporte"],
   ["fechaSesion", "la fecha de la sesión"],
   ["nacimiento", "la fecha de nacimiento"],
   ["edad", "la edad"],
@@ -70,10 +70,9 @@ export function validateField(key, value, allData = {}) {
       return null;
     }
     case "dni": {
-      if (!str) return "Falta completar el DNI";
-      if (/[a-zA-Z]/.test(str)) return "El DNI no puede contener letras";
-      const digits = str.replace(/\D/g, "");
-      if (digits.length < 4) return "El DNI debe tener al menos 4 dígitos";
+      if (!str) return "Falta completar el DNI / Pasaporte";
+      const alphanum = str.replace(/[^a-zA-Z0-9]/g, "");
+      if (alphanum.length < 3) return "El DNI / Pasaporte debe tener al menos 3 caracteres";
       return null;
     }
     case "fechaSesion": {
@@ -110,8 +109,8 @@ export function validateField(key, value, allData = {}) {
         return "Este campo no permite texto: debe ser un número en milímetros";
       }
       const n = Number(clean);
-      if (Number.isNaN(n) || n < 0 || n > 120) {
-        return "El valor de apertura debe estar entre 0 y 120 mm";
+      if (Number.isNaN(n) || n < 0 || n > 500) {
+        return "El valor de apertura debe estar entre 0 y 500 mm";
       }
       return null;
     }
@@ -124,8 +123,8 @@ export function validateField(key, value, allData = {}) {
         return "Este campo no permite texto: debe ser un número en milímetros";
       }
       const n = Number(clean);
-      if (Number.isNaN(n) || n < 0 || n > 50) {
-        return "El valor debe estar entre 0 y 50 mm";
+      if (Number.isNaN(n) || n < 0 || n > 500) {
+        return "El valor debe estar entre 0 y 500 mm";
       }
       return null;
     }
@@ -217,7 +216,10 @@ export function validateStep(stepNumber, data = {}) {
 
 export function normalizeDni(dni) {
   const digits = String(dni || "").replace(/\D/g, "");
-  return digits.length >= 4 ? digits : String(dni || "").trim().toLowerCase();
+  if (digits.length >= 4 && !/[a-zA-Z]/.test(String(dni || ""))) {
+    return digits;
+  }
+  return String(dni || "").trim().toLowerCase();
 }
 
 export function stripAccents(str) {

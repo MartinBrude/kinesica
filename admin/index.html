@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=59">
+  <link rel="stylesheet" href="/admin/styles.css?v=60">
   <script>
     (function () {
       try {
@@ -113,7 +113,7 @@
 
       <div class="library-toolbar">
         <select id="pdf-patient" aria-label="Paciente"></select>
-        <input type="search" id="search" placeholder="Buscar por nombre o DNI">
+        <input type="search" id="search" placeholder="Buscar por nombre, DNI o pasaporte">
         <button type="button" class="btn light" id="btn-mine">Ver solo mis pacientes</button>
         <button type="button" class="btn light" id="btn-group">Agrupar por paciente</button>
         <select id="page-size" class="page-size" aria-label="Cantidad por página" hidden>
@@ -154,8 +154,8 @@
             <label>Nombre completo
               <input name="nombre" placeholder="Ej: Carolina Méndez" required autocomplete="name">
             </label>
-            <label>Documento (DNI)
-              <input name="dni" inputmode="numeric" pattern="[0-9.\s-]*" placeholder="Ej: 34.205.109" required>
+            <label>DNI / Pasaporte
+              <input name="dni" placeholder="Ej: 34.205.109 o AB123456" required autocomplete="off">
             </label>
           </div>
           <label id="field-profesional" hidden>Profesional asignado
@@ -251,10 +251,10 @@
             <h3>3. Mediciones y rangos de movimientos mandibulares</h3>
             <div class="grid-2">
               <label>Apertura máxima libre de dolor (mm)
-              <input name="aperturaLibre" type="number" min="0" max="120" step="any" inputmode="decimal" placeholder="Ej: 35">
+              <input name="aperturaLibre" type="number" min="0" max="500" step="any" inputmode="decimal" placeholder="Ej: 35">
               </label>
               <label>Apertura máxima con dolor (mm)
-              <input name="aperturaDolor" type="number" min="0" max="120" step="any" inputmode="decimal" placeholder="Ej: 46">
+              <input name="aperturaDolor" type="number" min="0" max="500" step="any" inputmode="decimal" placeholder="Ej: 46">
               </label>
             </div>
             <div class="grid-2">
@@ -282,16 +282,16 @@
                 </div>
               </div>
               <label>Movimiento de protrusión (mm)
-                <input name="protrusion" type="number" min="0" max="50" step="any" inputmode="decimal" placeholder="Ej: 8">
+                <input name="protrusion" type="number" min="0" max="500" step="any" inputmode="decimal" placeholder="Ej: 8">
               </label>
             </div>
             <span class="field-label">Lateralidades mandibulares (mm)</span>
             <div class="grid-2">
               <label>Izquierda
-                <input name="latIzq" type="number" min="0" max="50" step="any" inputmode="decimal" placeholder="10">
+                <input name="latIzq" type="number" min="0" max="500" step="any" inputmode="decimal" placeholder="10">
               </label>
               <label>Derecha
-                <input name="latDer" type="number" min="0" max="50" step="any" inputmode="decimal" placeholder="10">
+                <input name="latDer" type="number" min="0" max="500" step="any" inputmode="decimal" placeholder="10">
               </label>
             </div>
           </div>
@@ -564,6 +564,6 @@
     })();
   </script>
   <div id="print-root"></div>
-  <script type="module" src="/admin/app.js?v=59"></script>
+  <script type="module" src="/admin/app.js?v=60"></script>
 </body>
 </html>

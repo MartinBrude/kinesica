@@ -28,7 +28,7 @@ if ($method === 'POST') {
     }
     $required = [
         'nombre' => 'el nombre completo',
-        'dni' => 'el DNI',
+        'dni' => 'el DNI / Pasaporte',
         'fechaSesion' => 'la fecha de la sesión',
         'nacimiento' => 'la fecha de nacimiento',
         'edad' => 'la edad',

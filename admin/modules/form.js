@@ -16,7 +16,7 @@ import {
   validateField,
   validateFicha,
   validateStep,
-} from "../ficha-rules.mjs?v=59";
+} from "../ficha-rules.mjs?v=60";
 
 const form = document.querySelector("#ficha");
 const formView = document.querySelector("#view-form");
@@ -305,42 +305,22 @@ export function setupInputRestrictions(formEl) {
         el.value = val;
       }
       if (val) {
-        const maxVal = name === "aperturaLibre" || name === "aperturaDolor" ? 120 : 50;
+        const maxVal = 500;
         const n = Number(val);
         const valid = !Number.isNaN(n) && n >= 0 && n <= maxVal;
         el.classList.toggle("input-error", !valid);
-        el.title = valid ? "" : `Debe ser un número entre 0 y ${maxVal} mm`;
+        el.title = valid ? "" : "Debe ser un número entre 0 y 500 mm";
       } else {
         el.title = "";
       }
     });
   });
 
-  // 3. Documento (DNI): bloquea letras, permite números y formato (. y -)
+  // 3. Documento (DNI / Pasaporte): permite números, letras y formato (. y -)
   const dniInput = formEl.elements.dni;
   if (dniInput) {
-    dniInput.addEventListener("keydown", (e) => {
-      if (
-        e.key === "Backspace" ||
-        e.key === "Delete" ||
-        e.key === "Tab" ||
-        e.key === "ArrowLeft" ||
-        e.key === "ArrowRight" ||
-        e.key === "Home" ||
-        e.key === "End" ||
-        e.key === "Enter" ||
-        e.ctrlKey ||
-        e.metaKey
-      ) {
-        return;
-      }
-      if (/^[a-zA-Z]$/.test(e.key)) {
-        e.preventDefault();
-      }
-    });
-
     dniInput.addEventListener("input", () => {
-      const clean = dniInput.value.replace(/[a-zA-Z]/g, "");
+      const clean = dniInput.value.replace(/[^a-zA-Z0-9.\s-]/g, "");
       if (dniInput.value !== clean) {
         dniInput.value = clean;
       }
