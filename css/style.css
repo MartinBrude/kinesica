@@ -2754,35 +2754,6 @@ main:focus {
   line-height: 1.25;
 }
 
-.clinic-facts {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0.35rem 1rem;
-  margin: 1.25rem auto 0;
-  max-width: 28rem;
-  text-align: left;
-}
-
-.clinic-facts dt,
-.clinic-facts dd {
-  margin: 0;
-}
-
-.clinic-facts dt {
-  font-weight: 600;
-}
-
-.clinic-steps-title {
-  margin: 1.5rem 0 0.5rem;
-  font-size: 1.15rem;
-}
-
-.clinic-steps {
-  margin: 0 auto 0.5rem;
-  max-width: 28rem;
-  text-align: left;
-}
-
 .map-transit-card-detail {
   margin: 0;
   display: flex;
