@@ -28,7 +28,7 @@ import {
   compareFichas,
   daysBetween,
   matchFichaSearch,
-} from "./ficha-rules.mjs?v=82";
+} from "./ficha-rules.mjs?v=83";
 
 import {
   api,
@@ -76,7 +76,7 @@ import {
   getCurrentId,
   setCurrentId,
   initForm,
-} from "./modules/form.js?v=81";
+} from "./modules/form.js?v=82";
 
 import {
   loadAll,
@@ -91,7 +91,7 @@ import {
   syncMineButton,
   downloadJSON,
   initLibrary,
-} from "./modules/library.js?v=85";
+} from "./modules/library.js?v=86";
 
 import {
   buildSheet,

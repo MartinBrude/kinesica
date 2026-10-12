@@ -224,6 +224,30 @@ if ($method === 'POST') {
         }
     }
 
+    $inherited = '';
+    $siblingRows = $pdo->query('SELECT id, profesional, payload FROM fichas ORDER BY updated_at DESC')->fetchAll();
+    foreach ($siblingRows as $row) {
+        if ((string) $row['id'] === $id) {
+            continue;
+        }
+        $item = json_decode((string) $row['payload'], true);
+        if (!is_array($item)) {
+            continue;
+        }
+        $doc = $docKey((string) ($item['dni'] ?? ''));
+        $name = $nameKey((string) ($item['nombre'] ?? ''));
+        $sameDoc = $incomingDoc !== '' && $doc === $incomingDoc;
+        $sameNameOnly = $incomingDoc === '' && $incomingName !== '' && $name === $incomingName && $doc === '';
+        if (!$sameDoc && !$sameNameOnly) {
+            continue;
+        }
+        $owner = (string) ($row['profesional'] ?? '');
+        if (isset($clinicians[$owner])) {
+            $inherited = $owner;
+            break;
+        }
+    }
+
     $pdo->beginTransaction();
     $existing = $pdo->prepare('SELECT profesional FROM fichas WHERE id = :id FOR UPDATE');
     $existing->execute(['id' => $id]);
@@ -234,6 +258,8 @@ if ($method === 'POST') {
             $profesional = $requested;
         } elseif ($previous !== false && $previous !== '' && isset($clinicians[(string) $previous])) {
             $profesional = (string) $previous;
+        } elseif ($inherited !== '') {
+            $profesional = $inherited;
         } else {
             $profesional = 'norberto';
         }
@@ -243,6 +269,8 @@ if ($method === 'POST') {
             json_out(403, ['error' => 'No tienes permiso para modificar esta ficha']);
         }
         $profesional = (string) $previous;
+    } elseif ($inherited !== '') {
+        $profesional = $inherited;
     } elseif ($auth['username'] === 'maria') {
         $profesional = 'maria';
     } else {

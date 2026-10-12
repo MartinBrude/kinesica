@@ -187,13 +187,14 @@ await test("getSessionIndex ordena por fecha y numera sesiones nuevas", () => {
 });
 
 await test("nextSession copia solo datos del paciente, no clínicos", () => {
-  const prev = { ...emptyFicha(), nombre: "Ana", dni: "1111", nacimiento: "1989-05-28", eva: 8, ruidos: "Sí", id: "abc" };
+  const prev = { ...emptyFicha(), nombre: "Ana", dni: "1111", nacimiento: "1989-05-28", eva: 8, ruidos: "Sí", id: "abc", profesional: "maria" };
   const next = nextSession(prev, "2026-10-20");
   assert.equal(next.nombre, "Ana");
   assert.equal(next.eva, emptyFicha().eva);
   assert.equal(next.ruidos, emptyFicha().ruidos);
   assert.equal(next.id, undefined);
   assert.equal(next.edad, "37");
+  assert.equal(next.profesional, "maria");
   assert.doesNotThrow(() => nextSession(null, ""));
 });
 

@@ -13,7 +13,7 @@ import {
   missingFields,
   exampleFicha,
   ageOn,
-} from "../ficha-rules.mjs?v=79";
+} from "../ficha-rules.mjs?v=83";
 import { formatDate } from "./api.js?v=77";
 import { debounce, dialogAlert, dialogConfirm, escapeHtml } from "./dom.js?v=78";
 import { todayISO } from "./form.js?v=77";

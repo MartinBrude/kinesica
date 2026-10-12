@@ -371,6 +371,7 @@ export function nextSession(item, fechaSesion) {
   copy.sinDocumento = Boolean(item?.sinDocumento);
   copy.fechaSesion = fechaSesion || "";
   copy.edad = ageOn(item?.nacimiento, fechaSesion);
+  if (CLINICIANS[item?.profesional]) copy.profesional = item.profesional;
   return copy;
 }
 

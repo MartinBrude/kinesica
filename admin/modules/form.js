@@ -741,6 +741,9 @@ export function initForm({ onSave, onBack, onCompare, onPrint, getSessionUser })
         if (match.antecedentes) {
           form.elements.antecedentes.value = match.antecedentes;
         }
+        if (form.elements.profesional && match.profesional) {
+          form.elements.profesional.value = match.profesional;
+        }
         syncAge();
         const pSessions = all.filter((f) => patientKey(f) === selectedKey);
         setDniPower(!match.sinDocumento, { clear: Boolean(match.sinDocumento) });

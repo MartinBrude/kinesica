@@ -331,10 +331,11 @@ function password_reset_register_attempt(string $identifier): void
          VALUES (:attempt_key, 1, UTC_TIMESTAMP(), NULL)
          ON DUPLICATE KEY UPDATE
             attempts = IF(window_start < :window_start, 1, attempts + 1),
-            window_start = IF(window_start < :window_start, UTC_TIMESTAMP(), window_start)'
+            window_start = IF(window_start < :window_start_cmp, UTC_TIMESTAMP(), window_start)'
     )->execute([
         'attempt_key' => $key,
         'window_start' => $windowStart,
+        'window_start_cmp' => $windowStart,
     ]);
 
     $stmt = $pdo->prepare('SELECT attempts FROM password_reset_attempts WHERE attempt_key = :attempt_key');
