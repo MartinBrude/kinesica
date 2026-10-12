@@ -195,7 +195,6 @@
 
           <div class="patient-fixed-section" id="patient-fixed-section">
             <div class="form-subgroup form-subgroup-first">
-              <h3 class="subheading-filiacion">Filiación e identificación personal (Datos basales)</h3>
               <div class="grid-2">
                 <label>Nombre completo
                   <input name="nombre" placeholder="Ej: Carolina Méndez" required autocomplete="name">
@@ -227,9 +226,8 @@
             </div>
 
             <div class="form-subgroup">
-              <h3 class="subheading-filiacion">Motivo de consulta y antecedentes basales</h3>
               <fieldset>
-                <legend>Motivo de consulta principal</legend>
+                <legend class="subheading-filiacion">Motivo de consulta</legend>
                 <div class="pills" data-single="motivo">
                   <button type="button" data-value="Traumático">Traumático</button>
                   <button type="button" data-value="No Traumático">No Traumático</button>
@@ -238,7 +236,7 @@
               </fieldset>
               <!-- FEATURE-OPTIONAL: habitos-bruxismo -->
               <fieldset class="habitos-block">
-                <legend>Hábitos parafuncionales y bruxismo</legend>
+                <legend>Hábitos</legend>
                 <div class="habit-grid">
                   <label class="check"><input type="checkbox" name="habitoApretamiento"> Apretamiento diurno</label>
                   <label class="check"><input type="checkbox" name="habitoBruxismo"> Bruxismo nocturno</label>
@@ -247,14 +245,14 @@
                 </div>
               </fieldset>
               <!-- /FEATURE-OPTIONAL: habitos-bruxismo -->
-              <label>Descripción de antecedentes clínicos
+              <label>Antecedentes clínicos
                 <textarea name="antecedentes" rows="4" placeholder="Coloca la sintomatología inicial, hábitos o incidentes traumáticos reportados por el paciente" required></textarea>
               </label>
             </div>
           </div>
 
           <div class="session-dynamic-section form-subgroup">
-            <h3 class="subheading-session">Datos de la sesión / consulta actual</h3>
+            <h3 class="subheading-session">Sesión</h3>
             <div class="grid-2">
               <label>Fecha de la sesión
                 <input name="fechaSesion" type="date" required>
