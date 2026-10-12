@@ -3108,7 +3108,12 @@ Pathology detail pages (FAQ dolencias)
 ----------------------------------*/
 .pathology-page {
   padding-top: 48px;
-  padding-bottom: 32px;
+  padding-bottom: 8px;
+}
+
+.pathology-urgent-care.space-medium {
+  padding-top: 16px;
+  padding-bottom: 64px;
 }
 
 .content p.pathology-eyebrow,

@@ -75,19 +75,15 @@ function methodImageSrc(image, prefix) {
 
 const METHOD_PAGE_UI = {
   es: {
-    summaryTitle: "Respuesta breve",
     whatIsTitle: (name) => `¿Qué es ${name}?`,
   },
   en: {
-    summaryTitle: "Quick answer",
     whatIsTitle: (name) => `What is ${name}?`,
   },
   fr: {
-    summaryTitle: "Réponse rapide",
     whatIsTitle: (name) => `Qu'est-ce que ${name} ?`,
   },
   pt: {
-    summaryTitle: "Resposta rápida",
     whatIsTitle: (name) => `O que é ${name}?`,
   },
 };
@@ -123,7 +119,6 @@ function buildMain(data, ui, imageSrc, lang) {
             <p class="method-eyebrow">${escHtml(ui.eyebrow)}</p>
             <h1>${escHtml(data.h1)}</h1>
             <section class="method-answer-first">
-              <h2>${escHtml(pageUi.summaryTitle)}</h2>
               <p class="lead">${escHtml(data.lead)}</p>
             </section>
           </div>

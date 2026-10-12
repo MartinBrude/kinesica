@@ -96,7 +96,6 @@ function buildRelatedSection(pathology, lang) {
 
 const PATHOLOGY_PAGE_UI = {
   es: {
-    summaryTitle: "Respuesta breve",
     whatLabel: "Qué es",
     symptomsLabel: "Síntomas",
     treatmentLabel: "Cómo se trata",
@@ -116,7 +115,6 @@ const PATHOLOGY_PAGE_UI = {
     urgentLinkLabel: "Condiciones de uso y alcance informativo",
   },
   en: {
-    summaryTitle: "Quick answer",
     whatLabel: "What it is",
     symptomsLabel: "Symptoms",
     treatmentLabel: "How it is treated",
@@ -136,7 +134,6 @@ const PATHOLOGY_PAGE_UI = {
     urgentLinkLabel: "Conditions of use and informational scope",
   },
   fr: {
-    summaryTitle: "Réponse rapide",
     whatLabel: "De quoi s'agit-il",
     symptomsLabel: "Symptômes",
     treatmentLabel: "Comment c'est traité",
@@ -156,7 +153,6 @@ const PATHOLOGY_PAGE_UI = {
     urgentLinkLabel: "Conditions d'utilisation et portée informative",
   },
   pt: {
-    summaryTitle: "Resposta rápida",
     whatLabel: "O que é",
     symptomsLabel: "Sintomas",
     treatmentLabel: "Como se trata",
@@ -286,8 +282,7 @@ function buildMain(pathology, lang) {
           <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
             <p class="pathology-eyebrow">${ui.eyebrow}</p>
             <h1>${data.h1}</h1>
-            <section class="pathology-answer-first" aria-labelledby="pathology-summary-${pathology.stem}">
-              <h2 id="pathology-summary-${pathology.stem}">${escHtml(pageUi.summaryTitle)}</h2>
+            <section class="pathology-answer-first">
               <p class="lead">${data.lead}</p>
               <ul>
 ${answerPoints}
