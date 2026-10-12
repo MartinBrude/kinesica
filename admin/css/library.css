@@ -165,9 +165,27 @@
   color: var(--navy);
 }
 
-.library-list {
-  display: grid;
-  gap: 10px;
+.library-toolbar.is-idle {
+  opacity: 0.45;
+}
+
+.library-toolbar.is-idle select,
+.library-toolbar.is-idle input,
+.library-toolbar.is-idle .lt-chip {
+  background: #eef1f4;
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.lt-chip:disabled {
+  pointer-events: none;
+}
+
+.empty-none {
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--navy);
+  padding: 28px 8px 12px;
 }
 
 .card-row {

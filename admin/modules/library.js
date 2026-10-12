@@ -573,6 +573,14 @@ export function renderLibrary() {
   }
   syncMineButton();
 
+  const noPatients = loadAll().length === 0;
+  const toolbar = libraryView?.querySelector(".library-toolbar");
+  if (toolbar) toolbar.classList.toggle("is-idle", noPatients);
+  if (patientSelect) patientSelect.disabled = noPatients;
+  if (searchInput) searchInput.disabled = noPatients;
+  if (mineButton) mineButton.disabled = noPatients;
+  if (sortPatientsSelect) sortPatientsSelect.disabled = noPatients;
+
   const items = visibleFichas(sessionUser);
 
   // Sincronizar selector de pacientes para PDF
@@ -649,7 +657,7 @@ export function renderLibrary() {
 
   if (!groups.length) {
     const p = document.createElement("p");
-    p.className = "empty";
+    p.className = noPatients ? "empty empty-none" : "empty";
     p.textContent = searchInput?.value || onlyMine
       ? "No se encontraron pacientes con los filtros actuales."
       : "No hay pacientes guardados todavía.";
