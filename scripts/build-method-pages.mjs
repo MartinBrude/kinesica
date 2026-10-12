@@ -128,7 +128,7 @@ function buildMain(data, ui, imageSrc, lang) {
             </section>
           </div>
           <figure class="method-figure">
-            <img src="${escHtml(imageSrc)}" alt="${escHtml(data.h1)}" width="1536" height="1024" decoding="async" fetchpriority="high" />
+            <img src="${escHtml(imageSrc)}" alt="${escHtml(data.h1)}" title="${escHtml(data.h1)}" width="1536" height="1024" decoding="async" fetchpriority="high" />
           </figure>
           <div class="method-page-body">
 ${rendered}

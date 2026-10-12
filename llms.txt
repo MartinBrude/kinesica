@@ -28,7 +28,7 @@ Información útil para asistentes y crawlers:
 
 ## Páginas principales
 
-- [Inicio (español, Argentina)](https://www.kinesica.com.ar/): Kinésica es un centro de kinesiología, osteopatía, RPG y ATM en Palermo. Terapias manuales personalizadas.
+- [Inicio (español, Argentina)](https://www.kinesica.com.ar/): Kinésica es un centro de kinesiología, osteopatía, RPG y ATM en Palermo. Terapias manuales personalizadas para dolor, postura y movimiento.
 - [Artículos y patologías](https://www.kinesica.com.ar/articulos.html): Artículos sobre kinesiología, osteopatía y terapia manual. Información sobre cervicalgia, lumbalgia y tratamientos en Palermo.
 - [CV — Norberto Silvio Brude](https://www.kinesica.com.ar/cv.html): Kinesiólogo y osteópata; formación y experiencia profesional.
 - [Política de privacidad](https://www.kinesica.com.ar/privacidad.html): Protección de datos personales y procedimiento para solicitar eliminación de información.
@@ -88,7 +88,7 @@ Información útil para asistentes y crawlers:
 
 ## English
 
-- [Home (English)](https://www.kinesica.com.ar/en/): Kinésica is a clinic for kinesiology, osteopathy, RPG, and TMJ in Palermo offering personalized manual therapy.
+- [Home (English)](https://www.kinesica.com.ar/en/): Kinésica is a clinic for kinesiology, osteopathy, RPG, and TMJ in Palermo. Personalized manual therapy for pain, posture, and movement.
 - [Articles & conditions](https://www.kinesica.com.ar/en/articulos.html): Articles about kinesiology, osteopathy, and manual therapy. Information about cervical pain, low back pain, and treatments in Palermo.
 - [CV — Norberto Silvio Brude](https://www.kinesica.com.ar/en/cv.html): Physiotherapist and osteopath profile.
 - [Privacy policy](https://www.kinesica.com.ar/en/privacidad.html): Personal data protection and deletion request procedure.
@@ -110,7 +110,7 @@ Información útil para asistentes y crawlers:
 
 - [Headache: pain and tension relief](https://www.kinesica.com.ar/en/cefalea.html): Headache treatment at Kinésica (Buenos Aires). We assess neck, posture and TMJ to reduce pain, prevent recurrence and restore daily life.
 - [Upper back pain (dorsalgia)](https://www.kinesica.com.ar/en/dorsalgia.html): Upper back pain treatment at Kinésica (Buenos Aires). Hands-on care and posture work to ease pain, restore thoracic mobility and improve breathing.
-- [Low back pain (lumbalgia)](https://www.kinesica.com.ar/en/lumbalgia.html): Low back pain care at Kinésica (Buenos Aires). Assessment plus manual therapy and exercise to relieve pain and rebuild confident movement.
+- [Low back pain: assessment and treatment](https://www.kinesica.com.ar/en/lumbalgia.html): Low back pain care at Kinésica (Buenos Aires). Assessment plus manual therapy and exercise to relieve pain and rebuild confident movement.
 - [Sciatica-like pain (ciatalgia)](https://www.kinesica.com.ar/en/ciatalgia.html): Sciatica-like symptoms at Kinésica (Buenos Aires). We assess the sciatic nerve, spine and hip. Neurodynamics plus manual therapy and exercise.
 - [Neck-to-arm pain (cervicobrachialgia)](https://www.kinesica.com.ar/en/cervicobraquialgia.html): Neck-to-arm pain care at Kinésica (Buenos Aires). Cervical and neural assessment, neurodynamics and manual therapy to restore comfort and function.
 - [Groin pain (pubalgia)](https://www.kinesica.com.ar/en/pubalgia.html): Groin pain care at Kinésica (Buenos Aires). Pelvis and hip assessment, manual therapy and exercise to return to sport with confidence.
@@ -148,7 +148,7 @@ Información útil para asistentes y crawlers:
 
 ## Français
 
-- [Accueil (français)](https://www.kinesica.com.ar/fr/): Kinésica est un centre de kinésithérapie, ostéopathie, RPG et ATM à Palermo. Thérapies manuelles personnalisées.
+- [Accueil (français)](https://www.kinesica.com.ar/fr/): Kinésica est un centre de kinésithérapie, ostéopathie, RPG et ATM à Palermo. Thérapies manuelles personnalisées pour la douleur et la posture.
 - [Articles et pathologies](https://www.kinesica.com.ar/fr/articulos.html): Articles sur la kinésithérapie, l'ostéopathie et la thérapie manuelle : douleur cervicale, lombalgie et traitements à Palermo.
 - [CV — Norberto Silvio Brude](https://www.kinesica.com.ar/fr/cv.html): Profil du kinésithérapeute et ostéopathe.
 - [Politique de confidentialité](https://www.kinesica.com.ar/fr/privacidad.html): Protection des données personnelles et demande de suppression d'informations.
@@ -170,7 +170,7 @@ Información útil para asistentes y crawlers:
 
 - [Céphalée : soulager la douleur](https://www.kinesica.com.ar/fr/cefalea.html): Prise en charge des céphalées chez Kinésica (Buenos Aires). Bilan du cou, de la posture et de l’ATM pour réduire la douleur et les récidives.
 - [Dorsalgie : douleur du haut du dos](https://www.kinesica.com.ar/fr/dorsalgia.html): Traitement de la dorsalgie chez Kinésica (Buenos Aires). Thérapie manuelle et posture pour réduire la douleur et améliorer la mobilité thoracique.
-- [Lombalgie : douleur lombaire](https://www.kinesica.com.ar/fr/lumbalgia.html): Prise en charge de la lombalgie chez Kinésica (Buenos Aires). Bilan, thérapie manuelle et exercice pour soulager et retrouver un mouvement confiant.
+- [Lombalgie : évaluation et traitement](https://www.kinesica.com.ar/fr/lumbalgia.html): Prise en charge de la lombalgie chez Kinésica (Buenos Aires). Bilan, thérapie manuelle et exercice pour soulager et retrouver un mouvement confiant.
 - [Ciatalgie : douleur qui descend dans la jambe](https://www.kinesica.com.ar/fr/ciatalgia.html): Ciatalgie chez Kinésica (Buenos Aires). Bilan du nerf sciatique, de la colonne et de la hanche. Neurodynamique, thérapie manuelle et exercice.
 - [Cervicobrachialgie : du cou au bras](https://www.kinesica.com.ar/fr/cervicobraquialgia.html): Cervicobrachialgie chez Kinésica (Buenos Aires). Bilan cervical et neural, neurodynamique et thérapie manuelle pour réduire la douleur et récupérer le bras.
 - [Pubalgie : douleur de l’aine et du pubis](https://www.kinesica.com.ar/fr/pubalgia.html): Prise en charge de la pubalgie chez Kinésica (Buenos Aires). Bilan bassin/hanche, thérapie manuelle et exercice pour reprendre le sport sans douleur.
@@ -208,7 +208,7 @@ Información útil para asistentes y crawlers:
 
 ## Português
 
-- [Início (português)](https://www.kinesica.com.ar/pt/): Kinésica é um centro de fisioterapia, osteopatia, RPG e ATM em Palermo com terapias manuais personalizadas.
+- [Início (português)](https://www.kinesica.com.ar/pt/): Kinésica é um centro de fisioterapia, osteopatia, RPG e ATM em Palermo. Terapias manuais personalizadas para dor, postura e movimento.
 - [Artigos e condições](https://www.kinesica.com.ar/pt/articulos.html): Artigos sobre fisioterapia, osteopatia e terapia manual: dor cervical, lombalgia e tratamentos em Palermo.
 - [Currículo — Norberto Silvio Brude](https://www.kinesica.com.ar/pt/cv.html): Perfil do fisioterapeuta e osteopata.
 - [Política de privacidade](https://www.kinesica.com.ar/pt/privacidad.html): Proteção de dados pessoais e procedimento para solicitar a eliminação de informações.

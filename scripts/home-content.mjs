@@ -11,7 +11,7 @@ import {
   googleReviewsListUrl,
 } from "./google-place.mjs";
 import { SITE_OG_IMAGE } from "./page-shell.mjs";
-import { waMeUrl } from "./site-contact.mjs";
+import { CONTACT, OPENING_HOURS, waMeUrl } from "./site-contact.mjs";
 import { readExistingPayload } from "./fetch-google-reviews.mjs";
 import {
   balanceReviewOrder,
@@ -24,6 +24,91 @@ export const HOME_OG_IMAGE = SITE_OG_IMAGE;
 export const HOME_HERO_IMAGE = HOME_OG_IMAGE;
 
 const HOME_WHATSAPP_HREF = waMeUrl();
+
+function hourLabel(hm) {
+  const [hour, minute] = hm.split(":").map(Number);
+  return minute === 0 ? String(hour) : `${hour}:${String(minute).padStart(2, "0")}`;
+}
+
+/** Address, hours and phone as a definition list, plus how to book. */
+function renderVisitFacts(lang) {
+  const open = hourLabel(OPENING_HOURS.opens);
+  const close = hourLabel(OPENING_HOURS.closes);
+  const address = `${CONTACT.address.streetAddress}, ${CONTACT.address.addressNeighborhood}, ${CONTACT.address.addressRegion}`;
+  const copy = {
+    es: {
+      lead: `Kinésica atiende en ${CONTACT.address.streetAddress}, Palermo, de lunes a viernes de ${open} a ${close} h.`,
+      address: "Dirección",
+      hours: "Horario",
+      phone: "Teléfono",
+      hoursValue: `Lunes a viernes, ${open} a ${close} h`,
+      stepsTitle: "Cómo pedir turno",
+      steps: [
+        "Escribinos por WhatsApp o agendá online.",
+        "Contanos qué te duele y si tenés estudios.",
+        "Te esperamos en el consultorio de Palermo.",
+      ],
+    },
+    en: {
+      lead: `Kinésica sees you at ${CONTACT.address.streetAddress}, Palermo, Monday to Friday, ${open} to ${close}.`,
+      address: "Address",
+      hours: "Hours",
+      phone: "Phone",
+      hoursValue: `Monday to Friday, ${open} to ${close}`,
+      stepsTitle: "How to book",
+      steps: [
+        "Message us on WhatsApp or book online.",
+        "Tell us what hurts and whether you have studies.",
+        "We will see you at the Palermo clinic.",
+      ],
+    },
+    fr: {
+      lead: `Kinésica vous reçoit au ${CONTACT.address.streetAddress}, Palermo, du lundi au vendredi de ${open} h à ${close} h.`,
+      address: "Adresse",
+      hours: "Horaires",
+      phone: "Téléphone",
+      hoursValue: `Lundi au vendredi, ${open} h à ${close} h`,
+      stepsTitle: "Comment prendre rendez-vous",
+      steps: [
+        "Écrivez-nous sur WhatsApp ou réservez en ligne.",
+        "Dites-nous ce qui fait mal et si vous avez des examens.",
+        "Nous vous attendons au cabinet de Palermo.",
+      ],
+    },
+    pt: {
+      lead: `A Kinésica atende em ${CONTACT.address.streetAddress}, Palermo, de segunda a sexta, das ${open} às ${close} h.`,
+      address: "Endereço",
+      hours: "Horário",
+      phone: "Telefone",
+      hoursValue: `Segunda a sexta, ${open} às ${close} h`,
+      stepsTitle: "Como marcar",
+      steps: [
+        "Escreva no WhatsApp ou agende online.",
+        "Conte o que dói e se você tem exames.",
+        "Esperamos você no consultório em Palermo.",
+      ],
+    },
+  }[lang];
+  const items = [
+    [copy.address, address],
+    [copy.hours, copy.hoursValue],
+    [copy.phone, CONTACT.phoneDisplay],
+  ];
+  const steps = copy.steps.map((step) => `                <li>${escHtml(step)}</li>`).join("\n");
+  return [
+    `              <p class="section-lead">${escHtml(copy.lead)}</p>`,
+    `              <dl class="clinic-facts">`,
+    ...items.flatMap(([term, value]) => [
+      `                <dt>${escHtml(term)}</dt>`,
+      `                <dd>${escHtml(value)}</dd>`,
+    ]),
+    `              </dl>`,
+    `              <h3 class="clinic-steps-title">${escHtml(copy.stepsTitle)}</h3>`,
+    `              <ol class="clinic-steps">`,
+    steps,
+    `              </ol>`,
+  ].join("\n");
+}
 
 /**
  * Control de visibilidad del botón de agendar en el Hero.
@@ -119,6 +204,7 @@ const TEAM_ABOUT = {
   es: {
     eyebrow: "Sobre nosotros",
     title: "Profesionales dedicados a tu bienestar",
+    summary: "En Kinésica te atiende un equipo de kinesiólogos en Palermo.",
     lead:
       "Somos kinesiólogos en constante formación, dedicados a la <span class=\"text-highlight\">Terapia Manual</span> para abordar a cada paciente de forma integral. Buscamos el tratamiento específico que necesitás para dejar de vivir con dolor.",
     members: [
@@ -143,6 +229,7 @@ const TEAM_ABOUT = {
   en: {
     eyebrow: "About us",
     title: "Professionals dedicated to your wellbeing",
+    summary: "At Kinésica, kinesiologists in Palermo look after you.",
     lead:
       "We are kinesiologists in ongoing training, dedicated to <span class=\"text-highlight\">Manual Therapy</span> for a whole-person approach. We look for the specific treatment you need so you can stop living with pain.",
     members: [
@@ -167,6 +254,7 @@ const TEAM_ABOUT = {
   fr: {
     eyebrow: "À propos",
     title: "Des praticiens dédiés à votre bien-être",
+    summary: "Chez Kinésica, des kinésithérapeutes vous reçoivent à Palermo.",
     lead:
       "Nous sommes kinésithérapeutes en formation continue, dédiés à la <span class=\"text-highlight\">thérapie manuelle</span> pour une prise en charge globale. Nous cherchons le traitement adapté pour que vous cessiez de vivre avec la douleur.",
     members: [
@@ -191,6 +279,7 @@ const TEAM_ABOUT = {
   pt: {
     eyebrow: "Sobre nós",
     title: "Profissionais dedicados ao seu bem-estar",
+    summary: "Na Kinésica, fisioterapeutas atendem você em Palermo.",
     lead:
       "Somos fisioterapeutas em formação contínua, dedicados à <span class=\"text-highlight\">terapia manual</span> para um cuidado integral. Buscamos o tratamento específico para você deixar de viver com dor.",
     members: [
@@ -551,6 +640,7 @@ function teamAboutSection(lang) {
     "              <!-- section title start-->",
     `              <p class=\"section-eyebrow\">${copy.eyebrow}</p>`,
     `              <h2 class=\"heading-line-center\">${copy.title}</h2>`,
+    `              <p class=\"section-lead\">${copy.summary}</p>`,
     "              <p class=\"section-lead\">",
     `                ${copy.lead}`,
     "              </p>",
@@ -629,7 +719,7 @@ function reviewTimeLabel(review, lang) {
 
 function renderReviewCard(review, lang) {
   const avatarHtml = review.authorPhoto
-    ? `\n                    <img class="google-review-avatar" src="${escAttr(review.authorPhoto)}" alt="" width="40" height="40" loading="lazy" decoding="async" referrerpolicy="no-referrer" />`
+    ? `\n                    <img class="google-review-avatar" src="${escAttr(review.authorPhoto)}" alt="${escAttr(review.author || "")}" width="40" height="40" loading="lazy" decoding="async" referrerpolicy="no-referrer" />`
     : "";
   const timeLabel = reviewTimeLabel(review, lang);
   const timeHtml = timeLabel
@@ -686,10 +776,10 @@ export function googleReviewsBlock(lang) {
 /** @type {Record<import("./languages.mjs").LangCode, HomeLang>} */
 export const HOME = {
   es: {
-    title: "Kinésica - Kinesiología, Osteopatía, RPG y ATM en Palermo, Buenos Aires",
-    description: "Kinésica es un centro de kinesiología, osteopatía, RPG y ATM en Palermo. Terapias manuales personalizadas.",
-    ogDescription: "Kinésica es un centro de kinesiología, osteopatía, RPG y ATM en Palermo. Terapias manuales personalizadas.",
-    twitterDescription: "Kinésica es un centro de kinesiología, osteopatía, RPG y ATM en Palermo. Terapias manuales personalizadas.",
+    title: "Kinésica - Kinesiología, Osteopatía, RPG y ATM en Palermo",
+    description: "Kinésica es un centro de kinesiología, osteopatía, RPG y ATM en Palermo. Terapias manuales personalizadas para dolor, postura y movimiento.",
+    ogDescription: "Kinésica es un centro de kinesiología, osteopatía, RPG y ATM en Palermo. Terapias manuales personalizadas para dolor, postura y movimiento.",
+    twitterDescription: "Kinésica es un centro de kinesiología, osteopatía, RPG y ATM en Palermo. Terapias manuales personalizadas para dolor, postura y movimiento.",
     twitterImageAlt: "Centro Kinésica — kinesiología, osteopatía, RPG y ATM en Palermo",
     mainHtml: [
       "<section class=\"hero-section\">",
@@ -698,8 +788,9 @@ export const HOME = {
       "          <div class=\"col-md-5\">",
       "            <h1 class=\"hero-title\">Kinesiología <br />RPG <br />Osteopatía <br />ATM</h1>",
       "            <p class=\"hero-text\">",
-      "              No te acostumbres a vivir con dolor, podemos encontrar juntos un",
-      "              camino para que vivas mejor.",
+      "              En Kinésica, en Palermo, no tenés que acostumbrarte a vivir con dolor.",
+      "              Evaluamos tu caso y armamos un tratamiento de terapia manual para que",
+      "              vuelvas a moverte mejor.",
       "            </p>",
       ...renderHeroActions("es"),
       "</div>",
@@ -735,6 +826,7 @@ export const HOME = {
       "            <div class=\"section-title mb40 text-center\">",
       "              <p class=\"section-eyebrow\">Ubicación</p>",
       "              <h2 class=\"heading-line-center\">¿Dónde estamos?</h2>",
+      renderVisitFacts("es"),
       "            </div>",
       "          </div>",
       "        </div>",
@@ -799,10 +891,10 @@ export const HOME = {
     ].join("\n"),
   },
   en: {
-    title: "Kinésica - Kinesiology, Osteopathy, RPG and TMJ in Palermo, Buenos Aires",
-    description: "Kinésica is a clinic for kinesiology, osteopathy, RPG, and TMJ in Palermo offering personalized manual therapy.",
-    ogDescription: "Kinésica is a clinic for kinesiology, osteopathy, RPG, and TMJ in Palermo offering personalized manual therapy.",
-    twitterDescription: "Kinésica is a clinic for kinesiology, osteopathy, RPG, and TMJ in Palermo offering personalized manual therapy.",
+    title: "Kinésica - Kinesiology, Osteopathy, RPG and TMJ in Palermo",
+    description: "Kinésica is a clinic for kinesiology, osteopathy, RPG, and TMJ in Palermo. Personalized manual therapy for pain, posture, and movement.",
+    ogDescription: "Kinésica is a clinic for kinesiology, osteopathy, RPG, and TMJ in Palermo. Personalized manual therapy for pain, posture, and movement.",
+    twitterDescription: "Kinésica is a clinic for kinesiology, osteopathy, RPG, and TMJ in Palermo. Personalized manual therapy for pain, posture, and movement.",
     twitterImageAlt: "Kinésica clinic — kinesiology, osteopathy, RPG and TMJ in Palermo",
     mainHtml: [
       "<section class=\"hero-section\">",
@@ -811,8 +903,9 @@ export const HOME = {
       "          <div class=\"col-md-5\">",
       "            <h1 class=\"hero-title\">Kinesiology <br />RPG <br />Osteopathy <br />TMJ</h1>",
       "            <p class=\"hero-text\">",
-      "              Don't get used to living in pain. Together, we can find a way for",
-      "              you to live better.",
+      "              At Kinésica in Palermo, you do not have to get used to living in pain.",
+      "              We assess your case and plan manual therapy so you can move more",
+      "              comfortably.",
       "            </p>",
       ...renderHeroActions("en"),
       "</div>",
@@ -848,6 +941,7 @@ export const HOME = {
       "            <div class=\"section-title mb40 text-center\">",
       "              <p class=\"section-eyebrow\">Visit us</p>",
       "              <h2 class=\"heading-line-center\">Location</h2>",
+      renderVisitFacts("en"),
       "            </div>",
       "          </div>",
       "        </div>",
@@ -912,10 +1006,10 @@ export const HOME = {
     ].join("\n"),
   },
   fr: {
-    title: "Kinésica — Kinésithérapie, ostéopathie, RPG et ATM à Palermo, Buenos Aires",
-    description: "Kinésica est un centre de kinésithérapie, ostéopathie, RPG et ATM à Palermo. Thérapies manuelles personnalisées.",
-    ogDescription: "Kinésica est un centre de kinésithérapie, ostéopathie, RPG et ATM à Palermo. Thérapies manuelles personnalisées.",
-    twitterDescription: "Kinésica est un centre de kinésithérapie, ostéopathie, RPG et ATM à Palermo. Thérapies manuelles personnalisées.",
+    title: "Kinésica — Kinésithérapie, ostéopathie, RPG, ATM à Palermo",
+    description: "Kinésica est un centre de kinésithérapie, ostéopathie, RPG et ATM à Palermo. Thérapies manuelles personnalisées pour la douleur et la posture.",
+    ogDescription: "Kinésica est un centre de kinésithérapie, ostéopathie, RPG et ATM à Palermo. Thérapies manuelles personnalisées pour la douleur et la posture.",
+    twitterDescription: "Kinésica est un centre de kinésithérapie, ostéopathie, RPG et ATM à Palermo. Thérapies manuelles personnalisées pour la douleur et la posture.",
     twitterImageAlt: "Centre Kinésica — kinésithérapie, ostéopathie, RPG et ATM à Palermo",
     mainHtml: [
       "<section class=\"hero-section\">",
@@ -924,7 +1018,9 @@ export const HOME = {
       "          <div class=\"col-md-5\">",
       "            <h1 class=\"hero-title\">Kinésithérapie <br />RPG <br />Ostéopathie <br />ATM</h1>",
       "            <p class=\"hero-text\">",
-      "              N'habituez pas votre corps à la douleur. Ensemble, nous pouvons trouver une façon de mieux vivre.",
+      "              Chez Kinésica, à Palermo, vous n'avez pas à vous habituer à la douleur.",
+      "              Nous évaluons votre cas et proposons une thérapie manuelle pour que",
+      "              vous bougiez mieux.",
       "            </p>",
       ...renderHeroActions("fr"),
       "</div>",
@@ -960,6 +1056,7 @@ export const HOME = {
       "            <div class=\"section-title mb40 text-center\">",
       "              <p class=\"section-eyebrow\">Adresse</p>",
       "              <h2 class=\"heading-line-center\">Localisation</h2>",
+      renderVisitFacts("fr"),
       "            </div>",
       "          </div>",
       "        </div>",
@@ -1024,10 +1121,10 @@ export const HOME = {
     ].join("\n"),
   },
   pt: {
-    title: "Kinésica — Fisioterapia, osteopatia, RPG e ATM em Palermo, Buenos Aires",
-    description: "Kinésica é um centro de fisioterapia, osteopatia, RPG e ATM em Palermo com terapias manuais personalizadas.",
-    ogDescription: "Kinésica é um centro de fisioterapia, osteopatia, RPG e ATM em Palermo com terapias manuais personalizadas.",
-    twitterDescription: "Kinésica é um centro de fisioterapia, osteopatia, RPG e ATM em Palermo com terapias manuais personalizadas.",
+    title: "Kinésica — Fisioterapia, osteopatia, RPG e ATM em Palermo",
+    description: "Kinésica é um centro de fisioterapia, osteopatia, RPG e ATM em Palermo. Terapias manuais personalizadas para dor, postura e movimento.",
+    ogDescription: "Kinésica é um centro de fisioterapia, osteopatia, RPG e ATM em Palermo. Terapias manuais personalizadas para dor, postura e movimento.",
+    twitterDescription: "Kinésica é um centro de fisioterapia, osteopatia, RPG e ATM em Palermo. Terapias manuais personalizadas para dor, postura e movimento.",
     twitterImageAlt: "Clínica Kinésica — fisioterapia, osteopatia, RPG e ATM em Palermo",
     mainHtml: [
       "<section class=\"hero-section\">",
@@ -1036,7 +1133,9 @@ export const HOME = {
       "          <div class=\"col-md-5\">",
       "            <h1 class=\"hero-title\">Fisioterapia <br />RPG <br />Osteopatia <br />ATM</h1>",
       "            <p class=\"hero-text\">",
-      "              Não se acostume a viver com dor. Juntos, podemos encontrar um caminho para você viver melhor.",
+      "              Na Kinésica, em Palermo, você não precisa se acostumar a viver com dor.",
+      "              Avaliamos o seu caso e montamos um tratamento de terapia manual para",
+      "              você se mover melhor.",
       "            </p>",
       ...renderHeroActions("pt"),
       "</div>",
@@ -1072,6 +1171,7 @@ export const HOME = {
       "            <div class=\"section-title mb40 text-center\">",
       "              <p class=\"section-eyebrow\">Visite-nos</p>",
       "              <h2 class=\"heading-line-center\">Localização</h2>",
+      renderVisitFacts("pt"),
       "            </div>",
       "          </div>",
       "        </div>",

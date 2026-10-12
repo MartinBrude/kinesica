@@ -69,7 +69,7 @@ function renderCard(p, localIndex, cardLast, globalIndex, lang, ui) {
   const href = `${p.stem}.html`;
   const thumb = articleThumbSrc(p.stem, lang);
   const media = thumb
-    ? `<span class="articles-index-card-media"><img src="${thumb}" alt="" width="320" height="180" loading="lazy" decoding="async" /></span>`
+    ? `<span class="articles-index-card-media"><img src="${thumb}" alt="${escHtml(data.breadcrumb)}" width="320" height="180" loading="lazy" decoding="async" /></span>`
     : `<span class="articles-index-card-media articles-index-card-media--placeholder" aria-hidden="true"></span>`;
 
   return `                <a href="${href}" class="articles-index-card" style="--card-i: ${localIndex}; --card-last: ${cardLast}; --card-hue: ${cardHue(globalIndex)}">

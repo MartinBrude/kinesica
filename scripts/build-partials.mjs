@@ -64,7 +64,7 @@ function buildHeader(lang, s) {
     <div class="container">
       <div class="row">
         <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-          <a href="${s.homeHref}"><img src="${s.logoSrc}?v=${LOGO_VERSION}" alt="${s.logoAlt}" width="300" height="100"
+          <a href="${s.homeHref}"><img src="${s.logoSrc}?v=${LOGO_VERSION}" alt="${s.logoAlt}" title="${s.logoAlt}" width="300" height="100"
               loading="eager" /></a>
         </div>
         <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">

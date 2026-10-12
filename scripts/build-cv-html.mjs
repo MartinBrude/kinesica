@@ -180,7 +180,7 @@ ${bodyShellTop(prefix)}${headerShellMarkup(lang, prefix)}
     <section class="cv-hero">
       <div class="container">
         <div class="cv-hero-inner">
-          <img src="${profileImageWebp}" alt="${escHtml(FOUNDER.shortName)}" class="cv-photo" width="140" height="140" loading="eager" />
+          <img src="${profileImageWebp}" alt="${escHtml(FOUNDER.shortName)}" title="${escHtml(FOUNDER.shortName)}" class="cv-photo" width="140" height="140" loading="eager" />
           <div class="cv-hero-text">
             <h1>${escHtml(FOUNDER.shortName)}</h1>
             <p class="cv-role">${escHtml(data.role)}</p>

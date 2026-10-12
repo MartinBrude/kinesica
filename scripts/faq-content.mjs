@@ -6,10 +6,26 @@ import { escHtml } from "./html-utils.mjs";
 import { pathologyForStem } from "./pathology-content.mjs";
 
 export const FAQ_UI = {
-  es: { eyebrow: "Consultas", heading: "Preguntas Frecuentes" },
-  en: { eyebrow: "Help", heading: "Frequently Asked Questions" },
-  fr: { eyebrow: "Aide", heading: "Questions fréquentes" },
-  pt: { eyebrow: "Ajuda", heading: "Perguntas frequentes" },
+  es: {
+    eyebrow: "Consultas",
+    heading: "Preguntas Frecuentes",
+    lead: "Respuestas cortas sobre tu primera consulta en Kinésica.",
+  },
+  en: {
+    eyebrow: "Help",
+    heading: "Frequently Asked Questions",
+    lead: "Short answers about your first visit to Kinésica.",
+  },
+  fr: {
+    eyebrow: "Aide",
+    heading: "Questions fréquentes",
+    lead: "Réponses courtes sur votre première séance chez Kinésica.",
+  },
+  pt: {
+    eyebrow: "Ajuda",
+    heading: "Perguntas frequentes",
+    lead: "Respostas curtas sobre a sua primeira consulta na Kinésica.",
+  },
 };
 
 const CLOTHING = {
@@ -314,6 +330,7 @@ export function renderFaqSection(lang) {
             <div class="section-title mb60 text-center">
               <p class="section-eyebrow">${escHtml(ui.eyebrow)}</p>
               <h2 class="heading-line-center">${escHtml(ui.heading)}</h2>
+              <p class="section-lead">${escHtml(ui.lead)}</p>
             </div>
           </div>
         </div>
