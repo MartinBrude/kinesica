@@ -269,4 +269,7 @@ Información útil para asistentes y crawlers:
 ## Optional
 
 - [Documentación extendida](https://www.kinesica.com.ar/llms-full.txt): resúmenes con párrafos clave de métodos y patologías (es/en/fr/pt).
+- [Resumen para motores de IA](https://www.kinesica.com.ar/ai/summary.json): ficha del centro en JSON.
+- [Preguntas frecuentes](https://www.kinesica.com.ar/ai/faq.json): FAQ de la home en es/en/fr/pt.
+- [ai.txt](https://www.kinesica.com.ar/.well-known/ai.txt): punteros de descubrimiento.
 - [Sitemap](https://www.kinesica.com.ar/sitemap.xml): all public HTML URLs (es/en/fr/pt).

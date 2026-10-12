@@ -1,0 +1,31 @@
+{
+  "name": "Kinésica",
+  "url": "https://www.kinesica.com.ar/",
+  "description": "Kinésica es un centro de kinesiología, osteopatía, RPG y ATM en Palermo. Terapias manuales personalizadas para dolor, postura y movimiento.",
+  "languages": [
+    "es",
+    "en",
+    "fr",
+    "pt"
+  ],
+  "inLanguage": "es-AR",
+  "address": {
+    "streetAddress": "Charcas 3889",
+    "neighborhood": "Palermo",
+    "locality": "Ciudad Autónoma de Buenos Aires",
+    "region": "CABA",
+    "postalCode": "C1425",
+    "country": "AR"
+  },
+  "telephone": "+54 (11) 6156-4311",
+  "email": "norberto1712@gmail.com",
+  "whatsapp": "https://wa.me/5491161564311",
+  "openingHours": "Mo-Fr 08:00-19:00",
+  "founder": "Norberto Silvio Brude",
+  "documents": {
+    "llmsTxt": "https://www.kinesica.com.ar/llms.txt",
+    "llmsFullTxt": "https://www.kinesica.com.ar/llms-full.txt",
+    "faq": "https://www.kinesica.com.ar/ai/faq.json",
+    "sitemap": "https://www.kinesica.com.ar/sitemap.xml"
+  }
+}

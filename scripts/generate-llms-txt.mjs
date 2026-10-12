@@ -16,6 +16,9 @@ import {
   OPENING_HOURS,
   waMeUrl,
 } from "./site-contact.mjs";
+import { faqsForSchema } from "./faq-content.mjs";
+import { HOME } from "./home-content.mjs";
+import { LANG_CODES } from "./languages.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = path.join(ROOT, "llms.txt");
@@ -260,6 +263,9 @@ const ptMainLines = [
 
 const optionalLines = [
   `- [Documentación extendida](${SITE}/llms-full.txt): resúmenes con párrafos clave de métodos y patologías (es/en/fr/pt).`,
+  `- [Resumen para motores de IA](${SITE}/ai/summary.json): ficha del centro en JSON.`,
+  `- [Preguntas frecuentes](${SITE}/ai/faq.json): FAQ de la home en es/en/fr/pt.`,
+  `- [ai.txt](${SITE}/.well-known/ai.txt): punteros de descubrimiento.`,
   `- [Sitemap](${SITE}/sitemap.xml): all public HTML URLs (es/en/fr/pt).`,
 ];
 
@@ -309,18 +315,84 @@ ${section("Pathologies (français)", pathologyLines("fr", { expanded: true }))}
 ${section("Português", ptMainLines)}
 ${section(METHOD_SECTION_TITLES.pt, techniqueLines("pt", { expanded: true }))}
 ${section("Patologias (português)", pathologyLines("pt", { expanded: true }))}
-${section("Optional", [`- [Sitemap](${SITE}/sitemap.xml): all public HTML URLs (es/en/fr/pt).`])}
+${section("Optional", [`- [Sitemap](${SITE}/sitemap.xml): all public HTML URLs (es/en/fr/pt).`, `- [ai.txt](${SITE}/.well-known/ai.txt)`, `- [summary.json](${SITE}/ai/summary.json)`, `- [faq.json](${SITE}/ai/faq.json)`])}
 `.trimEnd() + "\n";
 }
 
 const llmsTxt = buildLlmsTxt();
 const llmsFullTxt = buildLlmsFullTxt();
 
+const summary = {
+  name: "Kinésica",
+  url: `${SITE}/`,
+  description: HOME.es.description,
+  languages: LANG_CODES,
+  inLanguage: "es-AR",
+  address: {
+    streetAddress: CONTACT.address.streetAddress,
+    neighborhood: CONTACT.address.addressNeighborhood,
+    locality: CONTACT.address.addressLocality,
+    region: CONTACT.address.addressRegion,
+    postalCode: CONTACT.address.postalCode,
+    country: CONTACT.address.addressCountry,
+  },
+  telephone: CONTACT.phoneDisplay,
+  email: CONTACT.email,
+  whatsapp: waMeUrl(),
+  openingHours: OPENING_HOURS.schemaShort,
+  founder: FOUNDER.name,
+  documents: {
+    llmsTxt: `${SITE}/llms.txt`,
+    llmsFullTxt: `${SITE}/llms-full.txt`,
+    faq: `${SITE}/ai/faq.json`,
+    sitemap: `${SITE}/sitemap.xml`,
+  },
+};
+
+const faq = {
+  url: `${SITE}/`,
+  languages: Object.fromEntries(
+    LANG_CODES.map((lang) => [lang, faqsForSchema(lang)]),
+  ),
+};
+
+const aiTxt = `# Kinésica
+# AI discovery file. Canonical content remains the public HTML pages.
+
+User-agent: *
+Allow: /
+
+Name: Kinésica
+Description: ${HOME.es.description}
+Canonical: ${SITE}/
+Languages: es-AR, en, fr, pt
+Contact: ${CONTACT.phoneDisplay}
+Email: ${CONTACT.email}
+Address: ${CONTACT.address.streetAddress}, ${CONTACT.address.addressNeighborhood}, ${CONTACT.address.addressRegion}
+Hours: ${OPENING_HOURS.llmsLine}
+Llms-txt: ${SITE}/llms.txt
+Llms-full: ${SITE}/llms-full.txt
+Summary: ${SITE}/ai/summary.json
+Faq: ${SITE}/ai/faq.json
+Sitemap: ${SITE}/sitemap.xml
+`;
+
+const aiDir = path.join(ROOT, "ai");
+const wellKnownDir = path.join(ROOT, ".well-known");
+fs.mkdirSync(aiDir, { recursive: true });
+fs.mkdirSync(wellKnownDir, { recursive: true });
+
 fs.writeFileSync(OUT, llmsTxt);
 fs.writeFileSync(OUT_FULL, llmsFullTxt);
+fs.writeFileSync(path.join(aiDir, "summary.json"), `${JSON.stringify(summary, null, 2)}\n`);
+fs.writeFileSync(path.join(aiDir, "faq.json"), `${JSON.stringify(faq, null, 2)}\n`);
+fs.writeFileSync(path.join(wellKnownDir, "ai.txt"), aiTxt);
 
 console.log("Wrote", path.relative(ROOT, OUT));
 console.log("Wrote", path.relative(ROOT, OUT_FULL));
+console.log("Wrote ai/summary.json");
+console.log("Wrote ai/faq.json");
+console.log("Wrote .well-known/ai.txt");
 console.log(
   `  ${mainPagesEs.length} main · ${METHOD_STEMS.length} methods × 4 langs · ${PATHOLOGIES.length} pathologies`,
 );

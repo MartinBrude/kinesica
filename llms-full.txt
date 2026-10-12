@@ -271,3 +271,6 @@ Versión resumida: [llms.txt](https://www.kinesica.com.ar/llms.txt)
 ## Optional
 
 - [Sitemap](https://www.kinesica.com.ar/sitemap.xml): all public HTML URLs (es/en/fr/pt).
+- [ai.txt](https://www.kinesica.com.ar/.well-known/ai.txt)
+- [summary.json](https://www.kinesica.com.ar/ai/summary.json)
+- [faq.json](https://www.kinesica.com.ar/ai/faq.json)

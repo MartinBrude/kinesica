@@ -1,0 +1,19 @@
+# Kinésica
+# AI discovery file. Canonical content remains the public HTML pages.
+
+User-agent: *
+Allow: /
+
+Name: Kinésica
+Description: Kinésica es un centro de kinesiología, osteopatía, RPG y ATM en Palermo. Terapias manuales personalizadas para dolor, postura y movimiento.
+Canonical: https://www.kinesica.com.ar/
+Languages: es-AR, en, fr, pt
+Contact: +54 (11) 6156-4311
+Email: norberto1712@gmail.com
+Address: Charcas 3889, Palermo, CABA
+Hours: lunes a viernes, 08:00–19:00
+Llms-txt: https://www.kinesica.com.ar/llms.txt
+Llms-full: https://www.kinesica.com.ar/llms-full.txt
+Summary: https://www.kinesica.com.ar/ai/summary.json
+Faq: https://www.kinesica.com.ar/ai/faq.json
+Sitemap: https://www.kinesica.com.ar/sitemap.xml
