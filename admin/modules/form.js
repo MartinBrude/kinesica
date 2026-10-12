@@ -18,7 +18,7 @@ import {
   validateStep,
   getUniquePatients,
   getSessionIndex,
-} from "../ficha-rules.mjs?v=82";
+} from "../ficha-rules.mjs?v=85";
 import { dialogAlert, dialogConfirm } from "./dom.js?v=78";
 
 const form = document.querySelector("#ficha");

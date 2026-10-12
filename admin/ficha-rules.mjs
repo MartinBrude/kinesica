@@ -17,13 +17,13 @@ export const CLINICIAN_DETAILS = {
   norberto: {
     nombre: "Lic. Norberto Brude",
     titulo: "Kinesiólogo Fisiatra",
-    matricula: "M.N. 4930 · M.P. 518",
-    signatureFile: "/admin/signatures/norberto.png",
+    matricula: "M.N. 11816",
+    signatureFile: "/admin/signatures/norberto.png?v=2",
   },
   maria: {
     nombre: "Lic. María Gulín",
     titulo: "Kinesióloga Fisiatra",
-    matricula: "M.N. · M.P.",
+    matricula: "M.N. 15322 · M.P. 3112",
     signatureFile: "/admin/signatures/maria.png",
   },
 };

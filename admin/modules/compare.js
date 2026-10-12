@@ -9,7 +9,7 @@ import {
   patientKey,
   normalizeDni,
   CLINICIAN_DETAILS,
-} from "../ficha-rules.mjs?v=79";
+} from "../ficha-rules.mjs?v=85";
 import { formatDate } from "./api.js?v=77";
 import { escapeHtml, node } from "./dom.js?v=77";
 
@@ -497,7 +497,7 @@ export function buildComparePrintSheet(res) {
   const details = CLINICIAN_DETAILS[profKey] || {
     nombre: res.sessionY?.profesionalNombre || "Lic. Norberto Brude",
     titulo: "Kinesiólogo Fisiatra",
-    matricula: "M.N. 4930 · M.P. 518",
+    matricula: "M.N. 11816",
     signatureFile: `/admin/signatures/${profKey}.png`,
   };
 

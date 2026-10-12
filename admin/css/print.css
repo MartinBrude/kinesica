@@ -382,8 +382,8 @@
     page-break-inside: avoid;
   }
   .pf-sig-image {
-    max-height: 40px;
-    max-width: 160px;
+    max-height: 58px;
+    max-width: 180px;
     object-fit: contain;
     margin-bottom: -3px;
   }
