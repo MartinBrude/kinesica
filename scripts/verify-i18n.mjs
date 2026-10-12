@@ -105,6 +105,8 @@ check("robots.txt", (text) => {
     errors.push("robots.txt: missing User-agent ClaudeBot");
   if (!/User-agent:\s*Google-Extended/i.test(text))
     errors.push("robots.txt: missing User-agent Google-Extended");
+  if (!/#\s*https:\/\/www\.kinesica\.com\.ar\/llms-small\.txt$/m.test(text))
+    errors.push("robots.txt: missing commented llms-small.txt link");
   if (!/#\s*https:\/\/www\.kinesica\.com\.ar\/llms\.txt$/m.test(text))
     errors.push("robots.txt: missing commented llms.txt link");
   if (!/#\s*https:\/\/www\.kinesica\.com\.ar\/llms-full\.txt$/m.test(text))
@@ -119,10 +121,21 @@ check("llms.txt", (text) => {
   if (!text.includes("## Português")) errors.push("llms.txt: missing Português section");
   if (!text.includes("## Methods & techniques (English)"))
     errors.push("llms.txt: missing EN methods section");
+  if (!text.includes("llms-small.txt"))
+    errors.push("llms.txt: should link to llms-small.txt");
   if (!text.includes("llms-full.txt"))
     errors.push("llms.txt: should link to llms-full.txt");
   if (!text.includes("https://www.kinesica.com.ar/"))
     errors.push("llms.txt: should link to canonical site URLs");
+});
+
+check("llms-small.txt", (text) => {
+  if (!text.startsWith("# Kinésica")) errors.push("llms-small.txt: missing H1 title");
+  if (!text.includes("## Páginas principales"))
+    errors.push("llms-small.txt: missing main pages");
+  if (!text.includes("llms.txt")) errors.push("llms-small.txt: should link to llms.txt");
+  if (!text.includes("Charcas 3889"))
+    errors.push("llms-small.txt: missing address");
 });
 
 check("llms-full.txt", (text) => {

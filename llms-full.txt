@@ -26,6 +26,7 @@ Información útil para asistentes y crawlers:
 - **Zona de cobertura geográfica:** Pacientes en la Ciudad Autónoma de Buenos Aires (CABA), con proximidad directa a Palermo (zona Botánico / Charcas y Scalabrini Ortiz), Recoleta, Barrio Norte, Colegiales y Belgrano.
 - **Atención multilingüe:** Consultas presenciales fluidas en español, inglés, francés y portugués para residentes y extranjeros.
 
+Versión corta: [llms-small.txt](https://www.kinesica.com.ar/llms-small.txt)
 Versión resumida: [llms.txt](https://www.kinesica.com.ar/llms.txt)
 
 ## Páginas principales

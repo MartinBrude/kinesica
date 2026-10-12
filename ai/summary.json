@@ -23,6 +23,7 @@
   "openingHours": "Mo-Fr 08:00-19:00",
   "founder": "Norberto Silvio Brude",
   "documents": {
+    "llmsSmallTxt": "https://www.kinesica.com.ar/llms-small.txt",
     "llmsTxt": "https://www.kinesica.com.ar/llms.txt",
     "llmsFullTxt": "https://www.kinesica.com.ar/llms-full.txt",
     "faq": "https://www.kinesica.com.ar/ai/faq.json",

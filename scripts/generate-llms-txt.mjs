@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Generate /llms.txt and /llms-full.txt (https://llmstxt.org/) for LLM crawlers.
+ * Generate /llms-small.txt, /llms.txt and /llms-full.txt (https://llmstxt.org/) for LLM crawlers.
  * Run: node scripts/generate-llms-txt.mjs
  */
 import fs from "fs";
@@ -21,6 +21,7 @@ import { HOME } from "./home-content.mjs";
 import { LANG_CODES } from "./languages.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const OUT_SMALL = path.join(ROOT, "llms-small.txt");
 const OUT = path.join(ROOT, "llms.txt");
 const OUT_FULL = path.join(ROOT, "llms-full.txt");
 
@@ -262,12 +263,39 @@ const ptMainLines = [
 ];
 
 const optionalLines = [
+  `- [Versión corta](${SITE}/llms-small.txt): contacto, páginas principales y métodos en español.`,
   `- [Documentación extendida](${SITE}/llms-full.txt): resúmenes con párrafos clave de métodos y patologías (es/en/fr/pt).`,
   `- [Resumen para motores de IA](${SITE}/ai/summary.json): ficha del centro en JSON.`,
   `- [Preguntas frecuentes](${SITE}/ai/faq.json): FAQ de la home en es/en/fr/pt.`,
   `- [ai.txt](${SITE}/.well-known/ai.txt): punteros de descubrimiento.`,
   `- [Sitemap](${SITE}/sitemap.xml): all public HTML URLs (es/en/fr/pt).`,
 ];
+
+function buildLlmsSmallTxt() {
+  return `# Kinésica
+
+> ${HOME.es.description}
+
+- **Turnos:** WhatsApp [${CONTACT.phoneDisplay}](${waMeUrl()})
+- **Horario:** ${OPENING_HOURS.llmsLine}
+- **Ubicación:** ${CONTACT.address.streetAddress}, ${CONTACT.address.addressNeighborhood}, ${CONTACT.address.addressRegion} (${CONTACT.address.postalCode})
+- **Profesional:** ${FOUNDER.name}
+
+${section(
+  "Páginas principales",
+  mainPagesEs.map(([title, lang, stem]) => link(title, lang, stem)),
+)}
+${section(
+  "Métodos y técnicas",
+  METHOD_STEMS.map((stem) => link(METHODS[stem].es.breadcrumb, "es", stem)),
+)}
+${section("Índices", [
+  `- [llms.txt](${SITE}/llms.txt): métodos y patologías en es/en/fr/pt.`,
+  `- [llms-full.txt](${SITE}/llms-full.txt): resúmenes ampliados.`,
+  `- [Sitemap](${SITE}/sitemap.xml)`,
+])}
+`.trimEnd() + "\n";
+}
 
 function buildLlmsTxt() {
   return `# Kinésica
@@ -298,6 +326,7 @@ function buildLlmsFullTxt() {
 
 ${INTRO}
 
+Versión corta: [llms-small.txt](${SITE}/llms-small.txt)
 Versión resumida: [llms.txt](${SITE}/llms.txt)
 
 ${section(
@@ -319,6 +348,7 @@ ${section("Optional", [`- [Sitemap](${SITE}/sitemap.xml): all public HTML URLs (
 `.trimEnd() + "\n";
 }
 
+const llmsSmallTxt = buildLlmsSmallTxt();
 const llmsTxt = buildLlmsTxt();
 const llmsFullTxt = buildLlmsFullTxt();
 
@@ -342,6 +372,7 @@ const summary = {
   openingHours: OPENING_HOURS.schemaShort,
   founder: FOUNDER.name,
   documents: {
+    llmsSmallTxt: `${SITE}/llms-small.txt`,
     llmsTxt: `${SITE}/llms.txt`,
     llmsFullTxt: `${SITE}/llms-full.txt`,
     faq: `${SITE}/ai/faq.json`,
@@ -370,6 +401,7 @@ Contact: ${CONTACT.phoneDisplay}
 Email: ${CONTACT.email}
 Address: ${CONTACT.address.streetAddress}, ${CONTACT.address.addressNeighborhood}, ${CONTACT.address.addressRegion}
 Hours: ${OPENING_HOURS.llmsLine}
+Llms-small: ${SITE}/llms-small.txt
 Llms-txt: ${SITE}/llms.txt
 Llms-full: ${SITE}/llms-full.txt
 Summary: ${SITE}/ai/summary.json
@@ -382,12 +414,14 @@ const wellKnownDir = path.join(ROOT, ".well-known");
 fs.mkdirSync(aiDir, { recursive: true });
 fs.mkdirSync(wellKnownDir, { recursive: true });
 
+fs.writeFileSync(OUT_SMALL, llmsSmallTxt);
 fs.writeFileSync(OUT, llmsTxt);
 fs.writeFileSync(OUT_FULL, llmsFullTxt);
 fs.writeFileSync(path.join(aiDir, "summary.json"), `${JSON.stringify(summary, null, 2)}\n`);
 fs.writeFileSync(path.join(aiDir, "faq.json"), `${JSON.stringify(faq, null, 2)}\n`);
 fs.writeFileSync(path.join(wellKnownDir, "ai.txt"), aiTxt);
 
+console.log("Wrote", path.relative(ROOT, OUT_SMALL));
 console.log("Wrote", path.relative(ROOT, OUT));
 console.log("Wrote", path.relative(ROOT, OUT_FULL));
 console.log("Wrote ai/summary.json");
