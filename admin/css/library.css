@@ -279,6 +279,12 @@
   cursor: default;
 }
 
+.library-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 /* Tarjeta de Paciente y Acordeón de Sesiones */
 .patient-card {
   background: white;
