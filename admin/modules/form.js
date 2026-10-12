@@ -291,8 +291,10 @@ export function setPatientLocked(locked, patientData = null, sessionCount = 0, i
  */
 export function populatePatientPicker(allFichas = [], selectedKey = "") {
   const select = document.querySelector("#patient-quick-select");
+  const card = document.querySelector("#patient-picker-card");
   if (!select) return;
   const patients = getUniquePatients(allFichas);
+  if (card) card.hidden = patients.length === 0;
   select.innerHTML = '<option value="">— Cargar nuevo paciente (o seleccionar existente) —</option>';
   for (const p of patients) {
     const opt = document.createElement("option");
