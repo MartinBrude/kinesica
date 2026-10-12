@@ -81,6 +81,7 @@ import {
 import {
   loadAll,
   setCache,
+  resetLibrary,
   showLibrary,
   visibleFichas,
   renderLibrary,
@@ -91,7 +92,7 @@ import {
   syncMineButton,
   downloadJSON,
   initLibrary,
-} from "./modules/library.js?v=87";
+} from "./modules/library.js?v=88";
 
 import {
   buildSheet,
@@ -233,7 +234,7 @@ initAuth({
     showLibrary();
   },
   onLogout: () => {
-    setCache([]);
+    resetLibrary();
     try {
       sessionStorage.removeItem("kinesica_admin_view");
     } catch {}

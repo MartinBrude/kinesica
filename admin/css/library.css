@@ -181,6 +181,30 @@
   pointer-events: none;
 }
 
+.library-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 28px 0 8px;
+  color: var(--navy);
+  font-weight: 600;
+}
+
+.library-loading::before {
+  content: "";
+  width: 18px;
+  height: 18px;
+  border: 2px solid #d5deea;
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: library-spin 0.7s linear infinite;
+}
+
+@keyframes library-spin {
+  to { transform: rotate(360deg); }
+}
+
 .empty-none {
   font-size: 1.35rem;
   font-weight: 600;

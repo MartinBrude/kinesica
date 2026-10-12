@@ -32,6 +32,7 @@ const btnSeed = document.querySelector("#btn-seed");
 const btnExport = document.querySelector("#btn-export");
 
 let cache = [];
+let libraryLoaded = false;
 let grouped = false;
 let focusedPatient = null;
 let page = 0;
@@ -126,6 +127,12 @@ export function loadAll() {
  */
 export function setCache(items) {
   cache = items || [];
+  libraryLoaded = true;
+}
+
+export function resetLibrary() {
+  cache = [];
+  libraryLoaded = false;
 }
 
 /**
@@ -573,13 +580,14 @@ export function renderLibrary() {
   }
   syncMineButton();
 
-  const noPatients = loadAll().length === 0;
+  const noPatients = libraryLoaded && loadAll().length === 0;
   const toolbar = libraryView?.querySelector(".library-toolbar");
-  if (toolbar) toolbar.classList.toggle("is-idle", noPatients);
-  if (patientSelect) patientSelect.disabled = noPatients;
-  if (searchInput) searchInput.disabled = noPatients;
-  if (mineButton) mineButton.disabled = noPatients;
-  if (sortPatientsSelect) sortPatientsSelect.disabled = noPatients;
+  if (toolbar) toolbar.classList.toggle("is-idle", noPatients || !libraryLoaded);
+  const controlsLocked = noPatients || !libraryLoaded;
+  if (patientSelect) patientSelect.disabled = controlsLocked;
+  if (searchInput) searchInput.disabled = controlsLocked;
+  if (mineButton) mineButton.disabled = controlsLocked;
+  if (sortPatientsSelect) sortPatientsSelect.disabled = controlsLocked;
 
   const items = visibleFichas(sessionUser);
 
@@ -655,7 +663,13 @@ export function renderLibrary() {
     fragment.append(filterBanner);
   }
 
-  if (!groups.length) {
+  if (!libraryLoaded) {
+    const status = document.createElement("p");
+    status.className = "library-loading";
+    status.setAttribute("role", "status");
+    status.textContent = "Cargando fichas…";
+    fragment.append(status);
+  } else if (!groups.length) {
     const p = document.createElement("p");
     p.className = noPatients ? "empty empty-none" : "empty";
     p.textContent = searchInput?.value || onlyMine
