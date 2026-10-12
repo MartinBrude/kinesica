@@ -124,7 +124,25 @@ fieldset {
 .grid-2,
 .grid-3 {
   display: grid;
-  gap: 12px;
+  gap: 12px 12px;
+}
+
+.block > .grid-2,
+.block > .grid-3 {
+  row-gap: 20px;
+}
+
+.block > .grid-2 + .grid-2,
+.block > .grid-2 + .field-label,
+.panel > .eva-block + .grid-2,
+.panel > .grid-2 + label,
+.panel > label + .block {
+  margin-top: 20px;
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 8px;
 }
 
 .grid-2 {
@@ -138,7 +156,7 @@ fieldset {
 .muscle-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px 16px;
+  gap: 16px 16px;
 }
 
 .panel > label,
