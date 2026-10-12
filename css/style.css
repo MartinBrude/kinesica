@@ -3111,9 +3111,12 @@ Pathology detail pages (FAQ dolencias)
   padding-bottom: 8px;
 }
 
-.pathology-urgent-care.space-medium {
-  padding-top: 16px;
-  padding-bottom: 64px;
+.pathology-urgent-care.space-medium,
+.pathology-techniques.space-medium,
+.pathology-faq.space-medium,
+.pathology-related.space-medium {
+  padding-top: 12px;
+  padding-bottom: 20px;
 }
 
 .content p.pathology-eyebrow,
@@ -3170,8 +3173,8 @@ Pathology detail pages (FAQ dolencias)
 }
 
 .pathology-techniques {
-  padding-top: 40px;
-  padding-bottom: 48px;
+  padding-top: 12px;
+  padding-bottom: 20px;
 }
 
 .pathology-techniques h2,
@@ -3242,13 +3245,13 @@ Pathology detail pages (FAQ dolencias)
 }
 
 .pathology-related {
-  padding-top: 40px;
-  padding-bottom: 48px;
+  padding-top: 12px;
+  padding-bottom: 20px;
 }
 
 .pathology-faq {
-  padding-top: 40px;
-  padding-bottom: 40px;
+  padding-top: 12px;
+  padding-bottom: 12px;
   border-top: 1px solid #edf2f7;
 }
 
