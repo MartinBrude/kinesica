@@ -7,6 +7,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { repoPath, STEMS } from "./i18n-urls.mjs";
 import { LANG_CODES, SUBDIR_PREFIXES, partialLang } from "./languages.mjs";
+import { CONTACT } from "./site-contact.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -134,7 +135,7 @@ check("llms-small.txt", (text) => {
   if (!text.includes("## Páginas principales"))
     errors.push("llms-small.txt: missing main pages");
   if (!text.includes("llms.txt")) errors.push("llms-small.txt: should link to llms.txt");
-  if (!text.includes("Charcas 3889"))
+  if (!text.includes(CONTACT.address.streetAddress))
     errors.push("llms-small.txt: missing address");
 });
 
