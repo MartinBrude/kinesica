@@ -44,11 +44,24 @@
     { id: "paciente", label: "Paciente en tratamiento", internal: true, practitioners: ["norberto", "maria"] },
   ];
 
+  const MAX_BOOKING_DAYS = 60;
+
   // Horario semanal por profesional. Clave = día JS (0 domingo … 6 sábado).
-  // null = todavía sin confirmar: se usa la franja general del consultorio (lun–vie 08:00–19:00).
+  // María: Lunes 9 a 15, Martes 9 a 14:30, Viernes 9 a 13.
+  // Norberto: Lunes 15:30 a 19, Martes 15 a 19, Miércoles 9 a 16, Jueves 15 a 19, Viernes 13:30 a 19.
   const PRACTITIONER_HOURS = {
-    norberto: null,
-    maria: null,
+    norberto: {
+      1: [{ start: "15:30", end: "19:00" }], // Lunes 15:30 a 19 hs
+      2: [{ start: "15:00", end: "19:00" }], // Martes 15 a 19 hs
+      3: [{ start: "09:00", end: "16:00" }], // Miércoles 9 a 16 hs
+      4: [{ start: "15:00", end: "19:00" }], // Jueves 15 a 19 hs
+      5: [{ start: "13:30", end: "19:00" }], // Viernes 13:30 a 19 hs
+    },
+    maria: {
+      1: [{ start: "09:00", end: "15:00" }], // Lunes 9 a 15 hs
+      2: [{ start: "09:00", end: "14:30" }], // Martes 9 a 14:30 hs
+      5: [{ start: "09:00", end: "13:00" }], // Viernes 9 a 13 hs
+    },
   };
 
   // Lista oficial de Feriados Nacionales de Argentina (YYYY-MM-DD)
@@ -143,16 +156,29 @@
 
   /**
    * Ventanas de trabajo de un profesional en una fecha.
-   * Si sus horarios aún no fueron cargados, usa lun–vie 08:00–19:00.
+   * Si practitionerId no se especifica (null), devuelve todas las ventanas de atención del consultorio ese día.
    */
   function getWorkingWindows(practitionerId, dateInput) {
     const d = typeof dateInput === "string" ? parseLocalDate(dateInput) : new Date(dateInput);
     const dow = d.getDay();
-    const hours = PRACTITIONER_HOURS[practitionerId];
-    if (!hours) {
-      if (dow === 0 || dow === 6) return [];
-      return [{ startMin: DAY_START_HOUR * 60, endMin: DAY_END_HOUR * 60 }];
+    if (dow === 0 || dow === 6) return [];
+
+    if (!practitionerId) {
+      const combined = [];
+      Object.keys(PRACTITIONERS).forEach(function (id) {
+        const hours = PRACTITIONER_HOURS[id];
+        if (!hours) return;
+        const ranges = hours[dow] || [];
+        ranges.forEach(function (range) {
+          combined.push({ startMin: parseHmToMinutes(range.start), endMin: parseHmToMinutes(range.end) });
+        });
+      });
+      combined.sort(function (a, b) { return a.startMin - b.startMin; });
+      return combined;
     }
+
+    const hours = PRACTITIONER_HOURS[practitionerId];
+    if (!hours) return [];
     const ranges = hours[dow] || [];
     return ranges.map(function (range) {
       return { startMin: parseHmToMinutes(range.start), endMin: parseHmToMinutes(range.end) };
@@ -204,12 +230,18 @@
       return [];
     }
 
-    const windows = practitionerId
-      ? getWorkingWindows(practitionerId, baseDate)
-      : [{ startMin: DAY_START_HOUR * 60, endMin: DAY_END_HOUR * 60 }];
+    // Regla de máximo 60 días
+    const now = options.now ? new Date(options.now) : new Date();
+    const todayZero = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const targetZero = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate());
+    const diffDays = Math.round((targetZero.getTime() - todayZero.getTime()) / (24 * 60 * 60 * 1000));
+    if (diffDays > MAX_BOOKING_DAYS) {
+      return [];
+    }
+
+    const windows = getWorkingWindows(practitionerId, baseDate);
     if (!windows.length) return [];
 
-    const now = options.now ? new Date(options.now) : new Date();
     const rawBusy = Array.isArray(options.busyIntervals) ? options.busyIntervals : [];
     const relevantBusy = rawBusy.filter(function (ev) {
       return eventBlocksPractitioner(ev, practitionerId);
@@ -236,12 +268,13 @@
             return slotStart < b.end && slotEnd > b.start;
           });
           if (!overlaps) {
+            const onDuty = practitionerId || (practitionersAt(baseDate, formatTime(current))[0] || null);
             slots.push({
               time: formatTime(current),
               startIso: new Date(slotStart).toISOString(),
               endIso: new Date(slotEnd).toISOString(),
               durationMinutes: durationMinutes,
-              practitionerId: practitionerId,
+              practitionerId: onDuty,
             });
           }
         }
@@ -284,6 +317,13 @@
         if (!isBusinessDay(d)) {
           errors.push("La fecha seleccionada no es un día hábil de atención (lunes a viernes).");
         }
+        const today = req.now ? new Date(req.now) : new Date();
+        const todayZero = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        const targetZero = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        const diffDays = Math.round((targetZero.getTime() - todayZero.getTime()) / (24 * 60 * 60 * 1000));
+        if (diffDays > MAX_BOOKING_DAYS) {
+          errors.push(`Los turnos se pueden solicitar a un máximo de ${MAX_BOOKING_DAYS} días.`);
+        }
       }
     }
 
@@ -321,6 +361,23 @@
       });
       if (!fits) {
         errors.push("Ese horario está fuera del día de atención del profesional.");
+      }
+    } else if (
+      technique &&
+      !technique.bySchedule &&
+      req.date &&
+      req.time &&
+      !req.practitionerId
+    ) {
+      const timeMin = parseHmToMinutes(req.time);
+      const fitsAny = technique.practitioners.some(function (pid) {
+        const windows = getWorkingWindows(pid, req.date);
+        return windows.some(function (w) {
+          return timeMin >= w.startMin && timeMin + SESSION_DURATION_MINUTES <= w.endMin;
+        });
+      });
+      if (!fitsAny) {
+        errors.push("Ese horario está fuera del horario de atención del consultorio.");
       }
     }
 
@@ -466,6 +523,7 @@
     PRACTITIONERS: PRACTITIONERS,
     TECHNIQUES: TECHNIQUES,
     PRACTITIONER_HOURS: PRACTITIONER_HOURS,
+    MAX_BOOKING_DAYS: MAX_BOOKING_DAYS,
     DEFAULT_ARGENTINA_HOLIDAYS: DEFAULT_ARGENTINA_HOLIDAYS,
     isBusinessDay: isBusinessDay,
     getTechnique: getTechnique,

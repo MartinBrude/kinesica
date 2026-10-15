@@ -81,6 +81,7 @@
       sessionPro: "Sesión presencial de 1 hora, en los días en que atiende ese profesional.",
       noDays: "No hay días con horarios disponibles en las próximas semanas.",
       slotTitle: "Elegí el horario de la sesión",
+      slotTitleWith: "Elegí el horario de la sesión con",
       slotError: "Error al consultar disponibilidad:",
       summaryKind: "🩺 Turno presencial de 1 hora",
       technique: "Técnica",
@@ -156,6 +157,7 @@
       sessionPro: "One-hour in-person session, on the days that practitioner works.",
       noDays: "No days with available times in the coming weeks.",
       slotTitle: "Choose a session time",
+      slotTitleWith: "Choose a session time with",
       slotError: "Could not check availability:",
       summaryKind: "🩺 One-hour in-person session",
       technique: "Technique",
@@ -231,6 +233,7 @@
       sessionPro: "Séance d'une heure, les jours où ce praticien reçoit.",
       noDays: "Aucun jour avec des horaires disponibles dans les prochaines semaines.",
       slotTitle: "Choisissez l'horaire de la séance",
+      slotTitleWith: "Choisissez l'horaire de la séance avec",
       slotError: "Erreur lors de la consultation des disponibilités :",
       summaryKind: "🩺 Séance en cabinet d'une heure",
       technique: "Technique",
@@ -306,6 +309,7 @@
       sessionPro: "Sessão presencial de 1 hora, nos dias em que esse profissional atende.",
       noDays: "Não há dias com horários disponíveis nas próximas semanas.",
       slotTitle: "Escolha o horário da sessão",
+      slotTitleWith: "Escolha o horário da sessão com",
       slotError: "Erro ao consultar a disponibilidade:",
       summaryKind: "🩺 Sessão presencial de 1 hora",
       technique: "Técnica",
@@ -769,7 +773,8 @@
       let checkDate = new Date(today);
       let scanned = 0;
       const days = [];
-      while (days.length < limit && scanned < 45) {
+      const MAX_DAYS_AHEAD = (engine && engine.MAX_BOOKING_DAYS) || 60;
+      while (days.length < limit && scanned < MAX_DAYS_AHEAD) {
         scanned += 1;
         const iso = engine.formatDateIso(checkDate);
         const current = new Date(checkDate);
@@ -831,7 +836,12 @@
       // Título y subtítulo paso 2
       const step2Title = this.container.querySelector("#kb-step-2 .kb-section-title");
       if (step2Title) {
-        step2Title.textContent = this.t("slotTitle");
+        const named = this.state.existingPatient === true && this.state.practitionerId
+          ? this.practitionerFullName(this.state.practitionerId)
+          : "";
+        step2Title.textContent = named
+          ? `${this.t("slotTitleWith")} ${named}`
+          : this.t("slotTitle");
       }
 
       const subtitle = this.container.querySelector("#kb-slots-subtitle");
@@ -932,6 +942,11 @@
       slots = this.restrictToPractitioner(slots, dateIso);
       if (!this.state.practitionerId && chosen && chosen.bySchedule) {
         slots = slots.filter((slot) => engine.practitionersAt(dateIso, slot.time).length > 0);
+      } else if (chosen && Array.isArray(chosen.practitioners)) {
+        slots = slots.filter((slot) => {
+          const atSlot = engine.practitionersAt(dateIso, slot.time);
+          return chosen.practitioners.some((pid) => atSlot.indexOf(pid) !== -1);
+        });
       }
       return slots;
     }
