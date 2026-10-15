@@ -784,16 +784,21 @@
       if (this._prefetchRun) return;
       this._prefetchRun = true;
       this._prefetchedSlots = this._prefetchedSlots || {};
+      const cacheGen = this._slotCacheGen || 0;
       const days = this.collectAttendanceDays(10);
       const run = async () => {
         if (this.client && typeof this.client.getSlotsRange === "function") {
           await this.client.getSlotsRange(days.map((day) => day.iso));
         }
+        if (cacheGen !== (this._slotCacheGen || 0)) return;
         for (let i = 0; i < days.length; i += 1) {
           const day = days[i];
+          if (cacheGen !== (this._slotCacheGen || 0)) return;
           if (this._prefetchedSlots[day.iso]) continue;
           try {
-            this._prefetchedSlots[day.iso] = await this.fetchFilteredSlots(day.iso);
+            const slots = await this.fetchFilteredSlots(day.iso);
+            if (cacheGen !== (this._slotCacheGen || 0)) return;
+            this._prefetchedSlots[day.iso] = slots;
           } catch (err) {}
         }
       };
@@ -861,7 +866,8 @@
       if (empty) empty.style.display = "none";
       if (grid) grid.style.display = "none";
 
-      this._prefetchedSlots = this._prefetchedSlots || {};
+      this._slotCacheGen = (this._slotCacheGen || 0) + 1;
+      this._prefetchedSlots = {};
       const days = this.collectAttendanceDays(10);
 
       let firstAvailable = null;
@@ -923,15 +929,8 @@
       });
       let slots = this.filterSlotsWithBuffer(res.availableSlots || [], dateIso, this.state.appointmentType);
       const chosen = engine.getTechnique(this.state.techniqueId);
-      const targetPractitionerId = this.state.practitionerId;
-      if (targetPractitionerId) {
-        const windows = engine.getWorkingWindows(targetPractitionerId, dateIso);
-        slots = slots.filter((slot) => {
-          const [h, m] = slot.time.split(":").map(Number);
-          const tMin = h * 60 + (m || 0);
-          return windows.some((w) => tMin >= w.startMin && tMin + engine.SESSION_DURATION_MINUTES <= w.endMin);
-        });
-      } else if (chosen && chosen.bySchedule) {
+      slots = this.restrictToPractitioner(slots, dateIso);
+      if (!this.state.practitionerId && chosen && chosen.bySchedule) {
         slots = slots.filter((slot) => engine.practitionersAt(dateIso, slot.time).length > 0);
       }
       return slots;
@@ -967,7 +966,10 @@
       grid.innerHTML = "";
 
       try {
-        const slots = cached ? this._prefetchedSlots[dateIso] : await this.fetchFilteredSlots(dateIso, forceRefresh);
+        const slots = this.restrictToPractitioner(
+          cached ? this._prefetchedSlots[dateIso] : await this.fetchFilteredSlots(dateIso, forceRefresh),
+          dateIso
+        );
         if (currentReq !== this._slotReqSeq) return;
 
         loading.style.display = "none";
@@ -1028,6 +1030,17 @@
      * Filtra los turnos garantizando el margen de anticipación cuando la consulta es para hoy:
      * Turnos presenciales (60 min): mínimo 2 horas de margen de traslado al consultorio.
      */
+    restrictToPractitioner(slots, dateIso) {
+      const id = this.state.practitionerId;
+      if (!id || !Array.isArray(slots)) return slots || [];
+      const windows = engine.getWorkingWindows(id, dateIso);
+      return slots.filter((slot) => {
+        const parts = String(slot.time || "").split(":");
+        const tMin = parseInt(parts[0], 10) * 60 + parseInt(parts[1] || "0", 10);
+        return windows.some((w) => tMin >= w.startMin && tMin + engine.SESSION_DURATION_MINUTES <= w.endMin);
+      });
+    }
+
     filterSlotsWithBuffer(slots, dateIso, appointmentType) {
       if (!Array.isArray(slots) || slots.length === 0) return [];
 
