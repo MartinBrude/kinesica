@@ -213,14 +213,15 @@ Cuando Norberto o María agendan un turno a mano en Google Calendar (desde la we
      > **Compromisos personales de Norberto en horario de atención (08 a 19 hs):** Si Norberto tiene un médico, trámite o almuerzo durante el horario laboral, debe anotarlo en **`consultorio`** con el título `🚫 [BLOQUEADO]`. De esa forma Clara respeta su horario y el bot sabe que no debe enviar ningún recordatorio.
 
 2. **Título del Evento (Summary):**  
-   - Formato estándar de sesión habitual:  
-     `🩺 [TURNO] Nombre Completo` (ej: `🩺 [TURNO] Lucas Méndez`)
-   - Si desean identificar quién de los dos atiende:  
-     `🩺 [NORBERTO] [TURNO] Lucas Méndez`  
-     `🩺 [MARIA] [TURNO] Lucas Méndez`
-   - Si la sesión es para un menor de edad acompañado por su familiar:  
-     `🩺 [TURNO - MENOR] Lucas Méndez (Familiar: Andrea Gómez)`  
-     *(El sistema detecta automáticamente la condición de menor y añade en el recordatorio la indicación de asistir con un adulto responsable).*
+   - **¡Cero emojis obligatorios!** No hace falta colocar ningún emoji (🩺, 🌿, etc. no son requeridos).
+   - **Formato directo:** Escribir simplemente el nombre y apellido del paciente:  
+     `Lucas Méndez` (o `[TURNO] Lucas Méndez` si prefieren esa etiqueta).
+   - **Identificación opcional de profesional:** Si desean asentar quién de los dos atiende:  
+     `[NORBERTO] Lucas Méndez`  
+     `[MARIA] Lucas Méndez`
+   - **Menor de edad:** Si asiste acompañado/a por un adulto responsable:  
+     `Lucas Méndez (Familiar: Andrea Gómez)` o `[TURNO - MENOR] Lucas Méndez (Familiar: Andrea Gómez)`  
+     *(El sistema detecta automáticamente la condición de menor y añade en el recordatorio la indicación de asistir con un adulto).*
 
 3. **Horario y Duración:**  
    - Duración: **Exactamente 1 hora (60 minutos)**.  
@@ -228,16 +229,18 @@ Cuando Norberto o María agendan un turno a mano en Google Calendar (desde la we
    - Franja oficial: Lunes a viernes hábiles de 08:00 a 19:00 hs.
 
 4. **Descripción del Evento (Notas):**  
-   - Incluir siempre el número de WhatsApp con su código de área y el DNI:
+   - **El teléfono celular solo es necesario la PRIMERA VEZ:**
+     - **Paciente nuevo (primera consulta en Kinésica):** Anotar su número con código de área (ej: `📱 WhatsApp: 5491144556677` o `1144556677`) la primera vez que se carga la cita a mano. Al procesar el recordatorio, el sistema indexa y guarda el celular automáticamente en el **Directorio Dinámico de Pacientes**.
+     - **Pacientes habituales (2ª sesión en adelante):** **¡Ya no hace falta poner el teléfono!** Norberto y María simplemente crean el evento con el nombre del paciente (`Lucas Méndez`). El bot de recordatorios de las 24 hs busca automáticamente el nombre en el Directorio y le despacha el WhatsApp sin tener que tipear el número nunca más.
+   - **Cero exigencia de DNI en cada sesión:**
+     - **No tiene ningún sentido cargar el DNI cada sesión.** El DNI se registra una sola vez en la ficha de admisión o cuando Clara agenda por chat. Para agendar turnos manuales día a día, Norberto y María **jamás están obligados a cargar el DNI**.
+   - **Notas clínicas (opcionales):** La descripción puede dejarse vacía o aprovecharse únicamente para anotaciones terapéuticas si lo desean:
      ```text
-     📱 WhatsApp: 5491144556677
-     🪪 DNI: 35123456
+     📱 WhatsApp: 5491144556677 (solo indispensable la 1ª vez)
      Motivo: Lumbalgia y evaluación postural
-     Atiende: Norberto · 1ª Sesión
+     Atiende: Norberto
+     Trae resonancia magnética lumbar previa
      ```
-   - > [!IMPORTANT]  
-     > **¿Por qué es indispensable poner el WhatsApp en la descripción?**  
-     > Porque el bot de recordatorios de las 24 hs lee el teléfono de este campo para despachar el mensaje. Si el paciente es nuevo y no colocás el número, el bot no tendrá adónde enviar el recordatorio.
 
 ---
 
@@ -278,8 +281,8 @@ Para mantener la armonía entre el equipo humano y la inteligencia artificial de
 | # | ❌ Qué NUNCA hacer | 💥 Qué pasa por detrás | ✅ Qué deben hacer en su lugar |
 |---|---|---|---|
 | **1** | **Dejar el turno en el calendario por defecto `"Norberto Brude"`** | Al estar en la cuenta personal de Norberto, Clara solo lee el calendario `consultorio`. Si queda en el calendario por defecto de Norberto, Clara no lo ve y asignará un turno en el mismo horario. | Seleccionar siempre el calendario **`consultorio`** en el desplegable. |
-| **2** | **Poner títulos vagos sin nombre:** `"Turno"`, `"Paciente"`, `"RPG"`, `"Kinesio"` | El bot no sabe a quién pertenece la cita, no puede extraer el nombre de pila y, si falta el teléfono, no puede resolverlo en el directorio. | Escribir siempre: `🩺 [TURNO] Nombre y Apellido`. |
-| **3** | **Dejar la descripción vacía sin número de WhatsApp** | Si es un paciente nuevo o no agendado previamente, el bot de recordatorios no encuentra el teléfono y **el paciente no recibe el aviso de 24 hs**. | Escribir en la descripción: `📱 WhatsApp: 54911...` (o `11...`). |
+| **2** | **Poner títulos vagos sin nombre:** `"Turno"`, `"Paciente"`, `"RPG"`, `"Kinesio"` | El bot no sabe a quién pertenece la cita, no puede extraer el nombre de pila y, si falta el teléfono, no puede resolverlo en el directorio. | Escribir el nombre del paciente: `Lucas Méndez` (o `[TURNO] Lucas Méndez`). ¡Sin emojis obligatorios! |
+| **3** | **No anotar el celular si el paciente es nuevo** | Si el paciente nunca vino antes a Kinésica y no se coloca su WhatsApp en la 1ª sesión, el bot no sabrá adónde enviar el aviso de 24 hs. (En pacientes habituales no hace falta). | Escribir en la descripción `📱 WhatsApp: 54911...` **solo la primera vez**. En las siguientes el bot lo busca solo en el directorio. |
 | **4** | **Superponer eventos o encimar horarios** | En Kinésica hay **1 sola camilla física**. Si agendan a dos pacientes a la misma hora o pisan una cita previa, colapsa la atención presencial. | Chequear que el bloque horario esté completamente libre antes de guardar. |
 | **5** | **Crear turnos con duraciones no estándar** (15 min, 30 min o 45 min) | Descalibra la grilla de turnos de Clara, generando huecos inutilizables o solapamientos con la próxima sesión de 1 hora. | Todos los turnos deben durar **exactamente 60 minutos** (de hora en punto a hora en punto). |
 | **6** | **Escribir `"Cancelado"` en un turno que sigue activo** | El filtro anti-cancelación detectará la palabra clave y **anulará de inmediato el recordatorio de 24 hs**. El paciente pensará que nadie lo espera. | Usar `"Cancelado"` únicamente cuando la cita haya sido verdaderamente anulada. |
