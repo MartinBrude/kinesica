@@ -198,16 +198,23 @@
   text-align: left;
 }
 
-.kb-choice-card:hover {
+.kb-choice-card:hover:not(.selected) {
   border-color: var(--kin-primary);
-  background: var(--kin-bg-light);
+  background: var(--kin-bg-sky);
   transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0, 95, 153, 0.1);
 }
 
 .kb-choice-card.selected {
   border-color: var(--kin-primary);
   background: var(--kin-bg-sky);
-  box-shadow: 0 4px 16px rgba(0, 95, 153, 0.12);
+  box-shadow: 0 4px 16px rgba(0, 95, 153, 0.15);
+}
+
+.kb-choice-card.selected:hover {
+  border-color: var(--kin-primary-hover);
+  box-shadow: 0 6px 18px rgba(0, 95, 153, 0.2);
+  transform: translateY(-1px);
 }
 
 .kb-choice-card .kb-badge {
@@ -284,10 +291,20 @@
   transition: all 0.18s ease;
 }
 
-.kb-date-card:hover:not(.disabled) {
+.kb-date-card:hover:not(.disabled):not(.selected) {
   border-color: var(--kin-primary);
-  background: var(--kin-bg-light);
+  background: var(--kin-bg-sky);
+  box-shadow: 0 4px 12px rgba(0, 95, 153, 0.12);
   transform: translateY(-2px);
+}
+
+.kb-date-card:hover:not(.disabled):not(.selected) .kb-date-day {
+  color: var(--kin-primary);
+}
+
+.kb-date-card:hover:not(.disabled):not(.selected) .kb-date-dow,
+.kb-date-card:hover:not(.disabled):not(.selected) .kb-date-month {
+  color: var(--kin-navy);
 }
 
 .kb-date-card.selected {
@@ -300,6 +317,41 @@
 .kb-date-card.selected .kb-date-dow,
 .kb-date-card.selected .kb-date-day,
 .kb-date-card.selected .kb-date-month {
+  color: #ffffff;
+}
+
+.kb-date-card.selected:hover {
+  background: var(--kin-primary-hover);
+  border-color: var(--kin-primary-hover);
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(0, 95, 153, 0.38);
+  transform: translateY(-2px);
+}
+
+.kb-date-card.selected:hover .kb-date-dow,
+.kb-date-card.selected:hover .kb-date-day,
+.kb-date-card.selected:hover .kb-date-month {
+  color: #ffffff;
+}
+
+.kb-date-card:active {
+  transform: translateY(0);
+}
+
+.kb-date-card:active:not(.selected) {
+  background: var(--kin-bg-sky);
+  border-color: var(--kin-primary);
+}
+
+.kb-date-card.selected:active {
+  background: var(--kin-primary-hover);
+  border-color: var(--kin-primary-hover);
+  color: #ffffff;
+}
+
+.kb-date-card.selected:active .kb-date-dow,
+.kb-date-card.selected:active .kb-date-day,
+.kb-date-card.selected:active .kb-date-month {
   color: #ffffff;
 }
 
@@ -400,10 +452,11 @@
   user-select: none;
 }
 
-.kb-slot-chip:hover {
+.kb-slot-chip:hover:not(.disabled):not(:disabled):not(.selected) {
   border-color: var(--kin-primary);
   background: var(--kin-bg-sky);
   color: var(--kin-primary);
+  box-shadow: 0 3px 8px rgba(0, 95, 153, 0.12);
   transform: translateY(-1px);
 }
 
@@ -412,6 +465,14 @@
   border-color: var(--kin-primary);
   color: #ffffff;
   box-shadow: 0 4px 12px rgba(0, 95, 153, 0.25);
+}
+
+.kb-slot-chip.selected:hover {
+  background: var(--kin-primary-hover);
+  border-color: var(--kin-primary-hover);
+  color: #ffffff;
+  box-shadow: 0 6px 14px rgba(0, 95, 153, 0.35);
+  transform: translateY(-1px);
 }
 
 /* Form Controls */
@@ -523,6 +584,7 @@
 
 .kb-btn-secondary:hover {
   background: #e5e7eb;
+  color: var(--kin-navy);
 }
 
 /* Success Card */

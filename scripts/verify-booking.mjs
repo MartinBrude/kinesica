@@ -136,16 +136,16 @@ test("REGLA 2B: Feriados nacionales no son días hábiles y devuelven 0 slots", 
   assert.strictEqual(slots.length, 0, "No debe haber turnos en feriados");
 });
 
-test("REGLA 2C: Día hábil ordinario genera slots dentro de 08:00 a 19:00", () => {
-  // Miércoles 7 de Octubre 2026
+test("REGLA 2C: Miércoles genera slots de Norberto entre 09:00 y 16:00 (último turno a las 15:00)", () => {
+  // Miércoles 7 de Octubre 2026 (Norberto de 09:00 a 16:00, turnos de 9 a 15 inclusive)
   const slots = calculateAvailableSlots({
     date: "2026-10-07",
     appointmentType: "session",
   });
   assert.ok(slots.length > 0, "Debe generar slots disponibles");
-  assert.strictEqual(slots[0].time, "08:00", "Primer turno debe arrancar a las 08:00");
+  assert.strictEqual(slots[0].time, "09:00", "Primer turno debe arrancar a las 09:00");
   const lastSlot = slots[slots.length - 1];
-  assert.strictEqual(lastSlot.time, "18:00", "Último turno de 1h debe arrancar a las 18:00 para terminar a las 19:00");
+  assert.strictEqual(lastSlot.time, "15:00", "Último turno de 1h debe arrancar a las 15:00 para terminar a las 16:00");
 });
 
 // ---------------------------------------------------------------------------
@@ -185,6 +185,7 @@ test("REGLA 3A: Una llamada existente bloquea turnos presenciales que la solapen
 });
 
 test("REGLA 3B: Los horarios del profesional recortan los turnos de ese día", () => {
+  const originalMaria = engine.PRACTITIONER_HOURS.maria;
   engine.PRACTITIONER_HOURS.maria = { 3: [{ start: "10:00", end: "13:00" }] };
   try {
     const slots = calculateAvailableSlots({
@@ -193,7 +194,7 @@ test("REGLA 3B: Los horarios del profesional recortan los turnos de ese día", (
     });
     assert.deepStrictEqual(slots.map((s) => s.time), ["10:00", "10:30", "11:00", "11:30", "12:00"]);
   } finally {
-    engine.PRACTITIONER_HOURS.maria = null;
+    engine.PRACTITIONER_HOURS.maria = originalMaria;
   }
 });
 
@@ -308,6 +309,95 @@ test("REGLA 6B: El título del calendario del paciente incluye la técnica", () 
   assert.strictEqual(exportData.title, "Turno en Kinésica — Acupuntura");
   assert.ok(exportData.description.includes("Profesional: mujer"));
   assert.strictEqual(exportData.filename, "kinesica-turno-2026-10-15.ics");
+});
+
+// ---------------------------------------------------------------------------
+// 7. HORARIOS OFICIALES DEFINIDOS PARA MARÍA Y NORBERTO
+// ---------------------------------------------------------------------------
+test("REGLA 7A: Horarios de María (Lunes 9-15, Martes 9-14:30, Viernes 9-13; Mié y Jue no atiende)", () => {
+  // Lunes 2026-10-05: 9 a 15 (turnos de 9 a 14 inclusive, finaliza a las 15 hs)
+  const monSlots = calculateAvailableSlots({ date: "2026-10-05", practitionerId: "maria" });
+  assert.strictEqual(monSlots[0].time, "09:00");
+  assert.strictEqual(monSlots[monSlots.length - 1].time, "14:00");
+
+  // Martes 2026-10-06: 9 a 14:30 (turnos de 9 a 13:30 inclusive, finaliza a las 14:30 hs)
+  const tueSlots = calculateAvailableSlots({ date: "2026-10-06", practitionerId: "maria" });
+  assert.strictEqual(tueSlots[0].time, "09:00");
+  assert.strictEqual(tueSlots[tueSlots.length - 1].time, "13:30");
+
+  // Miércoles y Jueves: María no atiende (0 turnos)
+  const wedSlots = calculateAvailableSlots({ date: "2026-10-07", practitionerId: "maria" });
+  assert.strictEqual(wedSlots.length, 0);
+  const thuSlots = calculateAvailableSlots({ date: "2026-10-08", practitionerId: "maria" });
+  assert.strictEqual(thuSlots.length, 0);
+
+  // Viernes 2026-10-09: 9 a 13 (turnos de 9 a 12 inclusive, finaliza a las 13 hs)
+  const friSlots = calculateAvailableSlots({ date: "2026-10-09", practitionerId: "maria" });
+  assert.strictEqual(friSlots[0].time, "09:00");
+  assert.strictEqual(friSlots[friSlots.length - 1].time, "12:00");
+});
+
+test("REGLA 7B: Horarios de Norberto (Lun 15:30-19, Mar 15-19, Mié 9-16, Jue 15-19, Vie 13:30-19)", () => {
+  // Lunes 2026-10-05: 15:30 a 19 (primer turno 15:30, último 18:00 termina a las 19:00)
+  const monSlots = calculateAvailableSlots({ date: "2026-10-05", practitionerId: "norberto" });
+  assert.strictEqual(monSlots[0].time, "15:30");
+  assert.strictEqual(monSlots[monSlots.length - 1].time, "18:00");
+
+  // Martes 2026-10-06: 15 a 19 (primer turno 15:00, último 18:00)
+  const tueSlots = calculateAvailableSlots({ date: "2026-10-06", practitionerId: "norberto" });
+  assert.strictEqual(tueSlots[0].time, "15:00");
+  assert.strictEqual(tueSlots[tueSlots.length - 1].time, "18:00");
+
+  // Miércoles 2026-10-07: 9 a 16 (primer turno 09:00, último 15:00 termina a las 16:00)
+  const wedSlots = calculateAvailableSlots({ date: "2026-10-07", practitionerId: "norberto" });
+  assert.strictEqual(wedSlots[0].time, "09:00");
+  assert.strictEqual(wedSlots[wedSlots.length - 1].time, "15:00");
+
+  // Jueves 2026-10-08: 15 a 19 (primer turno 15:00, último 18:00)
+  const thuSlots = calculateAvailableSlots({ date: "2026-10-08", practitionerId: "norberto" });
+  assert.strictEqual(thuSlots[0].time, "15:00");
+  assert.strictEqual(thuSlots[thuSlots.length - 1].time, "18:00");
+
+  // Viernes 2026-10-09: 13:30 a 19 (primer turno 13:30, último 18:00 termina a las 19:00)
+  const friSlots = calculateAvailableSlots({ date: "2026-10-09", practitionerId: "norberto" });
+  assert.strictEqual(friSlots[0].time, "13:30");
+  assert.strictEqual(friSlots[friSlots.length - 1].time, "18:00");
+});
+
+test("REGLA 8: Clara puede dar turnos a un máximo de 60 días", () => {
+  const baseNow = new Date(2026, 9, 15); // 15 de Octubre 2026
+  // Fecha a 50 días (4 de Diciembre 2026, viernes hábil)
+  const validFuture = "2026-12-04";
+  const validSlots = calculateAvailableSlots({
+    date: validFuture,
+    now: baseNow,
+    practitionerId: "norberto",
+  });
+  assert.ok(validSlots.length > 0, "A 50 días debe generar turnos");
+
+  // Fecha a 65 días (19 de Diciembre 2026) -> más de 60 días
+  const beyond60 = "2026-12-19";
+  const blockedSlots = calculateAvailableSlots({
+    date: beyond60,
+    now: baseNow,
+    practitionerId: "norberto",
+  });
+  assert.strictEqual(blockedSlots.length, 0, "A más de 60 días no debe ofrecer turnos");
+
+  // Validación de solicitud a más de 60 días es rechazada
+  const validationRes = validateBookingRequest({
+    appointmentType: "session",
+    techniqueId: "osteopatia",
+    practitionerId: "norberto",
+    nombre: "Ana Gómez",
+    telefono: "+5491112345678",
+    dni: "30123456",
+    date: "2026-12-28", // > 60 días desde 15 Oct
+    time: "16:00",
+    now: baseNow,
+  });
+  assert.strictEqual(validationRes.isValid, false);
+  assert.ok(validationRes.errors.some((e) => e.includes("máximo de 60 días")));
 });
 
 console.log(`\n🎉 Resultado: ${passed}/${total} tests superados con éxito.\n`);

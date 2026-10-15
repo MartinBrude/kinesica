@@ -74,10 +74,10 @@ function syncHtmlAssetRefs(html, sources) {
   return out;
 }
 
-/** Quita ?v=… de CSS/JS en HTML (idempotente). */
+/** Quita ?v=… de CSS/JS en HTML (idempotente), preservando versiones manuales de admin. */
 function stripCacheQueryFromHtml(html) {
   return html.replace(
-    /((?:href|src)=["'][^"']+\.(?:min\.)?(?:css|js))\?v=\d+(["'])/g,
+    /((?:href|src)=["'](?!.*\/admin\/(?:styles\.css|app\.js))[^"']+\.(?:min\.)?(?:css|js))\?v=\d+(["'])/g,
     "$1$2",
   );
 }
@@ -127,7 +127,7 @@ function applyCacheQueryToHtml(html, version, sources, bundles = []) {
     const min = rel.endsWith(".min.js") || rel.endsWith(".min.css") ? rel : toMinPath(rel);
     const esc = min.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const re = new RegExp(
-      `((?:href|src)=["'])((?:\\.\\./)?${esc})(["'])`,
+      `((?:href|src)=["'])((?:\\.\\./|/)?${esc})(["'])`,
       "g",
     );
     out = out.replace(re, `$1$2?v=${version}$3`);
@@ -211,7 +211,11 @@ async function main() {
   );
 
   let htmlChanged = 0;
-  for (const file of listHtmlFiles(ROOT)) {
+  const htmlFilesToProcess = [...listHtmlFiles(ROOT)];
+  if (fs.existsSync(path.join(ROOT, "admin/index.html"))) {
+    htmlFilesToProcess.push("admin/index.html");
+  }
+  for (const file of htmlFilesToProcess) {
     const full = path.join(ROOT, file);
     const original = fs.readFileSync(full, "utf8");
     let next = syncHtmlAssetRefs(original, sources);

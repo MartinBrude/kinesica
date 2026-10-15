@@ -28,6 +28,36 @@ const DAY_END_HOUR = 19;
 const CALL_BUFFER_HOURS = 1; // Para llamadas de 10m: mínimo 1 hora de anticipación (no ofrecer nada en la siguiente hora)
 const SESSION_BUFFER_HOURS = 2; // Para turnos presenciales de 1h: mínimo 2 horas de margen de traslado
 const SAME_DAY_BUFFER_HOURS = 2; // Compatibilidad retroactiva
+const MAX_BOOKING_DAYS = 60; // Máximo 60 días de anticipación para turnos
+
+// Horarios semanales por profesional (0 domingo … 6 sábado)
+const PRACTITIONER_HOURS = {
+  norberto: {
+    1: [{ start: "15:30", end: "19:00" }], // Lunes 15:30 a 19 hs
+    2: [{ start: "15:00", end: "19:00" }], // Martes 15 a 19 hs
+    3: [{ start: "09:00", end: "16:00" }], // Miércoles 9 a 16 hs
+    4: [{ start: "15:00", end: "19:00" }], // Jueves 15 a 19 hs
+    5: [{ start: "13:30", end: "19:00" }]  // Viernes 13:30 a 19 hs
+  },
+  maria: {
+    1: [{ start: "09:00", end: "15:00" }], // Lunes 9 a 15 hs
+    2: [{ start: "09:00", end: "14:30" }], // Martes 9 a 14:30 hs
+    5: [{ start: "09:00", end: "13:00" }]  // Viernes 9 a 13 hs
+  }
+};
+
+function getGasWorkingWindows(practitionerId, dayOfWeek) {
+  if (dayOfWeek === 0 || dayOfWeek === 6) return [];
+  if (practitionerId && PRACTITIONER_HOURS[practitionerId]) {
+    return PRACTITIONER_HOURS[practitionerId][dayOfWeek] || [];
+  }
+  const combined = [];
+  ["maria", "norberto"].forEach(function(pid) {
+    const list = PRACTITIONER_HOURS[pid][dayOfWeek] || [];
+    list.forEach(function(w) { combined.push(w); });
+  });
+  return combined;
+}
 
 // Feriados Oficiales de Argentina
 const ARGENTINA_HOLIDAYS = [
@@ -186,6 +216,33 @@ function handleGetSlots(params) {
     });
   }
 
+  const now = new Date();
+  const todayInArg = Utilities.formatDate(now, "America/Argentina/Buenos_Aires", "yyyy-MM-dd");
+  const todayMs = parseArgentinaDate(todayInArg, "00:00").getTime();
+  const targetMs = parseArgentinaDate(dateStr, "00:00").getTime();
+  const diffDays = Math.round((targetMs - todayMs) / (24 * 3600 * 1000));
+  if (diffDays < 0 || diffDays > MAX_BOOKING_DAYS) {
+    return createJsonResponse({
+      status: "success",
+      date: dateStr,
+      type: type,
+      availableSlots: [],
+      message: "Fecha fuera del período permitido (máximo " + MAX_BOOKING_DAYS + " días)"
+    });
+  }
+
+  const practitionerId = params.practitioner || params.practitionerId || "";
+  const windows = getGasWorkingWindows(practitionerId, dayOfWeek);
+  if (!windows.length) {
+    return createJsonResponse({
+      status: "success",
+      date: dateStr,
+      type: type,
+      availableSlots: [],
+      message: "Sin atención en este día"
+    });
+  }
+
   // 2. Consultar Google Calendar en el rango 08:00 a 19:00 hora de Argentina
   const cal = getKinesicaCalendar();
   const dayStart = parseArgentinaDate(dateStr, "08:00");
@@ -203,10 +260,7 @@ function handleGetSlots(params) {
   });
 
   // 3. Buffer para reservas del mismo día:
-  // - Llamadas (10 min): mínimo 1 hora de anticipación (no ofrecer nada en la siguiente hora)
   // - Turnos presenciales (60 min): mínimo 2 horas de margen de traslado
-  const now = new Date();
-  const todayInArg = Utilities.formatDate(now, "America/Argentina/Buenos_Aires", "yyyy-MM-dd");
   const isToday = (todayInArg === dateStr);
   const bufferHours = SESSION_BUFFER_HOURS;
   const minAllowedTime = isToday ? (now.getTime() + bufferHours * 3600 * 1000) : dayStart.getTime();
@@ -215,17 +269,19 @@ function handleGetSlots(params) {
   const step = 30;
   const availableSlots = [];
 
-  for (let h = DAY_START_HOUR; h < DAY_END_HOUR; h++) {
-    for (let m = 0; m < 60; m += step) {
-      const hh = ("0" + h).slice(-2);
-      const mm = ("0" + m).slice(-2);
+  windows.forEach(function(win) {
+    const winStartParts = win.start.split(":").map(Number);
+    const winEndParts = win.end.split(":").map(Number);
+    const winStartMin = winStartParts[0] * 60 + winStartParts[1];
+    const winEndMin = winEndParts[0] * 60 + winEndParts[1];
+
+    for (let m = winStartMin; m + duration <= winEndMin; m += step) {
+      const hh = ("0" + Math.floor(m / 60)).slice(-2);
+      const mm = ("0" + (m % 60)).slice(-2);
       const timeSlotStr = hh + ":" + mm;
 
       const slotStart = parseArgentinaDate(dateStr, timeSlotStr).getTime();
       const slotEnd = slotStart + duration * 60 * 1000;
-
-      // El turno no debe exceder las 19:00 hs en Argentina
-      if (slotEnd > dayEnd.getTime()) break;
 
       if (slotStart >= minAllowedTime) {
         const hasCollision = busy.some(function(b) {
@@ -241,7 +297,7 @@ function handleGetSlots(params) {
         }
       }
     }
-  }
+  });
 
   return createJsonResponse({
     status: "success",
@@ -269,8 +325,8 @@ function handleGetSlotsRange(params) {
 
   const fromMs = parseArgentinaDate(fromStr, "12:00").getTime();
   const toMs = parseArgentinaDate(toStr, "12:00").getTime();
-  if (toMs < fromMs || (toMs - fromMs) > 45 * 24 * 3600 * 1000) {
-    return createJsonResponse({ status: "error", message: "Rango de fechas inválido" });
+  if (toMs < fromMs || (toMs - fromMs) > MAX_BOOKING_DAYS * 24 * 3600 * 1000) {
+    return createJsonResponse({ status: "error", message: "Rango de fechas inválido (máximo " + MAX_BOOKING_DAYS + " días)" });
   }
 
   const cal = getKinesicaCalendar();
@@ -286,10 +342,11 @@ function handleGetSlotsRange(params) {
 
   const now = new Date();
   const todayInArg = Utilities.formatDate(now, "America/Argentina/Buenos_Aires", "yyyy-MM-dd");
+  const practitionerId = params.practitioner || params.practitionerId || "";
   const days = {};
   let cursor = fromStr;
   while (cursor <= toStr) {
-    days[cursor] = computeDaySlots(cursor, busy, now, todayInArg);
+    days[cursor] = computeDaySlots(cursor, busy, now, todayInArg, practitionerId);
     cursor = nextIsoDate(cursor);
   }
 
@@ -308,25 +365,40 @@ function nextIsoDate(dateStr) {
   return Utilities.formatDate(d, "America/Argentina/Buenos_Aires", "yyyy-MM-dd");
 }
 
-function computeDaySlots(dateStr, busy, now, todayInArg) {
+function computeDaySlots(dateStr, busy, now, todayInArg, practitionerId) {
   const targetDate = parseArgentinaDate(dateStr, "12:00");
   const dayOfWeek = targetDate.getUTCDay();
   if (dayOfWeek === 0 || dayOfWeek === 6 || ARGENTINA_HOLIDAYS.indexOf(dateStr) !== -1) {
     return [];
   }
 
+  const todayMs = parseArgentinaDate(todayInArg, "00:00").getTime();
+  const targetMs = parseArgentinaDate(dateStr, "00:00").getTime();
+  const diffDays = Math.round((targetMs - todayMs) / (24 * 3600 * 1000));
+  if (diffDays < 0 || diffDays > MAX_BOOKING_DAYS) {
+    return [];
+  }
+
+  const windows = getGasWorkingWindows(practitionerId, dayOfWeek);
+  if (!windows.length) return [];
+
   const dayStart = parseArgentinaDate(dateStr, "08:00");
-  const dayEnd = parseArgentinaDate(dateStr, "19:00");
   const isToday = todayInArg === dateStr;
   const minAllowedTime = isToday ? (now.getTime() + SESSION_BUFFER_HOURS * 3600 * 1000) : dayStart.getTime();
   const availableSlots = [];
+  const duration = SESSION_DURATION_MINUTES;
+  const step = 30;
 
-  for (let h = DAY_START_HOUR; h < DAY_END_HOUR; h++) {
-    for (let m = 0; m < 60; m += 30) {
-      const timeSlotStr = ("0" + h).slice(-2) + ":" + ("0" + m).slice(-2);
+  windows.forEach(function(win) {
+    const winStartParts = win.start.split(":").map(Number);
+    const winEndParts = win.end.split(":").map(Number);
+    const winStartMin = winStartParts[0] * 60 + winStartParts[1];
+    const winEndMin = winEndParts[0] * 60 + winEndParts[1];
+
+    for (let m = winStartMin; m + duration <= winEndMin; m += step) {
+      const timeSlotStr = ("0" + Math.floor(m / 60)).slice(-2) + ":" + ("0" + (m % 60)).slice(-2);
       const slotStart = parseArgentinaDate(dateStr, timeSlotStr).getTime();
-      const slotEnd = slotStart + SESSION_DURATION_MINUTES * 60 * 1000;
-      if (slotEnd > dayEnd.getTime()) break;
+      const slotEnd = slotStart + duration * 60 * 1000;
       if (slotStart < minAllowedTime) continue;
       const hasCollision = busy.some(function(b) {
         return slotStart < b.end && slotEnd > b.start;
@@ -339,7 +411,8 @@ function computeDaySlots(dateStr, busy, now, todayInArg) {
         });
       }
     }
-  }
+  });
+
   return availableSlots;
 }
 
@@ -413,16 +486,45 @@ function handleBookAppointment(payload) {
   const startTime = parseArgentinaDate(dateStr, timeStr);
   const endTime = new Date(startTime.getTime() + duration * 60 * 1000);
 
-  // 1. Verificación de anticipación mínima para el mismo día
+  // 1. Verificación de anticipación mínima y máximo 60 días
   const now = new Date();
   const todayInArg = Utilities.formatDate(now, "America/Argentina/Buenos_Aires", "yyyy-MM-dd");
   const isToday = (todayInArg === dateStr);
+  const todayMs = parseArgentinaDate(todayInArg, "00:00").getTime();
+  const targetMs = parseArgentinaDate(dateStr, "00:00").getTime();
+  const diffDays = Math.round((targetMs - todayMs) / (24 * 3600 * 1000));
+  if (diffDays < 0) {
+    return createJsonResponse({ status: "error", message: "No se pueden agendar turnos en fechas pasadas." }, 400);
+  }
+  if (diffDays > MAX_BOOKING_DAYS) {
+    return createJsonResponse({ status: "error", message: "Los turnos se pueden solicitar a un máximo de " + MAX_BOOKING_DAYS + " días." }, 400);
+  }
+
   const bufferHours = SESSION_BUFFER_HOURS;
   const minAllowedTime = isToday ? (now.getTime() + bufferHours * 3600 * 1000) : parseArgentinaDate(dateStr, "08:00").getTime();
   if (startTime.getTime() < minAllowedTime) {
     return createJsonResponse({
       status: "error",
       message: "Los turnos presenciales deben reservarse con al menos 2 horas de anticipación."
+    }, 400);
+  }
+
+  // 2. Verificación de horario del profesional
+  const targetDate = parseArgentinaDate(dateStr, "12:00");
+  const dayOfWeek = targetDate.getUTCDay();
+  const practitionerId = payload.practitionerId || "";
+  const windows = getGasWorkingWindows(practitionerId, dayOfWeek);
+  const timeParts = timeStr.split(":").map(Number);
+  const reqMin = timeParts[0] * 60 + timeParts[1];
+  const fitsWindow = windows.some(function(w) {
+    const sParts = w.start.split(":").map(Number);
+    const eParts = w.end.split(":").map(Number);
+    return reqMin >= (sParts[0] * 60 + sParts[1]) && reqMin + duration <= (eParts[0] * 60 + eParts[1]);
+  });
+  if (!fitsWindow) {
+    return createJsonResponse({
+      status: "error",
+      message: "El horario seleccionado está fuera del horario de atención del profesional."
     }, 400);
   }
 
@@ -436,8 +538,7 @@ function handleBookAppointment(payload) {
     }, 409);
   }
 
-  // 2. Construir título normalizado Kinésica
-  const practitionerId = payload.practitionerId || "";
+  // 3. Construir título normalizado Kinésica
   const practitionerNames = { norberto: "Norberto", maria: "María" };
   const whoName = practitionerNames[practitionerId] || "";
   const whoTag = whoName ? "[" + whoName.toUpperCase() + "] " : "";
