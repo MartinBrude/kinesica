@@ -377,6 +377,12 @@
       return "";
     }
 
+    practitionerFullName(id) {
+      if (id === "norberto") return "Norberto Brude";
+      if (id === "maria") return "María Gulín";
+      return this.practitionerGenderLabel(id);
+    }
+
     techniqueLabel(technique) {
       if (!technique) return "";
       const labels = this.copy.techniques || {};
@@ -682,7 +688,7 @@
         const card = document.createElement("div");
         card.className = "kb-choice-card";
         card.dataset.practitioner = id;
-        card.innerHTML = `<h3>${this.practitionerGenderLabel(id)}</h3>`;
+        card.innerHTML = `<h3>${this.practitionerFullName(id)}</h3>`;
         card.addEventListener("click", () => {
           this.state.practitionerId = id;
           this.state.techniqueId = "paciente";
