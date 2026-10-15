@@ -90,6 +90,8 @@ function doGet(e) {
       return handleBookAppointment(params);
     } else if (action === "check_patient") {
       return handleCheckPatient(params);
+    } else if (action === "get_directory") {
+      return handleGetDirectory();
     }
 
     return createJsonResponse({ status: "error", message: "Acción no reconocida en GET" }, 400);
@@ -445,6 +447,39 @@ function handleCheckPatient(payload) {
   }
 
   return createJsonResponse({ status: "success", is_habitual: false, name: null });
+}
+
+/**
+ * Endpoint GET: Devuelve el directorio de pacientes registrado en Google Sheets
+ * en formato { "nombre normalizado": "telefono" } para resolución automática de recordatorios.
+ */
+function handleGetDirectory() {
+  const sheet = getPatientsSheet();
+  if (!sheet) {
+    return createJsonResponse({ status: "success", action: "get_directory", total: 0, directory: {} });
+  }
+
+  const data = sheet.getDataRange().getValues();
+  const directory = {};
+  for (let i = 1; i < data.length; i++) {
+    const rawName = String(data[i][0] || "").trim();
+    const cleanName = rawName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const rawPhone = String(data[i][2] || "").replace(/[^0-9]/g, '');
+    if (cleanName && rawPhone && rawPhone.length >= 8) {
+      let phone = rawPhone;
+      if (phone.startsWith('549') && phone.length >= 12) phone = phone.substring(0, 13);
+      else if (phone.startsWith('54') && !phone.startsWith('549') && phone.length >= 12) phone = '549' + phone.slice(2, 12);
+      else if (phone.startsWith('11') && phone.length === 10) phone = '549' + phone;
+      directory[cleanName] = phone;
+    }
+  }
+
+  return createJsonResponse({
+    status: "success",
+    action: "get_directory",
+    total: Object.keys(directory).length,
+    directory: directory
+  });
 }
 
 /**

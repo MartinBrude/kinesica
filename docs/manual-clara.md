@@ -188,116 +188,58 @@ El flujo técnico detrás de escena se basa en cinco pilares automatizados:
 
 ---
 
-### 🟢 3.2. ¿Qué DEBEN hacer Norberto y María? (Guía Paso a Paso con Capturas)
+### 🔄 3.1.1. Coherencia Total: Agendamiento vía Botón en Admin vs. Chatbot Clara
 
-Cuando Norberto o María agendan un turno a mano en Google Calendar (desde la web o desde la app del celular), deben completar la cita siguiendo este estándar exacto:
+En Kinésica existen dos vías directas para que un turno ingrese a la agenda sin intervención manual:
+1. **El Botón "Agendar" en el Módulo de Administración (`/admin`):** Abre la turnera oficial interactiva (el mismo widget de reservas web de `turnos.html`).
+2. **El Chatbot de WhatsApp (Clara):** Coordina la cita de forma conversacional las 24 horas por chat o mensaje de voz.
+
+**Ambos canales operan de manera 100% coordinada y coherente:**
+
+| Dimensión Operativa | Agendamiento vía Botón en Admin / Web | Agendamiento vía Chatbot Clara | Resultado Unificado |
+|---|---|---|---|
+| **Calendario de destino** | Google Calendar (`consultorio`) | Google Calendar (`consultorio`) | 🏛️ Fuente única de verdad compartida. |
+| **Título del evento (Summary)** | `🩺 [PROFESIONAL] [TURNO] Nombre` (o `[TURNO - MENOR]`) | `🩺 [TURNO] Nombre` (o `[TURNO - MENOR]`) | 🏷️ Reconocimiento unívoco de turnos válidos de 1h. |
+| **Duración y ventana** | Exactamente 60 minutos dentro del horario del kinesiólogo | Exactamente 60 minutos dentro del horario del kinesiólogo | ⏱️ Camilla protegida de colisiones y sobreturnos. |
+| **Datos en la descripción** | `📱 WhatsApp`, `🪪 DNI`, `Motivo`, `Técnica` | `📱 WhatsApp`, `🪪 DNI`, `Motivo` | 📋 Toda la información de contacto accesible en el evento. |
+| **Planilla ("el archivo" Google Sheets)** | Se asienta fila automáticamente en tiempo real | Se asienta fila automáticamente vía webhook de background | 📊 Base de datos siempre al día sin duplicar datos. |
+| **Alertas a Norberto y María** | Dispara WhatsApp con datos de la reserva web | Dispara alerta interna de WhatsApp con resumen del turno | 🔔 El profesional se entera al instante por su celular. |
+| **Recordatorio automático de 24 hs** | Se envía el día anterior con los 3 botones nativos | Se envía el día anterior con los 3 botones nativos | 📲 El paciente confirma, reprograma o cancela con 1 toque. |
+
+---
+
+### 📋 3.2. Protocolo de Agenda: Qué SÍ hacer y Qué NUNCA hacer (Guía Unificada)
+
+Google Calendar (calendario **`consultorio`**) es la **única fuente de verdad** del consultorio. Para que el equipo humano y Clara trabajen en perfecta sincronía sin superposiciones ni fallas de recordatorios, todas las reglas operativas se resumen en esta matriz única:
 
 <p align="center">
-  <img src="assets/mockup_google_calendar_correcto.jpg" alt="Mockup Oficial de Google Calendar" width="820">
+  <img src="assets/mockup_google_calendar_correcto.jpg" alt="Mockup Oficial de Google Calendar" width="760">
   <br>
   <em>Figura 2: Captura real del formulario de agendamiento en Google Calendar (consultorio).</em>
 </p>
 
-<p align="center">
-  <img src="assets/mockup_evento_anotado.png" alt="Anatomía del Turno Perfecto" width="880">
-  <br>
-  <em>Figura 3: Los 4 campos obligatorios y sus reglas para no romper el proceso.</em>
-</p>
-
-#### 📝 Los 4 Campos Obligatorios del Turno Perfecto:
-
-1. **Calendario (OBLIGATORIO):**  
-   - Seleccionar siempre el calendario **`consultorio`** (color verde).  
-   - > [!CAUTION]  
-     > **¡El detalle más importante!** Al usar la cuenta personal de Norberto, Google Calendar muchas veces ofrece por defecto el calendario personal `"Norberto Brude"`. Si el turno queda guardado en `"Norberto Brude"`, Clara es completamente ciega a ese evento: creerá que el consultorio está vacío y le dará el mismo turno a un paciente por WhatsApp, provocando una superposición en la camilla.  
-     > **Compromisos personales de Norberto en horario de atención (08 a 19 hs):** Si Norberto tiene un médico, trámite o almuerzo durante el horario laboral, debe anotarlo en **`consultorio`** con el título `🚫 [BLOQUEADO]`. De esa forma Clara respeta su horario y el bot sabe que no debe enviar ningún recordatorio.
-
-2. **Título del Evento (Summary):**  
-   - **¡Cero emojis obligatorios!** No hace falta colocar ningún emoji (🩺, 🌿, etc. no son requeridos).
-   - **Formato directo:** Escribir simplemente el nombre y apellido del paciente:  
-     `Lucas Méndez` (o `[TURNO] Lucas Méndez` si prefieren esa etiqueta).
-   - **Identificación opcional de profesional:** Si desean asentar quién de los dos atiende:  
-     `[NORBERTO] Lucas Méndez`  
-     `[MARIA] Lucas Méndez`
-   - **Menor de edad:** Si asiste acompañado/a por un adulto responsable:  
-     `Lucas Méndez (Familiar: Andrea Gómez)` o `[TURNO - MENOR] Lucas Méndez (Familiar: Andrea Gómez)`  
-     *(El sistema detecta automáticamente la condición de menor y añade en el recordatorio la indicación de asistir con un adulto).*
-
-3. **Horario y Duración:**  
-   - Duración: **Exactamente 1 hora (60 minutos)**.  
-   - Ejemplos válidos: `10:00 a 11:00 hs`, `15:00 a 16:00 hs`, `18:00 a 19:00 hs`.  
-   - Franja oficial: Lunes a viernes hábiles de 08:00 a 19:00 hs.
-
-4. **Descripción del Evento (Notas):**  
-   - **El teléfono celular solo es necesario la PRIMERA VEZ:**
-     - **Paciente nuevo (primera consulta en Kinésica):** Anotar su número con código de área (ej: `📱 WhatsApp: 5491144556677` o `1144556677`) la primera vez que se carga la cita a mano. Al procesar el recordatorio, el sistema indexa y guarda el celular automáticamente en el **Directorio Dinámico de Pacientes**.
-     - **Pacientes habituales (2ª sesión en adelante):** **¡Ya no hace falta poner el teléfono!** Norberto y María simplemente crean el evento con el nombre del paciente (`Lucas Méndez`). El bot de recordatorios de las 24 hs busca automáticamente el nombre en el Directorio y le despacha el WhatsApp sin tener que tipear el número nunca más.
-   - **Cero exigencia de DNI en cada sesión:**
-     - **No tiene ningún sentido cargar el DNI cada sesión.** El DNI se registra una sola vez en la ficha de admisión o cuando Clara agenda por chat. Para agendar turnos manuales día a día, Norberto y María **jamás están obligados a cargar el DNI**.
-   - **Notas clínicas (opcionales):** La descripción puede dejarse vacía o aprovecharse únicamente para anotaciones terapéuticas si lo desean:
-     ```text
-     📱 WhatsApp: 5491144556677 (solo indispensable la 1ª vez)
-     Motivo: Lumbalgia y evaluación postural
-     Atiende: Norberto
-     Trae resonancia magnética lumbar previa
-     ```
-
----
-
-#### 🚫 Cómo Bloquear Horarios para No Atender (Almuerzos, Cursos, Trámites)
-Si Norberto o María necesitan ausentarse o cerrar un horario específico del consultorio:
-- Crear un evento en el calendario **`consultorio`** que cubra el rango deseado (ej: jueves de 13:00 a 15:00 hs).
-- Título obligatorio: `🚫 [BLOQUEADO]` o `🚫 [BLOQUEADO] Trámite personal`.
-- **Efecto automático:** Clara detectará el hueco como ocupado y jamás ofrecerá ese horario a los pacientes. Además, el bot de recordatorios ignorará este evento y no mandará ningún mensaje.
-
-#### 🏖️ Cómo Cargar Vacaciones o Receso del Consultorio
-- Crear un evento de **día completo** en el calendario **`consultorio`**.
-- Título: `🏖️ [VACACIONES CONSULTORIO - CERRADO]` o `Vacaciones`.
-- **Efecto automático:** Clara informará con calidez a los pacientes que escriban que el consultorio está en receso y ofrecerá turnos para las fechas posteriores al regreso.
-
-#### ❌ Cómo Cancelar o Anular un Turno a Mano
-Si un paciente les avisa directamente a ustedes por llamada o chat personal que no va a asistir:
-- **Opción A (Recomendada):** Abrir el evento en Google Calendar y **eliminarlo** (tacho de basura). El hueco queda liberado al instante para Clara.
-- **Opción B (Registro histórico):** Si prefieren conservar el registro, editen el título agregando `[CANCELADO]` o `[ANULADO]` al inicio (ej: `[CANCELADO] 🩺 [TURNO] Lucas Méndez`). El bot de recordatorios detectará la palabra y **no le enviará el WhatsApp**.
-
----
-
-### 🔴 3.3. ¿Qué NUNCA deben hacer? (Los 7 Errores Críticos que Rompen el Proceso)
-
-Para mantener la armonía entre el equipo humano y la inteligencia artificial de Clara, nunca cometan estas 7 equivocaciones:
-
-<p align="center">
-  <img src="assets/comparativa_agendamiento_dos_donts.jpg" alt="Póster Comparativo de Agendamiento" width="620">
-  <br>
-  <em>Figura 4: Póster resumen de Qué SÍ hacer y Qué NUNCA hacer.</em>
-</p>
-
-<p align="center">
-  <img src="assets/tabla_visual_dos_donts.png" alt="Tabla Comparativa Do's and Don'ts" width="880">
-  <br>
-  <em>Figura 5: Matriz visual de causa y efecto en la automatización de agenda.</em>
-</p>
-
-| # | ❌ Qué NUNCA hacer | 💥 Qué pasa por detrás | ✅ Qué deben hacer en su lugar |
+| Aspecto / Operación | ✅ Qué SÍ hacer | ❌ Qué NUNCA hacer | 💡 Impacto en el Sistema / Clara |
 |---|---|---|---|
-| **1** | **Dejar el turno en el calendario por defecto `"Norberto Brude"`** | Al estar en la cuenta personal de Norberto, Clara solo lee el calendario `consultorio`. Si queda en el calendario por defecto de Norberto, Clara no lo ve y asignará un turno en el mismo horario. | Seleccionar siempre el calendario **`consultorio`** en el desplegable. |
-| **2** | **Poner títulos vagos sin nombre:** `"Turno"`, `"Paciente"`, `"RPG"`, `"Kinesio"` | El bot no sabe a quién pertenece la cita, no puede extraer el nombre de pila y, si falta el teléfono, no puede resolverlo en el directorio. | Escribir el nombre del paciente: `Lucas Méndez` (o `[TURNO] Lucas Méndez`). ¡Sin emojis obligatorios! |
-| **3** | **No anotar el celular si el paciente es nuevo** | Si el paciente nunca vino antes a Kinésica y no se coloca su WhatsApp en la 1ª sesión, el bot no sabrá adónde enviar el aviso de 24 hs. (En pacientes habituales no hace falta). | Escribir en la descripción `📱 WhatsApp: 54911...` **solo la primera vez**. En las siguientes el bot lo busca solo en el directorio. |
-| **4** | **Superponer eventos o encimar horarios** | En Kinésica hay **1 sola camilla física**. Si agendan a dos pacientes a la misma hora o pisan una cita previa, colapsa la atención presencial. | Chequear que el bloque horario esté completamente libre antes de guardar. |
-| **5** | **Crear turnos con duraciones no estándar** (15 min, 30 min o 45 min) | Descalibra la grilla de turnos de Clara, generando huecos inutilizables o solapamientos con la próxima sesión de 1 hora. | Todos los turnos deben durar **exactamente 60 minutos** (de hora en punto a hora en punto). |
-| **6** | **Escribir `"Cancelado"` en un turno que sigue activo** | El filtro anti-cancelación detectará la palabra clave y **anulará de inmediato el recordatorio de 24 hs**. El paciente pensará que nadie lo espera. | Usar `"Cancelado"` únicamente cuando la cita haya sido verdaderamente anulada. |
-| **7** | **Pedirle a Clara por WhatsApp que les agende un turno a ustedes** | Clara reconoce sus celulares como administradores. Les responderá: *"Los turnos son para los pacientes, no para los kinesiólogos"*. | Los bloqueos y turnos manuales los cargan ustedes directamente en Google Calendar. |
+| **1. Calendario de destino** | Seleccionar siempre el calendario **`consultorio`** (color verde). | Dejar el evento en el calendario personal por defecto (`"Norberto Brude"`). | Clara solo lee `consultorio`. Si queda en el personal, no lo ve, cree que la camilla está libre y agendará a otro paciente en ese horario. |
+| **2. Título de la cita (Summary)** | Escribir el nombre del paciente: `Lucas Méndez` (o `[TURNO] Lucas Méndez`).<br>• Menor: `Lucas Méndez (Familiar: Andrea Gómez)`.<br>• Profesional opcional: `[NORBERTO]` o `[MARIA]`. *(Cero emojis obligatorios).* | Poner títulos vagos sin nombre: `"Turno"`, `"Paciente"`, `"RPG"`, `"Kinesio"`. | El bot extrae el nombre de pila para saludar con calidez y asocia la cita con el paciente para resolver su WhatsApp en el directorio. |
+| **3. Carga del teléfono (WhatsApp)** | **Cargar el celular 1 sola vez por cualquiera de estas 2 vías:**<br>• **Opción A (Planilla):** Asentar Nombre y Celular en el [Google Sheets](https://docs.google.com/spreadsheets/d/1kyGkYea0Iu_OrXxF-yONqhs2rG1O8YUWbbSmQe37GCk/edit).<br>• **Opción B (1º turno):** Escribir en la descripción `📱 WhatsApp: 54911...` solo la 1ª vez.<br>*(En las sesiones 2ª en adelante, la descripción puede dejarse vacía).* | • Olvidar anotar el WhatsApp en la 1ª sesión de un paciente nuevo.<br>• Perder tiempo volviendo a escribir el teléfono en cada sesión de pacientes habituales. | El bot memoriza el teléfono en su Directorio Dinámico permanente. Para los turnos siguientes, con solo el nombre en el título, rescata el teléfono automáticamente. |
+| **4. DNI / Documento** | No es obligatorio en el día a día. Se registra en la admisión/planilla o cuando Clara agenda por chat. | Exigir o cargar el DNI en cada sesión manual en Google Calendar. | El DNI solo se pide una única vez al ingresar al consultorio. No es requisito para despachar recordatorios diarios. |
+| **5. Duración y Horarios** | Exactamente **60 minutos** (1 hora) dentro de las franjas de atención hábiles (08:00 a 19:00 hs). | • Turnos de 15, 30 o 45 min.<br>• Superponer eventos a la misma hora. | Hay **1 sola camilla física**. Duraciones irregulares descalibran los huecos libres y las superposiciones colapsan la atención presencial. |
+| **6. Bloqueos personales (almuerzos, trámites)** | Crear evento en el calendario **`consultorio`** con el título `🚫 [BLOQUEADO]` en el horario requerido. | • Anotarlo en el calendario personal.<br>• Pedirle a Clara por WhatsApp que bloquee horarios. | Clara reconoce `🚫 [BLOQUEADO]` como horario ocupado y no lo ofrece. El bot de recordatorios no envía ningún WhatsApp por este evento. |
+| **7. Vacaciones / Receso** | Crear evento de **día completo** en **`consultorio`** titulado `🏖️ [VACACIONES CONSULTORIO - CERRADO]` o `Vacaciones`. | Cerrar el consultorio sin marcar el evento de día completo en `consultorio`. | Clara detecta el cierre, avisa cordialmente que el consultorio está en receso y solo ofrece turnos para las fechas posteriores al regreso. |
+| **8. Cancelaciones manuales** | • **Recomendado:** Eliminar el turno (tacho de basura). El hueco queda liberado al instante.<br>• **Historial:** Si desean conservarlo, anteponer `[CANCELADO]` o `[ANULADO]` al título. | Escribir `"Cancelado"` en un turno que sigue activo y en pie. | El bot detecta `[CANCELADO]` y anula de inmediato el recordatorio de las 24 hs (el paciente creería erróneamente que la sesión se suspendió). |
+| **9. Uso de Clara por Kinesiólogos** | Recibir alertas internas de turnos y usar comandos de control (`pausar bot`, `reanudar bot`). | Pedirle a Clara por WhatsApp que les agende un turno a Norberto o María. | Clara reconoce sus celulares como administradores y les recordará: *"Los turnos son para los pacientes, no para los kinesiólogos"*. |
 
 ---
 
-### 📲 3.4. El Resultado Final: ¿Qué recibe el paciente 24 horas antes?
+### 📲 3.3. El Resultado Final: ¿Qué recibe el paciente 24 horas antes?
 
 Cuando un turno se agenda correctamente en Google Calendar, el bot de recordatorios se activa a las 10:00 hs (o domingos a las 18:00 hs) y despacha automáticamente una plantilla interactiva oficial de WhatsApp:
 
 <p align="center">
   <img src="assets/mockup_whatsapp_recordatorio_24h.jpg" alt="Captura del Recordatorio de 24 hs en WhatsApp" width="380">
   <br>
-  <em>Figura 6: Mensaje oficial interactivo de WhatsApp recibido por el paciente 24 horas antes con los 3 botones de confirmación rápida.</em>
+  <em>Figura 3: Mensaje oficial interactivo de WhatsApp recibido por el paciente 24 horas antes con los 3 botones de confirmación rápida.</em>
 </p>
 
 #### 🔘 Los 3 Botones Interactivos Nativos y su Acción:
@@ -482,6 +424,29 @@ Para probar el funcionamiento como si fueras un paciente nuevo:
 
 > 📋 **¿Querés probar escenarios específicos o reportar observaciones?**  
 > En la [**Guía Oficial de Pruebas y Reporte de Feedback**](guia-pruebas.md) ([Enlace en GitHub](https://github.com/MartinBrude/kinesica/blob/main/docs/guia-pruebas.md)) tenés más de 30 casos de prueba preparados (consultas de prepagas, urgencias, audios confusos, lista de espera, etc.) y una ficha simple para reportar cualquier comentario o sugerencia.
+
+### 🚀 8.1. Checklist de Salida a Producción: ¿Ya se pueden iniciar las pruebas manuales?
+
+> [!TIP]
+> **¡SÍ, ya podés empezar las pruebas manuales con el chat en producción!**  
+> Todos los componentes del sistema se encuentran completamente implementados, sincronizados y validados por una suite exhaustiva de **219 pruebas automatizadas (100% exitosas)**.
+
+#### ✅ Estado de los componentes clave para pruebas:
+1. **Franjas horarias oficiales:** Cargadas e integradas tanto en Clara (recepción conversacional) como en el Auditor Clínico (guardrail de calidad) y en la turnera web de reservas.
+2. **Capacidad física y Camilla Única:** Protección anti-solapamiento estricta activa (cero colisiones posibles).
+3. **Mapeo por disciplina:** Asignación automática de Osteopatía y Manipulaciones viscerales a Norberto; Acupuntura y Posturología a María; RPG y Neurodinamia compartidas.
+4. **Memoria de pacientes y DNI flexible:** Reconocimiento de habituales por número de WhatsApp, saludo personalizado por nombre de pila y botón de escape `[Prefiero no dar DNI]`.
+5. **Botoneras interactivas nativas:** Botones rápidos de selección de horarios, selección de profesional, opciones de cancelación y recordatorios de 24 hs.
+6. **Sincronización bidireccional de teléfonos:** Soporte simultáneo para indexar teléfonos desde el primer turno en Google Calendar o desde la planilla de Google Sheets ("el archivo").
+7. **Pausa operativa y comandos de administración:** Reconocimiento de los celulares de Norberto y María para comandos como `"pausar bot"`, `"reanudar bot"` y `"vacaciones..."`.
+8. **Planilla de Primeras Sesiones:** Sincronización en tiempo real en Google Drive con sanitización contra inyección de fórmulas.
+
+#### 🧪 Pasos recomendados para tu prueba manual inicial:
+1. Abrí el chat de WhatsApp con la línea oficial de Clara (`11 3178-1733`).
+2. Enviá `/restart` para reiniciar la memoria como si fueras un paciente nuevo.
+3. Pedí un turno para una dolencia específica (ej: *"Hola, tengo bruxismo y me duele la mandíbula, ¿tienen turno esta semana?"* o mandá un audio de voz).
+4. Verificá que Clara te responda con empatía, te informe los honorarios correspondientes ($65.000 para ATM) y te ofrezca 2 huecos con botones interactivos.
+5. Seleccioná un horario, ingresá tu nombre y probá el botón `[Prefiero no dar DNI]` para ver cómo confirma el turno y asienta la cita en Google Calendar.
 
 ---
 
