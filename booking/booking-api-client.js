@@ -457,7 +457,8 @@
       const payload = Object.assign({ action: "book" }, data);
 
       const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
-      const timeoutId = controller ? setTimeout(() => controller.abort(), 25000) : null;
+      // El script crea el evento y después avisa por WhatsApp. 25s cortaba la espera con el turno ya agendado.
+      const timeoutId = controller ? setTimeout(() => controller.abort(), 55000) : null;
       let res;
       try {
         res = await fetch(url, {
