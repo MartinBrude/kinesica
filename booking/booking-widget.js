@@ -923,7 +923,15 @@
       });
       let slots = this.filterSlotsWithBuffer(res.availableSlots || [], dateIso, this.state.appointmentType);
       const chosen = engine.getTechnique(this.state.techniqueId);
-      if (chosen && chosen.bySchedule) {
+      const targetPractitionerId = this.state.practitionerId;
+      if (targetPractitionerId) {
+        const windows = engine.getWorkingWindows(targetPractitionerId, dateIso);
+        slots = slots.filter((slot) => {
+          const [h, m] = slot.time.split(":").map(Number);
+          const tMin = h * 60 + (m || 0);
+          return windows.some((w) => tMin >= w.startMin && tMin + engine.SESSION_DURATION_MINUTES <= w.endMin);
+        });
+      } else if (chosen && chosen.bySchedule) {
         slots = slots.filter((slot) => engine.practitionersAt(dateIso, slot.time).length > 0);
       }
       return slots;
