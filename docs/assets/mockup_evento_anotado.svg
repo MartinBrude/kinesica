@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 620" width="100%" height="100%" style="background:#0F1F17; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Header -->
+  <text x="490" y="38" text-anchor="middle" fill="#D8F3DC" font-size="24" font-weight="800" letter-spacing="0.5">📋 ANATOMÍA DEL TURNO PERFECTO EN GOOGLE CALENDAR</text>
+  <text x="490" y="64" text-anchor="middle" fill="#95D5B2" font-size="14">Los 4 campos indispensables que Norberto y María deben completar al agendar a mano</text>
+
+  <!-- The Google Calendar Modal Box -->
+  <g transform="translate(50, 95)" filter="url(#shadow)">
+    <!-- Window background -->
+    <rect width="480" height="480" rx="16" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="1"/>
+
+    <!-- Header bar -->
+    <path d="M 0 16 Q 0 0 16 0 L 464 0 Q 480 0 480 16 L 480 50 L 0 50 Z" fill="#F8F9FA" stroke="#E0E0E0" stroke-width="1"/>
+    <circle cx="24" cy="25" r="6" fill="#EA4335"/>
+    <circle cx="42" cy="25" r="6" fill="#FBBC05"/>
+    <circle cx="60" cy="25" r="6" fill="#34A853"/>
+    <text x="240" y="31" text-anchor="middle" fill="#5F6368" font-size="13" font-weight="600">Google Calendar · Crear Evento</text>
+    <text x="455" y="30" text-anchor="middle" fill="#5F6368" font-size="18" font-weight="400">✕</text>
+
+    <!-- Field 1: Title Input -->
+    <g transform="translate(25, 70)">
+      <rect width="430" height="48" rx="6" fill="#F1F3F4" stroke="#1A73E8" stroke-width="2"/>
+      <text x="16" y="30" fill="#202124" font-size="18" font-weight="700">🩺 [TURNO] Lucas Méndez</text>
+    </g>
+
+    <!-- Field 2: Date & Time -->
+    <g transform="translate(25, 135)">
+      <rect width="430" height="46" rx="6" fill="#F8F9FA" stroke="#DADCE0" stroke-width="1"/>
+      <text x="16" y="29" fill="#1A73E8" font-size="17">🕒</text>
+      <text x="45" y="29" fill="#202124" font-size="15" font-weight="600">Martes, 18 de Noviembre · 10:00 – 11:00 hs</text>
+    </g>
+
+    <!-- Field 3: Calendar Selector -->
+    <g transform="translate(25, 198)">
+      <rect width="430" height="46" rx="6" fill="#E6F4EA" stroke="#137333" stroke-width="2"/>
+      <circle cx="28" cy="23" r="8" fill="#1E8E3E"/>
+      <text x="48" y="29" fill="#137333" font-size="15" font-weight="800">consultorio</text>
+      <text x="135" y="28" fill="#188038" font-size="12" font-weight="600">(Calendario Compartido Kinésica)</text>
+      <path d="M 405 21 L 412 28 L 419 21 Z" fill="#137333"/>
+    </g>
+
+    <!-- Field 4: Description -->
+    <g transform="translate(25, 260)">
+      <rect width="430" height="135" rx="6" fill="#F8F9FA" stroke="#DADCE0" stroke-width="1"/>
+      <text x="16" y="26" fill="#5F6368" font-size="14">📝</text>
+      <text x="42" y="26" fill="#202124" font-size="13" font-family="monospace" font-weight="700">📱 WhatsApp: 5491144556677</text>
+      <text x="42" y="50" fill="#202124" font-size="13" font-family="monospace" font-weight="700">🪪 DNI: 35123456</text>
+      <text x="42" y="74" fill="#3C4043" font-size="12">Tratamiento: RPG / Lumbalgia aguda</text>
+      <text x="42" y="94" fill="#3C4043" font-size="12">Atiende: Norberto · 1ª Sesión</text>
+      <text x="42" y="116" fill="#5F6368" font-size="11" font-style="italic">Trae resonancia magnética lumbar previa</text>
+    </g>
+
+    <!-- Save Button -->
+    <g transform="translate(355, 415)">
+      <rect width="100" height="38" rx="19" fill="#1A73E8"/>
+      <text x="50" y="24" text-anchor="middle" fill="#FFFFFF" font-size="14" font-weight="700">Guardar</text>
+    </g>
+  </g>
+
+  <!-- Right Side Callout Explanations -->
+  <g transform="translate(560, 95)">
+
+    <!-- Callout 1 -->
+    <g transform="translate(0, 50)">
+      <rect width="370" height="75" rx="10" fill="#183D2C" stroke="#52B788" stroke-width="1.5"/>
+      <circle cx="-25" cy="37" r="14" fill="#52B788"/>
+      <text x="-25" y="42" text-anchor="middle" fill="#0F1F17" font-size="14" font-weight="900">1</text>
+      <path d="M -11 37 L 0 37" stroke="#52B788" stroke-width="2"/>
+      <text x="16" y="25" fill="#52B788" font-size="13" font-weight="800">TÍTULO: EMOJI + [TURNO] + NOMBRE</text>
+      <text x="16" y="43" fill="#D8F3DC" font-size="11">• Formato: <tspan font-weight="bold">🩺 [TURNO] Nombre y Apellido</tspan></text>
+      <text x="16" y="59" fill="#B7E4C7" font-size="11">• Si atiende Norberto o María: <tspan font-weight="bold">🩺 [NORBERTO] [TURNO] ...</tspan></text>
+    </g>
+
+    <!-- Callout 2 -->
+    <g transform="translate(0, 142)">
+      <rect width="370" height="75" rx="10" fill="#183D2C" stroke="#52B788" stroke-width="1.5"/>
+      <circle cx="-25" cy="37" r="14" fill="#52B788"/>
+      <text x="-25" y="42" text-anchor="middle" fill="#0F1F17" font-size="14" font-weight="900">2</text>
+      <path d="M -11 37 L 0 37" stroke="#52B788" stroke-width="2"/>
+      <text x="16" y="25" fill="#52B788" font-size="13" font-weight="800">DURACIÓN: EXACTAMENTE 1 HORA (60m)</text>
+      <text x="16" y="43" fill="#D8F3DC" font-size="11">• Lunes a viernes entre las 08:00 y las 19:00 hs.</text>
+      <text x="16" y="59" fill="#FF8A80" font-size="11" font-weight="700">⚠️ ¡NUNCA agendar 15 o 30 min! Descalibra a Clara.</text>
+    </g>
+
+    <!-- Callout 3 -->
+    <g transform="translate(0, 235)">
+      <rect width="370" height="92" rx="10" fill="#331E1E" stroke="#FF6B6B" stroke-width="1.5"/>
+      <circle cx="-25" cy="46" r="14" fill="#FF6B6B"/>
+      <text x="-25" y="51" text-anchor="middle" fill="#FFFFFF" font-size="14" font-weight="900">3</text>
+      <path d="M -11 46 L 0 46" stroke="#FF6B6B" stroke-width="2"/>
+      <text x="16" y="24" fill="#FF6B6B" font-size="13" font-weight="800">CALENDARIO: SIEMPRE 'consultorio'</text>
+      <text x="16" y="42" fill="#FFE3E3" font-size="11">• La cuenta de Google es la personal de Norberto.</text>
+      <text x="16" y="58" fill="#FFE3E3" font-size="11">• <tspan font-weight="bold">¡OJO!</tspan> Elegir el calendario <tspan font-weight="bold">'consultorio'</tspan>, no el</text>
+      <text x="16" y="74" fill="#FFE3E3" font-size="11">principal 'Norberto'. Clara solo lee 'consultorio'.</text>
+      <text x="16" y="88" fill="#FF8A80" font-size="10" font-weight="700">Evita que se superpongan turnos en la camilla.</text>
+    </g>
+
+    <!-- Callout 4 -->
+    <g transform="translate(0, 345)">
+      <rect width="370" height="85" rx="10" fill="#183D2C" stroke="#52B788" stroke-width="1.5"/>
+      <circle cx="-25" cy="42" r="14" fill="#52B788"/>
+      <text x="-25" y="47" text-anchor="middle" fill="#0F1F17" font-size="14" font-weight="900">4</text>
+      <path d="M -11 42 L 0 42" stroke="#52B788" stroke-width="2"/>
+      <text x="16" y="25" fill="#52B788" font-size="13" font-weight="800">DESCRIPCIÓN: WHATSAPP Y DNI</text>
+      <text x="16" y="43" fill="#D8F3DC" font-size="11">• <tspan font-weight="bold">📱 WhatsApp: 5491144556677</tspan> (con 549 o 11).</text>
+      <text x="16" y="59" fill="#B7E4C7" font-size="11">• El bot de recordatorios 24h saca el número de acá.</text>
+      <text x="16" y="75" fill="#95D5B2" font-size="11">• Si el paciente confirma, pasa a <tspan font-weight="bold">[CONFIRMADO]</tspan>.</text>
+    </g>
+
+  </g>
+</svg>

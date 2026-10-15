@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 560" width="100%" height="100%" style="background:#0D1F17; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <!-- Title -->
+  <text x="480" y="38" text-anchor="middle" fill="#D8F3DC" font-size="24" font-weight="800">⚖️ TABLA COMPARATIVA: CÓMO SÍ vs. QUÉ NUNCA HACER</text>
+  <text x="480" y="64" text-anchor="middle" fill="#95D5B2" font-size="14">Reglas obligatorias para agendar en Google Calendar sin romper la automatización</text>
+
+  <!-- Left Column: CÓMO SÍ AGENDAR -->
+  <g transform="translate(40, 90)">
+    <rect width="420" height="440" rx="16" fill="#143828" stroke="#52B788" stroke-width="2"/>
+    <rect width="420" height="50" rx="16" fill="#2D6A4F"/>
+    <text x="210" y="33" text-anchor="middle" fill="#FFFFFF" font-size="17" font-weight="800">✅ CÓMO SÍ AGENDAR</text>
+
+    <!-- Item 1 -->
+    <g transform="translate(20, 68)">
+      <rect width="380" height="60" rx="8" fill="#0F291D" stroke="#40916C" stroke-width="1"/>
+      <text x="16" y="24" fill="#52B788" font-size="13" font-weight="700">1. Calendario: 'consultorio'</text>
+      <text x="16" y="44" fill="#D8F3DC" font-size="11">Seleccionar siempre el calendario verde 'consultorio'.</text>
+    </g>
+
+    <!-- Item 2 -->
+    <g transform="translate(20, 140)">
+      <rect width="380" height="60" rx="8" fill="#0F291D" stroke="#40916C" stroke-width="1"/>
+      <text x="16" y="24" fill="#52B788" font-size="13" font-weight="700">2. Título: 🩺 [TURNO] Nombre Completo</text>
+      <text x="16" y="44" fill="#D8F3DC" font-size="11">Ej: 🩺 [TURNO] Lucas Méndez (o [NORBERTO] / [MARIA]).</text>
+    </g>
+
+    <!-- Item 3 -->
+    <g transform="translate(20, 212)">
+      <rect width="380" height="60" rx="8" fill="#0F291D" stroke="#40916C" stroke-width="1"/>
+      <text x="16" y="24" fill="#52B788" font-size="13" font-weight="700">3. Duración: 1 hora exacta (60m)</text>
+      <text x="16" y="44" fill="#D8F3DC" font-size="11">De lunes a viernes hábiles entre 08:00 y 19:00 hs.</text>
+    </g>
+
+    <!-- Item 4 -->
+    <g transform="translate(20, 284)">
+      <rect width="380" height="60" rx="8" fill="#0F291D" stroke="#40916C" stroke-width="1"/>
+      <text x="16" y="24" fill="#52B788" font-size="13" font-weight="700">4. Descripción: WhatsApp y DNI</text>
+      <text x="16" y="44" fill="#D8F3DC" font-size="11">Poner 📱 WhatsApp: 54911... para el recordatorio de 24h.</text>
+    </g>
+
+    <!-- Item 5 -->
+    <g transform="translate(20, 356)">
+      <rect width="380" height="60" rx="8" fill="#0F291D" stroke="#40916C" stroke-width="1"/>
+      <text x="16" y="24" fill="#52B788" font-size="13" font-weight="700">5. Bloqueos: 🚫 [BLOQUEADO]</text>
+      <text x="16" y="44" fill="#D8F3DC" font-size="11">Cierra el hueco a Clara y evita envíos de mensajes.</text>
+    </g>
+  </g>
+
+  <!-- Right Column: QUÉ NUNCA HACER -->
+  <g transform="translate(500, 90)">
+    <rect width="420" height="440" rx="16" fill="#2B1313" stroke="#E63946" stroke-width="2"/>
+    <rect width="420" height="50" rx="16" fill="#9B1D20"/>
+    <text x="210" y="33" text-anchor="middle" fill="#FFFFFF" font-size="17" font-weight="800">❌ QUÉ NUNCA HACER</text>
+
+    <!-- Item 1 -->
+    <g transform="translate(20, 68)">
+      <rect width="380" height="60" rx="8" fill="#200E0E" stroke="#C1121F" stroke-width="1"/>
+      <text x="16" y="24" fill="#FF6B6B" font-size="13" font-weight="700">1. Usar el calendario por defecto</text>
+      <text x="16" y="44" fill="#FFE3E3" font-size="11">Dejarlo en 'Norberto' en vez de 'consultorio'. Clara no lo lee.</text>
+    </g>
+
+    <!-- Item 2 -->
+    <g transform="translate(20, 140)">
+      <rect width="380" height="60" rx="8" fill="#200E0E" stroke="#C1121F" stroke-width="1"/>
+      <text x="16" y="24" fill="#FF6B6B" font-size="13" font-weight="700">2. Títulos vagos: 'Turno' o 'Kinesio'</text>
+      <text x="16" y="44" fill="#FFE3E3" font-size="11">El bot no sabrá a quién llamar ni podrá buscar el teléfono.</text>
+    </g>
+
+    <!-- Item 3 -->
+    <g transform="translate(20, 212)">
+      <rect width="380" height="60" rx="8" fill="#200E0E" stroke="#C1121F" stroke-width="1"/>
+      <text x="16" y="24" fill="#FF6B6B" font-size="13" font-weight="700">3. Fraccionar horas (15, 30 o 45 min)</text>
+      <text x="16" y="44" fill="#FFE3E3" font-size="11">Descalibra el motor de huecos libres de Clara.</text>
+    </g>
+
+    <!-- Item 4 -->
+    <g transform="translate(20, 284)">
+      <rect width="380" height="60" rx="8" fill="#200E0E" stroke="#C1121F" stroke-width="1"/>
+      <text x="16" y="24" fill="#FF6B6B" font-size="13" font-weight="700">4. Dejar la descripción sin WhatsApp</text>
+      <text x="16" y="44" fill="#FFE3E3" font-size="11">El paciente NO recibirá el recordatorio de 24 horas.</text>
+    </g>
+
+    <!-- Item 5 -->
+    <g transform="translate(20, 356)">
+      <rect width="380" height="60" rx="8" fill="#200E0E" stroke="#C1121F" stroke-width="1"/>
+      <text x="16" y="24" fill="#FF6B6B" font-size="13" font-weight="700">5. Escribir 'Cancelado' si sigue activo</text>
+      <text x="16" y="44" fill="#FFE3E3" font-size="11">El bot anulará de inmediato el envío del recordatorio.</text>
+    </g>
+  </g>
+</svg>
