@@ -1139,11 +1139,18 @@
       }
     }
 
+    formatConfirmationWhen(dateIso, time) {
+      const parts = String(dateIso || "").split("-");
+      const day = parts.length === 3 ? `${parts[2]}/${parts[1]}` : String(dateIso || "");
+      const hm = String(time || "").slice(0, 5);
+      return `${day} ${this.t("at")} ${hm} hs`;
+    }
+
     renderConfirmation(payload, result) {
       const q = (sel) => this.container.querySelector(sel);
 
       const technique = engine.getTechnique(payload.techniqueId);
-      const gender = this.practitionerGenderLabel(payload.practitionerId);
+      const professional = this.practitionerFullName(payload.practitionerId) || this.t("bySchedulePro");
       q("#kb-success-title").textContent = this.t("success");
 
       const summaryBox = q("#kb-success-summary");
@@ -1152,10 +1159,9 @@
           ${this.t("summaryKind")}
         </div>
         ${technique && !technique.bySchedule && !technique.internal ? `<div><strong>${this.t("technique")}:</strong> ${this.techniqueLabel(technique)}</div>` : ""}
-        <div><strong>${this.t("practitioner")}:</strong> ${gender || this.t("bySchedulePro")}</div>
+        <div><strong>${this.t("practitioner")}:</strong> ${professional}</div>
         <div><strong>${this.t("patient")}:</strong> ${payload.nombre}</div>
-        <div><strong>${this.t("when")}:</strong> ${payload.date} ${this.t("at")} ${payload.time}${this.t("hs") ? " " + this.t("hs") : ""}</div>
-        <div><strong>${this.t("contact")}:</strong> ${payload.telefono}</div>
+        <div><strong>${this.t("when")}:</strong> ${this.formatConfirmationWhen(payload.date, payload.time)}</div>
         <div style="margin-top: 6px; font-size: 12px; color: var(--kin-text-muted);">
           ${this.t("eventId")} <code>${result.eventId || "OK"}</code>
         </div>
@@ -1166,7 +1172,7 @@
       clinicRules.style.display = "block";
 
       const subtitle = q("#kb-success-subtitle");
-      subtitle.innerHTML = `${this.t("bookedFor")} <strong>${payload.date} ${this.t("at")} ${payload.time}${this.t("hs") ? " " + this.t("hs") : ""}</strong>.`;
+      if (subtitle) subtitle.hidden = true;
 
       this.setupCalendarButtons(payload, result);
     }
