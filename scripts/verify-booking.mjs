@@ -400,4 +400,17 @@ test("REGLA 8: Clara puede dar turnos a un máximo de 60 días", () => {
   assert.ok(validationRes.errors.some((e) => e.includes("máximo de 60 días")));
 });
 
+test("REGLA 9: Opción 'No me importa' (sin profesional fijo) ofrece turnos con cualquiera de los dos", () => {
+  // Lunes 2026-10-05 sin practitionerId devuelve tanto turnos de María (mañana) como de Norberto (tarde)
+  const bothSlots = calculateAvailableSlots({
+    date: "2026-10-05",
+    practitionerId: null,
+  });
+  const times = bothSlots.map((s) => s.time);
+  assert.ok(times.includes("09:00"), "Debe incluir turnos de María por la mañana");
+  assert.ok(times.includes("14:00"), "Debe incluir el último turno de María por la mañana");
+  assert.ok(times.includes("15:30"), "Debe incluir turnos de Norberto por la tarde");
+  assert.ok(times.includes("18:00"), "Debe incluir el último turno de Norberto por la tarde");
+});
+
 console.log(`\n🎉 Resultado: ${passed}/${total} tests superados con éxito.\n`);

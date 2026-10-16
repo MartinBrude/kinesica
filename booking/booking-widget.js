@@ -41,6 +41,7 @@
       qPrefer: "¿Preferís un profesional hombre o mujer?",
       proMale: "Hombre",
       proFemale: "Mujer",
+      proAny: "No me importa",
       yes: "Sí", no: "No",
       seeSlots: "Ver horarios disponibles →",
       pickDay: "Elige el día y horario",
@@ -117,6 +118,7 @@
       qPrefer: "Would you prefer a male or female practitioner?",
       proMale: "Male",
       proFemale: "Female",
+      proAny: "I don't mind",
       yes: "Yes", no: "No",
       seeSlots: "See available times →",
       pickDay: "Choose a day and time",
@@ -193,6 +195,7 @@
       qPrefer: "Préférez-vous un praticien ou une praticienne ?",
       proMale: "Homme",
       proFemale: "Femme",
+      proAny: "Peu m'importe",
       yes: "Oui", no: "Non",
       seeSlots: "Voir les horaires disponibles →",
       pickDay: "Choisissez le jour et l'horaire",
@@ -269,6 +272,7 @@
       qPrefer: "Prefere um profissional homem ou mulher?",
       proMale: "Homem",
       proFemale: "Mulher",
+      proAny: "Não me importa",
       yes: "Sim", no: "Não",
       seeSlots: "Ver horários disponíveis →",
       pickDay: "Escolha o dia e o horário",
@@ -354,6 +358,7 @@
         existingPatient: null,
         techniqueId: null,
         practitionerId: null,
+        practitionerPreference: null,
         selectedDate: null,
         selectedTime: null,
         availableSlots: [],
@@ -669,6 +674,7 @@
       this.state.existingPatient = isExisting;
       this.state.techniqueId = null;
       this.state.practitionerId = null;
+      this.state.practitionerPreference = null;
       this.container.querySelectorAll("#kb-patient-grid .kb-choice-card").forEach((card) => {
         const yes = card.dataset.patient === "yes";
         card.classList.toggle("selected", yes === isExisting);
@@ -721,6 +727,7 @@
     selectTechnique(techniqueId) {
       const technique = engine.getTechnique(techniqueId);
       this.state.techniqueId = techniqueId;
+      this.state.practitionerPreference = null;
       this.state.practitionerId = technique.bySchedule
         ? null
         : technique.practitioners.length === 1
@@ -742,16 +749,27 @@
         return;
       }
       box.style.display = "block";
-      technique.practitioners.forEach((id) => {
+      const options = technique.practitioners.map((id) => ({
+        value: id,
+        label: this.practitionerGenderLabel(id),
+      }));
+      options.push({
+        value: "any",
+        label: this.t("proAny"),
+      });
+      options.forEach((opt) => {
         const card = document.createElement("div");
         card.className = "kb-choice-card";
-        card.dataset.practitioner = id;
-        card.innerHTML = `<h3>${this.practitionerGenderLabel(id)}</h3>`;
+        card.dataset.practitioner = opt.value;
+        card.innerHTML = `<h3>${opt.label}</h3>`;
         card.addEventListener("click", () => {
-          const nextId = this.state.practitionerId === id ? null : id;
-          this.state.practitionerId = nextId;
+          const isAny = opt.value === "any";
+          const isSame = this.state.practitionerPreference === opt.value;
+          const nextPref = isSame ? null : opt.value;
+          this.state.practitionerPreference = nextPref;
+          this.state.practitionerId = !nextPref || isAny ? null : opt.value;
           grid.querySelectorAll(".kb-choice-card").forEach((c) => {
-            c.classList.toggle("selected", c.dataset.practitioner === nextId);
+            c.classList.toggle("selected", c.dataset.practitioner === nextPref);
           });
           this.syncStep1Continue();
         });
@@ -847,7 +865,7 @@
       const subtitle = this.container.querySelector("#kb-slots-subtitle");
       if (subtitle) {
         const techniqueForSub = engine.getTechnique(this.state.techniqueId);
-        subtitle.textContent = techniqueForSub && techniqueForSub.bySchedule
+        subtitle.textContent = (techniqueForSub && techniqueForSub.bySchedule) || !this.state.practitionerId
           ? this.t("sessionHour")
           : this.t("sessionPro");
         subtitle.style.display = "block";
@@ -861,6 +879,15 @@
         : (technique && technique.practitioners) || Object.keys(engine.PRACTITIONERS);
       const works = ids.some((id) => engine.getWorkingWindows(id, date).length > 0);
       return engine.isBusinessDay(date) && works;
+    }
+
+    practitionersForSlot(dateIso, timeHm) {
+      const onDuty = engine.practitionersAt(dateIso, timeHm);
+      const chosen = engine.getTechnique(this.state.techniqueId);
+      if (chosen && Array.isArray(chosen.practitioners) && !chosen.bySchedule) {
+        return onDuty.filter((id) => chosen.practitioners.indexOf(id) !== -1);
+      }
+      return onDuty;
     }
 
     async renderDateCarousel() {
@@ -1007,8 +1034,8 @@
         slots.forEach((slot) => {
           const chip = document.createElement("div");
           chip.className = "kb-slot-chip";
-          const onDuty = engine.getTechnique(this.state.techniqueId) && engine.getTechnique(this.state.techniqueId).bySchedule
-            ? engine.practitionersAt(dateIso, slot.time)
+          const onDuty = !this.state.practitionerId
+            ? this.practitionersForSlot(dateIso, slot.time)
             : [];
           const dutyLabel = onDuty.length === 1 ? ` · ${this.practitionerGenderLabel(onDuty[0])}` : "";
           const hs = this.t("hs");
@@ -1017,10 +1044,6 @@
 
           chip.addEventListener("click", () => {
             this.state.selectedTime = slot.time;
-            const chosen = engine.getTechnique(this.state.techniqueId);
-            const keptChoice = chosen && chosen.practitioners.length > 1 && this.state.practitionerId;
-            if (!keptChoice && onDuty.length === 1) this.state.practitionerId = onDuty[0];
-            else if (!keptChoice && onDuty.length > 1) this.state.practitionerId = null;
             const chips = grid.querySelectorAll(".kb-slot-chip");
             chips.forEach((ch) => ch.classList.remove("selected"));
             chip.classList.add("selected");
@@ -1106,11 +1129,16 @@
       const telefono = q("#kb-input-telefono").value.trim();
       const dni = q("#kb-input-dni").value.trim();
 
+      const slotPractitioners = this.practitionersForSlot(this.state.selectedDate, this.state.selectedTime);
+      const effectivePractitionerId =
+        this.state.practitionerId ||
+        (slotPractitioners.length === 1 ? slotPractitioners[0] : null);
+
       const payload = {
         tipo: "session",
         appointmentType: "session",
         techniqueId: this.state.techniqueId,
-        practitionerId: this.state.practitionerId,
+        practitionerId: effectivePractitionerId,
         date: this.state.selectedDate,
         time: this.state.selectedTime,
         nombre: nombre,

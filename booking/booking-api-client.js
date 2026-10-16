@@ -223,7 +223,7 @@
       }
 
       const effectiveUrl = this.getEffectiveApiUrl();
-      const url = `${effectiveUrl}?action=get_slots&date=${encodeURIComponent(dateStr)}&type=session&practitioner=${encodeURIComponent(options.practitionerId || "")}&technique=${encodeURIComponent(options.techniqueId || "")}`;
+      const url = `${effectiveUrl}?action=get_slots&date=${encodeURIComponent(dateStr)}&type=session`;
 
       const fetchWithRetry = async (attempt) => {
         // En el primer intento damos 20s para permitir que el cold start de GAS despierte
