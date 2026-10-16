@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=97">
+  <link rel="stylesheet" href="/admin/styles.css?v=98">
   <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1792186467">
   <script>
     (function () {
@@ -169,6 +169,7 @@
         <button type="button" data-step="2">3. Músculos craneales</button>
         <button type="button" data-step="3">4. Dolor y oclusión</button>
         <button type="button" data-step="4">5. Criterios CDI-TTM</button>
+        <button type="button" data-step="5">6. Anotaciones</button>
       </nav>
 
       <form id="ficha" class="sheet" autocomplete="off" novalidate>
@@ -276,9 +277,6 @@
                 </select>
               </label>
             </div>
-            <label>Anotaciones de la sesión
-              <textarea name="anotaciones" rows="3" placeholder="Anotaciones particulares de la sesión, evolución o comentarios..."></textarea>
-            </label>
           </div>
         </div>
 
@@ -621,8 +619,12 @@
               <textarea name="plan" rows="5" placeholder="Terapia manual, ejercicios, férula, pautas de autocuidado, derivaciones..."></textarea>
             </label>
           </div>
-          <label style="margin-top: 16px;">Anotaciones de la sesión
-            <textarea name="anotaciones" rows="4" placeholder="Anotaciones particulares de la sesión, procedimientos realizados, evolución o comentarios..."></textarea>
+        </div>
+
+        <div class="panel" data-panel="5" hidden>
+          <h2><span class="bar"></span>6. Anotaciones de la sesión</h2>
+          <label>Anotaciones particulares de la sesión, procedimientos realizados, evolución o comentarios
+            <textarea name="anotaciones" rows="8" placeholder="Anotaciones particulares de la sesión, procedimientos realizados, evolución o comentarios..."></textarea>
           </label>
         </div>
 
@@ -675,6 +677,7 @@
           <button type="button" data-compare-tab="2">3. Músculos</button>
           <button type="button" data-compare-tab="3">4. Dolor y oclusión</button>
           <button type="button" data-compare-tab="4">5. Criterios CDI</button>
+          <button type="button" data-compare-tab="5">6. Anotaciones</button>
           <button type="button" data-compare-tab="all">📋 Ver toda la ficha</button>
         </nav>
 
@@ -723,6 +726,6 @@
   </script>
   <div id="print-root"></div>
   <script src="/booking/booking-bundle.min.js?v=1792186467" defer></script>
-  <script type="module" src="/admin/app.js?v=97"></script>
+  <script type="module" src="/admin/app.js?v=98"></script>
 </body>
 </html>

@@ -267,6 +267,7 @@ export function validateStep(stepNumber, data = {}) {
     2: [],
     3: ["eva"],
     4: [],
+    5: ["anotaciones"],
   };
   const fields = stepFields[stepNumber] || [];
   const errors = {};
@@ -956,6 +957,12 @@ export function compareFichas(sourceA, sourceB) {
         cdiDiff,
         diffText("Observaciones clínicas", a.observaciones, b.observaciones),
         diffText("Plan de tratamiento / recomendaciones", a.plan, b.plan),
+      ],
+    },
+    {
+      id: "anotaciones",
+      title: "6. Anotaciones de la sesión",
+      fields: [
         diffText("Anotaciones de la sesión", a.anotaciones, b.anotaciones),
       ],
     },

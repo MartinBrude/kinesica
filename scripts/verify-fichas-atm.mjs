@@ -420,7 +420,7 @@ assert.equal(diffRes.kpis.aperturaLibre.delta, 10);
 assert.equal(diffRes.kpis.aperturaLibre.trend, "better", "Mayor apertura libre es mejoría clínica");
 assert.equal(diffRes.kpis.ruidos.changed, true);
 assert.equal(diffRes.kpis.ruidos.trend, "better", "Cesación de ruidos es mejoría");
-assert.equal(diffRes.sections.length, 5, "Debe tener las 5 secciones clínicas");
+assert.equal(diffRes.sections.length, 6, "Debe tener las 6 secciones clínicas (incluyendo Anotaciones)");
 
 const seccionDolor = diffRes.sections.find((s) => s.id === "dolor");
 assert.ok(seccionDolor, "Debe existir sección dolor y oclusión");
@@ -621,10 +621,17 @@ assert.equal(validateField("aperturaLibrePost", "42"), null);
 // Verificación de reseteo garantizado a Paso 0 y aislamiento del formulario
 assert.match(app, /#view-form \.panel/, "Paneles deben estar estrictamente delimitados a #view-form");
 assert.match(app, /#view-form \.steps button/, "Botones de pasos deben estar delimitados a #view-form");
-assert.match(app, /Number\.isInteger\(num\) && num >= 0 && num <= 4/, "showStep debe normalizar defensivamente cualquier valor inválido o NaN");
+assert.match(app, /Number\.isInteger\(num\) && num >= 0 && num <= 5/, "showStep debe normalizar defensivamente cualquier valor inválido o NaN");
 assert.match(app, /onNewFichaBlank[\s\S]*showForm\(0\)/, "onNewFichaBlank debe garantizar apertura directa en paso 0");
 assert.match(app, /function fillForm[\s\S]*showStep\(0\)/, "fillForm debe resetear inmediatamente la vista al paso 0");
 assert.match(app, /window\.scrollTo\(\{ top: 0/, "showForm debe posicionar la pantalla en la parte superior");
+
+// Verificación de aislamiento de Anotaciones en Tab 6
+assert.match(html, /<button type="button" data-step="5">6\. Anotaciones<\/button>/);
+assert.match(html, /data-panel="5"/);
+assert.match(html, /data-compare-tab="5">6\. Anotaciones<\/button>/);
+const matchesAnotaciones = (html.match(/name="anotaciones"/g) || []).length;
+assert.equal(matchesAnotaciones, 1, "Debe haber exactamente un textarea de anotaciones en toda la ficha (solo en tab 6)");
 
 console.log("fichas ATM: ok");
 

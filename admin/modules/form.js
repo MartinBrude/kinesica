@@ -18,7 +18,7 @@ import {
   validateStep,
   getUniquePatients,
   getSessionIndex,
-} from "../ficha-rules.mjs?v=88";
+} from "../ficha-rules.mjs?v=89";
 import { dialogAlert, dialogConfirm } from "./dom.js?v=78";
 
 const form = document.querySelector("#ficha");
@@ -613,12 +613,12 @@ export function syncFollowups() {
 }
 
 /**
- * Muestra el panel correspondiente al índice del paso seleccionado (0..4).
+ * Muestra el panel correspondiente al índice del paso seleccionado (0..5).
  * @param {number} [index=0] Índice del paso
  */
 export function showStep(index = 0) {
   const num = Number(index);
-  const validStep = (Number.isInteger(num) && num >= 0 && num <= 4) ? num : 0;
+  const validStep = (Number.isInteger(num) && num >= 0 && num <= 5) ? num : 0;
   step = validStep;
   document.querySelectorAll("#view-form .panel").forEach((panel) => {
     panel.hidden = Number(panel.dataset.panel) !== validStep;
@@ -627,7 +627,7 @@ export function showStep(index = 0) {
     btn.classList.toggle("active", Number(btn.dataset.step) === validStep);
   });
   if (btnPrev) btnPrev.hidden = validStep === 0;
-  if (btnNext) btnNext.hidden = validStep === 4;
+  if (btnNext) btnNext.hidden = validStep === 5;
 }
 
 /**
@@ -835,12 +835,6 @@ export function initForm({ onSave, onBack, onCompare, onPrint, getSessionUser })
   }
 
   form.addEventListener("input", (e) => {
-    if (e.target.name === "anotaciones") {
-      const val = e.target.value;
-      form.querySelectorAll('textarea[name="anotaciones"]').forEach((el) => {
-        if (el !== e.target && el.value !== val) el.value = val;
-      });
-    }
     if (e.target.classList.contains("input-error") && e.target.value.trim()) {
       const err = validateField(e.target.name, e.target.value, readForm());
       if (!err) {
@@ -1002,7 +996,7 @@ export function initForm({ onSave, onBack, onCompare, onPrint, getSessionUser })
           return;
         }
       }
-      showStep(Math.min(4, step + 1));
+      showStep(Math.min(5, step + 1));
     });
   }
 

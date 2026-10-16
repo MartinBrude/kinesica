@@ -245,7 +245,7 @@ check(new Set(sameName.map((p) => patientKey(fichas.find((f) => f.id === `${p.id
 const noDoc = patients.filter((p) => p.kind === "nombre");
 check(new Set(noDoc.map((p) => patientKey({ nombre: `${p.first} ${p.last}`, dni: "" }))).size === noDoc.length, "pacientes sin documento se mezclaron");
 
-for (let step = 0; step <= 4; step += 1) {
+for (let step = 0; step <= 5; step += 1) {
   for (const ficha of fichas.filter((f) => f.id).slice(0, 40)) {
     const result = validateStep(step, ficha);
     check(typeof result.isValid === "boolean", `validateStep ${step} no devolvió estado`);
