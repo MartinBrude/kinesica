@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/admin/styles.css?v=94">
-  <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1792185995">
+  <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1792186467">
   <script>
     (function () {
       try {
@@ -31,9 +31,9 @@
       <img src="/admin/logo.png?v=22" alt="Kinésica" width="190" height="50">
     </a>
     <div class="top-actions">
-      <button type="button" class="clara-btn is-active" id="btn-toggle-clara" title="Estado de Clara en WhatsApp" hidden>
+      <button type="button" class="clara-btn is-inactive" id="btn-toggle-clara" title="Estado de Clara en WhatsApp" hidden aria-pressed="false">
         <span class="clara-dot" aria-hidden="true"></span>
-        <span class="clara-label">Clara: Activa</span>
+        <span class="clara-label">Clara: Desactivada</span>
       </button>
       <button type="button" class="clara-btn is-inactive" id="btn-toggle-booking" title="Botón Agendar en la web pública" hidden aria-pressed="false">
         <span class="clara-dot" aria-hidden="true"></span>
@@ -647,7 +647,7 @@
     })();
   </script>
   <div id="print-root"></div>
-  <script src="/booking/booking-bundle.min.js?v=1792185995" defer></script>
+  <script src="/booking/booking-bundle.min.js?v=1792186467" defer></script>
   <script type="module" src="/admin/app.js?v=94"></script>
 </body>
 </html>

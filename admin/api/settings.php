@@ -8,7 +8,7 @@ $settingsFile = __DIR__ . '/settings.json';
 function get_runtime_settings(string $file): array
 {
     $defaults = [
-        'clara_active' => true,
+        'clara_active' => false,
         'booking_active' => false,
     ];
     if (!is_file($file)) {

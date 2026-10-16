@@ -93,7 +93,7 @@ var CLARA_PHONE_DISPLAY = "+54 (11) 3178-1733";
 function syncPublicSettings() {
   function applySettings(settings) {
     if (!settings) return;
-    var claraActive = settings.clara_active !== false;
+    var claraActive = Boolean(settings.clara_active);
     var bookingActive = Boolean(settings.booking_active);
 
     var site = window.KINESICA_SITE || {};
