@@ -12,6 +12,48 @@
 
 ---
 
+## 📑 Índice de Contenidos
+
+1. [**👩‍💼 1. ¿Quién es Clara y cuál es su trabajo?**](#‍-1-quién-es-clara-y-cuál-es-su-trabajo)
+   - [Sus responsabilidades principales](#sus-responsabilidades-principales)
+2. [**🩺 2. ¿Cómo habla y cómo atiende a los pacientes?**](#-2-cómo-habla-y-cómo-atiende-a-los-pacientes)
+   - [Sus "Reglas de Oro"](#sus-reglas-de-oro)
+   - [🔘 2.1. Botoneras Interactivas de WhatsApp (Flujo Determinista y Cero Fricción)](#-21-botoneras-interactivas-de-whatsapp-flujo-determinista-y-cero-fricción)
+   - [🛡️ El Validador de Calidad en Tiempo Real (Doble Modelo / Guardrail)](#️-el-validador-de-calidad-en-tiempo-real-doble-modelo--guardrail)
+3. [**📅 3. Guía Maestra de Google Calendar: Cómo Funciona por Detrás, Qué Deben Hacer y Qué NO**](#-3-guía-maestra-de-google-calendar-cómo-funciona-por-detrás-qué-deben-hacer-y-qué-no)
+   - [⚙️ 3.1. ¿Cómo funciona por detrás? (El Cerebro del Sistema)](#️-31-cómo-funciona-por-detrás-el-cerebro-del-sistema)
+   - [🔄 3.1.1. Coherencia Total: Agendamiento vía Botón en Admin vs. Chatbot Clara](#-311-coherencia-total-agendamiento-vía-botón-en-admin-vs-chatbot-clara)
+   - [📋 3.2. Protocolo de Agenda: Qué SÍ hacer y Qué NUNCA hacer (Guía Unificada)](#-32-protocolo-de-agenda-qué-sí-hacer-y-qué-nunca-hacer-guía-unificada)
+   - [📲 3.3. El Resultado Final: ¿Qué recibe el paciente 24 horas antes?](#-33-el-resultado-final-qué-recibe-el-paciente-24-horas-antes)
+     - [🔘 Los 3 Botones Interactivos Nativos y su Acción](#-los-3-botones-interactivos-nativos-y-su-acción)
+4. [**🔔 4. ¿Qué notificaciones le llegan a Norberto y a María a su celular?**](#-4-qué-notificaciones-le-llegan-a-norberto-y-a-maría-a-su-celular)
+   - [📧 Contingencia por Caída de WhatsApp (Fallback Automático a Correo Electrónico)](#-contingencia-por-caída-de-whatsapp-fallback-automático-a-correo-electrónico)
+5. [**👑 5. El "Modo Administrador": ¿Cómo le hablan los profesionales a Clara?**](#-5-el-modo-administrador-cómo-le-hablan-los-profesionales-a-clara)
+   - [📋 A. La agenda del día](#-a-la-agenda-del-día)
+   - [🚫 B. Bloquear un horario para no atender](#-b-bloquear-un-horario-para-no-atender)
+   - [🏖️ C. Vacaciones o receso del consultorio](#️-c-vacaciones-o-receso-del-consultorio)
+   - [⏸️ D. Atender el chat personalmente (Pausa Individual y General de Clara)](#️-d-atender-el-chat-personalmente-pausa-individual-y-general-de-clara)
+     - [🎯 1. Pausa Individual por Conversación (Recomendada)](#-1-pausa-individual-por-conversación-recomendada)
+     - [🛑 2. Pausa General / Global del Consultorio](#-2-pausa-general--global-del-consultorio)
+     - [⏳ 3. Despausa automática de seguridad (Timeout de 8 horas)](#-3-despausa-automática-de-seguridad-timeout-de-8-horas)
+   - [❌ E. Anular o cancelar un turno de un paciente](#-e-anular-o-cancelar-un-turno-de-un-paciente)
+   - [🩺 F. Los kinesiólogos no son pacientes (solicitud de turnos)](#-f-los-kinesiólogos-no-son-pacientes-solicitud-de-turnos)
+6. [**⏳ 6. Lista de Espera Inteligente (Smart Waitlist en Google Sheets)**](#-6-lista-de-espera-inteligente-smart-waitlist-en-google-sheets)
+7. [**📊 7. Agente de Base de Datos y Spreadsheet de Primeras Sesiones (Background)**](#-7-agente-de-base-de-datos-y-spreadsheet-de-primeras-sesiones-background)
+   - [🔒 Regla Estricta de Aislamiento y Alcance](#-regla-estricta-de-aislamiento-y-alcance)
+   - [📋 Columnas de la Planilla (`pacientes_primera_sesion.xlsx` y Google Sheets)](#-columnas-de-la-planilla-pacientes_primera_sesionxlsx-y-google-sheets)
+   - [🔄 Identificación Automática de Pacientes Habituales (Cero Repetición de Datos)](#-identificación-automática-de-pacientes-habituales-cero-repetición-de-datos)
+   - [✏️ Corrección de Nombre y Sincronización en Google Drive](#️-corrección-de-nombre-y-sincronización-en-google-drive)
+   - [📁 Acceso a las Planillas](#-acceso-a-las-planillas)
+   - [💻 Comando del Agente en Terminal](#-comando-del-agente-en-terminal)
+8. [**🧪 8. ¿Cómo probar a Clara desde el celular?**](#-8-cómo-probar-a-clara-desde-el-celular)
+   - [🚀 8.1. Checklist de Salida a Producción: ¿Ya se pueden iniciar las pruebas manuales?](#-81-checklist-de-salida-a-producción-ya-se-pueden-iniciar-las-pruebas-manuales)
+     - [✅ Estado de los componentes clave para pruebas](#-estado-de-los-componentes-clave-para-pruebas)
+     - [🧪 Pasos recomendados para tu prueba manual inicial](#-pasos-recomendados-para-tu-prueba-manual-inicial)
+9. [**📌 9. "Machete" rápido de comandos para los profesionales**](#-9-machete-rápido-de-comandos-para-los-profesionales)
+
+---
+
 ## 👩‍💼 1. ¿Quién es Clara y cuál es su trabajo?
 
 **Clara** es la secretaria de recepción virtual de **Kinésica** (Palermo, CABA). Está conectada al WhatsApp del consultorio las **24 horas del día, los 7 días de la semana**.
@@ -285,7 +327,7 @@ Para no llenarle el WhatsApp de mensajes innecesarios, **Clara no avisa cuando u
 7. ⏳ **Protección contra colisión entre pacientes simultáneos (Hold de 10 minutos):**  
    Si dos pacientes están chateando al mismo tiempo con Clara y a ambos les interesa el mismo horario, el primer paciente que recibe las opciones retiene temporalmente ese horario durante 10 minutos. Durante esa ventana, el segundo paciente verá ese horario como ocupado, garantizando que jamás dos personas reserven el mismo turno. Si el primer paciente confirma, el turno se asienta definitivamente; y si pasan 10 minutos sin confirmar, el turno se libera automáticamente para los demás.
 
-*(En todos los avisos, Norberto y María pueden presionar directamente el enlace azul `wa.me/...` para escribirle o llamarlo con un solo toque).*
+*(En todos los avisos, Norberto y María pueden presionar directamente el enlace azul `wa.me/...` para escribirle o llamarlo con un solo toque. Además, en todas las derivaciones y consultas clínicas, Clara activa automáticamente una pausa individual de 8 horas sobre ese paciente para que los profesionales puedan chatear personalmente sin interferencias del bot).*
 
 ### 📧 Contingencia por Caída de WhatsApp (Fallback Automático a Correo Electrónico)
 Si por algún motivo el servicio de Meta WhatsApp se interrumpe, se cae o falla al entregar un mensaje, Clara activa automáticamente un **circuito de respaldo por correo electrónico**:
@@ -320,15 +362,37 @@ Norberto y María marcan ese horario ellos mismos en Google Calendar. Clara no c
 * **Qué escribirle:** `"vacaciones del 15 al 25 de octubre, cerrá la agenda"`.
 * **Qué hace Clara:** Marca en el calendario `🏖️ [VACACIONES CONSULTORIO - CERRADO]` cubriendo todos esos días. Si un paciente escribe en ese período pidiendo turno, Clara le explica con amabilidad que el consultorio se encuentra en receso y le ofrece agendar un turno para cuando regresen.
 
-### ⏸️ D. Atender el chat personalmente (Pausar y Reanudar a Clara)
-* **Pausar el bot:**
-  - **Qué escribirle:** `"pausar bot"`, `"lo atiendo yo"` o `"silencio"`.
-  - **Qué hace Clara:** Responde *"Entendido [Norberto/María], pausado. Te dejo la conversación a vos 🙌"* y activa el **silenciamiento total** del flujo hacia los pacientes. A partir de ese momento, ningún mensaje de un paciente recibirá respuesta automática de Clara, permitiendo a los profesionales chatear con tranquilidad.
-  - **Acceso administrativo mientras está en pausa:** Norberto y María pueden seguir cargando vacaciones por chat. Las cancelaciones de citas y los horarios que no atienden los gestionan directamente en Google Calendar. La agenda del día también se mira ahí.
-* **Reanudar el bot:**
-  - **Qué escribirle:** `"reanudar bot"`, `"activar bot"` o `"retomar bot"`.
-  - **Qué hace Clara:** Responde *"¡Listo [Norberto/María]! Vuelvo a estar activa y atenta a las consultas 🌿"* y retoma de inmediato la atención automática a los pacientes.
-* **Despausa automática de seguridad (Timeout de 8 horas):** Si por olvido nadie envía `"reanudar bot"`, el sistema levanta automáticamente la pausa tras 8 horas de inactividad para evitar que el consultorio quede desatendido.
+### ⏸️ D. Atender el chat personalmente (Pausa Individual y General de Clara)
+
+Para que Norberto y María puedan conversar directamente con un paciente sin que Clara interfiera con respuestas automáticas, el sistema cuenta con dos niveles de pausa: **Pausa Individual por Conversación** (la recomendada para el día a día) y **Pausa General**.
+
+#### 🎯 1. Pausa Individual por Conversación (Recomendada)
+Permite silenciar a Clara **única y exclusivamente para un paciente específico**, mientras el resto del consultorio sigue funcionando y agendando turnos con total normalidad.
+
+* **Cómo activarla manualmente:**
+  - **Por número de teléfono:** Escribirle a Clara `"pausar 11 6123-4567"` o `"silenciar 1161234567"`.
+  - **Por nombre del paciente:** Escribirle a Clara `"pausar a Lucas"` o `"silenciar a Florencia"` (Clara busca el número en el historial de fichas o en la planilla).
+  - **Qué hace Clara:** Responde *"Entendido [Norberto/María], pausé las respuestas automáticas para [Paciente/Número]. Te dejo esa conversación a vos 🙌"*. A partir de ese momento, cualquier mensaje que envíe ese paciente no recibirá respuesta del bot.
+* **⚡ Auto-pausa inteligente al derivar (Automática):**
+  - Cada vez que Clara deriva una consulta médica, una solicitud de kinesióloga mujer, atención domiciliaria o un pedido directo de hablar con un profesional, Clara despacha la alerta al celular del profesional y **activa automáticamente la pausa individual para ese paciente** durante 8 horas.
+  - Así, Norberto y María pueden escribirle al paciente con tranquilidad usando el link `wa.me/` sin que Clara interrumpa con mensajes robóticos si el paciente sigue escribiendo.
+* **Cómo reanudar la atención individual:**
+  - **Qué escribirle:** `"reanudar 11 6123-4567"` o `"reanudar a Lucas"`.
+  - **Qué hace Clara:** Responde *"¡Listo [Norberto/María]! Reanudé la atención automática para [Paciente/Número] 🌿"* y vuelve a atender a ese paciente normalmente.
+
+#### 🛑 2. Pausa General / Global del Consultorio
+Silencia a Clara para **todos** los pacientes en simultáneo (ideal ante emergencias, cortes o situaciones generales).
+
+* **Pausar todo el bot:**
+  - **Qué escribirle:** `"pausar bot"`, `"silencio"` o `"lo atiendo yo"` (sin especificar paciente).
+  - **Qué hace Clara:** Responde *"Entendido [Norberto/María], pausado el bot en general. Te dejo las conversaciones a vos 🙌"* y entra en silencio absoluto para todos los pacientes.
+  - **Acceso administrativo mientras está en pausa:** Norberto y María pueden seguir consultando vacaciones o gestionando la agenda sin que Clara deje de responderles a ellos.
+* **Reanudar todo el bot:**
+  - **Qué escribirle:** `"reanudar bot"`, `"activar bot"`, `"retomar bot"` o `"reanudar todo"`.
+  - **Qué hace Clara:** Responde *"¡Listo [Norberto/María]! Vuelvo a estar activa y atenta a las consultas 🌿"* y reactiva tanto la atención general como todas las pausas individuales acumuladas.
+
+#### ⏳ 3. Despausa automática de seguridad (Timeout de 8 horas)
+Si por descuido nadie envía el comando de reanudación, el sistema **levanta automáticamente la pausa tras 8 horas de inactividad** (tanto para pausas individuales como para la pausa general) para garantizar que ningún paciente quede desatendido al día siguiente.
 
 ### ❌ E. Anular o cancelar un turno de un paciente
 * **Cómo lo hacen Norberto y María:** Las cancelaciones y modificaciones de citas por parte del equipo profesional se realizan **directamente en Google Calendar** (eliminando el turno con el icono del tacho de basura para liberar el hueco al instante, o anteponiendo `[CANCELADO]` si desean conservar el registro histórico).
@@ -461,8 +525,10 @@ Guardá esta tablita a mano para usar con Clara en el chat:
 | **Cerrar un hueco específico** | En Google Calendar marcando un evento `🚫 [BLOQUEADO]`. Clara no crea bloqueos por chat. |
 | **Cerrar por vacaciones** | `"vacaciones del 15 al 25 de octubre"` |
 | **Anular o cancelar el turno de un paciente** | En Google Calendar (eliminando el evento o anteponiendo `[CANCELADO]`). Clara no cancela turnos de pacientes por chat para los profesionales. |
-| **Hablar vos con un paciente sin que Clara responda** | `"pausar bot"` o `"lo atiendo yo"` |
-| **Reanudar la atención de Clara tras una pausa** | `"reanudar bot"` o `"activar bot"` |
+| **Pausar a un paciente específico (Pausa individual)** | `"pausar 11 6123-4567"` o `"pausar a Lucas"` |
+| **Reanudar a un paciente específico** | `"reanudar 11 6123-4567"` o `"reanudar a Lucas"` |
+| **Pausar todo el bot (Pausa general de emergencia)** | `"pausar bot"`, `"lo atiendo yo"` o `"silencio"` |
+| **Reanudar toda la atención de Clara tras una pausa** | `"reanudar bot"`, `"activar bot"` o `"reanudar todo"` |
 | **Empezar una prueba de cero como paciente** | `/restart` |
 
 ---
