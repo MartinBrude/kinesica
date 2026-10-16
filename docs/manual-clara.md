@@ -414,11 +414,12 @@ Si por descuido nadie envía el comando de reanudación, el sistema **levanta au
 1. Clara le explica que los horarios de ese momento ya están cubiertos y le ofrece:  
    *"Si querés, te anoto en lista de espera y si se libera un hueco te aviso primero 🙌"*.
 2. Si el paciente dice que sí, Clara **NO anota la espera como evento en Google Calendar** (evitando bloquear la camilla o activar por error el bot de recordatorios de 24 hs). En su lugar, registra automáticamente la solicitud en la pestaña **`Lista de Espera`** de la planilla de Google Sheets (guardando fecha, nombre del paciente, WhatsApp, profesional o disciplina solicitada, y franja horaria preferida) y notifica al profesional correspondiente.
-3. Si más adelante otro paciente cancela su turno de ese día, el sistema detecta la camilla libre, consulta la pestaña de Lista de Espera en Google Sheets y despacha una alerta al profesional a cargo:  
+3. Si más adelante otro paciente cancela su turno de ese día, el sistema detecta la camilla libre, consulta la Lista de Espera vigente y despacha una alerta al profesional a cargo:  
    > *🚨 CANCELACIÓN URGENTE DE HOY EN KINÉSICA*  
    > • *Se liberó un hueco a las 16 hs.*  
    > • 💡 *PACIENTE EN LISTA DE ESPERA DISPONIBLE:* Lucas Méndez (wa.me/54911...).  
    > *¡Podés tocar su enlace para avisarle del lugar liberado!*
+4. **Borrado automático por vencimiento:** Si pasa el día o momento solicitado (la hora puntual pedida, las 14:30 hs si pidió por la mañana, o las 19:00 hs si pidió por la tarde/día completo) y no se liberó el turno ni se informó al paciente, el registro **se borra automáticamente** tanto de la memoria operativa como de la pestaña **`Lista de Espera`** en Google Sheets (y también se elimina si el paciente agenda otro turno).
 
 ---
 
