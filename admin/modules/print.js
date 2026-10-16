@@ -10,7 +10,7 @@ import {
   ageOn,
   formatSessionBadgeText,
   shouldOmitInvariableFields,
-} from "../ficha-rules.mjs?v=85";
+} from "../ficha-rules.mjs?v=88";
 import { formatDate } from "./api.js?v=77";
 import {
   node,
@@ -158,48 +158,85 @@ export function buildSheet(item, sessionUser = null, meta = {}) {
     .join(" · ");
   // /FEATURE-OPTIONAL: patron-desviacion
 
-  add(
-    atm,
-    grid([
-      [
-        "Ruidos articulares",
-        item.ruidos === "Sí"
-          ? formatParts([
-              item.ruidos,
-              side(item.ruidosIzq, item.ruidosDer),
-              fases && `en ${fases}`,
-              tiposRuido && `(${tiposRuido})`,
-            ])
-          : (item.ruidos === "No" ? "No" : ""),
-      ],
-      [
-        "Dolor condilar",
-        item.dolorCondilar === "Sí"
-          ? formatParts([item.dolorCondilar, side(item.condilarIzq, item.condilarDer)])
-          : (item.dolorCondilar === "No" ? "No" : ""),
-      ],
-      ["Apertura libre de dolor", item.aperturaLibre ? `${item.aperturaLibre} mm` : ""],
-      ["Apertura con dolor", item.aperturaDolor ? `${item.aperturaDolor} mm` : ""],
-      [
-        "Desviación de trayectoria",
-        item.desviacion === "Sí"
-          ? formatParts([
-              item.desviacion,
-              side(item.desvIzq, item.desvDer),
-              patronDesv && `(${patronDesv})`,
-            ])
-          : (item.desviacion === "No" ? "No" : ""),
-      ],
-      ["Protrusión", item.protrusion ? `${item.protrusion} mm` : ""],
-      [
-        "Lateralidades",
-        formatParts([
-          item.latIzq ? `Izq ${item.latIzq} mm` : "",
-          item.latDer ? `Der ${item.latDer} mm` : "",
-        ]),
-      ],
-    ])
+  const hasPostMediciones = Boolean(
+    item.aperturaLibrePost ||
+    item.aperturaDolorPost ||
+    item.desviacionPost ||
+    item.protrusionPost ||
+    item.latIzqPost ||
+    item.latDerPost
   );
+
+  const atmFields = [
+    [
+      "Ruidos articulares",
+      item.ruidos === "Sí"
+        ? formatParts([
+            item.ruidos,
+            side(item.ruidosIzq, item.ruidosDer),
+            fases && `en ${fases}`,
+            tiposRuido && `(${tiposRuido})`,
+          ])
+        : (item.ruidos === "No" ? "No" : ""),
+    ],
+    [
+      "Dolor condilar",
+      item.dolorCondilar === "Sí"
+        ? formatParts([item.dolorCondilar, side(item.condilarIzq, item.condilarDer)])
+        : (item.dolorCondilar === "No" ? "No" : ""),
+    ],
+    [hasPostMediciones ? "Apertura libre (antes)" : "Apertura libre de dolor", item.aperturaLibre ? `${item.aperturaLibre} mm` : ""],
+    [hasPostMediciones ? "Apertura con dolor (antes)" : "Apertura con dolor", item.aperturaDolor ? `${item.aperturaDolor} mm` : ""],
+    [
+      hasPostMediciones ? "Desviación (antes)" : "Desviación de trayectoria",
+      item.desviacion === "Sí"
+        ? formatParts([
+            item.desviacion,
+            side(item.desvIzq, item.desvDer),
+            patronDesv && `(${patronDesv})`,
+          ])
+        : (item.desviacion === "No" ? "No" : ""),
+    ],
+    [hasPostMediciones ? "Protrusión (antes)" : "Protrusión", item.protrusion ? `${item.protrusion} mm` : ""],
+    [
+      hasPostMediciones ? "Lateralidades (antes)" : "Lateralidades",
+      formatParts([
+        item.latIzq ? `Izq ${item.latIzq} mm` : "",
+        item.latDer ? `Der ${item.latDer} mm` : "",
+      ]),
+    ],
+  ];
+
+  if (hasPostMediciones) {
+    const patronDesvPost = [item.desvCorregidaPost ? "corregida en S" : "", item.deflexionPost ? "deflexión" : ""]
+      .filter(Boolean)
+      .join(" · ");
+
+    atmFields.push(
+      ["Apertura libre (al finalizar)", item.aperturaLibrePost ? `${item.aperturaLibrePost} mm` : ""],
+      ["Apertura dolor (al finalizar)", item.aperturaDolorPost ? `${item.aperturaDolorPost} mm` : ""],
+      [
+        "Desviación (al finalizar)",
+        item.desviacionPost === "Sí"
+          ? formatParts([
+              item.desviacionPost,
+              side(item.desvIzqPost, item.desvDerPost),
+              patronDesvPost && `(${patronDesvPost})`,
+            ])
+          : (item.desviacionPost === "No" ? "No" : ""),
+      ],
+      ["Protrusión (al finalizar)", item.protrusionPost ? `${item.protrusionPost} mm` : ""],
+      [
+        "Lateralidades (al finalizar)",
+        formatParts([
+          item.latIzqPost ? `Izq ${item.latIzqPost} mm` : "",
+          item.latDerPost ? `Der ${item.latDerPost} mm` : "",
+        ]),
+      ]
+    );
+  }
+
+  add(atm, grid(atmFields));
 
   const mus = section("Músculos craneales y disco articular");
   add(

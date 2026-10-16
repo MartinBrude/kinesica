@@ -108,7 +108,9 @@ export function validateField(key, value, allData = {}) {
       return null;
     }
     case "aperturaLibre":
-    case "aperturaDolor": {
+    case "aperturaDolor":
+    case "aperturaLibrePost":
+    case "aperturaDolorPost": {
       if (!str) return null;
       const clean = str.replace(",", ".");
       if (/[a-zA-Z]/.test(clean) || !/^\d+(\.\d+)?$/.test(clean)) {
@@ -122,7 +124,10 @@ export function validateField(key, value, allData = {}) {
     }
     case "protrusion":
     case "latIzq":
-    case "latDer": {
+    case "latDer":
+    case "protrusionPost":
+    case "latIzqPost":
+    case "latDerPost": {
       if (!str) return null;
       const clean = str.replace(",", ".");
       if (/[a-zA-Z]/.test(clean) || !/^\d+(\.\d+)?$/.test(clean)) {
@@ -158,6 +163,15 @@ export function validateField(key, value, allData = {}) {
       const isSi = str === "Sí" || allData.desviacion === "Sí";
       if (isSi && !allData.desvIzq && !allData.desvDer) {
         return "Debe indicar el lado (izquierdo y/o derecho) en la desviación lateral de la trayectoria";
+      }
+      return null;
+    }
+    case "desviacionPost":
+    case "desvIzqPost":
+    case "desvDerPost": {
+      const isSi = str === "Sí" || allData.desviacionPost === "Sí";
+      if (isSi && !allData.desvIzqPost && !allData.desvDerPost) {
+        return "Debe indicar el lado (izquierdo y/o derecho) en la desviación lateral al finalizar la sesión";
       }
       return null;
     }
@@ -198,6 +212,12 @@ export function validateFicha(data = {}) {
     "protrusion",
     "latIzq",
     "latDer",
+    "aperturaLibrePost",
+    "aperturaDolorPost",
+    "desviacionPost",
+    "protrusionPost",
+    "latIzqPost",
+    "latDerPost",
     "eva",
   ];
 
@@ -228,7 +248,22 @@ export function validateStep(stepNumber, data = {}) {
   data = data || {};
   const stepFields = {
     0: ["nombre", "dni", "fechaSesion", "nacimiento", "edad", "motivo", "antecedentes"],
-    1: ["ruidos", "dolorCondilar", "aperturaLibre", "aperturaDolor", "desviacion", "protrusion", "latIzq", "latDer"],
+    1: [
+      "ruidos",
+      "dolorCondilar",
+      "aperturaLibre",
+      "aperturaDolor",
+      "desviacion",
+      "protrusion",
+      "latIzq",
+      "latDer",
+      "aperturaLibrePost",
+      "aperturaDolorPost",
+      "desviacionPost",
+      "protrusionPost",
+      "latIzqPost",
+      "latDerPost",
+    ],
     2: [],
     3: ["eva"],
     4: [],
@@ -481,6 +516,18 @@ export function emptyFicha() {
     protrusion: "",
     latIzq: "",
     latDer: "",
+    aperturaLibrePost: "",
+    aperturaDolorPost: "",
+    desviacionPost: "",
+    desvIzqPost: false,
+    desvDerPost: false,
+    // FEATURE-OPTIONAL: patron-desviacion
+    desvCorregidaPost: false,
+    deflexionPost: false,
+    // /FEATURE-OPTIONAL: patron-desviacion
+    protrusionPost: "",
+    latIzqPost: "",
+    latDerPost: "",
     maseteroIzq: false,
     maseteroDer: false,
     temporalIzq: false,
@@ -542,7 +589,10 @@ export function coerceFicha(input = {}) {
   }
 
   // Sanitizar mediciones de ATM: números no negativos en milímetros (sin texto)
-  for (const mKey of ["aperturaLibre", "aperturaDolor", "protrusion", "latIzq", "latDer"]) {
+  for (const mKey of [
+    "aperturaLibre", "aperturaDolor", "protrusion", "latIzq", "latDer",
+    "aperturaLibrePost", "aperturaDolorPost", "protrusionPost", "latIzqPost", "latDerPost",
+  ]) {
     if (out[mKey]) {
       const cleanVal = String(out[mKey]).replace(",", ".").replace(/[^\d.]/g, "");
       const numVal = Number(cleanVal);
@@ -599,6 +649,18 @@ export function exampleFicha() {
     protrusion: "8",
     latIzq: "10",
     latDer: "10",
+    aperturaLibrePost: "42",
+    aperturaDolorPost: "48",
+    desviacionPost: "No",
+    desvIzqPost: false,
+    desvDerPost: false,
+    // FEATURE-OPTIONAL: patron-desviacion
+    desvCorregidaPost: false,
+    deflexionPost: false,
+    // /FEATURE-OPTIONAL: patron-desviacion
+    protrusionPost: "9",
+    latIzqPost: "11",
+    latDerPost: "11",
     maseteroIzq: true,
     maseteroDer: true,
     temporalIzq: true,
@@ -804,6 +866,29 @@ export function compareFichas(sourceA, sourceB) {
   const aperturaLibreDiff = diffNumber("Apertura libre de dolor", a.aperturaLibre, b.aperturaLibre, "mm", false);
   const aperturaDolorDiff = diffNumber("Apertura máxima con dolor", a.aperturaDolor, b.aperturaDolor, "mm", false);
 
+  const desvPostA = summarizeDesv({
+    desviacion: a.desviacionPost,
+    desvIzq: a.desvIzqPost,
+    desvDer: a.desvDerPost,
+    desvCorregida: a.desvCorregidaPost,
+    deflexion: a.deflexionPost,
+  });
+  const desvPostB = summarizeDesv({
+    desviacion: b.desviacionPost,
+    desvIzq: b.desvIzqPost,
+    desvDer: b.desvDerPost,
+    desvCorregida: b.desvCorregidaPost,
+    deflexion: b.deflexionPost,
+  });
+  const desvPostDiff = {
+    label: "Desviación lateral (al finalizar)",
+    changed: desvPostA !== desvPostB,
+    current: desvPostB,
+    previous: desvPostA,
+    trend: a.desviacionPost === "Sí" && b.desviacionPost === "No" ? "better" : (a.desviacionPost === "No" && b.desviacionPost === "Sí" ? "worse" : "same"),
+    display: desvPostA !== desvPostB ? `${desvPostA} ➔ ${desvPostB}` : desvPostB,
+  };
+
   const sections = [
     {
       id: "filiacion",
@@ -826,6 +911,12 @@ export function compareFichas(sourceA, sourceB) {
         diffNumber("Protrusión mandibular", a.protrusion, b.protrusion, "mm", false),
         diffNumber("Lateralidad izquierda", a.latIzq, b.latIzq, "mm", false),
         diffNumber("Lateralidad derecha", a.latDer, b.latDer, "mm", false),
+        diffNumber("Apertura libre (al finalizar)", a.aperturaLibrePost, b.aperturaLibrePost, "mm", false),
+        diffNumber("Apertura dolor (al finalizar)", a.aperturaDolorPost, b.aperturaDolorPost, "mm", false),
+        desvPostDiff,
+        diffNumber("Protrusión (al finalizar)", a.protrusionPost, b.protrusionPost, "mm", false),
+        diffNumber("Lateralidad izq (al finalizar)", a.latIzqPost, b.latIzqPost, "mm", false),
+        diffNumber("Lateralidad der (al finalizar)", a.latDerPost, b.latDerPost, "mm", false),
       ],
     },
     {

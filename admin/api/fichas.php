@@ -163,6 +163,7 @@ if ($method === 'POST') {
         'ruidos' => ['ruidosIzq', 'ruidosDer', 'los ruidos articulares'],
         'dolorCondilar' => ['condilarIzq', 'condilarDer', 'el dolor condilar a la palpación'],
         'desviacion' => ['desvIzq', 'desvDer', 'la desviación lateral de la trayectoria'],
+        'desviacionPost' => ['desvIzqPost', 'desvDerPost', 'la desviación lateral al finalizar la sesión'],
     ];
     foreach ($conditionals as $field => [$left, $right, $label]) {
         $answer = $data[$field] ?? '';
@@ -175,6 +176,10 @@ if ($method === 'POST') {
         if ($answer === 'Sí' && !$data[$left] && !$data[$right]) {
             json_out(422, ['error' => 'Debe indicar el lado (izquierdo y/o derecho) en ' . $label]);
         }
+    }
+    if ($data['desviacionPost'] !== 'Sí') {
+        $data['desvCorregidaPost'] = false;
+        $data['deflexionPost'] = false;
     }
 
     $clinicians = ['norberto' => 'Norberto', 'maria' => 'María'];

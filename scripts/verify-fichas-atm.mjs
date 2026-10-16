@@ -581,6 +581,43 @@ assert.match(css, /\.patient-sessions/);
 assert.match(css, /\.session-row/);
 assert.match(css, /\.session-chip/);
 
+// Verificación de duplicación de mediciones mandibulares: Antes vs Al finalizar la sesión
+assert.match(html, /class="mediciones-accordion"/, "Debe existir acordeón de mediciones");
+assert.match(html, /id="details-mediciones-post"/, "Debe existir sección desplegable al finalizar la sesión");
+assert.match(html, /Antes de la sesión/);
+assert.match(html, /Al finalizar la sesión/);
+assert.match(html, /name="aperturaLibrePost"/);
+assert.match(html, /name="aperturaDolorPost"/);
+assert.match(html, /data-single="desviacionPost"/);
+assert.match(html, /data-follow="desviacionPost"/);
+assert.match(html, /name="desvIzqPost"/);
+assert.match(html, /name="desvDerPost"/);
+assert.match(html, /name="protrusionPost"/);
+assert.match(html, /name="latIzqPost"/);
+assert.match(html, /name="latDerPost"/);
+
+assert.match(css, /\.mediciones-accordion/);
+assert.match(css, /\.mediciones-summary/);
+assert.match(css, /\.mediciones-badge/);
+assert.match(css, /\.badge-pre/);
+assert.match(css, /\.badge-post/);
+assert.match(css, /\.mediciones-body/);
+
+assert.match(php, /'desviacionPost'\s*=>/);
+assert.match(app, /details-mediciones-post/);
+assert.match(app, /aperturaLibrePost/);
+
+// Validación de reglas de negocio para mediciones post
+assert.equal(emptyFicha().aperturaLibrePost, "");
+assert.equal(emptyFicha().desvIzqPost, false);
+assert.equal(coerceFicha({ aperturaLibrePost: "42,5" }).aperturaLibrePost, "42.5");
+assert.equal(coerceFicha({ aperturaDolorPost: "48abc" }).aperturaDolorPost, "48");
+assert.equal(coerceFicha({ latIzqPost: "-5" }).latIzqPost, "5");
+assert.ok(validateField("desviacionPost", "Sí", { desviacionPost: "Sí" }), "Debe exigir lado si desviación post es Sí");
+assert.equal(validateField("desviacionPost", "Sí", { desviacionPost: "Sí", desvIzqPost: true }), null);
+assert.equal(validateField("aperturaLibrePost", "abc"), "Este campo no permite texto: debe ser un número en milímetros");
+assert.equal(validateField("aperturaLibrePost", "42"), null);
+
 // Verificación de reseteo garantizado a Paso 0 y aislamiento del formulario
 assert.match(app, /#view-form \.panel/, "Paneles deben estar estrictamente delimitados a #view-form");
 assert.match(app, /#view-form \.steps button/, "Botones de pasos deben estar delimitados a #view-form");

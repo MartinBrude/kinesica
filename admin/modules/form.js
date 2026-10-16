@@ -18,7 +18,7 @@ import {
   validateStep,
   getUniquePatients,
   getSessionIndex,
-} from "../ficha-rules.mjs?v=85";
+} from "../ficha-rules.mjs?v=88";
 import { dialogAlert, dialogConfirm } from "./dom.js?v=78";
 
 const form = document.querySelector("#ficha");
@@ -152,6 +152,26 @@ export function fillForm(data, allFichas = []) {
   syncFollowups();
   syncEva();
   updateStepValidation();
+
+  const preAccordion = form.querySelector(".mediciones-accordion");
+  if (preAccordion) preAccordion.open = true;
+
+  const postAccordion = document.querySelector("#details-mediciones-post");
+  if (postAccordion) {
+    const hasPostData = Boolean(
+      data.aperturaLibrePost ||
+      data.aperturaDolorPost ||
+      data.desviacionPost ||
+      data.desvIzqPost ||
+      data.desvDerPost ||
+      data.desvCorregidaPost ||
+      data.deflexionPost ||
+      data.protrusionPost ||
+      data.latIzqPost ||
+      data.latDerPost
+    );
+    postAccordion.open = hasPostData;
+  }
 
   const sessionUser = typeof activeSessionUserGetter === "function" ? activeSessionUserGetter() : null;
   const isAdmin = sessionUser?.username === "martin";
@@ -369,6 +389,7 @@ export function highlightErrorFields(keys = []) {
     ruidos: { follow: "ruidos", checks: ["ruidosIzq", "ruidosDer"] },
     dolorCondilar: { follow: "dolorCondilar", checks: ["condilarIzq", "condilarDer"] },
     desviacion: { follow: "desviacion", checks: ["desvIzq", "desvDer"] },
+    desviacionPost: { follow: "desviacionPost", checks: ["desvIzqPost", "desvDerPost"] },
   };
 
   keys.forEach((key) => {
@@ -438,7 +459,18 @@ export function setupInputRestrictions(formEl) {
   }
 
   // 2. Mediciones mandibulares (milímetros: decimal o entero >= 0) - No permiten texto
-  const measurementNames = ["aperturaLibre", "aperturaDolor", "protrusion", "latIzq", "latDer"];
+  const measurementNames = [
+    "aperturaLibre",
+    "aperturaDolor",
+    "protrusion",
+    "latIzq",
+    "latDer",
+    "aperturaLibrePost",
+    "aperturaDolorPost",
+    "protrusionPost",
+    "latIzqPost",
+    "latDerPost",
+  ];
   measurementNames.forEach((name) => {
     const el = formEl.elements[name];
     if (!el) return;
@@ -827,6 +859,8 @@ export function initForm({ onSave, onBack, onCompare, onPrint, getSessionUser })
       condilarDer: "dolorCondilar",
       desvIzq: "desviacion",
       desvDer: "desviacion",
+      desvIzqPost: "desviacionPost",
+      desvDerPost: "desviacionPost",
     };
     const key = sideMap[e.target?.name];
     if (key) {
@@ -837,6 +871,7 @@ export function initForm({ onSave, onBack, onCompare, onPrint, getSessionUser })
           ruidos: { follow: "ruidos", checks: ["ruidosIzq", "ruidosDer"] },
           dolorCondilar: { follow: "dolorCondilar", checks: ["condilarIzq", "condilarDer"] },
           desviacion: { follow: "desviacion", checks: ["desvIzq", "desvDer"] },
+          desviacionPost: { follow: "desviacionPost", checks: ["desvIzqPost", "desvDerPost"] },
         }[key];
         const fg = form.querySelector(`[data-follow="${sideConfig.follow}"] .follow-group`);
         if (fg) fg.classList.remove("input-error");

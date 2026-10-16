@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=96">
+  <link rel="stylesheet" href="/admin/styles.css?v=97">
   <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1792186467">
   <script>
     (function () {
@@ -327,53 +327,122 @@
               </span>
             </div>
           </div>
-          <div class="block">
+          <div class="block mediciones-block">
             <h3>3. Mediciones y rangos de movimientos mandibulares</h3>
-            <div class="grid-2">
-              <label>Apertura máxima libre de dolor (mm)
-              <input name="aperturaLibre" type="number" min="0" max="500" step="any" inputmode="decimal" placeholder="Ej: 35">
-              </label>
-              <label>Apertura máxima con dolor (mm)
-              <input name="aperturaDolor" type="number" min="0" max="500" step="any" inputmode="decimal" placeholder="Ej: 46">
-              </label>
-            </div>
-            <div class="grid-2">
-              <div>
-                <span class="field-label">Desviación lateral de la trayectoria</span>
-                <div class="row-controls">
-                  <div class="pills" data-single="desviacion">
-                    <button type="button" data-value="Sí">Sí</button>
-                    <button type="button" data-value="No">No</button>
+
+            <details class="mediciones-accordion" open>
+              <summary class="mediciones-summary">
+                <span class="mediciones-summary-left">
+                  <span class="mediciones-badge badge-pre">Antes de la sesión</span>
+                  <span class="mediciones-sub">Evaluación basal previa al tratamiento</span>
+                </span>
+                <span class="mediciones-chevron" aria-hidden="true">▾</span>
+              </summary>
+              <div class="mediciones-body">
+                <div class="grid-2">
+                  <label>Apertura máxima libre de dolor (mm)
+                  <input name="aperturaLibre" type="number" min="0" max="500" step="any" inputmode="decimal" placeholder="Ej: 35">
+                  </label>
+                  <label>Apertura máxima con dolor (mm)
+                  <input name="aperturaDolor" type="number" min="0" max="500" step="any" inputmode="decimal" placeholder="Ej: 46">
+                  </label>
+                </div>
+                <div class="grid-2">
+                  <div>
+                    <span class="field-label">Desviación lateral de la trayectoria</span>
+                    <div class="row-controls">
+                      <div class="pills" data-single="desviacion">
+                        <button type="button" data-value="Sí">Sí</button>
+                        <button type="button" data-value="No">No</button>
+                      </div>
+                      <span class="follow" data-follow="desviacion" hidden>
+                        <span class="follow-group">
+                          <span class="inline-label">Lado:</span>
+                          <label class="check"><input type="checkbox" name="desvIzq"> Izq</label>
+                          <label class="check"><input type="checkbox" name="desvDer"> Der</label>
+                        </span>
+                        <!-- FEATURE-OPTIONAL: patron-desviacion -->
+                        <span class="follow-group">
+                          <span class="inline-label">Patrón:</span>
+                          <label class="check"><input type="checkbox" name="desvCorregida"> Desviación corregida (en S)</label>
+                          <label class="check"><input type="checkbox" name="deflexion"> Deflexión (no corregida)</label>
+                        </span>
+                        <!-- /FEATURE-OPTIONAL: patron-desviacion -->
+                      </span>
+                    </div>
                   </div>
-                  <span class="follow" data-follow="desviacion" hidden>
-                    <span class="follow-group">
-                      <span class="inline-label">Lado:</span>
-                      <label class="check"><input type="checkbox" name="desvIzq"> Izq</label>
-                      <label class="check"><input type="checkbox" name="desvDer"> Der</label>
-                    </span>
-                    <!-- FEATURE-OPTIONAL: patron-desviacion -->
-                    <span class="follow-group">
-                      <span class="inline-label">Patrón:</span>
-                      <label class="check"><input type="checkbox" name="desvCorregida"> Desviación corregida (en S)</label>
-                      <label class="check"><input type="checkbox" name="deflexion"> Deflexión (no corregida)</label>
-                    </span>
-                    <!-- /FEATURE-OPTIONAL: patron-desviacion -->
-                  </span>
+                  <label>Movimiento de protrusión (mm)
+                    <input name="protrusion" type="number" min="0" max="500" step="any" inputmode="decimal" placeholder="Ej: 8">
+                  </label>
+                </div>
+                <span class="field-label">Lateralidades mandibulares (mm)</span>
+                <div class="grid-2">
+                  <label>Izquierda
+                    <input name="latIzq" type="number" min="0" max="500" step="any" inputmode="decimal" placeholder="10">
+                  </label>
+                  <label>Derecha
+                    <input name="latDer" type="number" min="0" max="500" step="any" inputmode="decimal" placeholder="10">
+                  </label>
                 </div>
               </div>
-              <label>Movimiento de protrusión (mm)
-                <input name="protrusion" type="number" min="0" max="500" step="any" inputmode="decimal" placeholder="Ej: 8">
-              </label>
-            </div>
-            <span class="field-label">Lateralidades mandibulares (mm)</span>
-            <div class="grid-2">
-              <label>Izquierda
-                <input name="latIzq" type="number" min="0" max="500" step="any" inputmode="decimal" placeholder="10">
-              </label>
-              <label>Derecha
-                <input name="latDer" type="number" min="0" max="500" step="any" inputmode="decimal" placeholder="10">
-              </label>
-            </div>
+            </details>
+
+            <details class="mediciones-accordion" id="details-mediciones-post">
+              <summary class="mediciones-summary">
+                <span class="mediciones-summary-left">
+                  <span class="mediciones-badge badge-post">Al finalizar la sesión</span>
+                  <span class="mediciones-sub">Reevaluación de control post-tratamiento</span>
+                </span>
+                <span class="mediciones-chevron" aria-hidden="true">▾</span>
+              </summary>
+              <div class="mediciones-body">
+                <div class="grid-2">
+                  <label>Apertura máxima libre de dolor (mm)
+                  <input name="aperturaLibrePost" type="number" min="0" max="500" step="any" inputmode="decimal" placeholder="Ej: 42">
+                  </label>
+                  <label>Apertura máxima con dolor (mm)
+                  <input name="aperturaDolorPost" type="number" min="0" max="500" step="any" inputmode="decimal" placeholder="Ej: 48">
+                  </label>
+                </div>
+                <div class="grid-2">
+                  <div>
+                    <span class="field-label">Desviación lateral de la trayectoria</span>
+                    <div class="row-controls">
+                      <div class="pills" data-single="desviacionPost">
+                        <button type="button" data-value="Sí">Sí</button>
+                        <button type="button" data-value="No">No</button>
+                      </div>
+                      <span class="follow" data-follow="desviacionPost" hidden>
+                        <span class="follow-group">
+                          <span class="inline-label">Lado:</span>
+                          <label class="check"><input type="checkbox" name="desvIzqPost"> Izq</label>
+                          <label class="check"><input type="checkbox" name="desvDerPost"> Der</label>
+                        </span>
+                        <!-- FEATURE-OPTIONAL: patron-desviacion -->
+                        <span class="follow-group">
+                          <span class="inline-label">Patrón:</span>
+                          <label class="check"><input type="checkbox" name="desvCorregidaPost"> Desviación corregida (en S)</label>
+                          <label class="check"><input type="checkbox" name="deflexionPost"> Deflexión (no corregida)</label>
+                        </span>
+                        <!-- /FEATURE-OPTIONAL: patron-desviacion -->
+                      </span>
+                    </div>
+                  </div>
+                  <label>Movimiento de protrusión (mm)
+                    <input name="protrusionPost" type="number" min="0" max="500" step="any" inputmode="decimal" placeholder="Ej: 9">
+                  </label>
+                </div>
+                <span class="field-label">Lateralidades mandibulares (mm)</span>
+                <div class="grid-2">
+                  <label>Izquierda
+                    <input name="latIzqPost" type="number" min="0" max="500" step="any" inputmode="decimal" placeholder="11">
+                  </label>
+                  <label>Derecha
+                    <input name="latDerPost" type="number" min="0" max="500" step="any" inputmode="decimal" placeholder="11">
+                  </label>
+                </div>
+              </div>
+            </details>
           </div>
         </div>
 
@@ -654,6 +723,6 @@
   </script>
   <div id="print-root"></div>
   <script src="/booking/booking-bundle.min.js?v=1792186467" defer></script>
-  <script type="module" src="/admin/app.js?v=96"></script>
+  <script type="module" src="/admin/app.js?v=97"></script>
 </body>
 </html>
