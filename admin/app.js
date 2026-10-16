@@ -48,6 +48,7 @@ import {
   add,
   debounce,
   dialogAlert,
+  dialogConfirm,
 } from "./modules/dom.js?v=78";
 
 import {
@@ -338,6 +339,59 @@ initCompare({
     showForm(0);
   },
 });
+
+/**
+ * Inicializa el control para activar y desactivar a Clara en el modo admin.
+ * Requiere confirmación explícita antes de cambiar el estado.
+ */
+function initClaraToggle() {
+  const btn = document.getElementById("btn-toggle-clara");
+  if (!btn) return;
+
+  const label = btn.querySelector(".clara-label");
+
+  function render(isActive) {
+    btn.classList.toggle("is-active", isActive);
+    btn.classList.toggle("is-inactive", !isActive);
+    btn.setAttribute("aria-pressed", String(isActive));
+    if (label) {
+      label.textContent = isActive ? "Clara: Activa" : "Clara: Desactivada";
+    }
+    btn.title = isActive
+      ? "Clara está activa (tocá para desactivar)"
+      : "Clara está desactivada (tocá para activar)";
+  }
+
+  let isActive = localStorage.getItem("kinesica_clara_active") !== "0";
+  render(isActive);
+
+  btn.addEventListener("click", async () => {
+    const willDeactivate = isActive;
+    const question = willDeactivate
+      ? "¿Estás seguro de que querés desactivar a Clara? Dejará de responder automáticamente en WhatsApp."
+      : "¿Estás seguro de que querés activar a Clara? Volverá a responder automáticamente en WhatsApp.";
+
+    const confirmed = await dialogConfirm(question, {
+      danger: willDeactivate,
+      okText: willDeactivate ? "Desactivar" : "Activar",
+      cancelText: "Cancelar",
+    });
+
+    if (!confirmed) return;
+
+    isActive = !isActive;
+    try {
+      localStorage.setItem("kinesica_clara_active", isActive ? "1" : "0");
+    } catch (_) {}
+    render(isActive);
+
+    window.dispatchEvent(
+      new CustomEvent("clara:status-change", { detail: { active: isActive } })
+    );
+  });
+}
+
+initClaraToggle();
 
 // Inicialización de la aplicación al cargar la página
 fillForm(blank(), loadAll());

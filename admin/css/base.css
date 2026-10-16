@@ -266,6 +266,12 @@ main {
     padding: 4px 8px;
     font-size: 12px;
   }
+  .clara-btn {
+    height: 34px;
+    padding: 0 10px;
+    font-size: 12px;
+    gap: 6px;
+  }
   main {
     padding: 14px 10px 48px;
   }
@@ -314,4 +320,62 @@ main {
 .btn.danger:hover {
   background: #881337;
   border-color: #881337;
+}
+
+.clara-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 14px;
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+  border: 1px solid transparent;
+  background: #fff;
+}
+
+.clara-btn.is-active {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #065f46;
+}
+
+.clara-btn.is-active:hover {
+  background: #d1fae5;
+  border-color: #6ee7b7;
+}
+
+.clara-btn.is-inactive {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #991b1b;
+}
+
+.clara-btn.is-inactive:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+}
+
+.clara-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.clara-btn.is-active .clara-dot {
+  background-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+.clara-btn.is-inactive .clara-dot {
+  background-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
 }

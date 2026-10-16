@@ -149,10 +149,18 @@ export function dialogAlert(message) {
  * @returns {Promise<boolean>}
  */
 export function dialogConfirm(message, options = {}) {
-  return enqueueDialog(() => openDialog({ message, confirm: true, danger: Boolean(options.danger) }));
+  return enqueueDialog(() =>
+    openDialog({
+      message,
+      confirm: true,
+      danger: Boolean(options.danger),
+      okText: options.okText,
+      cancelText: options.cancelText,
+    })
+  );
 }
 
-function openDialog({ message, confirm, danger }) {
+function openDialog({ message, confirm, danger, okText, cancelText }) {
   return new Promise((resolve) => {
     const root = document.createElement("div");
     root.className = "app-dialog";
@@ -173,14 +181,14 @@ function openDialog({ message, confirm, danger }) {
     const ok = document.createElement("button");
     ok.type = "button";
     ok.className = danger ? "btn danger" : "btn green";
-    ok.textContent = confirm ? (danger ? "Quitar" : "Confirmar") : "Entendido";
+    ok.textContent = okText || (confirm ? (danger ? "Quitar" : "Confirmar") : "Entendido");
 
     let cancel = null;
     if (confirm) {
       cancel = document.createElement("button");
       cancel.type = "button";
       cancel.className = "btn light";
-      cancel.textContent = "Cancelar";
+      cancel.textContent = cancelText || "Cancelar";
       actions.append(cancel);
     }
     actions.append(ok);
