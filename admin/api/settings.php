@@ -9,7 +9,7 @@ function get_runtime_settings(string $file): array
 {
     $defaults = [
         'clara_active' => true,
-        'booking_active' => true,
+        'booking_active' => false,
     ];
     if (!is_file($file)) {
         return $defaults;

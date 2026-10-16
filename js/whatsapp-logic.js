@@ -94,7 +94,7 @@ function syncPublicSettings() {
   function applySettings(settings) {
     if (!settings) return;
     var claraActive = settings.clara_active !== false;
-    var bookingActive = settings.booking_active !== false;
+    var bookingActive = Boolean(settings.booking_active);
 
     var site = window.KINESICA_SITE || {};
     var cfg = site.contact || {};
@@ -113,7 +113,13 @@ function syncPublicSettings() {
 
     var heroBookingBtn = document.getElementById("hero-btn-booking");
     if (heroBookingBtn) {
-      heroBookingBtn.hidden = !bookingActive;
+      if (bookingActive) {
+        heroBookingBtn.hidden = false;
+        heroBookingBtn.style.display = "";
+      } else {
+        heroBookingBtn.hidden = true;
+        heroBookingBtn.style.display = "none";
+      }
     }
   }
 

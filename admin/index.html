@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/admin/styles.css?v=94">
-  <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1792185618">
+  <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1792185995">
   <script>
     (function () {
       try {
@@ -35,9 +35,9 @@
         <span class="clara-dot" aria-hidden="true"></span>
         <span class="clara-label">Clara: Activa</span>
       </button>
-      <button type="button" class="clara-btn is-active" id="btn-toggle-booking" title="Botón Agendar en la web pública" hidden>
+      <button type="button" class="clara-btn is-inactive" id="btn-toggle-booking" title="Botón Agendar en la web pública" hidden aria-pressed="false">
         <span class="clara-dot" aria-hidden="true"></span>
-        <span class="clara-label">Agendar en web: Activo</span>
+        <span class="clara-label">Agendar en web: Desactivado</span>
       </button>
       <button type="button" class="btn green" id="btn-agendar" data-booking-open hidden title="Abrir agenda de turnos">Agendar</button>
       <div class="session-box">
@@ -647,7 +647,7 @@
     })();
   </script>
   <div id="print-root"></div>
-  <script src="/booking/booking-bundle.min.js?v=1792185618" defer></script>
+  <script src="/booking/booking-bundle.min.js?v=1792185995" defer></script>
   <script type="module" src="/admin/app.js?v=94"></script>
 </body>
 </html>

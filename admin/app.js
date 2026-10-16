@@ -349,7 +349,7 @@ function initAdminChannels() {
   const bookingBtn = document.getElementById("btn-toggle-booking");
 
   let claraActive = localStorage.getItem("kinesica_clara_active") !== "0";
-  let bookingActive = localStorage.getItem("kinesica_booking_active") !== "0";
+  let bookingActive = localStorage.getItem("kinesica_booking_active") === "1";
 
   function renderClara(isActive) {
     if (!claraBtn) return;

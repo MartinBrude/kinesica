@@ -74,6 +74,10 @@ html:has(body.page-home) {
   );
 }
 
+[hidden] {
+  display: none !important;
+}
+
 body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
