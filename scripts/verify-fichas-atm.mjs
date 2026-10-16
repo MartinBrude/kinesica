@@ -163,6 +163,16 @@ assert.doesNotMatch(html, /name="lugarNac"[^>]*required/);
 assert.equal(validateField("lugarNac", ""), null);
 assert.equal(validateField("lugarNac", "Córdoba"), null);
 
+// Campo de texto de anotaciones de la sesión
+assert.match(html, /name="anotaciones"/);
+assert.doesNotMatch(html, /name="anotaciones"[^>]*required/);
+assert.equal(validateField("anotaciones", ""), null);
+assert.equal(validateField("anotaciones", "Evolución favorable"), null);
+assert.equal(coerceFicha({ anotaciones: "  Nota de sesión  " }).anotaciones, "Nota de sesión");
+const sessConNotas = { ...sample, anotaciones: "Nota de la sesión 1" };
+const sigSess = nextSession(sessConNotas, "2026-10-20");
+assert.equal(sigSess.anotaciones, "", "La siguiente sesión debe comenzar con anotaciones limpias");
+
 // Step 0 es válido sin lugar de nacimiento
 const step0DataWithoutLugarNac = {
   nombre: "Juan Pérez",

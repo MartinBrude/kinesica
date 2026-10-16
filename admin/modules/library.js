@@ -13,7 +13,7 @@ import {
   missingFields,
   exampleFicha,
   ageOn,
-} from "../ficha-rules.mjs?v=85";
+} from "../ficha-rules.mjs?v=86";
 import { formatDate } from "./api.js?v=77";
 import { debounce, dialogAlert, dialogConfirm, escapeHtml } from "./dom.js?v=78";
 import { todayISO } from "./form.js?v=77";
@@ -277,6 +277,15 @@ export function sessionRow(item, patient, callbacks = {}, sessionIndex = 1, tota
     cdiHtml = `<span class="session-chip">CDI: ${escapeHtml(item.cdi.join(", "))}</span>`;
   }
 
+  // Anotaciones de la sesión
+  let anotacionesHtml = "";
+  if (item.anotaciones && item.anotaciones.trim()) {
+    const preview = item.anotaciones.trim().length > 30
+      ? `${item.anotaciones.trim().slice(0, 30)}…`
+      : item.anotaciones.trim();
+    anotacionesHtml = `<span class="session-chip session-chip-notes" title="${escapeHtml(item.anotaciones.trim())}">📝 ${escapeHtml(preview)}</span>`;
+  }
+
   // Profesional
   const profName = item.profesionalNombre || (item.profesional === "norberto" ? "Norberto" : item.profesional === "maria" ? "María" : "");
   const profHtml = profName ? `<span class="session-prof">${escapeHtml(profName)}</span>` : "";
@@ -290,6 +299,7 @@ export function sessionRow(item, patient, callbacks = {}, sessionIndex = 1, tota
         ${evaBadgeHtml}
         ${aperturaHtml}
         ${cdiHtml}
+        ${anotacionesHtml}
       </div>
     </div>
     <div class="session-actions"></div>

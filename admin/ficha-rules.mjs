@@ -95,7 +95,8 @@ export function validateField(key, value, allData = {}) {
       }
       return null;
     }
-    case "lugarNac": {
+    case "lugarNac":
+    case "anotaciones": {
       return null;
     }
     case "motivo": {
@@ -447,6 +448,7 @@ export function emptyFicha() {
     nacimiento: "",
     edad: "",
     lugarNac: "",
+    anotaciones: "",
     motivo: "",
     // FEATURE-OPTIONAL: habitos-bruxismo
     habitoApretamiento: false,
@@ -564,6 +566,7 @@ export function exampleFicha() {
     nacimiento: "1992-03-14",
     edad: "34",
     lugarNac: "Córdoba",
+    anotaciones: "Paciente refiere alivio tras terapia manual descompresiva. Mejoría en el rango de apertura.",
     motivo: "No Traumático",
     // FEATURE-OPTIONAL: habitos-bruxismo
     habitoApretamiento: true,
@@ -809,6 +812,7 @@ export function compareFichas(sourceA, sourceB) {
         diffText("Motivo de consulta", a.motivo, b.motivo),
         habDiff,
         diffText("Antecedentes clínicos", a.antecedentes, b.antecedentes),
+        diffText("Anotaciones de la sesión", a.anotaciones, b.anotaciones),
       ],
     },
     {

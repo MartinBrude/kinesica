@@ -59,8 +59,8 @@ if ($method === 'POST') {
         json_out(422, ['error' => 'La ficha contiene campos con formato o tamaño no válido']);
     }
 
-    // Campos de texto obligatorios: deben ser cadenas
-    $textFields = ['nombre', 'dni', 'motivo', 'antecedentes'];
+    // Campos de texto: deben ser cadenas
+    $textFields = ['nombre', 'dni', 'motivo', 'antecedentes', 'anotaciones'];
     foreach ($textFields as $key) {
         if (isset($data[$key]) && !is_string($data[$key])) {
             json_out(422, ['error' => 'El campo ' . $key . ' debe ser texto']);

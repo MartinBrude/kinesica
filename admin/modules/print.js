@@ -106,6 +106,7 @@ export function buildSheet(item, sessionUser = null, meta = {}) {
     // /FEATURE-OPTIONAL: habitos-bruxismo
 
     add(who, prose("Antecedentes clínicos", item.antecedentes));
+    if (item.anotaciones) add(who, prose("Anotaciones de la sesión", item.anotaciones));
   } else {
     // Sesión de seguimiento: cabecera filiatoria compacta que no repite datos invariables
     who = node("section", "pf-who pf-who-followup");
@@ -139,6 +140,7 @@ export function buildSheet(item, sessionUser = null, meta = {}) {
       );
       who.append(followupBar);
     }
+    if (item.anotaciones) add(who, prose("Anotaciones de la sesión", item.anotaciones));
   }
 
   const atm = section("Articulación temporomandibular");
