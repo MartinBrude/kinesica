@@ -74,6 +74,13 @@ export function headPreconnectGtm() {
   return '  <link rel="preconnect" href="https://www.googletagmanager.com" />\n';
 }
 
+export function headPreconnectBooking() {
+  return (
+    '  <link rel="preconnect" href="https://script.google.com" />\n' +
+    '  <link rel="preconnect" href="https://script.googleusercontent.com" crossorigin />\n'
+  );
+}
+
 /** LCP hero: smaller asset on narrow viewports (see images/hero-img-mobile.*). */
 export function headHeroImagePreload(prefix) {
   return (
@@ -90,6 +97,7 @@ export function headStandardStylesheets(
   return (
     headRobotoPreload(prefix) +
     (gtm ? headPreconnectGtm() : "") +
+    (bookingWidget ? headPreconnectBooking() : "") +
     syncCssLink(`${prefix}css/bootstrap.min.css`) +
     headRobotoStylesheet(prefix) +
     asyncCssLink(`${prefix}css/font-awesome.min.css`) +

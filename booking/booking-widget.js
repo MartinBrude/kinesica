@@ -1000,8 +1000,11 @@
       const errorBox = this.container.querySelector("#kb-slots-error");
       const grid = this.container.querySelector("#kb-slots-grid");
 
-      const cached = !forceRefresh && this._prefetchedSlots && this._prefetchedSlots[dateIso];
-      loading.style.display = cached ? "none" : "flex";
+      const hasWarm = !forceRefresh && (
+        (this._prefetchedSlots && this._prefetchedSlots[dateIso]) ||
+        (this.client && typeof this.client.hasCachedSlots === "function" && this.client.hasCachedSlots(dateIso))
+      );
+      loading.style.display = hasWarm ? "none" : "flex";
       empty.style.display = "none";
       errorBox.style.display = "none";
       grid.style.display = "none";
@@ -1009,7 +1012,9 @@
 
       try {
         const slots = this.restrictToPractitioner(
-          cached ? this._prefetchedSlots[dateIso] : await this.fetchFilteredSlots(dateIso, forceRefresh),
+          (!forceRefresh && this._prefetchedSlots && this._prefetchedSlots[dateIso])
+            ? this._prefetchedSlots[dateIso]
+            : await this.fetchFilteredSlots(dateIso, forceRefresh),
           dateIso
         );
         if (currentReq !== this._slotReqSeq) return;

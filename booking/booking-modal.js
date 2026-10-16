@@ -127,7 +127,22 @@
         { passive: true }
       );
 
+      KinesicaBookingModal.ensurePreconnect();
       KinesicaBookingModal.warmAgenda();
+    },
+
+    ensurePreconnect() {
+      if (typeof document === "undefined") return;
+      const origins = ["https://script.google.com", "https://script.googleusercontent.com"];
+      origins.forEach((href) => {
+        if (!document.querySelector(`link[rel="preconnect"][href="${href}"]`)) {
+          const link = document.createElement("link");
+          link.rel = "preconnect";
+          link.href = href;
+          if (href.includes("googleusercontent")) link.crossOrigin = "anonymous";
+          document.head.appendChild(link);
+        }
+      });
     },
 
     warmAgenda() {
@@ -138,7 +153,8 @@
       }
       const dates = [];
       const start = new Date();
-      for (let i = 0; i < 18; i += 1) {
+      // 2 semanas (14 días corridos) es suficiente para cubrir la agenda inmediata
+      for (let i = 0; i < 14; i += 1) {
         const day = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
         const y = day.getFullYear();
         const m = String(day.getMonth() + 1).padStart(2, "0");

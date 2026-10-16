@@ -57,7 +57,7 @@
   }
 
   const RANGE_STORAGE_KEY = "kinesica_slots_range_v1";
-  const RANGE_TTL_MS = 180000;
+  const RANGE_TTL_MS = 300000; // 5 minutos de caché para navegación fluida
 
   function readStoredRange() {
     try {
@@ -118,6 +118,14 @@
 
     setForceMock(force) {
       this.isMock = force;
+    }
+
+    hasCachedSlots(dateStr) {
+      if (this.isMock) return true;
+      const cacheKey = `${dateStr}_session`;
+      if (this._slotsCache && this._slotsCache[cacheKey]) return true;
+      const stored = readStoredRange();
+      return Boolean(stored && stored.days && stored.days[dateStr]);
     }
 
     /**
@@ -195,31 +203,45 @@
       // El webhook ignora profesional y técnica: un solo calendario del consultorio.
       const cacheKey = `${dateStr}_${appointmentType}`;
 
-      // 1. Revisar caché en memoria (validez 2 minutos para respuesta instantánea)
+      // 1. Revisar caché en memoria (validez TTL para respuesta instantánea)
       this._slotsCache = this._slotsCache || {};
       const cached = this._slotsCache[cacheKey];
-      if (!forceRefresh && cached && Date.now() - cached.timestamp < 120000) {
+      if (!forceRefresh && cached && Date.now() - cached.timestamp < RANGE_TTL_MS) {
         return cached.data;
       }
 
-      // 2. Si ya hay una petición idéntica en vuelo, reutilizar la misma Promise (anti-duplicación)
-      this._inFlightSlots = this._inFlightSlots || {};
-      if (!forceRefresh && this._inFlightSlots[cacheKey]) {
-        return this._inFlightSlots[cacheKey];
+      // 2. Revisar sessionStorage (donde se guardó el rango de 2 semanas de la consulta de fondo o previa)
+      if (!forceRefresh) {
+        const stored = readStoredRange();
+        if (stored && stored.days && stored.days[dateStr]) {
+          applyStoredDays(this._slotsCache, stored.days, stored.at);
+          const warmed = this._slotsCache[cacheKey];
+          if (warmed) return warmed.data;
+        }
       }
 
+      // 3. Si hay una consulta de rango en vuelo (warmAgenda o prefetch), esperarla
       const rangePromise = typeof window !== "undefined" ? window.__kinesicaSlotsRangePromise : null;
       if (!forceRefresh && rangePromise) {
-        await rangePromise;
+        try {
+          await rangePromise;
+        } catch (e) {}
         const warmed = this._slotsCache[cacheKey];
         if (warmed && Date.now() - warmed.timestamp < RANGE_TTL_MS) {
           return warmed.data;
         }
         const stored = readStoredRange();
-        if (stored && stored.days[dateStr]) {
+        if (stored && stored.days && stored.days[dateStr]) {
           applyStoredDays(this._slotsCache, stored.days, stored.at);
-          return this._slotsCache[cacheKey].data;
+          const fromStored = this._slotsCache[cacheKey];
+          if (fromStored) return fromStored.data;
         }
+      }
+
+      // 4. Si ya hay una petición idéntica en vuelo, reutilizar la misma Promise (anti-duplicación)
+      this._inFlightSlots = this._inFlightSlots || {};
+      if (!forceRefresh && this._inFlightSlots[cacheKey]) {
+        return this._inFlightSlots[cacheKey];
       }
 
       const effectiveUrl = this.getEffectiveApiUrl();
