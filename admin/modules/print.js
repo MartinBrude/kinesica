@@ -106,7 +106,6 @@ export function buildSheet(item, sessionUser = null, meta = {}) {
     // /FEATURE-OPTIONAL: habitos-bruxismo
 
     add(who, prose("Antecedentes clínicos", item.antecedentes));
-    if (item.anotaciones) add(who, prose("Anotaciones de la sesión", item.anotaciones));
   } else {
     // Sesión de seguimiento: cabecera filiatoria compacta que no repite datos invariables
     who = node("section", "pf-who pf-who-followup");
@@ -140,7 +139,6 @@ export function buildSheet(item, sessionUser = null, meta = {}) {
       );
       who.append(followupBar);
     }
-    if (item.anotaciones) add(who, prose("Anotaciones de la sesión", item.anotaciones));
   }
 
   const atm = section("Articulación temporomandibular");
@@ -268,8 +266,9 @@ export function buildSheet(item, sessionUser = null, meta = {}) {
   const selected = item.cdi || [];
   const obs = prose("Observaciones clínicas", item.observaciones);
   const plan = prose("Plan de tratamiento", item.plan);
+  const notesSession = prose("Anotaciones de la sesión", item.anotaciones);
 
-  if (selected.length > 0 || obs || plan) {
+  if (selected.length > 0 || obs || plan || notesSession) {
     const chips = node("div", "pf-chips");
     if (selected.length) {
       for (const id of selected) chips.append(node("span", "pf-chip", CDI_LABELS[id] || id));
@@ -281,6 +280,7 @@ export function buildSheet(item, sessionUser = null, meta = {}) {
     if (obs) notes.append(obs);
     if (plan) notes.append(plan);
     if (notes.childElementCount) cdi.append(notes);
+    if (notesSession) cdi.append(notesSession);
   }
 
   const profKey = item.profesional || (sessionUser?.username === "maria" ? "maria" : "norberto");

@@ -812,7 +812,6 @@ export function compareFichas(sourceA, sourceB) {
         diffText("Motivo de consulta", a.motivo, b.motivo),
         habDiff,
         diffText("Antecedentes clínicos", a.antecedentes, b.antecedentes),
-        diffText("Anotaciones de la sesión", a.anotaciones, b.anotaciones),
       ],
     },
     {
@@ -866,6 +865,7 @@ export function compareFichas(sourceA, sourceB) {
         cdiDiff,
         diffText("Observaciones clínicas", a.observaciones, b.observaciones),
         diffText("Plan de tratamiento / recomendaciones", a.plan, b.plan),
+        diffText("Anotaciones de la sesión", a.anotaciones, b.anotaciones),
       ],
     },
   ];
