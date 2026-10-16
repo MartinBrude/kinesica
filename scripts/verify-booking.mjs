@@ -248,6 +248,18 @@ test("REGLA 5: Títulos y descripciones cumplen el estándar exacto de Kinésica
   assert.ok(description.includes("📱 WhatsApp: +54 9 11 6156-4311"));
   assert.ok(description.includes("🪪 DNI: 35123456"));
   assert.ok(description.includes("📋 Motivo: Dolor cervical y contractura"));
+
+  const descRpg = formatCalendarDescription({
+    telefono: "+54 9 11 6156-4311",
+    techniqueId: "rpg",
+  });
+  assert.ok(descRpg.includes("📋 Especialidad: RPG"));
+
+  const descNoSe = formatCalendarDescription({
+    telefono: "+54 9 11 6156-4311",
+    techniqueId: "no-se",
+  });
+  assert.ok(descNoSe.includes("📋 Especialidad: No especifica"));
 });
 
 // ---------------------------------------------------------------------------

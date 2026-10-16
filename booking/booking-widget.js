@@ -1139,6 +1139,11 @@
         this.state.practitionerId ||
         (slotPractitioners.length === 1 ? slotPractitioners[0] : null);
 
+      const chosenTech = engine.getTechnique(this.state.techniqueId);
+      const especialidad = this.state.techniqueId === "no-se"
+        ? "No especifica"
+        : (chosenTech ? chosenTech.label : "No especifica");
+
       const payload = {
         tipo: "session",
         appointmentType: "session",
@@ -1149,7 +1154,8 @@
         nombre: nombre,
         telefono: telefono,
         dni: dni,
-        motivo: "",
+        motivo: especialidad,
+        especialidad: especialidad,
         isMenor: false,
         nombreFamiliar: "",
         notas: "",

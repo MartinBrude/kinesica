@@ -493,7 +493,6 @@ function handleBookAppointment(payload) {
   const dni = (payload.dni || "No provisto").trim();
   const dateStr = payload.date; // YYYY-MM-DD
   const timeStr = payload.time; // HH:mm
-  const motivo = (payload.motivo || "Consulta general").trim();
   const isMenor = Boolean(payload.isMenor);
   const nombreFamiliar = (payload.nombreFamiliar || "").trim();
   const notas = (payload.notas || "").trim();
@@ -587,20 +586,26 @@ function handleBookAppointment(payload) {
     rpg: "RPG",
     neurodinamia: "Neurodinamia",
     viscerales: "Manipulaciones viscerales (Barral)",
-    posturologia: "Posturología"
+    posturologia: "Posturología",
+    "no-se": "No especifica"
   };
   const techniqueId = String(payload.techniqueId || "");
   const techniqueLabel = techniqueLabels[techniqueId] || "";
 
+  const especialidad = techniqueId === "no-se"
+    ? "No especifica"
+    : (techniqueLabel || payload.especialidad || (payload.motivo && payload.motivo !== "Consulta general" ? payload.motivo : "") || "No especifica");
+
+  const motivo = especialidad;
+
   // 3. Construir descripción normalizada
   const descParts = [];
   if (whoName) descParts.push("👤 Profesional: " + whoName);
-  if (techniqueLabel) descParts.push("🤲 Técnica: " + techniqueLabel);
   descParts.push(
     "📱 WhatsApp: " + telefono,
     "🪪 DNI: " + dni,
     "🌿 Origen: Reserva Web Oficial Kinésica",
-    "📋 Motivo: " + motivo
+    "📋 Especialidad: " + especialidad
   );
   if (isMenor && nombreFamiliar) descParts.push("👥 Adulto Responsable: " + nombreFamiliar);
   if (notas) descParts.push("💬 Notas: " + notas);
@@ -639,20 +644,21 @@ function handleBookAppointment(payload) {
     const notifyIds = practitionerId ? [practitionerId] : ["norberto", "maria"];
     notifyIds.forEach(function (id) {
       notifyPractitionerNewWebBooking(id, {
-      appointmentType: appointmentType,
-      nombre: nombre,
-      telefono: telefono,
-      dni: dni,
-      date: dateStr,
-      time: timeStr,
-      motivo: motivo,
-      isMenor: isMenor,
-      nombreFamiliar: nombreFamiliar,
-      notas: notas,
-      summary: summary,
-      practitionerName: whoName,
-      technique: techniqueLabel
-    });
+        appointmentType: appointmentType,
+        nombre: nombre,
+        telefono: telefono,
+        dni: dni,
+        date: dateStr,
+        time: timeStr,
+        especialidad: especialidad,
+        motivo: especialidad,
+        isMenor: isMenor,
+        nombreFamiliar: nombreFamiliar,
+        notas: notas,
+        summary: summary,
+        practitionerName: whoName,
+        technique: techniqueLabel
+      });
     });
   } catch (errNotify) {
     console.error("Error al notificar al profesional: " + errNotify);
@@ -718,11 +724,7 @@ function notifyPractitionerNewWebBooking(practitionerId, data) {
     "• *Fecha y Hora:* " + fechaAmigable + " a las " + data.time + " hs\n" +
     "• *WhatsApp:* " + waLink + "\n" +
     "• *DNI:* " + (data.dni || "No provisto") + "\n" +
-    "• *Motivo de consulta:* " + (data.motivo || "Consulta general");
-
-  if (data.technique) {
-    message += "\n• *Técnica:* " + data.technique;
-  }
+    "• *Especialidad:* " + (data.especialidad || data.technique || data.motivo || "No especifica");
 
   if (data.isMenor && data.nombreFamiliar) {
     message += "\n• *Adulto Responsable (Menor):* " + data.nombreFamiliar;

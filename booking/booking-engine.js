@@ -413,14 +413,19 @@
   function formatCalendarDescription(data) {
     const technique = getTechnique(data.techniqueId);
     const who = PRACTITIONERS[data.practitionerId];
+    const especialidad = data.techniqueId === "no-se"
+      ? "No especifica"
+      : (technique && !technique.internal ? technique.label : data.especialidad || data.motivo || "No especifica");
+
     const parts = [
       `📱 WhatsApp: ${data.telefono.trim()}`,
       `🪪 DNI: ${data.dni ? data.dni.trim() : "No provisto"}`,
       `🌿 Origen: Reserva Web Oficial Kinésica`,
     ];
-    if (technique && !technique.bySchedule && !technique.internal) parts.push(`🤲 Técnica: ${technique.label}`);
     if (who) parts.push(`👤 Profesional: ${who.name}`);
-    if (data.motivo && data.motivo.trim()) {
+    if (data.techniqueId || data.especialidad) {
+      parts.push(`📋 Especialidad: ${especialidad}`);
+    } else if (data.motivo && data.motivo.trim()) {
       parts.push(`📋 Motivo: ${data.motivo.trim()}`);
     }
     if (data.isMenor && data.nombreFamiliar) {
@@ -454,12 +459,18 @@
 
     const location = "Charcas 3889, Piso 5º B, Palermo, CABA (entre Scalabrini Ortiz y Aráoz)";
 
+    const specialtyLabel = payload.techniqueId === "no-se"
+      ? "No especifica"
+      : (technique && !technique.internal ? technique.label : (payload.especialidad || ""));
+
+    const specialtyLine = specialtyLabel ? `Especialidad: ${specialtyLabel}.` : "";
+
     const description = [
       "Información importante:",
       "- Te pedimos que llegues a la hora de la sesión, ni antes ni después, por características del espacio y la organización.",
       "- Asistir sin acompañantes (salvo necesidad directa o menores).",
       "- Traer estudios médicos previos si contás con ellos.",
-      technique && !technique.bySchedule && !technique.internal ? `Técnica: ${technique.label}.` : "",
+      specialtyLine,
       who ? `Profesional: ${who.id === "maria" ? "mujer" : "hombre"}.` : "",
     ].filter(Boolean).join("\n");
 
