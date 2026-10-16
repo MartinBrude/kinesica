@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/admin/styles.css?v=94">
-  <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1792143918">
+  <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1792185618">
   <script>
     (function () {
       try {
@@ -31,11 +31,15 @@
       <img src="/admin/logo.png?v=22" alt="Kinésica" width="190" height="50">
     </a>
     <div class="top-actions">
-      <button type="button" class="clara-btn is-active" id="btn-toggle-clara" title="Estado de Clara" hidden>
+      <button type="button" class="clara-btn is-active" id="btn-toggle-clara" title="Estado de Clara en WhatsApp" hidden>
         <span class="clara-dot" aria-hidden="true"></span>
         <span class="clara-label">Clara: Activa</span>
       </button>
-      <button type="button" class="btn green" id="btn-agendar" data-booking-open hidden>Agendar</button>
+      <button type="button" class="clara-btn is-active" id="btn-toggle-booking" title="Botón Agendar en la web pública" hidden>
+        <span class="clara-dot" aria-hidden="true"></span>
+        <span class="clara-label">Agendar en web: Activo</span>
+      </button>
+      <button type="button" class="btn green" id="btn-agendar" data-booking-open hidden title="Abrir agenda de turnos">Agendar</button>
       <div class="session-box">
         <span id="session-name" class="session-name" hidden></span>
         <button type="button" class="btn ghost" id="btn-logout" hidden>Salir</button>
@@ -614,6 +618,7 @@
             var logoutBtn = document.getElementById("btn-logout");
             var agendarBtn = document.getElementById("btn-agendar");
             var claraBtn = document.getElementById("btn-toggle-clara");
+            var bookingBtn = document.getElementById("btn-toggle-booking");
             if (nameEl) {
               nameEl.textContent = user;
               nameEl.hidden = false;
@@ -621,6 +626,7 @@
             if (logoutBtn) logoutBtn.hidden = false;
             if (agendarBtn) agendarBtn.hidden = false;
             if (claraBtn) claraBtn.hidden = false;
+            if (bookingBtn) bookingBtn.hidden = false;
           }
           var saved = null;
           try {
@@ -641,7 +647,7 @@
     })();
   </script>
   <div id="print-root"></div>
-  <script src="/booking/booking-bundle.min.js?v=1792143918" defer></script>
+  <script src="/booking/booking-bundle.min.js?v=1792185618" defer></script>
   <script type="module" src="/admin/app.js?v=94"></script>
 </body>
 </html>

@@ -76,7 +76,7 @@ function initDesktopWhatsAppClickHandler() {
     var site = window.KINESICA_SITE || {};
     var cfg = site.contact || {};
     var digits =
-      (digitsMatch && digitsMatch[1]) || cfg.whatsappDigits || "";
+      (digitsMatch && digitsMatch[1]) || cfg.activeWhatsappDigits || cfg.whatsappDigits || "";
     if (!digits) return;
 
     var sanitized = String(digits).replace(/\D/g, "");
@@ -87,17 +87,71 @@ function initDesktopWhatsAppClickHandler() {
   });
 }
 
+var CLARA_WHATSAPP_DIGITS = "5491131781733";
+var CLARA_PHONE_DISPLAY = "+54 (11) 3178-1733";
+
+function syncPublicSettings() {
+  function applySettings(settings) {
+    if (!settings) return;
+    var claraActive = settings.clara_active !== false;
+    var bookingActive = settings.booking_active !== false;
+
+    var site = window.KINESICA_SITE || {};
+    var cfg = site.contact || {};
+
+    if (claraActive) {
+      cfg.activeWhatsappDigits = CLARA_WHATSAPP_DIGITS;
+      cfg.activePhoneDisplay = CLARA_PHONE_DISPLAY;
+    } else {
+      cfg.activeWhatsappDigits = cfg.whatsappDigits;
+      cfg.activePhoneDisplay = cfg.phoneDisplay;
+    }
+
+    if (typeof kinesicaApplyWhatsAppContact === "function") {
+      kinesicaApplyWhatsAppContact();
+    }
+
+    var heroBookingBtn = document.getElementById("hero-btn-booking");
+    if (heroBookingBtn) {
+      heroBookingBtn.hidden = !bookingActive;
+    }
+  }
+
+  try {
+    var cached = JSON.parse(localStorage.getItem("kinesica_public_settings") || "null");
+    if (cached) applySettings(cached);
+  } catch (_) {}
+
+  if (typeof fetch === "function") {
+    fetch("/admin/api/settings.php", { cache: "no-cache" })
+      .then(function (res) {
+        return res.ok ? res.json() : null;
+      })
+      .then(function (data) {
+        if (data && typeof data === "object") {
+          try {
+            localStorage.setItem("kinesica_public_settings", JSON.stringify(data));
+          } catch (_) {}
+          applySettings(data);
+        }
+      })
+      .catch(function () {});
+  }
+}
+
 function kinesicaApplyWhatsAppContact() {
   initWhatsAppMobileScroll();
   initDesktopWhatsAppClickHandler();
 
   var site = window.KINESICA_SITE || {};
   var cfg = site.contact || {};
-  if (!cfg.whatsappDigits || !cfg.phoneDisplay) return;
+  var currentWhatsapp = cfg.activeWhatsappDigits || cfg.whatsappDigits;
+  var currentDisplay = cfg.activePhoneDisplay || cfg.phoneDisplay;
+  if (!currentWhatsapp || !currentDisplay) return;
 
   var contactData = {
-    whatsapp: cfg.whatsappDigits,
-    whatsappText: cfg.phoneDisplay,
+    whatsapp: currentWhatsapp,
+    whatsappText: currentDisplay,
   };
 
   var isDesktop = isDesktopBrowser();
@@ -139,10 +193,16 @@ function kinesicaApplyWhatsAppContact() {
 }
 
 window.kinesicaApplyWhatsAppContact = kinesicaApplyWhatsAppContact;
+window.kinesicaSyncPublicSettings = syncPublicSettings;
+
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", kinesicaApplyWhatsAppContact);
+  document.addEventListener("DOMContentLoaded", function () {
+    kinesicaApplyWhatsAppContact();
+    syncPublicSettings();
+  });
 } else {
   kinesicaApplyWhatsAppContact();
+  syncPublicSettings();
 }
 
 

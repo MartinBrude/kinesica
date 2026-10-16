@@ -341,57 +341,130 @@ initCompare({
 });
 
 /**
- * Inicializa el control para activar y desactivar a Clara en el modo admin.
- * Requiere confirmación explícita antes de cambiar el estado.
+ * Inicializa los controles de canales (Clara y Botón Agendar en web) en el modo admin.
+ * Ambos requieren confirmación explícita antes de cambiar el estado y sincronizan con settings.php.
  */
-function initClaraToggle() {
-  const btn = document.getElementById("btn-toggle-clara");
-  if (!btn) return;
+function initAdminChannels() {
+  const claraBtn = document.getElementById("btn-toggle-clara");
+  const bookingBtn = document.getElementById("btn-toggle-booking");
 
-  const label = btn.querySelector(".clara-label");
+  let claraActive = localStorage.getItem("kinesica_clara_active") !== "0";
+  let bookingActive = localStorage.getItem("kinesica_booking_active") !== "0";
 
-  function render(isActive) {
-    btn.classList.toggle("is-active", isActive);
-    btn.classList.toggle("is-inactive", !isActive);
-    btn.setAttribute("aria-pressed", String(isActive));
+  function renderClara(isActive) {
+    if (!claraBtn) return;
+    const label = claraBtn.querySelector(".clara-label");
+    claraBtn.classList.toggle("is-active", isActive);
+    claraBtn.classList.toggle("is-inactive", !isActive);
+    claraBtn.setAttribute("aria-pressed", String(isActive));
     if (label) {
       label.textContent = isActive ? "Clara: Activa" : "Clara: Desactivada";
     }
-    btn.title = isActive
+    claraBtn.title = isActive
       ? "Clara está activa (tocá para desactivar)"
       : "Clara está desactivada (tocá para activar)";
   }
 
-  let isActive = localStorage.getItem("kinesica_clara_active") !== "0";
-  render(isActive);
+  function renderBooking(isActive) {
+    if (!bookingBtn) return;
+    const label = bookingBtn.querySelector(".clara-label");
+    bookingBtn.classList.toggle("is-active", isActive);
+    bookingBtn.classList.toggle("is-inactive", !isActive);
+    bookingBtn.setAttribute("aria-pressed", String(isActive));
+    if (label) {
+      label.textContent = isActive ? "Agendar en web: Activo" : "Agendar en web: Desactivado";
+    }
+    bookingBtn.title = isActive
+      ? "Botón Agendar visible en la web (tocá para desactivar)"
+      : "Botón Agendar oculto en la web (tocá para activar)";
+  }
 
-  btn.addEventListener("click", async () => {
-    const willDeactivate = isActive;
-    const question = willDeactivate
-      ? "¿Estás seguro de que querés desactivar a Clara? Dejará de responder automáticamente en WhatsApp."
-      : "¿Estás seguro de que querés activar a Clara? Volverá a responder automáticamente en WhatsApp.";
+  renderClara(claraActive);
+  renderBooking(bookingActive);
 
-    const confirmed = await dialogConfirm(question, {
-      danger: willDeactivate,
-      okText: willDeactivate ? "Desactivar" : "Activar",
-      cancelText: "Cancelar",
+  // Sincronizar con el backend
+  api("settings.php")
+    .then((data) => {
+      if (!data) return;
+      if (typeof data.clara_active === "boolean") {
+        claraActive = data.clara_active;
+        localStorage.setItem("kinesica_clara_active", claraActive ? "1" : "0");
+        renderClara(claraActive);
+      }
+      if (typeof data.booking_active === "boolean") {
+        bookingActive = data.booking_active;
+        localStorage.setItem("kinesica_booking_active", bookingActive ? "1" : "0");
+        renderBooking(bookingActive);
+      }
+    })
+    .catch(() => {});
+
+  if (claraBtn) {
+    claraBtn.addEventListener("click", async () => {
+      const willDeactivate = claraActive;
+      const question = willDeactivate
+        ? "¿Estás seguro de que querés desactivar a Clara? En la web pública los botones de contacto volverán a abrir el WhatsApp del consultorio en vez del de Clara."
+        : "¿Estás seguro de que querés activar a Clara? En la web pública los botones de contacto abrirán el WhatsApp de Clara.";
+
+      const confirmed = await dialogConfirm(question, {
+        danger: willDeactivate,
+        okText: willDeactivate ? "Desactivar" : "Activar",
+        cancelText: "Cancelar",
+      });
+
+      if (!confirmed) return;
+
+      claraActive = !claraActive;
+      localStorage.setItem("kinesica_clara_active", claraActive ? "1" : "0");
+      renderClara(claraActive);
+
+      api("settings.php", {
+        method: "POST",
+        body: JSON.stringify({ clara_active: claraActive }),
+      }).catch((err) => {
+        if (!err.auth) dialogAlert("No se pudo guardar la configuración en el servidor.");
+      });
+
+      window.dispatchEvent(
+        new CustomEvent("clara:status-change", { detail: { active: claraActive } })
+      );
     });
+  }
 
-    if (!confirmed) return;
+  if (bookingBtn) {
+    bookingBtn.addEventListener("click", async () => {
+      const willDeactivate = bookingActive;
+      const question = willDeactivate
+        ? "¿Estás seguro de que querés desactivar el botón 'Agendar' en la web? Los pacientes ya no verán el botón para reservar turnos en la portada."
+        : "¿Estás seguro de que querés activar el botón 'Agendar' en la web? Los pacientes verán el botón destacado para reservar turnos en la portada.";
 
-    isActive = !isActive;
-    try {
-      localStorage.setItem("kinesica_clara_active", isActive ? "1" : "0");
-    } catch (_) {}
-    render(isActive);
+      const confirmed = await dialogConfirm(question, {
+        danger: willDeactivate,
+        okText: willDeactivate ? "Desactivar" : "Activar",
+        cancelText: "Cancelar",
+      });
 
-    window.dispatchEvent(
-      new CustomEvent("clara:status-change", { detail: { active: isActive } })
-    );
-  });
+      if (!confirmed) return;
+
+      bookingActive = !bookingActive;
+      localStorage.setItem("kinesica_booking_active", bookingActive ? "1" : "0");
+      renderBooking(bookingActive);
+
+      api("settings.php", {
+        method: "POST",
+        body: JSON.stringify({ booking_active: bookingActive }),
+      }).catch((err) => {
+        if (!err.auth) dialogAlert("No se pudo guardar la configuración en el servidor.");
+      });
+
+      window.dispatchEvent(
+        new CustomEvent("booking:status-change", { detail: { active: bookingActive } })
+      );
+    });
+  }
 }
 
-initClaraToggle();
+initAdminChannels();
 
 // Inicialización de la aplicación al cargar la página
 fillForm(blank(), loadAll());

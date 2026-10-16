@@ -18,6 +18,7 @@ const sessionNameEl = document.querySelector("#session-name");
 const logoutBtn = document.querySelector("#btn-logout");
 const agendarBtn = document.querySelector("#btn-agendar");
 const claraBtn = document.querySelector("#btn-toggle-clara");
+const bookingBtn = document.querySelector("#btn-toggle-booking");
 
 const enrollAccountEl = document.querySelector("#enroll-account");
 const enrollSecretEl = document.querySelector("#enroll-secret");
@@ -107,6 +108,7 @@ export function showGate(data = {}) {
   if (logoutBtn) logoutBtn.hidden = true;
   if (agendarBtn) agendarBtn.hidden = true;
   if (claraBtn) claraBtn.hidden = true;
+  if (bookingBtn) bookingBtn.hidden = true;
   if (sessionNameEl) sessionNameEl.hidden = true;
 
   const enroll = Boolean(data && data.enroll);
@@ -154,6 +156,7 @@ export function hideGate() {
   if (logoutBtn) logoutBtn.hidden = false;
   if (agendarBtn) agendarBtn.hidden = false;
   if (claraBtn) claraBtn.hidden = false;
+  if (bookingBtn) bookingBtn.hidden = false;
   if (sessionNameEl && sessionUser) {
     sessionNameEl.textContent = sessionUser.name || sessionUser.username;
     sessionNameEl.hidden = false;
