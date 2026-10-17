@@ -178,6 +178,7 @@ async function refresh() {
   const me = await api("me.php");
   setSessionUser(me);
   hideGate();
+  mountAdminChannels();
 
   const formView = document.querySelector("#view-form");
   const compareView = document.querySelector("#view-compare");
@@ -224,6 +225,7 @@ async function refresh() {
 
 // Configurar manejador de sesión expirada (HTTP 401)
 setAuthRequiredHandler((data) => {
+  unmountAdminChannels();
   setSessionUser(null);
   showGate(data);
 });
@@ -233,8 +235,10 @@ initAuth({
   onSuccess: async () => {
     await refresh();
     showLibrary();
+    mountAdminChannels();
   },
   onLogout: () => {
+    unmountAdminChannels();
     resetLibrary();
     try {
       sessionStorage.removeItem("kinesica_admin_view");
@@ -341,12 +345,30 @@ initCompare({
 });
 
 /**
- * Inicializa los controles de canales (Clara y Botón Agendar en web) en el modo admin.
- * Ambos requieren confirmación explícita antes de cambiar el estado y sincronizan con settings.php.
+ * Desmonta y remueve del DOM los botones de features para que no existan
+ * antes de iniciar sesión ni queden visibles tras cerrar sesión.
  */
-function initAdminChannels() {
-  const claraBtn = document.getElementById("btn-toggle-clara");
-  const bookingBtn = document.getElementById("btn-toggle-booking");
+function unmountAdminChannels() {
+  document.getElementById("btn-toggle-clara")?.remove();
+  document.getElementById("btn-toggle-booking")?.remove();
+}
+
+/**
+ * Monta e inserta dinámicamente en el DOM los controles de canales (Clara y Agendar)
+ * solo cuando el usuario está debidamente autenticado.
+ * Sincroniza su estado con settings.php.
+ */
+function mountAdminChannels() {
+  if (!getSessionUser()) {
+    unmountAdminChannels();
+    return;
+  }
+
+  const topActions = document.querySelector(".top-actions");
+  if (!topActions) return;
+
+  let claraBtn = document.getElementById("btn-toggle-clara");
+  let bookingBtn = document.getElementById("btn-toggle-booking");
 
   let claraActive = localStorage.getItem("kinesica_clara_active") === "1";
   let bookingActive = localStorage.getItem("kinesica_booking_active") === "1";
@@ -379,28 +401,25 @@ function initAdminChannels() {
       : "Botón Agendar oculto en la web (tocá para activar)";
   }
 
-  renderClara(claraActive);
-  renderBooking(bookingActive);
+  const agendarBtn = document.getElementById("btn-agendar");
 
-  // Sincronizar con el backend
-  api("settings.php")
-    .then((data) => {
-      if (!data) return;
-      if (typeof data.clara_active === "boolean") {
-        claraActive = data.clara_active;
-        localStorage.setItem("kinesica_clara_active", claraActive ? "1" : "0");
-        renderClara(claraActive);
-      }
-      if (typeof data.booking_active === "boolean") {
-        bookingActive = data.booking_active;
-        localStorage.setItem("kinesica_booking_active", bookingActive ? "1" : "0");
-        renderBooking(bookingActive);
-      }
-    })
-    .catch(() => {});
+  if (!claraBtn) {
+    claraBtn = document.createElement("button");
+    claraBtn.type = "button";
+    claraBtn.id = "btn-toggle-clara";
+    claraBtn.className = "clara-btn is-inactive";
+    claraBtn.title = "Estado de Clara en WhatsApp";
+    claraBtn.setAttribute("aria-pressed", "false");
+    claraBtn.innerHTML = '<span class="clara-dot" aria-hidden="true"></span><span class="clara-label">Clara: Desactivada</span>';
 
-  if (claraBtn) {
+    if (agendarBtn) {
+      topActions.insertBefore(claraBtn, agendarBtn);
+    } else {
+      topActions.appendChild(claraBtn);
+    }
+
     claraBtn.addEventListener("click", async () => {
+      if (!getSessionUser()) return;
       const willDeactivate = claraActive;
       const question = willDeactivate
         ? "¿Estás seguro de que querés desactivar a Clara? En la web pública los botones de contacto volverán a abrir el WhatsApp del consultorio en vez del de Clara."
@@ -431,8 +450,23 @@ function initAdminChannels() {
     });
   }
 
-  if (bookingBtn) {
+  if (!bookingBtn) {
+    bookingBtn = document.createElement("button");
+    bookingBtn.type = "button";
+    bookingBtn.id = "btn-toggle-booking";
+    bookingBtn.className = "clara-btn is-inactive";
+    bookingBtn.title = "Botón Agendar en la web pública";
+    bookingBtn.setAttribute("aria-pressed", "false");
+    bookingBtn.innerHTML = '<span class="clara-dot" aria-hidden="true"></span><span class="clara-label">Agendar en web: Desactivado</span>';
+
+    if (agendarBtn) {
+      topActions.insertBefore(bookingBtn, agendarBtn);
+    } else {
+      topActions.appendChild(bookingBtn);
+    }
+
     bookingBtn.addEventListener("click", async () => {
+      if (!getSessionUser()) return;
       const willDeactivate = bookingActive;
       const question = willDeactivate
         ? "¿Estás seguro de que querés desactivar el botón 'Agendar' en la web? Los pacientes ya no verán el botón para reservar turnos en la portada."
@@ -462,9 +496,27 @@ function initAdminChannels() {
       );
     });
   }
-}
 
-initAdminChannels();
+  renderClara(claraActive);
+  renderBooking(bookingActive);
+
+  // Sincronizar con el backend
+  api("settings.php")
+    .then((data) => {
+      if (!data) return;
+      if (typeof data.clara_active === "boolean") {
+        claraActive = data.clara_active;
+        localStorage.setItem("kinesica_clara_active", claraActive ? "1" : "0");
+        renderClara(claraActive);
+      }
+      if (typeof data.booking_active === "boolean") {
+        bookingActive = data.booking_active;
+        localStorage.setItem("kinesica_booking_active", bookingActive ? "1" : "0");
+        renderBooking(bookingActive);
+      }
+    })
+    .catch(() => {});
+}
 
 // Inicialización de la aplicación al cargar la página
 fillForm(blank(), loadAll());

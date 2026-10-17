@@ -393,4 +393,19 @@ await test("cada página impresa, incluida la segunda, tiene margen superior", (
   assert.match(printCss, /\.print-sheet\s*{[^}]*padding:\s*0/);
 });
 
+await test("los botones de features (Clara y Booking) no existen en el HTML inicial y se crean solo autenticado", () => {
+  assert.ok(!html.includes('id="btn-toggle-clara"'));
+  assert.ok(!html.includes('id="btn-toggle-booking"'));
+
+  const appJs = fs.readFileSync(path.join(adminDir, "app.js"), "utf8");
+  assert.match(appJs, /\.id\s*=\s*["']btn-toggle-clara["']/);
+  assert.match(appJs, /\.id\s*=\s*["']btn-toggle-booking["']/);
+
+  const baseCss = fs.readFileSync(path.join(adminDir, "css/base.css"), "utf8");
+  assert.match(baseCss, /\.clara-btn\[hidden\]/);
+  assert.match(baseCss, /html:not\(\.is-authenticated\)\s+\.clara-btn/);
+  assert.match(html, /html:not\(\.is-authenticated\)\s+#btn-toggle-clara/);
+  assert.match(html, /html:not\(\.is-authenticated\)\s+#btn-toggle-booking/);
+});
+
 console.log(`admin robustez: ok (${passed} pruebas)`);

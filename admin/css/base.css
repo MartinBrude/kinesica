@@ -23,6 +23,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 html,
 body {
   overflow-x: hidden;
@@ -321,6 +325,11 @@ main {
 .btn.danger:hover {
   background: #881337;
   border-color: #881337;
+}
+
+.clara-btn[hidden],
+html:not(.is-authenticated) .clara-btn {
+  display: none !important;
 }
 
 .clara-btn {
