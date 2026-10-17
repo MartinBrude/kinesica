@@ -96,7 +96,8 @@ export function validateField(key, value, allData = {}) {
       return null;
     }
     case "lugarNac":
-    case "anotaciones": {
+    case "anotaciones":
+    case "fotoUrl": {
       return null;
     }
     case "motivo": {
@@ -267,7 +268,7 @@ export function validateStep(stepNumber, data = {}) {
     2: [],
     3: ["eva"],
     4: [],
-    5: ["anotaciones"],
+    5: ["anotaciones", "fotoUrl"],
   };
   const fields = stepFields[stepNumber] || [];
   const errors = {};
@@ -485,6 +486,7 @@ export function emptyFicha() {
     edad: "",
     lugarNac: "",
     anotaciones: "",
+    fotoUrl: "",
     motivo: "",
     // FEATURE-OPTIONAL: habitos-bruxismo
     habitoApretamiento: false,
@@ -618,6 +620,7 @@ export function exampleFicha() {
     edad: "34",
     lugarNac: "Córdoba",
     anotaciones: "Paciente refiere alivio tras terapia manual descompresiva. Mejoría en el rango de apertura.",
+    fotoUrl: "/admin/api/foto.php?file=0123456789abcdef0123456789abcdef.jpg",
     motivo: "No Traumático",
     // FEATURE-OPTIONAL: habitos-bruxismo
     habitoApretamiento: true,
@@ -964,6 +967,7 @@ export function compareFichas(sourceA, sourceB) {
       title: "6. Anotaciones de la sesión",
       fields: [
         diffText("Anotaciones de la sesión", a.anotaciones, b.anotaciones),
+        diffText("Foto clínica adjunta", a.fotoUrl ? "Con foto adjunta" : "Sin foto", b.fotoUrl ? "Con foto adjunta" : "Sin foto"),
       ],
     },
   ];

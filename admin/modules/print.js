@@ -305,7 +305,7 @@ export function buildSheet(item, sessionUser = null, meta = {}) {
   const plan = prose("Plan de tratamiento", item.plan);
   const notesSession = prose("Anotaciones de la sesión", item.anotaciones);
 
-  if (selected.length > 0 || obs || plan || notesSession) {
+  if (selected.length > 0 || obs || plan || notesSession || item.fotoUrl) {
     const chips = node("div", "pf-chips");
     if (selected.length) {
       for (const id of selected) chips.append(node("span", "pf-chip", CDI_LABELS[id] || id));
@@ -318,6 +318,16 @@ export function buildSheet(item, sessionUser = null, meta = {}) {
     if (plan) notes.append(plan);
     if (notes.childElementCount) cdi.append(notes);
     if (notesSession) cdi.append(notesSession);
+    if (item.fotoUrl) {
+      const fotoWrap = node("div", "pf-foto-box");
+      fotoWrap.append(node("span", "pf-subhead", "Foto clínica adjunta"));
+      const img = document.createElement("img");
+      img.className = "pf-attached-photo";
+      img.src = item.fotoUrl;
+      img.alt = "Foto clínica de la sesión";
+      fotoWrap.append(img);
+      cdi.append(fotoWrap);
+    }
   }
 
   const profKey = item.profesional || (sessionUser?.username === "maria" ? "maria" : "norberto");

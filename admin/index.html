@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/admin/styles.css?v=99">
-  <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1792186467">
+  <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1792235281">
   <script>
     (function () {
       try {
@@ -628,6 +628,45 @@
           <label>Anotaciones particulares de la sesión, procedimientos realizados, evolución o comentarios
             <textarea name="anotaciones" rows="8" placeholder="Anotaciones particulares de la sesión, procedimientos realizados, evolución o comentarios..."></textarea>
           </label>
+
+          <div class="foto-attachment-card" id="foto-attachment-card">
+            <div class="foto-attachment-header">
+              <span class="foto-attachment-title">📷 Foto / Imagen clínica adjunta</span>
+              <span class="foto-attachment-badge">Opcional · Máx 5 MB</span>
+            </div>
+
+            <input type="hidden" name="fotoUrl" id="field-foto-url" value="">
+            <input type="file" id="foto-input" accept="image/jpeg,image/png,image/webp" style="display: none;">
+
+            <!-- Zona vacía: para adjuntar foto -->
+            <div class="foto-dropzone" id="foto-dropzone">
+              <div class="foto-dropzone-icon">📷</div>
+              <p class="foto-dropzone-text"><strong>Hacé clic o arrastrá una imagen</strong> para adjuntarla a esta sesión</p>
+              <p class="foto-dropzone-hint">Formatos soportados: JPG, PNG o WebP. Se optimiza automáticamente (máx. 5 MB).</p>
+              <button type="button" class="btn light btn-sm" id="btn-foto-select">Seleccionar imagen</button>
+            </div>
+
+            <!-- Zona de carga en progreso -->
+            <div class="foto-loading" id="foto-loading" hidden>
+              <span class="foto-spinner" aria-hidden="true"></span>
+              <span id="foto-loading-text">Optimizando y subiendo imagen…</span>
+            </div>
+
+            <!-- Zona con foto cargada / vista previa -->
+            <div class="foto-preview-container" id="foto-preview-container" hidden>
+              <div class="foto-preview-box">
+                <img id="foto-preview-img" src="" alt="Foto clínica adjunta de la sesión" class="foto-preview-img">
+              </div>
+              <div class="foto-preview-info">
+                <span class="foto-preview-status">✓ Foto adjunta en la sesión</span>
+                <div class="foto-preview-actions">
+                  <a href="#" target="_blank" rel="noopener noreferrer" class="btn ghost btn-sm" id="btn-foto-view">🔍 Ver en tamaño completo</a>
+                  <button type="button" class="btn light btn-sm" id="btn-foto-change">Cambiar</button>
+                  <button type="button" class="btn ghost btn-sm text-danger" id="btn-foto-remove">Quitar</button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="form-footer">
@@ -723,7 +762,7 @@
     })();
   </script>
   <div id="print-root"></div>
-  <script src="/booking/booking-bundle.min.js?v=1792186467" defer></script>
+  <script src="/booking/booking-bundle.min.js?v=1792235281" defer></script>
   <script type="module" src="/admin/app.js?v=99"></script>
 </body>
 </html>

@@ -60,13 +60,18 @@ if ($method === 'POST') {
     }
 
     // Campos de texto: deben ser cadenas
-    $textFields = ['nombre', 'dni', 'motivo', 'antecedentes', 'anotaciones'];
+    $textFields = ['nombre', 'dni', 'motivo', 'antecedentes', 'anotaciones', 'fotoUrl'];
     foreach ($textFields as $key) {
         if (isset($data[$key]) && !is_string($data[$key])) {
             json_out(422, ['error' => 'El campo ' . $key . ' debe ser texto']);
         }
         if (isset($data[$key])) {
             $data[$key] = trim($data[$key]);
+        }
+    }
+    if (!empty($data['fotoUrl'])) {
+        if (!preg_match('#^(/admin/)?api/foto\.php\?file=[a-f0-9]{32,64}\.(jpe?g|png|webp)$#i', (string) $data['fotoUrl'])) {
+            json_out(422, ['error' => 'La URL de la foto no es válida']);
         }
     }
     if (mb_strlen((string) ($data['nombre'] ?? '')) > 200 || mb_strlen((string) ($data['dni'] ?? '')) > 50) {
@@ -303,6 +308,17 @@ if ($method === 'POST') {
         'user' => $auth['username'],
     ]);
     $pdo->commit();
+
+    // Si la ficha tenía una foto previa y fue reemplazada o removida, eliminar el archivo anterior
+    if (is_array($prevItem) && !empty($prevItem['fotoUrl']) && ($prevItem['fotoUrl'] !== ($data['fotoUrl'] ?? ''))) {
+        if (preg_match('/file=([a-f0-9]{32,64}\.(jpe?g|png|webp))$/i', (string) $prevItem['fotoUrl'], $m)) {
+            $oldFile = __DIR__ . '/../uploads/' . $m[1];
+            if (is_file($oldFile)) {
+                @unlink($oldFile);
+            }
+        }
+    }
+
     json_out(200, $data);
 }
 
@@ -311,11 +327,23 @@ if ($method === 'DELETE') {
     if (!preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $id)) {
         json_out(422, ['error' => 'Ficha inválida']);
     }
-    $stmt = $pdo->prepare('SELECT profesional FROM fichas WHERE id = :id');
+    $stmt = $pdo->prepare('SELECT payload, profesional FROM fichas WHERE id = :id');
     $stmt->execute(['id' => $id]);
-    $owner = $stmt->fetchColumn();
-    if ($owner !== false && $owner !== '' && $auth['username'] !== 'martin' && $auth['username'] !== (string) $owner) {
-        json_out(403, ['error' => 'No tienes permiso para eliminar esta ficha']);
+    $row = $stmt->fetch();
+    if ($row) {
+        $owner = $row['profesional'] ?? '';
+        if ($owner !== false && $owner !== '' && $auth['username'] !== 'martin' && $auth['username'] !== (string) $owner) {
+            json_out(403, ['error' => 'No tienes permiso para eliminar esta ficha']);
+        }
+        $prevData = json_decode((string) ($row['payload'] ?? ''), true);
+        if (is_array($prevData) && !empty($prevData['fotoUrl'])) {
+            if (preg_match('/file=([a-f0-9]{32,64}\.(jpe?g|png|webp))$/i', (string) $prevData['fotoUrl'], $m)) {
+                $fileToDelete = __DIR__ . '/../uploads/' . $m[1];
+                if (is_file($fileToDelete)) {
+                    @unlink($fileToDelete);
+                }
+            }
+        }
     }
     $pdo->prepare('DELETE FROM fichas WHERE id = :id')->execute(['id' => $id]);
     json_out(200, ['ok' => true]);

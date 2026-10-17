@@ -286,6 +286,12 @@ export function sessionRow(item, patient, callbacks = {}, sessionIndex = 1, tota
     anotacionesHtml = `<span class="session-chip session-chip-notes" title="${escapeHtml(item.anotaciones.trim())}">📝 ${escapeHtml(preview)}</span>`;
   }
 
+  // Foto clínica adjunta
+  let fotoHtml = "";
+  if (item.fotoUrl) {
+    fotoHtml = `<span class="session-chip session-chip-foto" title="Foto clínica adjunta">📷 Foto</span>`;
+  }
+
   // Profesional
   const profName = item.profesionalNombre || (item.profesional === "norberto" ? "Norberto" : item.profesional === "maria" ? "María" : "");
   const profHtml = profName ? `<span class="session-prof">${escapeHtml(profName)}</span>` : "";
@@ -300,6 +306,7 @@ export function sessionRow(item, patient, callbacks = {}, sessionIndex = 1, tota
         ${aperturaHtml}
         ${cdiHtml}
         ${anotacionesHtml}
+        ${fotoHtml}
       </div>
     </div>
     <div class="session-actions"></div>

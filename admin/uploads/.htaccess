@@ -1,0 +1,2 @@
+# Deny direct HTTP access to uploaded files
+Require all denied

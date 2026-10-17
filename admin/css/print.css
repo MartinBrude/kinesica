@@ -483,4 +483,26 @@
     background: #f0fdf4;
     font-weight: 500;
   }
+
+  .pf-foto-box {
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px dashed #cbd5e1;
+  }
+  .pf-foto-box .pf-subhead {
+    display: block;
+    font-size: 8pt;
+    font-weight: 700;
+    color: #0f2d59;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .pf-attached-photo {
+    max-width: 100%;
+    max-height: 180px;
+    object-fit: contain;
+    border-radius: 4px;
+    border: 1px solid #cbd5e1;
+    display: block;
+  }
 }

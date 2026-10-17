@@ -896,3 +896,170 @@ input[name="edad"].input-calc {
     text-align: center;
   }
 }
+
+/* Adjuntar Foto Clínica en Panel 5 / Tab 6 */
+.foto-attachment-card {
+  margin-top: 18px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.foto-attachment-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.foto-attachment-title {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--navy);
+  letter-spacing: 0.02em;
+}
+
+.foto-attachment-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  background: var(--sky);
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+}
+
+.foto-dropzone {
+  border: 2px dashed #cbd5e1;
+  border-radius: 10px;
+  padding: 24px 16px;
+  text-align: center;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.foto-dropzone:hover,
+.foto-dropzone.dragover {
+  border-color: var(--primary);
+  background: #f0fdf4;
+}
+
+.foto-dropzone-icon {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.foto-dropzone-text {
+  margin: 0 0 4px;
+  font-size: 13px;
+  color: var(--navy);
+}
+
+.foto-dropzone-hint {
+  margin: 0 0 12px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.foto-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px 16px;
+  font-size: 13px;
+  color: var(--navy);
+  background: #f8fafc;
+  border-radius: 10px;
+  border: 1px dashed var(--line);
+}
+
+.foto-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--line);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: foto-spin 0.8s linear infinite;
+}
+
+@keyframes foto-spin {
+  to { transform: rotate(360deg); }
+}
+
+.foto-preview-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.foto-preview-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #0f172a;
+  border-radius: 8px;
+  padding: 8px;
+  overflow: hidden;
+  max-height: 380px;
+}
+
+.foto-preview-img {
+  max-width: 100%;
+  max-height: 360px;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.foto-preview-img:hover {
+  transform: scale(1.01);
+}
+
+.foto-preview-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.foto-preview-status {
+  font-size: 12px;
+  font-weight: 600;
+  color: #166534;
+  background: #dcfce7;
+  padding: 4px 10px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.foto-preview-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.text-danger {
+  color: #dc2626 !important;
+}
+
+.session-chip-foto {
+  background: #ecfdf5;
+  color: #065f46;
+  border-color: #a7f3d0;
+  font-weight: 600;
+}
+

@@ -408,4 +408,52 @@ await test("los botones de features (Clara y Booking) no existen en el HTML inic
   assert.match(html, /html:not\(\.is-authenticated\)\s+#btn-toggle-booking/);
 });
 
+await test("soporte de adjuntar foto clínica en panel 5 (tab 6)", () => {
+  // Verificación en ficha-rules.mjs
+  const blank = emptyFicha();
+  assert.equal(blank.fotoUrl, "");
+  assert.equal(validateField("fotoUrl", ""), null);
+  assert.equal(validateField("fotoUrl", "/admin/api/foto.php?file=123.jpg"), null);
+  assert.equal(validateStep(5, { anotaciones: "Prueba", fotoUrl: "/admin/api/foto.php?file=123.jpg" }).isValid, true);
+
+  const sesA = { ...blank, fotoUrl: "" };
+  const sesB = { ...blank, fotoUrl: "/admin/api/foto.php?file=abc.jpg" };
+  const diff = compareFichas(sesA, sesB);
+  const seccionAnotaciones = diff.sections.find((s) => s.id === "anotaciones");
+  assert.ok(seccionAnotaciones, "Debe existir sección de anotaciones en compareFichas");
+  const fieldFoto = seccionAnotaciones.fields.find((f) => f.label === "Foto clínica adjunta");
+  assert.ok(fieldFoto, "Debe existir campo de Foto clínica adjunta");
+  assert.equal(fieldFoto.changed, true);
+
+  // Verificación en HTML (Panel 5 / Tab 6)
+  assert.match(html, /data-panel="5"[\s\S]*id="foto-attachment-card"/);
+  assert.match(html, /id="field-foto-url"/);
+  assert.match(html, /id="foto-input"/);
+  assert.match(html, /id="foto-dropzone"/);
+  assert.match(html, /id="foto-preview-container"/);
+  assert.match(html, /id="foto-preview-img"/);
+  assert.match(html, /id="btn-foto-select"/);
+  assert.match(html, /id="btn-foto-view"/);
+  assert.match(html, /id="btn-foto-change"/);
+  assert.match(html, /id="btn-foto-remove"/);
+
+  // Verificación de seguridad en admin/api/foto.php
+  const fotoPhp = fs.readFileSync(path.join(adminDir, "api/foto.php"), "utf8");
+  assert.match(fotoPhp, /require_auth\(\)/, "foto.php debe exigir autenticación en GET y POST");
+  assert.match(fotoPhp, /5 \* 1024 \* 1024/, "foto.php debe limitar tamaño a 5 MB");
+  assert.match(fotoPhp, /IMAGETYPE_JPEG/, "foto.php debe verificar formatos de imagen válidos");
+  assert.match(fotoPhp, /IMAGETYPE_PNG/);
+  assert.match(fotoPhp, /IMAGETYPE_WEBP/);
+  assert.match(fotoPhp, /Content-Type/, "foto.php debe enviar cabeceras binarias");
+
+  // Verificación de protección en directorio de uploads
+  const uploadsHtaccess = fs.readFileSync(path.join(adminDir, "uploads/.htaccess"), "utf8");
+  assert.match(uploadsHtaccess, /Require all denied/, "admin/uploads/.htaccess debe bloquear acceso HTTP directo");
+
+  // Verificación en fichas.php
+  const fichasPhp = fs.readFileSync(path.join(adminDir, "api/fichas.php"), "utf8");
+  assert.match(fichasPhp, /'fotoUrl'/, "fichas.php debe reconocer fotoUrl");
+  assert.ok(fichasPhp.includes("foto.php") || fichasPhp.includes("api/foto"), "fichas.php debe validar la URL de la foto");
+});
+
 console.log(`admin robustez: ok (${passed} pruebas)`);

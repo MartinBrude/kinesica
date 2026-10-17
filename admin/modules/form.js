@@ -20,6 +20,7 @@ import {
   getSessionIndex,
 } from "../ficha-rules.mjs?v=89";
 import { dialogAlert, dialogConfirm } from "./dom.js?v=78";
+import { api } from "./api.js";
 
 const form = document.querySelector("#ficha");
 const formView = document.querySelector("#view-form");
@@ -31,6 +32,18 @@ const btnBack = document.querySelector("#btn-back");
 const btnPrev = document.querySelector("#btn-prev");
 const btnNext = document.querySelector("#btn-next");
 
+const fotoInput = document.querySelector("#foto-input");
+const fieldFotoUrl = document.querySelector("#field-foto-url");
+const fotoDropzone = document.querySelector("#foto-dropzone");
+const fotoLoading = document.querySelector("#foto-loading");
+const fotoLoadingText = document.querySelector("#foto-loading-text");
+const fotoPreviewContainer = document.querySelector("#foto-preview-container");
+const fotoPreviewImg = document.querySelector("#foto-preview-img");
+const btnFotoSelect = document.querySelector("#btn-foto-select");
+const btnFotoChange = document.querySelector("#btn-foto-change");
+const btnFotoRemove = document.querySelector("#btn-foto-remove");
+const btnFotoView = document.querySelector("#btn-foto-view");
+
 let step = 0;
 let currentId = null;
 let formBaseline = "";
@@ -39,6 +52,118 @@ let activeSessionUserGetter = null;
 let currentAllFichas = [];
 let identityKey = "";
 let identityEdited = false;
+let uploadInFlight = null;
+
+/**
+ * Actualiza la visualización de la vista previa de la foto adjunta.
+ * @param {string} url URL de la imagen en el backend o cadena vacía
+ */
+export function syncFotoPreview(url) {
+  const photoUrl = typeof url === "string" ? url.trim() : "";
+  if (fieldFotoUrl) fieldFotoUrl.value = photoUrl;
+  if (fotoLoading) fotoLoading.hidden = true;
+
+  if (photoUrl) {
+    if (fotoPreviewImg) fotoPreviewImg.src = photoUrl;
+    if (btnFotoView) btnFotoView.href = photoUrl;
+    if (fotoPreviewContainer) fotoPreviewContainer.hidden = false;
+    if (fotoDropzone) fotoDropzone.hidden = true;
+  } else {
+    if (fotoPreviewImg) fotoPreviewImg.src = "";
+    if (btnFotoView) btnFotoView.href = "#";
+    if (fotoPreviewContainer) fotoPreviewContainer.hidden = true;
+    if (fotoDropzone) fotoDropzone.hidden = false;
+  }
+}
+
+/**
+ * Comprime y escala una imagen en el cliente antes de subirla al servidor.
+ * - Dimensiones máximas: 1920x1920px manteniendo relación de aspecto.
+ * - Calidad de compresión JPEG/WebP: 0.82
+ * - Remueve metadatos EXIF / geolocalización al redibujar en canvas.
+ * - Límite de tamaño resultante: 5 MB.
+ * @param {File} file Archivo seleccionado
+ * @returns {Promise<File>}
+ */
+export async function compressImage(file, { maxDimension = 1920, quality = 0.82, maxSizeBytes = 5 * 1024 * 1024 } = {}) {
+  const validTypes = ["image/jpeg", "image/png", "image/webp"];
+  if (!validTypes.includes(file.type)) {
+    throw new Error("Formato de imagen no compatible. Usá JPG, PNG o WebP.");
+  }
+
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("No se pudo leer el archivo de imagen."));
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onerror = () => reject(new Error("El archivo no es una imagen válida o está dañado."));
+      img.onload = () => {
+        try {
+          let { width, height } = img;
+          if (width > maxDimension || height > maxDimension) {
+            if (width > height) {
+              height = Math.round((height * maxDimension) / width);
+              width = maxDimension;
+            } else {
+              width = Math.round((width * maxDimension) / height);
+              height = maxDimension;
+            }
+          }
+
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+            if (file.size > maxSizeBytes) {
+              reject(new Error("La imagen supera los 5 MB permitidos."));
+              return;
+            }
+            resolve(file);
+            return;
+          }
+
+          if (file.type === "image/png") {
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, width, height);
+          }
+
+          ctx.drawImage(img, 0, 0, width, height);
+
+          const outputType = file.type === "image/webp" ? "image/webp" : "image/jpeg";
+          canvas.toBlob(
+            (blob) => {
+              if (!blob) {
+                if (file.size > maxSizeBytes) {
+                  reject(new Error("La imagen supera los 5 MB permitidos."));
+                  return;
+                }
+                resolve(file);
+                return;
+              }
+              if (blob.size > maxSizeBytes) {
+                reject(new Error("La imagen optimizada supera el límite de 5 MB. Probá con una imagen más liviana."));
+                return;
+              }
+              const ext = outputType === "image/webp" ? "webp" : "jpg";
+              const optimized = new File([blob], `adjunto.${ext}`, {
+                type: outputType,
+                lastModified: Date.now(),
+              });
+              resolve(optimized);
+            },
+            outputType,
+            quality
+          );
+        } catch (err) {
+          reject(err);
+        }
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
 
 /**
  * Devuelve la fecha de hoy en formato ISO (YYYY-MM-DD).
@@ -204,6 +329,7 @@ export function fillForm(data, allFichas = []) {
     setPatientLocked(false);
   }
   setDniPower(!data?.sinDocumento);
+  syncFotoPreview(data?.fotoUrl || "");
   showStep(0);
 }
 
@@ -932,6 +1058,13 @@ export function initForm({ onSave, onBack, onCompare, onPrint, getSessionUser })
       form.elements.dni?.focus();
       return;
     }
+
+    if (uploadInFlight) {
+      try {
+        await uploadInFlight;
+      } catch {}
+    }
+
     const submitBtn = form.querySelector('button[type="submit"]');
     if (submitBtn) submitBtn.disabled = true;
     try {
@@ -946,6 +1079,112 @@ export function initForm({ onSave, onBack, onCompare, onPrint, getSessionUser })
       if (submitBtn) submitBtn.disabled = false;
     }
   });
+
+  async function processAndUploadFoto(file) {
+    if (!file) return;
+    const validTypes = ["image/jpeg", "image/png", "image/webp"];
+    if (!validTypes.includes(file.type)) {
+      await dialogAlert("Formato no admitido. Por favor seleccioná una imagen JPG, PNG o WebP.");
+      return;
+    }
+    if (file.size > 25 * 1024 * 1024) {
+      await dialogAlert("La imagen original supera los 25 MB. Por favor seleccioná una imagen más liviana.");
+      return;
+    }
+
+    if (fotoDropzone) fotoDropzone.hidden = true;
+    if (fotoPreviewContainer) fotoPreviewContainer.hidden = true;
+    if (fotoLoading) fotoLoading.hidden = false;
+    if (fotoLoadingText) fotoLoadingText.textContent = "Optimizando y comprimiendo imagen…";
+
+    const currentUrl = fieldFotoUrl?.value || "";
+
+    try {
+      const task = (async () => {
+        const compressed = await compressImage(file);
+        if (fotoLoadingText) fotoLoadingText.textContent = "Subiendo imagen al servidor…";
+        const fd = new FormData();
+        fd.append("foto", compressed);
+        return await api("foto.php", {
+          method: "POST",
+          body: fd,
+        });
+      })();
+
+      uploadInFlight = task;
+      const res = await task;
+      if (res?.url) {
+        syncFotoPreview(res.url);
+      }
+    } catch (err) {
+      syncFotoPreview(currentUrl);
+      if (!err.auth) {
+        await dialogAlert(err.message || "No se pudo subir la imagen.");
+      }
+    } finally {
+      uploadInFlight = null;
+      if (fotoInput) fotoInput.value = "";
+    }
+  }
+
+  if (fotoInput) {
+    fotoInput.addEventListener("change", (e) => {
+      const file = e.target.files?.[0];
+      if (file) processAndUploadFoto(file);
+    });
+  }
+
+  if (btnFotoSelect) {
+    btnFotoSelect.addEventListener("click", (e) => {
+      e.stopPropagation();
+      fotoInput?.click();
+    });
+  }
+
+  if (btnFotoChange) {
+    btnFotoChange.addEventListener("click", () => {
+      fotoInput?.click();
+    });
+  }
+
+  if (btnFotoRemove) {
+    btnFotoRemove.addEventListener("click", async () => {
+      const confirmed = await dialogConfirm("¿Deseás quitar la foto adjunta de esta sesión?");
+      if (confirmed) {
+        syncFotoPreview("");
+      }
+    });
+  }
+
+  if (fotoDropzone) {
+    fotoDropzone.addEventListener("click", () => {
+      fotoInput?.click();
+    });
+
+    fotoDropzone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      fotoDropzone.classList.add("dragover");
+    });
+
+    fotoDropzone.addEventListener("dragleave", () => {
+      fotoDropzone.classList.remove("dragover");
+    });
+
+    fotoDropzone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      fotoDropzone.classList.remove("dragover");
+      const file = e.dataTransfer?.files?.[0];
+      if (file) processAndUploadFoto(file);
+    });
+  }
+
+  if (fotoPreviewImg) {
+    fotoPreviewImg.addEventListener("click", () => {
+      if (fieldFotoUrl?.value) {
+        window.open(fieldFotoUrl.value, "_blank", "noopener,noreferrer");
+      }
+    });
+  }
 
   if (btnBack) {
     btnBack.addEventListener("click", async () => {
