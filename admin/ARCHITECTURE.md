@@ -75,6 +75,7 @@ Cada módulo tiene una responsabilidad única y bien delimitada:
 - **Características:**
   - Control de estados: Login de usuario y contraseña, enrolamiento y verificación TOTP (Google Authenticator), solicitud de link temporal de recuperación y cambio de contraseña.
   - Manejo seguro de mensajes de error sin revelar la existencia previa del correo/usuario.
+  - Guía operativa para usuarios clínicos (María y Norberto): ver [docs/configuracion-cuentas-profesionales.md](../docs/configuracion-cuentas-profesionales.md).
 
 ### `admin/modules/form.js`
 - **Responsabilidad:** Lógica interactiva del formulario clínico de ATM.

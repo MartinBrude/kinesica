@@ -209,6 +209,7 @@ Reglas detalladas para desarrollo con Cursor: `.cursorrules` y `.cursor/rules/`.
 |---------|-----------|
 | [docs/data-sources.md](docs/data-sources.md) | Contacto, fuentes de verdad, pipelines de regeneración |
 | [docs/articles-and-methods.md](docs/articles-and-methods.md) | Patologías, índice articulos, métodos — dónde editar y qué build correr |
+| [docs/configuracion-cuentas-profesionales.md](docs/configuracion-cuentas-profesionales.md) | Guía de acceso, autenticador (2FA) y cambio de contraseña para profesionales |
 | [ASSETS.md](ASSETS.md) | Pipeline CSS/JS, caché, despliegue de assets |
 | [.cursorrules](.cursorrules) | Resumen de principios y fuentes de verdad |
 | `.cursor/rules/*.mdc` | Roles arquitecto, developer y QA |
