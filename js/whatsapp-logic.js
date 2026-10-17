@@ -76,7 +76,7 @@ function initDesktopWhatsAppClickHandler() {
     var site = window.KINESICA_SITE || {};
     var cfg = site.contact || {};
     var digits =
-      (digitsMatch && digitsMatch[1]) || cfg.activeWhatsappDigits || cfg.whatsappDigits || "";
+      cfg.activeWhatsappDigits || (digitsMatch && digitsMatch[1]) || cfg.whatsappDigits || "";
     if (!digits) return;
 
     var sanitized = String(digits).replace(/\D/g, "");
@@ -176,7 +176,7 @@ function kinesicaApplyWhatsAppContact() {
   }
 
   setupWhatsAppLinks(
-    ".dynamic-whatsapp-link, .dynamic-whatsapp-url, #whatsapp-link",
+    ".dynamic-whatsapp-link, .dynamic-whatsapp-url, #whatsapp-link, a[href*='wa.me/'], a[href*='whatsapp://']",
     contactData.whatsapp
   );
 
