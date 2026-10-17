@@ -437,6 +437,11 @@ await test("soporte de adjuntar foto clínica en panel 5 (tab 6)", () => {
   assert.match(html, /id="btn-foto-change"/);
   assert.match(html, /id="btn-foto-remove"/);
 
+  // Verificación de Comparar Evolución e Historial (PDF) exclusivos en la última pestaña (Panel 5)
+  assert.match(html, /data-panel="5"[\s\S]*id="btn-compare-form"/);
+  assert.match(html, /data-panel="5"[\s\S]*id="btn-pdf-history"/);
+  assert.doesNotMatch(html, /class="sheet"[\s\S]*id="btn-compare-form"[\s\S]*data-panel="0"/);
+
   // Verificación de seguridad en admin/api/foto.php
   const fotoPhp = fs.readFileSync(path.join(adminDir, "api/foto.php"), "utf8");
   assert.match(fotoPhp, /require_auth\(\)/, "foto.php debe exigir autenticación en GET y POST");

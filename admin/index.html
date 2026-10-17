@@ -175,11 +175,6 @@
       </nav>
 
       <form id="ficha" class="sheet" autocomplete="off" novalidate>
-        <div class="sheet-tools">
-          <button type="button" class="btn light" id="btn-compare-form" hidden>Comparar evolución</button>
-          <button type="button" class="btn light" id="btn-pdf-history" hidden>Historial completo (PDF)</button>
-        </div>
-
         <div class="panel" data-panel="0">
           <div class="panel-header-row">
             <h2><span class="bar"></span>Información primaria</h2>
@@ -624,7 +619,13 @@
         </div>
 
         <div class="panel" data-panel="5" hidden>
-          <h2><span class="bar"></span>6. Anotaciones de la sesión</h2>
+          <div class="panel-header-row">
+            <h2><span class="bar"></span>6. Anotaciones de la sesión</h2>
+            <div class="sheet-tools">
+              <button type="button" class="btn light" id="btn-compare-form" hidden>Comparar evolución</button>
+              <button type="button" class="btn light" id="btn-pdf-history" hidden>Historial completo (PDF)</button>
+            </div>
+          </div>
           <label>Anotaciones particulares de la sesión, procedimientos realizados, evolución o comentarios
             <textarea name="anotaciones" rows="8" placeholder="Anotaciones particulares de la sesión, procedimientos realizados, evolución o comentarios..."></textarea>
           </label>
