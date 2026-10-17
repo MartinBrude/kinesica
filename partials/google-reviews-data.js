@@ -1,11 +1,11 @@
 /** AUTO-GENERATED — no editar. Fuente: npm run reviews:fetch */
 window.KINESICA_GOOGLE_REVIEWS = {
   "placeId": "ChIJZ2mPW9K1vJUR3J5kGRi5gws",
-  "fetchedAt": "2026-09-19T15:30:04.050Z",
+  "fetchedAt": "2026-10-17T15:06:51.382Z",
   "displayName": "Kinesica",
   "googleMapsUri": "https://maps.google.com/?cid=829710269522681564&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA",
   "rating": 5,
-  "userRatingCount": 32,
+  "userRatingCount": 33,
   "reviews": [
     {
       "author": "Mailín Schneeberger",
@@ -14,7 +14,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
       "rating": 5,
       "text": "Muy contenta con la atención. Norberto destaca por su profesionalismo, puntualidad y trato cercano. Me ayudó mucho con mi recuperación mediante un tratamiento personalizado. Totalmente recomendable si buscás un especialista de confianza.",
       "language": "es",
-      "relativeTime": "Hace 2 semanas",
+      "relativeTime": "Hace 1 mes",
       "publishTime": "2026-09-05T09:51:49.661002767Z"
     },
     {
@@ -42,7 +42,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
       "rating": 5,
       "text": "Norberto Brude es excelente. Por  varios problemas en la columna, rodilla, cuello que me producen permanentes dolores  hace años que hice varios intentos con otros profesionales pero recién con su tratamiento siento un considerable alivio- Lo recomiendo!!!",
       "language": "es",
-      "relativeTime": "Hace 1 mes",
+      "relativeTime": "Hace 2 meses",
       "publishTime": "2026-07-21T22:41:19.944949311Z"
     },
     {
@@ -52,7 +52,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
       "rating": 5,
       "text": "Excelente atención del doctor Brude en cada sesión. Explica con claridad y genera mucha confianza. Se nota el compromiso con la recuperación del paciente. Su trato es muy amable y personalizado.",
       "language": "es",
-      "relativeTime": "Hace 6 meses",
+      "relativeTime": "Hace 7 meses",
       "publishTime": "2026-03-18T19:26:52.862442188Z"
     }
   ],
@@ -65,7 +65,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Muy contenta con la atención. Norberto destaca por su profesionalismo, puntualidad y trato cercano. Me ayudó mucho con mi recuperación mediante un tratamiento personalizado. Totalmente recomendable si buscás un especialista de confianza.",
         "language": "es",
-        "relativeTime": "Hace 2 semanas",
+        "relativeTime": "Hace 1 mes",
         "publishTime": "2026-09-05T09:51:49.661002767Z"
       },
       {
@@ -93,7 +93,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Norberto Brude es excelente. Por  varios problemas en la columna, rodilla, cuello que me producen permanentes dolores  hace años que hice varios intentos con otros profesionales pero recién con su tratamiento siento un considerable alivio- Lo recomiendo!!!",
         "language": "es",
-        "relativeTime": "Hace 1 mes",
+        "relativeTime": "Hace 2 meses",
         "publishTime": "2026-07-21T22:41:19.944949311Z"
       },
       {
@@ -103,7 +103,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Excelente atención del doctor Brude en cada sesión. Explica con claridad y genera mucha confianza. Se nota el compromiso con la recuperación del paciente. Su trato es muy amable y personalizado.",
         "language": "es",
-        "relativeTime": "Hace 6 meses",
+        "relativeTime": "Hace 7 meses",
         "publishTime": "2026-03-18T19:26:52.862442188Z"
       }
     ],
@@ -115,7 +115,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "I'm very happy with the service. Norberto stands out for his professionalism, punctuality, and friendly approach. He greatly helped my recovery with a personalized treatment plan. I highly recommend him if you're looking for a trustworthy specialist.",
         "language": "en",
-        "relativeTime": "2 weeks ago",
+        "relativeTime": "a month ago",
         "publishTime": "2026-09-05T09:51:49.661002767Z"
       },
       {
@@ -143,7 +143,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Norberto Brude is excellent. I've had several problems with my spine, knees, and neck that have caused me constant pain for years. I tried several other professionals, but only with his treatment have I felt considerable relief. I highly recommend him!",
         "language": "en",
-        "relativeTime": "a month ago",
+        "relativeTime": "2 months ago",
         "publishTime": "2026-07-21T22:41:19.944949311Z"
       },
       {
@@ -165,7 +165,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Je suis très satisfait du service. Norberto se distingue par son professionnalisme, sa ponctualité et sa gentillesse. Il a grandement contribué à ma guérison grâce à un plan de traitement personnalisé. Je le recommande vivement si vous recherchez un spécialiste de confiance.",
         "language": "fr",
-        "relativeTime": "il y a 2 semaines",
+        "relativeTime": "il y a un mois",
         "publishTime": "2026-09-05T09:51:49.661002767Z"
       },
       {
@@ -193,7 +193,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Norberto Brude est excellent. Je souffre de problèmes de dos, de genoux et de cou qui me causent des douleurs constantes depuis des années. J'ai consulté plusieurs autres praticiens, mais seul son traitement m'a apporté un soulagement considérable. Je le recommande vivement !",
         "language": "fr",
-        "relativeTime": "il y a un mois",
+        "relativeTime": "il y a 2 mois",
         "publishTime": "2026-07-21T22:41:19.944949311Z"
       },
       {
@@ -203,7 +203,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Le Dr Brude prodigue d'excellents soins à chaque séance. Ses explications sont claires et il inspire confiance. Son engagement envers le rétablissement du patient est manifeste. Son approche est empreinte de bienveillance et personnalisée.",
         "language": "fr",
-        "relativeTime": "il y a 6 mois",
+        "relativeTime": "il y a 7 mois",
         "publishTime": "2026-03-18T19:26:52.862442188Z"
       }
     ],
@@ -215,7 +215,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Estou muito satisfeita com o serviço. Norberto se destaca pelo profissionalismo, pontualidade e cordialidade. Ele contribuiu muito para a minha recuperação com um plano de tratamento personalizado. Recomendo-o fortemente se você procura um especialista de confiança.",
         "language": "pt",
-        "relativeTime": "há 2 semanas",
+        "relativeTime": "há um mês",
         "publishTime": "2026-09-05T09:51:49.661002767Z"
       },
       {
@@ -243,7 +243,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Norberto Brude é excelente. Sofri com diversos problemas na coluna, joelhos e pescoço que me causaram dores constantes por anos. Consultei vários outros profissionais, mas somente com o tratamento dele senti um alívio considerável. Recomendo-o fortemente!",
         "language": "pt",
-        "relativeTime": "há um mês",
+        "relativeTime": "há 2 meses",
         "publishTime": "2026-07-21T22:41:19.944949311Z"
       },
       {
@@ -253,7 +253,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "O Dr. Brude oferece um atendimento excelente em todas as sessões. Ele explica tudo com clareza e inspira muita confiança. Seu comprometimento com a recuperação do paciente é evidente. Sua abordagem é muito gentil e personalizada.",
         "language": "pt",
-        "relativeTime": "há 6 meses",
+        "relativeTime": "há 7 meses",
         "publishTime": "2026-03-18T19:26:52.862442188Z"
       }
     ]
