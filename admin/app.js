@@ -116,6 +116,15 @@ import {
   hidePacientesView,
 } from "./modules/pacientes.js?v=1";
 
+import {
+  initDashboardModule,
+  showDashboardView,
+  hideDashboardView,
+  updateDashboardClara,
+  updateDashboardBooking,
+  updateDashboardState,
+} from "./modules/dashboard.js?v=1";
+
 // Re-exportar utilidades esenciales para interoperabilidad y pruebas
 export {
   api,
@@ -198,8 +207,10 @@ async function refresh() {
       showCompare(saved.pKey, saved.xId, saved.yId);
     } else if (saved?.view === "pacientes") {
       switchTab("pacientes");
+    } else if (saved?.view === "fichas") {
+      switchTab("fichas");
     } else if (saved?.view !== "form") {
-      showLibrary();
+      switchTab("inicio");
     }
   }
 
@@ -228,7 +239,7 @@ async function refresh() {
     }
   }
 
-  showLibrary();
+  switchTab("inicio");
 }
 
 // Configurar manejador de sesión expirada (HTTP 401)
@@ -242,7 +253,7 @@ setAuthRequiredHandler((data) => {
 initAuth({
   onSuccess: async () => {
     await refresh();
-    showLibrary();
+    switchTab("inicio");
     mountAdminChannels();
   },
   onLogout: () => {
@@ -353,15 +364,25 @@ initCompare({
 });
 
 function switchTab(tab) {
+  const btnInicio = document.querySelector("#nav-btn-inicio");
   const btnFichas = document.querySelector("#nav-btn-fichas");
   const btnPacientes = document.querySelector("#nav-btn-pacientes");
-  if (tab === "pacientes") {
-    btnFichas?.classList.remove("is-active");
+
+  btnInicio?.classList.remove("is-active");
+  btnFichas?.classList.remove("is-active");
+  btnPacientes?.classList.remove("is-active");
+
+  if (tab === "inicio") {
+    btnInicio?.classList.add("is-active");
+    hidePacientesView();
+    showDashboardView();
+  } else if (tab === "pacientes") {
     btnPacientes?.classList.add("is-active");
+    hideDashboardView();
     showPacientesView();
   } else {
-    btnPacientes?.classList.remove("is-active");
     btnFichas?.classList.add("is-active");
+    hideDashboardView();
     hidePacientesView();
     showLibrary();
   }
@@ -392,8 +413,13 @@ function mountAdminChannels() {
   const adminNav = document.getElementById("admin-nav");
   if (adminNav) {
     adminNav.hidden = false;
+    document.getElementById("nav-btn-inicio")?.addEventListener("click", () => switchTab("inicio"));
     document.getElementById("nav-btn-fichas")?.addEventListener("click", () => switchTab("fichas"));
     document.getElementById("nav-btn-pacientes")?.addEventListener("click", () => switchTab("pacientes"));
+    document.getElementById("brand-logo")?.addEventListener("click", (e) => {
+      e.preventDefault();
+      switchTab("inicio");
+    });
   }
 
   const topActions = document.querySelector(".top-actions");
@@ -406,6 +432,7 @@ function mountAdminChannels() {
   let bookingActive = localStorage.getItem("kinesica_booking_active") === "1";
 
   function renderClara(isActive) {
+    updateDashboardClara(isActive);
     if (!claraBtn) return;
     const label = claraBtn.querySelector(".clara-label");
     claraBtn.classList.toggle("is-active", isActive);
@@ -420,6 +447,7 @@ function mountAdminChannels() {
   }
 
   function renderBooking(isActive) {
+    updateDashboardBooking(isActive);
     if (!bookingBtn) return;
     const label = bookingBtn.querySelector(".clara-label");
     bookingBtn.classList.toggle("is-active", isActive);
@@ -553,6 +581,36 @@ function mountAdminChannels() {
 // Inicialización de la aplicación al cargar la página
 fillForm(blank(), loadAll());
 initPacientesModule();
+initDashboardModule({
+  onNavigate: (tab) => switchTab(tab),
+  onNewFicha: () => {
+    switchTab("fichas");
+    fillForm(blank(), loadAll());
+    showForm(0);
+  },
+  onNewPaciente: () => {
+    switchTab("pacientes");
+    document.querySelector("#btn-nuevo-paciente")?.click();
+  },
+  onClaraToggled: (isActive) => {
+    let claraBtn = document.getElementById("btn-toggle-clara");
+    if (claraBtn) {
+      const label = claraBtn.querySelector(".clara-label");
+      claraBtn.classList.toggle("is-active", isActive);
+      claraBtn.classList.toggle("is-inactive", !isActive);
+      if (label) label.textContent = isActive ? "Clara: Activa" : "Clara: Desactivada";
+    }
+  },
+  onBookingToggled: (isActive) => {
+    let bookingBtn = document.getElementById("btn-toggle-booking");
+    if (bookingBtn) {
+      const label = bookingBtn.querySelector(".clara-label");
+      bookingBtn.classList.toggle("is-active", isActive);
+      bookingBtn.classList.toggle("is-inactive", !isActive);
+      if (label) label.textContent = isActive ? "Agendar en web: Activo" : "Agendar en web: Desactivado";
+    }
+  },
+});
 
 const resetToken = new URLSearchParams(location.search).get("reset");
 const resetFormEl = document.querySelector("#reset-form");

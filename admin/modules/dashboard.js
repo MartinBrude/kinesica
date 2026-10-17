@@ -1,0 +1,158 @@
+/**
+ * Kinésica Admin - Módulo de Dashboard y Landing Principal
+ * Orquesta la vista principal de inicio con accesos rápidos a Fichas, Pacientes, Clara y Agenda.
+ */
+
+import { api } from "./api.js?v=77";
+import { getSessionUser } from "./auth.js?v=78";
+import { escapeHtml, dialogAlert } from "./dom.js?v=78";
+
+const viewDashboard = document.querySelector("#view-dashboard");
+const greetingEl = document.querySelector("#dash-greeting");
+const countFichasEl = document.querySelector("#dash-count-fichas");
+const countPacientesEl = document.querySelector("#dash-count-pacientes");
+const claraDot = document.querySelector("#dash-clara-dot");
+const claraText = document.querySelector("#dash-clara-status-text");
+const claraToggleBtn = document.querySelector("#dash-btn-toggle-clara");
+const bookingDot = document.querySelector("#dash-booking-dot");
+const bookingText = document.querySelector("#dash-booking-status-text");
+const bookingToggleBtn = document.querySelector("#dash-btn-toggle-booking");
+
+let activeClara = localStorage.getItem("kinesica_clara_active") === "1";
+let activeBooking = localStorage.getItem("kinesica_booking_active") === "1";
+
+export function showDashboardView() {
+  if (viewDashboard) {
+    viewDashboard.hidden = false;
+    const views = ["#view-library", "#view-pacientes", "#view-form", "#view-compare", "#view-gate"];
+    views.forEach((sel) => {
+      const el = document.querySelector(sel);
+      if (el) el.hidden = true;
+    });
+
+    try {
+      sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "inicio" }));
+    } catch {}
+
+    updateDashboardState();
+  }
+}
+
+export function hideDashboardView() {
+  if (viewDashboard) {
+    viewDashboard.hidden = true;
+  }
+}
+
+export function updateDashboardClara(isActive) {
+  activeClara = isActive;
+  if (claraDot) {
+    claraDot.className = `dash-status-dot ${isActive ? "active" : "inactive"}`;
+  }
+  if (claraText) {
+    claraText.textContent = isActive ? "Clara: Activa en WhatsApp" : "Clara: Pausada";
+  }
+  if (claraToggleBtn) {
+    claraToggleBtn.textContent = isActive ? "Pausar bot" : "Reanudar bot";
+  }
+}
+
+export function updateDashboardBooking(isActive) {
+  activeBooking = isActive;
+  if (bookingDot) {
+    bookingDot.className = `dash-status-dot ${isActive ? "active" : "inactive"}`;
+  }
+  if (bookingText) {
+    bookingText.textContent = isActive ? "Reservas Web: Activas" : "Reservas Web: Pausadas";
+  }
+  if (bookingToggleBtn) {
+    bookingToggleBtn.textContent = isActive ? "Pausar reservas" : "Activar reservas";
+  }
+}
+
+export async function updateDashboardState() {
+  const user = getSessionUser();
+  if (greetingEl) {
+    greetingEl.textContent = user?.name ? `Hola, ${user.name}` : "Consultorio Kinésica";
+  }
+
+  // Sincronizar estados de Clara y Booking
+  const claraStorage = localStorage.getItem("kinesica_clara_active") === "1";
+  const bookingStorage = localStorage.getItem("kinesica_booking_active") === "1";
+  updateDashboardClara(claraStorage);
+  updateDashboardBooking(bookingStorage);
+
+  // Cargar contadores de Fichas y Pacientes de forma asíncrona
+  try {
+    const fichas = await api("fichas.php");
+    if (countFichasEl && Array.isArray(fichas)) {
+      countFichasEl.textContent = `${fichas.length} sesión${fichas.length === 1 ? "" : "es"}`;
+    }
+  } catch {}
+
+  try {
+    const res = await api("pacientes.php");
+    const pacientes = Array.isArray(res?.items) ? res.items : (Array.isArray(res) ? res : []);
+    if (countPacientesEl) {
+      countPacientesEl.textContent = `${pacientes.length} paciente${pacientes.length === 1 ? "" : "s"}`;
+    }
+  } catch {}
+}
+
+export function initDashboardModule(callbacks = {}) {
+  // Conectar acciones de las tarjetas
+  document.querySelector("#dash-btn-fichas")?.addEventListener("click", () => {
+    callbacks.onNavigate?.("fichas");
+  });
+
+  document.querySelector("#dash-btn-nueva-ficha")?.addEventListener("click", () => {
+    callbacks.onNewFicha?.();
+  });
+
+  document.querySelector("#dash-btn-pacientes")?.addEventListener("click", () => {
+    callbacks.onNavigate?.("pacientes");
+  });
+
+  document.querySelector("#dash-btn-nuevo-paciente")?.addEventListener("click", () => {
+    callbacks.onNewPaciente?.();
+  });
+
+  // Toggle de Clara desde el dashboard
+  claraToggleBtn?.addEventListener("click", async () => {
+    const nextState = !activeClara;
+    claraToggleBtn.disabled = true;
+    try {
+      await api("settings.php", {
+        method: "POST",
+        body: JSON.stringify({ clara_active: nextState }),
+      });
+      localStorage.setItem("kinesica_clara_active", nextState ? "1" : "0");
+      updateDashboardClara(nextState);
+      // Sincronizar también el botón del topbar si existe
+      callbacks.onClaraToggled?.(nextState);
+    } catch (err) {
+      dialogAlert("No se pudo cambiar el estado de Clara.");
+    } finally {
+      claraToggleBtn.disabled = false;
+    }
+  });
+
+  // Toggle de Booking desde el dashboard
+  bookingToggleBtn?.addEventListener("click", async () => {
+    const nextState = !activeBooking;
+    bookingToggleBtn.disabled = true;
+    try {
+      await api("settings.php", {
+        method: "POST",
+        body: JSON.stringify({ booking_active: nextState }),
+      });
+      localStorage.setItem("kinesica_booking_active", nextState ? "1" : "0");
+      updateDashboardBooking(nextState);
+      callbacks.onBookingToggled?.(nextState);
+    } catch (err) {
+      dialogAlert("No se pudo cambiar el estado de la turnera web.");
+    } finally {
+      bookingToggleBtn.disabled = false;
+    }
+  });
+}
