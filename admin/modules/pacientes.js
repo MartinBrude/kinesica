@@ -95,14 +95,10 @@ export function renderPacientesTable() {
     tr.innerHTML = `
       <td>
         <strong style="color: var(--navy);">${escapeHtml(fullName)}</strong>
-        ${p.nombre_pila && p.nombre_pila !== fullName ? `<br><small style="color:var(--muted)">Llamar: ${escapeHtml(p.nombre_pila)}</small>` : ""}
       </td>
       <td>
         <div class="phone-cell">
           ${rawTel ? `<a class="phone-link" href="${waLink}" target="_blank" rel="noopener" title="Abrir chat de WhatsApp">📲 +${escapeHtml(rawTel)}</a>` : '<span style="color:var(--muted)">Sin teléfono</span>'}
-          <button type="button" class="btn-icon-edit btn-edit-phone" data-id="${p.id}" data-phone="${escapeHtml(rawTel)}" data-name="${escapeHtml(fullName)}" title="Editar solo el teléfono">
-            ✏️
-          </button>
         </div>
       </td>
       <td>${p.dni ? escapeHtml(p.dni) : '<span style="color:var(--muted)">—</span>'}</td>
@@ -123,11 +119,6 @@ export function renderPacientesTable() {
   });
 
   // Event Listeners para acciones en filas
-  listEl.querySelectorAll(".btn-edit-phone").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      openQuickPhoneModal(btn.dataset.id, btn.dataset.name, btn.dataset.phone);
-    });
-  });
 
   listEl.querySelectorAll(".btn-edit-paciente").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -157,73 +148,7 @@ export function renderPacientesTable() {
   });
 }
 
-// Modal rápido de edición de teléfono
-function openQuickPhoneModal(id, nombre, currentPhone) {
-  const backdrop = document.createElement("div");
-  backdrop.className = "paciente-modal-backdrop";
-  backdrop.innerHTML = `
-    <div class="paciente-modal-card" style="max-width: 420px;">
-      <div class="paciente-modal-header">
-        <h2>Editar teléfono</h2>
-        <button type="button" class="btn ghost btn-close-modal">✕</button>
-      </div>
-      <div class="paciente-modal-body">
-        <p style="margin:0; font-size:14px;">Paciente: <strong>${escapeHtml(nombre)}</strong></p>
-        <div class="paciente-modal-field">
-          <label>Nuevo Teléfono (WhatsApp)</label>
-          <input type="tel" id="input-quick-phone" value="${escapeHtml(currentPhone)}" placeholder="Ej: 11 6123-4567 o 5491161234567" required autofocus>
-          <small>El sistema normaliza automáticamente a formato internacional WhatsApp.</small>
-        </div>
-        <p id="quick-phone-error" style="color:#dc2626; font-size:13px; margin:0;" hidden></p>
-      </div>
-      <div class="paciente-modal-footer">
-        <button type="button" class="btn light btn-close-modal">Cancelar</button>
-        <button type="button" class="btn green" id="btn-save-quick-phone">Guardar Teléfono</button>
-      </div>
-    </div>
-  `;
 
-  document.body.append(backdrop);
-
-  const close = () => backdrop.remove();
-  backdrop.querySelectorAll(".btn-close-modal").forEach((b) => b.addEventListener("click", close));
-
-  const saveBtn = backdrop.querySelector("#btn-save-quick-phone");
-  const phoneInput = backdrop.querySelector("#input-quick-phone");
-  const errorEl = backdrop.querySelector("#quick-phone-error");
-
-  saveBtn.addEventListener("click", async () => {
-    const newPhone = phoneInput.value.trim();
-    if (!newPhone) {
-      errorEl.textContent = "Ingresá un número de teléfono";
-      errorEl.hidden = false;
-      return;
-    }
-    saveBtn.disabled = true;
-    saveBtn.textContent = "Guardando…";
-    errorEl.hidden = true;
-
-    try {
-      const res = await api("pacientes.php", {
-        method: "POST",
-        body: JSON.stringify({
-          action: "update_phone",
-          id: Number(id),
-          nuevo_telefono: newPhone,
-        }),
-      });
-      const p = pacientesCache.find((item) => String(item.id) === String(id));
-      if (p) p.telefono = res.nuevo_telefono;
-      renderPacientesTable();
-      close();
-    } catch (err) {
-      saveBtn.disabled = false;
-      saveBtn.textContent = "Guardar Teléfono";
-      errorEl.textContent = err.message || "Error al actualizar el teléfono";
-      errorEl.hidden = false;
-    }
-  });
-}
 
 // Modal de alta o edición completa de paciente
 function openFullPacienteModal(paciente = null) {
