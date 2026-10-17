@@ -26,6 +26,7 @@ const pageSizeSelect = document.querySelector("#page-size");
 const sortPatientsSelect = document.querySelector("#sort-patients");
 const libraryPager = document.querySelector("#library-pager");
 const mineButton = document.querySelector("#btn-mine");
+const filterProfSelect = document.querySelector("#filter-library-prof");
 const btnGroup = document.querySelector("#btn-group");
 const btnNew = document.querySelector("#btn-new");
 const btnSeed = document.querySelector("#btn-seed");
@@ -37,6 +38,7 @@ let grouped = false;
 let focusedPatient = null;
 let page = 0;
 let onlyMine = false;
+let activeFilterProf = "todos";
 let mineDefaultApplied = false;
 let expandedPatients = new Set();
 let patientSortMode = "name";
@@ -160,7 +162,14 @@ export function showLibrary() {
 export function visibleFichas(sessionUser = null) {
   const q = searchInput ? searchInput.value : "";
   return loadAll()
-    .filter((item) => !onlyMine || ownsFicha(item, sessionUser?.username))
+    .filter((item) => {
+      if (activeFilterProf === "todos") return true;
+      const prof = (item?.profesional || "").toLowerCase();
+      if (activeFilterProf === "indistinto") {
+        return prof === "indistinto" || prof === "";
+      }
+      return prof === activeFilterProf;
+    })
     .filter((item) => matchFichaSearch(item, q))
     .sort((a, b) => (b.fechaSesion || "").localeCompare(a.fechaSesion || ""));
 }
@@ -603,6 +612,10 @@ export function renderLibrary() {
   const controlsLocked = noPatients || !libraryLoaded;
   if (patientSelect) patientSelect.disabled = controlsLocked;
   if (searchInput) searchInput.disabled = controlsLocked;
+  if (filterProfSelect) {
+    filterProfSelect.disabled = controlsLocked;
+    filterProfSelect.value = activeFilterProf;
+  }
   if (mineButton) mineButton.disabled = controlsLocked;
   if (sortPatientsSelect) sortPatientsSelect.disabled = controlsLocked;
 
@@ -689,7 +702,7 @@ export function renderLibrary() {
   } else if (!groups.length) {
     const p = document.createElement("p");
     p.className = noPatients ? "empty empty-none" : "empty";
-    p.textContent = searchInput?.value || onlyMine
+    p.textContent = searchInput?.value || activeFilterProf !== "todos"
       ? "No se encontraron pacientes con los filtros actuales."
       : "No hay pacientes guardados todavía.";
     fragment.append(p);
@@ -769,6 +782,15 @@ export function initLibrary({
       try {
         localStorage.setItem("kinesica_patient_sort", patientSortMode);
       } catch {}
+      page = 0;
+      renderLibrary();
+    });
+  }
+
+  if (filterProfSelect) {
+    filterProfSelect.addEventListener("change", (e) => {
+      activeFilterProf = e.target.value;
+      focusedPatient = null;
       page = 0;
       renderLibrary();
     });
