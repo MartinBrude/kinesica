@@ -177,6 +177,11 @@ a {
 .btn.ghost {
   background: transparent;
   color: var(--primary);
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.btn.ghost:hover {
+  background: rgba(0, 95, 153, 0.08);
 }
 
 .btn.solid,

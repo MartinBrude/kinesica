@@ -4,8 +4,22 @@
 
 .admin-nav {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
+}
+
+.admin-nav .btn {
+  border-radius: 8px;
+  border-bottom: 2px solid transparent;
+  color: #3b506c;
+  padding: 8px 14px;
+  font-weight: 500;
+  transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+}
+
+.admin-nav .btn:hover {
+  background: rgba(0, 95, 153, 0.08);
+  color: var(--primary);
 }
 
 .admin-nav .btn.is-active {
@@ -13,7 +27,11 @@
   color: var(--primary);
   font-weight: 700;
   border-bottom: 2px solid var(--primary);
-  border-radius: var(--radius) var(--radius) 0 0;
+  border-radius: 8px 8px 0 0;
+}
+
+.admin-nav .btn.is-active:hover {
+  background: rgba(0, 95, 153, 0.16);
 }
 
 .pacientes-toolbar {
