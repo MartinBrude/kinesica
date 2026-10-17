@@ -8,6 +8,7 @@ return [
         'pass' => 'CAMBIAR',
     ],
     'install_token' => 'CAMBIAR',
+    'webhook_secret' => 'CAMBIAR',
     'mail_from' => 'no-reply@kinesica.com.ar',
     'admin_url' => 'https://www.kinesica.com.ar/admin/',
     'user_emails' => [

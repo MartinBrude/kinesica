@@ -160,7 +160,7 @@ function ensure_pacientes_tables(PDO $pdo): void
 }
 
 // Autenticación dual: Sesión web de usuario (admin) o Token de API (bot / n8n)
-function authenticate_request(): array
+function authenticate_request(?array &$bodyData = null): array
 {
     $config = cfg();
     $expectedSecret = (string) ($config['webhook_secret'] ?? $config['install_token'] ?? '');
@@ -179,14 +179,33 @@ function authenticate_request(): array
         return ['type' => 'api_token', 'user' => 'bot'];
     }
 
-    // 2. Si no es API, requerir sesión web activa de Kinésica
+    // 2. Chequeo por parámetro GET (ej. n8n workflow de recordatorios: ?action=directory&secret=...)
+    $querySecret = (string) ($_GET['secret'] ?? $_GET['token'] ?? '');
+    if ($querySecret !== '' && $expectedSecret !== '' && hash_equals($expectedSecret, $querySecret)) {
+        return ['type' => 'api_token', 'user' => 'bot'];
+    }
+
+    // 3. Chequeo por payload JSON (ej. n8n workflow live POST con campo 'secret')
+    $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+    if ($method === 'POST' || $method === 'PUT') {
+        if ($bodyData === null) {
+            $bodyData = read_json();
+        }
+        $payloadSecret = (string) ($bodyData['secret'] ?? $bodyData['token'] ?? '');
+        if ($payloadSecret !== '' && $expectedSecret !== '' && hash_equals($expectedSecret, $payloadSecret)) {
+            return ['type' => 'api_token', 'user' => 'bot'];
+        }
+    }
+
+    // 4. Si no es API, requerir sesión web activa de Kinésica
     require_header();
     $user = require_auth();
     return ['type' => 'session', 'user' => $user['username'], 'name' => $user['name']];
 }
 
 try {
-    $auth = authenticate_request();
+    $data = null;
+    $auth = authenticate_request($data);
     $pdo = db();
     ensure_pacientes_tables($pdo);
     $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
@@ -237,7 +256,9 @@ try {
     // POST: Altas, upserts y actualizaciones desde bot o admin
     // ---------------------------------------------------------
     if ($method === 'POST') {
-        $data = read_json();
+        if ($data === null) {
+            $data = read_json();
+        }
         $action = $data['action'] ?? 'upsert';
 
         // 1. Alta o actualización de paciente (upsert por teléfono)
@@ -423,7 +444,9 @@ try {
     // PUT: Edición completa de un paciente desde el panel admin
     // ---------------------------------------------------------
     if ($method === 'PUT') {
-        $data = read_json();
+        if ($data === null) {
+            $data = read_json();
+        }
         $id = (int) ($data['id'] ?? 0);
         if ($id <= 0) {
             json_out(422, ['status' => 'error', 'message' => 'ID inválido']);
