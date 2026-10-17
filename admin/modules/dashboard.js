@@ -9,8 +9,6 @@ import { escapeHtml, dialogAlert } from "./dom.js?v=78";
 
 const viewDashboard = document.querySelector("#view-dashboard");
 const greetingEl = document.querySelector("#dash-greeting");
-const countFichasEl = document.querySelector("#dash-count-fichas");
-const countPacientesEl = document.querySelector("#dash-count-pacientes");
 const claraDot = document.querySelector("#dash-clara-dot");
 const claraText = document.querySelector("#dash-clara-status-text");
 const claraToggleBtn = document.querySelector("#dash-btn-toggle-clara");
@@ -81,22 +79,6 @@ export async function updateDashboardState() {
   const bookingStorage = localStorage.getItem("kinesica_booking_active") === "1";
   updateDashboardClara(claraStorage);
   updateDashboardBooking(bookingStorage);
-
-  // Cargar contadores de Fichas y Pacientes de forma asíncrona
-  try {
-    const fichas = await api("fichas.php");
-    if (countFichasEl && Array.isArray(fichas)) {
-      countFichasEl.textContent = `${fichas.length} sesión${fichas.length === 1 ? "" : "es"}`;
-    }
-  } catch {}
-
-  try {
-    const res = await api("pacientes.php");
-    const pacientes = Array.isArray(res?.items) ? res.items : (Array.isArray(res) ? res : []);
-    if (countPacientesEl) {
-      countPacientesEl.textContent = `${pacientes.length} paciente${pacientes.length === 1 ? "" : "s"}`;
-    }
-  } catch {}
 }
 
 export function initDashboardModule(callbacks = {}) {
