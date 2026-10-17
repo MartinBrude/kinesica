@@ -308,6 +308,10 @@
       errors.push("El número de teléfono o WhatsApp ingresado no es válido.");
     }
 
+    if (req.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(req.email).trim())) {
+      errors.push("El correo electrónico ingresado no es válido.");
+    }
+
     if (!req.date || !req.time) {
       errors.push("Debes seleccionar una fecha y horario.");
     } else {

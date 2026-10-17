@@ -490,6 +490,7 @@ function handleBookAppointment(payload) {
   const appointmentType = payload.appointmentType || "session";
   const nombre = (payload.nombre || "").trim();
   const telefono = String(payload.telefono || "").trim();
+  const email = (payload.email || "").trim();
   const dni = (payload.dni || "No provisto").trim();
   const dateStr = payload.date; // YYYY-MM-DD
   const timeStr = payload.time; // HH:mm
@@ -603,13 +604,14 @@ function handleBookAppointment(payload) {
   if (whoName) descParts.push("👤 Profesional: " + whoName);
   descParts.push(
     "📱 WhatsApp: " + telefono,
+    (email ? "📧 Email: " + email : null),
     "🪪 DNI: " + dni,
     "🌿 Origen: Reserva Web Oficial Kinésica",
     "📋 Especialidad: " + especialidad
   );
   if (isMenor && nombreFamiliar) descParts.push("👥 Adulto Responsable: " + nombreFamiliar);
   if (notas) descParts.push("💬 Notas: " + notas);
-  const description = descParts.join(" | ");
+  const description = descParts.filter(Boolean).join(" | ");
 
   // 4. Crear evento en Google Calendar
   const practitionerContact = resolvePractitionerContact(practitionerId);

@@ -56,6 +56,9 @@
       dataDesc: "Esta información nos permite asentar tu reserva y contactarte puntualmente.",
       name: "Nombre y Apellido Completo *",
       namePh: "Ej: Juan Pérez",
+      email: "Correo Electrónico *",
+      emailPh: "Ej: juan@ejemplo.com",
+      emailInvalid: "El correo electrónico ingresado no es válido.",
       phone: "Teléfono / WhatsApp *",
       phonePh: "Ej: +54 9 11 0000-0000",
       dni: "DNI / Documento *",
@@ -71,7 +74,8 @@
       rulesAddr: "<strong>Dirección:</strong> Charcas 3889, Piso 5º, Depto B, Palermo (entre Scalabrini Ortiz y Aráoz).",
       rulesTime: "Te pedimos que llegues a la hora de la sesión, ni antes ni después, por características del espacio y la organización.",
       rulesCompany: "<strong>Sin acompañantes:</strong> La sesión es personalizada. Rogamos no asistir con acompañantes (salvo menores de edad o personas que requieran asistencia directa).",
-      rulesStudies: "<strong>Estudios previos:</strong> Si contás con radiografías, resonancias o informes médicos, por favor traelos a la sesión.",
+      rulesClothes: "<strong>Ropa adecuada:</strong> Concurrir con ropa cómoda y flexible (short o calza corta; si sos mujer, corpiño no deportivo).",
+      rulesStudies: "<strong>Estudios previos:</strong> Traer estudios y derivación médica si los tuviese.",
       maps: "🗺️ Abrir en Google Maps",
       done: "✓ Listo, finalizar y cerrar",
       errWho: "Elegí quién te atiende para ver los horarios.",
@@ -133,6 +137,9 @@
       dataDesc: "We use this to register your booking and reach you if needed.",
       name: "Full name *",
       namePh: "e.g. Jane Smith",
+      email: "Email Address *",
+      emailPh: "e.g. jane@example.com",
+      emailInvalid: "Please enter a valid email address.",
       phone: "Phone / WhatsApp *",
       phonePh: "e.g. +54 9 11 0000-0000",
       dni: "ID document *",
@@ -148,7 +155,8 @@
       rulesAddr: "<strong>Address:</strong> Charcas 3889, 5th floor, Apt B, Palermo (between Scalabrini Ortiz and Aráoz).",
       rulesTime: "Please arrive at the session time, neither early nor late, because of how the space is organized.",
       rulesCompany: "<strong>No companions:</strong> The session is one-to-one. Please do not bring companions (except minors or people who need direct assistance).",
-      rulesStudies: "<strong>Previous studies:</strong> If you have X-rays, MRI scans or medical reports, please bring them.",
+      rulesClothes: "<strong>Appropriate clothing:</strong> Please wear comfortable, flexible clothes (shorts or sports leggings; if you are a woman, non-sports bra).",
+      rulesStudies: "<strong>Previous studies:</strong> Bring previous studies and medical referral if you have them.",
       maps: "🗺️ Open in Google Maps",
       done: "✓ Done, close",
       errWho: "Choose who treats you to see available times.",
@@ -210,6 +218,9 @@
       dataDesc: "Ces informations permettent d'enregistrer votre réservation et de vous contacter.",
       name: "Nom et prénom *",
       namePh: "Ex. : Jeanne Dupont",
+      email: "Adresse e-mail *",
+      emailPh: "Ex. : nom@exemple.com",
+      emailInvalid: "Veuillez saisir une adresse e-mail valide.",
       phone: "Téléphone / WhatsApp *",
       phonePh: "Ex. : +54 9 11 0000-0000",
       dni: "Pièce d'identité *",
@@ -225,7 +236,8 @@
       rulesAddr: "<strong>Adresse :</strong> Charcas 3889, 5e étage, app. B, Palermo (entre Scalabrini Ortiz et Aráoz).",
       rulesTime: "Merci d'arriver à l'heure de la séance, ni avant ni après, en raison de l'organisation de l'espace.",
       rulesCompany: "<strong>Sans accompagnant :</strong> la séance est individuelle. Merci de ne pas venir accompagné (sauf mineurs ou personnes nécessitant une assistance directe).",
-      rulesStudies: "<strong>Examens antérieurs :</strong> si vous avez des radiographies, IRM ou comptes rendus, merci de les apporter.",
+      rulesClothes: "<strong>Tenue adaptée :</strong> venez avec des vêtements confortables et souples (short ou legging ; pour les femmes, soutien-gorge non sportif).",
+      rulesStudies: "<strong>Examens antérieurs :</strong> apportez vos examens et votre ordonnance médicale si vous en avez.",
       maps: "🗺️ Ouvrir dans Google Maps",
       done: "✓ Terminé, fermer",
       errWho: "Choisissez qui vous reçoit pour voir les horaires.",
@@ -287,6 +299,9 @@
       dataDesc: "Usamos estes dados para registrar a reserva e entrar em contato se for preciso.",
       name: "Nome e sobrenome *",
       namePh: "Ex.: João Silva",
+      email: "E-mail *",
+      emailPh: "Ex.: nome@exemplo.com",
+      emailInvalid: "Por favor, insira um e-mail válido.",
       phone: "Telefone / WhatsApp *",
       phonePh: "Ex.: +54 9 11 0000-0000",
       dni: "Documento *",
@@ -302,7 +317,8 @@
       rulesAddr: "<strong>Endereço:</strong> Charcas 3889, 5º andar, apto B, Palermo (entre Scalabrini Ortiz e Aráoz).",
       rulesTime: "Pedimos que chegue no horário da sessão, nem antes nem depois, pelas características do espaço.",
       rulesCompany: "<strong>Sem acompanhantes:</strong> a sessão é individual. Pedimos não vir com acompanhantes (exceto menores ou quem precise de assistência direta).",
-      rulesStudies: "<strong>Exames anteriores:</strong> se tiver radiografias, ressonâncias ou laudos, traga-os para a sessão.",
+      rulesClothes: "<strong>Roupa adequada:</strong> venha com roupas confortáveis e flexíveis (short ou legging curta; para mulheres, sutiã não esportivo).",
+      rulesStudies: "<strong>Exames anteriores:</strong> trazer exames e encaminhamento médico se tiver.",
       maps: "🗺️ Abrir no Google Maps",
       done: "✓ Pronto, fechar",
       errWho: "Escolha quem te atende para ver os horários.",
@@ -365,6 +381,7 @@
         isLoadingSlots: false,
         formData: {
           nombre: "",
+          email: "",
           telefono: "",
           dni: "",
         },
@@ -504,6 +521,11 @@
                 <input type="text" id="kb-input-nombre" placeholder="${this.t("namePh")}" required>
               </div>
 
+              <div class="kb-form-group">
+                <label for="kb-input-email">${this.t("email")}</label>
+                <input type="email" id="kb-input-email" placeholder="${this.t("emailPh")}" required autocomplete="email">
+              </div>
+
               <div class="kb-form-row">
                 <div class="kb-form-group">
                   <label for="kb-input-telefono">${this.t("phone")}</label>
@@ -573,6 +595,7 @@
                     <li>${this.t("rulesAddr")}</li>
                     <li>${this.t("rulesTime")}</li>
                     <li>${this.t("rulesCompany")}</li>
+                    <li>${this.t("rulesClothes")}</li>
                     <li>${this.t("rulesStudies")}</li>
                   </ul>
                   <div style="margin-top: 14px; text-align: center;">
@@ -1131,8 +1154,14 @@
       }
 
       const nombre = q("#kb-input-nombre").value.trim();
+      const email = q("#kb-input-email") ? q("#kb-input-email").value.trim() : "";
       const telefono = q("#kb-input-telefono").value.trim();
       const dni = q("#kb-input-dni").value.trim();
+
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        this.showError(this.t("emailInvalid") || "Por favor ingresá un correo electrónico válido.");
+        return;
+      }
 
       const slotPractitioners = this.practitionersForSlot(this.state.selectedDate, this.state.selectedTime);
       const effectivePractitionerId =
@@ -1152,6 +1181,7 @@
         date: this.state.selectedDate,
         time: this.state.selectedTime,
         nombre: nombre,
+        email: email,
         telefono: telefono,
         dni: dni,
         motivo: especialidad,
@@ -1168,6 +1198,10 @@
       try {
         const result = await this.client.bookAppointment(payload);
         this.state.confirmedBooking = result;
+
+        // Se envía solo en la confirmación de turno
+        this.sendConfirmationEmail(payload);
+
         this.renderConfirmation(payload, result);
         this.setStep(4);
       } catch (err) {
@@ -1175,6 +1209,36 @@
       } finally {
         btnSubmit.disabled = false;
         btnSubmit.textContent = this.t("confirm");
+      }
+    }
+
+    async sendConfirmationEmail(payload) {
+      if (!payload || !payload.email) return;
+      try {
+        const professionalName = this.practitionerFullName(payload.practitionerId) || "Lic. Norberto Brude";
+        const technique = engine.getTechnique(payload.techniqueId);
+        let serviceName = technique && !technique.bySchedule && !technique.internal ? technique.label : (payload.especialidad || "");
+        if (!serviceName || serviceName === "No especifica" || /osteopat[ií]a/i.test(serviceName)) {
+          serviceName = "Terapias Manuales";
+        }
+
+        await fetch("/api/send-confirmation.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: payload.email,
+            paciente: payload.nombre,
+            fecha: payload.date,
+            hora: payload.time,
+            profesional: professionalName,
+            servicio: serviceName,
+            esMenor: Boolean(payload.isMenor),
+          }),
+        });
+      } catch (err) {
+        console.warn("No se pudo enviar el correo de confirmación:", err);
       }
     }
 
@@ -1201,6 +1265,7 @@
         <div><strong>${this.t("practitioner")}:</strong> ${professional}</div>
         <div><strong>${this.t("patient")}:</strong> ${payload.nombre}</div>
         <div><strong>${this.t("when")}:</strong> ${this.formatConfirmationWhen(payload.date, payload.time)}</div>
+        ${payload.email ? `<div><strong>${this.t("email")}:</strong> ${payload.email}</div>` : ""}
         <div style="margin-top: 6px; font-size: 12px; color: var(--kin-text-muted);">
           ${this.t("eventId")} <code>${result.eventId || "OK"}</code>
         </div>

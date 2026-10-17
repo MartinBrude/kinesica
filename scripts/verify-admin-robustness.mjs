@@ -328,16 +328,21 @@ await test("index.html no tiene ids duplicados", () => {
 
 await test("los ids usados por querySelector/getElementById existen en el HTML o se crean en JS", () => {
   const htmlIds = new Set([...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]));
+  const allCreated = new Set();
+  for (const file of jsFiles) {
+    const src = fs.readFileSync(file, "utf8");
+    for (const m of src.matchAll(/\.id\s*=\s*["'`]([^"'`$]+)["'`]/g)) allCreated.add(m[1]);
+    for (const m of src.matchAll(/\sid=["']([\w-]+)["']/g)) allCreated.add(m[1]);
+  }
   const missing = [];
   for (const file of jsFiles) {
     const src = fs.readFileSync(file, "utf8");
-    const created = new Set([...src.matchAll(/\.id\s*=\s*["'`]([^"'`$]+)["'`]/g)].map((m) => m[1]));
     const refs = [
       ...[...src.matchAll(/querySelector\(\s*["'`]#([\w-]+)["'`]\s*\)/g)].map((m) => m[1]),
       ...[...src.matchAll(/getElementById\(\s*["'`]([\w-]+)["'`]\s*\)/g)].map((m) => m[1]),
     ];
     for (const id of refs) {
-      if (!htmlIds.has(id) && !created.has(id)) missing.push(`${path.basename(file)} → #${id}`);
+      if (!htmlIds.has(id) && !allCreated.has(id)) missing.push(`${path.basename(file)} → #${id}`);
     }
   }
   assert.deepEqual([...new Set(missing)], []);
@@ -393,19 +398,13 @@ await test("cada página impresa, incluida la segunda, tiene margen superior", (
   assert.match(printCss, /\.print-sheet\s*{[^}]*padding:\s*0/);
 });
 
-await test("los botones de features (Clara y Booking) no existen en el HTML inicial y se crean solo autenticado", () => {
-  assert.ok(!html.includes('id="btn-toggle-clara"'));
-  assert.ok(!html.includes('id="btn-toggle-booking"'));
+await test("los controles de features (Clara y Booking) están en el Dashboard", () => {
+  assert.ok(html.includes('id="dash-btn-toggle-clara"'));
+  assert.ok(html.includes('id="dash-btn-toggle-booking"'));
 
-  const appJs = fs.readFileSync(path.join(adminDir, "app.js"), "utf8");
-  assert.match(appJs, /\.id\s*=\s*["']btn-toggle-clara["']/);
-  assert.match(appJs, /\.id\s*=\s*["']btn-toggle-booking["']/);
-
-  const baseCss = fs.readFileSync(path.join(adminDir, "css/base.css"), "utf8");
-  assert.match(baseCss, /\.clara-btn\[hidden\]/);
-  assert.match(baseCss, /html:not\(\.is-authenticated\)\s+\.clara-btn/);
-  assert.match(html, /html:not\(\.is-authenticated\)\s+#btn-toggle-clara/);
-  assert.match(html, /html:not\(\.is-authenticated\)\s+#btn-toggle-booking/);
+  const dashJs = fs.readFileSync(path.join(adminDir, "modules/dashboard.js"), "utf8");
+  assert.match(dashJs, /dash-btn-toggle-clara/);
+  assert.match(dashJs, /dash-btn-toggle-booking/);
 });
 
 await test("soporte de adjuntar foto clínica en panel 5 (tab 6)", () => {

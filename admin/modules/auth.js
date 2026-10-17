@@ -14,9 +14,7 @@ const loginForm = document.querySelector("#login-form");
 const enrollForm = document.querySelector("#enroll-form");
 const forgotForm = document.querySelector("#forgot-form");
 const resetForm = document.querySelector("#reset-form");
-const sessionNameEl = document.querySelector("#session-name");
 const logoutBtn = document.querySelector("#btn-logout");
-const agendarBtn = document.querySelector("#btn-agendar");
 
 const enrollAccountEl = document.querySelector("#enroll-account");
 const enrollSecretEl = document.querySelector("#enroll-secret");
@@ -52,19 +50,12 @@ export function setSessionUser(user) {
       }
     } catch (_) {}
     document.documentElement.classList.add("is-authenticated");
-    if (sessionNameEl) {
-      sessionNameEl.textContent = user.name || user.username;
-      sessionNameEl.hidden = false;
-    }
   } else {
     try {
       localStorage.removeItem("kinesica_logged_in");
       localStorage.removeItem("kinesica_user_name");
     } catch (_) {}
     document.documentElement.classList.remove("is-authenticated");
-    if (sessionNameEl) {
-      sessionNameEl.hidden = true;
-    }
   }
 }
 
@@ -104,9 +95,7 @@ export function showGate(data = {}) {
 
   if (viewGate) viewGate.hidden = false;
   if (logoutBtn) logoutBtn.hidden = true;
-  if (agendarBtn) agendarBtn.hidden = true;
   document.querySelectorAll(".clara-btn").forEach((el) => el.remove());
-  if (sessionNameEl) sessionNameEl.hidden = true;
 
   const enroll = Boolean(data && data.enroll);
   const forgot = Boolean(data && data.forgot);
@@ -151,11 +140,6 @@ export function hideGate() {
   } catch (_) {}
   if (viewGate) viewGate.hidden = true;
   if (logoutBtn) logoutBtn.hidden = false;
-  if (agendarBtn) agendarBtn.hidden = false;
-  if (sessionNameEl && sessionUser) {
-    sessionNameEl.textContent = sessionUser.name || sessionUser.username;
-    sessionNameEl.hidden = false;
-  }
 }
 
 /**

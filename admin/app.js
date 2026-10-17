@@ -393,10 +393,6 @@ function switchTab(tab) {
  * antes de iniciar sesión ni queden visibles tras cerrar sesión.
  */
 function unmountAdminChannels() {
-  document.getElementById("btn-toggle-clara")?.remove();
-  document.getElementById("btn-toggle-booking")?.remove();
-  document.getElementById("btn-agendar")?.remove();
-  document.getElementById("session-name")?.remove();
   const nav = document.getElementById("admin-nav");
   if (nav) nav.hidden = true;
 }
@@ -422,12 +418,6 @@ function mountAdminChannels() {
       switchTab("inicio");
     });
   }
-
-  // Limpiar botones redundantes del header si existieran
-  document.getElementById("btn-toggle-clara")?.remove();
-  document.getElementById("btn-toggle-booking")?.remove();
-  document.getElementById("btn-agendar")?.remove();
-  document.getElementById("session-name")?.remove();
 
   // Sincronizar estado inicial de Clara y Reservas con el servidor para el Dashboard
   api("settings.php")

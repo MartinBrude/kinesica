@@ -266,6 +266,9 @@
           if (json.status === "error") {
             throw new Error(json.message || "Error al obtener disponibilidad");
           }
+          if (!Array.isArray(json.availableSlots)) {
+            throw new Error("Respuesta inválida del servidor de agenda: 'availableSlots' no es un arreglo");
+          }
           return json;
         } catch (err) {
           if (timeoutId) clearTimeout(timeoutId);
@@ -465,6 +468,7 @@
         date: data.date || "",
         time: data.time || "",
         nombre: data.nombre || "",
+        email: data.email || "",
         telefono: data.telefono || "",
         dni: data.dni || "",
         techniqueId: data.techniqueId || "",
