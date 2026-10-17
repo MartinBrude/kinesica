@@ -110,6 +110,12 @@ import {
   initCompare,
 } from "./modules/compare.js?v=79";
 
+import {
+  initPacientesModule,
+  showPacientesView,
+  hidePacientesView,
+} from "./modules/pacientes.js?v=1";
+
 // Re-exportar utilidades esenciales para interoperabilidad y pruebas
 export {
   api,
@@ -190,6 +196,8 @@ async function refresh() {
   if ((!formView || formView.hidden) && (!compareView || compareView.hidden)) {
     if (saved?.view === "compare" && saved.pKey) {
       showCompare(saved.pKey, saved.xId, saved.yId);
+    } else if (saved?.view === "pacientes") {
+      switchTab("pacientes");
     } else if (saved?.view !== "form") {
       showLibrary();
     }
@@ -344,6 +352,21 @@ initCompare({
   },
 });
 
+function switchTab(tab) {
+  const btnFichas = document.querySelector("#nav-btn-fichas");
+  const btnPacientes = document.querySelector("#nav-btn-pacientes");
+  if (tab === "pacientes") {
+    btnFichas?.classList.remove("is-active");
+    btnPacientes?.classList.add("is-active");
+    showPacientesView();
+  } else {
+    btnPacientes?.classList.remove("is-active");
+    btnFichas?.classList.add("is-active");
+    hidePacientesView();
+    showLibrary();
+  }
+}
+
 /**
  * Desmonta y remueve del DOM los botones de features para que no existan
  * antes de iniciar sesión ni queden visibles tras cerrar sesión.
@@ -351,6 +374,8 @@ initCompare({
 function unmountAdminChannels() {
   document.getElementById("btn-toggle-clara")?.remove();
   document.getElementById("btn-toggle-booking")?.remove();
+  const nav = document.getElementById("admin-nav");
+  if (nav) nav.hidden = true;
 }
 
 /**
@@ -362,6 +387,13 @@ function mountAdminChannels() {
   if (!getSessionUser()) {
     unmountAdminChannels();
     return;
+  }
+
+  const adminNav = document.getElementById("admin-nav");
+  if (adminNav) {
+    adminNav.hidden = false;
+    document.getElementById("nav-btn-fichas")?.addEventListener("click", () => switchTab("fichas"));
+    document.getElementById("nav-btn-pacientes")?.addEventListener("click", () => switchTab("pacientes"));
   }
 
   const topActions = document.querySelector(".top-actions");
@@ -520,6 +552,7 @@ function mountAdminChannels() {
 
 // Inicialización de la aplicación al cargar la página
 fillForm(blank(), loadAll());
+initPacientesModule();
 
 const resetToken = new URLSearchParams(location.search).get("reset");
 const resetFormEl = document.querySelector("#reset-form");
