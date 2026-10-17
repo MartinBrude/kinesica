@@ -26,11 +26,7 @@
     html.is-authenticated #view-gate {
       display: none !important;
     }
-    html:not(.is-authenticated) #btn-toggle-clara,
-    html:not(.is-authenticated) #btn-toggle-booking,
-    html:not(.is-authenticated) #btn-agendar,
     html:not(.is-authenticated) #btn-logout,
-    html:not(.is-authenticated) #session-name,
     html:not(.is-authenticated) #admin-nav {
       display: none !important;
     }
@@ -47,9 +43,7 @@
         <button type="button" class="btn ghost" id="nav-btn-fichas">Historias Clínicas</button>
         <button type="button" class="btn ghost" id="nav-btn-pacientes">Pacientes</button>
       </nav>
-      <button type="button" class="btn green" id="btn-agendar" data-booking-open hidden title="Abrir agenda de turnos">Agendar</button>
       <div class="session-box">
-        <span id="session-name" class="session-name" hidden></span>
         <button type="button" class="btn ghost" id="btn-logout" hidden>Salir</button>
       </div>
     </div>
@@ -195,12 +189,6 @@
               </span>
               <button type="button" class="btn light" id="dash-btn-toggle-clara" style="font-size:12px; padding:6px 12px;">Pausar bot</button>
             </div>
-          </div>
-          <div class="dash-card-actions">
-            <a class="btn ghost" href="https://web.whatsapp.com" target="_blank" rel="noopener" style="text-decoration:none; display:flex; align-items:center; justify-content:center; gap:6px;">
-              <span>Abrir WhatsApp Web</span>
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-            </a>
           </div>
         </article>
 
@@ -925,15 +913,8 @@
         if (localStorage.getItem("kinesica_logged_in") === "1") {
           var user = localStorage.getItem("kinesica_user_name");
           if (user) {
-            var nameEl = document.getElementById("session-name");
             var logoutBtn = document.getElementById("btn-logout");
-            var agendarBtn = document.getElementById("btn-agendar");
-            if (nameEl) {
-              nameEl.textContent = user;
-              nameEl.hidden = false;
-            }
             if (logoutBtn) logoutBtn.hidden = false;
-            if (agendarBtn) agendarBtn.hidden = false;
           }
           var saved = null;
           try {

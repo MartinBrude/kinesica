@@ -395,14 +395,15 @@ function switchTab(tab) {
 function unmountAdminChannels() {
   document.getElementById("btn-toggle-clara")?.remove();
   document.getElementById("btn-toggle-booking")?.remove();
+  document.getElementById("btn-agendar")?.remove();
+  document.getElementById("session-name")?.remove();
   const nav = document.getElementById("admin-nav");
   if (nav) nav.hidden = true;
 }
 
 /**
- * Monta e inserta dinámicamente en el DOM los controles de canales (Clara y Agendar)
- * solo cuando el usuario está debidamente autenticado.
- * Sincroniza su estado con settings.php.
+ * Activa la navegación interna cuando el usuario está debidamente autenticado
+ * y sincroniza la configuración con settings.php para el Dashboard.
  */
 function mountAdminChannels() {
   if (!getSessionUser()) {
@@ -422,157 +423,23 @@ function mountAdminChannels() {
     });
   }
 
-  const topActions = document.querySelector(".top-actions");
-  if (!topActions) return;
+  // Limpiar botones redundantes del header si existieran
+  document.getElementById("btn-toggle-clara")?.remove();
+  document.getElementById("btn-toggle-booking")?.remove();
+  document.getElementById("btn-agendar")?.remove();
+  document.getElementById("session-name")?.remove();
 
-  let claraBtn = document.getElementById("btn-toggle-clara");
-  let bookingBtn = document.getElementById("btn-toggle-booking");
-
-  let claraActive = localStorage.getItem("kinesica_clara_active") === "1";
-  let bookingActive = localStorage.getItem("kinesica_booking_active") === "1";
-
-  function renderClara(isActive) {
-    updateDashboardClara(isActive);
-    if (!claraBtn) return;
-    const label = claraBtn.querySelector(".clara-label");
-    claraBtn.classList.toggle("is-active", isActive);
-    claraBtn.classList.toggle("is-inactive", !isActive);
-    claraBtn.setAttribute("aria-pressed", String(isActive));
-    if (label) {
-      label.textContent = isActive ? "Clara: Activa" : "Clara: Desactivada";
-    }
-    claraBtn.title = isActive
-      ? "Clara está activa (tocá para desactivar)"
-      : "Clara está desactivada (tocá para activar)";
-  }
-
-  function renderBooking(isActive) {
-    updateDashboardBooking(isActive);
-    if (!bookingBtn) return;
-    const label = bookingBtn.querySelector(".clara-label");
-    bookingBtn.classList.toggle("is-active", isActive);
-    bookingBtn.classList.toggle("is-inactive", !isActive);
-    bookingBtn.setAttribute("aria-pressed", String(isActive));
-    if (label) {
-      label.textContent = isActive ? "Agendar en web: Activo" : "Agendar en web: Desactivado";
-    }
-    bookingBtn.title = isActive
-      ? "Botón Agendar visible en la web (tocá para desactivar)"
-      : "Botón Agendar oculto en la web (tocá para activar)";
-  }
-
-  const agendarBtn = document.getElementById("btn-agendar");
-
-  if (!claraBtn) {
-    claraBtn = document.createElement("button");
-    claraBtn.type = "button";
-    claraBtn.id = "btn-toggle-clara";
-    claraBtn.className = "clara-btn is-inactive";
-    claraBtn.title = "Estado de Clara en WhatsApp";
-    claraBtn.setAttribute("aria-pressed", "false");
-    claraBtn.innerHTML = '<span class="clara-dot" aria-hidden="true"></span><span class="clara-label">Clara: Desactivada</span>';
-
-    if (agendarBtn) {
-      topActions.insertBefore(claraBtn, agendarBtn);
-    } else {
-      topActions.appendChild(claraBtn);
-    }
-
-    claraBtn.addEventListener("click", async () => {
-      if (!getSessionUser()) return;
-      const willDeactivate = claraActive;
-      const question = willDeactivate
-        ? "¿Estás seguro de que querés desactivar a Clara? En la web pública los botones de contacto volverán a abrir el WhatsApp del consultorio en vez del de Clara."
-        : "¿Estás seguro de que querés activar a Clara? En la web pública los botones de contacto abrirán el WhatsApp de Clara.";
-
-      const confirmed = await dialogConfirm(question, {
-        danger: willDeactivate,
-        okText: willDeactivate ? "Desactivar" : "Activar",
-        cancelText: "Cancelar",
-      });
-
-      if (!confirmed) return;
-
-      claraActive = !claraActive;
-      localStorage.setItem("kinesica_clara_active", claraActive ? "1" : "0");
-      renderClara(claraActive);
-
-      api("settings.php", {
-        method: "POST",
-        body: JSON.stringify({ clara_active: claraActive }),
-      }).catch((err) => {
-        if (!err.auth) dialogAlert("No se pudo guardar la configuración en el servidor.");
-      });
-
-      window.dispatchEvent(
-        new CustomEvent("clara:status-change", { detail: { active: claraActive } })
-      );
-    });
-  }
-
-  if (!bookingBtn) {
-    bookingBtn = document.createElement("button");
-    bookingBtn.type = "button";
-    bookingBtn.id = "btn-toggle-booking";
-    bookingBtn.className = "clara-btn is-inactive";
-    bookingBtn.title = "Botón Agendar en la web pública";
-    bookingBtn.setAttribute("aria-pressed", "false");
-    bookingBtn.innerHTML = '<span class="clara-dot" aria-hidden="true"></span><span class="clara-label">Agendar en web: Desactivado</span>';
-
-    if (agendarBtn) {
-      topActions.insertBefore(bookingBtn, agendarBtn);
-    } else {
-      topActions.appendChild(bookingBtn);
-    }
-
-    bookingBtn.addEventListener("click", async () => {
-      if (!getSessionUser()) return;
-      const willDeactivate = bookingActive;
-      const question = willDeactivate
-        ? "¿Estás seguro de que querés desactivar el botón 'Agendar' en la web? Los pacientes ya no verán el botón para reservar turnos en la portada."
-        : "¿Estás seguro de que querés activar el botón 'Agendar' en la web? Los pacientes verán el botón destacado para reservar turnos en la portada.";
-
-      const confirmed = await dialogConfirm(question, {
-        danger: willDeactivate,
-        okText: willDeactivate ? "Desactivar" : "Activar",
-        cancelText: "Cancelar",
-      });
-
-      if (!confirmed) return;
-
-      bookingActive = !bookingActive;
-      localStorage.setItem("kinesica_booking_active", bookingActive ? "1" : "0");
-      renderBooking(bookingActive);
-
-      api("settings.php", {
-        method: "POST",
-        body: JSON.stringify({ booking_active: bookingActive }),
-      }).catch((err) => {
-        if (!err.auth) dialogAlert("No se pudo guardar la configuración en el servidor.");
-      });
-
-      window.dispatchEvent(
-        new CustomEvent("booking:status-change", { detail: { active: bookingActive } })
-      );
-    });
-  }
-
-  renderClara(claraActive);
-  renderBooking(bookingActive);
-
-  // Sincronizar con el backend
+  // Sincronizar estado inicial de Clara y Reservas con el servidor para el Dashboard
   api("settings.php")
     .then((data) => {
       if (!data) return;
       if (typeof data.clara_active === "boolean") {
-        claraActive = data.clara_active;
-        localStorage.setItem("kinesica_clara_active", claraActive ? "1" : "0");
-        renderClara(claraActive);
+        localStorage.setItem("kinesica_clara_active", data.clara_active ? "1" : "0");
+        updateDashboardClara(data.clara_active);
       }
       if (typeof data.booking_active === "boolean") {
-        bookingActive = data.booking_active;
-        localStorage.setItem("kinesica_booking_active", bookingActive ? "1" : "0");
-        renderBooking(bookingActive);
+        localStorage.setItem("kinesica_booking_active", data.booking_active ? "1" : "0");
+        updateDashboardBooking(data.booking_active);
       }
     })
     .catch(() => {});
@@ -591,24 +458,6 @@ initDashboardModule({
   onNewPaciente: () => {
     switchTab("pacientes");
     document.querySelector("#btn-nuevo-paciente")?.click();
-  },
-  onClaraToggled: (isActive) => {
-    let claraBtn = document.getElementById("btn-toggle-clara");
-    if (claraBtn) {
-      const label = claraBtn.querySelector(".clara-label");
-      claraBtn.classList.toggle("is-active", isActive);
-      claraBtn.classList.toggle("is-inactive", !isActive);
-      if (label) label.textContent = isActive ? "Clara: Activa" : "Clara: Desactivada";
-    }
-  },
-  onBookingToggled: (isActive) => {
-    let bookingBtn = document.getElementById("btn-toggle-booking");
-    if (bookingBtn) {
-      const label = bookingBtn.querySelector(".clara-label");
-      bookingBtn.classList.toggle("is-active", isActive);
-      bookingBtn.classList.toggle("is-inactive", !isActive);
-      if (label) label.textContent = isActive ? "Agendar en web: Activo" : "Agendar en web: Desactivado";
-    }
   },
 });
 
