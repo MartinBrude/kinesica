@@ -1,0 +1,237 @@
+/**
+ * Kinésica Admin - Módulo de Pacientes, Teléfonos y Lista de Espera
+ */
+
+.admin-nav {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.admin-nav .btn.is-active {
+  background: rgba(0, 95, 153, 0.12);
+  color: var(--primary);
+  font-weight: 700;
+  border-bottom: 2px solid var(--primary);
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.pacientes-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin: 16px 0;
+  padding: 12px 16px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.pacientes-search-box {
+  display: flex;
+  flex: 1;
+  min-width: 260px;
+  align-items: center;
+  gap: 8px;
+}
+
+.pacientes-search-box input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.pacientes-table-container {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow-x: auto;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.pacientes-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  text-align: left;
+}
+
+.pacientes-table th {
+  background: var(--sky);
+  padding: 12px 14px;
+  font-weight: 600;
+  color: var(--navy);
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.pacientes-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--sky);
+  color: var(--ink);
+  vertical-align: middle;
+}
+
+.pacientes-table tr:hover td {
+  background: #fbfdff;
+}
+
+.badge-prof {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.badge-prof.norberto {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.badge-prof.maria {
+  background: #fdf2f8;
+  color: #be185d;
+}
+
+.badge-prof.indistinto {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+.phone-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.phone-link {
+  color: var(--primary);
+  font-family: monospace;
+  font-size: 13px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.phone-link:hover {
+  text-decoration: underline;
+}
+
+.btn-icon-edit {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: var(--muted);
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn-icon-edit:hover {
+  color: var(--primary);
+  background: var(--sky);
+}
+
+.pacientes-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+/* Modal de edición de paciente */
+.paciente-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 28, 66, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.paciente-modal-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalPop 0.15s ease-out;
+}
+
+@keyframes modalPop {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.paciente-modal-header {
+  padding: 16px 20px;
+  background: var(--sky);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.paciente-modal-header h2 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--navy);
+}
+
+.paciente-modal-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.paciente-modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.paciente-modal-field label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.paciente-modal-field input,
+.paciente-modal-field select,
+.paciente-modal-field textarea {
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.paciente-modal-field small {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.paciente-modal-footer {
+  padding: 14px 20px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  background: #fafbfc;
+}
