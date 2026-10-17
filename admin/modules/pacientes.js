@@ -17,6 +17,57 @@ const countEl = document.querySelector("#pacientes-total-count");
 let pacientesCache = [];
 let activeFilterProf = "todos";
 
+/**
+ * Formatea un número de teléfono para lectura clara (ej: 5491161164311 -> (+54) 9 11 6116 4311)
+ * @param {string} raw
+ * @returns {string}
+ */
+export function formatDisplayPhone(raw) {
+  if (!raw) return "";
+  const digits = String(raw).replace(/\D/g, "");
+  if (!digits) return raw;
+
+  // Argentina: 549 + código de área + número local (ej: 5491161164311 -> (+54) 9 11 6116 4311)
+  if (digits.startsWith("549")) {
+    const rest = digits.slice(3); // ej: "1161164311"
+    if (rest.startsWith("11") && rest.length === 10) {
+      return `(+54) 9 11 ${rest.slice(2, 6)} ${rest.slice(6)}`;
+    }
+    if (rest.length === 10) {
+      return `(+54) 9 ${rest.slice(0, 3)} ${rest.slice(3, 6)} ${rest.slice(6)}`;
+    }
+    if (rest.length >= 8) {
+      const p1 = rest.slice(rest.length - 8, rest.length - 4);
+      const p2 = rest.slice(rest.length - 4);
+      const area = rest.slice(0, rest.length - 8);
+      return `(+54) 9 ${area} ${p1} ${p2}`;
+    }
+    return `(+54) 9 ${rest}`;
+  }
+
+  // Argentina sin 9 intermedio (ej: 5411...)
+  if (digits.startsWith("54") && digits.length >= 10) {
+    const rest = digits.slice(2);
+    if (rest.startsWith("11") && rest.length === 10) {
+      return `(+54) 11 ${rest.slice(2, 6)} ${rest.slice(6)}`;
+    }
+    return `(+54) ${rest}`;
+  }
+
+  // España: 34 + 9 dígitos (ej: 34612345678 -> (+34) 612 345 678)
+  if (digits.startsWith("34") && digits.length === 11) {
+    const rest = digits.slice(2);
+    return `(+34) ${rest.slice(0, 3)} ${rest.slice(3, 6)} ${rest.slice(6)}`;
+  }
+
+  // Local 10 dígitos (ej: 1161164311)
+  if (digits.startsWith("11") && digits.length === 10) {
+    return `11 ${digits.slice(2, 6)} ${digits.slice(6)}`;
+  }
+
+  return `+${digits}`;
+}
+
 export function showPacientesView() {
   if (viewPacientes) {
     viewPacientes.hidden = false;
@@ -88,9 +139,10 @@ export function renderPacientesTable() {
     // Nombre completo para mostrar como texto único
     const fullName = p.nombre_completo || [p.nombre, p.apellido].filter(Boolean).join(" ") || "Paciente";
 
-    // Teléfono formateado
+    // Teléfono formateado para lectura y link a WhatsApp
     const rawTel = p.telefono || "";
     const waLink = rawTel ? `https://wa.me/${rawTel}` : "#";
+    const displayTel = formatDisplayPhone(rawTel);
 
     tr.innerHTML = `
       <td>
@@ -98,7 +150,7 @@ export function renderPacientesTable() {
       </td>
       <td>
         <div class="phone-cell">
-          ${rawTel ? `<a class="phone-link" href="${waLink}" target="_blank" rel="noopener" title="Abrir chat de WhatsApp">📲 +${escapeHtml(rawTel)}</a>` : '<span style="color:var(--muted)">Sin teléfono</span>'}
+          ${rawTel ? `<a class="phone-link" href="${waLink}" target="_blank" rel="noopener" title="Abrir chat de WhatsApp">📲 ${escapeHtml(displayTel)}</a>` : '<span style="color:var(--muted)">Sin teléfono</span>'}
         </div>
       </td>
       <td>${p.dni ? escapeHtml(p.dni) : '<span style="color:var(--muted)">—</span>'}</td>
@@ -111,7 +163,14 @@ export function renderPacientesTable() {
       <td style="text-align: right;">
         <div class="pacientes-actions">
           <button type="button" class="btn light btn-edit-paciente" data-id="${p.id}" title="Editar paciente">Editar</button>
-          <button type="button" class="btn ghost btn-delete-paciente" data-id="${p.id}" data-name="${escapeHtml(fullName)}" style="color:#dc2626;" title="Eliminar paciente">🗑️</button>
+          <button type="button" class="btn ghost btn-delete-paciente btn-icon-del" data-id="${p.id}" data-name="${escapeHtml(fullName)}" title="Eliminar paciente" aria-label="Eliminar paciente">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              <line x1="10" y1="11" x2="10" y2="17"></line>
+              <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+          </button>
         </div>
       </td>
     `;

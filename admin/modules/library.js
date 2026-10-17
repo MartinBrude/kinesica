@@ -337,11 +337,7 @@ export function sessionRow(item, patient, callbacks = {}, sessionIndex = 1, tota
   jsonBtn.type = "button";
   jsonBtn.className = "btn ghost";
   jsonBtn.textContent = "JSON";
-  jsonBtn.title = "Descargar JSON de esta sesión";
-  jsonBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    if (callbacks.onDownloadJson) callbacks.onDownloadJson(item);
-  });
+  jsonBtn.hidden = true;
 
   const delBtn = document.createElement("button");
   delBtn.type = "button";
@@ -362,7 +358,7 @@ export function sessionRow(item, patient, callbacks = {}, sessionIndex = 1, tota
     if (callbacks.onDelete) callbacks.onDelete(item);
   });
 
-  actions.append(pdfBtn, jsonBtn, delBtn);
+  actions.append(pdfBtn, delBtn);
 
   row.addEventListener("click", (e) => {
     if (e.target.closest("button")) return;
@@ -483,22 +479,7 @@ export function patientGroupRow(key, sessions, callbacks = {}) {
   });
   controls.append(printGroup);
 
-  const jsonBtn = document.createElement("button");
-  jsonBtn.type = "button";
-  jsonBtn.className = "btn ghost";
-  jsonBtn.textContent = "JSON";
-  jsonBtn.title = sessions.length > 1
-    ? `Descargar JSON de las ${sessions.length} sesiones de ${latest.nombre || "este paciente"}`
-    : `Descargar JSON de ${latest.nombre || "este paciente"}`;
-  jsonBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    if (sessions.length > 1 && callbacks.onDownloadJsonAll) {
-      callbacks.onDownloadJsonAll(sessions);
-      return;
-    }
-    if (callbacks.onDownloadJson) callbacks.onDownloadJson(latest);
-  });
-  controls.append(jsonBtn);
+
 
   // Comparar (si tiene >= 2 sesiones)
   if (sessions.length >= 2 && callbacks.onCompare) {
