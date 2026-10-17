@@ -41,13 +41,13 @@ export function hidePacientesView() {
 
 export async function loadPacientes() {
   if (!listEl) return;
-  listEl.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px; color: var(--muted);">Cargando directorio de pacientes…</td></tr>`;
+  listEl.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 24px; color: var(--muted);">Cargando directorio de pacientes…</td></tr>`;
   try {
     const res = await api("pacientes.php");
     pacientesCache = Array.isArray(res?.items) ? res.items : (Array.isArray(res) ? res : []);
     renderPacientesTable();
   } catch (err) {
-    listEl.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px; color: #dc2626;">Error al cargar pacientes: ${escapeHtml(err.message)}</td></tr>`;
+    listEl.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 24px; color: #dc2626;">Error al cargar pacientes: ${escapeHtml(err.message)}</td></tr>`;
   }
 }
 
@@ -58,7 +58,9 @@ function filterPacientes() {
       return false;
     }
     if (!query) return true;
-    const nameMatch = (p.nombre_completo || "").toLowerCase().includes(query);
+    const nameMatch = (p.nombre_completo || "").toLowerCase().includes(query) ||
+                      (p.nombre || "").toLowerCase().includes(query) ||
+                      (p.apellido || "").toLowerCase().includes(query);
     const phoneMatch = (p.telefono || "").includes(query);
     const dniMatch = (p.dni || "").toLowerCase().includes(query);
     const motivoMatch = (p.motivo_consulta || "").toLowerCase().includes(query);
@@ -75,7 +77,7 @@ export function renderPacientesTable() {
   }
 
   if (filtered.length === 0) {
-    listEl.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 32px; color: var(--muted);">No se encontraron pacientes que coincidan con la búsqueda.</td></tr>`;
+    listEl.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 32px; color: var(--muted);">No se encontraron pacientes que coincidan con la búsqueda.</td></tr>`;
     return;
   }
 
@@ -83,19 +85,22 @@ export function renderPacientesTable() {
   filtered.forEach((p) => {
     const tr = document.createElement("tr");
 
+    // Nombre completo para mostrar como texto único
+    const fullName = p.nombre_completo || [p.nombre, p.apellido].filter(Boolean).join(" ") || "Paciente";
+
     // Teléfono formateado
     const rawTel = p.telefono || "";
     const waLink = rawTel ? `https://wa.me/${rawTel}` : "#";
 
     tr.innerHTML = `
       <td>
-        <strong style="color: var(--navy);">${escapeHtml(p.nombre_completo)}</strong>
-        ${p.nombre_pila && p.nombre_pila !== p.nombre_completo ? `<br><small style="color:var(--muted)">Llamar: ${escapeHtml(p.nombre_pila)}</small>` : ""}
+        <strong style="color: var(--navy);">${escapeHtml(fullName)}</strong>
+        ${p.nombre_pila && p.nombre_pila !== fullName ? `<br><small style="color:var(--muted)">Llamar: ${escapeHtml(p.nombre_pila)}</small>` : ""}
       </td>
       <td>
         <div class="phone-cell">
           ${rawTel ? `<a class="phone-link" href="${waLink}" target="_blank" rel="noopener" title="Abrir chat de WhatsApp">📲 +${escapeHtml(rawTel)}</a>` : '<span style="color:var(--muted)">Sin teléfono</span>'}
-          <button type="button" class="btn-icon-edit btn-edit-phone" data-id="${p.id}" data-phone="${escapeHtml(rawTel)}" data-name="${escapeHtml(p.nombre_completo)}" title="Editar solo el teléfono">
+          <button type="button" class="btn-icon-edit btn-edit-phone" data-id="${p.id}" data-phone="${escapeHtml(rawTel)}" data-name="${escapeHtml(fullName)}" title="Editar solo el teléfono">
             ✏️
           </button>
         </div>
@@ -107,13 +112,10 @@ export function renderPacientesTable() {
         </span>
       </td>
       <td><small>${p.motivo_consulta ? escapeHtml(p.motivo_consulta) : "—"}</small></td>
-      <td style="text-align: center;">
-        <span style="font-weight: 600;">${p.total_sesiones || 1}</span>
-      </td>
-      <td>
+      <td style="text-align: right;">
         <div class="pacientes-actions">
           <button type="button" class="btn light btn-edit-paciente" data-id="${p.id}" title="Editar paciente">Editar</button>
-          <button type="button" class="btn ghost btn-delete-paciente" data-id="${p.id}" data-name="${escapeHtml(p.nombre_completo)}" style="color:#dc2626;" title="Eliminar">🗑️</button>
+          <button type="button" class="btn ghost btn-delete-paciente" data-id="${p.id}" data-name="${escapeHtml(fullName)}" style="color:#dc2626;" title="Eliminar paciente">🗑️</button>
         </div>
       </td>
     `;
@@ -228,6 +230,16 @@ function openFullPacienteModal(paciente = null) {
   const isEdit = Boolean(paciente);
   const backdrop = document.createElement("div");
   backdrop.className = "paciente-modal-backdrop";
+
+  // Desglosar nombre y apellido si ya vienen separados o juntos
+  let nombreVal = paciente?.nombre || "";
+  let apellidoVal = paciente?.apellido || "";
+  if (!nombreVal && !apellidoVal && paciente?.nombre_completo) {
+    const parts = paciente.nombre_completo.trim().split(/\s+/);
+    nombreVal = parts[0] || "";
+    apellidoVal = parts.slice(1).join(" ") || "";
+  }
+
   backdrop.innerHTML = `
     <div class="paciente-modal-card">
       <div class="paciente-modal-header">
@@ -236,9 +248,15 @@ function openFullPacienteModal(paciente = null) {
       </div>
       <form id="form-full-paciente">
         <div class="paciente-modal-body">
-          <div class="paciente-modal-field">
-            <label>Nombre y Apellido *</label>
-            <input type="text" id="modal-p-nombre" value="${escapeHtml(paciente?.nombre_completo || "")}" placeholder="Ej: Florencia González" required autofocus>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="paciente-modal-field">
+              <label>Nombre *</label>
+              <input type="text" id="modal-p-nombre" value="${escapeHtml(nombreVal)}" placeholder="Ej: Florencia" required autofocus>
+            </div>
+            <div class="paciente-modal-field">
+              <label>Apellido *</label>
+              <input type="text" id="modal-p-apellido" value="${escapeHtml(apellidoVal)}" placeholder="Ej: González" required>
+            </div>
           </div>
           <div class="paciente-modal-field">
             <label>Teléfono (WhatsApp) *</label>
@@ -289,17 +307,20 @@ function openFullPacienteModal(paciente = null) {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const nombre = backdrop.querySelector("#modal-p-nombre").value.trim();
+    const apellido = backdrop.querySelector("#modal-p-apellido").value.trim();
     const tel = backdrop.querySelector("#modal-p-tel").value.trim();
     const dni = backdrop.querySelector("#modal-p-dni").value.trim();
     const prof = backdrop.querySelector("#modal-p-prof").value;
     const motivo = backdrop.querySelector("#modal-p-motivo").value.trim();
     const notas = backdrop.querySelector("#modal-p-notas").value.trim();
 
-    if (!nombre || !tel) {
-      errorEl.textContent = "Nombre y teléfono son obligatorios.";
+    if (!nombre || !apellido || !tel) {
+      errorEl.textContent = "Nombre, apellido y teléfono son obligatorios.";
       errorEl.hidden = false;
       return;
     }
+
+    const nombreCompleto = `${nombre} ${apellido}`.trim();
 
     submitBtn.disabled = true;
     submitBtn.textContent = "Guardando…";
@@ -311,7 +332,9 @@ function openFullPacienteModal(paciente = null) {
           method: "PUT",
           body: JSON.stringify({
             id: paciente.id,
-            nombre_completo: nombre,
+            nombre: nombre,
+            apellido: apellido,
+            nombre_completo: nombreCompleto,
             telefono: tel,
             dni: dni,
             profesional_habitual: prof,
@@ -324,7 +347,9 @@ function openFullPacienteModal(paciente = null) {
           method: "POST",
           body: JSON.stringify({
             action: "insert",
-            nombre_completo: nombre,
+            nombre: nombre,
+            apellido: apellido,
+            nombre_completo: nombreCompleto,
             telefono: tel,
             dni: dni,
             profesional_habitual: prof,
