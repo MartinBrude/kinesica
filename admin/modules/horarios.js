@@ -19,15 +19,15 @@ const btnCopyClara = document.querySelector("#btn-copy-clara-horarios");
 
 export const DEFAULT_PRACTITIONER_HOURS = {
   norberto: {
-    1: [{ start: "15:30", end: "19:00" }],
-    2: [{ start: "15:00", end: "19:00" }],
-    3: [{ start: "09:00", end: "16:00" }],
+    1: [{ start: "17:30", end: "19:30" }],
+    2: [{ start: "16:30", end: "19:30" }],
+    3: [{ start: "09:00", end: "16:30" }],
     4: [{ start: "15:00", end: "19:00" }],
-    5: [{ start: "13:30", end: "19:00" }],
+    5: [{ start: "13:30", end: "19:30" }],
   },
   maria: {
-    1: [{ start: "09:00", end: "15:00" }],
-    2: [{ start: "09:00", end: "14:30" }],
+    1: [{ start: "09:00", end: "17:00" }],
+    2: [{ start: "09:00", end: "16:00" }],
     5: [{ start: "09:00", end: "13:00" }],
   },
 };

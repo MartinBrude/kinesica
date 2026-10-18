@@ -24,7 +24,7 @@
 const CALL_DURATION_MINUTES = 10;
 const SESSION_DURATION_MINUTES = 60;
 const DAY_START_HOUR = 8;
-const DAY_END_HOUR = 19;
+const DAY_END_HOUR = 20;
 const CALL_BUFFER_HOURS = 1; // Para llamadas de 10m: mínimo 1 hora de anticipación (no ofrecer nada en la siguiente hora)
 const SESSION_BUFFER_HOURS = 2; // Para turnos presenciales de 1h: mínimo 2 horas de margen de traslado
 const SAME_DAY_BUFFER_HOURS = 2; // Compatibilidad retroactiva
@@ -33,15 +33,15 @@ const MAX_BOOKING_DAYS = 60; // Máximo 60 días de anticipación para turnos
 // Horarios semanales por profesional (0 domingo … 6 sábado)
 const PRACTITIONER_HOURS = {
   norberto: {
-    1: [{ start: "15:30", end: "19:00" }], // Lunes 15:30 a 19 hs
-    2: [{ start: "15:00", end: "19:00" }], // Martes 15 a 19 hs
-    3: [{ start: "09:00", end: "16:00" }], // Miércoles 9 a 16 hs
+    1: [{ start: "17:30", end: "19:30" }], // Lunes 17:30 a 19:30 hs
+    2: [{ start: "16:30", end: "19:30" }], // Martes 16:30 a 19:30 hs
+    3: [{ start: "09:00", end: "16:30" }], // Miércoles 9 a 16:30 hs
     4: [{ start: "15:00", end: "19:00" }], // Jueves 15 a 19 hs
-    5: [{ start: "13:30", end: "19:00" }]  // Viernes 13:30 a 19 hs
+    5: [{ start: "13:30", end: "19:30" }]  // Viernes 13:30 a 19:30 hs
   },
   maria: {
-    1: [{ start: "09:00", end: "15:00" }], // Lunes 9 a 15 hs
-    2: [{ start: "09:00", end: "14:30" }], // Martes 9 a 14:30 hs
+    1: [{ start: "09:00", end: "17:00" }], // Lunes 9 a 17 hs
+    2: [{ start: "09:00", end: "16:00" }], // Martes 9 a 16 hs
     5: [{ start: "09:00", end: "13:00" }]  // Viernes 9 a 13 hs
   }
 };
@@ -260,10 +260,10 @@ function handleGetSlots(params) {
     });
   }
 
-  // 2. Consultar Google Calendar en el rango 08:00 a 19:00 hora de Argentina
+  // 2. Consultar Google Calendar en el rango 08:00 a 20:00 hora de Argentina
   const cal = getKinesicaCalendar();
   const dayStart = parseArgentinaDate(dateStr, "08:00");
-  const dayEnd = parseArgentinaDate(dateStr, "19:00");
+  const dayEnd = parseArgentinaDate(dateStr, "20:00");
 
   const events = cal.getEvents(dayStart, dayEnd);
   const busy = events.map(function(ev) {
@@ -348,7 +348,7 @@ function handleGetSlotsRange(params) {
 
   const cal = getKinesicaCalendar();
   const rangeStart = parseArgentinaDate(fromStr, "08:00");
-  const rangeEnd = parseArgentinaDate(toStr, "19:00");
+  const rangeEnd = parseArgentinaDate(toStr, "20:00");
   const events = cal.getEvents(rangeStart, rangeEnd);
   const busy = events.map(function(ev) {
     return {

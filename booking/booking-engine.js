@@ -23,7 +23,7 @@
 
   const SESSION_DURATION_MINUTES = 60;
   const DAY_START_HOUR = 8;
-  const DAY_END_HOUR = 19;
+  const DAY_END_HOUR = 20;
   const SESSION_BUFFER_HOURS = 2; // Turnos presenciales: mínimo 2 horas de margen de traslado
   const SAME_DAY_BUFFER_HOURS = 2;
   const SLOT_STEP_MINUTES = 30;
@@ -47,19 +47,19 @@
   const MAX_BOOKING_DAYS = 60;
 
   // Horario semanal por defecto por profesional. Clave = día JS (0 domingo … 6 sábado).
-  // María: Lunes 9 a 15, Martes 9 a 14:30, Viernes 9 a 13.
-  // Norberto: Lunes 15:30 a 19, Martes 15 a 19, Miércoles 9 a 16, Jueves 15 a 19, Viernes 13:30 a 19.
+  // María: Lunes 9 a 17, Martes 9 a 16, Viernes 9 a 13.
+  // Norberto: Lunes 17:30 a 19:30, Martes 16:30 a 19:30, Miércoles 9 a 16:30, Jueves 15 a 19, Viernes 13:30 a 19:30.
   const DEFAULT_PRACTITIONER_HOURS = {
     norberto: {
-      1: [{ start: "15:30", end: "19:00" }], // Lunes 15:30 a 19 hs
-      2: [{ start: "15:00", end: "19:00" }], // Martes 15 a 19 hs
-      3: [{ start: "09:00", end: "16:00" }], // Miércoles 9 a 16 hs
+      1: [{ start: "17:30", end: "19:30" }], // Lunes 17:30 a 19:30 hs
+      2: [{ start: "16:30", end: "19:30" }], // Martes 16:30 a 19:30 hs
+      3: [{ start: "09:00", end: "16:30" }], // Miércoles 9 a 16:30 hs
       4: [{ start: "15:00", end: "19:00" }], // Jueves 15 a 19 hs
-      5: [{ start: "13:30", end: "19:00" }], // Viernes 13:30 a 19 hs
+      5: [{ start: "13:30", end: "19:30" }], // Viernes 13:30 a 19:30 hs
     },
     maria: {
-      1: [{ start: "09:00", end: "15:00" }], // Lunes 9 a 15 hs
-      2: [{ start: "09:00", end: "14:30" }], // Martes 9 a 14:30 hs
+      1: [{ start: "09:00", end: "17:00" }], // Lunes 9 a 17 hs
+      2: [{ start: "09:00", end: "16:00" }], // Martes 9 a 16 hs
       5: [{ start: "09:00", end: "13:00" }], // Viernes 9 a 13 hs
     },
   };

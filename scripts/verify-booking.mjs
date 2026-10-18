@@ -136,8 +136,8 @@ test("REGLA 2B: Feriados nacionales no son días hábiles y devuelven 0 slots", 
   assert.strictEqual(slots.length, 0, "No debe haber turnos en feriados");
 });
 
-test("REGLA 2C: Miércoles genera slots de Norberto entre 09:00 y 16:00 (último turno a las 15:00)", () => {
-  // Miércoles 7 de Octubre 2026 (Norberto de 09:00 a 16:00, turnos de 9 a 15 inclusive)
+test("REGLA 2C: Miércoles genera slots de Norberto entre 09:00 y 16:30 (último turno a las 15:30)", () => {
+  // Miércoles 7 de Octubre 2026 (Norberto de 09:00 a 16:30, turnos de 9 a 15:30 inclusive)
   const slots = calculateAvailableSlots({
     date: "2026-10-07",
     appointmentType: "session",
@@ -145,7 +145,7 @@ test("REGLA 2C: Miércoles genera slots de Norberto entre 09:00 y 16:00 (último
   assert.ok(slots.length > 0, "Debe generar slots disponibles");
   assert.strictEqual(slots[0].time, "09:00", "Primer turno debe arrancar a las 09:00");
   const lastSlot = slots[slots.length - 1];
-  assert.strictEqual(lastSlot.time, "15:00", "Último turno de 1h debe arrancar a las 15:00 para terminar a las 16:00");
+  assert.strictEqual(lastSlot.time, "15:30", "Último turno de 1h debe arrancar a las 15:30 para terminar a las 16:30");
 });
 
 // ---------------------------------------------------------------------------
@@ -326,16 +326,16 @@ test("REGLA 6B: El título del calendario del paciente incluye la técnica", () 
 // ---------------------------------------------------------------------------
 // 7. HORARIOS OFICIALES DEFINIDOS PARA MARÍA Y NORBERTO
 // ---------------------------------------------------------------------------
-test("REGLA 7A: Horarios de María (Lunes 9-15, Martes 9-14:30, Viernes 9-13; Mié y Jue no atiende)", () => {
-  // Lunes 2026-10-05: 9 a 15 (turnos de 9 a 14 inclusive, finaliza a las 15 hs)
+test("REGLA 7A: Horarios de María (Lunes 9-17, Martes 9-16, Viernes 9-13; Mié y Jue no atiende)", () => {
+  // Lunes 2026-10-05: 9 a 17 (turnos de 9 a 16 inclusive, finaliza a las 17 hs)
   const monSlots = calculateAvailableSlots({ date: "2026-10-05", practitionerId: "maria" });
   assert.strictEqual(monSlots[0].time, "09:00");
-  assert.strictEqual(monSlots[monSlots.length - 1].time, "14:00");
+  assert.strictEqual(monSlots[monSlots.length - 1].time, "16:00");
 
-  // Martes 2026-10-06: 9 a 14:30 (turnos de 9 a 13:30 inclusive, finaliza a las 14:30 hs)
+  // Martes 2026-10-06: 9 a 16 (turnos de 9 a 15 inclusive, finaliza a las 16 hs)
   const tueSlots = calculateAvailableSlots({ date: "2026-10-06", practitionerId: "maria" });
   assert.strictEqual(tueSlots[0].time, "09:00");
-  assert.strictEqual(tueSlots[tueSlots.length - 1].time, "13:30");
+  assert.strictEqual(tueSlots[tueSlots.length - 1].time, "15:00");
 
   // Miércoles y Jueves: María no atiende (0 turnos)
   const wedSlots = calculateAvailableSlots({ date: "2026-10-07", practitionerId: "maria" });
@@ -349,31 +349,31 @@ test("REGLA 7A: Horarios de María (Lunes 9-15, Martes 9-14:30, Viernes 9-13; Mi
   assert.strictEqual(friSlots[friSlots.length - 1].time, "12:00");
 });
 
-test("REGLA 7B: Horarios de Norberto (Lun 15:30-19, Mar 15-19, Mié 9-16, Jue 15-19, Vie 13:30-19)", () => {
-  // Lunes 2026-10-05: 15:30 a 19 (primer turno 15:30, último 18:00 termina a las 19:00)
+test("REGLA 7B: Horarios de Norberto (Lun 17:30-19:30, Mar 16:30-19:30, Mié 9-16:30, Jue 15-19, Vie 13:30-19:30)", () => {
+  // Lunes 2026-10-05: 17:30 a 19:30 (primer turno 17:30, último 18:30 termina a las 19:30)
   const monSlots = calculateAvailableSlots({ date: "2026-10-05", practitionerId: "norberto" });
-  assert.strictEqual(monSlots[0].time, "15:30");
-  assert.strictEqual(monSlots[monSlots.length - 1].time, "18:00");
+  assert.strictEqual(monSlots[0].time, "17:30");
+  assert.strictEqual(monSlots[monSlots.length - 1].time, "18:30");
 
-  // Martes 2026-10-06: 15 a 19 (primer turno 15:00, último 18:00)
+  // Martes 2026-10-06: 16:30 a 19:30 (primer turno 16:30, último 18:30)
   const tueSlots = calculateAvailableSlots({ date: "2026-10-06", practitionerId: "norberto" });
-  assert.strictEqual(tueSlots[0].time, "15:00");
-  assert.strictEqual(tueSlots[tueSlots.length - 1].time, "18:00");
+  assert.strictEqual(tueSlots[0].time, "16:30");
+  assert.strictEqual(tueSlots[tueSlots.length - 1].time, "18:30");
 
-  // Miércoles 2026-10-07: 9 a 16 (primer turno 09:00, último 15:00 termina a las 16:00)
+  // Miércoles 2026-10-07: 9 a 16:30 (primer turno 09:00, último 15:30 termina a las 16:30)
   const wedSlots = calculateAvailableSlots({ date: "2026-10-07", practitionerId: "norberto" });
   assert.strictEqual(wedSlots[0].time, "09:00");
-  assert.strictEqual(wedSlots[wedSlots.length - 1].time, "15:00");
+  assert.strictEqual(wedSlots[wedSlots.length - 1].time, "15:30");
 
   // Jueves 2026-10-08: 15 a 19 (primer turno 15:00, último 18:00)
   const thuSlots = calculateAvailableSlots({ date: "2026-10-08", practitionerId: "norberto" });
   assert.strictEqual(thuSlots[0].time, "15:00");
   assert.strictEqual(thuSlots[thuSlots.length - 1].time, "18:00");
 
-  // Viernes 2026-10-09: 13:30 a 19 (primer turno 13:30, último 18:00 termina a las 19:00)
+  // Viernes 2026-10-09: 13:30 a 19:30 (primer turno 13:30, último 18:30 termina a las 19:30)
   const friSlots = calculateAvailableSlots({ date: "2026-10-09", practitionerId: "norberto" });
   assert.strictEqual(friSlots[0].time, "13:30");
-  assert.strictEqual(friSlots[friSlots.length - 1].time, "18:00");
+  assert.strictEqual(friSlots[friSlots.length - 1].time, "18:30");
 });
 
 test("REGLA 8: Clara puede dar turnos a un máximo de 60 días", () => {
@@ -413,16 +413,16 @@ test("REGLA 8: Clara puede dar turnos a un máximo de 60 días", () => {
 });
 
 test("REGLA 9: Opción 'No me importa' (sin profesional fijo) ofrece turnos con cualquiera de los dos", () => {
-  // Lunes 2026-10-05 sin practitionerId devuelve tanto turnos de María (mañana) como de Norberto (tarde)
+  // Lunes 2026-10-05 sin practitionerId devuelve tanto turnos de María (mañana/tarde) como de Norberto (tarde)
   const bothSlots = calculateAvailableSlots({
     date: "2026-10-05",
     practitionerId: null,
   });
   const times = bothSlots.map((s) => s.time);
   assert.ok(times.includes("09:00"), "Debe incluir turnos de María por la mañana");
-  assert.ok(times.includes("14:00"), "Debe incluir el último turno de María por la mañana");
-  assert.ok(times.includes("15:30"), "Debe incluir turnos de Norberto por la tarde");
-  assert.ok(times.includes("18:00"), "Debe incluir el último turno de Norberto por la tarde");
+  assert.ok(times.includes("16:00"), "Debe incluir el último turno de María a las 16:00");
+  assert.ok(times.includes("17:30"), "Debe incluir turnos de Norberto a las 17:30");
+  assert.ok(times.includes("18:30"), "Debe incluir el último turno de Norberto a las 18:30");
 });
 
 test("REGLA 10: Cada profesional tiene configurado su WhatsApp directo para pacientes en tratamiento", () => {
@@ -435,14 +435,14 @@ test("REGLA 10: Cada profesional tiene configurado su WhatsApp directo para paci
 // ---------------------------------------------------------------------------
 test("REGLA 11A: Validación de 1 única camilla rechaza solapamientos entre María y Norberto", () => {
   const base = engine.clonePractitionerHours(engine.DEFAULT_PRACTITIONER_HOURS);
-  // Solapamiento en Lunes: María 09:00-15:00 y Norberto 14:00-19:00
-  base.norberto[1] = [{ start: "14:00", end: "19:00" }];
+  // Solapamiento en Lunes: María 09:00-17:00 y Norberto 16:00-19:30
+  base.norberto[1] = [{ start: "16:00", end: "19:30" }];
   const res = engine.validatePractitionerHours(base);
   assert.strictEqual(res.isValid, false);
   assert.ok(res.errors.some((e) => e.includes("Superposición de camilla") && e.includes("Lunes")));
   assert.strictEqual(res.conflicts.length, 1);
-  assert.strictEqual(res.conflicts[0].overlapStart, "14:00");
-  assert.strictEqual(res.conflicts[0].overlapEnd, "15:00");
+  assert.strictEqual(res.conflicts[0].overlapStart, "16:00");
+  assert.strictEqual(res.conflicts[0].overlapEnd, "17:00");
 });
 
 test("REGLA 11B: Soporta hasta 2 franjas diarias por profesional (turno partido) y rechaza más de 2 o duraciones < 60 min", () => {
@@ -499,8 +499,8 @@ test("REGLA 11D: formatClaraScheduleSummary genera el bloque de horarios legible
   const summary = engine.formatClaraScheduleSummary(engine.DEFAULT_PRACTITIONER_HOURS);
   assert.ok(summary.includes("Lic. María Gulín"));
   assert.ok(summary.includes("Lic. Norberto Brude"));
-  assert.ok(summary.includes("Lunes: 09:00 a 15:00 hs"));
-  assert.ok(summary.includes("Miércoles: 09:00 a 16:00 hs"));
+  assert.ok(summary.includes("Lunes: 09:00 a 17:00 hs"));
+  assert.ok(summary.includes("Miércoles: 09:00 a 16:30 hs"));
 });
 
 console.log(`\n🎉 Resultado: ${passed}/${total} tests superados con éxito.\n`);
