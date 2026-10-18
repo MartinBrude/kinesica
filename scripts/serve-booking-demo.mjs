@@ -10,6 +10,8 @@ import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { CONTACT } from "./site-contact.mjs";
+import { SITE } from "./i18n-urls.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const PORT = process.env.PORT || 3000;
@@ -112,7 +114,9 @@ const server = http.createServer((req, res) => {
           : "Por razones de espacio y concentración durante el tratamiento, <strong>asistir sin acompañantes</strong> (salvo necesidad de asistencia).";
 
         const servicioTexto = body.servicio ? ` (${body.servicio})` : "";
-        const direccion = body.direccion || "Charcas 3889, Piso 5º B, Palermo (entre Scalabrini Ortiz y Aráoz)";
+        const direccion =
+          body.direccion ||
+          `${CONTACT.address.streetAddress}, Piso 5º B, ${CONTACT.address.neighborhood} (entre Scalabrini Ortiz y Aráoz)`;
 
         const html = `<!DOCTYPE html>
 <html lang="es">
@@ -140,7 +144,7 @@ const server = http.createServer((req, res) => {
 <body>
   <div class="wrapper">
     <div class="header">
-      <img src="https://www.kinesica.com.ar/images/logo.png" alt="Kinésica" class="logo">
+      <img src="${SITE}/images/logo.png" alt="Kinésica" class="logo">
     </div>
     <div class="content">
       <h1 class="greeting">Turno confirmado</h1>
@@ -166,7 +170,7 @@ const server = http.createServer((req, res) => {
     </div>
     <div class="footer">
       <p style="margin: 0 0 6px 0;"><strong>Kinésica</strong> · Terapias Manuales & Rehabilitación</p>
-      <p style="margin: 0;"><a href="https://www.kinesica.com.ar" target="_blank">www.kinesica.com.ar</a></p>
+      <p style="margin: 0;"><a href="${SITE}" target="_blank">www.kinesica.com.ar</a></p>
     </div>
   </div>
 </body>
@@ -203,13 +207,19 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  if (reqPath === "/booking" || reqPath === "/booking/") {
-    res.writeHead(302, { Location: "/#agendar" });
+  if (reqPath === "/booking" || reqPath === "/booking/" || reqPath === "/turnos" || reqPath === "/turnos/") {
+    res.writeHead(302, { Location: "/agendar" });
     res.end();
     return;
   }
-  if (reqPath === "/" || reqPath === "") {
+  if (reqPath === "/agendar" || reqPath === "/agendar/") {
+    reqPath = "/agendar.html";
+  } else if (/^\/(en|fr|pt)\/agendar\/?$/.test(reqPath)) {
+    reqPath = reqPath.replace(/\/?$/, ".html");
+  } else if (reqPath === "/" || reqPath === "") {
     reqPath = "/index.html";
+  } else if (/^\/(en|fr|pt)\/?$/.test(reqPath)) {
+    reqPath = reqPath.replace(/\/?$/, "/index.html");
   }
 
   const filePath = path.join(ROOT, reqPath);
@@ -241,6 +251,6 @@ const server = http.createServer((req, res) => {
 
 server.listen(PORT, () => {
   console.log(`\n🌿 Servidor de pruebas de Kinésica corriendo:`);
-  console.log(`👉 Abrí en tu navegador: http://localhost:${PORT}/booking/\n`);
+  console.log(`👉 Abrí en tu navegador: http://localhost:${PORT}/agendar\n`);
   console.log(`Presiona Ctrl+C para detener el servidor.\n`);
 });

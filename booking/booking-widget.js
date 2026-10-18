@@ -79,6 +79,7 @@
       rulesStudies: "<strong>Estudios previos:</strong> Traer estudios y derivación médica si los tuviese.",
       maps: "🗺️ Abrir en Google Maps",
       done: "✓ Listo, finalizar y cerrar",
+      newBooking: "← Realizar otra consulta o reserva",
       errWho: "Elegí quién te atiende para ver los horarios.",
       errTechnique: "Elegí la técnica para ver los horarios.",
       errSlot: "Por favor selecciona un día y horario antes de continuar.",
@@ -161,6 +162,7 @@
       rulesStudies: "<strong>Previous studies:</strong> Bring previous studies and medical referral if you have them.",
       maps: "🗺️ Open in Google Maps",
       done: "✓ Done, close",
+      newBooking: "← Start a new booking",
       errWho: "Choose who treats you to see available times.",
       errTechnique: "Choose a technique to see available times.",
       errSlot: "Please choose a day and time before continuing.",
@@ -243,6 +245,7 @@
       rulesStudies: "<strong>Examens antérieurs :</strong> apportez vos examens et votre ordonnance médicale si vous en avez.",
       maps: "🗺️ Ouvrir dans Google Maps",
       done: "✓ Terminé, fermer",
+      newBooking: "← Nouvelle réservation",
       errWho: "Choisissez qui vous reçoit pour voir les horaires.",
       errTechnique: "Choisissez une technique pour voir les horaires.",
       errSlot: "Veuillez choisir un jour et un horaire avant de continuer.",
@@ -325,6 +328,7 @@
       rulesStudies: "<strong>Exames anteriores:</strong> trazer exames e encaminhamento médico se tiver.",
       maps: "🗺️ Abrir no Google Maps",
       done: "✓ Pronto, fechar",
+      newBooking: "← Fazer novo agendamento",
       errWho: "Escolha quem te atende para ver os horários.",
       errTechnique: "Escolha a técnica para ver os horários.",
       errSlot: "Escolha um dia e um horário antes de continuar.",
@@ -446,8 +450,9 @@
     }
 
     renderSkeleton() {
+      const containerMod = this.options.isModal ? "is-modal" : "is-inline";
       this.container.innerHTML = `
-        <div class="kinesica-booking-container">
+        <div class="kinesica-booking-container ${containerMod}">
           <div class="kb-header">
             ${this.options.isModal ? `<button type="button" class="kb-close-btn" aria-label="${this.t("close")}" data-action="close-modal">&times;</button>` : ''}
             <h2>${this.t("title")}</h2>
@@ -478,15 +483,15 @@
               <div class="kb-choice-grid" id="kb-patient-grid"></div>
 
               <div id="kb-existing-box" style="display: none; margin-top: 18px;">
-                <div class="kb-section-title" style="font-size: 1.05rem;">${this.t("qWho")}</div>
+                <div class="kb-section-title" style="font-size: 17px;">${this.t("qWho")}</div>
                 <div class="kb-choice-grid" id="kb-existing-practitioner-grid"></div>
               </div>
 
               <div id="kb-new-box" style="display: none; margin-top: 18px;">
-                <div class="kb-section-title" style="font-size: 1.05rem;">${this.t("qTechnique")}</div>
+                <div class="kb-section-title" style="font-size: 17px;">${this.t("qTechnique")}</div>
                 <div class="kb-choice-grid" id="kb-technique-grid"></div>
                 <div id="kb-practitioner-box" style="display: none; margin-top: 18px;">
-                  <div class="kb-section-title" style="font-size: 1.05rem;">${this.t("qPrefer")}</div>
+                  <div class="kb-section-title" style="font-size: 17px;">${this.t("qPrefer")}</div>
                   <div class="kb-choice-grid" id="kb-practitioner-grid"></div>
                 </div>
               </div>
@@ -630,7 +635,13 @@
                       ${this.t("done")}
                     </button>
                   </div>
-                ` : ""}
+                ` : `
+                  <div style="margin-top: 22px; text-align: center;">
+                    <button type="button" class="kb-btn kb-btn-secondary" data-action="reset-widget" style="width: auto; padding: 10px 28px; font-weight: 600;">
+                      ${this.t("newBooking")}
+                    </button>
+                  </div>
+                `}
 
               </div>
             </div>
@@ -649,6 +660,10 @@
           btn.addEventListener("click", () => this.options.onClose());
         });
       }
+
+      this.container.querySelectorAll('[data-action="reset-widget"]').forEach((btn) => {
+        btn.addEventListener("click", () => this.reset());
+      });
 
       this.renderPatientChoices();
       this.renderTechniqueChoices();

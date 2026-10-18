@@ -426,7 +426,7 @@ test("REGLA 9: Opción 'No me importa' (sin profesional fijo) ofrece turnos con 
 });
 
 test("REGLA 10: Cada profesional tiene configurado su WhatsApp directo para pacientes en tratamiento", () => {
-  assert.strictEqual(engine.PRACTITIONERS.norberto.whatsapp, "5491161564311");
+  assert.strictEqual(engine.PRACTITIONERS.norberto.whatsapp, CONTACT.whatsappDigits);
   assert.strictEqual(engine.PRACTITIONERS.maria.whatsapp, "5491128531224");
 });
 

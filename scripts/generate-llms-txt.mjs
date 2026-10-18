@@ -173,6 +173,13 @@ function pathologyLines(lang, { expanded = false } = {}) {
 const mainPagesEs = [
   ["Inicio (español, Argentina)", "es", "index", metaDescription("es", "index")],
   [
+    "Agendar turno online",
+    "es",
+    "agendar",
+    metaDescription("es", "agendar") ||
+      "Reserva de turnos presenciales de 1 hora en el consultorio de Palermo.",
+  ],
+  [
     "Artículos y patologías",
     "es",
     "articulos",
@@ -200,6 +207,12 @@ const mainPagesEs = [
 
 const enMainLines = [
   link("Home (English)", "en", "index", metaDescription("en", "index")),
+  link(
+    "Book an appointment online",
+    "en",
+    "agendar",
+    metaDescription("en", "agendar") || "Online appointment booking for 1-hour in-person sessions.",
+  ),
   link("Articles & conditions", "en", "articulos", metaDescription("en", "articulos")),
   link(`CV — ${FOUNDER.name}`, "en", "cv", "Physiotherapist and osteopath profile."),
   link("Privacy policy", "en", "privacidad", "Personal data protection and deletion request procedure."),
@@ -208,6 +221,12 @@ const enMainLines = [
 
 const frMainLines = [
   link("Accueil (français)", "fr", "index", metaDescription("fr", "index")),
+  link(
+    "Prendre rendez-vous en ligne",
+    "fr",
+    "agendar",
+    metaDescription("fr", "agendar") || "Réservation en ligne de séances individuelles d'une heure.",
+  ),
   link(
     "Articles et pathologies",
     "fr",
@@ -236,6 +255,12 @@ const frMainLines = [
 
 const ptMainLines = [
   link("Início (português)", "pt", "index", metaDescription("pt", "index")),
+  link(
+    "Agendar consulta online",
+    "pt",
+    "agendar",
+    metaDescription("pt", "agendar") || "Agendamento online de sessões presenciais de 1 hora.",
+  ),
   link(
     "Artigos e condições",
     "pt",

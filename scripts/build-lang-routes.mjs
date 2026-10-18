@@ -108,14 +108,17 @@ const source = `/**
       if (href === indexPath || href === indexFile) {
         return { lang: sub, stem: "index" };
       }
-      var re = new RegExp("^/" + sub + "/([^/?#]+)\\\\.html$");
+      var re = new RegExp("^/" + sub + "/([^/?#]+?)(?:\\\\.html|/)?$");
       var m = href.match(re);
-      if (m) {
+      if (m && (href.indexOf(".html") !== -1 || STEMS.indexOf(m[1]) !== -1)) {
         return { lang: sub, stem: m[1] };
       }
     }
-    var rootMatch = href.match(/^\\/([^/?#]+)\\.html$/);
-    if (rootMatch) {
+    var rootMatch = href.match(/^\\/([^/?#]+?)(?:\\.html|\\/)?$/);
+    if (
+      rootMatch &&
+      (href.indexOf(".html") !== -1 || STEMS.indexOf(rootMatch[1]) !== -1)
+    ) {
       return { lang: DEFAULT_LANG, stem: rootMatch[1] };
     }
     return null;
@@ -187,14 +190,19 @@ const source = `/**
       return { lang: langPart, stem: stemPart };
     }
 
-    var baseFile = path.substring(path.lastIndexOf("/") + 1);
-    if (!baseFile || !/\\.html$/i.test(baseFile)) {
+    var cleanPath = path.replace(/\\/+$/, "");
+    var baseFile = cleanPath.substring(cleanPath.lastIndexOf("/") + 1);
+    if (!baseFile) {
       return { lang: DEFAULT_LANG, stem: "index" };
     }
-    return {
-      lang: DEFAULT_LANG,
-      stem: baseFile.replace(/\\.html$/i, "") || "index",
-    };
+    var candidateStem = baseFile.replace(/\\.html$/i, "") || "index";
+    if (/\\.html$/i.test(baseFile) || STEMS.indexOf(candidateStem) !== -1) {
+      return {
+        lang: DEFAULT_LANG,
+        stem: candidateStem,
+      };
+    }
+    return { lang: DEFAULT_LANG, stem: "index" };
   }
 
   function isSpanishHome() {

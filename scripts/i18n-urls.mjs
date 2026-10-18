@@ -27,6 +27,7 @@ export const SCHEMA_LANGUAGE = Object.fromEntries(
 
 export const STEMS = [
   "index",
+  "agendar",
   "articulos",
   "atm",
   "acupuntura",

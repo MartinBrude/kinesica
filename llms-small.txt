@@ -10,6 +10,7 @@
 ## Páginas principales
 
 - [Inicio (español, Argentina)](https://www.kinesica.com.ar/)
+- [Agendar turno online](https://www.kinesica.com.ar/agendar.html)
 - [Artículos y patologías](https://www.kinesica.com.ar/articulos.html)
 - [CV — Norberto Silvio Brude](https://www.kinesica.com.ar/cv.html)
 - [Política de privacidad](https://www.kinesica.com.ar/privacidad.html)

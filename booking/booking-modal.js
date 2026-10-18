@@ -16,6 +16,7 @@
 
   let modalEl = null;
   let widgetInstance = null;
+  let inlineWidgetInstance = null;
   let previousActiveElement = null;
 
   function getApiUrl() {
@@ -67,27 +68,41 @@
 
   const KinesicaBookingModal = {
     init() {
-      // Auto-open si la URL contiene #agendar o ?agendar=true
-      const checkInitialHash = () => {
+      const onReady = () => {
+        KinesicaBookingModal.mountInlineWidget();
         if (
           window.location.hash === "#agendar" ||
           window.location.hash === "#habitual" ||
           window.location.search.indexOf("agendar=true") !== -1
         ) {
-          KinesicaBookingModal.open();
+          if (inlineWidgetInstance) {
+            if (window.location.hash === "#habitual" && typeof inlineWidgetInstance.selectExistingPatient === "function") {
+              inlineWidgetInstance.selectExistingPatient(true);
+            }
+          } else {
+            KinesicaBookingModal.open();
+          }
         }
       };
 
       if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", checkInitialHash);
+        document.addEventListener("DOMContentLoaded", onReady);
       } else {
-        checkInitialHash();
+        onReady();
       }
 
       // Hashchange listener para botón atrás de Android / navegador
       window.addEventListener("hashchange", function () {
         if (window.location.hash === "#agendar" || window.location.hash === "#habitual") {
-          if (!KinesicaBookingModal.isOpen()) {
+          if (inlineWidgetInstance) {
+            if (window.location.hash === "#habitual" && typeof inlineWidgetInstance.selectExistingPatient === "function") {
+              inlineWidgetInstance.selectExistingPatient(true);
+            }
+            const mount = document.getElementById("kinesica-booking-widget");
+            if (mount && typeof mount.scrollIntoView === "function") {
+              mount.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+          } else if (!KinesicaBookingModal.isOpen()) {
             KinesicaBookingModal.open({ skipHashPush: true });
           }
         } else if (KinesicaBookingModal.isOpen()) {
@@ -133,6 +148,24 @@
       });
     },
 
+    mountInlineWidget() {
+      if (typeof document === "undefined") return null;
+      const mount = document.getElementById("kinesica-booking-widget");
+      if (!mount) return null;
+      if (inlineWidgetInstance && inlineWidgetInstance.container === mount) {
+        return inlineWidgetInstance;
+      }
+      const Widget = WidgetClass || (typeof window !== "undefined" && window.KinesicaBookingWidget);
+      if (!Widget) return null;
+      inlineWidgetInstance = new Widget(mount, {
+        apiUrl: getApiUrl(),
+        forceMock: false,
+        isModal: false,
+        lang: document.documentElement.lang,
+      });
+      return inlineWidgetInstance;
+    },
+
     syncPractitionerHours() {
       if (typeof window === "undefined") return Promise.resolve();
       const applyHours = (hours) => {
@@ -169,6 +202,9 @@
     },
 
     invalidateCache() {
+      if (inlineWidgetInstance && inlineWidgetInstance.client && typeof inlineWidgetInstance.client.clearCache === "function") {
+        inlineWidgetInstance.client.clearCache();
+      }
       if (widgetInstance && widgetInstance.client && typeof widgetInstance.client.clearCache === "function") {
         widgetInstance.client.clearCache();
       } else if (
@@ -221,6 +257,10 @@
     prewarm() {
       if (typeof window === "undefined") return;
       if (window.__kinesicaSlotsRangePromise) return;
+      if (inlineWidgetInstance && inlineWidgetInstance.client && typeof inlineWidgetInstance.client.prewarm === "function") {
+        inlineWidgetInstance.client.prewarm();
+        return;
+      }
       if (widgetInstance && widgetInstance.client && typeof widgetInstance.client.prewarm === "function") {
         widgetInstance.client.prewarm();
         return;
@@ -239,6 +279,19 @@
       options = options || {};
       this.syncPractitionerHours();
       this.prewarm();
+
+      const inlineMount = typeof document !== "undefined" ? document.getElementById("kinesica-booking-widget") : null;
+      if (inlineMount) {
+        this.mountInlineWidget();
+        if (window.location.hash === "#habitual" && inlineWidgetInstance && typeof inlineWidgetInstance.selectExistingPatient === "function") {
+          inlineWidgetInstance.selectExistingPatient(true);
+        }
+        if (typeof inlineMount.scrollIntoView === "function") {
+          inlineMount.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+        return;
+      }
+
       previousActiveElement = document.activeElement;
 
       createModalDOM();
@@ -255,6 +308,10 @@
             onClose: () => KinesicaBookingModal.close(),
           });
         }
+      }
+
+      if (window.location.hash === "#habitual" && widgetInstance && typeof widgetInstance.selectExistingPatient === "function") {
+        widgetInstance.selectExistingPatient(true);
       }
 
       modalEl.classList.add("is-open");

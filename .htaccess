@@ -43,6 +43,11 @@ RewriteRule ^en/dolor-sacriiliaco\.html$ /en/dolor-sacroiliaco.html [R=301,L]
 RewriteRule ^fr/dolor-sacriiliaco\.html$ /fr/dolor-sacroiliaco.html [R=301,L]
 RewriteRule ^pt/dolor-sacriiliaco\.html$ /pt/dolor-sacroiliaco.html [R=301,L]
 
+# Online booking clean URL (/agendar and localized /en/agendar, /fr/agendar, /pt/agendar)
+RewriteRule ^agendar/?$ /agendar.html [L]
+RewriteRule ^(en|fr|pt)/agendar/?$ /$1/agendar.html [L]
+RewriteRule ^turnos/?$ /agendar [R=301,L]
+
 ErrorDocument 404 /404-router.html
 
 # Cache static images (SEO: Expires headers)
