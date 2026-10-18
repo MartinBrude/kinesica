@@ -72,7 +72,7 @@ export function showPacientesView() {
   if (viewPacientes) {
     viewPacientes.hidden = false;
     // Ocultar otras vistas
-    const views = ["#view-library", "#view-form", "#view-compare", "#view-gate"];
+    const views = ["#view-dashboard", "#view-library", "#view-horarios", "#view-form", "#view-compare", "#view-gate"];
     views.forEach((sel) => {
       const el = document.querySelector(sel);
       if (el) el.hidden = true;

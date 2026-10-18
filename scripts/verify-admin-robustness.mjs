@@ -460,4 +460,17 @@ await test("soporte de adjuntar foto clínica en panel 5 (tab 6)", () => {
   assert.ok(fichasPhp.includes("foto.php") || fichasPhp.includes("api/foto"), "fichas.php debe validar la URL de la foto");
 });
 
+await test("módulo de Horarios de Atención está integrado en HTML, JS y API", () => {
+  assert.ok(html.includes('id="nav-btn-horarios"'), "Debe existir botón Horarios en la barra de navegación");
+  assert.ok(html.includes('id="dash-btn-horarios"'), "Debe existir acceso a Horarios en el Dashboard");
+  assert.ok(html.includes('id="view-horarios"'), "Debe existir la vista #view-horarios");
+  assert.ok(html.includes('id="horarios-timeline-rows"'), "Debe existir la grilla visual semanal");
+  assert.ok(html.includes('id="horarios-clara-preview"'), "Debe existir el resumen para el prompt de Clara");
+
+  const horariosPhp = fs.readFileSync(path.join(adminDir, "api/horarios.php"), "utf8");
+  assert.match(horariosPhp, /require_auth\(\)/, "POST en horarios.php debe exigir sesión autenticada");
+  assert.match(horariosPhp, /Superposición de camilla/, "horarios.php debe validar colisión de 1 camilla");
+  assert.match(horariosPhp, /clara_schedule_summary/, "horarios.php debe generar el resumen para Clara");
+});
+
 console.log(`admin robustez: ok (${passed} pruebas)`);

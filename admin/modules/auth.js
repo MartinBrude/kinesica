@@ -88,10 +88,16 @@ export function showGate(data = {}) {
   const libraryView = document.querySelector("#view-library");
   const formView = document.querySelector("#view-form");
   const compareView = document.querySelector("#view-compare");
+  const dashView = document.querySelector("#view-dashboard");
+  const pacView = document.querySelector("#view-pacientes");
+  const horView = document.querySelector("#view-horarios");
 
   if (libraryView) libraryView.hidden = true;
   if (formView) formView.hidden = true;
   if (compareView) compareView.hidden = true;
+  if (dashView) dashView.hidden = true;
+  if (pacView) pacView.hidden = true;
+  if (horView) horView.hidden = true;
 
   if (viewGate) viewGate.hidden = false;
   if (logoutBtn) logoutBtn.hidden = true;

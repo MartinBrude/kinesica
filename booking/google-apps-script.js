@@ -46,14 +46,29 @@ const PRACTITIONER_HOURS = {
   }
 };
 
-function getGasWorkingWindows(practitionerId, dayOfWeek) {
+function resolveActivePractitionerHours(customHoursRaw) {
+  if (customHoursRaw) {
+    try {
+      const parsed = typeof customHoursRaw === "string" ? JSON.parse(customHoursRaw) : customHoursRaw;
+      if (parsed && typeof parsed === "object" && (parsed.norberto || parsed.maria)) {
+        return parsed;
+      }
+    } catch (e) {}
+  }
+  return PRACTITIONER_HOURS;
+}
+
+function getGasWorkingWindows(practitionerId, dayOfWeek, customHoursRaw) {
   if (dayOfWeek === 0 || dayOfWeek === 6) return [];
-  if (practitionerId && PRACTITIONER_HOURS[practitionerId]) {
-    return PRACTITIONER_HOURS[practitionerId][dayOfWeek] || [];
+  const activeHours = resolveActivePractitionerHours(customHoursRaw);
+  const dayKey = String(dayOfWeek);
+  if (practitionerId && activeHours[practitionerId]) {
+    return activeHours[practitionerId][dayKey] || activeHours[practitionerId][dayOfWeek] || [];
   }
   const combined = [];
   ["maria", "norberto"].forEach(function(pid) {
-    const list = PRACTITIONER_HOURS[pid][dayOfWeek] || [];
+    const pMap = activeHours[pid] || {};
+    const list = pMap[dayKey] || pMap[dayOfWeek] || [];
     list.forEach(function(w) { combined.push(w); });
   });
   return combined;
@@ -234,7 +249,7 @@ function handleGetSlots(params) {
   }
 
   const practitionerId = params.practitioner || params.practitionerId || "";
-  const windows = getGasWorkingWindows(practitionerId, dayOfWeek);
+  const windows = getGasWorkingWindows(practitionerId, dayOfWeek, params.hours);
   if (!windows.length) {
     return createJsonResponse({
       status: "success",
@@ -345,10 +360,11 @@ function handleGetSlotsRange(params) {
   const now = new Date();
   const todayInArg = Utilities.formatDate(now, "America/Argentina/Buenos_Aires", "yyyy-MM-dd");
   const practitionerId = params.practitioner || params.practitionerId || "";
+  const customHoursRaw = params.hours || null;
   const days = {};
   let cursor = fromStr;
   while (cursor <= toStr) {
-    days[cursor] = computeDaySlots(cursor, busy, now, todayInArg, practitionerId);
+    days[cursor] = computeDaySlots(cursor, busy, now, todayInArg, practitionerId, customHoursRaw);
     cursor = nextIsoDate(cursor);
   }
 
@@ -367,7 +383,7 @@ function nextIsoDate(dateStr) {
   return Utilities.formatDate(d, "America/Argentina/Buenos_Aires", "yyyy-MM-dd");
 }
 
-function computeDaySlots(dateStr, busy, now, todayInArg, practitionerId) {
+function computeDaySlots(dateStr, busy, now, todayInArg, practitionerId, customHoursRaw) {
   const targetDate = parseArgentinaDate(dateStr, "12:00");
   const dayOfWeek = targetDate.getUTCDay();
   if (dayOfWeek === 0 || dayOfWeek === 6 || ARGENTINA_HOLIDAYS.indexOf(dateStr) !== -1) {
@@ -381,7 +397,7 @@ function computeDaySlots(dateStr, busy, now, todayInArg, practitionerId) {
     return [];
   }
 
-  const windows = getGasWorkingWindows(practitionerId, dayOfWeek);
+  const windows = getGasWorkingWindows(practitionerId, dayOfWeek, customHoursRaw);
   if (!windows.length) return [];
 
   const dayStart = parseArgentinaDate(dateStr, "08:00");
@@ -548,7 +564,7 @@ function handleBookAppointment(payload) {
   const targetDate = parseArgentinaDate(dateStr, "12:00");
   const dayOfWeek = targetDate.getUTCDay();
   const practitionerId = payload.practitionerId || "";
-  const windows = getGasWorkingWindows(practitionerId, dayOfWeek);
+  const windows = getGasWorkingWindows(practitionerId, dayOfWeek, payload.hours);
   const timeParts = timeStr.split(":").map(Number);
   const reqMin = timeParts[0] * 60 + timeParts[1];
   const fitsWindow = windows.some(function(w) {

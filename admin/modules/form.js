@@ -764,9 +764,15 @@ export function showForm(targetStep = 0) {
   const libraryView = document.querySelector("#view-library");
   const compareView = document.querySelector("#view-compare");
   const gateView = document.querySelector("#view-gate");
+  const dashView = document.querySelector("#view-dashboard");
+  const pacView = document.querySelector("#view-pacientes");
+  const horView = document.querySelector("#view-horarios");
   if (gateView) gateView.hidden = true;
   if (libraryView) libraryView.hidden = true;
   if (compareView) compareView.hidden = true;
+  if (dashView) dashView.hidden = true;
+  if (pacView) pacView.hidden = true;
+  if (horView) horView.hidden = true;
   if (formView) {
     formView.hidden = false;
     try {

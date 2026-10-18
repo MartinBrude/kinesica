@@ -45,9 +45,15 @@ let activeSessionUserGetter = null;
 export function showCompare(pKey, preferredXId, preferredYId, fromView = null) {
   comparePreviousView = fromView || (formView && !formView.hidden ? "form" : "library");
   const gateView = document.querySelector("#view-gate");
+  const dashView = document.querySelector("#view-dashboard");
+  const pacView = document.querySelector("#view-pacientes");
+  const horView = document.querySelector("#view-horarios");
   if (gateView) gateView.hidden = true;
   if (libraryView) libraryView.hidden = true;
   if (formView) formView.hidden = true;
+  if (dashView) dashView.hidden = true;
+  if (pacView) pacView.hidden = true;
+  if (horView) horView.hidden = true;
   if (compareView) compareView.hidden = false;
 
   const allFichas = typeof activeAllFichasGetter === "function" ? activeAllFichasGetter() : [];

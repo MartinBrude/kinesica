@@ -128,7 +128,56 @@
       );
 
       KinesicaBookingModal.ensurePreconnect();
-      KinesicaBookingModal.warmAgenda();
+      KinesicaBookingModal.syncPractitionerHours().finally(() => {
+        KinesicaBookingModal.warmAgenda();
+      });
+    },
+
+    syncPractitionerHours() {
+      if (typeof window === "undefined") return Promise.resolve();
+      const applyHours = (hours) => {
+        if (
+          hours &&
+          window.KinesicaBookingEngine &&
+          typeof window.KinesicaBookingEngine.setPractitionerHours === "function"
+        ) {
+          window.KinesicaBookingEngine.setPractitionerHours(hours);
+        }
+      };
+
+      try {
+        const cached = JSON.parse(localStorage.getItem("kinesica_public_settings") || "null");
+        if (cached && cached.practitioner_hours) {
+          applyHours(cached.practitioner_hours);
+        }
+      } catch (_) {}
+
+      if (typeof fetch !== "function") return Promise.resolve();
+      return fetch("/admin/api/settings.php", { cache: "no-cache" })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (data && typeof data === "object") {
+            try {
+              localStorage.setItem("kinesica_public_settings", JSON.stringify(data));
+            } catch (_) {}
+            if (data.practitioner_hours) {
+              applyHours(data.practitioner_hours);
+            }
+          }
+        })
+        .catch(() => {});
+    },
+
+    invalidateCache() {
+      if (widgetInstance && widgetInstance.client && typeof widgetInstance.client.clearCache === "function") {
+        widgetInstance.client.clearCache();
+      } else if (
+        typeof window !== "undefined" &&
+        window.KinesicaBookingClient &&
+        typeof window.KinesicaBookingClient.clearStoredRange === "function"
+      ) {
+        window.KinesicaBookingClient.clearStoredRange();
+      }
     },
 
     ensurePreconnect() {
@@ -188,6 +237,7 @@
 
     open(options) {
       options = options || {};
+      this.syncPractitionerHours();
       this.prewarm();
       previousActiveElement = document.activeElement;
 

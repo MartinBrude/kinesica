@@ -1,31 +1,16 @@
 <?php
 declare(strict_types=1);
 
+define('KINESICA_HORARIOS_INCLUDED', true);
+require_once __DIR__ . '/horarios.php';
+
 header('Content-Type: application/json; charset=utf-8');
 
 $settingsFile = __DIR__ . '/settings.json';
 
 function get_runtime_settings(string $file): array
 {
-    $defaults = [
-        'clara_active' => false,
-        'booking_active' => false,
-    ];
-    if (!is_file($file)) {
-        return $defaults;
-    }
-    $raw = @file_get_contents($file);
-    if ($raw === false) {
-        return $defaults;
-    }
-    $data = json_decode($raw, true);
-    if (!is_array($data)) {
-        return $defaults;
-    }
-    return [
-        'clara_active' => isset($data['clara_active']) ? (bool) $data['clara_active'] : true,
-        'booking_active' => isset($data['booking_active']) ? (bool) $data['booking_active'] : true,
-    ];
+    return load_full_runtime_settings($file);
 }
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
@@ -39,7 +24,7 @@ if ($method === 'GET') {
 if ($method === 'POST') {
     require __DIR__ . '/lib.php';
     require_header();
-    require_auth();
+    $user = require_auth();
 
     $input = read_json();
     $current = get_runtime_settings($settingsFile);
@@ -50,13 +35,34 @@ if ($method === 'POST') {
     if (isset($input['booking_active'])) {
         $current['booking_active'] = (bool) $input['booking_active'];
     }
+    if (isset($input['practitioner_hours']) && is_array($input['practitioner_hours'])) {
+        $val = validate_practitioner_hours_php($input['practitioner_hours']);
+        if (!$val['isValid']) {
+            json_out(422, [
+                'error' => implode(' ', $val['errors']),
+                'errors' => $val['errors'],
+                'conflicts' => $val['conflicts'],
+            ]);
+        }
+        $current['practitioner_hours'] = $val['normalized'];
+        $current['horarios_updated_at'] = gmdate('Y-m-d\TH:i:s\Z');
+        $current['horarios_updated_by'] = (string) ($user['name'] ?: $user['username']);
+    }
 
-    $saved = @file_put_contents($settingsFile, json_encode($current, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    $toPersist = [
+        'clara_active' => $current['clara_active'],
+        'booking_active' => $current['booking_active'],
+        'practitioner_hours' => $current['practitioner_hours'],
+        'horarios_updated_at' => $current['horarios_updated_at'],
+        'horarios_updated_by' => $current['horarios_updated_by'],
+    ];
+
+    $saved = @file_put_contents($settingsFile, json_encode($toPersist, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     if ($saved === false) {
         json_out(500, ['error' => 'No se pudo guardar la configuración.']);
     }
 
-    json_out(200, $current);
+    json_out(200, get_runtime_settings($settingsFile));
 }
 
 http_response_code(405);

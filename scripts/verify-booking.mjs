@@ -430,4 +430,77 @@ test("REGLA 10: Cada profesional tiene configurado su WhatsApp directo para paci
   assert.strictEqual(engine.PRACTITIONERS.maria.whatsapp, "5491128531224");
 });
 
+// ---------------------------------------------------------------------------
+// 11. CONFIGURACIÓN DINÁMICA DE HORARIOS, REGLA DE 1 CAMILLA Y RESUMEN CLARA
+// ---------------------------------------------------------------------------
+test("REGLA 11A: Validación de 1 única camilla rechaza solapamientos entre María y Norberto", () => {
+  const base = engine.clonePractitionerHours(engine.DEFAULT_PRACTITIONER_HOURS);
+  // Solapamiento en Lunes: María 09:00-15:00 y Norberto 14:00-19:00
+  base.norberto[1] = [{ start: "14:00", end: "19:00" }];
+  const res = engine.validatePractitionerHours(base);
+  assert.strictEqual(res.isValid, false);
+  assert.ok(res.errors.some((e) => e.includes("Superposición de camilla") && e.includes("Lunes")));
+  assert.strictEqual(res.conflicts.length, 1);
+  assert.strictEqual(res.conflicts[0].overlapStart, "14:00");
+  assert.strictEqual(res.conflicts[0].overlapEnd, "15:00");
+});
+
+test("REGLA 11B: Soporta hasta 2 franjas diarias por profesional (turno partido) y rechaza más de 2 o duraciones < 60 min", () => {
+  const splitSchedule = engine.clonePractitionerHours(engine.DEFAULT_PRACTITIONER_HOURS);
+  // Jueves: María mañana 09:00-12:00 y tarde 12:30-14:30; Norberto 15:00-19:00
+  splitSchedule.maria[4] = [
+    { start: "09:00", end: "12:00" },
+    { start: "12:30", end: "14:30" },
+  ];
+  const validSplit = engine.validatePractitionerHours(splitSchedule);
+  assert.strictEqual(validSplit.isValid, true);
+  assert.strictEqual(validSplit.normalized.maria[4].length, 2);
+
+  // 3 franjas el mismo día deben rechazarse
+  const threeWindows = engine.clonePractitionerHours(engine.DEFAULT_PRACTITIONER_HOURS);
+  threeWindows.maria[4] = [
+    { start: "08:00", end: "09:30" },
+    { start: "10:00", end: "11:30" },
+    { start: "12:00", end: "13:30" },
+  ];
+  const invalidThree = engine.validatePractitionerHours(threeWindows);
+  assert.strictEqual(invalidThree.isValid, false);
+
+  // Franja de 30 min (< 60 min) debe rechazarse
+  const shortWindow = engine.clonePractitionerHours(engine.DEFAULT_PRACTITIONER_HOURS);
+  shortWindow.maria[4] = [{ start: "09:00", end: "09:30" }];
+  const invalidShort = engine.validatePractitionerHours(shortWindow);
+  assert.strictEqual(invalidShort.isValid, false);
+});
+
+test("REGLA 11C: setPractitionerHours actualiza en vivo los turnos ofrecidos por calculateAvailableSlots y resetPractitionerHours restaura los oficiales", () => {
+  try {
+    const custom = engine.clonePractitionerHours(engine.DEFAULT_PRACTITIONER_HOURS);
+    // Habilitar a María los Jueves de 09:00 a 12:00
+    custom.maria[4] = [{ start: "09:00", end: "12:00" }];
+    const applied = engine.setPractitionerHours(custom);
+    assert.strictEqual(applied.isValid, true);
+
+    // Jueves 2026-10-08 ahora debe ofrecer turnos para María (09:00 a 11:00 inclusive)
+    const thuSlots = calculateAvailableSlots({ date: "2026-10-08", practitionerId: "maria" });
+    assert.ok(thuSlots.length > 0, "María debe tener turnos el jueves tras actualizar horarios");
+    assert.strictEqual(thuSlots[0].time, "09:00");
+    assert.strictEqual(thuSlots[thuSlots.length - 1].time, "11:00");
+  } finally {
+    engine.resetPractitionerHours();
+  }
+
+  // Verificar que tras resetPractitionerHours el jueves vuelve a dar 0 turnos para María
+  const thuAfterReset = calculateAvailableSlots({ date: "2026-10-08", practitionerId: "maria" });
+  assert.strictEqual(thuAfterReset.length, 0);
+});
+
+test("REGLA 11D: formatClaraScheduleSummary genera el bloque de horarios legible para el prompt de Clara", () => {
+  const summary = engine.formatClaraScheduleSummary(engine.DEFAULT_PRACTITIONER_HOURS);
+  assert.ok(summary.includes("Lic. María Gulín"));
+  assert.ok(summary.includes("Lic. Norberto Brude"));
+  assert.ok(summary.includes("Lunes: 09:00 a 15:00 hs"));
+  assert.ok(summary.includes("Miércoles: 09:00 a 16:00 hs"));
+});
+
 console.log(`\n🎉 Resultado: ${passed}/${total} tests superados con éxito.\n`);

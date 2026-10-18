@@ -125,6 +125,13 @@ import {
   updateDashboardState,
 } from "./modules/dashboard.js?v=1";
 
+import {
+  initHorariosModule,
+  showHorariosView,
+  hideHorariosView,
+  applyHoursToRuntime,
+} from "./modules/horarios.js?v=1";
+
 // Re-exportar utilidades esenciales para interoperabilidad y pruebas
 export {
   api,
@@ -207,7 +214,9 @@ async function refresh() {
       showCompare(saved.pKey, saved.xId, saved.yId);
     } else if (saved?.view === "pacientes") {
       switchTab("pacientes");
-    } else if (saved?.view === "fichas") {
+    } else if (saved?.view === "horarios") {
+      switchTab("horarios");
+    } else if (saved?.view === "fichas" || saved?.view === "library") {
       switchTab("fichas");
     } else if (saved?.view !== "form") {
       switchTab("inicio");
@@ -239,7 +248,15 @@ async function refresh() {
     }
   }
 
-  switchTab("inicio");
+  if (saved?.view === "pacientes") {
+    switchTab("pacientes");
+  } else if (saved?.view === "horarios") {
+    switchTab("horarios");
+  } else if (saved?.view === "fichas" || saved?.view === "library") {
+    switchTab("fichas");
+  } else {
+    switchTab("inicio");
+  }
 }
 
 // Configurar manejador de sesión expirada (HTTP 401)
@@ -367,23 +384,33 @@ function switchTab(tab) {
   const btnInicio = document.querySelector("#nav-btn-inicio");
   const btnFichas = document.querySelector("#nav-btn-fichas");
   const btnPacientes = document.querySelector("#nav-btn-pacientes");
+  const btnHorarios = document.querySelector("#nav-btn-horarios");
 
   btnInicio?.classList.remove("is-active");
   btnFichas?.classList.remove("is-active");
   btnPacientes?.classList.remove("is-active");
+  btnHorarios?.classList.remove("is-active");
 
   if (tab === "inicio") {
     btnInicio?.classList.add("is-active");
     hidePacientesView();
+    hideHorariosView();
     showDashboardView();
   } else if (tab === "pacientes") {
     btnPacientes?.classList.add("is-active");
     hideDashboardView();
+    hideHorariosView();
     showPacientesView();
+  } else if (tab === "horarios") {
+    btnHorarios?.classList.add("is-active");
+    hideDashboardView();
+    hidePacientesView();
+    showHorariosView();
   } else {
     btnFichas?.classList.add("is-active");
     hideDashboardView();
     hidePacientesView();
+    hideHorariosView();
     showLibrary();
   }
 }
@@ -410,16 +437,20 @@ function mountAdminChannels() {
   const adminNav = document.getElementById("admin-nav");
   if (adminNav) {
     adminNav.hidden = false;
-    document.getElementById("nav-btn-inicio")?.addEventListener("click", () => switchTab("inicio"));
-    document.getElementById("nav-btn-fichas")?.addEventListener("click", () => switchTab("fichas"));
-    document.getElementById("nav-btn-pacientes")?.addEventListener("click", () => switchTab("pacientes"));
-    document.getElementById("brand-logo")?.addEventListener("click", (e) => {
-      e.preventDefault();
-      switchTab("inicio");
-    });
+    if (!adminNav.dataset.bound) {
+      adminNav.dataset.bound = "1";
+      document.getElementById("nav-btn-inicio")?.addEventListener("click", () => switchTab("inicio"));
+      document.getElementById("nav-btn-fichas")?.addEventListener("click", () => switchTab("fichas"));
+      document.getElementById("nav-btn-pacientes")?.addEventListener("click", () => switchTab("pacientes"));
+      document.getElementById("nav-btn-horarios")?.addEventListener("click", () => switchTab("horarios"));
+      document.getElementById("brand-logo")?.addEventListener("click", (e) => {
+        e.preventDefault();
+        switchTab("inicio");
+      });
+    }
   }
 
-  // Sincronizar estado inicial de Clara y Reservas con el servidor para el Dashboard
+  // Sincronizar estado inicial de Clara, Reservas y Horarios con el servidor
   api("settings.php")
     .then((data) => {
       if (!data) return;
@@ -431,6 +462,9 @@ function mountAdminChannels() {
         localStorage.setItem("kinesica_booking_active", data.booking_active ? "1" : "0");
         updateDashboardBooking(data.booking_active);
       }
+      if (data.practitioner_hours && typeof data.practitioner_hours === "object") {
+        applyHoursToRuntime(data.practitioner_hours);
+      }
     })
     .catch(() => {});
 }
@@ -438,6 +472,7 @@ function mountAdminChannels() {
 // Inicialización de la aplicación al cargar la página
 fillForm(blank(), loadAll());
 initPacientesModule();
+initHorariosModule();
 initDashboardModule({
   onNavigate: (tab) => switchTab(tab),
   onNewFicha: () => {

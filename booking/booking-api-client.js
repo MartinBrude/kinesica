@@ -59,12 +59,30 @@
   const RANGE_STORAGE_KEY = "kinesica_slots_range_v1";
   const RANGE_TTL_MS = 300000; // 5 minutos de caché para navegación fluida
 
+  function currentHoursSignature() {
+    try {
+      const h = engine && typeof engine.getPractitionerHours === "function"
+        ? engine.getPractitionerHours()
+        : (engine && engine.PRACTITIONER_HOURS) || {};
+      return JSON.stringify(h);
+    } catch (e) {
+      return "";
+    }
+  }
+
+  function clearStoredRange() {
+    try {
+      sessionStorage.removeItem(RANGE_STORAGE_KEY);
+    } catch (e) {}
+  }
+
   function readStoredRange() {
     try {
       const raw = sessionStorage.getItem(RANGE_STORAGE_KEY);
       if (!raw) return null;
       const parsed = JSON.parse(raw);
       if (!parsed || !parsed.days || Date.now() - parsed.at > RANGE_TTL_MS) return null;
+      if (parsed.hoursSig && parsed.hoursSig !== currentHoursSignature()) return null;
       return parsed;
     } catch (e) {
       return null;
@@ -73,7 +91,10 @@
 
   function writeStoredRange(from, to, days) {
     try {
-      sessionStorage.setItem(RANGE_STORAGE_KEY, JSON.stringify({ at: Date.now(), from, to, days }));
+      sessionStorage.setItem(
+        RANGE_STORAGE_KEY,
+        JSON.stringify({ at: Date.now(), from, to, days, hoursSig: currentHoursSignature() })
+      );
     } catch (e) {}
   }
 
@@ -245,7 +266,8 @@
       }
 
       const effectiveUrl = this.getEffectiveApiUrl();
-      const url = `${effectiveUrl}?action=get_slots&date=${encodeURIComponent(dateStr)}&type=session`;
+      const hoursParam = encodeURIComponent(currentHoursSignature());
+      const url = `${effectiveUrl}?action=get_slots&date=${encodeURIComponent(dateStr)}&type=session&hours=${hoursParam}`;
 
       const fetchWithRetry = async (attempt) => {
         // En el primer intento damos 20s para permitir que el cold start de GAS despierte
@@ -338,7 +360,8 @@
       }
 
       const effectiveUrl = this.getEffectiveApiUrl();
-      const url = `${effectiveUrl}?action=get_slots_range&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
+      const hoursParam = encodeURIComponent(currentHoursSignature());
+      const url = `${effectiveUrl}?action=get_slots_range&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&hours=${hoursParam}`;
 
       const promise = (async () => {
         const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
@@ -461,6 +484,7 @@
       // Enviamos tanto en la query string (garantiza supervivencia si un navegador degrada 302 a GET)
       // como en el cuerpo POST en formato JSON
       const effectiveUrl = this.getEffectiveApiUrl();
+      const hoursSig = currentHoursSignature();
       const query = new URLSearchParams({
         action: "book",
         tipo: data.tipo || "",
@@ -477,10 +501,11 @@
         isMenor: data.isMenor ? "true" : "false",
         nombreFamiliar: data.nombreFamiliar || "",
         notas: data.notas || "",
+        hours: hoursSig,
       });
 
       const url = `${effectiveUrl}?${query.toString()}`;
-      const payload = Object.assign({ action: "book" }, data);
+      const payload = Object.assign({ action: "book", hours: hoursSig }, data);
 
       const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
       // El script crea el evento y después avisa por WhatsApp. 25s cortaba la espera con el turno ya agendado.
@@ -514,11 +539,17 @@
       }
       return json;
     }
+
+    clearCache() {
+      this._slotsCache = {};
+      clearStoredRange();
+    }
   }
 
   return {
     BookingClient: BookingClient,
     getMockEvents: getMockEvents,
     saveMockEvents: saveMockEvents,
+    clearStoredRange: clearStoredRange,
   };
 });

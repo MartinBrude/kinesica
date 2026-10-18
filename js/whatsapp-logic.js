@@ -121,6 +121,14 @@ function syncPublicSettings() {
         heroBookingBtn.style.display = "none";
       }
     }
+
+    if (
+      settings.practitioner_hours &&
+      window.KinesicaBookingEngine &&
+      typeof window.KinesicaBookingEngine.setPractitionerHours === "function"
+    ) {
+      window.KinesicaBookingEngine.setPractitionerHours(settings.practitioner_hours);
+    }
   }
 
   try {

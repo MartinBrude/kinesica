@@ -46,10 +46,10 @@
 
   const MAX_BOOKING_DAYS = 60;
 
-  // Horario semanal por profesional. Clave = día JS (0 domingo … 6 sábado).
+  // Horario semanal por defecto por profesional. Clave = día JS (0 domingo … 6 sábado).
   // María: Lunes 9 a 15, Martes 9 a 14:30, Viernes 9 a 13.
   // Norberto: Lunes 15:30 a 19, Martes 15 a 19, Miércoles 9 a 16, Jueves 15 a 19, Viernes 13:30 a 19.
-  const PRACTITIONER_HOURS = {
+  const DEFAULT_PRACTITIONER_HOURS = {
     norberto: {
       1: [{ start: "15:30", end: "19:00" }], // Lunes 15:30 a 19 hs
       2: [{ start: "15:00", end: "19:00" }], // Martes 15 a 19 hs
@@ -63,6 +63,253 @@
       5: [{ start: "09:00", end: "13:00" }], // Viernes 9 a 13 hs
     },
   };
+
+  function clonePractitionerHours(source) {
+    const src = source || DEFAULT_PRACTITIONER_HOURS;
+    const out = { norberto: {}, maria: {} };
+    ["norberto", "maria"].forEach(function (pid) {
+      const pDays = (src && src[pid]) || {};
+      Object.keys(pDays).forEach(function (dow) {
+        const list = pDays[dow];
+        if (Array.isArray(list) && list.length > 0) {
+          out[pid][dow] = list.map(function (r) {
+            return { start: String(r.start || ""), end: String(r.end || "") };
+          });
+        }
+      });
+    });
+    return out;
+  }
+
+  const PRACTITIONER_HOURS = clonePractitionerHours(DEFAULT_PRACTITIONER_HOURS);
+
+  const DAY_NAMES_ES = {
+    1: "Lunes",
+    2: "Martes",
+    3: "Miércoles",
+    4: "Jueves",
+    5: "Viernes",
+  };
+
+  function minutesToHm(totalMin) {
+    const h = String(Math.floor(totalMin / 60)).padStart(2, "0");
+    const m = String(totalMin % 60).padStart(2, "0");
+    return `${h}:${m}`;
+  }
+
+  function isValidTimeFormat(hm) {
+    return typeof hm === "string" && /^([01]\d|2[0-3]):(00|30)$/.test(hm.trim());
+  }
+
+  /**
+   * Valida la estructura completa de horarios de los profesionales:
+   * - Hasta 2 franjas por día (Lunes a Viernes, claves 1..5).
+   * - Formato HH:00 o HH:30 entre 08:00 y 20:00.
+   * - Duración mínima de 60 minutos por franja.
+   * - Sin solapamiento interno en un mismo profesional.
+   * - Sin solapamiento entre Norberto y María (1 sola camilla en el consultorio).
+   */
+  function validatePractitionerHours(hoursInput) {
+    const errors = [];
+    const conflicts = [];
+    const normalized = { norberto: {}, maria: {} };
+
+    if (!hoursInput || typeof hoursInput !== "object") {
+      return {
+        isValid: false,
+        errors: ["El formato de horarios es inválido."],
+        conflicts: [],
+        normalized: clonePractitionerHours(DEFAULT_PRACTITIONER_HOURS),
+      };
+    }
+
+    const parsedByDay = { 1: {}, 2: {}, 3: {}, 4: {}, 5: {} };
+
+    ["maria", "norberto"].forEach(function (pid) {
+      const pLabel = pid === "maria" ? "María" : "Norberto";
+      const pSource = hoursInput[pid];
+      if (!pSource || typeof pSource !== "object") return;
+
+      Object.keys(pSource).forEach(function (rawKey) {
+        const dow = parseInt(rawKey, 10);
+        const rawList = pSource[rawKey];
+        if (!Array.isArray(rawList) || rawList.length === 0) return;
+        if (dow < 1 || dow > 5 || isNaN(dow)) {
+          errors.push(`Solo se permiten días de lunes a viernes (${pLabel}).`);
+          return;
+        }
+        const dayName = DAY_NAMES_ES[dow];
+        if (rawList.length > 2) {
+          errors.push(`${pLabel} (${dayName}): se permiten hasta 2 franjas horarias por día.`);
+          return;
+        }
+
+        const dayRanges = [];
+        rawList.forEach(function (item, idx) {
+          const start = item && typeof item.start === "string" ? item.start.trim() : "";
+          const end = item && typeof item.end === "string" ? item.end.trim() : "";
+          if (!isValidTimeFormat(start) || !isValidTimeFormat(end)) {
+            errors.push(`${pLabel} (${dayName}, franja ${idx + 1}): formato de hora inválido (usar HH:00 o HH:30).`);
+            return;
+          }
+          const startMin = parseHmToMinutes(start);
+          const endMin = parseHmToMinutes(end);
+          if (startMin < 8 * 60 || endMin > 20 * 60) {
+            errors.push(`${pLabel} (${dayName}: ${start} a ${end}): el horario debe estar entre las 08:00 y las 20:00 hs.`);
+            return;
+          }
+          if (endMin <= startMin) {
+            errors.push(`${pLabel} (${dayName}: ${start} a ${end}): la hora de fin debe ser posterior a la de inicio.`);
+            return;
+          }
+          if (endMin - startMin < SESSION_DURATION_MINUTES) {
+            errors.push(`${pLabel} (${dayName}: ${start} a ${end}): cada franja debe durar al menos 60 minutos.`);
+            return;
+          }
+          dayRanges.push({ start: start, end: end, startMin: startMin, endMin: endMin });
+        });
+
+        dayRanges.sort(function (a, b) {
+          return a.startMin - b.startMin;
+        });
+
+        if (dayRanges.length === 2) {
+          if (dayRanges[0].endMin > dayRanges[1].startMin) {
+            errors.push(
+              `${pLabel} (${dayName}): las dos franjas del mismo día se superponen (${dayRanges[0].start}–${dayRanges[0].end} y ${dayRanges[1].start}–${dayRanges[1].end}).`
+            );
+          }
+        }
+
+        if (dayRanges.length > 0) {
+          parsedByDay[dow][pid] = dayRanges;
+          normalized[pid][dow] = dayRanges.map(function (r) {
+            return { start: r.start, end: r.end };
+          });
+        }
+      });
+    });
+
+    // Verificar no-solapamiento entre María y Norberto (1 sola camilla)
+    [1, 2, 3, 4, 5].forEach(function (dow) {
+      const mList = parsedByDay[dow].maria || [];
+      const nList = parsedByDay[dow].norberto || [];
+      const dayName = DAY_NAMES_ES[dow];
+      mList.forEach(function (mRange) {
+        nList.forEach(function (nRange) {
+          const overlapStart = Math.max(mRange.startMin, nRange.startMin);
+          const overlapEnd = Math.min(mRange.endMin, nRange.endMin);
+          if (overlapStart < overlapEnd) {
+            const msg = `Superposición de camilla el ${dayName}: María (${mRange.start} a ${mRange.end}) se pisa con Norberto (${nRange.start} a ${nRange.end}) entre las ${minutesToHm(overlapStart)} y las ${minutesToHm(overlapEnd)} hs.`;
+            errors.push(msg);
+            conflicts.push({
+              day: dow,
+              dayName: dayName,
+              overlapStart: minutesToHm(overlapStart),
+              overlapEnd: minutesToHm(overlapEnd),
+              maria: { start: mRange.start, end: mRange.end },
+              norberto: { start: nRange.start, end: nRange.end },
+              message: msg,
+            });
+          }
+        });
+      });
+    });
+
+    return {
+      isValid: errors.length === 0,
+      errors: errors,
+      conflicts: conflicts,
+      normalized: normalized,
+    };
+  }
+
+  /**
+   * Actualiza en caliente los horarios de atención de los profesionales en el motor.
+   * Mantiene la referencia de PRACTITIONER_HOURS.
+   */
+  function setPractitionerHours(hoursInput) {
+    const check = validatePractitionerHours(hoursInput);
+    if (!check.isValid) {
+      return check;
+    }
+    ["norberto", "maria"].forEach(function (pid) {
+      PRACTITIONER_HOURS[pid] = {};
+      Object.keys(check.normalized[pid]).forEach(function (dow) {
+        PRACTITIONER_HOURS[pid][dow] = check.normalized[pid][dow].map(function (r) {
+          return { start: r.start, end: r.end };
+        });
+      });
+    });
+    return check;
+  }
+
+  function resetPractitionerHours() {
+    return setPractitionerHours(DEFAULT_PRACTITIONER_HOURS);
+  }
+
+  function getPractitionerHours() {
+    return clonePractitionerHours(PRACTITIONER_HOURS);
+  }
+
+  function joinDayNamesEs(names) {
+    if (names.length === 0) return "";
+    if (names.length === 1) return names[0];
+    if (names.length === 2) return `${names[0]} y ${names[1]}`;
+    return `${names.slice(0, -1).join(", ")} y ${names[names.length - 1]}`;
+  }
+
+  /**
+   * Genera el bloque de texto normativo para el prompt de Clara (WhatsApp / n8n).
+   */
+  function formatClaraScheduleSummary(hoursInput) {
+    const source = hoursInput ? clonePractitionerHours(hoursInput) : PRACTITIONER_HOURS;
+    const lines = ["Horarios oficiales:"];
+
+    [
+      { id: "maria", title: "Lic. María Gulín", shortName: "María" },
+      { id: "norberto", title: "Lic. Norberto Brude", shortName: "Norberto" },
+    ].forEach(function (prof) {
+      lines.push(`- ${prof.title}:`);
+      const pHours = (source && source[prof.id]) || {};
+      const offDays = [];
+
+      [1, 2, 3, 4, 5].forEach(function (dow) {
+        const dayName = DAY_NAMES_ES[dow];
+        const ranges = pHours[dow] || [];
+        if (!Array.isArray(ranges) || ranges.length === 0) {
+          offDays.push(dayName);
+          return;
+        }
+        if (ranges.length === 1) {
+          const r = ranges[0];
+          const endMin = parseHmToMinutes(r.end);
+          const lastTurn = minutesToHm(endMin - SESSION_DURATION_MINUTES);
+          lines.push(
+            `  * ${dayName}: ${r.start} a ${r.end} hs (turnos de ${r.start} a ${lastTurn} hs inclusive; el último turno finaliza a las ${r.end} hs).`
+          );
+        } else {
+          const parts = ranges.map(function (r, idx) {
+            const endMin = parseHmToMinutes(r.end);
+            const lastTurn = minutesToHm(endMin - SESSION_DURATION_MINUTES);
+            if (idx === ranges.length - 1) {
+              return `${r.start} a ${r.end} hs (turnos de ${r.start} a ${lastTurn} hs inclusive; el último turno finaliza a las ${r.end} hs)`;
+            }
+            return `${r.start} a ${r.end} hs (turnos de ${r.start} a ${lastTurn} hs inclusive)`;
+          });
+          lines.push(`  * ${dayName}: ${parts.join(" y ")}.`);
+        }
+      });
+
+      if (offDays.length === 5) {
+        lines.push(`  * Lunes a Viernes: ${prof.shortName} sin horarios de consultorio asignados.`);
+      } else if (offDays.length > 0) {
+        lines.push(`  * ${joinDayNamesEs(offDays)}: ${prof.shortName} no atiende en consultorio.`);
+      }
+    });
+
+    return lines.join("\n");
+  }
 
   // Lista oficial de Feriados Nacionales de Argentina (YYYY-MM-DD)
   // Incluye inamovibles, trasladables y puentes turísticos oficiales
@@ -537,9 +784,18 @@
     SAME_DAY_BUFFER_HOURS: SAME_DAY_BUFFER_HOURS,
     PRACTITIONERS: PRACTITIONERS,
     TECHNIQUES: TECHNIQUES,
+    DEFAULT_PRACTITIONER_HOURS: DEFAULT_PRACTITIONER_HOURS,
     PRACTITIONER_HOURS: PRACTITIONER_HOURS,
     MAX_BOOKING_DAYS: MAX_BOOKING_DAYS,
     DEFAULT_ARGENTINA_HOLIDAYS: DEFAULT_ARGENTINA_HOLIDAYS,
+    clonePractitionerHours: clonePractitionerHours,
+    validatePractitionerHours: validatePractitionerHours,
+    setPractitionerHours: setPractitionerHours,
+    resetPractitionerHours: resetPractitionerHours,
+    getPractitionerHours: getPractitionerHours,
+    formatClaraScheduleSummary: formatClaraScheduleSummary,
+    parseHmToMinutes: parseHmToMinutes,
+    minutesToHm: minutesToHm,
     isBusinessDay: isBusinessDay,
     getTechnique: getTechnique,
     practitionersAt: practitionersAt,
