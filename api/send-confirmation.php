@@ -164,40 +164,94 @@ $htmlContent = '
 </body>
 </html>';
 
-$apiKey = getenv('RESEND_API_KEY') ?: '';
+// Cargar configuración local si existe (admin/api/config.php y admin/api/mail.php)
+$localCfg = [];
+$configFile = __DIR__ . '/../admin/api/config.php';
+if (is_file($configFile)) {
+    $loaded = @include $configFile;
+    if (is_array($loaded)) {
+        $localCfg = array_merge($localCfg, $loaded);
+    }
+}
+$mailCfgFile = __DIR__ . '/../admin/api/mail.php';
+if (is_file($mailCfgFile)) {
+    $loadedMail = @include $mailCfgFile;
+    if (is_array($loadedMail)) {
+        $localCfg = array_merge($localCfg, $loadedMail);
+    }
+}
 
-$payload = [
-    'from'    => 'Kinésica <onboarding@resend.dev>', // Pasará a turnos@kinesica.com.ar una vez verificado el dominio
-    'to'      => [$email],
-    'subject' => 'Confirmación de turno - ' . $fechaLegible . ' (' . $horaLegible . ')',
-    'html'    => $htmlContent
-];
+$apiKey = trim((string) (
+    getenv('RESEND_API_KEY')
+    ?: ($_SERVER['RESEND_API_KEY'] ?? $_ENV['RESEND_API_KEY'] ?? $localCfg['resend_api_key'] ?? '')
+));
 
-$ch = curl_init('https://api.resend.com/emails');
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'Authorization: Bearer ' . $apiKey,
-    'Content-Type: application/json'
-]);
+$subject = 'Confirmación de turno - ' . $fechaLegible . ($horaLegible ? ' (' . $horaLegible . ')' : '');
+$resendError = null;
 
-$response = curl_exec($ch);
-$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$curlError = curl_error($ch);
-curl_close($ch);
+if ($apiKey !== '') {
+    $resendFrom = (string) ($localCfg['resend_from'] ?? 'Kinésica <onboarding@resend.dev>');
+    $payload = [
+        'from'    => $resendFrom,
+        'to'      => [$email],
+        'subject' => $subject,
+        'html'    => $htmlContent
+    ];
 
-if ($curlError) {
-    http_response_code(500);
-    echo json_encode(['success' => false, 'error' => $curlError]);
+    $ch = curl_init('https://api.resend.com/emails');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Authorization: Bearer ' . $apiKey,
+        'Content-Type: application/json'
+    ]);
+
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
+    curl_close($ch);
+
+    if (!$curlError && $httpCode >= 200 && $httpCode < 300) {
+        $resData = json_decode((string) $response, true);
+        echo json_encode(['success' => true, 'provider' => 'resend', 'data' => $resData]);
+        exit;
+    }
+
+    $resendError = $curlError ?: json_decode((string) $response, true);
+}
+
+// Fallback nativo vía MTA del servidor (Hostinger mail() con no-reply@kinesica.com.ar)
+$mailFrom = trim((string) ($localCfg['mail_from'] ?? 'no-reply@kinesica.com.ar'));
+if ($mailFrom === '') {
+    $mailFrom = 'no-reply@kinesica.com.ar';
+}
+$encodedSubject = '=?UTF-8?B?' . base64_encode($subject) . '?=';
+$headers = implode("\r\n", [
+    'MIME-Version: 1.0',
+    'Content-Type: text/html; charset=UTF-8',
+    'From: =?UTF-8?B?' . base64_encode('Kinésica') . '?= <' . $mailFrom . '>',
+    'Reply-To: Kinésica <norberto1712@gmail.com>',
+    'X-Mailer: PHP/' . phpversion()
+]) . "\r\n";
+
+$sentViaMail = @mail($email, $encodedSubject, $htmlContent, $headers, '-f ' . $mailFrom);
+if (!$sentViaMail) {
+    $sentViaMail = @mail($email, $encodedSubject, $htmlContent, $headers);
+}
+
+if ($sentViaMail) {
+    echo json_encode([
+        'success' => true,
+        'provider' => 'mail',
+        'from' => $mailFrom
+    ]);
     exit;
 }
 
-$resData = json_decode($response, true);
+http_response_code(502);
+echo json_encode([
+    'success' => false,
+    'error' => $resendError ?: 'No se pudo enviar el correo de confirmación.'
+]);
 
-if ($httpCode >= 200 && $httpCode < 300) {
-    echo json_encode(['success' => true, 'data' => $resData]);
-} else {
-    http_response_code($httpCode >= 400 && $httpCode < 600 ? $httpCode : 500);
-    echo json_encode(['success' => false, 'error' => $resData, 'code' => $httpCode]);
-}
