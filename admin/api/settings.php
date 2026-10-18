@@ -35,6 +35,19 @@ if ($method === 'POST') {
     if (isset($input['booking_active'])) {
         $current['booking_active'] = (bool) $input['booking_active'];
     }
+    if (isset($input['fees']) && is_array($input['fees'])) {
+        $atmVal = isset($input['fees']['atm']) ? (int) $input['fees']['atm'] : ($current['fees']['atm'] ?? 65000);
+        $genVal = isset($input['fees']['general']) ? (int) $input['fees']['general'] : ($current['fees']['general'] ?? 75000);
+        $payVal = isset($input['fees']['payment_methods']) ? trim((string) $input['fees']['payment_methods']) : ($current['fees']['payment_methods'] ?? 'Efectivo o transferencia bancaria');
+        $current['fees'] = [
+            'atm' => max(0, $atmVal),
+            'general' => max(0, $genVal),
+            'payment_methods' => $payVal ?: 'Efectivo o transferencia bancaria',
+            'updated_at' => gmdate('Y-m-d\TH:i:s\Z'),
+            'updated_by' => (string) ($user['name'] ?: $user['username']),
+        ];
+    }
+
     if (isset($input['practitioner_hours']) && is_array($input['practitioner_hours'])) {
         $val = validate_practitioner_hours_php($input['practitioner_hours']);
         if (!$val['isValid']) {
@@ -52,6 +65,13 @@ if ($method === 'POST') {
     $toPersist = [
         'clara_active' => $current['clara_active'],
         'booking_active' => $current['booking_active'],
+        'fees' => $current['fees'] ?? [
+            'atm' => 65000,
+            'general' => 75000,
+            'payment_methods' => 'Efectivo o transferencia bancaria',
+            'updated_at' => null,
+            'updated_by' => null,
+        ],
         'practitioner_hours' => $current['practitioner_hours'],
         'horarios_updated_at' => $current['horarios_updated_at'],
         'horarios_updated_by' => $current['horarios_updated_by'],

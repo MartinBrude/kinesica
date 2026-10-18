@@ -56,5 +56,12 @@
     }
   },
   "hours_updated_at": null,
-  "hours_updated_by": null
+  "hours_updated_by": null,
+  "fees": {
+    "atm": 65000,
+    "general": 75000,
+    "payment_methods": "Efectivo o transferencia bancaria",
+    "updated_at": null,
+    "updated_by": null
+  }
 }

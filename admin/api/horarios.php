@@ -318,9 +318,26 @@ function load_full_runtime_settings(string $file): array
         }
     }
 
+    $defaultFees = [
+        'atm' => 65000,
+        'general' => 75000,
+        'payment_methods' => 'Efectivo o transferencia bancaria',
+        'updated_at' => null,
+        'updated_by' => null,
+    ];
+    $fees = $defaultFees;
+    if (isset($data['fees']) && is_array($data['fees'])) {
+        $fees['atm'] = isset($data['fees']['atm']) ? (int) $data['fees']['atm'] : $defaultFees['atm'];
+        $fees['general'] = isset($data['fees']['general']) ? (int) $data['fees']['general'] : $defaultFees['general'];
+        $fees['payment_methods'] = !empty($data['fees']['payment_methods']) ? (string) $data['fees']['payment_methods'] : $defaultFees['payment_methods'];
+        $fees['updated_at'] = $data['fees']['updated_at'] ?? null;
+        $fees['updated_by'] = $data['fees']['updated_by'] ?? null;
+    }
+
     return [
         'clara_active' => isset($data['clara_active']) ? (bool) $data['clara_active'] : true,
         'booking_active' => isset($data['booking_active']) ? (bool) $data['booking_active'] : true,
+        'fees' => $fees,
         'practitioner_hours' => $hours,
         'practitioner_hours_py' => convert_hours_to_python_weekdays($hours),
         'clara_schedule_summary' => build_clara_schedule_summary($hours),

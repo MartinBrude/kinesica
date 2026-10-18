@@ -957,21 +957,46 @@
       this._prefetchRun = true;
       this._prefetchedSlots = this._prefetchedSlots || {};
       const cacheGen = this._slotCacheGen || 0;
-      const days = this.collectAttendanceDays(10);
+      const days = this.collectAttendanceDays(7);
       const run = async () => {
+        let rangeOk = false;
         if (this.client && typeof this.client.getSlotsRange === "function") {
-          await this.client.getSlotsRange(days.map((day) => day.iso));
+          try {
+            rangeOk = await this.client.getSlotsRange(days.map((day) => day.iso));
+          } catch (e) {
+            rangeOk = false;
+          }
         }
         if (cacheGen !== (this._slotCacheGen || 0)) return;
-        for (let i = 0; i < days.length; i += 1) {
-          const day = days[i];
-          if (cacheGen !== (this._slotCacheGen || 0)) return;
-          if (this._prefetchedSlots[day.iso]) continue;
-          try {
-            const slots = await this.fetchFilteredSlots(day.iso);
+
+        // Si getSlotsRange funcionó o no, aseguramos que los primeros 3 a 5 días estén precargados
+        const initialBatch = days.slice(0, 4);
+        await Promise.all(
+          initialBatch.map(async (day) => {
             if (cacheGen !== (this._slotCacheGen || 0)) return;
-            this._prefetchedSlots[day.iso] = slots;
-          } catch (err) {}
+            if (this._prefetchedSlots[day.iso]) return;
+            try {
+              const slots = await this.fetchFilteredSlots(day.iso);
+              if (cacheGen !== (this._slotCacheGen || 0)) return;
+              this._prefetchedSlots[day.iso] = slots;
+            } catch (err) {}
+          })
+        );
+
+        // Prefech del resto en tandas para no saturar
+        for (let i = 4; i < days.length; i += 2) {
+          if (cacheGen !== (this._slotCacheGen || 0)) return;
+          const batch = days.slice(i, i + 2);
+          await Promise.all(
+            batch.map(async (day) => {
+              if (this._prefetchedSlots[day.iso]) return;
+              try {
+                const slots = await this.fetchFilteredSlots(day.iso);
+                if (cacheGen !== (this._slotCacheGen || 0)) return;
+                this._prefetchedSlots[day.iso] = slots;
+              } catch (err) {}
+            })
+          );
         }
       };
       run();
@@ -1052,8 +1077,14 @@
       if (empty) empty.style.display = "none";
       if (grid) grid.style.display = "none";
 
-      this._slotCacheGen = (this._slotCacheGen || 0) + 1;
-      this._prefetchedSlots = {};
+      const filterKey = `${this.state.techniqueId || ""}_${this.state.practitionerId || ""}_${this.state.appointmentType || ""}`;
+      if (this._lastFilterKey !== filterKey) {
+        this._lastFilterKey = filterKey;
+        this._slotCacheGen = (this._slotCacheGen || 0) + 1;
+        this._prefetchedSlots = {};
+      } else {
+        this._prefetchedSlots = this._prefetchedSlots || {};
+      }
       const days = this.collectAttendanceDays(10);
 
       let firstAvailable = null;

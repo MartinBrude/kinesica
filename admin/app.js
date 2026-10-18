@@ -132,6 +132,12 @@ import {
   applyHoursToRuntime,
 } from "./modules/horarios.js?v=1";
 
+import {
+  initHonorariosModule,
+  showHonorariosView,
+  hideHonorariosView,
+} from "./modules/honorarios.js?v=1";
+
 // Re-exportar utilidades esenciales para interoperabilidad y pruebas
 export {
   api,
@@ -216,6 +222,8 @@ async function refresh() {
       switchTab("pacientes");
     } else if (saved?.view === "horarios") {
       switchTab("horarios");
+    } else if (saved?.view === "honorarios") {
+      switchTab("honorarios");
     } else if (saved?.view === "fichas" || saved?.view === "library") {
       switchTab("fichas");
     } else if (saved?.view !== "form") {
@@ -385,32 +393,44 @@ function switchTab(tab) {
   const btnFichas = document.querySelector("#nav-btn-fichas");
   const btnPacientes = document.querySelector("#nav-btn-pacientes");
   const btnHorarios = document.querySelector("#nav-btn-horarios");
+  const btnHonorarios = document.querySelector("#nav-btn-honorarios");
 
   btnInicio?.classList.remove("is-active");
   btnFichas?.classList.remove("is-active");
   btnPacientes?.classList.remove("is-active");
   btnHorarios?.classList.remove("is-active");
+  btnHonorarios?.classList.remove("is-active");
 
   if (tab === "inicio") {
     btnInicio?.classList.add("is-active");
     hidePacientesView();
     hideHorariosView();
+    hideHonorariosView();
     showDashboardView();
   } else if (tab === "pacientes") {
     btnPacientes?.classList.add("is-active");
     hideDashboardView();
     hideHorariosView();
+    hideHonorariosView();
     showPacientesView();
   } else if (tab === "horarios") {
     btnHorarios?.classList.add("is-active");
     hideDashboardView();
     hidePacientesView();
+    hideHonorariosView();
     showHorariosView();
+  } else if (tab === "honorarios") {
+    btnHonorarios?.classList.add("is-active");
+    hideDashboardView();
+    hidePacientesView();
+    hideHorariosView();
+    showHonorariosView();
   } else {
     btnFichas?.classList.add("is-active");
     hideDashboardView();
     hidePacientesView();
     hideHorariosView();
+    hideHonorariosView();
     showLibrary();
   }
 }
@@ -443,6 +463,7 @@ function mountAdminChannels() {
       document.getElementById("nav-btn-fichas")?.addEventListener("click", () => switchTab("fichas"));
       document.getElementById("nav-btn-pacientes")?.addEventListener("click", () => switchTab("pacientes"));
       document.getElementById("nav-btn-horarios")?.addEventListener("click", () => switchTab("horarios"));
+      document.getElementById("nav-btn-honorarios")?.addEventListener("click", () => switchTab("honorarios"));
       document.getElementById("brand-logo")?.addEventListener("click", (e) => {
         e.preventDefault();
         switchTab("inicio");
@@ -473,6 +494,7 @@ function mountAdminChannels() {
 fillForm(blank(), loadAll());
 initPacientesModule();
 initHorariosModule();
+initHonorariosModule();
 initDashboardModule({
   onNavigate: (tab) => switchTab(tab),
   onNewFicha: () => {

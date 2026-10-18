@@ -103,6 +103,14 @@ export function initDashboardModule(callbacks = {}) {
     callbacks.onNavigate?.("horarios");
   });
 
+  document.querySelector("#dash-btn-honorarios")?.addEventListener("click", () => {
+    callbacks.onNavigate?.("honorarios");
+  });
+
+  document.querySelector("#dash-btn-honorarios-card")?.addEventListener("click", () => {
+    callbacks.onNavigate?.("honorarios");
+  });
+
   // Toggle de Clara desde el dashboard
   claraToggleBtn?.addEventListener("click", async () => {
     const nextState = !activeClara;
