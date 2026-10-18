@@ -425,4 +425,9 @@ test("REGLA 9: Opción 'No me importa' (sin profesional fijo) ofrece turnos con 
   assert.ok(times.includes("18:00"), "Debe incluir el último turno de Norberto por la tarde");
 });
 
+test("REGLA 10: Cada profesional tiene configurado su WhatsApp directo para pacientes en tratamiento", () => {
+  assert.strictEqual(engine.PRACTITIONERS.norberto.whatsapp, "5491161564311");
+  assert.strictEqual(engine.PRACTITIONERS.maria.whatsapp, "5491128531224");
+});
+
 console.log(`\n🎉 Resultado: ${passed}/${total} tests superados con éxito.\n`);

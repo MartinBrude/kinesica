@@ -236,6 +236,14 @@
       modalEl.setAttribute("aria-hidden", "true");
       document.body.classList.remove("kinesica-booking-modal-open");
 
+      if (widgetInstance && typeof widgetInstance.reset === "function") {
+        widgetInstance.reset();
+      }
+      const dialog = modalEl.querySelector(".kinesica-booking-modal-dialog");
+      if (dialog) dialog.scrollTop = 0;
+      const body = modalEl.querySelector(".kinesica-booking-modal-body");
+      if (body) body.scrollTop = 0;
+
       if (!options.skipHashPush) {
         if (window.location.hash === "#agendar" || window.location.hash === "#habitual") {
           try {

@@ -44,6 +44,7 @@
       proAny: "No me importa",
       yes: "Sí", no: "No",
       seeSlots: "Ver horarios disponibles →",
+      openWhatsapp: "Abrir WhatsApp →",
       pickDay: "Elige el día y horario",
       daysLabel: "Días disponibles:",
       slotsLabel: "Horarios disponibles:",
@@ -125,6 +126,7 @@
       proAny: "I don't mind",
       yes: "Yes", no: "No",
       seeSlots: "See available times →",
+      openWhatsapp: "Open WhatsApp →",
       pickDay: "Choose a day and time",
       daysLabel: "Available days:",
       slotsLabel: "Available times:",
@@ -206,6 +208,7 @@
       proAny: "Peu m'importe",
       yes: "Oui", no: "Non",
       seeSlots: "Voir les horaires disponibles →",
+      openWhatsapp: "Ouvrir WhatsApp →",
       pickDay: "Choisissez le jour et l'horaire",
       daysLabel: "Jours disponibles :",
       slotsLabel: "Horaires disponibles :",
@@ -287,6 +290,7 @@
       proAny: "Não me importa",
       yes: "Sim", no: "Não",
       seeSlots: "Ver horários disponíveis →",
+      openWhatsapp: "Abrir WhatsApp →",
       pickDay: "Escolha o dia e o horário",
       daysLabel: "Dias disponíveis:",
       slotsLabel: "Horários disponíveis:",
@@ -407,6 +411,21 @@
       if (id === "norberto") return "Norberto Brude";
       if (id === "maria") return "María Gulín";
       return this.practitionerGenderLabel(id);
+    }
+
+    practitionerWhatsappUrl(id) {
+      const prac = engine && engine.PRACTITIONERS && engine.PRACTITIONERS[id];
+      const digits = (prac && prac.whatsapp) || (id === "maria" ? "5491128531224" : "5491161564311");
+      return `https://wa.me/${digits}`;
+    }
+
+    openPractitionerWhatsApp(id) {
+      const url = this.practitionerWhatsappUrl(id);
+      if (typeof window !== "undefined" && typeof window.open === "function") {
+        window.open(url, "_blank", "noopener,noreferrer");
+      } else if (typeof window !== "undefined") {
+        window.location.href = url;
+      }
     }
 
     techniqueLabel(technique) {
@@ -635,12 +654,17 @@
       this.renderTechniqueChoices();
 
       q("#kb-btn-next-1").addEventListener("click", () => {
-        const technique = engine.getTechnique(this.state.techniqueId);
-        if (this.state.existingPatient === true && !this.state.practitionerId) {
-          this.showError(this.t("errWho"));
+        if (this.state.existingPatient === true) {
+          if (!this.state.practitionerId) {
+            this.showError(this.t("errWho"));
+            return;
+          }
+          this.clearError();
+          this.openPractitionerWhatsApp(this.state.practitionerId);
           return;
         }
-        if (this.state.existingPatient !== true && !technique) {
+        const technique = engine.getTechnique(this.state.techniqueId);
+        if (!technique) {
           this.showError(this.t("errTechnique"));
           return;
         }
@@ -803,10 +827,97 @@
     syncStep1Continue() {
       const btn = this.container.querySelector("#kb-btn-next-1");
       const technique = engine.getTechnique(this.state.techniqueId);
-      const ready = this.state.existingPatient === true
+      const isExisting = this.state.existingPatient === true;
+      const ready = isExisting
         ? Boolean(this.state.practitionerId)
         : Boolean(technique);
-      if (btn) btn.disabled = !ready;
+      if (btn) {
+        btn.disabled = !ready;
+        btn.textContent = isExisting ? this.t("openWhatsapp") : this.t("seeSlots");
+      }
+    }
+
+    reset() {
+      this._carouselSeq = (this._carouselSeq || 0) + 1;
+      this._slotReqSeq = (this._slotReqSeq || 0) + 1;
+      this.state = {
+        step: 1,
+        tipo: "session",
+        appointmentType: "session",
+        existingPatient: null,
+        techniqueId: null,
+        practitionerId: null,
+        practitionerPreference: null,
+        selectedDate: null,
+        selectedTime: null,
+        availableSlots: [],
+        isLoadingSlots: false,
+        formData: {
+          nombre: "",
+          email: "",
+          telefono: "",
+          dni: "",
+        },
+        confirmedBooking: null,
+      };
+
+      this.clearError();
+
+      const q = (sel) => this.container.querySelector(sel);
+
+      this.container.querySelectorAll(".kb-choice-card.selected").forEach((card) => {
+        card.classList.remove("selected");
+      });
+
+      const existingBox = q("#kb-existing-box");
+      if (existingBox) existingBox.style.display = "none";
+
+      const newBox = q("#kb-new-box");
+      if (newBox) newBox.style.display = "none";
+
+      const practitionerBox = q("#kb-practitioner-box");
+      if (practitionerBox) practitionerBox.style.display = "none";
+
+      const carousel = q("#kb-date-carousel");
+      if (carousel) carousel.innerHTML = "";
+
+      const slotsGrid = q("#kb-slots-grid");
+      if (slotsGrid) {
+        slotsGrid.innerHTML = "";
+        slotsGrid.style.display = "none";
+      }
+
+      const slotsLoading = q("#kb-slots-loading");
+      if (slotsLoading) slotsLoading.style.display = "none";
+
+      const slotsEmpty = q("#kb-slots-empty");
+      if (slotsEmpty) slotsEmpty.style.display = "none";
+
+      const slotsError = q("#kb-slots-error");
+      if (slotsError) slotsError.style.display = "none";
+
+      const btnNext2 = q("#kb-btn-next-2");
+      if (btnNext2) btnNext2.disabled = true;
+
+      ["#kb-input-nombre", "#kb-input-email", "#kb-input-telefono", "#kb-input-dni"].forEach((sel) => {
+        const input = q(sel);
+        if (input) input.value = "";
+      });
+
+      const btnSubmit = q("#kb-btn-submit");
+      if (btnSubmit) {
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = this.t("confirm");
+      }
+
+      const summaryBox = q("#kb-success-summary");
+      if (summaryBox) summaryBox.innerHTML = "";
+
+      const clinicRules = q("#kb-success-clinic-rules");
+      if (clinicRules) clinicRules.style.display = "none";
+
+      this.syncStep1Continue();
+      this.setStep(1);
     }
 
     collectAttendanceDays(limit) {

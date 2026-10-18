@@ -29,8 +29,8 @@
   const SLOT_STEP_MINUTES = 30;
 
   const PRACTITIONERS = {
-    norberto: { id: "norberto", name: "Norberto" },
-    maria: { id: "maria", name: "María" },
+    norberto: { id: "norberto", name: "Norberto", whatsapp: "5491161564311" },
+    maria: { id: "maria", name: "María", whatsapp: "5491128531224" },
   };
 
   const TECHNIQUES = [
