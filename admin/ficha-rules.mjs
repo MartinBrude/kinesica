@@ -24,7 +24,7 @@ export const CLINICIAN_DETAILS = {
     nombre: "Lic. María Gulín",
     titulo: "Kinesióloga Fisiatra",
     matricula: "M.N. 15322 · M.P. 3112",
-    signatureFile: "/admin/signatures/maria.png",
+    signatureFile: "/admin/signatures/maria.png?v=2",
   },
 };
 

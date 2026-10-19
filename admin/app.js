@@ -28,7 +28,7 @@ import {
   compareFichas,
   daysBetween,
   matchFichaSearch,
-} from "./ficha-rules.mjs?v=89";
+} from "./ficha-rules.mjs?v=90";
 
 import {
   api,

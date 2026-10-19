@@ -9,7 +9,7 @@ import {
   patientKey,
   normalizeDni,
   CLINICIAN_DETAILS,
-} from "../ficha-rules.mjs?v=85";
+} from "../ficha-rules.mjs?v=90";
 import { formatDate } from "./api.js?v=77";
 import { escapeHtml, node } from "./dom.js?v=77";
 
