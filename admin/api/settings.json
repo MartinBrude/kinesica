@@ -65,7 +65,7 @@
     "updated_by": null
   },
   "clara_texts": {
-    "menu_welcome": "¡Hola! Te damos la bienvenida a *Kinésica* 🩺\n\nPor favor, respondé con la letra de la opción que necesitás:\n\n*A.* 📅 Turnos y disponibilidad (agendar o consultar)\n*B.* 📍 Dónde queda el consultorio y cómo llegar\n*C.* 💳 Honorarios y formas de pago\n*D.* 👕 ¿Cómo es la vestimenta a utilizar en la sesión?\n*E.* 💬 Dejar un mensaje a Norberto o María\n\n_(Escribí la letra de la opción deseada, por ejemplo *A* o *C*)_",
+    "menu_welcome": "¡Hola! Te damos la bienvenida a *Kinésica* 🩺\n\nPor favor, respondé con la letra de la opción que necesitás:\n\n*A.* 📅 Turnos (agendar, consultar o cancelar)\n*B.* 📍 Ubicación y horarios del consultorio\n*C.* 💳 Honorarios y cobertura (obras sociales / reintegros)\n*D.* 👕 ¿Cómo venir vestido/a a la sesión?\n*E.* 💬 Comunicarte con un profesional (Lic. Norberto Brude / Lic. María Gulín)\n\n_(Escribí la letra de la opción deseada, por ejemplo *A* o *C*)_",
     "opt_a_text": "📅 *Turnos y Reservas - Kinésica*\n\nPara ver los días y horarios disponibles en tiempo real con Norberto o María y agendar tu sesión de 60 minutos, ingresá a nuestra turnera online:\n\n👉 *https://kinesica.com.ar/agendar*",
     "opt_b_text": "📍 *Kinésica Consultorio*\n• *Ubicación:* Charcas 3889, Piso 5º B, Palermo, CABA (entre Scalabrini Ortiz y Aráoz, a metros de Av. Santa Fe y estación Scalabrini Ortiz del Subte D).\n• *Google Maps:* https://maps.google.com/?q=Charcas+3889+Palermo+CABA",
     "opt_d_text": "👕 *Indumentaria para la sesión:*\n• Ropa interior o pantalón corto para los varones.\n• Ropa interior con corpiño tradicional (no deportivo), malla de 2 piezas o calza corta para las mujeres.\nSi sos menor, vení acompañado/a por un mayor 🙌.",

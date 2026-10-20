@@ -335,7 +335,17 @@ function load_full_runtime_settings(string $file): array
     }
 
     $defaultClaraTexts = [
-        'menu_welcome' => "Hola! Te damos la bienvenida a Kinésica 🌿\n\n¿En qué podemos ayudarte hoy?\nEscribí la letra de tu consulta:\n\nA) Turnos y disponibilidad\nB) Dónde queda el consultorio y cómo llegar\nC) Honorarios y formas de pago\nD) Cómo venir vestido/a a la sesión\nE) Dejar un mensaje a Norberto o María",
+        'menu_welcome' => "¡Hola! Te damos la bienvenida a *Kinésica* 🩺
+
+Por favor, respondé con la letra de la opción que necesitás:
+
+*A.* 📅 Turnos (agendar, consultar o cancelar)
+*B.* 📍 Ubicación y horarios del consultorio
+*C.* 💳 Honorarios y cobertura (obras sociales / reintegros)
+*D.* 👕 ¿Cómo venir vestido/a a la sesión?
+*E.* 💬 Comunicarte con un profesional (Lic. Norberto Brude / Lic. María Gulín)
+
+_(Escribí la letra de la opción deseada, por ejemplo *A* o *C*)_",
         'opt_a_text' => 'Para coordinar o consultar turnos, ingresá a nuestra turnera online: https://kinesica.com.ar/agendar 📅',
         'opt_b_text' => 'Kinésica queda en Charcas 3889, Piso 5º B, Palermo, CABA (entre Scalabrini Ortiz y Aráoz). 📍',
         'opt_d_text' => "Indumentaria para la sesión:\n• Ropa interior o pantalón corto para los varones.\n• Ropa interior con corpiño tradicional (no deportivo), malla de 2 piezas o calza corta para las mujeres.\nSi sos menor, vení acompañado/a por un mayor 🙌.",

@@ -45,11 +45,11 @@ export const DEFAULT_CLARA_TEXTS = {
 
 Por favor, respondé con la letra de la opción que necesitás:
 
-*A.* 📅 Turnos y disponibilidad (agendar o consultar)
-*B.* 📍 Dónde queda el consultorio y cómo llegar
-*C.* 💳 Honorarios y formas de pago
-*D.* 👕 ¿Cómo es la vestimenta a utilizar en la sesión?
-*E.* 💬 Dejar un mensaje a Norberto o María
+*A.* 📅 Turnos (agendar, consultar o cancelar)
+*B.* 📍 Ubicación y horarios del consultorio
+*C.* 💳 Honorarios y cobertura (obras sociales / reintegros)
+*D.* 👕 ¿Cómo venir vestido/a a la sesión?
+*E.* 💬 Comunicarte con un profesional (Lic. Norberto Brude / Lic. María Gulín)
 
 _(Escribí la letra de la opción deseada, por ejemplo *A* o *C*)_",
   opt_a_text: "📅 *Turnos y Reservas - Kinésica*
@@ -295,13 +295,32 @@ function getNowTimeStr() {
   return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
 
+function formatWhatsAppMarkdown(rawText) {
+  if (!rawText) return "";
+  const escaped = escapeHtml(rawText);
+  // Negrita: *texto* -> <strong>texto</strong>
+  let formatted = escaped.replace(/\*([^*\n\r]+)\*/g, "<strong>$1</strong>");
+  // Cursiva: _texto_ -> <em>texto</em>
+  formatted = formatted.replace(/_([^_\n\r]+)_/g, "<em>$1</em>");
+  // Enlaces http/https automáticos
+  formatted = formatted.replace(
+    /(https?:\/\/[^\s<]+)/g,
+    '<a href="$1" target="_blank" rel="noopener noreferrer" style="color:#027eb5; text-decoration:underline;">$1</a>'
+  );
+  return formatted;
+}
+
 export function appendChatMessage(text, sender = "bot") {
   if (!chatMessagesEl) return;
   const msgEl = document.createElement("div");
   msgEl.className = `chat-msg ${sender}`;
   
   const textNode = document.createElement("div");
-  textNode.textContent = text;
+  if (sender === "bot") {
+    textNode.innerHTML = formatWhatsAppMarkdown(text);
+  } else {
+    textNode.textContent = text;
+  }
   msgEl.appendChild(textNode);
 
   const timeNode = document.createElement("span");
