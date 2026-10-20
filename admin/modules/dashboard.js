@@ -9,6 +9,7 @@ import { escapeHtml, dialogAlert } from "./dom.js?v=78";
 
 const viewDashboard = document.querySelector("#view-dashboard");
 const greetingEl = document.querySelector("#dash-greeting");
+const descEl = document.querySelector("#dash-desc");
 const loginsEl = document.querySelector("#dash-logins");
 const claraDot = document.querySelector("#dash-clara-dot");
 const claraText = document.querySelector("#dash-clara-status-text");
@@ -73,6 +74,14 @@ export async function updateDashboardState() {
   const user = getSessionUser();
   if (greetingEl) {
     greetingEl.textContent = user?.name ? `Hola, ${user.name}` : "Consultorio Kinésica";
+  }
+  if (descEl) {
+    const rawName = user?.name || user?.username || "";
+    let cleanName = rawName.replace(/^Lic\.\s*/i, "").trim();
+    if (!cleanName) {
+      cleanName = "usuario";
+    }
+    descEl.textContent = `Panel de control de ${cleanName}`;
   }
   if (loginsEl) {
     const isAdminUser = user?.role === "admin" || user?.username === "martin";
