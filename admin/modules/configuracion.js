@@ -9,6 +9,8 @@
 
 import { api } from "./api.js?v=77";
 import { escapeHtml, dialogAlert } from "./dom.js?v=78";
+import { loadHorariosFromServer } from "./horarios.js?v=1";
+import { loadHonorarios } from "./honorarios.js?v=1";
 
 const viewConfiguracion = document.querySelector("#view-configuracion");
 
@@ -54,7 +56,6 @@ let activeBooking = false;
 export function showConfiguracionView(subtab = "clara") {
   if (viewConfiguracion) {
     viewConfiguracion.hidden = false;
-    mountNestedViews();
     const views = ["#view-dashboard", "#view-library", "#view-pacientes", "#view-form", "#view-compare", "#view-gate"];
     views.forEach((sel) => {
       const el = document.querySelector(sel);
@@ -88,7 +89,11 @@ export function switchConfigSubtab(subtabId) {
   configSections.forEach((sec) => {
     if (sec.id === `config-panel-${subtabId}`) {
       sec.hidden = false;
-      if (subtabId === "chat" && chatMessagesEl && chatMessagesEl.children.length === 0) {
+      if (subtabId === "horarios") {
+        loadHorariosFromServer();
+      } else if (subtabId === "honorarios") {
+        loadHonorarios();
+      } else if (subtabId === "chat" && chatMessagesEl && chatMessagesEl.children.length === 0) {
         resetChatDemo();
       }
     } else {
@@ -254,22 +259,6 @@ export function initConfiguracionModule(callbacks = {}) {
   });
 
   initChatSimulator();
-}
-
-export function mountNestedViews() {
-  const horContainer = document.querySelector("#config-horarios-placeholder");
-  const honContainer = document.querySelector("#config-honorarios-placeholder");
-  const viewHorarios = document.querySelector("#view-horarios");
-  const viewHonorarios = document.querySelector("#view-honorarios");
-
-  if (horContainer && viewHorarios && viewHorarios.parentElement !== horContainer) {
-    horContainer.appendChild(viewHorarios);
-    viewHorarios.hidden = false;
-  }
-  if (honContainer && viewHonorarios && viewHonorarios.parentElement !== honContainer) {
-    honContainer.appendChild(viewHonorarios);
-    viewHonorarios.hidden = false;
-  }
 }
 
 // ----------------------------------------------------

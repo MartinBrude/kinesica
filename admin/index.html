@@ -378,67 +378,7 @@
       </div>
     </section>
 
-    <section id="view-horarios" class="view" hidden>
-      <div class="hero-card">
-        <div class="hero-copy">
-          <span class="doc-icon" aria-hidden="true"></span>
-          <h1 class="hero-title">Horarios de Atención por Profesional</h1>
-          <p style="margin: 4px 0 0; color: var(--muted); font-size: 14px;">
-            Definí los días y franjas de consultorio de María y Norberto (1 camilla). Se aplican en vivo a la función Agendar y al resumen para Clara.
-          </p>
-          <small id="horarios-last-updated" style="display:block; margin-top:6px; color:var(--accent-deep); font-weight:600;"></small>
-        </div>
-        <div class="hero-actions">
-          <button type="button" class="btn green btn-primary-cta" id="btn-save-horarios">Guardar horarios</button>
-          <button type="button" class="btn light" id="btn-test-horarios-booking" data-booking-open>📅 Probar en Agendar</button>
-          <div class="hero-secondary">
-            <button type="button" class="hero-link" id="btn-reset-horarios">Restaurar horarios por defecto</button>
-          </div>
-        </div>
-      </div>
-
-      <div id="horarios-status-banner" class="horarios-alert-box" role="status" hidden></div>
-
-      <div class="horarios-timeline-card">
-        <div class="horarios-timeline-header">
-          <div>
-            <h2 class="horarios-timeline-title">Ocupación Semanal de Consultorio (08:00 a 20:00 hs)</h2>
-            <p class="horarios-timeline-sub">Los horarios entre ambos profesionales no pueden superponerse por tratarse de una única camilla física.</p>
-          </div>
-          <div class="horarios-legend">
-            <span class="horarios-legend-item"><span class="horarios-legend-swatch maria"></span> Lic. María Gulin</span>
-            <span class="horarios-legend-item"><span class="horarios-legend-swatch norberto"></span> Lic. Norberto Brude</span>
-            <span class="horarios-legend-item"><span class="horarios-legend-swatch conflict"></span> Superposición</span>
-          </div>
-        </div>
-        <div class="horarios-axis" aria-hidden="true">
-          <span>Día</span>
-          <div class="horarios-axis-ticks">
-            <span>08:00</span>
-            <span>10:00</span>
-            <span>12:00</span>
-            <span>14:00</span>
-            <span>16:00</span>
-            <span>18:00</span>
-            <span>20:00</span>
-          </div>
-        </div>
-        <div id="horarios-timeline-rows" class="horarios-timeline-rows"></div>
-      </div>
-
-      <div id="horarios-editors-grid" class="horarios-editors-grid"></div>
-
-      <div class="horarios-clara-card">
-        <div class="horarios-clara-header">
-          <div>
-            <h2 class="horarios-timeline-title">Bloque de Horarios para el Chatbot de Clara (WhatsApp)</h2>
-            <p class="horarios-timeline-sub">Se actualiza automáticamente con la regla del último turno iniciable (60 min antes del cierre) y queda disponible en <code>/admin/api/horarios.php</code>.</p>
-          </div>
-          <button type="button" class="btn light" id="btn-copy-clara-horarios">📋 Copiar texto para Clara</button>
-        </div>
-        <pre id="horarios-clara-preview" class="horarios-clara-pre"></pre>
-      </div>
-    </section>
+    
 
     <!-- 4. CENTRO DE CONTROL UNIFICADO: CONFIGURACIÓN -->
     <section id="view-configuracion" class="view" hidden>
@@ -577,63 +517,70 @@
 
       <!-- SUBPANEL 3: HORARIOS DE ATENCIÓN (Inyectado / Compartido) -->
       <div id="config-panel-horarios" class="config-subpanel" hidden>
-        <div id="config-horarios-placeholder"></div>
+        <div class="hero-card">
+        <div class="hero-copy">
+          <span class="doc-icon" aria-hidden="true"></span>
+          <h1 class="hero-title">Horarios de Atención por Profesional</h1>
+          <p style="margin: 4px 0 0; color: var(--muted); font-size: 14px;">
+            Definí los días y franjas de consultorio de María y Norberto (1 camilla). Se aplican en vivo a la función Agendar y al resumen para Clara.
+          </p>
+          <small id="horarios-last-updated" style="display:block; margin-top:6px; color:var(--accent-deep); font-weight:600;"></small>
+        </div>
+        <div class="hero-actions">
+          <button type="button" class="btn green btn-primary-cta" id="btn-save-horarios">Guardar horarios</button>
+          <button type="button" class="btn light" id="btn-test-horarios-booking" data-booking-open>📅 Probar en Agendar</button>
+          <div class="hero-secondary">
+            <button type="button" class="hero-link" id="btn-reset-horarios">Restaurar horarios por defecto</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="horarios-status-banner" class="horarios-alert-box" role="status" hidden></div>
+
+      <div class="horarios-timeline-card">
+        <div class="horarios-timeline-header">
+          <div>
+            <h2 class="horarios-timeline-title">Ocupación Semanal de Consultorio (08:00 a 20:00 hs)</h2>
+            <p class="horarios-timeline-sub">Los horarios entre ambos profesionales no pueden superponerse por tratarse de una única camilla física.</p>
+          </div>
+          <div class="horarios-legend">
+            <span class="horarios-legend-item"><span class="horarios-legend-swatch maria"></span> Lic. María Gulin</span>
+            <span class="horarios-legend-item"><span class="horarios-legend-swatch norberto"></span> Lic. Norberto Brude</span>
+            <span class="horarios-legend-item"><span class="horarios-legend-swatch conflict"></span> Superposición</span>
+          </div>
+        </div>
+        <div class="horarios-axis" aria-hidden="true">
+          <span>Día</span>
+          <div class="horarios-axis-ticks">
+            <span>08:00</span>
+            <span>10:00</span>
+            <span>12:00</span>
+            <span>14:00</span>
+            <span>16:00</span>
+            <span>18:00</span>
+            <span>20:00</span>
+          </div>
+        </div>
+        <div id="horarios-timeline-rows" class="horarios-timeline-rows"></div>
+      </div>
+
+      <div id="horarios-editors-grid" class="horarios-editors-grid"></div>
+
+      <div class="horarios-clara-card">
+        <div class="horarios-clara-header">
+          <div>
+            <h2 class="horarios-timeline-title">Bloque de Horarios para el Chatbot de Clara (WhatsApp)</h2>
+            <p class="horarios-timeline-sub">Se actualiza automáticamente con la regla del último turno iniciable (60 min antes del cierre) y queda disponible en <code>/admin/api/horarios.php</code>.</p>
+          </div>
+          <button type="button" class="btn light" id="btn-copy-clara-horarios">📋 Copiar texto para Clara</button>
+        </div>
+        <pre id="horarios-clara-preview" class="horarios-clara-pre"></pre>
+      </div>
       </div>
 
       <!-- SUBPANEL 4: HONORARIOS Y FORMAS DE PAGO (Inyectado / Compartido) -->
       <div id="config-panel-honorarios" class="config-subpanel" hidden>
-        <div id="config-honorarios-placeholder"></div>
-      </div>
-
-      <!-- SUBPANEL 5: DEMO CHAT CON CLARA (WHATSAPP SIMULATOR) -->
-      <div id="config-panel-chat" class="config-subpanel" hidden>
-        <div style="text-align: center; max-width: 600px; margin: 0 auto 20px;">
-          <h2 class="horarios-timeline-title" style="margin-bottom: 4px;">Simulador Interactivo de Clara (WhatsApp)</h2>
-          <p class="horarios-timeline-sub">
-            Probá la experiencia de un paciente en tiempo real interactuando con los textos y honorarios que acabás de configurar.
-          </p>
-        </div>
-
-        <div class="chat-demo-container">
-          <div class="chat-demo-header">
-            <div class="chat-demo-avatar">🌿</div>
-            <div class="chat-demo-info">
-              <h3>Clara · Recepción Kinésica</h3>
-              <p>en línea (asistente virtual)</p>
-            </div>
-          </div>
-
-          <div id="chat-demo-messages" class="chat-demo-messages">
-            <!-- Mensajes dinámicos generados por JS -->
-          </div>
-
-          <div class="chat-quick-actions">
-            <button type="button" class="chat-quick-btn" data-chat-act="A">A · Turnos</button>
-            <button type="button" class="chat-quick-btn" data-chat-act="B">B · Ubicación</button>
-            <button type="button" class="chat-quick-btn" data-chat-act="C">C · Honorarios</button>
-            <button type="button" class="chat-quick-btn" data-chat-act="D">D · Vestimenta</button>
-            <button type="button" class="chat-quick-btn" data-chat-act="E">E · Profesional</button>
-            <button type="button" class="chat-quick-btn" data-chat-act="MENU" style="color:var(--muted);">Reiniciar</button>
-          </div>
-
-          <form id="chat-demo-form" class="chat-demo-input-bar">
-            <input type="text" id="chat-demo-input" class="chat-demo-input" placeholder="Escribí un mensaje o elegí una opción..." autocomplete="off">
-            <button type="submit" class="chat-demo-send-btn" aria-label="Enviar">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="22" y1="2" x2="11" y2="13"></line>
-                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-              </svg>
-            </button>
-          </form>
-        </div>
-      </div>
-
-    </section>
-
-
-    <!-- 5. Configuración de Honorarios y Medios de Pago -->
-    <section id="view-honorarios" class="view" hidden>
-      <div class="hero-card">
+        <div class="hero-card">
         <div class="hero-copy">
           <span class="doc-icon" aria-hidden="true"></span>
           <h1 class="hero-title">Configuración de Honorarios</h1>
@@ -696,7 +643,56 @@
         </div>
         <pre id="honorarios-preview" class="horarios-clara-pre" style="white-space: pre-wrap; font-family: inherit; font-size: 14px;"></pre>
       </div>
+      </div>
+
+      <!-- SUBPANEL 5: DEMO CHAT CON CLARA (WHATSAPP SIMULATOR) -->
+      <div id="config-panel-chat" class="config-subpanel" hidden>
+        <div style="text-align: center; max-width: 600px; margin: 0 auto 20px;">
+          <h2 class="horarios-timeline-title" style="margin-bottom: 4px;">Simulador Interactivo de Clara (WhatsApp)</h2>
+          <p class="horarios-timeline-sub">
+            Probá la experiencia de un paciente en tiempo real interactuando con los textos y honorarios que acabás de configurar.
+          </p>
+        </div>
+
+        <div class="chat-demo-container">
+          <div class="chat-demo-header">
+            <div class="chat-demo-avatar">🌿</div>
+            <div class="chat-demo-info">
+              <h3>Clara · Recepción Kinésica</h3>
+              <p>en línea (asistente virtual)</p>
+            </div>
+          </div>
+
+          <div id="chat-demo-messages" class="chat-demo-messages">
+            <!-- Mensajes dinámicos generados por JS -->
+          </div>
+
+          <div class="chat-quick-actions">
+            <button type="button" class="chat-quick-btn" data-chat-act="A">A · Turnos</button>
+            <button type="button" class="chat-quick-btn" data-chat-act="B">B · Ubicación</button>
+            <button type="button" class="chat-quick-btn" data-chat-act="C">C · Honorarios</button>
+            <button type="button" class="chat-quick-btn" data-chat-act="D">D · Vestimenta</button>
+            <button type="button" class="chat-quick-btn" data-chat-act="E">E · Profesional</button>
+            <button type="button" class="chat-quick-btn" data-chat-act="MENU" style="color:var(--muted);">Reiniciar</button>
+          </div>
+
+          <form id="chat-demo-form" class="chat-demo-input-bar">
+            <input type="text" id="chat-demo-input" class="chat-demo-input" placeholder="Escribí un mensaje o elegí una opción..." autocomplete="off">
+            <button type="submit" class="chat-demo-send-btn" aria-label="Enviar">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </form>
+        </div>
+      </div>
+
     </section>
+
+
+    <!-- 5. Configuración de Honorarios y Medios de Pago -->
+    
 
     <section id="view-form" class="view" hidden>
       <div class="form-nav">
@@ -1306,6 +1302,6 @@
   </script>
   <div id="print-root"></div>
   <script src="/booking/booking-bundle.min.js?v=1792345131" defer></script>
-  <script type="module" src="/admin/app.js?v=107"></script>
+  <script type="module" src="/admin/app.js?v=108"></script>
 </body>
 </html>

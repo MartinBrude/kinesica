@@ -142,7 +142,7 @@ import {
   initConfiguracionModule,
   showConfiguracionView,
   hideConfiguracionView,
-} from "./modules/configuracion.js?v=2";
+} from "./modules/configuracion.js?v=3";
 
 // Re-exportar utilidades esenciales para interoperabilidad y pruebas
 export {
