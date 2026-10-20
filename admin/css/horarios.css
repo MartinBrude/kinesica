@@ -623,3 +623,133 @@
 .chat-demo-send-btn:hover {
   background: #008f6f;
 }
+
+/* ==========================================================================
+   Admin Collapsible Sections (Consultorio & Clara)
+   ========================================================================== */
+details.admin-collapsible-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  margin: 0 auto 24px;
+  max-width: 960px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+details.admin-collapsible-card[open] {
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+}
+
+summary.admin-collapsible-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 24px;
+  cursor: pointer;
+  user-select: none;
+  background: var(--card);
+  border-bottom: 1px solid transparent;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  list-style: none;
+}
+
+summary.admin-collapsible-summary::-webkit-details-marker {
+  display: none;
+}
+
+summary.admin-collapsible-summary:hover {
+  background: #f8fafc;
+}
+
+details.admin-collapsible-card[open] > summary.admin-collapsible-summary {
+  border-bottom-color: var(--line);
+  background: #fbfcfd;
+}
+
+.admin-collapsible-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.admin-collapsible-icon {
+  font-size: 20px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #f1f5f9;
+  flex-shrink: 0;
+}
+
+.admin-collapsible-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.admin-collapsible-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.admin-collapsible-desc {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.admin-collapsible-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.admin-collapsible-chevron {
+  width: 20px;
+  height: 20px;
+  color: var(--muted);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+}
+
+details.admin-collapsible-card[open] > summary .admin-collapsible-chevron {
+  transform: rotate(180deg);
+}
+
+.admin-collapsible-body {
+  padding: 24px;
+}
+
+@media (max-width: 640px) {
+  summary.admin-collapsible-summary {
+    padding: 14px 16px;
+  }
+  .admin-collapsible-body {
+    padding: 16px;
+  }
+  .admin-collapsible-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 17px;
+  }
+  .admin-collapsible-title {
+    font-size: 15px;
+  }
+  .admin-collapsible-desc {
+    font-size: 12px;
+  }
+}
+
