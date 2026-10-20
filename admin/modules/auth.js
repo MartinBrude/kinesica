@@ -55,19 +55,29 @@ export function getSessionUser() {
 export function setSessionUser(user) {
   sessionUser = user;
   authed = Boolean(user);
+  const userLabel = document.querySelector("#session-user-name");
   if (user) {
+    const displayName = user.name || user.username || "";
     try {
       localStorage.setItem("kinesica_logged_in", "1");
-      if (user.name || user.username) {
-        localStorage.setItem("kinesica_user_name", user.name || user.username);
+      if (displayName) {
+        localStorage.setItem("kinesica_user_name", displayName);
       }
     } catch (_) {}
+    if (userLabel) {
+      userLabel.textContent = displayName;
+      userLabel.hidden = false;
+    }
     document.documentElement.classList.add("is-authenticated");
   } else {
     try {
       localStorage.removeItem("kinesica_logged_in");
       localStorage.removeItem("kinesica_user_name");
     } catch (_) {}
+    if (userLabel) {
+      userLabel.textContent = "";
+      userLabel.hidden = true;
+    }
     document.documentElement.classList.remove("is-authenticated");
   }
 }

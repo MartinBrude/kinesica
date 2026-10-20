@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=105">
+  <link rel="stylesheet" href="/admin/styles.css?v=106">
   <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1792345131">
   <script>
     (function () {
@@ -45,6 +45,7 @@
         <button type="button" class="btn ghost" id="nav-btn-configuracion">Configuración</button>
       </nav>
       <div class="session-box">
+        <span class="session-user-label" id="session-user-name" hidden></span>
         <button type="button" class="btn ghost" id="btn-logout" hidden>Salir</button>
       </div>
     </div>
@@ -153,7 +154,7 @@
       <div class="dashboard-hero">
         <div class="hero-card">
           <ul class="dashboard-logins" id="dash-logins" hidden></ul>
-          <h1 class="dashboard-title" id="dash-greeting">Bienvenido a tu Panel de Control</h1>
+          <h1 class="dashboard-title" id="dash-greeting">Panel de Control</h1>
         </div>
       </div>
 
@@ -1274,6 +1275,11 @@
           if (user) {
             var logoutBtn = document.getElementById("btn-logout");
             if (logoutBtn) logoutBtn.hidden = false;
+            var userLabel = document.getElementById("session-user-name");
+            if (userLabel) {
+              userLabel.textContent = user;
+              userLabel.hidden = false;
+            }
           }
           var saved = null;
           try {
@@ -1304,6 +1310,6 @@
   </script>
   <div id="print-root"></div>
   <script src="/booking/booking-bundle.min.js?v=1792345131" defer></script>
-  <script type="module" src="/admin/app.js?v=116"></script>
+  <script type="module" src="/admin/app.js?v=117"></script>
 </body>
 </html>

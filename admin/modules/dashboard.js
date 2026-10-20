@@ -72,16 +72,7 @@ export async function updateDashboardBooking(isActive) {
 export async function updateDashboardState() {
   const user = getSessionUser();
   if (greetingEl) {
-    const rawName = user?.name || user?.username || "";
-    let cleanName = rawName.replace(/^Lic\.\s*/i, "").trim();
-    const lower = cleanName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    if (lower.includes("maria")) {
-      greetingEl.textContent = `Bienvenida a tu Panel de Control, ${cleanName}`;
-    } else if (cleanName) {
-      greetingEl.textContent = `Bienvenido a tu Panel de Control, ${cleanName}`;
-    } else {
-      greetingEl.textContent = "Bienvenido a tu Panel de Control";
-    }
+    greetingEl.textContent = "Panel de Control";
   }
   if (loginsEl) {
     const isAdminUser = user?.role === "admin" || user?.username === "martin";

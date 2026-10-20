@@ -58,7 +58,7 @@ import {
   hideGate,
   setGateMessage,
   initAuth,
-} from "./modules/auth.js?v=79";
+} from "./modules/auth.js?v=80";
 
 import {
   todayISO,
@@ -123,7 +123,7 @@ import {
   updateDashboardClara,
   updateDashboardBooking,
   updateDashboardState,
-} from "./modules/dashboard.js?v=6";
+} from "./modules/dashboard.js?v=7";
 
 import {
   initHorariosModule,
