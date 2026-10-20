@@ -25,6 +25,12 @@ const inputOptB = document.querySelector("#cfg-opt-b");
 const inputOptD = document.querySelector("#cfg-opt-d");
 const inputCancellation = document.querySelector("#cfg-cancellation-policy");
 const inputConfirmation = document.querySelector("#cfg-confirmation-notes");
+const inputReminderText = document.querySelector("#cfg-reminder-text");
+const inputReminderNotes = document.querySelector("#cfg-reminder-notes");
+const inputClaraReminderText = document.querySelector("#cfg-clara-reminder-text");
+const inputClaraReminderNotes = document.querySelector("#cfg-clara-reminder-notes");
+const reminderPreview = document.querySelector("#cfg-reminder-preview");
+const claraReminderPreview = document.querySelector("#cfg-clara-reminder-preview");
 
 // Opciones personalizadas del menú
 const customOptionsContainer = document.querySelector("#custom-options-container");
@@ -73,7 +79,15 @@ Para ver los días y horarios disponibles en tiempo real con Norberto o María y
 • Ropa interior con corpiño tradicional (no deportivo), malla de 2 piezas o calza corta para las mujeres.
 Si sos menor, vení acompañado/a por un mayor 🙌.`,
   cancellation_policy: `Te recordamos que los turnos pueden cancelarse o reprogramarse con un mínimo de 24 horas de anticipación 🙌.`,
-  confirmation_notes: `Por favor asistir con puntualidad exacta al horario asignado. El consultorio cuenta con una única camilla y no dispone de sala de espera 📍.`
+  confirmation_notes: `Por favor asistir con puntualidad exacta al horario asignado. El consultorio cuenta con una única camilla y no dispone de sala de espera 📍.`,
+  reminder_text: `¡Hola {nombre}! 🌿 Te escribo desde Kinésica para recordarte tu {tipo_cita} programada para mañana a las {horario}.
+
+{indicaciones}
+
+Por favor confirmá tu asistencia seleccionando una de las opciones a continuación 🙌:`,
+  reminder_notes: `📍 Te esperamos en Charcas 3889, 5º, B (Palermo).
+⚠️ Te recordamos que el espacio no cuenta con sala de espera, por lo que te pedimos puntualidad estricta para evitar esperas en la entrada y no concurrir con acompañantes (salvo menores de edad o personas que requieran asistencia directa).
+Si tienen estudios médicos previos, no olviden traerlos.`
 };
 
 let currentTexts = { ...DEFAULT_CLARA_TEXTS };
@@ -231,6 +245,14 @@ function renderTexts(data) {
   if (inputCancellation) inputCancellation.value = (typeof data.cancellation_policy === "string" && data.cancellation_policy.trim()) ? data.cancellation_policy : DEFAULT_CLARA_TEXTS.cancellation_policy;
   if (inputConfirmation) inputConfirmation.value = (typeof data.confirmation_notes === "string" && data.confirmation_notes.trim()) ? data.confirmation_notes : DEFAULT_CLARA_TEXTS.confirmation_notes;
 
+  const rText = (typeof data.reminder_text === "string" && data.reminder_text.trim()) ? data.reminder_text : DEFAULT_CLARA_TEXTS.reminder_text;
+  const rNotes = (typeof data.reminder_notes === "string" && data.reminder_notes.trim()) ? data.reminder_notes : DEFAULT_CLARA_TEXTS.reminder_notes;
+  if (inputReminderText) inputReminderText.value = rText;
+  if (inputReminderNotes) inputReminderNotes.value = rNotes;
+  if (inputClaraReminderText) inputClaraReminderText.value = rText;
+  if (inputClaraReminderNotes) inputClaraReminderNotes.value = rNotes;
+  updateReminderPreview();
+
   if (Array.isArray(data.custom_menu_options)) {
     customMenuOptions = JSON.parse(JSON.stringify(data.custom_menu_options));
   } else if (Array.isArray(data.clara_texts?.custom_menu_options)) {
@@ -257,6 +279,20 @@ function renderTexts(data) {
       textsLastUpdated.hidden = false;
     }
   }
+}
+
+function updateReminderPreview() {
+  const tmpl = inputReminderText?.value?.trim() || inputClaraReminderText?.value?.trim() || DEFAULT_CLARA_TEXTS.reminder_text;
+  const notes = inputReminderNotes?.value?.trim() || inputClaraReminderNotes?.value?.trim() || DEFAULT_CLARA_TEXTS.reminder_notes;
+  const preview = tmpl
+    .replace(/\{nombre\}/gi, "Lucas")
+    .replace(/\{horario\}/gi, "16:00 hs")
+    .replace(/\{hora\}/gi, "16:00 hs")
+    .replace(/\{tipo_cita\}/gi, "sesión en el consultorio")
+    .replace(/\{indicaciones\}/gi, notes);
+
+  if (reminderPreview) reminderPreview.textContent = preview;
+  if (claraReminderPreview) claraReminderPreview.textContent = preview;
 }
 
 function updateStatusToggles(isClaraOn, isBookingOn) {
@@ -372,6 +408,8 @@ export function initConfiguracionModule(callbacks = {}) {
         opt_d_text: inputOptD?.value?.trim() || DEFAULT_CLARA_TEXTS.opt_d_text,
         cancellation_policy: inputCancellation?.value?.trim() || DEFAULT_CLARA_TEXTS.cancellation_policy,
         confirmation_notes: inputConfirmation?.value?.trim() || DEFAULT_CLARA_TEXTS.confirmation_notes,
+        reminder_text: inputReminderText?.value?.trim() || inputClaraReminderText?.value?.trim() || DEFAULT_CLARA_TEXTS.reminder_text,
+        reminder_notes: inputReminderNotes?.value?.trim() || inputClaraReminderNotes?.value?.trim() || DEFAULT_CLARA_TEXTS.reminder_notes,
         custom_menu_options: cleanCustom
       },
       custom_menu_options: cleanCustom
@@ -407,6 +445,16 @@ export function initConfiguracionModule(callbacks = {}) {
 
   btnSaveTexts?.addEventListener("click", () => handleSaveTextsAndPolicies(btnSaveTexts));
   btnSaveMailsPolicies?.addEventListener("click", () => handleSaveTextsAndPolicies(btnSaveMailsPolicies));
+
+  // Sincronización en vivo de campos y vista previa de recordatorios
+  const syncAndPreview = (source, target) => {
+    if (target && source) target.value = source.value;
+    updateReminderPreview();
+  };
+  inputReminderText?.addEventListener("input", () => syncAndPreview(inputReminderText, inputClaraReminderText));
+  inputClaraReminderText?.addEventListener("input", () => syncAndPreview(inputClaraReminderText, inputReminderText));
+  inputReminderNotes?.addEventListener("input", () => syncAndPreview(inputReminderNotes, inputClaraReminderNotes));
+  inputClaraReminderNotes?.addEventListener("input", () => syncAndPreview(inputClaraReminderNotes, inputReminderNotes));
 
   // Restaurar valores por defecto
   btnResetTexts?.addEventListener("click", async () => {

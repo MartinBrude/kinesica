@@ -503,6 +503,48 @@
             No hay opciones adicionales configuradas. Hacé clic en <strong>"+ Agregar opción"</strong> para sumar una (por ejemplo: F. ¿Con qué técnicas trabajan?).
           </div>
         </div>
+
+        <div class="horarios-timeline-card" style="max-width: 860px; margin: 0 auto 30px;">
+          <div style="margin-bottom:20px;">
+            <h3 class="horarios-timeline-title" style="margin:0; font-size:16px;">📲 Recordatorio de Turnos (24 hs antes por WhatsApp)</h3>
+            <p class="horarios-timeline-sub" style="margin-top:4px;">
+              Personalizá el mensaje y las indicaciones que Clara envía automáticamente a los pacientes el día anterior con los botones <strong>[✅ Confirmo]</strong> y <strong>[❌ Cancelar]</strong>.
+            </p>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:22px;">
+            <div>
+              <label for="cfg-clara-reminder-text" style="display:block; font-weight:600; margin-bottom:8px; font-size:14px; color:var(--navy);">
+                Texto del Mensaje de Recordatorio
+              </label>
+              <textarea id="cfg-clara-reminder-text" rows="4" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical;"></textarea>
+              <small style="color:var(--muted); font-size:12px; margin-top:6px; display:block;">
+                Variables automáticas disponibles: <code>{nombre}</code> (nombre de pila), <code>{horario}</code> (hora del turno), <code>{indicaciones}</code> (pautas del consultorio).
+              </small>
+            </div>
+
+            <div>
+              <label for="cfg-clara-reminder-notes" style="display:block; font-weight:600; margin-bottom:8px; font-size:14px; color:var(--navy);">
+                Indicaciones y Dirección del Consultorio (en el recordatorio)
+              </label>
+              <textarea id="cfg-clara-reminder-notes" rows="4" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical;"></textarea>
+              <small style="color:var(--muted); font-size:12px; margin-top:6px; display:block;">
+                Pautas de ubicación y puntualidad. Si el turno es de un menor de edad, Clara suma automáticamente la aclaración de concurrir con un adulto.
+              </small>
+            </div>
+
+            <div style="background:var(--bg); border:1px solid var(--line); border-radius:var(--radius); padding:16px;">
+              <span style="display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--muted); margin-bottom:8px;">
+                👁️ Vista Previa en WhatsApp:
+              </span>
+              <div id="cfg-clara-reminder-preview" style="white-space:pre-wrap; font-size:13px; line-height:1.5; color:var(--navy); font-family:inherit; background:#fff; padding:14px; border-radius:8px; border:1px solid rgba(0,0,0,0.06);"></div>
+              <div style="display:flex; gap:10px; margin-top:10px;">
+                <span style="display:inline-block; padding:6px 14px; background:#e8f5e9; color:#2e7d32; border:1px solid #c8e6c9; border-radius:18px; font-size:12px; font-weight:600;">[✅ Confirmo]</span>
+                <span style="display:inline-block; padding:6px 14px; background:#ffebee; color:#c62828; border:1px solid #ffcdd2; border-radius:18px; font-size:12px; font-weight:600;">[❌ Cancelar]</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- SUBPANEL 2: MAILS Y POLÍTICAS -->
@@ -542,6 +584,46 @@
               </label>
               <textarea id="cfg-confirmation-notes" rows="3" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical;"></textarea>
               <small style="color:var(--muted); font-size:12px; margin-top:6px; display:block;">Aviso de timbre, ausencia de sala de espera y puntualidad para la privacidad del paciente anterior.</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="horarios-timeline-card" style="max-width: 860px; margin: 0 auto 30px;">
+          <h3 class="horarios-timeline-title" style="margin-bottom:6px; font-size:16px;">📲 Recordatorio de Turnos (24 hs antes por WhatsApp)</h3>
+          <p class="horarios-timeline-sub" style="margin-bottom:22px;">
+            Mensaje enviado automáticamente por WhatsApp a los pacientes con turno al día siguiente (a las 10:00 hs o domingos 18:00 hs). Se despacha con los botones <strong>[✅ Confirmo]</strong> y <strong>[❌ Cancelar]</strong>.
+          </p>
+
+          <div style="display:flex; flex-direction:column; gap:22px;">
+            <div>
+              <label for="cfg-reminder-text" style="display:block; font-weight:600; margin-bottom:8px; font-size:14px; color:var(--navy);">
+                Texto del Mensaje de Recordatorio
+              </label>
+              <textarea id="cfg-reminder-text" rows="4" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical;"></textarea>
+              <small style="color:var(--muted); font-size:12px; margin-top:6px; display:block;">
+                Variables automáticas disponibles: <code>{nombre}</code> (nombre de pila), <code>{horario}</code> (hora del turno), <code>{indicaciones}</code> (pautas del consultorio).
+              </small>
+            </div>
+
+            <div>
+              <label for="cfg-reminder-notes" style="display:block; font-weight:600; margin-bottom:8px; font-size:14px; color:var(--navy);">
+                Indicaciones y Dirección del Consultorio (en el recordatorio)
+              </label>
+              <textarea id="cfg-reminder-notes" rows="4" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical;"></textarea>
+              <small style="color:var(--muted); font-size:12px; margin-top:6px; display:block;">
+                Pautas de ubicación y puntualidad. Si el turno es de un menor de edad, Clara suma automáticamente la aclaración de concurrir con un adulto.
+              </small>
+            </div>
+
+            <div style="background:var(--bg); border:1px solid var(--line); border-radius:var(--radius); padding:16px;">
+              <span style="display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--muted); margin-bottom:8px;">
+                👁️ Vista Previa en WhatsApp:
+              </span>
+              <div id="cfg-reminder-preview" style="white-space:pre-wrap; font-size:13px; line-height:1.5; color:var(--navy); font-family:inherit; background:#fff; padding:14px; border-radius:8px; border:1px solid rgba(0,0,0,0.06);"></div>
+              <div style="display:flex; gap:10px; margin-top:10px;">
+                <span style="display:inline-block; padding:6px 14px; background:#e8f5e9; color:#2e7d32; border:1px solid #c8e6c9; border-radius:18px; font-size:12px; font-weight:600;">[✅ Confirmo]</span>
+                <span style="display:inline-block; padding:6px 14px; background:#ffebee; color:#c62828; border:1px solid #ffcdd2; border-radius:18px; font-size:12px; font-weight:600;">[❌ Cancelar]</span>
+              </div>
             </div>
           </div>
         </div>
@@ -1327,6 +1409,6 @@
   </script>
   <div id="print-root"></div>
   <script src="/booking/booking-bundle.min.js?v=1792345131" defer></script>
-  <script type="module" src="/admin/app.js?v=119"></script>
+  <script type="module" src="/admin/app.js?v=120"></script>
 </body>
 </html>

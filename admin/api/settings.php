@@ -68,7 +68,7 @@ if ($method === 'POST') {
     }
 
     if (isset($input['clara_texts']) && is_array($input['clara_texts'])) {
-        $allowed = ['menu_welcome', 'opt_a_text', 'opt_b_text', 'opt_d_text', 'cancellation_policy', 'confirmation_notes'];
+        $allowed = ['menu_welcome', 'opt_a_text', 'opt_b_text', 'opt_d_text', 'cancellation_policy', 'confirmation_notes', 'reminder_text', 'reminder_notes'];
         $cleanTexts = $current['clara_texts'] ?? [];
         foreach ($allowed as $field) {
             if (isset($input['clara_texts'][$field])) {

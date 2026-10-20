@@ -71,6 +71,8 @@
     "opt_d_text": "👕 *Indumentaria para la sesión:*\n• Ropa interior o pantalón corto para los varones.\n• Ropa interior con corpiño tradicional (no deportivo), malla de 2 piezas o calza corta para las mujeres.\nSi sos menor, vení acompañado/a por un mayor 🙌.",
     "cancellation_policy": "Te recordamos que los turnos pueden cancelarse o reprogramarse con un mínimo de 24 horas de anticipación 🙌.",
     "confirmation_notes": "Por favor asistir con puntualidad exacta al horario asignado. El consultorio cuenta con una única camilla y no dispone de sala de espera 📍.",
+    "reminder_text": "¡Hola {nombre}! 🌿 Te escribo desde Kinésica para recordarte tu {tipo_cita} programada para mañana a las {horario}.\n\n{indicaciones}\n\nPor favor confirmá tu asistencia seleccionando una de las opciones a continuación 🙌:",
+    "reminder_notes": "📍 Te esperamos en Charcas 3889, 5º, B (Palermo).\n⚠️ Te recordamos que el espacio no cuenta con sala de espera, por lo que te pedimos puntualidad estricta para evitar esperas en la entrada y no concurrir con acompañantes (salvo menores de edad o personas que requieran asistencia directa).\nSi tienen estudios médicos previos, no olviden traerlos.",
     "updated_at": null,
     "updated_by": null
   },
