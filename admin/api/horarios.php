@@ -365,11 +365,31 @@ _(Escribí la letra de la opción deseada, por ejemplo *A* o *C*)_",
         $claraTexts['updated_by'] = $data['clara_texts']['updated_by'] ?? null;
     }
 
+    $customOptions = [];
+    $rawCustom = $data['custom_menu_options'] ?? ($data['clara_texts']['custom_menu_options'] ?? []);
+    if (is_array($rawCustom)) {
+        foreach ($rawCustom as $row) {
+            if (!is_array($row)) continue;
+            $letter = strtoupper(trim((string) ($row['letter'] ?? '')));
+            $label = trim((string) ($row['label'] ?? ($row['title'] ?? '')));
+            $response = trim((string) ($row['response'] ?? ($row['text'] ?? '')));
+            if ($letter !== '' && ($label !== '' || $response !== '')) {
+                $customOptions[] = [
+                    'letter' => $letter,
+                    'label' => $label,
+                    'response' => $response,
+                ];
+            }
+        }
+    }
+    $claraTexts['custom_menu_options'] = $customOptions;
+
     return [
         'clara_active' => isset($data['clara_active']) ? (bool) $data['clara_active'] : true,
         'booking_active' => isset($data['booking_active']) ? (bool) $data['booking_active'] : true,
         'fees' => $fees,
         'clara_texts' => $claraTexts,
+        'custom_menu_options' => $customOptions,
         'practitioner_hours' => $hours,
         'practitioner_hours_py' => convert_hours_to_python_weekdays($hours),
         'clara_schedule_summary' => build_clara_schedule_summary($hours),

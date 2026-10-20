@@ -75,6 +75,31 @@ if ($method === 'POST') {
         $current['clara_texts'] = $cleanTexts;
     }
 
+    if (isset($input['custom_menu_options']) || isset($input['clara_texts']['custom_menu_options'])) {
+        $rawOpts = $input['custom_menu_options'] ?? ($input['clara_texts']['custom_menu_options'] ?? []);
+        $cleanOpts = [];
+        if (is_array($rawOpts)) {
+            $reserved = ['A', 'B', 'C', 'D', 'E'];
+            foreach ($rawOpts as $row) {
+                if (!is_array($row)) continue;
+                $letter = strtoupper(trim((string) ($row['letter'] ?? '')));
+                $label = trim((string) ($row['label'] ?? ($row['title'] ?? '')));
+                $response = trim((string) ($row['response'] ?? ($row['text'] ?? '')));
+                if ($letter === '' || in_array($letter, $reserved, true)) continue;
+                if ($label === '' && $response === '') continue;
+                $cleanOpts[] = [
+                    'letter' => $letter,
+                    'label' => $label,
+                    'response' => $response,
+                ];
+            }
+        }
+        $current['custom_menu_options'] = $cleanOpts;
+        if (isset($current['clara_texts'])) {
+            $current['clara_texts']['custom_menu_options'] = $cleanOpts;
+        }
+    }
+
     $toPersist = [
         'clara_active' => $current['clara_active'],
         'booking_active' => $current['booking_active'],
@@ -86,6 +111,7 @@ if ($method === 'POST') {
             'updated_by' => null,
         ],
         'clara_texts' => $current['clara_texts'] ?? null,
+        'custom_menu_options' => $current['custom_menu_options'] ?? [],
         'practitioner_hours' => $current['practitioner_hours'],
         'horarios_updated_at' => $current['horarios_updated_at'],
         'horarios_updated_by' => $current['horarios_updated_by'],

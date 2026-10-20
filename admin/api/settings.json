@@ -73,5 +73,6 @@
     "confirmation_notes": "Por favor asistir con puntualidad exacta al horario asignado. El consultorio cuenta con una única camilla y no dispone de sala de espera 📍.",
     "updated_at": null,
     "updated_by": null
-  }
+  },
+  "custom_menu_options": []
 }

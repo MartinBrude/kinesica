@@ -482,6 +482,27 @@
             </div>
           </div>
         </div>
+
+        <!-- Opciones Personalizadas Sin Lógica (Preguntas frecuentes del Menú) -->
+        <div class="horarios-timeline-card" style="max-width: 860px; margin: 0 auto 30px;">
+          <div class="horarios-timeline-header">
+            <div>
+              <h3 class="horarios-timeline-title" style="margin:0; font-size:16px;">Opciones informativas adicionales del Menú (Sin IA)</h3>
+              <p class="horarios-timeline-sub" style="margin-top:4px;">
+                Permite a Norberto agregar opciones con letra y respuesta fija (ej: F. ¿Con qué técnicas trabajan?). Clara las detectará y responderá directamente en WhatsApp sin costo de IA ni demoras.
+              </p>
+            </div>
+            <button type="button" class="btn secondary" id="btn-add-custom-option" style="font-size:13px; padding:6px 14px;">
+              + Agregar opción
+            </button>
+          </div>
+
+          <div id="custom-options-container" style="display:flex; flex-direction:column; gap:16px;"></div>
+
+          <div id="custom-options-empty" style="padding:18px; text-align:center; color:var(--muted); font-size:13px; background:var(--bg); border-radius:var(--radius); border:1px dashed var(--line);">
+            No hay opciones adicionales configuradas. Hacé clic en <strong>"+ Agregar opción"</strong> para sumar una (por ejemplo: F. ¿Con qué técnicas trabajan?).
+          </div>
+        </div>
       </div>
 
       <!-- SUBPANEL 2: MAILS Y POLÍTICAS -->
@@ -1304,6 +1325,6 @@
   </script>
   <div id="print-root"></div>
   <script src="/booking/booking-bundle.min.js?v=1792345131" defer></script>
-  <script type="module" src="/admin/app.js?v=117"></script>
+  <script type="module" src="/admin/app.js?v=118"></script>
 </body>
 </html>

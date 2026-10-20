@@ -26,6 +26,12 @@ const inputOptD = document.querySelector("#cfg-opt-d");
 const inputCancellation = document.querySelector("#cfg-cancellation-policy");
 const inputConfirmation = document.querySelector("#cfg-confirmation-notes");
 
+// Opciones personalizadas del menú
+const customOptionsContainer = document.querySelector("#custom-options-container");
+const customOptionsEmpty = document.querySelector("#custom-options-empty");
+const btnAddCustomOption = document.querySelector("#btn-add-custom-option");
+let customMenuOptions = [];
+
 const btnSaveTexts = document.querySelector("#btn-save-clara-texts");
 const btnResetTexts = document.querySelector("#btn-reset-clara-texts");
 const textsStatusBanner = document.querySelector("#clara-texts-status-banner");
@@ -127,6 +133,94 @@ export function switchConfigSubtab(subtabId) {
   } catch {}
 }
 
+function getNextAvailableLetter() {
+  const used = new Set(["A", "B", "C", "D", "E"]);
+  customMenuOptions.forEach((opt) => {
+    if (opt.letter) used.add(opt.letter.toUpperCase());
+  });
+  const alphabet = "FGHIJKLMNOPQRSTUVWXYZ".split("");
+  for (const l of alphabet) {
+    if (!used.has(l)) return l;
+  }
+  return "F";
+}
+
+function renderCustomOptionsList() {
+  if (!customOptionsContainer) return;
+  customOptionsContainer.replaceChildren();
+
+  if (!customMenuOptions || customMenuOptions.length === 0) {
+    if (customOptionsEmpty) customOptionsEmpty.hidden = false;
+    return;
+  }
+  if (customOptionsEmpty) customOptionsEmpty.hidden = true;
+
+  customMenuOptions.forEach((item, index) => {
+    const row = document.createElement("div");
+    row.className = "custom-option-card";
+    row.style.cssText = "background:var(--bg); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px; display:flex; flex-direction:column; gap:10px;";
+
+    const topBar = document.createElement("div");
+    topBar.style.cssText = "display:flex; align-items:center; gap:10px;";
+
+    const letterLabel = document.createElement("span");
+    letterLabel.textContent = "Letra:";
+    letterLabel.style.cssText = "font-weight:600; font-size:13px; color:var(--navy);";
+
+    const letterInput = document.createElement("input");
+    letterInput.type = "text";
+    letterInput.maxLength = 2;
+    letterInput.value = item.letter || "";
+    letterInput.placeholder = "F";
+    letterInput.style.cssText = "width:48px; text-transform:uppercase; text-align:center; font-weight:700; padding:6px; border:1px solid var(--line); border-radius:4px; font-size:14px; background:#fff;";
+    letterInput.addEventListener("input", (e) => {
+      let val = e.target.value.toUpperCase().replace(/[^A-Z]/g, "");
+      if (["A", "B", "C", "D", "E"].includes(val)) {
+        dialogAlert(`Las letras A, B, C, D y E están reservadas para las funciones nativas (Turnos, Ubicación, Honorarios, Ropa y Contacto). Por favor elegí desde la F en adelante.`);
+        val = "";
+      }
+      e.target.value = val;
+      item.letter = val;
+    });
+
+    const titleInput = document.createElement("input");
+    titleInput.type = "text";
+    titleInput.value = item.label || "";
+    titleInput.placeholder = "Título en el menú (ej: ¿Con qué técnicas trabajan?)";
+    titleInput.style.cssText = "flex:1; padding:7px 10px; border:1px solid var(--line); border-radius:4px; font-size:14px; background:#fff;";
+    titleInput.addEventListener("input", (e) => {
+      item.label = e.target.value;
+    });
+
+    const delBtn = document.createElement("button");
+    delBtn.type = "button";
+    delBtn.textContent = "✕ Eliminar";
+    delBtn.style.cssText = "background:transparent; border:1px solid #ef4444; color:#ef4444; border-radius:4px; padding:6px 12px; font-size:12px; font-weight:600; cursor:pointer;";
+    delBtn.addEventListener("click", () => {
+      customMenuOptions.splice(index, 1);
+      renderCustomOptionsList();
+    });
+
+    topBar.appendChild(letterLabel);
+    topBar.appendChild(letterInput);
+    topBar.appendChild(titleInput);
+    topBar.appendChild(delBtn);
+
+    const respTextarea = document.createElement("textarea");
+    respTextarea.rows = 2;
+    respTextarea.value = item.response || "";
+    respTextarea.placeholder = "Respuesta exacta que dará Clara al elegir esta opción (ej: En Kinésica nos especializamos en RPG, Kinesiología postural y traumatológica, Osteopatía...)";
+    respTextarea.style.cssText = "width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:4px; font-size:13px; font-family:inherit; line-height:1.4; resize:vertical; background:#fff;";
+    respTextarea.addEventListener("input", (e) => {
+      item.response = e.target.value;
+    });
+
+    row.appendChild(topBar);
+    row.appendChild(respTextarea);
+    customOptionsContainer.appendChild(row);
+  });
+}
+
 function renderTexts(data) {
   if (inputMenuWelcome) inputMenuWelcome.value = data.menu_welcome || DEFAULT_CLARA_TEXTS.menu_welcome;
   if (inputOptA) inputOptA.value = data.opt_a_text || DEFAULT_CLARA_TEXTS.opt_a_text;
@@ -134,6 +228,15 @@ function renderTexts(data) {
   if (inputOptD) inputOptD.value = data.opt_d_text || DEFAULT_CLARA_TEXTS.opt_d_text;
   if (inputCancellation) inputCancellation.value = data.cancellation_policy || DEFAULT_CLARA_TEXTS.cancellation_policy;
   if (inputConfirmation) inputConfirmation.value = data.confirmation_notes || DEFAULT_CLARA_TEXTS.confirmation_notes;
+
+  if (Array.isArray(data.custom_menu_options)) {
+    customMenuOptions = JSON.parse(JSON.stringify(data.custom_menu_options));
+  } else if (Array.isArray(data.clara_texts?.custom_menu_options)) {
+    customMenuOptions = JSON.parse(JSON.stringify(data.clara_texts.custom_menu_options));
+  } else {
+    customMenuOptions = [];
+  }
+  renderCustomOptionsList();
 
   if (textsLastUpdated) {
     if (data.updated_at) {
@@ -173,6 +276,12 @@ async function loadConfigData() {
     if (data) {
       if (data.clara_texts) {
         currentTexts = { ...DEFAULT_CLARA_TEXTS, ...data.clara_texts };
+        if (data.custom_menu_options) {
+          currentTexts.custom_menu_options = data.custom_menu_options;
+        }
+        renderTexts(currentTexts);
+      } else if (data.custom_menu_options) {
+        currentTexts.custom_menu_options = data.custom_menu_options;
         renderTexts(currentTexts);
       }
       const isClaraOn = typeof data.clara_active === "boolean" ? data.clara_active : true;
@@ -193,10 +302,50 @@ export function initConfiguracionModule(callbacks = {}) {
     });
   });
 
+  // Agregar opción personalizada al menú
+  btnAddCustomOption?.addEventListener("click", () => {
+    const nextL = getNextAvailableLetter();
+    customMenuOptions.push({
+      letter: nextL,
+      label: "",
+      response: ""
+    });
+    renderCustomOptionsList();
+  });
+
   // Guardar Textos de Clara & Políticas
   btnSaveTexts?.addEventListener("click", async () => {
     btnSaveTexts.disabled = true;
     btnSaveTexts.textContent = "Guardando...";
+
+    // Validar customMenuOptions
+    const cleanCustom = [];
+    const reserved = ["A", "B", "C", "D", "E"];
+    for (const opt of customMenuOptions) {
+      const l = String(opt.letter || "").trim().toUpperCase();
+      const label = String(opt.label || "").trim();
+      const response = String(opt.response || "").trim();
+      if (!l && !label && !response) continue;
+      if (!l) {
+        dialogAlert("Cada opción personalizada debe tener una letra asignada (ej: F).");
+        btnSaveTexts.disabled = false;
+        btnSaveTexts.textContent = "Guardar textos y políticas";
+        return;
+      }
+      if (reserved.includes(l)) {
+        dialogAlert(`La letra ${l} está reservada para las opciones nativas de Clara. Por favor usá letras de la F en adelante.`);
+        btnSaveTexts.disabled = false;
+        btnSaveTexts.textContent = "Guardar textos y políticas";
+        return;
+      }
+      if (!response) {
+        dialogAlert(`Por favor ingresá la respuesta para la opción ${l}.`);
+        btnSaveTexts.disabled = false;
+        btnSaveTexts.textContent = "Guardar textos y políticas";
+        return;
+      }
+      cleanCustom.push({ letter: l, label: label || `Opción ${l}`, response });
+    }
 
     const payload = {
       clara_texts: {
@@ -206,7 +355,9 @@ export function initConfiguracionModule(callbacks = {}) {
         opt_d_text: inputOptD?.value?.trim() || DEFAULT_CLARA_TEXTS.opt_d_text,
         cancellation_policy: inputCancellation?.value?.trim() || DEFAULT_CLARA_TEXTS.cancellation_policy,
         confirmation_notes: inputConfirmation?.value?.trim() || DEFAULT_CLARA_TEXTS.confirmation_notes,
-      }
+        custom_menu_options: cleanCustom
+      },
+      custom_menu_options: cleanCustom
     };
 
     try {
@@ -216,10 +367,13 @@ export function initConfiguracionModule(callbacks = {}) {
       });
       if (res && res.clara_texts) {
         currentTexts = { ...DEFAULT_CLARA_TEXTS, ...res.clara_texts };
+        if (res.custom_menu_options) {
+          currentTexts.custom_menu_options = res.custom_menu_options;
+        }
         renderTexts(currentTexts);
       }
       if (textsStatusBanner) {
-        textsStatusBanner.textContent = "✓ Textos y políticas guardados con éxito.";
+        textsStatusBanner.textContent = "✓ Textos y opciones del menú guardados con éxito.";
         textsStatusBanner.className = "horarios-alert-box is-success";
         textsStatusBanner.hidden = false;
         setTimeout(() => { textsStatusBanner.hidden = true; }, 4000);
@@ -239,6 +393,7 @@ export function initConfiguracionModule(callbacks = {}) {
       cancelText: "Cancelar",
     });
     if (ok) {
+      customMenuOptions = [];
       renderTexts(DEFAULT_CLARA_TEXTS);
       await dialogAlert("Se restauraron los textos predeterminados. Presioná 'Guardar textos y políticas' para confirmar.");
     }
@@ -341,7 +496,20 @@ export function resetChatDemo() {
   if (!chatMessagesEl) return;
   chatMessagesEl.replaceChildren();
   chatSubmenu = null;
-  const welcome = inputMenuWelcome?.value?.trim() || currentTexts.menu_welcome || DEFAULT_CLARA_TEXTS.menu_welcome;
+  let welcome = inputMenuWelcome?.value?.trim() || currentTexts.menu_welcome || DEFAULT_CLARA_TEXTS.menu_welcome;
+  if (customMenuOptions && customMenuOptions.length > 0) {
+    const extraLines = customMenuOptions
+      .filter((o) => o.letter && o.label)
+      .map((o) => `*${o.letter.toUpperCase()}.* ${o.label}`)
+      .join("\n");
+    if (extraLines && !welcome.toUpperCase().includes(`*${customMenuOptions[0].letter.toUpperCase()}.*`)) {
+      if (welcome.includes("\n\n_(")) {
+        welcome = welcome.replace("\n\n_(", `\n${extraLines}\n\n_(`);
+      } else {
+        welcome += `\n${extraLines}`;
+      }
+    }
+  }
   appendChatMessage(welcome, "bot");
 }
 
@@ -358,6 +526,20 @@ function handleChatUserInput(inputRaw) {
     setTimeout(() => {
       resetChatDemo();
     }, 400);
+    return;
+  }
+
+  // Buscar coincidencia en opciones personalizadas
+  const matchedCustom = customMenuOptions.find((o) => {
+    const l = String(o.letter || "").toLowerCase();
+    return l && (norm === l || norm === `opcion ${l}` || norm.startsWith(`${l}.`) || norm.startsWith(`${l} -`));
+  });
+  if (matchedCustom) {
+    chatSubmenu = null;
+    const resp = matchedCustom.response || "Información no disponible.";
+    setTimeout(() => {
+      appendChatMessage(`${resp}\n\n_(Escribí *MENU* para volver a ver las opciones)_`, "bot");
+    }, 450);
     return;
   }
 
@@ -444,7 +626,7 @@ function handleChatUserInput(inputRaw) {
 
   // Respuesta por defecto con el menú
   setTimeout(() => {
-    appendChatMessage("Disculpame, no llegué a comprender esa opción. Por favor ingresá una de las letras del menú (A, B, C, D o E) o escribí *MENU* 🙌.", "bot");
+    appendChatMessage("Disculpame, no llegué a comprender esa opción. Por favor ingresá una de las letras del menú o escribí *MENU* 🙌.", "bot");
   }, 500);
 }
 
