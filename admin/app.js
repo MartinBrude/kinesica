@@ -123,7 +123,7 @@ import {
   updateDashboardClara,
   updateDashboardBooking,
   updateDashboardState,
-} from "./modules/dashboard.js?v=4";
+} from "./modules/dashboard.js?v=5";
 
 import {
   initHorariosModule,
