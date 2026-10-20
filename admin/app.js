@@ -123,7 +123,7 @@ import {
   updateDashboardClara,
   updateDashboardBooking,
   updateDashboardState,
-} from "./modules/dashboard.js?v=5";
+} from "./modules/dashboard.js?v=6";
 
 import {
   initHorariosModule,
@@ -142,7 +142,7 @@ import {
   initConfiguracionModule,
   showConfiguracionView,
   hideConfiguracionView,
-} from "./modules/configuracion.js?v=3";
+} from "./modules/configuracion.js?v=4";
 
 // Re-exportar utilidades esenciales para interoperabilidad y pruebas
 export {
@@ -411,22 +411,16 @@ function switchTab(tab, subtab = "clara") {
     btnInicio?.classList.add("is-active");
     hidePacientesView();
     hideConfiguracionView();
-    hideHorariosView();
-    hideHonorariosView();
     showDashboardView();
   } else if (tab === "pacientes") {
     btnPacientes?.classList.add("is-active");
     hideDashboardView();
     hideConfiguracionView();
-    hideHorariosView();
-    hideHonorariosView();
     showPacientesView();
   } else if (tab === "configuracion" || tab === "horarios" || tab === "honorarios") {
     btnConfig?.classList.add("is-active");
     hideDashboardView();
     hidePacientesView();
-    hideHorariosView();
-    hideHonorariosView();
     const effectiveSubtab = tab === "horarios" ? "horarios" : (tab === "honorarios" ? "honorarios" : subtab);
     showConfiguracionView(effectiveSubtab);
   } else {
@@ -434,8 +428,6 @@ function switchTab(tab, subtab = "clara") {
     hideDashboardView();
     hidePacientesView();
     hideConfiguracionView();
-    hideHorariosView();
-    hideHonorariosView();
     showLibrary();
   }
 }

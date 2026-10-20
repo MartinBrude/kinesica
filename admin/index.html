@@ -1283,12 +1283,9 @@
           } else if (saved.view === "pacientes") {
             var pac = document.getElementById("view-pacientes");
             if (pac) pac.hidden = false;
-          } else if (saved.view === "horarios") {
-            var hor = document.getElementById("view-horarios");
-            if (hor) hor.hidden = false;
-          } else if (saved.view === "honorarios") {
-            var hon = document.getElementById("view-honorarios");
-            if (hon) hon.hidden = false;
+          } else if (saved.view === "configuracion" || saved.view === "horarios" || saved.view === "honorarios") {
+            var cfg = document.getElementById("view-configuracion");
+            if (cfg) cfg.hidden = false;
           } else if (saved.view === "form") {
             var form = document.getElementById("view-form");
             if (form) form.hidden = false;
@@ -1302,6 +1299,6 @@
   </script>
   <div id="print-root"></div>
   <script src="/booking/booking-bundle.min.js?v=1792345131" defer></script>
-  <script type="module" src="/admin/app.js?v=108"></script>
+  <script type="module" src="/admin/app.js?v=109"></script>
 </body>
 </html>
