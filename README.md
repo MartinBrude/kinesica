@@ -214,3 +214,4 @@ Reglas detalladas para desarrollo con Cursor: `.cursorrules` y `.cursor/rules/`.
 | [.cursorrules](.cursorrules) | Resumen de principios y fuentes de verdad |
 | `.cursor/rules/*.mdc` | Roles arquitecto, developer y QA |
 | `llms.txt` | Resumen público del sitio (generado) |
+
