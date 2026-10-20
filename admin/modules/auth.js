@@ -21,6 +21,8 @@ const enrollAccountEl = document.querySelector("#enroll-account");
 const enrollSecretEl = document.querySelector("#enroll-secret");
 
 const loginErrorEl = document.querySelector("#login-error");
+const loginCodeSentNote = document.querySelector("#login-code-sent-note");
+const btnLoginSendEmailCode = document.querySelector("#btn-login-send-email-code");
 const enrollErrorEl = document.querySelector("#enroll-error");
 const forgotErrorEl = document.querySelector("#forgot-error");
 const resetErrorEl = document.querySelector("#reset-error");
@@ -140,6 +142,8 @@ export function showGate(data = {}) {
     }
   }
 
+  if (loginCodeSentNote && !data.keepNote) loginCodeSentNote.hidden = true;
+
   if (enroll) {
     if (enrollAccountEl) enrollAccountEl.textContent = data.account || "Kinésica";
     const secret = data.secret || "";
@@ -215,6 +219,44 @@ export function initAuth({ onSuccess, onLogout }) {
 
   if (btnForgotBack) {
     btnForgotBack.addEventListener("click", () => showGate({ login: true }));
+  }
+
+  if (btnLoginSendEmailCode) {
+    btnLoginSendEmailCode.addEventListener("click", async () => {
+      const username = loginForm?.elements?.username?.value?.trim() || "";
+      if (!username) {
+        setGateMessage(loginErrorEl, "Ingresá tu usuario arriba para enviarte el código.", false);
+        loginForm?.elements?.username?.focus();
+        return;
+      }
+      if (loginErrorEl) loginErrorEl.hidden = true;
+      btnLoginSendEmailCode.disabled = true;
+      btnLoginSendEmailCode.textContent = "Enviando código...";
+      try {
+        const data = await api("login-code.php", {
+          method: "POST",
+          body: JSON.stringify({ action: "send", username }),
+        });
+        if (loginCodeSentNote) {
+          setGateMessage(
+            loginCodeSentNote,
+            data.message || `Código enviado a ${data.emailMasked || "tu correo"}. Ingresalo arriba y tocá Entrar.`,
+            true
+          );
+        }
+        btnLoginSendEmailCode.textContent = "Reenviar código al mail";
+        const codeInput = loginForm?.elements?.code;
+        if (codeInput) {
+          codeInput.value = "";
+          codeInput.focus();
+        }
+      } catch (err) {
+        setGateMessage(loginErrorEl, err.message, false);
+        btnLoginSendEmailCode.textContent = "¿No tenés la app? Enviame un código al mail";
+      } finally {
+        btnLoginSendEmailCode.disabled = false;
+      }
+    });
   }
 
   if (btnEmailCode) {

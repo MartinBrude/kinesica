@@ -58,7 +58,7 @@ import {
   hideGate,
   setGateMessage,
   initAuth,
-} from "./modules/auth.js?v=78";
+} from "./modules/auth.js?v=79";
 
 import {
   todayISO,

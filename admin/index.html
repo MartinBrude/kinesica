@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=101">
+  <link rel="stylesheet" href="/admin/styles.css?v=102">
   <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1792345131">
   <script>
     (function () {
@@ -64,6 +64,12 @@
           <label>Código
             <input name="code" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" placeholder="6 dígitos">
           </label>
+          <div class="code-helper-row" style="margin-top:-4px; margin-bottom:4px;">
+            <button type="button" class="btn-link-action" id="btn-login-send-email-code" style="background:none; border:none; color:var(--primary); font-size:13px; font-weight:500; cursor:pointer; padding:0; text-decoration:underline; font-family:inherit;">
+              ¿No tenés la app? Enviame un código al mail
+            </button>
+          </div>
+          <p id="login-code-sent-note" class="gate-note" hidden></p>
           <p id="login-error" class="gate-error" hidden></p>
           <button type="submit" class="btn green">Entrar</button>
           <button type="button" class="btn ghost" id="btn-email-code">Ingresar con código al mail</button>
@@ -1144,6 +1150,6 @@
   </script>
   <div id="print-root"></div>
   <script src="/booking/booking-bundle.min.js?v=1792345131" defer></script>
-  <script type="module" src="/admin/app.js?v=100"></script>
+  <script type="module" src="/admin/app.js?v=102"></script>
 </body>
 </html>
