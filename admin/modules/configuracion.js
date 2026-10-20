@@ -41,12 +41,31 @@ const cfgBookingText = document.querySelector("#cfg-booking-status-text");
 const cfgBookingToggleBtn = document.querySelector("#cfg-btn-toggle-booking");
 
 export const DEFAULT_CLARA_TEXTS = {
-  menu_welcome: "Hola! Te damos la bienvenida a Kinésica 🌿\n\n¿En qué podemos ayudarte hoy?\nEscribí la letra de tu consulta:\n\nA) Turnos y disponibilidad\nB) Dónde queda el consultorio y cómo llegar\nC) Honorarios y formas de pago\nD) Cómo venir vestido/a a la sesión\nE) Dejar un mensaje a Norberto o María",
-  opt_a_text: "Para coordinar o consultar turnos, ingresá a nuestra turnera online: https://kinesica.com.ar/agendar 📅",
-  opt_b_text: "Kinésica queda en Charcas 3889, Piso 5º B, Palermo, CABA (entre Scalabrini Ortiz y Aráoz). 📍",
-  opt_d_text: "Indumentaria para la sesión:\n• Ropa interior o pantalón corto para los varones.\n• Ropa interior con corpiño tradicional (no deportivo), malla de 2 piezas o calza corta para las mujeres.\nSi sos menor, vení acompañado/a por un mayor 🙌.",
-  cancellation_policy: "Te recordamos que los turnos pueden cancelarse o reprogramarse con un mínimo de 24 horas de anticipación para permitir que otro paciente utilice la camilla.",
-  confirmation_notes: "Por favor asistir con puntualidad exacta al horario asignado. El consultorio cuenta con una única camilla y no dispone de sala de espera."
+  menu_welcome: "¡Hola! Te damos la bienvenida a *Kinésica* 🩺
+
+Por favor, respondé con la letra de la opción que necesitás:
+
+*A.* 📅 Turnos y disponibilidad (agendar o consultar)
+*B.* 📍 Dónde queda el consultorio y cómo llegar
+*C.* 💳 Honorarios y formas de pago
+*D.* 👕 ¿Cómo es la vestimenta a utilizar en la sesión?
+*E.* 💬 Dejar un mensaje a Norberto o María
+
+_(Escribí la letra de la opción deseada, por ejemplo *A* o *C*)_",
+  opt_a_text: "📅 *Turnos y Reservas - Kinésica*
+
+Para ver los días y horarios disponibles en tiempo real con Norberto o María y agendar tu sesión de 60 minutos, ingresá a nuestra turnera online:
+
+👉 *https://kinesica.com.ar/agendar*",
+  opt_b_text: "📍 *Kinésica Consultorio*
+• *Ubicación:* Charcas 3889, Piso 5º B, Palermo, CABA (entre Scalabrini Ortiz y Aráoz, a metros de Av. Santa Fe y estación Scalabrini Ortiz del Subte D).
+• *Google Maps:* https://maps.google.com/?q=Charcas+3889+Palermo+CABA",
+  opt_d_text: "👕 *Indumentaria para la sesión:*
+• Ropa interior o pantalón corto para los varones.
+• Ropa interior con corpiño tradicional (no deportivo), malla de 2 piezas o calza corta para las mujeres.
+Si sos menor, vení acompañado/a por un mayor 🙌.",
+  cancellation_policy: "Te recordamos que los turnos pueden cancelarse o reprogramarse con un mínimo de 24 horas de anticipación para permitir que otro paciente utilice la camilla 🙌.",
+  confirmation_notes: "Por favor asistir con puntualidad exacta al horario asignado. El consultorio cuenta con una única camilla y no dispone de sala de espera 📍."
 };
 
 let currentTexts = { ...DEFAULT_CLARA_TEXTS };
