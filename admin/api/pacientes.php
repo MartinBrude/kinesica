@@ -95,6 +95,7 @@ function ensure_pacientes_tables(PDO $pdo): void
             nombre_completo VARCHAR(120) NOT NULL,
             nombre_pila VARCHAR(60) NOT NULL,
             dni VARCHAR(20) DEFAULT NULL,
+            email VARCHAR(120) DEFAULT NULL,
             profesional_habitual ENUM('norberto', 'maria', 'indistinto') NOT NULL DEFAULT 'indistinto',
             motivo_consulta VARCHAR(255) DEFAULT NULL,
             notas TEXT DEFAULT NULL,
@@ -102,7 +103,8 @@ function ensure_pacientes_tables(PDO $pdo): void
             created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
             updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             INDEX idx_pacientes_tel (telefono),
-            INDEX idx_pacientes_nombre (nombre_completo)
+            INDEX idx_pacientes_nombre (nombre_completo),
+            INDEX idx_pacientes_email (email)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     ");
 
@@ -120,7 +122,7 @@ function ensure_pacientes_tables(PDO $pdo): void
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     ");
 
-    // 2. Si la tabla ya existía, asegurar existencia de columnas 'nombre' y 'apellido'
+    // 2. Si la tabla ya existía, asegurar existencia de columnas 'nombre', 'apellido' y 'email'
     try {
         $cols = $pdo->query("SHOW COLUMNS FROM pacientes")->fetchAll(PDO::FETCH_COLUMN);
         if (!in_array('nombre', $cols, true)) {
@@ -128,6 +130,10 @@ function ensure_pacientes_tables(PDO $pdo): void
         }
         if (!in_array('apellido', $cols, true)) {
             $pdo->exec("ALTER TABLE pacientes ADD apellido VARCHAR(60) NOT NULL DEFAULT '' AFTER nombre");
+        }
+        if (!in_array('email', $cols, true)) {
+            $pdo->exec("ALTER TABLE pacientes ADD email VARCHAR(120) DEFAULT NULL AFTER dni");
+            $pdo->exec("ALTER TABLE pacientes ADD INDEX idx_pacientes_email (email)");
         }
         // Poblar nombre y apellido si están vacíos dividiendo nombre_completo
         $pdo->exec("
@@ -240,7 +246,7 @@ try {
         if ($q !== '') {
             $stmt = $pdo->prepare('
                 SELECT * FROM pacientes 
-                WHERE nombre_completo LIKE :q OR nombre LIKE :q OR apellido LIKE :q OR telefono LIKE :q OR dni LIKE :q 
+                WHERE nombre_completo LIKE :q OR nombre LIKE :q OR apellido LIKE :q OR telefono LIKE :q OR dni LIKE :q OR email LIKE :q
                 ORDER BY nombre_completo ASC LIMIT 100
             ');
             $stmt->execute(['q' => "%$q%"]);
@@ -293,6 +299,10 @@ try {
                 ? trim((string) $data['dni']) 
                 : null;
 
+            $email = isset($data['email']) && trim((string) $data['email']) !== '' 
+                ? trim((string) $data['email']) 
+                : null;
+
             $profesional = in_array($data['profesional_habitual'] ?? '', ['norberto', 'maria', 'indistinto'], true)
                 ? $data['profesional_habitual']
                 : 'indistinto';
@@ -303,10 +313,10 @@ try {
 
             $stmt = $pdo->prepare('
                 INSERT INTO pacientes (
-                    telefono, nombre, apellido, nombre_completo, nombre_pila, dni, profesional_habitual, 
+                    telefono, nombre, apellido, nombre_completo, nombre_pila, dni, email, profesional_habitual, 
                     motivo_consulta, notas, origen
                 ) VALUES (
-                    :telefono, :nombre, :apellido, :nombre_completo, :nombre_pila, :dni, :profesional_habitual, 
+                    :telefono, :nombre, :apellido, :nombre_completo, :nombre_pila, :dni, :email, :profesional_habitual, 
                     :motivo_consulta, :notas, :origen
                 )
                 ON DUPLICATE KEY UPDATE
@@ -315,6 +325,7 @@ try {
                     nombre_completo = VALUES(nombre_completo),
                     nombre_pila = VALUES(nombre_pila),
                     dni = COALESCE(VALUES(dni), dni),
+                    email = COALESCE(VALUES(email), email),
                     profesional_habitual = CASE WHEN VALUES(profesional_habitual) != "indistinto" THEN VALUES(profesional_habitual) ELSE profesional_habitual END,
                     motivo_consulta = COALESCE(VALUES(motivo_consulta), motivo_consulta),
                     notas = COALESCE(VALUES(notas), notas)
@@ -327,6 +338,7 @@ try {
                 'nombre_completo' => $nombreCompleto,
                 'nombre_pila' => $nombrePila,
                 'dni' => $dni,
+                'email' => $email,
                 'profesional_habitual' => $profesional,
                 'motivo_consulta' => $motivo,
                 'notas' => $notas,
@@ -339,7 +351,8 @@ try {
                 'phone' => $phone,
                 'nombre' => $nombre,
                 'apellido' => $apellido,
-                'nombre_pila' => $nombrePila
+                'nombre_pila' => $nombrePila,
+                'email' => $email,
             ]);
         }
 
@@ -481,6 +494,7 @@ try {
 
         $nombrePila = extract_first_name($nombreCompleto);
         $dni = !empty($data['dni']) ? trim((string) $data['dni']) : null;
+        $email = !empty($data['email']) ? trim((string) $data['email']) : null;
         $profesional = in_array($data['profesional_habitual'] ?? '', ['norberto', 'maria', 'indistinto'], true) 
             ? $data['profesional_habitual'] 
             : 'indistinto';
@@ -495,6 +509,7 @@ try {
                 nombre_completo = :nom,
                 nombre_pila = :pila,
                 dni = :dni,
+                email = :email,
                 profesional_habitual = :prof,
                 motivo_consulta = :motivo,
                 notas = :notas
@@ -507,6 +522,7 @@ try {
             'nom' => $nombreCompleto,
             'pila' => $nombrePila,
             'dni' => $dni,
+            'email' => $email,
             'prof' => $profesional,
             'motivo' => $motivo,
             'notas' => $notas,

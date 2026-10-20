@@ -141,6 +141,21 @@
   text-decoration: underline;
 }
 
+.email-link {
+  color: var(--primary);
+  font-size: 13px;
+  text-decoration: none;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.email-link:hover {
+  text-decoration: underline;
+  color: var(--navy);
+}
+
 .btn-icon-edit {
   background: none;
   border: none;

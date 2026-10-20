@@ -8,8 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=106">
-  <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1792345131">
+  <link rel="stylesheet" href="/admin/styles.css?v=107">
+  <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1792520182">
   <script>
     (function () {
       try {
@@ -339,7 +339,7 @@
       <div class="pacientes-toolbar">
         <div class="pacientes-search-box">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-          <input type="search" id="search-pacientes" placeholder="Buscar por nombre, teléfono o DNI…">
+          <input type="search" id="search-pacientes" placeholder="Buscar por nombre, teléfono, email o DNI…">
         </div>
         <div style="display:flex; align-items:center; gap: 12px;">
           <label style="font-size:13px; color:var(--muted); display:flex; align-items:center; gap: 6px;">
@@ -361,6 +361,7 @@
             <tr>
               <th>Nombre y Apellido</th>
               <th>WhatsApp (Teléfono)</th>
+              <th>Email</th>
               <th>DNI</th>
               <th>Profesional</th>
               <th>Motivo de Consulta</th>
@@ -369,7 +370,7 @@
           </thead>
           <tbody id="pacientes-list-tbody">
             <tr>
-              <td colspan="6" style="text-align:center; padding: 24px; color: var(--muted);">Cargando directorio de pacientes…</td>
+              <td colspan="7" style="text-align:center; padding: 24px; color: var(--muted);">Cargando directorio de pacientes…</td>
             </tr>
           </tbody>
         </table>
@@ -1390,7 +1391,7 @@
     })();
   </script>
   <div id="print-root"></div>
-  <script src="/booking/booking-bundle.min.js?v=1792345131" defer></script>
-  <script type="module" src="/admin/app.js?v=124"></script>
+  <script src="/booking/booking-bundle.min.js?v=1792520182" defer></script>
+  <script type="module" src="/admin/app.js?v=125"></script>
 </body>
 </html>

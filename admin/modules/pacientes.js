@@ -92,13 +92,13 @@ export function hidePacientesView() {
 
 export async function loadPacientes() {
   if (!listEl) return;
-  listEl.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 24px; color: var(--muted);">Cargando directorio de pacientes…</td></tr>`;
+  listEl.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px; color: var(--muted);">Cargando directorio de pacientes…</td></tr>`;
   try {
     const res = await api("pacientes.php");
     pacientesCache = Array.isArray(res?.items) ? res.items : (Array.isArray(res) ? res : []);
     renderPacientesTable();
   } catch (err) {
-    listEl.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 24px; color: #dc2626;">Error al cargar pacientes: ${escapeHtml(err.message)}</td></tr>`;
+    listEl.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px; color: #dc2626;">Error al cargar pacientes: ${escapeHtml(err.message)}</td></tr>`;
   }
 }
 
@@ -113,9 +113,10 @@ function filterPacientes() {
                       (p.nombre || "").toLowerCase().includes(query) ||
                       (p.apellido || "").toLowerCase().includes(query);
     const phoneMatch = (p.telefono || "").includes(query);
+    const emailMatch = (p.email || "").toLowerCase().includes(query);
     const dniMatch = (p.dni || "").toLowerCase().includes(query);
     const motivoMatch = (p.motivo_consulta || "").toLowerCase().includes(query);
-    return nameMatch || phoneMatch || dniMatch || motivoMatch;
+    return nameMatch || phoneMatch || emailMatch || dniMatch || motivoMatch;
   });
 }
 
@@ -128,7 +129,7 @@ export function renderPacientesTable() {
   }
 
   if (filtered.length === 0) {
-    listEl.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 32px; color: var(--muted);">No se encontraron pacientes que coincidan con la búsqueda.</td></tr>`;
+    listEl.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 32px; color: var(--muted);">No se encontraron pacientes que coincidan con la búsqueda.</td></tr>`;
     return;
   }
 
@@ -152,6 +153,9 @@ export function renderPacientesTable() {
         <div class="phone-cell">
           ${rawTel ? `<a class="phone-link" href="${waLink}" target="_blank" rel="noopener" title="Abrir chat de WhatsApp">📲 ${escapeHtml(displayTel)}</a>` : '<span style="color:var(--muted)">Sin teléfono</span>'}
         </div>
+      </td>
+      <td>
+        ${p.email ? `<a class="email-link" href="mailto:${escapeHtml(p.email)}" title="Enviar correo a ${escapeHtml(p.email)}">✉️ ${escapeHtml(p.email)}</a>` : '<span style="color:var(--muted)">—</span>'}
       </td>
       <td>${p.dni ? escapeHtml(p.dni) : '<span style="color:var(--muted)">—</span>'}</td>
       <td>
@@ -242,10 +246,17 @@ function openFullPacienteModal(paciente = null) {
               <input type="text" id="modal-p-apellido" value="${escapeHtml(apellidoVal)}" placeholder="Ej: González" required>
             </div>
           </div>
-          <div class="paciente-modal-field">
-            <label>Teléfono (WhatsApp) *</label>
-            <input type="tel" id="modal-p-tel" value="${escapeHtml(paciente?.telefono || "")}" placeholder="Ej: 11 6123-4567 o 54911..." required>
-            <small>Se usa para enviar recordatorios y confirmaciones automáticas de turnos.</small>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="paciente-modal-field">
+              <label>Teléfono (WhatsApp) *</label>
+              <input type="tel" id="modal-p-tel" value="${escapeHtml(paciente?.telefono || "")}" placeholder="Ej: 11 6123-4567 o 54911..." required>
+              <small>Para WhatsApp y recordatorios automáticos.</small>
+            </div>
+            <div class="paciente-modal-field">
+              <label>Email</label>
+              <input type="email" id="modal-p-email" value="${escapeHtml(paciente?.email || "")}" placeholder="ejemplo@email.com">
+              <small>Para avisos y confirmaciones de turnos.</small>
+            </div>
           </div>
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
             <div class="paciente-modal-field">
@@ -293,6 +304,7 @@ function openFullPacienteModal(paciente = null) {
     const nombre = backdrop.querySelector("#modal-p-nombre").value.trim();
     const apellido = backdrop.querySelector("#modal-p-apellido").value.trim();
     const tel = backdrop.querySelector("#modal-p-tel").value.trim();
+    const email = backdrop.querySelector("#modal-p-email").value.trim();
     const dni = backdrop.querySelector("#modal-p-dni").value.trim();
     const prof = backdrop.querySelector("#modal-p-prof").value;
     const motivo = backdrop.querySelector("#modal-p-motivo").value.trim();
@@ -320,6 +332,7 @@ function openFullPacienteModal(paciente = null) {
             apellido: apellido,
             nombre_completo: nombreCompleto,
             telefono: tel,
+            email: email,
             dni: dni,
             profesional_habitual: prof,
             motivo_consulta: motivo,
@@ -335,6 +348,7 @@ function openFullPacienteModal(paciente = null) {
             apellido: apellido,
             nombre_completo: nombreCompleto,
             telefono: tel,
+            email: email,
             dni: dni,
             profesional_habitual: prof,
             motivo_consulta: motivo,

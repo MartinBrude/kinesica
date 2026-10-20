@@ -68,6 +68,88 @@ if (empty($paciente)) {
     exit;
 }
 
+// Auto-registro/actualización en el Directorio de Pacientes (MySQL)
+$rawPhone = trim((string) ($data['telefono'] ?? ''));
+if ($rawPhone !== '') {
+    try {
+        require_once __DIR__ . '/../admin/api/lib.php';
+        $db = db();
+        
+        // Auto-migración en caso de que la columna email aún no exista
+        $cols = $db->query("SHOW COLUMNS FROM pacientes")->fetchAll(PDO::FETCH_COLUMN);
+        if (!in_array('email', $cols, true)) {
+            $db->exec("ALTER TABLE pacientes ADD email VARCHAR(120) DEFAULT NULL AFTER dni");
+            $db->exec("ALTER TABLE pacientes ADD INDEX idx_pacientes_email (email)");
+        }
+
+        // Limpieza y normalización de teléfono
+        $digits = preg_replace('/[^0-9]/', '', $rawPhone) ?? '';
+        if (str_starts_with($digits, '549') && strlen($digits) >= 12) {
+            $phone = substr($digits, 0, 13);
+        } elseif (str_starts_with($digits, '54') && !str_starts_with($digits, '549') && strlen($digits) >= 12) {
+            $phone = '549' . substr($digits, 2, 10);
+        } elseif (str_starts_with($digits, '0')) {
+            $phone = '549' . substr($digits, 1);
+        } elseif (str_starts_with($digits, '15') && strlen($digits) === 10) {
+            $phone = '54911' . substr($digits, 2);
+        } elseif (str_starts_with($digits, '11') && strlen($digits) === 10) {
+            $phone = '549' . $digits;
+        } elseif (!str_starts_with($digits, '549') && strlen($digits) === 10) {
+            $phone = '549' . $digits;
+        } else {
+            $phone = $digits;
+        }
+
+        if (strlen($phone) >= 8) {
+            $fullName = trim($paciente);
+            $parts = preg_split('/\s+/u', $fullName, 2, PREG_SPLIT_NO_EMPTY) ?: [];
+            $nom = $parts[0] ?? $fullName;
+            $ape = $parts[1] ?? '';
+            $pila = $nom;
+            $dniVal = !empty($data['dni']) && trim((string) $data['dni']) !== 'No provisto' ? trim((string) $data['dni']) : null;
+            $motivoVal = !empty($data['motivo']) ? trim((string) $data['motivo']) : (!empty($servicio) ? $servicio : null);
+
+            $profVal = 'indistinto';
+            if (stripos($profesional, 'Norberto') !== false) {
+                $profVal = 'norberto';
+            } elseif (stripos($profesional, 'Mar') !== false) {
+                $profVal = 'maria';
+            }
+
+            $stmtUpsert = $db->prepare('
+                INSERT INTO pacientes (
+                    telefono, nombre, apellido, nombre_completo, nombre_pila, dni, email, profesional_habitual, motivo_consulta, origen
+                ) VALUES (
+                    :telefono, :nombre, :apellido, :nombre_completo, :nombre_pila, :dni, :email, :profesional, :motivo, "web"
+                )
+                ON DUPLICATE KEY UPDATE
+                    nombre = CASE WHEN VALUES(nombre) != "" THEN VALUES(nombre) ELSE nombre END,
+                    apellido = CASE WHEN VALUES(apellido) != "" THEN VALUES(apellido) ELSE apellido END,
+                    nombre_completo = VALUES(nombre_completo),
+                    nombre_pila = VALUES(nombre_pila),
+                    dni = COALESCE(VALUES(dni), dni),
+                    email = COALESCE(VALUES(email), email),
+                    profesional_habitual = CASE WHEN VALUES(profesional_habitual) != "indistinto" THEN VALUES(profesional_habitual) ELSE profesional_habitual END,
+                    motivo_consulta = COALESCE(VALUES(motivo_consulta), motivo_consulta)
+            ');
+
+            $stmtUpsert->execute([
+                'telefono' => $phone,
+                'nombre' => $nom,
+                'apellido' => $ape,
+                'nombre_completo' => $fullName,
+                'nombre_pila' => $pila,
+                'dni' => $dniVal,
+                'email' => $email,
+                'profesional' => $profVal,
+                'motivo' => $motivoVal,
+            ]);
+        }
+    } catch (Throwable $e) {
+        error_log('kinesica send-confirmation auto-paciente error: ' . $e->getMessage());
+    }
+}
+
 // Formatear fecha a castellano si viene en formato YYYY-MM-DD
 function formatearFechaLegible($dateStr) {
     if (preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $dateStr, $m)) {

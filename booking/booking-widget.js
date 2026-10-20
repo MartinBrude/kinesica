@@ -1387,10 +1387,13 @@
           body: JSON.stringify({
             email: payload.email,
             paciente: payload.nombre,
+            telefono: payload.telefono,
+            dni: payload.dni,
             fecha: payload.date,
             hora: payload.time,
             profesional: professionalName,
             servicio: serviceName,
+            motivo: payload.motivo || payload.especialidad,
             esMenor: Boolean(payload.isMenor),
           }),
         });

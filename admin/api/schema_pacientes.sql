@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS pacientes (
     nombre_completo VARCHAR(120) NOT NULL,
     nombre_pila VARCHAR(60) NOT NULL,
     dni VARCHAR(20) DEFAULT NULL,
+    email VARCHAR(120) DEFAULT NULL,
     profesional_habitual ENUM('norberto', 'maria', 'indistinto') NOT NULL DEFAULT 'indistinto',
     motivo_consulta VARCHAR(255) DEFAULT NULL,
     notas TEXT DEFAULT NULL,
@@ -16,7 +17,8 @@ CREATE TABLE IF NOT EXISTS pacientes (
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_pacientes_tel (telefono),
-    INDEX idx_pacientes_nombre (nombre_completo)
+    INDEX idx_pacientes_nombre (nombre_completo),
+    INDEX idx_pacientes_email (email)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS lista_espera (

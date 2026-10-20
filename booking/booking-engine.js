@@ -555,9 +555,11 @@
       errors.push("El número de teléfono o WhatsApp ingresado no es válido.");
     }
 
-    const email = String(req.email || "").trim();
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      errors.push("El correo electrónico ingresado no es válido.");
+    if (req.email !== undefined && req.email !== null && String(req.email).trim() !== "") {
+      const email = String(req.email).trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        errors.push("El correo electrónico ingresado no es válido.");
+      }
     }
 
     if (!req.date || !req.time) {
