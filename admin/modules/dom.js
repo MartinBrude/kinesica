@@ -136,16 +136,22 @@ function enqueueDialog(task) {
 /**
  * Aviso modal del admin. Reemplaza window.alert.
  * @param {string} message
+ * @param {{type?: "success" | "danger" | "info"}} [options]
  * @returns {Promise<void>}
  */
-export function dialogAlert(message) {
-  return enqueueDialog(() => openDialog({ message, confirm: false }));
+export function dialogAlert(message, options = {}) {
+  const msgStr = String(message ?? "");
+  const inferredSuccess = options.type === "success" || /(éxito|correctamente|restauraron|guardados|guardado|importó|importaron)/i.test(msgStr);
+  const inferredDanger = options.type === "danger" || (!inferredSuccess && /(error|falló|supera|inválido|no es|no se pudo|falta)/i.test(msgStr));
+  const finalType = options.type || (inferredSuccess ? "success" : (inferredDanger ? "danger" : "info"));
+
+  return enqueueDialog(() => openDialog({ message: msgStr, confirm: false, alertType: finalType }));
 }
 
 /**
  * Confirmación modal del admin. Reemplaza window.confirm.
  * @param {string} message
- * @param {{danger?: boolean}} [options]
+ * @param {{danger?: boolean, okText?: string, cancelText?: string}} [options]
  * @returns {Promise<boolean>}
  */
 export function dialogConfirm(message, options = {}) {
@@ -160,14 +166,21 @@ export function dialogConfirm(message, options = {}) {
   );
 }
 
-function openDialog({ message, confirm, danger, okText, cancelText }) {
+function openDialog({ message, confirm, danger, okText, cancelText, alertType }) {
   return new Promise((resolve) => {
     const root = document.createElement("div");
     root.className = "app-dialog";
     root.setAttribute("role", "presentation");
 
     const card = document.createElement("div");
-    card.className = "app-dialog-card";
+    let cardClasses = "app-dialog-card";
+    if (confirm && danger) {
+      cardClasses += " is-danger";
+    } else if (!confirm) {
+      if (alertType === "success") cardClasses += " is-success";
+      else if (alertType === "danger") cardClasses += " is-danger";
+    }
+    card.className = cardClasses;
     card.setAttribute("role", confirm ? "dialog" : "alertdialog");
     card.setAttribute("aria-modal", "true");
 
@@ -180,8 +193,13 @@ function openDialog({ message, confirm, danger, okText, cancelText }) {
 
     const ok = document.createElement("button");
     ok.type = "button";
-    ok.className = danger ? "btn danger" : "btn green";
-    ok.textContent = okText || (confirm ? (danger ? "Quitar" : "Confirmar") : "Entendido");
+    if (confirm) {
+      ok.className = danger ? "btn danger" : "btn green";
+      ok.textContent = okText || (danger ? "Quitar" : "Confirmar");
+    } else {
+      ok.className = alertType === "danger" ? "btn danger" : "btn green";
+      ok.textContent = okText || "Entendido";
+    }
 
     let cancel = null;
     if (confirm) {

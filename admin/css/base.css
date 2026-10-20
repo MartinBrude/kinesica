@@ -302,6 +302,27 @@ main {
   border-radius: 16px;
   background: var(--white);
   box-shadow: var(--shadow);
+  border: 1px solid var(--line);
+}
+
+.app-dialog-card.is-success {
+  background: #ecfdf5;
+  border: 1.5px solid #6ee7b7;
+}
+
+.app-dialog-card.is-success .app-dialog-text {
+  color: #065f46;
+  font-weight: 500;
+}
+
+.app-dialog-card.is-danger {
+  background: #fef2f2;
+  border: 1.5px solid #fca5a5;
+}
+
+.app-dialog-card.is-danger .app-dialog-text {
+  color: #991b1b;
+  font-weight: 500;
 }
 
 .app-dialog-text {

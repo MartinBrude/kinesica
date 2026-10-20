@@ -220,7 +220,7 @@ export function initConfiguracionModule(callbacks = {}) {
       }
       if (textsStatusBanner) {
         textsStatusBanner.textContent = "✓ Textos y políticas guardados con éxito.";
-        textsStatusBanner.className = "horarios-alert-box success";
+        textsStatusBanner.className = "horarios-alert-box is-success";
         textsStatusBanner.hidden = false;
         setTimeout(() => { textsStatusBanner.hidden = true; }, 4000);
       }

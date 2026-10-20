@@ -380,22 +380,24 @@
 /* Configuración Unificada - Pestañas y Paneles */
 .config-tabs-nav {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   border-bottom: 2px solid var(--line);
-  margin-bottom: 24px;
+  margin-top: 10px;
+  margin-bottom: 32px;
   overflow-x: auto;
   padding-bottom: 0;
 }
 
 .config-tab-btn {
   font-weight: 600;
-  font-size: 14px;
+  font-size: 14.5px;
   border-radius: var(--radius) var(--radius) 0 0;
-  padding: 10px 18px;
+  padding: 12px 22px;
   border-bottom: 2px solid transparent;
   margin-bottom: -2px;
   color: var(--muted);
   transition: all 0.15s ease;
+  white-space: nowrap;
 }
 
 .config-tab-btn:hover {
@@ -407,6 +409,46 @@
   color: var(--primary);
   border-bottom: 2px solid var(--primary);
   background: transparent;
+}
+
+/* Barra de control superior para cada subpanel de configuración */
+.config-subpanel-toolbar {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.config-subpanel-desc {
+  max-width: 620px;
+}
+
+.config-subpanel-desc h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.config-subpanel-desc p {
+  margin: 4px 0 0;
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.config-subpanel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
 }
 
 /* Simulador de Chat con Clara (WhatsApp Style) */
