@@ -90,7 +90,16 @@ function formatearFechaLegible($dateStr) {
 $fechaLegible = formatearFechaLegible($fechaRaw);
 $horaLegible = $horaRaw ? (strpos($horaRaw, 'hs') === false ? "{$horaRaw} hs" : $horaRaw) : '';
 
-// Condicionales del consultorio
+// Condicionales del consultorio y lectura dinámica de políticas
+$runtimeSettingsFile = __DIR__ . '/../admin/api/settings.json';
+$customCancellationPolicy = 'Te recordamos que los turnos pueden cancelarse o reprogramarse con un mínimo de 24 horas de anticipación 🙌.';
+if (is_file($runtimeSettingsFile)) {
+    $rJson = json_decode(@file_get_contents($runtimeSettingsFile), true);
+    if (!empty($rJson['clara_texts']['cancellation_policy'])) {
+        $customCancellationPolicy = trim((string) $rJson['clara_texts']['cancellation_policy']);
+    }
+}
+
 $indicacionPuntualidad = $esMenor
     ? 'Al tratarse de un paciente menor de edad, recomendamos presentarse 5 a 10 minutos antes junto a un adulto responsable.'
     : 'Por las características del espacio y para respetar las sesiones en curso, <strong>te pedimos llegar puntual a la hora de tu turno, ni antes ni después</strong>.';
@@ -207,7 +216,7 @@ $htmlContent = '
       </div>
 
       <p style="font-size: 13px; color: #64748b; margin-top: 18px;">
-        Si necesitás reprogramar o cancelar, por favor avisanos con anticipación para poder disponer del espacio para otro paciente.
+        ' . htmlspecialchars($customCancellationPolicy) . '
       </p>
     </div>
     <div class="footer">

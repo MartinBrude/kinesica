@@ -16,7 +16,12 @@ function get_runtime_settings(string $file): array
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 if ($method === 'GET') {
-    header('Cache-Control: public, max-age=15, stale-while-revalidate=45');
+    if (!empty($_SERVER['HTTP_X_KINESICA']) || isset($_GET['_t'])) {
+        header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+        header('Pragma: no-cache');
+    } else {
+        header('Cache-Control: public, max-age=15, stale-while-revalidate=45');
+    }
     echo json_encode(get_runtime_settings($settingsFile), JSON_UNESCAPED_UNICODE);
     exit;
 }

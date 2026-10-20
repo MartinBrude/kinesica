@@ -33,8 +33,10 @@ const btnAddCustomOption = document.querySelector("#btn-add-custom-option");
 let customMenuOptions = [];
 
 const btnSaveTexts = document.querySelector("#btn-save-clara-texts");
+const btnSaveMailsPolicies = document.querySelector("#btn-save-mails-policies");
 const btnResetTexts = document.querySelector("#btn-reset-clara-texts");
 const textsStatusBanner = document.querySelector("#clara-texts-status-banner");
+const mailsStatusBanner = document.querySelector("#mails-texts-status-banner");
 const textsLastUpdated = document.querySelector("#clara-texts-last-updated");
 
 // Toggles de Clara y Booking en la cabecera de Configuración
@@ -55,7 +57,7 @@ Por favor, respondé con la letra de la opción que necesitás:
 *B.* 📍 Ubicación y horarios del consultorio
 *C.* 💳 Honorarios y cobertura (obras sociales / reintegros)
 *D.* 👕 ¿Cómo venir vestido/a a la sesión?
-*E.* 💬 Comunicarte con un profesional (Lic. Norberto Brude / Lic. María Gulín)
+*E.* 💬 Comunicarte con un profesional (Lic. Norberto Brude / Lic. María Gulin)
 
 _(Escribí la letra de la opción deseada, por ejemplo *A* o *C*)_`,
   opt_a_text: `📅 *Turnos y Reservas - Kinésica*
@@ -70,7 +72,7 @@ Para ver los días y horarios disponibles en tiempo real con Norberto o María y
 • Ropa interior o pantalón corto para los varones.
 • Ropa interior con corpiño tradicional (no deportivo), malla de 2 piezas o calza corta para las mujeres.
 Si sos menor, vení acompañado/a por un mayor 🙌.`,
-  cancellation_policy: `Te recordamos que los turnos pueden cancelarse o reprogramarse con un mínimo de 24 horas de anticipación para permitir que otro paciente utilice la camilla 🙌.`,
+  cancellation_policy: `Te recordamos que los turnos pueden cancelarse o reprogramarse con un mínimo de 24 horas de anticipación 🙌.`,
   confirmation_notes: `Por favor asistir con puntualidad exacta al horario asignado. El consultorio cuenta con una única camilla y no dispone de sala de espera 📍.`
 };
 
@@ -226,8 +228,8 @@ function renderTexts(data) {
   if (inputOptA) inputOptA.value = data.opt_a_text || DEFAULT_CLARA_TEXTS.opt_a_text;
   if (inputOptB) inputOptB.value = data.opt_b_text || DEFAULT_CLARA_TEXTS.opt_b_text;
   if (inputOptD) inputOptD.value = data.opt_d_text || DEFAULT_CLARA_TEXTS.opt_d_text;
-  if (inputCancellation) inputCancellation.value = data.cancellation_policy || DEFAULT_CLARA_TEXTS.cancellation_policy;
-  if (inputConfirmation) inputConfirmation.value = data.confirmation_notes || DEFAULT_CLARA_TEXTS.confirmation_notes;
+  if (inputCancellation) inputCancellation.value = (typeof data.cancellation_policy === "string" && data.cancellation_policy.trim()) ? data.cancellation_policy : DEFAULT_CLARA_TEXTS.cancellation_policy;
+  if (inputConfirmation) inputConfirmation.value = (typeof data.confirmation_notes === "string" && data.confirmation_notes.trim()) ? data.confirmation_notes : DEFAULT_CLARA_TEXTS.confirmation_notes;
 
   if (Array.isArray(data.custom_menu_options)) {
     customMenuOptions = JSON.parse(JSON.stringify(data.custom_menu_options));
@@ -272,7 +274,7 @@ function updateStatusToggles(isClaraOn, isBookingOn) {
 
 async function loadConfigData() {
   try {
-    const data = await api("settings.php");
+    const data = await api("settings.php?_t=" + Date.now());
     if (data) {
       if (data.clara_texts) {
         currentTexts = { ...DEFAULT_CLARA_TEXTS, ...data.clara_texts };
@@ -313,10 +315,28 @@ export function initConfiguracionModule(callbacks = {}) {
     renderCustomOptionsList();
   });
 
-  // Guardar Textos de Clara & Políticas
-  btnSaveTexts?.addEventListener("click", async () => {
-    btnSaveTexts.disabled = true;
-    btnSaveTexts.textContent = "Guardando...";
+  // Guardar Textos de Clara & Políticas Unificado
+  const handleSaveTextsAndPolicies = async (triggerBtn) => {
+    const isMailsBtn = triggerBtn === btnSaveMailsPolicies;
+    if (btnSaveTexts) {
+      btnSaveTexts.disabled = true;
+      if (!isMailsBtn) btnSaveTexts.textContent = "Guardando...";
+    }
+    if (btnSaveMailsPolicies) {
+      btnSaveMailsPolicies.disabled = true;
+      if (isMailsBtn) btnSaveMailsPolicies.textContent = "Guardando...";
+    }
+
+    const restoreButtons = () => {
+      if (btnSaveTexts) {
+        btnSaveTexts.disabled = false;
+        btnSaveTexts.textContent = "Guardar textos y políticas";
+      }
+      if (btnSaveMailsPolicies) {
+        btnSaveMailsPolicies.disabled = false;
+        btnSaveMailsPolicies.textContent = "Guardar políticas en mails";
+      }
+    };
 
     // Validar customMenuOptions
     const cleanCustom = [];
@@ -328,20 +348,17 @@ export function initConfiguracionModule(callbacks = {}) {
       if (!l && !label && !response) continue;
       if (!l) {
         dialogAlert("Cada opción personalizada debe tener una letra asignada (ej: F).");
-        btnSaveTexts.disabled = false;
-        btnSaveTexts.textContent = "Guardar textos y políticas";
+        restoreButtons();
         return;
       }
       if (reserved.includes(l)) {
         dialogAlert(`La letra ${l} está reservada para las opciones nativas de Clara. Por favor usá letras de la F en adelante.`);
-        btnSaveTexts.disabled = false;
-        btnSaveTexts.textContent = "Guardar textos y políticas";
+        restoreButtons();
         return;
       }
       if (!response) {
         dialogAlert(`Por favor ingresá la respuesta para la opción ${l}.`);
-        btnSaveTexts.disabled = false;
-        btnSaveTexts.textContent = "Guardar textos y políticas";
+        restoreButtons();
         return;
       }
       cleanCustom.push({ letter: l, label: label || `Opción ${l}`, response });
@@ -372,19 +389,24 @@ export function initConfiguracionModule(callbacks = {}) {
         }
         renderTexts(currentTexts);
       }
-      if (textsStatusBanner) {
-        textsStatusBanner.textContent = "✓ Textos y opciones del menú guardados con éxito.";
-        textsStatusBanner.className = "horarios-alert-box is-success";
-        textsStatusBanner.hidden = false;
-        setTimeout(() => { textsStatusBanner.hidden = true; }, 4000);
-      }
+      const showSuccess = (banner, msg) => {
+        if (!banner) return;
+        banner.textContent = msg;
+        banner.className = "horarios-alert-box is-success";
+        banner.hidden = false;
+        setTimeout(() => { banner.hidden = true; }, 4000);
+      };
+      showSuccess(textsStatusBanner, "✓ Textos y opciones del menú guardados con éxito.");
+      showSuccess(mailsStatusBanner, "✓ Políticas y pautas de mails guardadas con éxito.");
     } catch (err) {
       dialogAlert(err?.message || "Error al guardar los textos de Clara.");
     } finally {
-      btnSaveTexts.disabled = false;
-      btnSaveTexts.textContent = "Guardar textos y políticas";
+      restoreButtons();
     }
-  });
+  };
+
+  btnSaveTexts?.addEventListener("click", () => handleSaveTextsAndPolicies(btnSaveTexts));
+  btnSaveMailsPolicies?.addEventListener("click", () => handleSaveTextsAndPolicies(btnSaveMailsPolicies));
 
   // Restaurar valores por defecto
   btnResetTexts?.addEventListener("click", async () => {

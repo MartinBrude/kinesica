@@ -515,9 +515,11 @@
             </p>
           </div>
           <div class="config-subpanel-actions">
-            <button type="button" class="btn green" onclick="document.querySelector('#btn-save-clara-texts').click()">Guardar políticas en mails</button>
+            <button type="button" class="btn green" id="btn-save-mails-policies">Guardar políticas en mails</button>
           </div>
         </div>
+
+        <div id="mails-texts-status-banner" class="horarios-alert-box" role="status" hidden style="max-width: 860px; margin: 0 auto 20px;"></div>
 
         <div class="horarios-timeline-card" style="max-width: 860px; margin: 0 auto 30px;">
           <h3 class="horarios-timeline-title" style="margin-bottom:6px; font-size:16px;">Políticas en Mails de Confirmación</h3>
@@ -1325,6 +1327,6 @@
   </script>
   <div id="print-root"></div>
   <script src="/booking/booking-bundle.min.js?v=1792345131" defer></script>
-  <script type="module" src="/admin/app.js?v=118"></script>
+  <script type="module" src="/admin/app.js?v=119"></script>
 </body>
 </html>

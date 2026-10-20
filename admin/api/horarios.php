@@ -343,13 +343,13 @@ Por favor, respondé con la letra de la opción que necesitás:
 *B.* 📍 Ubicación y horarios del consultorio
 *C.* 💳 Honorarios y cobertura (obras sociales / reintegros)
 *D.* 👕 ¿Cómo venir vestido/a a la sesión?
-*E.* 💬 Comunicarte con un profesional (Lic. Norberto Brude / Lic. María Gulín)
+*E.* 💬 Comunicarte con un profesional (Lic. Norberto Brude / Lic. María Gulin)
 
 _(Escribí la letra de la opción deseada, por ejemplo *A* o *C*)_",
         'opt_a_text' => 'Para coordinar o consultar turnos, ingresá a nuestra turnera online: https://kinesica.com.ar/agendar 📅',
         'opt_b_text' => 'Kinésica queda en Charcas 3889, Piso 5º B, Palermo, CABA (entre Scalabrini Ortiz y Aráoz). 📍',
         'opt_d_text' => "Indumentaria para la sesión:\n• Ropa interior o pantalón corto para los varones.\n• Ropa interior con corpiño tradicional (no deportivo), malla de 2 piezas o calza corta para las mujeres.\nSi sos menor, vení acompañado/a por un mayor 🙌.",
-        'cancellation_policy' => 'Te recordamos que los turnos pueden cancelarse o reprogramarse con un mínimo de 24 horas de anticipación para permitir que otro paciente utilice la camilla.',
+        'cancellation_policy' => 'Te recordamos que los turnos pueden cancelarse o reprogramarse con un mínimo de 24 horas de anticipación 🙌.',
         'confirmation_notes' => 'Por favor asistir con puntualidad exacta al horario asignado. El consultorio cuenta con una única camilla y no dispone de sala de espera.',
         'updated_at' => null,
         'updated_by' => null,
