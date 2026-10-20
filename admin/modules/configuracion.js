@@ -41,7 +41,7 @@ const cfgBookingText = document.querySelector("#cfg-booking-status-text");
 const cfgBookingToggleBtn = document.querySelector("#cfg-btn-toggle-booking");
 
 export const DEFAULT_CLARA_TEXTS = {
-  menu_welcome: "¡Hola! Te damos la bienvenida a *Kinésica* 🩺
+  menu_welcome: `¡Hola! Te damos la bienvenida a *Kinésica* 🩺
 
 Por favor, respondé con la letra de la opción que necesitás:
 
@@ -51,21 +51,21 @@ Por favor, respondé con la letra de la opción que necesitás:
 *D.* 👕 ¿Cómo venir vestido/a a la sesión?
 *E.* 💬 Comunicarte con un profesional (Lic. Norberto Brude / Lic. María Gulín)
 
-_(Escribí la letra de la opción deseada, por ejemplo *A* o *C*)_",
-  opt_a_text: "📅 *Turnos y Reservas - Kinésica*
+_(Escribí la letra de la opción deseada, por ejemplo *A* o *C*)_`,
+  opt_a_text: `📅 *Turnos y Reservas - Kinésica*
 
 Para ver los días y horarios disponibles en tiempo real con Norberto o María y agendar tu sesión de 60 minutos, ingresá a nuestra turnera online:
 
-👉 *https://kinesica.com.ar/agendar*",
-  opt_b_text: "📍 *Kinésica Consultorio*
+👉 *https://kinesica.com.ar/agendar*`,
+  opt_b_text: `📍 *Kinésica Consultorio*
 • *Ubicación:* Charcas 3889, Piso 5º B, Palermo, CABA (entre Scalabrini Ortiz y Aráoz, a metros de Av. Santa Fe y estación Scalabrini Ortiz del Subte D).
-• *Google Maps:* https://maps.google.com/?q=Charcas+3889+Palermo+CABA",
-  opt_d_text: "👕 *Indumentaria para la sesión:*
+• *Google Maps:* https://maps.google.com/?q=Charcas+3889+Palermo+CABA`,
+  opt_d_text: `👕 *Indumentaria para la sesión:*
 • Ropa interior o pantalón corto para los varones.
 • Ropa interior con corpiño tradicional (no deportivo), malla de 2 piezas o calza corta para las mujeres.
-Si sos menor, vení acompañado/a por un mayor 🙌.",
-  cancellation_policy: "Te recordamos que los turnos pueden cancelarse o reprogramarse con un mínimo de 24 horas de anticipación para permitir que otro paciente utilice la camilla 🙌.",
-  confirmation_notes: "Por favor asistir con puntualidad exacta al horario asignado. El consultorio cuenta con una única camilla y no dispone de sala de espera 📍."
+Si sos menor, vení acompañado/a por un mayor 🙌.`,
+  cancellation_policy: `Te recordamos que los turnos pueden cancelarse o reprogramarse con un mínimo de 24 horas de anticipación para permitir que otro paciente utilice la camilla 🙌.`,
+  confirmation_notes: `Por favor asistir con puntualidad exacta al horario asignado. El consultorio cuenta con una única camilla y no dispone de sala de espera 📍.`
 };
 
 let currentTexts = { ...DEFAULT_CLARA_TEXTS };
