@@ -627,12 +627,17 @@
 /* ==========================================================================
    Admin Collapsible Sections (Consultorio & Clara)
    ========================================================================== */
+#view-consultorio .hero-card,
+#view-clara .hero-card {
+  margin-bottom: 24px;
+}
+
 details.admin-collapsible-card {
   background: var(--white);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  margin: 0 auto 24px;
-  max-width: 960px;
+  margin: 0 0 20px;
+  width: 100%;
   box-shadow: var(--shadow);
   overflow: hidden;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
