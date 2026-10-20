@@ -43,7 +43,7 @@ const DAYS = [
 const PROF_META = [
   {
     id: "maria",
-    name: "Lic. María Gulín",
+    name: "Lic. María Gulin",
     shortName: "María",
     specialties: "Kinesiología · RPG · ATM · Acupuntura · Posturología",
     cardClass: "maria-card",

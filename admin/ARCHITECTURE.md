@@ -43,7 +43,7 @@ admin/
 │   └── compare.js           # Controlador de la vista comparativa de evolución
 ├── signatures/              # Imágenes digitales de sellos y firmas profesionales
 │   ├── norberto.png         # Firma y sello del Lic. Norberto Brude
-│   └── maria.png            # Firma y sello de la Lic. María Gulín
+│   └── maria.png            # Firma y sello de la Lic. María Gulin
 ├── .htaccess                # Protección de archivos sensibles y cabeceras de seguridad
 ├── app.js                   # Orquestador principal y punto de entrada (280 líneas)
 ├── ficha-rules.mjs          # Reglas clínicas puras de dominio (CDI-TTM y cálculos)
@@ -86,7 +86,7 @@ Cada módulo tiene una responsabilidad única y bien delimitada:
   - Validación suave con indicador luminoso discreto (`.step-dot`) y foco automático en el primer campo faltante.
   - Barra de dolor EVA con gradiente visual y badge semántico (`syncEva`).
   - Detección de cambios sin guardar antes de salir (`formState`).
-  - **Asignación de profesional por admin:** Cuando el administrador (`martin`) crea o edita una ficha, se activa el selector `#field-profesional` para asignar la ficha al Lic. Norberto Brude o a la Lic. María Gulín. Para los profesionales clínicos no-admin, el selector se mantiene oculto y la ficha se vincula estrictamente a su propia cuenta.
+  - **Asignación de profesional por admin:** Cuando el administrador (`martin`) crea o edita una ficha, se activa el selector `#field-profesional` para asignar la ficha al Lic. Norberto Brude o a la Lic. María Gulin. Para los profesionales clínicos no-admin, el selector se mantiene oculto y la ficha se vincula estrictamente a su propia cuenta.
 
 ### `admin/modules/library.js`
 - **Responsabilidad:** Gestión de historias clínicas registradas.

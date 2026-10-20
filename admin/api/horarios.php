@@ -241,7 +241,7 @@ function build_clara_schedule_summary(array $hours): string
     $lines = ['Horarios oficiales:'];
 
     $profs = [
-        ['id' => 'maria', 'title' => 'Lic. María Gulín', 'short' => 'María'],
+        ['id' => 'maria', 'title' => 'Lic. María Gulin', 'short' => 'María'],
         ['id' => 'norberto', 'title' => 'Lic. Norberto Brude', 'short' => 'Norberto'],
     ];
 
@@ -334,10 +334,32 @@ function load_full_runtime_settings(string $file): array
         $fees['updated_by'] = $data['fees']['updated_by'] ?? null;
     }
 
+    $defaultClaraTexts = [
+        'menu_welcome' => "Hola! Te damos la bienvenida a Kinésica 🌿\n\n¿En qué podemos ayudarte hoy?\nEscribí la letra de tu consulta:\n\nA) Turnos y disponibilidad\nB) Dónde queda el consultorio y cómo llegar\nC) Honorarios y formas de pago\nD) Cómo venir vestido/a a la sesión\nE) Dejar un mensaje a Norberto o María",
+        'opt_a_text' => 'Para coordinar o consultar turnos, ingresá a nuestra turnera online: https://kinesica.com.ar/agendar 📅',
+        'opt_b_text' => 'Kinésica queda en Charcas 3889, Piso 5º B, Palermo, CABA (entre Scalabrini Ortiz y Aráoz). 📍',
+        'opt_d_text' => "Indumentaria para la sesión:\n• Ropa interior o pantalón corto para los varones.\n• Ropa interior con corpiño tradicional (no deportivo), malla de 2 piezas o calza corta para las mujeres.\nSi sos menor, vení acompañado/a por un mayor 🙌.",
+        'cancellation_policy' => 'Te recordamos que los turnos pueden cancelarse o reprogramarse con un mínimo de 24 horas de anticipación para permitir que otro paciente utilice la camilla.',
+        'confirmation_notes' => 'Por favor asistir con puntualidad exacta al horario asignado. El consultorio cuenta con una única camilla y no dispone de sala de espera.',
+        'updated_at' => null,
+        'updated_by' => null,
+    ];
+    $claraTexts = $defaultClaraTexts;
+    if (isset($data['clara_texts']) && is_array($data['clara_texts'])) {
+        foreach ($defaultClaraTexts as $k => $defVal) {
+            if (isset($data['clara_texts'][$k]) && is_string($data['clara_texts'][$k])) {
+                $claraTexts[$k] = trim($data['clara_texts'][$k]);
+            }
+        }
+        $claraTexts['updated_at'] = $data['clara_texts']['updated_at'] ?? null;
+        $claraTexts['updated_by'] = $data['clara_texts']['updated_by'] ?? null;
+    }
+
     return [
         'clara_active' => isset($data['clara_active']) ? (bool) $data['clara_active'] : true,
         'booking_active' => isset($data['booking_active']) ? (bool) $data['booking_active'] : true,
         'fees' => $fees,
+        'clara_texts' => $claraTexts,
         'practitioner_hours' => $hours,
         'practitioner_hours_py' => convert_hours_to_python_weekdays($hours),
         'clara_schedule_summary' => build_clara_schedule_summary($hours),

@@ -24,7 +24,7 @@ let activeBooking = localStorage.getItem("kinesica_booking_active") === "1";
 export function showDashboardView() {
   if (viewDashboard) {
     viewDashboard.hidden = false;
-    const views = ["#view-library", "#view-pacientes", "#view-horarios", "#view-form", "#view-compare", "#view-gate"];
+    const views = ["#view-library", "#view-pacientes", "#view-configuracion", "#view-horarios", "#view-honorarios", "#view-form", "#view-compare", "#view-gate"];
     views.forEach((sel) => {
       const el = document.querySelector(sel);
       if (el) el.hidden = true;
@@ -143,12 +143,16 @@ export function initDashboardModule(callbacks = {}) {
     callbacks.onNewPaciente?.();
   });
 
+  document.querySelector("#dash-btn-config-general")?.addEventListener("click", () => {
+    callbacks.onNavigate?.("configuracion");
+  });
+
   document.querySelector("#dash-btn-horarios")?.addEventListener("click", () => {
-    callbacks.onNavigate?.("horarios");
+    callbacks.onNavigate?.("configuracion", "horarios");
   });
 
   document.querySelector("#dash-btn-honorarios-card")?.addEventListener("click", () => {
-    callbacks.onNavigate?.("honorarios");
+    callbacks.onNavigate?.("configuracion", "honorarios");
   });
 
   // Toggle de Clara desde el dashboard

@@ -376,3 +376,35 @@
   white-space: pre-wrap;
   overflow-x: auto;
 }
+
+/* Configuración Unificada - Pestañas y Paneles */
+.config-tabs-nav {
+  display: flex;
+  gap: 8px;
+  border-bottom: 2px solid var(--line);
+  margin-bottom: 24px;
+  overflow-x: auto;
+  padding-bottom: 0;
+}
+
+.config-tab-btn {
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: var(--radius) var(--radius) 0 0;
+  padding: 10px 18px;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  color: var(--muted);
+  transition: all 0.15s ease;
+}
+
+.config-tab-btn:hover {
+  color: var(--navy);
+  background: var(--bg);
+}
+
+.config-tab-btn.is-active {
+  color: var(--primary);
+  border-bottom: 2px solid var(--primary);
+  background: transparent;
+}

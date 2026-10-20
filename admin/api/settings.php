@@ -62,6 +62,19 @@ if ($method === 'POST') {
         $current['horarios_updated_by'] = (string) ($user['name'] ?: $user['username']);
     }
 
+    if (isset($input['clara_texts']) && is_array($input['clara_texts'])) {
+        $allowed = ['menu_welcome', 'opt_a_text', 'opt_b_text', 'opt_d_text', 'cancellation_policy', 'confirmation_notes'];
+        $cleanTexts = $current['clara_texts'] ?? [];
+        foreach ($allowed as $field) {
+            if (isset($input['clara_texts'][$field])) {
+                $cleanTexts[$field] = trim((string) $input['clara_texts'][$field]);
+            }
+        }
+        $cleanTexts['updated_at'] = gmdate('Y-m-d\TH:i:s\Z');
+        $cleanTexts['updated_by'] = (string) ($user['name'] ?: $user['username']);
+        $current['clara_texts'] = $cleanTexts;
+    }
+
     $toPersist = [
         'clara_active' => $current['clara_active'],
         'booking_active' => $current['booking_active'],
@@ -72,6 +85,7 @@ if ($method === 'POST') {
             'updated_at' => null,
             'updated_by' => null,
         ],
+        'clara_texts' => $current['clara_texts'] ?? null,
         'practitioner_hours' => $current['practitioner_hours'],
         'horarios_updated_at' => $current['horarios_updated_at'],
         'horarios_updated_by' => $current['horarios_updated_by'],

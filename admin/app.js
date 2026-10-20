@@ -138,6 +138,12 @@ import {
   hideHonorariosView,
 } from "./modules/honorarios.js?v=1";
 
+import {
+  initConfiguracionModule,
+  showConfiguracionView,
+  hideConfiguracionView,
+} from "./modules/configuracion.js?v=1";
+
 // Re-exportar utilidades esenciales para interoperabilidad y pruebas
 export {
   api,
@@ -220,10 +226,12 @@ async function refresh() {
       showCompare(saved.pKey, saved.xId, saved.yId);
     } else if (saved?.view === "pacientes") {
       switchTab("pacientes");
+    } else if (saved?.view === "configuracion") {
+      switchTab("configuracion", saved.subtab || "clara");
     } else if (saved?.view === "horarios") {
-      switchTab("horarios");
+      switchTab("configuracion", "horarios");
     } else if (saved?.view === "honorarios") {
-      switchTab("honorarios");
+      switchTab("configuracion", "honorarios");
     } else if (saved?.view === "fichas" || saved?.view === "library") {
       switchTab("fichas");
     } else if (saved?.view !== "form") {
@@ -388,47 +396,44 @@ initCompare({
   },
 });
 
-function switchTab(tab) {
+function switchTab(tab, subtab = "clara") {
   const btnInicio = document.querySelector("#nav-btn-inicio");
   const btnFichas = document.querySelector("#nav-btn-fichas");
   const btnPacientes = document.querySelector("#nav-btn-pacientes");
-  const btnHorarios = document.querySelector("#nav-btn-horarios");
-  const btnHonorarios = document.querySelector("#nav-btn-honorarios");
+  const btnConfig = document.querySelector("#nav-btn-configuracion");
 
   btnInicio?.classList.remove("is-active");
   btnFichas?.classList.remove("is-active");
   btnPacientes?.classList.remove("is-active");
-  btnHorarios?.classList.remove("is-active");
-  btnHonorarios?.classList.remove("is-active");
+  btnConfig?.classList.remove("is-active");
 
   if (tab === "inicio") {
     btnInicio?.classList.add("is-active");
     hidePacientesView();
+    hideConfiguracionView();
     hideHorariosView();
     hideHonorariosView();
     showDashboardView();
   } else if (tab === "pacientes") {
     btnPacientes?.classList.add("is-active");
     hideDashboardView();
+    hideConfiguracionView();
     hideHorariosView();
     hideHonorariosView();
     showPacientesView();
-  } else if (tab === "horarios") {
-    btnHorarios?.classList.add("is-active");
-    hideDashboardView();
-    hidePacientesView();
-    hideHonorariosView();
-    showHorariosView();
-  } else if (tab === "honorarios") {
-    btnHonorarios?.classList.add("is-active");
+  } else if (tab === "configuracion" || tab === "horarios" || tab === "honorarios") {
+    btnConfig?.classList.add("is-active");
     hideDashboardView();
     hidePacientesView();
     hideHorariosView();
-    showHonorariosView();
+    hideHonorariosView();
+    const effectiveSubtab = tab === "horarios" ? "horarios" : (tab === "honorarios" ? "honorarios" : subtab);
+    showConfiguracionView(effectiveSubtab);
   } else {
     btnFichas?.classList.add("is-active");
     hideDashboardView();
     hidePacientesView();
+    hideConfiguracionView();
     hideHorariosView();
     hideHonorariosView();
     showLibrary();
@@ -462,8 +467,7 @@ function mountAdminChannels() {
       document.getElementById("nav-btn-inicio")?.addEventListener("click", () => switchTab("inicio"));
       document.getElementById("nav-btn-fichas")?.addEventListener("click", () => switchTab("fichas"));
       document.getElementById("nav-btn-pacientes")?.addEventListener("click", () => switchTab("pacientes"));
-      document.getElementById("nav-btn-horarios")?.addEventListener("click", () => switchTab("horarios"));
-      document.getElementById("nav-btn-honorarios")?.addEventListener("click", () => switchTab("honorarios"));
+      document.getElementById("nav-btn-configuracion")?.addEventListener("click", () => switchTab("configuracion"));
       document.getElementById("brand-logo")?.addEventListener("click", (e) => {
         e.preventDefault();
         switchTab("inicio");
@@ -495,8 +499,12 @@ fillForm(blank(), loadAll());
 initPacientesModule();
 initHorariosModule();
 initHonorariosModule();
+initConfiguracionModule({
+  onClaraToggled: (active) => updateDashboardClara(active),
+  onBookingToggled: (active) => updateDashboardBooking(active),
+});
 initDashboardModule({
-  onNavigate: (tab) => switchTab(tab),
+  onNavigate: (tab, subtab) => switchTab(tab, subtab),
   onNewFicha: () => {
     switchTab("fichas");
     fillForm(blank(), loadAll());
