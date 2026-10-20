@@ -134,8 +134,16 @@ export function initDashboardModule(callbacks = {}) {
     callbacks.onNewPaciente?.();
   });
 
+  document.querySelector("#dash-btn-consultorio")?.addEventListener("click", () => {
+    callbacks.onNavigate?.("consultorio");
+  });
+
+  document.querySelector("#dash-btn-clara")?.addEventListener("click", () => {
+    callbacks.onNavigate?.("clara");
+  });
+
   document.querySelector("#dash-btn-config-general")?.addEventListener("click", () => {
-    callbacks.onNavigate?.("configuracion");
+    callbacks.onNavigate?.("clara");
   });
 
   // Toggle de Clara desde el dashboard

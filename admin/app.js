@@ -123,7 +123,7 @@ import {
   updateDashboardClara,
   updateDashboardBooking,
   updateDashboardState,
-} from "./modules/dashboard.js?v=7";
+} from "./modules/dashboard.js?v=8";
 
 import {
   initHorariosModule,
@@ -140,9 +140,13 @@ import {
 
 import {
   initConfiguracionModule,
+  showConsultorioView,
+  hideConsultorioView,
+  showClaraView,
+  hideClaraView,
   showConfiguracionView,
   hideConfiguracionView,
-} from "./modules/configuracion.js?v=12";
+} from "./modules/configuracion.js?v=13";
 
 // Re-exportar utilidades esenciales para interoperabilidad y pruebas
 export {
@@ -226,12 +230,10 @@ async function refresh() {
       showCompare(saved.pKey, saved.xId, saved.yId);
     } else if (saved?.view === "pacientes") {
       switchTab("pacientes");
-    } else if (saved?.view === "configuracion") {
-      switchTab("configuracion", saved.subtab || "clara");
-    } else if (saved?.view === "horarios") {
-      switchTab("configuracion", "horarios");
-    } else if (saved?.view === "honorarios") {
-      switchTab("configuracion", "honorarios");
+    } else if (saved?.view === "consultorio" || saved?.view === "horarios" || saved?.view === "honorarios") {
+      switchTab("consultorio");
+    } else if (saved?.view === "clara" || saved?.view === "configuracion") {
+      switchTab("clara");
     } else if (saved?.view === "fichas" || saved?.view === "library") {
       switchTab("fichas");
     } else if (saved?.view !== "form") {
@@ -266,8 +268,10 @@ async function refresh() {
 
   if (saved?.view === "pacientes") {
     switchTab("pacientes");
-  } else if (saved?.view === "horarios") {
-    switchTab("horarios");
+  } else if (saved?.view === "consultorio" || saved?.view === "horarios" || saved?.view === "honorarios") {
+    switchTab("consultorio");
+  } else if (saved?.view === "clara" || saved?.view === "configuracion") {
+    switchTab("clara");
   } else if (saved?.view === "fichas" || saved?.view === "library") {
     switchTab("fichas");
   } else {
@@ -396,38 +400,49 @@ initCompare({
   },
 });
 
-function switchTab(tab, subtab = "clara") {
+function switchTab(tab) {
   const btnInicio = document.querySelector("#nav-btn-inicio");
   const btnFichas = document.querySelector("#nav-btn-fichas");
   const btnPacientes = document.querySelector("#nav-btn-pacientes");
-  const btnConfig = document.querySelector("#nav-btn-configuracion");
+  const btnConsultorio = document.querySelector("#nav-btn-consultorio");
+  const btnClara = document.querySelector("#nav-btn-clara");
 
   btnInicio?.classList.remove("is-active");
   btnFichas?.classList.remove("is-active");
   btnPacientes?.classList.remove("is-active");
-  btnConfig?.classList.remove("is-active");
+  btnConsultorio?.classList.remove("is-active");
+  btnClara?.classList.remove("is-active");
 
   if (tab === "inicio") {
     btnInicio?.classList.add("is-active");
     hidePacientesView();
-    hideConfiguracionView();
+    hideConsultorioView();
+    hideClaraView();
     showDashboardView();
   } else if (tab === "pacientes") {
     btnPacientes?.classList.add("is-active");
     hideDashboardView();
-    hideConfiguracionView();
+    hideConsultorioView();
+    hideClaraView();
     showPacientesView();
-  } else if (tab === "configuracion" || tab === "horarios" || tab === "honorarios") {
-    btnConfig?.classList.add("is-active");
+  } else if (tab === "consultorio" || tab === "horarios" || tab === "honorarios") {
+    btnConsultorio?.classList.add("is-active");
     hideDashboardView();
     hidePacientesView();
-    const effectiveSubtab = tab === "horarios" ? "horarios" : (tab === "honorarios" ? "honorarios" : subtab);
-    showConfiguracionView(effectiveSubtab);
+    hideClaraView();
+    showConsultorioView();
+  } else if (tab === "clara" || tab === "configuracion") {
+    btnClara?.classList.add("is-active");
+    hideDashboardView();
+    hidePacientesView();
+    hideConsultorioView();
+    showClaraView();
   } else {
     btnFichas?.classList.add("is-active");
     hideDashboardView();
     hidePacientesView();
-    hideConfiguracionView();
+    hideConsultorioView();
+    hideClaraView();
     showLibrary();
   }
 }
@@ -459,7 +474,8 @@ function mountAdminChannels() {
       document.getElementById("nav-btn-inicio")?.addEventListener("click", () => switchTab("inicio"));
       document.getElementById("nav-btn-fichas")?.addEventListener("click", () => switchTab("fichas"));
       document.getElementById("nav-btn-pacientes")?.addEventListener("click", () => switchTab("pacientes"));
-      document.getElementById("nav-btn-configuracion")?.addEventListener("click", () => switchTab("configuracion"));
+      document.getElementById("nav-btn-consultorio")?.addEventListener("click", () => switchTab("consultorio"));
+      document.getElementById("nav-btn-clara")?.addEventListener("click", () => switchTab("clara"));
       document.getElementById("brand-logo")?.addEventListener("click", (e) => {
         e.preventDefault();
         switchTab("inicio");

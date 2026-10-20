@@ -12,9 +12,11 @@ import { escapeHtml, dialogAlert, dialogConfirm } from "./dom.js?v=78";
 import { loadHorariosFromServer } from "./horarios.js?v=1";
 import { loadHonorarios } from "./honorarios.js?v=1";
 
+const viewConsultorio = document.querySelector("#view-consultorio");
+const viewClara = document.querySelector("#view-clara");
 const viewConfiguracion = document.querySelector("#view-configuracion");
 
-// Subpestañas
+// Subpestañas (compatibilidad si existieran)
 const configTabBtns = document.querySelectorAll(".config-tab-btn");
 const configSections = document.querySelectorAll(".config-subpanel");
 
@@ -94,59 +96,75 @@ let currentTexts = { ...DEFAULT_CLARA_TEXTS };
 let activeClara = false;
 let activeBooking = false;
 
-export function showConfiguracionView(subtab = "clara") {
-  if (viewConfiguracion) {
-    viewConfiguracion.hidden = false;
-    const views = ["#view-dashboard", "#view-library", "#view-pacientes", "#view-form", "#view-compare", "#view-gate"];
+export function showConsultorioView() {
+  if (viewConsultorio) {
+    viewConsultorio.hidden = false;
+    const views = ["#view-dashboard", "#view-library", "#view-pacientes", "#view-clara", "#view-configuracion", "#view-form", "#view-compare", "#view-gate"];
     views.forEach((sel) => {
       const el = document.querySelector(sel);
       if (el) el.hidden = true;
     });
 
     try {
-      sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "configuracion", subtab }));
+      sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "consultorio" }));
     } catch {}
 
-    switchConfigSubtab(subtab);
+    loadHorariosFromServer();
+    loadHonorarios();
+  }
+}
+
+export function hideConsultorioView() {
+  if (viewConsultorio) {
+    viewConsultorio.hidden = true;
+  }
+}
+
+export function showClaraView() {
+  if (viewClara) {
+    viewClara.hidden = false;
+    const views = ["#view-dashboard", "#view-library", "#view-pacientes", "#view-consultorio", "#view-configuracion", "#view-form", "#view-compare", "#view-gate"];
+    views.forEach((sel) => {
+      const el = document.querySelector(sel);
+      if (el) el.hidden = true;
+    });
+
+    try {
+      sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "clara" }));
+    } catch {}
+
     loadConfigData();
+    if (chatMessagesEl && chatMessagesEl.children.length === 0) {
+      resetChatDemo();
+    }
+  }
+}
+
+export function hideClaraView() {
+  if (viewClara) {
+    viewClara.hidden = true;
+  }
+}
+
+export function showConfiguracionView(subtab = "clara") {
+  if (subtab === "horarios" || subtab === "honorarios") {
+    showConsultorioView();
+  } else {
+    showClaraView();
   }
 }
 
 export function hideConfiguracionView() {
-  if (viewConfiguracion) {
-    viewConfiguracion.hidden = true;
-  }
+  hideConsultorioView();
+  hideClaraView();
 }
 
 export function switchConfigSubtab(subtabId) {
-  configTabBtns.forEach((btn) => {
-    if (btn.dataset.subtab === subtabId) {
-      btn.classList.add("is-active");
-    } else {
-      btn.classList.remove("is-active");
-    }
-  });
-
-  configSections.forEach((sec) => {
-    if (sec.id === `config-panel-${subtabId}`) {
-      sec.hidden = false;
-      if (subtabId === "horarios") {
-        loadHorariosFromServer();
-      } else if (subtabId === "honorarios") {
-        loadHonorarios();
-      } else if (subtabId === "chat" && chatMessagesEl && chatMessagesEl.children.length === 0) {
-        resetChatDemo();
-      }
-    } else {
-      sec.hidden = true;
-    }
-  });
-
-  try {
-    const current = JSON.parse(sessionStorage.getItem("kinesica_admin_view") || "{}");
-    current.subtab = subtabId;
-    sessionStorage.setItem("kinesica_admin_view", JSON.stringify(current));
-  } catch {}
+  if (subtabId === "horarios" || subtabId === "honorarios") {
+    showConsultorioView();
+  } else {
+    showClaraView();
+  }
 }
 
 function getNextAvailableLetter() {

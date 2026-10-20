@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/admin/styles.css?v=107">
-  <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1792520182">
+  <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1792520925">
   <script>
     (function () {
       try {
@@ -42,7 +42,8 @@
         <button type="button" class="btn ghost is-active" id="nav-btn-inicio">Inicio</button>
         <button type="button" class="btn ghost" id="nav-btn-fichas">Historias Clínicas</button>
         <button type="button" class="btn ghost" id="nav-btn-pacientes">Pacientes</button>
-        <button type="button" class="btn ghost" id="nav-btn-configuracion">Configuración</button>
+        <button type="button" class="btn ghost" id="nav-btn-consultorio">Consultorio</button>
+        <button type="button" class="btn ghost" id="nav-btn-clara">Clara & Mensajes</button>
       </nav>
       <div class="session-box">
         <span class="session-user-label" id="session-user-name" hidden></span>
@@ -229,27 +230,52 @@
           </div>
         </article>
 
-        <!-- 4. Centro de Control Unificado: Configuración -->
+        <!-- 4. Consultorio: Horarios y Honorarios -->
         <article class="dash-card">
           <div>
             <div class="dash-card-header">
-              <div class="dash-icon-box green" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+              <div class="dash-icon-box blue" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
               </div>
               <div class="dash-card-meta">
                 <div class="dash-card-title">
-                  <span>Configuración General</span>
+                  <span>Consultorio</span>
                 </div>
                 <p class="dash-card-desc">
-                  Control del Asistente Clara (WhatsApp), turnera web, horarios de atención, honorarios y políticas de mails.
+                  Ocupación semanal de la camilla, franjas de atención de María y Norberto, y aranceles vigentes por sesión.
                 </p>
               </div>
             </div>
           </div>
           <div class="dash-card-actions">
-            <button type="button" class="btn green" id="dash-btn-config-general" title="Abrir configuración general">
-              ⚙️ Configuración
+            <button type="button" class="btn green" id="dash-btn-consultorio" title="Abrir gestión del consultorio">
+              🕒 Ver Consultorio
             </button>
+          </div>
+        </article>
+
+        <!-- 5. Clara WhatsApp & Mensajes -->
+        <article class="dash-card">
+          <div>
+            <div class="dash-card-header">
+              <div class="dash-icon-box green" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+              </div>
+              <div class="dash-card-meta">
+                <div class="dash-card-title">
+                  <span>Clara & Mensajes</span>
+                </div>
+                <p class="dash-card-desc">
+                  Mensajes de bienvenida en WhatsApp, recordatorios automáticos (24hs), políticas de cancelación y simulador en vivo.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="dash-card-actions">
+            <button type="button" class="btn green" id="dash-btn-clara" title="Abrir Clara y Mensajes">
+              💬 Ver Clara & Mensajes
+            </button>
+            <button type="button" id="dash-btn-config-general" hidden aria-hidden="true"></button>
           </div>
         </article>
       </div>
@@ -379,268 +405,31 @@
 
     
 
-    <!-- 4. CENTRO DE CONTROL UNIFICADO: CONFIGURACIÓN -->
-    <section id="view-configuracion" class="view" hidden>
+    <!-- 4. OPERATIVA DEL CONSULTORIO: HORARIOS Y HONORARIOS -->
+    <section id="view-consultorio" class="view" hidden>
       <div class="hero-card">
         <div class="hero-copy">
           <span class="doc-icon" aria-hidden="true"></span>
-          <h1 class="hero-title">Configuración General</h1>
+          <h1 class="hero-title">Consultorio: Horarios y Honorarios</h1>
         </div>
-        <div class="hero-actions" style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
-          <div class="dash-card-status" style="margin:0; padding:6px 14px; background:var(--card); border:1px solid var(--line); border-radius:var(--radius);">
-            <span class="dash-status-indicator" style="font-size:13px;">
-              <span class="dash-status-dot active" id="cfg-clara-dot"></span>
-              <span id="cfg-clara-status-text">Clara WhatsApp: Activa</span>
-            </span>
-            <button type="button" class="btn light" id="cfg-btn-toggle-clara" style="font-size:12px; padding:4px 10px; margin-left:8px;">Pausar bot</button>
-          </div>
-          <div class="dash-card-status" style="margin:0; padding:6px 14px; background:var(--card); border:1px solid var(--line); border-radius:var(--radius);">
-            <span class="dash-status-indicator" style="font-size:13px;">
-              <span class="dash-status-dot active" id="cfg-booking-dot"></span>
-              <span id="cfg-booking-status-text">Reservas Web: Activas</span>
-            </span>
-            <button type="button" class="btn light" id="cfg-btn-toggle-booking" style="font-size:12px; padding:4px 10px; margin-left:8px;">Pausar turnera</button>
-          </div>
+        <div class="hero-actions">
+          <button type="button" class="btn light" id="btn-test-horarios-booking" data-booking-open>📅 Probar en Agendar</button>
         </div>
       </div>
 
-      <!-- Navegación por pestañas internas de Configuración -->
-      <div class="config-tabs-nav" style="display:flex; gap:8px; border-bottom:1px solid var(--line); margin-bottom:20px; overflow-x:auto; padding-bottom:2px;">
-        <button type="button" class="btn ghost is-active config-tab-btn" data-subtab="clara" style="font-weight:600; font-size:14px; border-radius:var(--radius) var(--radius) 0 0;">
-          💬 Mensajes de Clara (WhatsApp)
-        </button>
-        <button type="button" class="btn ghost config-tab-btn" data-subtab="mails" style="font-weight:600; font-size:14px; border-radius:var(--radius) var(--radius) 0 0;">
-          ✉️ Mails y Políticas (24hs)
-        </button>
-        <button type="button" class="btn ghost config-tab-btn" data-subtab="horarios" style="font-weight:600; font-size:14px; border-radius:var(--radius) var(--radius) 0 0;">
-          🕒 Horarios de Atención
-        </button>
-        <button type="button" class="btn ghost config-tab-btn" data-subtab="honorarios" style="font-weight:600; font-size:14px; border-radius:var(--radius) var(--radius) 0 0;">
-          💳 Honorarios y Pagos
-        </button>
-        <button type="button" class="btn ghost config-tab-btn" data-subtab="chat" style="font-weight:600; font-size:14px; border-radius:var(--radius) var(--radius) 0 0; color:var(--primary);">
-          📱 Demo Chat con Clara
-        </button>
-      </div>
-
-      <div id="clara-texts-status-banner" class="horarios-alert-box" role="status" hidden></div>
-
-      <!-- SUBPANEL 1: CLARA (WHATSAPP) -->
-      <div id="config-panel-clara" class="config-subpanel">
-        <div class="config-subpanel-toolbar">
+      <!-- BLOQUE 1: HORARIOS DE ATENCIÓN (CAMILLA ÚNICA) -->
+      <div class="consultorio-section" style="margin-bottom: 36px;">
+        <div class="config-subpanel-toolbar" style="margin-bottom: 16px;">
           <div class="config-subpanel-desc">
-            <h2>Mensajes de Clara (WhatsApp)</h2>
-            <p>
-              Personalizá el saludo de bienvenida y las respuestas de Clara según la opción que elijan los pacientes (A, B, D).
+            <h2 style="font-size: 18px; margin: 0 0 4px 0; color: var(--navy);">🕒 Horarios de Atención por Profesional</h2>
+            <p style="margin: 0; color: var(--muted); font-size: 13px;">
+              Días y franjas de consultorio de María y Norberto con validación de camilla única.
             </p>
-            <small id="clara-texts-last-updated" style="display:block; margin-top:6px; color:var(--accent-deep); font-weight:600;"></small>
-          </div>
-          <div class="config-subpanel-actions">
-            <button type="button" class="btn green" id="btn-save-clara-texts">Guardar textos y políticas</button>
-            <button type="button" class="hero-link" id="btn-reset-clara-texts" style="background:none; border:none; cursor:pointer;">Restaurar textos por defecto</button>
-          </div>
-        </div>
-
-        <div class="horarios-timeline-card" style="max-width: 860px; margin: 0 auto 30px;">
-          <div style="margin-bottom:20px;">
-            <h3 class="horarios-timeline-title" style="margin:0; font-size:16px;">Menú Principal y Opciones de WhatsApp</h3>
-            <p class="horarios-timeline-sub" style="margin-top:4px;">
-              La opción C se sincroniza directamente desde Honorarios y el agendamiento (A) linkea a la turnera web oficial.
-            </p>
-          </div>
-
-          <div style="display:flex; flex-direction:column; gap:22px;">
-            <div>
-              <label for="cfg-menu-welcome" style="display:block; font-weight:600; margin-bottom:8px; font-size:14px; color:var(--navy);">
-                Mensaje de Bienvenida y Menú de Opciones (WhatsApp)
-              </label>
-              <textarea id="cfg-menu-welcome" rows="7" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical;"></textarea>
-              <small style="color:var(--muted); font-size:12px; margin-top:6px; display:block;">Este es el mensaje inicial que Clara envía al recibir una consulta general.</small>
-            </div>
-
-            <div>
-              <label for="cfg-opt-a" style="display:block; font-weight:600; margin-bottom:8px; font-size:14px; color:var(--navy);">
-                Respuesta a Opción A (Turnos y Disponibilidad)
-              </label>
-              <textarea id="cfg-opt-a" rows="3" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical;"></textarea>
-              <small style="color:var(--muted); font-size:12px; margin-top:6px; display:block;">Invitación al paciente a agendar directamente en la turnera online oficial.</small>
-            </div>
-
-            <div>
-              <label for="cfg-opt-b" style="display:block; font-weight:600; margin-bottom:8px; font-size:14px; color:var(--navy);">
-                Respuesta a Opción B (Ubicación y Llegada al Consultorio)
-              </label>
-              <textarea id="cfg-opt-b" rows="3" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical;"></textarea>
-              <small style="color:var(--muted); font-size:12px; margin-top:6px; display:block;">Dirección de Kinésica, referencias de calles e indicaciones para llegar.</small>
-            </div>
-
-            <div>
-              <label for="cfg-opt-d" style="display:block; font-weight:600; margin-bottom:8px; font-size:14px; color:var(--navy);">
-                Respuesta a Opción D (Indumentaria y Vestimenta para la Sesión)
-              </label>
-              <textarea id="cfg-opt-d" rows="3" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical;"></textarea>
-              <small style="color:var(--muted); font-size:12px; margin-top:6px; display:block;">Recomendaciones de ropa cómoda para facilitar la evaluación clínica en camilla.</small>
-            </div>
-          </div>
-        </div>
-
-        <!-- Opciones Personalizadas Sin Lógica (Preguntas frecuentes del Menú) -->
-        <div class="horarios-timeline-card" style="max-width: 860px; margin: 0 auto 30px;">
-          <div class="horarios-timeline-header">
-            <div>
-              <h3 class="horarios-timeline-title" style="margin:0; font-size:16px;">Opciones informativas adicionales del Menú (Sin IA)</h3>
-              <p class="horarios-timeline-sub" style="margin-top:4px;">
-                Permite a Norberto agregar opciones con letra y respuesta fija (ej: F. ¿Con qué técnicas trabajan?). Clara las detectará y responderá directamente en WhatsApp sin costo de IA ni demoras.
-              </p>
-            </div>
-            <button type="button" class="btn secondary" id="btn-add-custom-option" style="font-size:13px; padding:6px 14px;">
-              + Agregar opción
-            </button>
-          </div>
-
-          <div id="custom-options-container" style="display:flex; flex-direction:column; gap:16px;"></div>
-
-          <div id="custom-options-empty" style="padding:18px; text-align:center; color:var(--muted); font-size:13px; background:var(--bg); border-radius:var(--radius); border:1px dashed var(--line);">
-            No hay opciones adicionales configuradas. Hacé clic en <strong>"+ Agregar opción"</strong> para sumar una (por ejemplo: F. ¿Con qué técnicas trabajan?).
-          </div>
-        </div>
-
-        <div class="horarios-timeline-card" style="max-width: 860px; margin: 0 auto 30px;">
-          <div style="margin-bottom:20px;">
-            <h3 class="horarios-timeline-title" style="margin:0; font-size:16px;">📲 Recordatorio de Turnos (24 hs antes por WhatsApp)</h3>
-            <p class="horarios-timeline-sub" style="margin-top:4px;">
-              Personalizá el mensaje y las indicaciones que Clara envía automáticamente a los pacientes el día anterior con los botones <strong>[✅ Confirmo]</strong> y <strong>[❌ Cancelar]</strong>.
-            </p>
-          </div>
-
-          <div style="display:flex; flex-direction:column; gap:22px;">
-            <div>
-              <label for="cfg-clara-reminder-text" style="display:block; font-weight:600; margin-bottom:8px; font-size:14px; color:var(--navy);">
-                Texto del Mensaje de Recordatorio
-              </label>
-              <textarea id="cfg-clara-reminder-text" rows="4" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical;"></textarea>
-              <small style="color:var(--muted); font-size:12px; margin-top:6px; display:block;">
-                Variables automáticas disponibles: <code>{nombre}</code> (nombre de pila), <code>{horario}</code> (hora del turno), <code>{indicaciones}</code> (pautas del consultorio).
-              </small>
-            </div>
-
-            <div>
-              <label for="cfg-clara-reminder-notes" style="display:block; font-weight:600; margin-bottom:8px; font-size:14px; color:var(--navy);">
-                Indicaciones y Dirección del Consultorio (en el recordatorio)
-              </label>
-              <textarea id="cfg-clara-reminder-notes" rows="4" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical;"></textarea>
-              <small style="color:var(--muted); font-size:12px; margin-top:6px; display:block;">
-                Pautas de ubicación y puntualidad. Si el turno es de un menor de edad, Clara suma automáticamente la aclaración de concurrir con un adulto.
-              </small>
-            </div>
-
-            <div style="background:var(--bg); border:1px solid var(--line); border-radius:var(--radius); padding:16px;">
-              <span style="display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--muted); margin-bottom:8px;">
-                👁️ Vista Previa en WhatsApp:
-              </span>
-              <div id="cfg-clara-reminder-preview" style="white-space:pre-wrap; font-size:13px; line-height:1.5; color:var(--navy); font-family:inherit; background:#fff; padding:14px; border-radius:8px; border:1px solid rgba(0,0,0,0.06);"></div>
-              <div style="display:flex; gap:10px; margin-top:10px;">
-                <span style="display:inline-block; padding:6px 14px; background:#e8f5e9; color:#2e7d32; border:1px solid #c8e6c9; border-radius:18px; font-size:12px; font-weight:600;">[✅ Confirmo]</span>
-                <span style="display:inline-block; padding:6px 14px; background:#ffebee; color:#c62828; border:1px solid #ffcdd2; border-radius:18px; font-size:12px; font-weight:600;">[❌ Cancelar]</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- SUBPANEL 2: MAILS Y POLÍTICAS -->
-      <div id="config-panel-mails" class="config-subpanel" hidden>
-        <div class="config-subpanel-toolbar">
-          <div class="config-subpanel-desc">
-            <h2>Mails y Políticas (24hs)</h2>
-            <p>
-              Textos legales y pautas de asistencia incluidos en los correos electrónicos de confirmación que le llegan a cada paciente tras agendar.
-            </p>
-          </div>
-          <div class="config-subpanel-actions">
-            <button type="button" class="btn green" id="btn-save-mails-policies">Guardar políticas en mails</button>
-          </div>
-        </div>
-
-        <div id="mails-texts-status-banner" class="horarios-alert-box" role="status" hidden style="max-width: 860px; margin: 0 auto 20px;"></div>
-
-        <div class="horarios-timeline-card" style="max-width: 860px; margin: 0 auto 30px;">
-          <h3 class="horarios-timeline-title" style="margin-bottom:6px; font-size:16px;">Políticas en Mails de Confirmación</h3>
-          <p class="horarios-timeline-sub" style="margin-bottom:22px;">
-            Estos textos se incorporan de forma automática en el correo electrónico oficial tras agendar un turno.
-          </p>
-
-          <div style="display:flex; flex-direction:column; gap:22px;">
-            <div>
-              <label for="cfg-cancellation-policy" style="display:block; font-weight:600; margin-bottom:8px; font-size:14px; color:var(--navy);">
-                Política de Cancelación y Reprogramación (Aviso con 24 hs de anticipación)
-              </label>
-              <textarea id="cfg-cancellation-policy" rows="3" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical;"></textarea>
-              <small style="color:var(--muted); font-size:12px; margin-top:6px; display:block;">Se destaca en el mail para cuidar la camilla única y evitar ausencias imprevistas.</small>
-            </div>
-
-            <div>
-              <label for="cfg-confirmation-notes" style="display:block; font-weight:600; margin-bottom:8px; font-size:14px; color:var(--navy);">
-                Indicaciones de Puntualidad y Acceso al Consultorio
-              </label>
-              <textarea id="cfg-confirmation-notes" rows="3" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical;"></textarea>
-              <small style="color:var(--muted); font-size:12px; margin-top:6px; display:block;">Aviso de timbre, ausencia de sala de espera y puntualidad para la privacidad del paciente anterior.</small>
-            </div>
-          </div>
-        </div>
-
-        <div class="horarios-timeline-card" style="max-width: 860px; margin: 0 auto 30px;">
-          <h3 class="horarios-timeline-title" style="margin-bottom:6px; font-size:16px;">📲 Recordatorio de Turnos (24 hs antes por WhatsApp)</h3>
-          <p class="horarios-timeline-sub" style="margin-bottom:22px;">
-            Mensaje enviado automáticamente por WhatsApp a los pacientes con turno al día siguiente (a las 10:00 hs o domingos 18:00 hs). Se despacha con los botones <strong>[✅ Confirmo]</strong> y <strong>[❌ Cancelar]</strong>.
-          </p>
-
-          <div style="display:flex; flex-direction:column; gap:22px;">
-            <div>
-              <label for="cfg-reminder-text" style="display:block; font-weight:600; margin-bottom:8px; font-size:14px; color:var(--navy);">
-                Texto del Mensaje de Recordatorio
-              </label>
-              <textarea id="cfg-reminder-text" rows="4" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical;"></textarea>
-              <small style="color:var(--muted); font-size:12px; margin-top:6px; display:block;">
-                Variables automáticas disponibles: <code>{nombre}</code> (nombre de pila), <code>{horario}</code> (hora del turno), <code>{indicaciones}</code> (pautas del consultorio).
-              </small>
-            </div>
-
-            <div>
-              <label for="cfg-reminder-notes" style="display:block; font-weight:600; margin-bottom:8px; font-size:14px; color:var(--navy);">
-                Indicaciones y Dirección del Consultorio (en el recordatorio)
-              </label>
-              <textarea id="cfg-reminder-notes" rows="4" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical;"></textarea>
-              <small style="color:var(--muted); font-size:12px; margin-top:6px; display:block;">
-                Pautas de ubicación y puntualidad. Si el turno es de un menor de edad, Clara suma automáticamente la aclaración de concurrir con un adulto.
-              </small>
-            </div>
-
-            <div style="background:var(--bg); border:1px solid var(--line); border-radius:var(--radius); padding:16px;">
-              <span style="display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--muted); margin-bottom:8px;">
-                👁️ Vista Previa en WhatsApp:
-              </span>
-              <div id="cfg-reminder-preview" style="white-space:pre-wrap; font-size:13px; line-height:1.5; color:var(--navy); font-family:inherit; background:#fff; padding:14px; border-radius:8px; border:1px solid rgba(0,0,0,0.06);"></div>
-              <div style="display:flex; gap:10px; margin-top:10px;">
-                <span style="display:inline-block; padding:6px 14px; background:#e8f5e9; color:#2e7d32; border:1px solid #c8e6c9; border-radius:18px; font-size:12px; font-weight:600;">[✅ Confirmo]</span>
-                <span style="display:inline-block; padding:6px 14px; background:#ffebee; color:#c62828; border:1px solid #ffcdd2; border-radius:18px; font-size:12px; font-weight:600;">[❌ Cancelar]</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- SUBPANEL 3: HORARIOS DE ATENCIÓN (Inyectado / Compartido) -->
-      <div id="config-panel-horarios" class="config-subpanel" hidden>
-        <div class="config-subpanel-toolbar">
-          <div class="config-subpanel-desc">
-            <h2>Horarios de Atención por Profesional</h2>
             <small id="horarios-last-updated" style="display:block; margin-top:6px; color:var(--accent-deep); font-weight:600;"></small>
           </div>
-          <div class="config-subpanel-actions">
+          <div class="config-subpanel-actions" style="display:flex; gap:10px; align-items:center;">
             <button type="button" class="btn green" id="btn-save-horarios">Guardar horarios</button>
-            <button type="button" class="btn light" id="btn-test-horarios-booking" data-booking-open>📅 Probar en Agendar</button>
-            <button type="button" class="hero-link" id="btn-reset-horarios" style="background:none; border:none; cursor:pointer;">Restaurar horarios por defecto</button>
+            <button type="button" class="hero-link" id="btn-reset-horarios" style="background:none; border:none; cursor:pointer;">Restaurar por defecto</button>
           </div>
         </div>
 
@@ -649,7 +438,7 @@
         <div class="horarios-timeline-card">
           <div class="horarios-timeline-header">
             <div>
-              <h2 class="horarios-timeline-title">Ocupación Semanal de Consultorio (08:00 a 20:00 hs)</h2>
+              <h3 class="horarios-timeline-title" style="margin:0; font-size:15px;">Ocupación Semanal de Camilla (08:00 a 20:00 hs)</h3>
             </div>
             <div class="horarios-legend">
               <span class="horarios-legend-item"><span class="horarios-legend-swatch maria"></span> Lic. María Gulin</span>
@@ -675,26 +464,26 @@
         <div id="horarios-editors-grid" class="horarios-editors-grid"></div>
       </div>
 
-      <!-- SUBPANEL 4: HONORARIOS Y FORMAS DE PAGO (Inyectado / Compartido) -->
-      <div id="config-panel-honorarios" class="config-subpanel" hidden>
-        <div class="config-subpanel-toolbar">
+      <!-- BLOQUE 2: HONORARIOS Y FORMAS DE PAGO -->
+      <div class="consultorio-section">
+        <div class="config-subpanel-toolbar" style="margin-bottom: 16px;">
           <div class="config-subpanel-desc">
-            <h2>Configuración de Honorarios</h2>
-            <p>
-              Definí los aranceles vigentes por sesión y los medios de pago aceptados. Se sincronizan en vivo con las respuestas del bot de WhatsApp (Opción C).
+            <h2 style="font-size: 18px; margin: 0 0 4px 0; color: var(--navy);">💳 Honorarios y Formas de Pago</h2>
+            <p style="margin: 0; color: var(--muted); font-size: 13px;">
+              Aranceles vigentes por sesión y medios de pago. Se sincronizan en vivo con las respuestas del bot de WhatsApp (Opción C).
             </p>
             <small id="honorarios-last-updated" style="display:block; margin-top:6px; color:var(--accent-deep); font-weight:600;"></small>
           </div>
-          <div class="config-subpanel-actions">
+          <div class="config-subpanel-actions" style="display:flex; gap:10px; align-items:center;">
             <button type="button" class="btn green" id="btn-save-honorarios">Guardar honorarios</button>
-            <button type="button" class="hero-link" id="btn-reset-honorarios" style="background:none; border:none; cursor:pointer;">Restaurar valores por defecto</button>
+            <button type="button" class="hero-link" id="btn-reset-honorarios" style="background:none; border:none; cursor:pointer;">Restaurar por defecto</button>
           </div>
         </div>
 
         <div id="honorarios-status-banner" class="horarios-alert-box" role="status" hidden></div>
 
-        <div class="horarios-timeline-card" style="max-width: 800px; margin: 0 auto 28px;">
-          <h2 class="horarios-timeline-title" style="margin-bottom: 20px;">Valores de Sesión</h2>
+        <div class="horarios-timeline-card" style="max-width: 860px; margin: 0 auto 28px;">
+          <h3 class="horarios-timeline-title" style="margin-bottom: 18px; font-size:15px;">Valores de Sesión</h3>
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 24px;">
             <div>
               <label for="input-fee-atm" style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px; color: var(--navy);">
@@ -728,21 +517,187 @@
           </div>
         </div>
 
-        <div class="horarios-clara-card" style="max-width: 800px; margin: 0 auto 30px;">
-        <div class="horarios-clara-header">
-          <div>
-            <h2 class="horarios-timeline-title">Vista Previa de Respuesta en WhatsApp (Opción C)</h2>
-            <p class="horarios-timeline-sub">Así se le responderá automáticamente a cualquier paciente que consulte honorarios.</p>
+        <div class="horarios-clara-card" style="max-width: 860px; margin: 0 auto 30px;">
+          <div class="horarios-clara-header">
+            <div>
+              <h3 class="horarios-timeline-title" style="margin:0; font-size:15px;">Vista Previa de Respuesta en WhatsApp (Opción C)</h3>
+              <p class="horarios-timeline-sub" style="margin-top:4px;">Así se le responderá automáticamente a cualquier paciente que consulte honorarios.</p>
+            </div>
           </div>
+          <pre id="honorarios-preview" class="horarios-clara-pre" style="white-space: pre-wrap; font-family: inherit; font-size: 14px;"></pre>
         </div>
-        <pre id="honorarios-preview" class="horarios-clara-pre" style="white-space: pre-wrap; font-family: inherit; font-size: 14px;"></pre>
       </div>
+    </section>
+
+    <!-- 5. COMUNICACIÓN Y ASISTENTE: CLARA & MENSAJES -->
+    <section id="view-clara" class="view" hidden>
+      <div class="hero-card">
+        <div class="hero-copy">
+          <span class="doc-icon" aria-hidden="true"></span>
+          <h1 class="hero-title">Clara & Mensajes</h1>
+        </div>
+        <div class="hero-actions" style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+          <div class="dash-card-status" style="margin:0; padding:6px 14px; background:var(--card); border:1px solid var(--line); border-radius:var(--radius);">
+            <span class="dash-status-indicator" style="font-size:13px;">
+              <span class="dash-status-dot active" id="cfg-clara-dot"></span>
+              <span id="cfg-clara-status-text">Clara WhatsApp: Activa</span>
+            </span>
+            <button type="button" class="btn light" id="cfg-btn-toggle-clara" style="font-size:12px; padding:4px 10px; margin-left:8px;">Pausar bot</button>
+          </div>
+          <div class="dash-card-status" style="margin:0; padding:6px 14px; background:var(--card); border:1px solid var(--line); border-radius:var(--radius);">
+            <span class="dash-status-indicator" style="font-size:13px;">
+              <span class="dash-status-dot active" id="cfg-booking-dot"></span>
+              <span id="cfg-booking-status-text">Reservas Web: Activas</span>
+            </span>
+            <button type="button" class="btn light" id="cfg-btn-toggle-booking" style="font-size:12px; padding:4px 10px; margin-left:8px;">Pausar turnera</button>
+          </div>
+          <button type="button" class="btn green" id="btn-save-clara-texts">Guardar mensajes y políticas</button>
+          <button type="button" class="hero-link" id="btn-reset-clara-texts" style="background:none; border:none; cursor:pointer;">Restaurar por defecto</button>
+        </div>
       </div>
 
-      <!-- SUBPANEL 5: DEMO CHAT CON CLARA (WHATSAPP SIMULATOR) -->
-      <div id="config-panel-chat" class="config-subpanel" hidden>
-        <div style="text-align: center; max-width: 600px; margin: 0 auto 20px;">
-          <h2 class="horarios-timeline-title" style="margin-bottom: 4px;">Simulador Interactivo de Clara (WhatsApp)</h2>
+      <div id="clara-texts-status-banner" class="horarios-alert-box" role="status" hidden style="max-width: 860px; margin: 0 auto 20px;"></div>
+
+      <!-- CARD 1: MENÚ PRINCIPAL Y OPCIONES DE WHATSAPP -->
+      <div class="horarios-timeline-card" style="max-width: 860px; margin: 0 auto 30px;">
+        <div style="margin-bottom:20px;">
+          <h3 class="horarios-timeline-title" style="margin:0; font-size:16px;">Menú Principal y Opciones de WhatsApp</h3>
+          <p class="horarios-timeline-sub" style="margin-top:4px;">
+            Personalizá el saludo de bienvenida y las respuestas de Clara según la opción que elijan los pacientes (A, B, D). La opción C se sincroniza directamente desde Honorarios.
+          </p>
+          <small id="clara-texts-last-updated" style="display:block; margin-top:6px; color:var(--accent-deep); font-weight:600;"></small>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:22px;">
+          <div>
+            <label for="cfg-menu-welcome" style="display:block; font-weight:600; margin-bottom:8px; font-size:14px; color:var(--navy);">
+              Mensaje de Bienvenida y Menú de Opciones (WhatsApp)
+            </label>
+            <textarea id="cfg-menu-welcome" rows="7" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical;"></textarea>
+            <small style="color:var(--muted); font-size:12px; margin-top:6px; display:block;">Este es el mensaje inicial que Clara envía al recibir una consulta general.</small>
+          </div>
+
+          <div>
+            <label for="cfg-opt-a" style="display:block; font-weight:600; margin-bottom:8px; font-size:14px; color:var(--navy);">
+              Respuesta a Opción A (Turnos y Disponibilidad)
+            </label>
+            <textarea id="cfg-opt-a" rows="3" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical;"></textarea>
+            <small style="color:var(--muted); font-size:12px; margin-top:6px; display:block;">Invitación al paciente a agendar directamente en la turnera online oficial.</small>
+          </div>
+
+          <div>
+            <label for="cfg-opt-b" style="display:block; font-weight:600; margin-bottom:8px; font-size:14px; color:var(--navy);">
+              Respuesta a Opción B (Ubicación y Llegada al Consultorio)
+            </label>
+            <textarea id="cfg-opt-b" rows="3" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical;"></textarea>
+            <small style="color:var(--muted); font-size:12px; margin-top:6px; display:block;">Dirección de Kinésica, referencias de calles e indicaciones para llegar.</small>
+          </div>
+
+          <div>
+            <label for="cfg-opt-d" style="display:block; font-weight:600; margin-bottom:8px; font-size:14px; color:var(--navy);">
+              Respuesta a Opción D (Indumentaria y Vestimenta para la Sesión)
+            </label>
+            <textarea id="cfg-opt-d" rows="3" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical;"></textarea>
+            <small style="color:var(--muted); font-size:12px; margin-top:6px; display:block;">Recomendaciones de ropa cómoda para facilitar la evaluación clínica en camilla.</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 2: OPCIONES INFORMACIÓN ADICIONALES (SIN IA) -->
+      <div class="horarios-timeline-card" style="max-width: 860px; margin: 0 auto 30px;">
+        <div class="horarios-timeline-header">
+          <div>
+            <h3 class="horarios-timeline-title" style="margin:0; font-size:16px;">Opciones informativas adicionales del Menú (Sin IA)</h3>
+            <p class="horarios-timeline-sub" style="margin-top:4px;">
+              Permite a Norberto agregar opciones con letra y respuesta fija (ej: F. ¿Con qué técnicas trabajan?). Clara las detectará y responderá directamente en WhatsApp sin costo de IA ni demoras.
+            </p>
+          </div>
+          <button type="button" class="btn secondary" id="btn-add-custom-option" style="font-size:13px; padding:6px 14px;">
+            + Agregar opción
+          </button>
+        </div>
+
+        <div id="custom-options-container" style="display:flex; flex-direction:column; gap:16px;"></div>
+
+        <div id="custom-options-empty" style="padding:18px; text-align:center; color:var(--muted); font-size:13px; background:var(--bg); border-radius:var(--radius); border:1px dashed var(--line);">
+          No hay opciones adicionales configuradas. Hacé clic en <strong>"+ Agregar opción"</strong> para sumar una (por ejemplo: F. ¿Con qué técnicas trabajan?).
+        </div>
+      </div>
+
+      <!-- CARD 3: RECORDATORIOS AUTOMÁTICOS 24H -->
+      <div class="horarios-timeline-card" style="max-width: 860px; margin: 0 auto 30px;">
+        <div style="margin-bottom:20px;">
+          <h3 class="horarios-timeline-title" style="margin:0; font-size:16px;">📲 Recordatorio de Turnos (24 hs antes por WhatsApp)</h3>
+          <p class="horarios-timeline-sub" style="margin-top:4px;">
+            Personalizá el mensaje y las indicaciones que Clara envía automáticamente a los pacientes el día anterior con los botones <strong>[✅ Confirmo]</strong> y <strong>[❌ Cancelar]</strong>.
+          </p>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:22px;">
+          <div>
+            <label for="cfg-clara-reminder-text" style="display:block; font-weight:600; margin-bottom:8px; font-size:14px; color:var(--navy);">
+              Texto del Mensaje de Recordatorio
+            </label>
+            <textarea id="cfg-clara-reminder-text" rows="4" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical;"></textarea>
+            <small style="color:var(--muted); font-size:12px; margin-top:6px; display:block;">
+              Variables automáticas disponibles: <code>{nombre}</code> (nombre de pila), <code>{horario}</code> (hora del turno), <code>{indicaciones}</code> (pautas del consultorio).
+            </small>
+          </div>
+
+          <div>
+            <label for="cfg-clara-reminder-notes" style="display:block; font-weight:600; margin-bottom:8px; font-size:14px; color:var(--navy);">
+              Indicaciones y Dirección del Consultorio (en el recordatorio)
+            </label>
+            <textarea id="cfg-clara-reminder-notes" rows="4" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical;"></textarea>
+            <small style="color:var(--muted); font-size:12px; margin-top:6px; display:block;">
+              Pautas de ubicación y puntualidad. Si el turno es de un menor de edad, Clara suma automáticamente la aclaración de concurrir con un adulto.
+            </small>
+          </div>
+
+          <div style="background:var(--bg); border:1px solid var(--line); border-radius:var(--radius); padding:16px;">
+            <span style="display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--muted); margin-bottom:8px;">
+              👁️ Vista Previa en WhatsApp:
+            </span>
+            <div id="cfg-clara-reminder-preview" style="white-space:pre-wrap; font-size:13px; line-height:1.5; color:var(--navy); font-family:inherit; background:#fff; padding:14px; border-radius:8px; border:1px solid rgba(0,0,0,0.06);"></div>
+            <div style="display:flex; gap:10px; margin-top:10px;">
+              <span style="display:inline-block; padding:6px 14px; background:#e8f5e9; color:#2e7d32; border:1px solid #c8e6c9; border-radius:18px; font-size:12px; font-weight:600;">[✅ Confirmo]</span>
+              <span style="display:inline-block; padding:6px 14px; background:#ffebee; color:#c62828; border:1px solid #ffcdd2; border-radius:18px; font-size:12px; font-weight:600;">[❌ Cancelar]</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 4: POLÍTICAS DE CANCELACIÓN Y ACCESO -->
+      <div class="horarios-timeline-card" style="max-width: 860px; margin: 0 auto 30px;">
+        <h3 class="horarios-timeline-title" style="margin-bottom:6px; font-size:16px;">📋 Políticas de Cancelación y Acceso al Consultorio</h3>
+        <p class="horarios-timeline-sub" style="margin-bottom:22px;">
+          Estos textos se aplican de forma unificada tanto a los correos electrónicos de confirmación como a las respuestas y recordatorios de Clara en WhatsApp.
+        </p>
+
+        <div style="display:flex; flex-direction:column; gap:22px;">
+          <div>
+            <label for="cfg-cancellation-policy" style="display:block; font-weight:600; margin-bottom:8px; font-size:14px; color:var(--navy);">
+              Política de Cancelación y Reprogramación (Aviso con 24 hs de anticipación)
+            </label>
+            <textarea id="cfg-cancellation-policy" rows="3" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical;"></textarea>
+            <small style="color:var(--muted); font-size:12px; margin-top:6px; display:block;">Se destaca para cuidar la camilla única y evitar ausencias imprevistas.</small>
+          </div>
+
+          <div>
+            <label for="cfg-confirmation-notes" style="display:block; font-weight:600; margin-bottom:8px; font-size:14px; color:var(--navy);">
+              Indicaciones de Puntualidad y Acceso al Consultorio
+            </label>
+            <textarea id="cfg-confirmation-notes" rows="3" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical;"></textarea>
+            <small style="color:var(--muted); font-size:12px; margin-top:6px; display:block;">Aviso de timbre, ausencia de sala de espera y puntualidad para la privacidad de la sesión anterior.</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 5: SIMULADOR DE CHAT INTERACTIVO CON CLARA -->
+      <div style="max-width: 860px; margin: 0 auto 40px;">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <h3 class="horarios-timeline-title" style="margin-bottom: 4px; font-size:16px;">📱 Simulador Interactivo de Clara (WhatsApp)</h3>
+          <p style="color:var(--muted); font-size:13px; margin:0;">Probá la experiencia en tiempo real interactuando con los textos configurados arriba.</p>
         </div>
 
         <div class="chat-demo-container">
@@ -775,7 +730,6 @@
           </form>
         </div>
       </div>
-
     </section>
 
 
@@ -1376,9 +1330,12 @@
           } else if (saved.view === "pacientes") {
             var pac = document.getElementById("view-pacientes");
             if (pac) pac.hidden = false;
-          } else if (saved.view === "configuracion" || saved.view === "horarios" || saved.view === "honorarios") {
-            var cfg = document.getElementById("view-configuracion");
-            if (cfg) cfg.hidden = false;
+          } else if (saved.view === "consultorio" || saved.view === "horarios" || saved.view === "honorarios") {
+            var con = document.getElementById("view-consultorio");
+            if (con) con.hidden = false;
+          } else if (saved.view === "clara" || saved.view === "configuracion") {
+            var cla = document.getElementById("view-clara");
+            if (cla) cla.hidden = false;
           } else if (saved.view === "form") {
             var form = document.getElementById("view-form");
             if (form) form.hidden = false;
@@ -1391,7 +1348,7 @@
     })();
   </script>
   <div id="print-root"></div>
-  <script src="/booking/booking-bundle.min.js?v=1792520182" defer></script>
-  <script type="module" src="/admin/app.js?v=125"></script>
+  <script src="/booking/booking-bundle.min.js?v=1792520925" defer></script>
+  <script type="module" src="/admin/app.js?v=126"></script>
 </body>
 </html>

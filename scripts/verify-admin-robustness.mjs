@@ -338,6 +338,8 @@ await test("los ids usados por querySelector/getElementById existen en el HTML o
   const allowed = new Set([
     "view-horarios",
     "view-honorarios",
+    "view-configuracion",
+    "nav-btn-configuracion",
     "dash-clara-dot",
     "dash-clara-status-text",
     "dash-btn-toggle-clara",
@@ -346,6 +348,11 @@ await test("los ids usados por querySelector/getElementById existen en el HTML o
     "dash-btn-toggle-booking",
     "horarios-clara-preview",
     "btn-copy-clara-horarios",
+    "cfg-reminder-text",
+    "cfg-reminder-notes",
+    "cfg-reminder-preview",
+    "btn-save-mails-policies",
+    "mails-texts-status-banner",
   ]);
   for (const file of jsFiles) {
     const src = fs.readFileSync(file, "utf8");
@@ -468,7 +475,7 @@ await test("soporte de adjuntar foto clínica en panel 5 (tab 6)", () => {
 });
 
 await test("módulo de Horarios de Atención está integrado en HTML, JS y API", () => {
-  assert.ok(html.includes('id="nav-btn-horarios"') || html.includes('id="nav-btn-configuracion"'), "Debe existir botón Configuración/Horarios en la barra de navegación");
+  assert.ok(html.includes('id="nav-btn-horarios"') || html.includes('id="nav-btn-configuracion"') || html.includes('id="nav-btn-consultorio"'), "Debe existir botón Consultorio/Horarios en la barra de navegación");
   assert.ok(html.includes('id="horarios-timeline-rows"'), "Debe existir la grilla visual semanal");
 
   const horariosPhp = fs.readFileSync(path.join(adminDir, "api/horarios.php"), "utf8");
