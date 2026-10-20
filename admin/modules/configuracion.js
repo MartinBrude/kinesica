@@ -8,7 +8,7 @@
  */
 
 import { api } from "./api.js?v=77";
-import { escapeHtml, dialogAlert } from "./dom.js?v=78";
+import { escapeHtml, dialogAlert, dialogConfirm } from "./dom.js?v=78";
 import { loadHorariosFromServer } from "./horarios.js?v=1";
 import { loadHonorarios } from "./honorarios.js?v=1";
 
@@ -233,9 +233,14 @@ export function initConfiguracionModule(callbacks = {}) {
   });
 
   // Restaurar valores por defecto
-  btnResetTexts?.addEventListener("click", () => {
-    if (confirm("¿Deseas restaurar los mensajes y políticas predeterminados de Kinésica?")) {
+  btnResetTexts?.addEventListener("click", async () => {
+    const ok = await dialogConfirm("¿Deseas restaurar los mensajes y políticas predeterminados de Kinésica?", {
+      okText: "Restaurar",
+      cancelText: "Cancelar",
+    });
+    if (ok) {
       renderTexts(DEFAULT_CLARA_TEXTS);
+      await dialogAlert("Se restauraron los textos predeterminados. Presioná 'Guardar textos y políticas' para confirmar.");
     }
   });
 
