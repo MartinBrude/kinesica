@@ -88,6 +88,9 @@ export function switchConfigSubtab(subtabId) {
   configSections.forEach((sec) => {
     if (sec.id === `config-panel-${subtabId}`) {
       sec.hidden = false;
+      if (subtabId === "chat" && chatMessagesEl && chatMessagesEl.children.length === 0) {
+        resetChatDemo();
+      }
     } else {
       sec.hidden = true;
     }
@@ -249,6 +252,8 @@ export function initConfiguracionModule(callbacks = {}) {
       cfgBookingToggleBtn.disabled = false;
     }
   });
+
+  initChatSimulator();
 }
 
 export function mountNestedViews() {
@@ -265,4 +270,167 @@ export function mountNestedViews() {
     honContainer.appendChild(viewHonorarios);
     viewHonorarios.hidden = false;
   }
+}
+
+// ----------------------------------------------------
+// Simulador de Chat con Clara (WhatsApp Experience)
+// ----------------------------------------------------
+const chatMessagesEl = document.querySelector("#chat-demo-messages");
+const chatFormEl = document.querySelector("#chat-demo-form");
+const chatInputEl = document.querySelector("#chat-demo-input");
+const chatQuickBtns = document.querySelectorAll(".chat-quick-btn");
+
+let chatSubmenu = null; // 'turnos', 'profesional', etc.
+
+function getNowTimeStr() {
+  const d = new Date();
+  return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+}
+
+export function appendChatMessage(text, sender = "bot") {
+  if (!chatMessagesEl) return;
+  const msgEl = document.createElement("div");
+  msgEl.className = `chat-msg ${sender}`;
+  
+  const textNode = document.createElement("div");
+  textNode.textContent = text;
+  msgEl.appendChild(textNode);
+
+  const timeNode = document.createElement("span");
+  timeNode.className = "chat-msg-time";
+  timeNode.textContent = getNowTimeStr();
+  msgEl.appendChild(timeNode);
+
+  chatMessagesEl.appendChild(msgEl);
+  chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+}
+
+export function resetChatDemo() {
+  if (!chatMessagesEl) return;
+  chatMessagesEl.replaceChildren();
+  chatSubmenu = null;
+  const welcome = inputMenuWelcome?.value?.trim() || currentTexts.menu_welcome || DEFAULT_CLARA_TEXTS.menu_welcome;
+  appendChatMessage(welcome, "bot");
+}
+
+function handleChatUserInput(inputRaw) {
+  const input = (inputRaw || "").trim();
+  if (!input) return;
+
+  appendChatMessage(input, "user");
+
+  const norm = input.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+
+  // Reset / Menu
+  if (norm === "menu" || norm === "reiniciar" || norm === "hola" || norm === "buenas") {
+    setTimeout(() => {
+      resetChatDemo();
+    }, 400);
+    return;
+  }
+
+  // Si está en submenú Turnos
+  if (chatSubmenu === "turnos") {
+    if (norm === "1") {
+      chatSubmenu = null;
+      const optA = inputOptA?.value?.trim() || currentTexts.opt_a_text || DEFAULT_CLARA_TEXTS.opt_a_text;
+      setTimeout(() => {
+        appendChatMessage(optA, "bot");
+      }, 500);
+      return;
+    }
+    if (norm === "2") {
+      chatSubmenu = null;
+      setTimeout(() => {
+        appendChatMessage("📋 Consultando tus turnos agendados en Google Calendar...\n\nNo tenés turnos activos registrados en este momento para este número.\n\nEscribí *MENU* para volver al inicio.", "bot");
+      }, 600);
+      return;
+    }
+  }
+
+  // Si está en submenú Profesional
+  if (chatSubmenu === "profesional") {
+    let proName = "nuestro equipo de kinesiólogos";
+    if (norm === "1") proName = "Lic. Norberto Brude";
+    if (norm === "2") proName = "Lic. María Gulin";
+    chatSubmenu = null;
+    setTimeout(() => {
+      appendChatMessage(`¡Perfecto! Ya le transmitimos tu consulta a ${proName}. Te estará contactando a la brevedad directamente por WhatsApp 🙌.\n\nEscribí *MENU* para volver a ver las opciones.`, "bot");
+    }, 500);
+    return;
+  }
+
+  // Opciones A a E
+  if (norm === "a" || norm.startsWith("opcion a")) {
+    chatSubmenu = "turnos";
+    setTimeout(() => {
+      appendChatMessage("📅 *Gestión de Turnos - Kinésica*\n\nPor favor elegí una opción respondiendo *1* o *2*:\n\n*1.* 📅 Agendar un nuevo turno (enlace web)\n*2.* 📋 Consultar o cancelar mis turnos actuales\n\n_(Respondé *1* o *2*, o escribí *MENU* para volver al menú principal)_", "bot");
+    }, 450);
+    return;
+  }
+
+  if (norm === "b" || norm.startsWith("opcion b") || norm.includes("donde queda") || norm.includes("ubicacion")) {
+    chatSubmenu = null;
+    const optB = inputOptB?.value?.trim() || currentTexts.opt_b_text || DEFAULT_CLARA_TEXTS.opt_b_text;
+    setTimeout(() => {
+      appendChatMessage(optB, "bot");
+    }, 450);
+    return;
+  }
+
+  if (norm === "c" || norm.startsWith("opcion c") || norm.includes("honorarios") || norm.includes("precio") || norm.includes("cuanto sale")) {
+    chatSubmenu = null;
+    const atmVal = parseInt(document.querySelector("#input-fee-atm")?.value, 10) || 65000;
+    const genVal = parseInt(document.querySelector("#input-fee-general")?.value, 10) || 75000;
+    const payVal = document.querySelector("#input-fee-payment-methods")?.value?.trim() || "Efectivo o transferencia bancaria";
+    const atmStr = `$${atmVal.toLocaleString("es-AR")}`;
+    const genStr = `$${genVal.toLocaleString("es-AR")}`;
+
+    const feeMsg = `💳 *Honorarios y Cobertura*\n• *Consulta y Sesión ATM:* ${atmStr}\n• *Kinesiología General / RPG / Osteopatía:* ${genStr}\n• *Formas de pago:* ${payVal}\n\nAtendemos de forma particular y emitimos factura oficial para reintegro con tu obra social o prepaga.\n\nEscribí *MENU* para volver al menú principal.`;
+    setTimeout(() => {
+      appendChatMessage(feeMsg, "bot");
+    }, 450);
+    return;
+  }
+
+  if (norm === "d" || norm.startsWith("opcion d") || norm.includes("ropa") || norm.includes("vestimenta")) {
+    chatSubmenu = null;
+    const optD = inputOptD?.value?.trim() || currentTexts.opt_d_text || DEFAULT_CLARA_TEXTS.opt_d_text;
+    setTimeout(() => {
+      appendChatMessage(optD, "bot");
+    }, 450);
+    return;
+  }
+
+  if (norm === "e" || norm.startsWith("opcion e") || norm.includes("profesional") || norm.includes("hablar")) {
+    chatSubmenu = "profesional";
+    setTimeout(() => {
+      appendChatMessage("💬 *Contacto con un Profesional*\n\n¿Con quién te gustaría comunicarte?\n*1.* Lic. Norberto Brude\n*2.* Lic. María Gulin\n*3.* Indistinto / Primera consulta general\n\n_(Respondé *1*, *2* o *3*, o escribí tu consulta directamente y se la transmitimos)_", "bot");
+    }, 450);
+    return;
+  }
+
+  // Respuesta por defecto con el menú
+  setTimeout(() => {
+    appendChatMessage("Disculpame, no llegué a comprender esa opción. Por favor ingresá una de las letras del menú (A, B, C, D o E) o escribí *MENU* 🙌.", "bot");
+  }, 500);
+}
+
+export function initChatSimulator() {
+  chatFormEl?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const val = chatInputEl?.value?.trim();
+    if (!val) return;
+    chatInputEl.value = "";
+    handleChatUserInput(val);
+  });
+
+  chatQuickBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const act = btn.dataset.chatAct;
+      if (act) {
+        handleChatUserInput(act);
+      }
+    });
+  });
 }
