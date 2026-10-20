@@ -1,11 +1,11 @@
 /** AUTO-GENERATED — no editar. Fuente: npm run reviews:fetch */
 window.KINESICA_GOOGLE_REVIEWS = {
   "placeId": "ChIJZ2mPW9K1vJUR3J5kGRi5gws",
-  "fetchedAt": "2026-10-17T22:57:32.989Z",
+  "fetchedAt": "2026-10-20T16:27:54.932Z",
   "displayName": "Kinesica",
   "googleMapsUri": "https://maps.google.com/?cid=829710269522681564&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA",
   "rating": 5,
-  "userRatingCount": 34,
+  "userRatingCount": 35,
   "reviews": [
     {
       "author": "Mailín Schneeberger",
@@ -42,7 +42,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
       "rating": 5,
       "text": "Norberto Brude es excelente. Por  varios problemas en la columna, rodilla, cuello que me producen permanentes dolores  hace años que hice varios intentos con otros profesionales pero recién con su tratamiento siento un considerable alivio- Lo recomiendo!!!",
       "language": "es",
-      "relativeTime": "Hace 2 meses",
+      "relativeTime": "Hace 3 meses",
       "publishTime": "2026-07-21T22:41:19.944949311Z"
     },
     {
@@ -93,7 +93,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Norberto Brude es excelente. Por  varios problemas en la columna, rodilla, cuello que me producen permanentes dolores  hace años que hice varios intentos con otros profesionales pero recién con su tratamiento siento un considerable alivio- Lo recomiendo!!!",
         "language": "es",
-        "relativeTime": "Hace 2 meses",
+        "relativeTime": "Hace 3 meses",
         "publishTime": "2026-07-21T22:41:19.944949311Z"
       },
       {
@@ -143,7 +143,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Norberto Brude is excellent. I've had several problems with my spine, knees, and neck that have caused me constant pain for years. I tried several other professionals, but only with his treatment have I felt considerable relief. I highly recommend him!",
         "language": "en",
-        "relativeTime": "2 months ago",
+        "relativeTime": "3 months ago",
         "publishTime": "2026-07-21T22:41:19.944949311Z"
       },
       {
@@ -193,7 +193,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Norberto Brude est excellent. Je souffre de problèmes de dos, de genoux et de cou qui me causent des douleurs constantes depuis des années. J'ai consulté plusieurs autres praticiens, mais seul son traitement m'a apporté un soulagement considérable. Je le recommande vivement !",
         "language": "fr",
-        "relativeTime": "il y a 2 mois",
+        "relativeTime": "il y a 3 mois",
         "publishTime": "2026-07-21T22:41:19.944949311Z"
       },
       {
@@ -243,7 +243,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Norberto Brude é excelente. Sofri com diversos problemas na coluna, joelhos e pescoço que me causaram dores constantes por anos. Consultei vários outros profissionais, mas somente com o tratamento dele senti um alívio considerável. Recomendo-o fortemente!",
         "language": "pt",
-        "relativeTime": "há 2 meses",
+        "relativeTime": "há 3 meses",
         "publishTime": "2026-07-21T22:41:19.944949311Z"
       },
       {
