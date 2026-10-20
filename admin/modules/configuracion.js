@@ -293,8 +293,8 @@ function renderTexts(data) {
       textsLastUpdated.textContent = `Última modificación: ${str}${data.updated_by ? ` por ${data.updated_by}` : ""}`;
       textsLastUpdated.hidden = false;
     } else {
-      textsLastUpdated.textContent = "Textos oficiales activos";
-      textsLastUpdated.hidden = false;
+      textsLastUpdated.textContent = "";
+      textsLastUpdated.hidden = true;
     }
   }
 }
