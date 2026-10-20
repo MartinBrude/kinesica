@@ -624,59 +624,83 @@
         </summary>
 
         <div class="admin-collapsible-body">
-          <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-            <div>
-              <small id="clara-texts-last-updated" style="display:block; color:var(--accent-deep); font-weight:600;"></small>
-            </div>
+          <div style="margin-bottom: 24px; display: flex; justify-content: flex-end; align-items: center; flex-wrap: wrap; gap: 12px;">
             <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
               <button type="button" class="btn green" id="btn-save-clara-texts">Guardar mensajes y políticas</button>
               <button type="button" class="hero-link" id="btn-reset-clara-texts" style="background:none; border:none; cursor:pointer;">Restaurar por defecto</button>
             </div>
           </div>
 
-          <div id="clara-texts-status-banner" class="horarios-alert-box" role="status" hidden style="margin-bottom: 20px;"></div>
+          <div id="clara-texts-status-banner" class="horarios-alert-box" role="status" hidden style="margin-bottom: 24px;"></div>
 
-          <div style="display:flex; flex-direction:column; gap:22px; margin-bottom: 30px;">
-            <div>
-              <label for="cfg-menu-welcome" style="display:block; font-weight:600; margin-bottom:8px; font-size:14px; color:var(--navy);">
-                Mensaje de Bienvenida y Menú de Opciones (WhatsApp)
-              </label>
-              <textarea id="cfg-menu-welcome" rows="7" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical;"></textarea>
-              <small style="color:var(--muted); font-size:12px; margin-top:6px; display:block;">Este es el mensaje inicial que Clara envía al recibir una consulta general.</small>
+          <div style="display:flex; flex-direction:column; gap:24px; margin-bottom: 32px;">
+            <!-- BLOQUE 1: MENÚ PRINCIPAL -->
+            <div class="clara-text-block" style="background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 22px;">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+                <span style="display:inline-block; font-size:11px; font-weight:700; letter-spacing:0.4px; text-transform:uppercase; background:#e0f2fe; color:#0369a1; padding:3px 8px; border-radius:4px;">Menú Principal</span>
+                <label for="cfg-menu-welcome" style="font-weight:700; font-size:15px; color:var(--navy); margin:0; cursor:pointer;">
+                  Mensaje de Bienvenida y Menú de Opciones (WhatsApp)
+                </label>
+              </div>
+              <p style="margin: 0 0 12px 0; color: var(--muted); font-size: 13px; line-height: 1.4;">
+                Texto de saludo inicial que Clara envía al recibir un mensaje por WhatsApp ofreciendo las opciones A a E.
+              </p>
+              <textarea id="cfg-menu-welcome" rows="7" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical; background:#fff;"></textarea>
             </div>
 
-            <div>
-              <label for="cfg-opt-a" style="display:block; font-weight:600; margin-bottom:8px; font-size:14px; color:var(--navy);">
-                Respuesta a Opción A (Turnos y Disponibilidad)
-              </label>
-              <textarea id="cfg-opt-a" rows="3" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical;"></textarea>
-              <small style="color:var(--muted); font-size:12px; margin-top:6px; display:block;">Invitación al paciente a agendar directamente en la turnera online oficial.</small>
+            <!-- BLOQUE 2: OPCIÓN A -->
+            <div class="clara-text-block" style="background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 22px;">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+                <span style="display:inline-block; font-size:11px; font-weight:700; letter-spacing:0.4px; text-transform:uppercase; background:#eef2ff; color:#4338ca; padding:3px 8px; border-radius:4px;">Opción A</span>
+                <label for="cfg-opt-a" style="font-weight:700; font-size:15px; color:var(--navy); margin:0; cursor:pointer;">
+                  Respuesta a Opción A (Turnos y Disponibilidad Online)
+                </label>
+              </div>
+              <p style="margin: 0 0 12px 0; color: var(--muted); font-size: 13px; line-height: 1.4;">
+                Respuesta automática al seleccionar A: invita al paciente a agendar en la turnera online oficial de Kinésica.
+              </p>
+              <textarea id="cfg-opt-a" rows="3" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical; background:#fff;"></textarea>
             </div>
 
-            <div>
-              <label for="cfg-opt-b" style="display:block; font-weight:600; margin-bottom:8px; font-size:14px; color:var(--navy);">
-                Respuesta a Opción B (Ubicación y Llegada al Consultorio)
-              </label>
-              <textarea id="cfg-opt-b" rows="3" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical;"></textarea>
-              <small style="color:var(--muted); font-size:12px; margin-top:6px; display:block;">Dirección de Kinésica, referencias de calles e indicaciones para llegar.</small>
+            <!-- BLOQUE 3: OPCIÓN B -->
+            <div class="clara-text-block" style="background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 22px;">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+                <span style="display:inline-block; font-size:11px; font-weight:700; letter-spacing:0.4px; text-transform:uppercase; background:#ecfdf5; color:#047857; padding:3px 8px; border-radius:4px;">Opción B</span>
+                <label for="cfg-opt-b" style="font-weight:700; font-size:15px; color:var(--navy); margin:0; cursor:pointer;">
+                  Respuesta a Opción B (Ubicación y Llegada al Consultorio)
+                </label>
+              </div>
+              <p style="margin: 0 0 12px 0; color: var(--muted); font-size: 13px; line-height: 1.4;">
+                Respuesta automática al seleccionar B: dirección exacta (Charcas 3889), piso, referencias y enlace a Google Maps.
+              </p>
+              <textarea id="cfg-opt-b" rows="3" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical; background:#fff;"></textarea>
             </div>
 
-            <div>
-              <label for="cfg-opt-d" style="display:block; font-weight:600; margin-bottom:8px; font-size:14px; color:var(--navy);">
-                Respuesta a Opción D (Indumentaria y Vestimenta para la Sesión)
-              </label>
-              <textarea id="cfg-opt-d" rows="3" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical;"></textarea>
-              <small style="color:var(--muted); font-size:12px; margin-top:6px; display:block;">Recomendaciones de ropa cómoda para facilitar la evaluación clínica en camilla.</small>
+            <!-- BLOQUE 4: OPCIÓN D -->
+            <div class="clara-text-block" style="background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 22px;">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+                <span style="display:inline-block; font-size:11px; font-weight:700; letter-spacing:0.4px; text-transform:uppercase; background:#fffbeb; color:#b45309; padding:3px 8px; border-radius:4px;">Opción D</span>
+                <label for="cfg-opt-d" style="font-weight:700; font-size:15px; color:var(--navy); margin:0; cursor:pointer;">
+                  Respuesta a Opción D (Indumentaria y Vestimenta para la Sesión)
+                </label>
+              </div>
+              <p style="margin: 0 0 12px 0; color: var(--muted); font-size: 13px; line-height: 1.4;">
+                Respuesta automática al seleccionar D: pautas de ropa cómoda para varones y mujeres para evaluar postura y columna.
+              </p>
+              <textarea id="cfg-opt-d" rows="3" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical; background:#fff;"></textarea>
             </div>
           </div>
 
           <!-- SUBBLOQUE: OPCIONES INFORMACIÓN ADICIONALES (SIN IA) -->
-          <div style="border-top: 1px solid var(--line); padding-top: 24px;">
-            <div class="horarios-timeline-header">
+          <div style="border-top: 2px solid var(--line); padding-top: 28px;">
+            <div class="horarios-timeline-header" style="margin-bottom: 16px;">
               <div>
-                <h3 class="horarios-timeline-title" style="margin:0; font-size:15px;">Opciones informativas adicionales del Menú (Sin IA)</h3>
-                <p class="horarios-timeline-sub" style="margin-top:4px;">
-                  Permite agregar opciones con letra y respuesta fija (ej: F. ¿Con qué técnicas trabajan?). Clara responderá directamente en WhatsApp sin demora.
+                <h3 class="horarios-timeline-title" style="margin:0; font-size:15px; display:flex; align-items:center; gap:8px;">
+                  <span style="display:inline-block; font-size:11px; font-weight:700; letter-spacing:0.4px; text-transform:uppercase; background:#f3f4f6; color:#374151; padding:3px 8px; border-radius:4px;">Personalizadas</span>
+                  <span>Opciones informativas adicionales del Menú (Sin IA)</span>
+                </h3>
+                <p class="horarios-timeline-sub" style="margin-top:6px;">
+                  Permite agregar opciones con letra propia y respuesta fija (ej: F. ¿Con qué técnicas trabajan?). Clara responderá directamente en WhatsApp sin demora.
                 </p>
               </div>
               <button type="button" class="btn secondary" id="btn-add-custom-option" style="font-size:13px; padding:6px 14px;">
@@ -1447,6 +1471,6 @@
   </script>
   <div id="print-root"></div>
   <script src="/booking/booking-bundle.min.js?v=1792522560" defer></script>
-  <script type="module" src="/admin/app.js?v=129"></script>
+  <script type="module" src="/admin/app.js?v=130"></script>
 </body>
 </html>

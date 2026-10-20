@@ -45,7 +45,6 @@ const btnSaveMailsPolicies = document.querySelector("#btn-save-mails-policies");
 const btnResetTexts = document.querySelector("#btn-reset-clara-texts");
 const textsStatusBanner = document.querySelector("#clara-texts-status-banner");
 const mailsStatusBanner = document.querySelector("#mails-texts-status-banner");
-const textsLastUpdated = document.querySelector("#clara-texts-last-updated");
 
 // Toggles de Clara y Booking en la cabecera de Configuración
 const cfgClaraDot = document.querySelector("#cfg-clara-dot");
@@ -279,24 +278,6 @@ function renderTexts(data) {
     customMenuOptions = [];
   }
   renderCustomOptionsList();
-
-  if (textsLastUpdated) {
-    if (data.updated_at) {
-      const date = new Date(data.updated_at);
-      const str = date.toLocaleDateString("es-AR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit"
-      });
-      textsLastUpdated.textContent = `Última modificación: ${str}${data.updated_by ? ` por ${data.updated_by}` : ""}`;
-      textsLastUpdated.hidden = false;
-    } else {
-      textsLastUpdated.textContent = "";
-      textsLastUpdated.hidden = true;
-    }
-  }
 }
 
 function updateReminderPreview() {
