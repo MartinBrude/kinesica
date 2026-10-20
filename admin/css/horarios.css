@@ -15,10 +15,12 @@
   box-shadow: 0 2px 8px rgba(185, 28, 28, 0.06);
 }
 
-.horarios-alert-box.is-success {
-  border-color: #6ee7b7;
-  background: #ecfdf5;
-  color: #065f46;
+.horarios-alert-box.is-success,
+.horarios-alert-box.success {
+  border-color: #6ee7b7 !important;
+  background: #ecfdf5 !important;
+  color: #065f46 !important;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.08) !important;
 }
 
 .horarios-alert-list {
