@@ -48,12 +48,14 @@ if ($action === 'verify') {
     session_regenerate_id(true);
     $_SESSION['user'] = $user['username'];
     $_SESSION['name'] = $user['display_name'];
+    $_SESSION['role'] = (string) ($user['role'] ?? user_role($user['username']));
     $_SESSION['full'] = true;
 
     json_out(200, [
         'ok' => true,
         'username' => $user['username'],
         'name' => $user['display_name'],
+        'role' => $_SESSION['role'],
     ]);
 }
 
@@ -70,7 +72,7 @@ $email = user_email($username);
 if (!$user || $email === '') {
     login_code_register_attempt($username);
     json_out(404, [
-        'error' => 'Usuario no reconocido. Las cuentas habilitadas son María, Norberto y Martín.',
+        'error' => 'Usuario o correo no reconocido. Verificá los datos e intentá de nuevo.',
     ]);
 }
 

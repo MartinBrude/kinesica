@@ -43,7 +43,7 @@ export function hideDashboardView() {
   }
 }
 
-export function updateDashboardClara(isActive) {
+export async function updateDashboardClara(isActive) {
   activeClara = isActive;
   if (claraDot) {
     claraDot.className = `dash-status-dot ${isActive ? "active" : "inactive"}`;
@@ -56,7 +56,7 @@ export function updateDashboardClara(isActive) {
   }
 }
 
-export function updateDashboardBooking(isActive) {
+export async function updateDashboardBooking(isActive) {
   activeBooking = isActive;
   if (bookingDot) {
     bookingDot.className = `dash-status-dot ${isActive ? "active" : "inactive"}`;
@@ -75,7 +75,8 @@ export async function updateDashboardState() {
     greetingEl.textContent = user?.name ? `Hola, ${user.name}` : "Consultorio Kinésica";
   }
   if (loginsEl) {
-    const logins = user?.username === "martin" && Array.isArray(user.logins) ? user.logins : [];
+    const isAdminUser = user?.role === "admin" || user?.username === "martin";
+    const logins = isAdminUser && Array.isArray(user.logins) ? user.logins : [];
     if (!logins.length) {
       loginsEl.hidden = true;
       loginsEl.replaceChildren();
@@ -93,7 +94,22 @@ export async function updateDashboardState() {
     }
   }
 
-  // Sincronizar estados de Clara y Booking
+  // Sincronizar estados de Clara y Booking desde el backend (settings.php)
+  try {
+    const settings = await api("settings.php").catch(() => null);
+    if (settings) {
+      const isClaraOn = typeof settings.clara_active === "boolean" ? settings.clara_active : true;
+      const isBookingOn = typeof settings.booking_active === "boolean" ? settings.booking_active : true;
+      try {
+        localStorage.setItem("kinesica_clara_active", isClaraOn ? "1" : "0");
+        localStorage.setItem("kinesica_booking_active", isBookingOn ? "1" : "0");
+      } catch (_) {}
+      updateDashboardClara(isClaraOn);
+      updateDashboardBooking(isBookingOn);
+      return;
+    }
+  } catch (_) {}
+
   const claraStorage = localStorage.getItem("kinesica_clara_active") === "1";
   const bookingStorage = localStorage.getItem("kinesica_booking_active") === "1";
   updateDashboardClara(claraStorage);

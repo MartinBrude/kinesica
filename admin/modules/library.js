@@ -243,14 +243,15 @@ export function syncMineButton() {
  */
 export function downloadJSON(data, todayStr = "", fileStem = "") {
   const isArray = Array.isArray(data);
-  const name = fileStem
+  const rawName = fileStem
     || (isArray
       ? "fichas-atm"
-      : `ficha-${(data.nombre || "paciente").replace(/\s+/g, "_")}`);
+      : `ficha-${(data.nombre || "paciente")}`);
+  const safeName = rawName.replace(/[^a-zA-Z0-9_\u00C0-\u017F-]/g, "_").replace(/_+/g, "_");
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = `${name}-${todayStr || new Date().toISOString().slice(0, 10)}.json`;
+  a.download = `${safeName}-${todayStr || new Date().toISOString().slice(0, 10)}.json`;
   a.click();
   URL.revokeObjectURL(a.href);
 }
@@ -831,7 +832,7 @@ export function initLibrary({
   if (btnSeed) {
     btnSeed.addEventListener("click", async () => {
       const sessionUser = typeof activeSessionUserGetter === "function" ? activeSessionUserGetter() : null;
-      if (sessionUser && sessionUser.username !== "martin") return;
+      if (sessionUser && sessionUser.role !== "admin" && sessionUser.username !== "martin") return;
       if (!(await dialogConfirm("¿Agregar 20 fichas de prueba?"))) return;
       btnSeed.disabled = true;
       try {

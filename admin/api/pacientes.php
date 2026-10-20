@@ -179,13 +179,7 @@ function authenticate_request(?array &$bodyData = null): array
         return ['type' => 'api_token', 'user' => 'bot'];
     }
 
-    // 2. Chequeo por parámetro GET (ej. n8n workflow de recordatorios: ?action=directory&secret=...)
-    $querySecret = (string) ($_GET['secret'] ?? $_GET['token'] ?? '');
-    if ($querySecret !== '' && $expectedSecret !== '' && hash_equals($expectedSecret, $querySecret)) {
-        return ['type' => 'api_token', 'user' => 'bot'];
-    }
-
-    // 3. Chequeo por payload JSON (ej. n8n workflow live POST con campo 'secret')
+    // 2. Chequeo por payload JSON (ej. n8n workflow live POST con campo 'secret')
     $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
     if ($method === 'POST' || $method === 'PUT') {
         if ($bodyData === null) {
@@ -197,10 +191,15 @@ function authenticate_request(?array &$bodyData = null): array
         }
     }
 
-    // 4. Si no es API, requerir sesión web activa de Kinésica
+    // 3. Si no es API, requerir sesión web activa de Kinésica
     require_header();
     $user = require_auth();
-    return ['type' => 'session', 'user' => $user['username'], 'name' => $user['name']];
+    return [
+        'type' => 'session',
+        'user' => $user['username'],
+        'name' => $user['name'],
+        'role' => $user['role'] ?? 'professional',
+    ];
 }
 
 try {
@@ -521,6 +520,9 @@ try {
     // DELETE: Eliminar paciente por ID (solo admin)
     // ---------------------------------------------------------
     if ($method === 'DELETE') {
+        if (!is_admin($auth)) {
+            json_out(403, ['status' => 'error', 'message' => 'Solo administradores pueden eliminar pacientes']);
+        }
         $id = (int) ($_GET['id'] ?? 0);
         if ($id <= 0) {
             json_out(422, ['status' => 'error', 'message' => 'ID inválido']);

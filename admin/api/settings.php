@@ -77,7 +77,11 @@ if ($method === 'POST') {
         'horarios_updated_by' => $current['horarios_updated_by'],
     ];
 
-    $saved = @file_put_contents($settingsFile, json_encode($toPersist, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    $saved = @file_put_contents(
+        $settingsFile,
+        json_encode($toPersist, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE),
+        LOCK_EX
+    );
     if ($saved === false) {
         json_out(500, ['error' => 'No se pudo guardar la configuración.']);
     }

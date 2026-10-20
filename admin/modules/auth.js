@@ -187,6 +187,23 @@ export function hideGate() {
  * @param {() => void} callbacks.onLogout Callback invocado tras desconectar la sesión
  */
 export function initAuth({ onSuccess, onLogout }) {
+  const btnTogglePassword = document.querySelector("#btn-toggle-password");
+  if (btnTogglePassword && loginForm) {
+    btnTogglePassword.addEventListener("click", () => {
+      const passwordInput = loginForm.elements.password;
+      if (!passwordInput) return;
+      const isPassword = passwordInput.type === "password";
+      passwordInput.type = isPassword ? "text" : "password";
+      btnTogglePassword.setAttribute("aria-label", isPassword ? "Ocultar contraseña" : "Mostrar contraseña");
+      btnTogglePassword.title = isPassword ? "Ocultar contraseña" : "Mostrar contraseña";
+      const iconShow = btnTogglePassword.querySelector(".eye-show");
+      const iconHide = btnTogglePassword.querySelector(".eye-hide");
+      if (iconShow) iconShow.hidden = isPassword;
+      if (iconHide) iconHide.hidden = !isPassword;
+      passwordInput.focus();
+    });
+  }
+
   document.querySelectorAll('input[name="code"]').forEach((codeEl) => {
     codeEl.addEventListener("keydown", (e) => {
       if (

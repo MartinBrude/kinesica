@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require __DIR__ . '/lib.php';
+require_header();
 start_session();
 if (empty($_SESSION['user'])) {
     json_out(401, ['login' => true]);
@@ -19,8 +20,13 @@ if (empty($_SESSION['full'])) {
         'secret' => $user['totp_secret'],
     ]);
 }
-$payload = ['name' => $_SESSION['name'], 'username' => $_SESSION['user']];
-if ($_SESSION['user'] === 'martin') {
+$role = (string) ($_SESSION['role'] ?? ($user['role'] ?? 'professional'));
+$payload = [
+    'name' => $_SESSION['name'],
+    'username' => $_SESSION['user'],
+    'role' => $role,
+];
+if ($role === 'admin') {
     ensure_login_counts();
     $rows = db()->query('SELECT display_name, login_count FROM users ORDER BY display_name')->fetchAll();
     $payload['logins'] = array_map(static function (array $row): array {

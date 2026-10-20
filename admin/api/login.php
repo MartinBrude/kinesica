@@ -31,6 +31,7 @@ start_session();
 session_regenerate_id(true);
 $_SESSION['user'] = $user['username'];
 $_SESSION['name'] = $user['display_name'];
+$_SESSION['role'] = (string) ($user['role'] ?? user_role($user['username']));
 
 if (!(int) $user['totp_confirmed']) {
     $_SESSION['full'] = false;
@@ -54,4 +55,8 @@ if (!totp_valid($user['totp_secret'], $code) && !login_code_verify($username, $c
 login_clear_failures($username);
 login_record_success($username);
 $_SESSION['full'] = true;
-json_out(200, ['ok' => true, 'name' => $user['display_name']]);
+json_out(200, [
+    'ok' => true,
+    'name' => $user['display_name'],
+    'role' => (string) ($_SESSION['role'] ?? 'professional'),
+]);

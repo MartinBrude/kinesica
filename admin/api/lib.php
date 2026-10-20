@@ -108,7 +108,22 @@ function require_auth(): array
     if (empty($_SESSION['user']) || empty($_SESSION['full'])) {
         json_out(401, ['login' => true]);
     }
-    return ['username' => $_SESSION['user'], 'name' => $_SESSION['name']];
+    return [
+        'username' => $_SESSION['user'],
+        'name' => $_SESSION['name'],
+        'role' => (string) ($_SESSION['role'] ?? 'professional'),
+    ];
+}
+
+function is_admin(?array $auth = null): bool
+{
+    if ($auth !== null && isset($auth['role'])) {
+        return $auth['role'] === 'admin';
+    }
+    if (session_status() === PHP_SESSION_ACTIVE && !empty($_SESSION['role'])) {
+        return $_SESSION['role'] === 'admin';
+    }
+    return false;
 }
 
 function base32_decode(string $value): string
@@ -518,6 +533,32 @@ function password_reset_clear_attempts(string $identifier): void
     ensure_password_reset_attempts();
     db()->prepare('DELETE FROM password_reset_attempts WHERE attempt_key = :attempt_key')
         ->execute(['attempt_key' => reset_attempt_key($identifier)]);
+}
+
+function ensure_users_role_column(): void
+{
+    static $checked = false;
+    if ($checked) {
+        return;
+    }
+    try {
+        $cols = db()->query("SHOW COLUMNS FROM users LIKE 'role'")->fetch();
+        if (!$cols) {
+            db()->exec("ALTER TABLE users ADD role ENUM('admin', 'professional') NOT NULL DEFAULT 'professional'");
+            db()->exec("UPDATE users SET role = 'admin' WHERE username = 'martin'");
+        }
+    } catch (Throwable $e) {
+    }
+    $checked = true;
+}
+
+function user_role(string $username): string
+{
+    ensure_users_role_column();
+    $stmt = db()->prepare('SELECT role FROM users WHERE username = :username LIMIT 1');
+    $stmt->execute(['username' => $username]);
+    $role = $stmt->fetchColumn();
+    return $role ? (string) $role : ($username === 'martin' ? 'admin' : 'professional');
 }
 
 function ensure_login_counts(): void

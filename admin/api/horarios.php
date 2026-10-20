@@ -400,12 +400,23 @@ if ($method === 'POST') {
     $toPersist = [
         'clara_active' => $current['clara_active'],
         'booking_active' => $current['booking_active'],
+        'fees' => $current['fees'] ?? [
+            'atm' => 65000,
+            'general' => 75000,
+            'payment_methods' => 'Efectivo o transferencia bancaria',
+            'updated_at' => null,
+            'updated_by' => null,
+        ],
         'practitioner_hours' => $normalizedHours,
         'horarios_updated_at' => $updatedAt,
         'horarios_updated_by' => $updatedBy,
     ];
 
-    $saved = @file_put_contents($settingsFile, json_encode($toPersist, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    $saved = @file_put_contents(
+        $settingsFile,
+        json_encode($toPersist, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE),
+        LOCK_EX
+    );
     if ($saved === false) {
         json_out(500, ['error' => 'No se pudieron guardar los horarios en el servidor.']);
     }

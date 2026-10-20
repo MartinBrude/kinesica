@@ -319,14 +319,17 @@ export function buildSheet(item, sessionUser = null, meta = {}) {
     if (notes.childElementCount) cdi.append(notes);
     if (notesSession) cdi.append(notesSession);
     if (item.fotoUrl) {
-      const fotoWrap = node("div", "pf-foto-box");
-      fotoWrap.append(node("span", "pf-subhead", "Foto clínica adjunta"));
-      const img = document.createElement("img");
-      img.className = "pf-attached-photo";
-      img.src = item.fotoUrl;
-      img.alt = "Foto clínica de la sesión";
-      fotoWrap.append(img);
-      cdi.append(fotoWrap);
+      const safeFotoPattern = /^(\/admin\/)?api\/foto\.php\?file=[a-f0-9]{32,64}\.(jpe?g|png|webp)$/i;
+      if (safeFotoPattern.test(String(item.fotoUrl).trim())) {
+        const fotoWrap = node("div", "pf-foto-box");
+        fotoWrap.append(node("span", "pf-subhead", "Foto clínica adjunta"));
+        const img = document.createElement("img");
+        img.className = "pf-attached-photo";
+        img.src = item.fotoUrl;
+        img.alt = "Foto clínica de la sesión";
+        fotoWrap.append(img);
+        cdi.append(fotoWrap);
+      }
     }
   }
 

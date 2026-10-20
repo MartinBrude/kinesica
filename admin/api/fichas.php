@@ -214,8 +214,14 @@ if ($method === 'POST') {
     $incomingDoc = $docKey((string) ($data['dni'] ?? ''));
     $incomingName = $nameKey((string) ($data['nombre'] ?? ''));
     if ($incomingDoc !== '' && $incomingName !== '') {
-        $others = $pdo->query('SELECT id, payload FROM fichas')->fetchAll();
-        foreach ($others as $row) {
+        $stmtDni = $pdo->prepare('SELECT id, payload FROM fichas WHERE JSON_UNQUOTE(JSON_EXTRACT(payload, "$.dni")) LIKE :dniPattern');
+        $stmtDni->execute(['dniPattern' => '%' . trim((string) ($data['dni'] ?? '')) . '%']);
+        $candidateRows = $stmtDni->fetchAll();
+        // Fallback a escaneo si JSON_EXTRACT no arrojó candidatos o no está soportado
+        if (empty($candidateRows)) {
+            $candidateRows = $pdo->query('SELECT id, payload FROM fichas')->fetchAll();
+        }
+        foreach ($candidateRows as $row) {
             if ((string) $row['id'] === $id) {
                 continue;
             }
@@ -235,7 +241,20 @@ if ($method === 'POST') {
     }
 
     $inherited = '';
-    $siblingRows = $pdo->query('SELECT id, profesional, payload FROM fichas ORDER BY updated_at DESC')->fetchAll();
+    $stmtSiblings = $pdo->prepare('
+        SELECT id, profesional, payload FROM fichas 
+        WHERE id != :id AND (
+            JSON_UNQUOTE(JSON_EXTRACT(payload, "$.dni")) LIKE :dniPattern OR 
+            JSON_UNQUOTE(JSON_EXTRACT(payload, "$.nombre")) LIKE :namePattern
+        ) ORDER BY updated_at DESC LIMIT 50
+    ');
+    $dniPat = $incomingDoc !== '' ? '%' . trim((string) ($data['dni'] ?? '')) . '%' : '%NOMATCH%';
+    $namePat = $incomingName !== '' ? '%' . trim((string) ($data['nombre'] ?? '')) . '%' : '%NOMATCH%';
+    $stmtSiblings->execute(['id' => $id, 'dniPattern' => $dniPat, 'namePattern' => $namePat]);
+    $siblingRows = $stmtSiblings->fetchAll();
+    if (empty($siblingRows)) {
+        $siblingRows = $pdo->query('SELECT id, profesional, payload FROM fichas ORDER BY updated_at DESC LIMIT 100')->fetchAll();
+    }
     foreach ($siblingRows as $row) {
         if ((string) $row['id'] === $id) {
             continue;
@@ -262,7 +281,7 @@ if ($method === 'POST') {
     $existing = $pdo->prepare('SELECT profesional FROM fichas WHERE id = :id FOR UPDATE');
     $existing->execute(['id' => $id]);
     $previous = $existing->fetchColumn();
-    if ($auth['username'] === 'martin') {
+    if (is_admin($auth)) {
         $requested = (string) ($data['profesional'] ?? '');
         if (isset($clinicians[$requested])) {
             $profesional = $requested;
@@ -332,7 +351,7 @@ if ($method === 'DELETE') {
     $row = $stmt->fetch();
     if ($row) {
         $owner = $row['profesional'] ?? '';
-        if ($owner !== false && $owner !== '' && $auth['username'] !== 'martin' && $auth['username'] !== (string) $owner) {
+        if ($owner !== false && $owner !== '' && !is_admin($auth) && $auth['username'] !== (string) $owner) {
             json_out(403, ['error' => 'No tienes permiso para eliminar esta ficha']);
         }
         $prevData = json_decode((string) ($row['payload'] ?? ''), true);

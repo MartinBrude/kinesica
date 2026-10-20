@@ -97,7 +97,10 @@ export function populateCompareSessions(pKey, preferredXId, preferredYId) {
   const allFichas = typeof activeAllFichasGetter === "function" ? activeAllFichasGetter() : [];
   const patientSessions = allFichas
     .filter((f) => patientKey(f) === pKey)
-    .sort((a, b) => (a.fechaSesion || "").localeCompare(b.fechaSesion || ""));
+    .sort((a, b) => (
+      (a.fechaSesion || "").localeCompare(b.fechaSesion || "") ||
+      (a.savedAt || a.id || "").localeCompare(b.savedAt || b.id || "")
+    ));
 
   if (!patientSessions.length) {
     if (compareBanner) {
