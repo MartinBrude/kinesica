@@ -9,6 +9,7 @@ import { escapeHtml, dialogAlert } from "./dom.js?v=78";
 
 const viewDashboard = document.querySelector("#view-dashboard");
 const greetingEl = document.querySelector("#dash-greeting");
+const loginsEl = document.querySelector("#dash-logins");
 const claraDot = document.querySelector("#dash-clara-dot");
 const claraText = document.querySelector("#dash-clara-status-text");
 const claraToggleBtn = document.querySelector("#dash-btn-toggle-clara");
@@ -72,6 +73,24 @@ export async function updateDashboardState() {
   const user = getSessionUser();
   if (greetingEl) {
     greetingEl.textContent = user?.name ? `Hola, ${user.name}` : "Consultorio Kinésica";
+  }
+  if (loginsEl) {
+    const logins = user?.username === "martin" && Array.isArray(user.logins) ? user.logins : [];
+    if (!logins.length) {
+      loginsEl.hidden = true;
+      loginsEl.replaceChildren();
+    } else {
+      loginsEl.hidden = false;
+      loginsEl.replaceChildren(
+        ...logins.map((row) => {
+          const item = document.createElement("li");
+          const name = document.createElement("strong");
+          name.textContent = row.name || "";
+          item.append(name, document.createTextNode(`: ${Number(row.count) || 0}`));
+          return item;
+        })
+      );
+    }
   }
 
   // Sincronizar estados de Clara y Booking

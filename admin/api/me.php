@@ -19,4 +19,15 @@ if (empty($_SESSION['full'])) {
         'secret' => $user['totp_secret'],
     ]);
 }
-json_out(200, ['name' => $_SESSION['name'], 'username' => $_SESSION['user']]);
+$payload = ['name' => $_SESSION['name'], 'username' => $_SESSION['user']];
+if ($_SESSION['user'] === 'martin') {
+    ensure_login_counts();
+    $rows = db()->query('SELECT display_name, login_count FROM users ORDER BY display_name')->fetchAll();
+    $payload['logins'] = array_map(static function (array $row): array {
+        return [
+            'name' => (string) $row['display_name'],
+            'count' => (int) $row['login_count'],
+        ];
+    }, $rows);
+}
+json_out(200, $payload);

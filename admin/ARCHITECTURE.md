@@ -18,8 +18,9 @@ admin/
 │   ├── fichas.php           # Endpoint CRUD de historias clínicas
 │   ├── forgot.php           # Solicitud de restablecimiento de contraseña
 │   ├── install.php          # Inicialización de esquema y credenciales
-│   ├── lib.php              # Librería común: base de datos, sesiones, TOTP, rate limiting
+│   ├── lib.php              # Librería común: base de datos, sesiones, TOTP, rate limiting, OTP por correo
 │   ├── login.php            # Verificación de credenciales y primer factor
+│   ├── login-code.php       # Vía alternativa de acceso mediante código de 6 dígitos enviado al mail
 │   ├── logout.php           # Cierre de sesión y destrucción de cookie
 │   ├── mail.php             # Configuración de servidor de correo
 │   ├── me.php               # Estado del usuario actual autenticado

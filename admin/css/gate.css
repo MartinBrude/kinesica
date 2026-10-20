@@ -19,7 +19,8 @@ html.is-authenticated #view-gate {
 #login-form[hidden],
 #enroll-form[hidden],
 #forgot-form[hidden],
-#reset-form[hidden] {
+#reset-form[hidden],
+#email-code-form[hidden] {
   display: none !important;
 }
 

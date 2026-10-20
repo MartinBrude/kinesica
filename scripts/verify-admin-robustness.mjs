@@ -473,4 +473,74 @@ await test("módulo de Horarios de Atención está integrado en HTML, JS y API",
   assert.match(horariosPhp, /clara_schedule_summary/, "horarios.php debe generar el resumen para Clara");
 });
 
+await test("vía alternativa de login por código al mail disponible para María, Norberto y Martín", async () => {
+  // 1. Integridad HTML del Gate
+  assert.ok(html.includes('id="btn-email-code"'), "Debe existir botón para activar login alternativo por mail");
+  assert.ok(html.includes('id="email-code-form"'), "Debe existir formulario #email-code-form");
+  assert.ok(html.includes('id="email-code-step-request"'), "Debe existir paso 1 de solicitud de código");
+  assert.ok(html.includes('id="email-code-step-verify"'), "Debe existir paso 2 de verificación de código");
+  assert.ok(html.includes('id="btn-send-email-code"'), "Debe existir botón para solicitar envío");
+  assert.ok(html.includes('id="btn-verify-email-code"'), "Debe existir botón para validar código e ingresar");
+  assert.ok(html.includes('id="btn-resend-email-code"'), "Debe existir botón para reenviar código");
+  assert.ok(html.includes('id="btn-email-code-back"'), "Debe existir botón para regresar al login clásico");
+  assert.ok(html.includes('id="email-code-sent-note"'), "Debe existir nota de confirmación de envío con correo enmascarado");
+  assert.ok(html.includes('id="email-code-request-error"'), "Debe existir contenedor de error en solicitud");
+  assert.ok(html.includes('id="email-code-verify-error"'), "Debe existir contenedor de error en verificación");
+
+  // 2. Integridad de los scripts backend PHP
+  const loginCodePhp = fs.readFileSync(path.join(adminDir, "api/login-code.php"), "utf8");
+  assert.match(loginCodePhp, /require_header\(\)/, "login-code.php debe exigir cabecera anti-CSRF");
+  assert.match(loginCodePhp, /resolve_username/, "login-code.php debe resolver usuarios con tolerancia a mayúsculas/tildes");
+  assert.match(loginCodePhp, /login_code_verify/, "login-code.php debe verificar código de un solo uso");
+  assert.match(loginCodePhp, /login_code_store/, "login-code.php debe almacenar hash del código temporal");
+  assert.match(loginCodePhp, /send_login_code_email/, "login-code.php debe enviar código por correo");
+
+  const libPhp = fs.readFileSync(path.join(adminDir, "api/lib.php"), "utf8");
+  assert.match(libPhp, /function resolve_username/, "lib.php debe incluir resolve_username");
+  assert.match(libPhp, /function mask_email/, "lib.php debe incluir mask_email");
+  assert.match(libPhp, /function login_code_verify/, "lib.php debe incluir login_code_verify");
+  assert.match(libPhp, /function login_code_store/, "lib.php debe incluir login_code_store");
+  assert.match(libPhp, /function send_login_code_email/, "lib.php debe incluir send_login_code_email");
+
+  const loginPhp = fs.readFileSync(path.join(adminDir, "api/login.php"), "utf8");
+  assert.match(loginPhp, /login_code_verify/, "login.php tradicional debe aceptar código de mail como fallback de 2FA");
+
+  // 3. Simulación de cliente API para envío y verificación de código
+  let payloadSent = null;
+  mockFetch((url, options) => {
+    payloadSent = { url, body: JSON.parse(options.body) };
+    if (payloadSent.body.action === "send") {
+      return jsonResponse(200, {
+        ok: true,
+        sent: true,
+        username: payloadSent.body.username,
+        emailMasked: "ma*****6@gmail.com",
+        message: "Te enviamos un código de 6 dígitos a ma*****6@gmail.com.",
+      });
+    }
+    return jsonResponse(200, {
+      ok: true,
+      username: payloadSent.body.username,
+      name: "Lic. María Gulín",
+    });
+  });
+
+  const sendResult = await api("login-code.php", {
+    method: "POST",
+    body: JSON.stringify({ action: "send", username: "maria" }),
+  });
+  assert.equal(sendResult.ok, true);
+  assert.equal(sendResult.username, "maria");
+  assert.equal(payloadSent.url, "api/login-code.php");
+  assert.equal(payloadSent.body.username, "maria");
+
+  const verifyResult = await api("login-code.php", {
+    method: "POST",
+    body: JSON.stringify({ action: "verify", username: "maria", code: "123456" }),
+  });
+  assert.equal(verifyResult.ok, true);
+  assert.equal(verifyResult.name, "Lic. María Gulín");
+  assert.equal(payloadSent.body.code, "123456");
+});
+
 console.log(`admin robustez: ok (${passed} pruebas)`);

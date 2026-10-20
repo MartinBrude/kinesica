@@ -555,7 +555,8 @@
       errors.push("El número de teléfono o WhatsApp ingresado no es válido.");
     }
 
-    if (req.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(req.email).trim())) {
+    const email = String(req.email || "").trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       errors.push("El correo electrónico ingresado no es válido.");
     }
 
@@ -670,6 +671,7 @@
 
     const parts = [
       `📱 WhatsApp: ${data.telefono.trim()}`,
+      `📧 Email: ${String(data.email || "").trim()}`,
       `🪪 DNI: ${data.dni ? data.dni.trim() : "No provisto"}`,
       `🌿 Origen: Reserva Web Oficial Kinésica`,
     ];

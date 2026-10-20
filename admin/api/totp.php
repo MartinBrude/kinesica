@@ -31,6 +31,7 @@ if (!$user || !totp_valid($user['totp_secret'], $code)) {
 }
 
 login_clear_failures($username);
+login_record_success($username);
 db()->prepare('UPDATE users SET totp_confirmed = 1 WHERE username = :username')
     ->execute(['username' => $user['username']]);
 $_SESSION['full'] = true;

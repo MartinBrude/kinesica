@@ -118,13 +118,15 @@ A partir de ahora, cada vez que vayas a atender o revisar historias clínicas:
 ### 2. El sistema dice "Demasiados intentos fallidos"
 - Si se ingresan datos incorrectos 5 veces seguidas, el sistema se bloquea temporalmente durante **30 minutos** para proteger la cuenta contra accesos no autorizados. Esperá ese lapso e intentá nuevamente con tranquilidad.
 
-### 3. ¿Qué hago si cambio de teléfono celular?
+### 3. ¿Qué hago si no tengo el celular, lo cambié o no funciona el Authenticator?
+- **Vía alternativa inmediata (Código al mail):**  
+  En la pantalla de acceso, hacé clic en el botón **"Ingresar con código al mail"**. Escribí tu usuario (`maria`, `norberto` o `martin`) o tu correo registrado y hacé clic en **"Enviar código al mail"**. Te llegará un código de 6 dígitos a tu casilla de Gmail (`manosmagicas7116@gmail.com`, `norberto1712@gmail.com` o `martin.brude@gmail.com`). Escribilo en la pantalla y entrarás directamente al sistema sin necesidad de contraseña ni de tu celular.
 - **Si todavía tenés el teléfono viejo:**  
   1. Abrí Google Authenticator en el teléfono viejo.  
   2. Tocá el menú (o tu foto de perfil) y elegí **"Transferir cuentas"** ➔ **"Exportar cuentas"**.  
   3. En el teléfono nuevo, descargá Google Authenticator y elegí **"Transferir cuentas"** ➔ **"Importar cuentas"** y escaneá el código QR que muestra el teléfono viejo.
 - **Si perdiste o se rompió tu teléfono:**  
-  Avisale a Martín para que reinicie la clave de segundo factor de tu usuario. Al hacerlo, podrás vincular tu nuevo celular repitiendo simplemente el **Paso 2**.
+  Podés seguir atendiendo normalmente utilizando la **vía alternativa con código al mail**. Además, avisale a Martín para reiniciar el Authenticator cuando tengas tu nuevo dispositivo.
 
 ### 4. ¿Cómo cerrar la sesión de forma segura?
 - Al terminar tu jornada de atención, hacé clic en el botón **"Salir"** ubicado en la esquina superior derecha de la pantalla. Esto evita que otra persona que use la computadora acceda a los datos de tus pacientes.

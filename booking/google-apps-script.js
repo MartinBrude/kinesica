@@ -533,6 +533,10 @@ function handleBookAppointment(payload) {
     return createJsonResponse({ status: "error", message: "Teléfono válido es requerido" }, 400);
   }
 
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return createJsonResponse({ status: "error", message: "Correo electrónico válido es requerido" }, 400);
+  }
+
   const duration = SESSION_DURATION_MINUTES;
   const startTime = parseArgentinaDate(dateStr, timeStr);
   const endTime = new Date(startTime.getTime() + duration * 60 * 1000);
@@ -620,7 +624,7 @@ function handleBookAppointment(payload) {
   if (whoName) descParts.push("👤 Profesional: " + whoName);
   descParts.push(
     "📱 WhatsApp: " + telefono,
-    (email ? "📧 Email: " + email : null),
+    "📧 Email: " + email,
     "🪪 DNI: " + dni,
     "🌿 Origen: Reserva Web Oficial Kinésica",
     "📋 Especialidad: " + especialidad
@@ -649,7 +653,7 @@ function handleBookAppointment(payload) {
       if (sheet) {
         const phoneFormatted = telefono.startsWith("'") ? telefono : "'" + telefono;
         const fechaHora = dateStr + " " + timeStr + " hs";
-        sheet.appendRow([nombre, dni, phoneFormatted, fechaHora, motivo, techniqueLabel]);
+        sheet.appendRow([nombre, dni, phoneFormatted, fechaHora, motivo, techniqueLabel, email]);
       }
     } catch (e) {
       // No bloquea la respuesta si la planilla falla

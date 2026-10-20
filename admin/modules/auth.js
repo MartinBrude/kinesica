@@ -14,6 +14,7 @@ const loginForm = document.querySelector("#login-form");
 const enrollForm = document.querySelector("#enroll-form");
 const forgotForm = document.querySelector("#forgot-form");
 const resetForm = document.querySelector("#reset-form");
+const emailCodeForm = document.querySelector("#email-code-form");
 const logoutBtn = document.querySelector("#btn-logout");
 
 const enrollAccountEl = document.querySelector("#enroll-account");
@@ -23,9 +24,19 @@ const loginErrorEl = document.querySelector("#login-error");
 const enrollErrorEl = document.querySelector("#enroll-error");
 const forgotErrorEl = document.querySelector("#forgot-error");
 const resetErrorEl = document.querySelector("#reset-error");
+const emailCodeRequestError = document.querySelector("#email-code-request-error");
+const emailCodeVerifyError = document.querySelector("#email-code-verify-error");
+const emailCodeSentNote = document.querySelector("#email-code-sent-note");
 
 const btnForgot = document.querySelector("#btn-forgot");
 const btnForgotBack = document.querySelector("#btn-forgot-back");
+const btnEmailCode = document.querySelector("#btn-email-code");
+const btnEmailCodeBack = document.querySelector("#btn-email-code-back");
+const btnSendEmailCode = document.querySelector("#btn-send-email-code");
+const btnVerifyEmailCode = document.querySelector("#btn-verify-email-code");
+const btnResendEmailCode = document.querySelector("#btn-resend-email-code");
+const emailCodeStepRequest = document.querySelector("#email-code-step-request");
+const emailCodeStepVerify = document.querySelector("#email-code-step-verify");
 
 /**
  * Obtiene el usuario autenticado en la sesión actual.
@@ -106,11 +117,28 @@ export function showGate(data = {}) {
   const enroll = Boolean(data && data.enroll);
   const forgot = Boolean(data && data.forgot);
   const reset = Boolean(data && data.reset);
+  const emailCode = Boolean(data && data.emailCode);
 
-  if (loginForm) loginForm.hidden = enroll || forgot || reset;
+  if (loginForm) loginForm.hidden = enroll || forgot || reset || emailCode;
   if (enrollForm) enrollForm.hidden = !enroll;
   if (forgotForm) forgotForm.hidden = !forgot;
   if (resetForm) resetForm.hidden = !reset;
+  if (emailCodeForm) emailCodeForm.hidden = !emailCode;
+
+  if (emailCode) {
+    if (emailCodeStepRequest) emailCodeStepRequest.hidden = false;
+    if (emailCodeStepVerify) emailCodeStepVerify.hidden = true;
+    if (emailCodeRequestError) emailCodeRequestError.hidden = true;
+    if (emailCodeVerifyError) emailCodeVerifyError.hidden = true;
+    const userInput = emailCodeForm ? emailCodeForm.elements.username : null;
+    if (userInput) {
+      if (!userInput.value) {
+        userInput.focus();
+      } else {
+        userInput.select();
+      }
+    }
+  }
 
   if (enroll) {
     if (enrollAccountEl) enrollAccountEl.textContent = data.account || "Kinésica";
@@ -187,6 +215,154 @@ export function initAuth({ onSuccess, onLogout }) {
 
   if (btnForgotBack) {
     btnForgotBack.addEventListener("click", () => showGate({ login: true }));
+  }
+
+  if (btnEmailCode) {
+    btnEmailCode.addEventListener("click", () => {
+      if (loginForm && emailCodeForm) {
+        const currentVal = loginForm.elements.username?.value?.trim() || "";
+        if (currentVal && !emailCodeForm.elements.username?.value) {
+          emailCodeForm.elements.username.value = currentVal;
+        }
+      }
+      showGate({ emailCode: true });
+    });
+  }
+
+  if (btnEmailCodeBack) {
+    btnEmailCodeBack.addEventListener("click", () => showGate({ login: true }));
+  }
+
+  const handleSendEmailCode = async () => {
+    if (!emailCodeForm) return;
+    const username = emailCodeForm.elements.username?.value?.trim() || "";
+    if (!username) {
+      setGateMessage(emailCodeRequestError, "Ingresá tu usuario o correo.", false);
+      return;
+    }
+    if (emailCodeRequestError) emailCodeRequestError.hidden = true;
+    if (btnSendEmailCode) {
+      btnSendEmailCode.disabled = true;
+      btnSendEmailCode.textContent = "Enviando código...";
+    }
+    try {
+      const data = await api("login-code.php", {
+        method: "POST",
+        body: JSON.stringify({ action: "send", username }),
+      });
+      emailCodeForm.dataset.user = data.username || username;
+      if (emailCodeStepRequest) emailCodeStepRequest.hidden = true;
+      if (emailCodeStepVerify) emailCodeStepVerify.hidden = false;
+      if (emailCodeSentNote) {
+        setGateMessage(
+          emailCodeSentNote,
+          data.message || `Código enviado a ${data.emailMasked || "tu correo"}.`,
+          true
+        );
+      }
+      if (emailCodeVerifyError) emailCodeVerifyError.hidden = true;
+      const codeInput = emailCodeForm.elements.code;
+      if (codeInput) {
+        codeInput.value = "";
+        codeInput.focus();
+      }
+    } catch (err) {
+      setGateMessage(emailCodeRequestError, err.message, false);
+    } finally {
+      if (btnSendEmailCode) {
+        btnSendEmailCode.disabled = false;
+        btnSendEmailCode.textContent = "Enviar código al mail";
+      }
+    }
+  };
+
+  const handleVerifyEmailCode = async () => {
+    if (!emailCodeForm) return;
+    const username = emailCodeForm.dataset.user || emailCodeForm.elements.username?.value?.trim() || "";
+    const code = emailCodeForm.elements.code?.value?.trim() || "";
+    if (!code || code.length < 6) {
+      setGateMessage(emailCodeVerifyError, "Ingresá los 6 dígitos del código.", false);
+      return;
+    }
+    if (emailCodeVerifyError) emailCodeVerifyError.hidden = true;
+    if (btnVerifyEmailCode) {
+      btnVerifyEmailCode.disabled = true;
+      btnVerifyEmailCode.textContent = "Verificando...";
+    }
+    try {
+      const data = await api("login-code.php", {
+        method: "POST",
+        body: JSON.stringify({ action: "verify", username, code }),
+      });
+      setSessionUser({ username: data.username || username, name: data.name });
+      hideGate();
+      if (typeof onSuccess === "function") await onSuccess();
+    } catch (err) {
+      if (err.auth) return;
+      setGateMessage(emailCodeVerifyError, err.message, false);
+    } finally {
+      if (btnVerifyEmailCode) {
+        btnVerifyEmailCode.disabled = false;
+        btnVerifyEmailCode.textContent = "Confirmar y entrar";
+      }
+    }
+  };
+
+  if (btnSendEmailCode) {
+    btnSendEmailCode.addEventListener("click", (e) => {
+      e.preventDefault();
+      handleSendEmailCode();
+    });
+  }
+
+  if (btnVerifyEmailCode) {
+    btnVerifyEmailCode.addEventListener("click", (e) => {
+      e.preventDefault();
+      handleVerifyEmailCode();
+    });
+  }
+
+  if (btnResendEmailCode) {
+    btnResendEmailCode.addEventListener("click", async (e) => {
+      e.preventDefault();
+      const username = emailCodeForm?.dataset?.user || emailCodeForm?.elements?.username?.value?.trim() || "";
+      if (!username) return;
+      btnResendEmailCode.disabled = true;
+      btnResendEmailCode.textContent = "Reenviando...";
+      try {
+        const data = await api("login-code.php", {
+          method: "POST",
+          body: JSON.stringify({ action: "send", username }),
+        });
+        setGateMessage(
+          emailCodeSentNote,
+          `Nuevo código enviado a ${data.emailMasked || "tu correo"}.`,
+          true
+        );
+        if (emailCodeVerifyError) emailCodeVerifyError.hidden = true;
+        const codeInput = emailCodeForm?.elements?.code;
+        if (codeInput) {
+          codeInput.value = "";
+          codeInput.focus();
+        }
+      } catch (err) {
+        setGateMessage(emailCodeVerifyError, err.message, false);
+      } finally {
+        btnResendEmailCode.disabled = false;
+        btnResendEmailCode.textContent = "Reenviar código";
+      }
+    });
+  }
+
+  if (emailCodeForm) {
+    emailCodeForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (emailCodeStepVerify && !emailCodeStepVerify.hidden) {
+        handleVerifyEmailCode();
+      } else {
+        handleSendEmailCode();
+      }
+    });
   }
 
   if (forgotForm) {

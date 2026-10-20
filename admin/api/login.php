@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 require_header();
 $body = read_json();
-$username = strtolower(trim((string) ($body['username'] ?? '')));
+$username = resolve_username((string) ($body['username'] ?? ''));
 $password = (string) ($body['password'] ?? '');
 $code = (string) ($body['code'] ?? '');
 
@@ -42,7 +42,7 @@ if (!(int) $user['totp_confirmed']) {
     ]);
 }
 
-if (!totp_valid($user['totp_secret'], $code)) {
+if (!totp_valid($user['totp_secret'], $code) && !login_code_verify($username, $code)) {
     $_SESSION = [];
     login_register_failure($username);
     if (login_is_locked($username)) {
@@ -52,5 +52,6 @@ if (!totp_valid($user['totp_secret'], $code)) {
 }
 
 login_clear_failures($username);
+login_record_success($username);
 $_SESSION['full'] = true;
 json_out(200, ['ok' => true, 'name' => $user['display_name']]);

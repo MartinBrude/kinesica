@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=100">
+  <link rel="stylesheet" href="/admin/styles.css?v=101">
   <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1792345131">
   <script>
     (function () {
@@ -66,7 +66,31 @@
           </label>
           <p id="login-error" class="gate-error" hidden></p>
           <button type="submit" class="btn green">Entrar</button>
+          <button type="button" class="btn ghost" id="btn-email-code">Ingresar con código al mail</button>
           <button type="button" class="btn ghost" id="btn-forgot">Olvidé mi contraseña</button>
+        </div>
+      </form>
+      <form id="email-code-form" class="hero-card gate-card" method="POST" hidden>
+        <div class="gate-fields">
+          <h1>Código al mail</h1>
+          <p>Ingresá con un código de seguridad de 6 dígitos enviado a tu correo (María, Norberto o Martín).</p>
+          <div id="email-code-step-request">
+            <label>Usuario o Correo
+              <input name="username" autocomplete="username" placeholder="maria, norberto o martin" required>
+            </label>
+            <p id="email-code-request-error" class="gate-error" hidden></p>
+            <button type="button" class="btn green" id="btn-send-email-code">Enviar código al mail</button>
+          </div>
+          <div id="email-code-step-verify" hidden>
+            <p id="email-code-sent-note" class="gate-note"></p>
+            <label>Código de 6 dígitos
+              <input name="code" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" placeholder="6 dígitos">
+            </label>
+            <p id="email-code-verify-error" class="gate-error" hidden></p>
+            <button type="button" class="btn green" id="btn-verify-email-code">Confirmar y entrar</button>
+            <button type="button" class="btn ghost" id="btn-resend-email-code">Reenviar código</button>
+          </div>
+          <button type="button" class="btn ghost" id="btn-email-code-back">Volver al ingreso habitual</button>
         </div>
       </form>
       <form id="forgot-form" class="hero-card gate-card" method="POST" hidden>
@@ -112,6 +136,7 @@
       <div class="dashboard-hero">
         <div class="hero-card">
           <p class="dashboard-greeting" id="dash-greeting">Consultorio Kinésica</p>
+          <ul class="dashboard-logins" id="dash-logins" hidden></ul>
           <h1 class="dashboard-title">Panel de Control</h1>
           <p class="dashboard-desc">
             Historias clínicas digitales, directorio de pacientes, control del asistente de WhatsApp y coordinación de turnos.

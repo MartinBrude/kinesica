@@ -52,6 +52,8 @@ if (empty($servicio) || preg_match('/osteopat[ií]a\s*(?:&|\/|y)?\s*(?:terapia[s
 }
 $direccion = trim($data['direccion'] ?? 'Charcas 3889, Piso 5º B, Palermo (entre Scalabrini Ortiz y Aráoz)');
 $esMenor = !empty($data['esMenor']) || !empty($data['isMenor']);
+$tipo = strtolower(trim($data['tipo'] ?? 'confirmacion'));
+$esCancelacion = in_array($tipo, ['cancelacion', 'cancelación', 'anulacion', 'anulación'], true);
 
 // Validaciones básicas
 if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -98,6 +100,58 @@ $indicacionAcompaniante = $esMenor
     : 'Por razones de espacio y concentración durante el tratamiento, <strong>asistir sin acompañantes</strong> (salvo necesidad de asistencia).';
 
 $servicioTexto = $servicio ? ' (' . $servicio . ')' : '';
+
+if ($esCancelacion) {
+    $subject = 'Anulación de turno - ' . $fechaLegible . ($horaLegible ? ' (' . $horaLegible . ')' : '');
+    $htmlContent = '
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anulación de Turno - Kinésica</title>
+  <style>
+    body { margin: 0; padding: 20px; background-color: #f5f7fa; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+    .wrapper { max-width: 580px; margin: 0 auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; border: 1px solid #e5e9f0; }
+    .header { padding: 30px 20px 20px 20px; text-align: center; border-bottom: 2px solid #005f99; }
+    .logo { max-width: 180px; height: auto; display: block; margin: 0 auto; }
+    .content { padding: 30px 26px; color: #2c3e50; font-size: 15px; line-height: 1.6; }
+    .greeting { font-size: 18px; font-weight: 600; color: #1a252f; margin: 0 0 12px 0; }
+    .lead-text { color: #556575; margin-bottom: 22px; }
+    .card-details { background-color: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #005f99; border-radius: 6px; padding: 16px 18px; margin-bottom: 24px; }
+    .detail-item { margin: 6px 0; font-size: 15px; color: #334155; }
+    .detail-item strong { min-width: 100px; display: inline-block; color: #005f99; }
+    .footer { text-align: center; padding: 22px; font-size: 12px; color: #8a99a8; background-color: #f8fafc; border-top: 1px solid #edf2f7; }
+    .footer a { color: #005f99; text-decoration: none; font-weight: 500; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="header">
+      <img src="https://www.kinesica.com.ar/images/logo.png" alt="Kinésica" class="logo">
+    </div>
+    <div class="content">
+      <h1 class="greeting">Turno anulado</h1>
+      <p class="lead-text">Hola <strong>' . htmlspecialchars($paciente) . '</strong>, anulamos tu turno en Kinésica.</p>
+      <div class="card-details">
+        <div class="detail-item"><strong>Fecha:</strong> ' . htmlspecialchars($fechaLegible) . '</div>
+        <div class="detail-item"><strong>Horario:</strong> ' . htmlspecialchars($horaLegible) . '</div>
+        <div class="detail-item"><strong>Atención:</strong> ' . htmlspecialchars($profesional . $servicioTexto) . '</div>
+        <div class="detail-item"><strong>Dirección:</strong> ' . htmlspecialchars($direccion) . '</div>
+      </div>
+      <p style="font-size: 13px; color: #64748b; margin-top: 18px;">
+        Si querés otro horario, podés reservarlo en <a href="https://www.kinesica.com.ar/agendar" style="color:#005f99;">kinesica.com.ar/agendar</a> o escribirnos por WhatsApp.
+      </p>
+    </div>
+    <div class="footer">
+      <p style="margin: 0 0 6px 0;"><strong>Kinésica</strong> · Terapias Manuales & Rehabilitación</p>
+      <p style="margin: 0;"><a href="https://www.kinesica.com.ar" target="_blank">www.kinesica.com.ar</a></p>
+    </div>
+  </div>
+</body>
+</html>';
+} else {
+    $subject = 'Confirmación de turno - ' . $fechaLegible . ($horaLegible ? ' (' . $horaLegible . ')' : '');
 
 // Plantilla HTML con diseño Kinésica
 $htmlContent = '
@@ -163,6 +217,7 @@ $htmlContent = '
   </div>
 </body>
 </html>';
+}
 
 // Cargar configuración local si existe (admin/api/config.php y admin/api/mail.php)
 $localCfg = [];
@@ -186,7 +241,9 @@ $apiKey = trim((string) (
     ?: ($_SERVER['RESEND_API_KEY'] ?? $_ENV['RESEND_API_KEY'] ?? $localCfg['resend_api_key'] ?? '')
 ));
 
-$subject = 'Confirmación de turno - ' . $fechaLegible . ($horaLegible ? ' (' . $horaLegible . ')' : '');
+if (!isset($subject)) {
+    $subject = 'Confirmación de turno - ' . $fechaLegible . ($horaLegible ? ' (' . $horaLegible . ')' : '');
+}
 $resendError = null;
 
 if ($apiKey !== '') {

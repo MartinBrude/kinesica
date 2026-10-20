@@ -5,7 +5,14 @@ function cfg(): array
 {
     static $cfg;
     if ($cfg === null) {
-        $cfg = require __DIR__ . '/config.php';
+        $configFile = __DIR__ . '/config.php';
+        if (is_file($configFile)) {
+            $cfg = require $configFile;
+        } elseif (is_file(__DIR__ . '/config.example.php')) {
+            $cfg = require __DIR__ . '/config.example.php';
+        } else {
+            $cfg = [];
+        }
         $mailFile = __DIR__ . '/mail.php';
         if (is_file($mailFile)) {
             $mail = require $mailFile;
@@ -247,8 +254,164 @@ function send_mail(string $to, string $subject, string $body): bool
 
 function user_email(string $username): string
 {
+    $username = resolve_username($username);
     $emails = cfg()['user_emails'] ?? [];
     return (string) ($emails[$username] ?? '');
+}
+
+function resolve_username(string $identifier): string
+{
+    $clean = mb_strtolower(trim($identifier), 'UTF-8');
+    $clean = strtr($clean, [
+        'á' => 'a',
+        'é' => 'e',
+        'í' => 'i',
+        'ó' => 'o',
+        'ú' => 'u',
+        'ü' => 'u',
+    ]);
+    if ($clean === '') {
+        return '';
+    }
+    $emails = cfg()['user_emails'] ?? [];
+    if (isset($emails[$clean])) {
+        return $clean;
+    }
+    foreach ($emails as $name => $address) {
+        if (strcasecmp((string) $address, trim($identifier)) === 0) {
+            return (string) $name;
+        }
+    }
+    return $clean;
+}
+
+function mask_email(string $email): string
+{
+    $parts = explode('@', $email, 2);
+    if (count($parts) !== 2) {
+        return $email;
+    }
+    $name = $parts[0];
+    $domain = $parts[1];
+    $len = strlen($name);
+    if ($len <= 2) {
+        $masked = substr($name, 0, 1) . '*';
+    } else {
+        $masked = substr($name, 0, 2) . str_repeat('*', min(4, max(1, $len - 3))) . substr($name, -1);
+    }
+    return $masked . '@' . $domain;
+}
+
+function send_html_mail(string $to, string $subject, string $htmlBody, string $textAlt = ''): bool
+{
+    $from = (string) (cfg()['mail_from'] ?? 'no-reply@kinesica.com.ar');
+    if ($from === '' || $to === '') {
+        return false;
+    }
+    $encoded = '=?UTF-8?B?' . base64_encode($subject) . '?=';
+
+    $resendKey = getenv('RESEND_API_KEY') ?: ($_SERVER['RESEND_API_KEY'] ?? $_ENV['RESEND_API_KEY'] ?? cfg()['resend_api_key'] ?? '');
+    if ($resendKey !== '' && function_exists('curl_init')) {
+        $payload = [
+            'from' => 'Kinésica <' . $from . '>',
+            'to' => [$to],
+            'subject' => $subject,
+            'html' => $htmlBody,
+        ];
+        if ($textAlt !== '') {
+            $payload['text'] = $textAlt;
+        }
+        $ch = curl_init('https://api.resend.com/emails');
+        curl_setopt_array($ch, [
+            CURLOPT_POST => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => [
+                'Authorization: Bearer ' . $resendKey,
+                'Content-Type: application/json',
+            ],
+            CURLOPT_POSTFIELDS => json_encode($payload),
+            CURLOPT_TIMEOUT => 6,
+        ]);
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
+        curl_close($ch);
+        if (!$curlError && $httpCode >= 200 && $httpCode < 300) {
+            return true;
+        }
+    }
+
+    $headers = implode("\r\n", [
+        'MIME-Version: 1.0',
+        'Content-Type: text/html; charset=UTF-8',
+        'From: =?UTF-8?B?' . base64_encode('Kinésica') . "?= <{$from}>",
+        'Reply-To: Kinésica <' . $from . '>',
+        'X-Mailer: PHP/' . phpversion(),
+    ]) . "\r\n";
+
+    $sent = @mail($to, $encoded, $htmlBody, $headers, '-f ' . $from);
+    if (!$sent) {
+        $sent = @mail($to, $encoded, $htmlBody, $headers);
+    }
+    return (bool) $sent;
+}
+
+function send_login_code_email(string $to, string $displayName, string $code): bool
+{
+    $subject = "Código de acceso a Kinésica: {$code}";
+    $greeting = $displayName ? 'Hola ' . htmlspecialchars($displayName) . ',' : 'Hola,';
+    $codeFormatted = substr($code, 0, 3) . ' ' . substr($code, 3, 3);
+
+    $html = <<<HTML
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Código de acceso a Kinésica</title>
+  <style>
+    body { margin: 0; padding: 24px; background-color: #f4f6f9; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+    .wrapper { max-width: 480px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; }
+    .header { padding: 24px 20px 16px; text-align: center; border-bottom: 2px solid #005f99; }
+    .header h2 { margin: 0; color: #005f99; font-size: 20px; letter-spacing: 0.02em; }
+    .content { padding: 28px 24px; color: #1e293b; font-size: 15px; line-height: 1.6; }
+    .code-box { background: #f0f7fc; border: 1px solid #bae0f5; border-radius: 10px; text-align: center; padding: 18px 12px; margin: 20px 0; }
+    .code-number { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 34px; font-weight: 700; letter-spacing: 0.25em; color: #005f99; margin: 0; }
+    .badge { display: inline-block; font-size: 12px; font-weight: 600; color: #64748b; margin-top: 6px; }
+    .footer { text-align: center; padding: 18px; font-size: 12px; color: #94a3b8; background-color: #f8fafc; border-top: 1px solid #edf2f7; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="header">
+      <h2>Kinésica · Panel de Control</h2>
+    </div>
+    <div class="content">
+      <p style="margin-top:0;">{$greeting}</p>
+      <p>Usá el siguiente código de seguridad para ingresar al sistema de historias clínicas:</p>
+      <div class="code-box">
+        <div class="code-number">{$codeFormatted}</div>
+        <span class="badge">Válido por 15 minutos · Un solo uso</span>
+      </div>
+      <p style="font-size: 13px; color: #64748b; margin-bottom: 0;">
+        Si vos no solicitaste este código, podés ignorar este mensaje con tranquilidad. Tu cuenta permanece segura.
+      </p>
+    </div>
+    <div class="footer">
+      <p style="margin: 0;">Kinésica · Terapias Manuales & Rehabilitación</p>
+    </div>
+  </div>
+</body>
+</html>
+HTML;
+
+    $text = "Kinésica · Código de acceso\n\n"
+        . "{$greeting}\n\n"
+        . "Tu código de acceso es: {$codeFormatted}\n"
+        . "Válido por 15 minutos.\n\n"
+        . "Si vos no lo solicitaste, podés ignorar este correo.\n\n"
+        . "Kinésica";
+
+    return send_html_mail($to, $subject, $html, $text);
 }
 
 function ensure_password_resets(): void
@@ -357,6 +520,30 @@ function password_reset_clear_attempts(string $identifier): void
         ->execute(['attempt_key' => reset_attempt_key($identifier)]);
 }
 
+function ensure_login_counts(): void
+{
+    static $ready = false;
+    if ($ready) {
+        return;
+    }
+    $column = db()->query("SHOW COLUMNS FROM users LIKE 'login_count'")->fetch();
+    if (!$column) {
+        db()->exec('ALTER TABLE users ADD login_count INT UNSIGNED NOT NULL DEFAULT 0');
+    }
+    $ready = true;
+}
+
+function login_record_success(string $username): void
+{
+    $key = login_attempt_key($username);
+    if ($key === '') {
+        return;
+    }
+    ensure_login_counts();
+    db()->prepare('UPDATE users SET login_count = login_count + 1 WHERE username = :username')
+        ->execute(['username' => $key]);
+}
+
 function login_clear_failures(string $username): void
 {
     $key = login_attempt_key($username);
@@ -366,4 +553,150 @@ function login_clear_failures(string $username): void
     ensure_login_attempts();
     db()->prepare('DELETE FROM login_attempts WHERE username = :username')
         ->execute(['username' => $key]);
+}
+
+function ensure_login_codes(): void
+{
+    static $ready = false;
+    if ($ready) {
+        return;
+    }
+    db()->exec(
+        'CREATE TABLE IF NOT EXISTS login_codes (
+            code_hash CHAR(64) PRIMARY KEY,
+            username VARCHAR(32) NOT NULL,
+            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            expires_at DATETIME NOT NULL,
+            INDEX idx_login_codes_user (username)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4'
+    );
+    $ready = true;
+}
+
+function ensure_login_code_attempts(): void
+{
+    static $ready = false;
+    if ($ready) {
+        return;
+    }
+    db()->exec(
+        'CREATE TABLE IF NOT EXISTS login_code_attempts (
+            attempt_key CHAR(64) PRIMARY KEY,
+            attempts SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+            window_start DATETIME NOT NULL,
+            locked_until DATETIME NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4'
+    );
+    $ready = true;
+}
+
+function login_code_attempt_key(string $identifier): string
+{
+    $clean = resolve_username($identifier);
+    if ($clean === '') {
+        $clean = 'empty';
+    }
+    $ip = (string) ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
+    return hash('sha256', $clean . '|' . $ip);
+}
+
+function login_code_block_message(): string
+{
+    return 'Demasiadas solicitudes de código. Por seguridad, esperá 15 minutos antes de volver a intentar.';
+}
+
+function login_code_is_locked(string $identifier): bool
+{
+    ensure_login_code_attempts();
+    $key = login_code_attempt_key($identifier);
+    $stmt = db()->prepare('SELECT locked_until FROM login_code_attempts WHERE attempt_key = :key');
+    $stmt->execute(['key' => $key]);
+    $until = $stmt->fetchColumn();
+    if (!$until) {
+        return false;
+    }
+    if (strtotime($until . ' UTC') > time()) {
+        return true;
+    }
+    db()->prepare('DELETE FROM login_code_attempts WHERE attempt_key = :key')
+        ->execute(['key' => $key]);
+    return false;
+}
+
+function login_code_register_attempt(string $identifier): void
+{
+    ensure_login_code_attempts();
+    $key = login_code_attempt_key($identifier);
+    $pdo = db();
+    $windowStart = gmdate('Y-m-d H:i:s', time() - 15 * 60);
+    $pdo->prepare('DELETE FROM login_code_attempts WHERE window_start < :expired')
+        ->execute(['expired' => $windowStart]);
+    $pdo->prepare(
+        'INSERT INTO login_code_attempts (attempt_key, attempts, window_start, locked_until)
+         VALUES (:key, 1, UTC_TIMESTAMP(), NULL)
+         ON DUPLICATE KEY UPDATE
+            attempts = IF(window_start < :window_start, 1, attempts + 1),
+            window_start = IF(window_start < :window_start_cmp, UTC_TIMESTAMP(), window_start)'
+    )->execute([
+        'key' => $key,
+        'window_start' => $windowStart,
+        'window_start_cmp' => $windowStart,
+    ]);
+
+    $stmt = $pdo->prepare('SELECT attempts FROM login_code_attempts WHERE attempt_key = :key');
+    $stmt->execute(['key' => $key]);
+    if ((int) $stmt->fetchColumn() <= 4) {
+        return;
+    }
+    $pdo->prepare('UPDATE login_code_attempts SET locked_until = :until WHERE attempt_key = :key')
+        ->execute([
+            'until' => gmdate('Y-m-d H:i:s', time() + 15 * 60),
+            'key' => $key,
+        ]);
+}
+
+function login_code_clear_attempts(string $identifier): void
+{
+    ensure_login_code_attempts();
+    db()->prepare('DELETE FROM login_code_attempts WHERE attempt_key = :key')
+        ->execute(['key' => login_code_attempt_key($identifier)]);
+}
+
+function login_code_store(string $username, string $code, int $validMinutes = 15): void
+{
+    $username = resolve_username($username);
+    ensure_login_codes();
+    $hash = hash('sha256', $username . ':' . $code);
+    $pdo = db();
+    $pdo->prepare('DELETE FROM login_codes WHERE username = :username OR expires_at < UTC_TIMESTAMP()')
+        ->execute(['username' => $username]);
+    $expires = gmdate('Y-m-d H:i:s', time() + ($validMinutes * 60));
+    $pdo->prepare(
+        'INSERT INTO login_codes (code_hash, username, expires_at) VALUES (:hash, :username, :expires)'
+    )->execute([
+        'hash' => $hash,
+        'username' => $username,
+        'expires' => $expires,
+    ]);
+}
+
+function login_code_verify(string $username, string $code): bool
+{
+    $username = resolve_username($username);
+    $code = preg_replace('/\s+/', '', $code) ?? '';
+    if (!preg_match('/^\d{6}$/', $code)) {
+        return false;
+    }
+    ensure_login_codes();
+    $hash = hash('sha256', $username . ':' . $code);
+    $pdo = db();
+    $stmt = $pdo->prepare(
+        'SELECT username FROM login_codes WHERE code_hash = :hash AND username = :username AND expires_at > UTC_TIMESTAMP() LIMIT 1'
+    );
+    $stmt->execute(['hash' => $hash, 'username' => $username]);
+    if ($stmt->fetchColumn()) {
+        $pdo->prepare('DELETE FROM login_codes WHERE username = :username')->execute(['username' => $username]);
+        return true;
+    }
+    return false;
 }
