@@ -11,9 +11,9 @@ Este módulo implementa el sistema de reservas web conectado a **Google Calendar
    - Osteopatía: Norberto.
    - Acupuntura y posturología: María.
    - RPG, neurodinamia y manipulaciones viscerales (método Barral): ambos.
-   - Los horarios de cada uno viven en `PRACTITIONER_HOURS` (`booking-engine.js`). Mientras estén en `null`, se ofrece lun–vie 08:00–19:00.
+   - Los horarios de cada uno viven en `PRACTITIONER_HOURS` (`booking-engine.js`). Mientras estén en `null`, se ofrece lun–vie 08:00–19:30.
 3. **Franja Horaria y Días de Atención:**
-   - Lunes a viernes hábiles entre las **08:00 y las 19:00 hs** (zona horaria `America/Argentina/Buenos_Aires`).
+   - Lunes a viernes hábiles entre las **08:00 y las 19:30 hs** (zona horaria `America/Argentina/Buenos_Aires`).
    - Sábados, domingos y feriados nacionales de Argentina están **bloqueados determinísticamente** (0 slots).
 4. **Anti-Colisión Determinista (Unicidad del Profesional):**
    - El profesional atiende de forma individual: una llamada de 10 min no colisiona con un turno de 60 min, ni con citas previas ni con bloqueos administrativos (`🚫 [BLOQUEADO]`).
@@ -56,7 +56,7 @@ Valida:
 - [x] Bloqueo de turnos directos a pacientes de primera vez.
 - [x] Habilitación de sesiones a pacientes habituales.
 - [x] Exclusión de fines de semana y feriados nacionales.
-- [x] Límites de la franja horaria (08:00 a 19:00 hs).
+- [x] Límites de la franja horaria (08:00 a 19:30 hs).
 - [x] No-solapamiento entre llamadas y sesiones de 1 hora.
 - [x] Buffer de 2 horas para turnos en el día.
 - [x] Formato canónico de títulos y descripciones de Google Calendar.

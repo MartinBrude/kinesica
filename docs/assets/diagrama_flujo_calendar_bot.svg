@@ -67,7 +67,7 @@
     <!-- Behind the scenes rules -->
     <rect x="15" y="225" width="210" height="95" rx="10" fill="#183B2D"/>
     <text x="25" y="245" fill="#D8F3DC" font-size="11" font-weight="700">🛡️ Filtros de Clara:</text>
-    <text x="25" y="263" fill="#B7E4C7" font-size="10">• Lee huecos libres (08 a 19 hs)</text>
+    <text x="25" y="263" fill="#B7E4C7" font-size="10">• Lee huecos libres (08 a 19:30 hs)</text>
     <text x="25" y="279" fill="#B7E4C7" font-size="10">• Hold 10 min anti-colisión</text>
     <text x="25" y="295" fill="#B7E4C7" font-size="10">• Ignora bloqueos y vacaciones</text>
     <text x="25" y="311" fill="#B7E4C7" font-size="10">• Solo lee 'consultorio'</text>

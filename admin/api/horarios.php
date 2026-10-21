@@ -348,6 +348,7 @@ Por favor, respondé con la letra de la opción que necesitás:
 _(Escribí la letra de la opción deseada, por ejemplo *A* o *C*)_",
         'opt_a_text' => 'Para coordinar o consultar turnos, ingresá a nuestra turnera online: https://kinesica.com.ar/agendar 📅',
         'opt_b_text' => 'Kinésica queda en Charcas 3889, Piso 5º B, Palermo, CABA (entre Scalabrini Ortiz y Aráoz). 📍',
+        'opt_c_text' => "💳 *Honorarios y Cobertura*\n• *Honorarios:* {honorario_atm} para ATM (bruxismo / dolor mandibular) y {honorario_general} para el resto de las consultas (kinesiología general, osteopatía, RPG, etc.). Las sesiones son individuales y de 60 minutos.\n• *Medios de pago:* Se puede abonar en {medios_pago}.\n• *Cobertura:* Atendemos de forma particular. Al finalizar tu sesión te entregamos la factura oficial para que puedas presentarla en tu prepaga u obra social y solicitar el reintegro correspondiente según tu plan 📄.",
         'opt_d_text' => "Indumentaria para la sesión:\n• Ropa interior o pantalón corto para los varones.\n• Ropa interior con corpiño tradicional (no deportivo), malla de 2 piezas o calza corta para las mujeres.\nSi sos menor, vení acompañado/a por un mayor 🙌.",
         'cancellation_policy' => 'Te recordamos que los turnos pueden cancelarse o reprogramarse con un mínimo de 24 horas de anticipación 🙌.',
         'confirmation_notes' => 'Por favor asistir con puntualidad exacta al horario asignado. El consultorio cuenta con una única camilla y no dispone de sala de espera.',

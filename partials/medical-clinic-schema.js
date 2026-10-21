@@ -57,7 +57,7 @@
       }
     ],
     "openingHours": [
-      "Mo-Fr 08:00-19:00"
+      "Mo-Fr 08:00-19:30"
     ],
     "openingHoursSpecification": [
       {
@@ -70,7 +70,7 @@
           "Friday"
         ],
         "opens": "08:00",
-        "closes": "19:00"
+        "closes": "19:30"
       }
     ],
     "medicalSpecialty": [
@@ -349,7 +349,7 @@
       "ratingValue": 5,
       "bestRating": 5,
       "worstRating": 1,
-      "ratingCount": 32
+      "ratingCount": 35
     }
   },
   "en": {
@@ -403,7 +403,7 @@
       }
     ],
     "openingHours": [
-      "Mo-Fr 08:00-19:00"
+      "Mo-Fr 08:00-19:30"
     ],
     "openingHoursSpecification": [
       {
@@ -416,7 +416,7 @@
           "Friday"
         ],
         "opens": "08:00",
-        "closes": "19:00"
+        "closes": "19:30"
       }
     ],
     "medicalSpecialty": [
@@ -695,7 +695,7 @@
       "ratingValue": 5,
       "bestRating": 5,
       "worstRating": 1,
-      "ratingCount": 32
+      "ratingCount": 35
     }
   },
   "fr": {
@@ -749,7 +749,7 @@
       }
     ],
     "openingHours": [
-      "Mo-Fr 08:00-19:00"
+      "Mo-Fr 08:00-19:30"
     ],
     "openingHoursSpecification": [
       {
@@ -762,7 +762,7 @@
           "Friday"
         ],
         "opens": "08:00",
-        "closes": "19:00"
+        "closes": "19:30"
       }
     ],
     "medicalSpecialty": [
@@ -1041,7 +1041,7 @@
       "ratingValue": 5,
       "bestRating": 5,
       "worstRating": 1,
-      "ratingCount": 32
+      "ratingCount": 35
     }
   },
   "pt": {
@@ -1095,7 +1095,7 @@
       }
     ],
     "openingHours": [
-      "Mo-Fr 08:00-19:00"
+      "Mo-Fr 08:00-19:30"
     ],
     "openingHoursSpecification": [
       {
@@ -1108,7 +1108,7 @@
           "Friday"
         ],
         "opens": "08:00",
-        "closes": "19:00"
+        "closes": "19:30"
       }
     ],
     "medicalSpecialty": [
@@ -1383,7 +1383,7 @@
       "ratingValue": 5,
       "bestRating": 5,
       "worstRating": 1,
-      "ratingCount": 32
+      "ratingCount": 35
     }
   }
 };

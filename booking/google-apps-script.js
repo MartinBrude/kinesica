@@ -30,7 +30,9 @@ const SESSION_BUFFER_HOURS = 2; // Para turnos presenciales de 1h: mínimo 2 hor
 const SAME_DAY_BUFFER_HOURS = 2; // Compatibilidad retroactiva
 const MAX_BOOKING_DAYS = 60; // Máximo 60 días de anticipación para turnos
 
-// Horarios semanales por profesional (0 domingo … 6 sábado)
+// FALLBACK TÉCNICO de horarios (0 domingo … 6 sábado). La única fuente real es el admin
+// (settings.php → practitioner_hours), que se lee en runtime con fetchAdminPractitionerHours().
+// Este objeto solo se usa si settings.php no responde y no hay caché.
 const PRACTITIONER_HOURS = {
   norberto: {
     1: [{ start: "17:30", end: "19:30" }], // Lunes 17:30 a 19:30 hs
@@ -46,21 +48,67 @@ const PRACTITIONER_HOURS = {
   }
 };
 
-function resolveActivePractitionerHours(customHoursRaw) {
-  if (customHoursRaw) {
+const ADMIN_SETTINGS_URL_DEFAULT = "https://www.kinesica.com.ar/admin/api/settings.php";
+const ADMIN_HOURS_CACHE_KEY = "admin_practitioner_hours_v1";
+const ADMIN_HOURS_CACHE_SECONDS = 120;
+
+function isValidHoursObject(h) {
+  return Boolean(h && typeof h === "object" && (h.norberto || h.maria));
+}
+
+/** Lee practitioner_hours del admin (settings.php) con caché corta. Devuelve null si falla. */
+let ADMIN_HOURS_MEMO; // memo por ejecución (evita refetch en un rango de días)
+
+function fetchAdminPractitionerHours() {
+  if (ADMIN_HOURS_MEMO !== undefined) return ADMIN_HOURS_MEMO;
+  ADMIN_HOURS_MEMO = fetchAdminPractitionerHoursUncached();
+  return ADMIN_HOURS_MEMO;
+}
+
+function fetchAdminPractitionerHoursUncached() {
+  let cache = null;
+  try {
+    cache = CacheService.getScriptCache();
+    const cached = cache.get(ADMIN_HOURS_CACHE_KEY);
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      if (isValidHoursObject(parsed)) return parsed;
+    }
+  } catch (e) {}
+  try {
+    const url = PropertiesService.getScriptProperties().getProperty("SETTINGS_URL") || ADMIN_SETTINGS_URL_DEFAULT;
+    const res = UrlFetchApp.fetch(url + (url.indexOf("?") === -1 ? "?" : "&") + "_t=" + Date.now(), { muteHttpExceptions: true });
+    if (res.getResponseCode() !== 200) return null;
+    const data = JSON.parse(res.getContentText());
+    const hours = data && data.practitioner_hours;
+    if (!isValidHoursObject(hours)) return null;
+    try { if (cache) cache.put(ADMIN_HOURS_CACHE_KEY, JSON.stringify(hours), ADMIN_HOURS_CACHE_SECONDS); } catch (e) {}
+    return hours;
+  } catch (e) {
+    return null;
+  }
+}
+
+/**
+ * Horarios vigentes: 1) admin (settings.php), 2) los que mandó la web (solo para mostrar slots,
+ * nunca para validar una reserva), 3) fallback técnico PRACTITIONER_HOURS.
+ */
+function resolveActivePractitionerHours(customHoursRaw, opts) {
+  const adminHours = fetchAdminPractitionerHours();
+  if (adminHours) return adminHours;
+  const allowClientHours = !(opts && opts.forBooking);
+  if (allowClientHours && customHoursRaw) {
     try {
       const parsed = typeof customHoursRaw === "string" ? JSON.parse(customHoursRaw) : customHoursRaw;
-      if (parsed && typeof parsed === "object" && (parsed.norberto || parsed.maria)) {
-        return parsed;
-      }
+      if (isValidHoursObject(parsed)) return parsed;
     } catch (e) {}
   }
   return PRACTITIONER_HOURS;
 }
 
-function getGasWorkingWindows(practitionerId, dayOfWeek, customHoursRaw) {
+function getGasWorkingWindows(practitionerId, dayOfWeek, customHoursRaw, opts) {
   if (dayOfWeek === 0 || dayOfWeek === 6) return [];
-  const activeHours = resolveActivePractitionerHours(customHoursRaw);
+  const activeHours = resolveActivePractitionerHours(customHoursRaw, opts);
   const dayKey = String(dayOfWeek);
   if (practitionerId && activeHours[practitionerId]) {
     return activeHours[practitionerId][dayKey] || activeHours[practitionerId][dayOfWeek] || [];
@@ -572,7 +620,8 @@ function handleBookAppointment(payload) {
   const targetDate = parseArgentinaDate(dateStr, "12:00");
   const dayOfWeek = targetDate.getUTCDay();
   const practitionerId = payload.practitionerId || "";
-  const windows = getGasWorkingWindows(practitionerId, dayOfWeek, payload.hours);
+  // Reserva: nunca se confía en los horarios enviados por el navegador.
+  const windows = getGasWorkingWindows(practitionerId, dayOfWeek, null, { forBooking: true });
   const timeParts = timeStr.split(":").map(Number);
   const reqMin = timeParts[0] * 60 + timeParts[1];
   const fitsWindow = windows.some(function(w) {

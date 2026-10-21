@@ -11,7 +11,7 @@ Languages: es-AR, en, fr, pt
 Contact: +54 (11) 6156-4311
 Email: norberto1712@gmail.com
 Address: Charcas 3889, Palermo, CABA
-Hours: lunes a viernes, 08:00–19:00
+Hours: lunes a viernes, 08:00–19:30
 Llms-small: https://www.kinesica.com.ar/llms-small.txt
 Llms-txt: https://www.kinesica.com.ar/llms.txt
 Llms-full: https://www.kinesica.com.ar/llms-full.txt

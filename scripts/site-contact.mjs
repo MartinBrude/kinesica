@@ -45,7 +45,7 @@ export const FOUNDER = {
  */
 export const OPENING_HOURS = {
   opens: "08:00",
-  closes: "19:00",
+  closes: "19:30",
   days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
 };
 

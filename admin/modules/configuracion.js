@@ -7,6 +7,7 @@
  * 4. Honorarios y Medios de Pago
  */
 
+import { DEFAULT_OPT_C_TEXT, renderOptCText } from "./menu-texts.js?v=1";
 import { api } from "./api.js?v=77";
 import { escapeHtml, dialogAlert, dialogConfirm } from "./dom.js?v=78";
 import { loadHorariosFromServer } from "./horarios.js?v=1";
@@ -24,6 +25,7 @@ const configSections = document.querySelectorAll(".config-subpanel");
 const inputMenuWelcome = document.querySelector("#cfg-menu-welcome");
 const inputOptA = document.querySelector("#cfg-opt-a");
 const inputOptB = document.querySelector("#cfg-opt-b");
+const inputOptC = document.querySelector("#cfg-opt-c");
 const inputOptD = document.querySelector("#cfg-opt-d");
 const inputCancellation = document.querySelector("#cfg-cancellation-policy");
 const inputConfirmation = document.querySelector("#cfg-confirmation-notes");
@@ -75,6 +77,7 @@ Para ver los días y horarios disponibles en tiempo real con Norberto o María y
   opt_b_text: `📍 *Kinésica Consultorio*
 • *Ubicación:* Charcas 3889, Piso 5º B, Palermo, CABA (entre Scalabrini Ortiz y Aráoz, a metros de Av. Santa Fe y estación Scalabrini Ortiz del Subte D).
 • *Google Maps:* https://maps.google.com/?q=Charcas+3889+Palermo+CABA`,
+  opt_c_text: DEFAULT_OPT_C_TEXT,
   opt_d_text: `👕 *Indumentaria para la sesión:*
 • Ropa interior o pantalón corto para los varones.
 • Ropa interior con corpiño tradicional (no deportivo), malla de 2 piezas o calza corta para las mujeres.
@@ -258,6 +261,7 @@ function renderTexts(data) {
   if (inputMenuWelcome) inputMenuWelcome.value = data.menu_welcome || DEFAULT_CLARA_TEXTS.menu_welcome;
   if (inputOptA) inputOptA.value = data.opt_a_text || DEFAULT_CLARA_TEXTS.opt_a_text;
   if (inputOptB) inputOptB.value = data.opt_b_text || DEFAULT_CLARA_TEXTS.opt_b_text;
+  if (inputOptC) inputOptC.value = data.opt_c_text || DEFAULT_CLARA_TEXTS.opt_c_text;
   if (inputOptD) inputOptD.value = data.opt_d_text || DEFAULT_CLARA_TEXTS.opt_d_text;
   if (inputCancellation) inputCancellation.value = (typeof data.cancellation_policy === "string" && data.cancellation_policy.trim()) ? data.cancellation_policy : DEFAULT_CLARA_TEXTS.cancellation_policy;
   if (inputConfirmation) inputConfirmation.value = (typeof data.confirmation_notes === "string" && data.confirmation_notes.trim()) ? data.confirmation_notes : DEFAULT_CLARA_TEXTS.confirmation_notes;
@@ -404,6 +408,7 @@ export function initConfiguracionModule(callbacks = {}) {
         menu_welcome: inputMenuWelcome?.value?.trim() || DEFAULT_CLARA_TEXTS.menu_welcome,
         opt_a_text: inputOptA?.value?.trim() || DEFAULT_CLARA_TEXTS.opt_a_text,
         opt_b_text: inputOptB?.value?.trim() || DEFAULT_CLARA_TEXTS.opt_b_text,
+        opt_c_text: inputOptC?.value?.trim() || DEFAULT_CLARA_TEXTS.opt_c_text,
         opt_d_text: inputOptD?.value?.trim() || DEFAULT_CLARA_TEXTS.opt_d_text,
         cancellation_policy: inputCancellation?.value?.trim() || DEFAULT_CLARA_TEXTS.cancellation_policy,
         confirmation_notes: inputConfirmation?.value?.trim() || DEFAULT_CLARA_TEXTS.confirmation_notes,
@@ -645,9 +650,10 @@ function handleChatUserInput(inputRaw) {
 
   // Opciones A a E
   if (norm === "a" || norm.startsWith("opcion a")) {
-    chatSubmenu = "turnos";
+    chatSubmenu = null;
+    const optA = inputOptA?.value?.trim() || currentTexts.opt_a_text || DEFAULT_CLARA_TEXTS.opt_a_text;
     setTimeout(() => {
-      appendChatMessage("📅 *Gestión de Turnos - Kinésica*\n\nPor favor elegí una opción respondiendo *1* o *2*:\n\n*1.* 📅 Agendar un nuevo turno (enlace web)\n*2.* 📋 Consultar o cancelar mis turnos actuales\n\n_(Respondé *1* o *2*, o escribí *MENU* para volver al menú principal)_", "bot");
+      appendChatMessage(optA, "bot");
     }, 450);
     return;
   }
@@ -666,10 +672,8 @@ function handleChatUserInput(inputRaw) {
     const atmVal = parseInt(document.querySelector("#input-fee-atm")?.value, 10) || 65000;
     const genVal = parseInt(document.querySelector("#input-fee-general")?.value, 10) || 75000;
     const payVal = document.querySelector("#input-fee-payment-methods")?.value?.trim() || "Efectivo o transferencia bancaria";
-    const atmStr = `$${atmVal.toLocaleString("es-AR")}`;
-    const genStr = `$${genVal.toLocaleString("es-AR")}`;
-
-    const feeMsg = `💳 *Honorarios y Cobertura*\n• *Consulta y Sesión ATM:* ${atmStr}\n• *Kinesiología General / RPG / Osteopatía:* ${genStr}\n• *Formas de pago:* ${payVal}\n\nAtendemos de forma particular y emitimos factura oficial para reintegro con tu obra social o prepaga.\n\nEscribí *MENU* para volver al menú principal.`;
+    const optC = inputOptC?.value?.trim() || currentTexts.opt_c_text || DEFAULT_CLARA_TEXTS.opt_c_text;
+    const feeMsg = renderOptCText(optC, { atm: atmVal, general: genVal, payment_methods: payVal });
     setTimeout(() => {
       appendChatMessage(feeMsg, "bot");
     }, 450);
