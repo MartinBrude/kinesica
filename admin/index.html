@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/admin/styles.css?v=109">
-  <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1792619805">
+  <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1792620211">
   <script>
     (function () {
       try {
@@ -161,121 +161,92 @@
 
       <div class="dashboard-grid">
         <!-- 1. Historias Clínicas ATM -->
-        <article class="dash-card">
-          <div>
-            <div class="dash-card-header">
-              <div class="dash-icon-box blue" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-              </div>
-              <div class="dash-card-meta">
-                <div class="dash-card-title">
-                  <span>Historias Clínicas ATM</span>
-                </div>
-                <p class="dash-card-desc">
-                  Evaluación clínica CDI-TTM, rangos de apertura articular, escala EVA, evolución sesión a sesión y reportes institucionales.
-                </p>
-              </div>
+        <article class="dash-card" id="dash-card-fichas" role="button" tabindex="0" aria-label="Abrir Historias Clínicas ATM">
+          <div class="dash-card-header">
+            <div class="dash-icon-box blue" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
             </div>
-          </div>
-          <div class="dash-card-actions">
-            <button type="button" class="btn green" id="dash-btn-fichas">Ver Fichas</button>
-            <button type="button" class="btn light" id="dash-btn-nueva-ficha">+ Nueva Sesión</button>
+            <div class="dash-card-meta">
+              <div class="dash-card-title">
+                <span>Historias Clínicas ATM</span>
+                <span class="dash-card-arrow" aria-hidden="true">→</span>
+              </div>
+              <p class="dash-card-desc">
+                Evaluación clínica CDI-TTM, rangos de apertura articular, escala EVA, evolución sesión a sesión y reportes institucionales.
+              </p>
+            </div>
           </div>
         </article>
 
         <!-- 2. Base de Pacientes -->
-        <article class="dash-card">
-          <div>
-            <div class="dash-card-header">
-              <div class="dash-icon-box teal" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-              </div>
-              <div class="dash-card-meta">
-                <div class="dash-card-title">
-                  <span>Directorio de Pacientes</span>
-                </div>
-                <p class="dash-card-desc">
-                  Base centralizada de pacientes, teléfonos de WhatsApp verificados, motivos de consulta y primeras sesiones.
-                </p>
-              </div>
+        <article class="dash-card" id="dash-card-pacientes" role="button" tabindex="0" aria-label="Abrir Directorio de Pacientes">
+          <div class="dash-card-header">
+            <div class="dash-icon-box teal" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
             </div>
-          </div>
-          <div class="dash-card-actions">
-            <button type="button" class="btn green" id="dash-btn-pacientes">Ver Pacientes</button>
-            <button type="button" class="btn light" id="dash-btn-nuevo-paciente">+ Nuevo Paciente</button>
+            <div class="dash-card-meta">
+              <div class="dash-card-title">
+                <span>Directorio de Pacientes</span>
+                <span class="dash-card-arrow" aria-hidden="true">→</span>
+              </div>
+              <p class="dash-card-desc">
+                Base centralizada de pacientes, teléfonos de WhatsApp verificados, motivos de consulta y primeras sesiones.
+              </p>
+            </div>
           </div>
         </article>
 
         <!-- 3. Agendar Turnos -->
-        <article class="dash-card">
-          <div>
-            <div class="dash-card-header">
-              <div class="dash-icon-box amber" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-              </div>
-              <div class="dash-card-meta">
-                <div class="dash-card-title">
-                  <span>Agendar Turnos</span>
-                </div>
-                <p class="dash-card-desc">
-                  Coordinación de citas presenciales en tiempo real con Google Calendar y turnera oficial de Kinésica sin colisiones.
-                </p>
-              </div>
+        <article class="dash-card" id="dash-card-agendar" role="button" tabindex="0" data-booking-open aria-label="Abrir Turnera para Agendar Turnos">
+          <div class="dash-card-header">
+            <div class="dash-icon-box amber" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
             </div>
-          </div>
-          <div class="dash-card-actions">
-            <button type="button" class="btn green" id="dash-btn-agendar-modal" data-booking-open title="Abrir agenda de turnos">
-              📅 Abrir Turnera
-            </button>
+            <div class="dash-card-meta">
+              <div class="dash-card-title">
+                <span>Agendar Turnos</span>
+                <span class="dash-card-arrow" aria-hidden="true">→</span>
+              </div>
+              <p class="dash-card-desc">
+                Coordinación de citas presenciales en tiempo real con Google Calendar y turnera oficial de Kinésica sin colisiones.
+              </p>
+            </div>
           </div>
         </article>
 
         <!-- 4. Consultorio: Horarios y Honorarios -->
-        <article class="dash-card">
-          <div>
-            <div class="dash-card-header">
-              <div class="dash-icon-box blue" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-              </div>
-              <div class="dash-card-meta">
-                <div class="dash-card-title">
-                  <span>Consultorio</span>
-                </div>
-                <p class="dash-card-desc">
-                  Ocupación semanal de la camilla, franjas de atención de María y Norberto, y aranceles vigentes por sesión.
-                </p>
-              </div>
+        <article class="dash-card" id="dash-card-consultorio" role="button" tabindex="0" aria-label="Abrir Gestión de Consultorio">
+          <div class="dash-card-header">
+            <div class="dash-icon-box blue" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
             </div>
-          </div>
-          <div class="dash-card-actions">
-            <button type="button" class="btn green" id="dash-btn-consultorio" title="Abrir gestión del consultorio">
-              🕒 Ver Consultorio
-            </button>
+            <div class="dash-card-meta">
+              <div class="dash-card-title">
+                <span>Consultorio</span>
+                <span class="dash-card-arrow" aria-hidden="true">→</span>
+              </div>
+              <p class="dash-card-desc">
+                Ocupación semanal de la camilla, franjas de atención de María y Norberto, y aranceles vigentes por sesión.
+              </p>
+            </div>
           </div>
         </article>
 
         <!-- 5. Clara WhatsApp & Mensajes -->
-        <article class="dash-card">
-          <div>
-            <div class="dash-card-header">
-              <div class="dash-icon-box green" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-              </div>
-              <div class="dash-card-meta">
-                <div class="dash-card-title">
-                  <span>Clara & Mensajes</span>
-                </div>
-                <p class="dash-card-desc">
-                  Mensajes de bienvenida en WhatsApp, recordatorios automáticos (24hs), políticas de cancelación y simulador en vivo.
-                </p>
-              </div>
+        <article class="dash-card" id="dash-card-clara" role="button" tabindex="0" aria-label="Abrir Clara WhatsApp y Mensajes">
+          <div class="dash-card-header">
+            <div class="dash-icon-box green" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
             </div>
-          </div>
-          <div class="dash-card-actions">
-            <button type="button" class="btn green" id="dash-btn-clara" title="Abrir Clara y Mensajes">
-              💬 Ver Clara & Mensajes
-            </button>
-            <button type="button" id="dash-btn-config-general" hidden aria-hidden="true"></button>
+            <div class="dash-card-meta">
+              <div class="dash-card-title">
+                <span>Clara & Mensajes</span>
+                <span class="dash-card-arrow" aria-hidden="true">→</span>
+              </div>
+              <p class="dash-card-desc">
+                Mensajes de bienvenida en WhatsApp, recordatorios automáticos (24hs), políticas de cancelación y simulador en vivo.
+              </p>
+            </div>
           </div>
         </article>
       </div>
@@ -1470,7 +1441,7 @@
     })();
   </script>
   <div id="print-root"></div>
-  <script src="/booking/booking-bundle.min.js?v=1792619805" defer></script>
+  <script src="/booking/booking-bundle.min.js?v=1792620211" defer></script>
   <script type="module" src="/admin/app.js?v=130"></script>
 </body>
 </html>

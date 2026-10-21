@@ -117,34 +117,34 @@ export async function updateDashboardState() {
 }
 
 export function initDashboardModule(callbacks = {}) {
-  // Conectar acciones de las tarjetas
-  document.querySelector("#dash-btn-fichas")?.addEventListener("click", () => {
-    callbacks.onNavigate?.("fichas");
-  });
+  // Conectar acciones directas de las tarjetas
+  const attachCard = (sel, action) => {
+    const el = document.querySelector(sel);
+    if (!el) return;
+    el.addEventListener("click", () => action());
+    el.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        action();
+      }
+    });
+  };
 
-  document.querySelector("#dash-btn-nueva-ficha")?.addEventListener("click", () => {
-    callbacks.onNewFicha?.();
-  });
+  attachCard("#dash-card-fichas", () => callbacks.onNavigate?.("fichas"));
+  attachCard("#dash-card-pacientes", () => callbacks.onNavigate?.("pacientes"));
+  attachCard("#dash-card-consultorio", () => callbacks.onNavigate?.("consultorio"));
+  attachCard("#dash-card-clara", () => callbacks.onNavigate?.("clara"));
 
-  document.querySelector("#dash-btn-pacientes")?.addEventListener("click", () => {
-    callbacks.onNavigate?.("pacientes");
-  });
-
-  document.querySelector("#dash-btn-nuevo-paciente")?.addEventListener("click", () => {
-    callbacks.onNewPaciente?.();
-  });
-
-  document.querySelector("#dash-btn-consultorio")?.addEventListener("click", () => {
-    callbacks.onNavigate?.("consultorio");
-  });
-
-  document.querySelector("#dash-btn-clara")?.addEventListener("click", () => {
-    callbacks.onNavigate?.("clara");
-  });
-
-  document.querySelector("#dash-btn-config-general")?.addEventListener("click", () => {
-    callbacks.onNavigate?.("clara");
-  });
+  // Card de turnera (abre el modal accesible de reservas)
+  const agendarCard = document.querySelector("#dash-card-agendar");
+  if (agendarCard) {
+    agendarCard.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        agendarCard.click();
+      }
+    });
+  }
 
   // Toggle de Clara desde el dashboard
   claraToggleBtn?.addEventListener("click", async () => {

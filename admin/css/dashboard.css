@@ -78,23 +78,30 @@
   box-shadow: 0 2px 12px rgba(0, 40, 70, 0.04);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  justify-content: flex-start;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
   position: relative;
   overflow: hidden;
+  cursor: pointer;
+  user-select: none;
 }
 
 .dash-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 60, 95, 0.08);
-  border-color: #a3c4dc;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(0, 60, 95, 0.09);
+  border-color: #689cb8;
+}
+
+.dash-card:focus-visible {
+  outline: 2px solid #005f99;
+  outline-offset: 2px;
 }
 
 .dash-card-header {
   display: flex;
   align-items: flex-start;
-  gap: 14px;
-  margin-bottom: 14px;
+  gap: 16px;
+  margin-bottom: 0;
 }
 
 .dash-icon-box {
@@ -136,6 +143,20 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
+}
+
+.dash-card-arrow {
+  color: #94a3b8;
+  font-size: 18px;
+  line-height: 1;
+  transition: transform 0.2s ease, color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.dash-card:hover .dash-card-arrow {
+  transform: translateX(4px);
+  color: #005f99;
 }
 
 .dash-card-desc {
