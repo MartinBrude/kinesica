@@ -12,7 +12,8 @@ VALUES
 ('5491188990011', 'Nélida', 'Di Rienzo', 'Nélida Di Rienzo', 'Nélida', NULL, 'indistinto', 'Dolor articular y movilidad', 'whatsapp'),
 ('5491111223344', 'Leonor', 'Koszkin', 'Leonor Koszkin', 'Leonor', NULL, 'indistinto', 'Cervicalgia y tensión escapular', 'whatsapp'),
 ('5491199001122', 'Viviana', 'Dalamon', 'Viviana Dalamon', 'Viviana', NULL, 'maria', 'Rehabilitación de hombro', 'whatsapp'),
-('5491133221100', 'Sofía', 'Finocchio Gonzalez', 'Sofía Finocchio Gonzalez', 'Sofía', NULL, 'norberto', 'ATM y contractura cervical', 'whatsapp')
+('5491133221100', 'Sofía', 'Finocchio Gonzalez', 'Sofía Finocchio Gonzalez', 'Sofía', NULL, 'norberto', 'ATM y contractura cervical', 'whatsapp'),
+('5491188776655', 'Lucas', 'Méndez', 'Lucas Méndez', 'Lucas', '38123456', 'norberto', 'Lumbalgia aguda y postura', 'whatsapp')
 ON DUPLICATE KEY UPDATE
     nombre = VALUES(nombre),
     apellido = VALUES(apellido),

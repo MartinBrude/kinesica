@@ -185,7 +185,13 @@ function authenticate_request(?array &$bodyData = null): array
         return ['type' => 'api_token', 'user' => 'bot'];
     }
 
-    // 2. Chequeo por payload JSON (ej. n8n workflow live POST con campo 'secret')
+    // 2. Chequeo por GET query string (ej. n8n workflow de recordatorios: ?action=directory&secret=...)
+    $querySecret = (string) ($_GET['secret'] ?? $_GET['token'] ?? '');
+    if ($querySecret !== '' && $expectedSecret !== '' && hash_equals($expectedSecret, $querySecret)) {
+        return ['type' => 'api_token', 'user' => 'bot'];
+    }
+
+    // 3. Chequeo por payload JSON (ej. n8n workflow live POST con campo 'secret')
     $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
     if ($method === 'POST' || $method === 'PUT') {
         if ($bodyData === null) {
@@ -235,6 +241,22 @@ try {
             json_out(200, ['status' => 'success', 'directory' => $directory]);
         }
 
+        // Obtener email de paciente por teléfono
+        if ($action === 'get_email_by_phone') {
+            $rawPhone = (string) ($_GET['telefono'] ?? '');
+            $phone = clean_phone_number($rawPhone);
+            if ($phone !== '') {
+                $tel8 = substr($phone, -8);
+                $stmt = $pdo->prepare('SELECT email FROM pacientes WHERE telefono = :tel OR telefono LIKE :tel_end LIMIT 1');
+                $stmt->execute(['tel' => $phone, 'tel_end' => '%' . $tel8]);
+                $row = $stmt->fetch();
+                if ($row && !empty($row['email'])) {
+                    json_out(200, ['status' => 'success', 'email' => $row['email']]);
+                }
+            }
+            json_out(200, ['status' => 'not_found', 'email' => '']);
+        }
+
         // Listado de lista de espera
         if ($action === 'waitlist') {
             $stmt = $pdo->query('SELECT * FROM lista_espera WHERE estado = "activa" ORDER BY created_at DESC');
@@ -265,6 +287,32 @@ try {
             $data = read_json();
         }
         $action = $data['action'] ?? 'upsert';
+
+        // 0. Obtener email de paciente por teléfono
+        if ($action === 'get_email_by_phone') {
+            $rawPhone = (string) ($data['telefono'] ?? '');
+            $phone = clean_phone_number($rawPhone);
+            if ($phone !== '') {
+                $tel8 = substr($phone, -8);
+                $stmt = $pdo->prepare('SELECT email FROM pacientes WHERE telefono = :tel OR telefono LIKE :tel_end LIMIT 1');
+                $stmt->execute(['tel' => $phone, 'tel_end' => '%' . $tel8]);
+                $row = $stmt->fetch();
+                if ($row && !empty($row['email'])) {
+                    json_out(200, ['status' => 'success', 'email' => $row['email']]);
+                }
+            }
+            json_out(200, ['status' => 'not_found', 'email' => '']);
+        }
+
+        // Envío de correo de fallback / alerta (reemplazo de Apps Script)
+        if ($action === 'send_fallback_email' || $action === 'send_email') {
+            $to = trim((string) ($data['to'] ?? 'norberto1712@gmail.com'));
+            $subject = trim((string) ($data['subject'] ?? 'Aviso Kinésica'));
+            $html = (string) ($data['html'] ?? $data['body'] ?? '');
+            $text = (string) ($data['text'] ?? strip_tags($html));
+            $sent = send_html_mail($to, $subject, $html, $text);
+            json_out(200, ['status' => $sent ? 'success' : 'error', 'message' => $sent ? 'Correo enviado' : 'Error al enviar correo']);
+        }
 
         // 1. Alta o actualización de paciente (upsert por teléfono)
         if ($action === 'upsert' || $action === 'insert') {
