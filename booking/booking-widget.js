@@ -540,16 +540,16 @@
               <div class="kb-section-title">${this.t("dataTitle")}</div>
               <div class="kb-section-desc">${this.t("dataDesc")}</div>
 
-              <div class="kb-form-group" style="margin-bottom: 16px; padding: 12px; background: rgba(13, 92, 70, 0.04); border-radius: 8px; border: 1px solid rgba(13, 92, 70, 0.15);">
-                <label style="font-weight: 600; display: block; margin-bottom: 8px;">¿Para quién es el turno?</label>
-                <div style="display: flex; gap: 16px; flex-wrap: wrap;">
-                  <label style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px;">
+              <div class="kb-radio-group">
+                <div class="kb-radio-title">¿Para quién es el turno?</div>
+                <div class="kb-radio-options">
+                  <label class="kb-radio-label">
                     <input type="radio" name="kb-for-whom" id="kb-radio-self" value="self" checked>
                     <span>Para mí</span>
                   </label>
-                  <label style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px;">
+                  <label class="kb-radio-label">
                     <input type="radio" name="kb-for-whom" id="kb-radio-other" value="other">
-                    <span>Para otra persona (marido, hijo/a, familiar, etc.)</span>
+                    <span>Para otra persona</span>
                   </label>
                 </div>
               </div>
@@ -596,7 +596,7 @@
                 <div class="kb-form-group" id="kb-group-telefono">
                   <label for="kb-input-telefono" id="kb-label-telefono">${this.t("phone")}</label>
                   <input type="tel" id="kb-input-telefono" placeholder="${this.t("phonePh")}" required>
-                  <label id="kb-wrap-no-phone" style="display: none; align-items: center; gap: 6px; margin-top: 6px; font-size: 12px; color: #475569; cursor: pointer;">
+                  <label id="kb-wrap-no-phone" class="kb-checkbox-label" style="display: none; align-items: center; gap: 8px; margin-top: 8px; font-size: 13px; color: #475569; cursor: pointer;">
                     <input type="checkbox" id="kb-check-no-phone">
                     <span>No tiene celular propio (usar mi número de WhatsApp)</span>
                   </label>
