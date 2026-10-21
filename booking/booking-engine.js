@@ -651,12 +651,16 @@
   function formatCalendarSummary(data) {
     const isMenor = Boolean(data.isMenor);
     const nombre = data.nombre.trim();
-    const familiar = (data.nombreFamiliar || "").trim();
+    const familiar = (data.contactoNombre || data.nombreFamiliar || "").trim();
+    const esParaTercero = Boolean(data.esParaTercero || (data.contactoNombre && data.contactoNombre.trim()));
 
     const who = PRACTITIONERS[data.practitionerId];
     const whoTag = who ? `[${who.name.toUpperCase()}] ` : "";
     if (isMenor && familiar) {
       return `🩺 ${whoTag}[TURNO - MENOR] ${nombre} (Familiar: ${familiar})`;
+    }
+    if (esParaTercero && familiar) {
+      return `🩺 ${whoTag}[TURNO] ${nombre} (Agendó: ${familiar})`;
     }
     return `🩺 ${whoTag}[TURNO] ${nombre}`;
   }
@@ -671,12 +675,31 @@
       ? "No especifica"
       : (technique && !technique.internal ? technique.label : data.especialidad || data.motivo || "No especifica");
 
-    const parts = [
-      `📱 WhatsApp: ${data.telefono.trim()}`,
+    const parts = [];
+    if (data.esParaTercero && data.contactoNombre) {
+      const telPaciente = (data.telefono || "").trim();
+      const telContacto = (data.contactoTelefono || "").trim();
+      if (telPaciente && telContacto && telPaciente !== telContacto) {
+        parts.push(`📱 WhatsApp Paciente: ${telPaciente}`);
+        parts.push(`👤 Agendado por: ${data.contactoNombre.trim()} (WhatsApp: ${telContacto})`);
+        parts.push(`📱 WhatsApp: ${telPaciente} / ${telContacto}`);
+      } else {
+        parts.push(`📱 WhatsApp: ${telPaciente || telContacto}`);
+        parts.push(`👤 Agendado por: ${data.contactoNombre.trim()}`);
+      }
+      if (data.contactoNotas && data.contactoNotas.trim()) {
+        parts.push(`👥 Relación/Rol: ${data.contactoNotas.trim()}`);
+      }
+    } else {
+      parts.push(`📱 WhatsApp: ${data.telefono.trim()}`);
+    }
+
+    parts.push(
       `📧 Email: ${String(data.email || "").trim()}`,
       `🪪 DNI: ${data.dni ? data.dni.trim() : "No provisto"}`,
-      `🌿 Origen: Reserva Web Oficial Kinésica`,
-    ];
+      `🌿 Origen: Reserva Web Oficial Kinésica`
+    );
+
     if (who) parts.push(`👤 Profesional: ${who.name}`);
     if (data.techniqueId || data.especialidad) {
       parts.push(`📋 Especialidad: ${especialidad}`);

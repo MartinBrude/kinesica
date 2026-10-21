@@ -116,7 +116,10 @@ function filterPacientes() {
     const emailMatch = (p.email || "").toLowerCase().includes(query);
     const dniMatch = (p.dni || "").toLowerCase().includes(query);
     const motivoMatch = (p.motivo_consulta || "").toLowerCase().includes(query);
-    return nameMatch || phoneMatch || emailMatch || dniMatch || motivoMatch;
+    const contactMatch = (p.contacto_nombre || "").toLowerCase().includes(query) ||
+                         (p.contacto_telefono || "").includes(query) ||
+                         (p.contacto_notas || "").toLowerCase().includes(query);
+    return nameMatch || phoneMatch || emailMatch || dniMatch || motivoMatch || contactMatch;
   });
 }
 
@@ -140,6 +143,13 @@ export function renderPacientesTable() {
     // Nombre completo para mostrar como texto único
     const fullName = p.nombre_completo || [p.nombre, p.apellido].filter(Boolean).join(" ") || "Paciente";
 
+    // Badge si fue agendado por un tercero o tiene familiar/secretaria asociada
+    const contactBadge = (p.contacto_nombre || p.contacto_telefono)
+      ? `<div style="font-size: 11px; color: #475569; margin-top: 3px; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; display: inline-block;">
+           👤 Contacto / Agendó: <strong>${escapeHtml(p.contacto_nombre || "Familiar")}</strong>${p.contacto_telefono ? ` (${escapeHtml(formatDisplayPhone(p.contacto_telefono))})` : ""}${p.contacto_notas ? ` • ${escapeHtml(p.contacto_notas)}` : ""}
+         </div>`
+      : "";
+
     // Teléfono formateado para lectura y link a WhatsApp
     const rawTel = p.telefono || "";
     const waLink = rawTel ? `https://wa.me/${rawTel}` : "#";
@@ -148,6 +158,7 @@ export function renderPacientesTable() {
     tr.innerHTML = `
       <td>
         <strong style="color: var(--navy);">${escapeHtml(fullName)}</strong>
+        ${contactBadge}
       </td>
       <td>
         <div class="phone-cell">
@@ -280,6 +291,31 @@ function openFullPacienteModal(paciente = null) {
             <label>Notas Clínicas / Administrativas</label>
             <textarea id="modal-p-notas" rows="2" placeholder="Observaciones opcionales">${escapeHtml(paciente?.notas || "")}</textarea>
           </div>
+          <div style="margin-top: 12px; padding: 12px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+            <div style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 8px; text-transform: uppercase;">
+              👤 Contacto / Agendado por (opcional):
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 8px;">
+              <div class="paciente-modal-field">
+                <label>Nombre de quien agenda</label>
+                <input type="text" id="modal-p-contacto-nombre" value="${escapeHtml(paciente?.contacto_nombre || "")}" placeholder="Ej: Laura Gómez (familiar / cónyuge / secretaria)">
+              </div>
+              <div class="paciente-modal-field">
+                <label>Teléfono de contacto (WhatsApp)</label>
+                <input type="tel" id="modal-p-contacto-tel" value="${escapeHtml(paciente?.contacto_telefono || "")}" placeholder="Ej: 11 6123-4567 o 54911...">
+              </div>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div class="paciente-modal-field">
+                <label>Email de contacto</label>
+                <input type="email" id="modal-p-contacto-email" value="${escapeHtml(paciente?.contacto_email || "")}" placeholder="contacto@ejemplo.com">
+              </div>
+              <div class="paciente-modal-field">
+                <label>Relación o rol</label>
+                <input type="text" id="modal-p-contacto-notas" value="${escapeHtml(paciente?.contacto_notas || "")}" placeholder="Ej: Cónyuge, Hijo/a, Secretaria">
+              </div>
+            </div>
+          </div>
           <p id="modal-p-error" style="color:#dc2626; font-size:13px; margin:0;" hidden></p>
         </div>
         <div class="paciente-modal-footer">
@@ -309,6 +345,10 @@ function openFullPacienteModal(paciente = null) {
     const prof = backdrop.querySelector("#modal-p-prof").value;
     const motivo = backdrop.querySelector("#modal-p-motivo").value.trim();
     const notas = backdrop.querySelector("#modal-p-notas").value.trim();
+    const contactoNombre = backdrop.querySelector("#modal-p-contacto-nombre")?.value.trim() || "";
+    const contactoTel = backdrop.querySelector("#modal-p-contacto-tel")?.value.trim() || "";
+    const contactoEmail = backdrop.querySelector("#modal-p-contacto-email")?.value.trim() || "";
+    const contactoNotas = backdrop.querySelector("#modal-p-contacto-notas")?.value.trim() || "";
 
     if (!nombre || !apellido || !tel) {
       errorEl.textContent = "Nombre, apellido y teléfono son obligatorios.";
@@ -337,6 +377,10 @@ function openFullPacienteModal(paciente = null) {
             profesional_habitual: prof,
             motivo_consulta: motivo,
             notas: notas,
+            contacto_nombre: contactoNombre,
+            contacto_telefono: contactoTel,
+            contacto_email: contactoEmail,
+            contacto_notas: contactoNotas,
           }),
         });
       } else {
@@ -353,6 +397,10 @@ function openFullPacienteModal(paciente = null) {
             profesional_habitual: prof,
             motivo_consulta: motivo,
             notas: notas,
+            contacto_nombre: contactoNombre,
+            contacto_telefono: contactoTel,
+            contacto_email: contactoEmail,
+            contacto_notas: contactoNotas,
             origen: "admin",
           }),
         });

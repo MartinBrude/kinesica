@@ -540,8 +540,50 @@
               <div class="kb-section-title">${this.t("dataTitle")}</div>
               <div class="kb-section-desc">${this.t("dataDesc")}</div>
 
+              <div class="kb-form-group" style="margin-bottom: 16px; padding: 12px; background: rgba(13, 92, 70, 0.04); border-radius: 8px; border: 1px solid rgba(13, 92, 70, 0.15);">
+                <label style="font-weight: 600; display: block; margin-bottom: 8px;">¿Para quién es el turno?</label>
+                <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                  <label style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px;">
+                    <input type="radio" name="kb-for-whom" id="kb-radio-self" value="self" checked>
+                    <span>Para mí</span>
+                  </label>
+                  <label style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px;">
+                    <input type="radio" name="kb-for-whom" id="kb-radio-other" value="other">
+                    <span>Para otra persona (marido, hijo/a, familiar, etc.)</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Bloque condicional: Datos de quien agenda (cuando es para otra persona) -->
+              <div id="kb-third-party-box" style="display: none; margin-bottom: 16px; padding: 12px; background: #f0fdf4; border-radius: 8px; border: 1px solid #bbf7d0;">
+                <div style="font-size: 12px; font-weight: 700; color: #166534; margin-bottom: 10px; text-transform: uppercase;">
+                  Tus datos (quien agenda el turno):
+                </div>
+                <div class="kb-form-group" style="margin-bottom: 8px;">
+                  <label for="kb-input-contacto-nombre">Tu Nombre y Apellido *</label>
+                  <input type="text" id="kb-input-contacto-nombre" placeholder="Ej: Laura Gómez">
+                </div>
+                <div class="kb-form-row">
+                  <div class="kb-form-group" style="margin-bottom: 8px;">
+                    <label for="kb-input-contacto-telefono">Tu Teléfono / WhatsApp *</label>
+                    <input type="tel" id="kb-input-contacto-telefono" placeholder="${this.t("phonePh")}">
+                  </div>
+                  <div class="kb-form-group" style="margin-bottom: 8px;">
+                    <label for="kb-input-contacto-notas">Relación o rol (opcional)</label>
+                    <input type="text" id="kb-input-contacto-notas" placeholder="Ej: Cónyuge, Hijo/a, Secretaria">
+                  </div>
+                </div>
+                <small style="color: #64748b; font-size: 12px; display: block;">
+                  Te enviaremos el comprobante y podrás consultar o anular el turno cuando lo necesites.
+                </small>
+              </div>
+
+              <div id="kb-patient-header" style="display: none; font-size: 12px; font-weight: 700; color: #1e293b; margin-bottom: 10px; text-transform: uppercase;">
+                Datos del paciente (quien asistirá a la sesión):
+              </div>
+
               <div class="kb-form-group">
-                <label for="kb-input-nombre">${this.t("name")}</label>
+                <label for="kb-input-nombre" id="kb-label-nombre">${this.t("name")}</label>
                 <input type="text" id="kb-input-nombre" placeholder="${this.t("namePh")}" required>
               </div>
 
@@ -551,9 +593,13 @@
               </div>
 
               <div class="kb-form-row">
-                <div class="kb-form-group">
-                  <label for="kb-input-telefono">${this.t("phone")}</label>
+                <div class="kb-form-group" id="kb-group-telefono">
+                  <label for="kb-input-telefono" id="kb-label-telefono">${this.t("phone")}</label>
                   <input type="tel" id="kb-input-telefono" placeholder="${this.t("phonePh")}" required>
+                  <label id="kb-wrap-no-phone" style="display: none; align-items: center; gap: 6px; margin-top: 6px; font-size: 12px; color: #475569; cursor: pointer;">
+                    <input type="checkbox" id="kb-check-no-phone">
+                    <span>No tiene celular propio (usar mi número de WhatsApp)</span>
+                  </label>
                 </div>
                 <div class="kb-form-group">
                   <label for="kb-input-dni" id="kb-label-dni">${this.t("dni")}</label>
@@ -711,6 +757,55 @@
 
       // Envío final
       q("#kb-btn-submit").addEventListener("click", () => this.handleBookingSubmit());
+
+      // Soporte de agendamiento para otra persona (terceros / familiares / etc.)
+      const radioSelf = q("#kb-radio-self");
+      const radioOther = q("#kb-radio-other");
+      const thirdPartyBox = q("#kb-third-party-box");
+      const patientHeader = q("#kb-patient-header");
+      const wrapNoPhone = q("#kb-wrap-no-phone");
+      const checkNoPhone = q("#kb-check-no-phone");
+      const inputTel = q("#kb-input-telefono");
+      const inputContactTel = q("#kb-input-contacto-telefono");
+
+      const updateThirdPartyView = () => {
+        const isOther = radioOther && radioOther.checked;
+        if (thirdPartyBox) thirdPartyBox.style.display = isOther ? "block" : "none";
+        if (patientHeader) patientHeader.style.display = isOther ? "block" : "none";
+        if (wrapNoPhone) wrapNoPhone.style.display = isOther ? "inline-flex" : "none";
+        const labelNombre = q("#kb-label-nombre");
+        if (labelNombre) {
+          labelNombre.textContent = isOther ? "Nombre y Apellido de quien asistirá *" : this.t("name");
+        }
+        if (isOther && checkNoPhone && checkNoPhone.checked) {
+          if (inputTel && inputContactTel) {
+            inputTel.value = inputContactTel.value;
+            inputTel.disabled = true;
+          }
+        } else if (inputTel) {
+          inputTel.disabled = false;
+        }
+      };
+
+      if (radioSelf) radioSelf.addEventListener("change", updateThirdPartyView);
+      if (radioOther) radioOther.addEventListener("change", updateThirdPartyView);
+      if (checkNoPhone) {
+        checkNoPhone.addEventListener("change", () => {
+          if (checkNoPhone.checked && inputContactTel && inputTel) {
+            inputTel.value = inputContactTel.value;
+            inputTel.disabled = true;
+          } else if (inputTel) {
+            inputTel.disabled = false;
+          }
+        });
+      }
+      if (inputContactTel) {
+        inputContactTel.addEventListener("input", () => {
+          if (checkNoPhone && checkNoPhone.checked && inputTel) {
+            inputTel.value = inputContactTel.value;
+          }
+        });
+      }
 
 
     }
@@ -914,10 +1009,25 @@
       const btnNext2 = q("#kb-btn-next-2");
       if (btnNext2) btnNext2.disabled = true;
 
-      ["#kb-input-nombre", "#kb-input-email", "#kb-input-telefono", "#kb-input-dni"].forEach((sel) => {
+      ["#kb-input-nombre", "#kb-input-email", "#kb-input-telefono", "#kb-input-dni", "#kb-input-contacto-nombre", "#kb-input-contacto-telefono", "#kb-input-contacto-notas"].forEach((sel) => {
         const input = q(sel);
         if (input) input.value = "";
       });
+
+      const radioSelf = q("#kb-radio-self");
+      if (radioSelf) radioSelf.checked = true;
+      const thirdPartyBox = q("#kb-third-party-box");
+      if (thirdPartyBox) thirdPartyBox.style.display = "none";
+      const patientHeader = q("#kb-patient-header");
+      if (patientHeader) patientHeader.style.display = "none";
+      const wrapNoPhone = q("#kb-wrap-no-phone");
+      if (wrapNoPhone) wrapNoPhone.style.display = "none";
+      const checkNoPhone = q("#kb-check-no-phone");
+      if (checkNoPhone) checkNoPhone.checked = false;
+      const inputTel = q("#kb-input-telefono");
+      if (inputTel) inputTel.disabled = false;
+      const labelNombre = q("#kb-label-nombre");
+      if (labelNombre) labelNombre.textContent = this.t("name");
 
       const btnSubmit = q("#kb-btn-submit");
       if (btnSubmit) {
@@ -1310,10 +1420,43 @@
         return;
       }
 
+      const isOther = q("#kb-radio-other") && q("#kb-radio-other").checked;
+      let contactoNombre = "";
+      let contactoTelefono = "";
+      let contactoNotas = "";
+      if (isOther) {
+        contactoNombre = q("#kb-input-contacto-nombre") ? q("#kb-input-contacto-nombre").value.trim() : "";
+        contactoTelefono = q("#kb-input-contacto-telefono") ? q("#kb-input-contacto-telefono").value.trim() : "";
+        contactoNotas = q("#kb-input-contacto-notas") ? q("#kb-input-contacto-notas").value.trim() : "";
+
+        if (!contactoNombre) {
+          this.showError("Por favor ingresá tu nombre y apellido (quien agenda).");
+          return;
+        }
+        if (!contactoTelefono || contactoTelefono.replace(/\D/g, "").length < 8) {
+          this.showError("Por favor ingresá tu teléfono o WhatsApp de contacto.");
+          return;
+        }
+      }
+
       const nombre = q("#kb-input-nombre").value.trim();
       const email = q("#kb-input-email") ? q("#kb-input-email").value.trim() : "";
-      const telefono = q("#kb-input-telefono").value.trim();
+      let telefono = q("#kb-input-telefono").value.trim();
+      const checkNoPhone = q("#kb-check-no-phone");
+      if (isOther && (!telefono || (checkNoPhone && checkNoPhone.checked))) {
+        telefono = contactoTelefono;
+      }
       const dni = q("#kb-input-dni").value.trim();
+
+      if (!nombre) {
+        this.showError("Por favor ingresá el nombre y apellido del paciente.");
+        return;
+      }
+
+      if (!telefono || telefono.replace(/\D/g, "").length < 8) {
+        this.showError("Por favor ingresá un teléfono o celular de contacto válido.");
+        return;
+      }
 
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         this.showError(this.t("emailInvalid") || "Por favor ingresá un correo electrónico válido.");
@@ -1343,9 +1486,13 @@
         dni: dni,
         motivo: especialidad,
         especialidad: especialidad,
-        isMenor: false,
-        nombreFamiliar: "",
-        notas: "",
+        esParaTercero: isOther,
+        contactoNombre: contactoNombre,
+        contactoTelefono: contactoTelefono,
+        contactoNotas: contactoNotas,
+        isMenor: Boolean(isOther && (/hijo|menor/i.test(contactoNotas) || (checkNoPhone && checkNoPhone.checked))),
+        nombreFamiliar: contactoNombre,
+        notas: isOther ? `Agendado por: ${contactoNombre} (${contactoTelefono})` : "",
       };
 
       const btnSubmit = q("#kb-btn-submit");
@@ -1395,6 +1542,10 @@
             servicio: serviceName,
             motivo: payload.motivo || payload.especialidad,
             esMenor: Boolean(payload.isMenor),
+            esParaTercero: Boolean(payload.esParaTercero),
+            contactoNombre: payload.contactoNombre || "",
+            contactoTelefono: payload.contactoTelefono || "",
+            contactoNotas: payload.contactoNotas || "",
           }),
         });
       } catch (err) {

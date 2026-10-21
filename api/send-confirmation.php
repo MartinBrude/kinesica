@@ -116,11 +116,23 @@ if ($rawPhone !== '') {
                 $profVal = 'maria';
             }
 
+            $contactoNombre = !empty($data['contactoNombre']) ? trim((string) $data['contactoNombre']) : (!empty($data['contacto_nombre']) ? trim((string) $data['contacto_nombre']) : null);
+            $contactoTelRaw = !empty($data['contactoTelefono']) ? (string) $data['contactoTelefono'] : (!empty($data['contacto_telefono']) ? (string) $data['contacto_telefono'] : '');
+            $contactoTel = $contactoTelRaw !== '' ? preg_replace('/[^0-9]/', '', $contactoTelRaw) : null;
+            if ($contactoTel && str_starts_with($contactoTel, '549') && strlen($contactoTel) >= 12) {
+                $contactoTel = substr($contactoTel, 0, 13);
+            } elseif ($contactoTel && str_starts_with($contactoTel, '11') && strlen($contactoTel) === 10) {
+                $contactoTel = '549' . $contactoTel;
+            }
+            $contactoNotas = !empty($data['contactoNotas']) ? trim((string) $data['contactoNotas']) : (!empty($data['contacto_notas']) ? trim((string) $data['contacto_notas']) : null);
+
             $stmtUpsert = $db->prepare('
                 INSERT INTO pacientes (
-                    telefono, nombre, apellido, nombre_completo, nombre_pila, dni, email, profesional_habitual, motivo_consulta, origen
+                    telefono, nombre, apellido, nombre_completo, nombre_pila, dni, email, profesional_habitual, motivo_consulta, origen,
+                    contacto_nombre, contacto_telefono, contacto_notas
                 ) VALUES (
-                    :telefono, :nombre, :apellido, :nombre_completo, :nombre_pila, :dni, :email, :profesional, :motivo, "web"
+                    :telefono, :nombre, :apellido, :nombre_completo, :nombre_pila, :dni, :email, :profesional, :motivo, "web",
+                    :contacto_nombre, :contacto_telefono, :contacto_notas
                 )
                 ON DUPLICATE KEY UPDATE
                     nombre = CASE WHEN VALUES(nombre) != "" THEN VALUES(nombre) ELSE nombre END,
@@ -130,7 +142,10 @@ if ($rawPhone !== '') {
                     dni = COALESCE(VALUES(dni), dni),
                     email = COALESCE(VALUES(email), email),
                     profesional_habitual = CASE WHEN VALUES(profesional_habitual) != "indistinto" THEN VALUES(profesional_habitual) ELSE profesional_habitual END,
-                    motivo_consulta = COALESCE(VALUES(motivo_consulta), motivo_consulta)
+                    motivo_consulta = COALESCE(VALUES(motivo_consulta), motivo_consulta),
+                    contacto_nombre = COALESCE(VALUES(contacto_nombre), contacto_nombre),
+                    contacto_telefono = COALESCE(VALUES(contacto_telefono), contacto_telefono),
+                    contacto_notas = COALESCE(VALUES(contacto_notas), contacto_notas)
             ');
 
             $stmtUpsert->execute([
@@ -143,6 +158,9 @@ if ($rawPhone !== '') {
                 'email' => $email,
                 'profesional' => $profVal,
                 'motivo' => $motivoVal,
+                'contacto_nombre' => $contactoNombre,
+                'contacto_telefono' => $contactoTel,
+                'contacto_notas' => $contactoNotas,
             ]);
         }
     } catch (Throwable $e) {

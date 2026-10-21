@@ -512,6 +512,10 @@ function handleBookAppointment(payload) {
   const timeStr = payload.time; // HH:mm
   const isMenor = Boolean(payload.isMenor);
   const nombreFamiliar = (payload.nombreFamiliar || "").trim();
+  const esParaTercero = Boolean(payload.esParaTercero || payload.contactoNombre);
+  const contactoNombre = String(payload.contactoNombre || payload.nombreFamiliar || "").trim();
+  const contactoTelefono = String(payload.contactoTelefono || "").trim();
+  const contactoNotas = String(payload.contactoNotas || "").trim();
   const notas = (payload.notas || "").trim();
 
   if (appointmentType === "call") {
@@ -597,9 +601,12 @@ function handleBookAppointment(payload) {
   const practitionerNames = { norberto: "Norberto", maria: "María" };
   const whoName = practitionerNames[practitionerId] || "";
   const whoTag = whoName ? "[" + whoName.toUpperCase() + "] " : "";
-  const summary = (isMenor && nombreFamiliar)
-    ? "🩺 " + whoTag + "[TURNO - MENOR] " + nombre + " (Familiar: " + nombreFamiliar + ")"
-    : "🩺 " + whoTag + "[TURNO] " + nombre;
+  const familiarTitle = contactoNombre || nombreFamiliar;
+  const summary = (isMenor && familiarTitle)
+    ? "🩺 " + whoTag + "[TURNO - MENOR] " + nombre + " (Familiar: " + familiarTitle + ")"
+    : (esParaTercero && familiarTitle)
+      ? "🩺 " + whoTag + "[TURNO] " + nombre + " (Agendó: " + familiarTitle + ")"
+      : "🩺 " + whoTag + "[TURNO] " + nombre;
 
   const techniqueLabels = {
     osteopatia: "Osteopatía",
@@ -622,14 +629,28 @@ function handleBookAppointment(payload) {
   // 3. Construir descripción normalizada
   const descParts = [];
   if (whoName) descParts.push("👤 Profesional: " + whoName);
+
+  if (esParaTercero && familiarTitle) {
+    if (telefono && contactoTelefono && telefono !== contactoTelefono) {
+      descParts.push("📱 WhatsApp Paciente: " + telefono);
+      descParts.push("👤 Agendado por: " + familiarTitle + " (WhatsApp: " + contactoTelefono + ")");
+      descParts.push("📱 WhatsApp: " + telefono + " / " + contactoTelefono);
+    } else {
+      descParts.push("📱 WhatsApp: " + (telefono || contactoTelefono));
+      descParts.push("👤 Agendado por: " + familiarTitle);
+    }
+    if (contactoNotas) descParts.push("👥 Relación/Rol: " + contactoNotas);
+  } else {
+    descParts.push("📱 WhatsApp: " + telefono);
+  }
+
   descParts.push(
-    "📱 WhatsApp: " + telefono,
     "📧 Email: " + email,
     "🪪 DNI: " + dni,
     "🌿 Origen: Reserva Web Oficial Kinésica",
     "📋 Especialidad: " + especialidad
   );
-  if (isMenor && nombreFamiliar) descParts.push("👥 Adulto Responsable: " + nombreFamiliar);
+  if (isMenor && familiarTitle) descParts.push("👥 Adulto Responsable: " + familiarTitle);
   if (notas) descParts.push("💬 Notas: " + notas);
   const description = descParts.filter(Boolean).join(" | ");
 

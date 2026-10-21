@@ -13,12 +13,17 @@ CREATE TABLE IF NOT EXISTS pacientes (
     profesional_habitual ENUM('norberto', 'maria', 'indistinto') NOT NULL DEFAULT 'indistinto',
     motivo_consulta VARCHAR(255) DEFAULT NULL,
     notas TEXT DEFAULT NULL,
+    contacto_nombre VARCHAR(120) DEFAULT NULL,
+    contacto_telefono VARCHAR(20) DEFAULT NULL,
+    contacto_email VARCHAR(120) DEFAULT NULL,
+    contacto_notas VARCHAR(100) DEFAULT NULL,
     origen ENUM('whatsapp', 'web', 'admin') NOT NULL DEFAULT 'whatsapp',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_pacientes_tel (telefono),
     INDEX idx_pacientes_nombre (nombre_completo),
-    INDEX idx_pacientes_email (email)
+    INDEX idx_pacientes_email (email),
+    INDEX idx_pacientes_contacto_tel (contacto_telefono)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS lista_espera (

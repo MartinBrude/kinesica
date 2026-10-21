@@ -135,6 +135,19 @@ function ensure_pacientes_tables(PDO $pdo): void
             $pdo->exec("ALTER TABLE pacientes ADD email VARCHAR(120) DEFAULT NULL AFTER dni");
             $pdo->exec("ALTER TABLE pacientes ADD INDEX idx_pacientes_email (email)");
         }
+        if (!in_array('contacto_nombre', $cols, true)) {
+            $pdo->exec("ALTER TABLE pacientes ADD contacto_nombre VARCHAR(120) DEFAULT NULL AFTER notas");
+        }
+        if (!in_array('contacto_telefono', $cols, true)) {
+            $pdo->exec("ALTER TABLE pacientes ADD contacto_telefono VARCHAR(20) DEFAULT NULL AFTER contacto_nombre");
+            $pdo->exec("ALTER TABLE pacientes ADD INDEX idx_pacientes_contacto_tel (contacto_telefono)");
+        }
+        if (!in_array('contacto_email', $cols, true)) {
+            $pdo->exec("ALTER TABLE pacientes ADD contacto_email VARCHAR(120) DEFAULT NULL AFTER contacto_telefono");
+        }
+        if (!in_array('contacto_notas', $cols, true)) {
+            $pdo->exec("ALTER TABLE pacientes ADD contacto_notas VARCHAR(100) DEFAULT NULL AFTER contacto_email");
+        }
         // Poblar nombre y apellido si están vacíos dividiendo nombre_completo
         $pdo->exec("
             UPDATE pacientes 
@@ -268,7 +281,7 @@ try {
         if ($q !== '') {
             $stmt = $pdo->prepare('
                 SELECT * FROM pacientes 
-                WHERE nombre_completo LIKE :q OR nombre LIKE :q OR apellido LIKE :q OR telefono LIKE :q OR dni LIKE :q OR email LIKE :q
+                WHERE nombre_completo LIKE :q OR nombre LIKE :q OR apellido LIKE :q OR telefono LIKE :q OR dni LIKE :q OR email LIKE :q OR contacto_nombre LIKE :q OR contacto_telefono LIKE :q
                 ORDER BY nombre_completo ASC LIMIT 100
             ');
             $stmt->execute(['q' => "%$q%"]);
@@ -359,13 +372,26 @@ try {
             $notas = isset($data['notas']) ? trim((string) $data['notas']) : null;
             $origen = in_array($data['origen'] ?? '', ['whatsapp', 'web', 'admin'], true) ? $data['origen'] : 'whatsapp';
 
+            $contactoNombre = isset($data['contacto_nombre']) && trim((string) $data['contacto_nombre']) !== '' 
+                ? trim((string) $data['contacto_nombre']) 
+                : null;
+            $contactoTelRaw = (string) ($data['contacto_telefono'] ?? '');
+            $contactoTel = $contactoTelRaw !== '' ? clean_phone_number($contactoTelRaw) : null;
+            if ($contactoTel === '') $contactoTel = null;
+            $contactoEmail = isset($data['contacto_email']) && trim((string) $data['contacto_email']) !== '' 
+                ? trim((string) $data['contacto_email']) 
+                : null;
+            $contactoNotas = isset($data['contacto_notas']) && trim((string) $data['contacto_notas']) !== '' 
+                ? trim((string) $data['contacto_notas']) 
+                : null;
+
             $stmt = $pdo->prepare('
                 INSERT INTO pacientes (
                     telefono, nombre, apellido, nombre_completo, nombre_pila, dni, email, profesional_habitual, 
-                    motivo_consulta, notas, origen
+                    motivo_consulta, notas, origen, contacto_nombre, contacto_telefono, contacto_email, contacto_notas
                 ) VALUES (
                     :telefono, :nombre, :apellido, :nombre_completo, :nombre_pila, :dni, :email, :profesional_habitual, 
-                    :motivo_consulta, :notas, :origen
+                    :motivo_consulta, :notas, :origen, :contacto_nombre, :contacto_telefono, :contacto_email, :contacto_notas
                 )
                 ON DUPLICATE KEY UPDATE
                     nombre = CASE WHEN VALUES(nombre) != "" THEN VALUES(nombre) ELSE nombre END,
@@ -376,7 +402,11 @@ try {
                     email = COALESCE(VALUES(email), email),
                     profesional_habitual = CASE WHEN VALUES(profesional_habitual) != "indistinto" THEN VALUES(profesional_habitual) ELSE profesional_habitual END,
                     motivo_consulta = COALESCE(VALUES(motivo_consulta), motivo_consulta),
-                    notas = COALESCE(VALUES(notas), notas)
+                    notas = COALESCE(VALUES(notas), notas),
+                    contacto_nombre = COALESCE(VALUES(contacto_nombre), contacto_nombre),
+                    contacto_telefono = COALESCE(VALUES(contacto_telefono), contacto_telefono),
+                    contacto_email = COALESCE(VALUES(contacto_email), contacto_email),
+                    contacto_notas = COALESCE(VALUES(contacto_notas), contacto_notas)
             ');
 
             $stmt->execute([
@@ -391,6 +421,10 @@ try {
                 'motivo_consulta' => $motivo,
                 'notas' => $notas,
                 'origen' => $origen,
+                'contacto_nombre' => $contactoNombre,
+                'contacto_telefono' => $contactoTel,
+                'contacto_email' => $contactoEmail,
+                'contacto_notas' => $contactoNotas,
             ]);
 
             json_out(200, [
@@ -548,6 +582,12 @@ try {
             : 'indistinto';
         $motivo = !empty($data['motivo_consulta']) ? trim((string) $data['motivo_consulta']) : null;
         $notas = !empty($data['notas']) ? trim((string) $data['notas']) : null;
+        $contactoNombre = !empty($data['contacto_nombre']) ? trim((string) $data['contacto_nombre']) : null;
+        $contactoTelRaw = (string) ($data['contacto_telefono'] ?? '');
+        $contactoTel = $contactoTelRaw !== '' ? clean_phone_number($contactoTelRaw) : null;
+        if ($contactoTel === '') $contactoTel = null;
+        $contactoEmail = !empty($data['contacto_email']) ? trim((string) $data['contacto_email']) : null;
+        $contactoNotas = !empty($data['contacto_notas']) ? trim((string) $data['contacto_notas']) : null;
 
         $stmt = $pdo->prepare('
             UPDATE pacientes SET
@@ -560,7 +600,11 @@ try {
                 email = :email,
                 profesional_habitual = :prof,
                 motivo_consulta = :motivo,
-                notas = :notas
+                notas = :notas,
+                contacto_nombre = :contacto_nombre,
+                contacto_telefono = :contacto_telefono,
+                contacto_email = :contacto_email,
+                contacto_notas = :contacto_notas
             WHERE id = :id
         ');
         $stmt->execute([
@@ -574,6 +618,10 @@ try {
             'prof' => $profesional,
             'motivo' => $motivo,
             'notas' => $notas,
+            'contacto_nombre' => $contactoNombre,
+            'contacto_telefono' => $contactoTel,
+            'contacto_email' => $contactoEmail,
+            'contacto_notas' => $contactoNotas,
             'id' => $id
         ]);
 
