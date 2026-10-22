@@ -24,3 +24,8 @@ assert.match(botHash, /^[0-9a-f]{64}$/, "bot_token.sha256 debe ser un SHA-256 en
 assert.match(pac, /bot_token\.sha256/);
 assert.match(pac, /hash_equals\(\$expectedHash, hash\('sha256', \$token\)\)/);
 console.log("destinatarios: ok (sin números de prueba, sin seed, sin pisar mails, con límite)");
+for (const f of ["booking/google-apps-script.js", "booking/google-apps-script.min.js"]) {
+  const g = readFileSync(f, "utf8");
+  assert.ok(!g.includes("1362220846964898"), `${f} usa el Phone Number ID viejo`);
+  assert.ok(g.includes('"1340013275870491"'), `${f} debe usar el Phone Number ID 1340013275870491`);
+}

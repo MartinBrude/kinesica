@@ -12,7 +12,7 @@
  *    - SPREADSHEET_ID: "1kyGkYea0Iu_OrXxF-yONqhs2rG1O8YUWbbSmQe37GCk"
  *    - WHATSAPP_TOKEN: Token de Meta WhatsApp Cloud API para enviar alertas por WhatsApp a Norberto.
  *    - NORBERTO_PHONE: "541161564311" (opcional, valor por defecto).
- *    - WHATSAPP_PHONE_NUMBER_ID: "1362220846964898" (opcional, valor por defecto).
+ *    - WHATSAPP_PHONE_NUMBER_ID: "1340013275870491" (opcional, valor por defecto).
  *    - N8N_ALERT_WEBHOOK_URL: (Opcional) URL de webhook n8n para despacho vía n8n.
  * 4. Implementar -> Nueva implementación -> Tipo: "Aplicación web":
  *    - Ejecutar como: "Yo" (tu cuenta de Google con acceso al calendario).
@@ -55,7 +55,7 @@ const ADMIN_HOURS_CACHE_KEY = "admin_practitioner_hours_v1";
 const ADMIN_HOURS_CACHE_SECONDS = 120;
 // Última copia buena de los horarios del admin (persistente): se usa si settings.php no responde.
 const ADMIN_HOURS_LAST_GOOD_PROP = "ADMIN_HOURS_LAST_GOOD";
-const GAS_CODE_VERSION = "v18-admin-hours";
+const GAS_CODE_VERSION = "v19-phone-id";
 
 function isValidHoursObject(h) {
   return Boolean(h && typeof h === "object" && (h.norberto || h.maria));
@@ -950,7 +950,7 @@ function notifyPractitionerNewWebBooking(practitionerId, data) {
   const contact = resolvePractitionerContact(practitionerId);
   const props = PropertiesService.getScriptProperties();
   const token = props.getProperty("WHATSAPP_TOKEN") || props.getProperty("META_ACCESS_TOKEN");
-  const phoneId = props.getProperty("WHATSAPP_PHONE_NUMBER_ID") || "1362220846964898";
+  const phoneId = props.getProperty("WHATSAPP_PHONE_NUMBER_ID") || "1340013275870491";
   const n8nWebhookUrl = props.getProperty("N8N_ALERT_WEBHOOK_URL");
 
   const tipoDetalle = data.appointmentType === "session"

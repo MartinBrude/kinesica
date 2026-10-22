@@ -114,7 +114,7 @@ import {
   initPacientesModule,
   showPacientesView,
   hidePacientesView,
-} from "./modules/pacientes.js?v=2";
+} from "./modules/pacientes.js?v=3";
 
 import {
   initDashboardModule,

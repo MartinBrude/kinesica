@@ -5,6 +5,7 @@
 
 import { api } from "./api.js?v=77";
 import { escapeHtml, node, debounce, dialogAlert, dialogConfirm } from "./dom.js?v=78";
+import { phoneMatches } from "./phone-search.js?v=1";
 
 const viewPacientes = document.querySelector("#view-pacientes");
 const listEl = document.querySelector("#pacientes-list-tbody");
@@ -112,12 +113,12 @@ function filterPacientes() {
     const nameMatch = (p.nombre_completo || "").toLowerCase().includes(query) ||
                       (p.nombre || "").toLowerCase().includes(query) ||
                       (p.apellido || "").toLowerCase().includes(query);
-    const phoneMatch = (p.telefono || "").includes(query);
+    const phoneMatch = (p.telefono || "").includes(query) || phoneMatches(p.telefono, query);
     const emailMatch = (p.email || "").toLowerCase().includes(query);
     const dniMatch = (p.dni || "").toLowerCase().includes(query);
     const motivoMatch = (p.motivo_consulta || "").toLowerCase().includes(query);
     const contactMatch = (p.contacto_nombre || "").toLowerCase().includes(query) ||
-                         (p.contacto_telefono || "").includes(query) ||
+                         (p.contacto_telefono || "").includes(query) || phoneMatches(p.contacto_telefono, query) ||
                          (p.contacto_notas || "").toLowerCase().includes(query);
     return nameMatch || phoneMatch || emailMatch || dniMatch || motivoMatch || contactMatch;
   });
