@@ -8,7 +8,7 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const src = fs.readFileSync(path.join(root, "booking/google-apps-script.js"), "utf8");
 
-function load({ adminHours, status = 200, throws = false, events = [] }) {
+function load({ adminHours, status = 200, throws = false, events = [], props = {} }) {
   const calls = [];
   const store = {};
   const ctx = {
@@ -24,7 +24,16 @@ function load({ adminHours, status = 200, throws = false, events = [] }) {
       },
     },
     CacheService: { getScriptCache: () => ({ get: (k) => store[k] || null, put: (k, v) => { store[k] = v; } }) },
-    PropertiesService: { getScriptProperties: () => ({ getProperty: () => null }) },
+    PropertiesService: { getScriptProperties: () => ({ getProperty: (k) => (k in props ? props[k] : null) }) },
+    SpreadsheetApp: {
+      openById: () => ({
+        getActiveSheet: () => ({
+          getDataRange: () => ({
+            getValues: () => [["Nombre", "x", "Telefono"], ["Juana Pérez", "", "+54 9 11 2222-3333"]],
+          }),
+        }),
+      }),
+    },
     CalendarApp: {
       getCalendarById: () => ({
         getName: () => "consultorio",
@@ -117,6 +126,57 @@ test("get_slots_range tampoco expone eventos", () => {
   const body = ctx.doGet({ parameter: { action: "get_slots_range", from, to: from, practitioner: "maria" } }).text;
   assert.equal(JSON.parse(body).status, "success");
   assert.ok(!body.includes("Juana") && !body.includes("eventsDetected"));
+});
+
+// --- check_patient / get_directory exigen secret == GAS_API_SECRET ---
+const SECRET = "s".repeat(32);
+const leaks = (body) => body.includes("Juana") || body.includes("22223333") || body.includes("is_habitual") || body.includes("directory\"");
+const post = (ctx, obj) => ctx.doPost({ postData: { contents: JSON.stringify(obj) } }).text;
+
+test("sin GAS_API_SECRET configurado: unauthorized aunque se mande secret", () => {
+  const { ctx } = load({ adminHours: ALL_WEEK });
+  for (const body of [
+    ctx.doGet({ parameter: { action: "get_directory", secret: SECRET } }).text,
+    ctx.doGet({ parameter: { action: "check_patient", telefono: "1122223333", secret: SECRET } }).text,
+    post(ctx, { action: "check_patient", telefono: "1122223333", secret: SECRET }),
+  ]) {
+    assert.deepEqual(JSON.parse(body), { status: "error", message: "unauthorized" });
+    assert.ok(!leaks(body));
+  }
+});
+
+test("secret ausente o incorrecto: unauthorized sin datos", () => {
+  const { ctx } = load({ adminHours: ALL_WEEK, props: { GAS_API_SECRET: SECRET } });
+  for (const secret of [undefined, "", "x", SECRET.slice(1) + "t"]) {
+    const p = secret === undefined ? {} : { secret };
+    for (const body of [
+      ctx.doGet({ parameter: { action: "get_directory", ...p } }).text,
+      ctx.doGet({ parameter: { action: "check_patient", telefono: "1122223333", ...p } }).text,
+      post(ctx, { action: "check_patient", telefono: "1122223333", ...p }),
+    ]) {
+      assert.deepEqual(JSON.parse(body), { status: "error", message: "unauthorized" });
+      assert.ok(!leaks(body));
+    }
+  }
+});
+
+test("secret correcto: check_patient y get_directory responden como antes", () => {
+  const { ctx } = load({ adminHours: ALL_WEEK, props: { GAS_API_SECRET: SECRET } });
+  const dir = JSON.parse(ctx.doGet({ parameter: { action: "get_directory", secret: SECRET } }).text);
+  assert.equal(dir.status, "success");
+  assert.equal(dir.directory["juana perez"], "5491122223333");
+  const g = JSON.parse(ctx.doGet({ parameter: { action: "check_patient", telefono: "1122223333", secret: SECRET } }).text);
+  assert.equal(g.is_habitual, true);
+  assert.equal(g.nombre, "Juana Pérez");
+  const p = JSON.parse(post(ctx, { action: "check_patient", telefono: "1122223333", secret: SECRET }));
+  assert.equal(p.nombre, "Juana Pérez");
+});
+
+test("las demás acciones no piden secret", () => {
+  const { ctx } = load({ adminHours: ALL_WEEK, props: { GAS_API_SECRET: SECRET } });
+  const day = nextWeekday(7);
+  assert.equal(JSON.parse(ctx.doGet({ parameter: { action: "get_slots", date: day } }).text).status, "success");
+  assert.equal(JSON.parse(ctx.doGet({ parameter: { action: "ping" } }).text).status, "online");
 });
 
 console.log(`apps script horarios admin: ok (${n} pruebas)`);

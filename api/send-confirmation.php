@@ -5,6 +5,7 @@
  */
 
 header('Content-Type: application/json; charset=utf-8');
+require_once __DIR__ . '/confirmation-mail-lib.php';
 
 // Configuración CORS
 $allowedOrigins = [
@@ -190,15 +191,11 @@ function formatearFechaLegible($dateStr) {
 $fechaLegible = formatearFechaLegible($fechaRaw);
 $horaLegible = $horaRaw ? (strpos($horaRaw, 'hs') === false ? "{$horaRaw} hs" : $horaRaw) : '';
 
-// Condicionales del consultorio y lectura dinámica de políticas
-$runtimeSettingsFile = __DIR__ . '/../admin/api/settings.json';
-$customCancellationPolicy = 'Te recordamos que los turnos pueden cancelarse o reprogramarse con un mínimo de 24 horas de anticipación 🙌.';
-if (is_file($runtimeSettingsFile)) {
-    $rJson = json_decode(@file_get_contents($runtimeSettingsFile), true);
-    if (!empty($rJson['clara_texts']['cancellation_policy'])) {
-        $customCancellationPolicy = trim((string) $rJson['clara_texts']['cancellation_policy']);
-    }
-}
+// Textos del admin (settings.json = lo que sirve admin/api/settings.php), con fallback a los actuales.
+$runtimeSettings = kinesica_read_settings(__DIR__ . '/../admin/api/settings.json');
+$mailTexts = kinesica_mail_texts($runtimeSettings);
+$customCancellationPolicy = $mailTexts['cancellation_policy'];
+$practitionerIdRaw = trim((string) ($data['practitionerId'] ?? $data['practitioner_id'] ?? ''));
 
 $indicacionPuntualidad = $esMenor
     ? 'Al tratarse de un paciente menor de edad, recomendamos presentarse 5 a 10 minutos antes junto a un adulto responsable.'
@@ -307,16 +304,11 @@ $htmlContent = '
 
       <div class="card-guidelines">
         <div class="guidelines-title">Información importante para tu sesión</div>
-        <ul class="guidelines-list">
-          <li><strong>Puntualidad:</strong> ' . $indicacionPuntualidad . '</li>
-          <li><strong>Ropa adecuada:</strong> Concurrir con <em>ropa cómoda y flexible</em> (short o calza corta; si sos mujer, corpiño no deportivo) que permita evaluar la postura y la zona a tratar.</li>
-          <li><strong>Estudios previos:</strong> Traer estudios y derivación médica si los tuviese.</li>
-          <li><strong>Acompañantes:</strong> ' . $indicacionAcompaniante . '</li>
-        </ul>
+        ' . kinesica_guidelines_html($mailTexts['confirmation_notes'], $indicacionPuntualidad, $indicacionAcompaniante, $esMenor) . '
       </div>
 
       <p style="font-size: 13px; color: #64748b; margin-top: 18px;">
-        ' . htmlspecialchars($customCancellationPolicy) . '
+        ' . kinesica_text_to_html($customCancellationPolicy) . '
       </p>
     </div>
     <div class="footer">
@@ -350,6 +342,8 @@ $apiKey = trim((string) (
     ?: ($_SERVER['RESEND_API_KEY'] ?? $_ENV['RESEND_API_KEY'] ?? $localCfg['resend_api_key'] ?? '')
 ));
 
+$replyToEmail = kinesica_reply_to_email($practitionerIdRaw, $profesional, $runtimeSettings, $localCfg);
+
 if (!isset($subject)) {
     $subject = 'Confirmación de turno - ' . $fechaLegible . ($horaLegible ? ' (' . $horaLegible . ')' : '');
 }
@@ -361,7 +355,8 @@ if ($apiKey !== '') {
         'from'    => $resendFrom,
         'to'      => [$email],
         'subject' => $subject,
-        'html'    => $htmlContent
+        'html'    => $htmlContent,
+        'reply_to' => $replyToEmail
     ];
 
     $ch = curl_init('https://api.resend.com/emails');
@@ -397,7 +392,7 @@ $headers = implode("\r\n", [
     'MIME-Version: 1.0',
     'Content-Type: text/html; charset=UTF-8',
     'From: =?UTF-8?B?' . base64_encode('Kinésica') . '?= <' . $mailFrom . '>',
-    'Reply-To: Kinésica <norberto1712@gmail.com>',
+    'Reply-To: Kinésica <' . $replyToEmail . '>',
     'X-Mailer: PHP/' . phpversion()
 ]) . "\r\n";
 

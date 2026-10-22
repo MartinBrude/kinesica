@@ -133,6 +133,26 @@ const ARGENTINA_HOLIDAYS = [
   "2027-12-25"
 ];
 
+// TODO('revisar si hay llamadores externos de check_patient/get_directory')
+// check_patient y get_directory devuelven datos de pacientes: exigen `secret` == script property GAS_API_SECRET.
+function isAuthorizedSecret(params) {
+  let expected = null;
+  try {
+    expected = PropertiesService.getScriptProperties().getProperty("GAS_API_SECRET");
+  } catch (e) {
+    expected = null;
+  }
+  const given = params && params.secret != null ? String(params.secret) : "";
+  if (!expected || !given || given.length !== expected.length) return false;
+  let diff = 0;
+  for (let i = 0; i < expected.length; i++) diff |= expected.charCodeAt(i) ^ given.charCodeAt(i);
+  return diff === 0;
+}
+
+function unauthorizedResponse() {
+  return createJsonResponse({ status: "error", message: "unauthorized" }, 401);
+}
+
 function doGet(e) {
   try {
     const params = e ? e.parameter : {};
@@ -152,8 +172,10 @@ function doGet(e) {
     } else if (action === "book") {
       return handleBookAppointment(params);
     } else if (action === "check_patient") {
+      if (!isAuthorizedSecret(params)) return unauthorizedResponse();
       return handleCheckPatient(params);
     } else if (action === "get_directory") {
+      if (!isAuthorizedSecret(params)) return unauthorizedResponse();
       return handleGetDirectory();
     }
 
@@ -180,6 +202,7 @@ function doPost(e) {
     const action = payload.action || "book";
 
     if (action === "check_patient") {
+      if (!isAuthorizedSecret(payload)) return unauthorizedResponse();
       return handleCheckPatient(payload);
     } else if (action === "book") {
       return handleBookAppointment(payload);
