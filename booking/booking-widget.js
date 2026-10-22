@@ -60,6 +60,10 @@
       email: "Correo Electrónico *",
       emailPh: "Ej: juan@ejemplo.com",
       emailInvalid: "El correo electrónico ingresado no es válido.",
+      errContactName: "Por favor ingresá tu nombre y apellido (quien agenda).",
+      errContactPhone: "Por favor ingresá tu teléfono o WhatsApp de contacto.",
+      errPatientName: "Por favor ingresá el nombre y apellido del paciente.",
+      errPhone: "Por favor ingresá un teléfono o celular de contacto válido.",
       phone: "Teléfono / WhatsApp *",
       phonePh: "Ej: +54 9 11 0000-0000",
       dni: "DNI / Documento *",
@@ -143,6 +147,10 @@
       email: "Email Address *",
       emailPh: "e.g. jane@example.com",
       emailInvalid: "Please enter a valid email address.",
+      errContactName: "Please enter your full name (the person booking).",
+      errContactPhone: "Please enter your phone or WhatsApp number.",
+      errPatientName: "Please enter the patient's full name.",
+      errPhone: "Please enter a valid phone or mobile number.",
       phone: "Phone / WhatsApp *",
       phonePh: "e.g. +54 9 11 0000-0000",
       dni: "ID document *",
@@ -226,6 +234,10 @@
       email: "Adresse e-mail *",
       emailPh: "Ex. : nom@exemple.com",
       emailInvalid: "Veuillez saisir une adresse e-mail valide.",
+      errContactName: "Veuillez saisir votre nom et prénom (la personne qui réserve).",
+      errContactPhone: "Veuillez saisir votre téléphone ou WhatsApp.",
+      errPatientName: "Veuillez saisir le nom et prénom du patient.",
+      errPhone: "Veuillez saisir un numéro de téléphone ou de portable valide.",
       phone: "Téléphone / WhatsApp *",
       phonePh: "Ex. : +54 9 11 0000-0000",
       dni: "Pièce d'identité *",
@@ -309,6 +321,10 @@
       email: "E-mail *",
       emailPh: "Ex.: nome@exemplo.com",
       emailInvalid: "Por favor, insira um e-mail válido.",
+      errContactName: "Por favor, informe seu nome e sobrenome (quem agenda).",
+      errContactPhone: "Por favor, informe seu telefone ou WhatsApp.",
+      errPatientName: "Por favor, informe o nome e sobrenome do paciente.",
+      errPhone: "Por favor, informe um telefone ou celular válido.",
       phone: "Telefone / WhatsApp *",
       phonePh: "Ex.: +54 9 11 0000-0000",
       dni: "Documento *",
@@ -562,11 +578,13 @@
                 <div class="kb-form-group" style="margin-bottom: 8px;">
                   <label for="kb-input-contacto-nombre">Tu Nombre y Apellido *</label>
                   <input type="text" id="kb-input-contacto-nombre" placeholder="Ej: Laura Gómez">
+                  <div class="kb-field-error" id="kb-err-contacto-nombre" role="alert" aria-live="assertive" hidden></div>
                 </div>
                 <div class="kb-form-row">
                   <div class="kb-form-group" style="margin-bottom: 8px;">
                     <label for="kb-input-contacto-telefono">Tu Teléfono / WhatsApp *</label>
                     <input type="tel" id="kb-input-contacto-telefono" placeholder="${this.t("phonePh")}">
+                  <div class="kb-field-error" id="kb-err-contacto-telefono" role="alert" aria-live="assertive" hidden></div>
                   </div>
                   <div class="kb-form-group" style="margin-bottom: 8px;">
                     <label for="kb-input-contacto-notas">Relación o rol (opcional)</label>
@@ -585,17 +603,20 @@
               <div class="kb-form-group">
                 <label for="kb-input-nombre" id="kb-label-nombre">${this.t("name")}</label>
                 <input type="text" id="kb-input-nombre" placeholder="${this.t("namePh")}" required>
+                  <div class="kb-field-error" id="kb-err-nombre" role="alert" aria-live="assertive" hidden></div>
               </div>
 
               <div class="kb-form-group">
                 <label for="kb-input-email">${this.t("email")}</label>
                 <input type="email" id="kb-input-email" placeholder="${this.t("emailPh")}" required autocomplete="email">
+                  <div class="kb-field-error" id="kb-err-email" role="alert" aria-live="assertive" hidden></div>
               </div>
 
               <div class="kb-form-row">
                 <div class="kb-form-group" id="kb-group-telefono">
                   <label for="kb-input-telefono" id="kb-label-telefono">${this.t("phone")}</label>
                   <input type="tel" id="kb-input-telefono" placeholder="${this.t("phonePh")}" required>
+                  <div class="kb-field-error" id="kb-err-telefono" role="alert" aria-live="assertive" hidden></div>
                   <label id="kb-wrap-no-phone" class="kb-checkbox-label" style="display: none; align-items: center; gap: 8px; margin-top: 8px; font-size: 13px; color: #475569; cursor: pointer;">
                     <input type="checkbox" id="kb-check-no-phone">
                     <span>No tiene celular propio (usar mi número de WhatsApp)</span>
@@ -604,6 +625,7 @@
                 <div class="kb-form-group">
                   <label for="kb-input-dni" id="kb-label-dni">${this.t("dni")}</label>
                   <input type="text" id="kb-input-dni" placeholder="${this.t("dniPh")}">
+                  <div class="kb-field-error" id="kb-err-dni" role="alert" aria-live="assertive" hidden></div>
                 </div>
               </div>
 
@@ -757,6 +779,14 @@
 
       // Envío final
       q("#kb-btn-submit").addEventListener("click", () => this.handleBookingSubmit());
+
+      // Errores por campo: se ocultan recién cuando el usuario modifica ESE campo.
+      BookingWidget.FORM_FIELDS.forEach((field) => {
+        const input = q(`#kb-input-${field}`);
+        if (input) input.addEventListener("input", () => this.clearFieldError(field));
+      });
+      const noPhoneToggle = q("#kb-check-no-phone");
+      if (noPhoneToggle) noPhoneToggle.addEventListener("change", () => this.clearFieldError("telefono"));
 
       // Soporte de agendamiento para otra persona (terceros / familiares / etc.)
       const radioSelf = q("#kb-radio-self");
@@ -1014,6 +1044,7 @@
         if (input) input.value = "";
       });
 
+      this.clearAllFieldErrors();
       const radioSelf = q("#kb-radio-self");
       if (radioSelf) radioSelf.checked = true;
       const thirdPartyBox = q("#kb-third-party-box");
@@ -1429,14 +1460,6 @@
         contactoTelefono = q("#kb-input-contacto-telefono") ? q("#kb-input-contacto-telefono").value.trim() : "";
         contactoNotas = q("#kb-input-contacto-notas") ? q("#kb-input-contacto-notas").value.trim() : "";
 
-        if (!contactoNombre) {
-          this.showError("Por favor ingresá tu nombre y apellido (quien agenda).");
-          return;
-        }
-        if (!contactoTelefono || contactoTelefono.replace(/\D/g, "").length < 8) {
-          this.showError("Por favor ingresá tu teléfono o WhatsApp de contacto.");
-          return;
-        }
       }
 
       const nombre = q("#kb-input-nombre").value.trim();
@@ -1448,18 +1471,13 @@
       }
       const dni = q("#kb-input-dni").value.trim();
 
-      if (!nombre) {
-        this.showError("Por favor ingresá el nombre y apellido del paciente.");
-        return;
-      }
-
-      if (!telefono || telefono.replace(/\D/g, "").length < 8) {
-        this.showError("Por favor ingresá un teléfono o celular de contacto válido.");
-        return;
-      }
-
-      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        this.showError(this.t("emailInvalid") || "Por favor ingresá un correo electrónico válido.");
+      const telefonoPropio = q("#kb-input-telefono").value.trim();
+      const usesContactPhone = Boolean(isOther && (!telefonoPropio || (checkNoPhone && checkNoPhone.checked)));
+      const fieldErrors = BookingWidget.validateContactForm({
+        isOther, contactoNombre, contactoTelefono, nombre, email, telefono, usesContactPhone,
+      }, (key) => this.t(key));
+      if (fieldErrors.length) {
+        this.showFieldErrors(fieldErrors);
         return;
       }
 
@@ -1647,7 +1665,70 @@
       banner.textContent = "";
       banner.classList.remove("visible");
     }
+
+    /** Muestra cada error junto a su campo (borde, aria-invalid, aria-describedby, role=alert) y enfoca el primero. */
+    showFieldErrors(errors) {
+      this.clearAllFieldErrors();
+      let first = null;
+      (errors || []).forEach(({ field, message }) => {
+        const input = this.container.querySelector(`#kb-input-${field}`);
+        const box = this.container.querySelector(`#kb-err-${field}`);
+        if (box) {
+          box.textContent = message;
+          box.hidden = false;
+        }
+        if (input) {
+          input.classList.add("kb-input-invalid");
+          input.setAttribute("aria-invalid", "true");
+          if (box) input.setAttribute("aria-describedby", box.id);
+          if (!first && !input.disabled) first = input;
+        }
+      });
+      if (first) {
+        try { first.focus({ preventScroll: true }); } catch (e) { first.focus(); }
+        if (first.scrollIntoView) first.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+
+    clearFieldError(field) {
+      const input = this.container.querySelector(`#kb-input-${field}`);
+      const box = this.container.querySelector(`#kb-err-${field}`);
+      if (box) {
+        box.textContent = "";
+        box.hidden = true;
+      }
+      if (input) {
+        input.classList.remove("kb-input-invalid");
+        input.removeAttribute("aria-invalid");
+        if (box && input.getAttribute("aria-describedby") === box.id) input.removeAttribute("aria-describedby");
+      }
+    }
+
+    clearAllFieldErrors() {
+      BookingWidget.FORM_FIELDS.forEach((field) => this.clearFieldError(field));
+    }
   }
+
+  /** Campos del formulario "Completa tus datos" con mensaje de error propio. */
+  BookingWidget.FORM_FIELDS = ["contacto-nombre", "contacto-telefono", "nombre", "email", "telefono", "dni"];
+
+  /**
+   * Validación pura del formulario de datos (sin DOM). Devuelve TODOS los errores, en el orden visual.
+   * El DNI no es obligatorio hoy, así que no genera error.
+   */
+  BookingWidget.validateContactForm = function (v, t) {
+    const errors = [];
+    const digits = (x) => String(x || "").replace(/\D/g, "").length;
+    if (v.isOther) {
+      if (!v.contactoNombre) errors.push({ field: "contacto-nombre", message: t("errContactName") });
+      if (!v.contactoTelefono || digits(v.contactoTelefono) < 8) errors.push({ field: "contacto-telefono", message: t("errContactPhone") });
+    }
+    if (!v.nombre) errors.push({ field: "nombre", message: t("errPatientName") });
+    if (!v.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email)) errors.push({ field: "email", message: t("emailInvalid") });
+    // Si el teléfono del paciente sale del de quien agenda, el error ya está marcado en ese campo.
+    if (!v.usesContactPhone && (!v.telefono || digits(v.telefono) < 8)) errors.push({ field: "telefono", message: t("errPhone") });
+    return errors;
+  };
 
   return BookingWidget;
 });
