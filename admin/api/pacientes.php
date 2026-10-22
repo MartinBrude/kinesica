@@ -170,6 +170,24 @@ function authenticate_request(?array &$bodyData = null): array
     $config = cfg();
     $expectedSecret = (string) ($config['webhook_secret'] ?? $config['install_token'] ?? '');
 
+    // Token del bot (n8n): solo se versiona su SHA-256 (bot_token.sha256); el valor vive en secrets.env del bot.
+    $botTokenOk = static function (string $token): bool {
+        if (strlen($token) < 32) {
+            return false;
+        }
+        $hashFile = __DIR__ . '/bot_token.sha256';
+        $expectedHash = is_file($hashFile) ? strtolower(trim((string) file_get_contents($hashFile))) : '';
+        return strlen($expectedHash) === 64 && hash_equals($expectedHash, hash('sha256', $token));
+    };
+    $headerToken = (string) ($_SERVER['HTTP_X_WEBHOOK_SECRET'] ?? '');
+    $authHeaderRaw = (string) ($_SERVER['HTTP_AUTHORIZATION'] ?? '');
+    if (str_starts_with($authHeaderRaw, 'Bearer ')) {
+        $headerToken = $headerToken !== '' ? $headerToken : trim(substr($authHeaderRaw, 7));
+    }
+    if ($headerToken !== '' && $botTokenOk($headerToken)) {
+        return ['type' => 'api_token', 'user' => 'bot'];
+    }
+
     // 1. Chequeo por Header de API o Webhook
     $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
     if (str_starts_with($authHeader, 'Bearer ')) {

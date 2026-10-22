@@ -19,4 +19,8 @@ assert.ok(!conf.includes("email = COALESCE(VALUES(email), email)"), "la turnera 
 assert.match(conf, /email = CASE WHEN email IS NULL OR email = "" THEN VALUES\(email\) ELSE email END/);
 assert.match(conf, /kinesica_confirmation_rate_ok\('email:/, "falta el límite por mail");
 assert.match(conf, /http_response_code\(429\)/);
+const botHash = readFileSync("admin/api/bot_token.sha256", "utf8").trim();
+assert.match(botHash, /^[0-9a-f]{64}$/, "bot_token.sha256 debe ser un SHA-256 en hex");
+assert.match(pac, /bot_token\.sha256/);
+assert.match(pac, /hash_equals\(\$expectedHash, hash\('sha256', \$token\)\)/);
 console.log("destinatarios: ok (sin números de prueba, sin seed, sin pisar mails, con límite)");
