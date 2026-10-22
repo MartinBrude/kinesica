@@ -7,11 +7,11 @@
  * 4. Honorarios y Medios de Pago
  */
 
-import { DEFAULT_OPT_C_TEXT, renderOptCText } from "./menu-texts.js?v=1";
+import { DEFAULT_OPT_C_TEXT, renderOptCText, REMINDER_TEMPLATE_TEXT, renderReminderPreview } from "./menu-texts.js?v=2";
 import { api } from "./api.js?v=77";
 import { escapeHtml, dialogAlert, dialogConfirm } from "./dom.js?v=78";
-import { loadHorariosFromServer } from "./horarios.js?v=1";
-import { loadHonorarios } from "./honorarios.js?v=1";
+import { loadHorariosFromServer } from "./horarios.js?v=2";
+import { loadHonorarios } from "./honorarios.js?v=2";
 
 const viewConsultorio = document.querySelector("#view-consultorio");
 const viewClara = document.querySelector("#view-clara");
@@ -270,11 +270,11 @@ function renderTexts(data) {
   if (inputCancellation) inputCancellation.value = (typeof data.cancellation_policy === "string" && data.cancellation_policy.trim()) ? data.cancellation_policy : DEFAULT_CLARA_TEXTS.cancellation_policy;
   if (inputConfirmation) inputConfirmation.value = (typeof data.confirmation_notes === "string" && data.confirmation_notes.trim()) ? data.confirmation_notes : DEFAULT_CLARA_TEXTS.confirmation_notes;
 
-  const rText = (typeof data.reminder_text === "string" && data.reminder_text.trim()) ? data.reminder_text : DEFAULT_CLARA_TEXTS.reminder_text;
   const rNotes = (typeof data.reminder_notes === "string" && data.reminder_notes.trim()) ? data.reminder_notes : DEFAULT_CLARA_TEXTS.reminder_notes;
-  if (inputReminderText) inputReminderText.value = rText;
+  // El texto del recordatorio lo fija la plantilla de Meta: se muestra sólo lectura, nunca el reminder_text guardado.
+  if (inputReminderText) inputReminderText.value = REMINDER_TEMPLATE_TEXT;
+  if (inputClaraReminderText) inputClaraReminderText.value = REMINDER_TEMPLATE_TEXT;
   if (inputReminderNotes) inputReminderNotes.value = rNotes;
-  if (inputClaraReminderText) inputClaraReminderText.value = rText;
   if (inputClaraReminderNotes) inputClaraReminderNotes.value = rNotes;
   updateReminderPreview();
 
@@ -289,15 +289,8 @@ function renderTexts(data) {
 }
 
 function updateReminderPreview() {
-  const tmpl = inputReminderText?.value?.trim() || inputClaraReminderText?.value?.trim() || DEFAULT_CLARA_TEXTS.reminder_text;
   const notes = inputReminderNotes?.value?.trim() || inputClaraReminderNotes?.value?.trim() || DEFAULT_CLARA_TEXTS.reminder_notes;
-  const preview = tmpl
-    .replace(/\{nombre\}/gi, "Lucas")
-    .replace(/\{horario\}/gi, "16:00 hs")
-    .replace(/\{hora\}/gi, "16:00 hs")
-    .replace(/\{tipo_cita\}/gi, "sesión en el consultorio")
-    .replace(/\{indicaciones\}/gi, notes);
-
+  const preview = renderReminderPreview(notes);
   if (reminderPreview) reminderPreview.textContent = preview;
   if (claraReminderPreview) claraReminderPreview.textContent = preview;
 }
@@ -324,7 +317,6 @@ function readFormTexts() {
     opt_d_text: inputOptD?.value?.trim() || DEFAULT_CLARA_TEXTS.opt_d_text,
     cancellation_policy: inputCancellation?.value?.trim() || DEFAULT_CLARA_TEXTS.cancellation_policy,
     confirmation_notes: inputConfirmation?.value?.trim() || DEFAULT_CLARA_TEXTS.confirmation_notes,
-    reminder_text: inputReminderText?.value?.trim() || inputClaraReminderText?.value?.trim() || DEFAULT_CLARA_TEXTS.reminder_text,
     reminder_notes: inputReminderNotes?.value?.trim() || inputClaraReminderNotes?.value?.trim() || DEFAULT_CLARA_TEXTS.reminder_notes,
   };
 }
@@ -501,8 +493,6 @@ export function initConfiguracionModule(callbacks = {}) {
     if (target && source) target.value = source.value;
     updateReminderPreview();
   };
-  inputReminderText?.addEventListener("input", () => syncAndPreview(inputReminderText, inputClaraReminderText));
-  inputClaraReminderText?.addEventListener("input", () => syncAndPreview(inputClaraReminderText, inputReminderText));
   inputReminderNotes?.addEventListener("input", () => syncAndPreview(inputReminderNotes, inputClaraReminderNotes));
   inputClaraReminderNotes?.addEventListener("input", () => syncAndPreview(inputClaraReminderNotes, inputReminderNotes));
 

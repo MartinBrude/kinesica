@@ -20,3 +20,22 @@ export function renderOptCText(template, fees = {}) {
     .replace(/\{honorario_general\}/g, general)
     .replace(/\{medios_pago\}/g, pay);
 }
+
+// Recordatorio de 24 h: lo envía n8n ("Kinesica - Recordatorios 24h" → "Send WhatsApp Reminder") con la plantilla
+// de Meta recordatorio_turno_kinesica. Variables de la plantilla: {{1}} nombre de pila, {{2}} "sesión en el
+// consultorio" (fijo), {{3}} hora, {{4}} indicaciones (editables en el admin). El texto no se edita desde aquí.
+export const REMINDER_TEMPLATE_NAME = "recordatorio_turno_kinesica";
+export const REMINDER_TIPO_CITA = "sesión en el consultorio";
+export const REMINDER_TEMPLATE_TEXT = `¡Hola {nombre}! 🌿 Te escribo desde Kinésica para recordarte tu ${REMINDER_TIPO_CITA} programada para mañana a las {horario}.
+
+{indicaciones}
+
+Por favor confirmá tu asistencia seleccionando una de las opciones a continuación 🙌:`;
+
+/** Vista previa fiel a lo que se envía: sólo cambian nombre, hora e indicaciones. */
+export function renderReminderPreview(indicaciones, { nombre = "Lucas", horario = "16:00 hs" } = {}) {
+  return REMINDER_TEMPLATE_TEXT
+    .replace("{nombre}", nombre)
+    .replace("{horario}", horario)
+    .replace("{indicaciones}", String(indicaciones || "").trim());
+}

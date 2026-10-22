@@ -722,9 +722,10 @@
               <label for="cfg-clara-reminder-text" style="display:block; font-weight:600; margin-bottom:8px; font-size:14px; color:var(--navy);">
                 Texto del Mensaje de Recordatorio
               </label>
-              <textarea id="cfg-clara-reminder-text" rows="4" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical;"></textarea>
-              <small style="color:var(--muted); font-size:12px; margin-top:6px; display:block;">
-                Variables automáticas disponibles: <code>{nombre}</code> (nombre de pila), <code>{horario}</code> (hora del turno), <code>{indicaciones}</code> (pautas del consultorio).
+              <textarea id="cfg-clara-reminder-text" rows="7" readonly aria-readonly="true" aria-describedby="cfg-clara-reminder-text-note" tabindex="-1" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:none; background:var(--bg); color:var(--muted); cursor:default;"></textarea>
+              <small id="cfg-clara-reminder-text-note" style="color:var(--muted); font-size:12px; margin-top:6px; display:block;">
+                Este texto lo fija la plantilla aprobada por WhatsApp (Meta) y no se puede editar desde aquí. Lo que sí podés cambiar son las indicaciones de abajo.
+                <br><code>{nombre}</code> = nombre de pila del paciente · <code>{horario}</code> = hora del turno · <code>{indicaciones}</code> = las indicaciones de abajo.
               </small>
             </div>
 
@@ -1453,6 +1454,6 @@
   </script>
   <div id="print-root"></div>
   <script src="/booking/booking-bundle.min.js?v=1792659293" defer></script>
-  <script type="module" src="/admin/app.js?v=132"></script>
+  <script type="module" src="/admin/app.js?v=133"></script>
 </body>
 </html>

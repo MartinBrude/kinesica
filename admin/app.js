@@ -146,7 +146,7 @@ import {
   hideClaraView,
   showConfiguracionView,
   hideConfiguracionView,
-} from "./modules/configuracion.js?v=17";
+} from "./modules/configuracion.js?v=18";
 
 // Re-exportar utilidades esenciales para interoperabilidad y pruebas
 export {
