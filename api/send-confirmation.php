@@ -252,6 +252,8 @@ $indicacionAcompaniante = $esMenor
 $servicioTexto = $servicio ? ' (' . $servicio . ')' : '';
 
 if ($esCancelacion) {
+    // Sin formato de WhatsApp (*negrita*, _cursiva_) en el nombre que llega del bot.
+    $paciente = trim(kinesica_text_to_plain($paciente));
     $subject = 'Anulación de turno - ' . $fechaLegible . ($horaLegible ? ' (' . $horaLegible . ')' : '');
     $htmlContent = '
 <!DOCTYPE html>
@@ -291,6 +293,9 @@ if ($esCancelacion) {
       </div>
       <p style="font-size: 13px; color: #64748b; margin-top: 18px;">
         Si querés otro horario, podés reservarlo en <a href="https://www.kinesica.com.ar/agendar" style="color:#005f99;">kinesica.com.ar/agendar</a> o escribirnos por WhatsApp.
+      </p>
+      <p style="font-size: 13px; color: #64748b; margin-top: 18px;">
+        ' . kinesica_text_to_html($customCancellationPolicy) . '
       </p>
     </div>
     <div class="footer">
