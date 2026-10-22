@@ -369,11 +369,7 @@ function handleGetSlots(params) {
     version: "v2-timezone-fixed",
     date: dateStr,
     type: type,
-    calendarName: cal.getName(),
-    calendarId: cal.getId(),
-    eventsDetected: busy.map(function(b) {
-      return b.title + " (" + b.startStr + " a " + b.endStr + " hs)";
-    }),
+    // Privacidad: el endpoint es público; no se exponen eventos (nombres de pacientes) ni el id del calendario.
     availableSlots: availableSlots
   });
 }
