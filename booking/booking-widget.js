@@ -60,6 +60,7 @@
       email: "Correo Electrónico *",
       emailPh: "Ej: juan@ejemplo.com",
       emailInvalid: "El correo electrónico ingresado no es válido.",
+      emailConfirm: "¿El correo es correcto? Si lo escribiste bien, volvé a tocar Confirmar.",
       errContactName: "Por favor ingresá tu nombre y apellido (quien agenda).",
       errContactPhone: "Por favor ingresá tu teléfono o WhatsApp de contacto.",
       errPatientName: "Por favor ingresá el nombre y apellido del paciente.",
@@ -148,6 +149,7 @@
       email: "Email Address *",
       emailPh: "e.g. jane@example.com",
       emailInvalid: "Please enter a valid email address.",
+      emailConfirm: "Is your email correct? If it's correct as typed, tap Confirm again.",
       errContactName: "Please enter your full name (the person booking).",
       errContactPhone: "Please enter your phone or WhatsApp number.",
       errPatientName: "Please enter the patient's full name.",
@@ -236,6 +238,7 @@
       email: "Adresse e-mail *",
       emailPh: "Ex. : nom@exemple.com",
       emailInvalid: "Veuillez saisir une adresse e-mail valide.",
+      emailConfirm: "Votre e-mail est-il correct ? Si vous l'avez bien saisi, appuyez à nouveau sur Confirmer.",
       errContactName: "Veuillez saisir votre nom et prénom (la personne qui réserve).",
       errContactPhone: "Veuillez saisir votre téléphone ou WhatsApp.",
       errPatientName: "Veuillez saisir le nom et prénom du patient.",
@@ -324,6 +327,7 @@
       email: "E-mail *",
       emailPh: "Ex.: nome@exemplo.com",
       emailInvalid: "Por favor, insira um e-mail válido.",
+      emailConfirm: "Seu e-mail está correto? Se digitou certo, toque em Confirmar novamente.",
       errContactName: "Por favor, informe seu nome e sobrenome (quem agenda).",
       errContactPhone: "Por favor, informe seu telefone ou WhatsApp.",
       errPatientName: "Por favor, informe o nome e sobrenome do paciente.",
@@ -1496,6 +1500,7 @@
       const telefonoPropio = q("#kb-input-telefono").value.trim();
       const usesContactPhone = Boolean(isOther && (!telefonoPropio || (checkNoPhone && checkNoPhone.checked)));
       this._confirmedPhones = this._confirmedPhones || new Set();
+      this._confirmedEmails = this._confirmedEmails || new Set();
       const fieldErrors = BookingWidget.validateContactForm({
         isOther,
         contactoNombre,
@@ -1505,11 +1510,15 @@
         telefono,
         usesContactPhone,
         confirmedPhones: this._confirmedPhones,
+        confirmedEmails: this._confirmedEmails,
       }, (key) => this.t(key));
       if (fieldErrors.length) {
         fieldErrors.forEach((err) => {
           if (err.isSoftPhoneConfirm && err.phoneDigits) {
             this._confirmedPhones.add(err.phoneDigits);
+          }
+          if (err.isSoftEmailConfirm && err.emailValue) {
+            this._confirmedEmails.add(err.emailValue);
           }
         });
         this.showFieldErrors(fieldErrors);
@@ -1797,6 +1806,49 @@
   };
 
   /**
+   * Detecta si un dominio de email parece un error tipográfico común de proveedores masivos.
+   * Si detecta sospecha, devuelve la sugerencia (ej: "gmail.com"), de lo contrario null.
+   */
+  BookingWidget.suggestEmailDomain = function (raw) {
+    const s = String(raw || "").trim().toLowerCase();
+    const at = s.lastIndexOf("@");
+    if (at === -1) return null;
+    const domain = s.slice(at + 1);
+    if (!domain) return null;
+
+    const typoMap = {
+      "gmai.com": "gmail.com",
+      "gmial.com": "gmail.com",
+      "gamil.com": "gmail.com",
+      "gmaill.com": "gmail.com",
+      "gmail.con": "gmail.com",
+      "gemail.com": "gmail.com",
+      "gmail.co": "gmail.com",
+      "hotmial.com": "hotmail.com",
+      "hotmai.com": "hotmail.com",
+      "hotamail.com": "hotmail.com",
+      "hotmaill.com": "hotmail.com",
+      "hotmail.con": "hotmail.com",
+      "outloo.com": "outlook.com",
+      "outlok.com": "outlook.com",
+      "outlock.com": "outlook.com",
+      "outlook.con": "outlook.com",
+      "yaho.com": "yahoo.com",
+      "yahooo.com": "yahoo.com",
+      "yahoo.con": "yahoo.com",
+      "iclud.com": "icloud.com",
+      "icoud.com": "icloud.com",
+      "icloud.con": "icloud.com",
+    };
+    if (typoMap[domain]) return typoMap[domain];
+    // TLDs con typo evidente (.con en lugar de .com)
+    if (domain.endsWith(".con") && domain.length > 5) {
+      return domain.slice(0, -4) + ".com";
+    }
+    return null;
+  };
+
+  /**
    * Analiza un teléfono argentino o internacional.
    * - valid=false: no llega al mínimo de dígitos o son todos iguales -> error bloqueante.
    * - standard=true: formato argentino (AMBA/interior, con o sin +54/0/15) o internacional estándar (+ / 00 / código país).
@@ -1864,6 +1916,21 @@
     }
     if (!BookingWidget.isValidEmail(v.email)) {
       errors.push({ field: "email", message: t("emailInvalid") });
+    } else {
+      const emailLower = String(v.email || "").trim().toLowerCase();
+      const confirmedEmails = v && v.confirmedEmails;
+      const isEmailConfirmed = Boolean(
+        confirmedEmails && (typeof confirmedEmails.has === "function" ? confirmedEmails.has(emailLower) : Array.isArray(confirmedEmails) && confirmedEmails.indexOf(emailLower) !== -1)
+      );
+      const suggested = BookingWidget.suggestEmailDomain(emailLower);
+      if (suggested && !isEmailConfirmed) {
+        errors.push({
+          field: "email",
+          message: t("emailConfirm"),
+          isSoftEmailConfirm: true,
+          emailValue: emailLower,
+        });
+      }
     }
     // Si el teléfono del paciente sale del de quien agenda, el error ya está marcado en ese campo.
     if (!v.usesContactPhone) {

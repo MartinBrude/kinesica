@@ -174,4 +174,24 @@ test("teléfono inválido (<6 dígitos o todos repetidos): bloquea siempre", () 
   }
 });
 
+test("email con typo de dominio evidente: repregunta una vez y luego deja pasar", () => {
+  const typoEmail = "juan@gmial.com";
+  const confirmedEmails = new Set();
+  const first = BookingWidget.validateContactForm(
+    { ...ok, email: typoEmail, confirmedEmails },
+    t
+  );
+  assert.equal(first.length, 1);
+  assert.equal(first[0].field, "email");
+  assert.equal(first[0].message, "T:emailConfirm");
+  assert.equal(first[0].isSoftEmailConfirm, true);
+
+  confirmedEmails.add(first[0].emailValue);
+  const second = BookingWidget.validateContactForm(
+    { ...ok, email: typoEmail, confirmedEmails },
+    t
+  );
+  assert.deepEqual(second, []);
+});
+
 console.log(`formulario de datos (errores por campo): ok (${n} pruebas)`);

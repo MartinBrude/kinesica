@@ -87,6 +87,44 @@ export function isValidAdminEmail(raw) {
   return labels.every((lbl) => lbl.length > 0 && lbl.length <= 63 && /^[A-Za-z0-9-]+$/.test(lbl) && !lbl.startsWith("-") && !lbl.endsWith("-"));
 }
 
+export function suggestAdminEmailDomain(raw) {
+  const s = String(raw || "").trim().toLowerCase();
+  const at = s.lastIndexOf("@");
+  if (at === -1) return null;
+  const domain = s.slice(at + 1);
+  if (!domain) return null;
+
+  const typoMap = {
+    "gmai.com": "gmail.com",
+    "gmial.com": "gmail.com",
+    "gamil.com": "gmail.com",
+    "gmaill.com": "gmail.com",
+    "gmail.con": "gmail.com",
+    "gemail.com": "gmail.com",
+    "gmail.co": "gmail.com",
+    "hotmial.com": "hotmail.com",
+    "hotmai.com": "hotmail.com",
+    "hotamail.com": "hotmail.com",
+    "hotmaill.com": "hotmail.com",
+    "hotmail.con": "hotmail.com",
+    "outloo.com": "outlook.com",
+    "outlok.com": "outlook.com",
+    "outlock.com": "outlook.com",
+    "outlook.con": "outlook.com",
+    "yaho.com": "yahoo.com",
+    "yahooo.com": "yahoo.com",
+    "yahoo.con": "yahoo.com",
+    "iclud.com": "icloud.com",
+    "icoud.com": "icloud.com",
+    "icloud.con": "icloud.com",
+  };
+  if (typoMap[domain]) return typoMap[domain];
+  if (domain.endsWith(".con") && domain.length > 5) {
+    return domain.slice(0, -4) + ".com";
+  }
+  return null;
+}
+
 export function inspectAdminPhone(raw) {
   const trimmed = String(raw || "").trim();
   const digits = trimmed.replace(/\D/g, "");
@@ -377,6 +415,7 @@ function openFullPacienteModal(paciente = null) {
   const errorEl = backdrop.querySelector("#modal-p-error");
   const submitBtn = backdrop.querySelector("#btn-submit-paciente");
   const confirmedWeirdPhones = new Set();
+  const confirmedSuspiciousEmails = new Set();
 
   // Restricción de input en tiempo real en el modal
   ["#modal-p-tel", "#modal-p-contacto-tel"].forEach((sel) => {
@@ -439,10 +478,31 @@ function openFullPacienteModal(paciente = null) {
       errorEl.hidden = false;
       return;
     }
+    if (email) {
+      const eLower = email.toLowerCase();
+      const suggested = suggestAdminEmailDomain(eLower);
+      if (suggested && !confirmedSuspiciousEmails.has(eLower)) {
+        confirmedSuspiciousEmails.add(eLower);
+        errorEl.textContent = `¿El correo (${email}) es correcto? Quizás quisiste escribir @${suggested}. Si está bien, volvé a tocar Guardar.`;
+        errorEl.hidden = false;
+        return;
+      }
+    }
+
     if (!isValidAdminEmail(contactoEmail)) {
       errorEl.textContent = "El correo electrónico de contacto no tiene un formato válido.";
       errorEl.hidden = false;
       return;
+    }
+    if (contactoEmail) {
+      const ceLower = contactoEmail.toLowerCase();
+      const suggestedContact = suggestAdminEmailDomain(ceLower);
+      if (suggestedContact && !confirmedSuspiciousEmails.has(ceLower)) {
+        confirmedSuspiciousEmails.add(ceLower);
+        errorEl.textContent = `¿El correo de contacto (${contactoEmail}) es correcto? Quizás quisiste escribir @${suggestedContact}. Si está bien, volvé a tocar Guardar.`;
+        errorEl.hidden = false;
+        return;
+      }
     }
 
     const telInfo = inspectAdminPhone(tel);
