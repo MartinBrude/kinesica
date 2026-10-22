@@ -202,11 +202,7 @@ function authenticate_request(?array &$bodyData = null): array
         return ['type' => 'api_token', 'user' => 'bot'];
     }
 
-    // 2. Chequeo por GET query string (ej. n8n workflow de recordatorios: ?action=directory&secret=...)
-    $querySecret = (string) ($_GET['secret'] ?? $_GET['token'] ?? '');
-    if ($querySecret !== '' && $expectedSecret !== '' && hash_equals($expectedSecret, $querySecret)) {
-        return ['type' => 'api_token', 'user' => 'bot'];
-    }
+    // 2. La clave en la URL (?secret= / ?token=) ya no se acepta: quedaría en logs e historiales.
 
     // 3. Chequeo por payload JSON (ej. n8n workflow live POST con campo 'secret')
     $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';

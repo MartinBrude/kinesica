@@ -29,3 +29,4 @@ for (const f of ["booking/google-apps-script.js", "booking/google-apps-script.mi
   assert.ok(!g.includes("1362220846964898"), `${f} usa el Phone Number ID viejo`);
   assert.ok(g.includes('"1340013275870491"'), `${f} debe usar el Phone Number ID 1340013275870491`);
 }
+assert.ok(!/\$_GET\['(secret|token)'\]/.test(pac), "pacientes.php no debe aceptar la clave en la URL");
