@@ -41,11 +41,58 @@ function kinesica_mail_texts(array $settings): array
     ];
 }
 
-/** Texto del admin → HTML seguro: escapa todo y respeta saltos de línea. */
-function kinesica_text_to_html(string $text): string
+/**
+ * Formato estilo WhatsApp de los textos del admin.
+ * Pares *x* → negrita y _x_ → cursiva sólo en límites de palabra (no toca foo_bar@x.com ni URLs);
+ * "* " / "- " al inicio de línea → "• "; marcadores sueltos se eliminan.
+ * Devuelve el texto con marcas internas \x01b…\x02 / \x01i…\x02 y los emails/URLs protegidos.
+ */
+function kinesica_wa_markup(string $text, array &$protected): string
 {
     $text = str_replace(["\r\n", "\r"], "\n", trim($text));
-    return nl2br(htmlspecialchars($text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'), false);
+    $protected = [];
+    // Emails y URLs: se protegen tal cual.
+    $text = preg_replace_callback('~\b(?:https?://|www\.)[^\s<>"]+|[\p{L}\p{N}._%+\-]+@[\p{L}\p{N}.\-]+\.[\p{L}]{2,}~u', function ($m) use (&$protected) {
+        $protected[] = $m[0];
+        return "\x03" . (count($protected) - 1) . "\x03";
+    }, $text) ?? $text;
+    // Viñetas al inicio de línea.
+    $text = preg_replace('/^[ \t]*[*\-•][ \t]+/mu', '• ', $text) ?? $text;
+    // Pares en límite de palabra, contenido sin espacios en los bordes y en una sola línea.
+    $text = preg_replace('/(?<![\p{L}\p{N}*])\*(?=[^\s*])([^*\n]*?[^\s*])\*(?![\p{L}\p{N}*])/u', "\x01b$1\x02", $text) ?? $text;
+    $text = preg_replace('/(?<![\p{L}\p{N}_])_(?=[^\s_])([^_\n]*?[^\s_])_(?![\p{L}\p{N}_])/u', "\x01i$1\x02", $text) ?? $text;
+    // Marcadores sueltos: todo * restante; _ salvo entre letras/números (snake_case).
+    $text = str_replace('*', '', $text);
+    $text = preg_replace('/(?<![\p{L}\p{N}])_+|_+(?![\p{L}\p{N}])/u', '', $text) ?? $text;
+    $text = preg_replace('/[ \t]{2,}/', ' ', $text) ?? $text;
+    return trim(preg_replace('/[ \t]+$/m', '', $text) ?? $text);
+}
+
+function kinesica_restore_protected(string $text, array $protected, bool $html): string
+{
+    return preg_replace_callback('/\x03(\d+)\x03/', function ($m) use ($protected, $html) {
+        $v = $protected[(int) $m[1]] ?? '';
+        return $html ? htmlspecialchars($v, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') : $v;
+    }, $text) ?? $text;
+}
+
+/** Texto del admin → HTML seguro: escapa todo, *x*→<strong>, _x_→<em>, respeta saltos de línea. */
+function kinesica_text_to_html(string $text): string
+{
+    $protected = [];
+    $marked = kinesica_wa_markup($text, $protected);
+    $html = htmlspecialchars($marked, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    $html = preg_replace_callback('/\x01([bi])(.*?)\x02/s', fn ($m) => $m[1] === 'b' ? "<strong>{$m[2]}</strong>" : "<em>{$m[2]}</em>", $html) ?? $html;
+    $html = str_replace(["\x01", "\x02"], '', $html);
+    return nl2br(kinesica_restore_protected($html, $protected, true), false);
+}
+
+/** Texto del admin → texto plano: sin marcadores de WhatsApp. */
+function kinesica_text_to_plain(string $text): string
+{
+    $protected = [];
+    $marked = preg_replace('/\x01[bi]/', '', kinesica_wa_markup($text, $protected)) ?? '';
+    return kinesica_restore_protected(str_replace(["\x01", "\x02"], '', $marked), $protected, false);
 }
 
 /** 'norberto' | 'maria' | null a partir de un id o un nombre ("Lic. María Gulin"). Palabra completa. */

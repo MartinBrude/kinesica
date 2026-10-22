@@ -28,6 +28,16 @@ check(kinesica_text_to_html("<b>x</b> & \"y\"\nlínea 2") === "&lt;b&gt;x&lt;/b&
 check(str_contains(kinesica_guidelines_html('', 'P', 'A', false), 'Ropa adecuada'), 'sin notas → lista actual');
 check(!str_contains(kinesica_guidelines_html('Notas', 'P', 'A', false), 'Ropa adecuada'), 'con notas → notas del admin');
 
+// --- formato WhatsApp en textos del admin ---
+check(kinesica_text_to_html('Llegá *puntual* y _relajado_') === 'Llegá <strong>puntual</strong> y <em>relajado</em>', 'negrita/cursiva');
+check(kinesica_text_to_plain('Llegá *puntual* y _relajado_') === 'Llegá puntual y relajado', 'plano sin marcadores');
+check(kinesica_text_to_html('Escribí a foo_bar@x.com o https://x.com/a_b_c') === 'Escribí a foo_bar@x.com o https://x.com/a_b_c', 'emails/URLs intactos');
+check(kinesica_text_to_html('archivo_final y snake_case_var') === 'archivo_final y snake_case_var', 'guiones bajos internos intactos');
+check(kinesica_text_to_html('precio 5 * 3 y *suelto y _otro') === 'precio 5 3 y suelto y otro', 'marcadores sueltos eliminados');
+check(kinesica_text_to_html('*<b>x</b>* & _"y"_') === '<strong>&lt;b&gt;x&lt;/b&gt;</strong> &amp; <em>&quot;y&quot;</em>', 'escape dentro de negrita/cursiva');
+check(kinesica_text_to_html("* *Uno:* a\n- _Dos_") === "• <strong>Uno:</strong> a<br>\n• <em>Dos</em>", 'viñetas + saltos');
+check(!preg_match('/[*]|(?<![\p{L}\p{N}])_|_(?![\p{L}\p{N}])/u', strip_tags(kinesica_text_to_html("*a* _b_ ** __ *c _d"))), 'sin * ni _ visibles');
+
 // --- endpoint real, mail capturado ---
 function render_mail(array $post, ?array $settings): array
 {
@@ -49,6 +59,10 @@ function render_mail(array $post, ?array $settings): array
     return [$resp, $mail];
 }
 $base = ['email' => 'paciente@example.com', 'paciente' => 'Ana <Test>', 'fecha' => '2026-10-26', 'hora' => '10:00', 'profesional' => 'Lic. María Gulin', 'servicio' => 'Acupuntura'];
+$wa = ['clara_texts' => ['cancellation_policy' => 'Cancelá con *24 hs*.', 'confirmation_notes' => "• *Puntualidad:* llegá _a horario_."]];
+[$resp, $mail] = render_mail($base, $wa);
+check(str_contains($mail, '<strong>24 hs</strong>') && str_contains($mail, '<strong>Puntualidad:</strong> llegá <em>a horario</em>.'), 'mail renderiza negrita/cursiva del admin');
+
 $admin = ['clara_texts' => [
     'cancellation_policy' => "Cancelá con 48 hs <b>mínimo</b>.\nGracias & saludos",
     'confirmation_notes' => "Traé toalla.\nLlegá puntual <script>x</script>",
