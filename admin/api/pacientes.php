@@ -159,21 +159,7 @@ function ensure_pacientes_tables(PDO $pdo): void
         // En caso de que SHOW COLUMNS falle o ya esté aplicado, no interrumpir
     }
 
-    // 3. Sembrar datos iniciales si la tabla está completamente vacía
-    try {
-        $count = (int) $pdo->query("SELECT COUNT(*) FROM pacientes")->fetchColumn();
-        if ($count === 0) {
-            $seedFile = __DIR__ . '/seed_pacientes.sql';
-            if (is_file($seedFile)) {
-                $sql = file_get_contents($seedFile);
-                if ($sql) {
-                    $pdo->exec($sql);
-                }
-            }
-        }
-    } catch (Throwable $e) {
-        // Ignorar si el seed falla
-    }
+    // Sin datos semilla: la tabla nunca se puebla con teléfonos de prueba (podrían ser de terceros).
 
     $checked = true;
 }

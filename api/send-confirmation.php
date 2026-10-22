@@ -69,6 +69,50 @@ if (empty($paciente)) {
     exit;
 }
 
+// Límite de envíos: evita usar el endpoint para mandar mails a terceros en masa
+function kinesica_confirmation_rate_ok(string $key, int $max, int $windowSec): bool
+{
+    try {
+        $dir = rtrim(sys_get_temp_dir(), '/') . '/kinesica_conf_rl';
+        if (!is_dir($dir)) {
+            @mkdir($dir, 0700, true);
+        }
+        $file = $dir . '/' . hash('sha256', $key) . '.json';
+        $now = time();
+        $fh = @fopen($file, 'c+');
+        if (!$fh) {
+            return true;
+        }
+        flock($fh, LOCK_EX);
+        $raw = stream_get_contents($fh);
+        $hits = json_decode($raw ?: '[]', true);
+        if (!is_array($hits)) {
+            $hits = [];
+        }
+        $hits = array_values(array_filter($hits, static fn($t) => is_int($t) && $t > $now - $windowSec));
+        $ok = count($hits) < $max;
+        if ($ok) {
+            $hits[] = $now;
+        }
+        ftruncate($fh, 0);
+        rewind($fh);
+        fwrite($fh, json_encode($hits));
+        flock($fh, LOCK_UN);
+        fclose($fh);
+        return $ok;
+    } catch (Throwable $e) {
+        return true;
+    }
+}
+
+$clientIp = (string) ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
+if (!kinesica_confirmation_rate_ok('email:' . strtolower($email), 4, 3600)
+    || !kinesica_confirmation_rate_ok('ip:' . $clientIp, 20, 3600)) {
+    http_response_code(429);
+    echo json_encode(['success' => false, 'error' => 'Demasiados envíos. Probá de nuevo más tarde.']);
+    exit;
+}
+
 // Auto-registro/actualización en el Directorio de Pacientes (MySQL)
 $rawPhone = trim((string) ($data['telefono'] ?? ''));
 if ($rawPhone !== '') {
@@ -141,7 +185,7 @@ if ($rawPhone !== '') {
                     nombre_completo = VALUES(nombre_completo),
                     nombre_pila = VALUES(nombre_pila),
                     dni = COALESCE(VALUES(dni), dni),
-                    email = COALESCE(VALUES(email), email),
+                    email = CASE WHEN email IS NULL OR email = "" THEN VALUES(email) ELSE email END,
                     profesional_habitual = CASE WHEN VALUES(profesional_habitual) != "indistinto" THEN VALUES(profesional_habitual) ELSE profesional_habitual END,
                     motivo_consulta = COALESCE(VALUES(motivo_consulta), motivo_consulta),
                     contacto_nombre = COALESCE(VALUES(contacto_nombre), contacto_nombre),

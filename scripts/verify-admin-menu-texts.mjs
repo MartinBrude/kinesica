@@ -88,7 +88,7 @@ test("recordatorio: texto de la plantilla de Meta sólo lectura, igual a lo que 
       .replace("${formattedTime}", "{horario}").replace("${indicaciones}", "{indicaciones}").replace(/\\n/g, "\n");
     assert.equal(tpl, REMINDER_TEMPLATE_TEXT);
     const send = wf.nodes.find((x) => x.name === "Send WhatsApp Reminder").parameters.jsonBody;
-    assert.ok(send.includes('"name": "recordatorio_turno_kinesica"'));
+    assert.match(send, /name: "recordatorio_turno_kinesica"|"name": "recordatorio_turno_kinesica"/);
   }
   assert.equal(renderReminderPreview("📍 Charcas 3889"),
     "¡Hola Lucas! 🌿 Te escribo desde Kinésica para recordarte tu sesión en el consultorio programada para mañana a las 16:00 hs.\n\n📍 Charcas 3889\n\nPor favor confirmá tu asistencia seleccionando una de las opciones a continuación 🙌:");
