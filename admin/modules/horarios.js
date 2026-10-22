@@ -14,7 +14,6 @@ const statusBannerEl = document.querySelector("#horarios-status-banner");
 const lastUpdatedEl = document.querySelector("#horarios-last-updated");
 const claraPreviewEl = document.querySelector("#horarios-clara-preview");
 const btnSave = document.querySelector("#btn-save-horarios");
-const btnReset = document.querySelector("#btn-reset-horarios");
 const btnCopyClara = document.querySelector("#btn-copy-clara-horarios");
 
 export const DEFAULT_PRACTITIONER_HOURS = {
@@ -637,34 +636,6 @@ export function initHorariosModule() {
       } finally {
         btnSave.disabled = false;
         btnSave.textContent = originalText;
-      }
-    });
-  }
-
-  if (btnReset) {
-    btnReset.addEventListener("click", async () => {
-      const confirmed = await dialogConfirm(
-        "¿Querés restaurar los horarios habituales por defecto de María y Norberto?",
-        "Restaurar",
-        "Cancelar"
-      );
-      if (!confirmed) return;
-
-      btnReset.disabled = true;
-      try {
-        const res = await api("horarios.php", {
-          method: "POST",
-          body: JSON.stringify({ action: "reset" }),
-        });
-        isDirty = false;
-        applyHoursToRuntime(res.practitioner_hours || DEFAULT_PRACTITIONER_HOURS);
-        updateMetaTimestamp(res.updated_at, res.updated_by);
-        refreshUI();
-        showStatusBanner("success", ["✓ Se restauraron los horarios por defecto de María y Norberto."]);
-      } catch (err) {
-        dialogAlert(err.message || "No se pudieron restaurar los horarios.");
-      } finally {
-        btnReset.disabled = false;
       }
     });
   }

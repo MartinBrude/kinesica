@@ -502,12 +502,11 @@ if ($method === 'POST') {
     $input = read_json();
     $current = load_full_runtime_settings($settingsFile);
 
-    $action = $input['action'] ?? 'save';
-    if ($action === 'reset') {
-        $targetHours = default_practitioner_hours();
-    } else {
-        $targetHours = $input['practitioner_hours'] ?? $input;
+    // La acción 'reset' (restaurar horarios por defecto) se quitó del admin: ya no se acepta.
+    if (($input['action'] ?? 'save') === 'reset') {
+        json_out(400, ['error' => 'La restauración de horarios por defecto ya no está disponible.']);
     }
+    $targetHours = $input['practitioner_hours'] ?? $input;
 
     $validation = validate_practitioner_hours_php($targetHours);
     if (!$validation['isValid']) {

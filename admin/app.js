@@ -130,13 +130,13 @@ import {
   showHorariosView,
   hideHorariosView,
   applyHoursToRuntime,
-} from "./modules/horarios.js?v=1";
+} from "./modules/horarios.js?v=2";
 
 import {
   initHonorariosModule,
   showHonorariosView,
   hideHonorariosView,
-} from "./modules/honorarios.js?v=1";
+} from "./modules/honorarios.js?v=2";
 
 import {
   initConfiguracionModule,
@@ -146,7 +146,7 @@ import {
   hideClaraView,
   showConfiguracionView,
   hideConfiguracionView,
-} from "./modules/configuracion.js?v=16";
+} from "./modules/configuracion.js?v=17";
 
 // Re-exportar utilidades esenciales para interoperabilidad y pruebas
 export {

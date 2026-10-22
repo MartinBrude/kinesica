@@ -53,4 +53,21 @@ if (fs.existsSync(wfPath)) {
   });
 }
 
+test("el admin no tiene 'Restaurar por defecto' (botones, handlers ni acción reset)", () => {
+  const walk = (dir) => fs.readdirSync(path.join(root, dir), { withFileTypes: true }).flatMap((e) => {
+    const rel = path.join(dir, e.name);
+    if (e.isDirectory()) return e.name === "node_modules" || e.name === "data" ? [] : walk(rel);
+    return /\.(html|js|mjs|php|css)$/.test(e.name) ? [rel] : [];
+  });
+  const files = walk("admin");
+  assert.ok(files.includes(path.join("admin", "index.html")));
+  for (const rel of files) {
+    const src = read(rel);
+    assert.ok(!/Restaurar por defecto/i.test(src), `${rel} contiene "Restaurar por defecto"`);
+    assert.ok(!/btn-reset-(horarios|honorarios|clara-texts)|btnResetTexts/.test(src), `${rel} conserva un botón/handler de restaurar`);
+  }
+  assert.ok(!/action:\s*"reset"/.test(read("admin/modules/horarios.js")), "horarios.js todavía envía action reset");
+  assert.match(read("admin/api/horarios.php"), /=== 'reset'\) \{\n\s*json_out\(400/, "horarios.php debe rechazar action reset");
+});
+
 console.log(`admin menú C: ok (${n} pruebas)`);

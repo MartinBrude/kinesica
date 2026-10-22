@@ -44,7 +44,6 @@ let customMenuOptions = [];
 
 const btnSaveTexts = document.querySelector("#btn-save-clara-texts");
 const btnSaveMailsPolicies = document.querySelector("#btn-save-mails-policies");
-const btnResetTexts = document.querySelector("#btn-reset-clara-texts");
 const textsStatusBanner = document.querySelector("#clara-texts-status-banner");
 const mailsStatusBanner = document.querySelector("#mails-texts-status-banner");
 
@@ -506,19 +505,6 @@ export function initConfiguracionModule(callbacks = {}) {
   inputClaraReminderText?.addEventListener("input", () => syncAndPreview(inputClaraReminderText, inputReminderText));
   inputReminderNotes?.addEventListener("input", () => syncAndPreview(inputReminderNotes, inputClaraReminderNotes));
   inputClaraReminderNotes?.addEventListener("input", () => syncAndPreview(inputClaraReminderNotes, inputReminderNotes));
-
-  // Restaurar valores por defecto
-  btnResetTexts?.addEventListener("click", async () => {
-    const ok = await dialogConfirm("¿Deseas restaurar los mensajes y políticas predeterminados de Kinésica?", {
-      okText: "Restaurar",
-      cancelText: "Cancelar",
-    });
-    if (ok) {
-      customMenuOptions = [];
-      renderTexts(DEFAULT_CLARA_TEXTS);
-      await dialogAlert("Se restauraron los textos predeterminados. Presioná 'Guardar textos y políticas' para confirmar.");
-    }
-  });
 
   // Toggle Clara
   cfgClaraToggleBtn?.addEventListener("click", async () => {

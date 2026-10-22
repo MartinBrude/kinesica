@@ -15,7 +15,6 @@ const statusBanner = document.querySelector("#honorarios-status-banner");
 const lastUpdatedEl = document.querySelector("#honorarios-last-updated");
 const previewEl = document.querySelector("#honorarios-preview");
 const btnSave = document.querySelector("#btn-save-honorarios");
-const btnReset = document.querySelector("#btn-reset-honorarios");
 
 export const DEFAULT_FEES = {
   atm: 65000,
@@ -138,12 +137,5 @@ export function initHonorariosModule() {
     } finally {
       btnSave.disabled = false;
     }
-  });
-
-  btnReset?.addEventListener("click", () => {
-    if (inputAtm) inputAtm.value = DEFAULT_FEES.atm;
-    if (inputGeneral) inputGeneral.value = DEFAULT_FEES.general;
-    if (inputPayment) inputPayment.value = DEFAULT_FEES.payment_methods;
-    updatePreview();
   });
 }
