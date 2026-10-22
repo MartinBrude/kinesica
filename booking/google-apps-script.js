@@ -701,22 +701,46 @@ function handleGetDirectory() {
 /**
  * Endpoint POST: Agenda el turno o llamada en Google Calendar.
  */
+function isValidBookingEmail(raw) {
+  const s = String(raw || "").trim();
+  if (!s || s.length > 120 || /\s/.test(s)) return false;
+  const parts = s.split("@");
+  if (parts.length !== 2) return false;
+  const local = parts[0];
+  const domain = parts[1];
+  if (!local || !domain || local.length > 64 || domain.length > 253) return false;
+  if (local.indexOf(".") === 0 || local.slice(-1) === "." || local.indexOf("..") !== -1) return false;
+  if (domain.indexOf(".") === 0 || domain.slice(-1) === "." || domain.indexOf("..") !== -1) return false;
+  if (!/^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+$/.test(local)) return false;
+  const labels = domain.split(".");
+  if (labels.length < 2) return false;
+  const tld = labels[labels.length - 1];
+  if (!/^[A-Za-z]{2,24}$/.test(tld)) return false;
+  for (let i = 0; i < labels.length; i++) {
+    const lbl = labels[i];
+    if (!lbl || lbl.length > 63 || !/^[A-Za-z0-9-]+$/.test(lbl) || lbl.indexOf("-") === 0 || lbl.slice(-1) === "-") {
+      return false;
+    }
+  }
+  return true;
+}
+
 function handleBookAppointment(payload) {
   const tipo = payload.tipo || "primera_vez"; // 'primera_vez' | 'habitual'
   const appointmentType = payload.appointmentType || "session";
-  const nombre = (payload.nombre || "").trim();
-  const telefono = String(payload.telefono || "").trim();
-  const email = (payload.email || "").trim();
-  const dni = (payload.dni || "No provisto").trim();
+  const nombre = String(payload.nombre || "").trim().slice(0, 120);
+  const telefono = String(payload.telefono || "").trim().slice(0, 30);
+  const email = String(payload.email || "").trim().slice(0, 120);
+  const dni = String(payload.dni || "No provisto").trim().slice(0, 30);
   const dateStr = payload.date; // YYYY-MM-DD
   const timeStr = payload.time; // HH:mm
   const isMenor = Boolean(payload.isMenor);
-  const nombreFamiliar = (payload.nombreFamiliar || "").trim();
+  const nombreFamiliar = String(payload.nombreFamiliar || "").trim().slice(0, 120);
   const esParaTercero = Boolean(payload.esParaTercero || payload.contactoNombre);
-  const contactoNombre = String(payload.contactoNombre || payload.nombreFamiliar || "").trim();
-  const contactoTelefono = String(payload.contactoTelefono || "").trim();
-  const contactoNotas = String(payload.contactoNotas || "").trim();
-  const notas = (payload.notas || "").trim();
+  const contactoNombre = String(payload.contactoNombre || payload.nombreFamiliar || "").trim().slice(0, 120);
+  const contactoTelefono = String(payload.contactoTelefono || "").trim().slice(0, 30);
+  const contactoNotas = String(payload.contactoNotas || "").trim().slice(0, 100);
+  const notas = String(payload.notas || "").trim().slice(0, 500);
 
   if (appointmentType === "call") {
     return createJsonResponse({
@@ -725,7 +749,7 @@ function handleBookAppointment(payload) {
     }, 400);
   }
 
-  if (!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr) || !timeStr) {
+  if (!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr) || !timeStr || !/^([01]\d|2[0-3]):[0-5]\d$/.test(String(timeStr))) {
     return createJsonResponse({ status: "error", message: "Fecha (YYYY-MM-DD) y hora (HH:mm) son requeridas para la reserva." }, 400);
   }
 
@@ -733,11 +757,12 @@ function handleBookAppointment(payload) {
     return createJsonResponse({ status: "error", message: "Nombre completo es requerido" }, 400);
   }
 
-  if (!telefono || telefono.replace(/[^0-9]/g, "").length < 8) {
+  const phoneDigits = telefono.replace(/[^0-9]/g, "");
+  if (!phoneDigits || phoneDigits.length < 6 || phoneDigits.length > 16 || /^(\d)\1+$/.test(phoneDigits)) {
     return createJsonResponse({ status: "error", message: "Teléfono válido es requerido" }, 400);
   }
 
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  if (!isValidBookingEmail(email)) {
     return createJsonResponse({ status: "error", message: "Correo electrónico válido es requerido" }, 400);
   }
 

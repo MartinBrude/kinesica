@@ -64,6 +64,7 @@
       errContactPhone: "Por favor ingresá tu teléfono o WhatsApp de contacto.",
       errPatientName: "Por favor ingresá el nombre y apellido del paciente.",
       errPhone: "Por favor ingresá un teléfono o celular de contacto válido.",
+      phoneConfirm: "¿El número es correcto? Si es de otro país o ya lo revisaste, volvé a tocar Confirmar.",
       phone: "Teléfono / WhatsApp *",
       phonePh: "Ej: +54 9 11 0000-0000",
       dni: "DNI / Documento *",
@@ -151,6 +152,7 @@
       errContactPhone: "Please enter your phone or WhatsApp number.",
       errPatientName: "Please enter the patient's full name.",
       errPhone: "Please enter a valid phone or mobile number.",
+      phoneConfirm: "Is this phone number correct? If it's from another country or you already checked it, tap Confirm again.",
       phone: "Phone / WhatsApp *",
       phonePh: "e.g. +54 9 11 0000-0000",
       dni: "ID document *",
@@ -238,6 +240,7 @@
       errContactPhone: "Veuillez saisir votre téléphone ou WhatsApp.",
       errPatientName: "Veuillez saisir le nom et prénom du patient.",
       errPhone: "Veuillez saisir un numéro de téléphone ou de portable valide.",
+      phoneConfirm: "Ce numéro est-il correct ? S'il est d'un autre pays ou déjà vérifié, appuyez à nouveau sur Confirmer.",
       phone: "Téléphone / WhatsApp *",
       phonePh: "Ex. : +54 9 11 0000-0000",
       dni: "Pièce d'identité *",
@@ -325,6 +328,7 @@
       errContactPhone: "Por favor, informe seu telefone ou WhatsApp.",
       errPatientName: "Por favor, informe o nome e sobrenome do paciente.",
       errPhone: "Por favor, informe um telefone ou celular válido.",
+      phoneConfirm: "O número está correto? Se for de outro país ou você já conferiu, toque em Confirmar novamente.",
       phone: "Telefone / WhatsApp *",
       phonePh: "Ex.: +54 9 11 0000-0000",
       dni: "Documento *",
@@ -577,18 +581,18 @@
                 </div>
                 <div class="kb-form-group" style="margin-bottom: 8px;">
                   <label for="kb-input-contacto-nombre">Tu Nombre y Apellido *</label>
-                  <input type="text" id="kb-input-contacto-nombre" placeholder="Ej: Laura Gómez">
+                  <input type="text" id="kb-input-contacto-nombre" placeholder="Ej: Laura Gómez" maxlength="100" autocomplete="name">
                   <div class="kb-field-error" id="kb-err-contacto-nombre" role="alert" aria-live="assertive" hidden></div>
                 </div>
                 <div class="kb-form-row">
                   <div class="kb-form-group" style="margin-bottom: 8px;">
                     <label for="kb-input-contacto-telefono">Tu Teléfono / WhatsApp *</label>
-                    <input type="tel" id="kb-input-contacto-telefono" placeholder="${this.t("phonePh")}">
+                    <input type="tel" id="kb-input-contacto-telefono" placeholder="${this.t("phonePh")}" maxlength="24" inputmode="tel" autocomplete="tel">
                   <div class="kb-field-error" id="kb-err-contacto-telefono" role="alert" aria-live="assertive" hidden></div>
                   </div>
                   <div class="kb-form-group" style="margin-bottom: 8px;">
                     <label for="kb-input-contacto-notas">Relación o rol (opcional)</label>
-                    <input type="text" id="kb-input-contacto-notas" placeholder="Ej: Cónyuge, Hijo/a, Secretaria">
+                    <input type="text" id="kb-input-contacto-notas" placeholder="Ej: Cónyuge, Hijo/a, Secretaria" maxlength="80">
                   </div>
                 </div>
                 <small style="color: #64748b; font-size: 12px; display: block;">
@@ -602,20 +606,20 @@
 
               <div class="kb-form-group">
                 <label for="kb-input-nombre" id="kb-label-nombre">${this.t("name")}</label>
-                <input type="text" id="kb-input-nombre" placeholder="${this.t("namePh")}" required>
+                <input type="text" id="kb-input-nombre" placeholder="${this.t("namePh")}" maxlength="100" autocomplete="name" required>
                   <div class="kb-field-error" id="kb-err-nombre" role="alert" aria-live="assertive" hidden></div>
               </div>
 
               <div class="kb-form-group">
                 <label for="kb-input-email">${this.t("email")}</label>
-                <input type="email" id="kb-input-email" placeholder="${this.t("emailPh")}" required autocomplete="email">
+                <input type="email" id="kb-input-email" placeholder="${this.t("emailPh")}" maxlength="120" inputmode="email" autocapitalize="off" spellcheck="false" required autocomplete="email">
                   <div class="kb-field-error" id="kb-err-email" role="alert" aria-live="assertive" hidden></div>
               </div>
 
               <div class="kb-form-row">
                 <div class="kb-form-group" id="kb-group-telefono">
                   <label for="kb-input-telefono" id="kb-label-telefono">${this.t("phone")}</label>
-                  <input type="tel" id="kb-input-telefono" placeholder="${this.t("phonePh")}" required>
+                  <input type="tel" id="kb-input-telefono" placeholder="${this.t("phonePh")}" maxlength="24" inputmode="tel" autocomplete="tel" required>
                   <div class="kb-field-error" id="kb-err-telefono" role="alert" aria-live="assertive" hidden></div>
                   <label id="kb-wrap-no-phone" class="kb-checkbox-label" style="display: none; align-items: center; gap: 8px; margin-top: 8px; font-size: 13px; color: #475569; cursor: pointer;">
                     <input type="checkbox" id="kb-check-no-phone">
@@ -624,7 +628,7 @@
                 </div>
                 <div class="kb-form-group">
                   <label for="kb-input-dni" id="kb-label-dni">${this.t("dni")}</label>
-                  <input type="text" id="kb-input-dni" placeholder="${this.t("dniPh")}">
+                  <input type="text" id="kb-input-dni" placeholder="${this.t("dniPh")}" maxlength="20">
                   <div class="kb-field-error" id="kb-err-dni" role="alert" aria-live="assertive" hidden></div>
                 </div>
               </div>
@@ -781,10 +785,28 @@
       q("#kb-btn-submit").addEventListener("click", () => this.handleBookingSubmit());
 
       // Errores por campo: se ocultan recién cuando el usuario modifica ESE campo.
+      // Restricción de entrada en vivo para evitar que viajen caracteres inválidos.
       BookingWidget.FORM_FIELDS.forEach((field) => {
         const input = q(`#kb-input-${field}`);
-        if (input) input.addEventListener("input", () => this.clearFieldError(field));
+        if (input) {
+          input.addEventListener("input", () => {
+            if (typeof input.value === "string") {
+              const sanitized = BookingWidget.sanitizeFieldInput(field, input.value);
+              if (sanitized !== input.value) input.value = sanitized;
+            }
+            this.clearFieldError(field);
+          });
+        }
       });
+      const inputContactNotas = q("#kb-input-contacto-notas");
+      if (inputContactNotas) {
+        inputContactNotas.addEventListener("input", () => {
+          if (typeof inputContactNotas.value === "string") {
+            const sanitized = BookingWidget.sanitizeFieldInput("contacto-notas", inputContactNotas.value);
+            if (sanitized !== inputContactNotas.value) inputContactNotas.value = sanitized;
+          }
+        });
+      }
       const noPhoneToggle = q("#kb-check-no-phone");
       if (noPhoneToggle) noPhoneToggle.addEventListener("change", () => this.clearFieldError("telefono"));
 
@@ -1473,10 +1495,23 @@
 
       const telefonoPropio = q("#kb-input-telefono").value.trim();
       const usesContactPhone = Boolean(isOther && (!telefonoPropio || (checkNoPhone && checkNoPhone.checked)));
+      this._confirmedPhones = this._confirmedPhones || new Set();
       const fieldErrors = BookingWidget.validateContactForm({
-        isOther, contactoNombre, contactoTelefono, nombre, email, telefono, usesContactPhone,
+        isOther,
+        contactoNombre,
+        contactoTelefono,
+        nombre,
+        email,
+        telefono,
+        usesContactPhone,
+        confirmedPhones: this._confirmedPhones,
       }, (key) => this.t(key));
       if (fieldErrors.length) {
+        fieldErrors.forEach((err) => {
+          if (err.isSoftPhoneConfirm && err.phoneDigits) {
+            this._confirmedPhones.add(err.phoneDigits);
+          }
+        });
         this.showFieldErrors(fieldErrors);
         return;
       }
@@ -1713,20 +1748,127 @@
   BookingWidget.FORM_FIELDS = ["contacto-nombre", "contacto-telefono", "nombre", "email", "telefono", "dni"];
 
   /**
+   * Restringe en vivo lo que se puede tipear en cada campo antes de validar.
+   */
+  BookingWidget.sanitizeFieldInput = function (field, rawValue) {
+    const val = String(rawValue == null ? "" : rawValue).replace(/[\u0000-\u001F\u007F]/g, "");
+    if (field === "telefono" || field === "contacto-telefono") {
+      // Solo dígitos, +, espacios, guiones, paréntesis y puntos; + solo al inicio
+      const cleaned = val.replace(/[^0-9+\-().\s]/g, "");
+      const hasLeadingPlus = cleaned.trimStart().startsWith("+");
+      const withoutPlus = cleaned.replace(/\+/g, "");
+      return (hasLeadingPlus ? "+" + withoutPlus : withoutPlus).slice(0, 24);
+    }
+    if (field === "email") {
+      // Sin espacios ni caracteres prohibidos en direcciones de correo
+      return val.replace(/[\s<>(),;:"[\]\\]/g, "").slice(0, 120);
+    }
+    if (field === "nombre" || field === "contacto-nombre") {
+      // Letras (incluyendo acentos/diacríticos), espacios, apóstrofes, guiones y puntos
+      return val.replace(/[^\p{L}\p{M}\s'.\-]/gu, "").replace(/\s{2,}/g, " ").slice(0, 100);
+    }
+    if (field === "dni") {
+      return val.replace(/[^0-9A-Za-z.\-\s]/g, "").slice(0, 20);
+    }
+    if (field === "contacto-notas") {
+      return val.replace(/[<>]/g, "").slice(0, 80);
+    }
+    return val;
+  };
+
+  /**
+   * Valida estrictamente el formato de una dirección de correo electrónico.
+   */
+  BookingWidget.isValidEmail = function (raw) {
+    const s = String(raw || "").trim();
+    if (!s || s.length > 120 || /\s/.test(s)) return false;
+    const parts = s.split("@");
+    if (parts.length !== 2) return false;
+    const [local, domain] = parts;
+    if (!local || !domain || local.length > 64 || domain.length > 253) return false;
+    if (local.startsWith(".") || local.endsWith(".") || local.includes("..")) return false;
+    if (domain.startsWith(".") || domain.endsWith(".") || domain.includes("..")) return false;
+    if (!/^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+$/.test(local)) return false;
+    const labels = domain.split(".");
+    if (labels.length < 2) return false;
+    const tld = labels[labels.length - 1];
+    if (!/^[A-Za-z]{2,24}$/.test(tld)) return false;
+    return labels.every((lbl) => lbl.length > 0 && lbl.length <= 63 && /^[A-Za-z0-9-]+$/.test(lbl) && !lbl.startsWith("-") && !lbl.endsWith("-"));
+  };
+
+  /**
+   * Analiza un teléfono argentino o internacional.
+   * - valid=false: no llega al mínimo de dígitos o son todos iguales -> error bloqueante.
+   * - standard=true: formato argentino (AMBA/interior, con o sin +54/0/15) o internacional estándar (+ / 00 / código país).
+   * - standard=false (pero valid=true): formato inusual (ej. 6-7 dígitos o largo atípico sin prefijo) -> se repregunta 1 vez y luego se deja pasar.
+   */
+  BookingWidget.inspectPhone = function (raw) {
+    const trimmed = String(raw || "").trim();
+    const digits = trimmed.replace(/\D/g, "");
+    if (digits.length < 6 || digits.length > 16 || /^(\d)\1+$/.test(digits)) {
+      return { valid: false, standard: false, digits };
+    }
+    const hasIntlPrefix = trimmed.startsWith("+") || trimmed.startsWith("00");
+    // Formato argentino estándar
+    const isStandardAr =
+      (/^549?\d{10}$/.test(digits)) ||
+      (/^0?(?:11|[23]\d{2,3})\d{6,8}$/.test(digits) && digits.length >= 10 && digits.length <= 11) ||
+      (/^0?1115\d{8}$/.test(digits)) ||
+      (/^15\d{8}$/.test(digits)) ||
+      (/^\d{8}$/.test(digits) && !hasIntlPrefix); // fijo/celular local CABA de 8 dígitos
+    // Formato internacional estándar (E.164 con + o 00, o prefijos de países frecuentes como UY 598, CL 56, BR 55, PY 595, BO 591, ES 34, US/CA 1, etc.)
+    const isStandardIntl =
+      (hasIntlPrefix && digits.length >= 8 && digits.length <= 15) ||
+      (/^(?:34\d{9}|598\d{8,9}|56\d{9}|55\d{10,11}|595\d{9}|591\d{8}|51\d{9}|57\d{10}|52\d{10}|1\d{10}|44\d{10}|33\d{9}|39\d{9,10}|49\d{10,11})$/.test(digits));
+    return {
+      valid: true,
+      standard: Boolean(isStandardAr || isStandardIntl),
+      digits,
+    };
+  };
+
+  /**
    * Validación pura del formulario de datos (sin DOM). Devuelve TODOS los errores, en el orden visual.
-   * El DNI no es obligatorio hoy, así que no genera error.
+   * Si un teléfono tiene dígitos pero formato no estándar, repregunta una vez (isSoftPhoneConfirm)
+   * y en el segundo intento (confirmedPhones) lo deja pasar.
    */
   BookingWidget.validateContactForm = function (v, t) {
     const errors = [];
-    const digits = (x) => String(x || "").replace(/\D/g, "").length;
+    const confirmed = v && v.confirmedPhones;
+    const isConfirmed = (digits) => Boolean(
+      confirmed && (typeof confirmed.has === "function" ? confirmed.has(digits) : Array.isArray(confirmed) && confirmed.indexOf(digits) !== -1)
+    );
+    const checkPhoneField = (rawPhone, fieldName, errKey) => {
+      const info = BookingWidget.inspectPhone(rawPhone);
+      if (!info.valid) {
+        errors.push({ field: fieldName, message: t(errKey) });
+      } else if (!info.standard && !isConfirmed(info.digits)) {
+        errors.push({
+          field: fieldName,
+          message: t("phoneConfirm"),
+          isSoftPhoneConfirm: true,
+          phoneDigits: info.digits,
+        });
+      }
+    };
+    const cleanName = (x) => String(x || "").replace(/[^\p{L}\p{M}]/gu, "");
+
     if (v.isOther) {
-      if (!v.contactoNombre) errors.push({ field: "contacto-nombre", message: t("errContactName") });
-      if (!v.contactoTelefono || digits(v.contactoTelefono) < 8) errors.push({ field: "contacto-telefono", message: t("errContactPhone") });
+      if (!v.contactoNombre || cleanName(v.contactoNombre).length < 2) {
+        errors.push({ field: "contacto-nombre", message: t("errContactName") });
+      }
+      checkPhoneField(v.contactoTelefono, "contacto-telefono", "errContactPhone");
     }
-    if (!v.nombre) errors.push({ field: "nombre", message: t("errPatientName") });
-    if (!v.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email)) errors.push({ field: "email", message: t("emailInvalid") });
+    if (!v.nombre || cleanName(v.nombre).length < 2) {
+      errors.push({ field: "nombre", message: t("errPatientName") });
+    }
+    if (!BookingWidget.isValidEmail(v.email)) {
+      errors.push({ field: "email", message: t("emailInvalid") });
+    }
     // Si el teléfono del paciente sale del de quien agenda, el error ya está marcado en ese campo.
-    if (!v.usesContactPhone && (!v.telefono || digits(v.telefono) < 8)) errors.push({ field: "telefono", message: t("errPhone") });
+    if (!v.usesContactPhone) {
+      checkPhoneField(v.telefono, "telefono", "errPhone");
+    }
     return errors;
   };
 

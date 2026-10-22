@@ -15,12 +15,17 @@ function normalize_search_key(string $str): string
     return preg_replace('/[^a-z0-9\s]/', '', $str) ?? '';
 }
 
-// Normalizador de teléfonos estricto para WhatsApp (Argentina y España)
+// Normalizador de teléfonos para WhatsApp (soporta Argentina e internacionales)
 function clean_phone_number(string $raw): string
 {
-    $digits = preg_replace('/[^0-9]/', '', $raw) ?? '';
+    $trimmed = trim($raw);
+    $hasIntlPrefix = str_starts_with($trimmed, '+') || str_starts_with($trimmed, '00');
+    $digits = preg_replace('/[^0-9]/', '', $trimmed) ?? '';
     if ($digits === '') {
         return '';
+    }
+    if (str_starts_with($trimmed, '00') && str_starts_with($digits, '00')) {
+        $digits = substr($digits, 2);
     }
 
     if (str_starts_with($digits, '549') && strlen($digits) >= 12) {
@@ -29,7 +34,11 @@ function clean_phone_number(string $raw): string
     if (str_starts_with($digits, '54') && !str_starts_with($digits, '549') && strlen($digits) >= 12) {
         return '549' . substr($digits, 2, 10);
     }
-    if (str_starts_with($digits, '34') && strlen($digits) === 11) {
+    // Si tiene prefijo internacional explícito (+ / 00) de otro país o código conocido no-AR, preservar tal cual
+    if ($hasIntlPrefix && !str_starts_with($digits, '54')) {
+        return substr($digits, 0, 16);
+    }
+    if (preg_match('/^(?:34\d{9}|598\d{8,9}|56\d{9}|55\d{10,11}|595\d{9}|591\d{8}|51\d{9}|57\d{10}|52\d{10}|1\d{10}|44\d{10}|33\d{9}|39\d{9,10}|49\d{10,11})$/', $digits)) {
         return $digits;
     }
     if (str_starts_with($digits, '0')) {
@@ -44,7 +53,32 @@ function clean_phone_number(string $raw): string
     if (str_starts_with($digits, '11') && strlen($digits) === 10) {
         return '549' . $digits;
     }
-    return $digits;
+    return substr($digits, 0, 16);
+}
+
+function is_valid_email_strict(?string $raw): bool
+{
+    if ($raw === null) {
+        return true;
+    }
+    $s = trim($raw);
+    if ($s === '') {
+        return true;
+    }
+    if (strlen($s) > 120 || preg_match('/\s/', $s)) {
+        return false;
+    }
+    if (!filter_var($s, FILTER_VALIDATE_EMAIL)) {
+        return false;
+    }
+    $parts = explode('@', $s);
+    if (count($parts) !== 2) {
+        return false;
+    }
+    $domain = $parts[1];
+    $labels = explode('.', $domain);
+    $tld = end($labels);
+    return count($labels) >= 2 && is_string($tld) && (bool) preg_match('/^[A-Za-z]{2,24}$/', $tld);
 }
 
 // Extractor de primer nombre / nombre de pila (respetando compuestos)
@@ -331,13 +365,13 @@ try {
         if ($action === 'upsert' || $action === 'insert') {
             $rawPhone = (string) ($data['telefono'] ?? '');
             $phone = clean_phone_number($rawPhone);
-            if (strlen($phone) < 8) {
+            if (strlen($phone) < 6 || strlen($phone) > 16 || preg_match('/^(\d)\1+$/', $phone)) {
                 json_out(422, ['status' => 'error', 'message' => 'Número de teléfono inválido o incompleto']);
             }
 
-            $nombre = trim((string) ($data['nombre'] ?? ''));
-            $apellido = trim((string) ($data['apellido'] ?? ''));
-            $nombreCompleto = trim((string) ($data['nombre_completo'] ?? $data['nombre_apellido'] ?? ''));
+            $nombre = mb_substr(trim((string) ($data['nombre'] ?? '')), 0, 60, 'UTF-8');
+            $apellido = mb_substr(trim((string) ($data['apellido'] ?? '')), 0, 60, 'UTF-8');
+            $nombreCompleto = mb_substr(trim((string) ($data['nombre_completo'] ?? $data['nombre_apellido'] ?? '')), 0, 120, 'UTF-8');
 
             if ($nombreCompleto === '' && ($nombre !== '' || $apellido !== '')) {
                 $nombreCompleto = trim($nombre . ' ' . $apellido);
@@ -351,29 +385,32 @@ try {
                 json_out(422, ['status' => 'error', 'message' => 'El nombre y apellido son obligatorios']);
             }
 
-            $nombrePila = trim((string) ($data['nombre_pila'] ?? ''));
+            $nombrePila = mb_substr(trim((string) ($data['nombre_pila'] ?? '')), 0, 60, 'UTF-8');
             if ($nombrePila === '') {
                 $nombrePila = extract_first_name($nombreCompleto);
             }
 
             $dni = isset($data['dni']) && trim((string) $data['dni']) !== '' && trim((string) $data['dni']) !== 'No provisto' 
-                ? trim((string) $data['dni']) 
+                ? mb_substr(trim((string) $data['dni']), 0, 20, 'UTF-8')
                 : null;
 
             $email = isset($data['email']) && trim((string) $data['email']) !== '' 
                 ? trim((string) $data['email']) 
                 : null;
+            if (!is_valid_email_strict($email)) {
+                json_out(422, ['status' => 'error', 'message' => 'El formato del correo electrónico no es válido']);
+            }
 
             $profesional = in_array($data['profesional_habitual'] ?? '', ['norberto', 'maria', 'indistinto'], true)
                 ? $data['profesional_habitual']
                 : 'indistinto';
 
-            $motivo = isset($data['motivo_consulta']) ? trim((string) $data['motivo_consulta']) : null;
-            $notas = isset($data['notas']) ? trim((string) $data['notas']) : null;
+            $motivo = isset($data['motivo_consulta']) ? mb_substr(trim((string) $data['motivo_consulta']), 0, 255, 'UTF-8') : null;
+            $notas = isset($data['notas']) ? mb_substr(trim((string) $data['notas']), 0, 2000, 'UTF-8') : null;
             $origen = in_array($data['origen'] ?? '', ['whatsapp', 'web', 'admin'], true) ? $data['origen'] : 'whatsapp';
 
             $contactoNombre = isset($data['contacto_nombre']) && trim((string) $data['contacto_nombre']) !== '' 
-                ? trim((string) $data['contacto_nombre']) 
+                ? mb_substr(trim((string) $data['contacto_nombre']), 0, 120, 'UTF-8')
                 : null;
             $contactoTelRaw = (string) ($data['contacto_telefono'] ?? '');
             $contactoTel = $contactoTelRaw !== '' ? clean_phone_number($contactoTelRaw) : null;
@@ -381,8 +418,11 @@ try {
             $contactoEmail = isset($data['contacto_email']) && trim((string) $data['contacto_email']) !== '' 
                 ? trim((string) $data['contacto_email']) 
                 : null;
+            if (!is_valid_email_strict($contactoEmail)) {
+                json_out(422, ['status' => 'error', 'message' => 'El correo electrónico de contacto no es válido']);
+            }
             $contactoNotas = isset($data['contacto_notas']) && trim((string) $data['contacto_notas']) !== '' 
-                ? trim((string) $data['contacto_notas']) 
+                ? mb_substr(trim((string) $data['contacto_notas']), 0, 100, 'UTF-8')
                 : null;
 
             $stmt = $pdo->prepare('
@@ -468,7 +508,7 @@ try {
         if ($action === 'update_phone') {
             $id = (int) ($data['id'] ?? 0);
             $newPhone = clean_phone_number((string) ($data['nuevo_telefono'] ?? ''));
-            if ($id <= 0 || strlen($newPhone) < 8) {
+            if ($id <= 0 || strlen($newPhone) < 6 || strlen($newPhone) > 16 || preg_match('/^(\d)\1+$/', $newPhone)) {
                 json_out(422, ['status' => 'error', 'message' => 'ID o teléfono inválido']);
             }
 
@@ -547,9 +587,9 @@ try {
         }
 
         $phone = clean_phone_number((string) ($data['telefono'] ?? ''));
-        $nombre = trim((string) ($data['nombre'] ?? ''));
-        $apellido = trim((string) ($data['apellido'] ?? ''));
-        $nombreCompleto = trim((string) ($data['nombre_completo'] ?? ''));
+        $nombre = mb_substr(trim((string) ($data['nombre'] ?? '')), 0, 60, 'UTF-8');
+        $apellido = mb_substr(trim((string) ($data['apellido'] ?? '')), 0, 60, 'UTF-8');
+        $nombreCompleto = mb_substr(trim((string) ($data['nombre_completo'] ?? '')), 0, 120, 'UTF-8');
 
         if ($nombreCompleto === '' && ($nombre !== '' || $apellido !== '')) {
             $nombreCompleto = trim($nombre . ' ' . $apellido);
@@ -559,7 +599,7 @@ try {
             $apellido = $parts[1] ?? '';
         }
 
-        if (strlen($phone) < 8 || $nombreCompleto === '') {
+        if (strlen($phone) < 6 || strlen($phone) > 16 || preg_match('/^(\d)\1+$/', $phone) || $nombreCompleto === '') {
             json_out(422, ['status' => 'error', 'message' => 'Nombre, apellido y teléfono son obligatorios']);
         }
 
@@ -575,19 +615,25 @@ try {
         }
 
         $nombrePila = extract_first_name($nombreCompleto);
-        $dni = !empty($data['dni']) ? trim((string) $data['dni']) : null;
+        $dni = !empty($data['dni']) ? mb_substr(trim((string) $data['dni']), 0, 20, 'UTF-8') : null;
         $email = !empty($data['email']) ? trim((string) $data['email']) : null;
+        if (!is_valid_email_strict($email)) {
+            json_out(422, ['status' => 'error', 'message' => 'El formato del correo electrónico no es válido']);
+        }
         $profesional = in_array($data['profesional_habitual'] ?? '', ['norberto', 'maria', 'indistinto'], true) 
             ? $data['profesional_habitual'] 
             : 'indistinto';
-        $motivo = !empty($data['motivo_consulta']) ? trim((string) $data['motivo_consulta']) : null;
-        $notas = !empty($data['notas']) ? trim((string) $data['notas']) : null;
-        $contactoNombre = !empty($data['contacto_nombre']) ? trim((string) $data['contacto_nombre']) : null;
+        $motivo = !empty($data['motivo_consulta']) ? mb_substr(trim((string) $data['motivo_consulta']), 0, 255, 'UTF-8') : null;
+        $notas = !empty($data['notas']) ? mb_substr(trim((string) $data['notas']), 0, 2000, 'UTF-8') : null;
+        $contactoNombre = !empty($data['contacto_nombre']) ? mb_substr(trim((string) $data['contacto_nombre']), 0, 120, 'UTF-8') : null;
         $contactoTelRaw = (string) ($data['contacto_telefono'] ?? '');
         $contactoTel = $contactoTelRaw !== '' ? clean_phone_number($contactoTelRaw) : null;
         if ($contactoTel === '') $contactoTel = null;
         $contactoEmail = !empty($data['contacto_email']) ? trim((string) $data['contacto_email']) : null;
-        $contactoNotas = !empty($data['contacto_notas']) ? trim((string) $data['contacto_notas']) : null;
+        if (!is_valid_email_strict($contactoEmail)) {
+            json_out(422, ['status' => 'error', 'message' => 'El correo electrónico de contacto no es válido']);
+        }
+        $contactoNotas = !empty($data['contacto_notas']) ? mb_substr(trim((string) $data['contacto_notas']), 0, 100, 'UTF-8') : null;
 
         $stmt = $pdo->prepare('
             UPDATE pacientes SET

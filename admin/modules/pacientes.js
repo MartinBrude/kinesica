@@ -69,6 +69,47 @@ export function formatDisplayPhone(raw) {
   return `+${digits}`;
 }
 
+export function isValidAdminEmail(raw) {
+  const s = String(raw || "").trim();
+  if (!s) return true; // opcional en pacientes del admin
+  if (s.length > 120 || /\s/.test(s)) return false;
+  const parts = s.split("@");
+  if (parts.length !== 2) return false;
+  const [local, domain] = parts;
+  if (!local || !domain || local.length > 64 || domain.length > 253) return false;
+  if (local.startsWith(".") || local.endsWith(".") || local.includes("..")) return false;
+  if (domain.startsWith(".") || domain.endsWith(".") || domain.includes("..")) return false;
+  if (!/^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+$/.test(local)) return false;
+  const labels = domain.split(".");
+  if (labels.length < 2) return false;
+  const tld = labels[labels.length - 1];
+  if (!/^[A-Za-z]{2,24}$/.test(tld)) return false;
+  return labels.every((lbl) => lbl.length > 0 && lbl.length <= 63 && /^[A-Za-z0-9-]+$/.test(lbl) && !lbl.startsWith("-") && !lbl.endsWith("-"));
+}
+
+export function inspectAdminPhone(raw) {
+  const trimmed = String(raw || "").trim();
+  const digits = trimmed.replace(/\D/g, "");
+  if (digits.length < 6 || digits.length > 16 || /^(\d)\1+$/.test(digits)) {
+    return { valid: false, standard: false, digits };
+  }
+  const hasIntlPrefix = trimmed.startsWith("+") || trimmed.startsWith("00");
+  const isStandardAr =
+    (/^549?\d{10}$/.test(digits)) ||
+    (/^0?(?:11|[23]\d{2,3})\d{6,8}$/.test(digits) && digits.length >= 10 && digits.length <= 11) ||
+    (/^0?1115\d{8}$/.test(digits)) ||
+    (/^15\d{8}$/.test(digits)) ||
+    (/^\d{8}$/.test(digits) && !hasIntlPrefix);
+  const isStandardIntl =
+    (hasIntlPrefix && digits.length >= 8 && digits.length <= 15) ||
+    (/^(?:34\d{9}|598\d{8,9}|56\d{9}|55\d{10,11}|595\d{9}|591\d{8}|51\d{9}|57\d{10}|52\d{10}|1\d{10}|44\d{10}|33\d{9}|39\d{9,10}|49\d{10,11})$/.test(digits));
+  return {
+    valid: true,
+    standard: Boolean(isStandardAr || isStandardIntl),
+    digits,
+  };
+}
+
 export function showPacientesView() {
   if (viewPacientes) {
     viewPacientes.hidden = false;
@@ -251,29 +292,29 @@ function openFullPacienteModal(paciente = null) {
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
             <div class="paciente-modal-field">
               <label>Nombre *</label>
-              <input type="text" id="modal-p-nombre" value="${escapeHtml(nombreVal)}" placeholder="Ej: Florencia" required autofocus>
+              <input type="text" id="modal-p-nombre" value="${escapeHtml(nombreVal)}" placeholder="Ej: Florencia" maxlength="60" required autofocus>
             </div>
             <div class="paciente-modal-field">
               <label>Apellido *</label>
-              <input type="text" id="modal-p-apellido" value="${escapeHtml(apellidoVal)}" placeholder="Ej: González" required>
+              <input type="text" id="modal-p-apellido" value="${escapeHtml(apellidoVal)}" placeholder="Ej: González" maxlength="60" required>
             </div>
           </div>
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
             <div class="paciente-modal-field">
               <label>Teléfono (WhatsApp) *</label>
-              <input type="tel" id="modal-p-tel" value="${escapeHtml(paciente?.telefono || "")}" placeholder="Ej: 11 6123-4567 o 54911..." required>
+              <input type="tel" id="modal-p-tel" value="${escapeHtml(paciente?.telefono || "")}" placeholder="Ej: 11 6123-4567 o +34..." maxlength="24" inputmode="tel" required>
               <small>Para WhatsApp y recordatorios automáticos.</small>
             </div>
             <div class="paciente-modal-field">
               <label>Email</label>
-              <input type="email" id="modal-p-email" value="${escapeHtml(paciente?.email || "")}" placeholder="ejemplo@email.com">
+              <input type="email" id="modal-p-email" value="${escapeHtml(paciente?.email || "")}" placeholder="ejemplo@email.com" maxlength="120" inputmode="email" autocapitalize="off" spellcheck="false">
               <small>Para avisos y confirmaciones de turnos.</small>
             </div>
           </div>
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
             <div class="paciente-modal-field">
               <label>DNI / Documento</label>
-              <input type="text" id="modal-p-dni" value="${escapeHtml(paciente?.dni || "")}" placeholder="Opcional">
+              <input type="text" id="modal-p-dni" value="${escapeHtml(paciente?.dni || "")}" placeholder="Opcional" maxlength="20">
             </div>
             <div class="paciente-modal-field">
               <label>Profesional Habitual</label>
@@ -286,11 +327,11 @@ function openFullPacienteModal(paciente = null) {
           </div>
           <div class="paciente-modal-field">
             <label>Motivo de Consulta / Disciplina</label>
-            <input type="text" id="modal-p-motivo" value="${escapeHtml(paciente?.motivo_consulta || "")}" placeholder="Ej: ATM, RPG, Cervicalgia, Lumbalgia">
+            <input type="text" id="modal-p-motivo" value="${escapeHtml(paciente?.motivo_consulta || "")}" placeholder="Ej: ATM, RPG, Cervicalgia, Lumbalgia" maxlength="255">
           </div>
           <div class="paciente-modal-field">
             <label>Notas Clínicas / Administrativas</label>
-            <textarea id="modal-p-notas" rows="2" placeholder="Observaciones opcionales">${escapeHtml(paciente?.notas || "")}</textarea>
+            <textarea id="modal-p-notas" rows="2" placeholder="Observaciones opcionales" maxlength="2000">${escapeHtml(paciente?.notas || "")}</textarea>
           </div>
           <div style="margin-top: 12px; padding: 12px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
             <div style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 8px; text-transform: uppercase;">
@@ -299,21 +340,21 @@ function openFullPacienteModal(paciente = null) {
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 8px;">
               <div class="paciente-modal-field">
                 <label>Nombre de quien agenda</label>
-                <input type="text" id="modal-p-contacto-nombre" value="${escapeHtml(paciente?.contacto_nombre || "")}" placeholder="Ej: Laura Gómez (familiar / cónyuge / secretaria)">
+                <input type="text" id="modal-p-contacto-nombre" value="${escapeHtml(paciente?.contacto_nombre || "")}" placeholder="Ej: Laura Gómez (familiar / cónyuge / secretaria)" maxlength="120">
               </div>
               <div class="paciente-modal-field">
                 <label>Teléfono de contacto (WhatsApp)</label>
-                <input type="tel" id="modal-p-contacto-tel" value="${escapeHtml(paciente?.contacto_telefono || "")}" placeholder="Ej: 11 6123-4567 o 54911...">
+                <input type="tel" id="modal-p-contacto-tel" value="${escapeHtml(paciente?.contacto_telefono || "")}" placeholder="Ej: 11 6123-4567 o +34..." maxlength="24" inputmode="tel">
               </div>
             </div>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
               <div class="paciente-modal-field">
                 <label>Email de contacto</label>
-                <input type="email" id="modal-p-contacto-email" value="${escapeHtml(paciente?.contacto_email || "")}" placeholder="contacto@ejemplo.com">
+                <input type="email" id="modal-p-contacto-email" value="${escapeHtml(paciente?.contacto_email || "")}" placeholder="contacto@ejemplo.com" maxlength="120" inputmode="email" autocapitalize="off" spellcheck="false">
               </div>
               <div class="paciente-modal-field">
                 <label>Relación o rol</label>
-                <input type="text" id="modal-p-contacto-notas" value="${escapeHtml(paciente?.contacto_notas || "")}" placeholder="Ej: Cónyuge, Hijo/a, Secretaria">
+                <input type="text" id="modal-p-contacto-notas" value="${escapeHtml(paciente?.contacto_notas || "")}" placeholder="Ej: Cónyuge, Hijo/a, Secretaria" maxlength="100">
               </div>
             </div>
           </div>
@@ -335,6 +376,42 @@ function openFullPacienteModal(paciente = null) {
   const form = backdrop.querySelector("#form-full-paciente");
   const errorEl = backdrop.querySelector("#modal-p-error");
   const submitBtn = backdrop.querySelector("#btn-submit-paciente");
+  const confirmedWeirdPhones = new Set();
+
+  // Restricción de input en tiempo real en el modal
+  ["#modal-p-tel", "#modal-p-contacto-tel"].forEach((sel) => {
+    const el = backdrop.querySelector(sel);
+    if (el) {
+      el.addEventListener("input", () => {
+        const cleaned = el.value.replace(/[^0-9+\-().\s]/g, "");
+        const hasPlus = cleaned.trimStart().startsWith("+");
+        const noPlus = cleaned.replace(/\+/g, "");
+        const next = (hasPlus ? "+" + noPlus : noPlus).slice(0, 24);
+        if (next !== el.value) el.value = next;
+        errorEl.hidden = true;
+      });
+    }
+  });
+  ["#modal-p-email", "#modal-p-contacto-email"].forEach((sel) => {
+    const el = backdrop.querySelector(sel);
+    if (el) {
+      el.addEventListener("input", () => {
+        const next = el.value.replace(/[\s<>(),;:"[\]\\]/g, "").slice(0, 120);
+        if (next !== el.value) el.value = next;
+        errorEl.hidden = true;
+      });
+    }
+  });
+  ["#modal-p-nombre", "#modal-p-apellido", "#modal-p-contacto-nombre"].forEach((sel) => {
+    const el = backdrop.querySelector(sel);
+    if (el) {
+      el.addEventListener("input", () => {
+        const next = el.value.replace(/[^\p{L}\p{M}\s'.\-]/gu, "").replace(/\s{2,}/g, " ");
+        if (next !== el.value) el.value = next;
+        errorEl.hidden = true;
+      });
+    }
+  });
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -355,6 +432,45 @@ function openFullPacienteModal(paciente = null) {
       errorEl.textContent = "Nombre, apellido y teléfono son obligatorios.";
       errorEl.hidden = false;
       return;
+    }
+
+    if (!isValidAdminEmail(email)) {
+      errorEl.textContent = "El correo electrónico ingresado no tiene un formato válido.";
+      errorEl.hidden = false;
+      return;
+    }
+    if (!isValidAdminEmail(contactoEmail)) {
+      errorEl.textContent = "El correo electrónico de contacto no tiene un formato válido.";
+      errorEl.hidden = false;
+      return;
+    }
+
+    const telInfo = inspectAdminPhone(tel);
+    if (!telInfo.valid) {
+      errorEl.textContent = "Por favor ingresá un número de teléfono válido.";
+      errorEl.hidden = false;
+      return;
+    }
+    if (!telInfo.standard && !confirmedWeirdPhones.has(telInfo.digits)) {
+      confirmedWeirdPhones.add(telInfo.digits);
+      errorEl.textContent = "¿El teléfono es correcto? Si es de otro país o ya lo revisaste, volvé a tocar Guardar para confirmar.";
+      errorEl.hidden = false;
+      return;
+    }
+
+    if (contactoTel) {
+      const cTelInfo = inspectAdminPhone(contactoTel);
+      if (!cTelInfo.valid) {
+        errorEl.textContent = "El teléfono de contacto no es válido.";
+        errorEl.hidden = false;
+        return;
+      }
+      if (!cTelInfo.standard && !confirmedWeirdPhones.has(cTelInfo.digits)) {
+        confirmedWeirdPhones.add(cTelInfo.digits);
+        errorEl.textContent = "¿El teléfono de contacto es correcto? Si es de otro país o ya lo revisaste, volvé a tocar Guardar.";
+        errorEl.hidden = false;
+        return;
+      }
     }
 
     const nombreCompleto = `${nombre} ${apellido}`.trim();

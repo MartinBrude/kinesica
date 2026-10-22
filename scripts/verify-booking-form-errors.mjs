@@ -98,13 +98,79 @@ test("plantilla: cada campo tiene su contenedor role=alert y se cablea el evento
   for (const f of ["contacto-nombre", "contacto-telefono", "nombre", "email", "telefono", "dni"]) {
     assert.match(src, new RegExp(`id="kb-err-${f}" role="alert"`));
   }
-  assert.match(src, /addEventListener\("input", \(\) => this\.clearFieldError\(field\)\)/);
+  assert.match(src, /addEventListener\("input",\s*\(\)\s*=>\s*\{[\s\S]*?this\.clearFieldError\(field\)/);
   assert.doesNotMatch(src, /showError\("Por favor ingresá/, "ya no hay avisos transitorios del formulario");
 });
 
-test("i18n: los 4 idiomas tienen los textos de error", () => {
-  for (const k of ["errContactName", "errContactPhone", "errPatientName", "errPhone", "emailInvalid"]) {
+test("i18n: los 4 idiomas tienen los textos de error y confirmación de teléfono", () => {
+  for (const k of ["errContactName", "errContactPhone", "errPatientName", "errPhone", "phoneConfirm", "emailInvalid"]) {
     assert.equal((src.match(new RegExp(`\\b${k}: "`, "g")) || []).length, 4, k);
+  }
+});
+
+test("restricción de input en vivo (sanitizeFieldInput): filtra caracteres inválidos antes de enviar", () => {
+  assert.equal(BookingWidget.sanitizeFieldInput("telefono", "+54 abc 9 11 2233-4455!"), "+54  9 11 2233-4455");
+  assert.equal(BookingWidget.sanitizeFieldInput("telefono", "11+22+33"), "112233", "el + solo se permite al inicio");
+  assert.equal(BookingWidget.sanitizeFieldInput("email", " juan.perez @ gmail.com "), "juan.perez@gmail.com");
+  assert.equal(BookingWidget.sanitizeFieldInput("nombre", "María José 123 @$!"), "María José ");
+  assert.equal(BookingWidget.sanitizeFieldInput("dni", "30.123.456<script>"), "30.123.456script");
+});
+
+test("validación estricta de email: rechaza dominios o sintaxis inválida", () => {
+  for (const valid of ["ana@ejemplo.com", "juan.perez+turnos@clinica.com.ar", "user_1@sub.domain.org"]) {
+    assert.equal(BookingWidget.isValidEmail(valid), true, `debe aceptar ${valid}`);
+  }
+  for (const invalid of ["", "sin-arroba.com", "a@b", "a@b.c", "a..b@ejemplo.com", ".ana@ejemplo.com", "ana@ejemplo..com", "ana@-ejemplo.com", "ana@ejemplo.123", "ana perez@ejemplo.com"]) {
+    assert.equal(BookingWidget.isValidEmail(invalid), false, `debe rechazar ${invalid}`);
+  }
+});
+
+test("teléfonos internacionales y argentinos estándar pasan directo sin repregunta", () => {
+  for (const stdPhone of [
+    "11 6156-4311",
+    "+54 9 11 6156 4311",
+    "011 15 6156 4311",
+    "+34 612 345 678",
+    "+598 99 123 456",
+    "+56 9 8765 4321",
+    "+55 11 98765 4321",
+    "+1 305 555 0199",
+    "0034 612 345 678",
+  ]) {
+    assert.deepEqual(
+      BookingWidget.validateContactForm({ ...ok, telefono: stdPhone }, t),
+      [],
+      `debe aceptar directo ${stdPhone}`
+    );
+  }
+});
+
+test("teléfono con formato inusual (>=6 dígitos): repregunta una vez pero siempre deja pasar al confirmar", () => {
+  const unusual = "4567890"; // 7 dígitos sin prefijo internacional ni formato AR estándar
+  const confirmedPhones = new Set();
+  const firstAttempt = BookingWidget.validateContactForm(
+    { ...ok, telefono: unusual, confirmedPhones },
+    t
+  );
+  assert.equal(firstAttempt.length, 1);
+  assert.equal(firstAttempt[0].field, "telefono");
+  assert.equal(firstAttempt[0].message, "T:phoneConfirm");
+  assert.equal(firstAttempt[0].isSoftPhoneConfirm, true);
+  // Al registrar que ya se repreguntó ese número, el segundo intento pasa sin bloquear
+  confirmedPhones.add(firstAttempt[0].phoneDigits);
+  const secondAttempt = BookingWidget.validateContactForm(
+    { ...ok, telefono: unusual, confirmedPhones },
+    t
+  );
+  assert.deepEqual(secondAttempt, []);
+});
+
+test("teléfono inválido (<6 dígitos o todos repetidos): bloquea siempre", () => {
+  for (const bad of ["12345", "1111111111", "00000000", "abc"]) {
+    const errs = BookingWidget.validateContactForm({ ...ok, telefono: bad }, t);
+    assert.equal(errs.length, 1, `debe bloquear ${bad}`);
+    assert.equal(errs[0].message, "T:errPhone");
+    assert.ok(!errs[0].isSoftPhoneConfirm);
   }
 });
 

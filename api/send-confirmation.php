@@ -56,8 +56,25 @@ $esMenor = !empty($data['esMenor']) || !empty($data['isMenor']);
 $tipo = strtolower(trim($data['tipo'] ?? 'confirmacion'));
 $esCancelacion = in_array($tipo, ['cancelacion', 'cancelación', 'anulacion', 'anulación'], true);
 
-// Validaciones básicas
-if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+// Validaciones estrictas en la frontera
+$isValidEmail = static function (string $raw): bool {
+    $s = trim($raw);
+    if ($s === '' || strlen($s) > 120 || preg_match('/\s/', $s)) {
+        return false;
+    }
+    if (!filter_var($s, FILTER_VALIDATE_EMAIL)) {
+        return false;
+    }
+    $parts = explode('@', $s);
+    if (count($parts) !== 2) {
+        return false;
+    }
+    $labels = explode('.', $parts[1]);
+    $tld = end($labels);
+    return count($labels) >= 2 && is_string($tld) && (bool) preg_match('/^[A-Za-z]{2,24}$/', $tld);
+};
+
+if (!$isValidEmail($email)) {
     http_response_code(400);
     echo json_encode(['success' => false, 'error' => 'Email no provisto o con formato inválido.']);
     exit;
@@ -127,32 +144,57 @@ if ($rawPhone !== '') {
             $db->exec("ALTER TABLE pacientes ADD INDEX idx_pacientes_email (email)");
         }
 
-        // Limpieza y normalización de teléfono
-        $digits = preg_replace('/[^0-9]/', '', $rawPhone) ?? '';
-        if (str_starts_with($digits, '549') && strlen($digits) >= 12) {
-            $phone = substr($digits, 0, 13);
-        } elseif (str_starts_with($digits, '54') && !str_starts_with($digits, '549') && strlen($digits) >= 12) {
-            $phone = '549' . substr($digits, 2, 10);
-        } elseif (str_starts_with($digits, '0')) {
-            $phone = '549' . substr($digits, 1);
-        } elseif (str_starts_with($digits, '15') && strlen($digits) === 10) {
-            $phone = '54911' . substr($digits, 2);
-        } elseif (str_starts_with($digits, '11') && strlen($digits) === 10) {
-            $phone = '549' . $digits;
-        } elseif (!str_starts_with($digits, '549') && strlen($digits) === 10) {
-            $phone = '549' . $digits;
-        } else {
-            $phone = $digits;
-        }
+        // Limpieza y normalización de teléfono (Argentina e internacionales)
+        $normalizePhone = static function (string $raw): string {
+            $trimmed = trim($raw);
+            $hasIntlPrefix = str_starts_with($trimmed, '+') || str_starts_with($trimmed, '00');
+            $digits = preg_replace('/[^0-9]/', '', $trimmed) ?? '';
+            if ($digits === '') {
+                return '';
+            }
+            if (str_starts_with($trimmed, '00') && str_starts_with($digits, '00')) {
+                $digits = substr($digits, 2);
+            }
+            if (str_starts_with($digits, '549') && strlen($digits) >= 12) {
+                return substr($digits, 0, 13);
+            }
+            if (str_starts_with($digits, '54') && !str_starts_with($digits, '549') && strlen($digits) >= 12) {
+                return '549' . substr($digits, 2, 10);
+            }
+            if ($hasIntlPrefix && !str_starts_with($digits, '54')) {
+                return substr($digits, 0, 16);
+            }
+            if (preg_match('/^(?:34\d{9}|598\d{8,9}|56\d{9}|55\d{10,11}|595\d{9}|591\d{8}|51\d{9}|57\d{10}|52\d{10}|1\d{10}|44\d{10}|33\d{9}|39\d{9,10}|49\d{10,11})$/', $digits)) {
+                return $digits;
+            }
+            if (str_starts_with($digits, '0')) {
+                $digits = substr($digits, 1);
+            }
+            if (str_starts_with($digits, '15') && strlen($digits) === 10) {
+                return '54911' . substr($digits, 2);
+            }
+            if (str_starts_with($digits, '1115') && strlen($digits) === 12) {
+                return '54911' . substr($digits, 4);
+            }
+            if (str_starts_with($digits, '11') && strlen($digits) === 10) {
+                return '549' . $digits;
+            }
+            if (!str_starts_with($digits, '549') && strlen($digits) === 10 && preg_match('/^(?:2|3)\d{9}$/', $digits)) {
+                return '549' . $digits;
+            }
+            return substr($digits, 0, 16);
+        };
 
-        if (strlen($phone) >= 8) {
-            $fullName = trim($paciente);
+        $phone = $normalizePhone($rawPhone);
+
+        if (strlen($phone) >= 6 && !preg_match('/^(\d)\1+$/', $phone)) {
+            $fullName = mb_substr(trim($paciente), 0, 120, 'UTF-8');
             $parts = preg_split('/\s+/u', $fullName, 2, PREG_SPLIT_NO_EMPTY) ?: [];
-            $nom = $parts[0] ?? $fullName;
-            $ape = $parts[1] ?? '';
+            $nom = mb_substr($parts[0] ?? $fullName, 0, 60, 'UTF-8');
+            $ape = mb_substr($parts[1] ?? '', 0, 60, 'UTF-8');
             $pila = $nom;
-            $dniVal = !empty($data['dni']) && trim((string) $data['dni']) !== 'No provisto' ? trim((string) $data['dni']) : null;
-            $motivoVal = !empty($data['motivo']) ? trim((string) $data['motivo']) : (!empty($servicio) ? $servicio : null);
+            $dniVal = !empty($data['dni']) && trim((string) $data['dni']) !== 'No provisto' ? mb_substr(trim((string) $data['dni']), 0, 20, 'UTF-8') : null;
+            $motivoVal = !empty($data['motivo']) ? mb_substr(trim((string) $data['motivo']), 0, 255, 'UTF-8') : (!empty($servicio) ? mb_substr($servicio, 0, 255, 'UTF-8') : null);
 
             $profVal = 'indistinto';
             if (stripos($profesional, 'Norberto') !== false) {
@@ -161,15 +203,13 @@ if ($rawPhone !== '') {
                 $profVal = 'maria';
             }
 
-            $contactoNombre = !empty($data['contactoNombre']) ? trim((string) $data['contactoNombre']) : (!empty($data['contacto_nombre']) ? trim((string) $data['contacto_nombre']) : null);
+            $contactoNombre = !empty($data['contactoNombre']) ? mb_substr(trim((string) $data['contactoNombre']), 0, 120, 'UTF-8') : (!empty($data['contacto_nombre']) ? mb_substr(trim((string) $data['contacto_nombre']), 0, 120, 'UTF-8') : null);
             $contactoTelRaw = !empty($data['contactoTelefono']) ? (string) $data['contactoTelefono'] : (!empty($data['contacto_telefono']) ? (string) $data['contacto_telefono'] : '');
-            $contactoTel = $contactoTelRaw !== '' ? preg_replace('/[^0-9]/', '', $contactoTelRaw) : null;
-            if ($contactoTel && str_starts_with($contactoTel, '549') && strlen($contactoTel) >= 12) {
-                $contactoTel = substr($contactoTel, 0, 13);
-            } elseif ($contactoTel && str_starts_with($contactoTel, '11') && strlen($contactoTel) === 10) {
-                $contactoTel = '549' . $contactoTel;
+            $contactoTel = $contactoTelRaw !== '' ? $normalizePhone($contactoTelRaw) : null;
+            if ($contactoTel === '') {
+                $contactoTel = null;
             }
-            $contactoNotas = !empty($data['contactoNotas']) ? trim((string) $data['contactoNotas']) : (!empty($data['contacto_notas']) ? trim((string) $data['contacto_notas']) : null);
+            $contactoNotas = !empty($data['contactoNotas']) ? mb_substr(trim((string) $data['contactoNotas']), 0, 100, 'UTF-8') : (!empty($data['contacto_notas']) ? mb_substr(trim((string) $data['contacto_notas']), 0, 100, 'UTF-8') : null);
 
             $stmtUpsert = $db->prepare('
                 INSERT INTO pacientes (

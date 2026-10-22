@@ -96,9 +96,21 @@ export async function loadHonorarios() {
 }
 
 export function initHonorariosModule() {
-  inputAtm?.addEventListener("input", updatePreview);
-  inputGeneral?.addEventListener("input", updatePreview);
-  inputPayment?.addEventListener("input", updatePreview);
+  const restrictNumericFee = (el) => {
+    if (!el) return;
+    el.addEventListener("input", () => {
+      const clean = String(el.value || "").replace(/\D/g, "").slice(0, 8);
+      if (clean !== el.value) el.value = clean;
+      updatePreview();
+    });
+  };
+  restrictNumericFee(inputAtm);
+  restrictNumericFee(inputGeneral);
+  inputPayment?.addEventListener("input", () => {
+    const clean = String(inputPayment.value || "").replace(/[<>]/g, "").slice(0, 160);
+    if (clean !== inputPayment.value) inputPayment.value = clean;
+    updatePreview();
+  });
 
   btnSave?.addEventListener("click", async () => {
     btnSave.disabled = true;

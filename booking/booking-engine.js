@@ -543,21 +543,41 @@
    * @param {string} req.date - Fecha YYYY-MM-DD
    * @param {string} req.time - Hora HH:mm
    */
+  function isValidEmailAddress(raw) {
+    const s = String(raw || "").trim();
+    if (!s || s.length > 120 || /\s/.test(s)) return false;
+    const parts = s.split("@");
+    if (parts.length !== 2) return false;
+    const local = parts[0];
+    const domain = parts[1];
+    if (!local || !domain || local.length > 64 || domain.length > 253) return false;
+    if (local.startsWith(".") || local.endsWith(".") || local.indexOf("..") !== -1) return false;
+    if (domain.startsWith(".") || domain.endsWith(".") || domain.indexOf("..") !== -1) return false;
+    if (!/^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+$/.test(local)) return false;
+    const labels = domain.split(".");
+    if (labels.length < 2) return false;
+    const tld = labels[labels.length - 1];
+    if (!/^[A-Za-z]{2,24}$/.test(tld)) return false;
+    return labels.every(function (lbl) {
+      return lbl.length > 0 && lbl.length <= 63 && /^[A-Za-z0-9-]+$/.test(lbl) && !lbl.startsWith("-") && !lbl.endsWith("-");
+    });
+  }
+
   function validateBookingRequest(req) {
     const errors = [];
 
-    if (!req.nombre || req.nombre.trim().length < 3) {
+    if (!req.nombre || req.nombre.trim().length < 3 || req.nombre.trim().length > 120) {
       errors.push("El nombre y apellido completo es obligatorio (mínimo 3 caracteres).");
     }
 
     const cleanPhone = String(req.telefono || "").replace(/[^0-9]/g, "");
-    if (!cleanPhone || cleanPhone.length < 8) {
+    if (!cleanPhone || cleanPhone.length < 6 || cleanPhone.length > 16 || /^(\d)\1+$/.test(cleanPhone)) {
       errors.push("El número de teléfono o WhatsApp ingresado no es válido.");
     }
 
     if (req.email !== undefined && req.email !== null && String(req.email).trim() !== "") {
       const email = String(req.email).trim();
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      if (!isValidEmailAddress(email)) {
         errors.push("El correo electrónico ingresado no es válido.");
       }
     }
