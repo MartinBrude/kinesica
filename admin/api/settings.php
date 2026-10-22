@@ -6,7 +6,7 @@ require_once __DIR__ . '/horarios.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
-$settingsFile = __DIR__ . '/settings.json';
+$settingsFile = kinesica_settings_source_file();
 
 function get_runtime_settings(string $file): array
 {
@@ -32,106 +32,100 @@ if ($method === 'POST') {
     $user = require_auth();
 
     $input = read_json();
-    $current = get_runtime_settings($settingsFile);
+    $userName = (string) ($user['name'] ?: $user['username']);
 
-    if (isset($input['clara_active'])) {
-        $current['clara_active'] = (bool) $input['clara_active'];
-    }
-    if (isset($input['booking_active'])) {
-        $current['booking_active'] = (bool) $input['booking_active'];
-    }
-    if (isset($input['fees']) && is_array($input['fees'])) {
-        $atmVal = isset($input['fees']['atm']) ? (int) $input['fees']['atm'] : ($current['fees']['atm'] ?? 65000);
-        $genVal = isset($input['fees']['general']) ? (int) $input['fees']['general'] : ($current['fees']['general'] ?? 75000);
-        $payVal = isset($input['fees']['payment_methods']) ? trim((string) $input['fees']['payment_methods']) : ($current['fees']['payment_methods'] ?? 'Efectivo o transferencia bancaria');
-        $current['fees'] = [
-            'atm' => max(0, $atmVal),
-            'general' => max(0, $genVal),
-            'payment_methods' => $payVal ?: 'Efectivo o transferencia bancaria',
-            'updated_at' => gmdate('Y-m-d\TH:i:s\Z'),
-            'updated_by' => (string) ($user['name'] ?: $user['username']),
-        ];
-    }
+    try {
+        kinesica_update_settings(function (array $raw) use ($input, $userName): array {
+            $current = load_full_runtime_settings(kinesica_settings_source_file());
+            $now = gmdate('Y-m-d\TH:i:s\Z');
 
-    if (isset($input['practitioner_hours']) && is_array($input['practitioner_hours'])) {
-        $val = validate_practitioner_hours_php($input['practitioner_hours']);
-        if (!$val['isValid']) {
-            json_out(422, [
-                'error' => implode(' ', $val['errors']),
-                'errors' => $val['errors'],
-                'conflicts' => $val['conflicts'],
-            ]);
-        }
-        $current['practitioner_hours'] = $val['normalized'];
-        $current['horarios_updated_at'] = gmdate('Y-m-d\TH:i:s\Z');
-        $current['horarios_updated_by'] = (string) ($user['name'] ?: $user['username']);
-    }
-
-    if (isset($input['clara_texts']) && is_array($input['clara_texts'])) {
-        $allowed = ['menu_welcome', 'opt_a_text', 'opt_b_text', 'opt_c_text', 'opt_d_text', 'cancellation_policy', 'confirmation_notes', 'reminder_text', 'reminder_notes'];
-        $cleanTexts = $current['clara_texts'] ?? [];
-        foreach ($allowed as $field) {
-            if (isset($input['clara_texts'][$field])) {
-                $cleanTexts[$field] = trim((string) $input['clara_texts'][$field]);
+            if (isset($input['clara_active'])) {
+                $raw['clara_active'] = (bool) $input['clara_active'];
             }
-        }
-        $cleanTexts['updated_at'] = gmdate('Y-m-d\TH:i:s\Z');
-        $cleanTexts['updated_by'] = (string) ($user['name'] ?: $user['username']);
-        $current['clara_texts'] = $cleanTexts;
-    }
-
-    if (isset($input['custom_menu_options']) || isset($input['clara_texts']['custom_menu_options'])) {
-        $rawOpts = $input['custom_menu_options'] ?? ($input['clara_texts']['custom_menu_options'] ?? []);
-        $cleanOpts = [];
-        if (is_array($rawOpts)) {
-            $reserved = ['A', 'B', 'C', 'D', 'E'];
-            foreach ($rawOpts as $row) {
-                if (!is_array($row)) continue;
-                $letter = strtoupper(trim((string) ($row['letter'] ?? '')));
-                $label = trim((string) ($row['label'] ?? ($row['title'] ?? '')));
-                $response = trim((string) ($row['response'] ?? ($row['text'] ?? '')));
-                if ($letter === '' || in_array($letter, $reserved, true)) continue;
-                if ($label === '' && $response === '') continue;
-                $cleanOpts[] = [
-                    'letter' => $letter,
-                    'label' => $label,
-                    'response' => $response,
+            if (isset($input['booking_active'])) {
+                $raw['booking_active'] = (bool) $input['booking_active'];
+            }
+            if (isset($input['fees']) && is_array($input['fees'])) {
+                $fees = $current['fees'];
+                $atmVal = isset($input['fees']['atm']) ? (int) $input['fees']['atm'] : ($fees['atm'] ?? 65000);
+                $genVal = isset($input['fees']['general']) ? (int) $input['fees']['general'] : ($fees['general'] ?? 75000);
+                $payVal = isset($input['fees']['payment_methods']) ? trim((string) $input['fees']['payment_methods']) : ($fees['payment_methods'] ?? 'Efectivo o transferencia bancaria');
+                $raw['fees'] = [
+                    'atm' => max(0, $atmVal),
+                    'general' => max(0, $genVal),
+                    'payment_methods' => $payVal ?: 'Efectivo o transferencia bancaria',
+                    'updated_at' => $now,
+                    'updated_by' => $userName,
                 ];
             }
-        }
-        $current['custom_menu_options'] = $cleanOpts;
-        if (isset($current['clara_texts'])) {
-            $current['clara_texts']['custom_menu_options'] = $cleanOpts;
-        }
-    }
 
-    $toPersist = [
-        'clara_active' => $current['clara_active'],
-        'booking_active' => $current['booking_active'],
-        'fees' => $current['fees'] ?? [
-            'atm' => 65000,
-            'general' => 75000,
-            'payment_methods' => 'Efectivo o transferencia bancaria',
-            'updated_at' => null,
-            'updated_by' => null,
-        ],
-        'clara_texts' => $current['clara_texts'] ?? null,
-        'custom_menu_options' => $current['custom_menu_options'] ?? [],
-        'practitioner_hours' => $current['practitioner_hours'],
-        'horarios_updated_at' => $current['horarios_updated_at'],
-        'horarios_updated_by' => $current['horarios_updated_by'],
-    ];
+            if (isset($input['practitioner_hours']) && is_array($input['practitioner_hours'])) {
+                $val = validate_practitioner_hours_php($input['practitioner_hours']);
+                if (!$val['isValid']) {
+                    json_out(422, [
+                        'error' => implode(' ', $val['errors']),
+                        'errors' => $val['errors'],
+                        'conflicts' => $val['conflicts'],
+                    ]);
+                }
+                $raw['practitioner_hours'] = $val['normalized'];
+                $raw['horarios_updated_at'] = $now;
+                $raw['horarios_updated_by'] = $userName;
+            }
 
-    $saved = @file_put_contents(
-        $settingsFile,
-        json_encode($toPersist, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE),
-        LOCK_EX
-    );
-    if ($saved === false) {
+            $touchesTexts = (isset($input['clara_texts']) && is_array($input['clara_texts'])) || isset($input['custom_menu_options']);
+            if ($touchesTexts) {
+                // Control optimista: si otro guardado cambió los textos desde que se cargó la página, no pisarlo.
+                $revision = (int) ($raw['clara_texts_revision'] ?? 0);
+                if (array_key_exists('base_revision', $input) && (int) $input['base_revision'] !== $revision) {
+                    throw new KinesicaSettingsConflict('Los textos se modificaron desde otra sesión. Recargá la página para ver la versión actual antes de guardar.');
+                }
+                $raw['clara_texts_revision'] = $revision + 1;
+            }
+
+            if (isset($input['clara_texts']) && is_array($input['clara_texts'])) {
+                $allowed = ['menu_welcome', 'opt_a_text', 'opt_b_text', 'opt_c_text', 'opt_d_text', 'cancellation_policy', 'confirmation_notes', 'reminder_text', 'reminder_notes'];
+                $cleanTexts = isset($raw['clara_texts']) && is_array($raw['clara_texts']) ? $raw['clara_texts'] : [];
+                foreach ($allowed as $field) {
+                    if (isset($input['clara_texts'][$field])) {
+                        $cleanTexts[$field] = trim((string) $input['clara_texts'][$field]);
+                    }
+                }
+                $cleanTexts['updated_at'] = $now;
+                $cleanTexts['updated_by'] = $userName;
+                $raw['clara_texts'] = $cleanTexts;
+            }
+
+            if (isset($input['custom_menu_options']) || isset($input['clara_texts']['custom_menu_options'])) {
+                $rawOpts = $input['custom_menu_options'] ?? ($input['clara_texts']['custom_menu_options'] ?? []);
+                $cleanOpts = [];
+                if (is_array($rawOpts)) {
+                    $reserved = ['A', 'B', 'C', 'D', 'E'];
+                    foreach ($rawOpts as $row) {
+                        if (!is_array($row)) continue;
+                        $letter = strtoupper(trim((string) ($row['letter'] ?? '')));
+                        $label = trim((string) ($row['label'] ?? ($row['title'] ?? '')));
+                        $response = trim((string) ($row['response'] ?? ($row['text'] ?? '')));
+                        if ($letter === '' || in_array($letter, $reserved, true)) continue;
+                        if ($label === '' && $response === '') continue;
+                        $cleanOpts[] = ['letter' => $letter, 'label' => $label, 'response' => $response];
+                    }
+                }
+                $raw['custom_menu_options'] = $cleanOpts;
+                if (isset($raw['clara_texts']) && is_array($raw['clara_texts'])) {
+                    $raw['clara_texts']['custom_menu_options'] = $cleanOpts;
+                }
+            }
+
+            return $raw;
+        });
+    } catch (KinesicaSettingsConflict $e) {
+        json_out(409, ['error' => $e->getMessage(), 'conflict' => true, 'current' => get_runtime_settings(kinesica_settings_source_file())]);
+    } catch (Throwable $e) {
         json_out(500, ['error' => 'No se pudo guardar la configuración.']);
     }
 
-    json_out(200, get_runtime_settings($settingsFile));
+    json_out(200, get_runtime_settings(kinesica_settings_source_file()));
 }
 
 http_response_code(405);

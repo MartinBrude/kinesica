@@ -192,7 +192,7 @@ $fechaLegible = formatearFechaLegible($fechaRaw);
 $horaLegible = $horaRaw ? (strpos($horaRaw, 'hs') === false ? "{$horaRaw} hs" : $horaRaw) : '';
 
 // Textos del admin (settings.json = lo que sirve admin/api/settings.php), con fallback a los actuales.
-$runtimeSettings = kinesica_read_settings(__DIR__ . '/../admin/api/settings.json');
+$runtimeSettings = kinesica_read_settings(kinesica_admin_settings_file(__DIR__));
 $mailTexts = kinesica_mail_texts($runtimeSettings);
 $customCancellationPolicy = $mailTexts['cancellation_policy'];
 $practitionerIdRaw = trim((string) ($data['practitionerId'] ?? $data['practitioner_id'] ?? ''));

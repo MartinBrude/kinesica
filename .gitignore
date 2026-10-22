@@ -8,3 +8,7 @@ css/dist/
 css/dist-cv/
 scripts/reports/css-purge-audit.json
 .DS_Store
+
+# Datos vivos del admin (no versionar: el deploy por git los pisaría)
+admin/api/data/*
+!admin/api/data/.htaccess

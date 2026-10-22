@@ -398,7 +398,77 @@ _(Escribí la letra de la opción deseada, por ejemplo *A* o *C*)_",
         'clara_schedule_summary' => build_clara_schedule_summary($hours),
         'horarios_updated_at' => $data['horarios_updated_at'] ?? null,
         'horarios_updated_by' => $data['horarios_updated_by'] ?? null,
+        'clara_texts_revision' => (int) ($data['clara_texts_revision'] ?? 0),
     ];
+}
+
+/*
+ * Almacenamiento de la configuración del admin.
+ * admin/api/settings.json está versionado en git: cada `git push` (deploy de Hostinger) lo reemplaza en el
+ * servidor por la copia del repo. Por eso los datos vivos se guardan en admin/api/data/settings.json
+ * (no versionado; el deploy no lo toca) y settings.json queda sólo como semilla hasta el primer guardado.
+ */
+function kinesica_settings_runtime_file(): string
+{
+    return __DIR__ . '/data/settings.json';
+}
+
+function kinesica_settings_seed_file(): string
+{
+    return __DIR__ . '/settings.json';
+}
+
+/** Archivo a leer: el de datos vivos si existe; si no, la semilla versionada. */
+function kinesica_settings_source_file(): string
+{
+    $runtime = kinesica_settings_runtime_file();
+    return is_file($runtime) ? $runtime : kinesica_settings_seed_file();
+}
+
+function kinesica_settings_raw(string $file): array
+{
+    if (!is_file($file)) {
+        return [];
+    }
+    $raw = @file_get_contents($file);
+    $data = $raw === false ? null : json_decode($raw, true);
+    return is_array($data) ? $data : [];
+}
+
+final class KinesicaSettingsConflict extends RuntimeException
+{
+}
+
+/**
+ * Lee-modifica-escribe bajo lock exclusivo con escritura atómica (tmp + rename).
+ * $mutate recibe el JSON crudo guardado y devuelve el nuevo: las claves que no toca se conservan
+ * (guardar horarios no borra textos ni honorarios, y viceversa).
+ */
+function kinesica_update_settings(callable $mutate): array
+{
+    $runtime = kinesica_settings_runtime_file();
+    $dir = dirname($runtime);
+    if (!is_dir($dir) && !@mkdir($dir, 0775, true) && !is_dir($dir)) {
+        throw new RuntimeException('No se pudo crear el directorio de datos.');
+    }
+    $lock = @fopen($dir . '/.settings.lock', 'c');
+    if ($lock === false || !flock($lock, LOCK_EX)) {
+        throw new RuntimeException('No se pudo bloquear la configuración.');
+    }
+    try {
+        $current = kinesica_settings_raw(kinesica_settings_source_file());
+        $next = $mutate($current);
+        $tmp = $runtime . '.tmp' . getmypid();
+        $json = json_encode($next, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        if ($json === false || @file_put_contents($tmp, $json) === false || !@rename($tmp, $runtime)) {
+            @unlink($tmp);
+            throw new RuntimeException('No se pudo guardar la configuración.');
+        }
+        return $next;
+    } finally {
+        flock($lock, LOCK_UN);
+        fclose($lock);
+    }
 }
 
 // Si este archivo se incluye como librería desde settings.php, no ejecutar el controlador HTTP
@@ -407,7 +477,7 @@ if (defined('KINESICA_HORARIOS_INCLUDED')) {
 }
 
 header('Content-Type: application/json; charset=utf-8');
-$settingsFile = __DIR__ . '/settings.json';
+$settingsFile = kinesica_settings_source_file();
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 if ($method === 'GET') {
@@ -452,27 +522,15 @@ if ($method === 'POST') {
     $updatedAt = gmdate('Y-m-d\TH:i:s\Z');
     $updatedBy = (string) ($user['name'] ?: $user['username']);
 
-    $toPersist = [
-        'clara_active' => $current['clara_active'],
-        'booking_active' => $current['booking_active'],
-        'fees' => $current['fees'] ?? [
-            'atm' => 65000,
-            'general' => 75000,
-            'payment_methods' => 'Efectivo o transferencia bancaria',
-            'updated_at' => null,
-            'updated_by' => null,
-        ],
-        'practitioner_hours' => $normalizedHours,
-        'horarios_updated_at' => $updatedAt,
-        'horarios_updated_by' => $updatedBy,
-    ];
-
-    $saved = @file_put_contents(
-        $settingsFile,
-        json_encode($toPersist, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE),
-        LOCK_EX
-    );
-    if ($saved === false) {
+    try {
+        // Sólo cambia horarios: textos, honorarios y estados se conservan tal cual.
+        kinesica_update_settings(function (array $raw) use ($normalizedHours, $updatedAt, $updatedBy): array {
+            $raw['practitioner_hours'] = $normalizedHours;
+            $raw['horarios_updated_at'] = $updatedAt;
+            $raw['horarios_updated_by'] = $updatedBy;
+            return $raw;
+        });
+    } catch (Throwable $e) {
         json_out(500, ['error' => 'No se pudieron guardar los horarios en el servidor.']);
     }
 

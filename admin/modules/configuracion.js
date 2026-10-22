@@ -95,6 +95,11 @@ Si tienen estudios médicos previos, no olviden traerlos.`
 };
 
 let currentTexts = { ...DEFAULT_CLARA_TEXTS };
+// Estado de carga de los textos: no se guarda nada hasta haber cargado la versión del servidor,
+// y sólo se envían los campos que cambiaron respecto de lo cargado (con su revisión).
+let textsLoaded = false;
+let textsRevision = null;
+let loadedFormValues = null;
 let activeClara = false;
 let activeBooking = false;
 
@@ -311,6 +316,26 @@ function updateStatusToggles(isClaraOn, isBookingOn) {
   if (cfgBookingToggleBtn) cfgBookingToggleBtn.textContent = isBookingOn ? "Pausar turnera" : "Activar turnera";
 }
 
+function readFormTexts() {
+  return {
+    menu_welcome: inputMenuWelcome?.value?.trim() || DEFAULT_CLARA_TEXTS.menu_welcome,
+    opt_a_text: inputOptA?.value?.trim() || DEFAULT_CLARA_TEXTS.opt_a_text,
+    opt_b_text: inputOptB?.value?.trim() || DEFAULT_CLARA_TEXTS.opt_b_text,
+    opt_c_text: inputOptC?.value?.trim() || DEFAULT_CLARA_TEXTS.opt_c_text,
+    opt_d_text: inputOptD?.value?.trim() || DEFAULT_CLARA_TEXTS.opt_d_text,
+    cancellation_policy: inputCancellation?.value?.trim() || DEFAULT_CLARA_TEXTS.cancellation_policy,
+    confirmation_notes: inputConfirmation?.value?.trim() || DEFAULT_CLARA_TEXTS.confirmation_notes,
+    reminder_text: inputReminderText?.value?.trim() || inputClaraReminderText?.value?.trim() || DEFAULT_CLARA_TEXTS.reminder_text,
+    reminder_notes: inputReminderNotes?.value?.trim() || inputClaraReminderNotes?.value?.trim() || DEFAULT_CLARA_TEXTS.reminder_notes,
+  };
+}
+
+function rememberLoadedTexts(data) {
+  textsRevision = Number(data?.clara_texts_revision ?? 0) || 0;
+  loadedFormValues = { texts: readFormTexts(), custom: JSON.stringify(customMenuOptions) };
+  textsLoaded = true;
+}
+
 async function loadConfigData() {
   try {
     const data = await api("settings.php?_t=" + Date.now());
@@ -328,6 +353,7 @@ async function loadConfigData() {
       const isClaraOn = typeof data.clara_active === "boolean" ? data.clara_active : true;
       const isBookingOn = typeof data.booking_active === "boolean" ? data.booking_active : true;
       updateStatusToggles(isClaraOn, isBookingOn);
+      rememberLoadedTexts(data);
     }
   } catch (err) {
     console.warn("No se pudo cargar la configuración:", err);
@@ -356,6 +382,11 @@ export function initConfiguracionModule(callbacks = {}) {
 
   // Guardar Textos de Clara & Políticas Unificado
   const handleSaveTextsAndPolicies = async (triggerBtn) => {
+    if (!textsLoaded || !loadedFormValues) {
+      dialogAlert("Todavía se están cargando los textos guardados. Esperá unos segundos e intentá de nuevo.");
+      loadConfigData();
+      return;
+    }
     const isMailsBtn = triggerBtn === btnSaveMailsPolicies;
     if (btnSaveTexts) {
       btnSaveTexts.disabled = true;
@@ -403,21 +434,31 @@ export function initConfiguracionModule(callbacks = {}) {
       cleanCustom.push({ letter: l, label: label || `Opción ${l}`, response });
     }
 
-    const payload = {
-      clara_texts: {
-        menu_welcome: inputMenuWelcome?.value?.trim() || DEFAULT_CLARA_TEXTS.menu_welcome,
-        opt_a_text: inputOptA?.value?.trim() || DEFAULT_CLARA_TEXTS.opt_a_text,
-        opt_b_text: inputOptB?.value?.trim() || DEFAULT_CLARA_TEXTS.opt_b_text,
-        opt_c_text: inputOptC?.value?.trim() || DEFAULT_CLARA_TEXTS.opt_c_text,
-        opt_d_text: inputOptD?.value?.trim() || DEFAULT_CLARA_TEXTS.opt_d_text,
-        cancellation_policy: inputCancellation?.value?.trim() || DEFAULT_CLARA_TEXTS.cancellation_policy,
-        confirmation_notes: inputConfirmation?.value?.trim() || DEFAULT_CLARA_TEXTS.confirmation_notes,
-        reminder_text: inputReminderText?.value?.trim() || inputClaraReminderText?.value?.trim() || DEFAULT_CLARA_TEXTS.reminder_text,
-        reminder_notes: inputReminderNotes?.value?.trim() || inputClaraReminderNotes?.value?.trim() || DEFAULT_CLARA_TEXTS.reminder_notes,
-        custom_menu_options: cleanCustom
-      },
-      custom_menu_options: cleanCustom
-    };
+    // Sólo los campos que cambiaron respecto de lo cargado: así un formulario viejo no pisa otros textos.
+    const formTexts = readFormTexts();
+    const changedTexts = {};
+    for (const [key, value] of Object.entries(formTexts)) {
+      if (value !== loadedFormValues.texts[key]) changedTexts[key] = value;
+    }
+    const customChanged = JSON.stringify(cleanCustom) !== JSON.stringify(
+      JSON.parse(loadedFormValues.custom || "[]").map((o) => ({ letter: o.letter, label: o.label, response: o.response }))
+    );
+    if (!Object.keys(changedTexts).length && !customChanged) {
+      const banner = isMailsBtn ? mailsStatusBanner : textsStatusBanner;
+      if (banner) {
+        banner.textContent = "No hay cambios para guardar.";
+        banner.className = "horarios-alert-box is-success";
+        banner.hidden = false;
+        setTimeout(() => { banner.hidden = true; }, 4000);
+      }
+      restoreButtons();
+      return;
+    }
+    const payload = { base_revision: textsRevision, clara_texts: changedTexts };
+    if (customChanged) {
+      payload.clara_texts.custom_menu_options = cleanCustom;
+      payload.custom_menu_options = cleanCustom;
+    }
 
     try {
       const res = await api("settings.php", {
@@ -430,6 +471,7 @@ export function initConfiguracionModule(callbacks = {}) {
           currentTexts.custom_menu_options = res.custom_menu_options;
         }
         renderTexts(currentTexts);
+        rememberLoadedTexts(res);
       }
       const showSuccess = (banner, msg) => {
         if (!banner) return;
@@ -441,7 +483,12 @@ export function initConfiguracionModule(callbacks = {}) {
       showSuccess(textsStatusBanner, "✓ Textos y opciones del menú guardados con éxito.");
       showSuccess(mailsStatusBanner, "✓ Políticas y pautas de mails guardadas con éxito.");
     } catch (err) {
-      dialogAlert(err?.message || "Error al guardar los textos de Clara.");
+      if (err?.status === 409) {
+        // Otro guardado ganó: no se pisa. Se avisa y se conserva lo que la persona escribió en pantalla.
+        dialogAlert(err.message || "Los textos se modificaron desde otra sesión. Recargá la página antes de guardar.");
+      } else {
+        dialogAlert(err?.message || "Error al guardar los textos de Clara.");
+      }
     } finally {
       restoreButtons();
     }

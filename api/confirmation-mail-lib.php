@@ -16,6 +16,13 @@ const KINESICA_PRACTITIONER_EMAILS = [
     'maria' => 'manosmagicas7116@gmail.com',
 ];
 
+/** Configuración del admin: datos vivos (admin/api/data/settings.json) o, si aún no existen, la semilla versionada. */
+function kinesica_admin_settings_file(string $apiDir): string
+{
+    $runtime = $apiDir . '/../admin/api/data/settings.json';
+    return is_file($runtime) ? $runtime : $apiDir . '/../admin/api/settings.json';
+}
+
 function kinesica_read_settings(string $file): array
 {
     if (!is_file($file)) {
