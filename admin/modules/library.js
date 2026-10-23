@@ -17,6 +17,8 @@ import {
 import { formatDate } from "./api.js?v=77";
 import { debounce, dialogAlert, dialogConfirm, escapeHtml } from "./dom.js?v=78";
 import { todayISO } from "./form.js?v=77";
+import { sessionRow, patientGroupRow, fichaRow } from "./library-rows.js?v=2";
+export { sessionRow, patientGroupRow, fichaRow };
 
 const libraryView = document.querySelector("#view-library");
 const listEl = document.querySelector("#library-list");
@@ -48,6 +50,7 @@ try {
 } catch {}
 
 let activeSessionUserGetter = null;
+let activeRowCallbacks = {};
 let activeUpsert = null;
 let activeBlank = null;
 let activeFillForm = null;
@@ -271,8 +274,6 @@ export function downloadJSON(data, todayStr = "", fileStem = "") {
 // ----------------------------------------------------
 // Renderizado de Filas (delegado a library-rows.js)
 // ----------------------------------------------------
-import { sessionRow, patientGroupRow, fichaRow } from "./library-rows.js?v=1";
-export { sessionRow, patientGroupRow, fichaRow };
 
 export function renderLibrary() {
   if (!listEl) return;
