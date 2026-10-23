@@ -53,6 +53,15 @@ function formatWhatsAppMarkdown(rawText) {
   return formatted;
 }
 
+// Pie "volver al menú": solo se agrega si el texto no menciona ya MENU/menú (igual que el bot real).
+function withMenuFooter(text) {
+  const body = String(text || "").trim();
+  if (!body) return body;
+  const plain = body.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  if (/menu/i.test(plain)) return body;
+  return `${body}\n\n_(Escribí *MENU* para volver a ver las opciones)_`;
+}
+
 export function appendChatMessage(text, sender = "bot") {
   if (!chatMessagesEl) return;
   const msgEl = document.createElement("div");
@@ -145,14 +154,19 @@ function handleChatUserInput(inputRaw) {
     }
   }
 
-  // Si está en submenú Profesional
+  // Si está en submenú Profesional (mismas respuestas que el bot real)
   if (chatSubmenu === "profesional") {
-    let proName = "nuestro equipo de kinesiólogos";
-    if (norm === "1") proName = "Lic. Norberto Brude";
-    if (norm === "2") proName = "Lic. María Gulin";
+    let proMsg = "¡Perfecto! Ya le transmitimos tu consulta a nuestro equipo. Te estarán contactando a la brevedad directamente por WhatsApp 🙌.";
+    if (norm === "1" || norm === "norberto") {
+      proMsg = "¡Perfecto! Ya le transmitimos tu consulta al Lic. Norberto Brude. Te estará contactando a la brevedad directamente por WhatsApp 🙌.";
+    } else if (norm === "2" || /^mar[ií]a$/.test(norm)) {
+      proMsg = "¡Perfecto! Ya le transmitimos tu consulta a la Lic. María Gulin. Te estará contactando a la brevedad directamente por WhatsApp 🙌.";
+    } else if (norm === "3" || norm === "indistinto" || norm === "primera consulta") {
+      proMsg = "¡Perfecto! Ya le transmitimos tu consulta a nuestro equipo de kinesiólogos. Te estarán contactando a la brevedad directamente por WhatsApp 🙌.";
+    }
     chatSubmenu = null;
     setTimeout(() => {
-      appendChatMessage(`¡Perfecto! Ya le transmitimos tu consulta a ${proName}. Te estará contactando a la brevedad directamente por WhatsApp 🙌.\n\nEscribí *MENU* para volver a ver las opciones.`, "bot");
+      appendChatMessage(`${proMsg}\n\n_(Escribí *MENU* si deseás ver otras opciones)_`, "bot");
     }, 500);
     return;
   }
@@ -193,7 +207,7 @@ function handleChatUserInput(inputRaw) {
     chatSubmenu = null;
     const optD = ctx.inputs.optD?.value?.trim() || ctx.getTexts().opt_d_text || ctx.defaults.opt_d_text;
     setTimeout(() => {
-      appendChatMessage(optD, "bot");
+      appendChatMessage(withMenuFooter(optD), "bot");
     }, 450);
     return;
   }
@@ -201,7 +215,7 @@ function handleChatUserInput(inputRaw) {
   if (norm === "e" || norm.startsWith("opcion e") || norm.includes("profesional") || norm.includes("hablar")) {
     chatSubmenu = "profesional";
     setTimeout(() => {
-      appendChatMessage("💬 *Contacto con un Profesional*\n\n¿Con quién te gustaría comunicarte?\n*1.* Lic. Norberto Brude\n*2.* Lic. María Gulin\n*3.* Indistinto / Primera consulta general\n\n_(Respondé *1*, *2* o *3*, o escribí tu consulta directamente y se la transmitimos)_", "bot");
+      appendChatMessage("💬 *Contacto con un Profesional*\n\n¿Con quién te gustaría comunicarte?\n*1.* Lic. Norberto Brude\n*2.* Lic. María Gulin\n*3.* Indistinto / Primera consulta general\n\n_(Respondé *1*, *2* o *3*, o escribí tu consulta directamente y se la transmitimos)_\n_Escribí *MENU* para volver_", "bot");
     }, 450);
     return;
   }
