@@ -16,7 +16,7 @@ import {
 } from "../ficha-rules.mjs?v=87";
 import { formatDate } from "./api.js?v=77";
 import { debounce, dialogAlert, dialogConfirm, escapeHtml } from "./dom.js?v=78";
-import { todayISO } from "./form.js?v=77";
+import { todayISO } from "./form.js?v=87";
 import { sessionRow, patientGroupRow, fichaRow, setRowsContext } from "./library-rows.js?v=3";
 export { sessionRow, patientGroupRow, fichaRow };
 

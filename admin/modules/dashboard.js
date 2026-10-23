@@ -4,7 +4,7 @@
  */
 
 import { api } from "./api.js?v=77";
-import { getSessionUser } from "./auth.js?v=78";
+import { getSessionUser } from "./auth.js?v=80";
 import { escapeHtml, dialogAlert } from "./dom.js?v=78";
 
 const viewDashboard = document.querySelector("#view-dashboard");
