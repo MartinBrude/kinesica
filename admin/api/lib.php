@@ -402,7 +402,7 @@ function send_login_code_email(string $to, string $displayName, string $code): b
     </div>
     <div class="content">
       <p style="margin-top:0;">{$greeting}</p>
-      <p>Usá el siguiente código de seguridad para ingresar al sistema de historias clínicas:</p>
+      <p>Usá el siguiente código de seguridad para ingresar a backoffice de Kinésica:</p>
       <div class="code-box">
         <div class="code-number">{$codeFormatted}</div>
         <span class="badge">Válido por 15 minutos · Un solo uso</span>
