@@ -41,7 +41,10 @@ function loadAdminJs(entryPath) {
     "print.js",
     "compare.js",
     "form.js",
+    "form-image.js",
+    "form-restrictions.js",
     "library.js",
+    "library-rows.js",
     "auth.js",
     "api.js",
   ];
