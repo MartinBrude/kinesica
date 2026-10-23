@@ -4,7 +4,25 @@
  * e indicadores clínicos (EVA, apertura bucal, CDI).
  */
 
-import { escapeHtml } from "./dom.js?v=78";
+import { escapeHtml, dialogConfirm } from "./dom.js?v=78";
+import { formatDate } from "./api.js?v=77";
+import { patientKey, ageOn } from "../ficha-rules.mjs?v=87";
+
+/**
+ * Estado de la biblioteca inyectado por library.js (evita import circular).
+ * Se usan getters para leer siempre el valor vigente.
+ */
+let rowsCtx = {
+  loadAll: () => [],
+  isGrouped: () => false,
+  getSearchValue: () => "",
+  getExpandedPatients: () => new Set(),
+  renderLibrary: () => {},
+};
+
+export function setRowsContext(next) {
+  rowsCtx = { ...rowsCtx, ...next };
+}
 
 export function sessionRow(item, patient, callbacks = {}, sessionIndex = 1, totalSessions = 1) {
   const row = document.createElement("div");
@@ -125,9 +143,9 @@ export function sessionRow(item, patient, callbacks = {}, sessionIndex = 1, tota
  */
 export function patientGroupRow(key, sessions, callbacks = {}) {
   const latest = sessions[0] || {};
-  const isMulti = sessions.length > 1 || grouped;
-  const isSearchActive = Boolean(searchInput && searchInput.value.trim().length > 0);
-  const isExpanded = expandedPatients.has(key) || (isSearchActive && isMulti);
+  const isMulti = sessions.length > 1 || rowsCtx.isGrouped();
+  const isSearchActive = String(rowsCtx.getSearchValue() || "").trim().length > 0;
+  const isExpanded = rowsCtx.getExpandedPatients().has(key) || (isSearchActive && isMulti);
 
   const card = document.createElement("article");
   card.className = `patient-card ${isExpanded ? "is-expanded" : ""}`;
@@ -257,7 +275,7 @@ export function patientGroupRow(key, sessions, callbacks = {}) {
   </svg>${isMulti ? "Quitar todas" : "Quitar"}`;
   del.addEventListener("click", async (e) => {
     e.stopPropagation();
-    const all = loadAll().filter((item) => patientKey(item) === key);
+    const all = rowsCtx.loadAll().filter((item) => patientKey(item) === key);
     const name = latest.nombre || "este paciente";
     if (isMulti) {
       const countStr = all.length === 1 ? "la sesión" : `las ${all.length} sesiones`;
@@ -282,12 +300,12 @@ export function patientGroupRow(key, sessions, callbacks = {}) {
     if (!isMulti) {
       if (callbacks.onOpen) callbacks.onOpen(latest);
     } else {
-      if (expandedPatients.has(key)) {
-        expandedPatients.delete(key);
+      if (rowsCtx.getExpandedPatients().has(key)) {
+        rowsCtx.getExpandedPatients().delete(key);
       } else {
-        expandedPatients.add(key);
+        rowsCtx.getExpandedPatients().add(key);
       }
-      renderLibrary();
+      rowsCtx.renderLibrary();
     }
   });
 
@@ -317,9 +335,6 @@ export function patientGroupRow(key, sessions, callbacks = {}) {
 export function fichaRow(item, callbacks = {}) {
   return patientGroupRow(patientKey(item), [item], callbacks);
 }
-
-let activeSessionUserGetter = null;
-let activeRowCallbacks = {};
 
 /**
  * Renderiza la vista de biblioteca completa aplicando agrupación por persona, filtrado y paginación.

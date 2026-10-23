@@ -7,7 +7,21 @@
 
 import { renderOptCText } from "./menu-texts.js?v=2";
 import { escapeHtml } from "./dom.js?v=78";
-import { DEFAULT_CLARA_TEXTS } from "./configuracion.js?v=18";
+
+/**
+ * Contexto inyectado por configuracion.js (evita import circular y estado duplicado).
+ * getTexts / getCustomOptions se evalúan en cada uso para leer siempre el estado vigente.
+ */
+let ctx = {
+  defaults: {},
+  inputs: {},
+  getTexts: () => ({}),
+  getCustomOptions: () => [],
+};
+
+export function setChatContext(next) {
+  ctx = { ...ctx, ...next };
+}
 
 // ----------------------------------------------------
 // Simulador de Chat con Clara (WhatsApp Experience)
@@ -65,13 +79,13 @@ export function resetChatDemo() {
   if (!chatMessagesEl) return;
   chatMessagesEl.replaceChildren();
   chatSubmenu = null;
-  let welcome = inputMenuWelcome?.value?.trim() || currentTexts.menu_welcome || DEFAULT_CLARA_TEXTS.menu_welcome;
-  if (customMenuOptions && customMenuOptions.length > 0) {
-    const extraLines = customMenuOptions
+  let welcome = ctx.inputs.menuWelcome?.value?.trim() || ctx.getTexts().menu_welcome || ctx.defaults.menu_welcome;
+  if (ctx.getCustomOptions() && ctx.getCustomOptions().length > 0) {
+    const extraLines = ctx.getCustomOptions()
       .filter((o) => o.letter && o.label)
       .map((o) => `*${o.letter.toUpperCase()}.* ${o.label}`)
       .join("\n");
-    if (extraLines && !welcome.toUpperCase().includes(`*${customMenuOptions[0].letter.toUpperCase()}.*`)) {
+    if (extraLines && !welcome.toUpperCase().includes(`*${ctx.getCustomOptions()[0].letter.toUpperCase()}.*`)) {
       if (welcome.includes("\n\n_(")) {
         welcome = welcome.replace("\n\n_(", `\n${extraLines}\n\n_(`);
       } else {
@@ -99,7 +113,7 @@ function handleChatUserInput(inputRaw) {
   }
 
   // Buscar coincidencia en opciones personalizadas
-  const matchedCustom = customMenuOptions.find((o) => {
+  const matchedCustom = ctx.getCustomOptions().find((o) => {
     const l = String(o.letter || "").toLowerCase();
     return l && (norm === l || norm === `opcion ${l}` || norm.startsWith(`${l}.`) || norm.startsWith(`${l} -`));
   });
@@ -116,7 +130,7 @@ function handleChatUserInput(inputRaw) {
   if (chatSubmenu === "turnos") {
     if (norm === "1") {
       chatSubmenu = null;
-      const optA = inputOptA?.value?.trim() || currentTexts.opt_a_text || DEFAULT_CLARA_TEXTS.opt_a_text;
+      const optA = ctx.inputs.optA?.value?.trim() || ctx.getTexts().opt_a_text || ctx.defaults.opt_a_text;
       setTimeout(() => {
         appendChatMessage(optA, "bot");
       }, 500);
@@ -146,7 +160,7 @@ function handleChatUserInput(inputRaw) {
   // Opciones A a E
   if (norm === "a" || norm.startsWith("opcion a")) {
     chatSubmenu = null;
-    const optA = inputOptA?.value?.trim() || currentTexts.opt_a_text || DEFAULT_CLARA_TEXTS.opt_a_text;
+    const optA = ctx.inputs.optA?.value?.trim() || ctx.getTexts().opt_a_text || ctx.defaults.opt_a_text;
     setTimeout(() => {
       appendChatMessage(optA, "bot");
     }, 450);
@@ -155,7 +169,7 @@ function handleChatUserInput(inputRaw) {
 
   if (norm === "b" || norm.startsWith("opcion b") || norm.includes("donde queda") || norm.includes("ubicacion")) {
     chatSubmenu = null;
-    const optB = inputOptB?.value?.trim() || currentTexts.opt_b_text || DEFAULT_CLARA_TEXTS.opt_b_text;
+    const optB = ctx.inputs.optB?.value?.trim() || ctx.getTexts().opt_b_text || ctx.defaults.opt_b_text;
     setTimeout(() => {
       appendChatMessage(optB, "bot");
     }, 450);
@@ -167,7 +181,7 @@ function handleChatUserInput(inputRaw) {
     const atmVal = parseInt(document.querySelector("#input-fee-atm")?.value, 10) || 65000;
     const genVal = parseInt(document.querySelector("#input-fee-general")?.value, 10) || 75000;
     const payVal = document.querySelector("#input-fee-payment-methods")?.value?.trim() || "Efectivo o transferencia bancaria";
-    const optC = inputOptC?.value?.trim() || currentTexts.opt_c_text || DEFAULT_CLARA_TEXTS.opt_c_text;
+    const optC = ctx.inputs.optC?.value?.trim() || ctx.getTexts().opt_c_text || ctx.defaults.opt_c_text;
     const feeMsg = renderOptCText(optC, { atm: atmVal, general: genVal, payment_methods: payVal });
     setTimeout(() => {
       appendChatMessage(feeMsg, "bot");
@@ -177,7 +191,7 @@ function handleChatUserInput(inputRaw) {
 
   if (norm === "d" || norm.startsWith("opcion d") || norm.includes("ropa") || norm.includes("vestimenta")) {
     chatSubmenu = null;
-    const optD = inputOptD?.value?.trim() || currentTexts.opt_d_text || DEFAULT_CLARA_TEXTS.opt_d_text;
+    const optD = ctx.inputs.optD?.value?.trim() || ctx.getTexts().opt_d_text || ctx.defaults.opt_d_text;
     setTimeout(() => {
       appendChatMessage(optD, "bot");
     }, 450);

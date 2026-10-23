@@ -539,7 +539,7 @@ assert.match(app, /export function patientGroupRow/);
 assert.doesNotMatch(app, /Ver sesiones/);
 assert.match(app, /expandedPatients/);
 assert.match(app, /Quitar todas/);
-assert.match(app, /sessions\.length > 1 \|\| grouped/);
+assert.match(app, /sessions\.length > 1 \|\| (?:rowsCtx\.isGrouped\(\)|grouped)/);
 
 // Simular agrupación de biblioteca con pacientes de múltiples sesiones y de sesión única
 const libraryFichas = [

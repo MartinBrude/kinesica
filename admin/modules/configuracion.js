@@ -12,6 +12,7 @@ import { api } from "./api.js?v=77";
 import { escapeHtml, dialogAlert, dialogConfirm } from "./dom.js?v=78";
 import { loadHorariosFromServer } from "./horarios.js?v=3";
 import { loadHonorarios } from "./honorarios.js?v=2";
+import { appendChatMessage, resetChatDemo, initChatSimulator, setChatContext } from "./chat-simulator.js?v=2";
 
 const viewConsultorio = document.querySelector("#view-consultorio");
 const viewClara = document.querySelector("#view-clara");
@@ -94,6 +95,13 @@ Si tienen estudios médicos previos, no olviden traerlos.`
 };
 
 let currentTexts = { ...DEFAULT_CLARA_TEXTS };
+
+setChatContext({
+  defaults: DEFAULT_CLARA_TEXTS,
+  inputs: { menuWelcome: inputMenuWelcome, optA: inputOptA, optB: inputOptB, optC: inputOptC, optD: inputOptD },
+  getTexts: () => currentTexts,
+  getCustomOptions: () => customMenuOptions,
+});
 // Estado de carga de los textos: no se guarda nada hasta haber cargado la versión del servidor,
 // y sólo se envían los campos que cambiaron respecto de lo cargado (con su revisión).
 let textsLoaded = false;
@@ -140,6 +148,7 @@ export function showClaraView() {
     } catch {}
 
     loadConfigData();
+    const chatMessagesEl = document.querySelector("#chat-demo-messages");
     if (chatMessagesEl && chatMessagesEl.children.length === 0) {
       resetChatDemo();
     }
@@ -545,4 +554,4 @@ export function previewOptCText(optC, fees) {
 
 // Simulador de Chat con Clara (delegado a chat-simulator.js)
 // ----------------------------------------------------
-export { appendChatMessage, resetChatDemo, initChatSimulator } from "./chat-simulator.js?v=1";
+export { appendChatMessage, resetChatDemo, initChatSimulator } from "./chat-simulator.js?v=2";

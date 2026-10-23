@@ -93,7 +93,7 @@ import {
   syncMineButton,
   downloadJSON,
   initLibrary,
-} from "./modules/library.js?v=92";
+} from "./modules/library.js?v=93";
 
 import {
   buildSheet,
@@ -146,7 +146,7 @@ import {
   hideClaraView,
   showConfiguracionView,
   hideConfiguracionView,
-} from "./modules/configuracion.js?v=18";
+} from "./modules/configuracion.js?v=19";
 
 // Re-exportar utilidades esenciales para interoperabilidad y pruebas
 export {

@@ -17,7 +17,7 @@ import {
 import { formatDate } from "./api.js?v=77";
 import { debounce, dialogAlert, dialogConfirm, escapeHtml } from "./dom.js?v=78";
 import { todayISO } from "./form.js?v=77";
-import { sessionRow, patientGroupRow, fichaRow } from "./library-rows.js?v=2";
+import { sessionRow, patientGroupRow, fichaRow, setRowsContext } from "./library-rows.js?v=3";
 export { sessionRow, patientGroupRow, fichaRow };
 
 const libraryView = document.querySelector("#view-library");
@@ -51,6 +51,14 @@ try {
 
 let activeSessionUserGetter = null;
 let activeRowCallbacks = {};
+
+setRowsContext({
+  loadAll: () => loadAll(),
+  isGrouped: () => grouped,
+  getSearchValue: () => searchInput?.value || "",
+  getExpandedPatients: () => expandedPatients,
+  renderLibrary: () => renderLibrary(),
+});
 let activeUpsert = null;
 let activeBlank = null;
 let activeFillForm = null;
