@@ -47,6 +47,7 @@ try {
   if (s === "recent" || s === "name") patientSortMode = s;
 } catch {}
 
+let activeSessionUserGetter = null;
 let activeUpsert = null;
 let activeBlank = null;
 let activeFillForm = null;

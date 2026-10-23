@@ -93,7 +93,7 @@ import {
   syncMineButton,
   downloadJSON,
   initLibrary,
-} from "./modules/library.js?v=90";
+} from "./modules/library.js?v=91";
 
 import {
   buildSheet,

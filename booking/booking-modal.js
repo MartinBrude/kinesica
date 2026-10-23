@@ -231,8 +231,14 @@
     },
 
     warmAgenda() {
-      const Client = typeof window !== "undefined" ? window.KinesicaBookingClient : null;
-      if (!Client) {
+      const ClientModule = typeof window !== "undefined" ? window.KinesicaBookingClient : null;
+      const ClientConstructor =
+        ClientModule && typeof ClientModule.BookingClient === "function"
+          ? ClientModule.BookingClient
+          : typeof ClientModule === "function"
+          ? ClientModule
+          : null;
+      if (!ClientConstructor) {
         this.prewarm();
         return;
       }
@@ -246,8 +252,10 @@
         const d = String(day.getDate()).padStart(2, "0");
         dates.push(`${y}-${m}-${d}`);
       }
-      const client = new Client({ apiUrl: getApiUrl() });
-      client.getSlotsRange(dates);
+      const client = new ClientConstructor({ apiUrl: getApiUrl() });
+      if (client && typeof client.getSlotsRange === "function") {
+        client.getSlotsRange(dates);
+      }
     },
 
     isOpen() {
