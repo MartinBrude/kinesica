@@ -41,6 +41,7 @@ export const SHARED_BUNDLES = {
     "js/google-reviews.js",
   ],
   "booking/booking-bundle.min.js": [
+    "booking/booking-calendar-sync.js",
     "booking/booking-engine.js",
     "booking/booking-api-client.js",
     "booking/booking-validation.js",
