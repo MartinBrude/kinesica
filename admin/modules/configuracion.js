@@ -295,6 +295,8 @@ function renderTexts(data) {
     customMenuOptions = [];
   }
   renderCustomOptionsList();
+  // El saludo del simulador se genera una sola vez: regenerarlo con los textos recién cargados.
+  resetChatDemo();
 }
 
 function updateReminderPreview() {
@@ -544,6 +546,13 @@ export function initConfiguracionModule(callbacks = {}) {
   });
 
   initChatSimulator();
+
+  // Al editar el menú de bienvenida, refrescar el simulador (con pausa para no reiniciarlo en cada tecla).
+  let welcomeTimer = null;
+  inputMenuWelcome?.addEventListener("input", () => {
+    clearTimeout(welcomeTimer);
+    welcomeTimer = setTimeout(() => resetChatDemo(), 400);
+  });
 }
 
 // ----------------------------------------------------
