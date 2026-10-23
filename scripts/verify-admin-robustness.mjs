@@ -554,4 +554,25 @@ await test("vía alternativa de login por código al mail disponible para María
   assert.equal(payloadSent.body.code, "123456");
 });
 
+test("Configuración de horarios del encabezado de la web en admin y backend", async () => {
+  const indexHtml = fs.readFileSync(path.join(adminDir, "index.html"), "utf8");
+  assert.match(indexHtml, /id="select-header-schedule-opens"/, "index.html debe tener selector de apertura");
+  assert.match(indexHtml, /id="select-header-schedule-closes"/, "index.html debe tener selector de cierre");
+  assert.match(indexHtml, /id="header-schedule-preview"/, "index.html debe tener vista previa del encabezado");
+
+  const horariosJs = fs.readFileSync(path.join(adminDir, "modules/horarios.js"), "utf8");
+  assert.match(horariosJs, /formatHeaderScheduleText/, "horarios.js debe exportar o contener formatHeaderScheduleText");
+  assert.match(horariosJs, /header_schedule/, "horarios.js debe sincronizar header_schedule con el backend");
+
+  const horariosPhp = fs.readFileSync(path.join(adminDir, "api/horarios.php"), "utf8");
+  assert.match(horariosPhp, /'header_schedule'/, "horarios.php debe soportar header_schedule");
+
+  const settingsPhp = fs.readFileSync(path.join(adminDir, "api/settings.php"), "utf8");
+  assert.match(settingsPhp, /'header_schedule'/, "settings.php debe soportar header_schedule");
+
+  const whatsappLogic = fs.readFileSync(path.join(root, "js/whatsapp-logic.js"), "utf8");
+  assert.match(whatsappLogic, /header_schedule/, "whatsapp-logic.js debe actualizar el header en vivo ante header_schedule");
+  assert.match(whatsappLogic, /\.time-text/, "whatsapp-logic.js debe seleccionar .time-text");
+});
+
 console.log(`admin robustez: ok (${passed} pruebas)`);

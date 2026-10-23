@@ -294,6 +294,7 @@ function load_full_runtime_settings(string $file): array
         'clara_active' => false,
         'booking_active' => false,
         'practitioner_hours' => $defaultHours,
+        'header_schedule' => ['opens' => '08:00', 'closes' => '19:00'],
         'horarios_updated_at' => null,
         'horarios_updated_by' => null,
     ];
@@ -387,6 +388,16 @@ _(Escribí la letra de la opción deseada, por ejemplo *A* o *C*)_",
     }
     $claraTexts['custom_menu_options'] = $customOptions;
 
+    $defaultHeaderSchedule = ['opens' => '08:00', 'closes' => '19:00'];
+    $headerSchedule = $defaultHeaderSchedule;
+    if (isset($data['header_schedule']) && is_array($data['header_schedule'])) {
+        $rawOpens = trim((string) ($data['header_schedule']['opens'] ?? '08:00'));
+        $rawCloses = trim((string) ($data['header_schedule']['closes'] ?? '19:00'));
+        if (preg_match('/^([01]\d|2[0-3]):(00|30)$/', $rawOpens) && preg_match('/^([01]\d|2[0-3]):(00|30)$/', $rawCloses)) {
+            $headerSchedule = ['opens' => $rawOpens, 'closes' => $rawCloses];
+        }
+    }
+
     return [
         'clara_active' => isset($data['clara_active']) ? (bool) $data['clara_active'] : true,
         'booking_active' => isset($data['booking_active']) ? (bool) $data['booking_active'] : true,
@@ -396,6 +407,7 @@ _(Escribí la letra de la opción deseada, por ejemplo *A* o *C*)_",
         'practitioner_hours' => $hours,
         'practitioner_hours_py' => convert_hours_to_python_weekdays($hours),
         'clara_schedule_summary' => build_clara_schedule_summary($hours),
+        'header_schedule' => $headerSchedule,
         'horarios_updated_at' => $data['horarios_updated_at'] ?? null,
         'horarios_updated_by' => $data['horarios_updated_by'] ?? null,
         'clara_texts_revision' => (int) ($data['clara_texts_revision'] ?? 0),
@@ -488,6 +500,7 @@ if ($method === 'GET') {
         'practitioner_hours' => $current['practitioner_hours'],
         'practitioner_hours_py' => $current['practitioner_hours_py'],
         'clara_schedule_summary' => $current['clara_schedule_summary'],
+        'header_schedule' => $current['header_schedule'] ?? ['opens' => '08:00', 'closes' => '19:00'],
         'updated_at' => $current['horarios_updated_at'],
         'updated_by' => $current['horarios_updated_by'],
     ], JSON_UNESCAPED_UNICODE);
@@ -517,14 +530,30 @@ if ($method === 'POST') {
         ]);
     }
 
+    $headerSchedule = null;
+    if (isset($input['header_schedule']) && is_array($input['header_schedule'])) {
+        $rawOpens = trim((string) ($input['header_schedule']['opens'] ?? ''));
+        $rawCloses = trim((string) ($input['header_schedule']['closes'] ?? ''));
+        if (!preg_match('/^([01]\d|2[0-3]):(00|30)$/', $rawOpens) || !preg_match('/^([01]\d|2[0-3]):(00|30)$/', $rawCloses)) {
+            json_out(422, [
+                'error' => 'El horario del encabezado debe tener formato HH:MM (08:00 a 20:00 hs en intervalos de 30 minutos).',
+                'errors' => ['Formato de horario de encabezado inválido.'],
+            ]);
+        }
+        $headerSchedule = ['opens' => $rawOpens, 'closes' => $rawCloses];
+    }
+
     $normalizedHours = $validation['normalized'];
     $updatedAt = gmdate('Y-m-d\TH:i:s\Z');
     $updatedBy = (string) ($user['name'] ?: $user['username']);
 
     try {
         // Sólo cambia horarios: textos, honorarios y estados se conservan tal cual.
-        kinesica_update_settings(function (array $raw) use ($normalizedHours, $updatedAt, $updatedBy): array {
+        kinesica_update_settings(function (array $raw) use ($normalizedHours, $headerSchedule, $updatedAt, $updatedBy): array {
             $raw['practitioner_hours'] = $normalizedHours;
+            if ($headerSchedule !== null) {
+                $raw['header_schedule'] = $headerSchedule;
+            }
             $raw['horarios_updated_at'] = $updatedAt;
             $raw['horarios_updated_by'] = $updatedBy;
             return $raw;
@@ -533,11 +562,14 @@ if ($method === 'POST') {
         json_out(500, ['error' => 'No se pudieron guardar los horarios en el servidor.']);
     }
 
+    $savedHeaderSchedule = $headerSchedule ?? ($current['header_schedule'] ?? ['opens' => '08:00', 'closes' => '19:00']);
+
     json_out(200, [
         'status' => 'success',
         'practitioner_hours' => $normalizedHours,
         'practitioner_hours_py' => convert_hours_to_python_weekdays($normalizedHours),
         'clara_schedule_summary' => build_clara_schedule_summary($normalizedHours),
+        'header_schedule' => $savedHeaderSchedule,
         'updated_at' => $updatedAt,
         'updated_by' => $updatedBy,
     ]);

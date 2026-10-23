@@ -129,6 +129,56 @@ function syncPublicSettings() {
     ) {
       window.KinesicaBookingEngine.setPractitionerHours(settings.practitioner_hours);
     }
+
+    if (settings.header_schedule && settings.header_schedule.opens && settings.header_schedule.closes) {
+      updateHeaderSchedule(settings.header_schedule.opens, settings.header_schedule.closes);
+    }
+  }
+
+  function updateHeaderSchedule(opens, closes) {
+    function parseHm(hm) {
+      var parts = String(hm || "00:00").split(":");
+      return { hour: parseInt(parts[0], 10) || 0, minute: parseInt(parts[1], 10) || 0 };
+    }
+    function hour24(hm) {
+      var t = parseHm(hm);
+      return t.minute === 0 ? String(t.hour) : t.hour + ":" + (t.minute < 10 ? "0" : "") + t.minute;
+    }
+    function hourEn12(hm) {
+      var t = parseHm(hm);
+      var suffix = t.hour < 12 || t.hour === 24 ? "a.m." : "p.m.";
+      var h12 = t.hour % 12;
+      if (h12 === 0) h12 = 12;
+      var time = t.minute === 0 ? String(h12) : h12 + ":" + (t.minute < 10 ? "0" : "") + t.minute;
+      return time + " " + suffix;
+    }
+
+    var root = document.getElementById("site-header-root");
+    var lang = (root && root.getAttribute("data-header-lang")) || document.documentElement.lang || "es";
+    lang = String(lang).toLowerCase().slice(0, 2);
+
+    var o24 = hour24(opens);
+    var c24 = hour24(closes);
+    var html = "";
+    switch (lang) {
+      case "en":
+        html = "Monday to Friday: <strong>" + hourEn12(opens) + " to " + hourEn12(closes) + "</strong>";
+        break;
+      case "fr":
+        html = "Lundi au vendredi : <strong>" + o24 + " h \u00E0 " + c24 + " h</strong>";
+        break;
+      case "pt":
+        html = "Segunda a sexta: <strong>" + o24 + " h \u00E0s " + c24 + " h</strong>";
+        break;
+      case "es":
+      default:
+        html = "Lunes a viernes: <strong>" + o24 + " a " + c24 + " h</strong>";
+        break;
+    }
+
+    document.querySelectorAll(".time-text").forEach(function (el) {
+      el.innerHTML = html;
+    });
   }
 
   try {

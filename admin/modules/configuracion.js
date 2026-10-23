@@ -10,7 +10,7 @@
 import { DEFAULT_OPT_C_TEXT, renderOptCText, REMINDER_TEMPLATE_TEXT, renderReminderPreview } from "./menu-texts.js?v=2";
 import { api } from "./api.js?v=77";
 import { escapeHtml, dialogAlert, dialogConfirm } from "./dom.js?v=78";
-import { loadHorariosFromServer } from "./horarios.js?v=2";
+import { loadHorariosFromServer } from "./horarios.js?v=3";
 import { loadHonorarios } from "./honorarios.js?v=2";
 
 const viewConsultorio = document.querySelector("#view-consultorio");

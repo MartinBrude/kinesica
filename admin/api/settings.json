@@ -64,6 +64,10 @@
     "updated_at": null,
     "updated_by": null
   },
+  "header_schedule": {
+    "opens": "08:00",
+    "closes": "19:00"
+  },
   "clara_texts": {
     "menu_welcome": "¡Hola! Te damos la bienvenida a *Kinésica* 🩺\n\nPor favor, respondé con la letra de la opción que necesitás:\n\n*A.* 📅 Turnos (agendar, consultar o cancelar)\n*B.* 📍 Ubicación y horarios del consultorio\n*C.* 💳 Honorarios y cobertura (obras sociales / reintegros)\n*D.* 👕 ¿Cómo venir vestido/a a la sesión?\n*E.* 💬 Comunicarte con un profesional (Lic. Norberto Brude / Lic. María Gulin)\n\n_(Escribí la letra de la opción deseada, por ejemplo *A* o *C*)_",
     "opt_a_text": "📅 *Turnos y Reservas - Kinésica*\n\nPara ver los días y horarios disponibles en tiempo real con Norberto o María y agendar tu sesión de 60 minutos, ingresá a nuestra turnera online:\n\n👉 *https://kinesica.com.ar/agendar*",

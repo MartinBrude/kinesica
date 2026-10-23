@@ -442,6 +442,35 @@
           </div>
 
           <div id="horarios-editors-grid" class="horarios-editors-grid"></div>
+
+          <div class="horarios-timeline-card" style="margin-top: 24px; margin-bottom: 0;">
+            <div class="horarios-timeline-header">
+              <div>
+                <h3 class="horarios-timeline-title" style="margin:0; font-size:15px;">Horario de la Barra Superior (Encabezado Web)</h3>
+                <p class="horarios-timeline-sub" style="margin-top:4px;">Define los horarios de apertura y cierre que se muestran al tope de todas las páginas del sitio web (ej. <em>Lunes a viernes: 8 a 19 h</em>).</p>
+              </div>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 20px; margin-top: 14px;">
+              <div>
+                <label for="select-header-schedule-opens" style="display:block; font-size:13px; font-weight:600; color:var(--navy); margin-bottom:6px;">
+                  Horario de apertura
+                </label>
+                <select id="select-header-schedule-opens" style="min-width: 130px; height: 38px; border-radius: 6px; border: 1px solid var(--line); padding: 0 10px; font-size: 14px; background: #fff; font-weight: 500;">
+                </select>
+              </div>
+              <div>
+                <label for="select-header-schedule-closes" style="display:block; font-size:13px; font-weight:600; color:var(--navy); margin-bottom:6px;">
+                  Horario de cierre
+                </label>
+                <select id="select-header-schedule-closes" style="min-width: 130px; height: 38px; border-radius: 6px; border: 1px solid var(--line); padding: 0 10px; font-size: 14px; background: #fff; font-weight: 500;">
+                </select>
+              </div>
+              <div style="flex: 1; min-width: 240px; padding: 10px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; color: #475569;">
+                <span style="font-weight: 600; color: var(--navy); display: block; margin-bottom: 2px;">Vista previa en la barra:</span>
+                <span id="header-schedule-preview" style="color: #0f172a;">Lunes a viernes: <strong>8 a 19 h</strong></span>
+              </div>
+            </div>
+          </div>
         </div>
       </details>
 

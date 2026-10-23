@@ -15,6 +15,12 @@ const lastUpdatedEl = document.querySelector("#horarios-last-updated");
 const claraPreviewEl = document.querySelector("#horarios-clara-preview");
 const btnSave = document.querySelector("#btn-save-horarios");
 const btnCopyClara = document.querySelector("#btn-copy-clara-horarios");
+const selectHeaderOpens = document.querySelector("#select-header-schedule-opens");
+const selectHeaderCloses = document.querySelector("#select-header-schedule-closes");
+const headerPreviewEl = document.querySelector("#header-schedule-preview");
+
+export const DEFAULT_HEADER_SCHEDULE = { opens: "08:00", closes: "19:00" };
+let draftHeaderSchedule = { ...DEFAULT_HEADER_SCHEDULE };
 
 export const DEFAULT_PRACTITIONER_HOURS = {
   norberto: {
@@ -102,6 +108,60 @@ function buildTimeOptions(minHour = 8, maxHour = 20) {
 
 const START_TIME_OPTIONS = buildTimeOptions(8, 19);
 const END_TIME_OPTIONS = buildTimeOptions(9, 20);
+const HEADER_TIME_OPTIONS = buildTimeOptions(8, 20);
+
+export function formatHeaderScheduleText(opens, closes) {
+  function formatHm24(hm) {
+    const parts = String(hm || "").split(":");
+    const h = parseInt(parts[0], 10) || 0;
+    const m = parseInt(parts[1], 10) || 0;
+    return m === 0 ? String(h) : `${h}:${String(m).padStart(2, "0")}`;
+  }
+  return `Lunes a viernes: <strong>${formatHm24(opens)} a ${formatHm24(closes)} h</strong>`;
+}
+
+function initHeaderScheduleSelects() {
+  if (!selectHeaderOpens || !selectHeaderCloses) return;
+  selectHeaderOpens.innerHTML = "";
+  selectHeaderCloses.innerHTML = "";
+
+  HEADER_TIME_OPTIONS.forEach((hm) => {
+    const optO = document.createElement("option");
+    optO.value = hm;
+    optO.textContent = `${hm} hs`;
+    selectHeaderOpens.appendChild(optO);
+
+    const optC = document.createElement("option");
+    optC.value = hm;
+    optC.textContent = `${hm} hs`;
+    selectHeaderCloses.appendChild(optC);
+  });
+
+  selectHeaderOpens.value = draftHeaderSchedule.opens;
+  selectHeaderCloses.value = draftHeaderSchedule.closes;
+
+  selectHeaderOpens.addEventListener("change", () => {
+    isDirty = true;
+    draftHeaderSchedule.opens = selectHeaderOpens.value;
+    if (hmToMin(draftHeaderSchedule.closes) <= hmToMin(draftHeaderSchedule.opens)) {
+      const nextMin = Math.min(20 * 60, hmToMin(draftHeaderSchedule.opens) + 60);
+      draftHeaderSchedule.closes = minToHm(nextMin);
+      selectHeaderCloses.value = draftHeaderSchedule.closes;
+    }
+    refreshUI();
+  });
+
+  selectHeaderCloses.addEventListener("change", () => {
+    isDirty = true;
+    draftHeaderSchedule.closes = selectHeaderCloses.value;
+    if (hmToMin(draftHeaderSchedule.closes) <= hmToMin(draftHeaderSchedule.opens)) {
+      const prevMin = Math.max(8 * 60, hmToMin(draftHeaderSchedule.closes) - 60);
+      draftHeaderSchedule.opens = minToHm(prevMin);
+      selectHeaderOpens.value = draftHeaderSchedule.opens;
+    }
+    refreshUI();
+  });
+}
 
 export function validateHoursDraft(hoursInput) {
   if (
@@ -579,6 +639,19 @@ function refreshUI() {
     claraPreviewEl.textContent = buildClaraPreviewText(draftHours);
   }
 
+  if (selectHeaderOpens && selectHeaderOpens.value !== draftHeaderSchedule.opens) {
+    selectHeaderOpens.value = draftHeaderSchedule.opens;
+  }
+  if (selectHeaderCloses && selectHeaderCloses.value !== draftHeaderSchedule.closes) {
+    selectHeaderCloses.value = draftHeaderSchedule.closes;
+  }
+  if (headerPreviewEl) {
+    headerPreviewEl.innerHTML = formatHeaderScheduleText(
+      draftHeaderSchedule.opens,
+      draftHeaderSchedule.closes
+    );
+  }
+
   if (btnSave) {
     btnSave.disabled = !validation.isValid;
   }
@@ -598,6 +671,12 @@ export async function loadHorariosFromServer() {
     if (res && res.practitioner_hours) {
       isDirty = false;
       applyHoursToRuntime(res.practitioner_hours);
+      if (res.header_schedule && res.header_schedule.opens && res.header_schedule.closes) {
+        draftHeaderSchedule = {
+          opens: res.header_schedule.opens,
+          closes: res.header_schedule.closes,
+        };
+      }
       updateMetaTimestamp(res.updated_at, res.updated_by);
       refreshUI();
     }
@@ -607,6 +686,7 @@ export async function loadHorariosFromServer() {
 }
 
 export function initHorariosModule() {
+  initHeaderScheduleSelects();
   refreshUI();
 
   if (btnSave) {
@@ -624,13 +704,22 @@ export function initHorariosModule() {
       try {
         const res = await api("horarios.php", {
           method: "POST",
-          body: JSON.stringify({ practitioner_hours: validation.normalized }),
+          body: JSON.stringify({
+            practitioner_hours: validation.normalized,
+            header_schedule: draftHeaderSchedule,
+          }),
         });
         isDirty = false;
         applyHoursToRuntime(res.practitioner_hours || validation.normalized);
+        if (res.header_schedule && res.header_schedule.opens && res.header_schedule.closes) {
+          draftHeaderSchedule = {
+            opens: res.header_schedule.opens,
+            closes: res.header_schedule.closes,
+          };
+        }
         updateMetaTimestamp(res.updated_at, res.updated_by);
         refreshUI();
-        showStatusBanner("success", ["✓ Horarios guardados y activos en la turnera Agendar y para Clara."]);
+        showStatusBanner("success", ["✓ Horarios guardados y activos en la turnera Agendar, barra superior y Clara."]);
       } catch (err) {
         showStatusBanner("error", [err.message || "No se pudieron guardar los horarios."]);
       } finally {

@@ -130,7 +130,7 @@ import {
   showHorariosView,
   hideHorariosView,
   applyHoursToRuntime,
-} from "./modules/horarios.js?v=2";
+} from "./modules/horarios.js?v=3";
 
 import {
   initHonorariosModule,

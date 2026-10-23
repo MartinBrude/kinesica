@@ -73,6 +73,14 @@ if ($method === 'POST') {
                 $raw['horarios_updated_by'] = $userName;
             }
 
+            if (isset($input['header_schedule']) && is_array($input['header_schedule'])) {
+                $rawOpens = trim((string) ($input['header_schedule']['opens'] ?? ''));
+                $rawCloses = trim((string) ($input['header_schedule']['closes'] ?? ''));
+                if (preg_match('/^([01]\d|2[0-3]):(00|30)$/', $rawOpens) && preg_match('/^([01]\d|2[0-3]):(00|30)$/', $rawCloses)) {
+                    $raw['header_schedule'] = ['opens' => $rawOpens, 'closes' => $rawCloses];
+                }
+            }
+
             $touchesTexts = (isset($input['clara_texts']) && is_array($input['clara_texts'])) || isset($input['custom_menu_options']);
             if ($touchesTexts) {
                 // Control optimista: si otro guardado cambió los textos desde que se cargó la página, no pisarlo.
