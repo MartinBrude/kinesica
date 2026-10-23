@@ -484,6 +484,8 @@ export function initConfiguracionModule(callbacks = {}) {
       };
       showSuccess(textsStatusBanner, "✓ Textos y opciones del menú guardados con éxito.");
       showSuccess(mailsStatusBanner, "✓ Políticas y pautas de mails guardadas con éxito.");
+      // Tras guardar, el simulador vuelve a empezar con los valores nuevos.
+      resetChatDemo();
     } catch (err) {
       if (err?.status === 409) {
         // Otro guardado ganó: no se pisa. Se avisa y se conserva lo que la persona escribió en pantalla.
