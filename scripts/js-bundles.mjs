@@ -43,6 +43,7 @@ export const SHARED_BUNDLES = {
   "booking/booking-bundle.min.js": [
     "booking/booking-engine.js",
     "booking/booking-api-client.js",
+    "booking/booking-validation.js",
     "booking/booking-widget.js",
     "booking/booking-modal.js",
   ],
