@@ -67,6 +67,7 @@ Este paso se realiza **una sola vez** para conectar tu celular con tu cuenta de 
    - Tocá el botón **"Agregar"**.
 6. En tu celular vas a ver que ya aparece **Kinésica** con 6 números grandes y un pequeño círculo azul que va girando (cambia cada 30 segundos).
 7. Volvé a la pantalla de la computadora:
+   - En el casillero **"Contraseña de la cuenta"**, escribí tu contraseña provisoria (la misma con la que diste inicio a la sesión).
    - En el casillero **"Código de 6 dígitos"**, escribí los 6 números que muestra tu celular en ese instante.
    - Hacé clic en el botón verde **"Confirmar"**.
 
@@ -120,7 +121,7 @@ A partir de ahora, cada vez que vayas a atender o revisar historias clínicas:
 
 ### 3. ¿Qué hago si no tengo el celular, lo cambié o no funciona el Authenticator?
 - **Vía alternativa inmediata (Código al mail):**  
-  En la pantalla de acceso, hacé clic en el botón **"Ingresar con código al mail"**. Escribí tu usuario (`maria`, `norberto` o `martin`) o tu correo registrado y hacé clic en **"Enviar código al mail"**. Te llegará un código de 6 dígitos a tu casilla de Gmail (`manosmagicas7116@gmail.com`, `norberto1712@gmail.com` o `martin.brude@gmail.com`). Escribilo en la pantalla y entrarás directamente al sistema sin necesidad de contraseña ni de tu celular.
+  En la pantalla de acceso, hacé clic en el botón **"Ingresar con código al mail"**. Escribí tu usuario (`maria`, `norberto` o `martin`) o tu correo registrado y hacé clic en **"Enviar código al mail"**. Te llegará un código de 6 dígitos a tu casilla de Gmail (`manosmagicas7116@gmail.com`, `norberto1712@gmail.com` o `martin.brude@gmail.com`). Escribí tu contraseña de la cuenta junto con los 6 dígitos en la pantalla y entrarás directamente al sistema sin necesidad de tu celular.
 - **Si todavía tenés el teléfono viejo:**  
   1. Abrí Google Authenticator en el teléfono viejo.  
   2. Tocá el menú (o tu foto de perfil) y elegí **"Transferir cuentas"** ➔ **"Exportar cuentas"**.  

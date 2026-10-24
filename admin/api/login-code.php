@@ -11,6 +11,7 @@ require_header();
 $body = read_json();
 $rawUsername = (string) ($body['username'] ?? '');
 $username = resolve_username($rawUsername);
+$password = (string) ($body['password'] ?? '');
 $code = (string) ($body['code'] ?? '');
 $action = (string) ($body['action'] ?? ($code !== '' ? 'verify' : 'send'));
 
@@ -36,7 +37,15 @@ if ($action === 'verify') {
         json_out(403, ['error' => 'Cuenta suspendida o inactiva. Comunicate con el administrador.']);
     }
 
-    if (!$user || !login_code_verify($username, $cleanCode)) {
+    if (!$user || !password_verify($password, (string) ($user['password_hash'] ?? ''))) {
+        login_register_failure($username);
+        if (login_is_locked($username)) {
+            json_out(429, ['error' => login_block_message()]);
+        }
+        json_out(401, ['error' => 'Contraseña incorrecta']);
+    }
+
+    if (!login_code_verify($username, $cleanCode)) {
         login_register_failure($username);
         if (login_is_locked($username)) {
             json_out(429, ['error' => login_block_message()]);

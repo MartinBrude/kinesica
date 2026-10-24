@@ -104,8 +104,23 @@
           </div>
           <div id="email-code-step-verify" hidden>
             <p id="email-code-sent-note" class="gate-note"></p>
+            <label>Contraseña de la cuenta
+              <div class="password-input-wrap">
+                <input name="email_code_password" type="password" autocomplete="current-password" required>
+                <button type="button" class="btn-toggle-password" id="btn-toggle-email-code-password" aria-label="Mostrar contraseña" title="Mostrar contraseña">
+                  <svg class="eye-icon eye-show" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                  <svg class="eye-icon eye-hide" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" hidden>
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                  </svg>
+                </button>
+              </div>
+            </label>
             <label>Código de 6 dígitos
-              <input name="code" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" placeholder="6 dígitos">
+              <input name="code" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" placeholder="6 dígitos" required>
             </label>
             <p id="email-code-verify-error" class="gate-error" hidden></p>
             <button type="button" class="btn green" id="btn-verify-email-code">Confirmar y entrar</button>
@@ -139,10 +154,25 @@
         </div>
       </form>
       <form id="enroll-form" class="hero-card gate-card" method="POST" hidden>
-        <div>
+        <div class="gate-fields">
           <h1>Código del celular</h1>
           <p>En Google Authenticator o similar, elegí “ingresar clave”. Cuenta: <strong id="enroll-account"></strong></p>
           <p class="enroll-secret" id="enroll-secret"></p>
+          <label>Contraseña de la cuenta
+            <div class="password-input-wrap">
+              <input name="enroll_password" type="password" autocomplete="current-password" required>
+              <button type="button" class="btn-toggle-password" id="btn-toggle-enroll-password" aria-label="Mostrar contraseña" title="Mostrar contraseña">
+                <svg class="eye-icon eye-show" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <svg class="eye-icon eye-hide" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" hidden>
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+              </button>
+            </div>
+          </label>
           <label>Código de 6 dígitos
             <input name="code" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" required>
           </label>

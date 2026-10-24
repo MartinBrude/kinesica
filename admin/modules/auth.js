@@ -160,8 +160,14 @@ export function showGate(data = {}) {
     if (enrollSecretEl) {
       enrollSecretEl.textContent = secret.replace(/(.{4})/g, "$1 ").trim();
     }
-    const enrollInput = enrollForm ? enrollForm.elements.code : null;
-    if (enrollInput) enrollInput.focus();
+    const enrollPassInput = enrollForm ? enrollForm.elements.enroll_password : null;
+    if (enrollPassInput) {
+      enrollPassInput.value = "";
+      enrollPassInput.focus();
+    } else {
+      const enrollInput = enrollForm ? enrollForm.elements.code : null;
+      if (enrollInput) enrollInput.focus();
+    }
   }
 
   if (reset) {
@@ -197,22 +203,27 @@ export function hideGate() {
  * @param {() => void} callbacks.onLogout Callback invocado tras desconectar la sesión
  */
 export function initAuth({ onSuccess, onLogout }) {
-  const btnTogglePassword = document.querySelector("#btn-toggle-password");
-  if (btnTogglePassword && loginForm) {
-    btnTogglePassword.addEventListener("click", () => {
-      const passwordInput = loginForm.elements.password;
-      if (!passwordInput) return;
-      const isPassword = passwordInput.type === "password";
-      passwordInput.type = isPassword ? "text" : "password";
-      btnTogglePassword.setAttribute("aria-label", isPassword ? "Ocultar contraseña" : "Mostrar contraseña");
-      btnTogglePassword.title = isPassword ? "Ocultar contraseña" : "Mostrar contraseña";
-      const iconShow = btnTogglePassword.querySelector(".eye-show");
-      const iconHide = btnTogglePassword.querySelector(".eye-hide");
+  const bindPasswordToggle = (btnId, inputSelector) => {
+    const btn = document.querySelector(btnId);
+    if (!btn) return;
+    btn.addEventListener("click", () => {
+      const input = typeof inputSelector === "function" ? inputSelector() : document.querySelector(inputSelector);
+      if (!input) return;
+      const isPassword = input.type === "password";
+      input.type = isPassword ? "text" : "password";
+      btn.setAttribute("aria-label", isPassword ? "Ocultar contraseña" : "Mostrar contraseña");
+      btn.title = isPassword ? "Ocultar contraseña" : "Mostrar contraseña";
+      const iconShow = btn.querySelector(".eye-show");
+      const iconHide = btn.querySelector(".eye-hide");
       if (iconShow) iconShow.hidden = isPassword;
       if (iconHide) iconHide.hidden = !isPassword;
-      passwordInput.focus();
+      input.focus();
     });
-  }
+  };
+
+  bindPasswordToggle("#btn-toggle-password", () => loginForm?.elements?.password);
+  bindPasswordToggle("#btn-toggle-email-code-password", () => emailCodeForm?.elements?.email_code_password);
+  bindPasswordToggle("#btn-toggle-enroll-password", () => enrollForm?.elements?.enroll_password);
 
   document.querySelectorAll('input[name="code"]').forEach((codeEl) => {
     codeEl.addEventListener("keydown", (e) => {
@@ -348,9 +359,16 @@ export function initAuth({ onSuccess, onLogout }) {
   const handleVerifyEmailCode = async () => {
     if (!emailCodeForm) return;
     const username = emailCodeForm.dataset.user || emailCodeForm.elements.username?.value?.trim() || "";
+    const password = emailCodeForm.elements.email_code_password?.value || "";
     const code = emailCodeForm.elements.code?.value?.trim() || "";
+    if (!password) {
+      setGateMessage(emailCodeVerifyError, "Ingresá tu contraseña.", false);
+      emailCodeForm.elements.email_code_password?.focus();
+      return;
+    }
     if (!code || code.length < 6) {
       setGateMessage(emailCodeVerifyError, "Ingresá los 6 dígitos del código.", false);
+      emailCodeForm.elements.code?.focus();
       return;
     }
     if (emailCodeVerifyError) emailCodeVerifyError.hidden = true;
@@ -361,7 +379,7 @@ export function initAuth({ onSuccess, onLogout }) {
     try {
       const data = await api("login-code.php", {
         method: "POST",
-        body: JSON.stringify({ action: "verify", username, code }),
+        body: JSON.stringify({ action: "verify", username, password, code }),
       });
       setSessionUser({ username: data.username || username, name: data.name });
       hideGate();
@@ -512,10 +530,17 @@ export function initAuth({ onSuccess, onLogout }) {
     enrollForm.addEventListener("submit", async (event) => {
       event.preventDefault();
       if (enrollErrorEl) enrollErrorEl.hidden = true;
+      const password = event.target.enroll_password?.value || "";
+      const code = event.target.code?.value || "";
+      if (!password) {
+        setGateMessage(enrollErrorEl, "Ingresá tu contraseña.", false);
+        event.target.enroll_password?.focus();
+        return;
+      }
       try {
-        const data = await api("totp.php", {
+        await api("totp.php", {
           method: "POST",
-          body: JSON.stringify({ code: event.target.code.value }),
+          body: JSON.stringify({ password, code }),
         });
         hideGate();
         if (typeof onSuccess === "function") await onSuccess();

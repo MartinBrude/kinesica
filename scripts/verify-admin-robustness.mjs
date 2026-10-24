@@ -502,9 +502,14 @@ await test("vía alternativa de login por código al mail disponible para María
   const loginCodePhp = fs.readFileSync(path.join(adminDir, "api/login-code.php"), "utf8");
   assert.match(loginCodePhp, /require_header\(\)/, "login-code.php debe exigir cabecera anti-CSRF");
   assert.match(loginCodePhp, /resolve_username/, "login-code.php debe resolver usuarios con tolerancia a mayúsculas/tildes");
+  assert.match(loginCodePhp, /password_verify/, "login-code.php debe verificar contraseña de la cuenta");
   assert.match(loginCodePhp, /login_code_verify/, "login-code.php debe verificar código de un solo uso");
   assert.match(loginCodePhp, /login_code_store/, "login-code.php debe almacenar hash del código temporal");
   assert.match(loginCodePhp, /send_login_code_email/, "login-code.php debe enviar código por correo");
+
+  const totpPhp = fs.readFileSync(path.join(adminDir, "api/totp.php"), "utf8");
+  assert.match(totpPhp, /password_verify/, "totp.php debe exigir y verificar contraseña en confirmación de enrolamiento");
+  assert.match(totpPhp, /totp_valid/, "totp.php debe verificar código TOTP");
 
   const libPhp = fs.readFileSync(path.join(adminDir, "api/lib.php"), "utf8");
   assert.match(libPhp, /function resolve_username/, "lib.php debe incluir resolve_username");
@@ -512,6 +517,7 @@ await test("vía alternativa de login por código al mail disponible para María
   assert.match(libPhp, /function login_code_verify/, "lib.php debe incluir login_code_verify");
   assert.match(libPhp, /function login_code_store/, "lib.php debe incluir login_code_store");
   assert.match(libPhp, /function send_login_code_email/, "lib.php debe incluir send_login_code_email");
+  assert.match(libPhp, /for \(\$i = -1; \$i <= 1; \$i\+\+\)/, "totp_valid debe operar con tolerancia de ±1 intervalo (30s)");
 
   const loginPhp = fs.readFileSync(path.join(adminDir, "api/login.php"), "utf8");
   assert.match(loginPhp, /login_code_verify/, "login.php tradicional debe aceptar código de mail como fallback de 2FA");
