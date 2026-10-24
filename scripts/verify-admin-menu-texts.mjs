@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { DEFAULT_OPT_C_TEXT, renderOptCText, REMINDER_TEMPLATE_TEXT, renderReminderPreview } from "../admin/modules/menu-texts.js";
+import { CONTACT } from "./site-contact.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const read = (rel) => fs.readFileSync(path.join(root, rel), "utf8");
@@ -90,8 +91,8 @@ test("recordatorio: texto de la plantilla de Meta sólo lectura, igual a lo que 
     const send = wf.nodes.find((x) => x.name === "Send WhatsApp Reminder").parameters.jsonBody;
     assert.match(send, /name: "recordatorio_turno_kinesica"|"name": "recordatorio_turno_kinesica"/);
   }
-  assert.equal(renderReminderPreview("📍 Charcas 3889"),
-    "¡Hola Lucas! 🌿 Te escribo desde Kinésica para recordarte tu sesión en el consultorio programada para mañana a las 16:00 hs.\n\n📍 Charcas 3889\n\nPor favor confirmá tu asistencia seleccionando una de las opciones a continuación 🙌:");
+  assert.equal(renderReminderPreview(`📍 ${CONTACT.address.streetAddress}`),
+    `¡Hola Lucas! 🌿 Te escribo desde Kinésica para recordarte tu sesión en el consultorio programada para mañana a las 16:00 hs.\n\n📍 ${CONTACT.address.streetAddress}\n\nPor favor confirmá tu asistencia seleccionando una de las opciones a continuación 🙌:`);
 });
 
 test("guardar textos no envía reminder_text y los módulos se importan con una sola versión", () => {
