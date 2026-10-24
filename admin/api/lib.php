@@ -624,42 +624,54 @@ function ensure_users_role_column(): void
             db()->exec("ALTER TABLE users ADD last_name VARCHAR(60) NULL DEFAULT NULL");
         }
 
-        // Sembrar / migrar datos de los usuarios base si están vacíos
+        // Sembrar / migrar datos de los usuarios base si no existen o faltan datos
         $seedUsers = [
             'martin' => [
+                'name' => 'Martín',
                 'email' => 'martin.brude@gmail.com',
                 'telefono' => '',
                 'first_name' => 'Martín',
                 'last_name' => 'Brude',
+                'role' => 'admin',
             ],
             'norberto' => [
+                'name' => 'Norberto',
                 'email' => 'norberto1712@gmail.com',
                 'telefono' => '5491161564311',
                 'first_name' => 'Norberto',
                 'last_name' => 'Brude',
+                'role' => 'professional',
             ],
             'maria' => [
+                'name' => 'María',
                 'email' => 'manosmagicas7116@gmail.com',
                 'telefono' => '5491128531224',
                 'first_name' => 'María',
                 'last_name' => 'Gulin',
+                'role' => 'professional',
             ],
         ];
-        $upd = db()->prepare(
-            'UPDATE users 
-             SET email = COALESCE(NULLIF(email, ""), :email),
-                 telefono = COALESCE(NULLIF(telefono, ""), :telefono),
-                 first_name = COALESCE(NULLIF(first_name, ""), :first_name),
-                 last_name = COALESCE(NULLIF(last_name, ""), :last_name)
-             WHERE username = :username'
+
+        $ins = db()->prepare(
+            'INSERT INTO users (username, display_name, password_hash, totp_secret, totp_confirmed, role, active, email, telefono, first_name, last_name, login_count)
+             VALUES (:username, :name, "", "", 0, :role, 1, :email, :telefono, :first_name, :last_name, 0)
+             ON DUPLICATE KEY UPDATE
+                 email = COALESCE(NULLIF(email, ""), VALUES(email)),
+                 telefono = COALESCE(NULLIF(telefono, ""), VALUES(telefono)),
+                 first_name = COALESCE(NULLIF(first_name, ""), VALUES(first_name)),
+                 last_name = COALESCE(NULLIF(last_name, ""), VALUES(last_name)),
+                 display_name = IF(display_name = "" OR display_name IS NULL, VALUES(display_name), display_name)'
         );
+
         foreach ($seedUsers as $uName => $uData) {
-            $upd->execute([
+            $ins->execute([
+                'username' => $uName,
+                'name' => $uData['name'],
+                'role' => $uData['role'],
                 'email' => $uData['email'],
                 'telefono' => $uData['telefono'],
                 'first_name' => $uData['first_name'],
                 'last_name' => $uData['last_name'],
-                'username' => $uName,
             ]);
         }
     } catch (Throwable $e) {

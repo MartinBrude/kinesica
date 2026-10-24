@@ -50,7 +50,7 @@ $action = (string) ($input['action'] ?? '');
 
 /**
  * Helper para sincronizar datos del profesional en settings.json
- * (practitioner_emails, etc.)
+ * (practitioner_emails, practitioner_phones, opt_e_text y menu_welcome en Clara)
  */
 function sync_settings_practitioner(string $username, string $email, string $phone, bool $active = true): void
 {
@@ -73,6 +73,51 @@ function sync_settings_practitioner(string $username, string $email, string $pho
             } else {
                 unset($raw['practitioner_phones'][$username]);
             }
+
+            // Consultar todos los profesionales activos para sincronizar los textos de Clara
+            try {
+                $stmt = db()->query(
+                    'SELECT username, display_name, first_name, last_name, active 
+                     FROM users 
+                     WHERE role = "professional" AND active = 1 
+                     ORDER BY (username = "norberto") DESC, (username = "maria") DESC, display_name ASC'
+                );
+                $activeProfs = $stmt->fetchAll();
+                if ($activeProfs) {
+                    $names = array_map(static function ($p) {
+                        $n = trim((string) ($p['display_name'] ?: ($p['first_name'] . ' ' . $p['last_name'])));
+                        return (stripos($n, 'Lic.') === false ? 'Lic. ' : '') . $n;
+                    }, $activeProfs);
+
+                    $namesJoined = implode(' / ', $names);
+
+                    // 1. Sincronizar bienvenida de Clara
+                    if (isset($raw['clara_texts']['menu_welcome'])) {
+                        $raw['clara_texts']['menu_welcome'] = preg_replace(
+                            '/\*E\.\*\s*💬\s*Comunicarte con un profesional[^\n]*/u',
+                            "*E.* 💬 Comunicarte con un profesional ({$namesJoined})",
+                            $raw['clara_texts']['menu_welcome']
+                        );
+                    }
+
+                    // 2. Sincronizar Opción E (contacto con profesional)
+                    if (isset($raw['clara_texts']['opt_e_text'])) {
+                        $optLines = [
+                            "💬 *Contacto con un Profesional*\n",
+                            "¿Con quién te gustaría comunicarte?",
+                        ];
+                        $idx = 1;
+                        foreach ($names as $proName) {
+                            $optLines[] = "*{$idx}.* {$proName}";
+                            $idx++;
+                        }
+                        $optLines[] = "*{$idx}.* Indistinto / Primera consulta general\n";
+                        $optLines[] = "_(Respondé indicando la opción deseada o escribí tu consulta directamente y se la transmitimos)_";
+                        $optLines[] = "_Escribí *MENU* para volver_";
+                        $raw['clara_texts']['opt_e_text'] = implode("\n", $optLines);
+                    }
+                }
+            } catch (Throwable $t) {}
 
             return $raw;
         });
