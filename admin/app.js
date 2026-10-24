@@ -152,7 +152,7 @@ import {
   initAdminModule,
   showAdminView,
   hideAdminView,
-} from "./modules/admin-panel.js?v=2";
+} from "./modules/admin-panel.js?v=3";
 
 // Re-exportar utilidades esenciales para interoperabilidad y pruebas
 export {

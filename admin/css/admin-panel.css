@@ -181,8 +181,13 @@
 }
 
 /* Acciones en tabla */
+.prof-actions-td {
+  text-align: right;
+  white-space: nowrap;
+}
+
 .prof-actions-cell {
-  display: flex;
+  display: inline-flex;
   gap: 8px;
   align-items: center;
   justify-content: flex-end;

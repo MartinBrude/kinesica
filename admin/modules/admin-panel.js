@@ -152,7 +152,10 @@ function renderProfesionales(profesionales) {
 
       // Acciones
       const tdActions = document.createElement("td");
-      tdActions.className = "prof-actions-cell";
+      tdActions.className = "prof-actions-td";
+
+      const actionsWrap = document.createElement("div");
+      actionsWrap.className = "prof-actions-cell";
 
       // Botón Editar
       const btnEdit = document.createElement("button");
@@ -160,7 +163,7 @@ function renderProfesionales(profesionales) {
       btnEdit.className = "btn ghost";
       btnEdit.textContent = "Editar";
       btnEdit.addEventListener("click", () => openEditModal(prof));
-      tdActions.append(btnEdit);
+      actionsWrap.append(btnEdit);
 
       // Botón Reenviar invitación (si está activo)
       if (prof.active) {
@@ -170,7 +173,7 @@ function renderProfesionales(profesionales) {
         btnInvite.title = "Enviar enlace de contraseña al correo";
         btnInvite.textContent = "Reenviar link";
         btnInvite.addEventListener("click", () => handleResendInvite(prof));
-        tdActions.append(btnInvite);
+        actionsWrap.append(btnInvite);
       }
 
       // Botón Dar de baja / Reactivar (no disponible para martin)
@@ -181,9 +184,10 @@ function renderProfesionales(profesionales) {
         btnToggle.style.color = prof.active ? "#dc2626" : "";
         btnToggle.textContent = prof.active ? "Dar de baja" : "Reactivar";
         btnToggle.addEventListener("click", () => handleToggleActive(prof));
-        tdActions.append(btnToggle);
+        actionsWrap.append(btnToggle);
       }
 
+      tdActions.append(actionsWrap);
       tr.append(tdName, tdEmail, tdPhone, tdRole, tdStatus, tdActions);
       return tr;
     })
