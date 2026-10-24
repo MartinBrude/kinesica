@@ -4,14 +4,11 @@
  * Schema JSON-LD is injected by inject-local-schema.mjs (buildHomeGraph).
  * Run: npm run build:home
  */
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
-import { HTML_LANG, repoPath } from "./i18n-urls.mjs";
-import { LANG_CODES } from "./languages.mjs";
+import { HTML_LANG } from "./i18n-urls.mjs";
 import { HOME, HOME_HERO_IMAGE, googleReviewsBlock } from "./home-content.mjs";
 import { renderFaqSection } from "./faq-content.mjs";
 import { headerShellMarkup } from "./header-shell.mjs";
+import { repoRoot, writeLangPages } from "./build-helpers.mjs";
 import {
   LOCALE,
   assetPrefixForLang,
@@ -28,7 +25,7 @@ import {
   headHeroImagePreload,
 } from "./page-shell.mjs";
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const ROOT = repoRoot(import.meta.url);
 
 function buildMainHtml(lang, prefix) {
   const copy = HOME[lang];
@@ -88,14 +85,5 @@ ${bodyFooterAndUiScripts(lang, p, { faqAccordion: true, mapEmbedFacade: true })}
 `;
 }
 
-let written = 0;
-for (const lang of LANG_CODES) {
-  const rel = repoPath(lang, "index");
-  const full = path.join(ROOT, rel);
-  fs.mkdirSync(path.dirname(full), { recursive: true });
-  fs.writeFileSync(full, buildHtml(lang));
-  written++;
-  console.log("wrote:", rel);
-}
-
+const written = writeLangPages(ROOT, "index", buildHtml);
 console.log(`Done. ${written} home page(s).`);

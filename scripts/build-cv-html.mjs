@@ -3,15 +3,17 @@
  * Generate cv.html, en/cv.html, fr/cv.html, pt/cv.html from scripts/cv-content.mjs
  * Run: node scripts/build-cv-html.mjs
  */
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
 import { createRequire } from "module";
 import { CV } from "./cv-content.mjs";
-import { SITE, absoluteUrl, HTML_LANG, repoPath } from "./i18n-urls.mjs";
-import { LANG_CODES } from "./languages.mjs";
+import { SITE, absoluteUrl, HTML_LANG } from "./i18n-urls.mjs";
 import { headerShellMarkup } from "./header-shell.mjs";
-import { breadcrumbListSchema, escHtml } from "./html-utils.mjs";
+import { escHtml } from "./html-utils.mjs";
+import {
+  homePageBreadcrumbSchema,
+  jsonLdScript,
+  repoRoot,
+  writeLangPages,
+} from "./build-helpers.mjs";
 import {
   LOCALE,
   assetPrefixForLang,
@@ -32,7 +34,7 @@ import { CONTACT, FOUNDER, waMeUrl, mailtoUrl } from "./site-contact.mjs";
 const require = createRequire(import.meta.url);
 const { toMinPath } = require("../assets.config.cjs");
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const ROOT = repoRoot(import.meta.url);
 const CV_EMAIL = CONTACT.email;
 const CV_WHATSAPP_URL = waMeUrl(CONTACT.whatsappDigits);
 
@@ -115,39 +117,26 @@ function buildPage(lang, data) {
   const profileImageJpg = `${SITE}/images/noberto-brude-kinesiologo-osteopata.jpg`;
   const profileImageWebp = `${prefix}images/noberto-brude-kinesiologo-osteopata.webp`;
 
-  const personSchema = JSON.stringify(
-    {
-      "@context": "https://schema.org",
-      "@type": "Person",
-      name: FOUNDER.name,
-      jobTitle: data.role,
-      email: CV_EMAIL,
-      telephone: CONTACT.phoneSchema,
-      url: canonical,
-      image: profileImageJpg,
-      worksFor: {
-        "@type": "MedicalClinic",
-        name: "Kinésica",
-        url: absoluteUrl(lang, "index"),
-      },
-      address: {
-        "@type": "PostalAddress",
-        addressLocality: "Buenos Aires",
-        addressCountry: "AR",
-      },
+  const personSchema = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: FOUNDER.name,
+    jobTitle: data.role,
+    email: CV_EMAIL,
+    telephone: CONTACT.phoneSchema,
+    url: canonical,
+    image: profileImageJpg,
+    worksFor: {
+      "@type": "MedicalClinic",
+      name: "Kinésica",
+      url: absoluteUrl(lang, "index"),
     },
-    null,
-    2
-  );
-
-  const breadcrumbSchema = JSON.stringify(
-    breadcrumbListSchema([
-      { name: data.homeName, item: absoluteUrl(lang, "index") },
-      { name: data.breadcrumb, item: canonical },
-    ]),
-    null,
-    2,
-  );
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Buenos Aires",
+      addressCountry: "AR",
+    },
+  };
 
   return `<!doctype html>
 <html lang="${HTML_LANG[lang]}">
@@ -170,8 +159,8 @@ ${headLangDeferScripts(prefix)}${headSeoBlock({
     canonical,
   })}
 ${headStandardStylesheets(prefix)}${syncCssLink(asset(prefix, "css/cv.css"))}  <script src="${asset(prefix, "partials/gtm-head.js")}" defer></script>
-  <script type="application/ld+json">${personSchema}</script>
-  <script type="application/ld+json">${breadcrumbSchema}</script>
+${jsonLdScript(personSchema)}
+${jsonLdScript(homePageBreadcrumbSchema(lang, data.homeName, data.breadcrumb, canonical))}
 </head>
 
 <body>
@@ -204,9 +193,4 @@ ${bodyFooterAndUiScripts(lang, prefix)}
 `;
 }
 
-for (const lang of LANG_CODES) {
-  const out = path.join(ROOT, repoPath(lang, "cv"));
-  fs.mkdirSync(path.dirname(out), { recursive: true });
-  fs.writeFileSync(out, buildPage(lang, CV[lang]));
-  console.log("Wrote", out);
-}
+writeLangPages(ROOT, "cv", (lang) => buildPage(lang, CV[lang]));

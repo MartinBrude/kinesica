@@ -6,6 +6,7 @@
  * - Bump `updatedAt` on a stem when its copy changes (schema dateModified).
  *   Do not bump dates without a copy change.
  */
+import { HOME_LABELS } from "./languages.mjs";
 export const PATHOLOGY_DEFAULT_PUBLISHED_AT = "2024-06-01";
 export const PATHOLOGY_DEFAULT_UPDATED_AT = PATHOLOGY_DEFAULT_PUBLISHED_AT;
 export const PATHOLOGY_STEMS = [
@@ -64,7 +65,7 @@ export const UI = {
     techniquesTitle: "Abordaje en Kinésica",
     techniquesLead:
       "Según la evaluación, integramos distintas técnicas de terapia manual para abordar la causa y no solo el síntoma.",
-    homeLabel: "Inicio",
+    homeLabel: HOME_LABELS.es,
     pathologiesBreadcrumb: "Patologías",
     relatedTitle: "Condiciones relacionadas",
     relatedLead:
@@ -76,7 +77,7 @@ export const UI = {
     techniquesTitle: "Approach at Kinésica",
     techniquesLead:
       "Based on your assessment, we integrate different manual therapy techniques to address the cause—not only the symptom.",
-    homeLabel: "Home",
+    homeLabel: HOME_LABELS.en,
     pathologiesBreadcrumb: "Conditions",
     relatedTitle: "Related conditions",
     relatedLead:
@@ -88,7 +89,7 @@ export const UI = {
     techniquesTitle: "Approche chez Kinésica",
     techniquesLead:
       "Selon le bilan, nous intégrons différentes techniques de thérapie manuelle pour traiter la cause, pas seulement le symptôme.",
-    homeLabel: "Accueil",
+    homeLabel: HOME_LABELS.fr,
     pathologiesBreadcrumb: "Pathologies",
     relatedTitle: "Pathologies associées",
     relatedLead:
@@ -99,7 +100,7 @@ export const UI = {
     complicationsTitle: "Complicações relacionadas",
     techniquesTitle: "Abordagem na Kinésica",
     techniquesLead: "De acordo com sua avaliação, combinamos técnicas de terapia manual para tratar a causa — não apenas o sintoma.",
-    homeLabel: "Início",
+    homeLabel: HOME_LABELS.pt,
     pathologiesBreadcrumb: "Condições",
     relatedTitle: "Condições relacionadas",
     relatedLead: "Outras condições frequentemente avaliadas junto com esta ou que compartilham abordagem semelhante.",

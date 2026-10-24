@@ -1,6 +1,8 @@
 /**
  * Copy for articulos.html index (ES / EN / FR / PT).
  */
+import { HOME_LABELS } from "./languages.mjs";
+
 export const ARTICLES_INDEX_UI = {
   es: {
     introTitle: "Dolencias frecuentes",
@@ -13,7 +15,7 @@ export const ARTICLES_INDEX_UI = {
     quote:
       "El cuerpo guarda la memoria de todas nuestras experiencias",
     quoteAuthor: "Léopold Busquet",
-    homeLabel: "Inicio",
+    homeLabel: HOME_LABELS.es,
     breadcrumb: "Artículos",
     pageTitle: "Artículos",
     metaTitle: "Artículos sobre Terapia Manual | Kinésica",
@@ -32,7 +34,7 @@ export const ARTICLES_INDEX_UI = {
     readMore: "Read",
     quote: "The body stores the memory of all our experiences",
     quoteAuthor: "Léopold Busquet",
-    homeLabel: "Home",
+    homeLabel: HOME_LABELS.en,
     breadcrumb: "Articles",
     pageTitle: "Articles",
     metaTitle: "Articles about Manual Therapy | Kinésica",
@@ -51,7 +53,7 @@ export const ARTICLES_INDEX_UI = {
     readMore: "Lire",
     quote: "Le corps garde la mémoire de toutes nos expériences",
     quoteAuthor: "Léopold Busquet",
-    homeLabel: "Accueil",
+    homeLabel: HOME_LABELS.fr,
     breadcrumb: "Articles",
     pageTitle: "Articles",
     metaTitle: "Articles sur la thérapie manuelle | Kinésica",
@@ -70,7 +72,7 @@ export const ARTICLES_INDEX_UI = {
     readMore: "Ler",
     quote: "O corpo guarda a memória de todas as nossas experiências",
     quoteAuthor: "Léopold Busquet",
-    homeLabel: "Início",
+    homeLabel: HOME_LABELS.pt,
     breadcrumb: "Artigos",
     pageTitle: "Artigos",
     metaTitle: "Artigos sobre terapia manual | Kinésica",

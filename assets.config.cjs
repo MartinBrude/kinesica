@@ -24,7 +24,6 @@ const CSS_SOURCES = [
 
 /** JS de terceros o ya minificados — no regenerar. */
 const JS_SKIP = new Set([
-  "jquery.min.js",
   "bootstrap.min.js",
   "site-secrets.js",
   "site-secrets.example.js",

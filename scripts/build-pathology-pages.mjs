@@ -3,9 +3,6 @@
  * Generate pathology detail pages (ES / EN / FR / PT) from pathology-content.mjs.
  * Run: node scripts/build-pathology-pages.mjs
  */
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
 import {
   PATHOLOGIES,
   PATHOLOGY_DEFAULT_PUBLISHED_AT,
@@ -20,14 +17,17 @@ import {
 import {
   absoluteUrl,
   HTML_LANG,
-  repoPath,
   SCHEMA_LANGUAGE,
   sitePath,
   SITE,
 } from "./i18n-urls.mjs";
-import { LANG_CODES } from "./languages.mjs";
 import { headerShellMarkup } from "./header-shell.mjs";
 import { breadcrumbListSchema, escHtml } from "./html-utils.mjs";
+import {
+  jsonLdScript,
+  repoRoot,
+  writeItemLangPages,
+} from "./build-helpers.mjs";
 import { ARTICLES_INDEX_UI } from "./articles-index-content.mjs";
 import { PATHOLOGY_MEDICAL_METADATA } from "./pathology-medical-metadata.mjs";
 import {
@@ -44,7 +44,6 @@ import {
   headCriticalCss,
   headJsClassScript,
   headLangDeferScripts,
-  headLangScripts,
   headSeoBlock,
   headStandardStylesheets,
   pageBreadcrumbSection,
@@ -55,7 +54,7 @@ import {
 import { FOUNDER } from "./site-contact.mjs";
 import { BUSINESS_ID } from "./schema-local-business.mjs";
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const ROOT = repoRoot(import.meta.url);
 
 function techniqueHref(lang, techStem) {
   return sitePath(lang, techStem);
@@ -438,25 +437,24 @@ function buildHtml(pathology, lang) {
   };
 
   const faqs = PATHOLOGY_FAQS[stem]?.[lang] || [];
-  let faqSchemaScript = "";
-  if (faqs.length) {
-    const faqSchema = {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "@id": `${canonical}#faq`,
-      inLanguage: SCHEMA_LANGUAGE[lang],
-      mainEntityOfPage: canonical,
-      mainEntity: faqs.map((f) => ({
-        "@type": "Question",
-        name: f.q,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: f.a,
-        },
-      })),
-    };
-    faqSchemaScript = `  <script type="application/ld+json">\n${JSON.stringify(faqSchema, null, 6).replace(/^/gm, "      ")}\n    </script>\n`;
-  }
+  const faqSchemaScripts =
+    faqs.length === 0
+      ? ""
+      : `${jsonLdScript({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "@id": `${canonical}#faq`,
+          inLanguage: SCHEMA_LANGUAGE[lang],
+          mainEntityOfPage: canonical,
+          mainEntity: faqs.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: f.a,
+            },
+          })),
+        })}\n`;
 
   const seoTitle = pathologySeoTitle(pathology, lang);
 
@@ -481,13 +479,9 @@ ${headLangDeferScripts(p)}${headSeoBlock({
     canonical,
   })}
 ${headStandardStylesheets(p)}  <script src="${p}partials/gtm-head.min.js" defer></script>
-  <script type="application/ld+json">
-${JSON.stringify(breadcrumbSchema, null, 6).replace(/^/gm, "      ")}
-    </script>
-  <script type="application/ld+json">
-${JSON.stringify(articleSchema, null, 6).replace(/^/gm, "      ")}
-    </script>
-${faqSchemaScript}</head>
+${jsonLdScript(breadcrumbSchema)}
+${jsonLdScript(articleSchema)}
+${faqSchemaScripts}</head>
 
 <body>
 ${bodyShellTop(p)}${headerShellMarkup(lang, p)}
@@ -510,16 +504,10 @@ ${bodyFooterAndUiScripts(lang, p)}
 `;
 }
 
-let written = 0;
-for (const pathology of PATHOLOGIES) {
-  for (const lang of LANG_CODES) {
-    const rel = repoPath(lang, pathology.stem);
-    const full = path.join(ROOT, rel);
-    fs.mkdirSync(path.dirname(full), { recursive: true });
-    fs.writeFileSync(full, buildHtml(pathology, lang));
-    written++;
-    console.log("wrote:", rel);
-  }
-}
-
+const written = writeItemLangPages(
+  ROOT,
+  PATHOLOGIES,
+  (p) => p.stem,
+  buildHtml,
+);
 console.log(`Done. ${written} pathology page(s). Stems: ${PATHOLOGY_STEMS.join(", ")}`);

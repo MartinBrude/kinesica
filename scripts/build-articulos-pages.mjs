@@ -5,7 +5,6 @@
  */
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
 import { PATHOLOGIES } from "./pathology-content.mjs";
 import { ARTICLES_INDEX_UI } from "./articles-index-content.mjs";
 import {
@@ -16,14 +15,18 @@ import { cardHue } from "./article-thumbnail-icons.mjs";
 import {
   absoluteUrl,
   HTML_LANG,
-  repoPath,
   SCHEMA_LANGUAGE,
   sitePath,
   SITE,
 } from "./i18n-urls.mjs";
-import { LANG_CODES } from "./languages.mjs";
 import { headerShellMarkup } from "./header-shell.mjs";
-import { breadcrumbListSchema, escHtml } from "./html-utils.mjs";
+import { escHtml } from "./html-utils.mjs";
+import {
+  homePageBreadcrumbSchema,
+  jsonLdScript,
+  repoRoot,
+  writeLangPages,
+} from "./build-helpers.mjs";
 import {
   LOCALE,
   assetPrefixForLang,
@@ -42,7 +45,7 @@ import {
   socialImageUrl,
 } from "./page-shell.mjs";
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const ROOT = repoRoot(import.meta.url);
 const ARTICLES_OG_IMAGE = "post-img.jpg";
 
 const pathologyByStem = new Map(
@@ -155,11 +158,6 @@ function buildHtml(lang) {
   const imgUrl = socialImageUrl(ARTICLES_OG_IMAGE);
   const imageAlt = ui.twitterImageAlt ?? ui.metaTitle;
 
-  const breadcrumbSchema = breadcrumbListSchema([
-    { name: ui.homeLabel, item: absoluteUrl(lang, "index") },
-    { name: ui.breadcrumb, item: canonical },
-  ]);
-
   const collectionSchema = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
@@ -194,12 +192,8 @@ ${headLangDeferScripts(p)}${headSeoBlock({
     canonical,
   })}
 ${headStandardStylesheets(p)}  <script src="${p}partials/gtm-head.min.js" defer></script>
-  <script type="application/ld+json">
-${JSON.stringify(breadcrumbSchema, null, 6).replace(/^/gm, "      ")}
-    </script>
-  <script type="application/ld+json">
-${JSON.stringify(collectionSchema, null, 6).replace(/^/gm, "      ")}
-    </script>
+${jsonLdScript(homePageBreadcrumbSchema(lang, ui.homeLabel, ui.breadcrumb, canonical))}
+${jsonLdScript(collectionSchema)}
 </head>
 
 <body>
@@ -221,14 +215,5 @@ ${bodyFooterAndUiScripts(lang, p)}
 `;
 }
 
-let written = 0;
-for (const lang of LANG_CODES) {
-  const rel = repoPath(lang, "articulos");
-  const full = path.join(ROOT, rel);
-  fs.mkdirSync(path.dirname(full), { recursive: true });
-  fs.writeFileSync(full, buildHtml(lang));
-  written++;
-  console.log("wrote:", rel);
-}
-
+const written = writeLangPages(ROOT, "articulos", buildHtml);
 console.log(`Done. ${written} articulos index page(s).`);

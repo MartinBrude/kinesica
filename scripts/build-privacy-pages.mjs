@@ -3,14 +3,18 @@
  * Generate privacy policy and personal data deletion pages (ES / EN / FR / PT).
  * Run: node scripts/build-privacy-pages.mjs
  */
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
 import { PRIVACY } from "./privacy-content.mjs";
-import { SITE, absoluteUrl, HTML_LANG, repoPath, sitePath } from "./i18n-urls.mjs";
-import { LANG_CODES } from "./languages.mjs";
+import { SITE, absoluteUrl, HTML_LANG, sitePath } from "./i18n-urls.mjs";
 import { headerShellMarkup } from "./header-shell.mjs";
-import { breadcrumbListSchema, escAttr, escHtml } from "./html-utils.mjs";
+import { escAttr, escHtml } from "./html-utils.mjs";
+import {
+  HOME_LABELS,
+  homePageBreadcrumbSchema,
+  jsonLdScript,
+  repoRoot,
+  webPageSchema,
+  writeLangPages,
+} from "./build-helpers.mjs";
 import {
   LOCALE,
   assetPrefixForLang,
@@ -26,16 +30,9 @@ import {
   pageCaptionMarkup,
   pageHeaderSection,
 } from "./page-shell.mjs";
-import { CONTACT, mailtoUrl, waMeUrl } from "./site-contact.mjs";
+import { CONTACT } from "./site-contact.mjs";
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-
-const HOME_LABELS = {
-  es: "Inicio",
-  en: "Home",
-  fr: "Accueil",
-  pt: "Início",
-};
+const ROOT = repoRoot(import.meta.url);
 
 function formatText(str) {
   if (!str) return "";
@@ -158,35 +155,6 @@ function buildHtml(lang) {
   const homeHref = sitePath(lang, "index");
   const homeLabel = HOME_LABELS[lang];
 
-  const breadcrumbSchema = JSON.stringify(
-    breadcrumbListSchema([
-      { name: homeLabel, item: absoluteUrl(lang, "index") },
-      { name: copy.breadcrumb, item: canonical },
-    ]),
-    null,
-    2,
-  );
-
-  const webPageSchema = JSON.stringify(
-    {
-      "@context": "https://schema.org",
-      "@type": "WebPage",
-      "@id": `${canonical}#webpage`,
-      url: canonical,
-      name: copy.title,
-      description: copy.description,
-      inLanguage: HTML_LANG[lang],
-      isPartOf: {
-        "@type": "WebSite",
-        "@id": `${SITE}/#website`,
-        url: absoluteUrl(lang, "index"),
-        name: "Kinésica",
-      },
-    },
-    null,
-    2,
-  );
-
   const sectionsHtml = copy.sections
     .map((sec) => renderSection(sec, lang, copy))
     .join("\n\n");
@@ -212,12 +180,15 @@ ${headLangDeferScripts(prefix)}${headSeoBlock({
     canonical,
   })}
 ${headStandardStylesheets(prefix)}  <script src="${prefix}partials/gtm-head.min.js" defer></script>
-  <script type="application/ld+json">
-${breadcrumbSchema}
-  </script>
-  <script type="application/ld+json">
-${webPageSchema}
-  </script>
+${jsonLdScript(homePageBreadcrumbSchema(lang, homeLabel, copy.breadcrumb, canonical))}
+${jsonLdScript(
+    webPageSchema({
+      lang,
+      canonical,
+      name: copy.title,
+      description: copy.description,
+    }),
+  )}
 </head>
 
 <body>
@@ -251,9 +222,4 @@ ${bodyFooterAndUiScripts(lang, prefix)}
 `;
 }
 
-for (const lang of LANG_CODES) {
-  const out = path.join(ROOT, repoPath(lang, "privacidad"));
-  fs.mkdirSync(path.dirname(out), { recursive: true });
-  fs.writeFileSync(out, buildHtml(lang));
-  console.log("Wrote", out);
-}
+writeLangPages(ROOT, "privacidad", buildHtml);

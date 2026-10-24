@@ -58,6 +58,14 @@ export const PICKER_TRIGGER_LABEL = {
   pt: "Idioma",
 };
 
+/** Breadcrumb / nav “Home” label per language (builders + content UI). */
+export const HOME_LABELS = {
+  es: "Inicio",
+  en: "Home",
+  fr: "Accueil",
+  pt: "Início",
+};
+
 export const DEFAULT_LANG =
   LANGUAGES.find((l) => l.isDefault)?.code ?? LANGUAGES[0].code;
 

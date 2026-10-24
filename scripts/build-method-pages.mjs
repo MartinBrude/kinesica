@@ -5,19 +5,22 @@
  */
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
 import { METHOD_STEMS, METHOD_UI, METHODS } from "./methods-content.mjs";
 import {
   absoluteUrl,
   HTML_LANG,
-  repoPath,
   SCHEMA_LANGUAGE,
   sitePath,
   SITE,
 } from "./i18n-urls.mjs";
-import { LANG_CODES } from "./languages.mjs";
 import { headerShellMarkup } from "./header-shell.mjs";
-import { breadcrumbListSchema, escHtml } from "./html-utils.mjs";
+import { escHtml } from "./html-utils.mjs";
+import {
+  homePageBreadcrumbSchema,
+  jsonLdScript,
+  repoRoot,
+  writeStemLangPages,
+} from "./build-helpers.mjs";
 import {
   LOCALE,
   assetPrefixForLang,
@@ -28,7 +31,6 @@ import {
   headFavicon,
   headJsClassScript,
   headLangDeferScripts,
-  headLangScripts,
   headSeoBlock,
   headStandardStylesheets,
   pageBreadcrumbSection,
@@ -42,7 +44,7 @@ import {
 } from "./schema-local-business.mjs";
 import { FOUNDER } from "./site-contact.mjs";
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const ROOT = repoRoot(import.meta.url);
 
 function methodTherapySchema(lang, stem, service) {
   return {
@@ -150,10 +152,6 @@ function buildHtml(stem, lang) {
   const canonical = absoluteUrl(lang, stem);
   const imgUrl = socialImageUrl(method.image);
   const pageImageSrc = methodImageSrc(method.image, p);
-  const breadcrumbSchema = breadcrumbListSchema([
-    { name: ui.homeLabel, item: absoluteUrl(lang, "index") },
-    { name: data.breadcrumb, item: canonical },
-  ]);
   const therapySchema = methodTherapySchema(lang, stem, service);
   const pageSchema = {
     "@context": "https://schema.org",
@@ -209,15 +207,9 @@ ${headLangDeferScripts(p)}${headSeoBlock({
     canonical,
   })}
 ${headStandardStylesheets(p)}  <script src="${p}partials/gtm-head.min.js" defer></script>
-  <script type="application/ld+json">
-${JSON.stringify(breadcrumbSchema, null, 6).replace(/^/gm, "      ")}
-    </script>
-  <script type="application/ld+json" id="kinesica-method-therapy">
-${JSON.stringify(therapySchema, null, 6).replace(/^/gm, "      ")}
-    </script>
-  <script type="application/ld+json">
-${JSON.stringify(pageSchema, null, 6).replace(/^/gm, "      ")}
-    </script>
+${jsonLdScript(homePageBreadcrumbSchema(lang, ui.homeLabel, data.breadcrumb, canonical))}
+${jsonLdScript(therapySchema, { id: "kinesica-method-therapy" })}
+${jsonLdScript(pageSchema)}
 </head>
 
 <body>
@@ -239,16 +231,5 @@ ${bodyFooterAndUiScripts(lang, p)}
 `;
 }
 
-let written = 0;
-for (const stem of METHOD_STEMS) {
-  for (const lang of LANG_CODES) {
-    const rel = repoPath(lang, stem);
-    const full = path.join(ROOT, rel);
-    fs.mkdirSync(path.dirname(full), { recursive: true });
-    fs.writeFileSync(full, buildHtml(stem, lang));
-    written++;
-    console.log("wrote:", rel);
-  }
-}
-
+const written = writeStemLangPages(ROOT, METHOD_STEMS, buildHtml);
 console.log(`Done. ${written} method page(s). Stems: ${METHOD_STEMS.join(", ")}`);

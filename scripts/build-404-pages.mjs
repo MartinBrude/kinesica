@@ -3,13 +3,10 @@
  * Generate localized 404 pages (ES / EN / FR / PT).
  * Run: npm run build:404
  */
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
-import { HTML_LANG, repoPath } from "./i18n-urls.mjs";
-import { LANG_CODES } from "./languages.mjs";
+import { HTML_LANG } from "./i18n-urls.mjs";
 import { headerShellMarkup } from "./header-shell.mjs";
 import { ERROR_404, ERROR_404_LANG_LINKS } from "./404-content.mjs";
+import { repoRoot, writeLangPages } from "./build-helpers.mjs";
 import {
   LOCALE,
   assetPrefixForLang,
@@ -21,7 +18,7 @@ import {
   headStandardStylesheets,
 } from "./page-shell.mjs";
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const ROOT = repoRoot(import.meta.url);
 
 const ERROR_STYLES = `  <style>
     .error-section {
@@ -101,14 +98,5 @@ ${bodyShellTop(p)}${headerShellMarkup(lang, p)}<div id="main" class="error-secti
 `;
 }
 
-let written = 0;
-for (const lang of LANG_CODES) {
-  const rel = repoPath(lang, "404");
-  const full = path.join(ROOT, rel);
-  fs.mkdirSync(path.dirname(full), { recursive: true });
-  fs.writeFileSync(full, buildHtml(lang));
-  written++;
-  console.log("wrote:", rel);
-}
-
+const written = writeLangPages(ROOT, "404", buildHtml);
 console.log(`Done. ${written} localized 404 page(s).`);

@@ -11,7 +11,7 @@ Siempre los archivos **sin** `.min`:
 
 No edites `*.min.css` ni `*.min.js`: se regeneran con el build.
 
-Los vendor (`bootstrap.min.css`, `jquery.min.js`, `font-awesome.min.css`) no entran en el pipeline.
+Los vendor (`bootstrap.min.css`, `font-awesome.min.css`) no entran en el pipeline.
 
 ## Build
 

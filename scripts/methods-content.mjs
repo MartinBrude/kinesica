@@ -2,6 +2,8 @@
  * Method/technique pages (ES / EN / FR / PT).
  * Edit copy here, then: npm run build:methods
  */
+import { HOME_LABELS } from "./languages.mjs";
+
 export const METHOD_STEMS = [
   "kinesiologia",
   "rpg",
@@ -15,26 +17,26 @@ export const METHOD_STEMS = [
 ];
 
 export const METHOD_UI = {
-  "es": {
-    "homeLabel": "Inicio",
-    "homeHref": "index.html",
-    "eyebrow": "Métodos y técnicas"
+  es: {
+    homeLabel: HOME_LABELS.es,
+    homeHref: "index.html",
+    eyebrow: "Métodos y técnicas",
   },
-  "en": {
-    "homeLabel": "Home",
-    "homeHref": "/en/",
-    "eyebrow": "Methods and techniques"
+  en: {
+    homeLabel: HOME_LABELS.en,
+    homeHref: "/en/",
+    eyebrow: "Methods and techniques",
   },
-  "fr": {
-    "homeLabel": "Accueil",
-    "homeHref": "/fr/",
-    "eyebrow": "Méthodes et techniques"
+  fr: {
+    homeLabel: HOME_LABELS.fr,
+    homeHref: "/fr/",
+    eyebrow: "Méthodes et techniques",
   },
-  "pt": {
-    "homeLabel": "Início",
-    "homeHref": "/pt/",
-    "eyebrow": "Métodos e técnicas"
-  }
+  pt: {
+    homeLabel: HOME_LABELS.pt,
+    homeHref: "/pt/",
+    eyebrow: "Métodos e técnicas",
+  },
 };
 
 /** @type {Record<string, { image: string, es: MethodLang, en: MethodLang, fr: MethodLang, pt: MethodLang }>} */
