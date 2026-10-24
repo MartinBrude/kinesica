@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+define('KINESICA_HORARIOS_INCLUDED', true);
+
 require __DIR__ . '/lib.php';
 require_once __DIR__ . '/horarios.php';
 
