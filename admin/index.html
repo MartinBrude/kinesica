@@ -45,6 +45,7 @@
         <button type="button" class="btn ghost" id="nav-btn-pacientes">Pacientes</button>
         <button type="button" class="btn ghost" id="nav-btn-consultorio">Consultorio</button>
         <button type="button" class="btn ghost" id="nav-btn-clara">Clara & Mensajes</button>
+        <button type="button" class="btn ghost" id="nav-btn-admin" hidden>Administración</button>
       </nav>
       <div class="session-box">
         <span class="session-user-label" id="session-user-name" hidden></span>
@@ -881,9 +882,117 @@
       </details>
     </section>
 
+    <!-- 6. MÓDULO EXCLUSIVO DE ADMINISTRACIÓN ("ADMIN DEL ADMIN") -->
+    <section id="view-admin" class="view" hidden>
+      <div class="hero-card" style="margin-bottom: 24px;">
+        <div class="hero-copy">
+          <span class="doc-icon" aria-hidden="true">⚙️</span>
+          <h1 class="hero-title">Administración del Sistema</h1>
+        </div>
+      </div>
 
-    <!-- 5. Configuración de Honorarios y Medios de Pago -->
-    
+      <div class="admin-grid">
+        <!-- SECCIÓN 1: CONTADORES DE LOGINS -->
+        <article class="admin-card">
+          <div class="admin-card-header">
+            <div class="admin-card-titles">
+              <h2 class="admin-card-title">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+                Contadores de Logins
+              </h2>
+              <p class="admin-card-desc">Historial acumulado de inicios de sesión exitosos por profesional.</p>
+            </div>
+          </div>
+          <div class="admin-card-body">
+            <div class="logins-summary-grid" id="admin-logins-container">
+              <!-- Renderizado dinámico -->
+            </div>
+          </div>
+        </article>
+
+        <!-- SECCIÓN 2: GESTIÓN DE PROFESIONALES -->
+        <article class="admin-card">
+          <div class="admin-card-header">
+            <div class="admin-card-titles">
+              <h2 class="admin-card-title">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                Equipo de Profesionales
+              </h2>
+              <p class="admin-card-desc">Altas, bajas, modificación de datos de contacto y roles.</p>
+            </div>
+            <button type="button" class="btn green" id="admin-btn-nuevo-prof">+ Nuevo Profesional</button>
+          </div>
+          <div class="admin-card-body">
+            <div class="prof-table-wrapper">
+              <table class="prof-table">
+                <thead>
+                  <tr>
+                    <th>Profesional</th>
+                    <th>Email</th>
+                    <th>Teléfono</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                    <th style="text-align: right;">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-prof-tbody">
+                  <!-- Renderizado dinámico -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- MODAL DE ALTA / EDICIÓN DE PROFESIONAL -->
+      <div id="admin-prof-modal" class="prof-modal-backdrop" hidden>
+        <div class="prof-modal-card" role="dialog" aria-modal="true" aria-labelledby="admin-prof-modal-title">
+          <div class="prof-modal-header">
+            <h3 id="admin-prof-modal-title">Profesional</h3>
+            <button type="button" class="prof-modal-close" id="admin-prof-modal-close" aria-label="Cerrar">&times;</button>
+          </div>
+          <form id="admin-prof-form">
+            <div class="prof-modal-body">
+              <div class="prof-form-group" hidden>
+                <label for="admin-prof-username">Usuario del sistema</label>
+                <input type="text" id="admin-prof-username" readonly style="background:#f1f5f9; cursor:not-allowed;">
+              </div>
+              <div class="prof-form-row">
+                <div class="prof-form-group">
+                  <label for="admin-prof-firstname">Nombre</label>
+                  <input type="text" id="admin-prof-firstname" required placeholder="Ej: Juan">
+                </div>
+                <div class="prof-form-group">
+                  <label for="admin-prof-lastname">Apellido</label>
+                  <input type="text" id="admin-prof-lastname" required placeholder="Ej: Pérez">
+                </div>
+              </div>
+              <div class="prof-form-group">
+                <label for="admin-prof-email">Correo Electrónico</label>
+                <input type="email" id="admin-prof-email" required placeholder="profesional@kinesica.com.ar">
+                <span class="prof-form-help">Se utilizará para notificaciones de turnos y envío de enlace de contraseña.</span>
+              </div>
+              <div class="prof-form-group">
+                <label for="admin-prof-telefono">Teléfono / WhatsApp</label>
+                <input type="tel" id="admin-prof-telefono" placeholder="Ej: 5491112345678">
+                <span class="prof-form-help">Número directo para coordinaciones y pacientes en tratamiento.</span>
+              </div>
+              <div class="prof-form-group">
+                <label for="admin-prof-role">Rol en el Sistema</label>
+                <select id="admin-prof-role">
+                  <option value="professional">Profesional (Historias clínicas y agenda propia)</option>
+                  <option value="admin">Administrador (Control total del sistema)</option>
+                </select>
+              </div>
+            </div>
+            <div class="prof-modal-footer">
+              <button type="button" class="btn ghost" id="admin-prof-modal-cancel">Cancelar</button>
+              <button type="submit" class="btn green" id="admin-prof-modal-save">Guardar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
 
     <section id="view-form" class="view" hidden>
       <div class="form-nav">

@@ -1,0 +1,321 @@
+/**
+ * Kinésica Admin - Módulo de Gestión de Administración ("Admin del Admin")
+ * Exclusivo para usuarios con rol 'admin'.
+ * 
+ * Contiene:
+ * 1. Métricas de Acceso y Logins por Profesional.
+ * 2. Gestión de Profesionales: Alta, Modificación, Baja lógica (desactivación/reactivación)
+ *    y reenvío de enlaces de configuración de contraseña.
+ */
+
+/* Contenedor general del módulo */
+#view-admin .admin-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Tarjetas principales del admin */
+.admin-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.admin-card-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  background: #fbfcfe;
+}
+
+.admin-card-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin-card-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--navy);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-card-desc {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.admin-card-body {
+  padding: 24px;
+}
+
+/* Métricas de logins */
+.logins-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.login-stat-card {
+  padding: 18px 20px;
+  border-radius: var(--radius-sm);
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.login-stat-card .stat-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.login-stat-card .stat-count {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.login-stat-card .stat-role {
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: capitalize;
+}
+
+/* Tabla de Profesionales */
+.prof-table-wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+}
+
+.prof-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 14px;
+}
+
+.prof-table th {
+  background: #f1f5f9;
+  color: var(--navy);
+  font-weight: 700;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.prof-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+  color: var(--navy);
+  vertical-align: middle;
+}
+
+.prof-table tr:last-child td {
+  border-bottom: none;
+}
+
+.prof-table tr.is-inactive {
+  background: #fbfbfb;
+  opacity: 0.75;
+}
+
+.prof-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.prof-status-badge.active {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.prof-status-badge.inactive {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.prof-role-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.prof-role-badge.admin {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.prof-role-badge.professional {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+/* Acciones en tabla */
+.prof-actions-cell {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.prof-actions-cell .btn {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+/* Modal de Profesional */
+.prof-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+  backdrop-filter: blur(2px);
+}
+
+.prof-modal-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  width: 100%;
+  max-width: 520px;
+  border: 1px solid var(--line);
+  overflow: hidden;
+  animation: modalPopIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalPopIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.prof-modal-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fbfcfe;
+}
+
+.prof-modal-header h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.prof-modal-close {
+  background: none;
+  border: none;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.prof-modal-close:hover {
+  color: var(--navy);
+}
+
+.prof-modal-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.prof-form-row {
+  display: flex;
+  gap: 16px;
+}
+
+.prof-form-row > * {
+  flex: 1;
+}
+
+.prof-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.prof-form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.prof-form-group input,
+.prof-form-group select {
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  color: var(--navy);
+  font-family: inherit;
+  background: #ffffff;
+}
+
+.prof-form-group input:focus,
+.prof-form-group select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0, 95, 153, 0.15);
+}
+
+.prof-form-help {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.prof-modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  background: #f8fafc;
+}

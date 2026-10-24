@@ -32,6 +32,10 @@ if ($action === 'verify') {
     $stmt->execute(['username' => $username]);
     $user = $stmt->fetch();
 
+    if ($user && isset($user['active']) && (int) $user['active'] === 0) {
+        json_out(403, ['error' => 'Cuenta suspendida o inactiva. Comunicate con el administrador.']);
+    }
+
     if (!$user || !login_code_verify($username, $cleanCode)) {
         login_register_failure($username);
         if (login_is_locked($username)) {
@@ -67,6 +71,10 @@ if (login_code_is_locked($username)) {
 $stmt = db()->prepare('SELECT * FROM users WHERE username = :username LIMIT 1');
 $stmt->execute(['username' => $username]);
 $user = $stmt->fetch();
+
+if ($user && isset($user['active']) && (int) $user['active'] === 0) {
+    json_out(403, ['error' => 'Cuenta suspendida o inactiva. Comunicate con el administrador.']);
+}
 
 $email = user_email($username);
 if (!$user || $email === '') {

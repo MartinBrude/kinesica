@@ -27,6 +27,10 @@ if (!$user || !password_verify($password, $user['password_hash'])) {
     json_out(401, ['error' => 'Usuario o contraseña incorrectos']);
 }
 
+if (isset($user['active']) && (int) $user['active'] === 0) {
+    json_out(403, ['error' => 'Cuenta suspendida o inactiva. Comunicate con el administrador.']);
+}
+
 start_session();
 session_regenerate_id(true);
 $_SESSION['user'] = $user['username'];

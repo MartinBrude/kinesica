@@ -148,6 +148,12 @@ import {
   hideConfiguracionView,
 } from "./modules/configuracion.js?v=23";
 
+import {
+  initAdminModule,
+  showAdminView,
+  hideAdminView,
+} from "./modules/admin-panel.js?v=1";
+
 // Re-exportar utilidades esenciales para interoperabilidad y pruebas
 export {
   api,
@@ -406,43 +412,57 @@ function switchTab(tab) {
   const btnPacientes = document.querySelector("#nav-btn-pacientes");
   const btnConsultorio = document.querySelector("#nav-btn-consultorio");
   const btnClara = document.querySelector("#nav-btn-clara");
+  const btnAdmin = document.querySelector("#nav-btn-admin");
 
   btnInicio?.classList.remove("is-active");
   btnFichas?.classList.remove("is-active");
   btnPacientes?.classList.remove("is-active");
   btnConsultorio?.classList.remove("is-active");
   btnClara?.classList.remove("is-active");
+  btnAdmin?.classList.remove("is-active");
 
   if (tab === "inicio") {
     btnInicio?.classList.add("is-active");
     hidePacientesView();
     hideConsultorioView();
     hideClaraView();
+    hideAdminView();
     showDashboardView();
   } else if (tab === "pacientes") {
     btnPacientes?.classList.add("is-active");
     hideDashboardView();
     hideConsultorioView();
     hideClaraView();
+    hideAdminView();
     showPacientesView();
   } else if (tab === "consultorio" || tab === "horarios" || tab === "honorarios") {
     btnConsultorio?.classList.add("is-active");
     hideDashboardView();
     hidePacientesView();
     hideClaraView();
+    hideAdminView();
     showConsultorioView();
   } else if (tab === "clara" || tab === "configuracion") {
     btnClara?.classList.add("is-active");
     hideDashboardView();
     hidePacientesView();
     hideConsultorioView();
+    hideAdminView();
     showClaraView();
+  } else if (tab === "admin") {
+    btnAdmin?.classList.add("is-active");
+    hideDashboardView();
+    hidePacientesView();
+    hideConsultorioView();
+    hideClaraView();
+    showAdminView();
   } else {
     btnFichas?.classList.add("is-active");
     hideDashboardView();
     hidePacientesView();
     hideConsultorioView();
     hideClaraView();
+    hideAdminView();
     showLibrary();
   }
 }
@@ -461,7 +481,8 @@ function unmountAdminChannels() {
  * y sincroniza la configuración con settings.php para el Dashboard.
  */
 function mountAdminChannels() {
-  if (!getSessionUser()) {
+  const user = getSessionUser();
+  if (!user) {
     unmountAdminChannels();
     return;
   }
@@ -469,6 +490,11 @@ function mountAdminChannels() {
   const adminNav = document.getElementById("admin-nav");
   if (adminNav) {
     adminNav.hidden = false;
+    const btnAdmin = document.getElementById("nav-btn-admin");
+    if (btnAdmin) {
+      btnAdmin.hidden = user.role !== "admin";
+    }
+
     if (!adminNav.dataset.bound) {
       adminNav.dataset.bound = "1";
       document.getElementById("nav-btn-inicio")?.addEventListener("click", () => switchTab("inicio"));
@@ -476,6 +502,7 @@ function mountAdminChannels() {
       document.getElementById("nav-btn-pacientes")?.addEventListener("click", () => switchTab("pacientes"));
       document.getElementById("nav-btn-consultorio")?.addEventListener("click", () => switchTab("consultorio"));
       document.getElementById("nav-btn-clara")?.addEventListener("click", () => switchTab("clara"));
+      document.getElementById("nav-btn-admin")?.addEventListener("click", () => switchTab("admin"));
       document.getElementById("brand-logo")?.addEventListener("click", (e) => {
         e.preventDefault();
         switchTab("inicio");
@@ -507,6 +534,7 @@ fillForm(blank(), loadAll());
 initPacientesModule();
 initHorariosModule();
 initHonorariosModule();
+initAdminModule();
 initConfiguracionModule({
   onClaraToggled: (active) => updateDashboardClara(active),
   onBookingToggled: (active) => updateDashboardBooking(active),

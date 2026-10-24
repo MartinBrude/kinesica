@@ -270,6 +270,19 @@ function send_mail(string $to, string $subject, string $body): bool
 function user_email(string $username): string
 {
     $username = resolve_username($username);
+    if ($username === '') {
+        return '';
+    }
+    ensure_users_role_column();
+    try {
+        $stmt = db()->prepare('SELECT email FROM users WHERE username = :username LIMIT 1');
+        $stmt->execute(['username' => $username]);
+        $email = (string) $stmt->fetchColumn();
+        if ($email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return $email;
+        }
+    } catch (Throwable $e) {}
+
     $emails = cfg()['user_emails'] ?? [];
     return (string) ($emails[$username] ?? '');
 }
@@ -288,6 +301,17 @@ function resolve_username(string $identifier): string
     if ($clean === '') {
         return '';
     }
+    // Primero buscar en base de datos si existe el email o username
+    ensure_users_role_column();
+    try {
+        $stmt = db()->prepare('SELECT username FROM users WHERE username = :u OR LOWER(email) = :e LIMIT 1');
+        $stmt->execute(['u' => $clean, 'e' => trim($identifier)]);
+        $found = (string) $stmt->fetchColumn();
+        if ($found !== '') {
+            return $found;
+        }
+    } catch (Throwable $e) {}
+
     $emails = cfg()['user_emails'] ?? [];
     if (isset($emails[$clean])) {
         return $clean;
@@ -576,6 +600,67 @@ function ensure_users_role_column(): void
         if (!$cols) {
             db()->exec("ALTER TABLE users ADD role ENUM('admin', 'professional') NOT NULL DEFAULT 'professional'");
             db()->exec("UPDATE users SET role = 'admin' WHERE username = 'martin'");
+        }
+
+        // Asegurar columnas extendidas para gestión de profesionales
+        $colActive = db()->query("SHOW COLUMNS FROM users LIKE 'active'")->fetch();
+        if (!$colActive) {
+            db()->exec("ALTER TABLE users ADD active TINYINT(1) NOT NULL DEFAULT 1");
+        }
+        $colEmail = db()->query("SHOW COLUMNS FROM users LIKE 'email'")->fetch();
+        if (!$colEmail) {
+            db()->exec("ALTER TABLE users ADD email VARCHAR(120) NULL DEFAULT NULL");
+        }
+        $colTelefono = db()->query("SHOW COLUMNS FROM users LIKE 'telefono'")->fetch();
+        if (!$colTelefono) {
+            db()->exec("ALTER TABLE users ADD telefono VARCHAR(30) NULL DEFAULT NULL");
+        }
+        $colFirstName = db()->query("SHOW COLUMNS FROM users LIKE 'first_name'")->fetch();
+        if (!$colFirstName) {
+            db()->exec("ALTER TABLE users ADD first_name VARCHAR(60) NULL DEFAULT NULL");
+        }
+        $colLastName = db()->query("SHOW COLUMNS FROM users LIKE 'last_name'")->fetch();
+        if (!$colLastName) {
+            db()->exec("ALTER TABLE users ADD last_name VARCHAR(60) NULL DEFAULT NULL");
+        }
+
+        // Sembrar / migrar datos de los usuarios base si están vacíos
+        $seedUsers = [
+            'martin' => [
+                'email' => 'martin.brude@gmail.com',
+                'telefono' => '',
+                'first_name' => 'Martín',
+                'last_name' => 'Brude',
+            ],
+            'norberto' => [
+                'email' => 'norberto1712@gmail.com',
+                'telefono' => '5491161564311',
+                'first_name' => 'Norberto',
+                'last_name' => 'Brude',
+            ],
+            'maria' => [
+                'email' => 'manosmagicas7116@gmail.com',
+                'telefono' => '5491128531224',
+                'first_name' => 'María',
+                'last_name' => 'Gulin',
+            ],
+        ];
+        $upd = db()->prepare(
+            'UPDATE users 
+             SET email = COALESCE(NULLIF(email, ""), :email),
+                 telefono = COALESCE(NULLIF(telefono, ""), :telefono),
+                 first_name = COALESCE(NULLIF(first_name, ""), :first_name),
+                 last_name = COALESCE(NULLIF(last_name, ""), :last_name)
+             WHERE username = :username'
+        );
+        foreach ($seedUsers as $uName => $uData) {
+            $upd->execute([
+                'email' => $uData['email'],
+                'telefono' => $uData['telefono'],
+                'first_name' => $uData['first_name'],
+                'last_name' => $uData['last_name'],
+                'username' => $uName,
+            ]);
         }
     } catch (Throwable $e) {
     }

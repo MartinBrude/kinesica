@@ -16,6 +16,6 @@ assert.match(pac, /phoneMatches\(p\.telefono, query\)/);
 assert.match(pac, /phoneMatches\(p\.contacto_telefono, query\)/);
 const html = readFileSync("admin/index.html", "utf8");
 assert.ok(!html.includes("(A, B, D)"), "el subtítulo no debe decir (A, B, D)");
-assert.ok(html.includes("respuestas automáticas (A, B, C y D)"));
+assert.ok(html.includes("respuestas automáticas (A, B, C, D y E)"));
 assert.match(html, /app\.js\?v=\d+/);
 console.log("pacientes (búsqueda por teléfono) y subtítulo del admin: ok");

@@ -70,28 +70,12 @@ export async function updateDashboardBooking(isActive) {
 }
 
 export async function updateDashboardState() {
-  const user = getSessionUser();
   if (greetingEl) {
     greetingEl.textContent = "Panel de Control";
   }
   if (loginsEl) {
-    const isAdminUser = user?.role === "admin" || user?.username === "martin";
-    const logins = isAdminUser && Array.isArray(user.logins) ? user.logins : [];
-    if (!logins.length) {
-      loginsEl.hidden = true;
-      loginsEl.replaceChildren();
-    } else {
-      loginsEl.hidden = false;
-      loginsEl.replaceChildren(
-        ...logins.map((row) => {
-          const item = document.createElement("li");
-          const name = document.createElement("strong");
-          name.textContent = row.name || "";
-          item.append(name, document.createTextNode(`: ${Number(row.count) || 0}`));
-          return item;
-        })
-      );
-    }
+    loginsEl.hidden = true;
+    loginsEl.replaceChildren();
   }
 
   // Sincronizar estados de Clara y Booking desde el backend (settings.php)
