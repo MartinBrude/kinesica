@@ -356,57 +356,85 @@ function send_html_mail(string $to, string $subject, string $htmlBody, string $t
         }
     }
 
-    $headers = implode("\r\n", [
-        'MIME-Version: 1.0',
-        'Content-Type: text/html; charset=UTF-8',
-        'From: =?UTF-8?B?' . base64_encode('Kinésica') . "?= <{$from}>",
-        'Reply-To: Kinésica <' . $from . '>',
-        'X-Mailer: PHP/' . phpversion(),
-    ]) . "\r\n";
+    if ($textAlt !== '') {
+        $boundary = 'bnd_' . md5(uniqid((string) mt_rand(), true));
+        $headers = implode("\r\n", [
+            'MIME-Version: 1.0',
+            'Content-Type: multipart/alternative; boundary="' . $boundary . '"',
+            'From: =?UTF-8?B?' . base64_encode('Kinésica') . "?= <{$from}>",
+            'Reply-To: Kinésica <' . $from . '>',
+            'X-Mailer: PHP/' . phpversion(),
+        ]) . "\r\n";
 
-    $sent = @mail($to, $encoded, $htmlBody, $headers, '-f ' . $from);
+        $body = "--{$boundary}\r\n"
+            . "Content-Type: text/plain; charset=UTF-8\r\n"
+            . "Content-Transfer-Encoding: base64\r\n\r\n"
+            . chunk_split(base64_encode($textAlt)) . "\r\n"
+            . "--{$boundary}\r\n"
+            . "Content-Type: text/html; charset=UTF-8\r\n"
+            . "Content-Transfer-Encoding: base64\r\n\r\n"
+            . chunk_split(base64_encode($htmlBody)) . "\r\n"
+            . "--{$boundary}--\r\n";
+    } else {
+        $headers = implode("\r\n", [
+            'MIME-Version: 1.0',
+            'Content-Type: text/html; charset=UTF-8',
+            'From: =?UTF-8?B?' . base64_encode('Kinésica') . "?= <{$from}>",
+            'Reply-To: Kinésica <' . $from . '>',
+            'X-Mailer: PHP/' . phpversion(),
+        ]) . "\r\n";
+        $body = $htmlBody;
+    }
+
+    $sent = @mail($to, $encoded, $body, $headers, '-f ' . $from);
     if (!$sent) {
-        $sent = @mail($to, $encoded, $htmlBody, $headers);
+        $sent = @mail($to, $encoded, $body, $headers);
     }
     return (bool) $sent;
 }
 
 function send_login_code_email(string $to, string $displayName, string $code): bool
 {
-    $subject = "Código de acceso a Kinésica: {$code}";
-    $greeting = $displayName ? 'Hola ' . htmlspecialchars($displayName) . ',' : 'Hola,';
-    $codeFormatted = substr($code, 0, 3) . ' ' . substr($code, 3, 3);
+    $subject = 'Código de acceso a Kinésica';
+    $cleanCode = str_pad(trim($code), 6, '0', STR_PAD_LEFT);
+    $greeting = $displayName !== '' ? 'Hola ' . htmlspecialchars($displayName, ENT_QUOTES, 'UTF-8') . ',' : 'Hola,';
+    $greetingPlain = $displayName !== '' ? "Hola {$displayName}," : "Hola,";
 
     $html = <<<HTML
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Código de acceso a Kinésica</title>
   <style>
-    body { margin: 0; padding: 24px; background-color: #f4f6f9; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+    body { margin: 0; padding: 24px; background-color: #f4f6f9; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
     .wrapper { max-width: 480px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; }
     .header { padding: 24px 20px 16px; text-align: center; border-bottom: 2px solid #005f99; }
     .header h2 { margin: 0; color: #005f99; font-size: 20px; letter-spacing: 0.02em; }
     .content { padding: 28px 24px; color: #1e293b; font-size: 15px; line-height: 1.6; }
-    .code-box { background: #f0f7fc; border: 1px solid #bae0f5; border-radius: 10px; text-align: center; padding: 18px 12px; margin: 20px 0; }
-    .code-number { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 34px; font-weight: 700; letter-spacing: 0.25em; color: #005f99; margin: 0; }
-    .badge { display: inline-block; font-size: 12px; font-weight: 600; color: #64748b; margin-top: 6px; }
+    .code-box { background: #f0f7fc; border: 1px solid #bae0f5; border-radius: 10px; text-align: center; padding: 20px 12px; margin: 0 0 20px 0; }
+    .code-number { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 36px; font-weight: 700; letter-spacing: 4px; color: #005f99; margin: 0 0 10px 0; line-height: 1; -webkit-user-select: all; user-select: all; }
+    .instruction { font-size: 15px; color: #0f172a; font-weight: 500; margin: 0 0 10px 0; }
+    .badge { display: inline-block; font-size: 12px; font-weight: 600; color: #64748b; }
     .footer { text-align: center; padding: 18px; font-size: 12px; color: #94a3b8; background-color: #f8fafc; border-top: 1px solid #edf2f7; }
   </style>
 </head>
 <body>
+  <div style="display:none;font-size:1px;color:#ffffff;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;">
+    {$cleanCode} es tu código de verificación para iniciar sesión en el panel de control de Kinésica.
+  </div>
   <div class="wrapper">
     <div class="header">
       <h2>Kinésica · Panel de Control</h2>
     </div>
     <div class="content">
-      <p style="margin-top:0;">{$greeting}</p>
-      <p>Usá el siguiente código de seguridad para ingresar a backoffice de Kinésica:</p>
       <div class="code-box">
-        <div class="code-number">{$codeFormatted}</div>
+        <div class="code-number">{$cleanCode}</div>
+        <div class="instruction">Usá este código de verificación para iniciar sesión en el panel de control de Kinésica.</div>
         <span class="badge">Válido por 15 minutos · Un solo uso</span>
       </div>
+      <p style="margin-top: 16px;">{$greeting}</p>
       <p style="font-size: 13px; color: #64748b; margin-bottom: 0;">
         Si vos no solicitaste este código, podés ignorar este mensaje con tranquilidad. Tu cuenta permanece segura.
       </p>
@@ -419,12 +447,14 @@ function send_login_code_email(string $to, string $displayName, string $code): b
 </html>
 HTML;
 
-    $text = "Kinésica · Código de acceso\n\n"
-        . "{$greeting}\n\n"
-        . "Tu código de acceso es: {$codeFormatted}\n"
-        . "Válido por 15 minutos.\n\n"
-        . "Si vos no lo solicitaste, podés ignorar este correo.\n\n"
-        . "Kinésica";
+    $text = "{$cleanCode}\n\n"
+        . "Usá este código de verificación para iniciar sesión en el panel de control de Kinésica.\n\n"
+        . "{$greetingPlain}\n\n"
+        . "Detalles de seguridad:\n"
+        . "• Validez: 15 minutos\n"
+        . "• Uso: un solo uso\n\n"
+        . "Si vos no solicitaste este código, podés ignorar este correo. Tu cuenta permanece segura.\n\n"
+        . "Kinésica · Terapias Manuales & Rehabilitación";
 
     return send_html_mail($to, $subject, $html, $text);
 }
