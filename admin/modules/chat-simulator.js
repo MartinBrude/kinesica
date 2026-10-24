@@ -214,8 +214,10 @@ function handleChatUserInput(inputRaw) {
 
   if (norm === "e" || norm.startsWith("opcion e") || norm.includes("profesional") || norm.includes("hablar")) {
     chatSubmenu = "profesional";
+    const optE = ctx.inputs.optE?.value?.trim() || ctx.getTexts().opt_e_text || ctx.defaults.opt_e_text ||
+      "💬 *Contacto con un Profesional*\n\n¿Con quién te gustaría comunicarte?\n*1.* Lic. Norberto Brude\n*2.* Lic. María Gulin\n*3.* Indistinto / Primera consulta general\n\n_(Respondé *1*, *2* o *3*, o escribí tu consulta directamente y se la transmitimos)_\n_Escribí *MENU* para volver_";
     setTimeout(() => {
-      appendChatMessage("💬 *Contacto con un Profesional*\n\n¿Con quién te gustaría comunicarte?\n*1.* Lic. Norberto Brude\n*2.* Lic. María Gulin\n*3.* Indistinto / Primera consulta general\n\n_(Respondé *1*, *2* o *3*, o escribí tu consulta directamente y se la transmitimos)_\n_Escribí *MENU* para volver_", "bot");
+      appendChatMessage(optE, "bot");
     }, 450);
     return;
   }

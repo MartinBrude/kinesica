@@ -28,6 +28,7 @@ const inputOptA = document.querySelector("#cfg-opt-a");
 const inputOptB = document.querySelector("#cfg-opt-b");
 const inputOptC = document.querySelector("#cfg-opt-c");
 const inputOptD = document.querySelector("#cfg-opt-d");
+const inputOptE = document.querySelector("#cfg-opt-e");
 const inputCancellation = document.querySelector("#cfg-cancellation-policy");
 const inputConfirmation = document.querySelector("#cfg-confirmation-notes");
 const inputReminderText = document.querySelector("#cfg-reminder-text");
@@ -82,6 +83,15 @@ Para ver los días y horarios disponibles en tiempo real con Norberto o María y
 • Ropa interior o pantalón corto para los varones.
 • Ropa interior con corpiño tradicional (no deportivo), malla de 2 piezas o calza corta para las mujeres.
 Si sos menor, vení acompañado/a por un mayor 🙌.`,
+  opt_e_text: `💬 *Contacto con un Profesional*
+
+¿Con quién te gustaría comunicarte?
+*1.* Lic. Norberto Brude
+*2.* Lic. María Gulin
+*3.* Indistinto / Primera consulta general
+
+_(Respondé *1*, *2* o *3*, o escribí tu consulta directamente y se la transmitimos)_
+_Escribí *MENU* para volver_`,
   cancellation_policy: `Te recordamos que los turnos pueden cancelarse o reprogramarse con un mínimo de 24 horas de anticipación 🙌.`,
   confirmation_notes: `Por favor asistir con puntualidad exacta al horario asignado. El consultorio cuenta con una única camilla y no dispone de sala de espera 📍.`,
   reminder_text: `¡Hola {nombre}! 🌿 Te escribo desde Kinésica para recordarte tu {tipo_cita} programada para mañana a las {horario}.
@@ -98,7 +108,7 @@ let currentTexts = { ...DEFAULT_CLARA_TEXTS };
 
 setChatContext({
   defaults: DEFAULT_CLARA_TEXTS,
-  inputs: { menuWelcome: inputMenuWelcome, optA: inputOptA, optB: inputOptB, optC: inputOptC, optD: inputOptD },
+  inputs: { menuWelcome: inputMenuWelcome, optA: inputOptA, optB: inputOptB, optC: inputOptC, optD: inputOptD, optE: inputOptE },
   getTexts: () => currentTexts,
   getCustomOptions: () => customMenuOptions,
 });
@@ -276,6 +286,7 @@ function renderTexts(data) {
   if (inputOptB) inputOptB.value = data.opt_b_text || DEFAULT_CLARA_TEXTS.opt_b_text;
   if (inputOptC) inputOptC.value = data.opt_c_text || DEFAULT_CLARA_TEXTS.opt_c_text;
   if (inputOptD) inputOptD.value = data.opt_d_text || DEFAULT_CLARA_TEXTS.opt_d_text;
+  if (inputOptE) inputOptE.value = data.opt_e_text || DEFAULT_CLARA_TEXTS.opt_e_text;
   if (inputCancellation) inputCancellation.value = (typeof data.cancellation_policy === "string" && data.cancellation_policy.trim()) ? data.cancellation_policy : DEFAULT_CLARA_TEXTS.cancellation_policy;
   if (inputConfirmation) inputConfirmation.value = (typeof data.confirmation_notes === "string" && data.confirmation_notes.trim()) ? data.confirmation_notes : DEFAULT_CLARA_TEXTS.confirmation_notes;
 
@@ -326,6 +337,7 @@ function readFormTexts() {
     opt_b_text: inputOptB?.value?.trim() || DEFAULT_CLARA_TEXTS.opt_b_text,
     opt_c_text: inputOptC?.value?.trim() || DEFAULT_CLARA_TEXTS.opt_c_text,
     opt_d_text: inputOptD?.value?.trim() || DEFAULT_CLARA_TEXTS.opt_d_text,
+    opt_e_text: inputOptE?.value?.trim() || DEFAULT_CLARA_TEXTS.opt_e_text,
     cancellation_policy: inputCancellation?.value?.trim() || DEFAULT_CLARA_TEXTS.cancellation_policy,
     confirmation_notes: inputConfirmation?.value?.trim() || DEFAULT_CLARA_TEXTS.confirmation_notes,
     reminder_notes: inputReminderNotes?.value?.trim() || inputClaraReminderNotes?.value?.trim() || DEFAULT_CLARA_TEXTS.reminder_notes,
