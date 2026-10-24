@@ -188,14 +188,29 @@
 
 .prof-actions-cell {
   display: inline-flex;
-  gap: 8px;
+  gap: 12px;
   align-items: center;
   justify-content: flex-end;
 }
 
 .prof-actions-cell .btn {
   padding: 6px 12px;
-  font-size: 12px;
+  font-size: 13px;
+}
+
+.prof-actions-cell .btn-prof-edit {
+  min-width: 68px;
+  text-align: center;
+}
+
+.prof-actions-cell .btn-prof-toggle,
+.prof-actions-cell .btn-prof-spacer {
+  min-width: 96px;
+  text-align: center;
+}
+
+.prof-actions-cell .btn-prof-spacer {
+  display: inline-block;
 }
 
 /* Modal de Profesional */

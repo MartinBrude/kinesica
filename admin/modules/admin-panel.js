@@ -160,31 +160,25 @@ function renderProfesionales(profesionales) {
       // Botón Editar
       const btnEdit = document.createElement("button");
       btnEdit.type = "button";
-      btnEdit.className = "btn ghost";
+      btnEdit.className = "btn ghost btn-prof-edit";
       btnEdit.textContent = "Editar";
       btnEdit.addEventListener("click", () => openEditModal(prof));
       actionsWrap.append(btnEdit);
-
-      // Botón Reenviar invitación (si está activo)
-      if (prof.active) {
-        const btnInvite = document.createElement("button");
-        btnInvite.type = "button";
-        btnInvite.className = "btn ghost";
-        btnInvite.title = "Enviar enlace de contraseña al correo";
-        btnInvite.textContent = "Reenviar link";
-        btnInvite.addEventListener("click", () => handleResendInvite(prof));
-        actionsWrap.append(btnInvite);
-      }
 
       // Botón Dar de baja / Reactivar (no disponible para martin)
       if (prof.username !== "martin") {
         const btnToggle = document.createElement("button");
         btnToggle.type = "button";
-        btnToggle.className = `btn ${prof.active ? "ghost" : "green"}`;
+        btnToggle.className = `btn ${prof.active ? "ghost" : "green"} btn-prof-toggle`;
         btnToggle.style.color = prof.active ? "#dc2626" : "";
         btnToggle.textContent = prof.active ? "Dar de baja" : "Reactivar";
         btnToggle.addEventListener("click", () => handleToggleActive(prof));
         actionsWrap.append(btnToggle);
+      } else {
+        const spacer = document.createElement("span");
+        spacer.className = "btn-prof-spacer";
+        spacer.setAttribute("aria-hidden", "true");
+        actionsWrap.append(spacer);
       }
 
       tdActions.append(actionsWrap);
