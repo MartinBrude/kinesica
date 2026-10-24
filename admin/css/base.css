@@ -264,20 +264,50 @@ main {
 
 @media (max-width: 800px) {
   .topbar {
-    min-height: 58px;
-    padding: 10px 14px;
+    min-height: auto;
+    padding: 10px 14px 8px;
     gap: 10px;
+    flex-wrap: wrap;
+    justify-content: space-between;
   }
   .top-title {
     display: none;
   }
   .brand img {
-    width: 135px;
-    height: 36px;
+    width: 130px;
+    height: 34px;
+  }
+  .top-actions {
+    margin-left: auto;
+    gap: 8px;
+  }
+  .admin-nav {
+    order: 3;
+    width: 100%;
+    margin-top: 4px;
+    padding-top: 6px;
+    border-top: 1px solid var(--sky);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+  }
+  .admin-nav::-webkit-scrollbar {
+    display: none;
+  }
+  .admin-nav .btn {
+    padding: 7px 11px;
+    font-size: 13px;
+    flex-shrink: 0;
   }
   .session-box {
     align-items: flex-end;
     gap: 2px;
+  }
+  .session-user-label {
+    font-size: 11px;
+    max-width: 110px;
   }
   .session-name {
     font-size: 12px;
@@ -297,7 +327,7 @@ main {
     gap: 6px;
   }
   main {
-    padding: 14px 10px 48px;
+    padding: 12px 10px 48px;
   }
 }
 

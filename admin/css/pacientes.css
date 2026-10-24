@@ -269,3 +269,43 @@
   gap: 10px;
   background: #fafbfc;
 }
+
+@media (max-width: 640px) {
+  .pacientes-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .pacientes-search-box {
+    min-width: 100%;
+  }
+
+  .pacientes-toolbar .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .paciente-modal-card {
+    max-height: 90vh;
+  }
+
+  .paciente-modal-header {
+    padding: 14px 16px;
+  }
+
+  .paciente-modal-body {
+    padding: 16px;
+  }
+
+  .paciente-modal-footer {
+    padding: 12px 16px;
+  }
+
+  .pacientes-table th,
+  .pacientes-table td {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+}

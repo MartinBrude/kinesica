@@ -339,3 +339,54 @@
   gap: 10px;
   background: #f8fafc;
 }
+
+@media (max-width: 640px) {
+  .admin-card-header {
+    padding: 16px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-card-header .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .admin-card-body {
+    padding: 16px;
+  }
+
+  .logins-summary-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .prof-form-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .prof-modal-card {
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .prof-modal-body {
+    padding: 16px;
+    overflow-y: auto;
+  }
+
+  .prof-modal-footer {
+    padding: 14px 16px;
+  }
+
+  .prof-actions-cell {
+    gap: 6px;
+  }
+
+  .prof-actions-cell .btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}

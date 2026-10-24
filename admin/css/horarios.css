@@ -743,7 +743,7 @@ details.admin-collapsible-card[open] > summary .admin-collapsible-chevron {
     padding: 14px 16px;
   }
   .admin-collapsible-body {
-    padding: 16px;
+    padding: 16px 12px;
   }
   .admin-collapsible-icon {
     width: 34px;
@@ -755,6 +755,49 @@ details.admin-collapsible-card[open] > summary .admin-collapsible-chevron {
   }
   .admin-collapsible-desc {
     font-size: 12px;
+  }
+
+  .config-subpanel-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .config-subpanel-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .config-subpanel-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .horarios-range-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .horarios-range-row select {
+    width: 100%;
+  }
+
+  .horarios-range-sep {
+    display: none;
+  }
+
+  .horarios-range-hint {
+    margin-left: 0;
+  }
+
+  .horarios-prof-card {
+    padding: 16px 14px;
+  }
+
+  .horarios-prof-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
   }
 }
 
