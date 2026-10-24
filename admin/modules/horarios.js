@@ -7,17 +7,18 @@
 import { api } from "./api.js?v=77";
 import { escapeHtml, dialogAlert, dialogConfirm } from "./dom.js?v=78";
 
-const viewHorarios = document.querySelector("#view-horarios");
-const timelineRowsEl = document.querySelector("#horarios-timeline-rows");
-const editorsGridEl = document.querySelector("#horarios-editors-grid");
-const statusBannerEl = document.querySelector("#horarios-status-banner");
-const lastUpdatedEl = document.querySelector("#horarios-last-updated");
-const claraPreviewEl = document.querySelector("#horarios-clara-preview");
-const btnSave = document.querySelector("#btn-save-horarios");
-const btnCopyClara = document.querySelector("#btn-copy-clara-horarios");
-const selectHeaderOpens = document.querySelector("#select-header-schedule-opens");
-const selectHeaderCloses = document.querySelector("#select-header-schedule-closes");
-const headerPreviewEl = document.querySelector("#header-schedule-preview");
+const getEl = (sel) => (typeof document !== "undefined" ? document.querySelector(sel) : null);
+const viewHorarios = getEl("#view-horarios");
+const timelineRowsEl = getEl("#horarios-timeline-rows");
+const editorsGridEl = getEl("#horarios-editors-grid");
+const statusBannerEl = getEl("#horarios-status-banner");
+const lastUpdatedEl = getEl("#horarios-last-updated");
+const claraPreviewEl = getEl("#horarios-clara-preview");
+const btnSave = getEl("#btn-save-horarios");
+const btnCopyClara = getEl("#btn-copy-clara-horarios");
+const selectHeaderOpens = getEl("#select-header-schedule-opens");
+const selectHeaderCloses = getEl("#select-header-schedule-closes");
+const headerPreviewEl = getEl("#header-schedule-preview");
 
 export const DEFAULT_HEADER_SCHEDULE = { opens: "08:00", closes: "19:00" };
 let draftHeaderSchedule = { ...DEFAULT_HEADER_SCHEDULE };

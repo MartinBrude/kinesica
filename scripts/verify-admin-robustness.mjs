@@ -30,6 +30,7 @@ import {
 } from "../admin/ficha-rules.mjs";
 import { api, formatDate, setAuthRequiredHandler } from "../admin/modules/api.js";
 import { escapeHtml } from "../admin/modules/dom.js";
+import { formatHeaderScheduleText } from "../admin/modules/horarios.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const adminDir = path.join(root, "admin");
@@ -560,7 +561,7 @@ await test("vía alternativa de login por código al mail disponible para María
   assert.equal(payloadSent.body.code, "123456");
 });
 
-test("Configuración de horarios del encabezado de la web en admin y backend", async () => {
+await test("Configuración de horarios del encabezado de la web en admin y backend", async () => {
   const indexHtml = fs.readFileSync(path.join(adminDir, "index.html"), "utf8");
   assert.match(indexHtml, /id="select-header-schedule-opens"/, "index.html debe tener selector de apertura");
   assert.match(indexHtml, /id="select-header-schedule-closes"/, "index.html debe tener selector de cierre");
@@ -579,6 +580,135 @@ test("Configuración de horarios del encabezado de la web en admin y backend", a
   const whatsappLogic = fs.readFileSync(path.join(root, "js/whatsapp-logic.js"), "utf8");
   assert.match(whatsappLogic, /header_schedule/, "whatsapp-logic.js debe actualizar el header en vivo ante header_schedule");
   assert.match(whatsappLogic, /\.time-text/, "whatsapp-logic.js debe seleccionar .time-text");
+});
+
+await test("compareFichas: evolución clínica con features opcionales y tendencias", () => {
+  const sesion1 = {
+    id: "f-001",
+    nombre: "Paciente Test",
+    dni: "30.123.456",
+    fechaSesion: "2026-10-01",
+    ruidos: "Sí",
+    ruidosIzq: true,
+    ruidosDer: false,
+    faseApertura: true,
+    ruidoClic: true,
+    ruidoCrep: false,
+    desviacion: "Sí",
+    desvDer: true,
+    deflexion: true,
+    desvCorregida: false,
+    eva: 8,
+    aperturaLibre: "24",
+    aperturaDolor: "32",
+    habitoBruxismo: true,
+    habitoApretamiento: true,
+    cdi: ["I.a", "II.a"],
+  };
+
+  const sesion2 = {
+    id: "f-002",
+    nombre: "Paciente Test",
+    dni: "30.123.456",
+    fechaSesion: "2026-10-20",
+    ruidos: "No",
+    desviacion: "No",
+    eva: 2,
+    aperturaLibre: "42",
+    aperturaDolor: "48",
+    habitoBruxismo: false,
+    habitoApretamiento: false,
+    cdi: [],
+  };
+
+  const comp = compareFichas(sesion1, sesion2);
+  assert.equal(comp.daysBetween, 19, "Diferencia de días calculada correctamente");
+  assert.equal(comp.kpis.eva.delta, -6, "Reducción de dolor EVA calculada");
+  assert.equal(comp.kpis.eva.trend, "better", "Menos dolor se considera mejora");
+  assert.equal(comp.kpis.aperturaLibre.delta, 18, "Aumento de apertura calculada");
+  assert.equal(comp.kpis.aperturaLibre.trend, "better", "Mayor apertura sin dolor se considera mejora");
+  assert.equal(comp.kpis.ruidos.trend, "better", "Desaparición de ruidos es mejora");
+  assert.equal(comp.kpis.ruidos.current, "No");
+  assert.ok(comp.kpis.ruidos.previous.includes("clic"));
+
+  // Sección de hábitos
+  const secFiliacion = comp.sections.find((s) => s.id === "filiacion");
+  const habField = secFiliacion.fields.find((f) => f.label === "Hábitos parafuncionales y bruxismo");
+  assert.ok(habField, "Debe existir campo de hábitos parafuncionales y bruxismo");
+  assert.equal(habField.trend, "better", "Dejar hábitos es una mejora");
+  assert.equal(habField.current, "Sin hábitos registrados");
+
+  // Sección de criterios CDI
+  const secCdi = comp.sections.find((s) => s.id === "cdi");
+  const cdiField = secCdi.fields.find((f) => f.label === "Criterios diagnósticos CDI-TTM");
+  assert.ok(cdiField, "Debe existir campo CDI");
+  assert.equal(cdiField.trend, "better", "Menos criterios patológicos es una mejora");
+});
+
+await test("Profesionales y roles: protección del superadmin y validaciones en backend", () => {
+  const profPhp = fs.readFileSync(path.join(adminDir, "api/profesionales.php"), "utf8");
+  assert.match(
+    profPhp,
+    /\$username === 'martin'\) \{\s*json_out\(400, \['error' => 'No es posible desactivar la cuenta del administrador principal\.'\]\);/,
+    "profesionales.php debe prohibir suspender a martin"
+  );
+  assert.match(
+    profPhp,
+    /FILTER_VALIDATE_EMAIL/,
+    "profesionales.php debe validar formato de correo electrónico"
+  );
+  assert.match(
+    profPhp,
+    /\$firstName === '' \|\| \$lastName === ''/,
+    "profesionales.php debe exigir nombre y apellido"
+  );
+});
+
+await test("Seguridad 2FA / Login: manejo de contraseñas erróneas y fallos simulados", async () => {
+  // Simular rechazo 401 por contraseña incorrecta en login-code
+  mockFetch(() => jsonResponse(401, { error: "Contraseña incorrecta" }));
+  await assert.rejects(
+    api("login-code.php", {
+      method: "POST",
+      body: JSON.stringify({ action: "verify", username: "maria", password: "wrong-password", code: "123456" }),
+    }),
+    (error) => error.status === 401 && error.message === "Contraseña incorrecta"
+  );
+
+  // Simular bloqueo 429 por exceso de intentos
+  mockFetch(() => jsonResponse(429, { error: "Demasiados intentos erróneos. Cuenta bloqueada por 15 minutos." }));
+  await assert.rejects(
+    api("login-code.php", {
+      method: "POST",
+      body: JSON.stringify({ action: "verify", username: "maria", password: "wrong-password", code: "123456" }),
+    }),
+    (error) => error.status === 429 && /bloqueada/i.test(error.message)
+  );
+
+  // Simular rechazo 401 por contraseña incorrecta en totp.php
+  mockFetch(() => jsonResponse(401, { error: "Contraseña incorrecta" }));
+  await assert.rejects(
+    api("totp.php", {
+      method: "POST",
+      body: JSON.stringify({ password: "wrong-password", code: "123456" }),
+    }),
+    (error) => error.status === 401 && error.message === "Contraseña incorrecta"
+  );
+});
+
+await test("Formateo seguro de horario de encabezado con valores normales y extremos", () => {
+  assert.equal(
+    formatHeaderScheduleText("08:00", "20:00"),
+    "Lunes a viernes: <strong>8 a 20 h</strong>"
+  );
+  assert.equal(
+    formatHeaderScheduleText("08:30", "19:30"),
+    "Lunes a viernes: <strong>8:30 a 19:30 h</strong>"
+  );
+  assert.equal(
+    formatHeaderScheduleText("", ""),
+    "Lunes a viernes: <strong>0 a 0 h</strong>"
+  );
 });
 
 console.log(`admin robustez: ok (${passed} pruebas)`);
