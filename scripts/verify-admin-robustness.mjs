@@ -443,6 +443,8 @@ await test("soporte de adjuntar foto clínica en panel 5 (tab 6)", () => {
   assert.match(html, /data-panel="5"[\s\S]*id="foto-attachment-card"/);
   assert.match(html, /id="field-foto-url"/);
   assert.match(html, /id="foto-input"/);
+  assert.match(html, /id="foto-input"[\s\S]*multiple/);
+  assert.match(html, /id="foto-gallery-grid"/);
   assert.match(html, /id="foto-dropzone"/);
   assert.match(html, /id="foto-preview-container"/);
   assert.match(html, /id="foto-preview-img"/);

@@ -14,8 +14,21 @@ assert.ok(!phoneMatches("", "1234"));
 const pac = readFileSync("admin/modules/pacientes.js", "utf8");
 assert.match(pac, /phoneMatches\(p\.telefono, query\)/);
 assert.match(pac, /phoneMatches\(p\.contacto_telefono, query\)/);
+assert.match(pac, /formatPatientName/);
+
+// Verificar formato de nombre Apellido, Nombre(s)
+import { formatPatientName } from "../admin/modules/pacientes.js";
+assert.equal(formatPatientName({ apellido: "Pérez", nombre: "Juan Carlos" }).display, "Pérez, Juan Carlos");
+assert.equal(formatPatientName({ nombre_completo: "Ana Clara Gómez" }).display, "Gómez, Ana Clara");
+
+// Verificar permisos de eliminación en pacientes.php
+const pacPhp = readFileSync("admin/api/pacientes.php", "utf8");
+assert.match(pacPhp, /norberto/);
+assert.match(pacPhp, /maria/);
+
 const html = readFileSync("admin/index.html", "utf8");
 assert.ok(!html.includes("(A, B, D)"), "el subtítulo no debe decir (A, B, D)");
 assert.ok(html.includes("respuestas automáticas (A, B, C, D y E)"));
+assert.match(html, /Apellido, Nombre\(s\)/);
 assert.match(html, /app\.js\?v=\d+/);
-console.log("pacientes (búsqueda por teléfono) y subtítulo del admin: ok");
+console.log("pacientes (búsqueda por teléfono, orden por apellido, permisos DELETE) y subtítulo del admin: ok");

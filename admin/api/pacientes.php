@@ -316,13 +316,13 @@ try {
             $stmt = $pdo->prepare('
                 SELECT * FROM pacientes 
                 WHERE nombre_completo LIKE :q OR nombre LIKE :q OR apellido LIKE :q OR telefono LIKE :q OR dni LIKE :q OR email LIKE :q OR contacto_nombre LIKE :q OR contacto_telefono LIKE :q
-                ORDER BY nombre_completo ASC LIMIT 100
+                ORDER BY CASE WHEN apellido != "" THEN apellido ELSE nombre_completo END ASC, nombre ASC LIMIT 100
             ');
             $stmt->execute(['q' => "%$q%"]);
             json_out(200, ['status' => 'success', 'items' => $stmt->fetchAll()]);
         }
 
-        $stmt = $pdo->query('SELECT * FROM pacientes ORDER BY nombre_completo ASC');
+        $stmt = $pdo->query('SELECT * FROM pacientes ORDER BY CASE WHEN apellido != "" THEN apellido ELSE nombre_completo END ASC, nombre ASC');
         json_out(200, ['status' => 'success', 'items' => $stmt->fetchAll()]);
     }
 
@@ -675,11 +675,13 @@ try {
     }
 
     // ---------------------------------------------------------
-    // DELETE: Eliminar paciente por ID (solo admin)
+    // DELETE: Eliminar paciente por ID (admin, norberto o maria)
     // ---------------------------------------------------------
     if ($method === 'DELETE') {
-        if (!is_admin($auth)) {
-            json_out(403, ['status' => 'error', 'message' => 'Solo administradores pueden eliminar pacientes']);
+        $user = $auth['username'] ?? '';
+        $allowedUsers = ['martin', 'norberto', 'maria'];
+        if (!is_admin($auth) && !in_array($user, $allowedUsers, true)) {
+            json_out(403, ['status' => 'error', 'message' => 'No tienes permiso para eliminar pacientes']);
         }
         $id = (int) ($_GET['id'] ?? 0);
         if ($id <= 0) {

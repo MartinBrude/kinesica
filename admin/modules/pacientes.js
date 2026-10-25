@@ -7,13 +7,13 @@ import { api } from "./api.js?v=77";
 import { escapeHtml, node, debounce, dialogAlert, dialogConfirm } from "./dom.js?v=78";
 import { phoneMatches } from "./phone-search.js?v=1";
 
-const viewPacientes = document.querySelector("#view-pacientes");
-const listEl = document.querySelector("#pacientes-list-tbody");
-const searchInput = document.querySelector("#search-pacientes");
-const profFilter = document.querySelector("#filter-pacientes-prof");
-const btnNuevo = document.querySelector("#btn-nuevo-paciente");
-const btnBackupSql = document.querySelector("#btn-backup-sql");
-const countEl = document.querySelector("#pacientes-total-count");
+const viewPacientes = typeof document !== "undefined" ? document.querySelector("#view-pacientes") : null;
+const listEl = typeof document !== "undefined" ? document.querySelector("#pacientes-list-tbody") : null;
+const searchInput = typeof document !== "undefined" ? document.querySelector("#search-pacientes") : null;
+const profFilter = typeof document !== "undefined" ? document.querySelector("#filter-pacientes-prof") : null;
+const btnNuevo = typeof document !== "undefined" ? document.querySelector("#btn-nuevo-paciente") : null;
+const btnBackupSql = typeof document !== "undefined" ? document.querySelector("#btn-backup-sql") : null;
+const countEl = typeof document !== "undefined" ? document.querySelector("#pacientes-total-count") : null;
 
 let pacientesCache = [];
 let activeFilterProf = "todos";
@@ -182,9 +182,46 @@ export async function loadPacientes() {
   }
 }
 
+/**
+ * Devuelve el apellido y nombre(s) estructurados a partir de un objeto paciente.
+ * @param {object} p
+ * @returns {{ apellido: string, nombre: string, display: string }}
+ */
+export function formatPatientName(p) {
+  let ap = (p?.apellido || "").trim();
+  let nom = (p?.nombre || "").trim();
+
+  if (!ap && !nom) {
+    const full = (p?.nombre_completo || "").trim();
+    if (full) {
+      const parts = full.split(/\s+/);
+      if (parts.length === 1) {
+        nom = parts[0];
+      } else {
+        // En español el primer token suele ser el nombre de pila y el resto los apellidos (ej: "Juan Pérez", "Ana María Gómez")
+        nom = parts.slice(0, parts.length > 2 ? 2 : 1).join(" ");
+        ap = parts.slice(parts.length > 2 ? 2 : 1).join(" ");
+      }
+    }
+  }
+
+  let display = "";
+  if (ap && nom) {
+    display = `${ap}, ${nom}`;
+  } else if (ap) {
+    display = ap;
+  } else if (nom) {
+    display = nom;
+  } else {
+    display = (p?.nombre_completo || "").trim() || "Paciente";
+  }
+
+  return { apellido: ap, nombre: nom, display };
+}
+
 function filterPacientes() {
   const query = (searchInput?.value || "").toLowerCase().trim();
-  return pacientesCache.filter((p) => {
+  const list = pacientesCache.filter((p) => {
     if (activeFilterProf !== "todos" && p.profesional_habitual !== activeFilterProf) {
       return false;
     }
@@ -201,6 +238,17 @@ function filterPacientes() {
                          (p.contacto_notas || "").toLowerCase().includes(query);
     return nameMatch || phoneMatch || emailMatch || dniMatch || motivoMatch || contactMatch;
   });
+
+  // Ordenar alfabéticamente por Apellido, y secundariamente por Nombre
+  list.sort((a, b) => {
+    const nameA = formatPatientName(a);
+    const nameB = formatPatientName(b);
+    const cmpAp = nameA.apellido.localeCompare(nameB.apellido, "es", { sensitivity: "base" });
+    if (cmpAp !== 0) return cmpAp;
+    return nameA.nombre.localeCompare(nameB.nombre, "es", { sensitivity: "base" });
+  });
+
+  return list;
 }
 
 export function renderPacientesTable() {
@@ -220,8 +268,10 @@ export function renderPacientesTable() {
   filtered.forEach((p) => {
     const tr = document.createElement("tr");
 
-    // Nombre completo para mostrar como texto único
-    const fullName = p.nombre_completo || [p.nombre, p.apellido].filter(Boolean).join(" ") || "Paciente";
+    // Formato de nombre: Apellido, Nombre(s)
+    const formattedName = formatPatientName(p);
+    const displayName = formattedName.display;
+    const fullNameForConfirm = p.nombre_completo || [p.nombre, p.apellido].filter(Boolean).join(" ") || displayName;
 
     // Badge si fue agendado por un tercero o tiene familiar/secretaria asociada
     const contactBadge = (p.contacto_nombre || p.contacto_telefono)
@@ -237,7 +287,7 @@ export function renderPacientesTable() {
 
     tr.innerHTML = `
       <td>
-        <strong style="color: var(--navy);">${escapeHtml(fullName)}</strong>
+        <strong style="color: var(--navy);">${escapeHtml(displayName)}</strong>
         ${contactBadge}
       </td>
       <td>
@@ -258,7 +308,7 @@ export function renderPacientesTable() {
       <td style="text-align: right;">
         <div class="pacientes-actions">
           <button type="button" class="btn light btn-edit-paciente" data-id="${p.id}" title="Editar paciente">Editar</button>
-          <button type="button" class="btn ghost btn-delete-paciente btn-icon-del" data-id="${p.id}" data-name="${escapeHtml(fullName)}" title="Eliminar paciente" aria-label="Eliminar paciente">
+          <button type="button" class="btn ghost btn-delete-paciente btn-icon-del" data-id="${p.id}" data-name="${escapeHtml(fullNameForConfirm)}" title="Eliminar paciente" aria-label="Eliminar paciente">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <polyline points="3 6 5 6 21 6"></polyline>
               <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>

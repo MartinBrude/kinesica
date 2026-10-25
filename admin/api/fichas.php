@@ -74,6 +74,19 @@ if ($method === 'POST') {
             json_out(422, ['error' => 'La URL de la foto no es válida']);
         }
     }
+    if (isset($data['fotosUrls'])) {
+        if (!is_array($data['fotosUrls'])) {
+            json_out(422, ['error' => 'fotosUrls debe ser un arreglo']);
+        }
+        if (count($data['fotosUrls']) > 10) {
+            json_out(422, ['error' => 'No se permite subir más de 10 fotos por sesión']);
+        }
+        foreach ($data['fotosUrls'] as $urlItem) {
+            if (!is_string($urlItem) || !preg_match('#^(/admin/)?api/foto\.php\?file=[a-f0-9]{32,64}\.(jpe?g|png|webp)$#i', $urlItem)) {
+                json_out(422, ['error' => 'Una de las URLs de las fotos no es válida']);
+            }
+        }
+    }
     if (mb_strlen((string) ($data['nombre'] ?? '')) > 200 || mb_strlen((string) ($data['dni'] ?? '')) > 50) {
         json_out(422, ['error' => 'Nombre o DNI demasiado largo']);
     }
@@ -328,10 +341,30 @@ if ($method === 'POST') {
     ]);
     $pdo->commit();
 
-    // Si la ficha tenía una foto previa y fue reemplazada o removida, eliminar el archivo anterior
-    if (is_array($prevItem) && !empty($prevItem['fotoUrl']) && ($prevItem['fotoUrl'] !== ($data['fotoUrl'] ?? ''))) {
-        if (preg_match('/file=([a-f0-9]{32,64}\.(jpe?g|png|webp))$/i', (string) $prevItem['fotoUrl'], $m)) {
-            $oldFile = __DIR__ . '/../uploads/' . $m[1];
+    // Helper para extraer lista completa de archivos asociados a una ficha (fotoUrl y fotosUrls)
+    $extractFiles = static function ($item): array {
+        $files = [];
+        if (!is_array($item)) return $files;
+        if (!empty($item['fotoUrl']) && preg_match('/file=([a-f0-9]{32,64}\.(jpe?g|png|webp))$/i', (string) $item['fotoUrl'], $m)) {
+            $files[$m[1]] = true;
+        }
+        if (!empty($item['fotosUrls']) && is_array($item['fotosUrls'])) {
+            foreach ($item['fotosUrls'] as $u) {
+                if (is_string($u) && preg_match('/file=([a-f0-9]{32,64}\.(jpe?g|png|webp))$/i', $u, $m)) {
+                    $files[$m[1]] = true;
+                }
+            }
+        }
+        return array_keys($files);
+    };
+
+    // Si la ficha tenía fotos previas y fueron reemplazadas o removidas, eliminar los archivos anteriores
+    if (is_array($prevItem)) {
+        $prevFiles = $extractFiles($prevItem);
+        $currentFiles = $extractFiles($data);
+        $toDelete = array_diff($prevFiles, $currentFiles);
+        foreach ($toDelete as $fName) {
+            $oldFile = __DIR__ . '/../uploads/' . $fName;
             if (is_file($oldFile)) {
                 @unlink($oldFile);
             }
@@ -355,11 +388,22 @@ if ($method === 'DELETE') {
             json_out(403, ['error' => 'No tienes permiso para eliminar esta ficha']);
         }
         $prevData = json_decode((string) ($row['payload'] ?? ''), true);
-        if (is_array($prevData) && !empty($prevData['fotoUrl'])) {
-            if (preg_match('/file=([a-f0-9]{32,64}\.(jpe?g|png|webp))$/i', (string) $prevData['fotoUrl'], $m)) {
-                $fileToDelete = __DIR__ . '/../uploads/' . $m[1];
-                if (is_file($fileToDelete)) {
-                    @unlink($fileToDelete);
+        if (is_array($prevData)) {
+            $filesToDelete = [];
+            if (!empty($prevData['fotoUrl']) && preg_match('/file=([a-f0-9]{32,64}\.(jpe?g|png|webp))$/i', (string) $prevData['fotoUrl'], $m)) {
+                $filesToDelete[$m[1]] = true;
+            }
+            if (!empty($prevData['fotosUrls']) && is_array($prevData['fotosUrls'])) {
+                foreach ($prevData['fotosUrls'] as $u) {
+                    if (is_string($u) && preg_match('/file=([a-f0-9]{32,64}\.(jpe?g|png|webp))$/i', $u, $m)) {
+                        $filesToDelete[$m[1]] = true;
+                    }
+                }
+            }
+            foreach (array_keys($filesToDelete) as $fName) {
+                $fileTarget = __DIR__ . '/../uploads/' . $fName;
+                if (is_file($fileTarget)) {
+                    @unlink($fileTarget);
                 }
             }
         }

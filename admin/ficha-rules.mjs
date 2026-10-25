@@ -97,7 +97,8 @@ export function validateField(key, value, allData = {}) {
     }
     case "lugarNac":
     case "anotaciones":
-    case "fotoUrl": {
+    case "fotoUrl":
+    case "fotosUrls": {
       return null;
     }
     case "motivo": {
@@ -268,7 +269,7 @@ export function validateStep(stepNumber, data = {}) {
     2: [],
     3: ["eva"],
     4: [],
-    5: ["anotaciones", "fotoUrl"],
+    5: ["anotaciones", "fotoUrl", "fotosUrls"],
   };
   const fields = stepFields[stepNumber] || [];
   const errors = {};
@@ -487,6 +488,7 @@ export function emptyFicha() {
     lugarNac: "",
     anotaciones: "",
     fotoUrl: "",
+    fotosUrls: [],
     motivo: "",
     // FEATURE-OPTIONAL: habitos-bruxismo
     habitoApretamiento: false,
@@ -607,6 +609,14 @@ export function coerceFicha(input = {}) {
   if (input?.savedAt) out.savedAt = String(input.savedAt);
   if (input?.profesional) out.profesional = String(input.profesional);
   if (input?.profesionalNombre) out.profesionalNombre = String(input.profesionalNombre);
+
+  // Compatibilidad bidireccional fotoUrl <-> fotosUrls
+  if (out.fotoUrl && out.fotosUrls.length === 0) {
+    out.fotosUrls = [out.fotoUrl];
+  } else if (!out.fotoUrl && out.fotosUrls.length > 0) {
+    out.fotoUrl = out.fotosUrls[0];
+  }
+
   return out;
 }
 
@@ -621,6 +631,7 @@ export function exampleFicha() {
     lugarNac: "Córdoba",
     anotaciones: "Paciente refiere alivio tras terapia manual descompresiva. Mejoría en el rango de apertura.",
     fotoUrl: "/admin/api/foto.php?file=0123456789abcdef0123456789abcdef.jpg",
+    fotosUrls: ["/admin/api/foto.php?file=0123456789abcdef0123456789abcdef.jpg"],
     motivo: "No Traumático",
     // FEATURE-OPTIONAL: habitos-bruxismo
     habitoApretamiento: true,

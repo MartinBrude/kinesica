@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=113">
+  <link rel="stylesheet" href="/admin/styles.css?v=114">
   <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1792693463">
   <script>
     (function () {
@@ -388,7 +388,7 @@
         <table class="pacientes-table">
           <thead>
             <tr>
-              <th>Nombre y Apellido</th>
+              <th>Apellido, Nombre(s)</th>
               <th>WhatsApp (Teléfono)</th>
               <th>Email</th>
               <th>DNI</th>
@@ -1518,15 +1518,22 @@
 
             <!-- Zona con fotos cargadas / vista previa en grilla -->
             <div class="foto-preview-container" id="foto-preview-container" hidden>
+              <!-- Grilla completa de fotos adjuntas con miniaturas y botón eliminar individual -->
+              <div class="foto-gallery-section">
+                <span class="foto-gallery-label">Fotos en esta sesión (hacé clic en una para ampliarla o en la × para eliminarla):</span>
+                <div class="foto-gallery-grid" id="foto-gallery-grid"></div>
+              </div>
+
+              <!-- Visor ampliado de la foto seleccionada -->
               <div class="foto-preview-box">
                 <img id="foto-preview-img" src="" alt="Foto clínica adjunta de la sesión" class="foto-preview-img">
               </div>
-              <div class="foto-gallery-grid" id="foto-gallery-grid"></div>
               <div class="foto-preview-info">
                 <span class="foto-preview-status" id="foto-preview-status">✓ Foto adjunta en la sesión</span>
                 <div class="foto-preview-actions">
                   <a href="#" target="_blank" rel="noopener noreferrer" class="btn ghost btn-sm" id="btn-foto-view">🔍 Ver en tamaño completo</a>
-                  <button type="button" class="btn light btn-sm" id="btn-foto-change">Agregar más</button>
+                  <button type="button" class="btn ghost btn-sm text-danger" id="btn-foto-remove-current" title="Eliminar la foto actualmente seleccionada">🗑️ Eliminar esta foto</button>
+                  <button type="button" class="btn light btn-sm" id="btn-foto-change">➕ Agregar más</button>
                   <button type="button" class="btn ghost btn-sm text-danger" id="btn-foto-remove">Quitar todas</button>
                 </div>
               </div>
@@ -1638,6 +1645,6 @@
   </script>
   <div id="print-root"></div>
   <script src="/booking/booking-bundle.min.js?v=1792693463" defer></script>
-  <script type="module" src="/admin/app.js?v=147"></script>
+  <script type="module" src="/admin/app.js?v=148"></script>
 </body>
 </html>

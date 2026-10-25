@@ -44,7 +44,10 @@ const fotoPreviewImg = document.querySelector("#foto-preview-img");
 const btnFotoSelect = document.querySelector("#btn-foto-select");
 const btnFotoChange = document.querySelector("#btn-foto-change");
 const btnFotoRemove = document.querySelector("#btn-foto-remove");
+const btnFotoRemoveCurrent = document.querySelector("#btn-foto-remove-current");
 const btnFotoView = document.querySelector("#btn-foto-view");
+const fotoGalleryGrid = document.querySelector("#foto-gallery-grid");
+const fotoPreviewStatus = document.querySelector("#foto-preview-status");
 
 let step = 0;
 let currentId = null;
@@ -55,25 +58,120 @@ let currentAllFichas = [];
 let identityKey = "";
 let identityEdited = false;
 let uploadInFlight = null;
+let currentFotos = [];
+let selectedFotoIdx = 0;
 
 /**
- * Actualiza la visualización de la vista previa de la foto adjunta.
- * @param {string} url URL de la imagen en el backend o cadena vacía
+ * Actualiza la visualización de la vista previa de las fotos adjuntas.
+ * @param {string|string[]} urls URLs de las imágenes en el backend
  */
-export function syncFotoPreview(url) {
-  const photoUrl = typeof url === "string" ? url.trim() : "";
-  if (fieldFotoUrl) fieldFotoUrl.value = photoUrl;
+export function syncFotoPreview(urls) {
+  let list = [];
+  if (Array.isArray(urls)) {
+    list = urls.map((u) => (typeof u === "string" ? u.trim() : "")).filter(Boolean);
+  } else if (typeof urls === "string" && urls.trim()) {
+    list = [urls.trim()];
+  }
+  currentFotos = list;
+  if (selectedFotoIdx >= currentFotos.length) {
+    selectedFotoIdx = Math.max(0, currentFotos.length - 1);
+  }
+
+  const primaryUrl = currentFotos[selectedFotoIdx] || currentFotos[0] || "";
+  if (fieldFotoUrl) fieldFotoUrl.value = primaryUrl;
   if (fotoLoading) fotoLoading.hidden = true;
 
-  if (photoUrl) {
-    if (fotoPreviewImg) fotoPreviewImg.src = photoUrl;
-    if (btnFotoView) btnFotoView.href = photoUrl;
+  if (currentFotos.length > 0) {
+    if (fotoPreviewImg) fotoPreviewImg.src = primaryUrl;
+    if (btnFotoView) btnFotoView.href = primaryUrl;
     if (fotoPreviewContainer) fotoPreviewContainer.hidden = false;
     if (fotoDropzone) fotoDropzone.hidden = true;
+
+    if (fotoPreviewStatus) {
+      fotoPreviewStatus.textContent = currentFotos.length === 1
+        ? "✓ 1 foto adjunta en la sesión"
+        : `✓ ${currentFotos.length} fotos adjuntas (viendo ${selectedFotoIdx + 1} de ${currentFotos.length})`;
+    }
+
+    if (btnFotoRemoveCurrent) {
+      btnFotoRemoveCurrent.hidden = false;
+      btnFotoRemoveCurrent.textContent = currentFotos.length > 1
+        ? `🗑️ Eliminar foto ${selectedFotoIdx + 1}`
+        : "🗑️ Eliminar foto";
+    }
+
+    if (fotoGalleryGrid) {
+      fotoGalleryGrid.innerHTML = "";
+      currentFotos.forEach((fUrl, idx) => {
+        const itemDiv = document.createElement("div");
+        itemDiv.className = `foto-gallery-item ${idx === selectedFotoIdx ? "is-selected" : ""}`;
+        itemDiv.title = `Foto ${idx + 1} de ${currentFotos.length} (hacé clic para verla en grande)`;
+
+        const thumb = document.createElement("img");
+        thumb.className = "foto-gallery-thumb";
+        thumb.src = fUrl;
+        thumb.alt = `Miniatura foto ${idx + 1}`;
+
+        const badge = document.createElement("span");
+        badge.className = "foto-gallery-badge";
+        badge.textContent = `${idx + 1}/${currentFotos.length}`;
+
+        const delBtn = document.createElement("button");
+        delBtn.type = "button";
+        delBtn.className = "foto-gallery-delete";
+        delBtn.title = `Eliminar foto ${idx + 1}`;
+        delBtn.setAttribute("aria-label", `Eliminar foto ${idx + 1}`);
+        delBtn.innerHTML = "×";
+        delBtn.addEventListener("click", async (ev) => {
+          ev.stopPropagation();
+          const ok = await dialogConfirm(`¿Deseás quitar la foto ${idx + 1} de la sesión?`);
+          if (ok) {
+            const updated = currentFotos.filter((_, i) => i !== idx);
+            if (selectedFotoIdx >= updated.length) {
+              selectedFotoIdx = Math.max(0, updated.length - 1);
+            }
+            syncFotoPreview(updated);
+          }
+        });
+
+        itemDiv.appendChild(thumb);
+        itemDiv.appendChild(badge);
+        itemDiv.appendChild(delBtn);
+
+        itemDiv.addEventListener("click", () => {
+          selectedFotoIdx = idx;
+          const chosen = currentFotos[idx];
+          if (fieldFotoUrl) fieldFotoUrl.value = chosen;
+          if (fotoPreviewImg) fotoPreviewImg.src = chosen;
+          if (btnFotoView) btnFotoView.href = chosen;
+          if (fotoPreviewStatus) {
+            fotoPreviewStatus.textContent = currentFotos.length === 1
+              ? "✓ 1 foto adjunta en la sesión"
+              : `✓ ${currentFotos.length} fotos adjuntas (viendo ${idx + 1} de ${currentFotos.length})`;
+          }
+          if (btnFotoRemoveCurrent) {
+            btnFotoRemoveCurrent.textContent = currentFotos.length > 1
+              ? `🗑️ Eliminar foto ${idx + 1}`
+              : "🗑️ Eliminar foto";
+          }
+          fotoGalleryGrid.querySelectorAll(".foto-gallery-item").forEach((el, i) => {
+            el.classList.toggle("is-selected", i === idx);
+          });
+        });
+
+        fotoGalleryGrid.appendChild(itemDiv);
+      });
+      fotoGalleryGrid.hidden = false;
+    }
   } else {
     if (fotoPreviewImg) fotoPreviewImg.src = "";
     if (btnFotoView) btnFotoView.href = "#";
     if (fotoPreviewContainer) fotoPreviewContainer.hidden = true;
+    if (fotoGalleryGrid) {
+      fotoGalleryGrid.innerHTML = "";
+      fotoGalleryGrid.hidden = true;
+    }
+    if (btnFotoRemoveCurrent) btnFotoRemoveCurrent.hidden = true;
     if (fotoDropzone) fotoDropzone.hidden = false;
   }
 }
@@ -137,6 +235,8 @@ export function readForm() {
   const dniOn = document.querySelector("#btn-dni-power")?.classList.contains("is-on") !== false;
   raw.sinDocumento = !dniOn;
   if (!dniOn) raw.dni = "";
+  raw.fotosUrls = [...currentFotos];
+  raw.fotoUrl = currentFotos[0] || "";
   return coerceFicha(raw);
 }
 
@@ -248,7 +348,11 @@ export function fillForm(data, allFichas = []) {
     setPatientLocked(false);
   }
   setDniPower(!data?.sinDocumento);
-  syncFotoPreview(data?.fotoUrl || "");
+  const initialFotos = Array.isArray(data?.fotosUrls) && data.fotosUrls.length > 0
+    ? data.fotosUrls
+    : (data?.fotoUrl ? [data.fotoUrl] : []);
+  selectedFotoIdx = 0;
+  syncFotoPreview(initialFotos);
   showStep(0);
 }
 
@@ -843,46 +947,69 @@ export function initForm({ onSave, onBack, onCompare, onPrint, getSessionUser })
     }
   });
 
-  async function processAndUploadFoto(file) {
-    if (!file) return;
-    const validTypes = ["image/jpeg", "image/png", "image/webp"];
-    if (!validTypes.includes(file.type)) {
-      await dialogAlert("Formato no admitido. Por favor seleccioná una imagen JPG, PNG o WebP.");
+  async function processAndUploadFotos(files) {
+    const fileList = Array.from(files || []).filter(Boolean);
+    if (!fileList.length) return;
+
+    if (currentFotos.length + fileList.length > 10) {
+      await dialogAlert(`Solo se permiten hasta 10 fotos por sesión. Actualmente tenés ${currentFotos.length} y seleccionaste ${fileList.length}.`);
       return;
     }
-    if (file.size > 25 * 1024 * 1024) {
-      await dialogAlert("La imagen original supera los 25 MB. Por favor seleccioná una imagen más liviana.");
-      return;
+
+    const validTypes = ["image/jpeg", "image/png", "image/webp"];
+    for (const f of fileList) {
+      if (!validTypes.includes(f.type)) {
+        await dialogAlert(`El archivo "${f.name}" no tiene un formato admitido. Seleccioná únicamente JPG, PNG o WebP.`);
+        return;
+      }
+      if (f.size > 25 * 1024 * 1024) {
+        await dialogAlert(`El archivo "${f.name}" supera los 25 MB. Seleccioná imágenes más livianas.`);
+        return;
+      }
     }
 
     if (fotoDropzone) fotoDropzone.hidden = true;
     if (fotoPreviewContainer) fotoPreviewContainer.hidden = true;
     if (fotoLoading) fotoLoading.hidden = false;
-    if (fotoLoadingText) fotoLoadingText.textContent = "Optimizando y comprimiendo imagen…";
 
-    const currentUrl = fieldFotoUrl?.value || "";
+    const previousFotos = [...currentFotos];
+    const uploadedUrls = [];
 
     try {
       const task = (async () => {
-        const compressed = await compressImage(file);
-        if (fotoLoadingText) fotoLoadingText.textContent = "Subiendo imagen al servidor…";
-        const fd = new FormData();
-        fd.append("foto", compressed);
-        return await api("foto.php", {
-          method: "POST",
-          body: fd,
-        });
+        for (let i = 0; i < fileList.length; i++) {
+          const file = fileList[i];
+          if (fotoLoadingText) {
+            fotoLoadingText.textContent = fileList.length === 1
+              ? "Optimizando y subiendo imagen…"
+              : `Optimizando y subiendo imagen ${i + 1} de ${fileList.length}…`;
+          }
+          const compressed = await compressImage(file);
+          const fd = new FormData();
+          fd.append("foto", compressed);
+          const res = await api("foto.php", {
+            method: "POST",
+            body: fd,
+          });
+          if (res?.url) {
+            uploadedUrls.push(res.url);
+          }
+        }
       })();
 
       uploadInFlight = task;
-      const res = await task;
-      if (res?.url) {
-        syncFotoPreview(res.url);
+      await task;
+      if (uploadedUrls.length > 0) {
+        const combined = [...currentFotos, ...uploadedUrls];
+        selectedFotoIdx = currentFotos.length; // enfocar la primera nueva foto subida
+        syncFotoPreview(combined);
+      } else {
+        syncFotoPreview(previousFotos);
       }
     } catch (err) {
-      syncFotoPreview(currentUrl);
+      syncFotoPreview(previousFotos);
       if (!err.auth) {
-        await dialogAlert(err.message || "No se pudo subir la imagen.");
+        await dialogAlert(err.message || "No se pudieron subir una o más imágenes.");
       }
     } finally {
       uploadInFlight = null;
@@ -892,8 +1019,8 @@ export function initForm({ onSave, onBack, onCompare, onPrint, getSessionUser })
 
   if (fotoInput) {
     fotoInput.addEventListener("change", (e) => {
-      const file = e.target.files?.[0];
-      if (file) processAndUploadFoto(file);
+      const files = e.target.files;
+      if (files?.length) processAndUploadFotos(files);
     });
   }
 
@@ -910,11 +1037,34 @@ export function initForm({ onSave, onBack, onCompare, onPrint, getSessionUser })
     });
   }
 
+  if (btnFotoRemoveCurrent) {
+    btnFotoRemoveCurrent.addEventListener("click", async () => {
+      if (!currentFotos.length) return;
+      const targetIdx = selectedFotoIdx;
+      const confirmed = await dialogConfirm(
+        currentFotos.length > 1
+          ? `¿Deseás eliminar la foto ${targetIdx + 1} de la sesión?`
+          : "¿Deseás quitar la foto adjunta de esta sesión?"
+      );
+      if (confirmed) {
+        const updated = currentFotos.filter((_, i) => i !== targetIdx);
+        if (selectedFotoIdx >= updated.length) {
+          selectedFotoIdx = Math.max(0, updated.length - 1);
+        }
+        syncFotoPreview(updated);
+      }
+    });
+  }
+
   if (btnFotoRemove) {
     btnFotoRemove.addEventListener("click", async () => {
-      const confirmed = await dialogConfirm("¿Deseás quitar la foto adjunta de esta sesión?");
+      const confirmed = await dialogConfirm(
+        currentFotos.length > 1
+          ? `¿Deseás quitar todas las fotos (${currentFotos.length}) adjuntas a esta sesión?`
+          : "¿Deseás quitar la foto adjunta de esta sesión?"
+      );
       if (confirmed) {
-        syncFotoPreview("");
+        syncFotoPreview([]);
       }
     });
   }
@@ -936,8 +1086,8 @@ export function initForm({ onSave, onBack, onCompare, onPrint, getSessionUser })
     fotoDropzone.addEventListener("drop", (e) => {
       e.preventDefault();
       fotoDropzone.classList.remove("dragover");
-      const file = e.dataTransfer?.files?.[0];
-      if (file) processAndUploadFoto(file);
+      const files = e.dataTransfer?.files;
+      if (files?.length) processAndUploadFotos(files);
     });
   }
 

@@ -305,7 +305,11 @@ export function buildSheet(item, sessionUser = null, meta = {}) {
   const plan = prose("Plan de tratamiento", item.plan);
   const notesSession = prose("Anotaciones de la sesión", item.anotaciones);
 
-  if (selected.length > 0 || obs || plan || notesSession || item.fotoUrl) {
+  const fotosList = Array.isArray(item.fotosUrls) && item.fotosUrls.length > 0
+    ? item.fotosUrls
+    : (item.fotoUrl ? [item.fotoUrl] : []);
+
+  if (selected.length > 0 || obs || plan || notesSession || fotosList.length > 0) {
     const chips = node("div", "pf-chips");
     if (selected.length) {
       for (const id of selected) chips.append(node("span", "pf-chip", CDI_LABELS[id] || id));
@@ -318,16 +322,21 @@ export function buildSheet(item, sessionUser = null, meta = {}) {
     if (plan) notes.append(plan);
     if (notes.childElementCount) cdi.append(notes);
     if (notesSession) cdi.append(notesSession);
-    if (item.fotoUrl) {
+    if (fotosList.length > 0) {
       const safeFotoPattern = /^(\/admin\/)?api\/foto\.php\?file=[a-f0-9]{32,64}\.(jpe?g|png|webp)$/i;
-      if (safeFotoPattern.test(String(item.fotoUrl).trim())) {
+      const validFotos = fotosList.filter((f) => safeFotoPattern.test(String(f).trim()));
+      if (validFotos.length > 0) {
         const fotoWrap = node("div", "pf-foto-box");
-        fotoWrap.append(node("span", "pf-subhead", "Foto clínica adjunta"));
-        const img = document.createElement("img");
-        img.className = "pf-attached-photo";
-        img.src = item.fotoUrl;
-        img.alt = "Foto clínica de la sesión";
-        fotoWrap.append(img);
+        fotoWrap.append(node("span", "pf-subhead", validFotos.length === 1 ? "Foto clínica adjunta" : `Fotos clínicas adjuntas (${validFotos.length})`));
+        const grid = node("div", "pf-attached-photos-grid");
+        for (const fUrl of validFotos) {
+          const img = document.createElement("img");
+          img.className = "pf-attached-photo";
+          img.src = fUrl;
+          img.alt = "Foto clínica de la sesión";
+          grid.append(img);
+        }
+        fotoWrap.append(grid);
         cdi.append(fotoWrap);
       }
     }

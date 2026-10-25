@@ -267,7 +267,15 @@ export function compareFichas(sourceA, sourceB) {
       title: "6. Anotaciones de la sesión",
       fields: [
         diffText("Anotaciones de la sesión", a.anotaciones, b.anotaciones),
-        diffText("Foto clínica adjunta", a.fotoUrl ? "Con foto adjunta" : "Sin foto", b.fotoUrl ? "Con foto adjunta" : "Sin foto"),
+        diffText(
+          "Foto clínica adjunta",
+          (Array.isArray(a.fotosUrls) && a.fotosUrls.length > 0)
+            ? `${a.fotosUrls.length} ${a.fotosUrls.length === 1 ? "foto adjunta" : "fotos adjuntas"}`
+            : (a.fotoUrl ? "Con foto adjunta" : "Sin foto"),
+          (Array.isArray(b.fotosUrls) && b.fotosUrls.length > 0)
+            ? `${b.fotosUrls.length} ${b.fotosUrls.length === 1 ? "foto adjunta" : "fotos adjuntas"}`
+            : (b.fotoUrl ? "Con foto adjunta" : "Sin foto"),
+        ),
       ],
     },
   ];

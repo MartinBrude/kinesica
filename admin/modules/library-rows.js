@@ -60,10 +60,15 @@ export function sessionRow(item, patient, callbacks = {}, sessionIndex = 1, tota
     anotacionesHtml = `<span class="session-chip session-chip-notes" title="${escapeHtml(item.anotaciones.trim())}">📝 ${escapeHtml(preview)}</span>`;
   }
 
-  // Foto clínica adjunta
+  // Fotos clínicas adjuntas
   let fotoHtml = "";
-  if (item.fotoUrl) {
-    fotoHtml = `<span class="session-chip session-chip-foto" title="Foto clínica adjunta">📷 Foto</span>`;
+  const totalFotos = Array.isArray(item.fotosUrls) && item.fotosUrls.length > 0
+    ? item.fotosUrls.length
+    : (item.fotoUrl ? 1 : 0);
+  if (totalFotos > 0) {
+    const fotoLabel = totalFotos === 1 ? "📷 Foto" : `📷 ${totalFotos} fotos`;
+    const fotoTitle = totalFotos === 1 ? "1 foto clínica adjunta" : `${totalFotos} fotos clínicas adjuntas`;
+    fotoHtml = `<span class="session-chip session-chip-foto" title="${fotoTitle}">${fotoLabel}</span>`;
   }
 
   // Profesional

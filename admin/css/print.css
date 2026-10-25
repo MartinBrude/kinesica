@@ -497,6 +497,11 @@
     text-transform: uppercase;
     margin-bottom: 4px;
   }
+  .pf-attached-photos-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
   .pf-attached-photo {
     max-width: 100%;
     max-height: 180px;
