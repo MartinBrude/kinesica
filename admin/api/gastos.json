@@ -1,0 +1,34 @@
+[
+  {
+    "id": "gasto_1",
+    "concepto": "AI automation apps",
+    "detalle": "",
+    "fecha": "2026-10-25",
+    "monto": 148.09,
+    "moneda": "EUR"
+  },
+  {
+    "id": "gasto_2",
+    "concepto": "AI automation apps",
+    "detalle": "",
+    "fecha": "2026-09-26",
+    "monto": 8.99,
+    "moneda": "EUR"
+  },
+  {
+    "id": "gasto_3",
+    "concepto": "Business Web Hosting",
+    "detalle": "kinesica.com.ar",
+    "fecha": "2026-02-03",
+    "monto": 65.88,
+    "moneda": "EUR"
+  },
+  {
+    "id": "gasto_4",
+    "concepto": "Premium Web Hosting",
+    "detalle": "kinesica.com.ar",
+    "fecha": "2025-03-28",
+    "monto": 35.88,
+    "moneda": "EUR"
+  }
+]

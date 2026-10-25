@@ -18,6 +18,8 @@ admin/
 │   ├── fichas.php           # Endpoint CRUD de historias clínicas
 │   ├── forgot.php           # Solicitud de restablecimiento de contraseña
 │   ├── foto.php             # Servidor seguro y validado de fotos clínicas adjuntas
+│   ├── gastos.json          # Semilla versionada de gastos y costos operativos (hosting, IA)
+│   ├── gastos.php           # API para registro, modificación, baja y cálculo de gastos (exclusivo admin)
 │   ├── horarios.php         # Persistencia de franjas de atención y restricción de camilla
 │   ├── install.php          # Inicialización de esquema y credenciales
 │   ├── lib.php              # Librería común: base de datos, sesiones, TOTP, rate limiting, OTP por correo

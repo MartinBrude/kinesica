@@ -1035,6 +1035,54 @@
             </div>
           </div>
         </article>
+
+        <!-- SECCIÓN 3: REGISTRO DE GASTOS -->
+        <article class="admin-card" id="admin-gastos-card">
+          <div class="admin-card-header">
+            <div class="admin-card-titles">
+              <h2 class="admin-card-title">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+                Registro de Gastos
+              </h2>
+              <p class="admin-card-desc">Historial y control de gastos operativos, hosting e infraestructura.</p>
+            </div>
+            <div class="admin-gastos-header-actions">
+              <button type="button" class="btn green" id="admin-btn-nuevo-gasto">+ Nuevo Gasto</button>
+            </div>
+          </div>
+          <div class="admin-card-body">
+            <div class="gastos-summary-grid">
+              <div class="login-stat-card gastos-stat-card">
+                <span class="stat-name">Suma Total</span>
+                <span class="stat-count" id="admin-gastos-suma-total">0,00 €</span>
+                <span class="stat-role" id="admin-gastos-count-label">0 gastos registrados</span>
+              </div>
+            </div>
+
+            <div class="prof-table-wrapper">
+              <table class="prof-table gastos-table">
+                <thead>
+                  <tr>
+                    <th>Servicio</th>
+                    <th>Pagado el</th>
+                    <th style="text-align: right;">Cantidad</th>
+                    <th style="text-align: right;">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-gastos-tbody">
+                  <!-- Renderizado dinámico -->
+                </tbody>
+                <tfoot>
+                  <tr class="gastos-total-row">
+                    <td colspan="2" style="font-weight: 700;">Total Acumulado</td>
+                    <td style="text-align: right; font-weight: 700; font-size: 15px;" id="admin-gastos-tfoot-total">0,00 €</td>
+                    <td></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </article>
       </div>
 
       <!-- MODAL DE ALTA / EDICIÓN DE PROFESIONAL -->
@@ -1081,6 +1129,52 @@
             <div class="prof-modal-footer">
               <button type="button" class="btn ghost" id="admin-prof-modal-cancel">Cancelar</button>
               <button type="submit" class="btn green" id="admin-prof-modal-save">Guardar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- MODAL DE ALTA / EDICIÓN DE GASTO -->
+      <div id="admin-gasto-modal" class="prof-modal-backdrop" hidden>
+        <div class="prof-modal-card" role="dialog" aria-modal="true" aria-labelledby="admin-gasto-modal-title">
+          <div class="prof-modal-header">
+            <h3 id="admin-gasto-modal-title">Nuevo Gasto</h3>
+            <button type="button" class="prof-modal-close" id="admin-gasto-modal-close" aria-label="Cerrar">&times;</button>
+          </div>
+          <form id="admin-gasto-form">
+            <input type="hidden" id="admin-gasto-id" value="">
+            <div class="prof-modal-body">
+              <div class="prof-form-group">
+                <label for="admin-gasto-concepto">Servicio / Concepto</label>
+                <input type="text" id="admin-gasto-concepto" required placeholder="Ej: AI automation apps o Business Web Hosting">
+              </div>
+              <div class="prof-form-group">
+                <label for="admin-gasto-detalle">Detalle (opcional)</label>
+                <input type="text" id="admin-gasto-detalle" placeholder="Ej: kinesica.com.ar">
+                <span class="prof-form-help">Subtítulo o detalle asociado, como dominio web o referencia.</span>
+              </div>
+              <div class="prof-form-row">
+                <div class="prof-form-group">
+                  <label for="admin-gasto-fecha">Pagado el (Fecha)</label>
+                  <input type="date" id="admin-gasto-fecha" required>
+                </div>
+                <div class="prof-form-group">
+                  <label for="admin-gasto-monto">Cantidad / Monto</label>
+                  <input type="number" id="admin-gasto-monto" required min="0.01" step="0.01" placeholder="Ej: 148.09">
+                </div>
+              </div>
+              <div class="prof-form-group">
+                <label for="admin-gasto-moneda">Moneda</label>
+                <select id="admin-gasto-moneda">
+                  <option value="EUR" selected>€ (Euro - EUR)</option>
+                  <option value="ARS">$ (Pesos Argentinos - ARS)</option>
+                  <option value="USD">$ (Dólares - USD)</option>
+                </select>
+              </div>
+            </div>
+            <div class="prof-modal-footer">
+              <button type="button" class="btn ghost" id="admin-gasto-modal-cancel">Cancelar</button>
+              <button type="submit" class="btn green" id="admin-gasto-modal-save">Guardar Gasto</button>
             </div>
           </form>
         </div>
@@ -1701,6 +1795,9 @@
           } else if (saved.view === "compare") {
             var comp = document.getElementById("view-compare");
             if (comp) comp.hidden = false;
+          } else if (saved.view === "admin") {
+            var adm = document.getElementById("view-admin");
+            if (adm) adm.hidden = false;
           }
         }
       } catch (_) {}

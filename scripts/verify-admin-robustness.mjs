@@ -713,4 +713,36 @@ await test("Formateo seguro de horario de encabezado con valores normales y extr
   );
 });
 
+await test("Módulo de Gastos: integridad de semilla, validaciones en backend y elementos en UI", () => {
+  const seedPath = path.join(adminDir, "api/gastos.json");
+  assert.ok(fs.existsSync(seedPath), "admin/api/gastos.json debe existir");
+  const seed = JSON.parse(fs.readFileSync(seedPath, "utf8"));
+  assert.equal(seed.length, 4, "Debe contener los 4 registros de la imagen");
+  assert.equal(seed[0].concepto, "AI automation apps");
+  assert.equal(seed[0].fecha, "2026-10-25");
+  assert.equal(seed[0].monto, 148.09);
+  assert.equal(seed[1].concepto, "AI automation apps");
+  assert.equal(seed[1].fecha, "2026-09-26");
+  assert.equal(seed[1].monto, 8.99);
+  assert.equal(seed[2].concepto, "Business Web Hosting");
+  assert.equal(seed[2].detalle, "kinesica.com.ar");
+  assert.equal(seed[2].fecha, "2026-02-03");
+  assert.equal(seed[2].monto, 65.88);
+  assert.equal(seed[3].concepto, "Premium Web Hosting");
+  assert.equal(seed[3].detalle, "kinesica.com.ar");
+  assert.equal(seed[3].fecha, "2025-03-28");
+  assert.equal(seed[3].monto, 35.88);
+
+  const total = seed.reduce((acc, g) => acc + g.monto, 0);
+  assert.equal(Math.round(total * 100) / 100, 258.84, "La suma total de los 4 registros debe ser 258.84");
+
+  const phpPath = path.join(adminDir, "api/gastos.php");
+  assert.ok(fs.existsSync(phpPath), "admin/api/gastos.php debe existir");
+  const phpSrc = fs.readFileSync(phpPath, "utf8");
+  assert.match(phpSrc, /is_admin\(\$auth\)/, "gastos.php debe requerir rol admin");
+  assert.match(phpSrc, /\$action === 'create'/, "gastos.php debe soportar alta");
+  assert.match(phpSrc, /\$action === 'update'/, "gastos.php debe soportar modificación");
+  assert.match(phpSrc, /\$action === 'delete'/, "gastos.php debe soportar baja");
+});
+
 console.log(`admin robustez: ok (${passed} pruebas)`);

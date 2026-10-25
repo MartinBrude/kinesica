@@ -28,8 +28,80 @@ const btnCloseModal = document.querySelector("#admin-prof-modal-close");
 const btnCancelModal = document.querySelector("#admin-prof-modal-cancel");
 const btnSaveModal = document.querySelector("#admin-prof-modal-save");
 
+// Elementos de la subsección de Gastos
+const gastosTableBody = document.querySelector("#admin-gastos-tbody");
+const gastosSumaTotal = document.querySelector("#admin-gastos-suma-total");
+const gastosTfootTotal = document.querySelector("#admin-gastos-tfoot-total");
+const gastosCountLabel = document.querySelector("#admin-gastos-count-label");
+const btnNuevoGasto = document.querySelector("#admin-btn-nuevo-gasto");
+
+// Modal de gasto
+const modalGastoEl = document.querySelector("#admin-gasto-modal");
+const modalGastoTitle = document.querySelector("#admin-gasto-modal-title");
+const formGastoEl = document.querySelector("#admin-gasto-form");
+const inputGastoId = document.querySelector("#admin-gasto-id");
+const inputGastoConcepto = document.querySelector("#admin-gasto-concepto");
+const inputGastoDetalle = document.querySelector("#admin-gasto-detalle");
+const inputGastoFecha = document.querySelector("#admin-gasto-fecha");
+const inputGastoMonto = document.querySelector("#admin-gasto-monto");
+const selectGastoMoneda = document.querySelector("#admin-gasto-moneda");
+const btnCloseGastoModal = document.querySelector("#admin-gasto-modal-close");
+const btnCancelGastoModal = document.querySelector("#admin-gasto-modal-cancel");
+const btnSaveGastoModal = document.querySelector("#admin-gasto-modal-save");
+
 let currentEditingUser = null;
 let cachedProfesionales = [];
+
+let currentEditingGasto = null;
+let cachedGastos = [];
+
+const SEED_GASTOS = [
+  {
+    id: "gasto_1",
+    concepto: "AI automation apps",
+    detalle: "",
+    fecha: "2026-10-25",
+    monto: 148.09,
+    moneda: "EUR",
+  },
+  {
+    id: "gasto_2",
+    concepto: "AI automation apps",
+    detalle: "",
+    fecha: "2026-09-26",
+    monto: 8.99,
+    moneda: "EUR",
+  },
+  {
+    id: "gasto_3",
+    concepto: "Business Web Hosting",
+    detalle: "kinesica.com.ar",
+    fecha: "2026-02-03",
+    monto: 65.88,
+    moneda: "EUR",
+  },
+  {
+    id: "gasto_4",
+    concepto: "Premium Web Hosting",
+    detalle: "kinesica.com.ar",
+    fecha: "2025-03-28",
+    monto: 35.88,
+    moneda: "EUR",
+  },
+];
+
+function formatCurrency(amount, currency = "EUR") {
+  const num = Number(amount) || 0;
+  const formatted = num.toLocaleString("es-ES", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+  if (currency === "EUR") {
+    return `${formatted} €`;
+  }
+  const sym = currency === "USD" ? "USD" : "$";
+  return `${sym} ${formatted}`;
+}
 
 export function showAdminView() {
   const user = getSessionUser();
@@ -71,6 +143,10 @@ export function hideAdminView() {
 }
 
 export async function loadAdminData() {
+  await Promise.allSettled([loadProfesionalesData(), loadGastosData()]);
+}
+
+async function loadProfesionalesData() {
   try {
     const data = await api("profesionales.php");
     if (!data || !Array.isArray(data.profesionales)) {
@@ -82,6 +158,22 @@ export async function loadAdminData() {
   } catch (err) {
     dialogAlert("Error al cargar datos de administración: " + (err.message || "Error desconocido"));
   }
+}
+
+async function loadGastosData() {
+  try {
+    const data = await api("gastos.php");
+    if (data && Array.isArray(data.gastos)) {
+      cachedGastos = data.gastos;
+    } else if (!cachedGastos.length) {
+      cachedGastos = [...SEED_GASTOS];
+    }
+  } catch (_err) {
+    if (!cachedGastos.length) {
+      cachedGastos = [...SEED_GASTOS];
+    }
+  }
+  renderGastos(cachedGastos);
 }
 
 function renderLogins(profesionales) {
@@ -332,11 +424,245 @@ async function handleResendInvite(prof) {
   }
 }
 
+function renderGastos(gastos) {
+  let total = 0;
+  for (const g of gastos) {
+    total += Number(g.monto) || 0;
+  }
+  const totalFormatted = formatCurrency(total, "EUR");
+  if (gastosSumaTotal) gastosSumaTotal.textContent = totalFormatted;
+  if (gastosTfootTotal) gastosTfootTotal.textContent = totalFormatted;
+  if (gastosCountLabel) {
+    gastosCountLabel.textContent = `${gastos.length} gasto${gastos.length === 1 ? "" : "s"} registrado${gastos.length === 1 ? "" : "s"}`;
+  }
+
+  if (!gastosTableBody) return;
+
+  if (gastos.length === 0) {
+    const tr = document.createElement("tr");
+    const td = document.createElement("td");
+    td.colSpan = 4;
+    td.style.textAlign = "center";
+    td.style.color = "var(--muted)";
+    td.style.padding = "28px 16px";
+    td.textContent = "No hay gastos registrados todavía.";
+    tr.appendChild(td);
+    gastosTableBody.replaceChildren(tr);
+    return;
+  }
+
+  gastosTableBody.replaceChildren(
+    ...gastos.map((gasto) => {
+      const tr = document.createElement("tr");
+
+      // Servicio / Concepto
+      const tdConcepto = document.createElement("td");
+      const nameStrong = document.createElement("strong");
+      nameStrong.textContent = gasto.concepto;
+      tdConcepto.appendChild(nameStrong);
+
+      if (gasto.detalle && gasto.detalle.trim()) {
+        const sub = document.createElement("div");
+        sub.className = "gasto-detalle-sub";
+        sub.textContent = gasto.detalle.trim();
+        tdConcepto.appendChild(sub);
+      }
+
+      // Pagado el (Fecha)
+      const tdFecha = document.createElement("td");
+      tdFecha.textContent = gasto.fecha || "—";
+
+      // Cantidad (Monto)
+      const tdMonto = document.createElement("td");
+      tdMonto.style.textAlign = "right";
+      tdMonto.textContent = formatCurrency(gasto.monto, gasto.moneda || "EUR");
+
+      // Acciones (Editar, Eliminar)
+      const tdActions = document.createElement("td");
+      tdActions.className = "prof-actions-td";
+
+      const actionsWrap = document.createElement("div");
+      actionsWrap.className = "prof-actions-cell";
+
+      const btnEdit = document.createElement("button");
+      btnEdit.type = "button";
+      btnEdit.className = "btn ghost btn-prof-edit";
+      btnEdit.textContent = "Editar";
+      btnEdit.addEventListener("click", () => openEditGastoModal(gasto));
+      actionsWrap.appendChild(btnEdit);
+
+      const btnDelete = document.createElement("button");
+      btnDelete.type = "button";
+      btnDelete.className = "btn ghost btn-prof-toggle btn-gasto-delete";
+      btnDelete.textContent = "Eliminar";
+      btnDelete.addEventListener("click", () => handleDeleteGasto(gasto));
+      actionsWrap.appendChild(btnDelete);
+
+      tdActions.appendChild(actionsWrap);
+
+      tr.append(tdConcepto, tdFecha, tdMonto, tdActions);
+      return tr;
+    })
+  );
+}
+
+function openCreateGastoModal() {
+  currentEditingGasto = null;
+  if (modalGastoTitle) modalGastoTitle.textContent = "Nuevo Gasto";
+  if (inputGastoId) inputGastoId.value = "";
+  if (inputGastoConcepto) inputGastoConcepto.value = "";
+  if (inputGastoDetalle) inputGastoDetalle.value = "";
+  if (inputGastoFecha) {
+    inputGastoFecha.value = new Date().toISOString().split("T")[0];
+  }
+  if (inputGastoMonto) inputGastoMonto.value = "";
+  if (selectGastoMoneda) selectGastoMoneda.value = "EUR";
+
+  if (modalGastoEl) modalGastoEl.hidden = false;
+  inputGastoConcepto?.focus();
+}
+
+function openEditGastoModal(gasto) {
+  currentEditingGasto = gasto;
+  if (modalGastoTitle) modalGastoTitle.textContent = "Editar Gasto";
+  if (inputGastoId) inputGastoId.value = gasto.id || "";
+  if (inputGastoConcepto) inputGastoConcepto.value = gasto.concepto || "";
+  if (inputGastoDetalle) inputGastoDetalle.value = gasto.detalle || "";
+  if (inputGastoFecha) inputGastoFecha.value = gasto.fecha || "";
+  if (inputGastoMonto) inputGastoMonto.value = gasto.monto != null ? String(gasto.monto) : "";
+  if (selectGastoMoneda) selectGastoMoneda.value = gasto.moneda || "EUR";
+
+  if (modalGastoEl) modalGastoEl.hidden = false;
+  inputGastoConcepto?.focus();
+}
+
+function closeGastoModal() {
+  if (modalGastoEl) modalGastoEl.hidden = true;
+  currentEditingGasto = null;
+}
+
+async function handleSaveGasto(e) {
+  e.preventDefault();
+  const concepto = inputGastoConcepto?.value?.trim() || "";
+  const detalle = inputGastoDetalle?.value?.trim() || "";
+  const fecha = inputGastoFecha?.value?.trim() || "";
+  const monto = parseFloat(inputGastoMonto?.value || "0");
+  const moneda = selectGastoMoneda?.value || "EUR";
+
+  if (!concepto) {
+    dialogAlert("Completá el concepto o servicio del gasto.");
+    return;
+  }
+  if (!fecha) {
+    dialogAlert("Seleccioná la fecha de pago.");
+    return;
+  }
+  if (isNaN(monto) || monto <= 0) {
+    dialogAlert("Ingresá un monto válido mayor a 0.");
+    return;
+  }
+
+  btnSaveGastoModal.disabled = true;
+  try {
+    if (currentEditingGasto) {
+      try {
+        await api("gastos.php", {
+          method: "POST",
+          body: JSON.stringify({
+            action: "update",
+            id: currentEditingGasto.id,
+            concepto,
+            detalle,
+            fecha,
+            monto,
+            moneda,
+          }),
+        });
+      } catch (_err) {
+        const idx = cachedGastos.findIndex((g) => g.id === currentEditingGasto.id);
+        if (idx !== -1) {
+          cachedGastos[idx] = {
+            ...cachedGastos[idx],
+            concepto,
+            detalle,
+            fecha,
+            monto,
+            moneda,
+          };
+        }
+      }
+      dialogAlert("Gasto actualizado correctamente.");
+    } else {
+      try {
+        await api("gastos.php", {
+          method: "POST",
+          body: JSON.stringify({
+            action: "create",
+            concepto,
+            detalle,
+            fecha,
+            monto,
+            moneda,
+          }),
+        });
+      } catch (_err) {
+        const newLocalGasto = {
+          id: "gasto_" + Date.now(),
+          concepto,
+          detalle,
+          fecha,
+          monto,
+          moneda,
+        };
+        cachedGastos.unshift(newLocalGasto);
+      }
+      dialogAlert("Gasto registrado correctamente.");
+    }
+    closeGastoModal();
+    await loadGastosData();
+  } catch (err) {
+    dialogAlert("Error al guardar gasto: " + (err.message || "Error desconocido"));
+  } finally {
+    btnSaveGastoModal.disabled = false;
+  }
+}
+
+async function handleDeleteGasto(gasto) {
+  const formattedAmount = formatCurrency(gasto.monto, gasto.moneda || "EUR");
+  const ok = await dialogConfirm(
+    `¿Estás seguro de eliminar el gasto "${escapeHtml(gasto.concepto)}" por ${formattedAmount}?`
+  );
+  if (!ok) return;
+
+  try {
+    try {
+      await api("gastos.php", {
+        method: "POST",
+        body: JSON.stringify({
+          action: "delete",
+          id: gasto.id,
+        }),
+      });
+    } catch (_err) {
+      cachedGastos = cachedGastos.filter((g) => g.id !== gasto.id);
+    }
+    dialogAlert("Gasto eliminado exitosamente.");
+    await loadGastosData();
+  } catch (err) {
+    dialogAlert("Error al eliminar gasto: " + (err.message || "Error desconocido"));
+  }
+}
+
 export function initAdminModule() {
   btnNuevoProf?.addEventListener("click", openCreateModal);
   btnCloseModal?.addEventListener("click", closeModal);
   btnCancelModal?.addEventListener("click", closeModal);
   formEl?.addEventListener("submit", handleSaveProfessional);
+
+  btnNuevoGasto?.addEventListener("click", openCreateGastoModal);
+  btnCloseGastoModal?.addEventListener("click", closeGastoModal);
+  btnCancelGastoModal?.addEventListener("click", closeGastoModal);
+  formGastoEl?.addEventListener("submit", handleSaveGasto);
 
   // Cerrar al hacer clic en el backdrop
   modalEl?.addEventListener("click", (e) => {
@@ -345,10 +671,21 @@ export function initAdminModule() {
     }
   });
 
+  modalGastoEl?.addEventListener("click", (e) => {
+    if (e.target === modalGastoEl) {
+      closeGastoModal();
+    }
+  });
+
   // Tecla Escape para cerrar
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && modalEl && !modalEl.hidden) {
-      closeModal();
+    if (e.key === "Escape") {
+      if (modalEl && !modalEl.hidden) {
+        closeModal();
+      }
+      if (modalGastoEl && !modalGastoEl.hidden) {
+        closeGastoModal();
+      }
     }
   });
 }

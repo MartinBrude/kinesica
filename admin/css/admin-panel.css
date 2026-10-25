@@ -390,3 +390,60 @@
     font-size: 12px;
   }
 }
+
+/* ==========================================================================
+   Subsección de Gastos y Costos Operativos
+   ========================================================================== */
+
+.admin-gastos-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.gastos-summary-grid {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.gastos-stat-card {
+  min-width: 240px;
+  background: #f8fafc;
+  border-left: 4px solid var(--accent);
+}
+
+.gastos-table th:nth-child(3),
+.gastos-table td:nth-child(3) {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.gasto-detalle-sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+  font-weight: 400;
+}
+
+.gastos-total-row {
+  background: #f8fafc;
+  border-top: 2px solid var(--line);
+}
+
+.gastos-total-row td {
+  padding: 14px 16px;
+  color: var(--navy);
+}
+
+.btn-gasto-delete {
+  color: #dc2626 !important;
+}
+
+.btn-gasto-delete:hover {
+  background: #fef2f2 !important;
+  color: #b91c1c !important;
+}
+
