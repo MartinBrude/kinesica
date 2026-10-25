@@ -18,38 +18,6 @@ ensure_login_counts();
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
-if ($method === 'GET') {
-    $stmt = db()->query(
-        'SELECT username, display_name, first_name, last_name, email, telefono, role, active, login_count 
-         FROM users 
-         ORDER BY (username = "martin") DESC, display_name ASC'
-    );
-    $rows = $stmt->fetchAll();
-
-    $list = array_map(static function (array $r): array {
-        return [
-            'username' => (string) $r['username'],
-            'name' => (string) ($r['display_name'] ?: $r['username']),
-            'first_name' => (string) ($r['first_name'] ?? ''),
-            'last_name' => (string) ($r['last_name'] ?? ''),
-            'email' => (string) ($r['email'] ?? ''),
-            'telefono' => (string) ($r['telefono'] ?? ''),
-            'role' => (string) ($r['role'] ?? 'professional'),
-            'active' => (int) ($r['active'] ?? 1),
-            'login_count' => (int) ($r['login_count'] ?? 0),
-        ];
-    }, $rows);
-
-    json_out(200, ['status' => 'success', 'profesionales' => $list]);
-}
-
-if ($method !== 'POST') {
-    json_out(405, ['error' => 'Método no permitido']);
-}
-
-$input = read_json();
-$action = (string) ($input['action'] ?? '');
-
 /**
  * Helper para sincronizar datos del profesional en settings.json
  * (practitioner_emails, practitioner_phones, opt_e_text y menu_welcome en Clara)
@@ -58,34 +26,48 @@ function sync_settings_practitioner(string $username, string $email, string $pho
 {
     try {
         kinesica_update_settings(function (array $raw) use ($username, $email, $phone, $active): array {
-            if (!isset($raw['practitioner_emails']) || !is_array($raw['practitioner_emails'])) {
-                $raw['practitioner_emails'] = [];
-            }
-            if ($active && $email !== '') {
-                $raw['practitioner_emails'][$username] = $email;
-            } else {
-                unset($raw['practitioner_emails'][$username]);
+            if ($username !== '' && $username !== 'martin') {
+                if (!isset($raw['practitioner_emails']) || !is_array($raw['practitioner_emails'])) {
+                    $raw['practitioner_emails'] = [];
+                }
+                if ($active && $email !== '') {
+                    $raw['practitioner_emails'][$username] = $email;
+                } else {
+                    unset($raw['practitioner_emails'][$username]);
+                }
+
+                if (!isset($raw['practitioner_phones']) || !is_array($raw['practitioner_phones'])) {
+                    $raw['practitioner_phones'] = [];
+                }
+                if ($active && $phone !== '') {
+                    $raw['practitioner_phones'][$username] = $phone;
+                } else {
+                    unset($raw['practitioner_phones'][$username]);
+                }
             }
 
-            if (!isset($raw['practitioner_phones']) || !is_array($raw['practitioner_phones'])) {
-                $raw['practitioner_phones'] = [];
-            }
-            if ($active && $phone !== '') {
-                $raw['practitioner_phones'][$username] = $phone;
-            } else {
-                unset($raw['practitioner_phones'][$username]);
-            }
-
-            // Consultar todos los profesionales activos para sincronizar los textos de Clara
+            // Consultar todos los profesionales clínicos activos (incluyendo a norberto y maria aunque tengan rol admin)
             try {
                 $stmt = db()->query(
-                    'SELECT username, display_name, first_name, last_name, active 
+                    'SELECT username, display_name, first_name, last_name, email, telefono, active 
                      FROM users 
-                     WHERE role = "professional" AND active = 1 
+                     WHERE username != "martin" AND active = 1 
                      ORDER BY (username = "norberto") DESC, (username = "maria") DESC, display_name ASC'
                 );
                 $activeProfs = $stmt->fetchAll();
                 if ($activeProfs) {
+                    foreach ($activeProfs as $p) {
+                        $u = (string) ($p['username'] ?? '');
+                        $em = trim((string) ($p['email'] ?? ''));
+                        $ph = trim((string) ($p['telefono'] ?? ''));
+                        if ($u !== '' && $em !== '') {
+                            $raw['practitioner_emails'][$u] = $em;
+                        }
+                        if ($u !== '' && $ph !== '') {
+                            $raw['practitioner_phones'][$u] = $ph;
+                        }
+                    }
+
                     $names = array_map(static function ($p) {
                         $n = trim((string) ($p['display_name'] ?: ($p['first_name'] . ' ' . $p['last_name'])));
                         return (stripos($n, 'Lic.') === false ? 'Lic. ' : '') . $n;
@@ -127,6 +109,41 @@ function sync_settings_practitioner(string $username, string $email, string $pho
         error_log('Error syncing practitioner to settings: ' . $e->getMessage());
     }
 }
+
+if ($method === 'GET') {
+    $stmt = db()->query(
+        'SELECT username, display_name, first_name, last_name, email, telefono, role, active, login_count 
+         FROM users 
+         ORDER BY (username = "martin") DESC, display_name ASC'
+    );
+    $rows = $stmt->fetchAll();
+
+    // Asegurar sincronización de profesionales activos en settings (por si cambiaron a rol admin)
+    sync_settings_practitioner('', '', '', true);
+
+    $list = array_map(static function (array $r): array {
+        return [
+            'username' => (string) $r['username'],
+            'name' => (string) ($r['display_name'] ?: $r['username']),
+            'first_name' => (string) ($r['first_name'] ?? ''),
+            'last_name' => (string) ($r['last_name'] ?? ''),
+            'email' => (string) ($r['email'] ?? ''),
+            'telefono' => (string) ($r['telefono'] ?? ''),
+            'role' => (string) ($r['role'] ?? 'professional'),
+            'active' => (int) ($r['active'] ?? 1),
+            'login_count' => (int) ($r['login_count'] ?? 0),
+        ];
+    }, $rows);
+
+    json_out(200, ['status' => 'success', 'profesionales' => $list]);
+}
+
+if ($method !== 'POST') {
+    json_out(405, ['error' => 'Método no permitido']);
+}
+
+$input = read_json();
+$action = (string) ($input['action'] ?? '');
 
 // ----------------------------------------------------
 // ACCIÓN: CREAR PROFESIONAL (ALTA)

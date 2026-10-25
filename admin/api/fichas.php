@@ -302,6 +302,8 @@ if ($method === 'POST') {
             $profesional = (string) $previous;
         } elseif ($inherited !== '') {
             $profesional = $inherited;
+        } elseif ($auth['username'] === 'maria') {
+            $profesional = 'maria';
         } else {
             $profesional = 'norberto';
         }
