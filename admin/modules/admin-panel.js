@@ -10,7 +10,6 @@ import { getSessionUser } from "./auth.js?v=80";
 import { escapeHtml, dialogAlert, dialogConfirm } from "./dom.js?v=78";
 
 const viewAdmin = document.querySelector("#view-admin");
-const loginsContainer = document.querySelector("#admin-logins-container");
 const profTableBody = document.querySelector("#admin-prof-tbody");
 const btnNuevoProf = document.querySelector("#admin-btn-nuevo-prof");
 
@@ -190,7 +189,6 @@ async function loadProfesionalesData() {
       return;
     }
     cachedProfesionales = data.profesionales;
-    renderLogins(cachedProfesionales);
     renderProfesionales(cachedProfesionales);
   } catch (err) {
     dialogAlert("Error al cargar datos de administración: " + (err.message || "Error desconocido"));
@@ -211,31 +209,6 @@ async function loadGastosData() {
     }
   }
   renderGastos(cachedGastos);
-}
-
-function renderLogins(profesionales) {
-  if (!loginsContainer) return;
-  loginsContainer.replaceChildren(
-    ...profesionales.map((prof) => {
-      const card = document.createElement("div");
-      card.className = "login-stat-card";
-
-      const name = document.createElement("span");
-      name.className = "stat-name";
-      name.textContent = prof.name || prof.username;
-
-      const count = document.createElement("span");
-      count.className = "stat-count";
-      count.textContent = String(prof.login_count ?? 0);
-
-      const role = document.createElement("span");
-      role.className = "stat-role";
-      role.textContent = prof.role === "admin" ? "Administrador" : "Profesional";
-
-      card.append(name, count, role);
-      return card;
-    })
-  );
 }
 
 function renderProfesionales(profesionales) {

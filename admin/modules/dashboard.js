@@ -9,7 +9,6 @@ import { escapeHtml, dialogAlert } from "./dom.js?v=78";
 
 const viewDashboard = document.querySelector("#view-dashboard");
 const greetingEl = document.querySelector("#dash-greeting");
-const loginsEl = document.querySelector("#dash-logins");
 const claraDot = document.querySelector("#dash-clara-dot");
 const claraText = document.querySelector("#dash-clara-status-text");
 const claraToggleBtn = document.querySelector("#dash-btn-toggle-clara");
@@ -72,10 +71,6 @@ export async function updateDashboardBooking(isActive) {
 export async function updateDashboardState() {
   if (greetingEl) {
     greetingEl.textContent = "Panel de Control";
-  }
-  if (loginsEl) {
-    loginsEl.hidden = true;
-    loginsEl.replaceChildren();
   }
 
   // Sincronizar estados de Clara y Booking desde el backend (settings.php)

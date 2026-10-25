@@ -123,7 +123,7 @@ import {
   updateDashboardClara,
   updateDashboardBooking,
   updateDashboardState,
-} from "./modules/dashboard.js?v=8";
+} from "./modules/dashboard.js?v=9";
 
 import {
   initHorariosModule,
@@ -152,7 +152,7 @@ import {
   initAdminModule,
   showAdminView,
   hideAdminView,
-} from "./modules/admin-panel.js?v=7";
+} from "./modules/admin-panel.js?v=8";
 
 // Re-exportar utilidades esenciales para interoperabilidad y pruebas
 export {

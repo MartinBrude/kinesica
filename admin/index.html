@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=116">
+  <link rel="stylesheet" href="/admin/styles.css?v=117">
   <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1792939506">
   <script>
     (function () {
@@ -186,7 +186,6 @@
     <section id="view-dashboard" class="view" hidden>
       <div class="dashboard-hero">
         <div class="hero-card">
-          <ul class="dashboard-logins" id="dash-logins" hidden></ul>
           <h1 class="dashboard-title" id="dash-greeting">Panel de Control</h1>
         </div>
       </div>
@@ -985,25 +984,7 @@
       </div>
 
       <div class="admin-grid">
-        <!-- SECCIÓN 1: CONTADORES DE LOGINS -->
-        <article class="admin-card">
-          <div class="admin-card-header">
-            <div class="admin-card-titles">
-              <h2 class="admin-card-title">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
-                Contadores de Logins
-              </h2>
-              <p class="admin-card-desc">Historial acumulado de inicios de sesión exitosos por profesional.</p>
-            </div>
-          </div>
-          <div class="admin-card-body">
-            <div class="logins-summary-grid" id="admin-logins-container">
-              <!-- Renderizado dinámico -->
-            </div>
-          </div>
-        </article>
-
-        <!-- SECCIÓN 2: GESTIÓN DE PROFESIONALES -->
+        <!-- SECCIÓN 1: GESTIÓN DE PROFESIONALES -->
         <article class="admin-card">
           <div class="admin-card-header">
             <div class="admin-card-titles">
@@ -1847,6 +1828,6 @@
   </script>
   <div id="print-root"></div>
   <script src="/booking/booking-bundle.min.js?v=1792939506" defer></script>
-  <script type="module" src="/admin/app.js?v=150"></script>
+  <script type="module" src="/admin/app.js?v=151"></script>
 </body>
 </html>
