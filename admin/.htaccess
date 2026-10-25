@@ -1,6 +1,14 @@
 Options -Indexes
 AddType application/javascript .mjs .js
 
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /admin/
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^(inicio|fichas|historias|pacientes|consultorio|horarios|honorarios|clara|configuracion|administracion|admin|sistema|ficha|comparar)(/.*)?$ index.html [L,QSA]
+</IfModule>
+
 <FilesMatch "\.(html|js|mjs|css)$">
   Header set Cache-Control "no-cache, no-store, must-revalidate"
   Header set Pragma "no-cache"

@@ -185,6 +185,92 @@ export {
  */
 let refreshSeq = 0;
 let localWrites = 0;
+let isInitialBoot = true;
+let isHandlingPopState = false;
+
+/**
+ * Interpreta la URL actual (/admin/<sección> o #<sección>) y devuelve el estado de vista.
+ * @returns {{ view: string, id?: string, pKey?: string, xId?: string, yId?: string } | null}
+ */
+function parseAdminRouteFromLocation() {
+  if (typeof window === "undefined" || !window.location) return null;
+  const raw = (
+    window.location.hash
+      ? window.location.hash.slice(1)
+      : window.location.pathname.replace(/^\/admin\/?/, "")
+  ).replace(/^\/+|\/+$/g, "");
+  if (!raw || raw === "index.html") return null;
+  const parts = raw.split("/");
+  const head = (parts[0] || "").toLowerCase();
+  if (head === "inicio") return { view: "inicio" };
+  if (head === "fichas" || head === "historias" || head === "library") return { view: "library" };
+  if (head === "pacientes") return { view: "pacientes" };
+  if (head === "consultorio" || head === "horarios" || head === "honorarios") return { view: "consultorio" };
+  if (head === "clara" || head === "configuracion") return { view: "clara" };
+  if (head === "administracion" || head === "admin" || head === "sistema") return { view: "admin" };
+  if (head === "ficha") return { view: "form", id: parts[1] ? decodeURIComponent(parts[1]) : "" };
+  if (head === "comparar") return { view: "compare" };
+  return null;
+}
+
+/**
+ * Sincroniza la barra de direcciones (History API) y el título del documento con la vista activa.
+ * @param {{ view?: string, id?: string, pKey?: string, xId?: string, yId?: string } | null} state
+ */
+function syncUrlWithViewState(state) {
+  if (typeof window === "undefined" || !window.history || !state || !state.view) return;
+  if (new URLSearchParams(window.location.search).has("reset")) return;
+  const isLogged = Boolean(getSessionUser()) || localStorage.getItem("kinesica_logged_in") === "1";
+  if (!isLogged) return;
+
+  const v = state.view;
+  let targetPath = "/admin/";
+  let docTitle = "Kinésica — Panel de Control";
+
+  if (v === "library" || v === "fichas") {
+    targetPath = "/admin/fichas";
+    docTitle = "Kinésica — Historias Clínicas";
+  } else if (v === "form") {
+    const slug = state.id ? encodeURIComponent(state.id) : "nueva";
+    targetPath = `/admin/ficha/${slug}`;
+    docTitle = "Kinésica — Ficha Clínica ATM";
+  } else if (v === "compare") {
+    targetPath = "/admin/comparar";
+    docTitle = "Kinésica — Comparar Sesiones";
+  } else if (v === "pacientes") {
+    targetPath = "/admin/pacientes";
+    docTitle = "Kinésica — Pacientes";
+  } else if (v === "consultorio" || v === "horarios" || v === "honorarios") {
+    targetPath = "/admin/consultorio";
+    docTitle = "Kinésica — Consultorio";
+  } else if (v === "clara" || v === "configuracion") {
+    targetPath = "/admin/clara";
+    docTitle = "Kinésica — Clara & Mensajes";
+  } else if (v === "admin" || v === "administracion") {
+    targetPath = "/admin/administracion";
+    docTitle = "Kinésica — Administración";
+  }
+
+  try {
+    document.title = docTitle;
+    const currentPath = window.location.pathname;
+    const method = isInitialBoot || isHandlingPopState || currentPath === targetPath ? "replaceState" : "pushState";
+    window.history[method](state, "", targetPath);
+  } catch {}
+}
+
+// Interceptar actualizaciones de kinesica_admin_view en sessionStorage para mantener la URL sincronizada
+if (typeof window !== "undefined" && window.sessionStorage) {
+  const nativeSetItem = window.sessionStorage.setItem.bind(window.sessionStorage);
+  window.sessionStorage.setItem = function (key, value) {
+    nativeSetItem(key, value);
+    if (key === "kinesica_admin_view") {
+      try {
+        syncUrlWithViewState(JSON.parse(value));
+      } catch {}
+    }
+  };
+}
 
 async function upsert(data) {
   const saved = await api("fichas.php", {
@@ -226,10 +312,14 @@ async function refresh() {
 
   const formView = document.querySelector("#view-form");
   const compareView = document.querySelector("#view-compare");
+  const urlRoute = parseAdminRouteFromLocation();
   let saved = null;
   try {
     saved = JSON.parse(sessionStorage.getItem("kinesica_admin_view") || "null");
   } catch {}
+  if (urlRoute) {
+    saved = urlRoute.view === "compare" && saved?.view === "compare" ? saved : urlRoute;
+  }
 
   if ((!formView || formView.hidden) && (!compareView || compareView.hidden)) {
     if (saved?.view === "compare" && saved.pKey) {
@@ -240,6 +330,8 @@ async function refresh() {
       switchTab("consultorio");
     } else if (saved?.view === "clara" || saved?.view === "configuracion") {
       switchTab("clara");
+    } else if (saved?.view === "admin" || saved?.view === "administracion") {
+      switchTab("admin");
     } else if (saved?.view === "fichas" || saved?.view === "library") {
       switchTab("fichas");
     } else if (saved?.view !== "form") {
@@ -256,10 +348,12 @@ async function refresh() {
       const ficha = items.find((f) => f.id === saved.id);
       if (ficha) fillForm(ficha, items);
     }
+    isInitialBoot = false;
     return;
   }
   if (compareView && !compareView.hidden) {
     renderCompareContent();
+    isInitialBoot = false;
     return;
   }
 
@@ -268,6 +362,7 @@ async function refresh() {
     if (ficha) {
       fillForm(ficha, items);
       showForm(0);
+      isInitialBoot = false;
       return;
     }
   }
@@ -278,11 +373,14 @@ async function refresh() {
     switchTab("consultorio");
   } else if (saved?.view === "clara" || saved?.view === "configuracion") {
     switchTab("clara");
+  } else if (saved?.view === "admin" || saved?.view === "administracion") {
+    switchTab("admin");
   } else if (saved?.view === "fichas" || saved?.view === "library") {
     switchTab("fichas");
   } else {
     switchTab("inicio");
   }
+  isInitialBoot = false;
 }
 
 // Configurar manejador de sesión expirada (HTTP 401)
@@ -304,6 +402,8 @@ initAuth({
     resetLibrary();
     try {
       sessionStorage.removeItem("kinesica_admin_view");
+      window.history.replaceState(null, "", "/admin/");
+      document.title = "Kinésica";
     } catch {}
   },
 });
@@ -551,6 +651,44 @@ initDashboardModule({
     document.querySelector("#btn-nuevo-paciente")?.click();
   },
 });
+
+if (typeof window !== "undefined") {
+  window.addEventListener("popstate", (event) => {
+    if (!getSessionUser()) return;
+    isHandlingPopState = true;
+    try {
+      const route = (event.state && event.state.view ? event.state : parseAdminRouteFromLocation()) || { view: "inicio" };
+      if (route.view === "form" && route.id) {
+        const items = loadAll();
+        const ficha = items.find((f) => f.id === route.id);
+        if (ficha) {
+          fillForm(ficha, items);
+          showForm(0);
+          return;
+        }
+      }
+      if (route.view === "compare" && route.pKey) {
+        showCompare(route.pKey, route.xId, route.yId);
+        return;
+      }
+      if (route.view === "library" || route.view === "fichas") {
+        switchTab("fichas");
+      } else if (route.view === "pacientes") {
+        switchTab("pacientes");
+      } else if (route.view === "consultorio" || route.view === "horarios" || route.view === "honorarios") {
+        switchTab("consultorio");
+      } else if (route.view === "clara" || route.view === "configuracion") {
+        switchTab("clara");
+      } else if (route.view === "admin" || route.view === "administracion") {
+        switchTab("admin");
+      } else {
+        switchTab("inicio");
+      }
+    } finally {
+      isHandlingPopState = false;
+    }
+  });
+}
 
 const resetToken = new URLSearchParams(location.search).get("reset");
 const resetFormEl = document.querySelector("#reset-form");

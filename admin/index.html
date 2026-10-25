@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
+  <base href="/admin/">
   <title>Kinésica</title>
   <link rel="icon" type="image/svg+xml" href="/images/favicon.svg?v=1789197731">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1805,6 +1806,22 @@
           try {
             saved = JSON.parse(sessionStorage.getItem("kinesica_admin_view") || "null");
           } catch (_) {}
+          var rawPath = (location.hash ? location.hash.slice(1) : location.pathname.replace(/^\/admin\/?/, "")).replace(/^\/+|\/+$/g, "");
+          if (rawPath && rawPath !== "index.html") {
+            var parts = rawPath.split("/");
+            var head = (parts[0] || "").toLowerCase();
+            if (head === "inicio") saved = { view: "inicio" };
+            else if (head === "fichas" || head === "historias" || head === "library") saved = { view: "library" };
+            else if (head === "pacientes") saved = { view: "pacientes" };
+            else if (head === "consultorio" || head === "horarios" || head === "honorarios") saved = { view: "consultorio" };
+            else if (head === "clara" || head === "configuracion") saved = { view: "clara" };
+            else if (head === "administracion" || head === "admin" || head === "sistema") saved = { view: "admin" };
+            else if (head === "ficha" && parts[1]) saved = { view: "form", id: decodeURIComponent(parts[1]) };
+            else if (head === "comparar") saved = saved && saved.view === "compare" ? saved : { view: "compare" };
+            try {
+              if (saved) sessionStorage.setItem("kinesica_admin_view", JSON.stringify(saved));
+            } catch (_) {}
+          }
           if (!saved || saved.view === "inicio") {
             var dash = document.getElementById("view-dashboard");
             if (dash) dash.hidden = false;
@@ -1836,6 +1853,6 @@
   </script>
   <div id="print-root"></div>
   <script src="/booking/booking-bundle.min.js?v=1792939506" defer></script>
-  <script type="module" src="/admin/app.js?v=151"></script>
+  <script type="module" src="/admin/app.js?v=152"></script>
 </body>
 </html>
