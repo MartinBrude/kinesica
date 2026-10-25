@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Manual de Usuario · Kinésica Admin</title>
+  <link rel="icon" type="image/svg+xml" href="/images/favicon.svg?v=1789197731">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/admin/styles.css?v=118">
+  <style>
+    .manual-shell {
+      max-width: 980px;
+      margin: 28px auto 64px;
+      padding: 0 20px;
+    }
+    .manual-header-card {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px 28px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .manual-header-titles h1 {
+      margin: 0 0 6px;
+      font-size: 22px;
+      color: var(--navy);
+    }
+    .manual-header-titles p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .manual-tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .manual-tab-btn {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--navy);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .manual-tab-btn:hover {
+      background: #f8fafc;
+      border-color: var(--primary);
+    }
+    .manual-tab-btn.is-active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #ffffff;
+    }
+    .manual-body-card {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 36px 40px;
+      color: var(--ink);
+      line-height: 1.65;
+      font-size: 15px;
+      overflow-x: auto;
+    }
+    .manual-body-card h1 {
+      font-size: 26px;
+      color: var(--navy);
+      margin-top: 0;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--sky);
+    }
+    .manual-body-card h2 {
+      font-size: 20px;
+      color: var(--navy);
+      margin-top: 32px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line);
+    }
+    .manual-body-card h3 {
+      font-size: 17px;
+      color: var(--primary);
+      margin-top: 24px;
+    }
+    .manual-body-card h4 {
+      font-size: 15px;
+      color: var(--navy);
+      margin-top: 18px;
+    }
+    .manual-body-card blockquote {
+      margin: 16px 0;
+      padding: 14px 18px;
+      background: #f8fafc;
+      border-left: 4px solid var(--primary);
+      border-radius: 0 8px 8px 0;
+      color: #334155;
+    }
+    .manual-body-card code {
+      background: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 5px;
+      font-size: 13.5px;
+      color: #0f172a;
+    }
+    .manual-body-card pre {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 16px 18px;
+      border-radius: 10px;
+      overflow-x: auto;
+    }
+    .manual-body-card pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+    .manual-body-card table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 18px 0;
+      font-size: 14px;
+    }
+    .manual-body-card th,
+    .manual-body-card td {
+      border: 1px solid var(--line);
+      padding: 10px 14px;
+      text-align: left;
+      vertical-align: top;
+    }
+    .manual-body-card th {
+      background: #f1f5f9;
+      color: var(--navy);
+      font-weight: 700;
+    }
+    .manual-body-card img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      margin: 12px 0;
+    }
+    .manual-body-card a {
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: underline;
+    }
+    .manual-body-card hr {
+      border: none;
+      border-top: 1px solid var(--line);
+      margin: 28px 0;
+    }
+    @media (max-width: 680px) {
+      .manual-body-card {
+        padding: 20px 18px;
+      }
+      .manual-header-card {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/admin/">
+      <img src="/admin/logo.png?v=22" alt="Kinésica" width="190" height="50">
+    </a>
+    <div class="top-actions">
+      <a href="/admin/" class="btn ghost">← Volver al Panel de Administración</a>
+    </div>
+  </header>
+
+  <div class="manual-shell">
+    <div class="manual-header-card">
+      <div class="manual-header-titles">
+        <h1>📖 Manual de Usuario y Documentación Operativa</h1>
+        <p>Guía práctica no técnica sobre el funcionamiento de Clara, Google Calendar, accesos y uso diario del consultorio.</p>
+      </div>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <a id="btn-github-doc" href="https://github.com/MartinBrude/kinesica/blob/main/docs/manual-clara.md" target="_blank" rel="noopener noreferrer" class="btn light">Ver en GitHub ↗</a>
+        <button type="button" class="btn green" onclick="window.print()">Imprimir / Guardar PDF</button>
+      </div>
+    </div>
+
+    <div class="manual-tabs" role="tablist">
+      <button type="button" class="manual-tab-btn is-active" data-doc="clara" data-file="/docs/manual-clara.md" data-gh="https://github.com/MartinBrude/kinesica/blob/main/docs/manual-clara.md">
+        🌿 Manual de Usuario y Clara
+      </button>
+      <button type="button" class="manual-tab-btn" data-doc="cuentas" data-file="/docs/configuracion-cuentas-profesionales.md" data-gh="https://github.com/MartinBrude/kinesica/blob/main/docs/configuracion-cuentas-profesionales.md">
+        🔐 Guía de Acceso y Cuentas (2FA)
+      </button>
+      <button type="button" class="manual-tab-btn" data-doc="pruebas" data-file="/docs/guia-pruebas.md" data-gh="https://github.com/MartinBrude/kinesica/blob/main/docs/guia-pruebas.md">
+        🧪 Guía de Pruebas y Casos de Uso
+      </button>
+    </div>
+
+    <article class="manual-body-card" id="manual-content">
+      <p style="color: var(--muted);">Cargando manual de usuario…</p>
+    </article>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    (function () {
+      const contentEl = document.getElementById("manual-content");
+      const ghBtn = document.getElementById("btn-github-doc");
+      const tabs = Array.from(document.querySelectorAll(".manual-tab-btn"));
+
+      function normalizeMarkdown(md) {
+        return md
+          .replace(/src="assets\//g, 'src="/docs/assets/')
+          .replace(/src="docs\/assets\//g, 'src="/docs/assets/')
+          .replace(/\]\(assets\//g, '](/docs/assets/')
+          .replace(/\]\(docs\/assets\//g, '](/docs/assets/')
+          .replace(/\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]/g, "<strong>$1:</strong>");
+      }
+
+      async function loadDoc(docKey) {
+        const activeBtn = tabs.find((b) => b.dataset.doc === docKey) || tabs[0];
+        tabs.forEach((b) => b.classList.toggle("is-active", b === activeBtn));
+        if (ghBtn && activeBtn.dataset.gh) {
+          ghBtn.href = activeBtn.dataset.gh;
+        }
+        contentEl.innerHTML = '<p style="color: var(--muted);">Cargando documento…</p>';
+        try {
+          const res = await fetch(activeBtn.dataset.file + "?_t=" + Date.now());
+          if (!res.ok) throw new Error("No se pudo cargar el documento");
+          const raw = await res.text();
+          const cleaned = normalizeMarkdown(raw);
+          if (window.marked && typeof window.marked.parse === "function") {
+            contentEl.innerHTML = window.marked.parse(cleaned);
+          } else {
+            const pre = document.createElement("pre");
+            pre.style.whiteSpace = "pre-wrap";
+            pre.textContent = cleaned;
+            contentEl.replaceChildren(pre);
+          }
+        } catch (err) {
+          contentEl.innerHTML = '<p style="color: #dc2626;">No se pudo cargar el manual local. Podés abrirlo directamente en <a href="' + activeBtn.dataset.gh + '" target="_blank" rel="noopener">GitHub</a>.</p>';
+        }
+      }
+
+      tabs.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const key = btn.dataset.doc;
+          const url = new URL(window.location.href);
+          url.searchParams.set("doc", key);
+          window.history.replaceState({}, "", url);
+          loadDoc(key);
+        });
+      });
+
+      const initialDoc = new URLSearchParams(window.location.search).get("doc") || "clara";
+      loadDoc(initialDoc);
+    })();
+  </script>
+</body>
+</html>
