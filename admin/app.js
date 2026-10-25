@@ -146,7 +146,7 @@ import {
   hideClaraView,
   showConfiguracionView,
   hideConfiguracionView,
-} from "./modules/configuracion.js?v=24";
+} from "./modules/configuracion.js?v=25";
 
 import {
   initAdminModule,

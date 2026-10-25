@@ -160,11 +160,9 @@ function handleChatUserInput(inputRaw) {
     const cleanDoc = docMatch ? docMatch[1].replace(/[.\s-]/g, "").toUpperCase() : "";
     chatSubmenu = null;
     setTimeout(() => {
-      if (cleanDoc) {
-        appendChatMessage(`📋 *Tus turnos*\n\n*1.* Lun 26/10 10:00 hs — Lic. Norberto Brude (DNI: ${cleanDoc})\n\nPara cancelar, respondé *C* y el número (ejemplo *C1*).\n\n_(Escribí *MENU* para volver)_`, "bot");
-      } else {
-        appendChatMessage("No encontramos turnos agendados asociados a ese documento.\n\n_(Escribí *MENU* para volver al inicio)_", "bot");
-      }
+      // Al ser un simulador offline/estático sin acceso directo a la agenda de Google Calendar,
+      // no inventamos turnos para cualquier DNI que ingrese el usuario.
+      appendChatMessage(`No encontramos turnos agendados asociados al documento *${cleanDoc || input}*.\n\n_(Escribí *MENU* para volver al inicio)_`, "bot");
     }, 600);
     return;
   }
