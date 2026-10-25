@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=114">
+  <link rel="stylesheet" href="/admin/styles.css?v=115">
   <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1792939506">
   <script>
     (function () {
@@ -1152,7 +1152,7 @@
 
       <!-- MODAL DE ALTA / EDICIÓN DE GASTO -->
       <div id="admin-gasto-modal" class="prof-modal-backdrop" hidden>
-        <div class="prof-modal-card" role="dialog" aria-modal="true" aria-labelledby="admin-gasto-modal-title">
+        <div class="prof-modal-card gasto-modal-card" role="dialog" aria-modal="true" aria-labelledby="admin-gasto-modal-title">
           <div class="prof-modal-header">
             <h3 id="admin-gasto-modal-title">Nuevo Gasto</h3>
             <button type="button" class="prof-modal-close" id="admin-gasto-modal-close" aria-label="Cerrar">&times;</button>
@@ -1160,16 +1160,17 @@
           <form id="admin-gasto-form">
             <input type="hidden" id="admin-gasto-id" value="">
             <div class="prof-modal-body">
-              <div class="prof-form-group">
-                <label for="admin-gasto-concepto">Servicio / Concepto</label>
-                <input type="text" id="admin-gasto-concepto" required placeholder="Ej: AI automation apps o Business Web Hosting">
+              <div class="prof-form-row cols-2">
+                <div class="prof-form-group">
+                  <label for="admin-gasto-concepto">Servicio / Concepto</label>
+                  <input type="text" id="admin-gasto-concepto" required placeholder="Ej: AI automation apps o Business Web Hosting">
+                </div>
+                <div class="prof-form-group">
+                  <label for="admin-gasto-detalle">Detalle (opcional)</label>
+                  <input type="text" id="admin-gasto-detalle" placeholder="Ej: kinesica.com.ar">
+                </div>
               </div>
-              <div class="prof-form-group">
-                <label for="admin-gasto-detalle">Detalle (opcional)</label>
-                <input type="text" id="admin-gasto-detalle" placeholder="Ej: kinesica.com.ar">
-                <span class="prof-form-help">Subtítulo o detalle asociado, como dominio web o referencia.</span>
-              </div>
-              <div class="prof-form-row">
+              <div class="prof-form-row cols-3">
                 <div class="prof-form-group">
                   <label for="admin-gasto-fecha">Pagado el (Fecha)</label>
                   <input type="date" id="admin-gasto-fecha" required>
@@ -1177,9 +1178,9 @@
                 <div class="prof-form-group">
                   <label for="admin-gasto-moneda">Moneda de Pago</label>
                   <select id="admin-gasto-moneda">
-                    <option value="EUR" selected>€ (Euro - EUR)</option>
-                    <option value="USD">US$ (Dólares - USD)</option>
-                    <option value="ARS">$ (Pesos Argentinos - ARS)</option>
+                    <option value="EUR" selected>€ — Euro (EUR)</option>
+                    <option value="USD">US$ — Dólar (USD)</option>
+                    <option value="ARS">$ — Peso Argentino (ARS)</option>
                   </select>
                 </div>
                 <div class="prof-form-group">
@@ -1191,17 +1192,19 @@
               <!-- Registro de equivalencias en las 3 monedas en el día de la fecha -->
               <div class="gasto-daily-conversions-box">
                 <div class="gasto-daily-conversions-header">
-                  <span class="gasto-daily-conversions-title">Registro de valores al cambio de esa fecha</span>
-                  <button type="button" class="btn ghost btn-sm" id="admin-btn-fetch-fecha-tc">↻ Cotización de la fecha</button>
+                  <div class="gasto-daily-conversions-titles">
+                    <span class="gasto-daily-conversions-title">Registro de valores al cambio de esa fecha</span>
+                    <span class="prof-form-help" id="admin-gasto-tc-status">Se guardan los 3 valores correspondientes al cambio del día del pago.</span>
+                  </div>
+                  <button type="button" class="btn light btn-sm" id="admin-btn-fetch-fecha-tc">↻ Actualizar cotización de la fecha</button>
                 </div>
-                <span class="prof-form-help" id="admin-gasto-tc-status">Se guardan los 3 valores correspondientes al cambio del día del pago.</span>
-                <div class="prof-form-row" style="margin-top: 8px;">
+                <div class="prof-form-row cols-3">
                   <div class="prof-form-group">
                     <label for="admin-gasto-monto-eur">En EUR (€) ese día</label>
                     <input type="number" id="admin-gasto-monto-eur" required min="0.01" step="0.01" placeholder="0.00">
                   </div>
                   <div class="prof-form-group">
-                    <label for="admin-gasto-monto-usd">En USD ($) ese día</label>
+                    <label for="admin-gasto-monto-usd">En USD (US$) ese día</label>
                     <input type="number" id="admin-gasto-monto-usd" required min="0.01" step="0.01" placeholder="0.00">
                   </div>
                   <div class="prof-form-group">

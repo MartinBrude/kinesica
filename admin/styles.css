@@ -9,7 +9,7 @@
  * - print.css: Formato de impresión A4, firmas digitales y reportes PDF
  */
 
-@import "./css/base.css?v=87";
+@import "./css/base.css?v=88";
 @import "./css/gate.css";
 @import "./css/library.css?v=87";
 @import "./css/form.css?v=85";
@@ -18,5 +18,5 @@
 @import "./css/pacientes.css?v=3";
 @import "./css/dashboard.css?v=2";
 @import "./css/horarios.css?v=6";
-@import "./css/admin-panel.css?v=6";
+@import "./css/admin-panel.css?v=7";
 
