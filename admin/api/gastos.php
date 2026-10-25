@@ -61,6 +61,65 @@ function kinesica_gastos_save(array $gastos): void
     }
 }
 
+/**
+ * Normaliza los valores en las 3 monedas (EUR, USD, ARS) para un registro según la cotización de su fecha.
+ */
+function kinesica_normalize_gasto_amounts(string $moneda, float $monto, array $input): array
+{
+    $tcEurUsd = isset($input['tc_eur_usd']) && is_numeric($input['tc_eur_usd']) && (float) $input['tc_eur_usd'] > 0
+        ? (float) $input['tc_eur_usd']
+        : 1.082;
+    $tcEurArs = isset($input['tc_eur_ars']) && is_numeric($input['tc_eur_ars']) && (float) $input['tc_eur_ars'] > 0
+        ? (float) $input['tc_eur_ars']
+        : 1450.00;
+
+    $montoEur = isset($input['monto_eur']) && is_numeric($input['monto_eur']) && (float) $input['monto_eur'] > 0
+        ? (float) $input['monto_eur']
+        : null;
+    $montoUsd = isset($input['monto_usd']) && is_numeric($input['monto_usd']) && (float) $input['monto_usd'] > 0
+        ? (float) $input['monto_usd']
+        : null;
+    $montoArs = isset($input['monto_ars']) && is_numeric($input['monto_ars']) && (float) $input['monto_ars'] > 0
+        ? (float) $input['monto_ars']
+        : null;
+
+    if ($moneda === 'EUR') {
+        $montoEur = $monto;
+        if ($montoUsd === null) {
+            $montoUsd = $monto * $tcEurUsd;
+        }
+        if ($montoArs === null) {
+            $montoArs = $monto * $tcEurArs;
+        }
+    } elseif ($moneda === 'USD') {
+        $montoUsd = $monto;
+        if ($montoEur === null) {
+            $montoEur = $tcEurUsd > 0 ? ($monto / $tcEurUsd) : $monto;
+        }
+        if ($montoArs === null) {
+            $tcUsdArs = $tcEurUsd > 0 ? ($tcEurArs / $tcEurUsd) : 1350.0;
+            $montoArs = $monto * $tcUsdArs;
+        }
+    } else {
+        $montoArs = $monto;
+        if ($montoEur === null) {
+            $montoEur = $tcEurArs > 0 ? ($monto / $tcEurArs) : 0.0;
+        }
+        if ($montoUsd === null) {
+            $tcUsdArs = $tcEurUsd > 0 ? ($tcEurArs / $tcEurUsd) : 1350.0;
+            $montoUsd = $tcUsdArs > 0 ? ($monto / $tcUsdArs) : 0.0;
+        }
+    }
+
+    return [
+        'monto_eur' => round((float) $montoEur, 2),
+        'monto_usd' => round((float) $montoUsd, 2),
+        'monto_ars' => round((float) $montoArs, 2),
+        'tc_eur_usd' => round($tcEurUsd, 4),
+        'tc_eur_ars' => round($tcEurArs, 2),
+    ];
+}
+
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 if ($method === 'GET') {
@@ -68,27 +127,31 @@ if ($method === 'GET') {
     usort($gastos, static function (array $a, array $b): int {
         return strcmp((string) ($b['fecha'] ?? ''), (string) ($a['fecha'] ?? ''));
     });
-    $subtotalEur = 0.0;
-    $subtotalUsd = 0.0;
-    $subtotalArs = 0.0;
-    foreach ($gastos as $g) {
-        $val = (float) ($g['monto'] ?? 0);
+
+    $totalEur = 0.0;
+    $totalUsd = 0.0;
+    $totalArs = 0.0;
+
+    foreach ($gastos as &$g) {
         $mon = strtoupper((string) ($g['moneda'] ?? 'EUR'));
-        if ($mon === 'EUR') {
-            $subtotalEur += $val;
-        } elseif ($mon === 'USD') {
-            $subtotalUsd += $val;
-        } else {
-            $subtotalArs += $val;
+        $val = (float) ($g['monto'] ?? 0);
+        if (!isset($g['monto_eur'], $g['monto_usd'], $g['monto_ars'])) {
+            $norm = kinesica_normalize_gasto_amounts($mon, $val, $g);
+            $g = array_merge($g, $norm);
         }
+        $totalEur += (float) $g['monto_eur'];
+        $totalUsd += (float) $g['monto_usd'];
+        $totalArs += (float) $g['monto_ars'];
     }
+    unset($g);
+
     json_out(200, [
         'status' => 'success',
         'gastos' => $gastos,
-        'subtotales' => [
-            'eur' => round($subtotalEur, 2),
-            'usd' => round($subtotalUsd, 2),
-            'ars' => round($subtotalArs, 2),
+        'totales' => [
+            'eur' => round($totalEur, 2),
+            'usd' => round($totalUsd, 2),
+            'ars' => round($totalArs, 2),
         ],
     ]);
 }
@@ -106,9 +169,6 @@ if ($action === 'create') {
     $fecha = trim((string) ($input['fecha'] ?? ''));
     $montoRaw = $input['monto'] ?? null;
     $moneda = strtoupper(trim((string) ($input['moneda'] ?? 'EUR')));
-    $tipoCambio = isset($input['tipo_cambio']) && is_numeric($input['tipo_cambio']) && (float) $input['tipo_cambio'] > 0
-        ? round((float) $input['tipo_cambio'], 2)
-        : null;
 
     if ($concepto === '' || mb_strlen($concepto) > 255) {
         json_out(422, ['error' => 'El concepto o servicio es obligatorio (máximo 255 caracteres).']);
@@ -132,17 +192,20 @@ if ($action === 'create') {
         $id = 'gasto_' . uniqid('', true);
     }
 
-    $nuevo = [
+    $monto = round((float) $montoRaw, 2);
+    $norm = kinesica_normalize_gasto_amounts($moneda, $monto, $input);
+
+    $nuevo = array_merge([
         'id' => $id,
         'concepto' => $concepto,
         'detalle' => $detalle,
         'fecha' => $fecha,
-        'monto' => round((float) $montoRaw, 2),
         'moneda' => $moneda,
-        'tipo_cambio' => $tipoCambio,
+        'monto' => $monto,
+    ], $norm, [
         'created_at' => gmdate('Y-m-d\TH:i:s\Z'),
         'created_by' => (string) ($auth['username'] ?? ''),
-    ];
+    ]);
 
     $gastos = kinesica_gastos_load();
     array_unshift($gastos, $nuevo);
@@ -150,7 +213,7 @@ if ($action === 'create') {
 
     json_out(200, [
         'status' => 'success',
-        'message' => 'Gasto registrado correctamente.',
+        'message' => 'Gasto registrado correctamente con sus equivalencias del día.',
         'gasto' => $nuevo,
     ]);
 }
@@ -162,9 +225,6 @@ if ($action === 'update') {
     $fecha = trim((string) ($input['fecha'] ?? ''));
     $montoRaw = $input['monto'] ?? null;
     $moneda = strtoupper(trim((string) ($input['moneda'] ?? 'EUR')));
-    $tipoCambio = isset($input['tipo_cambio']) && is_numeric($input['tipo_cambio']) && (float) $input['tipo_cambio'] > 0
-        ? round((float) $input['tipo_cambio'], 2)
-        : null;
 
     if ($id === '') {
         json_out(422, ['error' => 'ID de gasto no especificado.']);
@@ -185,6 +245,9 @@ if ($action === 'update') {
         $moneda = 'EUR';
     }
 
+    $monto = round((float) $montoRaw, 2);
+    $norm = kinesica_normalize_gasto_amounts($moneda, $monto, $input);
+
     $gastos = kinesica_gastos_load();
     $found = false;
     foreach ($gastos as &$g) {
@@ -192,9 +255,13 @@ if ($action === 'update') {
             $g['concepto'] = $concepto;
             $g['detalle'] = $detalle;
             $g['fecha'] = $fecha;
-            $g['monto'] = round((float) $montoRaw, 2);
             $g['moneda'] = $moneda;
-            $g['tipo_cambio'] = $tipoCambio;
+            $g['monto'] = $monto;
+            $g['monto_eur'] = $norm['monto_eur'];
+            $g['monto_usd'] = $norm['monto_usd'];
+            $g['monto_ars'] = $norm['monto_ars'];
+            $g['tc_eur_usd'] = $norm['tc_eur_usd'];
+            $g['tc_eur_ars'] = $norm['tc_eur_ars'];
             $g['updated_at'] = gmdate('Y-m-d\TH:i:s\Z');
             $g['updated_by'] = (string) ($auth['username'] ?? '');
             $found = true;

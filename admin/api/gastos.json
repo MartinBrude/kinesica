@@ -4,31 +4,51 @@
     "concepto": "AI automation apps",
     "detalle": "",
     "fecha": "2026-10-25",
+    "moneda": "EUR",
     "monto": 148.09,
-    "moneda": "EUR"
+    "monto_eur": 148.09,
+    "monto_usd": 160.23,
+    "monto_ars": 214730.50,
+    "tc_eur_usd": 1.082,
+    "tc_eur_ars": 1450.00
   },
   {
     "id": "gasto_2",
     "concepto": "AI automation apps",
     "detalle": "",
     "fecha": "2026-09-26",
+    "moneda": "EUR",
     "monto": 8.99,
-    "moneda": "EUR"
+    "monto_eur": 8.99,
+    "monto_usd": 10.00,
+    "monto_ars": 12817.94,
+    "tc_eur_usd": 1.112,
+    "tc_eur_ars": 1425.80
   },
   {
     "id": "gasto_3",
     "concepto": "Business Web Hosting",
     "detalle": "kinesica.com.ar",
     "fecha": "2026-02-03",
+    "moneda": "EUR",
     "monto": 65.88,
-    "moneda": "EUR"
+    "monto_eur": 65.88,
+    "monto_usd": 68.84,
+    "monto_ars": 85340.95,
+    "tc_eur_usd": 1.045,
+    "tc_eur_ars": 1295.40
   },
   {
     "id": "gasto_4",
     "concepto": "Premium Web Hosting",
     "detalle": "kinesica.com.ar",
     "fecha": "2025-03-28",
+    "moneda": "EUR",
     "monto": 35.88,
-    "moneda": "EUR"
+    "monto_eur": 35.88,
+    "monto_usd": 38.86,
+    "monto_ars": 41638.74,
+    "tc_eur_usd": 1.083,
+    "tc_eur_ars": 1160.50
   }
 ]

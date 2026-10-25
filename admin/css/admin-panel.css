@@ -401,61 +401,19 @@
   gap: 12px;
 }
 
-.gastos-rates-bar {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  background: #f8fafc;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  padding: 10px 16px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.rates-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--navy);
-}
-
-.rate-input-wrap {
-  display: inline-flex;
-  align-items: center;
-  background: #ffffff;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  padding: 2px 8px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--navy);
-}
-
-.rate-input-wrap input {
-  border: none;
-  outline: none;
-  background: transparent;
-  width: 65px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--navy);
-  padding: 4px 6px;
-  text-align: right;
-  font-family: inherit;
-}
-
-.rates-updated-note {
+.gastos-count-pill {
   font-size: 12px;
+  font-weight: 600;
   color: var(--muted);
-  margin-left: auto;
+  background: #f1f5f9;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
 }
 
 .gastos-summary-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 16px;
   margin-bottom: 20px;
 }
@@ -482,11 +440,6 @@
   border-left: 4px solid #d97706;
 }
 
-.gastos-stat-card.card-consolidado {
-  border-left: 4px solid #4f46e5;
-  background: #f5f3ff;
-}
-
 .gastos-stat-card .stat-equiv {
   font-size: 12px;
   color: var(--muted);
@@ -501,6 +454,20 @@
   white-space: nowrap;
 }
 
+.gasto-orig-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
 .gasto-tc-sub {
   font-size: 11px;
   color: var(--muted);
@@ -509,16 +476,35 @@
   margin-top: 2px;
 }
 
-.gasto-none-dash {
-  color: #cbd5e1;
-  font-weight: normal;
-}
-
 .gasto-detalle-sub {
   font-size: 12px;
   color: var(--muted);
   margin-top: 2px;
   font-weight: 400;
+}
+
+.gasto-daily-conversions-box {
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gasto-daily-conversions-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.gasto-daily-conversions-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy);
 }
 
 .gastos-total-row {

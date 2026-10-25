@@ -713,7 +713,7 @@ await test("Formateo seguro de horario de encabezado con valores normales y extr
   );
 });
 
-await test("Módulo de Gastos: integridad de semilla, validaciones en backend y elementos en UI", () => {
+await test("Módulo de Gastos: integridad de semilla con conversión por fecha, validaciones en backend y elementos en UI", () => {
   const seedPath = path.join(adminDir, "api/gastos.json");
   assert.ok(fs.existsSync(seedPath), "admin/api/gastos.json debe existir");
   const seed = JSON.parse(fs.readFileSync(seedPath, "utf8"));
@@ -733,13 +733,25 @@ await test("Módulo de Gastos: integridad de semilla, validaciones en backend y 
   assert.equal(seed[3].fecha, "2025-03-28");
   assert.equal(seed[3].monto, 35.88);
 
-  const total = seed.reduce((acc, g) => acc + g.monto, 0);
-  assert.equal(Math.round(total * 100) / 100, 258.84, "La suma total de los 4 registros debe ser 258.84");
+  // Cada registro debe almacenar sus propios valores equivalentes en las 3 monedas para su fecha histórica
+  for (const item of seed) {
+    assert.ok(typeof item.monto_eur === "number" && item.monto_eur > 0, `Registro ${item.id} debe tener monto_eur`);
+    assert.ok(typeof item.monto_usd === "number" && item.monto_usd > 0, `Registro ${item.id} debe tener monto_usd`);
+    assert.ok(typeof item.monto_ars === "number" && item.monto_ars > 0, `Registro ${item.id} debe tener monto_ars`);
+    assert.ok(typeof item.tc_eur_usd === "number" && item.tc_eur_usd > 0, `Registro ${item.id} debe tener tc_eur_usd`);
+    assert.ok(typeof item.tc_eur_ars === "number" && item.tc_eur_ars > 0, `Registro ${item.id} debe tener tc_eur_ars`);
+  }
+
+  const totalEur = seed.reduce((acc, g) => acc + g.monto_eur, 0);
+  assert.equal(Math.round(totalEur * 100) / 100, 258.84, "La suma total en EUR de los 4 registros debe ser 258.84");
 
   const phpPath = path.join(adminDir, "api/gastos.php");
   assert.ok(fs.existsSync(phpPath), "admin/api/gastos.php debe existir");
   const phpSrc = fs.readFileSync(phpPath, "utf8");
   assert.match(phpSrc, /is_admin\(\$auth\)/, "gastos.php debe requerir rol admin");
+  assert.match(phpSrc, /'monto_eur'/, "gastos.php debe persistir monto_eur por registro");
+  assert.match(phpSrc, /'monto_usd'/, "gastos.php debe persistir monto_usd por registro");
+  assert.match(phpSrc, /'monto_ars'/, "gastos.php debe persistir monto_ars por registro");
   assert.match(phpSrc, /\$action === 'create'/, "gastos.php debe soportar alta");
   assert.match(phpSrc, /\$action === 'update'/, "gastos.php debe soportar modificación");
   assert.match(phpSrc, /\$action === 'delete'/, "gastos.php debe soportar baja");
