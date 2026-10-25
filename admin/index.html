@@ -682,13 +682,40 @@
               <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
                 <span style="display:inline-block; font-size:11px; font-weight:700; letter-spacing:0.4px; text-transform:uppercase; background:#eef2ff; color:#4338ca; padding:3px 8px; border-radius:4px;">Opción A</span>
                 <label for="cfg-opt-a" style="font-weight:700; font-size:15px; color:var(--navy); margin:0; cursor:pointer;">
-                  Respuesta a Opción A (Turnos y Disponibilidad Online)
+                  Opción A: Turnos y Disponibilidad Online
                 </label>
               </div>
               <p style="margin: 0 0 12px 0; color: var(--muted); font-size: 13px; line-height: 1.4;">
-                Respuesta automática al seleccionar A: invita al paciente a agendar en la turnera online oficial de Kinésica.
+                Texto de enlace y respuesta principal al seleccionar la turnera online de Kinésica (Subopción 1).
               </p>
               <textarea id="cfg-opt-a" rows="3" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical; background:#fff;"></textarea>
+
+              <!-- SUBMENÚ COLAPSABLE: OPCIÓN A (TURNOS) -->
+              <details class="clara-submenu-details" style="margin-top: 14px; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px;">
+                <summary style="font-weight: 700; font-size: 13px; color: var(--navy); cursor: pointer; display: flex; align-items: center; gap: 8px; user-select: none;">
+                  <span>⚙️ Configurar textos del submenú de Opción A (Turnos: 1. Agendar / 2. Consultar o cancelar)</span>
+                </summary>
+                <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--line);">
+                  <div>
+                    <label for="cfg-submenu-turnos" style="display: block; font-weight: 600; font-size: 13px; color: var(--navy); margin-bottom: 4px;">
+                      Mensaje de Pregunta del Submenú A (Pregunta con opciones 1 y 2):
+                    </label>
+                    <small style="color: var(--muted); font-size: 12px; display: block; margin-bottom: 6px;">
+                      Es el mensaje que Clara envía al pulsar A preguntando si desea agendar nuevo o consultar turnos.
+                    </small>
+                    <textarea id="cfg-submenu-turnos" rows="4" style="width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:var(--radius); font-size:13px; font-family:inherit; line-height:1.45; resize:vertical; background:#f8fafc;"></textarea>
+                  </div>
+                  <div>
+                    <label for="cfg-opt-a2" style="display: block; font-weight: 600; font-size: 13px; color: var(--navy); margin-bottom: 4px;">
+                      Respuesta a Subopción 2 (Consultar o cancelar turnos / Pedido de DNI si no hay turnos por teléfono):
+                    </label>
+                    <small style="color: var(--muted); font-size: 12px; display: block; margin-bottom: 6px;">
+                      Texto que Clara envía al elegir la opción 2 cuando no encuentra turnos inmediatos con ese celular.
+                    </small>
+                    <textarea id="cfg-opt-a2" rows="3" style="width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:var(--radius); font-size:13px; font-family:inherit; line-height:1.45; resize:vertical; background:#f8fafc;"></textarea>
+                  </div>
+                </div>
+              </details>
             </div>
 
             <!-- BLOQUE 3: OPCIÓN B -->
@@ -738,13 +765,49 @@
               <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
                 <span style="display:inline-block; font-size:11px; font-weight:700; letter-spacing:0.4px; text-transform:uppercase; background:#f5f3ff; color:#6d28d9; padding:3px 8px; border-radius:4px;">Opción E</span>
                 <label for="cfg-opt-e" style="font-weight:700; font-size:15px; color:var(--navy); margin:0; cursor:pointer;">
-                  Respuesta a Opción E (Contacto con un Profesional)
+                  Opción E: Contacto con un Profesional (Pregunta de Selección)
                 </label>
               </div>
               <p style="margin: 0 0 12px 0; color: var(--muted); font-size: 13px; line-height: 1.4;">
-                Mensaje de submenú que Clara envía al seleccionar E para ofrecer comunicarse con Norberto, María o consulta general.
+                Mensaje de submenú que Clara envía al seleccionar E para ofrecer comunicarse con Norberto (1), María (2) o consulta general (3).
               </p>
               <textarea id="cfg-opt-e" rows="6" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical; background:#fff;"></textarea>
+
+              <!-- SUBMENÚ COLAPSABLE: OPCIÓN E (PROFESIONALES) -->
+              <details class="clara-submenu-details" style="margin-top: 14px; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px;">
+                <summary style="font-weight: 700; font-size: 13px; color: var(--navy); cursor: pointer; display: flex; align-items: center; gap: 8px; user-select: none;">
+                  <span>⚙️ Configurar respuestas automáticas del submenú de Opción E (Opciones 1, 2 y 3)</span>
+                </summary>
+                <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--line);">
+                  <div>
+                    <label for="cfg-opt-e1" style="display: block; font-weight: 600; font-size: 13px; color: var(--navy); margin-bottom: 4px;">
+                      Respuesta a Subopción 1 (Lic. Norberto Brude):
+                    </label>
+                    <small style="color: var(--muted); font-size: 12px; display: block; margin-bottom: 6px;">
+                      Mensaje enviado al elegir comunicarse específicamente con Norberto.
+                    </small>
+                    <textarea id="cfg-opt-e1" rows="3" style="width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:var(--radius); font-size:13px; font-family:inherit; line-height:1.45; resize:vertical; background:#f8fafc;"></textarea>
+                  </div>
+                  <div>
+                    <label for="cfg-opt-e2" style="display: block; font-weight: 600; font-size: 13px; color: var(--navy); margin-bottom: 4px;">
+                      Respuesta a Subopción 2 (Lic. María Gulin):
+                    </label>
+                    <small style="color: var(--muted); font-size: 12px; display: block; margin-bottom: 6px;">
+                      Mensaje enviado al elegir comunicarse específicamente con María.
+                    </small>
+                    <textarea id="cfg-opt-e2" rows="3" style="width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:var(--radius); font-size:13px; font-family:inherit; line-height:1.45; resize:vertical; background:#f8fafc;"></textarea>
+                  </div>
+                  <div>
+                    <label for="cfg-opt-e3" style="display: block; font-weight: 600; font-size: 13px; color: var(--navy); margin-bottom: 4px;">
+                      Respuesta a Subopción 3 (Indistinto / Primera consulta general):
+                    </label>
+                    <small style="color: var(--muted); font-size: 12px; display: block; margin-bottom: 6px;">
+                      Mensaje enviado al elegir consulta general o si el paciente redacta directamente su duda.
+                    </small>
+                    <textarea id="cfg-opt-e3" rows="3" style="width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:var(--radius); font-size:13px; font-family:inherit; line-height:1.45; resize:vertical; background:#f8fafc;"></textarea>
+                  </div>
+                </div>
+              </details>
             </div>
           </div>
 
@@ -1645,6 +1708,6 @@
   </script>
   <div id="print-root"></div>
   <script src="/booking/booking-bundle.min.js?v=1792693463" defer></script>
-  <script type="module" src="/admin/app.js?v=148"></script>
+  <script type="module" src="/admin/app.js?v=149"></script>
 </body>
 </html>

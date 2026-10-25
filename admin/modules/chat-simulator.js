@@ -147,8 +147,10 @@ function handleChatUserInput(inputRaw) {
     }
     if (norm === "2") {
       chatSubmenu = "buscar_dni";
+      const optA2 = ctx.inputs.optA2?.value?.trim() || ctx.getTexts().opt_a2_text || ctx.defaults.opt_a2_text ||
+        "Con este número de WhatsApp no encontramos turnos agendados. Si agendaste con otro teléfono, respondé directamente con tu *DNI o Pasaporte* y lo buscamos.\n\n_(Escribí *MENU* para volver)_";
       setTimeout(() => {
-        appendChatMessage("Con este número de WhatsApp no encontramos turnos agendados. Si agendaste con otro teléfono, respondé directamente con tu *DNI o Pasaporte* y lo buscamos.\n\n_(Escribí *MENU* para volver)_", "bot");
+        appendChatMessage(optA2, "bot");
       }, 600);
       return;
     }
@@ -169,17 +171,21 @@ function handleChatUserInput(inputRaw) {
 
   // Si está en submenú Profesional (mismas respuestas que el bot real)
   if (chatSubmenu === "profesional") {
-    let proMsg = "¡Perfecto! Ya le transmitimos tu consulta a nuestro equipo. Te estarán contactando a la brevedad directamente por WhatsApp 🙌.";
+    let proMsg = ctx.inputs.optE3?.value?.trim() || ctx.getTexts().opt_e3_text || ctx.defaults.opt_e3_text ||
+      "¡Perfecto! Ya le transmitimos tu consulta a nuestro equipo. Te estarán contactando a la brevedad directamente por WhatsApp 🙌.\n\n_(Escribí *MENU* si deseás ver otras opciones)_";
     if (norm === "1" || norm === "norberto") {
-      proMsg = "¡Perfecto! Ya le transmitimos tu consulta al Lic. Norberto Brude. Te estará contactando a la brevedad directamente por WhatsApp 🙌.";
+      proMsg = ctx.inputs.optE1?.value?.trim() || ctx.getTexts().opt_e1_text || ctx.defaults.opt_e1_text ||
+        "¡Perfecto! Ya le transmitimos tu consulta al Lic. Norberto Brude. Te estará contactando a la brevedad directamente por WhatsApp 🙌.\n\n_(Escribí *MENU* si deseás ver otras opciones)_";
     } else if (norm === "2" || /^mar[ií]a$/.test(norm)) {
-      proMsg = "¡Perfecto! Ya le transmitimos tu consulta a la Lic. María Gulin. Te estará contactando a la brevedad directamente por WhatsApp 🙌.";
+      proMsg = ctx.inputs.optE2?.value?.trim() || ctx.getTexts().opt_e2_text || ctx.defaults.opt_e2_text ||
+        "¡Perfecto! Ya le transmitimos tu consulta a la Lic. María Gulin. Te estará contactando a la brevedad directamente por WhatsApp 🙌.\n\n_(Escribí *MENU* si deseás ver otras opciones)_";
     } else if (norm === "3" || norm === "indistinto" || norm === "primera consulta") {
-      proMsg = "¡Perfecto! Ya le transmitimos tu consulta a nuestro equipo de kinesiólogos. Te estarán contactando a la brevedad directamente por WhatsApp 🙌.";
+      proMsg = ctx.inputs.optE3?.value?.trim() || ctx.getTexts().opt_e3_text || ctx.defaults.opt_e3_text ||
+        "¡Perfecto! Ya le transmitimos tu consulta a nuestro equipo de kinesiólogos. Te estarán contactando a la brevedad directamente por WhatsApp 🙌.\n\n_(Escribí *MENU* si deseás ver otras opciones)_";
     }
     chatSubmenu = null;
     setTimeout(() => {
-      appendChatMessage(`${proMsg}\n\n_(Escribí *MENU* si deseás ver otras opciones)_`, "bot");
+      appendChatMessage(proMsg, "bot");
     }, 500);
     return;
   }
@@ -187,8 +193,10 @@ function handleChatUserInput(inputRaw) {
   // Opciones A a E
   if (norm === "a" || norm.startsWith("opcion a")) {
     chatSubmenu = "turnos";
+    const subTurnosMsg = ctx.inputs.submenuTurnos?.value?.trim() || ctx.getTexts().submenu_turnos_text || ctx.defaults.submenu_turnos_text ||
+      "📅 *Gestión de Turnos - Kinésica*\n\nPor favor elegí una opción respondiendo *1* o *2*:\n\n*1.* 📅 Agendar un nuevo turno\n*2.* 📋 Consultar o cancelar mis turnos\n\n_(Respondé *1* o *2*, o escribí *MENU* para volver al menú principal)_";
     setTimeout(() => {
-      appendChatMessage("📅 *Gestión de Turnos - Kinésica*\n\nPor favor elegí una opción respondiendo *1* o *2*:\n\n*1.* 📅 Agendar un nuevo turno\n*2.* 📋 Consultar o cancelar mis turnos\n\n_(Respondé *1* o *2*, o escribí *MENU* para volver al menú principal)_", "bot");
+      appendChatMessage(subTurnosMsg, "bot");
     }, 450);
     return;
   }
