@@ -124,6 +124,8 @@ if ($assetName !== '') {
         'mockup_whatsapp_recordatorio_24h.jpg' => ['path' => 'assets/mockup_whatsapp_recordatorio_24h.jpg', 'mime' => 'image/jpeg'],
         'mockup_evento_anotado.png' => ['path' => 'assets/mockup_evento_anotado.png', 'mime' => 'image/png'],
         'tabla_visual_dos_donts.png' => ['path' => 'assets/tabla_visual_dos_donts.png', 'mime' => 'image/png'],
+        'mockup_google_calendar_correcto.jpg' => ['path' => 'assets/mockup_google_calendar_correcto.jpg', 'mime' => 'image/jpeg'],
+        'comparativa_agendamiento_dos_donts.jpg' => ['path' => 'assets/comparativa_agendamiento_dos_donts.jpg', 'mime' => 'image/jpeg'],
         'pacientes_primera_sesion.xlsx' => [
             'path' => 'pacientes_primera_sesion.xlsx',
             'mime' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',

@@ -799,6 +799,38 @@ await test("Protección de manual.html, /docs/ y recursos internos de /admin/ so
   const dbIdx = backupPhp.indexOf("$pdo = db()");
   assert.ok(authIdx > 0 && authIdx < dbIdx, "backup.php debe exigir require_auth() antes de abrir la base de datos");
   assert.match(backupPhp, /is_admin\(\$auth\)/, "backup.php debe exigir rol de administrador en descargas web");
+
+  // 7. Integridad del índice de contenidos (TOC), enlaces internos e imágenes de manual-clara.md
+  const manualClaraMd = fs.readFileSync(path.join(root, "docs/manual-clara.md"), "utf8");
+  assert.doesNotMatch(manualClaraMd, /reprogram/i, "manual-clara.md no debe mencionar reprogramar");
+  assert.doesNotMatch(manualClaraMd, /3\s+botones/i, "manual-clara.md no debe mencionar '3 botones'");
+
+  function normalizeSlug(raw) {
+    return String(raw || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[\u200d\ufe0f]/g, "")
+      .replace(/[.,:;?¿!¡"“”'’()[\]/]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  }
+
+  const headingSlugs = new Set();
+  for (const line of manualClaraMd.split("\n")) {
+    const m = line.match(/^#{1,4}\s+(.+)$/);
+    if (m) {
+      headingSlugs.add(normalizeSlug(m[1].replace(/[`*_~]/g, "")));
+    }
+  }
+  const internalAnchors = [...manualClaraMd.matchAll(/\]\(#([^)]+)\)/g)].map((m) => m[1]);
+  assert.ok(internalAnchors.length >= 25, "manual-clara.md debe tener su índice de contenidos completo");
+  for (const anchor of internalAnchors) {
+    assert.ok(
+      headingSlugs.has(normalizeSlug(anchor)),
+      `El enlace interno #${anchor} del índice debe corresponder a un título real en manual-clara.md`
+    );
+  }
 });
 
 console.log(`admin robustez: ok (${passed} pruebas)`);

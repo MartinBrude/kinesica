@@ -1,10 +1,15 @@
 Options -Indexes
 DirectoryIndex index.html
+AddType application/javascript .mjs .js
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
+  RewriteBase /admin/
   RewriteRule ^manual(?:\.html)?$ api/manual-doc.php?view=page [L,QSA]
   RewriteRule ^signatures/([a-z0-9_-]+\.png)$ api/firma.php?file=$1 [L,QSA]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^(inicio|fichas|historias|pacientes|consultorio|horarios|honorarios|clara|configuracion|administracion|admin|sistema|ficha|comparar)(/.*)?$ index.html [L,QSA]
 </IfModule>
 
 <FilesMatch "^(config\.php|config\.example\.php|mail\.php|lib\.php|\.env.*|\.git.*)$">

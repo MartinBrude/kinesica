@@ -216,6 +216,9 @@
       <button type="button" class="manual-tab-btn" data-doc="pruebas">
         🧪 Guía de Pruebas y Comandos
       </button>
+      <button type="button" class="manual-tab-btn" data-doc="whatsapp">
+        📱 Cuenta de WhatsApp
+      </button>
     </div>
 
     <article class="manual-card" id="manual-content">
@@ -235,15 +238,85 @@
         });
       }
 
+      function normalizeSlug(raw) {
+        return String(raw || "")
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[\u200d\ufe0f]/g, "")
+          .replace(/[.,:;?¿!¡"“”'’()[\]/]/g, "")
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "");
+      }
+
+      function githubSlug(raw) {
+        return String(raw || "")
+          .trim()
+          .toLowerCase()
+          .replace(/[\u200d\ufe0f]/g, "")
+          .replace(/[^\p{L}\p{N}\s-]/gu, "")
+          .replace(/\s+/g, "-")
+          .replace(/^-+|-+$/g, "");
+      }
+
+      function decorateHeadingsAndLinks() {
+        const headings = contentEl.querySelectorAll("h1, h2, h3, h4");
+        const usedIds = new Set();
+        headings.forEach(function (h) {
+          const text = h.textContent || "";
+          const baseId = normalizeSlug(text) || "seccion";
+          let finalId = baseId;
+          let counter = 2;
+          while (usedIds.has(finalId)) {
+            finalId = baseId + "-" + counter++;
+          }
+          usedIds.add(finalId);
+          h.id = finalId;
+          h.setAttribute("data-gh-slug", githubSlug(text));
+          h.style.scrollMarginTop = "24px";
+        });
+      }
+
+      function findHeadingByHash(hashStr) {
+        const raw = decodeURIComponent(String(hashStr || "").replace(/^#/, ""));
+        if (!raw) return null;
+        const direct = document.getElementById(raw);
+        if (direct && contentEl.contains(direct)) return direct;
+        const normTarget = normalizeSlug(raw);
+        const ghTarget = githubSlug(raw);
+        const headings = contentEl.querySelectorAll("h1, h2, h3, h4");
+        for (let i = 0; i < headings.length; i++) {
+          const h = headings[i];
+          if (
+            h.id === normTarget ||
+            h.getAttribute("data-gh-slug") === ghTarget ||
+            normalizeSlug(h.textContent) === normTarget
+          ) {
+            return h;
+          }
+        }
+        return null;
+      }
+
       function rewriteDocPaths(md) {
         return md
           .replace(/src="(?:\/?docs\/)?assets\/([^"]+)"/g, 'src="/admin/api/manual-doc.php?asset=$1"')
           .replace(/\]\((?:\/?docs\/)?assets\/([^)]+)\)/g, '](/admin/api/manual-doc.php?asset=$1)')
+          .replace(/\]\((?:\.\/|\/docs\/)?(?:manual-clara|MANUAL_CLARA)\.md\)/g, '](#doc-clara)')
+          .replace(/\]\((?:\.\/|\/docs\/)?configuracion-cuentas-profesionales\.md\)/g, '](#doc-cuentas)')
+          .replace(/\]\((?:\.\/|\/docs\/)?guia-pruebas\.md\)/g, '](#doc-pruebas)')
           .replace(/\]\((?:\.\/|\/docs\/)?cuenta-whatsapp-clara\.md\)/g, '](#doc-whatsapp)')
           .replace(/\]\((?:\.\/|\/docs\/)?pacientes_primera_sesion\.xlsx\)/g, '](/admin/api/manual-doc.php?asset=pacientes_primera_sesion.xlsx)');
       }
 
-      async function loadDoc(docKey) {
+      function setActiveTab(docKey) {
+        tabBtns.forEach(function (b) {
+          b.classList.toggle("is-active", b.getAttribute("data-doc") === docKey);
+        });
+      }
+
+      async function loadDoc(docKey, preserveHash) {
+        setActiveTab(docKey);
         contentEl.innerHTML = '<p style="color:var(--muted);">Cargando documento…</p>';
         try {
           const res = await fetch("/admin/api/manual-doc.php?doc=" + encodeURIComponent(docKey) + "&_t=" + Date.now(), {
@@ -260,11 +333,20 @@
           const fixedMd = rewriteDocPaths(rawMd);
           if (window.marked && typeof window.marked.parse === "function") {
             contentEl.innerHTML = window.marked.parse(fixedMd);
+            decorateHeadingsAndLinks();
           } else {
             const pre = document.createElement("pre");
             pre.style.whiteSpace = "pre-wrap";
             pre.textContent = fixedMd;
             contentEl.replaceChildren(pre);
+          }
+          if (preserveHash && window.location.hash) {
+            const target = findHeadingByHash(window.location.hash);
+            if (target) {
+              target.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+          } else {
+            window.scrollTo({ top: 0, behavior: "smooth" });
           }
         } catch (err) {
           contentEl.innerHTML = '<p style="color:#b91c1c; font-weight:600;">No se pudo cargar el documento.</p>';
@@ -272,20 +354,33 @@
       }
 
       contentEl.addEventListener("click", function (ev) {
-        const link = ev.target && ev.target.closest ? ev.target.closest('a[href="#doc-whatsapp"]') : null;
-        if (link) {
+        const link = ev.target && ev.target.closest ? ev.target.closest("a[href]") : null;
+        if (!link) return;
+        const href = link.getAttribute("href") || "";
+        const docMatch = href.match(/^#doc-(clara|cuentas|pruebas|whatsapp)$/);
+        if (docMatch) {
           ev.preventDefault();
-          tabBtns.forEach(function (b) { b.classList.remove("is-active"); });
-          loadDoc("whatsapp");
+          history.replaceState(null, "", window.location.pathname);
+          loadDoc(docMatch[1], false);
+          return;
+        }
+        if (href.startsWith("#") && href.length > 1) {
+          const target = findHeadingByHash(href);
+          if (target) {
+            ev.preventDefault();
+            history.replaceState(null, "", "#" + target.id);
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
         }
       });
 
       tabBtns.forEach(function (btn) {
         btn.addEventListener("click", function () {
-          tabBtns.forEach(function (b) { b.classList.remove("is-active"); });
-          btn.classList.add("is-active");
           const docKey = btn.getAttribute("data-doc");
-          if (docKey) loadDoc(docKey);
+          if (docKey) {
+            history.replaceState(null, "", window.location.pathname);
+            loadDoc(docKey, false);
+          }
         });
       });
 
@@ -306,7 +401,7 @@
             return;
           }
           document.documentElement.classList.add("is-admin-verified");
-          loadDoc("clara");
+          loadDoc("clara", true);
         } catch (_) {
           window.location.replace("/admin/");
         }
