@@ -30,9 +30,21 @@ const btnSaveModal = document.querySelector("#admin-prof-modal-save");
 
 // Elementos de la subsección de Gastos
 const gastosTableBody = document.querySelector("#admin-gastos-tbody");
-const gastosSumaTotal = document.querySelector("#admin-gastos-suma-total");
-const gastosTfootTotal = document.querySelector("#admin-gastos-tfoot-total");
+const gastosTotalEur = document.querySelector("#admin-gastos-total-eur");
+const gastosSubEur = document.querySelector("#admin-gastos-sub-eur");
+const gastosTotalUsd = document.querySelector("#admin-gastos-total-usd");
+const gastosSubUsd = document.querySelector("#admin-gastos-sub-usd");
+const gastosTotalArs = document.querySelector("#admin-gastos-total-ars");
+const gastosTotalConsolidado = document.querySelector("#admin-gastos-total-consolidado");
 const gastosCountLabel = document.querySelector("#admin-gastos-count-label");
+const inputRateEur = document.querySelector("#admin-rate-eur");
+const inputRateUsd = document.querySelector("#admin-rate-usd");
+const btnRefreshRates = document.querySelector("#admin-btn-refresh-rates");
+const ratesUpdatedNote = document.querySelector("#admin-rates-updated-note");
+const gastosTfootEur = document.querySelector("#admin-gastos-tfoot-eur");
+const gastosTfootUsd = document.querySelector("#admin-gastos-tfoot-usd");
+const gastosTfootArs = document.querySelector("#admin-gastos-tfoot-ars");
+const gastosTfootTotalArs = document.querySelector("#admin-gastos-tfoot-total-ars");
 const btnNuevoGasto = document.querySelector("#admin-btn-nuevo-gasto");
 
 // Modal de gasto
@@ -45,6 +57,8 @@ const inputGastoDetalle = document.querySelector("#admin-gasto-detalle");
 const inputGastoFecha = document.querySelector("#admin-gasto-fecha");
 const inputGastoMonto = document.querySelector("#admin-gasto-monto");
 const selectGastoMoneda = document.querySelector("#admin-gasto-moneda");
+const inputGastoTc = document.querySelector("#admin-gasto-tc");
+const previewGastoArs = document.querySelector("#admin-gasto-preview-ars");
 const btnCloseGastoModal = document.querySelector("#admin-gasto-modal-close");
 const btnCancelGastoModal = document.querySelector("#admin-gasto-modal-cancel");
 const btnSaveGastoModal = document.querySelector("#admin-gasto-modal-save");
@@ -55,6 +69,24 @@ let cachedProfesionales = [];
 let currentEditingGasto = null;
 let cachedGastos = [];
 
+const exchangeRates = {
+  EUR: 1450,
+  USD: 1350,
+  updatedAt: null,
+};
+
+try {
+  const savedRates = localStorage.getItem("kinesica_gastos_rates");
+  if (savedRates) {
+    const parsed = JSON.parse(savedRates);
+    if (parsed && typeof parsed === "object") {
+      if (Number(parsed.EUR) > 0) exchangeRates.EUR = Number(parsed.EUR);
+      if (Number(parsed.USD) > 0) exchangeRates.USD = Number(parsed.USD);
+      if (parsed.updatedAt) exchangeRates.updatedAt = parsed.updatedAt;
+    }
+  }
+} catch (_) {}
+
 const SEED_GASTOS = [
   {
     id: "gasto_1",
@@ -63,6 +95,7 @@ const SEED_GASTOS = [
     fecha: "2026-10-25",
     monto: 148.09,
     moneda: "EUR",
+    tipo_cambio: null,
   },
   {
     id: "gasto_2",
@@ -71,6 +104,7 @@ const SEED_GASTOS = [
     fecha: "2026-09-26",
     monto: 8.99,
     moneda: "EUR",
+    tipo_cambio: null,
   },
   {
     id: "gasto_3",
@@ -79,6 +113,7 @@ const SEED_GASTOS = [
     fecha: "2026-02-03",
     monto: 65.88,
     moneda: "EUR",
+    tipo_cambio: null,
   },
   {
     id: "gasto_4",
@@ -87,20 +122,19 @@ const SEED_GASTOS = [
     fecha: "2025-03-28",
     monto: 35.88,
     moneda: "EUR",
+    tipo_cambio: null,
   },
 ];
 
-function formatCurrency(amount, currency = "EUR") {
+function formatMoney(amount, currency = "ARS") {
   const num = Number(amount) || 0;
-  const formatted = num.toLocaleString("es-ES", {
+  const formatted = num.toLocaleString("es-AR", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
-  if (currency === "EUR") {
-    return `${formatted} €`;
-  }
-  const sym = currency === "USD" ? "USD" : "$";
-  return `${sym} ${formatted}`;
+  if (currency === "EUR") return `${formatted} €`;
+  if (currency === "USD") return `US$ ${formatted}`;
+  return `$ ${formatted}`;
 }
 
 export function showAdminView() {
@@ -424,24 +458,107 @@ async function handleResendInvite(prof) {
   }
 }
 
-function renderGastos(gastos) {
-  let total = 0;
-  for (const g of gastos) {
-    total += Number(g.monto) || 0;
+function updateRatesUI() {
+  if (inputRateEur) inputRateEur.value = String(exchangeRates.EUR);
+  if (inputRateUsd) inputRateUsd.value = String(exchangeRates.USD);
+  if (ratesUpdatedNote) {
+    ratesUpdatedNote.textContent = exchangeRates.updatedAt
+      ? `Cotización actualizada (${exchangeRates.updatedAt})`
+      : "Cotización de referencia diaria";
   }
-  const totalFormatted = formatCurrency(total, "EUR");
-  if (gastosSumaTotal) gastosSumaTotal.textContent = totalFormatted;
-  if (gastosTfootTotal) gastosTfootTotal.textContent = totalFormatted;
+}
+
+async function refreshDailyRates(notify = false) {
+  try {
+    const [resEur, resUsd] = await Promise.allSettled([
+      fetch("https://dolarapi.com/v1/cotizaciones/eur").then((r) => r.json()),
+      fetch("https://dolarapi.com/v1/dolares/tarjeta").then((r) => r.json()),
+    ]);
+    let updated = false;
+    if (resEur.status === "fulfilled" && resEur.value && resEur.value.venta) {
+      exchangeRates.EUR = Math.round(Number(resEur.value.venta));
+      updated = true;
+    }
+    if (resUsd.status === "fulfilled" && resUsd.value && resUsd.value.venta) {
+      exchangeRates.USD = Math.round(Number(resUsd.value.venta));
+      updated = true;
+    }
+    if (updated) {
+      exchangeRates.updatedAt = new Date().toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" });
+      try {
+        localStorage.setItem("kinesica_gastos_rates", JSON.stringify(exchangeRates));
+      } catch (_) {}
+      updateRatesUI();
+      renderGastos(cachedGastos);
+      if (notify) dialogAlert("Cotizaciones del día actualizadas correctamente.");
+    } else if (notify) {
+      dialogAlert("No se pudieron obtener cotizaciones en línea. Se mantienen los valores actuales.");
+    }
+  } catch (err) {
+    if (notify) dialogAlert("Error al consultar cotizaciones: " + (err.message || "Sin conexión"));
+  }
+}
+
+function getConvertedAmountInArs(gasto) {
+  const monto = Number(gasto.monto) || 0;
+  const moneda = (gasto.moneda || "EUR").toUpperCase();
+  if (moneda === "ARS") {
+    return { ars: monto, tc: 1 };
+  }
+  const customTc = Number(gasto.tipo_cambio);
+  const tc = customTc > 0 ? customTc : (exchangeRates[moneda] || 1);
+  return { ars: monto * tc, tc };
+}
+
+function renderGastos(gastos) {
+  let subtotalEur = 0;
+  let subtotalUsd = 0;
+  let subtotalArs = 0;
+  let totalConsolidadoArs = 0;
+
+  for (const g of gastos) {
+    const { ars } = getConvertedAmountInArs(g);
+    totalConsolidadoArs += ars;
+    const mon = (g.moneda || "EUR").toUpperCase();
+    const val = Number(g.monto) || 0;
+    if (mon === "EUR") subtotalEur += val;
+    else if (mon === "USD") subtotalUsd += val;
+    else subtotalArs += val;
+  }
+
+  // Actualizar Tarjetas KPI
+  if (gastosTotalEur) gastosTotalEur.textContent = formatMoney(subtotalEur, "EUR");
+  if (gastosSubEur) {
+    gastosSubEur.textContent = subtotalEur > 0
+      ? `≈ ${formatMoney(subtotalEur * exchangeRates.EUR, "ARS")} al cambio`
+      : "Sin gastos en euros";
+  }
+
+  if (gastosTotalUsd) gastosTotalUsd.textContent = formatMoney(subtotalUsd, "USD");
+  if (gastosSubUsd) {
+    gastosSubUsd.textContent = subtotalUsd > 0
+      ? `≈ ${formatMoney(subtotalUsd * exchangeRates.USD, "ARS")} al cambio`
+      : "Sin gastos en dólares";
+  }
+
+  if (gastosTotalArs) gastosTotalArs.textContent = formatMoney(subtotalArs, "ARS");
+  if (gastosTotalConsolidado) gastosTotalConsolidado.textContent = formatMoney(totalConsolidadoArs, "ARS");
   if (gastosCountLabel) {
     gastosCountLabel.textContent = `${gastos.length} gasto${gastos.length === 1 ? "" : "s"} registrado${gastos.length === 1 ? "" : "s"}`;
   }
+
+  // Actualizar pie de tabla
+  if (gastosTfootEur) gastosTfootEur.textContent = formatMoney(subtotalEur, "EUR");
+  if (gastosTfootUsd) gastosTfootUsd.textContent = formatMoney(subtotalUsd, "USD");
+  if (gastosTfootArs) gastosTfootArs.textContent = formatMoney(subtotalArs, "ARS");
+  if (gastosTfootTotalArs) gastosTfootTotalArs.textContent = formatMoney(totalConsolidadoArs, "ARS");
 
   if (!gastosTableBody) return;
 
   if (gastos.length === 0) {
     const tr = document.createElement("tr");
     const td = document.createElement("td");
-    td.colSpan = 4;
+    td.colSpan = 7;
     td.style.textAlign = "center";
     td.style.color = "var(--muted)";
     td.style.padding = "28px 16px";
@@ -454,8 +571,10 @@ function renderGastos(gastos) {
   gastosTableBody.replaceChildren(
     ...gastos.map((gasto) => {
       const tr = document.createElement("tr");
+      const mon = (gasto.moneda || "EUR").toUpperCase();
+      const { ars, tc } = getConvertedAmountInArs(gasto);
 
-      // Servicio / Concepto
+      // Columna 1: Servicio / Concepto
       const tdConcepto = document.createElement("td");
       const nameStrong = document.createElement("strong");
       nameStrong.textContent = gasto.concepto;
@@ -468,16 +587,58 @@ function renderGastos(gastos) {
         tdConcepto.appendChild(sub);
       }
 
-      // Pagado el (Fecha)
+      // Columna 2: Pagado el (Fecha)
       const tdFecha = document.createElement("td");
       tdFecha.textContent = gasto.fecha || "—";
 
-      // Cantidad (Monto)
-      const tdMonto = document.createElement("td");
-      tdMonto.style.textAlign = "right";
-      tdMonto.textContent = formatCurrency(gasto.monto, gasto.moneda || "EUR");
+      // Columna 3: EUR (€)
+      const tdEur = document.createElement("td");
+      tdEur.className = "num-col";
+      if (mon === "EUR") {
+        tdEur.textContent = formatMoney(gasto.monto, "EUR");
+      } else {
+        const dash = document.createElement("span");
+        dash.className = "gasto-none-dash";
+        dash.textContent = "—";
+        tdEur.appendChild(dash);
+      }
 
-      // Acciones (Editar, Eliminar)
+      // Columna 4: USD ($)
+      const tdUsd = document.createElement("td");
+      tdUsd.className = "num-col";
+      if (mon === "USD") {
+        tdUsd.textContent = formatMoney(gasto.monto, "USD");
+      } else {
+        const dash = document.createElement("span");
+        dash.className = "gasto-none-dash";
+        dash.textContent = "—";
+        tdUsd.appendChild(dash);
+      }
+
+      // Columna 5: ARS ($)
+      const tdArs = document.createElement("td");
+      tdArs.className = "num-col";
+      if (mon === "ARS") {
+        tdArs.textContent = formatMoney(gasto.monto, "ARS");
+      } else {
+        const dash = document.createElement("span");
+        dash.className = "gasto-none-dash";
+        dash.textContent = "—";
+        tdArs.appendChild(dash);
+      }
+
+      // Columna 6: Al cambio (ARS)
+      const tdEquivArs = document.createElement("td");
+      tdEquivArs.className = "num-col";
+      tdEquivArs.textContent = formatMoney(ars, "ARS");
+      if (mon !== "ARS" && tc > 1) {
+        const tcSub = document.createElement("span");
+        tcSub.className = "gasto-tc-sub";
+        tcSub.textContent = `TC: $ ${Math.round(tc).toLocaleString("es-AR")}`;
+        tdEquivArs.appendChild(tcSub);
+      }
+
+      // Columna 7: Acciones (Editar, Eliminar)
       const tdActions = document.createElement("td");
       tdActions.className = "prof-actions-td";
 
@@ -500,10 +661,32 @@ function renderGastos(gastos) {
 
       tdActions.appendChild(actionsWrap);
 
-      tr.append(tdConcepto, tdFecha, tdMonto, tdActions);
+      tr.append(tdConcepto, tdFecha, tdEur, tdUsd, tdArs, tdEquivArs, tdActions);
       return tr;
     })
   );
+}
+
+function updateModalPreview() {
+  if (!previewGastoArs) return;
+  const monto = parseFloat(inputGastoMonto?.value || "0");
+  const moneda = selectGastoMoneda?.value || "EUR";
+  const customTc = parseFloat(inputGastoTc?.value || "0");
+  const tcGroup = document.querySelector("#admin-gasto-tc-group");
+
+  if (moneda === "ARS") {
+    if (tcGroup) tcGroup.style.opacity = "0.4";
+    previewGastoArs.textContent = monto > 0
+      ? `Gasto directo en moneda local: ${formatMoney(monto, "ARS")}`
+      : "Gasto directo en moneda local.";
+  } else {
+    if (tcGroup) tcGroup.style.opacity = "1";
+    const tcApplied = customTc > 0 ? customTc : (exchangeRates[moneda] || 1);
+    const equiv = monto * tcApplied;
+    previewGastoArs.textContent = monto > 0
+      ? `Equivalente estimado: ${formatMoney(equiv, "ARS")} (TC aplicado: $ ${Math.round(tcApplied).toLocaleString("es-AR")} / ${moneda})`
+      : `Se aplicará la cotización del día: 1 ${moneda} = $ ${Math.round(tcApplied).toLocaleString("es-AR")} ARS.`;
+  }
 }
 
 function openCreateGastoModal() {
@@ -517,6 +700,8 @@ function openCreateGastoModal() {
   }
   if (inputGastoMonto) inputGastoMonto.value = "";
   if (selectGastoMoneda) selectGastoMoneda.value = "EUR";
+  if (inputGastoTc) inputGastoTc.value = "";
+  updateModalPreview();
 
   if (modalGastoEl) modalGastoEl.hidden = false;
   inputGastoConcepto?.focus();
@@ -531,6 +716,8 @@ function openEditGastoModal(gasto) {
   if (inputGastoFecha) inputGastoFecha.value = gasto.fecha || "";
   if (inputGastoMonto) inputGastoMonto.value = gasto.monto != null ? String(gasto.monto) : "";
   if (selectGastoMoneda) selectGastoMoneda.value = gasto.moneda || "EUR";
+  if (inputGastoTc) inputGastoTc.value = gasto.tipo_cambio ? String(gasto.tipo_cambio) : "";
+  updateModalPreview();
 
   if (modalGastoEl) modalGastoEl.hidden = false;
   inputGastoConcepto?.focus();
@@ -548,6 +735,8 @@ async function handleSaveGasto(e) {
   const fecha = inputGastoFecha?.value?.trim() || "";
   const monto = parseFloat(inputGastoMonto?.value || "0");
   const moneda = selectGastoMoneda?.value || "EUR";
+  const customTc = parseFloat(inputGastoTc?.value || "0");
+  const tipoCambio = customTc > 0 ? customTc : null;
 
   if (!concepto) {
     dialogAlert("Completá el concepto o servicio del gasto.");
@@ -576,6 +765,7 @@ async function handleSaveGasto(e) {
             fecha,
             monto,
             moneda,
+            tipo_cambio: tipoCambio,
           }),
         });
       } catch (_err) {
@@ -588,6 +778,7 @@ async function handleSaveGasto(e) {
             fecha,
             monto,
             moneda,
+            tipo_cambio: tipoCambio,
           };
         }
       }
@@ -603,6 +794,7 @@ async function handleSaveGasto(e) {
             fecha,
             monto,
             moneda,
+            tipo_cambio: tipoCambio,
           }),
         });
       } catch (_err) {
@@ -613,6 +805,7 @@ async function handleSaveGasto(e) {
           fecha,
           monto,
           moneda,
+          tipo_cambio: tipoCambio,
         };
         cachedGastos.unshift(newLocalGasto);
       }
@@ -628,7 +821,7 @@ async function handleSaveGasto(e) {
 }
 
 async function handleDeleteGasto(gasto) {
-  const formattedAmount = formatCurrency(gasto.monto, gasto.moneda || "EUR");
+  const formattedAmount = formatMoney(gasto.monto, gasto.moneda || "EUR");
   const ok = await dialogConfirm(
     `¿Estás seguro de eliminar el gasto "${escapeHtml(gasto.concepto)}" por ${formattedAmount}?`
   );
@@ -663,6 +856,38 @@ export function initAdminModule() {
   btnCloseGastoModal?.addEventListener("click", closeGastoModal);
   btnCancelGastoModal?.addEventListener("click", closeGastoModal);
   formGastoEl?.addEventListener("submit", handleSaveGasto);
+
+  updateRatesUI();
+  inputRateEur?.addEventListener("change", (e) => {
+    const val = parseFloat(e.target.value);
+    if (val > 0) {
+      exchangeRates.EUR = val;
+      try {
+        localStorage.setItem("kinesica_gastos_rates", JSON.stringify(exchangeRates));
+      } catch (_) {}
+      renderGastos(cachedGastos);
+    }
+  });
+
+  inputRateUsd?.addEventListener("change", (e) => {
+    const val = parseFloat(e.target.value);
+    if (val > 0) {
+      exchangeRates.USD = val;
+      try {
+        localStorage.setItem("kinesica_gastos_rates", JSON.stringify(exchangeRates));
+      } catch (_) {}
+      renderGastos(cachedGastos);
+    }
+  });
+
+  btnRefreshRates?.addEventListener("click", () => refreshDailyRates(true));
+
+  inputGastoMonto?.addEventListener("input", updateModalPreview);
+  selectGastoMoneda?.addEventListener("change", updateModalPreview);
+  inputGastoTc?.addEventListener("input", updateModalPreview);
+
+  // Intentar refrescar cotización en segundo plano al inicializar
+  refreshDailyRates(false).catch(() => {});
 
   // Cerrar al hacer clic en el backdrop
   modalEl?.addEventListener("click", (e) => {

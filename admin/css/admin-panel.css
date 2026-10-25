@@ -401,24 +401,117 @@
   gap: 12px;
 }
 
-.gastos-summary-grid {
+.gastos-rates-bar {
   display: flex;
+  align-items: center;
   gap: 16px;
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 10px 16px;
   margin-bottom: 20px;
   flex-wrap: wrap;
 }
 
-.gastos-stat-card {
-  min-width: 240px;
-  background: #f8fafc;
-  border-left: 4px solid var(--accent);
+.rates-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy);
 }
 
-.gastos-table th:nth-child(3),
-.gastos-table td:nth-child(3) {
+.rate-input-wrap {
+  display: inline-flex;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.rate-input-wrap input {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 65px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy);
+  padding: 4px 6px;
+  text-align: right;
+  font-family: inherit;
+}
+
+.rates-updated-note {
+  font-size: 12px;
+  color: var(--muted);
+  margin-left: auto;
+}
+
+.gastos-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.gastos-stat-card {
+  padding: 18px 20px;
+  border-radius: var(--radius-sm);
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.gastos-stat-card.card-eur {
+  border-left: 4px solid #0284c7;
+}
+
+.gastos-stat-card.card-usd {
+  border-left: 4px solid #16a34a;
+}
+
+.gastos-stat-card.card-ars {
+  border-left: 4px solid #d97706;
+}
+
+.gastos-stat-card.card-consolidado {
+  border-left: 4px solid #4f46e5;
+  background: #f5f3ff;
+}
+
+.gastos-stat-card .stat-equiv {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.gastos-table th.num-col,
+.gastos-table td.num-col {
   text-align: right;
   font-variant-numeric: tabular-nums;
   font-weight: 600;
+  white-space: nowrap;
+}
+
+.gasto-tc-sub {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 400;
+  display: block;
+  margin-top: 2px;
+}
+
+.gasto-none-dash {
+  color: #cbd5e1;
+  font-weight: normal;
 }
 
 .gasto-detalle-sub {

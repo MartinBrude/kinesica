@@ -68,14 +68,28 @@ if ($method === 'GET') {
     usort($gastos, static function (array $a, array $b): int {
         return strcmp((string) ($b['fecha'] ?? ''), (string) ($a['fecha'] ?? ''));
     });
-    $total = 0.0;
+    $subtotalEur = 0.0;
+    $subtotalUsd = 0.0;
+    $subtotalArs = 0.0;
     foreach ($gastos as $g) {
-        $total += (float) ($g['monto'] ?? 0);
+        $val = (float) ($g['monto'] ?? 0);
+        $mon = strtoupper((string) ($g['moneda'] ?? 'EUR'));
+        if ($mon === 'EUR') {
+            $subtotalEur += $val;
+        } elseif ($mon === 'USD') {
+            $subtotalUsd += $val;
+        } else {
+            $subtotalArs += $val;
+        }
     }
     json_out(200, [
         'status' => 'success',
         'gastos' => $gastos,
-        'total' => round($total, 2),
+        'subtotales' => [
+            'eur' => round($subtotalEur, 2),
+            'usd' => round($subtotalUsd, 2),
+            'ars' => round($subtotalArs, 2),
+        ],
     ]);
 }
 
@@ -92,6 +106,9 @@ if ($action === 'create') {
     $fecha = trim((string) ($input['fecha'] ?? ''));
     $montoRaw = $input['monto'] ?? null;
     $moneda = strtoupper(trim((string) ($input['moneda'] ?? 'EUR')));
+    $tipoCambio = isset($input['tipo_cambio']) && is_numeric($input['tipo_cambio']) && (float) $input['tipo_cambio'] > 0
+        ? round((float) $input['tipo_cambio'], 2)
+        : null;
 
     if ($concepto === '' || mb_strlen($concepto) > 255) {
         json_out(422, ['error' => 'El concepto o servicio es obligatorio (máximo 255 caracteres).']);
@@ -122,6 +139,7 @@ if ($action === 'create') {
         'fecha' => $fecha,
         'monto' => round((float) $montoRaw, 2),
         'moneda' => $moneda,
+        'tipo_cambio' => $tipoCambio,
         'created_at' => gmdate('Y-m-d\TH:i:s\Z'),
         'created_by' => (string) ($auth['username'] ?? ''),
     ];
@@ -144,6 +162,9 @@ if ($action === 'update') {
     $fecha = trim((string) ($input['fecha'] ?? ''));
     $montoRaw = $input['monto'] ?? null;
     $moneda = strtoupper(trim((string) ($input['moneda'] ?? 'EUR')));
+    $tipoCambio = isset($input['tipo_cambio']) && is_numeric($input['tipo_cambio']) && (float) $input['tipo_cambio'] > 0
+        ? round((float) $input['tipo_cambio'], 2)
+        : null;
 
     if ($id === '') {
         json_out(422, ['error' => 'ID de gasto no especificado.']);
@@ -173,6 +194,7 @@ if ($action === 'update') {
             $g['fecha'] = $fecha;
             $g['monto'] = round((float) $montoRaw, 2);
             $g['moneda'] = $moneda;
+            $g['tipo_cambio'] = $tipoCambio;
             $g['updated_at'] = gmdate('Y-m-d\TH:i:s\Z');
             $g['updated_by'] = (string) ($auth['username'] ?? '');
             $found = true;
