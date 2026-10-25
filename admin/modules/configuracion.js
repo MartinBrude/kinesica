@@ -93,7 +93,7 @@ Si sos menor, vení acompañado/a por un mayor 🙌.`,
 _(Respondé *1*, *2* o *3*, o escribí tu consulta directamente y se la transmitimos)_
 _Escribí *MENU* para volver_`,
   cancellation_policy: `Te recordamos que los turnos pueden cancelarse o reprogramarse con un mínimo de 24 horas de anticipación 🙌.`,
-  confirmation_notes: `Por favor asistir con puntualidad exacta al horario asignado. El consultorio cuenta con una única camilla y no dispone de sala de espera 📍.`,
+  confirmation_notes: `Por favor asistir con puntualidad exacta al horario asignado. No contamos con secretaria, si estamos atendiendo a otro paciente no podemos recibirte anticipadamente 📍.`,
   reminder_text: `¡Hola {nombre}! 🌿 Te escribo desde Kinésica para recordarte tu {tipo_cita} programada para mañana a las {horario}.
 
 {indicaciones}

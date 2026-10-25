@@ -16,7 +16,7 @@ export const AGENDAR = {
     highlights: [
       {
         icon: "fa-clock-o",
-        title: "Atención individual de 1 hora",
+        title: "Atención individual de aproximadamente 1 hora",
         text: "Cada sesión es personalizada y de dedicación exclusiva con el profesional en consultorio privado.",
       },
       {
