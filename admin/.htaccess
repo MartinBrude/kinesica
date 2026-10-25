@@ -1,32 +1,42 @@
 Options -Indexes
-AddType application/javascript .mjs .js
+DirectoryIndex index.html
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
-  RewriteBase /admin/
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule ^(inicio|fichas|historias|pacientes|consultorio|horarios|honorarios|clara|configuracion|administracion|admin|sistema|ficha|comparar)(/.*)?$ index.html [L,QSA]
+  RewriteRule ^manual(?:\.html)?$ api/manual-doc.php?view=page [L,QSA]
+  RewriteRule ^signatures/([a-z0-9_-]+\.png)$ api/firma.php?file=$1 [L,QSA]
 </IfModule>
 
-<FilesMatch "\.(html|js|mjs|css)$">
-  Header set Cache-Control "no-cache, no-store, must-revalidate"
-  Header set Pragma "no-cache"
-  Header set Expires "0"
+<FilesMatch "^(config\.php|config\.example\.php|mail\.php|lib\.php|\.env.*|\.git.*)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
 </FilesMatch>
 
-# Bloquear acceso directo a archivos de configuración, credenciales y copias
-<FilesMatch "^(config.*\.php|mail\.php|\.env.*|\.git.*)$">
-  Require all denied
+<FilesMatch "\.(sql|bak|old|log|md|json|sha256|lock)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
 </FilesMatch>
 
-<FilesMatch "\.(sql|bak|old|log)$">
-  Require all denied
-</FilesMatch>
-
-# Cabeceras de seguridad HTTP
 <IfModule mod_headers.c>
+  Header always set X-Robots-Tag "noindex, nofollow, noarchive"
   Header always set X-Content-Type-Options "nosniff"
-  Header always set X-Frame-Options "SAMEORIGIN"
-  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "no-referrer"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.frankfurter.app https://open.er-api.com https://dolarapi.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+  <FilesMatch "\.(html|js|mjs|css)$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+  </FilesMatch>
 </IfModule>

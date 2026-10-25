@@ -1,0 +1,9 @@
+# Bloquear acceso HTTP directo a toda la documentación y activos internos.
+# Solo se sirven a administradores autenticados a través de /admin/api/manual-doc.php
+<IfModule mod_authz_core.c>
+  Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+  Order allow,deny
+  Deny from all
+</IfModule>

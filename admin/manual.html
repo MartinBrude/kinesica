@@ -4,170 +4,183 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
-  <title>Manual de Usuario · Kinésica Admin</title>
+  <title>Manual de Usuario y Operaciones — Kinésica Admin</title>
   <link rel="icon" type="image/svg+xml" href="/images/favicon.svg?v=1789197731">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=118">
+  <link rel="stylesheet" href="/admin/styles.css?v=117">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
-    .manual-shell {
+    html:not(.is-admin-verified) body {
+      display: none !important;
+    }
+    .manual-container {
       max-width: 980px;
       margin: 28px auto 64px;
       padding: 0 20px;
     }
-    .manual-header-card {
-      background: #ffffff;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 24px 28px;
-      margin-bottom: 20px;
+    .manual-header-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
       flex-wrap: wrap;
+      gap: 14px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
     }
     .manual-header-titles h1 {
-      margin: 0 0 6px;
-      font-size: 22px;
+      margin: 0;
+      font-size: 20px;
       color: var(--navy);
     }
     .manual-header-titles p {
-      margin: 0;
-      font-size: 14px;
+      margin: 4px 0 0;
+      font-size: 13px;
       color: var(--muted);
     }
     .manual-tabs {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
       margin-bottom: 20px;
     }
     .manual-tab-btn {
-      background: #ffffff;
-      border: 1px solid var(--line);
-      border-radius: 10px;
       padding: 10px 18px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--navy);
       font-size: 14px;
       font-weight: 600;
-      color: var(--navy);
       cursor: pointer;
       transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
     }
     .manual-tab-btn:hover {
-      background: #f8fafc;
       border-color: var(--primary);
+      background: #f8fafc;
     }
     .manual-tab-btn.is-active {
       background: var(--primary);
+      color: #fff;
       border-color: var(--primary);
-      color: #ffffff;
     }
-    .manual-body-card {
-      background: #ffffff;
+    .manual-card {
+      background: #fff;
       border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 36px 40px;
-      color: var(--ink);
+      border-radius: 14px;
+      padding: 36px 42px;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
       line-height: 1.65;
+      color: #1e293b;
       font-size: 15px;
-      overflow-x: auto;
     }
-    .manual-body-card h1 {
+    @media (max-width: 680px) {
+      .manual-card {
+        padding: 22px 18px;
+      }
+    }
+    .manual-card h1 {
       font-size: 26px;
       color: var(--navy);
-      margin-top: 0;
+      border-bottom: 2px solid #e2e8f0;
       padding-bottom: 12px;
-      border-bottom: 2px solid var(--sky);
+      margin-top: 0;
     }
-    .manual-body-card h2 {
+    .manual-card h2 {
       font-size: 20px;
       color: var(--navy);
       margin-top: 32px;
       padding-bottom: 8px;
-      border-bottom: 1px solid var(--line);
+      border-bottom: 1px solid #f1f5f9;
     }
-    .manual-body-card h3 {
-      font-size: 17px;
-      color: var(--primary);
+    .manual-card h3 {
+      font-size: 16px;
+      color: #0f172a;
       margin-top: 24px;
     }
-    .manual-body-card h4 {
-      font-size: 15px;
-      color: var(--navy);
-      margin-top: 18px;
-    }
-    .manual-body-card blockquote {
-      margin: 16px 0;
-      padding: 14px 18px;
-      background: #f8fafc;
-      border-left: 4px solid var(--primary);
-      border-radius: 0 8px 8px 0;
-      color: #334155;
-    }
-    .manual-body-card code {
-      background: #f1f5f9;
-      padding: 2px 6px;
-      border-radius: 5px;
-      font-size: 13.5px;
-      color: #0f172a;
-    }
-    .manual-body-card pre {
-      background: #0f172a;
-      color: #f8fafc;
-      padding: 16px 18px;
+    .manual-card img {
+      max-width: 100%;
+      height: auto;
       border-radius: 10px;
-      overflow-x: auto;
+      border: 1px solid #e2e8f0;
+      margin: 12px 0;
     }
-    .manual-body-card pre code {
-      background: transparent;
-      color: inherit;
-      padding: 0;
-    }
-    .manual-body-card table {
+    .manual-card table {
       width: 100%;
       border-collapse: collapse;
       margin: 18px 0;
       font-size: 14px;
     }
-    .manual-body-card th,
-    .manual-body-card td {
-      border: 1px solid var(--line);
-      padding: 10px 14px;
+    .manual-card th,
+    .manual-card td {
+      border: 1px solid #e2e8f0;
+      padding: 10px 12px;
       text-align: left;
       vertical-align: top;
     }
-    .manual-body-card th {
-      background: #f1f5f9;
-      color: var(--navy);
+    .manual-card th {
+      background: #f8fafc;
       font-weight: 700;
+      color: var(--navy);
     }
-    .manual-body-card img {
-      max-width: 100%;
-      height: auto;
+    .manual-card tr:nth-child(even) td {
+      background: #fcfcfd;
+    }
+    .manual-card code {
+      background: #f1f5f9;
+      color: #0f172a;
+      padding: 2px 6px;
+      border-radius: 5px;
+      font-size: 13px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+    .manual-card pre {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 16px;
       border-radius: 10px;
-      border: 1px solid var(--line);
-      margin: 12px 0;
+      overflow-x: auto;
+      line-height: 1.5;
     }
-    .manual-body-card a {
-      color: var(--primary);
-      font-weight: 600;
-      text-decoration: underline;
+    .manual-card pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
     }
-    .manual-body-card hr {
+    .manual-card blockquote {
+      margin: 16px 0;
+      padding: 12px 18px;
+      border-left: 4px solid var(--primary);
+      background: #f8fafc;
+      border-radius: 0 8px 8px 0;
+      color: #334155;
+    }
+    .manual-card hr {
       border: none;
-      border-top: 1px solid var(--line);
+      border-top: 1px solid #e2e8f0;
       margin: 28px 0;
     }
-    @media (max-width: 680px) {
-      .manual-body-card {
-        padding: 20px 18px;
+    @media print {
+      .topbar, .manual-header-bar, .manual-tabs {
+        display: none !important;
       }
-      .manual-header-card {
-        padding: 18px;
+      .manual-container {
+        margin: 0;
+        max-width: 100%;
+        padding: 0;
+      }
+      .manual-card {
+        border: none;
+        box-shadow: none;
+        padding: 0;
       }
     }
   </style>
@@ -178,92 +191,128 @@
       <img src="/admin/logo.png?v=22" alt="Kinésica" width="190" height="50">
     </a>
     <div class="top-actions">
-      <a href="/admin/" class="btn ghost">← Volver al Panel de Administración</a>
+      <a href="/admin/" class="btn ghost" style="text-decoration:none;">← Volver al Panel</a>
     </div>
   </header>
 
-  <div class="manual-shell">
-    <div class="manual-header-card">
+  <main class="manual-container">
+    <div class="manual-header-bar">
       <div class="manual-header-titles">
         <h1>📖 Manual de Usuario y Documentación Operativa</h1>
-        <p>Guía práctica no técnica sobre el funcionamiento de Clara, Google Calendar, accesos y uso diario del consultorio.</p>
+        <p>Guías actualizadas de uso de Clara (WhatsApp), Google Calendar, Panel de Control y Pruebas</p>
       </div>
-      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-        <a id="btn-github-doc" href="https://github.com/MartinBrude/kinesica/blob/main/docs/manual-clara.md" target="_blank" rel="noopener noreferrer" class="btn light">Ver en GitHub ↗</a>
-        <button type="button" class="btn green" onclick="window.print()">Imprimir / Guardar PDF</button>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button type="button" class="btn light" id="btn-print-doc">🖨️ Imprimir / Guardar PDF</button>
       </div>
     </div>
 
     <div class="manual-tabs" role="tablist">
-      <button type="button" class="manual-tab-btn is-active" data-doc="clara" data-file="/docs/manual-clara.md" data-gh="https://github.com/MartinBrude/kinesica/blob/main/docs/manual-clara.md">
-        🌿 Manual de Usuario y Clara
+      <button type="button" class="manual-tab-btn is-active" data-doc="clara">
+        🤖 Manual Operativo de Clara y Calendar
       </button>
-      <button type="button" class="manual-tab-btn" data-doc="cuentas" data-file="/docs/configuracion-cuentas-profesionales.md" data-gh="https://github.com/MartinBrude/kinesica/blob/main/docs/configuracion-cuentas-profesionales.md">
-        🔐 Guía de Acceso y Cuentas (2FA)
+      <button type="button" class="manual-tab-btn" data-doc="cuentas">
+        🔐 Acceso y Panel de Profesionales
       </button>
-      <button type="button" class="manual-tab-btn" data-doc="pruebas" data-file="/docs/guia-pruebas.md" data-gh="https://github.com/MartinBrude/kinesica/blob/main/docs/guia-pruebas.md">
-        🧪 Guía de Pruebas y Casos de Uso
+      <button type="button" class="manual-tab-btn" data-doc="pruebas">
+        🧪 Guía de Pruebas y Comandos
       </button>
     </div>
 
-    <article class="manual-body-card" id="manual-content">
-      <p style="color: var(--muted);">Cargando manual de usuario…</p>
+    <article class="manual-card" id="manual-content">
+      <p style="color:var(--muted);">Cargando documentación…</p>
     </article>
-  </div>
+  </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script>
     (function () {
       const contentEl = document.getElementById("manual-content");
-      const ghBtn = document.getElementById("btn-github-doc");
-      const tabs = Array.from(document.querySelectorAll(".manual-tab-btn"));
+      const btnPrint = document.getElementById("btn-print-doc");
+      const tabBtns = document.querySelectorAll(".manual-tab-btn");
 
-      function normalizeMarkdown(md) {
+      if (btnPrint) {
+        btnPrint.addEventListener("click", function () {
+          window.print();
+        });
+      }
+
+      function rewriteDocPaths(md) {
         return md
-          .replace(/src="assets\//g, 'src="/docs/assets/')
-          .replace(/src="docs\/assets\//g, 'src="/docs/assets/')
-          .replace(/\]\(assets\//g, '](/docs/assets/')
-          .replace(/\]\(docs\/assets\//g, '](/docs/assets/')
-          .replace(/\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]/g, "<strong>$1:</strong>");
+          .replace(/src="(?:\/?docs\/)?assets\/([^"]+)"/g, 'src="/admin/api/manual-doc.php?asset=$1"')
+          .replace(/\]\((?:\/?docs\/)?assets\/([^)]+)\)/g, '](/admin/api/manual-doc.php?asset=$1)')
+          .replace(/\]\((?:\.\/|\/docs\/)?cuenta-whatsapp-clara\.md\)/g, '](#doc-whatsapp)')
+          .replace(/\]\((?:\.\/|\/docs\/)?pacientes_primera_sesion\.xlsx\)/g, '](/admin/api/manual-doc.php?asset=pacientes_primera_sesion.xlsx)');
       }
 
       async function loadDoc(docKey) {
-        const activeBtn = tabs.find((b) => b.dataset.doc === docKey) || tabs[0];
-        tabs.forEach((b) => b.classList.toggle("is-active", b === activeBtn));
-        if (ghBtn && activeBtn.dataset.gh) {
-          ghBtn.href = activeBtn.dataset.gh;
-        }
-        contentEl.innerHTML = '<p style="color: var(--muted);">Cargando documento…</p>';
+        contentEl.innerHTML = '<p style="color:var(--muted);">Cargando documento…</p>';
         try {
-          const res = await fetch(activeBtn.dataset.file + "?_t=" + Date.now());
-          if (!res.ok) throw new Error("No se pudo cargar el documento");
-          const raw = await res.text();
-          const cleaned = normalizeMarkdown(raw);
+          const res = await fetch("/admin/api/manual-doc.php?doc=" + encodeURIComponent(docKey) + "&_t=" + Date.now(), {
+            headers: { "X-Kinesica": "1" },
+            credentials: "same-origin",
+            cache: "no-store"
+          });
+          if (res.status === 401 || res.status === 403) {
+            window.location.replace("/admin/");
+            return;
+          }
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          const rawMd = await res.text();
+          const fixedMd = rewriteDocPaths(rawMd);
           if (window.marked && typeof window.marked.parse === "function") {
-            contentEl.innerHTML = window.marked.parse(cleaned);
+            contentEl.innerHTML = window.marked.parse(fixedMd);
           } else {
             const pre = document.createElement("pre");
             pre.style.whiteSpace = "pre-wrap";
-            pre.textContent = cleaned;
+            pre.textContent = fixedMd;
             contentEl.replaceChildren(pre);
           }
         } catch (err) {
-          contentEl.innerHTML = '<p style="color: #dc2626;">No se pudo cargar el manual local. Podés abrirlo directamente en <a href="' + activeBtn.dataset.gh + '" target="_blank" rel="noopener">GitHub</a>.</p>';
+          contentEl.innerHTML = '<p style="color:#b91c1c; font-weight:600;">No se pudo cargar el documento.</p>';
         }
       }
 
-      tabs.forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const key = btn.dataset.doc;
-          const url = new URL(window.location.href);
-          url.searchParams.set("doc", key);
-          window.history.replaceState({}, "", url);
-          loadDoc(key);
+      contentEl.addEventListener("click", function (ev) {
+        const link = ev.target && ev.target.closest ? ev.target.closest('a[href="#doc-whatsapp"]') : null;
+        if (link) {
+          ev.preventDefault();
+          tabBtns.forEach(function (b) { b.classList.remove("is-active"); });
+          loadDoc("whatsapp");
+        }
+      });
+
+      tabBtns.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          tabBtns.forEach(function (b) { b.classList.remove("is-active"); });
+          btn.classList.add("is-active");
+          const docKey = btn.getAttribute("data-doc");
+          if (docKey) loadDoc(docKey);
         });
       });
 
-      const initialDoc = new URLSearchParams(window.location.search).get("doc") || "clara";
-      loadDoc(initialDoc);
+      async function verifyAdminAndInit() {
+        try {
+          const res = await fetch("/admin/api/me.php", {
+            headers: { "X-Kinesica": "1" },
+            credentials: "same-origin",
+            cache: "no-store"
+          });
+          if (!res.ok) {
+            window.location.replace("/admin/");
+            return;
+          }
+          const me = await res.json();
+          if (!me || me.role !== "admin") {
+            window.location.replace("/admin/");
+            return;
+          }
+          document.documentElement.classList.add("is-admin-verified");
+          loadDoc("clara");
+        } catch (_) {
+          window.location.replace("/admin/");
+        }
+      }
+
+      verifyAdminAndInit();
     })();
   </script>
 </body>

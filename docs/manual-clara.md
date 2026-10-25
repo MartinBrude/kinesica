@@ -5,10 +5,11 @@
 > Una explicación simple y clara de cómo funciona **Clara**, cómo atiende a los pacientes que escriben al WhatsApp del consultorio, cómo se organiza con la agenda de Google Calendar y cómo los profesionales del equipo pueden pedirle cosas directamente desde su propio celular.  
 > 
 > 🔗 **Enlace permanente en GitHub:** [https://github.com/MartinBrude/kinesica/blob/main/docs/manual-clara.md](https://github.com/MartinBrude/kinesica/blob/main/docs/manual-clara.md)  
-> 📱 **Cuenta de WhatsApp de Clara:** [Ver paso a paso](cuenta-whatsapp-clara.md) ([Enlace en GitHub](https://github.com/MartinBrude/kinesica/blob/main/docs/cuenta-whatsapp-clara.md))  
+> 📱 **Cuenta de WhatsApp de Clara:** [Ver paso a paso](/docs/cuenta-whatsapp-clara.md) ([Enlace en GitHub](https://github.com/MartinBrude/kinesica/blob/main/docs/cuenta-whatsapp-clara.md))  
+> 🔐 **Guía de Acceso y Cuentas (2FA):** [Ver Guía de Acceso](configuracion-cuentas-profesionales.md) ([Enlace en GitHub](https://github.com/MartinBrude/kinesica/blob/main/docs/configuracion-cuentas-profesionales.md))  
 > 🧪 **Guía Oficial de Pruebas y Casos de Uso:** [Ver Guía de Pruebas](guia-pruebas.md) ([Enlace en GitHub](https://github.com/MartinBrude/kinesica/blob/main/docs/guia-pruebas.md))  
-> 🗺️ **Arquitectura y decisiones:** [Manual técnico, secciones 2 y 2.1](MANUAL_TECNICO.md)  
-> *(Este enlace se actualiza automáticamente con cada mejora del sistema).*
+> 🗺️ **Arquitectura del Panel Admin:** [Arquitectura y Seguridad (`/admin/ARCHITECTURE.md`)](https://github.com/MartinBrude/kinesica/blob/main/admin/ARCHITECTURE.md)  
+> *(Este documento se actualiza automáticamente con cada mejora del sistema).*
 
 ---
 
@@ -16,13 +17,15 @@
 
 | Si necesitás... | Andá a... |
 |---|---|
-| Ver / bloquear / anular turnos | **Google Calendar** → sección 3 y 9 de este manual |
-| Pausar a Clara o atender vos un chat | WhatsApp con Clara (modo Administrador) → sección 5 y 9 |
-| Saber qué avisos te llegan | Sección 4 |
-| Ver pacientes de primera sesión | Planilla de Google Sheets → sección 7 |
-| Ver quién espera un hueco | Pestaña `Lista de Espera` → sección 6 |
+| Ver / bloquear / anular turnos | **Google Calendar (`consultorio`)** → sección 3 y 9 de este manual |
+| Cambiar horarios de atención u honorarios ($ ATM / $ General) | **Panel Admin → Consultorio (`/admin/consultorio`)** → sección 2 |
+| Editar textos del menú de Clara (A–E, F...) o probar en el simulador | **Panel Admin → Clara & Mensajes (`/admin/clara`)** → sección 2.2 |
+| Pausar o reactivar a Clara (o cambiar entre modo Menú y modo IA) | **Panel Admin (`/admin/`)** o WhatsApp con Clara (modo Administrador) → sección 5 y 9 |
+| Saber qué avisos les llegan a Norberto y María | Sección 4 |
+| Ver directorio de pacientes y primeras sesiones | **Panel Admin → Pacientes (`/admin/pacientes`)** y Planilla de Google Sheets → sección 7 |
+| Ver quién espera un hueco | Pestaña `Lista de Espera` en Google Sheets → sección 6 |
 | Probar a Clara desde el celular | Sección 8 y [Guía de Pruebas](guia-pruebas.md) |
-| Algo no funciona (técnico) | [Manual Técnico](MANUAL_TECNICO.md) y [Pendientes](PENDIENTES_PRODUCCION.md) |
+| Gestionar usuarios, roles (Admin/Profesional) o gastos | **Panel Admin → Administración (`/admin/administracion`)** → [Guía de Cuentas](configuracion-cuentas-profesionales.md) |
 
 ---
 
@@ -31,37 +34,40 @@
 1. [**👩‍💼 1. ¿Quién es Clara y cuál es su trabajo?**](#‍-1-quién-es-clara-y-cuál-es-su-trabajo)
    - [Sus responsabilidades principales](#sus-responsabilidades-principales)
 2. [**🩺 2. ¿Cómo habla y cómo atiende a los pacientes?**](#-2-cómo-habla-y-cómo-atiende-a-los-pacientes)
+   - [Modos de operación de Clara: Modo Menú (por defecto) y Modo IA](#modos-de-operación-de-clara-modo-menú-por-defecto-y-modo-ia)
    - [Sus "Reglas de Oro"](#sus-reglas-de-oro)
    - [🔘 2.1. Botoneras Interactivas de WhatsApp (Flujo Determinista y Cero Fricción)](#-21-botoneras-interactivas-de-whatsapp-flujo-determinista-y-cero-fricción)
+   - [🔤 2.2. Menú por letras (Modo sin IA — Activo por defecto)](#-22-menú-por-letras-modo-sin-ia--activo-por-defecto)
    - [🛡️ El Validador de Calidad en Tiempo Real (Doble Modelo / Guardrail)](#️-el-validador-de-calidad-en-tiempo-real-doble-modelo--guardrail)
 3. [**📅 3. Guía Maestra de Google Calendar: Cómo Funciona por Detrás, Qué Deben Hacer y Qué NO**](#-3-guía-maestra-de-google-calendar-cómo-funciona-por-detrás-qué-deben-hacer-y-qué-no)
    - [⚙️ 3.1. ¿Cómo funciona por detrás? (El Cerebro del Sistema)](#️-31-cómo-funciona-por-detrás-el-cerebro-del-sistema)
    - [🔄 3.1.1. Coherencia Total: Agendamiento vía Botón en Admin vs. Chatbot Clara](#-311-coherencia-total-agendamiento-vía-botón-en-admin-vs-chatbot-clara)
    - [📋 3.2. Protocolo de Agenda: Qué SÍ hacer y Qué NUNCA hacer (Guía Unificada)](#-32-protocolo-de-agenda-qué-sí-hacer-y-qué-nunca-hacer-guía-unificada)
    - [📲 3.3. El Resultado Final: ¿Qué recibe el paciente 24 horas antes?](#-33-el-resultado-final-qué-recibe-el-paciente-24-horas-antes)
-     - [🔘 Los 3 Botones Interactivos Nativos y su Acción](#-los-3-botones-interactivos-nativos-y-su-acción)
+     - [🔘 Los 2 Botones Interactivos Nativos y su Acción](#-los-2-botones-interactivos-nativos-y-su-acción)
 4. [**🔔 4. ¿Qué notificaciones le llegan a Norberto y a María a su celular?**](#-4-qué-notificaciones-le-llegan-a-norberto-y-a-maría-a-su-celular)
    - [📧 Contingencia por Caída de WhatsApp (Fallback Automático a Correo Electrónico)](#-contingencia-por-caída-de-whatsapp-fallback-automático-a-correo-electrónico)
 5. [**👑 5. El "Modo Administrador": ¿Cómo le hablan los profesionales a Clara?**](#-5-el-modo-administrador-cómo-le-hablan-los-profesionales-a-clara)
    - [📋 A. La agenda del día](#-a-la-agenda-del-día)
    - [🚫 B. Bloquear un horario para no atender](#-b-bloquear-un-horario-para-no-atender)
    - [🏖️ C. Vacaciones o receso del consultorio](#️-c-vacaciones-o-receso-del-consultorio)
-   - [⏸️ D. Atender el chat personalmente (Pausa Individual y General de Clara)](#️-d-atender-el-chat-personalmente-pausa-individual-y-general-de-clara)
-     - [🎯 1. Pausa Individual por Conversación (Recomendada)](#-1-pausa-individual-por-conversación-recomendada)
-     - [🛑 2. Pausa General / Global del Consultorio](#-2-pausa-general--global-del-consultorio)
+   - [⏸️ D. Pausar o reanudar a Clara (Desde el Panel Admin o por WhatsApp)](#️-d-pausar-o-reanudar-a-clara-desde-el-panel-admin-o-por-whatsapp)
+     - [🛑 1. Pausa General / Global del Consultorio](#-1-pausa-general--global-del-consultorio)
+     - [ℹ️ 2. Por qué la Pausa Individual por Paciente está desactivada](#️-2-por-qué-la-pausa-individual-por-paciente-está-desactivada)
      - [⏳ 3. Despausa automática de seguridad (Timeout de 8 horas)](#-3-despausa-automática-de-seguridad-timeout-de-8-horas)
-   - [❌ E. Anular o cancelar un turno de un paciente](#-e-anular-o-cancelar-un-turno-de-un-paciente)
-   - [🩺 F. Los kinesiólogos no son pacientes (solicitud de turnos)](#-f-los-kinesiólogos-no-son-pacientes-solicitud-de-turnos)
+   - [🔀 E. Cambiar entre Modo Menú (sin IA) y Modo Agente IA](#-e-cambiar-entre-modo-menú-sin-ia-y-modo-agente-ia)
+   - [❌ F. Anular o cancelar un turno de un paciente](#-f-anular-o-cancelar-un-turno-de-un-paciente)
+   - [🩺 G. Los kinesiólogos no son pacientes (solicitud de turnos)](#-g-los-kinesiólogos-no-son-pacientes-solicitud-de-turnos)
 6. [**⏳ 6. Lista de Espera Inteligente (Smart Waitlist en Google Sheets)**](#-6-lista-de-espera-inteligente-smart-waitlist-en-google-sheets)
-7. [**📊 7. Agente de Base de Datos y Spreadsheet de Primeras Sesiones (Background)**](#-7-agente-de-base-de-datos-y-spreadsheet-de-primeras-sesiones-background)
+7. [**📊 7. Directorio de Pacientes y Planilla de Primeras Sesiones (Background)**](#-7-directorio-de-pacientes-y-planilla-de-primeras-sesiones-background)
    - [🔒 Regla Estricta de Aislamiento y Alcance](#-regla-estricta-de-aislamiento-y-alcance)
    - [📋 Columnas de la Planilla (`pacientes_primera_sesion.xlsx` y Google Sheets)](#-columnas-de-la-planilla-pacientes_primera_sesionxlsx-y-google-sheets)
    - [🔄 Identificación Automática de Pacientes Habituales (Cero Repetición de Datos)](#-identificación-automática-de-pacientes-habituales-cero-repetición-de-datos)
    - [✏️ Corrección de Nombre y Sincronización en Google Drive](#️-corrección-de-nombre-y-sincronización-en-google-drive)
-   - [📁 Acceso a las Planillas](#-acceso-a-las-planillas)
+   - [📁 Acceso a las Planillas y al Directorio Web](#-acceso-a-las-planillas-y-al-directorio-web)
    - [💻 Comando del Agente en Terminal](#-comando-del-agente-en-terminal)
-8. [**🧪 8. ¿Cómo probar a Clara desde el celular?**](#-8-cómo-probar-a-clara-desde-el-celular)
-   - [🚀 8.1. Checklist de Salida a Producción: ¿Ya se pueden iniciar las pruebas manuales?](#-81-checklist-de-salida-a-producción-ya-se-pueden-iniciar-las-pruebas-manuales)
+8. [**🧪 8. ¿Cómo probar a Clara desde el celular o el simulador?**](#-8-cómo-probar-a-clara-desde-el-celular-o-el-simulador)
+   - [🚀 8.1. Checklist de Salida a Producción](#-81-checklist-de-salida-a-producción)
      - [✅ Estado de los componentes clave para pruebas](#-estado-de-los-componentes-clave-para-pruebas)
      - [🧪 Pasos recomendados para tu prueba manual inicial](#-pasos-recomendados-para-tu-prueba-manual-inicial)
 9. [**📌 9. "Machete" rápido de comandos para los profesionales**](#-9-machete-rápido-de-comandos-para-los-profesionales)
@@ -70,39 +76,43 @@
 
 ## 👩‍💼 1. ¿Quién es Clara y cuál es su trabajo?
 
-**Clara** es la secretaria de recepción virtual de **Kinésica** (Palermo, CABA). Está conectada al WhatsApp del consultorio las **24 horas del día, los 7 días de la semana**.
+**Clara** es la secretaria de recepción virtual de **Kinésica** (Palermo, CABA). Está conectada al WhatsApp del consultorio las **24 horas del día, los 7 días de la semana**, y sincronizada en tiempo real con el **Panel de Administración (`/admin/`)** y **Google Calendar (`consultorio`)**.
 
 ### Sus responsabilidades principales:
-1. **Atender al instante:** Da una primera respuesta educada y profesional en segundos, evitando que los pacientes queden esperando o se vayan a otro consultorio.
-2. **Entender texto y audios de voz:** Si un paciente prefiere mandar un mensaje de voz contando su dolencia en lugar de escribir, Clara escucha el audio de forma invisible, comprende el problema y le responde por escrito con total naturalidad.
-3. **Coordinar la agenda:** Ofrece horarios de lunes a viernes hábiles y anota turnos presenciales de una hora en Google Calendar (`consultorio`). No anota llamadas ni bloqueos.
-4. **Cuidar el tiempo de los profesionales:** Filtra preguntas repetitivas (dónde queda, horarios, cómo se abona, reintegros) y avisa directamente a los profesionales (Norberto o María según la especialidad, o de forma equitativa 50/50 cuando ambos atienden) al celular cuando hay un turno nuevo, un cambio o una consulta médica puntual.
+1. **Atender al instante:** Da una primera respuesta educada y profesional en segundos (aguardando una breve ventana de 4 segundos para agrupar mensajes seguidos del paciente), evitando que los pacientes queden esperando o se vayan a otro consultorio.
+2. **Guiar por Menú Interactivo (`A`–`E`) o Conversación con IA:** Opera por defecto en **Modo Menú sin IA** (guiando con precisión por letras `A` a `E`, submenús de consulta/cancelación de turnos por WhatsApp o DNI y derivación directa a profesionales) y puede conmutarse en cualquier momento a **Modo Agente IA** (donde también transcribe audios de voz y coordina citas conversacionalmente).
+3. **Coordinar la agenda:** Trabaja conectada de forma directa a Google Calendar (`consultorio`) y a la turnera web (`kinesica.com.ar/agendar`), respetando estrictamente los horarios vigentes de cada profesional y la restricción de **1 sola camilla física**.
+4. **Cuidar el tiempo de los profesionales:** Filtra preguntas repetitivas (dónde queda, horarios, honorarios, medios de pago, reintegros, vestimenta) y avisa directamente al celular de **Norberto** o **María** cuando hay un turno nuevo, una cancelación o una solicitud para hablar con un profesional.
 
 ---
 
 ## 🩺 2. ¿Cómo habla y cómo atiende a los pacientes?
 
-Clara fue configurada con el estilo de una **secretaria médica real de Buenos Aires**: educada, cálida, ubicada, sobria y ejecutiva. Habla de "vos", escribe mensajes cortitos (2 a 3 oraciones para no cansar al que lee) y usa emojis con mucha moderación (🌿, 🩺, 🙌).
+### Modos de operación de Clara: Modo Menú (por defecto) y Modo IA
+
+Clara cuenta con dos modos de operación que comparten la misma agenda (`consultorio`) y la configuración en vivo del panel `/admin/`:
+* **📋 Modo Menú por letras (`modo menu` — activo por defecto):** Clara responde de forma 100% determinista (sin usar IA) presentando el menú de opciones **`A` a `E`** (más las opciones personalizadas `F`, `G`... que se agreguen en **`/admin/clara`**). Permite ir a la turnera web, consultar y cancelar turnos propios por teléfono o DNI (`C1`), ver ubicación, honorarios, vestimenta o pedir contacto directo con Norberto o María (ver detalle completo en la [Sección 2.2](#-22-menú-por-letras-modo-sin-ia--activo-por-defecto)).
+* **🤖 Modo Agente IA (`modo ia`):** Clara conversa libremente con lenguaje natural como una secretaria médica de Buenos Aires, interpreta audios de voz y ofrece huecos libres en el chat con botones interactivos. Norberto o María pueden alternar entre ambos modos enviando `"modo menu"` o `"modo ia"` por WhatsApp.
 
 ### Sus "Reglas de Oro":
 
 * **Escucha activa y presentación cordial (por única vez):** En el primer contacto, Clara se presenta cordialmente (*"Hola [Nombre], buen día. Soy Clara de Kinésica"*, usando emojis cálidos como 🌿 o 🩺). Puede saludar con el nombre de pila si ya lo conoce o si el paciente se presentó, e invitar a la consulta con empatía (ej: *"¿En qué te puedo ayudar?"* o integrando directamente la dolencia si el paciente ya la mencionó en su primer mensaje).
 * **Empatía ante el dolor:** Si alguien escribe diciendo *"me caí de la bici y me duele mucho la rodilla"* o *"tengo una contractura insoportable"*, Clara no le tira los turnos en seco. Primero valida su situación con calidez (*"Qué macana el golpe, para eso te va a venir muy bien la evaluación previa..."*) y luego propone los pasos a seguir.
 * **Quiénes atienden:** Clara sabe que los profesionales del consultorio son el **Lic. Norberto Brude** y la **Lic. María Gulin**, pero **solo los nombra si el paciente pregunta expresamente** (*"¿Quién me va a atender?"*). No repite los nombres si no viene al caso.
-* **Honorarios ($65.000 ATM / $75.000 resto):** Clara informa con total transparencia los honorarios del consultorio cuando se lo consultan:
+* **Honorarios dinámicos (configurables en `/admin/consultorio`, actualmente $65.000 ATM / $75.000 resto):** Clara toma en tiempo real los valores y medios de pago configurados en la pestaña **Consultorio** del panel de administración:
   - **$65.000** para ATM (articulación temporomandibular, bruxismo o dolor de mandíbula).
   - **$75.000** para el resto de las consultas y tratamientos (sesiones habituales).
   - **Regla estricta al pedir turno sin aclarar ATM:** Si el paciente solicita un turno presencial y no aclara que es para ATM, Clara le menciona **únicamente el valor de las sesiones habituales ($75.000)**. El valor de $65.000 se informa solo si el paciente especifica ATM, bruxismo o dolor de mandíbula, o bien si consulta de manera abierta/general por la lista de aranceles del consultorio.
   Explica con claridad el valor diferencial: sesiones 100% individuales y exclusivas de 1 hora completa.
 * **Obras sociales y prepagas:** Si el paciente pregunta si atienden por OSDE, Swiss Medical, etc., Clara aclara amablemente que se atiende de forma particular para brindar sesiones exclusivas y personalizadas, y que al finalizar se entrega factura oficial para tramitar el reintegro. Si el paciente no pregunta sobre prepagas, Clara no lo menciona.
 * **Dirección exacta, Google Maps y Transporte Público:** Informa la dirección (`Charcas 3889, Piso 5º, Dpto B, Palermo`), el enlace oficial de Google Maps ([https://maps.app.goo.gl/urpkh4HYe7dSdjPS9](https://maps.app.goo.gl/urpkh4HYe7dSdjPS9)) y las referencias clave de transporte (a 2 cuadras de Av. Santa Fe, Estación Scalabrini Ortiz del Subte D y Jardín Botánico) al confirmar turno presencial, si lo preguntan o si envían una ubicación por WhatsApp.
-* **Atención WhatsApp 24/7 y Franjas Oficiales de Turnos por Profesional:** Clara atiende consultas por WhatsApp las 24 horas, pero los turnos presenciales se realizan **exclusivamente dentro de los horarios oficiales de cada profesional de lunes a viernes hábiles**:
-  - **Lic. María Gulin:**
+* **Atención WhatsApp 24/7 y Franjas Oficiales de Turnos por Profesional (configurables en `/admin/consultorio`):** Clara atiende consultas por WhatsApp las 24 horas, pero los turnos presenciales se realizan **exclusivamente dentro de los horarios oficiales de cada profesional de lunes a viernes hábiles** (administrables en vivo desde la pestaña **Consultorio** del panel `/admin/`, con validación automática de 1 sola camilla):
+  - **Lic. María Gulin (configuración actual):**
     - **Lunes:** 09:00 a 17:00 hs (turnos de 09:00 a 16:00 hs inclusive; el último turno finaliza a las 17:00 hs).
     - **Martes:** 09:00 a 16:00 hs (turnos de 09:00 a 15:00 hs inclusive; el último turno finaliza a las 16:00 hs).
     - **Viernes:** 09:00 a 13:00 hs (turnos de 09:00 a 12:00 hs inclusive; el último turno finaliza a las 13:00 hs).
     - **Miércoles y Jueves:** No atiende en consultorio.
-  - **Lic. Norberto Brude:**
+  - **Lic. Norberto Brude (configuración actual):**
     - **Lunes:** 17:30 a 19:30 hs (turnos de 17:30 a 18:30 hs inclusive; el último turno finaliza a las 19:30 hs).
     - **Martes:** 16:30 a 19:30 hs (turnos de 16:30 a 18:30 hs inclusive; el último turno finaliza a las 19:30 hs).
     - **Miércoles:** 09:00 a 16:30 hs (turnos de 09:00 a 15:30 hs inclusive; el último turno finaliza a las 16:30 hs).
@@ -127,7 +137,7 @@ Clara fue configurada con el estilo de una **secretaria médica real de Buenos A
 * **Solicitud de comunicarse con un profesional:** Si alguien solicita comunicarse con un profesional, Clara informa que se estarán comunicando a la brevedad y notifica inmediatamente al profesional correspondiente (o distribuye equitativamente 50/50 entre Norberto y María si es una consulta general) vía WhatsApp para su seguimiento.
 * **Indumentaria para la sesión (solo si el paciente pregunta):** Si el paciente consulta cómo vestir o qué ropa llevar, Clara responde exactamente con la pauta oficial del consultorio:
   - Ropa interior o pantalón corto para los varones.
-  - Ropa interior, malla de 2 piezas o calza corta para las mujeres.
+  - Ropa interior con corpiño tradicional (no deportivo), malla de 2 piezas o calza corta para las mujeres.
   - Si sos menor, vení acompañado/a por un mayor.
   *(Solo se informa si el paciente lo pregunta expresamente; Clara jamás lo menciona por iniciativa propia).*
 * **Requisitos para agendar y trato por el nombre:** A los pacientes habituales los saluda por su nombre de pila. A los pacientes nuevos los saluda cordialmente con su nombre de pila si se presentaron, o con un saludo general de bienvenida si aún no lo hicieron, y les solicita su **Nombre completo** (nombre y apellido) y su **DNI** al momento de coordinar la cita.
@@ -161,7 +171,7 @@ Clara fue configurada con el estilo de una **secretaria médica real de Buenos A
 * **Agendamiento de a un turno a la vez:** Si un paciente solicita agendar turnos para dos o más personas (ej: para él y su pareja/familiar) o varias citas en simultáneo, Clara aclara amablemente que se agenda **de a un turno a la vez**, coordinando primero el turno inicial y, una vez concluido, el siguiente.
 * **Confirmación de turnos (Like / Reacción 👍 y Cero Confirmación Condicional):**
   - **Confirmación con Like:** Si el paciente responde a un recordatorio o consulta reaccionando con un "like" (👍) o enviando "👍" / "de una", Clara acepta la confirmación y asienta `[CONFIRMADO]` en Google Calendar.
-  - **No se acepta confirmación condicional:** Si el paciente responde con dudas, demoras o condiciones (*"llego 15 min tarde pero voy"*, *"te confirmo mañana"*, *"veo si llego"*), Clara **no confirma el turno**. Solicita amablemente una confirmación certera o propone reprogramar para no bloquear innecesariamente la única camilla del consultorio.
+  - **No se acepta confirmación condicional:** Si el paciente responde con dudas, demoras o condiciones (*"llego 15 min tarde pero voy"*, *"te confirmo mañana"*, *"veo si llego"*), Clara **no confirma el turno**. Solicita amablemente una confirmación certera o liberar el horario para no bloquear innecesariamente la única camilla del consultorio.
 * **Función operativa de Clara:** Clara tiene por función principal **atender las comunicaciones entrantes** de los pacientes de kinesiología. La gestión de cancelaciones masivas o avisos personales por imprevistos del profesional la realizan a mano los propios kinesiólogos.
 * **Solicitud de atención con profesional mujer o kinesióloga mujer (Asignación directa a María):** Si un paciente manifiesta preferencia o pide atenderse específicamente con una profesional mujer, kinesióloga mujer o directamente con María, Clara le informa cordialmente que no hay ningún inconveniente (*"¡Por supuesto, ningún problema! 🙌 En el equipo contamos con la Lic. María Gulin"*), le ofrece de inmediato los horarios disponibles de María para coordinar la cita presencial y notifica directamente a **María (`11 2853-1224`)**.
 
@@ -174,44 +184,41 @@ Para eliminar ambigüedades, acelerar las respuestas y brindar una experiencia m
 | **1. Selección de Horarios Proactivos** | `[📅 Lun 14/10 10:00]`<br>`[📅 Mar 15/10 16:00]`<br>`[🔄 Otros horarios]` | Ofrece los 2 mejores huecos libres según el día o franja solicitada por el paciente. Con un solo toque, el paciente elige el turno sin tener que escribirlo a mano. El botón de otros horarios solicita nuevas alternativas. |
 | **2. Profesional en Paciente Habitual** | `[Norberto Brude]`<br>`[María Gulin]`<br>`[Con cualquiera]` | Si un paciente recurrente escribe sin tener profesional asignado en su ficha, Clara le consulta con quién se atiende mediante botones rápidos para abrir la disponibilidad de ese profesional. |
 | **3. Flexibilidad de DNI al pedir datos** | `[Prefiero no dar DNI]`<br>`[🔄 Cambiar horario]` | Al solicitar Nombre y DNI a un paciente nuevo, Clara incluye un botón de escape: si el paciente toca `[Prefiero no dar DNI]`, el bot agenda la cita sin trabas registrando `🪪 DNI: No provisto`. |
-| **4. Doble Check de Cancelación / Reprogramación** | `[❌ Cancelar turno]`<br>`[🔄 Reprogramar]`<br>`[🔙 Mantener turno]` | Si el paciente solicita anular o mover su turno, Clara no borra a ciegas: presenta la botonera con opción de seguridad. Si el paciente toca `[🔙 Mantener turno]`, su cita sigue 100% reservada e intacta. |
-| **5. Recordatorios de 24 Horas** | `[✅ Confirmo]`<br>`[❌ Cancelar]` | Los recordatorios automáticos llegan con dos botones nativos. Al tocar `[✅ Confirmo]`, Google Calendar se actualiza automáticamente anteponiendo `[CONFIRMADO]` en la agenda. Al tocar `[❌ Cancelar]`, se anula directamente ese turno (sin preguntar de nuevo). Si el paciente quiere mover el turno, simplemente le escribe a Clara. |
+| **4. Doble Check de Cancelación** | `[❌ Cancelar turno]`<br>`[🔙 Mantener turno]` | Si el paciente solicita anular su turno, Clara no borra a ciegas: presenta la botonera con opción de seguridad. Si el paciente toca `[🔙 Mantener turno]`, su cita sigue 100% reservada e intacta. |
+| **5. Recordatorios de 24 Horas** | `[✅ Confirmo]`<br>`[❌ Cancelar]` | Los recordatorios automáticos llegan con dos botones nativos. Al tocar `[✅ Confirmo]`, Google Calendar se actualiza automáticamente anteponiendo `[CONFIRMADO]` en la agenda. Al tocar `[❌ Cancelar]`, se anula directamente ese turno (sin preguntar de nuevo) y se avisa al profesional. |
 
-### 🔤 2.2. Menú por letras (modo sin IA)
+### 🔤 2.2. Menú por letras (Modo sin IA — Activo por defecto)
 
-En el modo menú, Clara no interpreta el mensaje con el modelo. Responde según la letra o el número exacto.
+En el **Modo Menú** (`modo menu`, activo por defecto en producción), Clara no interpreta el mensaje con el modelo de IA: responde de forma instantánea y 100% determinista según la letra o el número exacto elegido por el paciente. Todos los textos del menú (`menu_welcome`, opciones `A` a `E`, submenús y opciones adicionales `F`, `G`...) se pueden editar en tiempo real desde el panel **`/admin/clara`** (**Clara & Mensajes**), que además cuenta con un **Simulador Interactivo de WhatsApp** para probar los cambios al instante.
 
 ```mermaid
 flowchart TD
   msg["Mensaje de WhatsApp"] --> opcion{"Qué escribió"}
 
-  opcion -->|"saludo o texto suelto"| menu["Menú A–E"]
+  opcion -->|"saludo, texto suelto o MENU"| menu["Menú A–E (+ F, G...)"]
   opcion --> turnos["A · Turnos"]
   opcion --> lugar["B · Ubicación"]
   opcion --> precios["C · Honorarios"]
   opcion --> ropa["D · Vestimenta"]
   opcion --> quien["E · Profesional"]
 
-  subgraph fijo ["Respuesta fija"]
+  subgraph admin ["Textos configurables en /admin/clara y /admin/consultorio"]
     menu
-    enlace["A y después 1: enlace de agendar"]
-    ropaTxt["Cómo venir vestido"]
+    enlace["A y después 1: enlace a kinesica.com.ar/agendar"]
+    lugarTxt["Dirección y enlace de Google Maps (sin grilla de horarios)"]
+    preciosTxt["Honorarios vigentes ($ ATM / $ General), medios de pago y cobertura"]
+    ropaTxt["Cómo venir vestido a la sesión"]
   end
 
-  subgraph admin ["Panel admin"]
-    lugarTxt["Dirección fija y horario de cada profesional"]
-    preciosTxt["Precio vigente y texto de cobertura"]
+  subgraph calendario ["Google Calendar ('consultorio')"]
+    lista["A y después 2: lista los turnos de ese WhatsApp (o pide DNI/Pasaporte)"]
+    anula["C1, C2...: anula el turno elegido en la lista vigente y confirma día y hora"]
   end
 
-  subgraph calendario ["Google Calendar"]
-    lista["A y después 2: lista los turnos de ese WhatsApp"]
-    anula["C1: anula el de la lista vigente y confirma día y hora"]
-  end
-
-  subgraph aviso ["Aviso por WhatsApp"]
+  subgraph aviso ["Aviso inmediato por WhatsApp al profesional"]
     norberto["E y después 1: Norberto"]
     maria["E y después 2: María"]
-    equipo["E y después 3, o la consulta: Norberto o María"]
+    equipo["E y después 3, o escribe su consulta: Norberto o María (50/50)"]
   end
 
   turnos --> enlace
@@ -220,31 +227,34 @@ flowchart TD
   lugar --> lugarTxt
   precios --> preciosTxt
   ropa --> ropaTxt
-  quien --> pregunta["Solo E: pregunta con quién y no avisa"]
+  quien --> pregunta["Solo E: muestra submenú 1/2/3 y todavía no avisa"]
   quien --> norberto
   quien --> maria
   quien --> equipo
 ```
 
-Escribir *E* solo no avisa. Un *1* o un *2* sin haber entrado en Turnos o en Profesional vuelve al menú.
+Escribir *E* solo no avisa a ningún profesional. Un *1* o un *2* sin haber entrado antes en Turnos (*A*) o en Profesional (*E*) vuelve a mostrar el menú principal.
 
 | Qué escribe el paciente | Qué hace Clara |
 |---|---|
-| Cualquier saludo o consulta suelta | Muestra el menú *A* a *E*. |
-| *A* | Pregunta si quiere agendar (*1*) o ver y cancelar sus turnos (*2*). |
-| *1* después de *A* | Envía el enlace https://kinesica.com.ar/agendar. |
-| *2* después de *A* | Lista los turnos de ese WhatsApp, numerados, y cierra el submenú anterior. Si no encuentra turnos con ese número, ofrece buscarlos por DNI o Pasaporte. |
-| DNI o Pasaporte tras *A* -> *2* | Busca turnos agendados con ese documento (tolerando puntos, guiones, espacios y letras extranjeras), los lista numerados y permite cancelarlos con *C1*. |
-| *C1* | Cancela el turno de ese número o documento en la lista vigente (30 minutos) y confirma día y hora. Si la lista venció, no cancela y pide ver los turnos de nuevo. Desde este menú no se reprograma. |
-| *B*, *C*, *D* | Ubicación, honorarios o indumentaria. El horario de *B* es el de cada profesional. |
-| *E* y después *1*, *2*, *3* o un texto | Avisa a Norberto, a María, o a cualquiera de los dos. Escribir *E* solo no avisa. |
-| *F*, *G*, ... (opciones adicionales) | Responde el texto informativo configurado por Norberto desde el Backoffice (pestaña Configuración). Cierra cualquier submenú previo y vuelve a dejar disponible el menú principal. |
-| *1* o *2* sin haber elegido *A* o *E* | Vuelve a mostrar el menú. No agenda ni avisa a un profesional. |
+| Cualquier saludo, consulta suelta o `MENU` | Muestra el menú de bienvenida (*A* a *E*, más las opciones personalizadas *F*, *G*... configuradas en `/admin/clara`). Escribir `MENU` desde cualquier submenú siempre regresa al menú principal. |
+| *A* | Abre el submenú de Turnos: pregunta si quiere agendar un nuevo turno (*1*) o consultar/cancelar sus turnos (*2*). |
+| *1* después de *A* | Envía el texto configurado (`opt_a_text`) con el enlace directo a la turnera online: `https://kinesica.com.ar/agendar`. |
+| *2* después de *A* (o escribir *"mis turnos"*) | Lista los turnos futuros de ese WhatsApp en Google Calendar (`consultorio`), numerados, y cierra el submenú anterior. Si no encuentra turnos con ese teléfono, ofrece buscarlos ingresando el **DNI o Pasaporte**. |
+| DNI o Pasaporte tras *A* -> *2* | Busca turnos agendados con ese documento (tolerando puntos, guiones, espacios y letras extranjeras), los lista numerados y habilita su cancelación con *C1*, *C2*, etc. |
+| *C1* (o *C2*, *C3*...) | Cancela en Google Calendar el turno correspondiente de la lista vigente (válida por 30 minutos), confirma día y hora al paciente y avisa por WhatsApp al profesional a cargo. Si la lista venció, pide volver a consultar los turnos (*A* -> *2*). |
+| *B* | Envía el texto de ubicación y enlace de Google Maps configurado en `/admin/clara` (`opt_b_text`), tal cual, sin adjuntar la grilla de horarios de los profesionales. |
+| *C* | Envía el texto de honorarios y cobertura configurado en `/admin/clara` (`opt_c_text`), reemplazando automáticamente `{honorario_atm}`, `{honorario_general}` y `{medios_pago}` con los valores vigentes de la pestaña **Consultorio** (`/admin/consultorio`). |
+| *D* | Envía las pautas de vestimenta para la sesión configuradas en `/admin/clara` (`opt_d_text`). |
+| *E* y después *1*, *2*, *3* o un texto | Al elegir *E* muestra el submenú de contacto con un profesional (sin disparar alerta todavía). Al responder *1* avisa a Norberto, con *2* avisa a María, y con *3* (o escribiendo directamente su consulta tras *E*) avisa al profesional correspondiente según especialidad o al azar 50/50. |
+| *F*, *G*, ... (opciones adicionales) | Responde el texto informativo configurado en el panel **`/admin/clara`** (pestaña **Clara & Mensajes**). Cierra cualquier submenú previo y vuelve a dejar disponible el menú principal. |
+| *1* o *2* sin haber elegido *A* o *E* | Vuelve a mostrar el menú principal. No agenda ni avisa a ningún profesional. |
 
-El submenú de Turnos o de profesionales se olvida a los 15 minutos, o antes si la persona elige otra letra.
+* **Expiración de submenú:** El submenú activo (*A* o *E*) caduca automáticamente a los **15 minutos** (la lista de turnos para cancelar con `C1` dura **30 minutos**), o antes si la persona elige otra letra o escribe `MENU`.
+* **Filtro anti-repetición de 20 segundos:** Si un usuario envía exactamente la misma consulta determinista dos veces seguidas en menos de 20 segundos, el sistema ignora el duplicado para no enviar dos respuestas idénticas.
 
-### 🛡️ El Validador de Calidad en Tiempo Real (Doble Modelo / Guardrail):
-Antes de que cualquier mensaje salga hacia el WhatsApp del paciente, la propuesta de respuesta pasa automáticamente por un **segundo modelo de inteligencia artificial (Auditor Clínico)**. Este segundo modelo revisa en milisegundos que se cumplan todas las reglas médicas y de estilo:
+### 🛡️ El Validador de Calidad en Tiempo Real (Doble Modelo / Guardrail en Modo IA):
+Cuando Clara opera en **Modo IA (`modo ia`)**, antes de que cualquier mensaje salga hacia el WhatsApp del paciente, la propuesta de respuesta pasa automáticamente por un **segundo modelo de inteligencia artificial (Auditor Clínico)**. Este segundo modelo revisa en milisegundos que se cumplan todas las reglas médicas y de estilo:
 1. Verifica que se informen con exactitud y transparencia los **honorarios oficiales vigentes** ($65.000 ATM / $75.000 resto), y que **al pedir turno sin aclarar ATM se informe únicamente el valor habitual ($75.000)**.
 2. Verifica que **no se pida llegar antes** de la sesión.
 3. Verifica la **privacidad total** de otros pacientes.
@@ -252,7 +262,7 @@ Antes de que cualquier mensaje salga hacia el WhatsApp del paciente, la propuest
 5. Verifica que **no haya superposiciones ni colisiones de agenda** (audita los eventos de Google Calendar y, si Clara propuso o confirmó un horario solapado con un turno existente, corrige el mensaje informando que está ocupado y ofreciendo alternativas libres; complementado con una guarda determinista de código que intercepta colisiones).
 6. Verifica el **mapeo estricto por disciplina** (Osteopatía y manipulaciones viscerales, también Barral, a Norberto; Acupuntura/Posturología a María; Reeducación Postural Global y RPG son la misma disciplina).
 7. Verifica que para **pacientes habituales** se consulte con qué profesional se atienden antes de dar horarios posibles.
-8. Verifica la **indumentaria sugerida** (ropa interior o pantalón corto para varones; ropa interior, malla de 2 piezas o calza corta para mujeres; solo si el paciente preguntó).
+8. Verifica la **indumentaria sugerida** (ropa interior o pantalón corto para varones; ropa interior con corpiño tradicional no deportivo, malla de 2 piezas o calza corta para mujeres; solo si el paciente preguntó).
 9. Verifica que, si preguntan dónde queda o se confirma un turno, la respuesta incluya la dirección completa (`Charcas 3889, 5º, B, CABA`).
 10. Verifica que la confirmación contenga las **condiciones del espacio y puntualidad estricta** (sin sala de espera ni acompañantes).
 11. Verifica los **requisitos de agendamiento**: si Clara confirma un turno sin Nombre Completo, el validador frena la confirmación y solicita los datos faltantes. El DNI se solicita cordialmente pero es estrictamente opcional; si el paciente prefiere no darlo o toca `[Prefiero no dar DNI]`, el validador aprueba la confirmación registrando `🪪 DNI: No provisto`.
@@ -346,9 +356,9 @@ Google Calendar (calendario **`consultorio`**) es la **única fuente de verdad**
 | **4. DNI / Documento** | No es obligatorio en el día a día. Se registra en la admisión/planilla o cuando Clara agenda por chat (si el paciente desea aportarlo). | Exigir o cargar el DNI en cada sesión manual en Google Calendar. | El DNI es opcional y solo se solicita una única vez al ingresar al consultorio. No es requisito para despachar recordatorios diarios. |
 | **5. Duración y Horarios** | Exactamente **60 minutos** (1 hora), pudiendo iniciar en hora en punto (:00) o y media (:30) según la disponibilidad vigente (ej: 15:30 a 16:30 hs) dentro del rango de atención del consultorio (08:00 a 19:30 hs). | • Turnos de duraciones distintas a 60 min (15, 30 o 45 min).<br>• Superponer eventos a la misma hora. | Hay **1 sola camilla física**. Duraciones irregulares descalibran los huecos libres y las superposiciones colapsan la atención presencial. |
 | **6. Bloqueos personales (almuerzos, trámites)** | Crear evento en el calendario **`consultorio`** con el título `🚫 [BLOQUEADO]` en el horario requerido. | • Anotarlo en el calendario personal.<br>• Pedirle a Clara por WhatsApp que bloquee horarios. | Clara reconoce `🚫 [BLOQUEADO]` como horario ocupado y no lo ofrece. El bot de recordatorios no envía ningún WhatsApp por este evento. |
-| **7. Vacaciones / Receso** | Crear evento de **día completo** en **`consultorio`** titulado `🏖️ [VACACIONES CONSULTORIO - CERRADO]` o pedirlo por WhatsApp a Clara. | Cerrar el consultorio sin marcar el evento de día completo en `consultorio`. | Clara detecta el cierre, avisa cordialmente que el consultorio está en receso y solo ofrece turnos para las fechas posteriores al regreso. |
+| **7. Vacaciones / Receso** | Crear evento de **día completo** en **`consultorio`** titulado `🏖️ [VACACIONES CONSULTORIO - CERRADO]` (o con la palabra `Vacaciones` / `Cerrado`). | Cerrar el consultorio sin marcar el evento de día completo en `consultorio`. | Clara y la turnera web detectan el cierre de día completo y no ofrecen ni confirman turnos en esas fechas. |
 | **8. Cancelaciones manuales** | • **Recomendado:** Eliminar el turno directamente en Google Calendar (tacho de basura). El hueco queda liberado al instante.<br>• **Historial:** Si desean conservarlo, anteponer `[CANCELADO]` o `[ANULADO]` al título en Google Calendar. | • Escribir `"Cancelado"` en un turno que sigue activo y en pie.<br>• Pedirle a Clara por WhatsApp que anule turnos de pacientes. | Las cancelaciones de los profesionales se gestionan siempre en Google Calendar. El bot detecta `[CANCELADO]` y anula de inmediato el recordatorio de las 24 hs. |
-| **9. Uso de Clara por Kinesiólogos** | Recibir alertas internas de turnos y usar comandos de control (`pausar bot`, `reanudar bot`, `vacaciones...`). | Pedirle a Clara por WhatsApp que les agende un turno o que cancele citas de pacientes por chat. | Clara reconoce sus celulares como administradores. Turnos personales y cancelaciones de citas se gestionan en Google Calendar. |
+| **9. Uso de Clara por Kinesiólogos** | Recibir alertas internas de turnos y usar comandos de control (`pausar bot`, `reanudar bot`, `olvidar <paciente>`, `modo menu` / `modo ia`). | Pedirle a Clara por WhatsApp que les agende un turno, cree bloqueos o cancele citas de pacientes por chat. | Clara reconoce sus celulares como administradores. Los turnos, bloqueos y cancelaciones de citas se gestionan en Google Calendar. |
 
 ---
 
@@ -383,33 +393,31 @@ Para no llenarle el WhatsApp de mensajes innecesarios, **Clara no avisa cuando u
    > • *WhatsApp:* wa.me/54911...  
    > • *Mensaje:* "Quería un turno para este jueves a las 16 hs"  
    > • *Respuesta de Clara:* "Te esperamos este jueves a las 16:00 hs..."
-2. 🔄 **Turno reprogramado:**  
-   Avisa al profesional asignado si un paciente movió su cita a otro día u horario.
-3. 🚨 **Cancelación urgente del mismo día:**  
-   Si alguien avisa a último momento que no puede ir a su turno de hoy, Clara dispara una alerta prioritaria al profesional correspondiente avisando que **se liberó un hueco para hoy** e indica si hay alguien en la lista de espera (en Google Sheets) disponible para ocuparlo.
-4. ⚠️ **Consultas profesionales y derivaciones (Especialidades de Norberto, María o Azar si ambos pueden responder):**  
-   - **Especialidades de Norberto (Osteopatía, Manipulaciones viscerales / Barral) o pedido directo de Norberto:** Clara informa al paciente que Norberto Brude se contactará a la brevedad y despacha la alerta directamente a **Norberto (`+54 11 6156-4311`)**.
-   - **Especialidades de María (Acupuntura, Posturología) o pedido directo de María:** Clara informa al paciente que la Lic. María Gulin se contactará a la brevedad y despacha la alerta directamente a **María (`11 2853-1224`)**.
-   - **Disciplinas compartidas (RPG / Reeducación Postural Global, Neurodinamia) o consultas generales donde ambos pueden responder ("con un profesional", "con el kinesiólogo", "con Norberto o María"):** Ambos profesionales pueden responder, por lo que el sistema **elige al azar entre ellos dos (50/50)** y despacha **exactamente 1 alerta** al profesional seleccionado al azar para su contacto directo, evitando saturar a ambos profesionales.
+2. 🚨 **Cancelación de turno / Cancelación urgente del mismo día:**  
+   Si un paciente cancela su turno (o avisa a último momento que no puede asistir a su turno de hoy), Clara dispara una alerta al profesional correspondiente avisando que **se liberó ese hueco** e indica si hay alguien en la lista de espera (en Google Sheets) disponible para ocuparlo.
+3. ⚠️ **Consultas profesionales y derivaciones (Especialidades de Norberto, María o Azar si ambos pueden responder):**  
+   - **Especialidades de Norberto (Osteopatía, Manipulaciones viscerales / Barral) o pedido directo de Norberto (opción `E` → `1`):** Clara informa al paciente que Norberto Brude se contactará a la brevedad y despacha la alerta directamente a **Norberto (`+54 11 6156-4311`)**.
+   - **Especialidades de María (Acupuntura, Posturología) o pedido directo de María (opción `E` → `2`):** Clara informa al paciente que la Lic. María Gulin se contactará a la brevedad y despacha la alerta directamente a **María (`11 2853-1224`)**.
+   - **Disciplinas compartidas (RPG / Reeducación Postural Global, Neurodinamia) o consultas generales donde ambos pueden responder (opción `E` → `3`, "con un profesional", "con el kinesiólogo", "con Norberto o María"):** Ambos profesionales pueden responder, por lo que el sistema **elige al azar entre ellos dos (50/50)** y despacha **exactamente 1 alerta** al profesional seleccionado al azar para su contacto directo, evitando saturar a ambos profesionales.
    - **Solicitud de profesional mujer o kinesióloga mujer:** Clara confirma la disponibilidad de la Lic. María Gulin, ofrece sus horarios o coordina la cita y notifica directamente a **María (`11 2853-1224`)**.
    - **Solicitud de atención a domicilio:** Se informa y alerta directamente a **Norberto (`+54 11 6156-4311`)** para que continúe él personalmente la comunicación.
-5. 📎 **Archivos adjuntos (estudios médicos, órdenes o comprobantes):**  
+4. 📎 **Archivos adjuntos (estudios médicos, órdenes o comprobantes):**  
    Cuando un paciente manda una foto o PDF, Clara acusa recibo y le envía al profesional asignado (o a Norberto si no tiene profesional definido) una alerta inmediata con el nombre, mensaje, tipo de archivo y el enlace directo `wa.me/...` para abrir el chat del paciente y ver o descargar el original con un solo toque.
-6. 🌐 **Nueva reserva realizada desde la web (`turnos.html`):**  
+5. 🌐 **Nueva reserva realizada desde la web (`turnos.html`):**  
    Cuando un paciente agenda directamente a través del motor de reservas del sitio web ([`kinesica.com.ar/turnos.html`](https://www.kinesica.com.ar/turnos.html)), Google Apps Script crea el evento en Google Calendar y le envía automáticamente al profesional seleccionado (Norberto o María) una alerta por WhatsApp con el tipo de cita (Turno 1h), datos del paciente, DNI, motivo y notas.
    - **Compatibilidad total con Clara:** Los eventos creados en la web (con formato `🩺 [NORBERTO] [TURNO] Nombre`, `🩺 [MARIA] [TURNO] Nombre` o `🩺 [TURNO - MENOR] Nombre (Familiar: Tutor)`) son reconocidos de forma nativa por Clara.
    - **Directorio Dinámico de Pacientes:** El número de WhatsApp del paciente se indexa automáticamente en el directorio de Kinésica. Si en el futuro Norberto o María agendan a ese paciente escribiendo solo su nombre sin teléfono en Google Calendar, el bot de recordatorios resuelve el teléfono desde el directorio y le despacha el recordatorio con su nombre de pila.
    - **Acompañamiento de menores:** Si el turno proviene de la web con indicación de menor y familiar, el recordatorio agrega automáticamente la indicación de concurrir acompañado por un adulto responsable.
-7. ⏳ **Protección contra colisión entre pacientes simultáneos (Hold de 10 minutos):**  
+6. ⏳ **Protección contra colisión entre pacientes simultáneos (Hold de 10 minutos):**  
    Si dos pacientes están chateando al mismo tiempo con Clara y a ambos les interesa el mismo horario, el primer paciente que recibe las opciones retiene temporalmente ese horario durante 10 minutos. Durante esa ventana, el segundo paciente verá ese horario como ocupado, garantizando que jamás dos personas reserven el mismo turno. Si el primer paciente confirma, el turno se asienta definitivamente; y si pasan 10 minutos sin confirmar, el turno se libera automáticamente para los demás.
 
-*(En todos los avisos, Norberto y María pueden presionar directamente el enlace azul `wa.me/...` para escribirle o llamarlo con un solo toque. Además, en todas las derivaciones y consultas clínicas, Clara activa automáticamente una pausa individual de 8 horas sobre ese paciente para que los profesionales puedan chatear personalmente sin interferencias del bot).*
+*(En todos los avisos, Norberto y María pueden presionar directamente el enlace azul `wa.me/...` para escribirle o llamarlo al paciente desde su propio WhatsApp con un solo toque. Clara permanece activa en su línea para seguir respondiendo si el paciente vuelve a usar el menú o hace otra consulta).*
 
 ### 📧 Contingencia por Caída de WhatsApp (Fallback Automático a Correo Electrónico)
 Si por algún motivo el servicio de Meta WhatsApp se interrumpe, se cae o falla al entregar un mensaje, Clara activa automáticamente un **circuito de respaldo por correo electrónico**:
 * **Destinatario oficial:** `norberto1712@gmail.com`
 * **Cuándo se activa:**
-  1. Si falla el envío de cualquier alerta operativa al profesional (turnos nuevos, reprogramaciones, cancelaciones del día, archivos adjuntos, derivaciones).
+  1. Si falla el envío de cualquier alerta operativa al profesional (turnos nuevos, cancelaciones, archivos adjuntos, derivaciones).
   2. Si WhatsApp cae y no se pudo entregar la respuesta de Clara al paciente (se recibe el nombre del paciente, su WhatsApp y el mensaje para responderle manualmente).
   3. Si ocurre una contingencia técnica en el bot y WhatsApp no puede despachar el aviso.
   4. Si el sistema de recordatorios de las 24 hs no puede entregar el recordatorio al paciente por WhatsApp (para que el consultorio sepa que ese paciente no fue notificado).
@@ -426,55 +434,47 @@ Clara reconoce automáticamente los celulares del equipo profesional:
 * Celular de Norberto: `+54 11 6156-4311`
 * Celular de María: `11 2853-1224`
 
-Cuando alguno de los dos le escribe a Clara, ella los saluda por su nombre (*"Hola Norberto..."* o *"Hola María..."*) y se pone a su disposición con comandos muy sencillos:
+Cuando alguno de los dos le escribe a Clara, ella los saluda por su nombre (*"Hola Norberto..."* o *"Hola María..."*) y se pone a su disposición con comandos directos de administración:
 
 ### 📋 A. La agenda del día
 Norberto y María la miran en Google Calendar. Clara no arma esa lista por WhatsApp. Si le escriben `"agenda hoy"` o `"¿quién viene?"`, les indica que la vean en el calendario.
 
 ### 🚫 B. Bloquear un horario para no atender
-Norberto y María marcan ese horario ellos mismos en Google Calendar. Clara no crea el bloqueo. Si se lo piden por chat, les dice que lo marquen en el calendario.
+Norberto y María marcan ese horario ellos mismos en Google Calendar (`🚫 [BLOQUEADO]`). Clara no crea el bloqueo por chat; si se lo piden por WhatsApp, responde: *"Hola [Norberto/María]. Los bloqueos los marcás en Google Calendar."*
 
 ### 🏖️ C. Vacaciones o receso del consultorio
-* **Qué escribirle:** `"vacaciones del 15 al 25 de octubre, cerrá la agenda"`.
-* **Qué hace Clara:** Marca en el calendario `🏖️ [VACACIONES CONSULTORIO - CERRADO]` cubriendo todos esos días. Si un paciente escribe en ese período pidiendo turno, Clara le explica con amabilidad que el consultorio se encuentra en receso y le ofrece agendar un turno para cuando regresen.
+* **Cómo cargarlo (recomendado):** Crear un evento de **día completo** en el calendario **`consultorio`** de Google Calendar con el título `🏖️ [VACACIONES CONSULTORIO - CERRADO]` (o que incluya la palabra `Vacaciones` / `Cerrado`) abarcando las fechas del receso.
+* **Efecto inmediato:** Tanto Clara como la turnera web (`kinesica.com.ar/agendar`) bloquean automáticamente los días del evento de día completo y sólo ofrecen turnos para fechas posteriores al regreso.
 
-### ⏸️ D. Atender el chat personalmente (Pausa Individual y General de Clara)
+### ⏸️ D. Pausar o reanudar a Clara (Desde el Panel Admin o por WhatsApp)
 
-Para que Norberto y María puedan conversar directamente con un paciente sin que Clara interfiera con respuestas automáticas, el sistema cuenta con dos niveles de pausa: **Pausa Individual por Conversación** (la recomendada para el día a día) y **Pausa General**.
+#### 🛑 1. Pausa General / Global del Consultorio
+Silencia a Clara para **todos** los pacientes en simultáneo (útil ante emergencias, mantenimiento o situaciones generales). Se puede activar o desactivar por cualquiera de estas dos vías:
 
-#### 🎯 1. Pausa Individual por Conversación (Recomendada)
-Permite silenciar a Clara **única y exclusivamente para un paciente específico**, mientras el resto del consultorio sigue funcionando y agendando turnos con total normalidad.
+* **Opción A — Desde el Panel de Administración (`/admin/`):**
+  - En la pestaña **Inicio** (`/admin/`) o en **Clara & Mensajes** (`/admin/clara`), hacer clic en el botón **"Pausar bot"** (o **"Activar bot"** para reanudarla). El cambio impacta en tiempo real tanto en las respuestas de WhatsApp como en el envío de recordatorios de 24 hs.
+* **Opción B — Desde el WhatsApp de Norberto o María:**
+  - **Para pausar todo el bot:** Escribirle a Clara `"pausar bot"`, `"silencio"` o `"lo atiendo yo"` (sin especificar paciente). Clara responde *"Entendido [Norberto/María], pausado el bot en general. Te dejo las conversaciones a vos 🙌"* y entra en silencio para todos los pacientes.
+  - **Para reanudar todo el bot:** Escribirle `"reanudar bot"`, `"activar bot"`, `"retomar bot"` o `"reanudar todo"`. Clara responde *"¡Listo [Norberto/María]! Vuelvo a estar activa y atenta a las consultas 🌿"*.
 
-* **Cómo activarla manualmente:**
-  - **Por número de teléfono:** Escribirle a Clara `"pausar 11 6123-4567"` o `"silenciar 1161234567"`.
-  - **Por nombre del paciente:** Escribirle a Clara `"pausar a Lucas"` o `"silenciar a Florencia"` (Clara busca el número en el historial de fichas o en la planilla).
-  - **Qué hace Clara:** Responde *"Entendido [Norberto/María], pausé las respuestas automáticas para [Paciente/Número]. Te dejo esa conversación a vos 🙌"*. A partir de ese momento, cualquier mensaje que envíe ese paciente no recibirá respuesta del bot.
-* **⚡ Auto-pausa inteligente al derivar (Automática):**
-  - Cada vez que Clara deriva una consulta médica, una solicitud de kinesióloga mujer, atención domiciliaria o un pedido directo de hablar con un profesional, Clara despacha la alerta al celular del profesional y **activa automáticamente la pausa individual para ese paciente** durante 8 horas.
-  - Así, Norberto y María pueden escribirle al paciente con tranquilidad usando el link `wa.me/` sin que Clara interrumpa con mensajes robóticos si el paciente sigue escribiendo.
-* **Cómo reanudar la atención individual:**
-  - **Qué escribirle:** `"reanudar 11 6123-4567"` o `"reanudar a Lucas"`.
-  - **Qué hace Clara:** Responde *"¡Listo [Norberto/María]! Reanudé la atención automática para [Paciente/Número] 🌿"* y vuelve a atender a ese paciente normalmente.
-
-#### 🛑 2. Pausa General / Global del Consultorio
-Silencia a Clara para **todos** los pacientes en simultáneo (ideal ante emergencias, cortes o situaciones generales).
-
-* **Pausar todo el bot:**
-  - **Qué escribirle:** `"pausar bot"`, `"silencio"` o `"lo atiendo yo"` (sin especificar paciente).
-  - **Qué hace Clara:** Responde *"Entendido [Norberto/María], pausado el bot en general. Te dejo las conversaciones a vos 🙌"* y entra en silencio absoluto para todos los pacientes.
-  - **Acceso administrativo mientras está en pausa:** Norberto y María pueden seguir consultando vacaciones o gestionando la agenda sin que Clara deje de responderles a ellos.
-* **Reanudar todo el bot:**
-  - **Qué escribirle:** `"reanudar bot"`, `"activar bot"`, `"retomar bot"` o `"reanudar todo"`.
-  - **Qué hace Clara:** Responde *"¡Listo [Norberto/María]! Vuelvo a estar activa y atenta a las consultas 🌿"* y reactiva tanto la atención general como todas las pausas individuales acumuladas.
+#### ℹ️ 2. Por qué la Pausa Individual por Paciente está desactivada
+* La **pausa individual por conversación está desactivada por diseño** para garantizar que Clara siempre responda a los pacientes si vuelven a consultar un horario, la dirección o cualquier opción del menú (además, como Norberto y María contactan al paciente desde sus propias líneas tocando el link `wa.me/...`, Clara nunca interfiere en el chat privado entre el profesional y el paciente).
+* Si Norberto o María escriben por WhatsApp `"pausar a Lucas"` o `"pausar 11 6123-4567"`, Clara les informa:
+  > *"ℹ️ [Norberto/María], la pausa individual está desactivada para que Clara siempre responda las consultas de los pacientes. Si necesitás pausar el bot de forma general, podés usar 'pausar bot' 🙌."*
 
 #### ⏳ 3. Despausa automática de seguridad (Timeout de 8 horas)
-Si por descuido nadie envía el comando de reanudación, el sistema **levanta automáticamente la pausa tras 8 horas de inactividad** (tanto para pausas individuales como para la pausa general) para garantizar que ningún paciente quede desatendido al día siguiente.
+Si se pausa el bot por WhatsApp (`"pausar bot"`) y por descuido nadie envía el comando de reanudación, el sistema **levanta automáticamente la pausa tras 8 horas** para garantizar que ningún paciente quede desatendido al día siguiente.
 
-### ❌ E. Anular o cancelar un turno de un paciente
+### 🔀 E. Cambiar entre Modo Menú (sin IA) y Modo Agente IA
+Desde el WhatsApp de Norberto o María se puede conmutar en vivo el modo de atención de Clara:
+* **Activar Modo Menú por letras (por defecto):** Escribir `"modo menu"` o `"modo sin ia"`. Clara confirma: *"📋 Modo activado: Menú Sin IA (Opciones A, B, C...). El bot responderá mediante menú determinista rápido sin usar IA."*
+* **Activar Modo Agente IA conversacional:** Escribir `"modo ia"` o `"modo con ia"`. Clara confirma: *"🤖 Modo activado: Agente IA (Clara). Se utilizará el modelo de IA para responder a los pacientes."*
+
+### ❌ F. Anular o cancelar un turno de un paciente
 * **Cómo lo hacen Norberto y María:** Las cancelaciones y modificaciones de citas por parte del equipo profesional se realizan **directamente en Google Calendar** (eliminando el turno con el icono del tacho de basura para liberar el hueco al instante, o anteponiendo `[CANCELADO]` si desean conservar el registro histórico).
-* **Clara no cancela citas de pacientes a pedido de los profesionales por chat:** Si Norberto o María le piden por WhatsApp a Clara que anule o cancele el turno de un paciente, Clara les recordará cordialmente que lo gestionen directamente desde Google Calendar para evitar inconsistencias en la grilla y asegurar que el hueco se libere en tiempo real.
+* **Clara no cancela citas de pacientes a pedido de los profesionales por chat:** Si Norberto o María le piden por WhatsApp a Clara que anule o cancele el turno de un paciente, Clara les recordará que lo gestionen directamente desde Google Calendar para evitar inconsistencias en la grilla y asegurar que el hueco se libere en tiempo real.
 
-### 🩺 F. Los kinesiólogos no son pacientes (solicitud de turnos)
+### 🩺 G. Los kinesiólogos no son pacientes (solicitud de turnos)
 * **Qué pasa si Norberto o María le piden un turno a Clara:** (ej: `"Clara, agendame un turno para mañana a las 15 hs"` o `"quiero un turno"`).
 * **Qué hace Clara:** reconoce que son los profesionales, no pacientes. No les pide DNI ni les crea el turno. Si el modelo lo creó, se borra. Les dice:  
   > *"Hola [Norberto/María]. Los turnos son para los pacientes, no para los kinesiólogos de Kinésica."*  
@@ -486,7 +486,7 @@ Si por descuido nadie envía el comando de reanudación, el sistema **levanta au
 
 ## ⏳ 6. Lista de Espera Inteligente (Smart Waitlist en Google Sheets)
 
-¿Qué pasa cuando un paciente quiere turno para un día o franja que está ocupada o no le sirven las primeras opciones?
+¿Qué pasa cuando un paciente quiere turno para un día o franja que está ocupada o no le sirven las primeras opciones (en Modo IA)?
 1. **Regla de precedencia (ofrecer al menos 3 pares de horarios antes de la Lista de Espera):** Clara nunca ofrece la lista de espera de entrada. Primero propone proactivamente **al menos 3 pares de horarios libres (3 tandas de 2 opciones = mínimo 6 horarios ofrecidos)** acompañados del botón `[🔄 Otros horarios]`.
 2. Recién si después de haber ofrecido al menos **3 pares de horarios** ninguno le queda cómodo al paciente, Clara le ofrece:  
    *"Si ninguno de estos horarios te queda cómodo, te anoto en nuestra lista de espera y si se libera un hueco te avisamos primero 🙌. ¿Querés que te anote?"*.
@@ -500,24 +500,24 @@ Si por descuido nadie envía el comando de reanudación, el sistema **levanta au
 
 ---
 
-## 📊 7. Agente de Base de Datos y Spreadsheet de Primeras Sesiones (Background)
+## 📊 7. Directorio de Pacientes y Planilla de Primeras Sesiones (Background)
 
-Kinésica cuenta con un **segundo agente autónomo especializado en administración de datos** que opera en segundo plano:
+Kinésica mantiene sincronizados los datos de los pacientes tanto en el **Directorio del Panel de Administración (`/admin/pacientes`)** como en la **Planilla de Google Sheets en Google Drive**, mediante un proceso automático en segundo plano:
 
 ```mermaid
 flowchart LR
-    A["Paciente confirma Primera Sesión Presencial"] --> B["Clara (Atención WhatsApp)"]
-    B --> C["Google Calendar ('consultorio')"]
-    B --> D["Agente de Base de Datos (Background)"]
-    D -.->|Sin comunicación al paciente| E["Google Sheets en Google Drive (Tiempo Real)"]
-    D -.->|Sin comunicación al paciente| F["pacientes_primera_sesion.xlsx"]
+    A["Paciente confirma Turno (Web o Clara)"] --> B["Google Calendar ('consultorio')"]
+    A --> C["Proceso de Base de Datos (Background)"]
+    C -.->|Sin comunicación al paciente| D["Directorio de Pacientes (/admin/pacientes)"]
+    C -.->|Sin comunicación al paciente| E["Google Sheets en Google Drive (Tiempo Real)"]
+    C -.->|Sin comunicación al paciente| F["pacientes_primera_sesion.xlsx"]
 ```
 
 ### 🔒 Regla Estricta de Aislamiento y Alcance:
 - **Cero comunicación con el paciente:** Este agente **NUNCA se comunica con el paciente**. Su única tarea es estructurar, auditar y mantener actualizada la base de datos de pacientes.
-- **SÓLO Primera Sesión Presencial:** Registra **únicamente** a los pacientes que concretaron un turno para su primera sesión presencial en el consultorio.
+- **SÓLO Primera Sesión Presencial en la Planilla:** La hoja de primeras sesiones registra **únicamente** a los pacientes que concretaron un turno para su primera sesión presencial en el consultorio.
 - **Sin Estado:** No se registra el estado del turno; solo los datos identificatorios, de contacto, fecha y clínicos requeridos.
-- **Sincronización en Tiempo Real:** Cada nuevo agendamiento se envía de forma inmediata a la hoja de Google Sheets en Google Drive.
+- **Sincronización en Tiempo Real:** Cada nuevo agendamiento impacta de forma inmediata en la base de datos de Kinésica (`/admin/pacientes`) y en la hoja de Google Sheets en Google Drive.
 
 ### 📋 Columnas de la Planilla (`pacientes_primera_sesion.xlsx` y Google Sheets):
 1. **Nombre y Apellido:** Nombre completo del paciente o titular.
@@ -538,9 +538,10 @@ flowchart LR
   2. **Actualización de la ficha:** Actualiza `staticData.patientHistory` en n8n. Esa es la única base que Clara consulta.
   3. **Seguimiento en Google Sheets (Drive):** El mismo paso envía un webhook con `action: "update_name"`. Si Drive no responde, el turno y el saludo siguen igual.
 
-### 📁 Acceso a las Planillas:
-- **Google Sheets en Vivo (Google Drive):** [Abrir en Google Drive](https://docs.google.com/spreadsheets/d/1kyGkYea0Iu_OrXxF-yONqhs2rG1O8YUWbbSmQe37GCk/edit)
-- **Planilla Excel Oficial Offline:** [`docs/pacientes_primera_sesion.xlsx`](pacientes_primera_sesion.xlsx) (con diseño verde Kinésica `#1B4332`, cabeceras fijas, bordes, auto-ajuste de columnas y filas cebradas).
+### 📁 Acceso a las Planillas y al Directorio Web:
+- **Directorio de Pacientes en el Panel Admin:** [`https://www.kinesica.com.ar/admin/pacientes`](https://www.kinesica.com.ar/admin/pacientes) (búsqueda instantánea por nombre, DNI o teléfono).
+- **Google Sheets en Vivo (Google Drive):** [Abrir en Google Drive](https://docs.google.com/spreadsheets/d/1kyGkYea0Iu_OrXxF-yONqhs2rG1O8YUWbbSmQe37GCk/edit) (también accesible desde un botón directo en `/admin/administracion`).
+- **Planilla Excel Oficial Offline:** [`docs/pacientes_primera_sesion.xlsx`](/docs/pacientes_primera_sesion.xlsx) (con diseño verde Kinésica `#1B4332`, cabeceras fijas, bordes, auto-ajuste de columnas y filas cebradas).
 
 ### 💻 Comando del Agente en Terminal:
 Podés consultar o regenerar la planilla local, forzar sincronización con Google Sheets o actualizar nombres manualmente ejecutando:
@@ -554,63 +555,68 @@ python3 agente_base_datos.py --update-name 5491144556677 "Nuevo Nombre Completo"
 
 ---
 
-## 🧪 8. ¿Cómo probar a Clara desde el celular?
+## 🧪 8. ¿Cómo probar a Clara desde el celular o el simulador?
 
-Para probar el funcionamiento como si fueras un paciente nuevo:
+Tenés dos formas muy prácticas de probar el funcionamiento de Clara:
 
-1. Abrí el chat de WhatsApp con el número de prueba de Clara.
-2. Escribí el comando:  
-   `/restart`
-3. **Qué pasará:** Clara borrará de inmediato tu ficha, el historial de conversación, pausas por derivación, retenciones de horarios y cualquier turno futuro de prueba que hayas agendado en Google Calendar con ese número, respondiendo:  
+### A. Desde el Simulador Interactivo del Panel Admin (sin usar WhatsApp)
+1. Ingresá a **[https://www.kinesica.com.ar/admin/clara](https://www.kinesica.com.ar/admin/clara)** (pestaña **Clara & Mensajes**).
+2. A la derecha de la pantalla vas a ver el **Simulador de WhatsApp en vivo**, donde podés tocar los botones rápidos (`Hola`, `A`, `B`, `C`, `D`, `E`, `1`, `2`, `MENU`) o escribir cualquier mensaje para ver al instante cómo responde Clara con los textos y honorarios actuales.
+
+### B. Desde tu celular en WhatsApp
+1. Abrí el chat de WhatsApp con el número de Clara (`11 3178-1733`).
+2. Si estás escribiendo desde un teléfono de administrador (Norberto o María) o un teléfono habilitado para pruebas (`testPhones`), podés reiniciar tu sesión escribiendo:  
+   `/restart` *(o desde el teléfono de Norberto/María para reiniciar el chat de cualquier otro número: `"olvidar <teléfono o nombre>"`)*
+3. **Qué pasará:** Clara borrará de inmediato la ficha en memoria de ese número, el historial de conversación, retenciones de horarios y cualquier turno futuro de prueba que hayas agendado en Google Calendar con ese teléfono, respondiendo:  
    *"🔄 Memoria reiniciada desde cero. Se borraron tu ficha, historial de conversación, pausas, retenciones y turnos futuros de prueba en la agenda. Ya podés escribir tu primer mensaje como paciente nuevo 🙌."*
 4. A partir de ahí, tu próximo mensaje inicia una prueba 100% desde cero como si nunca hubieras hablado con Clara.
 
 > 📋 **¿Querés probar escenarios específicos o reportar observaciones?**  
-> En la [**Guía Oficial de Pruebas y Reporte de Feedback**](guia-pruebas.md) ([Enlace en GitHub](https://github.com/MartinBrude/kinesica/blob/main/docs/guia-pruebas.md)) tenés más de 30 casos de prueba preparados (consultas de prepagas, urgencias, audios confusos, lista de espera, etc.) y una ficha simple para reportar cualquier comentario o sugerencia.
+> En la [**Guía Oficial de Pruebas y Reporte de Feedback**](guia-pruebas.md) ([Enlace en GitHub](https://github.com/MartinBrude/kinesica/blob/main/docs/guia-pruebas.md)) tenés todos los casos de prueba documentados y una ficha simple para reportar cualquier comentario o sugerencia.
 
-### 🚀 8.1. Checklist de Salida a Producción: ¿Ya se pueden iniciar las pruebas manuales?
+### 🚀 8.1. Checklist de Salida a Producción
 
 > [!TIP]
-> **¡SÍ, ya podés empezar las pruebas manuales con el chat en producción!**  
-> Todos los componentes del sistema se encuentran completamente implementados, sincronizados y validados por una suite exhaustiva de **232 pruebas automatizadas (100% exitosas)**.
+> **¡Todos los componentes están activos en producción!**  
+> El sistema se encuentra completamente sincronizado entre el Panel Admin (`/admin/`), el motor de reservas web (`/agendar`), Google Calendar (`consultorio`) y el flujo de Clara en n8n, validado por **365 pruebas automatizadas (100% exitosas)**.
 
 #### ✅ Estado de los componentes clave para pruebas:
-1. **Franjas horarias oficiales:** Cargadas e integradas tanto en Clara (recepción conversacional) como en el Auditor Clínico (guardrail de calidad) y en la turnera web de reservas.
-2. **Capacidad física y Camilla Única:** Protección anti-solapamiento estricta activa (cero colisiones posibles).
+1. **Modo Menú (`A`–`E`) y Modo IA conmutables:** Textos del menú y opciones adicionales (`F`, `G`...) 100% editables en vivo desde `/admin/clara`.
+2. **Franjas horarias y honorarios dinámicos:** Administrables desde `/admin/consultorio` con validación de **1 sola camilla física** e impacto inmediato en la web y en Clara.
 3. **Mapeo por disciplina:** Asignación automática de Osteopatía y Manipulaciones viscerales a Norberto; Acupuntura y Posturología a María; RPG y Neurodinamia compartidas.
-4. **Memoria de pacientes y DNI flexible:** Reconocimiento de habituales por número de WhatsApp, saludo personalizado por nombre de pila y botón de escape `[Prefiero no dar DNI]`.
-5. **Botoneras interactivas nativas:** Botones rápidos de selección de horarios, selección de profesional, opciones de cancelación y recordatorios de 24 hs.
-6. **Sincronización bidireccional de teléfonos:** Soporte simultáneo para indexar teléfonos desde el primer turno en Google Calendar o desde la planilla de Google Sheets ("el archivo").
-7. **Pausa operativa y comandos de administración:** Reconocimiento de los celulares de Norberto y María para comandos como `"pausar bot"`, `"reanudar bot"`, `"olvidar <teléfono/nombre>"` y `"vacaciones..."`.
-8. **Planilla de Primeras Sesiones:** Sincronización en tiempo real en Google Drive con sanitización contra inyección de fórmulas.
+4. **Memoria de pacientes y DNI flexible:** Reconocimiento de habituales por número de WhatsApp, saludo personalizado por nombre de pila y búsqueda/cancelación de turnos tanto por WhatsApp como por DNI o Pasaporte.
+5. **Recordatorios de 24 hs con botones interactivos:** Envío automático domingos 18:00 hs y lunes a jueves 10:00 hs con `[✅ Confirmo]` y `[❌ Cancelar]`.
+6. **Sincronización bidireccional de pacientes:** Indexación automática en el Directorio de Pacientes (`/admin/pacientes`), Google Calendar y la planilla de Google Sheets.
+7. **Pausa operativa y comandos de administración:** Control desde `/admin/` o desde los celulares de Norberto y María (`"pausar bot"`, `"reanudar bot"`, `"olvidar <teléfono/nombre>"`, `"modo menu"` / `"modo ia"`).
 
 #### 🧪 Pasos recomendados para tu prueba manual inicial:
-1. Abrí el chat de WhatsApp con la línea oficial de Clara (`11 3178-1733`).
-2. Enviá `/restart` para reiniciar la memoria, pausas y turnos de prueba como si fueras un paciente nuevo.
-3. Pedí un turno para una dolencia específica (ej: *"Hola, tengo bruxismo y me duele la mandíbula, ¿tienen turno esta semana?"* o mandá un audio de voz).
-4. Verificá que Clara te responda con empatía, te informe los honorarios correspondientes ($65.000 para ATM) y te ofrezca 2 huecos con botones interactivos.
-5. Seleccioná un horario, ingresá tu nombre y probá el botón `[Prefiero no dar DNI]` para ver cómo confirma el turno y asienta la cita en Google Calendar.
+1. Abrí el chat de WhatsApp con la línea oficial de Clara (`11 3178-1733`) o el simulador en `/admin/clara`.
+2. Enviá `/restart` (si estás desde tu celular de administrador/prueba) para reiniciar la memoria y turnos de prueba.
+3. En **Modo Menú** (por defecto), enviá `"Hola"` para recibir el menú `A`–`E`, probá las opciones `A` (`1` para agendar y `2` para consultar/cancelar turnos), `B`, `C`, `D` y `E`.
+4. Si querés probar la conversación abierta con IA, enviá `"modo ia"` desde el celular de Norberto o María y pedí un turno para una dolencia específica (ej: *"Hola, tengo bruxismo y me duele la mandíbula, ¿tienen turno esta semana?"*). Al terminar, podés volver al menú por letras enviando `"modo menu"`.
 
 ---
 
 ## 📌 9. "Machete" rápido de comandos para los profesionales
 
-Guardá esta tablita a mano para usar con Clara en el chat:
+Guardá esta tablita a mano para gestionar a Clara desde el celular de **Norberto** (`11 6156-4311`), de **María** (`11 2853-1224`) o desde el **Panel Admin (`/admin/`)**:
 
-| Qué querés hacer | Qué tenés que escribirle a Clara |
+| Qué querés hacer | Cómo hacerlo |
 |---|---|
-| **Ver la agenda** | En Google Calendar. Clara no la lista por WhatsApp. |
-| **Cerrar un hueco específico** | En Google Calendar marcando un evento `🚫 [BLOQUEADO]`. Clara no crea bloqueos por chat. |
-| **Cerrar por vacaciones** | `"vacaciones del 15 al 25 de octubre"` |
-| **Anular o cancelar el turno de un paciente** | En Google Calendar (eliminando el evento o anteponiendo `[CANCELADO]`). Clara no cancela turnos de pacientes por chat para los profesionales. |
-| **Pausar a un paciente específico (Pausa individual)** | `"pausar 11 6123-4567"` o `"pausar a Lucas"` |
-| **Reanudar a un paciente específico** | `"reanudar 11 6123-4567"` o `"reanudar a Lucas"` |
-| **Pausar todo el bot (Pausa general de emergencia)** | `"pausar bot"`, `"lo atiendo yo"` o `"silencio"` |
-| **Reanudar toda la atención de Clara tras una pausa** | `"reanudar bot"`, `"activar bot"` o `"reanudar todo"` |
-| **Empezar una prueba de cero desde el teléfono de prueba** | `/restart` (o `/reset` / `/olvidar`) |
-| **Olvidar a un teléfono/paciente desde Admin (Norberto/María)** | `"olvidar 11 6123-4567"` o `"olvidar a Lucas"` |
-| **Desactivar / Activar `/restart` público al salir a producción** | `"modo pruebas off"` / `"modo pruebas on"` |
+| **Ver la agenda del día** | En **Google Calendar (`consultorio`)**. Clara no lista la agenda por WhatsApp. |
+| **Cerrar un hueco específico (bloqueo)** | En **Google Calendar (`consultorio`)** creando un evento `🚫 [BLOQUEADO]`. Clara no crea bloqueos por chat. |
+| **Cerrar por vacaciones o receso** | En **Google Calendar (`consultorio`)** creando un evento de **día completo** `🏖️ [VACACIONES CONSULTORIO - CERRADO]`. |
+| **Anular o cancelar el turno de un paciente** | En **Google Calendar (`consultorio`)** eliminando el evento o anteponiendo `[CANCELADO]`. Clara no cancela turnos de pacientes por chat para los profesionales. |
+| **Cambiar horarios de atención u honorarios ($)** | En el Panel Admin → pestaña **Consultorio** (`/admin/consultorio`). |
+| **Editar los textos del menú de Clara (A–E, F...)** | En el Panel Admin → pestaña **Clara & Mensajes** (`/admin/clara`). |
+| **Pausar todo el bot (Pausa general)** | Tocando **"Pausar bot"** en `/admin/` o escribiéndole a Clara: `"pausar bot"`, `"lo atiendo yo"` o `"silencio"` (se reanuda solo a las 8 hs si nadie lo reactiva antes). |
+| **Reanudar toda la atención de Clara** | Tocando **"Activar bot"** en `/admin/` o escribiéndole a Clara: `"reanudar bot"`, `"activar bot"` o `"reanudar todo"`. |
+| **Pausa individual por paciente** | *Desactivada por diseño* para que Clara nunca deje a un paciente sin respuesta. |
+| **Cambiar a Modo Menú por letras (sin IA)** | Escribirle a Clara: `"modo menu"` o `"modo sin ia"` *(modo activo por defecto)*. |
+| **Cambiar a Modo Agente IA conversacional** | Escribirle a Clara: `"modo ia"` o `"modo con ia"`. |
+| **Reiniciar tu propio chat de prueba desde cero** | Escribirle a Clara: `/restart` (o `/reset` / `/olvidar`) desde un celular admin o de prueba. |
+| **Olvidar / reiniciar la ficha de otro teléfono o paciente** | Escribirle a Clara desde Admin: `"olvidar 11 6123-4567"` o `"olvidar a Lucas"` (también `/restart 11...` o `borrar ficha Lucas`). |
 
 ---
 
-*Cualquier sugerencia, ajuste de palabras o cambio en las reglas de atención que se quiera hacer, se puede ajustar en cuestión de minutos.*
+*Cualquier sugerencia, ajuste de palabras o cambio en las reglas de atención que se quiera hacer, se puede ajustar desde `/admin/clara` o en cuestión de minutos.*

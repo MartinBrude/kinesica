@@ -3,6 +3,15 @@ declare(strict_types=1);
 
 require __DIR__ . '/lib.php';
 
+// Si se solicita desde la web, exigir sesión de administrador antes de tocar la base de datos
+if (PHP_SAPI !== 'cli') {
+    require_header();
+    $auth = require_auth();
+    if (!is_admin($auth)) {
+        json_out(403, ['error' => 'Acceso denegado. Se requieren permisos de administrador.']);
+    }
+}
+
 $pdo = db();
 $tables = ['users', 'fichas', 'pacientes', 'lista_espera'];
 
@@ -53,10 +62,6 @@ if (PHP_SAPI === 'cli') {
     fwrite(STDOUT, basename($path) . ' ' . count($files) . " copias\n");
     exit(0);
 }
-
-// Si se solicita desde la web con sesión iniciada
-require_header();
-require_auth();
 
 $filename = 'kinesica-backup-' . gmdate('Y-m-d') . '.sql';
 header('Content-Type: application/sql; charset=utf-8');

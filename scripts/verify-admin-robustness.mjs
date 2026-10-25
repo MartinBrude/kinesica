@@ -757,4 +757,48 @@ await test("Módulo de Gastos: integridad de semilla con conversión por fecha, 
   assert.match(phpSrc, /\$action === 'delete'/, "gastos.php debe soportar baja");
 });
 
+await test("Protección de manual.html, /docs/ y recursos internos de /admin/ solo para usuarios autorizados", () => {
+  // 1. /docs/.htaccess bloquea acceso directo a todos los archivos de documentación e imágenes
+  const docsHtaccessPath = path.join(root, "docs/.htaccess");
+  assert.ok(fs.existsSync(docsHtaccessPath), "docs/.htaccess debe existir para impedir acceso directo por URL");
+  const docsHtaccess = fs.readFileSync(docsHtaccessPath, "utf8");
+  assert.match(docsHtaccess, /Require all denied/, "docs/.htaccess debe negar acceso HTTP directo");
+
+  // 2. admin/.htaccess protege manual.html, firmas y archivos internos (.md, .json, .sha256, .sql, lib.php)
+  const adminHtaccess = fs.readFileSync(path.join(adminDir, ".htaccess"), "utf8");
+  assert.match(adminHtaccess, /RewriteRule \^manual\(\?:\\\.html\)\?\$ api\/manual-doc\.php\?view=page/, "admin/.htaccess debe enrutar manual.html por manual-doc.php");
+  assert.match(adminHtaccess, /RewriteRule \^signatures\/\(\[a-z0-9_-\]\+\\\.png\)\$ api\/firma\.php\?file=\$1/, "admin/.htaccess debe enrutar firmas por firma.php");
+  assert.match(adminHtaccess, /lib\\\.php/, "admin/.htaccess debe bloquear acceso directo a lib.php");
+  assert.match(adminHtaccess, /md\|json\|sha256/, "admin/.htaccess debe bloquear acceso directo a .md, .json y .sha256");
+
+  // 3. admin/api/manual-doc.php exige sesión activa y rol de administrador (is_admin)
+  const manualDocPhpPath = path.join(adminDir, "api/manual-doc.php");
+  assert.ok(fs.existsSync(manualDocPhpPath), "admin/api/manual-doc.php debe existir");
+  const manualDocPhp = fs.readFileSync(manualDocPhpPath, "utf8");
+  assert.match(manualDocPhp, /require_auth\(\)/, "manual-doc.php debe exigir sesión autenticada");
+  assert.match(manualDocPhp, /is_admin\(\$auth\)/, "manual-doc.php debe exigir rol de administrador");
+
+  // 4. admin/manual.html oculta el documento hasta verificar rol admin contra /admin/api/me.php y consume manual-doc.php
+  const manualHtml = fs.readFileSync(path.join(adminDir, "manual.html"), "utf8");
+  assert.match(manualHtml, /html:not\(\.is-admin-verified\)\s*body\s*\{\s*display:\s*none\s*!important;/, "manual.html debe permanecer oculto hasta verificar rol admin");
+  assert.match(manualHtml, /me\.role !== "admin"/, "manual.html debe verificar me.role === 'admin'");
+  assert.match(manualHtml, /\/admin\/api\/manual-doc\.php\?doc=/, "manual.html debe cargar los documentos vía manual-doc.php");
+  assert.doesNotMatch(manualHtml, /fetch\(["']\/docs\//, "manual.html no debe hacer fetch directo a /docs/");
+
+  // 5. admin/signatures/.htaccess y admin/api/firma.php protegen las firmas digitales
+  const sigHtaccessPath = path.join(adminDir, "signatures/.htaccess");
+  assert.ok(fs.existsSync(sigHtaccessPath), "admin/signatures/.htaccess debe existir");
+  const firmaPhpPath = path.join(adminDir, "api/firma.php");
+  assert.ok(fs.existsSync(firmaPhpPath), "admin/api/firma.php debe existir");
+  const firmaPhp = fs.readFileSync(firmaPhpPath, "utf8");
+  assert.match(firmaPhp, /require_auth\(\)/, "firma.php debe exigir sesión autenticada");
+
+  // 6. admin/api/backup.php verifica autenticación y rol admin antes de consultar la base de datos en modo web
+  const backupPhp = fs.readFileSync(path.join(adminDir, "api/backup.php"), "utf8");
+  const authIdx = backupPhp.indexOf("require_auth()");
+  const dbIdx = backupPhp.indexOf("$pdo = db()");
+  assert.ok(authIdx > 0 && authIdx < dbIdx, "backup.php debe exigir require_auth() antes de abrir la base de datos");
+  assert.match(backupPhp, /is_admin\(\$auth\)/, "backup.php debe exigir rol de administrador en descargas web");
+});
+
 console.log(`admin robustez: ok (${passed} pruebas)`);

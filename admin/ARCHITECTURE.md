@@ -13,9 +13,10 @@ El módulo fue refactorizado a partir de archivos monolíticos, adoptando el est
 ```text
 admin/
 ├── api/                     # Backend PHP (REST/JSON seguro)
-│   ├── backup.php           # Copias de seguridad automáticas CLI
+│   ├── backup.php           # Copias de seguridad automáticas CLI y descarga SQL autenticada (admin)
 │   ├── config.example.php   # Plantilla de configuración
 │   ├── fichas.php           # Endpoint CRUD de historias clínicas
+│   ├── firma.php            # Servidor autenticado de firmas digitales (/admin/signatures/*.png)
 │   ├── forgot.php           # Solicitud de restablecimiento de contraseña
 │   ├── foto.php             # Servidor seguro y validado de fotos clínicas adjuntas
 │   ├── gastos.json          # Semilla versionada de gastos y costos operativos (hosting, IA)
@@ -27,6 +28,7 @@ admin/
 │   ├── login-code.php       # Vía alternativa de acceso mediante código de 6 dígitos enviado al mail
 │   ├── logout.php           # Cierre de sesión y destrucción de cookie
 │   ├── mail.php             # Configuración de servidor de correo
+│   ├── manual-doc.php       # Servidor exclusivo para admins de manual.html y documentación /docs/
 │   ├── me.php               # Estado del usuario actual autenticado
 │   ├── pacientes.php        # Directorio unificado, historial de sesiones y búsqueda por teléfono/DNI
 │   ├── profesionales.php    # Gestión de usuarios, roles (admin/professional), altas y suspensiones
@@ -43,7 +45,7 @@ admin/
 │   ├── pacientes.css        # Tablas de pacientes, fichas y búsqueda rápida
 │   ├── horarios.css         # Timeline interactivo de camilla y días laborales
 │   ├── configuracion.css    # Pestañas de Clara, simulador y honorarios
-│   ├── admin.css            # Panel de profesionales y control de administradores
+│   ├── admin-panel.css      # Panel de profesionales, gastos y control de administradores
 │   └── print.css            # Estilos para impresión A4, sellos y firmas
 ├── modules/                 # Módulos JavaScript (ES6 Modules)
 │   ├── admin-panel.js       # Gestión de administradores, profesionales, altas y bajas
@@ -111,7 +113,7 @@ Cada módulo tiene una responsabilidad única y bien delimitada:
   - Validación suave con indicador luminoso discreto (`.step-dot`) y foco automático en el primer campo faltante.
   - Barra de dolor EVA con gradiente visual y badge semántico (`syncEva`).
   - Detección de cambios sin guardar antes de salir (`formState`).
-  - **Asignación de profesional por admin:** Cuando el administrador (`martin`) crea o edita una ficha, se activa el selector `#field-profesional` para asignar la ficha al Lic. Norberto Brude o a la Lic. María Gulin. Para los profesionales clínicos no-admin, el selector se mantiene oculto y la ficha se vincula estrictamente a su propia cuenta.
+  - **Asignación de profesional por admin:** Cuando un usuario con rol administrador (`role === 'admin'`, como `martin` o `norberto`) crea o edita una ficha, se activa el selector `#field-profesional` para asignar la ficha al Lic. Norberto Brude o a la Lic. María Gulin. Para los profesionales clínicos sin rol admin, el selector se mantiene oculto y la ficha se vincula estrictamente a su propia cuenta.
 
 ### `admin/modules/library.js` y `library-rows.js`
 - **Responsabilidad:** Gestión de historias clínicas registradas.
@@ -143,11 +145,12 @@ Cada módulo tiene una responsabilidad única y bien delimitada:
   - Sincronización en vivo con el motor de reservas (`Agendar`), la barra superior de la web y los mensajes de WhatsApp Clara.
 
 ### `admin/modules/admin-panel.js`
-- **Responsabilidad:** Gestión y gobierno de cuentas de profesionales.
+- **Responsabilidad:** Gestión y gobierno de cuentas de profesionales, gastos operativos y recursos administrativos.
 - **Características:**
-  - Altas, edición de datos de contacto y asignación de roles.
+  - Altas, edición de datos de contacto y asignación de roles (`admin` / `professional`).
   - Suspensión y reactivación de cuentas con protección explícita del superadmin (`martin`).
-  - Envío y reenvío de enlaces de invitación y reseteo de claves.
+  - Envío y reenvío de enlaces de invitación (48 hs) y reseteo de claves (30 min).
+  - Control de gastos operativos con cotización histórica EUR/USD/ARS (`gastos.php`).
 
 ### `admin/modules/print.js`
 - **Responsabilidad:** Renderizado de la historia clínica en hoja institucional para impresión o PDF.
@@ -166,9 +169,9 @@ Cada módulo tiene una responsabilidad única y bien delimitada:
 | :--- | :---: | :--- |
 | **Protección contra CSRF** | **Blindado** | Todas las peticiones API (GET, POST, DELETE) exigen la cabecera personalizada `X-Kinesica: 1`. Los navegadores prohíben adjuntar cabeceras personalizadas en formularios o llamadas cross-origin estándar sin previa negociación CORS. |
 | **Protección contra XSS** | **Blindado** | En `dom.js`, todas las inserciones dinámicas de datos de pacientes (nombres, DNI, deltas, etiquetas) se procesan con `escapeHtml()`, y los textos directos se asignan vía `textContent`. |
-| **Control de Acceso / IDOR** | **Blindado** | En `admin/api/fichas.php`, las operaciones `POST` (modificación) y `DELETE` verifican que el usuario autenticado sea el creador original de la ficha o el administrador (`martin`). Norberto no puede alterar ni borrar fichas de María, ni viceversa. |
+| **Control de Acceso / IDOR** | **Blindado** | En `admin/api/fichas.php`, las operaciones `POST` (modificación) y `DELETE` verifican que el usuario autenticado sea el creador original de la ficha o tenga rol `admin` (`is_admin()`, validado en vivo contra la base de datos en cada request vía `require_auth()`). |
 | **Seguridad de Sesiones** | **Blindado** | Las cookies de sesión utilizan parámetros estrictos: `secure = true` (solo HTTPS), `httponly = true` (inaccesibles por JavaScript malicioso), `samesite = 'Lax'` y `path = '/admin/'`. Se regenera el ID de sesión con `session_regenerate_id(true)` tras iniciar sesión. |
-| **Fuerza Bruta y Bloqueo** | **Blindado** | Se registran los fallos en la tabla `login_attempts`. Al 5° intento fallido, el usuario queda bloqueado durante 15 minutos (`HTTP 429 Too Many Requests`), aplicado a contraseñas, TOTP y códigos por correo. |
+| **Fuerza Bruta y Bloqueo** | **Blindado** | Se registran los fallos en `login_attempts` y `login_code_attempts`. Al 5° intento fallido de acceso, el usuario queda bloqueado durante 30 minutos (`HTTP 429 Too Many Requests`), y durante 15 minutos para solicitudes reiteradas de código por correo. |
 | **Segundo Factor (2FA TOTP)** | **Blindado** | Implementación RFC 6238 nativa con secreto Base32. La validación tolera una ventana temporal de deriva horaria de $\pm 1$ paso (30s) usando `hash_equals()`. El enrolamiento exige contraseña previa. |
 | **Protección de Archivos Apache** | **Blindado** | `.htaccess` bloquea el acceso HTTP directo a archivos críticos (`config*.php`, `mail.php`, `.env*`, `*.sql`, `*.bak`, `*.log`). |
 | **Cabeceras de Seguridad HTTP** | **Blindado** | Configuración activa en `.htaccess`: `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN` y `Referrer-Policy: strict-origin-when-cross-origin`. |

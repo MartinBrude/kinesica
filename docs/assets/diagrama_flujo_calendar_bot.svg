@@ -92,10 +92,9 @@
 
     <!-- Sub item B: Botones -->
     <rect x="15" y="150" width="210" height="85" rx="10" fill="#0F251C" stroke="#40916C" stroke-width="1"/>
-    <text x="25" y="170" fill="#52B788" font-size="12" font-weight="700">📲 WhatsApp con 3 Botones</text>
-    <text x="32" y="190" fill="#74C69D" font-size="10">[✅ Confirmo] ➔ Auto-marca Calendar</text>
-    <text x="32" y="206" fill="#74C69D" font-size="10">[🔄 Reprogramar] ➔ Ofrece huecos</text>
-    <text x="32" y="222" fill="#FF6B6B" font-size="10">[❌ Cancelar] ➔ Libera y avisa lista</text>
+    <text x="25" y="172" fill="#52B788" font-size="12" font-weight="700">📲 WhatsApp con 2 Botones</text>
+    <text x="26" y="196" fill="#74C69D" font-size="10">[✅ Confirmo] ➔ Auto-marca Calendar</text>
+    <text x="26" y="218" fill="#FF6B6B" font-size="10">[❌ Cancelar] ➔ Libera y avisa lista</text>
 
     <!-- Sub item C: Impacto Calendar -->
     <rect x="15" y="247" width="210" height="65" rx="10" fill="#1B4332"/>
