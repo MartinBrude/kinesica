@@ -148,7 +148,7 @@ function handleChatUserInput(inputRaw) {
     if (norm === "2") {
       chatSubmenu = "buscar_dni";
       setTimeout(() => {
-        appendChatMessage("Con este número de WhatsApp no encontramos turnos agendados. Si agendaste con otro teléfono o desde la web, respondé directamente con tu *DNI o Pasaporte* y lo buscamos.\n\n_(Escribí *MENU* para volver)_", "bot");
+        appendChatMessage("Con este número de WhatsApp no encontramos turnos agendados. Si agendaste con otro teléfono, respondé directamente con tu *DNI o Pasaporte* y lo buscamos.\n\n_(Escribí *MENU* para volver)_", "bot");
       }, 600);
       return;
     }

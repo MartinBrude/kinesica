@@ -1495,38 +1495,39 @@
 
           <div class="foto-attachment-card" id="foto-attachment-card">
             <div class="foto-attachment-header">
-              <span class="foto-attachment-title">📷 Foto / Imagen clínica adjunta</span>
-              <span class="foto-attachment-badge">Opcional · Máx 5 MB</span>
+              <span class="foto-attachment-title">📷 Fotos / Imágenes clínicas adjuntas</span>
+              <span class="foto-attachment-badge">Opcional · Hasta 10 fotos · Máx 5 MB c/u</span>
             </div>
 
             <input type="hidden" name="fotoUrl" id="field-foto-url" value="">
-            <input type="file" id="foto-input" accept="image/jpeg,image/png,image/webp" style="display: none;">
+            <input type="file" id="foto-input" accept="image/jpeg,image/png,image/webp" multiple style="display: none;">
 
-            <!-- Zona vacía: para adjuntar foto -->
+            <!-- Zona vacía o botón para adjuntar fotos -->
             <div class="foto-dropzone" id="foto-dropzone">
               <div class="foto-dropzone-icon">📷</div>
-              <p class="foto-dropzone-text"><strong>Hacé clic o arrastrá una imagen</strong> para adjuntarla a esta sesión</p>
-              <p class="foto-dropzone-hint">Formatos soportados: JPG, PNG o WebP. Se optimiza automáticamente (máx. 5 MB).</p>
-              <button type="button" class="btn light btn-sm" id="btn-foto-select">Seleccionar imagen</button>
+              <p class="foto-dropzone-text"><strong>Hacé clic o arrastrá imágenes</strong> para adjuntarlas a esta sesión</p>
+              <p class="foto-dropzone-hint">Podés seleccionar o arrastrar varias imágenes juntas. Formatos: JPG, PNG o WebP (máx. 5 MB por foto).</p>
+              <button type="button" class="btn light btn-sm" id="btn-foto-select">Seleccionar imágenes</button>
             </div>
 
             <!-- Zona de carga en progreso -->
             <div class="foto-loading" id="foto-loading" hidden>
               <span class="foto-spinner" aria-hidden="true"></span>
-              <span id="foto-loading-text">Optimizando y subiendo imagen…</span>
+              <span id="foto-loading-text">Optimizando y subiendo imágenes…</span>
             </div>
 
-            <!-- Zona con foto cargada / vista previa -->
+            <!-- Zona con fotos cargadas / vista previa en grilla -->
             <div class="foto-preview-container" id="foto-preview-container" hidden>
               <div class="foto-preview-box">
                 <img id="foto-preview-img" src="" alt="Foto clínica adjunta de la sesión" class="foto-preview-img">
               </div>
+              <div class="foto-gallery-grid" id="foto-gallery-grid"></div>
               <div class="foto-preview-info">
-                <span class="foto-preview-status">✓ Foto adjunta en la sesión</span>
+                <span class="foto-preview-status" id="foto-preview-status">✓ Foto adjunta en la sesión</span>
                 <div class="foto-preview-actions">
                   <a href="#" target="_blank" rel="noopener noreferrer" class="btn ghost btn-sm" id="btn-foto-view">🔍 Ver en tamaño completo</a>
-                  <button type="button" class="btn light btn-sm" id="btn-foto-change">Cambiar</button>
-                  <button type="button" class="btn ghost btn-sm text-danger" id="btn-foto-remove">Quitar</button>
+                  <button type="button" class="btn light btn-sm" id="btn-foto-change">Agregar más</button>
+                  <button type="button" class="btn ghost btn-sm text-danger" id="btn-foto-remove">Quitar todas</button>
                 </div>
               </div>
             </div>
@@ -1637,6 +1638,6 @@
   </script>
   <div id="print-root"></div>
   <script src="/booking/booking-bundle.min.js?v=1792693463" defer></script>
-  <script type="module" src="/admin/app.js?v=146"></script>
+  <script type="module" src="/admin/app.js?v=147"></script>
 </body>
 </html>
