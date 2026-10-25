@@ -108,10 +108,32 @@ function require_auth(): array
     if (empty($_SESSION['user']) || empty($_SESSION['full'])) {
         json_out(401, ['login' => true]);
     }
+    $username = (string) $_SESSION['user'];
+    $role = (string) ($_SESSION['role'] ?? 'professional');
+    try {
+        ensure_users_role_column();
+        $stmt = db()->prepare('SELECT display_name, role, active FROM users WHERE username = :username LIMIT 1');
+        $stmt->execute(['username' => $username]);
+        $row = $stmt->fetch();
+        if ($row) {
+            if (isset($row['active']) && (int) $row['active'] === 0) {
+                $_SESSION = [];
+                json_out(401, ['login' => true]);
+            }
+            if (!empty($row['role'])) {
+                $role = (string) $row['role'];
+                $_SESSION['role'] = $role;
+            }
+            if (!empty($row['display_name'])) {
+                $_SESSION['name'] = (string) $row['display_name'];
+            }
+        }
+    } catch (Throwable $e) {
+    }
     return [
-        'username' => $_SESSION['user'],
-        'name' => $_SESSION['name'],
-        'role' => (string) ($_SESSION['role'] ?? 'professional'),
+        'username' => $username,
+        'name' => $_SESSION['name'] ?? $username,
+        'role' => $role,
     ];
 }
 
@@ -640,7 +662,7 @@ function ensure_users_role_column(): void
                 'telefono' => '5491161564311',
                 'first_name' => 'Norberto',
                 'last_name' => 'Brude',
-                'role' => 'professional',
+                'role' => 'admin',
             ],
             'maria' => [
                 'name' => 'María',

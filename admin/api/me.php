@@ -20,10 +20,11 @@ if (empty($_SESSION['full'])) {
         'secret' => $user['totp_secret'],
     ]);
 }
-$role = (string) ($_SESSION['role'] ?? ($user['role'] ?? 'professional'));
+$auth = require_auth();
+$role = $auth['role'];
 $payload = [
-    'name' => $_SESSION['name'],
-    'username' => $_SESSION['user'],
+    'name' => $auth['name'],
+    'username' => $auth['username'],
     'role' => $role,
 ];
 if ($role === 'admin') {

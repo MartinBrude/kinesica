@@ -58,7 +58,7 @@ import {
   hideGate,
   setGateMessage,
   initAuth,
-} from "./modules/auth.js?v=80";
+} from "./modules/auth.js?v=81";
 
 import {
   todayISO,
@@ -123,7 +123,7 @@ import {
   updateDashboardClara,
   updateDashboardBooking,
   updateDashboardState,
-} from "./modules/dashboard.js?v=9";
+} from "./modules/dashboard.js?v=10";
 
 import {
   initHorariosModule,
@@ -152,7 +152,7 @@ import {
   initAdminModule,
   showAdminView,
   hideAdminView,
-} from "./modules/admin-panel.js?v=8";
+} from "./modules/admin-panel.js?v=9";
 
 // Re-exportar utilidades esenciales para interoperabilidad y pruebas
 export {

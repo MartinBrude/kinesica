@@ -63,6 +63,9 @@ export function setSessionUser(user) {
       if (displayName) {
         localStorage.setItem("kinesica_user_name", displayName);
       }
+      if (user.role) {
+        localStorage.setItem("kinesica_user_role", user.role);
+      }
     } catch (_) {}
     if (userLabel) {
       userLabel.textContent = displayName;
@@ -73,6 +76,7 @@ export function setSessionUser(user) {
     try {
       localStorage.removeItem("kinesica_logged_in");
       localStorage.removeItem("kinesica_user_name");
+      localStorage.removeItem("kinesica_user_role");
     } catch (_) {}
     if (userLabel) {
       userLabel.textContent = "";
@@ -381,7 +385,7 @@ export function initAuth({ onSuccess, onLogout }) {
         method: "POST",
         body: JSON.stringify({ action: "verify", username, password, code }),
       });
-      setSessionUser({ username: data.username || username, name: data.name });
+      setSessionUser({ username: data.username || username, name: data.name, role: data.role });
       hideGate();
       if (typeof onSuccess === "function") await onSuccess();
     } catch (err) {
@@ -512,7 +516,7 @@ export function initAuth({ onSuccess, onLogout }) {
         if (data.enroll) {
           showGate(data);
         } else {
-          setSessionUser({ username: body.username, name: data.name });
+          setSessionUser({ username: body.username, name: data.name, role: data.role });
           hideGate();
           if (typeof onSuccess === "function") await onSuccess();
         }
@@ -538,10 +542,13 @@ export function initAuth({ onSuccess, onLogout }) {
         return;
       }
       try {
-        await api("totp.php", {
+        const data = await api("totp.php", {
           method: "POST",
           body: JSON.stringify({ password, code }),
         });
+        if (data && data.name) {
+          setSessionUser({ username: sessionUser?.username || "", name: data.name, role: data.role });
+        }
         hideGate();
         if (typeof onSuccess === "function") await onSuccess();
       } catch (err) {
@@ -560,6 +567,7 @@ export function initAuth({ onSuccess, onLogout }) {
       try {
         localStorage.removeItem("kinesica_logged_in");
         localStorage.removeItem("kinesica_user_name");
+        localStorage.removeItem("kinesica_user_role");
         sessionStorage.removeItem("kinesica_admin_view");
         sessionStorage.removeItem("kinesica_cta_seen");
       } catch (_) {}

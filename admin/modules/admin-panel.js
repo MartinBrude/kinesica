@@ -6,7 +6,7 @@
  */
 
 import { api } from "./api.js?v=77";
-import { getSessionUser } from "./auth.js?v=80";
+import { getSessionUser } from "./auth.js?v=81";
 import { escapeHtml, dialogAlert, dialogConfirm } from "./dom.js?v=78";
 
 const viewAdmin = document.querySelector("#view-admin");
