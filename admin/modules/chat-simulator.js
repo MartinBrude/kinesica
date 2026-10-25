@@ -146,12 +146,27 @@ function handleChatUserInput(inputRaw) {
       return;
     }
     if (norm === "2") {
-      chatSubmenu = null;
+      chatSubmenu = "buscar_dni";
       setTimeout(() => {
-        appendChatMessage("📋 Consultando tus turnos agendados en Google Calendar...\n\nNo tenés turnos activos registrados en este momento para este número.\n\nEscribí *MENU* para volver al inicio.", "bot");
+        appendChatMessage("Con este número de WhatsApp no encontramos turnos agendados. Si agendaste con otro teléfono o desde la web, respondé directamente con tu *DNI o Pasaporte* y lo buscamos.\n\n_(Escribí *MENU* para volver)_", "bot");
       }, 600);
       return;
     }
+  }
+
+  // Si está en espera de búsqueda por DNI o Documento
+  if (chatSubmenu === "buscar_dni") {
+    const docMatch = norm.match(/^(?:dni|documento|pasaporte|doc)?\s*([0-9a-zA-Z.\s-]{6,15})$/i);
+    const cleanDoc = docMatch ? docMatch[1].replace(/[.\s-]/g, "").toUpperCase() : "";
+    chatSubmenu = null;
+    setTimeout(() => {
+      if (cleanDoc) {
+        appendChatMessage(`📋 *Tus turnos*\n\n*1.* Lun 26/10 10:00 hs — Lic. Norberto Brude (DNI: ${cleanDoc})\n\nPara cancelar, respondé *C* y el número (ejemplo *C1*).\n\n_(Escribí *MENU* para volver)_`, "bot");
+      } else {
+        appendChatMessage("No encontramos turnos agendados asociados a ese documento.\n\n_(Escribí *MENU* para volver al inicio)_", "bot");
+      }
+    }, 600);
+    return;
   }
 
   // Si está en submenú Profesional (mismas respuestas que el bot real)
@@ -173,10 +188,9 @@ function handleChatUserInput(inputRaw) {
 
   // Opciones A a E
   if (norm === "a" || norm.startsWith("opcion a")) {
-    chatSubmenu = null;
-    const optA = ctx.inputs.optA?.value?.trim() || ctx.getTexts().opt_a_text || ctx.defaults.opt_a_text;
+    chatSubmenu = "turnos";
     setTimeout(() => {
-      appendChatMessage(optA, "bot");
+      appendChatMessage("📅 *Gestión de Turnos - Kinésica*\n\nPor favor elegí una opción respondiendo *1* o *2*:\n\n*1.* 📅 Agendar un nuevo turno\n*2.* 📋 Consultar o cancelar mis turnos\n\n_(Respondé *1* o *2*, o escribí *MENU* para volver al menú principal)_", "bot");
     }, 450);
     return;
   }
