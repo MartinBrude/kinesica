@@ -7,7 +7,7 @@
  * 4. Honorarios y Medios de Pago
  */
 
-import { DEFAULT_OPT_C_TEXT, renderOptCText, REMINDER_TEMPLATE_TEXT, renderReminderPreview } from "./menu-texts.js?v=2";
+import { DEFAULT_OPT_C_TEXT, DEFAULT_OPT_C_TEXT_EN, renderOptCText, renderOptCTextEn, REMINDER_TEMPLATE_TEXT, renderReminderPreview } from "./menu-texts.js?v=2";
 import { api } from "./api.js?v=77";
 import { escapeHtml, dialogAlert, dialogConfirm } from "./dom.js?v=78";
 import { loadHorariosFromServer } from "./horarios.js?v=3";
@@ -34,6 +34,17 @@ const inputOptA2 = document.querySelector("#cfg-opt-a2");
 const inputOptE1 = document.querySelector("#cfg-opt-e1");
 const inputOptE2 = document.querySelector("#cfg-opt-e2");
 const inputOptE3 = document.querySelector("#cfg-opt-e3");
+const inputMenuWelcomeEn = document.querySelector("#cfg-menu-welcome-en");
+const inputOptAEn = document.querySelector("#cfg-opt-a-en");
+const inputOptBEn = document.querySelector("#cfg-opt-b-en");
+const inputOptCEn = document.querySelector("#cfg-opt-c-en");
+const inputOptDEn = document.querySelector("#cfg-opt-d-en");
+const inputOptEEn = document.querySelector("#cfg-opt-e-en");
+const inputSubmenuTurnosEn = document.querySelector("#cfg-submenu-turnos-en");
+const inputOptA2En = document.querySelector("#cfg-opt-a2-en");
+const inputOptE1En = document.querySelector("#cfg-opt-e1-en");
+const inputOptE2En = document.querySelector("#cfg-opt-e2-en");
+const inputOptE3En = document.querySelector("#cfg-opt-e3-en");
 const inputCancellation = document.querySelector("#cfg-cancellation-policy");
 const inputConfirmation = document.querySelector("#cfg-confirmation-notes");
 const inputReminderText = document.querySelector("#cfg-reminder-text");
@@ -117,6 +128,62 @@ _(Escribí *MENU* si deseás ver otras opciones)_`,
   opt_e3_text: `¡Perfecto! Ya le transmitimos tu consulta a nuestro equipo de kinesiólogos. Te estarán contactando a la brevedad directamente por WhatsApp 🙌.
 
 _(Escribí *MENU* si deseás ver otras opciones)_`,
+  menu_welcome_en: `Hello! Welcome to *Kinésica* 🩺
+
+Please reply with the letter of the option you need:
+
+*A.* 📅 Appointments (book, check or cancel)
+*B.* 📍 Location and office hours
+*C.* 💳 Fees and coverage (health insurance / reimbursement)
+*D.* 👕 Session attire and dress code
+*E.* 💬 Speak with a practitioner (Lic. Norberto Brude / Lic. María Gulin)
+*F.* 🇪🇸 Español
+
+_(Reply with the option letter, for example *A* or *C*)_`,
+  opt_a_text_en: `📅 *Appointments & Booking - Kinésica*
+
+To check available days and times in real time with Norberto or María and book your 60-minute session, visit our online booking site:
+
+👉 *https://kinesica.com.ar/agendar*`,
+  opt_b_text_en: `📍 *Kinésica Clinic*
+• *Location:* Charcas 3889, 5th Floor, Apt B, Palermo, Buenos Aires (between Scalabrini Ortiz and Aráoz, steps from Av. Santa Fe and Scalabrini Ortiz Subte D station).
+• *Google Maps:* https://maps.google.com/?q=Charcas+3889+Palermo+CABA`,
+  opt_c_text_en: DEFAULT_OPT_C_TEXT_EN,
+  opt_d_text_en: `👕 *Attire for your session:*
+• Underwear or shorts for men.
+• Underwear with a standard (non-sports) bra, a 2-piece swimsuit, or short leggings for women.
+• If you have previous medical imaging or tests (MRI, X-rays), please bring them or send us photos 🙌.
+
+_(Type *MENU* to see the options again)_`,
+  opt_e_text_en: `💬 *Contact a Practitioner*
+
+Who would you like to speak with?
+*1.* Lic. Norberto Brude
+*2.* Lic. María Gulin
+*3.* Either / General inquiry
+
+_(Reply *1*, *2* or *3*, or write your question directly and we will pass it along)_
+_Type *MENU* to return_`,
+  submenu_turnos_text_en: `📅 *Appointments - Kinésica*
+
+Please choose an option by replying *1* or *2*:
+
+*1.* 📅 Book a new appointment
+*2.* 📋 Check or cancel my appointments
+
+_(Reply *1* or *2*, or type *MENU* to return to the main menu)_`,
+  opt_a2_text_en: `We couldn't find any scheduled appointments for this WhatsApp number. If you booked using a different phone number, reply directly with your *ID or Passport* and we will look it up.
+
+_(Type *MENU* to return)_`,
+  opt_e1_text_en: `Great! We've forwarded your message to Lic. Norberto Brude. He will contact you shortly directly via WhatsApp 🙌.
+
+_(Type *MENU* to see other options)_`,
+  opt_e2_text_en: `Great! We've forwarded your message to Lic. María Gulin. She will contact you shortly directly via WhatsApp 🙌.
+
+_(Type *MENU* to see other options)_`,
+  opt_e3_text_en: `Great! We've forwarded your message to our physical therapy team. They will contact you shortly directly via WhatsApp 🙌.
+
+_(Type *MENU* to see other options)_`,
   cancellation_policy: `Te recordamos que los turnos pueden cancelarse o reprogramarse con un mínimo de 24 horas de anticipación 🙌.`,
   confirmation_notes: `Por favor asistir con puntualidad exacta al horario asignado. No contamos con secretaria, si estamos atendiendo a otro paciente no podemos recibirte anticipadamente 📍.`,
   reminder_text: `¡Hola {nombre}! 🌿 Te escribo desde Kinésica para recordarte tu {tipo_cita} programada para mañana a las {horario}.
@@ -145,6 +212,17 @@ setChatContext({
     optE1: inputOptE1,
     optE2: inputOptE2,
     optE3: inputOptE3,
+    menuWelcomeEn: inputMenuWelcomeEn,
+    optAEn: inputOptAEn,
+    optBEn: inputOptBEn,
+    optCEn: inputOptCEn,
+    optDEn: inputOptDEn,
+    optEEn: inputOptEEn,
+    submenuTurnosEn: inputSubmenuTurnosEn,
+    optA2En: inputOptA2En,
+    optE1En: inputOptE1En,
+    optE2En: inputOptE2En,
+    optE3En: inputOptE3En,
   },
   getTexts: () => currentTexts,
   getCustomOptions: () => customMenuOptions,
@@ -329,6 +407,19 @@ function renderTexts(data) {
   if (inputOptE1) inputOptE1.value = data.opt_e1_text || DEFAULT_CLARA_TEXTS.opt_e1_text;
   if (inputOptE2) inputOptE2.value = data.opt_e2_text || DEFAULT_CLARA_TEXTS.opt_e2_text;
   if (inputOptE3) inputOptE3.value = data.opt_e3_text || DEFAULT_CLARA_TEXTS.opt_e3_text;
+
+  if (inputMenuWelcomeEn) inputMenuWelcomeEn.value = data.menu_welcome_en || DEFAULT_CLARA_TEXTS.menu_welcome_en;
+  if (inputOptAEn) inputOptAEn.value = data.opt_a_text_en || DEFAULT_CLARA_TEXTS.opt_a_text_en;
+  if (inputOptBEn) inputOptBEn.value = data.opt_b_text_en || DEFAULT_CLARA_TEXTS.opt_b_text_en;
+  if (inputOptCEn) inputOptCEn.value = data.opt_c_text_en || DEFAULT_CLARA_TEXTS.opt_c_text_en;
+  if (inputOptDEn) inputOptDEn.value = data.opt_d_text_en || DEFAULT_CLARA_TEXTS.opt_d_text_en;
+  if (inputOptEEn) inputOptEEn.value = data.opt_e_text_en || DEFAULT_CLARA_TEXTS.opt_e_text_en;
+  if (inputSubmenuTurnosEn) inputSubmenuTurnosEn.value = data.submenu_turnos_text_en || DEFAULT_CLARA_TEXTS.submenu_turnos_text_en;
+  if (inputOptA2En) inputOptA2En.value = data.opt_a2_text_en || DEFAULT_CLARA_TEXTS.opt_a2_text_en;
+  if (inputOptE1En) inputOptE1En.value = data.opt_e1_text_en || DEFAULT_CLARA_TEXTS.opt_e1_text_en;
+  if (inputOptE2En) inputOptE2En.value = data.opt_e2_text_en || DEFAULT_CLARA_TEXTS.opt_e2_text_en;
+  if (inputOptE3En) inputOptE3En.value = data.opt_e3_text_en || DEFAULT_CLARA_TEXTS.opt_e3_text_en;
+
   if (inputCancellation) inputCancellation.value = (typeof data.cancellation_policy === "string" && data.cancellation_policy.trim()) ? data.cancellation_policy : DEFAULT_CLARA_TEXTS.cancellation_policy;
   if (inputConfirmation) inputConfirmation.value = (typeof data.confirmation_notes === "string" && data.confirmation_notes.trim()) ? data.confirmation_notes : DEFAULT_CLARA_TEXTS.confirmation_notes;
 
@@ -385,6 +476,17 @@ function readFormTexts() {
     opt_e1_text: inputOptE1?.value?.trim() || DEFAULT_CLARA_TEXTS.opt_e1_text,
     opt_e2_text: inputOptE2?.value?.trim() || DEFAULT_CLARA_TEXTS.opt_e2_text,
     opt_e3_text: inputOptE3?.value?.trim() || DEFAULT_CLARA_TEXTS.opt_e3_text,
+    menu_welcome_en: inputMenuWelcomeEn?.value?.trim() || DEFAULT_CLARA_TEXTS.menu_welcome_en,
+    opt_a_text_en: inputOptAEn?.value?.trim() || DEFAULT_CLARA_TEXTS.opt_a_text_en,
+    opt_b_text_en: inputOptBEn?.value?.trim() || DEFAULT_CLARA_TEXTS.opt_b_text_en,
+    opt_c_text_en: inputOptCEn?.value?.trim() || DEFAULT_CLARA_TEXTS.opt_c_text_en,
+    opt_d_text_en: inputOptDEn?.value?.trim() || DEFAULT_CLARA_TEXTS.opt_d_text_en,
+    opt_e_text_en: inputOptEEn?.value?.trim() || DEFAULT_CLARA_TEXTS.opt_e_text_en,
+    submenu_turnos_text_en: inputSubmenuTurnosEn?.value?.trim() || DEFAULT_CLARA_TEXTS.submenu_turnos_text_en,
+    opt_a2_text_en: inputOptA2En?.value?.trim() || DEFAULT_CLARA_TEXTS.opt_a2_text_en,
+    opt_e1_text_en: inputOptE1En?.value?.trim() || DEFAULT_CLARA_TEXTS.opt_e1_text_en,
+    opt_e2_text_en: inputOptE2En?.value?.trim() || DEFAULT_CLARA_TEXTS.opt_e2_text_en,
+    opt_e3_text_en: inputOptE3En?.value?.trim() || DEFAULT_CLARA_TEXTS.opt_e3_text_en,
     cancellation_policy: inputCancellation?.value?.trim() || DEFAULT_CLARA_TEXTS.cancellation_policy,
     confirmation_notes: inputConfirmation?.value?.trim() || DEFAULT_CLARA_TEXTS.confirmation_notes,
     reminder_notes: inputReminderNotes?.value?.trim() || inputClaraReminderNotes?.value?.trim() || DEFAULT_CLARA_TEXTS.reminder_notes,

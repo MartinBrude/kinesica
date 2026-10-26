@@ -833,6 +833,110 @@
             <div id="custom-options-empty" style="padding:18px; text-align:center; color:var(--muted); font-size:13px; background:var(--bg); border-radius:var(--radius); border:1px dashed var(--line); margin-top:12px;">
               No hay opciones adicionales configuradas. Hacé clic en <strong>"+ Agregar opción"</strong> para sumar una (por ejemplo: F. ¿Con qué técnicas trabajan?).
             </div>
+
+            <!-- SUBSECCIÓN: MENÚ EN INGLÉS -->
+            <details class="clara-submenu-details" style="margin-top: 24px; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px;">
+              <summary style="font-weight: 700; font-size: 14px; color: var(--navy); cursor: pointer; display: flex; align-items: center; justify-content: space-between; user-select: none;">
+                <span style="display: flex; align-items: center; gap: 8px;">
+                  <span>🌐 Textos del Menú en Inglés (English Version)</span>
+                  <span style="font-size: 11px; background: #f0fdf4; color: #166534; padding: 2px 8px; border-radius: 4px; font-weight: 600;">Bilingüe</span>
+                </span>
+                <span style="font-size: 12px; color: var(--muted); font-weight: 500;">Desplegar para editar</span>
+              </summary>
+              <div style="display: flex; flex-direction: column; gap: 20px; margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--line);">
+                <p style="margin: 0; color: var(--muted); font-size: 13px; line-height: 1.45;">
+                  Textos enviados a pacientes internacionales o de habla inglesa cuando seleccionan la opción <strong>English</strong> en WhatsApp. Si se dejan vacíos, se usarán los textos predeterminados en inglés de Kinésica.
+                </p>
+
+                <!-- BLOQUE EN: MENÚ PRINCIPAL -->
+                <div>
+                  <label for="cfg-menu-welcome-en" style="display: block; font-weight: 600; font-size: 13px; color: var(--navy); margin-bottom: 4px;">
+                    Welcome Message &amp; Main Menu (English):
+                  </label>
+                  <textarea id="cfg-menu-welcome-en" rows="7" style="width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:var(--radius); font-size:13px; font-family:inherit; line-height:1.45; resize:vertical; background:#f8fafc;"></textarea>
+                </div>
+
+                <!-- BLOQUE EN: OPCIÓN A (APPOINTMENTS) -->
+                <div>
+                  <label for="cfg-opt-a-en" style="display: block; font-weight: 600; font-size: 13px; color: var(--navy); margin-bottom: 4px;">
+                    Option A: Online Booking Link (English):
+                  </label>
+                  <textarea id="cfg-opt-a-en" rows="3" style="width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:var(--radius); font-size:13px; font-family:inherit; line-height:1.45; resize:vertical; background:#f8fafc;"></textarea>
+                </div>
+
+                <!-- BLOQUE EN: SUBMENÚ A -->
+                <div style="background: #f8fafc; border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; display: flex; flex-direction: column; gap: 12px;">
+                  <div>
+                    <label for="cfg-submenu-turnos-en" style="display: block; font-weight: 600; font-size: 12px; color: var(--navy); margin-bottom: 4px;">
+                      Submenu A Prompt (1. Book / 2. Check or cancel):
+                    </label>
+                    <textarea id="cfg-submenu-turnos-en" rows="4" style="width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:var(--radius); font-size:12px; font-family:inherit; line-height:1.4; resize:vertical; background:#fff;"></textarea>
+                  </div>
+                  <div>
+                    <label for="cfg-opt-a2-en" style="display: block; font-weight: 600; font-size: 12px; color: var(--navy); margin-bottom: 4px;">
+                      Option A2: No Appointments Found (Ask for ID / Passport):
+                    </label>
+                    <textarea id="cfg-opt-a2-en" rows="3" style="width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:var(--radius); font-size:12px; font-family:inherit; line-height:1.4; resize:vertical; background:#fff;"></textarea>
+                  </div>
+                </div>
+
+                <!-- BLOQUE EN: OPCIÓN B (LOCATION) -->
+                <div>
+                  <label for="cfg-opt-b-en" style="display: block; font-weight: 600; font-size: 13px; color: var(--navy); margin-bottom: 4px;">
+                    Option B: Location &amp; Map (English):
+                  </label>
+                  <textarea id="cfg-opt-b-en" rows="3" style="width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:var(--radius); font-size:13px; font-family:inherit; line-height:1.45; resize:vertical; background:#f8fafc;"></textarea>
+                </div>
+
+                <!-- BLOQUE EN: OPCIÓN C (FEES) -->
+                <div>
+                  <label for="cfg-opt-c-en" style="display: block; font-weight: 600; font-size: 13px; color: var(--navy); margin-bottom: 4px;">
+                    Option C: Fees &amp; Coverage (English):
+                  </label>
+                  <small style="color: var(--muted); font-size: 12px; display: block; margin-bottom: 6px;">
+                    Placeholders disponibles: <code>{honorario_atm}</code>, <code>{honorario_general}</code>, <code>{medios_pago}</code>.
+                  </small>
+                  <textarea id="cfg-opt-c-en" rows="5" style="width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:var(--radius); font-size:13px; font-family:inherit; line-height:1.45; resize:vertical; background:#f8fafc;"></textarea>
+                </div>
+
+                <!-- BLOQUE EN: OPCIÓN D (ATTIRE) -->
+                <div>
+                  <label for="cfg-opt-d-en" style="display: block; font-weight: 600; font-size: 13px; color: var(--navy); margin-bottom: 4px;">
+                    Option D: Session Attire (English):
+                  </label>
+                  <textarea id="cfg-opt-d-en" rows="3" style="width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:var(--radius); font-size:13px; font-family:inherit; line-height:1.45; resize:vertical; background:#f8fafc;"></textarea>
+                </div>
+
+                <!-- BLOQUE EN: OPCIÓN E (PRACTITIONERS) -->
+                <div>
+                  <label for="cfg-opt-e-en" style="display: block; font-weight: 600; font-size: 13px; color: var(--navy); margin-bottom: 4px;">
+                    Option E: Practitioner Submenu Prompt (English):
+                  </label>
+                  <textarea id="cfg-opt-e-en" rows="4" style="width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:var(--radius); font-size:13px; font-family:inherit; line-height:1.45; resize:vertical; background:#f8fafc;"></textarea>
+                </div>
+
+                <div style="background: #f8fafc; border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; display: flex; flex-direction: column; gap: 12px;">
+                  <div>
+                    <label for="cfg-opt-e1-en" style="display: block; font-weight: 600; font-size: 12px; color: var(--navy); margin-bottom: 4px;">
+                      Option E1 Confirmation (Norberto):
+                    </label>
+                    <textarea id="cfg-opt-e1-en" rows="2" style="width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:var(--radius); font-size:12px; font-family:inherit; line-height:1.4; resize:vertical; background:#fff;"></textarea>
+                  </div>
+                  <div>
+                    <label for="cfg-opt-e2-en" style="display: block; font-weight: 600; font-size: 12px; color: var(--navy); margin-bottom: 4px;">
+                      Option E2 Confirmation (María):
+                    </label>
+                    <textarea id="cfg-opt-e2-en" rows="2" style="width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:var(--radius); font-size:12px; font-family:inherit; line-height:1.4; resize:vertical; background:#fff;"></textarea>
+                  </div>
+                  <div>
+                    <label for="cfg-opt-e3-en" style="display: block; font-weight: 600; font-size: 12px; color: var(--navy); margin-bottom: 4px;">
+                      Option E3 Confirmation (General Team):
+                    </label>
+                    <textarea id="cfg-opt-e3-en" rows="2" style="width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:var(--radius); font-size:12px; font-family:inherit; line-height:1.4; resize:vertical; background:#fff;"></textarea>
+                  </div>
+                </div>
+              </div>
+            </details>
           </div>
         </div>
       </details>
@@ -957,7 +1061,9 @@
               <!-- Mensajes dinámicos generados por JS -->
             </div>
 
-            <div class="chat-quick-actions" style="justify-content: flex-end;">
+            <div class="chat-quick-actions" style="justify-content: flex-end; gap: 8px;">
+              <button type="button" class="chat-quick-btn" data-chat-act="English" style="color:#0369a1; font-weight:600;">🌐 Probar English</button>
+              <button type="button" class="chat-quick-btn" data-chat-act="Español" style="color:#047857; font-weight:600;">🇪🇸 Probar Español</button>
               <button type="button" class="chat-quick-btn" data-chat-act="MENU" style="color:var(--muted); font-weight:600;">🔄 Reiniciar chat</button>
             </div>
 

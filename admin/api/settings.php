@@ -96,6 +96,9 @@ if ($method === 'POST') {
                     'menu_welcome', 'opt_a_text', 'opt_b_text', 'opt_c_text', 'opt_d_text', 'opt_e_text',
                     'submenu_turnos_text', 'opt_a2_text',
                     'opt_e1_text', 'opt_e2_text', 'opt_e3_text',
+                    'menu_welcome_en', 'opt_a_text_en', 'opt_b_text_en', 'opt_c_text_en', 'opt_d_text_en', 'opt_e_text_en',
+                    'submenu_turnos_text_en', 'opt_a2_text_en',
+                    'opt_e1_text_en', 'opt_e2_text_en', 'opt_e3_text_en',
                     'cancellation_policy', 'confirmation_notes', 'reminder_text', 'reminder_notes'
                 ];
                 $cleanTexts = isset($raw['clara_texts']) && is_array($raw['clara_texts']) ? $raw['clara_texts'] : [];
@@ -113,7 +116,7 @@ if ($method === 'POST') {
                 $rawOpts = $input['custom_menu_options'] ?? ($input['clara_texts']['custom_menu_options'] ?? []);
                 $cleanOpts = [];
                 if (is_array($rawOpts)) {
-                    $reserved = ['A', 'B', 'C', 'D', 'E'];
+                    $reserved = ['A', 'B', 'C', 'D', 'E', 'F'];
                     foreach ($rawOpts as $row) {
                         if (!is_array($row)) continue;
                         $letter = strtoupper(trim((string) ($row['letter'] ?? '')));

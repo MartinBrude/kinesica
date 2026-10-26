@@ -21,6 +21,23 @@ export function renderOptCText(template, fees = {}) {
     .replace(/\{medios_pago\}/g, pay);
 }
 
+export const DEFAULT_OPT_C_TEXT_EN = `💳 *Fees and Coverage*
+• *Fees:* {honorario_atm} for TMJ / ATM (bruxism / jaw pain) and {honorario_general} for all other consultations (general physiotherapy, osteopathy, postural reeducation / RPG, etc.). Sessions are 60 minutes, one-on-one.
+• *Payment methods:* Payment can be made in {medios_pago}.
+• *Coverage:* We operate as a private practice (out-of-network). At the end of your session, we issue an official invoice so you can submit it to your health insurance or medical plan for reimbursement 📄.`;
+
+export function renderOptCTextEn(template, fees = {}) {
+  const text = typeof template === "string" && template.trim() ? template.trim() : DEFAULT_OPT_C_TEXT_EN;
+  const atm = `$${Number(fees.atm || 65000).toLocaleString("es-AR")}`;
+  const general = `$${Number(fees.general || 75000).toLocaleString("es-AR")}`;
+  const rawPay = String(fees.payment_methods || "").toLowerCase();
+  const pay = (rawPay.includes("efectivo") || rawPay.includes("transferencia")) ? "cash or bank transfer" : (fees.payment_methods || "cash or bank transfer").toLowerCase();
+  return text
+    .replace(/\{honorario_atm\}/g, atm)
+    .replace(/\{honorario_general\}/g, general)
+    .replace(/\{medios_pago\}/g, pay);
+}
+
 // Recordatorio de 24 h: lo envía n8n ("Kinesica - Recordatorios 24h" → "Send WhatsApp Reminder") con la plantilla
 // de Meta recordatorio_turno_kinesica. Variables de la plantilla: {{1}} nombre de pila, {{2}} "sesión en el
 // consultorio" (fijo), {{3}} hora, {{4}} indicaciones (editables en el admin). El texto no se edita desde aquí.

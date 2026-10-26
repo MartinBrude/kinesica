@@ -5,7 +5,7 @@
  * a las opciones A-E, submenús y opciones personalizadas.
  */
 
-import { renderOptCText } from "./menu-texts.js?v=2";
+import { renderOptCText, renderOptCTextEn } from "./menu-texts.js?v=2";
 import { escapeHtml } from "./dom.js?v=78";
 import { api } from "./api.js?v=78";
 
@@ -33,6 +33,7 @@ const chatInputEl = document.querySelector("#chat-demo-input");
 const chatQuickBtns = document.querySelectorAll(".chat-quick-btn");
 
 let chatSubmenu = null; // 'turnos', 'profesional', etc.
+let chatLang = "es";
 
 function getNowTimeStr() {
   const d = new Date();
@@ -55,12 +56,13 @@ function formatWhatsAppMarkdown(rawText) {
 }
 
 // Pie "volver al menú": solo se agrega si el texto no menciona ya MENU/menú (igual que el bot real).
-function withMenuFooter(text) {
+function withMenuFooter(text, lang = chatLang) {
   const body = String(text || "").trim();
   if (!body) return body;
   const plain = body.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   if (/menu/i.test(plain)) return body;
-  return `${body}\n\n_(Escribí *MENU* para volver a ver las opciones)_`;
+  const footer = (lang === "en") ? "_(Type *MENU* to see the options again)_" : "_(Escribí *MENU* para volver a ver las opciones)_";
+  return `${body}\n\n${footer}`;
 }
 
 export function appendChatMessage(text, sender = "bot") {
@@ -85,21 +87,27 @@ export function appendChatMessage(text, sender = "bot") {
   chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
 }
 
-export function resetChatDemo() {
+export function resetChatDemo(lang = chatLang) {
   if (!chatMessagesEl) return;
   chatMessagesEl.replaceChildren();
   chatSubmenu = null;
-  let welcome = ctx.inputs.menuWelcome?.value?.trim() || ctx.getTexts().menu_welcome || ctx.defaults.menu_welcome;
-  if (ctx.getCustomOptions() && ctx.getCustomOptions().length > 0) {
-    const extraLines = ctx.getCustomOptions()
-      .filter((o) => o.letter && o.label)
-      .map((o) => `*${o.letter.toUpperCase()}.* ${o.label}`)
-      .join("\n");
-    if (extraLines && !welcome.toUpperCase().includes(`*${ctx.getCustomOptions()[0].letter.toUpperCase()}.*`)) {
-      if (welcome.includes("\n\n_(")) {
-        welcome = welcome.replace("\n\n_(", `\n${extraLines}\n\n_(`);
-      } else {
-        welcome += `\n${extraLines}`;
+  chatLang = lang;
+  let welcome;
+  if (chatLang === "en") {
+    welcome = ctx.inputs.menuWelcomeEn?.value?.trim() || ctx.getTexts().menu_welcome_en || ctx.defaults.menu_welcome_en;
+  } else {
+    welcome = ctx.inputs.menuWelcome?.value?.trim() || ctx.getTexts().menu_welcome || ctx.defaults.menu_welcome;
+    if (ctx.getCustomOptions() && ctx.getCustomOptions().length > 0) {
+      const extraLines = ctx.getCustomOptions()
+        .filter((o) => o.letter && o.label)
+        .map((o) => `*${o.letter.toUpperCase()}.* ${o.label}`)
+        .join("\n");
+      if (extraLines && !welcome.toUpperCase().includes(`*${ctx.getCustomOptions()[0].letter.toUpperCase()}.*`)) {
+        if (welcome.includes("\n\n_(")) {
+          welcome = welcome.replace("\n\n_(", `\n${extraLines}\n\n_(`);
+        } else {
+          welcome += `\n${extraLines}`;
+        }
       }
     }
   }
@@ -117,7 +125,25 @@ function handleChatUserInput(inputRaw) {
   // Reset / Menu
   if (norm === "menu" || norm === "reiniciar" || norm === "hola" || norm === "buenas") {
     setTimeout(() => {
-      resetChatDemo();
+      resetChatDemo(chatLang);
+    }, 400);
+    return;
+  }
+
+  // Cambio de idioma (English / Español)
+  if (norm === "english" || norm === "ingles" || (norm === "f" && chatLang === "es")) {
+    chatSubmenu = null;
+    chatLang = "en";
+    setTimeout(() => {
+      resetChatDemo("en");
+    }, 400);
+    return;
+  }
+  if (norm === "espanol" || norm === "spanish" || (norm === "f" && chatLang === "en")) {
+    chatSubmenu = null;
+    chatLang = "es";
+    setTimeout(() => {
+      resetChatDemo("es");
     }, 400);
     return;
   }
@@ -131,25 +157,28 @@ function handleChatUserInput(inputRaw) {
     chatSubmenu = null;
     const resp = matchedCustom.response || "Información no disponible.";
     setTimeout(() => {
-      appendChatMessage(`${resp}\n\n_(Escribí *MENU* para volver a ver las opciones)_`, "bot");
+      appendChatMessage(withMenuFooter(resp, chatLang), "bot");
     }, 450);
     return;
   }
 
   // Si está en submenú Turnos
   if (chatSubmenu === "turnos") {
-    if (norm === "1") {
+    if (norm === "1" || norm === "agendar" || norm === "book" || norm === "schedule") {
       chatSubmenu = null;
-      const optA = ctx.inputs.optA?.value?.trim() || ctx.getTexts().opt_a_text || ctx.defaults.opt_a_text;
+      const optA = (chatLang === "en")
+        ? (ctx.inputs.optAEn?.value?.trim() || ctx.getTexts().opt_a_text_en || ctx.defaults.opt_a_text_en)
+        : (ctx.inputs.optA?.value?.trim() || ctx.getTexts().opt_a_text || ctx.defaults.opt_a_text);
       setTimeout(() => {
         appendChatMessage(optA, "bot");
       }, 500);
       return;
     }
-    if (norm === "2") {
+    if (norm === "2" || norm === "consultar" || norm === "cancelar" || norm === "check" || norm === "cancel") {
       chatSubmenu = "buscar_dni";
-      const optA2 = ctx.inputs.optA2?.value?.trim() || ctx.getTexts().opt_a2_text || ctx.defaults.opt_a2_text ||
-        "Con este número de WhatsApp no encontramos turnos agendados. Si agendaste con otro teléfono, respondé directamente con tu *DNI o Pasaporte* y lo buscamos.\n\n_(Escribí *MENU* para volver)_";
+      const optA2 = (chatLang === "en")
+        ? (ctx.inputs.optA2En?.value?.trim() || ctx.getTexts().opt_a2_text_en || ctx.defaults.opt_a2_text_en)
+        : (ctx.inputs.optA2?.value?.trim() || ctx.getTexts().opt_a2_text || ctx.defaults.opt_a2_text);
       setTimeout(() => {
         appendChatMessage(optA2, "bot");
       }, 600);
@@ -159,39 +188,44 @@ function handleChatUserInput(inputRaw) {
 
   // Si está en espera de búsqueda por DNI o Documento
   if (chatSubmenu === "buscar_dni") {
-    const docMatch = norm.match(/^(?:dni|documento|pasaporte|doc)?\s*([0-9a-zA-Z.\s-]{6,15})$/i);
+    const docMatch = norm.match(/^(?:dni|documento|pasaporte|doc|id|passport)?\s*([0-9a-zA-Z.\s-]{6,15})$/i);
     const cleanDoc = docMatch ? docMatch[1].replace(/[.\s-]/g, "").toUpperCase() : "";
     chatSubmenu = null;
     setTimeout(() => {
-      // Al ser un simulador offline/estático sin acceso directo a la agenda de Google Calendar,
-      // no inventamos turnos para cualquier DNI que ingrese el usuario.
-      appendChatMessage(`No encontramos turnos agendados asociados al documento *${cleanDoc || input}*.\n\n_(Escribí *MENU* para volver al inicio)_`, "bot");
+      const notFoundMsg = (chatLang === "en")
+        ? `We didn't find any scheduled appointments associated with document *${cleanDoc || input}*.\n\n_(Type *MENU* to return to the menu)_`
+        : `No encontramos turnos agendados asociados al documento *${cleanDoc || input}*.\n\n_(Escribí *MENU* para volver al inicio)_`;
+      appendChatMessage(notFoundMsg, "bot");
     }, 600);
     return;
   }
 
   // Si está en submenú Profesional (mismas respuestas que el bot real)
   if (chatSubmenu === "profesional") {
-    let proMsg = ctx.inputs.optE3?.value?.trim() || ctx.getTexts().opt_e3_text || ctx.defaults.opt_e3_text ||
-      "¡Perfecto! Ya le transmitimos tu consulta a nuestro equipo. Te estarán contactando a la brevedad directamente por WhatsApp 🙌.\n\n_(Escribí *MENU* si deseás ver otras opciones)_";
+    let proMsg = (chatLang === "en")
+      ? (ctx.inputs.optE3En?.value?.trim() || ctx.getTexts().opt_e3_text_en || ctx.defaults.opt_e3_text_en)
+      : (ctx.inputs.optE3?.value?.trim() || ctx.getTexts().opt_e3_text || ctx.defaults.opt_e3_text);
     /** @type {"norberto"|"maria"|"azar"} */
     let alertTarget = "azar";
     let optionLabel = "E → consulta libre";
     if (norm === "1" || norm === "norberto") {
       alertTarget = "norberto";
       optionLabel = "E → 1 Norberto";
-      proMsg = ctx.inputs.optE1?.value?.trim() || ctx.getTexts().opt_e1_text || ctx.defaults.opt_e1_text ||
-        "¡Perfecto! Ya le transmitimos tu consulta al Lic. Norberto Brude. Te estará contactando a la brevedad directamente por WhatsApp 🙌.\n\n_(Escribí *MENU* si deseás ver otras opciones)_";
+      proMsg = (chatLang === "en")
+        ? (ctx.inputs.optE1En?.value?.trim() || ctx.getTexts().opt_e1_text_en || ctx.defaults.opt_e1_text_en)
+        : (ctx.inputs.optE1?.value?.trim() || ctx.getTexts().opt_e1_text || ctx.defaults.opt_e1_text);
     } else if (norm === "2" || /^mar[ií]a$/.test(norm)) {
       alertTarget = "maria";
       optionLabel = "E → 2 María";
-      proMsg = ctx.inputs.optE2?.value?.trim() || ctx.getTexts().opt_e2_text || ctx.defaults.opt_e2_text ||
-        "¡Perfecto! Ya le transmitimos tu consulta a la Lic. María Gulin. Te estará contactando a la brevedad directamente por WhatsApp 🙌.\n\n_(Escribí *MENU* si deseás ver otras opciones)_";
-    } else if (norm === "3" || norm === "indistinto" || norm === "primera consulta") {
+      proMsg = (chatLang === "en")
+        ? (ctx.inputs.optE2En?.value?.trim() || ctx.getTexts().opt_e2_text_en || ctx.defaults.opt_e2_text_en)
+        : (ctx.inputs.optE2?.value?.trim() || ctx.getTexts().opt_e2_text || ctx.defaults.opt_e2_text);
+    } else if (norm === "3" || norm === "indistinto" || norm === "primera consulta" || norm === "either" || norm === "any") {
       alertTarget = "azar";
       optionLabel = "E → 3 Indistinto";
-      proMsg = ctx.inputs.optE3?.value?.trim() || ctx.getTexts().opt_e3_text || ctx.defaults.opt_e3_text ||
-        "¡Perfecto! Ya le transmitimos tu consulta a nuestro equipo de kinesiólogos. Te estarán contactando a la brevedad directamente por WhatsApp 🙌.\n\n_(Escribí *MENU* si deseás ver otras opciones)_";
+      proMsg = (chatLang === "en")
+        ? (ctx.inputs.optE3En?.value?.trim() || ctx.getTexts().opt_e3_text_en || ctx.defaults.opt_e3_text_en)
+        : (ctx.inputs.optE3?.value?.trim() || ctx.getTexts().opt_e3_text || ctx.defaults.opt_e3_text);
     }
     chatSubmenu = null;
     const patientMessage = input;
@@ -203,51 +237,63 @@ function handleChatUserInput(inputRaw) {
   }
 
   // Opciones A a E
-  if (norm === "a" || norm.startsWith("opcion a")) {
+  if (norm === "a" || norm.startsWith("opcion a") || norm.startsWith("option a")) {
     chatSubmenu = "turnos";
-    const subTurnosMsg = ctx.inputs.submenuTurnos?.value?.trim() || ctx.getTexts().submenu_turnos_text || ctx.defaults.submenu_turnos_text ||
-      "📅 *Gestión de Turnos - Kinésica*\n\nPor favor elegí una opción respondiendo *1* o *2*:\n\n*1.* 📅 Agendar un nuevo turno\n*2.* 📋 Consultar o cancelar mis turnos\n\n_(Respondé *1* o *2*, o escribí *MENU* para volver al menú principal)_";
+    const subTurnosMsg = (chatLang === "en")
+      ? (ctx.inputs.submenuTurnosEn?.value?.trim() || ctx.getTexts().submenu_turnos_text_en || ctx.defaults.submenu_turnos_text_en)
+      : (ctx.inputs.submenuTurnos?.value?.trim() || ctx.getTexts().submenu_turnos_text || ctx.defaults.submenu_turnos_text);
     setTimeout(() => {
       appendChatMessage(subTurnosMsg, "bot");
     }, 450);
     return;
   }
 
-  if (norm === "b" || norm.startsWith("opcion b") || norm.includes("donde queda") || norm.includes("ubicacion")) {
+  if (norm === "b" || norm.startsWith("opcion b") || norm.startsWith("option b") || norm.includes("donde queda") || norm.includes("ubicacion") || norm.includes("location")) {
     chatSubmenu = null;
-    const optB = ctx.inputs.optB?.value?.trim() || ctx.getTexts().opt_b_text || ctx.defaults.opt_b_text;
+    const optB = (chatLang === "en")
+      ? (ctx.inputs.optBEn?.value?.trim() || ctx.getTexts().opt_b_text_en || ctx.defaults.opt_b_text_en)
+      : (ctx.inputs.optB?.value?.trim() || ctx.getTexts().opt_b_text || ctx.defaults.opt_b_text);
     setTimeout(() => {
       appendChatMessage(optB, "bot");
     }, 450);
     return;
   }
 
-  if (norm === "c" || norm.startsWith("opcion c") || norm.includes("honorarios") || norm.includes("precio") || norm.includes("cuanto sale")) {
+  if (norm === "c" || norm.startsWith("opcion c") || norm.startsWith("option c") || norm.includes("honorarios") || norm.includes("precio") || norm.includes("fees")) {
     chatSubmenu = null;
     const atmVal = parseInt(document.querySelector("#input-fee-atm")?.value, 10) || 65000;
     const genVal = parseInt(document.querySelector("#input-fee-general")?.value, 10) || 75000;
     const payVal = document.querySelector("#input-fee-payment-methods")?.value?.trim() || "Efectivo o transferencia bancaria";
-    const optC = ctx.inputs.optC?.value?.trim() || ctx.getTexts().opt_c_text || ctx.defaults.opt_c_text;
-    const feeMsg = renderOptCText(optC, { atm: atmVal, general: genVal, payment_methods: payVal });
+    let feeMsg;
+    if (chatLang === "en") {
+      const optCEn = ctx.inputs.optCEn?.value?.trim() || ctx.getTexts().opt_c_text_en || ctx.defaults.opt_c_text_en;
+      feeMsg = renderOptCTextEn(optCEn, { atm: atmVal, general: genVal, payment_methods: payVal });
+    } else {
+      const optC = ctx.inputs.optC?.value?.trim() || ctx.getTexts().opt_c_text || ctx.defaults.opt_c_text;
+      feeMsg = renderOptCText(optC, { atm: atmVal, general: genVal, payment_methods: payVal });
+    }
     setTimeout(() => {
       appendChatMessage(feeMsg, "bot");
     }, 450);
     return;
   }
 
-  if (norm === "d" || norm.startsWith("opcion d") || norm.includes("ropa") || norm.includes("vestimenta")) {
+  if (norm === "d" || norm.startsWith("opcion d") || norm.startsWith("option d") || norm.includes("ropa") || norm.includes("vestimenta") || norm.includes("attire")) {
     chatSubmenu = null;
-    const optD = ctx.inputs.optD?.value?.trim() || ctx.getTexts().opt_d_text || ctx.defaults.opt_d_text;
+    const optD = (chatLang === "en")
+      ? (ctx.inputs.optDEn?.value?.trim() || ctx.getTexts().opt_d_text_en || ctx.defaults.opt_d_text_en)
+      : (ctx.inputs.optD?.value?.trim() || ctx.getTexts().opt_d_text || ctx.defaults.opt_d_text);
     setTimeout(() => {
-      appendChatMessage(withMenuFooter(optD), "bot");
+      appendChatMessage(withMenuFooter(optD, chatLang), "bot");
     }, 450);
     return;
   }
 
-  if (norm === "e" || norm.startsWith("opcion e") || norm.includes("profesional") || norm.includes("hablar")) {
+  if (norm === "e" || norm.startsWith("opcion e") || norm.startsWith("option e") || norm.includes("profesional") || norm.includes("hablar") || norm.includes("practitioner")) {
     chatSubmenu = "profesional";
-    const optE = ctx.inputs.optE?.value?.trim() || ctx.getTexts().opt_e_text || ctx.defaults.opt_e_text ||
-      "💬 *Contacto con un Profesional*\n\n¿Con quién te gustaría comunicarte?\n*1.* Lic. Norberto Brude\n*2.* Lic. María Gulin\n*3.* Indistinto / Primera consulta general\n\n_(Respondé *1*, *2* o *3*, o escribí tu consulta directamente y se la transmitimos)_\n_Escribí *MENU* para volver_";
+    const optE = (chatLang === "en")
+      ? (ctx.inputs.optEEn?.value?.trim() || ctx.getTexts().opt_e_text_en || ctx.defaults.opt_e_text_en)
+      : (ctx.inputs.optE?.value?.trim() || ctx.getTexts().opt_e_text || ctx.defaults.opt_e_text);
     setTimeout(() => {
       appendChatMessage(optE, "bot");
     }, 450);
@@ -256,7 +302,10 @@ function handleChatUserInput(inputRaw) {
 
   // Respuesta por defecto con el menú
   setTimeout(() => {
-    appendChatMessage("Disculpame, no llegué a comprender esa opción. Por favor ingresá una de las letras del menú o escribí *MENU* 🙌.", "bot");
+    const fallbackMsg = (chatLang === "en")
+      ? "I'm sorry, I couldn't understand that option. Please reply with one of the menu letters or type *MENU* 🙌."
+      : "Disculpame, no llegué a comprender esa opción. Por favor ingresá una de las letras del menú o escribí *MENU* 🙌.";
+    appendChatMessage(fallbackMsg, "bot");
   }, 500);
 }
 
