@@ -38,7 +38,7 @@
     { id: "acupuntura", label: "Acupuntura", practitioners: ["maria"] },
     { id: "rpg", label: "RPG", practitioners: ["norberto", "maria"] },
     { id: "neurodinamia", label: "Neurodinamia", practitioners: ["norberto", "maria"] },
-    { id: "viscerales", label: "Manipulaciones viscerales (Barral)", practitioners: ["norberto", "maria"] },
+    { id: "viscerales", label: "Manipulaciones viscerales (Barral)", practitioners: ["norberto"] },
     { id: "posturologia", label: "Posturología", practitioners: ["maria"] },
     { id: "no-se", label: "No sé", bySchedule: true, practitioners: ["norberto", "maria"] },
     { id: "paciente", label: "Paciente en tratamiento", internal: true, practitioners: ["norberto", "maria"] },
