@@ -51,7 +51,20 @@ if ($patientMessage !== '') {
 }
 $body .= "\n_(Prueba desde /admin — no es un paciente real. Podés ignorarlo.)_";
 
-$result = send_whatsapp_alert($to, $body);
+$tplDetalle = $patientMessage !== ''
+    ? ('Mensaje simulador: "' . $patientMessage . '" | Disparado por ' . $byName)
+    : ('Disparado por ' . $byName . ' desde /admin (DEMO)');
+$alertPayload = [
+    'to' => $to,
+    'body' => $body,
+    'tpl_patient' => 'Demo simulador',
+    'tpl_whatsapp' => $to,
+    'tpl_motivo' => 'DEMO · ' . ($optionLabel !== '' ? $optionLabel : $targetRaw),
+    'tpl_detalle' => mb_substr($tplDetalle, 0, 300),
+    'tpl_btn_phone' => $to,
+];
+
+$result = send_whatsapp_alert_payload($alertPayload);
 if (!$result['ok']) {
     json_out(502, [
         'error' => $result['error'] ?? 'No se pudo enviar el WhatsApp',

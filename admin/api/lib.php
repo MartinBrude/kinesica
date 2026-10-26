@@ -1026,12 +1026,12 @@ function send_whatsapp_text(string $to, string $body): array
  *
  * @return array{ok: bool, http_code: int, error?: string}
  */
-function send_whatsapp_via_n8n_demo(string $to, string $body): array
+function send_whatsapp_via_n8n_demo(string $to, string $body, array $extra = []): array
 {
     $to = preg_replace('/\D+/', '', $to) ?? '';
     $body = trim($body);
-    if ($to === '' || $body === '') {
-        return ['ok' => false, 'http_code' => 0, 'error' => 'Destino o mensaje vacío'];
+    if ($to === '') {
+        return ['ok' => false, 'http_code' => 0, 'error' => 'Destino vacío'];
     }
     if (!function_exists('curl_init')) {
         return ['ok' => false, 'http_code' => 0, 'error' => 'cURL no disponible en el servidor'];
@@ -1049,11 +1049,12 @@ function send_whatsapp_via_n8n_demo(string $to, string $body): array
         return ['ok' => false, 'http_code' => 0, 'error' => 'Falta webhook_secret en config.php'];
     }
 
-    $payload = json_encode([
+    $payloadArr = array_merge([
         'to' => $to,
         'body' => $body,
         'source' => 'admin-simulator',
-    ], JSON_UNESCAPED_UNICODE);
+    ], $extra);
+    $payload = json_encode($payloadArr, JSON_UNESCAPED_UNICODE);
 
     $ch = curl_init($url);
     curl_setopt_array($ch, [
@@ -1092,18 +1093,121 @@ function send_whatsapp_via_n8n_demo(string $to, string $body): array
  */
 function send_whatsapp_alert(string $to, string $body): array
 {
+    return send_whatsapp_alert_payload(['to' => $to, 'body' => $body]);
+}
+
+/**
+ * Alerta con campos de plantilla (tpl_*) para el webhook n8n / Graph template.
+ *
+ * @param array{to:string,body?:string,tpl_patient?:string,tpl_whatsapp?:string,tpl_motivo?:string,tpl_detalle?:string,tpl_btn_phone?:string} $payload
+ * @return array{ok: bool, http_code: int, error?: string, via?: string}
+ */
+function send_whatsapp_alert_payload(array $payload): array
+{
+    $to = preg_replace('/\D+/', '', (string) ($payload['to'] ?? '')) ?? '';
+    $body = trim((string) ($payload['body'] ?? ''));
+    $extra = [];
+    foreach (['tpl_patient', 'tpl_whatsapp', 'tpl_motivo', 'tpl_detalle', 'tpl_btn_phone'] as $k) {
+        if (isset($payload[$k]) && trim((string) $payload[$k]) !== '') {
+            $extra[$k] = trim((string) $payload[$k]);
+        }
+    }
+
     $creds = whatsapp_credentials();
     if ($creds['token'] !== '') {
-        $direct = send_whatsapp_text($to, $body);
-        if ($direct['ok']) {
-            $direct['via'] = 'graph';
+        // Preferir plantilla si hay campos tpl_*; si no, texto libre (solo dentro de ventana 24h).
+        if ($extra !== []) {
+            $direct = send_whatsapp_template_alert($to, $extra);
+            $direct['via'] = 'graph-template';
             return $direct;
         }
-        // Si hay token pero falló Meta, no caemos a n8n en silencio: devolvemos el error.
+        $direct = send_whatsapp_text($to, $body);
         $direct['via'] = 'graph';
         return $direct;
     }
-    $viaN8n = send_whatsapp_via_n8n_demo($to, $body);
+    $viaN8n = send_whatsapp_via_n8n_demo($to, $body !== '' ? $body : 'alerta', $extra);
     $viaN8n['via'] = 'n8n';
     return $viaN8n;
+}
+
+/**
+ * Envía plantilla alerta_profesional_kinesica vía Graph API.
+ *
+ * @param array<string,string> $tpl
+ * @return array{ok: bool, http_code: int, error?: string, response?: string}
+ */
+function send_whatsapp_template_alert(string $to, array $tpl): array
+{
+    $creds = whatsapp_credentials();
+    $token = $creds['token'];
+    $phoneId = $creds['phone_number_id'];
+    $to = preg_replace('/\D+/', '', $to) ?? '';
+    if ($token === '' || $to === '') {
+        return ['ok' => false, 'http_code' => 0, 'error' => 'Falta token o destino'];
+    }
+    if (!function_exists('curl_init')) {
+        return ['ok' => false, 'http_code' => 0, 'error' => 'cURL no disponible'];
+    }
+
+    $btn = preg_replace('/\D+/', '', (string) ($tpl['tpl_btn_phone'] ?? $tpl['tpl_whatsapp'] ?? '')) ?? '';
+    $graphBody = [
+        'messaging_product' => 'whatsapp',
+        'recipient_type' => 'individual',
+        'to' => $to,
+        'type' => 'template',
+        'template' => [
+            'name' => 'alerta_profesional_kinesica',
+            'language' => ['code' => 'es_AR'],
+            'components' => [
+                [
+                    'type' => 'body',
+                    'parameters' => [
+                        ['type' => 'text', 'text' => (string) ($tpl['tpl_patient'] ?? '-')],
+                        ['type' => 'text', 'text' => (string) ($tpl['tpl_whatsapp'] ?? '-')],
+                        ['type' => 'text', 'text' => (string) ($tpl['tpl_motivo'] ?? '-')],
+                        ['type' => 'text', 'text' => (string) ($tpl['tpl_detalle'] ?? '-')],
+                    ],
+                ],
+                [
+                    'type' => 'button',
+                    'sub_type' => 'url',
+                    'index' => '0',
+                    'parameters' => [
+                        ['type' => 'text', 'text' => $btn !== '' ? $btn : '5491100000000'],
+                    ],
+                ],
+            ],
+        ],
+    ];
+
+    $url = 'https://graph.facebook.com/v22.0/' . rawurlencode($phoneId) . '/messages';
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_POST => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER => [
+            'Authorization: Bearer ' . $token,
+            'Content-Type: application/json',
+        ],
+        CURLOPT_POSTFIELDS => json_encode($graphBody, JSON_UNESCAPED_UNICODE),
+        CURLOPT_TIMEOUT => 20,
+    ]);
+    $response = curl_exec($ch);
+    $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
+    curl_close($ch);
+
+    if ($curlError) {
+        return ['ok' => false, 'http_code' => $httpCode, 'error' => 'Error de red: ' . $curlError];
+    }
+    if ($httpCode >= 200 && $httpCode < 300) {
+        return ['ok' => true, 'http_code' => $httpCode, 'response' => is_string($response) ? $response : ''];
+    }
+    $snippet = is_string($response) ? substr($response, 0, 300) : '';
+    return [
+        'ok' => false,
+        'http_code' => $httpCode,
+        'error' => 'Meta HTTP ' . $httpCode . ($snippet !== '' ? (': ' . $snippet) : ''),
+        'response' => is_string($response) ? $response : '',
+    ];
 }

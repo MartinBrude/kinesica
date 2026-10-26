@@ -364,8 +364,8 @@ function updateStatusToggles(isClaraOn, isBookingOn) {
   activeBooking = isBookingOn;
 
   if (cfgClaraDot) cfgClaraDot.className = `dash-status-dot ${isClaraOn ? "active" : "inactive"}`;
-  if (cfgClaraText) cfgClaraText.textContent = isClaraOn ? "Clara WhatsApp: Activa" : "Clara WhatsApp: Pausada";
-  if (cfgClaraToggleBtn) cfgClaraToggleBtn.textContent = isClaraOn ? "Pausar bot" : "Reanudar bot";
+  if (cfgClaraText) cfgClaraText.textContent = isClaraOn ? "Clara: Visible en web + recordatorios" : "Clara: Oculta en web (sin recordatorios)";
+  if (cfgClaraToggleBtn) cfgClaraToggleBtn.textContent = isClaraOn ? "Ocultar en web" : "Mostrar en web";
 
   if (cfgBookingDot) cfgBookingDot.className = `dash-status-dot ${isBookingOn ? "active" : "inactive"}`;
   if (cfgBookingText) cfgBookingText.textContent = isBookingOn ? "Reservas Web: Activas" : "Reservas Web: Pausadas";

@@ -43,6 +43,9 @@ RewriteRule ^en/dolor-sacriiliaco\.html$ /en/dolor-sacroiliaco.html [R=301,L]
 RewriteRule ^fr/dolor-sacriiliaco\.html$ /fr/dolor-sacroiliaco.html [R=301,L]
 RewriteRule ^pt/dolor-sacriiliaco\.html$ /pt/dolor-sacroiliaco.html [R=301,L]
 
+# WhatsApp alert template button: /wa/{E.164 digits} → redirect to wa.me
+RewriteRule ^wa/([0-9]{8,16})/?$ /wa/index.php [L,QSA]
+
 # Online booking clean URL (/agendar and localized /en/agendar, /fr/agendar, /pt/agendar)
 RewriteRule ^agendar/?$ /agendar.html [L]
 RewriteRule ^(en|fr|pt)/agendar/?$ /$1/agendar.html [L]

@@ -48,10 +48,10 @@ export async function updateDashboardClara(isActive) {
     claraDot.className = `dash-status-dot ${isActive ? "active" : "inactive"}`;
   }
   if (claraText) {
-    claraText.textContent = isActive ? "Clara: Activa en WhatsApp" : "Clara: Pausada";
+    claraText.textContent = isActive ? "Clara: Visible en web + recordatorios" : "Clara: Oculta en web (sin recordatorios)";
   }
   if (claraToggleBtn) {
-    claraToggleBtn.textContent = isActive ? "Pausar bot" : "Reanudar bot";
+    claraToggleBtn.textContent = isActive ? "Ocultar en web" : "Mostrar en web";
   }
 }
 
