@@ -1,12 +1,22 @@
 /** AUTO-GENERATED — no editar. Fuente: npm run reviews:fetch */
 window.KINESICA_GOOGLE_REVIEWS = {
   "placeId": "ChIJZ2mPW9K1vJUR3J5kGRi5gws",
-  "fetchedAt": "2026-10-20T16:27:54.932Z",
+  "fetchedAt": "2026-10-26T18:21:35.064Z",
   "displayName": "Kinesica",
   "googleMapsUri": "https://maps.google.com/?cid=829710269522681564&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA",
   "rating": 5,
   "userRatingCount": 35,
   "reviews": [
+    {
+      "author": "Manu Covic",
+      "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjXT_z1Jocd8RtQKJjZNPHtT6nWADbK9htmMD0ZnLXcr5WYoZBU=s128-c0x00000000-cc-rp-mo-ba4",
+      "authorProfile": "https://www.google.com/maps/contrib/101062939083218654733/reviews",
+      "rating": 5,
+      "text": "Norberto me ayudó mucho y saco dolores dorsales y de rodilla que venia padeciendo. El trato muy amigable y profesional. Lo recomiendo completamente!",
+      "language": "es",
+      "relativeTime": "Hace una semana",
+      "publishTime": "2026-10-17T15:27:44.938806512Z"
+    },
     {
       "author": "Mailín Schneeberger",
       "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjX7x83prghHbR_UiPIGfbc95mu8jcrTxPiT4RzDjyGFhI869U5DzQ=s128-c0x00000000-cc-rp-mo-ba2",
@@ -44,20 +54,20 @@ window.KINESICA_GOOGLE_REVIEWS = {
       "language": "es",
       "relativeTime": "Hace 3 meses",
       "publishTime": "2026-07-21T22:41:19.944949311Z"
-    },
-    {
-      "author": "Martin Figueroa",
-      "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWH1NIssF8Mao5RzMLHufdWDcctM9XzC6a9okzyyojbh9m-22pw=s128-c0x00000000-cc-rp-mo",
-      "authorProfile": "https://www.google.com/maps/contrib/114835887772282675184/reviews",
-      "rating": 5,
-      "text": "Excelente atención del doctor Brude en cada sesión. Explica con claridad y genera mucha confianza. Se nota el compromiso con la recuperación del paciente. Su trato es muy amable y personalizado.",
-      "language": "es",
-      "relativeTime": "Hace 7 meses",
-      "publishTime": "2026-03-18T19:26:52.862442188Z"
     }
   ],
   "byLang": {
     "es": [
+      {
+        "author": "Manu Covic",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjXT_z1Jocd8RtQKJjZNPHtT6nWADbK9htmMD0ZnLXcr5WYoZBU=s128-c0x00000000-cc-rp-mo-ba4",
+        "authorProfile": "https://www.google.com/maps/contrib/101062939083218654733/reviews",
+        "rating": 5,
+        "text": "Norberto me ayudó mucho y saco dolores dorsales y de rodilla que venia padeciendo. El trato muy amigable y profesional. Lo recomiendo completamente!",
+        "language": "es",
+        "relativeTime": "Hace una semana",
+        "publishTime": "2026-10-17T15:27:44.938806512Z"
+      },
       {
         "author": "Mailín Schneeberger",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjX7x83prghHbR_UiPIGfbc95mu8jcrTxPiT4RzDjyGFhI869U5DzQ=s128-c0x00000000-cc-rp-mo-ba2",
@@ -95,19 +105,19 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "language": "es",
         "relativeTime": "Hace 3 meses",
         "publishTime": "2026-07-21T22:41:19.944949311Z"
-      },
-      {
-        "author": "Martin Figueroa",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWH1NIssF8Mao5RzMLHufdWDcctM9XzC6a9okzyyojbh9m-22pw=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/114835887772282675184/reviews",
-        "rating": 5,
-        "text": "Excelente atención del doctor Brude en cada sesión. Explica con claridad y genera mucha confianza. Se nota el compromiso con la recuperación del paciente. Su trato es muy amable y personalizado.",
-        "language": "es",
-        "relativeTime": "Hace 7 meses",
-        "publishTime": "2026-03-18T19:26:52.862442188Z"
       }
     ],
     "en": [
+      {
+        "author": "Manu Covic",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjXT_z1Jocd8RtQKJjZNPHtT6nWADbK9htmMD0ZnLXcr5WYoZBU=s128-c0x00000000-cc-rp-mo-ba4",
+        "authorProfile": "https://www.google.com/maps/contrib/101062939083218654733/reviews",
+        "rating": 5,
+        "text": "Norberto helped me a lot and relieved the back and knee pain I'd been suffering from. He was very friendly and professional. I highly recommend him!",
+        "language": "en",
+        "relativeTime": "a week ago",
+        "publishTime": "2026-10-17T15:27:44.938806512Z"
+      },
       {
         "author": "Mailín Schneeberger",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjX7x83prghHbR_UiPIGfbc95mu8jcrTxPiT4RzDjyGFhI869U5DzQ=s128-c0x00000000-cc-rp-mo-ba2",
@@ -145,19 +155,19 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "language": "en",
         "relativeTime": "3 months ago",
         "publishTime": "2026-07-21T22:41:19.944949311Z"
-      },
-      {
-        "author": "Jack Grantham",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWSSbjYSLBV4mxom-l1D8K58_Mnko-xAxdA_PJ6irzmVMwrBTQvzg=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/116757338678492155627/reviews",
-        "rating": 5,
-        "text": "Amazing person! He is a healer.\nThank you very much.",
-        "language": "en",
-        "relativeTime": "a year ago",
-        "publishTime": "2025-01-21T04:07:42.347641Z"
       }
     ],
     "fr": [
+      {
+        "author": "Manu Covic",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjXT_z1Jocd8RtQKJjZNPHtT6nWADbK9htmMD0ZnLXcr5WYoZBU=s128-c0x00000000-cc-rp-mo-ba4",
+        "authorProfile": "https://www.google.com/maps/contrib/101062939083218654733/reviews",
+        "rating": 5,
+        "text": "Norberto m'a beaucoup aidé et a soulagé mes douleurs au dos et au genou. Il était très sympathique et professionnel. Je le recommande vivement !",
+        "language": "fr",
+        "relativeTime": "il y a une semaine",
+        "publishTime": "2026-10-17T15:27:44.938806512Z"
+      },
       {
         "author": "Mailín Schneeberger",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjX7x83prghHbR_UiPIGfbc95mu8jcrTxPiT4RzDjyGFhI869U5DzQ=s128-c0x00000000-cc-rp-mo-ba2",
@@ -195,19 +205,19 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "language": "fr",
         "relativeTime": "il y a 3 mois",
         "publishTime": "2026-07-21T22:41:19.944949311Z"
-      },
-      {
-        "author": "Martin Figueroa",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWH1NIssF8Mao5RzMLHufdWDcctM9XzC6a9okzyyojbh9m-22pw=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/114835887772282675184/reviews",
-        "rating": 5,
-        "text": "Le Dr Brude prodigue d'excellents soins à chaque séance. Ses explications sont claires et il inspire confiance. Son engagement envers le rétablissement du patient est manifeste. Son approche est empreinte de bienveillance et personnalisée.",
-        "language": "fr",
-        "relativeTime": "il y a 7 mois",
-        "publishTime": "2026-03-18T19:26:52.862442188Z"
       }
     ],
     "pt": [
+      {
+        "author": "Manu Covic",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjXT_z1Jocd8RtQKJjZNPHtT6nWADbK9htmMD0ZnLXcr5WYoZBU=s128-c0x00000000-cc-rp-mo-ba4",
+        "authorProfile": "https://www.google.com/maps/contrib/101062939083218654733/reviews",
+        "rating": 5,
+        "text": "Norberto me ajudou muito e aliviou as dores nas costas e nos joelhos que eu vinha sentindo. Ele foi muito simpático e profissional. Recomendo-o fortemente!",
+        "language": "pt",
+        "relativeTime": "há uma semana",
+        "publishTime": "2026-10-17T15:27:44.938806512Z"
+      },
       {
         "author": "Mailín Schneeberger",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjX7x83prghHbR_UiPIGfbc95mu8jcrTxPiT4RzDjyGFhI869U5DzQ=s128-c0x00000000-cc-rp-mo-ba2",
@@ -245,16 +255,6 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "language": "pt",
         "relativeTime": "há 3 meses",
         "publishTime": "2026-07-21T22:41:19.944949311Z"
-      },
-      {
-        "author": "Martin Figueroa",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWH1NIssF8Mao5RzMLHufdWDcctM9XzC6a9okzyyojbh9m-22pw=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/114835887772282675184/reviews",
-        "rating": 5,
-        "text": "O Dr. Brude oferece um atendimento excelente em todas as sessões. Ele explica tudo com clareza e inspira muita confiança. Seu comprometimento com a recuperação do paciente é evidente. Sua abordagem é muito gentil e personalizada.",
-        "language": "pt",
-        "relativeTime": "há 7 meses",
-        "publishTime": "2026-03-18T19:26:52.862442188Z"
       }
     ]
   },
