@@ -1,17 +1,39 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Rutas candidatas de config (la primera que exista gana).
+ * Fuera de public_html sobrevive a hosting_deploy; dentro de api/ hace falta
+ * tener el archivo en la máquina que despliega (gitignored).
+ *
+ * @return list<string>
+ */
+function kinesica_config_candidate_paths(): array
+{
+    // .../public_html/admin/api → subir 3 niveles = carpeta del dominio
+    $domainRoot = dirname(__DIR__, 3);
+    return [
+        $domainRoot . '/private/admin-config.php',
+        __DIR__ . '/config.php',
+    ];
+}
+
 function cfg(): array
 {
     static $cfg;
     if ($cfg === null) {
-        $configFile = __DIR__ . '/config.php';
-        if (is_file($configFile)) {
-            $cfg = require $configFile;
-        } elseif (is_file(__DIR__ . '/config.example.php')) {
+        $cfg = [];
+        foreach (kinesica_config_candidate_paths() as $configFile) {
+            if (is_file($configFile)) {
+                $loaded = require $configFile;
+                if (is_array($loaded)) {
+                    $cfg = $loaded;
+                    break;
+                }
+            }
+        }
+        if ($cfg === [] && is_file(__DIR__ . '/config.example.php')) {
             $cfg = require __DIR__ . '/config.example.php';
-        } else {
-            $cfg = [];
         }
         $mailFile = __DIR__ . '/mail.php';
         if (is_file($mailFile)) {

@@ -15,6 +15,7 @@ admin/
 ├── api/                     # Backend PHP (REST/JSON seguro)
 │   ├── backup.php           # Copias de seguridad automáticas CLI y descarga SQL autenticada (admin)
 │   ├── config.example.php   # Plantilla de configuración
+│   ├── config.php           # Secretos locales/prod (gitignored; obligatorio al deploy)
 │   ├── fichas.php           # Endpoint CRUD de historias clínicas
 │   ├── firma.php            # Servidor autenticado de firmas digitales (/admin/signatures/*.png)
 │   ├── forgot.php           # Solicitud de restablecimiento de contraseña
@@ -188,3 +189,15 @@ Cada módulo tiene una responsabilidad única y bien delimitada:
 | **Carga de Módulos Nativos** | Sin sobrecarga de herramientas de compilación pesadas; el navegador descarga y almacena en caché individualmente cada módulo JS y CSS. |
 | **Precarga de Imágenes en PDF** | Antes de abrir el cuadro de impresión nativo (`window.print()`), el sistema aguarda la resolución de `img.decode()` en paralelo mediante `Promise.all()`, asegurando que las firmas y sellos se impriman sin cortes. |
 | **Cache-Busting Versionado** | `index.html` incluye sufijos de versión controlados (`styles.css?v=...` y `app.js?v=...`) para asegurar actualización instantánea en los clientes ante nuevos despliegues. |
+
+---
+
+## 5. Deploy y `config.php` (no volver a borrarlo)
+
+`hosting_deploy` con el directorio del repo **reemplaza todo `public_html`**. Los archivos en `.gitignore` (`admin/api/config.php`, `mail.php`, `whatsapp.php`, `data/*`) **solo se conservan si existen en la máquina que empaqueta el deploy**.
+
+Reglas:
+
+1. Antes de cualquier deploy completo: `node scripts/deploy-hostinger.mjs --check-only` (falla si falta `config.php` local).
+2. Preferí subidas selectivas (TUS/FTP de archivos tocados) frente a un deploy full-site.
+3. `lib.php` también busca `../private/admin-config.php` (fuera de `public_html`); ese path sobrevive aunque se limpie el document root. Tras un restore, correr una vez `_migrate_config_once.php` y borrarlo.

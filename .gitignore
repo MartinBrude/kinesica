@@ -2,6 +2,8 @@ node_modules/
 .env
 admin/api/config.php
 admin/api/mail.php
+admin/api/whatsapp.php
+admin/api/bot_token.sha256
 js/site-secrets.js
 js/site-secrets.min.js
 css/dist/
