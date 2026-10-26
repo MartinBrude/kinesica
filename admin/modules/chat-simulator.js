@@ -7,6 +7,7 @@
 
 import { renderOptCText } from "./menu-texts.js?v=2";
 import { escapeHtml } from "./dom.js?v=78";
+import { api } from "./api.js?v=78";
 
 /**
  * Contexto inyectado por configuracion.js (evita import circular y estado duplicado).
@@ -173,19 +174,30 @@ function handleChatUserInput(inputRaw) {
   if (chatSubmenu === "profesional") {
     let proMsg = ctx.inputs.optE3?.value?.trim() || ctx.getTexts().opt_e3_text || ctx.defaults.opt_e3_text ||
       "¡Perfecto! Ya le transmitimos tu consulta a nuestro equipo. Te estarán contactando a la brevedad directamente por WhatsApp 🙌.\n\n_(Escribí *MENU* si deseás ver otras opciones)_";
+    /** @type {"norberto"|"maria"|"azar"} */
+    let alertTarget = "azar";
+    let optionLabel = "E → consulta libre";
     if (norm === "1" || norm === "norberto") {
+      alertTarget = "norberto";
+      optionLabel = "E → 1 Norberto";
       proMsg = ctx.inputs.optE1?.value?.trim() || ctx.getTexts().opt_e1_text || ctx.defaults.opt_e1_text ||
         "¡Perfecto! Ya le transmitimos tu consulta al Lic. Norberto Brude. Te estará contactando a la brevedad directamente por WhatsApp 🙌.\n\n_(Escribí *MENU* si deseás ver otras opciones)_";
     } else if (norm === "2" || /^mar[ií]a$/.test(norm)) {
+      alertTarget = "maria";
+      optionLabel = "E → 2 María";
       proMsg = ctx.inputs.optE2?.value?.trim() || ctx.getTexts().opt_e2_text || ctx.defaults.opt_e2_text ||
         "¡Perfecto! Ya le transmitimos tu consulta a la Lic. María Gulin. Te estará contactando a la brevedad directamente por WhatsApp 🙌.\n\n_(Escribí *MENU* si deseás ver otras opciones)_";
     } else if (norm === "3" || norm === "indistinto" || norm === "primera consulta") {
+      alertTarget = "azar";
+      optionLabel = "E → 3 Indistinto";
       proMsg = ctx.inputs.optE3?.value?.trim() || ctx.getTexts().opt_e3_text || ctx.defaults.opt_e3_text ||
         "¡Perfecto! Ya le transmitimos tu consulta a nuestro equipo de kinesiólogos. Te estarán contactando a la brevedad directamente por WhatsApp 🙌.\n\n_(Escribí *MENU* si deseás ver otras opciones)_";
     }
     chatSubmenu = null;
+    const patientMessage = input;
     setTimeout(() => {
       appendChatMessage(proMsg, "bot");
+      notifyProfessionalFromSimulator(alertTarget, optionLabel, patientMessage);
     }, 500);
     return;
   }
@@ -246,6 +258,33 @@ function handleChatUserInput(inputRaw) {
   setTimeout(() => {
     appendChatMessage("Disculpame, no llegué a comprender esa opción. Por favor ingresá una de las letras del menú o escribí *MENU* 🙌.", "bot");
   }, 500);
+}
+
+/**
+ * Avisa por WhatsApp real al profesional (DEMO · Simulador Clara).
+ * @param {"norberto"|"maria"|"azar"} target
+ * @param {string} optionLabel
+ * @param {string} patientMessage
+ */
+async function notifyProfessionalFromSimulator(target, optionLabel, patientMessage) {
+  try {
+    await api("clara-alert.php", {
+      method: "POST",
+      body: JSON.stringify({
+        target,
+        option_label: optionLabel,
+        patient_message: patientMessage,
+      }),
+    });
+  } catch (err) {
+    const detail = (err && err.message && err.message !== "auth")
+      ? err.message
+      : "revisá WHATSAPP_TOKEN en config.php";
+    appendChatMessage(
+      `⚠️ No pude avisar al profesional por WhatsApp: ${detail}`,
+      "bot"
+    );
+  }
 }
 
 export function initChatSimulator() {

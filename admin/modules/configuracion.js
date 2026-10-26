@@ -12,7 +12,7 @@ import { api } from "./api.js?v=77";
 import { escapeHtml, dialogAlert, dialogConfirm } from "./dom.js?v=78";
 import { loadHorariosFromServer } from "./horarios.js?v=3";
 import { loadHonorarios } from "./honorarios.js?v=2";
-import { appendChatMessage, resetChatDemo, initChatSimulator, setChatContext } from "./chat-simulator.js?v=7";
+import { appendChatMessage, resetChatDemo, initChatSimulator, setChatContext } from "./chat-simulator.js?v=8";
 
 const viewConsultorio = document.querySelector("#view-consultorio");
 const viewClara = document.querySelector("#view-clara");
@@ -624,4 +624,4 @@ export function previewOptCText(optC, fees) {
 
 // Simulador de Chat con Clara (delegado a chat-simulator.js)
 // ----------------------------------------------------
-export { appendChatMessage, resetChatDemo, initChatSimulator } from "./chat-simulator.js?v=6";
+export { appendChatMessage, resetChatDemo, initChatSimulator } from "./chat-simulator.js?v=8";

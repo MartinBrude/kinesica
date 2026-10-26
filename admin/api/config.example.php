@@ -11,6 +11,10 @@ return [
     'webhook_secret' => 'CAMBIAR',
     'mail_from' => 'no-reply@kinesica.com.ar',
     'admin_url' => 'https://www.kinesica.com.ar/admin/',
+    // Token permanente Meta WhatsApp Cloud API (mismo que n8n / Apps Script).
+    // También se puede inyectar por env: WHATSAPP_TOKEN / WHATSAPP_PHONE_NUMBER_ID.
+    'whatsapp_token' => '',
+    'whatsapp_phone_number_id' => '1340013275870491',
     'user_emails' => [
         'martin' => 'martin.brude@gmail.com',
         'norberto' => 'norberto1712@gmail.com',

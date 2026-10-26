@@ -890,3 +890,102 @@ function login_code_verify(string $username, string $code): bool
     }
     return false;
 }
+
+/**
+ * Credenciales Meta WhatsApp Cloud API (env primero, luego config.php).
+ *
+ * @return array{token: string, phone_number_id: string}
+ */
+function whatsapp_credentials(): array
+{
+    $token = (string) (
+        getenv('WHATSAPP_TOKEN')
+        ?: ($_SERVER['WHATSAPP_TOKEN'] ?? $_ENV['WHATSAPP_TOKEN'] ?? cfg()['whatsapp_token'] ?? '')
+    );
+    $phoneId = (string) (
+        getenv('WHATSAPP_PHONE_NUMBER_ID')
+        ?: ($_SERVER['WHATSAPP_PHONE_NUMBER_ID'] ?? $_ENV['WHATSAPP_PHONE_NUMBER_ID'] ?? cfg()['whatsapp_phone_number_id'] ?? '1340013275870491')
+    );
+    return [
+        'token' => trim($token),
+        'phone_number_id' => trim($phoneId) !== '' ? trim($phoneId) : '1340013275870491',
+    ];
+}
+
+/**
+ * Envía un texto por WhatsApp Cloud API.
+ *
+ * @return array{ok: bool, http_code: int, error?: string, response?: array}
+ */
+function send_whatsapp_text(string $to, string $body): array
+{
+    $to = preg_replace('/\D+/', '', $to) ?? '';
+    $body = trim($body);
+    if ($to === '' || $body === '') {
+        return ['ok' => false, 'http_code' => 0, 'error' => 'Destino o mensaje vacío'];
+    }
+    if (!function_exists('curl_init')) {
+        return ['ok' => false, 'http_code' => 0, 'error' => 'cURL no disponible en el servidor'];
+    }
+
+    $creds = whatsapp_credentials();
+    if ($creds['token'] === '') {
+        return [
+            'ok' => false,
+            'http_code' => 0,
+            'error' => 'Falta WHATSAPP_TOKEN (config.php o variable de entorno)',
+        ];
+    }
+
+    $url = 'https://graph.facebook.com/v21.0/' . rawurlencode($creds['phone_number_id']) . '/messages';
+    $payload = json_encode([
+        'messaging_product' => 'whatsapp',
+        'recipient_type' => 'individual',
+        'to' => $to,
+        'type' => 'text',
+        'text' => [
+            'preview_url' => false,
+            'body' => $body,
+        ],
+    ], JSON_UNESCAPED_UNICODE);
+
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_POST => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER => [
+            'Authorization: Bearer ' . $creds['token'],
+            'Content-Type: application/json',
+        ],
+        CURLOPT_POSTFIELDS => $payload,
+        CURLOPT_TIMEOUT => 15,
+    ]);
+    $response = curl_exec($ch);
+    $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
+    curl_close($ch);
+
+    if ($curlError) {
+        return ['ok' => false, 'http_code' => $httpCode, 'error' => 'Error de red: ' . $curlError];
+    }
+
+    $decoded = is_string($response) ? json_decode($response, true) : null;
+    if ($httpCode >= 200 && $httpCode < 300) {
+        return [
+            'ok' => true,
+            'http_code' => $httpCode,
+            'response' => is_array($decoded) ? $decoded : [],
+        ];
+    }
+
+    $metaMsg = '';
+    if (is_array($decoded)) {
+        $metaMsg = (string) ($decoded['error']['message'] ?? $decoded['error']['error_user_msg'] ?? '');
+    }
+    return [
+        'ok' => false,
+        'http_code' => $httpCode,
+        'error' => $metaMsg !== '' ? $metaMsg : ('Meta HTTP ' . $httpCode),
+        'response' => is_array($decoded) ? $decoded : [],
+    ];
+}
