@@ -28,8 +28,8 @@ export const DEFAULT_OPT_C_TEXT_EN = `💳 *Fees and Coverage*
 
 export function renderOptCTextEn(template, fees = {}) {
   const text = typeof template === "string" && template.trim() ? template.trim() : DEFAULT_OPT_C_TEXT_EN;
-  const atm = `$${Number(fees.atm || 65000).toLocaleString("es-AR")}`;
-  const general = `$${Number(fees.general || 75000).toLocaleString("es-AR")}`;
+  const atm = `ARS ${Number(fees.atm || 65000).toLocaleString("es-AR")}`;
+  const general = `ARS ${Number(fees.general || 75000).toLocaleString("es-AR")}`;
   const rawPay = String(fees.payment_methods || "").toLowerCase();
   const pay = (rawPay.includes("efectivo") || rawPay.includes("transferencia")) ? "cash or bank transfer" : (fees.payment_methods || "cash or bank transfer").toLowerCase();
   return text

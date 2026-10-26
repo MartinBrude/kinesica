@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { DEFAULT_OPT_C_TEXT, renderOptCText, REMINDER_TEMPLATE_TEXT, renderReminderPreview } from "../admin/modules/menu-texts.js";
+import { DEFAULT_OPT_C_TEXT, DEFAULT_OPT_C_TEXT_EN, renderOptCText, renderOptCTextEn, REMINDER_TEMPLATE_TEXT, renderReminderPreview } from "../admin/modules/menu-texts.js";
 import { CONTACT } from "./site-contact.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -15,6 +15,11 @@ test("placeholders de honorarios se reemplazan", () => {
   const out = renderOptCText("ATM {honorario_atm} / resto {honorario_general} / {medios_pago} / {honorario_atm}",
     { atm: 70000, general: 80000, payment_methods: "Efectivo o Transferencia" });
   assert.equal(out, "ATM $70.000 / resto $80.000 / efectivo o transferencia / $70.000");
+
+  const outEn = renderOptCTextEn("ATM {honorario_atm} / other {honorario_general} / {medios_pago} / {honorario_atm}",
+    { atm: 70000, general: 80000, payment_methods: "Efectivo o Transferencia" });
+  assert.equal(outEn, "ATM ARS 70.000 / other ARS 80.000 / cash or bank transfer / ARS 70.000");
+  assert.ok(!outEn.includes("$"));
 });
 
 test("texto vacío usa el default sin placeholders sueltos", () => {
@@ -24,6 +29,13 @@ test("texto vacío usa el default sin placeholders sueltos", () => {
     assert.match(out, /\$65\.000/);
     assert.match(out, /\$75\.000/);
     assert.ok(!out.includes("{"));
+
+    const outEn = renderOptCTextEn(t, {});
+    assert.match(outEn, /Fees and Coverage/);
+    assert.match(outEn, /ARS 65\.000/);
+    assert.match(outEn, /ARS 75\.000/);
+    assert.ok(!outEn.includes("$"));
+    assert.ok(!outEn.includes("{"));
   }
 });
 
