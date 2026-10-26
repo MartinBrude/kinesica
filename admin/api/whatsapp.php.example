@@ -1,0 +1,9 @@
+<?php
+/**
+ * Copiá este archivo a whatsapp.php en el servidor (no versionar whatsapp.php).
+ * Mismo token permanente de Meta que usa n8n / Google Apps Script.
+ */
+return [
+    'whatsapp_token' => 'PEGAR_TOKEN_PERMANENTE_AQUI',
+    'whatsapp_phone_number_id' => '1340013275870491',
+];

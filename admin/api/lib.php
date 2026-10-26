@@ -20,6 +20,14 @@ function cfg(): array
                 $cfg = array_merge($cfg, $mail);
             }
         }
+        // Secretos WhatsApp fuera de git (mismo patrón que mail.php).
+        $waFile = __DIR__ . '/whatsapp.php';
+        if (is_file($waFile)) {
+            $wa = require $waFile;
+            if (is_array($wa)) {
+                $cfg = array_merge($cfg, $wa);
+            }
+        }
     }
     return $cfg;
 }
@@ -988,4 +996,92 @@ function send_whatsapp_text(string $to, string $body): array
         'error' => $metaMsg !== '' ? $metaMsg : ('Meta HTTP ' . $httpCode),
         'response' => is_array($decoded) ? $decoded : [],
     ];
+}
+
+/**
+ * Fallback: despacha la alerta vía webhook n8n (usa la credencial WhatsApp de n8n).
+ * Útil cuando Hostinger no tiene WHATSAPP_TOKEN en config.
+ *
+ * @return array{ok: bool, http_code: int, error?: string}
+ */
+function send_whatsapp_via_n8n_demo(string $to, string $body): array
+{
+    $to = preg_replace('/\D+/', '', $to) ?? '';
+    $body = trim($body);
+    if ($to === '' || $body === '') {
+        return ['ok' => false, 'http_code' => 0, 'error' => 'Destino o mensaje vacío'];
+    }
+    if (!function_exists('curl_init')) {
+        return ['ok' => false, 'http_code' => 0, 'error' => 'cURL no disponible en el servidor'];
+    }
+
+    $url = trim((string) (
+        getenv('N8N_DEMO_ALERT_URL')
+        ?: ($_SERVER['N8N_DEMO_ALERT_URL'] ?? $_ENV['N8N_DEMO_ALERT_URL'] ?? cfg()['n8n_demo_alert_url'] ?? '')
+    ));
+    if ($url === '') {
+        $url = 'https://n8n.kinesica.com.ar/webhook/clara-demo-alert';
+    }
+    $secret = trim((string) (cfg()['webhook_secret'] ?? ''));
+    if ($secret === '') {
+        return ['ok' => false, 'http_code' => 0, 'error' => 'Falta webhook_secret en config.php'];
+    }
+
+    $payload = json_encode([
+        'to' => $to,
+        'body' => $body,
+        'source' => 'admin-simulator',
+    ], JSON_UNESCAPED_UNICODE);
+
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_POST => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER => [
+            'Content-Type: application/json',
+            'X-Webhook-Secret: ' . $secret,
+        ],
+        CURLOPT_POSTFIELDS => $payload,
+        CURLOPT_TIMEOUT => 20,
+    ]);
+    $response = curl_exec($ch);
+    $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
+    curl_close($ch);
+
+    if ($curlError) {
+        return ['ok' => false, 'http_code' => $httpCode, 'error' => 'Error de red n8n: ' . $curlError];
+    }
+    if ($httpCode >= 200 && $httpCode < 300) {
+        return ['ok' => true, 'http_code' => $httpCode];
+    }
+    $snippet = is_string($response) ? substr($response, 0, 200) : '';
+    return [
+        'ok' => false,
+        'http_code' => $httpCode,
+        'error' => 'n8n HTTP ' . $httpCode . ($snippet !== '' ? (': ' . $snippet) : ''),
+    ];
+}
+
+/**
+ * Envía WhatsApp: Graph API si hay token; si no, webhook n8n del simulador.
+ *
+ * @return array{ok: bool, http_code: int, error?: string, via?: string}
+ */
+function send_whatsapp_alert(string $to, string $body): array
+{
+    $creds = whatsapp_credentials();
+    if ($creds['token'] !== '') {
+        $direct = send_whatsapp_text($to, $body);
+        if ($direct['ok']) {
+            $direct['via'] = 'graph';
+            return $direct;
+        }
+        // Si hay token pero falló Meta, no caemos a n8n en silencio: devolvemos el error.
+        $direct['via'] = 'graph';
+        return $direct;
+    }
+    $viaN8n = send_whatsapp_via_n8n_demo($to, $body);
+    $viaN8n['via'] = 'n8n';
+    return $viaN8n;
 }

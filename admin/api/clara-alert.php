@@ -51,11 +51,12 @@ if ($patientMessage !== '') {
 }
 $body .= "\n_(Prueba desde /admin — no es un paciente real. Podés ignorarlo.)_";
 
-$result = send_whatsapp_text($to, $body);
+$result = send_whatsapp_alert($to, $body);
 if (!$result['ok']) {
     json_out(502, [
         'error' => $result['error'] ?? 'No se pudo enviar el WhatsApp',
         'http_code' => $result['http_code'] ?? 0,
+        'via' => $result['via'] ?? null,
     ]);
 }
 
@@ -65,4 +66,5 @@ json_out(200, [
     'professional' => $chosen,
     'professional_name' => $professionalName,
     'target_requested' => $targetRaw,
+    'via' => $result['via'] ?? null,
 ]);

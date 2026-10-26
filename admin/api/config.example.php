@@ -15,6 +15,8 @@ return [
     // También se puede inyectar por env: WHATSAPP_TOKEN / WHATSAPP_PHONE_NUMBER_ID.
     'whatsapp_token' => '',
     'whatsapp_phone_number_id' => '1340013275870491',
+    // Fallback del simulador si no hay token local: webhook n8n (clara-demo-alert).
+    'n8n_demo_alert_url' => 'https://n8n.kinesica.com.ar/webhook/clara-demo-alert',
     'user_emails' => [
         'martin' => 'martin.brude@gmail.com',
         'norberto' => 'norberto1712@gmail.com',
