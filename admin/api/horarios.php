@@ -345,6 +345,7 @@ Por favor, respondé con la letra de la opción que necesitás:
 *C.* 💳 Honorarios y cobertura (obras sociales / reintegros)
 *D.* 👕 ¿Cómo venir vestido/a a la sesión?
 *E.* 💬 Comunicarte con un profesional (Lic. Norberto Brude / Lic. María Gulin)
+*F.* 🌐 English
 
 _(Escribí la letra de la opción deseada, por ejemplo *A* o *C*)_",
         'opt_a_text' => 'Para coordinar o consultar turnos, ingresá a nuestra turnera online: https://kinesica.com.ar/agendar 📅',
@@ -357,6 +358,17 @@ _(Escribí la letra de la opción deseada, por ejemplo *A* o *C*)_",
         'opt_e1_text' => "¡Perfecto! Ya le transmitimos tu consulta al Lic. Norberto Brude. Te estará contactando a la brevedad directamente por WhatsApp 🙌.\n\n_(Escribí *MENU* si deseás ver otras opciones)_",
         'opt_e2_text' => "¡Perfecto! Ya le transmitimos tu consulta a la Lic. María Gulin. Te estará contactando a la brevedad directamente por WhatsApp 🙌.\n\n_(Escribí *MENU* si deseás ver otras opciones)_",
         'opt_e3_text' => "¡Perfecto! Ya le transmitimos tu consulta a nuestro equipo de kinesiólogos. Te estarán contactando a la brevedad directamente por WhatsApp 🙌.\n\n_(Escribí *MENU* si deseás ver otras opciones)_",
+        'menu_welcome_en' => "Hello! Welcome to *Kinésica* 🩺\n\nPlease reply with the letter of the option you need:\n\n*A.* 📅 Appointments (book, check or cancel)\n*B.* 📍 Location and office hours\n*C.* 💳 Fees and coverage (health insurance / reimbursement)\n*D.* 👕 Session attire and dress code\n*E.* 💬 Speak with a practitioner (Lic. Norberto Brude / Lic. María Gulin)\n*F.* 🇪🇸 Español\n\n_(Reply with the option letter, for example *A* or *C*)_",
+        'opt_a_text_en' => "📅 *Appointments & Booking - Kinésica*\n\nTo check available days and times in real time with Norberto or María and book your 60-minute session, visit our online booking site:\n\n👉 *https://kinesica.com.ar/agendar*",
+        'opt_b_text_en' => "📍 *Kinésica Clinic*\n• *Location:* Charcas 3889, 5th Floor, Apt B, Palermo, Buenos Aires (between Scalabrini Ortiz and Aráoz, steps from Av. Santa Fe and Scalabrini Ortiz Subte D station).\n• *Google Maps:* https://maps.google.com/?q=Charcas+3889+Palermo+CABA",
+        'opt_c_text_en' => "💳 *Fees and Coverage*\n• *Fees:* {honorario_atm} for TMJ / ATM (bruxism / jaw pain) and {honorario_general} for all other consultations (general physiotherapy, osteopathy, postural reeducation / RPG, etc.). Sessions are 60 minutes, one-on-one.\n• *Payment methods:* Payment can be made in {medios_pago}.\n• *Coverage:* We operate as a private practice (out-of-network). At the end of your session, we issue an official invoice so you can submit it to your health insurance or medical plan for reimbursement 📄.",
+        'opt_d_text_en' => "👕 *Attire for your session:*\n• Underwear or shorts for men.\n• Underwear with a standard (non-sports) bra, a 2-piece swimsuit, or short leggings for women.\n• If you have previous medical imaging or tests (MRI, X-rays), please bring them or send us photos 🙌.\n\n_(Type *MENU* to see the options again)_",
+        'opt_e_text_en' => "💬 *Contact a Practitioner*\n\nWho would you like to speak with?\n*1.* Lic. Norberto Brude\n*2.* Lic. María Gulin\n*3.* Either / General inquiry\n\n_(Reply *1*, *2* or *3*, or write your question directly and we will pass it along)_\n_Type *MENU* to return_",
+        'submenu_turnos_text_en' => "📅 *Appointments - Kinésica*\n\nPlease choose an option by replying *1* or *2*:\n\n*1.* 📅 Book a new appointment\n*2.* 📋 Check or cancel my appointments\n\n_(Reply *1* or *2*, or type *MENU* to return to the main menu)_",
+        'opt_a2_text_en' => "We couldn't find any scheduled appointments for this WhatsApp number. If you booked using a different phone number, reply directly with your *ID or Passport* and we will look it up.\n\n_(Type *MENU* to return)_",
+        'opt_e1_text_en' => "Great! We've forwarded your message to Lic. Norberto Brude. He will contact you shortly directly via WhatsApp 🙌.\n\n_(Type *MENU* to see other options)_",
+        'opt_e2_text_en' => "Great! We've forwarded your message to Lic. María Gulin. She will contact you shortly directly via WhatsApp 🙌.\n\n_(Type *MENU* to see other options)_",
+        'opt_e3_text_en' => "Great! We've forwarded your message to our physical therapy team. They will contact you shortly directly via WhatsApp 🙌.\n\n_(Type *MENU* to see other options)_",
         'cancellation_policy' => 'Te recordamos que los turnos pueden cancelarse o reprogramarse con un mínimo de 24 horas de anticipación 🙌.',
         'confirmation_notes' => 'Por favor asistir con puntualidad exacta al horario asignado. No contamos con secretaria, si estamos atendiendo a otro paciente no podemos recibirte anticipadamente.',
         'reminder_text' => "¡Hola {nombre}! 🌿 Te escribo desde Kinésica para recordarte tu sesión en el consultorio programada para mañana a las {horario}.\n\n{indicaciones}\n\nPor favor confirmá tu asistencia seleccionando una de las opciones a continuación 🙌:",

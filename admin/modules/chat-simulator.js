@@ -87,14 +87,38 @@ export function appendChatMessage(text, sender = "bot") {
   chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
 }
 
+export function getLangOptionLetter() {
+  const customOpts = (ctx.getCustomOptions && ctx.getCustomOptions()) || [];
+  const usedLetters = new Set(["A", "B", "C", "D", "E"]);
+  for (const opt of customOpts) {
+    if (opt && opt.letter) usedLetters.add(String(opt.letter).trim().toUpperCase());
+  }
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  for (let i = 5; i < alphabet.length; i++) {
+    if (!usedLetters.has(alphabet[i])) {
+      return alphabet[i];
+    }
+  }
+  return "F";
+}
+
 export function resetChatDemo(lang = chatLang) {
   if (!chatMessagesEl) return;
   chatMessagesEl.replaceChildren();
   chatSubmenu = null;
   chatLang = lang;
   let welcome;
+  const langLetter = getLangOptionLetter();
   if (chatLang === "en") {
     welcome = ctx.inputs.menuWelcomeEn?.value?.trim() || ctx.getTexts().menu_welcome_en || ctx.defaults.menu_welcome_en;
+    const langLineEn = `*${langLetter}.* 🇪🇸 Español`;
+    if (!welcome.toUpperCase().includes(`*${langLetter}.*`) && !/español|espanol|spanish/i.test(welcome)) {
+      if (welcome.includes("\n\n_(")) {
+        welcome = welcome.replace("\n\n_(", `\n${langLineEn}\n\n_(`);
+      } else {
+        welcome += `\n${langLineEn}`;
+      }
+    }
   } else {
     welcome = ctx.inputs.menuWelcome?.value?.trim() || ctx.getTexts().menu_welcome || ctx.defaults.menu_welcome;
     if (ctx.getCustomOptions() && ctx.getCustomOptions().length > 0) {
@@ -110,6 +134,14 @@ export function resetChatDemo(lang = chatLang) {
         }
       }
     }
+    const langLineEs = `*${langLetter}.* 🌐 English`;
+    if (!welcome.toUpperCase().includes(`*${langLetter}.*`) && !/english/i.test(welcome)) {
+      if (welcome.includes("\n\n_(")) {
+        welcome = welcome.replace("\n\n_(", `\n${langLineEs}\n\n_(`);
+      } else {
+        welcome += `\n${langLineEs}`;
+      }
+    }
   }
   appendChatMessage(welcome, "bot");
 }
@@ -123,35 +155,17 @@ function handleChatUserInput(inputRaw) {
   const norm = input.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
 
   // Reset / Menu
-  if (norm === "menu" || norm === "reiniciar" || norm === "hola" || norm === "buenas") {
+  if (norm === "menu" || norm === "reiniciar" || norm === "hola" || norm === "buenas" || norm === "hello" || norm === "hi" || norm === "start") {
     setTimeout(() => {
       resetChatDemo(chatLang);
     }, 400);
     return;
   }
 
-  // Cambio de idioma (English / Español)
-  if (norm === "english" || norm === "ingles" || (norm === "f" && chatLang === "es")) {
-    chatSubmenu = null;
-    chatLang = "en";
-    setTimeout(() => {
-      resetChatDemo("en");
-    }, 400);
-    return;
-  }
-  if (norm === "espanol" || norm === "spanish" || (norm === "f" && chatLang === "en")) {
-    chatSubmenu = null;
-    chatLang = "es";
-    setTimeout(() => {
-      resetChatDemo("es");
-    }, 400);
-    return;
-  }
-
-  // Buscar coincidencia en opciones personalizadas
+  // Buscar coincidencia en opciones personalizadas (precedencia sobre idioma si existiera custom)
   const matchedCustom = ctx.getCustomOptions().find((o) => {
     const l = String(o.letter || "").toLowerCase();
-    return l && (norm === l || norm === `opcion ${l}` || norm.startsWith(`${l}.`) || norm.startsWith(`${l} -`));
+    return l && (norm === l || norm === `opcion ${l}` || norm === `option ${l}` || norm.startsWith(`${l}.`) || norm.startsWith(`${l} -`));
   });
   if (matchedCustom) {
     chatSubmenu = null;
@@ -159,6 +173,27 @@ function handleChatUserInput(inputRaw) {
     setTimeout(() => {
       appendChatMessage(withMenuFooter(resp, chatLang), "bot");
     }, 450);
+    return;
+  }
+
+  // Cambio de idioma (English / Español)
+  const langLetter = getLangOptionLetter().toLowerCase();
+  const isOptionLang = norm === langLetter || norm === `${langLetter}.` || norm === `opcion ${langLetter}` || norm === `option ${langLetter}` || norm.startsWith(`${langLetter} -`) || norm.startsWith(`${langLetter}-`);
+
+  if (norm === "english" || norm === "ingles" || norm.includes("in english") || (isOptionLang && chatLang === "es")) {
+    chatSubmenu = null;
+    chatLang = "en";
+    setTimeout(() => {
+      resetChatDemo("en");
+    }, 400);
+    return;
+  }
+  if (norm === "espanol" || norm === "spanish" || norm.includes("in spanish") || (isOptionLang && chatLang === "en")) {
+    chatSubmenu = null;
+    chatLang = "es";
+    setTimeout(() => {
+      resetChatDemo("es");
+    }, 400);
     return;
   }
 
