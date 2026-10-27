@@ -1,12 +1,22 @@
 /** AUTO-GENERATED — no editar. Fuente: npm run reviews:fetch */
 window.KINESICA_GOOGLE_REVIEWS = {
   "placeId": "ChIJZ2mPW9K1vJUR3J5kGRi5gws",
-  "fetchedAt": "2026-10-27T00:16:48.237Z",
+  "fetchedAt": "2026-10-27T17:35:43.135Z",
   "displayName": "Kinesica",
   "googleMapsUri": "https://maps.google.com/?cid=829710269522681564&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA",
   "rating": 5,
   "userRatingCount": 35,
   "reviews": [
+    {
+      "author": "Manu Covic",
+      "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjXT_z1Jocd8RtQKJjZNPHtT6nWADbK9htmMD0ZnLXcr5WYoZBU=s128-c0x00000000-cc-rp-mo-ba4",
+      "authorProfile": "https://www.google.com/maps/contrib/101062939083218654733/reviews",
+      "rating": 5,
+      "text": "Norberto me ayudó mucho y saco dolores dorsales y de rodilla que venia padeciendo. El trato muy amigable y profesional. Lo recomiendo completamente!",
+      "language": "es",
+      "relativeTime": "Hace una semana",
+      "publishTime": "2026-10-17T15:27:44.938806512Z"
+    },
     {
       "author": "Mailín Schneeberger",
       "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjX7x83prghHbR_UiPIGfbc95mu8jcrTxPiT4RzDjyGFhI869U5DzQ=s128-c0x00000000-cc-rp-mo-ba2",
@@ -44,20 +54,20 @@ window.KINESICA_GOOGLE_REVIEWS = {
       "publishTime": "2026-07-24T02:05:02.000Z",
       "text": "Increíblemente sorprendido para bien, llevo 3 años con un dolor por epicondilitis, en apenas 2 sesiones con el kinesiologo Norberto Brude no tengo dolor, pude volver a entrenar, me despertaba con la mano dormida, no me volvió a suceder! Sinceramente un profesional fuera de serie, y sobre todo supo llevar calma cuando más lo necesitaba.",
       "language": "es"
-    },
-    {
-      "author": "Claudia Rothschild",
-      "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjV7zjR9a6k2KK0-ciZ60piNXJdtemgzlxd8EAGV2FdBnpfcV7wcWA=s128-c0x00000000-cc-rp-mo",
-      "authorProfile": "https://www.google.com/maps/contrib/118351524349714047042/reviews",
-      "rating": 5,
-      "text": "Norberto Brude es excelente. Por  varios problemas en la columna, rodilla, cuello que me producen permanentes dolores  hace años que hice varios intentos con otros profesionales pero recién con su tratamiento siento un considerable alivio- Lo recomiendo!!!",
-      "language": "es",
-      "relativeTime": "Hace 3 meses",
-      "publishTime": "2026-07-21T22:41:19.944949311Z"
     }
   ],
   "byLang": {
     "es": [
+      {
+        "author": "Manu Covic",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjXT_z1Jocd8RtQKJjZNPHtT6nWADbK9htmMD0ZnLXcr5WYoZBU=s128-c0x00000000-cc-rp-mo-ba4",
+        "authorProfile": "https://www.google.com/maps/contrib/101062939083218654733/reviews",
+        "rating": 5,
+        "text": "Norberto me ayudó mucho y saco dolores dorsales y de rodilla que venia padeciendo. El trato muy amigable y profesional. Lo recomiendo completamente!",
+        "language": "es",
+        "relativeTime": "Hace una semana",
+        "publishTime": "2026-10-17T15:27:44.938806512Z"
+      },
       {
         "author": "Mailín Schneeberger",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjX7x83prghHbR_UiPIGfbc95mu8jcrTxPiT4RzDjyGFhI869U5DzQ=s128-c0x00000000-cc-rp-mo-ba2",
@@ -95,19 +105,19 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "publishTime": "2026-07-24T02:05:02.000Z",
         "text": "Increíblemente sorprendido para bien, llevo 3 años con un dolor por epicondilitis, en apenas 2 sesiones con el kinesiologo Norberto Brude no tengo dolor, pude volver a entrenar, me despertaba con la mano dormida, no me volvió a suceder! Sinceramente un profesional fuera de serie, y sobre todo supo llevar calma cuando más lo necesitaba.",
         "language": "es"
-      },
-      {
-        "author": "Claudia Rothschild",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjV7zjR9a6k2KK0-ciZ60piNXJdtemgzlxd8EAGV2FdBnpfcV7wcWA=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/118351524349714047042/reviews",
-        "rating": 5,
-        "text": "Norberto Brude es excelente. Por  varios problemas en la columna, rodilla, cuello que me producen permanentes dolores  hace años que hice varios intentos con otros profesionales pero recién con su tratamiento siento un considerable alivio- Lo recomiendo!!!",
-        "language": "es",
-        "relativeTime": "Hace 3 meses",
-        "publishTime": "2026-07-21T22:41:19.944949311Z"
       }
     ],
     "en": [
+      {
+        "author": "Manu Covic",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjXT_z1Jocd8RtQKJjZNPHtT6nWADbK9htmMD0ZnLXcr5WYoZBU=s128-c0x00000000-cc-rp-mo-ba4",
+        "authorProfile": "https://www.google.com/maps/contrib/101062939083218654733/reviews",
+        "rating": 5,
+        "text": "Norberto helped me a lot and relieved the back and knee pain I'd been suffering from. He was very friendly and professional. I highly recommend him!",
+        "language": "en",
+        "relativeTime": "a week ago",
+        "publishTime": "2026-10-17T15:27:44.938806512Z"
+      },
       {
         "author": "Mailín Schneeberger",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjX7x83prghHbR_UiPIGfbc95mu8jcrTxPiT4RzDjyGFhI869U5DzQ=s128-c0x00000000-cc-rp-mo-ba2",
@@ -145,19 +155,19 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "language": "en",
         "relativeTime": "3 months ago",
         "publishTime": "2026-07-21T22:41:19.944949311Z"
-      },
-      {
-        "author": "Jack Grantham",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWSSbjYSLBV4mxom-l1D8K58_Mnko-xAxdA_PJ6irzmVMwrBTQvzg=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/116757338678492155627/reviews",
-        "rating": 5,
-        "text": "Amazing person! He is a healer.\nThank you very much.",
-        "language": "en",
-        "relativeTime": "a year ago",
-        "publishTime": "2025-01-21T04:07:42.347641Z"
       }
     ],
     "fr": [
+      {
+        "author": "Manu Covic",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjXT_z1Jocd8RtQKJjZNPHtT6nWADbK9htmMD0ZnLXcr5WYoZBU=s128-c0x00000000-cc-rp-mo-ba4",
+        "authorProfile": "https://www.google.com/maps/contrib/101062939083218654733/reviews",
+        "rating": 5,
+        "text": "Norberto m'a beaucoup aidé et a soulagé mes douleurs au dos et au genou. Il était très sympathique et professionnel. Je le recommande vivement !",
+        "language": "fr",
+        "relativeTime": "il y a une semaine",
+        "publishTime": "2026-10-17T15:27:44.938806512Z"
+      },
       {
         "author": "Mailín Schneeberger",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjX7x83prghHbR_UiPIGfbc95mu8jcrTxPiT4RzDjyGFhI869U5DzQ=s128-c0x00000000-cc-rp-mo-ba2",
@@ -195,19 +205,19 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "publishTime": "2026-07-24T02:05:02.000Z",
         "text": "Agréablement surpris, au-delà de toute attente : je souffrais d'une épicondylite depuis 3 ans, et en à peine 2 séances avec le kinésithérapeute Norberto Brude je n'ai plus de douleur, j'ai pu reprendre l'entraînement, je me réveillais avec la main endormie et cela ne s'est plus reproduit ! Un professionnel hors pair, et surtout il a su m'apporter du calme quand j'en avais le plus besoin.",
         "language": "fr"
-      },
-      {
-        "author": "Claudia Rothschild",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjV7zjR9a6k2KK0-ciZ60piNXJdtemgzlxd8EAGV2FdBnpfcV7wcWA=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/118351524349714047042/reviews",
-        "rating": 5,
-        "text": "Norberto Brude est excellent. Je souffre de problèmes de dos, de genoux et de cou qui me causent des douleurs constantes depuis des années. J'ai consulté plusieurs autres praticiens, mais seul son traitement m'a apporté un soulagement considérable. Je le recommande vivement !",
-        "language": "fr",
-        "relativeTime": "il y a 3 mois",
-        "publishTime": "2026-07-21T22:41:19.944949311Z"
       }
     ],
     "pt": [
+      {
+        "author": "Manu Covic",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjXT_z1Jocd8RtQKJjZNPHtT6nWADbK9htmMD0ZnLXcr5WYoZBU=s128-c0x00000000-cc-rp-mo-ba4",
+        "authorProfile": "https://www.google.com/maps/contrib/101062939083218654733/reviews",
+        "rating": 5,
+        "text": "Norberto me ajudou muito e aliviou as dores nas costas e nos joelhos que eu vinha sentindo. Ele foi muito simpático e profissional. Recomendo-o fortemente!",
+        "language": "pt",
+        "relativeTime": "há uma semana",
+        "publishTime": "2026-10-17T15:27:44.938806512Z"
+      },
       {
         "author": "Mailín Schneeberger",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjX7x83prghHbR_UiPIGfbc95mu8jcrTxPiT4RzDjyGFhI869U5DzQ=s128-c0x00000000-cc-rp-mo-ba2",
@@ -245,16 +255,6 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "publishTime": "2026-07-24T02:05:02.000Z",
         "text": "Incrivelmente surpreso, para melhor: levei 3 anos com dor por epicondilite e, em apenas 2 sessões com o fisioterapeuta Norberto Brude, não tenho mais dor, pude voltar a treinar, acordava com a mão dormente e isso não voltou a acontecer! Sinceramente um profissional fora de série, e acima de tudo soube trazer calma quando mais eu precisava.",
         "language": "pt"
-      },
-      {
-        "author": "Claudia Rothschild",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjV7zjR9a6k2KK0-ciZ60piNXJdtemgzlxd8EAGV2FdBnpfcV7wcWA=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/118351524349714047042/reviews",
-        "rating": 5,
-        "text": "Norberto Brude é excelente. Sofri com diversos problemas na coluna, joelhos e pescoço que me causaram dores constantes por anos. Consultei vários outros profissionais, mas somente com o tratamento dele senti um alívio considerável. Recomendo-o fortemente!",
-        "language": "pt",
-        "relativeTime": "há 3 meses",
-        "publishTime": "2026-07-21T22:41:19.944949311Z"
       }
     ]
   },
