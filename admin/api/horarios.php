@@ -292,7 +292,7 @@ function load_full_runtime_settings(string $file): array
     $defaultHours = default_practitioner_hours();
     $defaults = [
         'clara_active' => false,
-        'booking_active' => false,
+        'booking_active' => true,
         'practitioner_hours' => $defaultHours,
         'header_schedule' => ['opens' => '08:00', 'closes' => '19:00'],
         'horarios_updated_at' => null,

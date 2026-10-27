@@ -1,6 +1,6 @@
 {
   "clara_active": false,
-  "booking_active": false,
+  "booking_active": true,
   "practitioner_hours": {
     "norberto": {
       "1": [

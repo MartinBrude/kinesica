@@ -30,31 +30,17 @@ const HOME_WHATSAPP_HREF = waMeUrl();
  * La feature completa de turnos/reservas está preservada y operativa a través de /#agendar y turnos.html.
  * Cuando se decida reactivar el botón visual en el sitio, cambiar a `true`.
  */
-export const SHOW_HERO_BOOKING_BUTTON = false;
+export const SHOW_HERO_BOOKING_BUTTON = true;
 
 /**
  * Renderiza los botones de acción del Hero.
+ * Incluye #hero-btn-booking dentro de .hero-actions (oculto por defecto en el HTML estático
+ * con hidden y style="display:none;", y controlado dinámicamente por syncPublicSettings()
+ * según el estado de booking_active en el Admin).
  * @param {import("./languages.mjs").LangCode} lang
  * @param {string} [bookingHref="#agendar"]
  */
 export function renderHeroActions(lang, bookingHref = "#agendar") {
-  if (SHOW_HERO_BOOKING_BUTTON) {
-    const contactText = {
-      es: "Contacto",
-      en: "Contact",
-      fr: "Contact",
-      pt: "Contato",
-    }[lang];
-    return [
-      "            <div class=\"hero-actions\">",
-      `              <a href="${bookingHref}" class="btn btn-primary mr10 js-booking-open" data-booking-open>Agendar</a>`,
-      `              <a href="${HOME_WHATSAPP_HREF}" target="_blank" class="btn btn-default dynamic-whatsapp-url"`,
-      `                rel="noopener noreferrer">${contactText}</a>`,
-      "            </div>",
-    ];
-  }
-
-  // Botón único de contacto a WhatsApp
   const contactText = {
     es: "Contacto",
     en: "Contact",
@@ -62,9 +48,19 @@ export function renderHeroActions(lang, bookingHref = "#agendar") {
     pt: "Contato",
   }[lang];
 
+  const bookingText = {
+    es: "Agendar",
+    en: "Book",
+    fr: "Prendre RDV",
+    pt: "Agendar",
+  }[lang];
+
   return [
-    `            <a href="${HOME_WHATSAPP_HREF}" target="_blank" class="btn btn-default dynamic-whatsapp-url"`,
-    `              rel="noopener noreferrer">${contactText}</a>`,
+    "            <div class=\"hero-actions\">",
+    `              <a href="${bookingHref}" class="btn btn-primary mr10 js-booking-open js-hero-booking-btn" id="hero-btn-booking" data-booking-open hidden style="display:none;">${bookingText}</a>`,
+    `              <a href="${HOME_WHATSAPP_HREF}" target="_blank" class="btn btn-default dynamic-whatsapp-url"`,
+    `                rel="noopener noreferrer">${contactText}</a>`,
+    "            </div>",
   ];
 }
 
