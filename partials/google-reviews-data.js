@@ -1,22 +1,12 @@
 /** AUTO-GENERATED — no editar. Fuente: npm run reviews:fetch */
 window.KINESICA_GOOGLE_REVIEWS = {
   "placeId": "ChIJZ2mPW9K1vJUR3J5kGRi5gws",
-  "fetchedAt": "2026-10-26T18:21:35.064Z",
+  "fetchedAt": "2026-10-27T00:16:48.237Z",
   "displayName": "Kinesica",
   "googleMapsUri": "https://maps.google.com/?cid=829710269522681564&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA",
   "rating": 5,
   "userRatingCount": 35,
   "reviews": [
-    {
-      "author": "Manu Covic",
-      "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjXT_z1Jocd8RtQKJjZNPHtT6nWADbK9htmMD0ZnLXcr5WYoZBU=s128-c0x00000000-cc-rp-mo-ba4",
-      "authorProfile": "https://www.google.com/maps/contrib/101062939083218654733/reviews",
-      "rating": 5,
-      "text": "Norberto me ayudó mucho y saco dolores dorsales y de rodilla que venia padeciendo. El trato muy amigable y profesional. Lo recomiendo completamente!",
-      "language": "es",
-      "relativeTime": "Hace una semana",
-      "publishTime": "2026-10-17T15:27:44.938806512Z"
-    },
     {
       "author": "Mailín Schneeberger",
       "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjX7x83prghHbR_UiPIGfbc95mu8jcrTxPiT4RzDjyGFhI869U5DzQ=s128-c0x00000000-cc-rp-mo-ba2",
@@ -26,6 +16,16 @@ window.KINESICA_GOOGLE_REVIEWS = {
       "language": "es",
       "relativeTime": "Hace 1 mes",
       "publishTime": "2026-09-05T09:51:49.661002767Z"
+    },
+    {
+      "author": "Mabel Luján",
+      "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjVBfQZpjPw8LN5V7jT-CmJiCzsIWu7SIBXRqourAQTOJvmxQLse=s128-c0x00000000-cc-rp-mo",
+      "authorProfile": "https://www.google.com/maps/contrib/115447603217467401197/reviews",
+      "rating": 5,
+      "text": "Profesional muy responsable, respetuoso y con una excelente escucha lo cual es un gran valor para la especialidad . Tratamiento muy personalizado con diferentes técnicas, acorde a la necesidad de la consulta. Muy satisfecha!",
+      "language": "es",
+      "relativeTime": "Hace 1 mes",
+      "publishTime": "2026-09-01T17:22:51.713761464Z"
     },
     {
       "author": "Mariana González Cadahía",
@@ -59,16 +59,6 @@ window.KINESICA_GOOGLE_REVIEWS = {
   "byLang": {
     "es": [
       {
-        "author": "Manu Covic",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjXT_z1Jocd8RtQKJjZNPHtT6nWADbK9htmMD0ZnLXcr5WYoZBU=s128-c0x00000000-cc-rp-mo-ba4",
-        "authorProfile": "https://www.google.com/maps/contrib/101062939083218654733/reviews",
-        "rating": 5,
-        "text": "Norberto me ayudó mucho y saco dolores dorsales y de rodilla que venia padeciendo. El trato muy amigable y profesional. Lo recomiendo completamente!",
-        "language": "es",
-        "relativeTime": "Hace una semana",
-        "publishTime": "2026-10-17T15:27:44.938806512Z"
-      },
-      {
         "author": "Mailín Schneeberger",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjX7x83prghHbR_UiPIGfbc95mu8jcrTxPiT4RzDjyGFhI869U5DzQ=s128-c0x00000000-cc-rp-mo-ba2",
         "authorProfile": "https://www.google.com/maps/contrib/112780727533746305420/reviews",
@@ -77,6 +67,16 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "language": "es",
         "relativeTime": "Hace 1 mes",
         "publishTime": "2026-09-05T09:51:49.661002767Z"
+      },
+      {
+        "author": "Mabel Luján",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjVBfQZpjPw8LN5V7jT-CmJiCzsIWu7SIBXRqourAQTOJvmxQLse=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/115447603217467401197/reviews",
+        "rating": 5,
+        "text": "Profesional muy responsable, respetuoso y con una excelente escucha lo cual es un gran valor para la especialidad . Tratamiento muy personalizado con diferentes técnicas, acorde a la necesidad de la consulta. Muy satisfecha!",
+        "language": "es",
+        "relativeTime": "Hace 1 mes",
+        "publishTime": "2026-09-01T17:22:51.713761464Z"
       },
       {
         "author": "Mariana González Cadahía",
@@ -108,16 +108,6 @@ window.KINESICA_GOOGLE_REVIEWS = {
       }
     ],
     "en": [
-      {
-        "author": "Manu Covic",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjXT_z1Jocd8RtQKJjZNPHtT6nWADbK9htmMD0ZnLXcr5WYoZBU=s128-c0x00000000-cc-rp-mo-ba4",
-        "authorProfile": "https://www.google.com/maps/contrib/101062939083218654733/reviews",
-        "rating": 5,
-        "text": "Norberto helped me a lot and relieved the back and knee pain I'd been suffering from. He was very friendly and professional. I highly recommend him!",
-        "language": "en",
-        "relativeTime": "a week ago",
-        "publishTime": "2026-10-17T15:27:44.938806512Z"
-      },
       {
         "author": "Mailín Schneeberger",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjX7x83prghHbR_UiPIGfbc95mu8jcrTxPiT4RzDjyGFhI869U5DzQ=s128-c0x00000000-cc-rp-mo-ba2",
@@ -155,19 +145,19 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "language": "en",
         "relativeTime": "3 months ago",
         "publishTime": "2026-07-21T22:41:19.944949311Z"
+      },
+      {
+        "author": "Jack Grantham",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjWSSbjYSLBV4mxom-l1D8K58_Mnko-xAxdA_PJ6irzmVMwrBTQvzg=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/116757338678492155627/reviews",
+        "rating": 5,
+        "text": "Amazing person! He is a healer.\nThank you very much.",
+        "language": "en",
+        "relativeTime": "a year ago",
+        "publishTime": "2025-01-21T04:07:42.347641Z"
       }
     ],
     "fr": [
-      {
-        "author": "Manu Covic",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjXT_z1Jocd8RtQKJjZNPHtT6nWADbK9htmMD0ZnLXcr5WYoZBU=s128-c0x00000000-cc-rp-mo-ba4",
-        "authorProfile": "https://www.google.com/maps/contrib/101062939083218654733/reviews",
-        "rating": 5,
-        "text": "Norberto m'a beaucoup aidé et a soulagé mes douleurs au dos et au genou. Il était très sympathique et professionnel. Je le recommande vivement !",
-        "language": "fr",
-        "relativeTime": "il y a une semaine",
-        "publishTime": "2026-10-17T15:27:44.938806512Z"
-      },
       {
         "author": "Mailín Schneeberger",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjX7x83prghHbR_UiPIGfbc95mu8jcrTxPiT4RzDjyGFhI869U5DzQ=s128-c0x00000000-cc-rp-mo-ba2",
@@ -177,6 +167,16 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "language": "fr",
         "relativeTime": "il y a un mois",
         "publishTime": "2026-09-05T09:51:49.661002767Z"
+      },
+      {
+        "author": "Mabel Luján",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjVBfQZpjPw8LN5V7jT-CmJiCzsIWu7SIBXRqourAQTOJvmxQLse=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/115447603217467401197/reviews",
+        "rating": 5,
+        "text": "Un professionnel très responsable et respectueux, doté d'une excellente capacité d'écoute, un atout précieux dans cette spécialité. Le traitement est très personnalisé et utilise différentes techniques adaptées aux besoins de chaque patient. J'en suis très satisfait !",
+        "language": "fr",
+        "relativeTime": "il y a un mois",
+        "publishTime": "2026-09-01T17:22:51.713761464Z"
       },
       {
         "author": "Mariana González Cadahía",
@@ -209,16 +209,6 @@ window.KINESICA_GOOGLE_REVIEWS = {
     ],
     "pt": [
       {
-        "author": "Manu Covic",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjXT_z1Jocd8RtQKJjZNPHtT6nWADbK9htmMD0ZnLXcr5WYoZBU=s128-c0x00000000-cc-rp-mo-ba4",
-        "authorProfile": "https://www.google.com/maps/contrib/101062939083218654733/reviews",
-        "rating": 5,
-        "text": "Norberto me ajudou muito e aliviou as dores nas costas e nos joelhos que eu vinha sentindo. Ele foi muito simpático e profissional. Recomendo-o fortemente!",
-        "language": "pt",
-        "relativeTime": "há uma semana",
-        "publishTime": "2026-10-17T15:27:44.938806512Z"
-      },
-      {
         "author": "Mailín Schneeberger",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjX7x83prghHbR_UiPIGfbc95mu8jcrTxPiT4RzDjyGFhI869U5DzQ=s128-c0x00000000-cc-rp-mo-ba2",
         "authorProfile": "https://www.google.com/maps/contrib/112780727533746305420/reviews",
@@ -227,6 +217,16 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "language": "pt",
         "relativeTime": "há um mês",
         "publishTime": "2026-09-05T09:51:49.661002767Z"
+      },
+      {
+        "author": "Mabel Luján",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjVBfQZpjPw8LN5V7jT-CmJiCzsIWu7SIBXRqourAQTOJvmxQLse=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/115447603217467401197/reviews",
+        "rating": 5,
+        "text": "Uma profissional extremamente responsável e respeitosa, com excelentes habilidades de escuta, o que é inestimável nesta especialidade. O tratamento é muito personalizado, utilizando diversas técnicas adaptadas às necessidades de cada paciente. Estou muito satisfeita!",
+        "language": "pt",
+        "relativeTime": "há um mês",
+        "publishTime": "2026-09-01T17:22:51.713761464Z"
       },
       {
         "author": "Mariana González Cadahía",
