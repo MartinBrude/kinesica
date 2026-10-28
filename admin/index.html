@@ -1367,10 +1367,21 @@
           </svg>
           <input type="search" id="interacciones-search" placeholder="Buscar por paciente, teléfono o texto..." autocomplete="off">
         </div>
+        <div class="interacciones-toolbar-controls">
+          <label class="interacciones-pagesize-label">
+            <span>Mostrar:</span>
+            <select id="interacciones-page-size" class="page-size">
+              <option value="20" selected>20 por página</option>
+              <option value="50">50 por página</option>
+              <option value="100">100 por página</option>
+            </select>
+          </label>
+        </div>
         <div class="interacciones-stats" id="interacciones-stats"></div>
       </div>
 
       <div id="interacciones-list-container"></div>
+      <nav id="interacciones-pager" class="library-pager interacciones-pager" hidden></nav>
     </section>
 
     <section id="view-form" class="view" hidden>

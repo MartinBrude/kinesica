@@ -10,6 +10,9 @@ import { api } from "./api.js?v=77";
 import { escapeHtml } from "./dom.js?v=78";
 
 let cachedInteractions = [];
+let filteredInteractions = [];
+let currentPage = 0;
+let pageSize = 20;
 let isViewActive = false;
 
 const MONTH_NAMES = [
@@ -118,7 +121,9 @@ export async function loadInteracciones(force = false) {
     }
 
     cachedInteractions = resp.items || [];
-    renderInteractions(cachedInteractions);
+    filteredInteractions = [...cachedInteractions];
+    currentPage = 0;
+    renderCurrentView();
     updateStatsHeader();
   } catch (err) {
     container.innerHTML = `
@@ -141,6 +146,65 @@ function updateStatsHeader() {
     <span class="interacciones-stat-pill" style="color: #b9770e; background: #fef5e7;">⏳ ${pendingCount} pendientes</span>
     <span class="interacciones-stat-pill" style="color: #1e8449; background: #eafaf1;">✓ ${answeredCount} respondidas</span>
   `;
+}
+
+function renderCurrentView() {
+  const totalRows = filteredInteractions.length;
+  const effectivePageSize = pageSize > 0 ? pageSize : 20;
+  const totalPages = Math.max(1, Math.ceil(totalRows / effectivePageSize));
+
+  currentPage = Math.min(Math.max(0, currentPage), totalPages - 1);
+  const start = currentPage * effectivePageSize;
+  const pagedItems = filteredInteractions.slice(start, start + effectivePageSize);
+
+  renderInteractions(pagedItems);
+  renderPager(totalRows, totalPages);
+}
+
+function renderPager(totalRows, totalPages) {
+  const pagerEl = document.getElementById("interacciones-pager");
+  if (!pagerEl) return;
+
+  if (totalRows <= pageSize || totalRows === 0) {
+    pagerEl.hidden = true;
+    pagerEl.innerHTML = "";
+    return;
+  }
+
+  pagerEl.hidden = false;
+  pagerEl.innerHTML = "";
+
+  const prevBtn = document.createElement("button");
+  prevBtn.type = "button";
+  prevBtn.className = "btn ghost";
+  prevBtn.textContent = "← Anterior";
+  prevBtn.disabled = currentPage === 0;
+  prevBtn.addEventListener("click", () => {
+    if (currentPage > 0) {
+      currentPage -= 1;
+      renderCurrentView();
+      document.getElementById("view-interacciones")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  });
+
+  const span = document.createElement("span");
+  const unit = totalRows === 1 ? "conversación" : "conversaciones";
+  span.textContent = `Página ${currentPage + 1} de ${totalPages} (${totalRows} ${unit})`;
+
+  const nextBtn = document.createElement("button");
+  nextBtn.type = "button";
+  nextBtn.className = "btn ghost";
+  nextBtn.textContent = "Siguiente →";
+  nextBtn.disabled = currentPage >= totalPages - 1;
+  nextBtn.addEventListener("click", () => {
+    if (currentPage < totalPages - 1) {
+      currentPage += 1;
+      renderCurrentView();
+      document.getElementById("view-interacciones")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  });
+
+  pagerEl.append(prevBtn, span, nextBtn);
 }
 
 function renderInteractions(items) {
@@ -351,26 +415,36 @@ function renderChatMessages(messages, patientName) {
 export function initInteraccionesModule() {
   const searchInput = document.getElementById("interacciones-search");
   const refreshBtn = document.getElementById("btn-refresh-interacciones");
+  const pageSizeSelect = document.getElementById("interacciones-page-size");
+
+  if (pageSizeSelect) {
+    pageSize = Number(pageSizeSelect.value) || 20;
+    pageSizeSelect.addEventListener("change", (e) => {
+      pageSize = Number(e.target.value) || 20;
+      currentPage = 0;
+      renderCurrentView();
+    });
+  }
 
   if (searchInput) {
     searchInput.addEventListener("input", (e) => {
       const term = (e.target.value || "").toLowerCase().trim();
       if (!term) {
-        renderInteractions(cachedInteractions);
-        return;
+        filteredInteractions = [...cachedInteractions];
+      } else {
+        filteredInteractions = cachedInteractions.filter((item) => {
+          const nameMatch = (item.patient_name || "").toLowerCase().includes(term);
+          const phoneMatch = (item.wa_id || "").includes(term) || (item.phone_formatted || "").includes(term);
+          const summaryMatch = (item.summary || "").toLowerCase().includes(term);
+          const msgMatch = (item.messages || []).some((m) =>
+            (m.text || "").toLowerCase().includes(term)
+          );
+          return nameMatch || phoneMatch || summaryMatch || msgMatch;
+        });
       }
 
-      const filtered = cachedInteractions.filter((item) => {
-        const nameMatch = (item.patient_name || "").toLowerCase().includes(term);
-        const phoneMatch = (item.wa_id || "").includes(term) || (item.phone_formatted || "").includes(term);
-        const summaryMatch = (item.summary || "").toLowerCase().includes(term);
-        const msgMatch = (item.messages || []).some((m) =>
-          (m.text || "").toLowerCase().includes(term)
-        );
-        return nameMatch || phoneMatch || summaryMatch || msgMatch;
-      });
-
-      renderInteractions(filtered);
+      currentPage = 0;
+      renderCurrentView();
     });
   }
 

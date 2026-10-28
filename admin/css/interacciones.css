@@ -51,12 +51,64 @@
   pointer-events: none;
 }
 
+.interacciones-toolbar-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.interacciones-pagesize-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.interacciones-pagesize-label select {
+  padding: 6px 10px;
+  font-size: 13px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--navy);
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.18s ease;
+}
+
+.interacciones-pagesize-label select:focus {
+  border-color: #005f99;
+}
+
 .interacciones-stats {
   display: flex;
   align-items: center;
   gap: 14px;
   font-size: 13px;
   color: var(--muted);
+}
+
+.interacciones-pager {
+  margin: 24px auto 16px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.interacciones-pager button {
+  padding: 6px 14px;
+  font-size: 13px;
+}
+
+.interacciones-pager button:disabled {
+  opacity: 0.45;
+  cursor: default;
 }
 
 .interacciones-stat-pill {
