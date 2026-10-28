@@ -197,11 +197,23 @@ if ($method === 'POST') {
         ]);
     }
 
+    $headerSchedule = null;
+    if (isset($input['header_schedule']) && is_array($input['header_schedule'])) {
+        $rawOpens = trim((string) ($input['header_schedule']['opens'] ?? ''));
+        $rawCloses = trim((string) ($input['header_schedule']['closes'] ?? ''));
+        if (preg_match('/^([01]\d|2[0-3]):(00|30)$/', $rawOpens) && preg_match('/^([01]\d|2[0-3]):(00|30)$/', $rawCloses)) {
+            $headerSchedule = ['opens' => $rawOpens, 'closes' => $rawCloses];
+        }
+    }
+
     $now = gmdate('Y-m-d\TH:i:s\Z');
     $userName = (string) ($auth['name'] ?? $auth['username'] ?? 'admin');
 
-    $saved = kinesica_update_settings(function (array $raw) use ($validation, $now, $userName): array {
+    $saved = kinesica_update_settings(function (array $raw) use ($validation, $headerSchedule, $now, $userName): array {
         $raw['practitioner_hours'] = $validation['normalized'];
+        if ($headerSchedule !== null) {
+            $raw['header_schedule'] = $headerSchedule;
+        }
         $raw['horarios_updated_at'] = $now;
         $raw['horarios_updated_by'] = $userName;
         return $raw;

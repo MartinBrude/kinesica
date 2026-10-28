@@ -51,7 +51,8 @@ export async function loadInteracciones(force = false) {
 
   try {
     const resp = await api("interacciones.php");
-    if (!resp || !resp.ok) {
+    const isOk = Boolean(resp && (resp.ok === true || resp.status === "success" || Array.isArray(resp.items) || Array.isArray(resp.interactions)));
+    if (!isOk) {
       container.innerHTML = `
         <div class="interacciones-empty">
           <p>⚠️ No se pudieron cargar las interacciones en este momento.</p>
@@ -60,7 +61,7 @@ export async function loadInteracciones(force = false) {
       return;
     }
 
-    cachedInteractions = resp.items || [];
+    cachedInteractions = Array.isArray(resp.items) ? resp.items : (Array.isArray(resp.interactions) ? resp.interactions : []);
     applyFilters(true);
   } catch (err) {
     container.innerHTML = `

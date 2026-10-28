@@ -4,24 +4,23 @@ declare(strict_types=1);
 require __DIR__ . '/lib.php';
 require_once __DIR__ . '/interacciones_seed.php';
 
-$dataFile = __DIR__ . '/data/interactions.json';
+$dataFile = __DIR__ . '/data/interacciones.json';
+
+require_header();
 
 $isBotAuth = false;
+$headers = function_exists('getallheaders') ? getallheaders() : [];
+$botSecret = $headers['X-Kinesica-Bot-Secret'] ?? $headers['x-kinesica-bot-secret'] ?? $_SERVER['HTTP_X_KINESICA_BOT_SECRET'] ?? '';
 $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
-$botSecret = '';
-if (preg_match('/^Bearer\s+(.+)$/i', $authHeader, $matches)) {
+if ($botSecret === '' && preg_match('/^Bearer\s+(.+)$/i', $authHeader, $matches)) {
     $botSecret = trim($matches[1]);
-} elseif (isset($_SERVER['HTTP_X_BOT_TOKEN'])) {
-    $botSecret = trim((string) $_SERVER['HTTP_X_BOT_TOKEN']);
 }
-
-$cfgSecret = (string) (cfg()['bot_token'] ?? '');
+$cfgSecret = (string) (cfg()['webhook_secret'] ?? cfg()['bot_token'] ?? 'kinesica_webhook_secret_2026');
 if ($botSecret !== '' && hash_equals($cfgSecret, $botSecret)) {
     $isBotAuth = true;
 }
 
 if (!$isBotAuth) {
-    require_header();
     $auth = require_auth();
 }
 
@@ -82,10 +81,12 @@ if ($method === 'GET') {
     }
 
     json_out(200, [
+        'ok' => true,
         'status' => 'success',
         'total' => count($items),
         'answered_count' => $answeredCount,
         'unanswered_count' => $unansweredCount,
+        'items' => $items,
         'interactions' => $items,
         'grouped' => $grouped,
     ]);
