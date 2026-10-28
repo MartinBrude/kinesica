@@ -312,6 +312,12 @@ $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 if ($method === 'GET') {
     $items = load_interactions($dataFile);
 
+    // Normalizar answered por defecto false si no está presente
+    foreach ($items as &$it) {
+        $it['answered'] = (bool) ($it['answered'] ?? false);
+    }
+    unset($it);
+
     // Agrupar por fecha para conveniencia del frontend
     $grouped = [];
     foreach ($items as $item) {
@@ -332,6 +338,35 @@ if ($method === 'GET') {
 
 if ($method === 'POST') {
     $input = read_json();
+    $action = (string) ($input['action'] ?? '');
+
+    // Acción para alternar si la consulta fue respondida
+    if ($action === 'toggle_answered') {
+        $id = trim((string) ($input['id'] ?? ''));
+        $answered = (bool) ($input['answered'] ?? false);
+        if ($id === '') {
+            json_out(400, ['error' => 'id es requerido']);
+        }
+        $items = load_interactions($dataFile);
+        $found = false;
+        foreach ($items as &$it) {
+            if (($it['id'] ?? '') === $id) {
+                $it['answered'] = $answered;
+                $it['answered_at'] = $answered
+                    ? (new DateTime('now', new DateTimeZone('America/Argentina/Buenos_Aires')))->format('c')
+                    : null;
+                $found = true;
+                break;
+            }
+        }
+        unset($it);
+        if (!$found) {
+            json_out(404, ['error' => 'Conversación no encontrada']);
+        }
+        save_interactions($dataFile, $items);
+        json_out(200, ['ok' => true, 'id' => $id, 'answered' => $answered]);
+    }
+
     $waId = trim((string) ($input['wa_id'] ?? ''));
     $patientMessage = trim((string) ($input['patient_message'] ?? ''));
     $claraReply = trim((string) ($input['clara_reply'] ?? ''));
@@ -395,6 +430,8 @@ if ($method === 'POST') {
             'timestamp' => $isoTimestamp,
             'category' => $category,
             'category_label' => 'Consulta WhatsApp',
+            'answered' => false,
+            'answered_at' => null,
             'summary' => mb_substr($patientMessage, 0, 120),
             'messages' => [
                 [

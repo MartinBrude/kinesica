@@ -187,8 +187,72 @@
 
 .interaccion-actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+}
+
+/* Checkbox de Consulta respondida */
+.interaccion-answered-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  padding: 7px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.interaccion-answered-label:hover {
+  background: #f0f7fb;
+  border-color: #005f99;
+}
+
+.interaccion-answered-checkbox {
+  width: 17px;
+  height: 17px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: #128c7e;
+}
+
+.interaccion-card {
+  border-left: 4px solid #f39c12;
+}
+
+.interaccion-card.is-answered {
+  border-left: 4px solid #25d366;
+}
+
+.interaccion-card.is-answered .interaccion-answered-label {
+  background: #eafaf1;
+  border-color: #a3e4d7;
+  color: #0e6251;
+}
+
+.interaccion-status-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.interaccion-status-pill.pending {
+  background: #fef5e7;
+  color: #b9770e;
+}
+
+.interaccion-status-pill.answered {
+  background: #eafaf1;
+  color: #1e8449;
 }
 
 /* Botón llamativo de WhatsApp */
