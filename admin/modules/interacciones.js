@@ -124,7 +124,7 @@ export async function loadInteracciones(force = false) {
       const totalContacts = new Set(cachedInteractions.map((i) => i.wa_id)).size;
       statsEl.innerHTML = `
         <span class="interacciones-stat-pill">👥 ${totalContacts} personas</span>
-        <span class="interacciones-stat-pill">💬 ${cachedInteractions.length} hilos registrados</span>
+        <span class="interacciones-stat-pill">${cachedInteractions.length} conversaciones registradas</span>
       `;
     }
   } catch (err) {
@@ -180,7 +180,7 @@ function renderInteractions(items) {
       const name = conv.patient_name || "Paciente sin nombre";
       const phoneDisplay = conv.phone_formatted || `+${cleanWa}`;
       const timeStr = conv.time || "";
-      const categoryLabel = conv.category_label || "💬 Consulta WhatsApp";
+      const categoryLabel = (conv.category_label || "Consulta WhatsApp").replace(/^[💬\s]+/, "");
       const summaryText = conv.summary || "Consulta recibida";
       const cardId = `conv-card-${escapeHtml(conv.id || cleanWa)}`;
       const threadId = `thread-${escapeHtml(conv.id || cleanWa)}`;

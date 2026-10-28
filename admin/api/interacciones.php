@@ -394,7 +394,7 @@ if ($method === 'POST') {
             'time' => $timeStr,
             'timestamp' => $isoTimestamp,
             'category' => $category,
-            'category_label' => '💬 Consulta WhatsApp',
+            'category_label' => 'Consulta WhatsApp',
             'summary' => mb_substr($patientMessage, 0, 120),
             'messages' => [
                 [
