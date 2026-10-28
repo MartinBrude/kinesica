@@ -158,7 +158,7 @@ import {
   initInteraccionesModule,
   showInteraccionesView,
   hideInteraccionesView,
-} from "./modules/interacciones.js?v=1";
+} from "./modules/interacciones.js?v=2";
 
 // Re-exportar utilidades esenciales para interoperabilidad y pruebas
 export {
