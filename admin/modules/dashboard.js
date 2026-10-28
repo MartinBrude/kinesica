@@ -22,7 +22,7 @@ let activeBooking = localStorage.getItem("kinesica_booking_active") === "1";
 export function showDashboardView() {
   if (viewDashboard) {
     viewDashboard.hidden = false;
-    const views = ["#view-library", "#view-pacientes", "#view-configuracion", "#view-horarios", "#view-honorarios", "#view-form", "#view-compare", "#view-gate"];
+    const views = ["#view-library", "#view-pacientes", "#view-configuracion", "#view-horarios", "#view-honorarios", "#view-form", "#view-compare", "#view-gate", "#view-interacciones"];
     views.forEach((sel) => {
       const el = document.querySelector(sel);
       if (el) el.hidden = true;
@@ -113,6 +113,7 @@ export function initDashboardModule(callbacks = {}) {
   attachCard("#dash-card-pacientes", () => callbacks.onNavigate?.("pacientes"));
   attachCard("#dash-card-consultorio", () => callbacks.onNavigate?.("consultorio"));
   attachCard("#dash-card-clara", () => callbacks.onNavigate?.("clara"));
+  attachCard("#dash-card-interacciones", () => callbacks.onNavigate?.("interacciones"));
 
   // Card de turnera (abre el modal accesible de reservas)
   const agendarCard = document.querySelector("#dash-card-agendar");

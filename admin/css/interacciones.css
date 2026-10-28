@@ -1,0 +1,317 @@
+/**
+ * Kinésica Admin - Módulo de Interacciones WhatsApp (Clara)
+ * Estilos para visualización cronológica, agrupamiento por fechas y chat directo.
+ */
+
+.interacciones-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin: 16px 0 24px 0;
+  padding: 14px 18px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.interacciones-search-box {
+  display: flex;
+  flex: 1;
+  min-width: 280px;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+}
+
+.interacciones-search-box input {
+  width: 100%;
+  padding: 9px 14px 9px 36px;
+  font-size: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--navy);
+  outline: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.interacciones-search-box input:focus {
+  border-color: #005f99;
+  background: var(--white);
+  box-shadow: 0 0 0 3px rgba(0, 95, 153, 0.12);
+}
+
+.interacciones-search-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.interacciones-stats {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.interacciones-stat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f0f7fb;
+  color: #005f99;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+/* Contenedor de grupos por fecha */
+.interacciones-date-group {
+  margin-bottom: 32px;
+}
+
+.interacciones-date-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--navy);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.interacciones-date-header::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+.interacciones-date-badge {
+  background: var(--navy);
+  color: var(--white);
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Grilla de conversaciones */
+.interacciones-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.interaccion-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 2px 8px rgba(0, 30, 60, 0.04);
+  padding: 18px 22px;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.interaccion-card:hover {
+  border-color: #689cb8;
+  box-shadow: 0 4px 14px rgba(0, 40, 80, 0.08);
+}
+
+.interaccion-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.interaccion-user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.interaccion-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #e2f4ea;
+  color: #128c7e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.interaccion-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.interaccion-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 0;
+}
+
+.interaccion-phone {
+  font-size: 13px;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.interaccion-badge {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #f0f4f8;
+  color: #3b506c;
+}
+
+.interaccion-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Botón llamativo de WhatsApp */
+.btn-whatsapp-direct {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #25d366;
+  color: #ffffff !important;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(37, 211, 102, 0.3);
+  transition: background-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-whatsapp-direct:hover {
+  background-color: #1ebd5a;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.45);
+}
+
+.btn-whatsapp-direct svg {
+  fill: currentColor;
+}
+
+.interaccion-summary {
+  font-size: 14px;
+  color: #4a5d73;
+  margin: 4px 0 12px 0;
+  line-height: 1.5;
+  background: #f9fbfd;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border-left: 3px solid #005f99;
+}
+
+.interaccion-toggle-btn {
+  background: none;
+  border: none;
+  color: #005f99;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.interaccion-toggle-btn:hover {
+  text-decoration: underline;
+}
+
+/* Hilo de mensajes tipo chat WhatsApp */
+.interaccion-chat-thread {
+  margin-top: 14px;
+  padding: 16px;
+  background: #efeae2; /* Color de fondo clásico WhatsApp */
+  background-image: radial-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 0);
+  background-size: 20px 20px;
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chat-bubble {
+  max-width: 80%;
+  padding: 9px 13px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  line-height: 1.45;
+  position: relative;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  word-break: break-word;
+}
+
+.chat-bubble-patient {
+  align-self: flex-start;
+  background: #ffffff;
+  color: #111b21;
+  border-top-left-radius: 0;
+}
+
+.chat-bubble-clara {
+  align-self: flex-end;
+  background: #d9fdd3; /* Verde burbuja WhatsApp */
+  color: #111b21;
+  border-top-right-radius: 0;
+}
+
+.chat-bubble-sender {
+  font-size: 11px;
+  font-weight: 700;
+  color: #005f99;
+  margin-bottom: 3px;
+}
+
+.chat-bubble-clara .chat-bubble-sender {
+  color: #128c7e;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.chat-bubble-time {
+  display: block;
+  font-size: 10.5px;
+  color: #667781;
+  text-align: right;
+  margin-top: 4px;
+}
+
+.interacciones-empty {
+  text-align: center;
+  padding: 48px 24px;
+  background: var(--white);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  color: var(--muted);
+}

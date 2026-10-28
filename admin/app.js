@@ -154,6 +154,12 @@ import {
   hideAdminView,
 } from "./modules/admin-panel.js?v=9";
 
+import {
+  initInteraccionesModule,
+  showInteraccionesView,
+  hideInteraccionesView,
+} from "./modules/interacciones.js?v=1";
+
 // Re-exportar utilidades esenciales para interoperabilidad y pruebas
 export {
   api,
@@ -207,6 +213,7 @@ function parseAdminRouteFromLocation() {
   if (head === "pacientes") return { view: "pacientes" };
   if (head === "consultorio" || head === "horarios" || head === "honorarios") return { view: "consultorio" };
   if (head === "clara" || head === "configuracion") return { view: "clara" };
+  if (head === "interacciones" || head === "chats" || head === "mensajes") return { view: "interacciones" };
   if (head === "administracion" || head === "admin" || head === "sistema") return { view: "admin" };
   if (head === "ficha") return { view: "form", id: parts[1] ? decodeURIComponent(parts[1]) : "" };
   if (head === "comparar") return { view: "compare" };
@@ -246,6 +253,9 @@ function syncUrlWithViewState(state) {
   } else if (v === "clara" || v === "configuracion") {
     targetPath = "/admin/clara";
     docTitle = "Kinésica — Clara & Mensajes";
+  } else if (v === "interacciones" || v === "chats") {
+    targetPath = "/admin/interacciones";
+    docTitle = "Kinésica — Interacciones WhatsApp";
   } else if (v === "admin" || v === "administracion") {
     targetPath = "/admin/administracion";
     docTitle = "Kinésica — Administración";
@@ -330,6 +340,8 @@ async function refresh() {
       switchTab("consultorio");
     } else if (saved?.view === "clara" || saved?.view === "configuracion") {
       switchTab("clara");
+    } else if (saved?.view === "interacciones" || saved?.view === "chats") {
+      switchTab("interacciones");
     } else if (saved?.view === "admin" || saved?.view === "administracion") {
       switchTab("admin");
     } else if (saved?.view === "fichas" || saved?.view === "library") {
@@ -373,6 +385,8 @@ async function refresh() {
     switchTab("consultorio");
   } else if (saved?.view === "clara" || saved?.view === "configuracion") {
     switchTab("clara");
+  } else if (saved?.view === "interacciones" || saved?.view === "chats") {
+    switchTab("interacciones");
   } else if (saved?.view === "admin" || saved?.view === "administracion") {
     switchTab("admin");
   } else if (saved?.view === "fichas" || saved?.view === "library") {
@@ -512,6 +526,7 @@ function switchTab(tab) {
   const btnPacientes = document.querySelector("#nav-btn-pacientes");
   const btnConsultorio = document.querySelector("#nav-btn-consultorio");
   const btnClara = document.querySelector("#nav-btn-clara");
+  const btnInteracciones = document.querySelector("#nav-btn-interacciones");
   const btnAdmin = document.querySelector("#nav-btn-admin");
 
   btnInicio?.classList.remove("is-active");
@@ -519,6 +534,7 @@ function switchTab(tab) {
   btnPacientes?.classList.remove("is-active");
   btnConsultorio?.classList.remove("is-active");
   btnClara?.classList.remove("is-active");
+  btnInteracciones?.classList.remove("is-active");
   btnAdmin?.classList.remove("is-active");
 
   if (tab === "inicio") {
@@ -526,6 +542,7 @@ function switchTab(tab) {
     hidePacientesView();
     hideConsultorioView();
     hideClaraView();
+    hideInteraccionesView();
     hideAdminView();
     showDashboardView();
   } else if (tab === "pacientes") {
@@ -533,6 +550,7 @@ function switchTab(tab) {
     hideDashboardView();
     hideConsultorioView();
     hideClaraView();
+    hideInteraccionesView();
     hideAdminView();
     showPacientesView();
   } else if (tab === "consultorio" || tab === "horarios" || tab === "honorarios") {
@@ -540,6 +558,7 @@ function switchTab(tab) {
     hideDashboardView();
     hidePacientesView();
     hideClaraView();
+    hideInteraccionesView();
     hideAdminView();
     showConsultorioView();
   } else if (tab === "clara" || tab === "configuracion") {
@@ -547,14 +566,24 @@ function switchTab(tab) {
     hideDashboardView();
     hidePacientesView();
     hideConsultorioView();
+    hideInteraccionesView();
     hideAdminView();
     showClaraView();
+  } else if (tab === "interacciones" || tab === "chats") {
+    btnInteracciones?.classList.add("is-active");
+    hideDashboardView();
+    hidePacientesView();
+    hideConsultorioView();
+    hideClaraView();
+    hideAdminView();
+    showInteraccionesView();
   } else if (tab === "admin") {
     btnAdmin?.classList.add("is-active");
     hideDashboardView();
     hidePacientesView();
     hideConsultorioView();
     hideClaraView();
+    hideInteraccionesView();
     showAdminView();
   } else {
     btnFichas?.classList.add("is-active");
@@ -562,6 +591,7 @@ function switchTab(tab) {
     hidePacientesView();
     hideConsultorioView();
     hideClaraView();
+    hideInteraccionesView();
     hideAdminView();
     showLibrary();
   }
@@ -602,6 +632,7 @@ function mountAdminChannels() {
       document.getElementById("nav-btn-pacientes")?.addEventListener("click", () => switchTab("pacientes"));
       document.getElementById("nav-btn-consultorio")?.addEventListener("click", () => switchTab("consultorio"));
       document.getElementById("nav-btn-clara")?.addEventListener("click", () => switchTab("clara"));
+      document.getElementById("nav-btn-interacciones")?.addEventListener("click", () => switchTab("interacciones"));
       document.getElementById("nav-btn-admin")?.addEventListener("click", () => switchTab("admin"));
       document.getElementById("brand-logo")?.addEventListener("click", (e) => {
         e.preventDefault();
@@ -651,6 +682,7 @@ initDashboardModule({
     document.querySelector("#btn-nuevo-paciente")?.click();
   },
 });
+initInteraccionesModule();
 
 if (typeof window !== "undefined") {
   window.addEventListener("popstate", (event) => {
@@ -679,6 +711,8 @@ if (typeof window !== "undefined") {
         switchTab("consultorio");
       } else if (route.view === "clara" || route.view === "configuracion") {
         switchTab("clara");
+      } else if (route.view === "interacciones" || route.view === "chats") {
+        switchTab("interacciones");
       } else if (route.view === "admin" || route.view === "administracion") {
         switchTab("admin");
       } else {

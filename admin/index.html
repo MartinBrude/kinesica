@@ -46,6 +46,7 @@
         <button type="button" class="btn ghost" id="nav-btn-pacientes">Pacientes</button>
         <button type="button" class="btn ghost" id="nav-btn-consultorio">Consultorio</button>
         <button type="button" class="btn ghost" id="nav-btn-clara">Clara & Mensajes</button>
+        <button type="button" class="btn ghost" id="nav-btn-interacciones">Interacciones</button>
         <button type="button" class="btn ghost" id="nav-btn-admin" hidden>Administración</button>
       </nav>
       <div class="session-box">
@@ -277,6 +278,26 @@
               </div>
               <p class="dash-card-desc">
                 Mensajes de bienvenida en WhatsApp, recordatorios automáticos (24hs), políticas de cancelación y simulador en vivo.
+              </p>
+            </div>
+          </div>
+        </article>
+
+        <!-- 6. Interacciones WhatsApp (Clara) -->
+        <article class="dash-card" id="dash-card-interacciones" role="button" tabindex="0" aria-label="Abrir Interacciones de WhatsApp">
+          <div class="dash-card-header">
+            <div class="dash-icon-box green" aria-hidden="true" style="background: #e2f4ea; color: #128c7e;">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+            </div>
+            <div class="dash-card-meta">
+              <div class="dash-card-title">
+                <span>Interacciones WhatsApp</span>
+                <span class="dash-card-arrow" aria-hidden="true">→</span>
+              </div>
+              <p class="dash-card-desc">
+                Consultas recibidas por Clara agrupadas por fecha, historial de mensajes y botón directo para responderles por WhatsApp.
               </p>
             </div>
           </div>
@@ -1319,6 +1340,39 @@
       </div>
     </section>
 
+    <!-- 7. INTERACCIONES WHATSAPP (CLARA) -->
+    <section id="view-interacciones" class="view" hidden>
+      <div class="hero-card" style="margin-bottom: 20px;">
+        <div class="hero-copy">
+          <span class="doc-icon" aria-hidden="true">💬</span>
+          <div>
+            <h1 class="hero-title">Interacciones de WhatsApp (Clara)</h1>
+            <p class="hero-desc" style="margin: 4px 0 0; color: var(--muted); font-size: 14px;">
+              Historial de pacientes que le escribieron a Clara por WhatsApp, qué consultaron y acceso directo para responderles en un click.
+            </p>
+          </div>
+        </div>
+        <div class="hero-actions" style="margin: 0;">
+          <button type="button" class="btn light" id="btn-refresh-interacciones" style="display: inline-flex; align-items: center; gap: 6px;">
+            ↻ Actualizar
+          </button>
+        </div>
+      </div>
+
+      <div class="interacciones-toolbar">
+        <div class="interacciones-search-box">
+          <svg class="interacciones-search-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="search" id="interacciones-search" placeholder="Buscar por paciente, teléfono o texto..." autocomplete="off">
+        </div>
+        <div class="interacciones-stats" id="interacciones-stats"></div>
+      </div>
+
+      <div id="interacciones-list-container"></div>
+    </section>
+
     <section id="view-form" class="view" hidden>
       <div class="form-nav">
         <button type="button" class="btn ghost" id="btn-back">← Fichas</button>
@@ -1926,6 +1980,7 @@
             else if (head === "pacientes") saved = { view: "pacientes" };
             else if (head === "consultorio" || head === "horarios" || head === "honorarios") saved = { view: "consultorio" };
             else if (head === "clara" || head === "configuracion") saved = { view: "clara" };
+            else if (head === "interacciones" || head === "chats" || head === "mensajes") saved = { view: "interacciones" };
             else if (head === "administracion" || head === "admin" || head === "sistema") saved = { view: "admin" };
             else if (head === "ficha" && parts[1]) saved = { view: "form", id: decodeURIComponent(parts[1]) };
             else if (head === "comparar") saved = saved && saved.view === "compare" ? saved : { view: "compare" };
@@ -1948,6 +2003,9 @@
           } else if (saved.view === "clara" || saved.view === "configuracion") {
             var cla = document.getElementById("view-clara");
             if (cla) cla.hidden = false;
+          } else if (saved.view === "interacciones" || saved.view === "chats") {
+            var inter = document.getElementById("view-interacciones");
+            if (inter) inter.hidden = false;
           } else if (saved.view === "form") {
             var form = document.getElementById("view-form");
             if (form) form.hidden = false;
