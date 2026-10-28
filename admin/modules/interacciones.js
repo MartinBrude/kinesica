@@ -13,6 +13,7 @@ let cachedInteractions = [];
 let filteredInteractions = [];
 let currentPage = 0;
 let pageSize = 20;
+let activeStatusFilter = "all"; // "all" | "pending" | "answered"
 let isViewActive = false;
 
 const MONTH_NAMES = [
@@ -121,10 +122,7 @@ export async function loadInteracciones(force = false) {
     }
 
     cachedInteractions = resp.items || [];
-    filteredInteractions = [...cachedInteractions];
-    currentPage = 0;
-    renderCurrentView();
-    updateStatsHeader();
+    applyFilters(true);
   } catch (err) {
     container.innerHTML = `
       <div class="interacciones-empty">
@@ -134,6 +132,39 @@ export async function loadInteracciones(force = false) {
   }
 }
 
+function applyFilters(resetPage = true) {
+  const searchInput = document.getElementById("interacciones-search");
+  const term = (searchInput?.value || "").toLowerCase().trim();
+
+  filteredInteractions = cachedInteractions.filter((item) => {
+    // 1. Filtro de estado excluyente
+    if (activeStatusFilter === "pending" && Boolean(item.answered)) {
+      return false;
+    }
+    if (activeStatusFilter === "answered" && !item.answered) {
+      return false;
+    }
+
+    // 2. Filtro de búsqueda textual
+    if (!term) return true;
+    const nameMatch = (item.patient_name || "").toLowerCase().includes(term);
+    const phoneMatch =
+      (item.wa_id || "").includes(term) ||
+      (item.phone_formatted || "").includes(term);
+    const summaryMatch = (item.summary || "").toLowerCase().includes(term);
+    const msgMatch = (item.messages || []).some((m) =>
+      (m.text || "").toLowerCase().includes(term)
+    );
+    return nameMatch || phoneMatch || summaryMatch || msgMatch;
+  });
+
+  if (resetPage) {
+    currentPage = 0;
+  }
+  renderCurrentView();
+  updateStatsHeader();
+}
+
 function updateStatsHeader() {
   const statsEl = document.getElementById("interacciones-stats");
   if (!statsEl) return;
@@ -141,10 +172,25 @@ function updateStatsHeader() {
   const answeredCount = cachedInteractions.filter((i) => Boolean(i.answered)).length;
   const pendingCount = cachedInteractions.length - answeredCount;
 
+  const isPendingActive = activeStatusFilter === "pending";
+  const isAnsweredActive = activeStatusFilter === "answered";
+
   statsEl.innerHTML = `
     <span class="interacciones-stat-pill">👥 ${totalContacts} personas</span>
-    <span class="interacciones-stat-pill" style="color: #b9770e; background: #fef5e7;">⏳ ${pendingCount} pendientes</span>
-    <span class="interacciones-stat-pill" style="color: #1e8449; background: #eafaf1;">✓ ${answeredCount} respondidas</span>
+    <button type="button"
+      class="interacciones-stat-pill filter-pill filter-pending ${isPendingActive ? "is-active" : ""}"
+      data-filter="pending"
+      aria-pressed="${isPendingActive}"
+      title="${isPendingActive ? "Filtro activo: mostrando pendientes (click para quitar filtro)" : "Filtrar solo pendientes"}">
+      ⏳ ${pendingCount} pendientes
+    </button>
+    <button type="button"
+      class="interacciones-stat-pill filter-pill filter-answered ${isAnsweredActive ? "is-active" : ""}"
+      data-filter="answered"
+      aria-pressed="${isAnsweredActive}"
+      title="${isAnsweredActive ? "Filtro activo: mostrando respondidas (click para quitar filtro)" : "Filtrar solo respondidas"}">
+      ✓ ${answeredCount} respondidas
+    </button>
   `;
 }
 
@@ -212,11 +258,31 @@ function renderInteractions(items) {
   if (!container) return;
 
   if (!items || items.length === 0) {
+    let emptyMsg = "No se encontraron conversaciones con los filtros actuales.";
+    if (activeStatusFilter === "pending") {
+      emptyMsg = "No hay consultas pendientes de respuesta.";
+    } else if (activeStatusFilter === "answered") {
+      emptyMsg = "No hay consultas marcadas como respondidas.";
+    }
+
     container.innerHTML = `
       <div class="interacciones-empty">
-        <p>No se encontraron conversaciones con los filtros actuales.</p>
+        <p>${escapeHtml(emptyMsg)}</p>
+        ${
+          activeStatusFilter !== "all"
+            ? `<button type="button" class="btn secondary" id="btn-reset-status-filter" style="margin-top: 10px; font-size: 13px;">Mostrar todas</button>`
+            : ""
+        }
       </div>
     `;
+
+    const resetBtn = document.getElementById("btn-reset-status-filter");
+    if (resetBtn) {
+      resetBtn.addEventListener("click", () => {
+        activeStatusFilter = "all";
+        applyFilters(true);
+      });
+    }
     return;
   }
 
@@ -334,7 +400,7 @@ function renderInteractions(items) {
 
   // Bind checkboxes de "Consulta respondida"
   container.querySelectorAll(".interaccion-answered-checkbox").forEach((chk) => {
-    chk.addEventListener("change", async (e) => {
+    chk.addEventListener("change", async () => {
       const convId = chk.getAttribute("data-conv-id");
       const isChecked = chk.checked;
       const cardEl = chk.closest(".interaccion-card");
@@ -354,7 +420,13 @@ function renderInteractions(items) {
       if (targetConv) {
         targetConv.answered = isChecked;
       }
-      updateStatsHeader();
+
+      // Si hay un filtro activo, re-aplicar para actualizar la vista
+      if (activeStatusFilter !== "all") {
+        applyFilters(false);
+      } else {
+        updateStatsHeader();
+      }
 
       // Persistir en servidor
       try {
@@ -382,7 +454,11 @@ function renderInteractions(items) {
         if (targetConv) {
           targetConv.answered = !isChecked;
         }
-        updateStatsHeader();
+        if (activeStatusFilter !== "all") {
+          applyFilters(false);
+        } else {
+          updateStatsHeader();
+        }
         console.error("Error al persistir consulta respondida:", err);
       }
     });
@@ -416,6 +492,7 @@ export function initInteraccionesModule() {
   const searchInput = document.getElementById("interacciones-search");
   const refreshBtn = document.getElementById("btn-refresh-interacciones");
   const pageSizeSelect = document.getElementById("interacciones-page-size");
+  const statsEl = document.getElementById("interacciones-stats");
 
   if (pageSizeSelect) {
     pageSize = Number(pageSizeSelect.value) || 20;
@@ -426,25 +503,26 @@ export function initInteraccionesModule() {
     });
   }
 
-  if (searchInput) {
-    searchInput.addEventListener("input", (e) => {
-      const term = (e.target.value || "").toLowerCase().trim();
-      if (!term) {
-        filteredInteractions = [...cachedInteractions];
-      } else {
-        filteredInteractions = cachedInteractions.filter((item) => {
-          const nameMatch = (item.patient_name || "").toLowerCase().includes(term);
-          const phoneMatch = (item.wa_id || "").includes(term) || (item.phone_formatted || "").includes(term);
-          const summaryMatch = (item.summary || "").toLowerCase().includes(term);
-          const msgMatch = (item.messages || []).some((m) =>
-            (m.text || "").toLowerCase().includes(term)
-          );
-          return nameMatch || phoneMatch || summaryMatch || msgMatch;
-        });
-      }
+  if (statsEl) {
+    statsEl.addEventListener("click", (e) => {
+      const btn = e.target.closest(".filter-pill");
+      if (!btn) return;
+      const filterType = btn.getAttribute("data-filter");
+      if (!filterType) return;
 
-      currentPage = 0;
-      renderCurrentView();
+      // Filtro mutuamente excluyente: Uno, el otro o ninguno
+      if (activeStatusFilter === filterType) {
+        activeStatusFilter = "all";
+      } else {
+        activeStatusFilter = filterType;
+      }
+      applyFilters(true);
+    });
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener("input", () => {
+      applyFilters(true);
     });
   }
 

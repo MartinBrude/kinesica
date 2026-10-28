@@ -117,10 +117,79 @@
   gap: 6px;
   background: #f0f7fb;
   color: #005f99;
-  padding: 4px 10px;
-  border-radius: 12px;
+  padding: 5px 12px;
+  border-radius: 14px;
   font-weight: 600;
   font-size: 12px;
+  border: 1.5px solid transparent;
+  line-height: 1.2;
+}
+
+/* Filtros interactivos de cápsula (excluyentes) */
+button.interacciones-stat-pill {
+  font-family: inherit;
+  font-size: 12px;
+  border: 1.5px solid transparent;
+  margin: 0;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.interacciones-stat-pill.filter-pill {
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.18s ease;
+  font-family: inherit;
+}
+
+.interacciones-stat-pill.filter-pill:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.interacciones-stat-pill.filter-pill:focus-visible {
+  outline: 2px solid #005f99;
+  outline-offset: 1px;
+}
+
+/* Cápsula Pendientes: Inactivo vs Activo */
+.filter-pill.filter-pending {
+  background: #fef5e7;
+  color: #b9770e;
+  border-color: #fcd34d;
+}
+
+.filter-pill.filter-pending:hover {
+  background: #fde8cd;
+  border-color: #f59e0b;
+}
+
+.filter-pill.filter-pending.is-active {
+  background: #b9770e;
+  color: #ffffff;
+  border-color: #925c0b;
+  box-shadow: 0 2px 8px rgba(185, 119, 14, 0.35);
+  font-weight: 700;
+}
+
+/* Cápsula Respondidas: Inactivo vs Activo */
+.filter-pill.filter-answered {
+  background: #eafaf1;
+  color: #1e8449;
+  border-color: #a3e4d7;
+}
+
+.filter-pill.filter-answered:hover {
+  background: #d4efdf;
+  border-color: #27ae60;
+}
+
+.filter-pill.filter-answered.is-active {
+  background: #1e8449;
+  color: #ffffff;
+  border-color: #145a32;
+  box-shadow: 0 2px 8px rgba(30, 132, 73, 0.35);
+  font-weight: 700;
 }
 
 /* Contenedor de grupos por fecha */
