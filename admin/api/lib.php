@@ -89,9 +89,11 @@ function start_session(): void
     if (session_status() === PHP_SESSION_ACTIVE) {
         return;
     }
+    $lifetime = 8 * 3600; // 8 horas (28.800 segundos)
+    ini_set('session.gc_maxlifetime', (string) $lifetime);
     session_name('kinesica_atm');
     session_set_cookie_params([
-        'lifetime' => 0,
+        'lifetime' => $lifetime,
         'path' => '/admin/',
         'secure' => true,
         'httponly' => true,
