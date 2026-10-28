@@ -65,10 +65,10 @@ Valida:
 
 ## 🌐 4. Conexión con tu Google Calendar Real (Producción)
 
-El archivo [`google-apps-script.js`](file:///Users/martinbrude/Documents/kinesica/booking/google-apps-script.js) contiene el backend serverless listo para Google Workspace:
+El archivo [`google-apps-script.js`](./google-apps-script.js) contiene el backend serverless listo para Google Workspace:
 
 1. Abrí [script.google.com](https://script.google.com/) y creá un nuevo proyecto (o abrilo dentro del proyecto de `kinesica-bot`).
-2. Copiá el contenido de [`booking/google-apps-script.js`](file:///Users/martinbrude/Documents/kinesica/booking/google-apps-script.js).
+2. Copiá el contenido de [`google-apps-script.js`](./google-apps-script.js).
 3. En **Configuración del proyecto** → **Propiedades de la secuencia de comandos**:
    - `CALENDAR_NAME`: `consultorio`
    - `SPREADSHEET_ID`: `1kyGkYea0Iu_OrXxF-yONqhs2rG1O8YUWbbSmQe37GCk`
@@ -88,7 +88,7 @@ El archivo [`google-apps-script.js`](file:///Users/martinbrude/Documents/kinesic
 
 ## 🧩 5. Cómo Embeber el Widget en Cualquier Página
 
-Para agregar el widget a [`index.html`](file:///Users/martinbrude/Documents/kinesica/index.html) o a una sección de la web:
+Para agregar el widget a [`index.html`](../index.html) o a una sección de la web:
 
 ```html
 <!-- 1. Estilos en el <head> -->

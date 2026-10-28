@@ -9,7 +9,7 @@ Este documento describe las funcionalidades incorporadas al módulo de administr
 Cada una de estas 4 características clínicas cuenta con comentarios delimitadores uniformes:
 - En HTML (`admin/index.html`): `<!-- FEATURE-OPTIONAL: <nombre> --> ... <!-- /FEATURE-OPTIONAL: <nombre> -->`
 - En JavaScript (`admin/ficha-rules.mjs`, `admin/modules/print.js` y `admin/modules/form.js`): `// FEATURE-OPTIONAL: <nombre> ... // /FEATURE-OPTIONAL: <nombre>`
-- Para la guía completa de la arquitectura modular y seguridad, consultar [ARCHITECTURE.md](file:///Users/martinbrude/Documents/kinesica/admin/ARCHITECTURE.md).
+- Para la guía completa de la arquitectura modular y seguridad, consultar [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ### A. Tipo de Ruido Articular (Clic vs. Crepitación)
 - **Etiqueta:** `FEATURE-OPTIONAL: tipo-ruido`
@@ -93,7 +93,7 @@ Cada una de estas 4 características clínicas cuenta con comentarios delimitado
 
 ### A. Tipado Estricto y Coerción Centralizada (`coerceFicha`)
 - **Problema previo:** Al leer del formulario o al importar archivos `.json`, los tipos de datos dependían de cómo venían en el archivo (podían contener strings en campos booleanos, valores de dolor EVA fuera de rango 0..10, o arrays malformados).
-- **Solución:** Se implementó `coerceFicha(input)` en [`admin/ficha-rules.mjs`](file:///Users/martinbrude/Documents/kinesica/admin/ficha-rules.mjs). Coacciona de forma estricta:
+- **Solución:** Se implementó `coerceFicha(input)` en [`admin/ficha-rules.mjs`](./ficha-rules.mjs). Coacciona de forma estricta:
   - Strings limpios con `trim()`.
   - Booleans forzados a booleanos nativos (`true`/`false`).
   - `eva` acotado de forma segura como entero entre `0` y `10`.
@@ -102,7 +102,7 @@ Cada una de estas 4 características clínicas cuenta con comentarios delimitado
 
 ### B. Normalización de Clave de Paciente (`normalizeDni` y `patientKey`)
 - **Problema previo:** Si una ficha tenía DNI `"34.205.109"` y otra `"34205109"`, se interpretaban como pacientes distintos en la agrupación y en el filtro de PDF.
-- **Solución:** `patientKey(item)` centralizado en [`admin/ficha-rules.mjs`](file:///Users/martinbrude/Documents/kinesica/admin/ficha-rules.mjs) normaliza los dígitos del DNI y el nombre en minúsculas, unificando de forma confiable todas las sesiones del mismo paciente.
+- **Solución:** `patientKey(item)` centralizado en [`admin/ficha-rules.mjs`](./ficha-rules.mjs) normaliza los dígitos del DNI y el nombre en minúsculas, unificando de forma confiable todas las sesiones del mismo paciente.
 
 ### C. Refactor DRY en Validación y Formateo de Texto
 - **Validación DRY:** Función `highlightMissingFields(keys)` unificada entre la navegación paso a paso (`btn-next`), la validación del paso 0 y el submit del formulario.

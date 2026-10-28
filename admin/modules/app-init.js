@@ -3,7 +3,7 @@
  * Conecta los eventos y callbacks entre el Formulario, la Biblioteca, el Comparador y el Dashboard.
  */
 
-import { ageOn, patientKey, PATIENT_FIELDS, todayISO } from "../ficha-rules.mjs?v=90";
+import { ageOn, patientKey, PATIENT_FIELDS, todayISO } from "../ficha-rules.mjs?v=91";
 import { api } from "./api.js?v=77";
 import { dialogAlert } from "./dom.js?v=78";
 import { printItems } from "./print.js?v=82";

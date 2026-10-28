@@ -865,4 +865,71 @@ await test("interacciones.php limita almacenamiento a 1000 items más recientes"
   assert.match(interaccionesPhp, /count\(\$items\)\s*>\s*1000/, "interacciones.php debe limitar el total de items a 1000");
 });
 
+await test("todos los imports y exports en admin resuelven correctamente", () => {
+  function getCodeFiles(dir) {
+    const res = [];
+    for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, ent.name);
+      if (ent.isDirectory()) res.push(...getCodeFiles(full));
+      else if (ent.name.endsWith(".js") || ent.name.endsWith(".mjs")) res.push(full);
+    }
+    return res;
+  }
+  const files = getCodeFiles(adminDir);
+  for (const f of files) {
+    const content = fs.readFileSync(f, "utf8");
+    const re = /(?:import|export)\s+\{([^}]+)\}\s+from\s+["']([^"']+)["']/g;
+    let m;
+    while ((m = re.exec(content)) !== null) {
+      const symbols = m[1].split(",").map((s) => s.trim().split(/\s+as\s+/)[0].trim()).filter(Boolean);
+      const impPath = m[2];
+      if (impPath.startsWith("http://") || impPath.startsWith("https://")) continue;
+      const cleanPath = impPath.split("?")[0];
+      const target = path.resolve(path.dirname(f), cleanPath);
+      assert.ok(fs.existsSync(target), `Import path '${impPath}' en ${f} debe existir en disco`);
+      const targetContent = fs.readFileSync(target, "utf8");
+      for (const sym of symbols) {
+        if (sym === "default") continue;
+        const p1 = new RegExp(`\\bexport\\s+(?:(?:async\\s+)?function\\s*\\*?\\s*|class\\s+|(?:const|let|var)\\s+)${sym}\\b`);
+        const p2 = new RegExp(`\\bexport\\s*\\{[^}]*\\b${sym}\\b[^}]*\\}`);
+        const p3 = new RegExp(`\\bexport\\s*\\{[^}]*\\bas\\s+${sym}\\b[^}]*\\}`);
+        const p4 = /export\s*\*\s*from/;
+        assert.ok(
+          p1.test(targetContent) || p2.test(targetContent) || p3.test(targetContent) || p4.test(targetContent),
+          `El archivo ${target} debe exportar el símbolo '${sym}' requerido por ${f}`
+        );
+      }
+    }
+  }
+});
+
+await test("todos los enlaces en documentación markdown resuelven a archivos existentes", () => {
+  function getMdFiles(dir) {
+    const res = [];
+    for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (ent.name === "node_modules" || ent.name === ".git") continue;
+      const full = path.join(dir, ent.name);
+      if (ent.isDirectory()) res.push(...getMdFiles(full));
+      else if (ent.name.endsWith(".md")) res.push(full);
+    }
+    return res;
+  }
+  const mdFiles = getMdFiles(root);
+  for (const file of mdFiles) {
+    const content = fs.readFileSync(file, "utf8");
+    const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+    let m;
+    while ((m = linkRegex.exec(content)) !== null) {
+      const href = m[2].trim();
+      if (href.startsWith("http://") || href.startsWith("https://") || href.startsWith("#") || href.startsWith("mailto:")) continue;
+      const cleanHref = href.split("#")[0];
+      if (!cleanHref) continue;
+      const target = cleanHref.startsWith("/")
+        ? path.resolve(root, cleanHref.slice(1))
+        : path.resolve(path.dirname(file), cleanHref);
+      assert.ok(fs.existsSync(target), `En ${file}: el enlace '${href}' apunta a '${target}' que no existe`);
+    }
+  }
+});
+
 console.log(`admin robustez: ok (${passed} pruebas)`);

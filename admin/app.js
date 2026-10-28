@@ -6,7 +6,7 @@
 import {
   compareFichas,
   todayISO,
-} from "./ficha-rules.mjs?v=90";
+} from "./ficha-rules.mjs?v=91";
 
 import {
   api,

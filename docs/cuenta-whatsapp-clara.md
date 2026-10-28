@@ -1,7 +1,7 @@
 # Primer paso: la cuenta de WhatsApp de Clara
 
 > Guía para crear el número y la cuenta de WhatsApp de Clara, en tu teléfono o en otro.  
-> 📖 **Manual de Clara:** [Ver Manual Operativo](MANUAL_CLARA.md) ([Enlace en GitHub](https://github.com/MartinBrude/kinesica/blob/main/docs/manual-clara.md))
+> 📖 **Manual de Clara:** [Ver Manual Operativo](manual-clara.md) ([Enlace en GitHub](https://github.com/MartinBrude/kinesica/blob/main/docs/manual-clara.md))
 
 ---
 

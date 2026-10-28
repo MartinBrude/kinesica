@@ -11,9 +11,9 @@ description: >-
 
 ## Antes de investigar
 
-1. **Contacto** → [docs/data-sources.md](../../docs/data-sources.md)
-2. **Artículos / patologías** → [docs/articles-and-methods.md](../../docs/articles-and-methods.md#artículos--patologías)
-3. **Métodos** → [docs/articles-and-methods.md](../../docs/articles-and-methods.md#métodos-y-técnicas)
+1. **Contacto** → [docs/data-sources.md](../../../docs/data-sources.md)
+2. **Artículos / patologías** → [docs/articles-and-methods.md](../../../docs/articles-and-methods.md#artículos--patologías)
+3. **Métodos** → [docs/articles-and-methods.md](../../../docs/articles-and-methods.md#métodos-y-técnicas)
 4. No greppear HTML masivo — editar `scripts/*-content.mjs` y regenerar.
 
 ## Artículos (patologías)
@@ -83,4 +83,4 @@ Cierre completo: `npm run verify` (incluye dry + seo:audit; CI en cada push/PR).
   → i18n-urls.mjs
 ```
 
-Detalle: [docs/data-sources.md](../../docs/data-sources.md) · [docs/articles-and-methods.md](../../docs/articles-and-methods.md)
+Detalle: [docs/data-sources.md](../../../docs/data-sources.md) · [docs/articles-and-methods.md](../../../docs/articles-and-methods.md)
