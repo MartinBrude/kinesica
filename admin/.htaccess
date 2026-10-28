@@ -9,7 +9,13 @@ AddType application/javascript .mjs .js
   RewriteRule ^signatures/([a-z0-9_-]+\.png)$ api/firma.php?file=$1 [L,QSA]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule ^(inicio|fichas|historias|pacientes|consultorio|horarios|honorarios|clara|configuracion|administracion|admin|sistema|ficha|comparar)(/.*)?$ index.html [L,QSA]
+  RewriteRule ^(inicio|fichas|historias|library|pacientes|consultorio|horarios|honorarios|clara|configuracion|interacciones|chats|mensajes|administracion|admin|sistema|ficha|comparar)(/.*)?$ index.html [L,QSA]
+
+  # Fallback para cualquier subruta limpia de /admin/ que no sea archivo ni /api/ (evita 404 al refrescar)
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} !^/admin/api/
+  RewriteRule ^.*$ index.html [L,QSA]
 </IfModule>
 
 <FilesMatch "^(config\.php|config\.example\.php|mail\.php|lib\.php|\.env.*|\.git.*)$">
