@@ -5,6 +5,18 @@
  */
 
 import { api } from "./api.js?v=77";
+import { switchActiveView } from "./dom.js?v=78";
+import {
+  setGateMessage,
+  bindPasswordToggle,
+  setupNumericCodeInputs,
+  clearAuthStorage,
+  saveAuthStorage,
+} from "./auth-utils.js";
+import { setupEmailCodeFlow } from "./auth-email-code.js";
+import { setupRecoveryFlow, setupEnrollFlow } from "./auth-recovery.js";
+
+export { setGateMessage };
 
 let sessionUser = null;
 let authed = false;
@@ -40,44 +52,23 @@ const btnResendEmailCode = document.querySelector("#btn-resend-email-code");
 const emailCodeStepRequest = document.querySelector("#email-code-step-request");
 const emailCodeStepVerify = document.querySelector("#email-code-step-verify");
 
-/**
- * Obtiene el usuario autenticado en la sesión actual.
- * @returns {{username: string, name: string}|null}
- */
 export function getSessionUser() {
   return sessionUser;
 }
 
-/**
- * Establece el usuario autenticado actual.
- * @param {{username: string, name: string}|null} user
- */
 export function setSessionUser(user) {
   sessionUser = user;
   authed = Boolean(user);
   const userLabel = document.querySelector("#session-user-name");
   if (user) {
-    const displayName = user.name || user.username || "";
-    try {
-      localStorage.setItem("kinesica_logged_in", "1");
-      if (displayName) {
-        localStorage.setItem("kinesica_user_name", displayName);
-      }
-      if (user.role) {
-        localStorage.setItem("kinesica_user_role", user.role);
-      }
-    } catch (_) {}
+    saveAuthStorage(user);
     if (userLabel) {
-      userLabel.textContent = displayName;
+      userLabel.textContent = user.name || user.username || "";
       userLabel.hidden = false;
     }
     document.documentElement.classList.add("is-authenticated");
   } else {
-    try {
-      localStorage.removeItem("kinesica_logged_in");
-      localStorage.removeItem("kinesica_user_name");
-      localStorage.removeItem("kinesica_user_role");
-    } catch (_) {}
+    clearAuthStorage();
     if (userLabel) {
       userLabel.textContent = "";
       userLabel.hidden = true;
@@ -86,47 +77,12 @@ export function setSessionUser(user) {
   }
 }
 
-/**
- * Muestra un mensaje de estado en los formularios de acceso.
- * @param {HTMLElement} el Elemento de mensaje
- * @param {string} text Texto descriptivo
- * @param {boolean} [info=false] Si es true se muestra como nota informativa, si es false como error
- */
-export function setGateMessage(el, text, info = false) {
-  if (!el) return;
-  el.textContent = text;
-  el.classList.toggle("gate-note", Boolean(info));
-  el.classList.toggle("gate-error", !info);
-  el.hidden = false;
-}
-
-/**
- * Activa la pantalla de acceso (Gate) y oculta las vistas operativas de la aplicación.
- * @param {object} [data={}] Información de estado (enroll, forgot, reset, account, secret)
- */
 export function showGate(data = {}) {
   authed = false;
-  try {
-    localStorage.removeItem("kinesica_logged_in");
-    localStorage.removeItem("kinesica_user_name");
-  } catch (_) {}
+  clearAuthStorage();
   document.documentElement.classList.remove("is-authenticated");
 
-  const libraryView = document.querySelector("#view-library");
-  const formView = document.querySelector("#view-form");
-  const compareView = document.querySelector("#view-compare");
-  const dashView = document.querySelector("#view-dashboard");
-  const pacView = document.querySelector("#view-pacientes");
-  const horView = document.querySelector("#view-horarios");
-
-  if (libraryView) libraryView.hidden = true;
-  if (formView) formView.hidden = true;
-  if (compareView) compareView.hidden = true;
-  if (dashView) dashView.hidden = true;
-  if (pacView) pacView.hidden = true;
-  if (horView) horView.hidden = true;
-
-  if (viewGate) viewGate.hidden = false;
+  switchActiveView("view-gate");
   if (logoutBtn) logoutBtn.hidden = true;
   document.querySelectorAll(".clara-btn").forEach((el) => el.remove());
 
@@ -148,11 +104,8 @@ export function showGate(data = {}) {
     if (emailCodeVerifyError) emailCodeVerifyError.hidden = true;
     const userInput = emailCodeForm ? emailCodeForm.elements.username : null;
     if (userInput) {
-      if (!userInput.value) {
-        userInput.focus();
-      } else {
-        userInput.select();
-      }
+      if (!userInput.value) userInput.focus();
+      else userInput.select();
     }
   }
 
@@ -161,9 +114,7 @@ export function showGate(data = {}) {
   if (enroll) {
     if (enrollAccountEl) enrollAccountEl.textContent = data.account || "Kinésica";
     const secret = data.secret || "";
-    if (enrollSecretEl) {
-      enrollSecretEl.textContent = secret.replace(/(.{4})/g, "$1 ").trim();
-    }
+    if (enrollSecretEl) enrollSecretEl.textContent = secret.replace(/(.{4})/g, "$1 ").trim();
     const enrollPassInput = enrollForm ? enrollForm.elements.enroll_password : null;
     if (enrollPassInput) {
       enrollPassInput.value = "";
@@ -185,121 +136,21 @@ export function showGate(data = {}) {
   }
 }
 
-/**
- * Oculta la pantalla de acceso una vez autenticado exitosamente.
- */
 export function hideGate() {
   document.documentElement.classList.add("is-authenticated");
-  try {
-    localStorage.setItem("kinesica_logged_in", "1");
-    if (sessionUser && (sessionUser.name || sessionUser.username)) {
-      localStorage.setItem("kinesica_user_name", sessionUser.name || sessionUser.username);
-    }
-  } catch (_) {}
+  saveAuthStorage(sessionUser);
   if (viewGate) viewGate.hidden = true;
   if (logoutBtn) logoutBtn.hidden = false;
 }
 
-/**
- * Inicializa los controladores de eventos para los formularios de autenticación.
- * @param {object} callbacks Callbacks para interactuar con el flujo de la aplicación
- * @param {() => Promise<void>} callbacks.onSuccess Callback invocado tras inicio de sesión exitoso
- * @param {() => void} callbacks.onLogout Callback invocado tras desconectar la sesión
- */
 export function initAuth({ onSuccess, onLogout }) {
-  const bindPasswordToggle = (btnId, inputSelector) => {
-    const btn = document.querySelector(btnId);
-    if (!btn) return;
-    btn.addEventListener("click", () => {
-      const input = typeof inputSelector === "function" ? inputSelector() : document.querySelector(inputSelector);
-      if (!input) return;
-      const isPassword = input.type === "password";
-      input.type = isPassword ? "text" : "password";
-      btn.setAttribute("aria-label", isPassword ? "Ocultar contraseña" : "Mostrar contraseña");
-      btn.title = isPassword ? "Ocultar contraseña" : "Mostrar contraseña";
-      const iconShow = btn.querySelector(".eye-show");
-      const iconHide = btn.querySelector(".eye-hide");
-      if (iconShow) iconShow.hidden = isPassword;
-      if (iconHide) iconHide.hidden = !isPassword;
-      input.focus();
-    });
-  };
-
   bindPasswordToggle("#btn-toggle-password", () => loginForm?.elements?.password);
   bindPasswordToggle("#btn-toggle-email-code-password", () => emailCodeForm?.elements?.email_code_password);
   bindPasswordToggle("#btn-toggle-enroll-password", () => enrollForm?.elements?.enroll_password);
+  setupNumericCodeInputs();
 
-  document.querySelectorAll('input[name="code"]').forEach((codeEl) => {
-    codeEl.addEventListener("keydown", (e) => {
-      if (
-        e.key === "Backspace" ||
-        e.key === "Delete" ||
-        e.key === "Tab" ||
-        e.key === "ArrowLeft" ||
-        e.key === "ArrowRight" ||
-        e.key === "Enter" ||
-        e.ctrlKey ||
-        e.metaKey
-      ) {
-        return;
-      }
-      if (!/^\d$/.test(e.key)) {
-        e.preventDefault();
-      }
-    });
-    codeEl.addEventListener("input", () => {
-      const clean = codeEl.value.replace(/\D/g, "").slice(0, 6);
-      if (codeEl.value !== clean) {
-        codeEl.value = clean;
-      }
-    });
-  });
-
-  if (btnForgot) {
-    btnForgot.addEventListener("click", () => showGate({ forgot: true }));
-  }
-
-  if (btnForgotBack) {
-    btnForgotBack.addEventListener("click", () => showGate({ login: true }));
-  }
-
-  if (btnLoginSendEmailCode) {
-    btnLoginSendEmailCode.addEventListener("click", async () => {
-      const username = loginForm?.elements?.username?.value?.trim() || "";
-      if (!username) {
-        setGateMessage(loginErrorEl, "Ingresá tu usuario arriba para enviarte el código.", false);
-        loginForm?.elements?.username?.focus();
-        return;
-      }
-      if (loginErrorEl) loginErrorEl.hidden = true;
-      btnLoginSendEmailCode.disabled = true;
-      btnLoginSendEmailCode.textContent = "Enviando código...";
-      try {
-        const data = await api("login-code.php", {
-          method: "POST",
-          body: JSON.stringify({ action: "send", username }),
-        });
-        if (loginCodeSentNote) {
-          setGateMessage(
-            loginCodeSentNote,
-            data.message || `Código enviado a ${data.emailMasked || "tu correo"}. Ingresalo arriba y tocá Entrar.`,
-            true
-          );
-        }
-        btnLoginSendEmailCode.textContent = "Reenviar código al mail";
-        const codeInput = loginForm?.elements?.code;
-        if (codeInput) {
-          codeInput.value = "";
-          codeInput.focus();
-        }
-      } catch (err) {
-        setGateMessage(loginErrorEl, err.message, false);
-        btnLoginSendEmailCode.textContent = "¿No tenés la app? Enviame un código al mail";
-      } finally {
-        btnLoginSendEmailCode.disabled = false;
-      }
-    });
-  }
+  if (btnForgot) btnForgot.addEventListener("click", () => showGate({ forgot: true }));
+  if (btnForgotBack) btnForgotBack.addEventListener("click", () => showGate({ login: true }));
 
   if (btnEmailCode) {
     btnEmailCode.addEventListener("click", () => {
@@ -313,191 +164,35 @@ export function initAuth({ onSuccess, onLogout }) {
     });
   }
 
-  if (btnEmailCodeBack) {
-    btnEmailCodeBack.addEventListener("click", () => showGate({ login: true }));
-  }
+  if (btnEmailCodeBack) btnEmailCodeBack.addEventListener("click", () => showGate({ login: true }));
 
-  const handleSendEmailCode = async () => {
-    if (!emailCodeForm) return;
-    const username = emailCodeForm.elements.username?.value?.trim() || "";
-    if (!username) {
-      setGateMessage(emailCodeRequestError, "Ingresá tu usuario o correo.", false);
-      return;
-    }
-    if (emailCodeRequestError) emailCodeRequestError.hidden = true;
-    if (btnSendEmailCode) {
-      btnSendEmailCode.disabled = true;
-      btnSendEmailCode.textContent = "Enviando código...";
-    }
-    try {
-      const data = await api("login-code.php", {
-        method: "POST",
-        body: JSON.stringify({ action: "send", username }),
-      });
-      emailCodeForm.dataset.user = data.username || username;
-      if (emailCodeStepRequest) emailCodeStepRequest.hidden = true;
-      if (emailCodeStepVerify) emailCodeStepVerify.hidden = false;
-      if (emailCodeSentNote) {
-        setGateMessage(
-          emailCodeSentNote,
-          data.message || `Código enviado a ${data.emailMasked || "tu correo"}.`,
-          true
-        );
-      }
-      if (emailCodeVerifyError) emailCodeVerifyError.hidden = true;
-      const codeInput = emailCodeForm.elements.code;
-      if (codeInput) {
-        codeInput.value = "";
-        codeInput.focus();
-      }
-    } catch (err) {
-      setGateMessage(emailCodeRequestError, err.message, false);
-    } finally {
-      if (btnSendEmailCode) {
-        btnSendEmailCode.disabled = false;
-        btnSendEmailCode.textContent = "Enviar código al mail";
-      }
-    }
-  };
+  setupEmailCodeFlow({
+    loginForm,
+    emailCodeForm,
+    emailCodeStepRequest,
+    emailCodeStepVerify,
+    emailCodeRequestError,
+    emailCodeVerifyError,
+    emailCodeSentNote,
+    loginCodeSentNote,
+    loginErrorEl,
+    btnLoginSendEmailCode,
+    btnSendEmailCode,
+    btnVerifyEmailCode,
+    btnResendEmailCode,
+    onSuccess,
+    onUserAuthed: setSessionUser,
+    hideGate,
+  });
 
-  const handleVerifyEmailCode = async () => {
-    if (!emailCodeForm) return;
-    const username = emailCodeForm.dataset.user || emailCodeForm.elements.username?.value?.trim() || "";
-    const password = emailCodeForm.elements.email_code_password?.value || "";
-    const code = emailCodeForm.elements.code?.value?.trim() || "";
-    if (!password) {
-      setGateMessage(emailCodeVerifyError, "Ingresá tu contraseña.", false);
-      emailCodeForm.elements.email_code_password?.focus();
-      return;
-    }
-    if (!code || code.length < 6) {
-      setGateMessage(emailCodeVerifyError, "Ingresá los 6 dígitos del código.", false);
-      emailCodeForm.elements.code?.focus();
-      return;
-    }
-    if (emailCodeVerifyError) emailCodeVerifyError.hidden = true;
-    if (btnVerifyEmailCode) {
-      btnVerifyEmailCode.disabled = true;
-      btnVerifyEmailCode.textContent = "Verificando...";
-    }
-    try {
-      const data = await api("login-code.php", {
-        method: "POST",
-        body: JSON.stringify({ action: "verify", username, password, code }),
-      });
-      setSessionUser({ username: data.username || username, name: data.name, role: data.role });
-      hideGate();
-      if (typeof onSuccess === "function") await onSuccess();
-    } catch (err) {
-      if (err.auth) return;
-      setGateMessage(emailCodeVerifyError, err.message, false);
-    } finally {
-      if (btnVerifyEmailCode) {
-        btnVerifyEmailCode.disabled = false;
-        btnVerifyEmailCode.textContent = "Confirmar y entrar";
-      }
-    }
-  };
-
-  if (btnSendEmailCode) {
-    btnSendEmailCode.addEventListener("click", (e) => {
-      e.preventDefault();
-      handleSendEmailCode();
-    });
-  }
-
-  if (btnVerifyEmailCode) {
-    btnVerifyEmailCode.addEventListener("click", (e) => {
-      e.preventDefault();
-      handleVerifyEmailCode();
-    });
-  }
-
-  if (btnResendEmailCode) {
-    btnResendEmailCode.addEventListener("click", async (e) => {
-      e.preventDefault();
-      const username = emailCodeForm?.dataset?.user || emailCodeForm?.elements?.username?.value?.trim() || "";
-      if (!username) return;
-      btnResendEmailCode.disabled = true;
-      btnResendEmailCode.textContent = "Reenviando...";
-      try {
-        const data = await api("login-code.php", {
-          method: "POST",
-          body: JSON.stringify({ action: "send", username }),
-        });
-        setGateMessage(
-          emailCodeSentNote,
-          `Nuevo código enviado a ${data.emailMasked || "tu correo"}.`,
-          true
-        );
-        if (emailCodeVerifyError) emailCodeVerifyError.hidden = true;
-        const codeInput = emailCodeForm?.elements?.code;
-        if (codeInput) {
-          codeInput.value = "";
-          codeInput.focus();
-        }
-      } catch (err) {
-        setGateMessage(emailCodeVerifyError, err.message, false);
-      } finally {
-        btnResendEmailCode.disabled = false;
-        btnResendEmailCode.textContent = "Reenviar código";
-      }
-    });
-  }
-
-  if (emailCodeForm) {
-    emailCodeForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      if (emailCodeStepVerify && !emailCodeStepVerify.hidden) {
-        handleVerifyEmailCode();
-      } else {
-        handleSendEmailCode();
-      }
-    });
-  }
-
-  if (forgotForm) {
-    forgotForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      if (forgotErrorEl) forgotErrorEl.hidden = true;
-      try {
-        const data = await api("forgot.php", {
-          method: "POST",
-          body: JSON.stringify({ username: event.target.username.value }),
-        });
-        setGateMessage(
-          forgotErrorEl,
-          data.message || "Si el usuario tiene correo, te llega un enlace en unos minutos.",
-          true
-        );
-      } catch (err) {
-        setGateMessage(forgotErrorEl, err.message, false);
-      }
-    });
-  }
-
-  if (resetForm) {
-    resetForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      if (resetErrorEl) resetErrorEl.hidden = true;
-      const password = event.target.password.value;
-      if (password !== event.target.confirm.value) {
-        setGateMessage(resetErrorEl, "Las contraseñas no coinciden.", false);
-        return;
-      }
-      try {
-        await api("reset.php", {
-          method: "POST",
-          body: JSON.stringify({ token: event.target.dataset.token, password }),
-        });
-        history.replaceState(null, "", location.pathname);
-        showGate({ login: true });
-        setGateMessage(loginErrorEl, "Contraseña actualizada. Entrá con la nueva.", true);
-      } catch (err) {
-        setGateMessage(resetErrorEl, err.message, false);
-      }
-    });
-  }
+  setupRecoveryFlow({
+    forgotForm,
+    resetForm,
+    forgotErrorEl,
+    resetErrorEl,
+    loginErrorEl,
+    showGate,
+  });
 
   if (loginForm) {
     loginForm.addEventListener("submit", async (event) => {
@@ -509,10 +204,7 @@ export function initAuth({ onSuccess, onLogout }) {
         code: event.target.code.value,
       };
       try {
-        const data = await api("login.php", {
-          method: "POST",
-          body: JSON.stringify(body),
-        });
+        const data = await api("login.php", { method: "POST", body: JSON.stringify(body) });
         if (data.enroll) {
           showGate(data);
         } else {
@@ -530,47 +222,19 @@ export function initAuth({ onSuccess, onLogout }) {
     });
   }
 
-  if (enrollForm) {
-    enrollForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      if (enrollErrorEl) enrollErrorEl.hidden = true;
-      const password = event.target.enroll_password?.value || "";
-      const code = event.target.code?.value || "";
-      if (!password) {
-        setGateMessage(enrollErrorEl, "Ingresá tu contraseña.", false);
-        event.target.enroll_password?.focus();
-        return;
-      }
-      try {
-        const data = await api("totp.php", {
-          method: "POST",
-          body: JSON.stringify({ password, code }),
-        });
-        if (data && data.name) {
-          setSessionUser({ username: sessionUser?.username || "", name: data.name, role: data.role });
-        }
-        hideGate();
-        if (typeof onSuccess === "function") await onSuccess();
-      } catch (err) {
-        if (err.auth) return;
-        if (enrollErrorEl) {
-          enrollErrorEl.textContent = err.message;
-          enrollErrorEl.hidden = false;
-        }
-      }
-    });
-  }
+  setupEnrollFlow({
+    enrollForm,
+    enrollErrorEl,
+    setSessionUser,
+    getSessionUser,
+    hideGate,
+    onSuccess,
+  });
 
   if (logoutBtn) {
     logoutBtn.addEventListener("click", async () => {
       await api("logout.php", { method: "POST" }).catch(() => {});
-      try {
-        localStorage.removeItem("kinesica_logged_in");
-        localStorage.removeItem("kinesica_user_name");
-        localStorage.removeItem("kinesica_user_role");
-        sessionStorage.removeItem("kinesica_admin_view");
-        sessionStorage.removeItem("kinesica_cta_seen");
-      } catch (_) {}
+      clearAuthStorage();
       document.documentElement.classList.remove("is-authenticated");
       setSessionUser(null);
       if (typeof onLogout === "function") onLogout();

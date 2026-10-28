@@ -5,7 +5,7 @@
 
 import { api } from "./api.js?v=77";
 import { getSessionUser } from "./auth.js?v=81";
-import { escapeHtml, dialogAlert } from "./dom.js?v=78";
+import { escapeHtml, dialogAlert, switchActiveView } from "./dom.js?v=78";
 
 const viewDashboard = document.querySelector("#view-dashboard");
 const greetingEl = document.querySelector("#dash-greeting");
@@ -20,14 +20,8 @@ let activeClara = localStorage.getItem("kinesica_clara_active") === "1";
 let activeBooking = localStorage.getItem("kinesica_booking_active") === "1";
 
 export function showDashboardView() {
-  if (viewDashboard) {
-    viewDashboard.hidden = false;
-    const views = ["#view-library", "#view-pacientes", "#view-configuracion", "#view-horarios", "#view-honorarios", "#view-form", "#view-compare", "#view-gate", "#view-interacciones"];
-    views.forEach((sel) => {
-      const el = document.querySelector(sel);
-      if (el) el.hidden = true;
-    });
-
+  const view = switchActiveView("view-dashboard");
+  if (view) {
     try {
       sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "inicio" }));
     } catch {}

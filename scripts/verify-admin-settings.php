@@ -10,7 +10,7 @@ function check(bool $cond, string $msg): void { global $n; if (!$cond) { fwrite(
 $root = sys_get_temp_dir() . '/kin-settings-' . bin2hex(random_bytes(4));
 mkdir("$root/admin/api", 0777, true);
 mkdir("$root/api", 0777, true);
-foreach (['settings.php', 'horarios.php'] as $f) copy(__DIR__ . "/../admin/api/$f", "$root/admin/api/$f");
+foreach (['settings.php', 'horarios.php', 'horarios_validator.php', 'horarios_summary.php', 'kinesica_settings_storage.php'] as $f) copy(__DIR__ . "/../admin/api/$f", "$root/admin/api/$f");
 foreach (['confirmation-mail-lib.php'] as $f) copy(__DIR__ . "/../api/$f", "$root/api/$f");
 file_put_contents("$root/admin/api/lib.php", '<?php
 function require_header(): void {}

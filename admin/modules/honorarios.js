@@ -5,7 +5,7 @@
  */
 
 import { api } from "./api.js?v=77";
-import { escapeHtml, dialogAlert } from "./dom.js?v=78";
+import { escapeHtml, dialogAlert, switchActiveView } from "./dom.js?v=78";
 
 const viewHonorarios = document.querySelector("#view-honorarios");
 const inputAtm = document.querySelector("#input-fee-atm");
@@ -25,25 +25,18 @@ export const DEFAULT_FEES = {
 let currentFees = { ...DEFAULT_FEES };
 
 export function showHonorariosView() {
-  if (viewHonorarios) {
-    viewHonorarios.hidden = false;
-    const views = ["#view-dashboard", "#view-library", "#view-pacientes", "#view-horarios", "#view-form", "#view-compare", "#view-gate"];
-    views.forEach((sel) => {
-      const el = document.querySelector(sel);
-      if (el) el.hidden = true;
-    });
+  switchActiveView("view-consultorio");
+  try {
+    sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "consultorio" }));
+  } catch {}
 
-    try {
-      sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "honorarios" }));
-    } catch {}
-
-    loadHonorarios();
-  }
+  loadHonorarios();
 }
 
 export function hideHonorariosView() {
-  if (viewHonorarios) {
-    viewHonorarios.hidden = true;
+  const view = document.getElementById("view-consultorio");
+  if (view) {
+    view.hidden = true;
   }
 }
 

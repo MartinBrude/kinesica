@@ -29,7 +29,7 @@ import {
   validateStep,
 } from "../admin/ficha-rules.mjs";
 import { api, formatDate, setAuthRequiredHandler } from "../admin/modules/api.js";
-import { escapeHtml } from "../admin/modules/dom.js";
+import { escapeHtml, ALL_ADMIN_VIEWS, switchActiveView } from "../admin/modules/dom.js";
 import { formatHeaderScheduleText } from "../admin/modules/horarios.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -831,6 +831,38 @@ await test("Protección de manual.html, /docs/ y recursos internos de /admin/ so
       `El enlace interno #${anchor} del índice debe corresponder a un título real en manual-clara.md`
     );
   }
+});
+
+await test("ALL_ADMIN_VIEWS coincide exactamente con las secciones .view de admin/index.html", () => {
+  const indexHtml = fs.readFileSync(path.join(adminDir, "index.html"), "utf8");
+  const matches = [...indexHtml.matchAll(/<section\s+[^>]*id="(view-[a-z0-9_-]+)"[^>]*class="[^"]*\bview\b[^"]*"/g)].map((m) => m[1]);
+  assert.equal(matches.length, 10, "Deben existir 10 vistas principales en index.html");
+  assert.deepEqual(
+    [...matches].sort(),
+    [...ALL_ADMIN_VIEWS].sort(),
+    "ALL_ADMIN_VIEWS debe listar exactamente todas las vistas registradas en el HTML"
+  );
+});
+
+await test("switchActiveView maneja entornos sin DOM o vistas inexistentes de forma segura", () => {
+  assert.equal(typeof switchActiveView, "function");
+  // Sin window/document no debe crashear
+  assert.doesNotThrow(() => switchActiveView("view-interacciones"));
+  assert.doesNotThrow(() => switchActiveView("non_existent_view"));
+  assert.doesNotThrow(() => switchActiveView(null));
+});
+
+await test("kinesica_extract_ficha_photos extrae y deduplica fotos válidas en uploads", () => {
+  const libPhp = fs.readFileSync(path.join(adminDir, "api/lib.php"), "utf8");
+  assert.match(libPhp, /function kinesica_extract_ficha_photos/, "lib.php debe definir la función kinesica_extract_ficha_photos");
+  const fichasPhp = fs.readFileSync(path.join(adminDir, "api/fichas.php"), "utf8");
+  assert.match(fichasPhp, /kinesica_extract_ficha_photos\(\$prevItem\)/, "fichas.php debe usar kinesica_extract_ficha_photos en POST");
+  assert.match(fichasPhp, /kinesica_extract_ficha_photos\(\$prevData\)/, "fichas.php debe usar kinesica_extract_ficha_photos en DELETE");
+});
+
+await test("interacciones.php limita almacenamiento a 1000 items más recientes", () => {
+  const interaccionesPhp = fs.readFileSync(path.join(adminDir, "api/interacciones.php"), "utf8");
+  assert.match(interaccionesPhp, /count\(\$items\)\s*>\s*1000/, "interacciones.php debe limitar el total de items a 1000");
 });
 
 console.log(`admin robustez: ok (${passed} pruebas)`);

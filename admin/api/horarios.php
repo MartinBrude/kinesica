@@ -3,12 +3,11 @@ declare(strict_types=1);
 
 /**
  * Kinésica Admin - Gestión y Validación de Horarios de Profesionales
- * ==================================================================
- * Fuente única de verdad para:
- * 1. Módulo Horarios en /admin (Martín, Norberto y María).
- * 2. Turnera Web (Agendar) y Google Apps Script.
- * 3. Chatbot Clara (WhatsApp / n8n) en formato JS (1..5), Python (0..4) y texto para prompt.
  */
+
+require_once __DIR__ . '/horarios_validator.php';
+require_once __DIR__ . '/horarios_summary.php';
+require_once __DIR__ . '/kinesica_settings_storage.php';
 
 function default_practitioner_hours(): array
 {
@@ -28,265 +27,6 @@ function default_practitioner_hours(): array
     ];
 }
 
-function hm_to_minutes(string $hm): int
-{
-    $parts = explode(':', trim($hm));
-    return ((int) ($parts[0] ?? 0)) * 60 + ((int) ($parts[1] ?? 0));
-}
-
-function minutes_to_hm(int $totalMin): string
-{
-    $h = str_pad((string) intdiv($totalMin, 60), 2, '0', STR_PAD_LEFT);
-    $m = str_pad((string) ($totalMin % 60), 2, '0', STR_PAD_LEFT);
-    return "{$h}:{$m}";
-}
-
-function is_valid_hm(string $hm): bool
-{
-    return (bool) preg_match('/^([01]\d|2[0-3]):(00|30)$/', trim($hm));
-}
-
-/**
- * Valida las reglas de negocio de horarios (1 sola camilla, máx 2 franjas/día, mín 60 min).
- */
-function validate_practitioner_hours_php(mixed $input): array
-{
-    $errors = [];
-    $conflicts = [];
-    $normalized = [
-        'norberto' => [],
-        'maria' => [],
-    ];
-
-    if (!is_array($input)) {
-        return [
-            'isValid' => false,
-            'errors' => ['El formato de horarios enviado no es válido.'],
-            'conflicts' => [],
-            'normalized' => default_practitioner_hours(),
-        ];
-    }
-
-    $dayNames = [
-        1 => 'Lunes',
-        2 => 'Martes',
-        3 => 'Miércoles',
-        4 => 'Jueves',
-        5 => 'Viernes',
-    ];
-
-    $parsedByDay = [1 => [], 2 => [], 3 => [], 4 => [], 5 => []];
-
-    foreach (['maria' => 'María', 'norberto' => 'Norberto'] as $pid => $pLabel) {
-        $pSource = $input[$pid] ?? [];
-        if (!is_array($pSource)) {
-            continue;
-        }
-
-        foreach ($pSource as $rawDow => $rawList) {
-            if (!is_array($rawList) || count($rawList) === 0) {
-                continue;
-            }
-            $dow = (int) $rawDow;
-            if ($dow < 1 || $dow > 5) {
-                $errors[] = "Solo se permiten días de lunes a viernes ({$pLabel}).";
-                continue;
-            }
-            $dayName = $dayNames[$dow];
-            if (count($rawList) > 2) {
-                $errors[] = "{$pLabel} ({$dayName}): se permiten hasta 2 franjas horarias por día.";
-                continue;
-            }
-
-            $dayRanges = [];
-            foreach (array_values($rawList) as $idx => $item) {
-                $fNum = $idx + 1;
-                $start = is_array($item) && isset($item['start']) ? trim((string) $item['start']) : '';
-                $end = is_array($item) && isset($item['end']) ? trim((string) $item['end']) : '';
-
-                if (!is_valid_hm($start) || !is_valid_hm($end)) {
-                    $errors[] = "{$pLabel} ({$dayName}, franja {$fNum}): formato de hora inválido (usar HH:00 o HH:30).";
-                    continue;
-                }
-                $startMin = hm_to_minutes($start);
-                $endMin = hm_to_minutes($end);
-
-                if ($startMin < 8 * 60 || $endMin > 20 * 60) {
-                    $errors[] = "{$pLabel} ({$dayName}: {$start} a {$end}): el horario debe estar entre las 08:00 y las 20:00 hs.";
-                    continue;
-                }
-                if ($endMin <= $startMin) {
-                    $errors[] = "{$pLabel} ({$dayName}: {$start} a {$end}): la hora de fin debe ser posterior a la de inicio.";
-                    continue;
-                }
-                if ($endMin - $startMin < 60) {
-                    $errors[] = "{$pLabel} ({$dayName}: {$start} a {$end}): cada franja debe durar al menos 60 minutos.";
-                    continue;
-                }
-
-                $dayRanges[] = [
-                    'start' => $start,
-                    'end' => $end,
-                    'startMin' => $startMin,
-                    'endMin' => $endMin,
-                ];
-            }
-
-            usort($dayRanges, static fn(array $a, array $b): int => $a['startMin'] <=> $b['startMin']);
-
-            if (count($dayRanges) === 2 && $dayRanges[0]['endMin'] > $dayRanges[1]['startMin']) {
-                $errors[] = "{$pLabel} ({$dayName}): las dos franjas del mismo día se superponen ({$dayRanges[0]['start']}–{$dayRanges[0]['end']} y {$dayRanges[1]['start']}–{$dayRanges[1]['end']}).";
-            }
-
-            if (count($dayRanges) > 0) {
-                $parsedByDay[$dow][$pid] = $dayRanges;
-                $normalized[$pid][(string) $dow] = array_map(
-                    static fn(array $r): array => ['start' => $r['start'], 'end' => $r['end']],
-                    $dayRanges
-                );
-            }
-        }
-    }
-
-    // Validar que Norberto y María no se superpongan en la única camilla del consultorio
-    foreach ([1, 2, 3, 4, 5] as $dow) {
-        $mList = $parsedByDay[$dow]['maria'] ?? [];
-        $nList = $parsedByDay[$dow]['norberto'] ?? [];
-        $dayName = $dayNames[$dow];
-
-        foreach ($mList as $mRange) {
-            foreach ($nList as $nRange) {
-                $overlapStart = max($mRange['startMin'], $nRange['startMin']);
-                $overlapEnd = min($mRange['endMin'], $nRange['endMin']);
-                if ($overlapStart < $overlapEnd) {
-                    $oStartStr = minutes_to_hm($overlapStart);
-                    $oEndStr = minutes_to_hm($overlapEnd);
-                    $msg = "Superposición de camilla el {$dayName}: María ({$mRange['start']} a {$mRange['end']}) se pisa con Norberto ({$nRange['start']} a {$nRange['end']}) entre las {$oStartStr} y las {$oEndStr} hs.";
-                    $errors[] = $msg;
-                    $conflicts[] = [
-                        'day' => $dow,
-                        'dayName' => $dayName,
-                        'overlapStart' => $oStartStr,
-                        'overlapEnd' => $oEndStr,
-                        'maria' => ['start' => $mRange['start'], 'end' => $mRange['end']],
-                        'norberto' => ['start' => $nRange['start'], 'end' => $nRange['end']],
-                        'message' => $msg,
-                    ];
-                }
-            }
-        }
-    }
-
-    return [
-        'isValid' => count($errors) === 0,
-        'errors' => $errors,
-        'conflicts' => $conflicts,
-        'normalized' => $normalized,
-    ];
-}
-
-/**
- * Convierte el mapa JS (1=Lunes..5=Viernes) al formato Python weekday (0=Lunes..4=Viernes)
- * utilizado por free_slot_engine.py en kinesica-bot (Clara).
- */
-function convert_hours_to_python_weekdays(array $hours): array
-{
-    $out = ['norberto' => [], 'maria' => []];
-    foreach (['norberto', 'maria'] as $pid) {
-        $pDays = $hours[$pid] ?? [];
-        if (!is_array($pDays)) {
-            continue;
-        }
-        foreach ($pDays as $jsDow => $ranges) {
-            $pyDow = ((int) $jsDow) - 1;
-            if ($pyDow >= 0 && $pyDow <= 4 && is_array($ranges) && count($ranges) > 0) {
-                $out[$pid][(string) $pyDow] = array_map(
-                    static fn(array $r): array => [$r['start'], $r['end']],
-                    $ranges
-                );
-            }
-        }
-    }
-    return $out;
-}
-
-function join_day_names_es(array $names): string
-{
-    $count = count($names);
-    if ($count === 0) {
-        return '';
-    }
-    if ($count === 1) {
-        return $names[0];
-    }
-    if ($count === 2) {
-        return "{$names[0]} y {$names[1]}";
-    }
-    $last = array_pop($names);
-    return implode(', ', $names) . " y {$last}";
-}
-
-/**
- * Construye el resumen textual exacto para el prompt del chatbot Clara (WhatsApp / n8n).
- */
-function build_clara_schedule_summary(array $hours): string
-{
-    $dayNames = [
-        1 => 'Lunes',
-        2 => 'Martes',
-        3 => 'Miércoles',
-        4 => 'Jueves',
-        5 => 'Viernes',
-    ];
-    $lines = ['Horarios oficiales:'];
-
-    $profs = [
-        ['id' => 'maria', 'title' => 'Lic. María Gulin', 'short' => 'María'],
-        ['id' => 'norberto', 'title' => 'Lic. Norberto Brude', 'short' => 'Norberto'],
-    ];
-
-    foreach ($profs as $prof) {
-        $lines[] = "- {$prof['title']}:";
-        $pHours = $hours[$prof['id']] ?? [];
-        $offDays = [];
-
-        foreach ([1, 2, 3, 4, 5] as $dow) {
-            $dayName = $dayNames[$dow];
-            $ranges = $pHours[(string) $dow] ?? $pHours[$dow] ?? [];
-            if (!is_array($ranges) || count($ranges) === 0) {
-                $offDays[] = $dayName;
-                continue;
-            }
-            if (count($ranges) === 1) {
-                $r = $ranges[0];
-                $lastTurn = minutes_to_hm(hm_to_minutes($r['end']) - 60);
-                $lines[] = "  * {$dayName}: {$r['start']} a {$r['end']} hs (turnos de {$r['start']} a {$lastTurn} hs inclusive; el último turno finaliza a las {$r['end']} hs).";
-            } else {
-                $parts = [];
-                $total = count($ranges);
-                foreach (array_values($ranges) as $idx => $r) {
-                    $lastTurn = minutes_to_hm(hm_to_minutes($r['end']) - 60);
-                    if ($idx === $total - 1) {
-                        $parts[] = "{$r['start']} a {$r['end']} hs (turnos de {$r['start']} a {$lastTurn} hs inclusive; el último turno finaliza a las {$r['end']} hs)";
-                    } else {
-                        $parts[] = "{$r['start']} a {$r['end']} hs (turnos de {$r['start']} a {$lastTurn} hs inclusive)";
-                    }
-                }
-                $lines[] = "  * {$dayName}: " . implode(' y ', $parts) . '.';
-            }
-        }
-
-        if (count($offDays) === 5) {
-            $lines[] = "  * Lunes a Viernes: {$prof['short']} sin horarios de consultorio asignados.";
-        } elseif (count($offDays) > 0) {
-            $joined = join_day_names_es($offDays);
-            $lines[] = "  * {$joined}: {$prof['short']} no atiende en consultorio.";
-        }
-    }
-
-    return implode("\n", $lines);
-}
-
 function load_full_runtime_settings(string $file): array
 {
     $defaultHours = default_practitioner_hours();
@@ -299,17 +39,11 @@ function load_full_runtime_settings(string $file): array
         'horarios_updated_by' => null,
     ];
 
-    if (!is_file($file)) {
-        return $defaults;
-    }
+    if (!is_file($file)) return $defaults;
     $raw = @file_get_contents($file);
-    if ($raw === false) {
-        return $defaults;
-    }
+    if ($raw === false) return $defaults;
     $data = json_decode($raw, true);
-    if (!is_array($data)) {
-        return $defaults;
-    }
+    if (!is_array($data)) return $defaults;
 
     $hours = $defaultHours;
     if (isset($data['practitioner_hours']) && is_array($data['practitioner_hours'])) {
@@ -336,43 +70,32 @@ function load_full_runtime_settings(string $file): array
     }
 
     $defaultClaraTexts = [
-        'menu_welcome' => "¡Hola! Te damos la bienvenida a *Kinésica* 🩺
-
-Por favor, respondé con la letra de la opción que necesitás:
-
-*A.* 📅 Turnos (agendar, consultar o cancelar)
-*B.* 📍 Ubicación y horarios del consultorio
-*C.* 💳 Honorarios y cobertura (obras sociales / reintegros)
-*D.* 👕 ¿Cómo venir vestido/a a la sesión?
-*E.* 💬 Comunicarte con un profesional (Lic. Norberto Brude / Lic. María Gulin)
-*F.* 🌐 English
-
-_(Escribí la letra de la opción deseada, por ejemplo *A* o *C*)_",
+        'menu_welcome' => "¡Hola! Te damos la bienvenida a *Kinésica* 🩺\n\nPor favor, respondé con la letra de la opción que necesitás:\n*A.* 📅 Turnos\n*B.* 📍 Ubicación\n*C.* 💳 Honorarios\n*D.* 👕 Vestimenta\n*E.* 💬 Contacto\n*F.* 🌐 English",
         'opt_a_text' => 'Para coordinar o consultar turnos, ingresá a nuestra turnera online: https://kinesica.com.ar/agendar 📅',
         'opt_b_text' => 'Kinésica queda en Charcas 3889, Piso 5º B, Palermo, CABA (entre Scalabrini Ortiz y Aráoz). 📍',
         'opt_c_text' => "💳 *Honorarios y Cobertura*\n• *Honorarios:* {honorario_atm} para ATM (bruxismo / dolor mandibular) y {honorario_general} para el resto de las consultas (kinesiología general, osteopatía, RPG, etc.). Las sesiones son individuales y de 60 minutos.\n• *Medios de pago:* Se puede abonar en {medios_pago}.\n• *Cobertura:* Atendemos de forma particular. Al finalizar tu sesión te entregamos la factura oficial para que puedas presentarla en tu prepaga u obra social y solicitar el reintegro correspondiente según tu plan 📄.",
-        'opt_d_text' => "Indumentaria para la sesión:\n• Ropa interior o pantalón corto para los varones.\n• Ropa interior con corpiño tradicional (no deportivo), malla de 2 piezas o calza corta para las mujeres.\nSi sos menor, vení acompañado/a por un mayor 🙌.",
-        'opt_e_text' => "💬 *Contacto con un Profesional*\n\n¿Con quién te gustaría comunicarte?\n*1.* Lic. Norberto Brude\n*2.* Lic. María Gulin\n*3.* Indistinto / Primera consulta general\n\n_(Respondé *1*, *2* o *3*, o escribí tu consulta directamente y se la transmitimos)_\n_Escribí *MENU* para volver_",
-        'submenu_turnos_text' => "📅 *Gestión de Turnos - Kinésica*\n\nPor favor elegí una opción respondiendo *1* o *2*:\n\n*1.* 📅 Agendar un nuevo turno\n*2.* 📋 Consultar o cancelar mis turnos\n\n_(Respondé *1* o *2*, o escribí *MENU* para volver al menú principal)_",
-        'opt_a2_text' => "Con este número de WhatsApp no encontramos turnos agendados. Si agendaste con otro teléfono, respondé directamente con tu *DNI o Pasaporte* y lo buscamos.\n\n_(Escribí *MENU* para volver)_",
-        'opt_e1_text' => "¡Perfecto! Ya le transmitimos tu consulta al Lic. Norberto Brude. Te estará contactando a la brevedad directamente por WhatsApp 🙌.\n\n_(Escribí *MENU* si deseás ver otras opciones)_",
-        'opt_e2_text' => "¡Perfecto! Ya le transmitimos tu consulta a la Lic. María Gulin. Te estará contactando a la brevedad directamente por WhatsApp 🙌.\n\n_(Escribí *MENU* si deseás ver otras opciones)_",
-        'opt_e3_text' => "¡Perfecto! Ya le transmitimos tu consulta a nuestro equipo de kinesiólogos. Te estarán contactando a la brevedad directamente por WhatsApp 🙌.\n\n_(Escribí *MENU* si deseás ver otras opciones)_",
-        'menu_welcome_en' => "Hello! Welcome to *Kinésica* 🩺\n\nPlease reply with the letter of the option you need:\n\n*A.* 📅 Appointments (book, check or cancel)\n*B.* 📍 Location and office hours\n*C.* 💳 Fees and coverage (health insurance / reimbursement)\n*D.* 👕 Session attire and dress code\n*E.* 💬 Speak with a practitioner (Lic. Norberto Brude / Lic. María Gulin)\n*F.* 🇪🇸 Español\n\n_(Reply with the option letter, for example *A* or *C*)_",
-        'opt_a_text_en' => "📅 *Appointments & Booking - Kinésica*\n\nTo check available days and times in real time with Norberto or María and book your 60-minute session, visit our online booking site:\n\n👉 *https://kinesica.com.ar/agendar*",
-        'opt_b_text_en' => "📍 *Kinésica Clinic*\n• *Location:* Charcas 3889, 5th Floor, Apt B, Palermo, Buenos Aires (between Scalabrini Ortiz and Aráoz, steps from Av. Santa Fe and Scalabrini Ortiz Subte D station).\n• *Google Maps:* https://maps.google.com/?q=Charcas+3889+Palermo+CABA",
-        'opt_c_text_en' => "💳 *Fees and Coverage*\n• *Fees:* {honorario_atm} for TMJ / ATM (bruxism / jaw pain) and {honorario_general} for all other consultations (general physiotherapy, osteopathy, postural reeducation / RPG, etc.). Sessions are 60 minutes, one-on-one.\n• *Payment methods:* Payment can be made in {medios_pago}.\n• *Coverage:* We operate as a private practice (out-of-network). At the end of your session, we issue an official invoice so you can submit it to your health insurance or medical plan for reimbursement 📄.",
-        'opt_d_text_en' => "👕 *Attire for your session:*\n• Underwear or shorts for men.\n• Underwear with a standard (non-sports) bra, a 2-piece swimsuit, or short leggings for women.\n• If you have previous medical imaging or tests (MRI, X-rays), please bring them or send us photos 🙌.\n\n_(Type *MENU* to see the options again)_",
-        'opt_e_text_en' => "💬 *Contact a Practitioner*\n\nWho would you like to speak with?\n*1.* Lic. Norberto Brude\n*2.* Lic. María Gulin\n*3.* Either / General inquiry\n\n_(Reply *1*, *2* or *3*, or write your question directly and we will pass it along)_\n_Type *MENU* to return_",
-        'submenu_turnos_text_en' => "📅 *Appointments - Kinésica*\n\nPlease choose an option by replying *1* or *2*:\n\n*1.* 📅 Book a new appointment\n*2.* 📋 Check or cancel my appointments\n\n_(Reply *1* or *2*, or type *MENU* to return to the main menu)_",
-        'opt_a2_text_en' => "We couldn't find any scheduled appointments for this WhatsApp number. If you booked using a different phone number, reply directly with your *ID or Passport* and we will look it up.\n\n_(Type *MENU* to return)_",
-        'opt_e1_text_en' => "Great! We've forwarded your message to Lic. Norberto Brude. He will contact you shortly directly via WhatsApp 🙌.\n\n_(Type *MENU* to see other options)_",
-        'opt_e2_text_en' => "Great! We've forwarded your message to Lic. María Gulin. She will contact you shortly directly via WhatsApp 🙌.\n\n_(Type *MENU* to see other options)_",
-        'opt_e3_text_en' => "Great! We've forwarded your message to our physical therapy team. They will contact you shortly directly via WhatsApp 🙌.\n\n_(Type *MENU* to see other options)_",
+        'opt_d_text' => "Indumentaria para la sesión:\n• Ropa interior o pantalón corto para los varones.\n• Ropa interior con corpiño tradicional, malla de 2 piezas o calza corta para las mujeres.",
+        'opt_e_text' => "💬 *Contacto con un Profesional*\n\n¿Con quién te gustaría comunicarte?\n*1.* Lic. Norberto Brude\n*2.* Lic. María Gulin\n*3.* Indistinto",
+        'submenu_turnos_text' => "📅 *Gestión de Turnos - Kinésica*\n\n*1.* 📅 Agendar un nuevo turno\n*2.* 📋 Consultar o cancelar mis turnos",
+        'opt_a2_text' => "Con este número de WhatsApp no encontramos turnos agendados.",
+        'opt_e1_text' => "¡Perfecto! Ya le transmitimos tu consulta al Lic. Norberto Brude.",
+        'opt_e2_text' => "¡Perfecto! Ya le transmitimos tu consulta a la Lic. María Gulin.",
+        'opt_e3_text' => "¡Perfecto! Ya le transmitimos tu consulta a nuestro equipo de kinesiólogos.",
+        'menu_welcome_en' => "Hello! Welcome to *Kinésica* 🩺",
+        'opt_a_text_en' => "📅 *Appointments & Booking - Kinésica*",
+        'opt_b_text_en' => "📍 *Kinésica Clinic*",
+        'opt_c_text_en' => "💳 *Fees and Coverage*",
+        'opt_d_text_en' => "👕 *Attire for your session*",
+        'opt_e_text_en' => "💬 *Contact a Practitioner*",
+        'submenu_turnos_text_en' => "📅 *Appointments - Kinésica*",
+        'opt_a2_text_en' => "We couldn't find any scheduled appointments for this WhatsApp number.",
+        'opt_e1_text_en' => "Great! We've forwarded your message to Lic. Norberto Brude.",
+        'opt_e2_text_en' => "Great! We've forwarded your message to Lic. María Gulin.",
+        'opt_e3_text_en' => "Great! We've forwarded your message to our physical therapy team.",
         'cancellation_policy' => 'Te recordamos que los turnos pueden cancelarse o reprogramarse con un mínimo de 24 horas de anticipación 🙌.',
-        'confirmation_notes' => 'Por favor asistir con puntualidad exacta al horario asignado. No contamos con secretaria, si estamos atendiendo a otro paciente no podemos recibirte anticipadamente.',
-        'reminder_text' => "¡Hola {nombre}! 🌿 Te escribo desde Kinésica para recordarte tu sesión en el consultorio programada para mañana a las {horario}.\n\n{indicaciones}\n\nPor favor confirmá tu asistencia seleccionando una de las opciones a continuación 🙌:",
-        'reminder_notes' => "📍 Te esperamos en Charcas 3889, 5º, B (Palermo).\n⚠️ Te recordamos que el espacio no cuenta con sala de espera, por lo que te pedimos puntualidad estricta para evitar esperas en la entrada y no concurrir con acompañantes (salvo menores de edad o personas que requieran asistencia directa).\nSi tienen estudios médicos previos, no olviden traerlos.",
+        'confirmation_notes' => 'Por favor asistir con puntualidad exacta al horario asignado.',
+        'reminder_text' => "¡Hola {nombre}! 🌿 Te escribo desde Kinésica para recordarte tu sesión.",
+        'reminder_notes' => "📍 Te esperamos en Charcas 3889, 5º, B (Palermo).",
         'updated_at' => null,
         'updated_by' => null,
     ];
@@ -396,11 +119,7 @@ _(Escribí la letra de la opción deseada, por ejemplo *A* o *C*)_",
             $label = trim((string) ($row['label'] ?? ($row['title'] ?? '')));
             $response = trim((string) ($row['response'] ?? ($row['text'] ?? '')));
             if ($letter !== '' && ($label !== '' || $response !== '')) {
-                $customOptions[] = [
-                    'letter' => $letter,
-                    'label' => $label,
-                    'response' => $response,
-                ];
+                $customOptions[] = ['letter' => $letter, 'label' => $label, 'response' => $response];
             }
         }
     }
@@ -432,76 +151,6 @@ _(Escribí la letra de la opción deseada, por ejemplo *A* o *C*)_",
     ];
 }
 
-/*
- * Almacenamiento de la configuración del admin.
- * admin/api/settings.json está versionado en git: cada `git push` (deploy de Hostinger) lo reemplaza en el
- * servidor por la copia del repo. Por eso los datos vivos se guardan en admin/api/data/settings.json
- * (no versionado; el deploy no lo toca) y settings.json queda sólo como semilla hasta el primer guardado.
- */
-function kinesica_settings_runtime_file(): string
-{
-    return __DIR__ . '/data/settings.json';
-}
-
-function kinesica_settings_seed_file(): string
-{
-    return __DIR__ . '/settings.json';
-}
-
-/** Archivo a leer: el de datos vivos si existe; si no, la semilla versionada. */
-function kinesica_settings_source_file(): string
-{
-    $runtime = kinesica_settings_runtime_file();
-    return is_file($runtime) ? $runtime : kinesica_settings_seed_file();
-}
-
-function kinesica_settings_raw(string $file): array
-{
-    if (!is_file($file)) {
-        return [];
-    }
-    $raw = @file_get_contents($file);
-    $data = $raw === false ? null : json_decode($raw, true);
-    return is_array($data) ? $data : [];
-}
-
-final class KinesicaSettingsConflict extends RuntimeException
-{
-}
-
-/**
- * Lee-modifica-escribe bajo lock exclusivo con escritura atómica (tmp + rename).
- * $mutate recibe el JSON crudo guardado y devuelve el nuevo: las claves que no toca se conservan
- * (guardar horarios no borra textos ni honorarios, y viceversa).
- */
-function kinesica_update_settings(callable $mutate): array
-{
-    $runtime = kinesica_settings_runtime_file();
-    $dir = dirname($runtime);
-    if (!is_dir($dir) && !@mkdir($dir, 0775, true) && !is_dir($dir)) {
-        throw new RuntimeException('No se pudo crear el directorio de datos.');
-    }
-    $lock = @fopen($dir . '/.settings.lock', 'c');
-    if ($lock === false || !flock($lock, LOCK_EX)) {
-        throw new RuntimeException('No se pudo bloquear la configuración.');
-    }
-    try {
-        $current = kinesica_settings_raw(kinesica_settings_source_file());
-        $next = $mutate($current);
-        $tmp = $runtime . '.tmp' . getmypid();
-        $json = json_encode($next, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-        if ($json === false || @file_put_contents($tmp, $json) === false || !@rename($tmp, $runtime)) {
-            @unlink($tmp);
-            throw new RuntimeException('No se pudo guardar la configuración.');
-        }
-        return $next;
-    } finally {
-        flock($lock, LOCK_UN);
-        fclose($lock);
-    }
-}
-
-// Si este archivo se incluye como librería desde settings.php, no ejecutar el controlador HTTP
 if (defined('KINESICA_HORARIOS_INCLUDED')) {
     return;
 }
@@ -528,12 +177,11 @@ if ($method === 'GET') {
 if ($method === 'POST') {
     require __DIR__ . '/lib.php';
     require_header();
-    $user = require_auth();
+    $auth = require_auth();
 
     $input = read_json();
     $current = load_full_runtime_settings($settingsFile);
 
-    // La acción 'reset' (restaurar horarios por defecto) se quitó del admin: ya no se acepta.
     if (($input['action'] ?? 'save') === 'reset') {
         json_out(400, ['error' => 'La restauración de horarios por defecto ya no está disponible.']);
     }
@@ -542,56 +190,34 @@ if ($method === 'POST') {
     $validation = validate_practitioner_hours_php($targetHours);
     if (!$validation['isValid']) {
         json_out(422, [
-            'error' => implode(' ', $validation['errors']),
+            'status' => 'error',
+            'message' => 'Superposición de camilla o rango horario inválido detectado.',
             'errors' => $validation['errors'],
             'conflicts' => $validation['conflicts'],
         ]);
     }
 
-    $headerSchedule = null;
-    if (isset($input['header_schedule']) && is_array($input['header_schedule'])) {
-        $rawOpens = trim((string) ($input['header_schedule']['opens'] ?? ''));
-        $rawCloses = trim((string) ($input['header_schedule']['closes'] ?? ''));
-        if (!preg_match('/^([01]\d|2[0-3]):(00|30)$/', $rawOpens) || !preg_match('/^([01]\d|2[0-3]):(00|30)$/', $rawCloses)) {
-            json_out(422, [
-                'error' => 'El horario del encabezado debe tener formato HH:MM (08:00 a 20:00 hs en intervalos de 30 minutos).',
-                'errors' => ['Formato de horario de encabezado inválido.'],
-            ]);
-        }
-        $headerSchedule = ['opens' => $rawOpens, 'closes' => $rawCloses];
-    }
+    $now = gmdate('Y-m-d\TH:i:s\Z');
+    $userName = (string) ($auth['name'] ?? $auth['username'] ?? 'admin');
 
-    $normalizedHours = $validation['normalized'];
-    $updatedAt = gmdate('Y-m-d\TH:i:s\Z');
-    $updatedBy = (string) ($user['name'] ?: $user['username']);
+    $saved = kinesica_update_settings(function (array $raw) use ($validation, $now, $userName): array {
+        $raw['practitioner_hours'] = $validation['normalized'];
+        $raw['horarios_updated_at'] = $now;
+        $raw['horarios_updated_by'] = $userName;
+        return $raw;
+    });
 
-    try {
-        // Sólo cambia horarios: textos, honorarios y estados se conservan tal cual.
-        kinesica_update_settings(function (array $raw) use ($normalizedHours, $headerSchedule, $updatedAt, $updatedBy): array {
-            $raw['practitioner_hours'] = $normalizedHours;
-            if ($headerSchedule !== null) {
-                $raw['header_schedule'] = $headerSchedule;
-            }
-            $raw['horarios_updated_at'] = $updatedAt;
-            $raw['horarios_updated_by'] = $updatedBy;
-            return $raw;
-        });
-    } catch (Throwable $e) {
-        json_out(500, ['error' => 'No se pudieron guardar los horarios en el servidor.']);
-    }
-
-    $savedHeaderSchedule = $headerSchedule ?? ($current['header_schedule'] ?? ['opens' => '08:00', 'closes' => '19:00']);
-
+    $resp = load_full_runtime_settings($settingsFile);
     json_out(200, [
         'status' => 'success',
-        'practitioner_hours' => $normalizedHours,
-        'practitioner_hours_py' => convert_hours_to_python_weekdays($normalizedHours),
-        'clara_schedule_summary' => build_clara_schedule_summary($normalizedHours),
-        'header_schedule' => $savedHeaderSchedule,
-        'updated_at' => $updatedAt,
-        'updated_by' => $updatedBy,
+        'message' => 'Horarios actualizados correctamente.',
+        'practitioner_hours' => $resp['practitioner_hours'],
+        'practitioner_hours_py' => $resp['practitioner_hours_py'],
+        'clara_schedule_summary' => $resp['clara_schedule_summary'],
+        'header_schedule' => $resp['header_schedule'],
+        'updated_at' => $resp['horarios_updated_at'],
+        'updated_by' => $resp['horarios_updated_by'],
     ]);
 }
 
-http_response_code(405);
-echo json_encode(['error' => 'Método no permitido'], JSON_UNESCAPED_UNICODE);
+json_out(405, ['error' => 'Método no permitido']);

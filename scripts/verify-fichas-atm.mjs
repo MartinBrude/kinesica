@@ -48,7 +48,8 @@ function loadAdminJs(entryPath) {
     "auth.js",
     "api.js",
   ];
-  const moduleContents = order
+  const otherFiles = fs.readdirSync(modulesDir).filter((file) => file.endsWith(".js") && !order.includes(file));
+  const moduleContents = [...order, ...otherFiles]
     .map((file) => path.join(modulesDir, file))
     .filter((file) => fs.existsSync(file))
     .map((file) => fs.readFileSync(file, "utf8"));

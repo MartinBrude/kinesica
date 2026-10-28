@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require __DIR__ . '/lib.php';
+require_once __DIR__ . '/fichas_ops.php';
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 require_header();
@@ -9,15 +10,7 @@ $auth = require_auth();
 $pdo = db();
 
 if ($method === 'GET') {
-    $rows = $pdo->query('SELECT payload FROM fichas ORDER BY updated_at DESC')->fetchAll();
-    $items = [];
-    foreach ($rows as $row) {
-        $item = json_decode($row['payload'], true);
-        if (is_array($item)) {
-            $items[] = $item;
-        }
-    }
-    json_out(200, $items);
+    kinesica_fichas_get_all($pdo);
 }
 
 if ($method === 'POST') {
@@ -28,59 +21,21 @@ if ($method === 'POST') {
     }
     $id = $data['id'];
 
-    // Límites generales: tamaño total, claves y longitud de cadenas
-    $checkValue = static function ($value, int $depth = 0) use (&$checkValue): bool {
-        if ($depth > 4) {
-            return false;
-        }
-        if (is_string($value)) {
-            return mb_strlen($value) <= 5000;
-        }
-        if (is_int($value) || is_float($value) || is_bool($value) || $value === null) {
-            return true;
-        }
-        if (is_array($value)) {
-            if (count($value) > 200) {
-                return false;
-            }
-            foreach ($value as $k => $v) {
-                if (is_string($k) && !preg_match('/^[A-Za-z0-9_.-]{1,64}$/', $k)) {
-                    return false;
-                }
-                if (!$checkValue($v, $depth + 1)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        return false;
-    };
-    if (!$checkValue($data)) {
+    if (!kinesica_fichas_check_structure($data)) {
         json_out(422, ['error' => 'La ficha contiene campos con formato o tamaño no válido']);
     }
 
-    // Campos de texto: deben ser cadenas
     $textFields = ['nombre', 'dni', 'motivo', 'antecedentes', 'anotaciones', 'fotoUrl'];
     foreach ($textFields as $key) {
-        if (isset($data[$key]) && !is_string($data[$key])) {
-            json_out(422, ['error' => 'El campo ' . $key . ' debe ser texto']);
-        }
-        if (isset($data[$key])) {
-            $data[$key] = trim($data[$key]);
-        }
+        if (isset($data[$key]) && !is_string($data[$key])) json_out(422, ['error' => 'El campo ' . $key . ' debe ser texto']);
+        if (isset($data[$key])) $data[$key] = trim($data[$key]);
     }
-    if (!empty($data['fotoUrl'])) {
-        if (!preg_match('#^(/admin/)?api/foto\.php\?file=[a-f0-9]{32,64}\.(jpe?g|png|webp)$#i', (string) $data['fotoUrl'])) {
-            json_out(422, ['error' => 'La URL de la foto no es válida']);
-        }
+    if (!empty($data['fotoUrl']) && !preg_match('#^(/admin/)?api/foto\.php\?file=[a-f0-9]{32,64}\.(jpe?g|png|webp)$#i', (string) $data['fotoUrl'])) {
+        json_out(422, ['error' => 'La URL de la foto no es válida']);
     }
     if (isset($data['fotosUrls'])) {
-        if (!is_array($data['fotosUrls'])) {
-            json_out(422, ['error' => 'fotosUrls debe ser un arreglo']);
-        }
-        if (count($data['fotosUrls']) > 10) {
-            json_out(422, ['error' => 'No se permite subir más de 10 fotos por sesión']);
-        }
+        if (!is_array($data['fotosUrls'])) json_out(422, ['error' => 'fotosUrls debe ser un arreglo']);
+        if (count($data['fotosUrls']) > 10) json_out(422, ['error' => 'No se permite subir más de 10 fotos por sesión']);
         foreach ($data['fotosUrls'] as $urlItem) {
             if (!is_string($urlItem) || !preg_match('#^(/admin/)?api/foto\.php\?file=[a-f0-9]{32,64}\.(jpe?g|png|webp)$#i', $urlItem)) {
                 json_out(422, ['error' => 'Una de las URLs de las fotos no es válida']);
@@ -91,31 +46,19 @@ if ($method === 'POST') {
         json_out(422, ['error' => 'Nombre o DNI demasiado largo']);
     }
 
-    // Fechas estrictas (Y-m-d)
     $parseDate = static function ($value): ?DateTimeImmutable {
-        if (!is_string($value) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $value)) {
-            return null;
-        }
+        if (!is_string($value) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $value)) return null;
         $d = DateTimeImmutable::createFromFormat('!Y-m-d', $value);
         return ($d !== false && $d->format('Y-m-d') === $value) ? $d : null;
     };
     $birth = $parseDate($data['nacimiento'] ?? null);
     $session = $parseDate($data['fechaSesion'] ?? null);
     $today = new DateTimeImmutable('today');
-    if (($data['nacimiento'] ?? '') !== '' && $birth === null) {
-        json_out(422, ['error' => 'La fecha de nacimiento no es válida']);
-    }
-    if (($data['fechaSesion'] ?? '') !== '' && $session === null) {
-        json_out(422, ['error' => 'La fecha de la sesión no es válida']);
-    }
-    if ($birth !== null && $birth > $today) {
-        json_out(422, ['error' => 'La fecha de nacimiento no puede ser futura']);
-    }
+    if (($data['nacimiento'] ?? '') !== '' && $birth === null) json_out(422, ['error' => 'La fecha de nacimiento no es válida']);
+    if (($data['fechaSesion'] ?? '') !== '' && $session === null) json_out(422, ['error' => 'La fecha de la sesión no es válida']);
+    if ($birth !== null && $birth > $today) json_out(422, ['error' => 'La fecha de nacimiento no puede ser futura']);
     if ($birth !== null && $session !== null) {
-        if ($birth > $session) {
-            json_out(422, ['error' => 'La fecha de nacimiento no puede ser posterior a la sesión']);
-        }
-        // La edad se calcula siempre en servidor; no se confía en el cliente
+        if ($birth > $session) json_out(422, ['error' => 'La fecha de nacimiento no puede ser posterior a la sesión']);
         $data['edad'] = (string) $birth->diff($session)->y;
     }
 
@@ -137,15 +80,11 @@ if ($method === 'POST') {
     $missing = [];
     foreach ($required as $key => $label) {
         $value = $data[$key] ?? '';
-        if (!is_string($value) && !is_int($value)) {
-            $missing[] = $label;
-        } elseif (trim((string) $value) === '') {
+        if ((!is_string($value) && !is_int($value)) || trim((string) $value) === '') {
             $missing[] = $label;
         }
     }
-    if ($missing) {
-        json_out(422, ['error' => 'Falta completar: ' . implode(', ', $missing) . '.']);
-    }
+    if ($missing) json_out(422, ['error' => 'Falta completar: ' . implode(', ', $missing) . '.']);
 
     $edadRaw = trim((string) $data['edad']);
     if (!ctype_digit($edadRaw) || (int) $edadRaw > 120) {
@@ -153,22 +92,14 @@ if ($method === 'POST') {
     }
     $data['edad'] = (string) ((int) $edadRaw);
 
-    // EVA: entero 0-10 estricto
     $eva = $data['eva'] ?? 0;
-    if (is_string($eva) && preg_match('/^\d{1,2}$/', $eva)) {
-        $eva = (int) $eva;
-    }
-    if (!is_int($eva) || $eva < 0 || $eva > 10) {
-        json_out(422, ['error' => 'La EVA debe ser un entero entre 0 y 10']);
-    }
+    if (is_string($eva) && preg_match('/^\d{1,2}$/', $eva)) $eva = (int) $eva;
+    if (!is_int($eva) || $eva < 0 || $eva > 10) json_out(422, ['error' => 'La EVA debe ser un entero entre 0 y 10']);
     $data['eva'] = $eva;
 
-    // CDI: solo valores permitidos
     $cdiAllowed = ['I.a', 'I.b', 'II.a', 'II.b', 'II.c', 'III.a', 'III.b', 'III.c'];
     $cdi = $data['cdi'] ?? [];
-    if (!is_array($cdi)) {
-        json_out(422, ['error' => 'El campo CDI no es válido']);
-    }
+    if (!is_array($cdi)) json_out(422, ['error' => 'El campo CDI no es válido']);
     foreach ($cdi as $item) {
         if (!is_string($item) || !in_array($item, $cdiAllowed, true)) {
             json_out(422, ['error' => 'El campo CDI contiene valores no válidos']);
@@ -176,7 +107,6 @@ if ($method === 'POST') {
     }
     $data['cdi'] = array_values(array_unique($cdi));
 
-    // Opciones Sí/No con lado condicional; se limpian los lados obsoletos
     $conditionals = [
         'ruidos' => ['ruidosIzq', 'ruidosDer', 'los ruidos articulares'],
         'dolorCondilar' => ['condilarIzq', 'condilarDer', 'el dolor condilar a la palpación'],
@@ -185,9 +115,7 @@ if ($method === 'POST') {
     ];
     foreach ($conditionals as $field => [$left, $right, $label]) {
         $answer = $data[$field] ?? '';
-        if (!in_array($answer, ['Sí', 'No', ''], true)) {
-            json_out(422, ['error' => 'Valor no válido en ' . $label]);
-        }
+        if (!in_array($answer, ['Sí', 'No', ''], true)) json_out(422, ['error' => 'Valor no válido en ' . $label]);
         $data[$field] = $answer;
         $data[$left] = $answer === 'Sí' && filter_var($data[$left] ?? false, FILTER_VALIDATE_BOOLEAN);
         $data[$right] = $answer === 'Sí' && filter_var($data[$right] ?? false, FILTER_VALIDATE_BOOLEAN);
@@ -203,22 +131,17 @@ if ($method === 'POST') {
     $clinicians = ['norberto' => 'Norberto', 'maria' => 'María'];
     $docKey = static function (string $dni): string {
         $dni = trim($dni);
-        if ($dni === '') {
-            return '';
-        }
-        if (preg_match('/[A-Za-z]/', $dni)) {
-            return strtolower($dni);
-        }
+        if ($dni === '') return '';
+        if (preg_match('/[A-Za-z]/', $dni)) return strtolower($dni);
         $digits = preg_replace('/\D/', '', $dni) ?? '';
         return strlen($digits) >= 4 ? $digits : strtolower($dni);
     };
     $nameKey = static function (string $nombre): string {
         $nombre = mb_strtolower(trim($nombre));
-        $nombre = strtr($nombre, [
-            'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u', 'ü' => 'u', 'ñ' => 'n',
-        ]);
+        $nombre = strtr($nombre, ['á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u', 'ü' => 'u', 'ñ' => 'n']);
         return preg_replace('/\s+/', ' ', $nombre) ?? '';
     };
+
     $prevPayload = $pdo->prepare('SELECT payload FROM fichas WHERE id = :id');
     $prevPayload->execute(['id' => $id]);
     $prevRaw = $prevPayload->fetchColumn();
@@ -226,26 +149,17 @@ if ($method === 'POST') {
     $ownDoc = is_array($prevItem) ? $docKey((string) ($prevItem['dni'] ?? '')) : '';
     $incomingDoc = $docKey((string) ($data['dni'] ?? ''));
     $incomingName = $nameKey((string) ($data['nombre'] ?? ''));
+
     if ($incomingDoc !== '' && $incomingName !== '') {
         $stmtDni = $pdo->prepare('SELECT id, payload FROM fichas WHERE JSON_UNQUOTE(JSON_EXTRACT(payload, "$.dni")) LIKE :dniPattern');
         $stmtDni->execute(['dniPattern' => '%' . trim((string) ($data['dni'] ?? '')) . '%']);
-        $candidateRows = $stmtDni->fetchAll();
-        // Fallback a escaneo si JSON_EXTRACT no arrojó candidatos o no está soportado
-        if (empty($candidateRows)) {
-            $candidateRows = $pdo->query('SELECT id, payload FROM fichas')->fetchAll();
-        }
+        $candidateRows = $stmtDni->fetchAll() ?: $pdo->query('SELECT id, payload FROM fichas')->fetchAll();
         foreach ($candidateRows as $row) {
-            if ((string) $row['id'] === $id) {
-                continue;
-            }
+            if ((string) $row['id'] === $id) continue;
             $item = json_decode((string) $row['payload'], true);
-            if (!is_array($item)) {
-                continue;
-            }
+            if (!is_array($item)) continue;
             $doc = $docKey((string) ($item['dni'] ?? ''));
-            if ($ownDoc !== '' && $doc === $ownDoc) {
-                continue;
-            }
+            if ($ownDoc !== '' && $doc === $ownDoc) continue;
             $name = $nameKey((string) ($item['nombre'] ?? ''));
             if ($doc === $incomingDoc && $name !== '' && $name !== $incomingName) {
                 json_out(422, ['error' => 'El documento ya corresponde a ' . $item['nombre'] . '. No se puede guardar con otro nombre.']);
@@ -253,42 +167,7 @@ if ($method === 'POST') {
         }
     }
 
-    $inherited = '';
-    $stmtSiblings = $pdo->prepare('
-        SELECT id, profesional, payload FROM fichas 
-        WHERE id != :id AND (
-            JSON_UNQUOTE(JSON_EXTRACT(payload, "$.dni")) LIKE :dniPattern OR 
-            JSON_UNQUOTE(JSON_EXTRACT(payload, "$.nombre")) LIKE :namePattern
-        ) ORDER BY updated_at DESC LIMIT 50
-    ');
-    $dniPat = $incomingDoc !== '' ? '%' . trim((string) ($data['dni'] ?? '')) . '%' : '%NOMATCH%';
-    $namePat = $incomingName !== '' ? '%' . trim((string) ($data['nombre'] ?? '')) . '%' : '%NOMATCH%';
-    $stmtSiblings->execute(['id' => $id, 'dniPattern' => $dniPat, 'namePattern' => $namePat]);
-    $siblingRows = $stmtSiblings->fetchAll();
-    if (empty($siblingRows)) {
-        $siblingRows = $pdo->query('SELECT id, profesional, payload FROM fichas ORDER BY updated_at DESC LIMIT 100')->fetchAll();
-    }
-    foreach ($siblingRows as $row) {
-        if ((string) $row['id'] === $id) {
-            continue;
-        }
-        $item = json_decode((string) $row['payload'], true);
-        if (!is_array($item)) {
-            continue;
-        }
-        $doc = $docKey((string) ($item['dni'] ?? ''));
-        $name = $nameKey((string) ($item['nombre'] ?? ''));
-        $sameDoc = $incomingDoc !== '' && $doc === $incomingDoc;
-        $sameNameOnly = $incomingDoc === '' && $incomingName !== '' && $name === $incomingName && $doc === '';
-        if (!$sameDoc && !$sameNameOnly) {
-            continue;
-        }
-        $owner = (string) ($row['profesional'] ?? '');
-        if (isset($clinicians[$owner])) {
-            $inherited = $owner;
-            break;
-        }
-    }
+    $inherited = kinesica_fichas_find_inherited_owner($pdo, $id, $data, $incomingDoc, $incomingName, $clinicians, $docKey, $nameKey);
 
     $pdo->beginTransaction();
     $existing = $pdo->prepare('SELECT profesional FROM fichas WHERE id = :id FOR UPDATE');
@@ -296,17 +175,11 @@ if ($method === 'POST') {
     $previous = $existing->fetchColumn();
     if (is_admin($auth)) {
         $requested = (string) ($data['profesional'] ?? '');
-        if (isset($clinicians[$requested])) {
-            $profesional = $requested;
-        } elseif ($previous !== false && $previous !== '' && isset($clinicians[(string) $previous])) {
-            $profesional = (string) $previous;
-        } elseif ($inherited !== '') {
-            $profesional = $inherited;
-        } elseif ($auth['username'] === 'maria') {
-            $profesional = 'maria';
-        } else {
-            $profesional = 'norberto';
-        }
+        if (isset($clinicians[$requested])) $profesional = $requested;
+        elseif ($previous !== false && $previous !== '' && isset($clinicians[(string) $previous])) $profesional = (string) $previous;
+        elseif ($inherited !== '') $profesional = $inherited;
+        elseif ($auth['username'] === 'maria') $profesional = 'maria';
+        else $profesional = 'norberto';
     } elseif ($previous !== false && $previous !== '') {
         if ($auth['username'] !== (string) $previous) {
             $pdo->rollBack();
@@ -324,52 +197,15 @@ if ($method === 'POST') {
     $data['profesional'] = $profesional;
     $data['profesionalNombre'] = $clinicians[$profesional] ?? $profesional;
     $data['savedAt'] = gmdate('c');
-    $payload = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
-    if ($payload === false) {
-        $pdo->rollBack();
-        json_out(422, ['error' => 'La ficha contiene datos no válidos']);
-    }
 
-    $stmt = $pdo->prepare(
-        'INSERT INTO fichas (id, payload, profesional, updated_at, updated_by)
-         VALUES (:id, :payload, :profesional, UTC_TIMESTAMP(), :user)
-         ON DUPLICATE KEY UPDATE payload = VALUES(payload), profesional = VALUES(profesional), updated_at = UTC_TIMESTAMP(), updated_by = VALUES(updated_by)'
-    );
-    $stmt->execute([
-        'id' => $id,
-        'payload' => $payload,
-        'profesional' => $profesional,
-        'user' => $auth['username'],
-    ]);
-    $pdo->commit();
+    kinesica_fichas_save_record($pdo, $auth, $id, $data, $profesional);
 
-    // Helper para extraer lista completa de archivos asociados a una ficha (fotoUrl y fotosUrls)
-    $extractFiles = static function ($item): array {
-        $files = [];
-        if (!is_array($item)) return $files;
-        if (!empty($item['fotoUrl']) && preg_match('/file=([a-f0-9]{32,64}\.(jpe?g|png|webp))$/i', (string) $item['fotoUrl'], $m)) {
-            $files[$m[1]] = true;
-        }
-        if (!empty($item['fotosUrls']) && is_array($item['fotosUrls'])) {
-            foreach ($item['fotosUrls'] as $u) {
-                if (is_string($u) && preg_match('/file=([a-f0-9]{32,64}\.(jpe?g|png|webp))$/i', $u, $m)) {
-                    $files[$m[1]] = true;
-                }
-            }
-        }
-        return array_keys($files);
-    };
-
-    // Si la ficha tenía fotos previas y fueron reemplazadas o removidas, eliminar los archivos anteriores
     if (is_array($prevItem)) {
-        $prevFiles = $extractFiles($prevItem);
-        $currentFiles = $extractFiles($data);
-        $toDelete = array_diff($prevFiles, $currentFiles);
-        foreach ($toDelete as $fName) {
+        $prevFiles = kinesica_extract_ficha_photos($prevItem);
+        $currentFiles = kinesica_extract_ficha_photos($data);
+        foreach (array_diff($prevFiles, $currentFiles) as $fName) {
             $oldFile = __DIR__ . '/../uploads/' . $fName;
-            if (is_file($oldFile)) {
-                @unlink($oldFile);
-            }
+            if (is_file($oldFile)) @unlink($oldFile);
         }
     }
 
@@ -391,22 +227,9 @@ if ($method === 'DELETE') {
         }
         $prevData = json_decode((string) ($row['payload'] ?? ''), true);
         if (is_array($prevData)) {
-            $filesToDelete = [];
-            if (!empty($prevData['fotoUrl']) && preg_match('/file=([a-f0-9]{32,64}\.(jpe?g|png|webp))$/i', (string) $prevData['fotoUrl'], $m)) {
-                $filesToDelete[$m[1]] = true;
-            }
-            if (!empty($prevData['fotosUrls']) && is_array($prevData['fotosUrls'])) {
-                foreach ($prevData['fotosUrls'] as $u) {
-                    if (is_string($u) && preg_match('/file=([a-f0-9]{32,64}\.(jpe?g|png|webp))$/i', $u, $m)) {
-                        $filesToDelete[$m[1]] = true;
-                    }
-                }
-            }
-            foreach (array_keys($filesToDelete) as $fName) {
+            foreach (kinesica_extract_ficha_photos($prevData) as $fName) {
                 $fileTarget = __DIR__ . '/../uploads/' . $fName;
-                if (is_file($fileTarget)) {
-                    @unlink($fileTarget);
-                }
+                if (is_file($fileTarget)) @unlink($fileTarget);
             }
         }
     }

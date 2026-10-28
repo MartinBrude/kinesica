@@ -1,203 +1,256 @@
 # Arquitectura Modular y Seguridad del Módulo Admin
 
-Este documento detalla el diseño arquitectónico, la separación de responsabilidades, las medidas de seguridad y las optimizaciones de rendimiento aplicadas en el módulo integral de administración de Kinésica (`/admin`).
+Este documento describe la arquitectura técnica, la descomposición modular, los patrones de diseño y los mecanismos de seguridad implementados en el módulo de gestión clínica y administrativa de Kinésica (`/admin`).
 
 ---
 
-## 1. Visión General de la Arquitectura
+## 1. Regla Arquitectónica Fundamental
 
-El módulo fue refactorizado a partir de archivos monolíticos, adoptando el estándar nativo de **Módulos ECMAScript (ESM)** para JavaScript y **Hojas de Estilo Modulares (@import)** para CSS, sin requerir herramientas pesadas de empaquetado en tiempo de ejecución.
+> [!IMPORTANT]
+> **Límite Estricto de 250 Líneas de Código:**
+> Ningún archivo de código (`.js`, `.mjs`, `.php`) dentro del directorio `admin/` supera las **250 líneas**.  
+> Esta restricción arquitectónica garantiza:
+> - **Alta cohesión y principio de responsabilidad única (SRP)**: Cada módulo resuelve exactamente una tarea bien acotada.
+> - **Máxima legibilidad y mantenibilidad**: Los componentes son rápidos de auditar, testear y refactorizar.
+> - **Prevención de sobrecarga de contexto**: Los modelos de lenguaje y desarrolladores pueden cargar y razonar sobre módulos individuales sin consumir ventanas de contexto masivas.
 
-### Estructura de Directorios
+---
 
-```text
-admin/
-├── api/                     # Backend PHP (REST/JSON seguro)
-│   ├── backup.php           # Copias de seguridad automáticas CLI y descarga SQL autenticada (admin)
-│   ├── config.example.php   # Plantilla de configuración
-│   ├── config.php           # Secretos locales/prod (gitignored; obligatorio al deploy)
-│   ├── fichas.php           # Endpoint CRUD de historias clínicas
-│   ├── firma.php            # Servidor autenticado de firmas digitales (/admin/signatures/*.png)
-│   ├── forgot.php           # Solicitud de restablecimiento de contraseña
-│   ├── foto.php             # Servidor seguro y validado de fotos clínicas adjuntas
-│   ├── gastos.json          # Semilla versionada de gastos y costos operativos (hosting, IA)
-│   ├── gastos.php           # API para registro, modificación, baja y cálculo de gastos (exclusivo admin)
-│   ├── horarios.php         # Persistencia de franjas de atención y restricción de camilla
-│   ├── install.php          # Inicialización de esquema y credenciales
-│   ├── lib.php              # Librería común: base de datos, sesiones, TOTP, rate limiting, OTP por correo
-│   ├── login.php            # Verificación de credenciales y primer factor
-│   ├── login-code.php       # Vía alternativa de acceso mediante código de 6 dígitos enviado al mail
-│   ├── logout.php           # Cierre de sesión y destrucción de cookie
-│   ├── mail.php             # Configuración de servidor de correo
-│   ├── manual-doc.php       # Servidor exclusivo para admins de manual.html y documentación /docs/
-│   ├── me.php               # Estado del usuario actual autenticado
-│   ├── pacientes.php        # Directorio unificado, historial de sesiones y búsqueda por teléfono/DNI
-│   ├── profesionales.php    # Gestión de usuarios, roles (admin/professional), altas y suspensiones
-│   ├── reset.php            # Validación de token y cambio de contraseña
-│   ├── settings.php         # Ajustes globales de WhatsApp Clara y honorarios de sesión
-│   └── totp.php             # Validación de código 2FA y enrolamiento con verificación de clave
-├── css/                     # Hojas de estilo modulares divididas por responsabilidad
-│   ├── base.css             # Variables, reset, tipografía, topbar y botones
-│   ├── gate.css             # Pantallas de ingreso (login, 2FA, código por mail, forgot, reset)
-│   ├── library.css          # Biblioteca de historias, listados y paginación
-│   ├── form.css             # Formulario clínico en 6 pasos y escala EVA
-│   ├── compare.css          # Vista comparativa sesión a sesión y KPIs
-│   ├── dashboard.css        # Indicadores resumidos y accesos rápidos
-│   ├── pacientes.css        # Tablas de pacientes, fichas y búsqueda rápida
-│   ├── horarios.css         # Timeline interactivo de camilla y días laborales
-│   ├── configuracion.css    # Pestañas de Clara, simulador y honorarios
-│   ├── admin-panel.css      # Panel de profesionales, gastos y control de administradores
-│   └── print.css            # Estilos para impresión A4, sellos y firmas
-├── modules/                 # Módulos JavaScript (ES6 Modules)
-│   ├── admin-panel.js       # Gestión de administradores, profesionales, altas y bajas
-│   ├── api.js               # Cliente HTTP seguro con cabecera anti-CSRF
-│   ├── auth.js              # Controlador de autenticación, TOTP y código de 6 dígitos
-│   ├── chat-simulator.js    # Simulador interactivo en tiempo real de WhatsApp Clara
-│   ├── compare.js           # Controlador de la vista comparativa de evolución
-│   ├── configuracion.js     # Configuración de Clara (textos, avisos, ausencias)
-│   ├── dashboard.js         # Vista de inicio con métricas y accesos directos
-│   ├── dom.js               # Primitivas DOM, saneamiento anti-XSS y debounce
-│   ├── form-image.js        # Compresión client-side de imágenes clínicas (canvas/WebP)
-│   ├── form-restrictions.js # Reglas condicionales dinámicas de inputs
-│   ├── form.js              # Controlador del formulario clínico por pasos
-│   ├── honorarios.js        # Editor de honorarios de consulta y métodos de pago
-│   ├── horarios.js          # Editor de franjas horarias y control de 1 sola camilla
-│   ├── library-rows.js      # Renderizado de filas de biblioteca y dropdown de acciones
-│   ├── library.js           # Controlador de biblioteca, búsqueda y agrupación
-│   ├── menu-texts.js        # Textos informativos de consultorio y direcciones
-│   ├── pacientes.js         # Directorio de pacientes y unificación por DNI/teléfono
-│   ├── phone-search.js      # Normalizador y buscador inteligente por teléfono
-│   └── print.js             # Motor de generación de reportes impresos y PDF
-├── signatures/              # Imágenes digitales de sellos y firmas profesionales
-│   ├── norberto.png         # Firma y sello del Lic. Norberto Brude
-│   └── maria.png            # Firma y sello de la Lic. María Gulin
-├── .htaccess                # Protección de archivos sensibles y cabeceras de seguridad
-├── app.js                   # Orquestador principal y punto de entrada SPA
-├── ficha-rules.mjs          # Reglas clínicas puras de dominio (CDI-TTM y cálculos)
-├── ficha-compare.mjs        # Motor matemático de comparación sesión a sesión y KPIs
-├── index.html               # Estructura semántica de la aplicación SPA
-└── styles.css               # Hoja de estilos maestra que importa los módulos
+## 2. Visión General de la Arquitectura
+
+El sistema está construido como una **Single Page Application (SPA) modular nativa (ESM)** en el frontend y una **API REST desacoplada en PHP** en el backend, respaldada por MariaDB/MySQL.
+
+```mermaid
+flowchart TD
+    subgraph Frontend ["Frontend Modular SPA (admin/)"]
+        App["app.js (Orquestador SPA)"]
+        Modules["admin/modules/* (Componentes de Dominio & UI)"]
+        DomainRules["admin/ficha-rules*.mjs (Reglas Clínicas CDI/ATM)"]
+        Styles["admin/css/* (Hojas CSS por vista)"]
+        App --> Modules
+        App --> DomainRules
+        App -. carga estilos .-> Styles
+    end
+
+    subgraph BackendGateway ["Backend API & Seguridad (admin/api/)"]
+        AuthGateway["lib_auth.php & lib_attempts.php (Autenticación, TOTP, Rate Limit)"]
+        Endpoints["Endpoints REST (fichas, pacientes, horarios, gastos...)"]
+        Submodules["Submódulos de Operaciones (*_ops.php, *_helpers.php)"]
+        Facade["lib.php (Facade común)"]
+        Endpoints --> Submodules
+        Endpoints --> Facade
+        Endpoints --> AuthGateway
+    end
+
+    subgraph Persistence ["Persistencia & Integraciones"]
+        DB[(MariaDB / MySQL)]
+        JSONStorage[(gastos.json & settings)]
+        ResendAPI[Resend Mail API]
+        WhatsAppAPI[Meta Cloud WhatsApp API]
+    end
+
+    Modules -- "fetch HTTP (X-Kinesica: 1)" --> Endpoints
+    Submodules --> DB
+    Submodules --> JSONStorage
+    Facade --> ResendAPI
+    Facade --> WhatsAppAPI
 ```
 
 ---
 
-## 2. Separación de Responsabilidades (Módulos JS)
+## 3. Frontend: Desglose Modular (`admin/modules/`)
 
-Cada módulo tiene una responsabilidad única y bien delimitada:
+Todos los módulos utilizan exportaciones e importaciones estándar de ES6 (`import`/`export`).
 
-### `admin/modules/dom.js`
-- **Responsabilidad:** Utilidades puras para interacción con el DOM y sanitización de cadenas.
-- **Funciones clave:**
-  - `escapeHtml(str)`: Escapa caracteres peligrosos (`&`, `<`, `>`, `"`, `'`) para neutralizar cualquier vector de XSS al inyectar HTML.
-  - `node(tag, className, text)`: Crea elementos DOM de forma segura usando `textContent`.
-  - `debounce(fn, delay)`: Limita la cadencia de ejecución de eventos repetitivos (usado en el buscador).
-  - Constructores de layout impreso: `field`, `side`, `section`, `grid`, `prose`, `formatParts`.
+### 3.1. Shell de la Aplicación y Navegación
+- **`admin/app.js`**: Orquestador principal. Inicializa el ciclo de vida, expone bindings globales y coordina las pestañas.
+- **`admin/modules/app-init.js`**: Rutina de arranque, detección de credenciales en memoria, verificación de sesión y carga diferida.
+- **`admin/modules/app-tabs.js`**: Conmutación de vistas de la SPA (`#tab-form`, `#tab-library`, `#tab-compare`, `#tab-pacientes`, `#tab-horarios`, etc.).
+- **`admin/modules/router.js`**: Sincronización del estado de URL con los hashes de vista.
+- **`admin/modules/api.js`**: Cliente HTTP wrapper que inyecta automáticamente cabeceras de seguridad (`X-Kinesica: 1`), maneja errores y redirecciona ante sesiones expiradas (`401`).
+- **`admin/modules/dom.js`**: Primitivas seguras para creación de elementos (`node`), sanitización contra XSS (`escapeHtml`) y utilidades como `debounce`.
+- **`admin/modules/dom-dialogs.js`**: Modales de confirmación accesibles (`showConfirm`, `showPrompt`).
 
-### `admin/modules/api.js`
-- **Responsabilidad:** Capa de comunicación HTTP centralizada.
-- **Seguridad incorporada:**
-  - Envía siempre `credentials: "same-origin"` y la cabecera personalizada `X-Kinesica: 1` para bloquear peticiones entre orígenes no autorizados.
-  - Intercepta respuestas `HTTP 401 Unauthorized` y dispara automáticamente el gate de autenticación.
+### 3.2. Formulario Clínico ATM (`admin/modules/form*.js`)
+El formulario clínico de disfunción temporomandibular se estructura en subcomponentes especializados:
+- **`form.js`**: Fachada orquestadora del formulario que unifica la API pública para el resto de la aplicación.
+- **`form-nav.js`**: Controlador de navegación entre pasos (0 a 5), validación previa a avanzar y foco automático en campos obligatorios no completados.
+- **`form-patient.js`**: Gestión de la filiación del paciente, selector de profesionales asignados (visible para admins), cálculo dinámico de edad y toggle de DNI.
+- **`form-eva.js`**: Controlador reactivo de la escala EVA de dolor (0-10) con degradé semántico visual, sincronización de hábitos y botones de selección única (`data-single`).
+- **`form-photos.js`**: Manejador del estado de fotos clínicas adjuntas, compresión concurrentemente limitada (máximo 10 imágenes) y subida controlada.
+- **`form-photos-ui.js`**: Renderizado de la cuadrícula de miniaturas de fotos, acciones de borrado y contadores visuales.
+- **`form-reader.js`**: Serialización bidireccional entre los inputs del DOM y el objeto JSON canónico de la ficha clínica.
+- **`form-submit.js`**: Validación final de reglas clínicas y envío asíncrono al backend.
+- **`form-image.js`**: Compresión client-side en canvas (`image/webp` / `image/jpeg`) a un máximo de 1920px y remoción de metadatos EXIF sensibles.
+- **`form-restrictions.js`**: Reglas condicionales en tiempo real que habilitan o deshabilitan inputs según respuestas previas.
 
-### `admin/modules/auth.js`
-- **Responsabilidad:** Ciclo de vida de la sesión y formularios de ingreso.
-- **Características:**
-  - Control de estados: Login tradicional, enrolamiento y verificación TOTP (Google Authenticator), vía alternativa de código por email (con contraseña obligatoria), solicitud de enlace de recuperación y cambio de contraseña.
-  - Toggles visuales de contraseña accesibles (`aria-label`, iconos SVG `.eye-show`/`.eye-hide`).
-  - Guía operativa para usuarios clínicos (María y Norberto): ver [docs/configuracion-cuentas-profesionales.md](../docs/configuracion-cuentas-profesionales.md).
+### 3.3. Reglas Clínicas de Dominio (`admin/ficha-rules*.mjs`)
+Motor de lógica clínica agnóstico del DOM, compartido y verificado por la suite de pruebas automatizadas:
+- **`ficha-rules.mjs`**: Re-exportador canónico y funciones de cálculo clínico (apertura bucal, ruidos articulares, dolor muscular).
+- **`ficha-rules-validate.mjs`**: Validador estricto de estructura, coherencia de campos y criterios diagnósticos de investigación (CDI-TTM).
+- **`ficha-rules-patient.mjs`**: Lógica de normalización de datos de filiación, nombres, DNI y claves de paciente.
+- **`ficha-rules-defaults.mjs`**: Generador de valores por defecto e inicialización de esquemas clínicos.
 
-### `admin/modules/form.js`, `form-image.js` y `form-restrictions.js`
-- **Responsabilidad:** Lógica interactiva del formulario clínico de ATM.
-- **Características:**
-  - Navegación fluida por 6 paneles paso a paso (0. Paciente, 1. ATM, 2. Músculos, 3. Dolor y oclusión, 4. Criterios CDI, 5. Anotaciones y Foto adjunta).
-  - Compresión previa en canvas (`form-image.js`) antes del upload, reduciendo imágenes a un máximo de 1920px y despojando metadatos EXIF.
-  - Validación suave con indicador luminoso discreto (`.step-dot`) y foco automático en el primer campo faltante.
-  - Barra de dolor EVA con gradiente visual y badge semántico (`syncEva`).
-  - Detección de cambios sin guardar antes de salir (`formState`).
-  - **Asignación de profesional por admin:** Cuando un usuario con rol administrador (`role === 'admin'`, como `martin` o `norberto`) crea o edita una ficha, se activa el selector `#field-profesional` para asignar la ficha al Lic. Norberto Brude o a la Lic. María Gulin. Para los profesionales clínicos sin rol admin, el selector se mantiene oculto y la ficha se vincula estrictamente a su propia cuenta.
+### 3.4. Comparativa Clínica y Evolución (`admin/ficha-compare*.mjs` y `compare*.js`)
+- **`ficha-compare.mjs`**: Algoritmo matemático de cálculo de diferencias entre sesiones (Sesión $A$ vs. Sesión $B$), delta de EVA, apertura bucal y variación de síntomas.
+- **`ficha-compare-diff.mjs`**: Motor granular de diferencias campo a campo para la vista "Lo que cambió".
+- **`compare.js`**: Controlador del panel de comparación y selección de sesiones históricas.
+- **`compare-tabs.js`**: Navegación entre las pestañas "Resumen de KPIs", "Lo que cambió" y "Comparativa completa".
+- **`compare-render.js`**: Renderizado de tablas y badges de evolución (mejoría, empeoramiento, sin cambios).
 
-### `admin/modules/library.js` y `library-rows.js`
-- **Responsabilidad:** Gestión de historias clínicas registradas.
-- **Características:**
-  - Vista general cronológica y vista agrupada por paciente mediante `Map` en $O(n)$.
-  - Búsqueda tolerante a acentos y normalización de DNI (con puntos, espacios o guiones).
-  - Paginación dinámica configurable (`pageWindow`).
-  - Importación y exportación de archivos `.json` con validación estructural estricta.
+### 3.5. Biblioteca de Historias Clínicas (`admin/modules/library*.js`)
+- **`library.js`**: Controlador principal de listado, filtros por fecha, profesional o patología.
+- **`library-rows.js`**: Generación de filas para la vista cronológica estándar.
+- **`library-session-row.js`**: Renderizado de filas anidadas en la vista agrupada por paciente.
+- **`library-toolbar.js`**: Barra de herramientas con buscador en vivo, selector de vista y paginación.
+- **`library-render.js`**: Renderizado mediante `DocumentFragment` para prevenir el *layout thrashing*.
+- **`library-io.js`**: Exportación e importación segura de fichas en formato JSON con validación de esquema.
+- **`library-pager.js`**: Algoritmo de paginación numérica dinámica.
 
-### `admin/modules/compare.js` y `admin/ficha-compare.mjs`
-- **Responsabilidad:** Comparativa clínica evolución sesión a sesión (Sesión X vs. Sesión Y).
-- **Características:**
-  - Detección del intervalo de tiempo transcurrido en días (`daysBetween`).
-  - Tarjetas de Indicadores Clave (KPIs): Variación del dolor EVA, apertura bucal y remisión de ruidos.
-  - Pestaña "Lo que cambió" con resaltado de transiciones clínicas (`➔`), badges de mejora/empeoramiento y valores previos tachados.
-  - Generación de informe impreso comparativo A4 (`buildComparePrintSheet`).
+### 3.6. Directorio de Pacientes (`admin/modules/pacientes*.js`)
+- **`pacientes.js`**: Vista unificada de pacientes, consolidación histórica por DNI/teléfono.
+- **`pacientes-format.js`**: Formateadores de nombres propios, teléfonos y fechas.
+- **`pacientes-modal.js`**: Diálogo modal con la historia médica consolidada y accesos directos a nueva sesión o impresión.
+- **`phone-search.js`**: Motor de búsqueda tolerante con normalización telefónica internacional (E.164).
 
-### `admin/modules/pacientes.js` y `phone-search.js`
-- **Responsabilidad:** Directorio unificado de pacientes.
-- **Características:**
-  - Consolidación de sesiones históricas por DNI o clave de identidad.
-  - Búsqueda en vivo por nombre, DNI o número telefónico con normalización E.164.
-  - Accesos directos a crear nueva sesión vinculada o imprimir ficha histórica consolidada.
+### 3.7. Agenda y Horarios (`admin/modules/horarios*.js`)
+- **`horarios.js`**: Orquestador de la vista de agenda y horarios de atención.
+- **`horarios-editor.js`**: Interfaz de edición de franjas horarias por profesional (Norberto / María).
+- **`horarios-validator.js`**: Verificación estricta en tiempo real de la restricción de **1 sola camilla física** (previene solapamientos).
+- **`horarios-timeline.js`**: Visualización gráfica de la semana laboral y ocupación de camilla.
 
-### `admin/modules/horarios.js` y `honorarios.js`
-- **Responsabilidad:** Configuración del consultorio, agenda física y valores de consulta.
-- **Características:**
-  - Validación de restricción de **1 sola camilla física** en tiempo real (impide solapamiento entre Norberto y María).
-  - Sincronización en vivo con el motor de reservas (`Agendar`), la barra superior de la web y los mensajes de WhatsApp Clara.
+### 3.8. Configuración y Automatización Clara (`admin/modules/config*.js`)
+- **`configuracion.js`**: Fachada del panel de ajustes de consultorio y mensajes automáticos.
+- **`config-toggles.js`**: Interruptores de ausencias, vacaciones y recordatorios.
+- **`config-options.js`**: Gestión de opciones dinámicas de menús y avisos.
+- **`config-save.js`**: Persistencia asíncrona hacia el backend.
+- **`config-defaults.js`**: Configuración de respaldo por defecto.
+- **`config-views.js`**: Renderizado de pestañas de configuración.
+- **`chat-simulator.js`**: Simulador interactivo en tiempo real del bot de WhatsApp Clara.
+- **`menu-texts.js`**: Catálogo de textos informativos de consultorio, direcciones e indicaciones.
 
-### `admin/modules/admin-panel.js`
-- **Responsabilidad:** Gestión y gobierno de cuentas de profesionales, gastos operativos y recursos administrativos.
-- **Características:**
-  - Altas, edición de datos de contacto y asignación de roles (`admin` / `professional`).
-  - Suspensión y reactivación de cuentas con protección explícita del superadmin (`martin`).
-  - Envío y reenvío de enlaces de invitación (48 hs) y reseteo de claves (30 min).
-  - Control de gastos operativos con cotización histórica EUR/USD/ARS (`gastos.php`).
+### 3.9. Profesionales, Gastos y Administración (`admin/modules/admin*.js`)
+- **`admin-panel.js`**: Entrada del panel de administración del consultorio.
+- **`admin-profesionales.js`**: Alta, baja, edición de roles (`admin`/`professional`) y reenvío de invitaciones a profesionales.
+- **`admin-gastos.js`**: Listado de costos operativos con filtrado por categoría y período.
+- **`admin-gastos-modal.js`**: Formulario modal para registrar o editar gastos.
+- **`admin-gastos-rates.js`**: Conversión y normalización multimoneda (EUR, USD, ARS).
+- **`honorarios.js`**: Editor de honorarios de consulta y medios de pago.
 
-### `admin/modules/print.js`
-- **Responsabilidad:** Renderizado de la historia clínica en hoja institucional para impresión o PDF.
-- **Características:**
-  - Formato homologado para normas A4 con saltos de página inteligentes (`break-inside: avoid`).
-  - Integración de sellos y firmas digitales (`norberto.png`, `maria.png`) con precarga asíncrona (`img.decode()`) y ocultamiento silencioso en caso de ausencia de imagen.
+### 3.10. Autenticación y Seguridad Frontend (`admin/modules/auth*.js`)
+- **`auth.js`**: Controlador principal del gate de acceso y verificación 2FA.
+- **`auth-email-code.js`**: Flujo alternativo de inicio de sesión mediante código de 6 dígitos enviado por correo.
+- **`auth-recovery.js`**: Solicitud de restablecimiento de contraseña y cambio seguro.
+- **`auth-utils.js`**: Toggles de visibilidad de contraseña accesibles e indicadores de fortaleza.
 
-### `admin/app.js` (Orquestador)
-- **Responsabilidad:** Punto de entrada único que inicializa los módulos, conecta los callbacks entre vistas, administra la navegación y sincroniza la caché en memoria.
+### 3.11. Impresión y Exportación Homologada (`admin/modules/print*.js`)
+- **`print.js`**: Orquestador de impresión institucional en formato A4.
+- **`print-sections.js`**: Ensamblado de secciones clínicas con protección contra cortes de página (`break-inside: avoid`).
+- **`print-parts.js`**: Carga asíncrona segura de sellos y firmas digitales (`img.decode()`).
 
 ---
 
-## 3. Auditoría de Seguridad: ¿Está todo seguro?
+## 4. Backend PHP: Arquitectura y Descomposición (`admin/api/`)
 
-| Aspecto | Estado | Implementación / Protección |
+Todos los archivos de backend respetan el límite de 250 líneas y dividen la lógica en submódulos especializados.
+
+```mermaid
+flowchart LR
+    subgraph CoreLibs ["Librerías Core de Soporte"]
+        Lib["lib.php (Facade)"]
+        LibDB["lib_db.php (PDO & JSON)"]
+        LibAuth["lib_auth.php (Session & TOTP)"]
+        LibAttempts["lib_attempts.php (Rate Limiting)"]
+        LibCodes["lib_codes.php (Tokens Temporales)"]
+        LibMail["lib_mail.php (Resend Mail)"]
+        LibWA["lib_whatsapp.php (WhatsApp API)"]
+        LibWATpl["lib_whatsapp_template.php (Templates)"]
+    end
+
+    subgraph EndpointsAPI ["Endpoints REST (Controladores)"]
+        Fichas["fichas.php"] --> FichasOps["fichas_ops.php"]
+        Pacientes["pacientes.php"] --> PacientesOps["pacientes_ops.php"]
+        Pacientes --> PacientesHelpers["pacientes_helpers.php"]
+        Horarios["horarios.php"] --> HorariosVal["horarios_validator.php"]
+        Horarios --> HorariosSum["horarios_summary.php"]
+        Horarios --> SettingsStore["kinesica_settings_storage.php"]
+        Profesionales["profesionales.php"] --> ProfSync["profesionales_sync.php"]
+        Profesionales --> ProfInvite["profesionales_invite.php"]
+        Gastos["gastos.php"] --> GastosIO["gastos_io.php"]
+        Interacciones["interacciones.php"] --> InteraccionesSeed["interacciones_seed.php"]
+    end
+
+    EndpointsAPI --> CoreLibs
+```
+
+### 4.1. Núcleo Común y Seguridad (`lib*.php`)
+- **`lib.php`**: Fachada que expone y re-exporta funciones fundamentales para mantener total retrocompatibilidad con los tests y llamadas existentes.
+- **`lib_db.php`**: Inicialización de PDO, manejo de transacciones, envío estandarizado de respuestas JSON (`json_out`, `json_error`) y cabeceras de seguridad.
+- **`lib_auth.php`**: Autenticación mediante cookies de sesión estrictas (`SameSite=Lax`, `HttpOnly`, `Secure`), resolución de roles y motor TOTP nativo RFC 6238 con tolerancia $\pm 1$ paso.
+- **`lib_attempts.php`**: Control de fuerza bruta contra login y reseteo de claves (bloqueo automático de 30 minutos al 5° fallo).
+- **`lib_codes.php`**: Almacenamiento seguro y verificación de códigos OTP de 6 dígitos de un solo uso.
+- **`lib_mail.php`**: Envío de correos transaccionales a través de la API HTTP de Resend con soporte multipart y fallback seguro.
+- **`lib_whatsapp.php`**: Integración con Meta WhatsApp Cloud API y webhook de contingencia en n8n.
+- **`lib_whatsapp_template.php`**: Generación de plantillas aprobadas (`alerta_profesional_kinesica`) y serialización de parámetros.
+
+### 4.2. Endpoints y Submódulos de Dominio
+- **Fichas Clínicas**:
+  - `fichas.php`: Validación de sesión, autorización por rol/propietario, enrutamiento HTTP (GET/POST/DELETE).
+  - `fichas_ops.php`: Validaciones clínicas de ATM, criterios CDI, persistencia de fotos adjuntas y control de herencia entre sesiones.
+- **Pacientes**:
+  - `pacientes.php`: Endpoint del directorio unificado de pacientes y lista de espera.
+  - `pacientes_ops.php`: Operaciones de inserción, actualización, deduplicación y consolidación de historias.
+  - `pacientes_helpers.php`: Normalización de teléfonos E.164, extracción de apellidos y formateo de nombres.
+- **Agenda y Horarios**:
+  - `horarios.php`: Endpoint de persistencia de días y turnos de atención.
+  - `horarios_validator.php`: Validación matemática de intervalos horarios y garantía de **1 sola camilla física**.
+  - `horarios_summary.php`: Generación de resúmenes textuales de horarios para el prompt del sistema de Clara.
+  - `kinesica_settings_storage.php`: Guardado atómico en base de datos y archivos de configuración con bloqueo exclusivo (`LOCK_EX`).
+- **Profesionales**:
+  - `profesionales.php`: CRUD de cuentas profesionales y asignación de permisos.
+  - `profesionales_sync.php`: Sincronización automática de profesionales en los ajustes de Clara y la web.
+  - `profesionales_invite.php`: Creación de tokens de activación y envío de invitaciones por correo (48 hs).
+- **Gastos Operativos**:
+  - `gastos.php`: Endpoint de cálculo y reporte contable de costos de infraestructura.
+  - `gastos_io.php`: Lectura, serialización atómica y normalización multimoneda (EUR/USD/ARS) sobre `gastos.json`.
+- **Interacciones WhatsApp**:
+  - `interacciones.php`: Endpoint de registro y visualización de conversaciones de pacientes.
+  - `interacciones_seed.php`: Inicialización de conversaciones de prueba y límite estricto de historial (1000 items máximo).
+
+---
+
+## 5. Medidas de Seguridad y Robustez
+
+| Vector / Mecanismo | Nivel de Protección | Implementación Técnica |
 | :--- | :---: | :--- |
-| **Protección contra CSRF** | **Blindado** | Todas las peticiones API (GET, POST, DELETE) exigen la cabecera personalizada `X-Kinesica: 1`. Los navegadores prohíben adjuntar cabeceras personalizadas en formularios o llamadas cross-origin estándar sin previa negociación CORS. |
-| **Protección contra XSS** | **Blindado** | En `dom.js`, todas las inserciones dinámicas de datos de pacientes (nombres, DNI, deltas, etiquetas) se procesan con `escapeHtml()`, y los textos directos se asignan vía `textContent`. |
-| **Control de Acceso / IDOR** | **Blindado** | En `admin/api/fichas.php`, las operaciones `POST` (modificación) y `DELETE` verifican que el usuario autenticado sea el creador original de la ficha o tenga rol `admin` (`is_admin()`, validado en vivo contra la base de datos en cada request vía `require_auth()`). |
-| **Seguridad de Sesiones** | **Blindado** | Las cookies de sesión utilizan parámetros estrictos: `secure = true` (solo HTTPS), `httponly = true` (inaccesibles por JavaScript malicioso), `samesite = 'Lax'` y `path = '/admin/'`. Se regenera el ID de sesión con `session_regenerate_id(true)` tras iniciar sesión. |
-| **Fuerza Bruta y Bloqueo** | **Blindado** | Se registran los fallos en `login_attempts` y `login_code_attempts`. Al 5° intento fallido de acceso, el usuario queda bloqueado durante 30 minutos (`HTTP 429 Too Many Requests`), y durante 15 minutos para solicitudes reiteradas de código por correo. |
-| **Segundo Factor (2FA TOTP)** | **Blindado** | Implementación RFC 6238 nativa con secreto Base32. La validación tolera una ventana temporal de deriva horaria de $\pm 1$ paso (30s) usando `hash_equals()`. El enrolamiento exige contraseña previa. |
-| **Protección de Archivos Apache** | **Blindado** | `.htaccess` bloquea el acceso HTTP directo a archivos críticos (`config*.php`, `mail.php`, `.env*`, `*.sql`, `*.bak`, `*.log`). |
-| **Cabeceras de Seguridad HTTP** | **Blindado** | Configuración activa en `.htaccess`: `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN` y `Referrer-Policy: strict-origin-when-cross-origin`. |
+| **CSRF (Cross-Site Request Forgery)** | **Blindado** | Obligatoriedad de la cabecera `X-Kinesica: 1` en todas las peticiones `fetch`. Las peticiones cross-site no pueden enviar cabeceras personalizadas sin preflight CORS. |
+| **XSS (Cross-Site Scripting)** | **Blindado** | Sanitización obligatoria en `dom.js` con `escapeHtml()`. Asignación de cadenas dinámicas exclusivamente mediante `textContent` o `node()`. |
+| **IDOR / Control de Acceso** | **Blindado** | Verificación en cada request con `require_auth()` consultando el rol en vivo en la base de datos. Solo administradores o el creador de una ficha pueden modificarla o borrarla. |
+| **Inyección SQL** | **Blindado** | 100% de consultas parametrizadas con sentencias preparadas de PDO (`$pdo->prepare(...)`). |
+| **Ataques de Fuerza Bruta** | **Blindado** | Tablas `login_attempts` y `login_code_attempts`. Rate limiting con bloqueo temporal progresivo ante fallos reiterados (`HTTP 429`). |
+| **Autenticación en Dos Pasos (2FA)** | **Blindado** | Implementación nativa TOTP RFC 6238 en `lib_auth.php`. Enrolamiento protegido por contraseña previa. |
+| **Cookies de Sesión Seguras** | **Blindado** | `SameSite = Lax`, `HttpOnly = true`, `Secure = true`, `path = /admin/`. Regeneración del Session ID con `session_regenerate_id(true)` en cada login. |
+| **Filtrado de Archivos Sensibles** | **Blindado** | Reglas estrictas en `.htaccess` denegando el acceso HTTP a `*.php` internos de configuración, `.sql`, `.bak` y `.log`. |
 
 ---
 
-## 4. Auditoría de Rendimiento: ¿Está todo optimizado?
+## 6. Procedimiento de Verificación y Testing
 
-| Optimización | Descripción del Beneficio |
-| :--- | :--- |
-| **Búsqueda con Debounce (150 ms)** | El filtrado en vivo de pacientes no reconstruye el DOM por cada pulsación de teclado; agrupa las entradas del usuario reduciendo el recálculo en un 80%. |
-| **Uso de `DocumentFragment`** | La renderización de listas (`renderLibrary`, `renderPacientes`) compila todos los nodos en memoria y los inserta de una sola vez mediante `replaceChildren(fragment)`, evitando el *layout thrashing* y múltiples repintados. |
-| **Agrupación en $O(n)$** | La consolidación de pacientes y sesiones se realiza en una sola pasada usando `Map`, reemplazando búsquedas anidadas $O(n^2)$. |
-| **Carga de Módulos Nativos** | Sin sobrecarga de herramientas de compilación pesadas; el navegador descarga y almacena en caché individualmente cada módulo JS y CSS. |
-| **Precarga de Imágenes en PDF** | Antes de abrir el cuadro de impresión nativo (`window.print()`), el sistema aguarda la resolución de `img.decode()` en paralelo mediante `Promise.all()`, asegurando que las firmas y sellos se impriman sin cortes. |
-| **Cache-Busting Versionado** | `index.html` incluye sufijos de versión controlados (`styles.css?v=...` y `app.js?v=...`) para asegurar actualización instantánea en los clientes ante nuevos despliegues. |
+Para garantizar que el código se mantiene conforme a las reglas arquitectónicas y funcionales, ejecutar:
 
----
+```bash
+# 1. Linting estricto de JavaScript
+npm run admin:lint
 
-## 5. Deploy y `config.php` (no volver a borrarlo)
+# 2. Batería de pruebas unitarias y de integración de admin
+npm run admin:test
 
-`hosting_deploy` con el directorio del repo **reemplaza todo `public_html`**. Los archivos en `.gitignore` (`admin/api/config.php`, `mail.php`, `whatsapp.php`, `data/*`) **solo se conservan si existen en la máquina que empaqueta el deploy**.
+# 3. Verificación integral de todo el proyecto Kinésica
+npm run verify
+```
 
-Reglas:
-
-1. Antes de cualquier deploy completo: `node scripts/deploy-hostinger.mjs --check-only` (falla si falta `config.php` local).
-2. Preferí subidas selectivas (TUS/FTP de archivos tocados) frente a un deploy full-site.
-3. `lib.php` también busca `../private/admin-config.php` (fuera de `public_html`); ese path sobrevive aunque se limpie el document root. Tras un restore, correr una vez `_migrate_config_once.php` y borrarlo.
+Para auditar en cualquier momento que ningún archivo supere las 250 líneas:
+```bash
+find admin -type f \( -name "*.js" -o -name "*.mjs" -o -name "*.php" \) -exec wc -l {} + | awk '$1 > 250 && $2 != "total"'
+```
+*(Debe retornar 0 resultados).*
