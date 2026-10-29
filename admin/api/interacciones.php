@@ -121,6 +121,29 @@ if ($method === 'POST') {
         json_out(200, ['ok' => true, 'id' => $id, 'answered' => $answered]);
     }
 
+    if ($action === 'sync_all') {
+        $incoming = $input['items'] ?? [];
+        if (!is_array($incoming)) {
+            json_out(400, ['error' => 'items debe ser un arreglo']);
+        }
+        $current = load_interactions($dataFile);
+        $answeredMap = [];
+        foreach ($current as $c) {
+            if (!empty($c['answered']) && !empty($c['id'])) {
+                $answeredMap[$c['id']] = $c['answered_at'] ?? true;
+            }
+        }
+        foreach ($incoming as &$in) {
+            if (isset($in['id'], $answeredMap[$in['id']]) && empty($in['answered'])) {
+                $in['answered'] = true;
+                $in['answered_at'] = is_string($answeredMap[$in['id']]) ? $answeredMap[$in['id']] : null;
+            }
+        }
+        unset($in);
+        save_interactions($dataFile, $incoming);
+        json_out(200, ['ok' => true, 'total' => count($incoming), 'message' => 'Sincronizado']);
+    }
+
     $waId = trim((string) ($input['wa_id'] ?? ''));
     $patientMessage = trim((string) ($input['patient_message'] ?? ''));
     $claraReply = trim((string) ($input['clara_reply'] ?? ''));
