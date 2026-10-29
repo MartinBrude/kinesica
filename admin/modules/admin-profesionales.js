@@ -150,6 +150,30 @@ export async function handleToggleActive(prof, onReload) {
   }
 }
 
+export async function handleResendInvite(prof) {
+  if (!prof.email) {
+    dialogAlert("El usuario no tiene un correo configurado.");
+    return;
+  }
+  const ok = await dialogConfirm(
+    `¿Enviar correo de acceso a ${prof.name || prof.username} (${prof.email}) para que cree o restablezca su contraseña?`
+  );
+  if (!ok) return;
+
+  try {
+    const res = await api("profesionales.php", {
+      method: "POST",
+      body: JSON.stringify({
+        action: "resend_invite",
+        username: prof.username,
+      }),
+    });
+    dialogAlert(res.message || "Se envió el correo de acceso.");
+  } catch (err) {
+    dialogAlert("Error al enviar el acceso: " + (err.message || "Error desconocido"));
+  }
+}
+
 export function renderProfesionales(profesionales, onReload) {
   if (!profTableBody) return;
   profTableBody.replaceChildren(
@@ -204,6 +228,16 @@ export function renderProfesionales(profesionales, onReload) {
       btnEdit.textContent = "Editar";
       btnEdit.addEventListener("click", () => openEditModal(prof));
       actionsWrap.append(btnEdit);
+
+      if (prof.email) {
+        const btnInvite = document.createElement("button");
+        btnInvite.type = "button";
+        btnInvite.className = "btn ghost btn-prof-invite";
+        btnInvite.textContent = "Enviar acceso";
+        btnInvite.title = "Enviar correo con enlace para crear contraseña";
+        btnInvite.addEventListener("click", () => handleResendInvite(prof));
+        actionsWrap.append(btnInvite);
+      }
 
       if (prof.username !== "martin") {
         const btnToggle = document.createElement("button");
