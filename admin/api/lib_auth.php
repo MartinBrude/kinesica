@@ -164,7 +164,7 @@ function ensure_users_role_column(): void
             'martin' => ['name' => 'Martín', 'email' => 'martin.brude@gmail.com', 'telefono' => '', 'first_name' => 'Martín', 'last_name' => 'Brude', 'role' => 'admin'],
             'norberto' => ['name' => 'Norberto', 'email' => 'norberto1712@gmail.com', 'telefono' => '5491161564311', 'first_name' => 'Norberto', 'last_name' => 'Brude', 'role' => 'admin'],
             'maria' => ['name' => 'María', 'email' => 'manosmagicas7116@gmail.com', 'telefono' => '5491128531224', 'first_name' => 'María', 'last_name' => 'Gulin', 'role' => 'professional'],
-            'facundo' => ['name' => 'Facundo Vivardo', 'email' => 'facundovivardo@gmail.com', 'telefono' => '', 'first_name' => 'Facundo', 'last_name' => 'Vivardo', 'role' => 'colaborador'],
+            'facundo' => ['name' => 'Facundo Vivardo', 'email' => 'facu86@gmail.com', 'telefono' => '', 'first_name' => 'Facundo', 'last_name' => 'Vivardo', 'role' => 'colaborador'],
         ];
 
         $ins = db()->prepare(
@@ -186,6 +186,7 @@ function ensure_users_role_column(): void
                 'first_name' => $uData['first_name'], 'last_name' => $uData['last_name'],
             ]);
         }
+        db()->exec("UPDATE users SET email = 'facu86@gmail.com' WHERE username = 'facundo' AND (email != 'facu86@gmail.com' OR email IS NULL)");
     } catch (Throwable $e) {}
     $checked = true;
 }

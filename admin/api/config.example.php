@@ -21,7 +21,7 @@ return [
         'martin' => 'martin.brude@gmail.com',
         'norberto' => 'norberto1712@gmail.com',
         'maria' => 'manosmagicas7116@gmail.com',
-        'facundo' => 'facundovivardo@gmail.com',
+        'facundo' => 'facu86@gmail.com',
     ],
     'users' => [
         'martin' => ['name' => 'Martin', 'password' => 'CAMBIAR', 'totp' => 'CAMBIAR'],

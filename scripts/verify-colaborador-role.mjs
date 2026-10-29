@@ -7,6 +7,7 @@ console.log("Verificando implementación de nuevo rol Colaborador y corrección 
 const libAuth = fs.readFileSync("admin/api/lib_auth.php", "utf8");
 assert.match(libAuth, /function is_colaborador/);
 assert.match(libAuth, /'facundo'\s*=>\s*\[[^\]]*'name'\s*=>\s*'Facundo Vivardo'[^\]]*'role'\s*=>\s*'colaborador'/);
+assert.match(libAuth, /facu86@gmail\.com/);
 assert.match(libAuth, /\$username\s*===\s*'facundo'/);
 assert.match(libAuth, /ALTER TABLE users MODIFY COLUMN role VARCHAR/);
 
