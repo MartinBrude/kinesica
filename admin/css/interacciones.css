@@ -404,6 +404,39 @@ button.interacciones-stat-pill {
   fill: currentColor;
 }
 
+/* Botón discreto para archivar conversación */
+.btn-archive-interaction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.18s ease;
+  flex-shrink: 0;
+}
+
+.btn-archive-interaction:hover {
+  background: #fdfaf6;
+  border-color: #f39c12;
+  color: #d35400;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(243, 156, 18, 0.2);
+}
+
+.btn-archive-interaction:active {
+  transform: translateY(0);
+}
+
+.btn-archive-interaction svg {
+  display: block;
+}
+
 .interaccion-summary {
   font-size: 14px;
   color: #4a5d73;

@@ -6,7 +6,7 @@
 export function filterInteractionsList(items, term, activeStatusFilter) {
   const cleanTerm = String(term || "").toLowerCase().trim();
   return items.filter((item) => {
-    if (!item || typeof item !== "object") return false;
+    if (!item || typeof item !== "object" || item.archived) return false;
     if (activeStatusFilter === "pending" && Boolean(item.answered)) return false;
     if (activeStatusFilter === "answered" && !item.answered) return false;
     if (!cleanTerm) return true;
@@ -24,9 +24,10 @@ export function filterInteractionsList(items, term, activeStatusFilter) {
 
 export function renderStatsHeader(statsEl, { cachedInteractions, activeStatusFilter }) {
   if (!statsEl) return;
-  const totalContacts = new Set(cachedInteractions.map((i) => String(i?.wa_id || ""))).size;
-  const answeredCount = cachedInteractions.filter((i) => Boolean(i?.answered)).length;
-  const pendingCount = cachedInteractions.length - answeredCount;
+  const activeList = cachedInteractions.filter((i) => i && !i.archived);
+  const totalContacts = new Set(activeList.map((i) => String(i?.wa_id || ""))).size;
+  const answeredCount = activeList.filter((i) => Boolean(i?.answered)).length;
+  const pendingCount = activeList.length - answeredCount;
 
   const isPendingActive = activeStatusFilter === "pending";
   const isAnsweredActive = activeStatusFilter === "answered";

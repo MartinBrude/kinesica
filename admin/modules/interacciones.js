@@ -6,7 +6,7 @@
  */
 
 import { api } from "./api.js?v=77";
-import { escapeHtml, switchActiveView } from "./dom.js?v=78";
+import { escapeHtml, switchActiveView, dialogConfirm } from "./dom.js?v=78";
 import {
   formatDateHeader,
   buildInteractionCardHtml,
@@ -42,33 +42,20 @@ export async function loadInteracciones(force = false) {
   if (!container) return;
 
   if (container.children.length === 0 || force) {
-    container.innerHTML = `
-      <div style="text-align: center; padding: 40px; color: var(--muted);">
-        <span class="loading-spinner"></span> Cargando conversaciones recientes...
-      </div>
-    `;
+    container.innerHTML = `<div style="text-align:center;padding:40px;color:var(--muted);"><span class="loading-spinner"></span> Cargando conversaciones recientes...</div>`;
   }
 
   try {
     const resp = await api("interacciones.php");
     const isOk = Boolean(resp && (resp.ok === true || resp.status === "success" || Array.isArray(resp.items) || Array.isArray(resp.interactions)));
     if (!isOk) {
-      container.innerHTML = `
-        <div class="interacciones-empty">
-          <p>⚠️ No se pudieron cargar las interacciones en este momento.</p>
-        </div>
-      `;
+      container.innerHTML = `<div class="interacciones-empty"><p>⚠️ No se pudieron cargar las interacciones en este momento.</p></div>`;
       return;
     }
-
     cachedInteractions = Array.isArray(resp.items) ? resp.items : (Array.isArray(resp.interactions) ? resp.interactions : []);
     applyFilters(true);
   } catch (err) {
-    container.innerHTML = `
-      <div class="interacciones-empty">
-        <p>⚠️ Error al conectar con el servidor: ${escapeHtml(err.message || String(err))}</p>
-      </div>
-    `;
+    container.innerHTML = `<div class="interacciones-empty"><p>⚠️ Error al conectar con el servidor: ${escapeHtml(err.message || String(err))}</p></div>`;
   }
 }
 
@@ -164,12 +151,38 @@ function renderInteractions(items) {
 
   container.innerHTML = html;
   bindInteractionEvents(container, {
-    onToggleAnswered: async ({ convId, convKey, isChecked, chk, cardEl, pillEl }) => {
-      if (cardEl) cardEl.classList.toggle("is-answered", isChecked);
-      if (pillEl) {
-        pillEl.className = `interaccion-status-pill ${isChecked ? "answered" : "pending"}`;
-        pillEl.textContent = isChecked ? "✓ Respondida" : "⏳ Pendiente";
+    onArchive: async ({ convId, convName }) => {
+      const ok = await dialogConfirm(
+        `¿Archivar la conversación con "${convName}"? Se retirará de la lista.`,
+        { okText: "Archivar", cancelText: "Cancelar" }
+      );
+      if (!ok) return;
+
+      const targetConv = cachedInteractions.find((i) => i.id === convId);
+      if (targetConv) targetConv.archived = true;
+      applyFilters(false);
+
+      try {
+        const resp = await api("interacciones.php", {
+          method: "POST",
+          body: JSON.stringify({ action: "archive", id: convId }),
+        });
+        if (!resp || !resp.ok) throw new Error(resp?.error || "Error al archivar");
+      } catch (err) {
+        if (targetConv) targetConv.archived = false;
+        applyFilters(false);
+        console.error("Error al archivar interacción:", err);
       }
+    },
+    onToggleAnswered: async ({ convId, convKey, isChecked, chk, cardEl, pillEl }) => {
+      const setVisualStatus = (ans) => {
+        if (cardEl) cardEl.classList.toggle("is-answered", ans);
+        if (pillEl) {
+          pillEl.className = `interaccion-status-pill ${ans ? "answered" : "pending"}`;
+          pillEl.textContent = ans ? "✓ Respondida" : "⏳ Pendiente";
+        }
+      };
+      setVisualStatus(isChecked);
 
       const targetConv = cachedInteractions.find((i) => i.id === convId);
       if (targetConv) targetConv.answered = isChecked;
@@ -185,11 +198,7 @@ function renderInteractions(items) {
         if (!resp || !resp.ok) throw new Error(resp?.error || "Error al actualizar estado");
       } catch (err) {
         chk.checked = !isChecked;
-        if (cardEl) cardEl.classList.toggle("is-answered", !isChecked);
-        if (pillEl) {
-          pillEl.className = `interaccion-status-pill ${!isChecked ? "answered" : "pending"}`;
-          pillEl.textContent = !isChecked ? "✓ Respondida" : "⏳ Pendiente";
-        }
+        setVisualStatus(!isChecked);
         if (targetConv) targetConv.answered = !isChecked;
         if (activeStatusFilter !== "all") applyFilters(false);
         else updateStatsHeader();

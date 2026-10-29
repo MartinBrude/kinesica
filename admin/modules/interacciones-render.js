@@ -121,6 +121,14 @@ export function buildInteractionCardHtml(conv, itemIdx) {
             </svg>
             Abrir WhatsApp
           </a>
+
+          <button type="button" class="btn-archive-interaction" data-conv-id="${escapeHtml(conv?.id || convKey)}" data-conv-name="${escapeHtml(name)}" title="Archivar conversación" aria-label="Archivar conversación">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="21 8 21 21 3 21 3 8"></polyline>
+              <rect x="1" y="3" width="22" height="5"></rect>
+              <line x1="10" y1="12" x2="14" y2="12"></line>
+            </svg>
+          </button>
         </div>
       </div>
 
@@ -181,7 +189,7 @@ export function renderPager({ totalRows, totalPages, currentPage, pageSize, onPa
   pagerEl.append(prevBtn, span, nextBtn);
 }
 
-export function bindInteractionEvents(container, { onToggleAnswered }) {
+export function bindInteractionEvents(container, { onToggleAnswered, onArchive }) {
   if (!container) return;
   container.querySelectorAll("[data-thread-toggle]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -192,6 +200,17 @@ export function bindInteractionEvents(container, { onToggleAnswered }) {
       const span = btn.querySelector("span");
       if (span) {
         span.textContent = !threadEl.hidden ? span.textContent.replace("▶", "▼") : span.textContent.replace("▼", "▶");
+      }
+    });
+  });
+
+  container.querySelectorAll(".btn-archive-interaction").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const convId = btn.getAttribute("data-conv-id");
+      const convName = btn.getAttribute("data-conv-name") || "este contacto";
+      const cardEl = btn.closest(".interaccion-card");
+      if (typeof onArchive === "function") {
+        onArchive({ convId, convName, btn, cardEl });
       }
     });
   });

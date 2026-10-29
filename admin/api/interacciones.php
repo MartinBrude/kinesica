@@ -30,54 +30,39 @@ function load_interactions(string $dataFile): array
         @file_put_contents($dataFile, json_encode($seed, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
         return $seed;
     }
-
     $raw = @file_get_contents($dataFile);
-    if (!$raw) {
-        return get_initial_seed_interactions();
-    }
-    $decoded = json_decode($raw, true);
+    $decoded = $raw ? json_decode($raw, true) : null;
     return is_array($decoded) ? $decoded : get_initial_seed_interactions();
 }
 
 function save_interactions(string $dataFile, array $items): bool
 {
-    if (count($items) > 1000) {
-        $items = array_slice($items, 0, 1000);
-    }
+    if (count($items) > 1000) $items = array_slice($items, 0, 1000);
     $dir = dirname($dataFile);
-    if (!is_dir($dir)) {
-        @mkdir($dir, 0755, true);
-    }
+    if (!is_dir($dir)) @mkdir($dir, 0755, true);
     return (bool) @file_put_contents($dataFile, json_encode($items, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
 }
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 if ($method === 'GET') {
-    $items = load_interactions($dataFile);
-    foreach ($items as &$it) {
-        $it['answered'] = (bool) ($it['answered'] ?? false);
-    }
-    unset($it);
-
-    $grouped = [];
-    foreach ($items as $item) {
-        $dateKey = $item['date'] ?? 'Otras fechas';
-        if (!isset($grouped[$dateKey])) {
-            $grouped[$dateKey] = [];
-        }
-        $grouped[$dateKey][] = $item;
-    }
-
+    $rawItems = load_interactions($dataFile);
+    $items = [];
     $answeredCount = 0;
     $unansweredCount = 0;
-    foreach ($items as $it) {
-        if (!empty($it['answered'])) {
-            $answeredCount++;
-        } else {
-            $unansweredCount++;
+    $grouped = [];
+    $includeArchived = !empty($_GET['archived']);
+
+    foreach ($rawItems as &$it) {
+        $it['answered'] = !empty($it['answered']);
+        $it['archived'] = !empty($it['archived']);
+        if ($includeArchived || !$it['archived']) {
+            $items[] = $it;
+            $it['answered'] ? $answeredCount++ : $unansweredCount++;
+            $grouped[$it['date'] ?? 'Otras fechas'][] = $it;
         }
     }
+    unset($it);
 
     json_out(200, [
         'ok' => true,
@@ -95,20 +80,24 @@ if ($method === 'POST') {
     $input = read_json();
     $action = (string) ($input['action'] ?? '');
 
-    if ($action === 'toggle_answered') {
+    if ($action === 'archive' || $action === 'toggle_answered') {
         $id = trim((string) ($input['id'] ?? ''));
-        $answered = (bool) ($input['answered'] ?? false);
         if ($id === '') {
             json_out(400, ['error' => 'id es requerido']);
         }
         $items = load_interactions($dataFile);
         $found = false;
+        $nowIso = (new DateTime('now', new DateTimeZone('America/Argentina/Buenos_Aires')))->format('c');
         foreach ($items as &$it) {
             if (($it['id'] ?? '') === $id) {
-                $it['answered'] = $answered;
-                $it['answered_at'] = $answered
-                    ? (new DateTime('now', new DateTimeZone('America/Argentina/Buenos_Aires')))->format('c')
-                    : null;
+                if ($action === 'archive') {
+                    $it['archived'] = true;
+                    $it['archived_at'] = $nowIso;
+                } else {
+                    $answered = (bool) ($input['answered'] ?? false);
+                    $it['answered'] = $answered;
+                    $it['answered_at'] = $answered ? $nowIso : null;
+                }
                 $found = true;
                 break;
             }
@@ -118,7 +107,7 @@ if ($method === 'POST') {
             json_out(404, ['error' => 'Conversación no encontrada']);
         }
         save_interactions($dataFile, $items);
-        json_out(200, ['ok' => true, 'id' => $id, 'answered' => $answered]);
+        json_out(200, ['ok' => true, 'id' => $id, 'action' => $action]);
     }
 
     if ($action === 'sync_all') {
@@ -128,15 +117,25 @@ if ($method === 'POST') {
         }
         $current = load_interactions($dataFile);
         $answeredMap = [];
+        $archivedMap = [];
         foreach ($current as $c) {
-            if (!empty($c['answered']) && !empty($c['id'])) {
-                $answeredMap[$c['id']] = $c['answered_at'] ?? true;
+            $cid = $c['id'] ?? '';
+            if ($cid !== '') {
+                if (!empty($c['answered'])) $answeredMap[$cid] = $c['answered_at'] ?? true;
+                if (!empty($c['archived'])) $archivedMap[$cid] = $c['archived_at'] ?? true;
             }
         }
         foreach ($incoming as &$in) {
-            if (isset($in['id'], $answeredMap[$in['id']]) && empty($in['answered'])) {
-                $in['answered'] = true;
-                $in['answered_at'] = is_string($answeredMap[$in['id']]) ? $answeredMap[$in['id']] : null;
+            $iid = $in['id'] ?? '';
+            if ($iid !== '') {
+                if (isset($answeredMap[$iid]) && empty($in['answered'])) {
+                    $in['answered'] = true;
+                    $in['answered_at'] = is_string($answeredMap[$iid]) ? $answeredMap[$iid] : null;
+                }
+                if (isset($archivedMap[$iid])) {
+                    $in['archived'] = true;
+                    $in['archived_at'] = is_string($archivedMap[$iid]) ? $archivedMap[$iid] : null;
+                }
             }
         }
         unset($in);
