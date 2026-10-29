@@ -124,31 +124,33 @@ if ($method === 'POST') {
             json_out(400, ['error' => 'items debe ser un arreglo']);
         }
         $current = load_interactions($dataFile);
-        $answeredMap = [];
-        $archivedMap = [];
+        $mergedMap = [];
         foreach ($current as $c) {
-            $cid = $c['id'] ?? '';
-            if ($cid !== '') {
-                if (!empty($c['answered'])) $answeredMap[$cid] = $c['answered_at'] ?? true;
-                if (!empty($c['archived'])) $archivedMap[$cid] = $c['archived_at'] ?? true;
-            }
+            $k = (!empty($c['wa_id']) && !empty($c['date'])) ? ($c['wa_id'] . '_' . $c['date']) : ($c['id'] ?? '');
+            if ($k !== '') $mergedMap[$k] = $c;
         }
-        foreach ($incoming as &$in) {
-            $iid = $in['id'] ?? '';
-            if ($iid !== '') {
-                if (isset($answeredMap[$iid]) && empty($in['answered'])) {
+        foreach ($incoming as $in) {
+            $k = (!empty($in['wa_id']) && !empty($in['date'])) ? ($in['wa_id'] . '_' . $in['date']) : ($in['id'] ?? '');
+            if ($k === '') continue;
+            if (isset($mergedMap[$k])) {
+                $exist = $mergedMap[$k];
+                if (!empty($exist['answered']) && empty($in['answered'])) {
                     $in['answered'] = true;
-                    $in['answered_at'] = is_string($answeredMap[$iid]) ? $answeredMap[$iid] : null;
+                    $in['answered_at'] = $exist['answered_at'] ?? null;
                 }
-                if (isset($archivedMap[$iid])) {
+                if (!empty($exist['archived']) && empty($in['archived'])) {
                     $in['archived'] = true;
-                    $in['archived_at'] = is_string($archivedMap[$iid]) ? $archivedMap[$iid] : null;
+                    $in['archived_at'] = $exist['archived_at'] ?? null;
                 }
+                $mergedMap[$k] = array_merge($exist, $in);
+            } else {
+                $mergedMap[$k] = $in;
             }
         }
-        unset($in);
-        save_interactions($dataFile, $incoming);
-        json_out(200, ['ok' => true, 'total' => count($incoming), 'message' => 'Sincronizado']);
+        $finalItems = array_values($mergedMap);
+        usort($finalItems, fn($a, $b) => strcmp((string)($b['timestamp'] ?? ''), (string)($a['timestamp'] ?? '')));
+        save_interactions($dataFile, $finalItems);
+        json_out(200, ['ok' => true, 'total' => count($finalItems), 'message' => 'Sincronizado']);
     }
 
     $waId = trim((string) ($input['wa_id'] ?? ''));
