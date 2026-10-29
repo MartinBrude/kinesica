@@ -6,8 +6,6 @@ require_once __DIR__ . '/interacciones_seed.php';
 
 $dataFile = __DIR__ . '/data/interacciones.json';
 
-require_header();
-
 $isBotAuth = false;
 $headers = function_exists('getallheaders') ? getallheaders() : [];
 $botSecret = $headers['X-Kinesica-Bot-Secret'] ?? $headers['x-kinesica-bot-secret'] ?? $_SERVER['HTTP_X_KINESICA_BOT_SECRET'] ?? '';
@@ -21,6 +19,7 @@ if ($botSecret !== '' && hash_equals($cfgSecret, $botSecret)) {
 }
 
 if (!$isBotAuth) {
+    require_header();
     $auth = require_auth();
 }
 
