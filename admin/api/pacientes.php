@@ -69,11 +69,17 @@ try {
         $action = $_GET['action'] ?? '';
 
         if ($action === 'directory' || $action === 'get_directory') {
-            $stmt = $pdo->query('SELECT nombre_completo, telefono FROM pacientes WHERE telefono IS NOT NULL AND telefono != ""');
+            $stmt = $pdo->query('SELECT nombre, apellido, nombre_completo, telefono FROM pacientes WHERE telefono IS NOT NULL AND telefono != ""');
             $directory = [];
             while ($row = $stmt->fetch()) {
+                $tel = (string) $row['telefono'];
                 $norm = normalize_search_key($row['nombre_completo']);
-                if ($norm !== '') $directory[$norm] = $row['telefono'];
+                if ($norm !== '') $directory[$norm] = $tel;
+                if (!empty($row['nombre_completo'])) $directory[$row['nombre_completo']] = $tel;
+                $firstLast = trim(($row['nombre'] ?? '') . ' ' . ($row['apellido'] ?? ''));
+                if ($firstLast !== '') $directory[$firstLast] = $tel;
+                $lastFirst = trim(($row['apellido'] ?? '') . ' ' . ($row['nombre'] ?? ''));
+                if ($lastFirst !== '') $directory[$lastFirst] = $tel;
             }
             json_out(200, ['status' => 'success', 'directory' => $directory]);
         }
