@@ -6,6 +6,7 @@
  */
 
 import { api } from "./api.js?v=77";
+import { getSessionUser } from "./auth.js?v=81";
 import { escapeHtml, switchActiveView, dialogConfirm } from "./dom.js?v=78";
 import {
   formatDateHeader,
@@ -143,14 +144,16 @@ function renderInteractions(items) {
         </div>
         <div class="interacciones-list">
     `;
+    const currentUser = typeof getSessionUser === "function" ? getSessionUser() : null;
     groupItems.forEach((conv, itemIdx) => {
-      html += buildInteractionCardHtml(conv, itemIdx);
+      html += buildInteractionCardHtml(conv, itemIdx, currentUser);
     });
     html += `</div></section>`;
   });
 
   container.innerHTML = html;
   bindInteractionEvents(container, {
+    getSessionUser,
     onArchive: async ({ convId, convName }) => {
       const ok = await dialogConfirm(
         `¿Archivar la conversación con "${convName}"? Se retirará de la lista.`,

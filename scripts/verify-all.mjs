@@ -21,6 +21,7 @@ const steps = [
   ["node", ["scripts/verify-fichas-atm.mjs"]],
   ["node", ["scripts/verify-admin-robustness.mjs"]],
   ["node", ["scripts/verify-admin-corpus.mjs"]],
+  ["node", ["scripts/verify-interacciones-whatsapp.mjs"]],
 ];
 
 for (const [cmd, args] of steps) {

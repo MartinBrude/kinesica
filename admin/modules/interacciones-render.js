@@ -4,6 +4,7 @@
  */
 
 import { escapeHtml } from "./dom.js?v=78";
+import { buildWhatsAppUrl } from "./interacciones-message.js";
 
 const MONTH_NAMES = [
   "enero", "febrero", "marzo", "abril", "mayo", "junio",
@@ -77,9 +78,9 @@ export function renderChatMessages(messages, patientName) {
     .join("");
 }
 
-export function buildInteractionCardHtml(conv, itemIdx) {
+export function buildInteractionCardHtml(conv, itemIdx, senderName) {
   const cleanWa = String(conv?.wa_id || "").replace(/[^0-9]/g, "");
-  const waUrl = `https://wa.me/${cleanWa}`;
+  const waUrl = buildWhatsAppUrl(cleanWa, senderName);
   const name = String(conv?.patient_name || "").trim() || "Paciente sin nombre";
   const phoneDisplay = String(conv?.phone_formatted || "").trim() || (cleanWa ? `+${cleanWa}` : "Sin teléfono");
   const timeStr = String(conv?.time || "").trim();
@@ -115,7 +116,7 @@ export function buildInteractionCardHtml(conv, itemIdx) {
             <span>Consulta respondida</span>
           </label>
 
-          <a href="${waUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct" title="Abrir chat en WhatsApp">
+          <a href="${waUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct" data-wa-id="${cleanWa}" title="Abrir chat en WhatsApp">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.694.074-2.123-.518-1.745-.724-2.888-2.484-2.975-2.6-.088-.116-.708-.941-.708-1.792s.448-1.27.607-1.446c.159-.175.347-.219.462-.219.116 0 .232.001.332.006.106.005.249-.04.39.299.144.35.491 1.199.535 1.286.044.088.073.19.015.305-.058.116-.088.188-.174.29-.088.102-.185.228-.264.307-.089.088-.182.184-.078.362.103.179.462.763.992 1.236.684.609 1.26.798 1.439.887.179.088.283.073.388-.047.106-.119.454-.528.575-.709.121-.179.243-.151.409-.089.165.059 1.053.496 1.234.585.18.089.301.133.346.208.045.075.045.436-.099.841z"/>
             </svg>
@@ -189,7 +190,7 @@ export function renderPager({ totalRows, totalPages, currentPage, pageSize, onPa
   pagerEl.append(prevBtn, span, nextBtn);
 }
 
-export function bindInteractionEvents(container, { onToggleAnswered, onArchive }) {
+export function bindInteractionEvents(container, { onToggleAnswered, onArchive, getSessionUser }) {
   if (!container) return;
   container.querySelectorAll("[data-thread-toggle]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -200,6 +201,15 @@ export function bindInteractionEvents(container, { onToggleAnswered, onArchive }
       const span = btn.querySelector("span");
       if (span) {
         span.textContent = !threadEl.hidden ? span.textContent.replace("▶", "▼") : span.textContent.replace("▼", "▶");
+      }
+    });
+  });
+
+  container.querySelectorAll(".btn-whatsapp-direct").forEach((link) => {
+    link.addEventListener("click", () => {
+      const cleanWa = link.getAttribute("data-wa-id");
+      if (cleanWa && typeof getSessionUser === "function") {
+        link.href = buildWhatsAppUrl(cleanWa, getSessionUser());
       }
     });
   });
