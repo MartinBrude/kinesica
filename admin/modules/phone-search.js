@@ -21,3 +21,15 @@ export function phoneMatches(storedPhone, query) {
   if (!stored) return false;
   return phoneQueryVariants(query).some((v) => stored.includes(v));
 }
+
+export function isMartinBrudePhone(phone) {
+  const digits = String(phone || "").replace(/\D/g, "");
+  if (!digits) return false;
+  return digits === "34658444935" || digits === "658444935" || digits.endsWith("34658444935") || digits.endsWith("658444935");
+}
+
+export function getKnownContactName(phone) {
+  if (isMartinBrudePhone(phone)) return "Martín Brude";
+  return null;
+}
+

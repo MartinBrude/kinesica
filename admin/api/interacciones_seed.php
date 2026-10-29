@@ -71,7 +71,7 @@ function get_initial_seed_interactions(): array
             'id' => 'exec_1790',
             'wa_id' => '34658444935',
             'phone_formatted' => '+34 658 44 49 35',
-            'patient_name' => 'Prueba Administración (España)',
+            'patient_name' => 'Martín Brude',
             'date' => '2026-10-27',
             'time' => '06:26',
             'timestamp' => '2026-10-27T09:26:28Z',

@@ -40,7 +40,7 @@ export function formatDisplayPhone(raw) {
 
   if (digits.startsWith("34") && digits.length === 11) {
     const rest = digits.slice(2);
-    return `(+34) ${rest.slice(0, 3)} ${rest.slice(3, 6)} ${rest.slice(6)}`;
+    return `(+34) ${rest.slice(0, 3)} ${rest.slice(3, 5)} ${rest.slice(5, 7)} ${rest.slice(7)}`;
   }
 
   if (digits.startsWith("11") && digits.length === 10) {

@@ -43,6 +43,13 @@ function save_interactions(string $dataFile, array $items): bool
     return (bool) @file_put_contents($dataFile, json_encode($items, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
 }
 
+function is_martin_brude_phone(?string $phone): bool
+{
+    if (!$phone) return false;
+    $clean = preg_replace('/\D/', '', $phone);
+    return $clean === '34658444935' || $clean === '658444935' || str_ends_with($clean, '34658444935') || str_ends_with($clean, '658444935');
+}
+
 function sync_interactions_from_n8n(string $dataFile, bool $force = false): void
 {
     $dir = dirname($dataFile);
@@ -181,6 +188,9 @@ function sync_interactions_from_n8n(string $dataFile, bool $force = false): void
             $key = $waId . '_' . $datePart;
 
             $cleanDigits = preg_replace('/[^\d]/', '', $waId);
+            if (is_martin_brude_phone($cleanDigits)) {
+                $patientName = 'Martín Brude';
+            }
             $phoneFormatted = '+' . $cleanDigits;
             if (str_starts_with($cleanDigits, '54911') && strlen($cleanDigits) === 13) {
                 $phoneFormatted = '+54 9 11 ' . substr($cleanDigits, 5, 4) . '-' . substr($cleanDigits, 9);
@@ -209,7 +219,7 @@ function sync_interactions_from_n8n(string $dataFile, bool $force = false): void
                     'id' => 'exec_' . $eid,
                     'wa_id' => $waId,
                     'phone_formatted' => $phoneFormatted,
-                    'patient_name' => $patientName,
+                    'patient_name' => is_martin_brude_phone($cleanDigits) ? 'Martín Brude' : $patientName,
                     'date' => $datePart,
                     'time' => $timePart,
                     'timestamp' => $started,
@@ -225,7 +235,12 @@ function sync_interactions_from_n8n(string $dataFile, bool $force = false): void
                 $hasUpdates = true;
             }
 
-            if ($patientName !== '' && empty($existingMap[$key]['patient_name'])) {
+            if (is_martin_brude_phone($cleanDigits)) {
+                if (($existingMap[$key]['patient_name'] ?? '') !== 'Martín Brude') {
+                    $existingMap[$key]['patient_name'] = 'Martín Brude';
+                    $hasUpdates = true;
+                }
+            } elseif ($patientName !== '' && empty($existingMap[$key]['patient_name'])) {
                 $existingMap[$key]['patient_name'] = $patientName;
                 $hasUpdates = true;
             }
@@ -281,8 +296,15 @@ if ($method === 'GET') {
     $unansweredCount = 0;
     $archivedCount = 0;
     $grouped = [];
+    $hasFixes = false;
 
     foreach ($rawItems as &$it) {
+        if (is_martin_brude_phone($it['wa_id'] ?? '') || is_martin_brude_phone($it['phone_formatted'] ?? '')) {
+            if (($it['patient_name'] ?? '') !== 'Martín Brude') {
+                $it['patient_name'] = 'Martín Brude';
+                $hasFixes = true;
+            }
+        }
         $it['answered'] = !empty($it['answered']);
         $it['archived'] = !empty($it['archived']);
         $items[] = $it;
@@ -296,6 +318,10 @@ if ($method === 'GET') {
         $grouped[$it['date'] ?? 'Otras fechas'][] = $it;
     }
     unset($it);
+
+    if ($hasFixes) {
+        save_interactions($dataFile, $rawItems);
+    }
 
     json_out(200, [
         'ok' => true,
@@ -365,6 +391,9 @@ if ($method === 'POST') {
         foreach ($incoming as $in) {
             $k = (!empty($in['wa_id']) && !empty($in['date'])) ? ($in['wa_id'] . '_' . $in['date']) : ($in['id'] ?? '');
             if ($k === '') continue;
+            if (is_martin_brude_phone($in['wa_id'] ?? '') || is_martin_brude_phone($in['phone_formatted'] ?? '')) {
+                $in['patient_name'] = 'Martín Brude';
+            }
             if (isset($mergedMap[$k])) {
                 $exist = $mergedMap[$k];
                 if (!empty($exist['answered']) && empty($in['answered'])) {
@@ -392,6 +421,10 @@ if ($method === 'POST') {
     $patientName = trim((string) ($input['patient_name'] ?? ''));
     $category = trim((string) ($input['category'] ?? 'consulta_general'));
 
+    if (is_martin_brude_phone($waId)) {
+        $patientName = 'Martín Brude';
+    }
+
     if ($waId === '' || $patientMessage === '') {
         json_out(400, ['error' => 'wa_id y patient_message son requeridos']);
     }
@@ -417,7 +450,9 @@ if ($method === 'POST') {
     }
 
     if ($foundIdx >= 0) {
-        if ($patientName !== '' && empty($items[$foundIdx]['patient_name'])) {
+        if (is_martin_brude_phone($waId)) {
+            $items[$foundIdx]['patient_name'] = 'Martín Brude';
+        } elseif ($patientName !== '' && empty($items[$foundIdx]['patient_name'])) {
             $items[$foundIdx]['patient_name'] = $patientName;
         }
         $items[$foundIdx]['time'] = $timeStr;

@@ -13,8 +13,9 @@ import {
   buildInteractionCardHtml,
   renderPager,
   bindInteractionEvents,
-} from "./interacciones-render.js";
-import { filterInteractionsList, renderStatsHeader } from "./interacciones-filter.js";
+} from "./interacciones-render.js?v=2";
+import { filterInteractionsList, renderStatsHeader } from "./interacciones-filter.js?v=2";
+import { isMartinBrudePhone } from "./phone-search.js?v=2";
 
 let cachedInteractions = [];
 let filteredInteractions = [];
@@ -89,7 +90,13 @@ export async function loadInteracciones(force = false) {
       }
       return;
     }
-    cachedInteractions = Array.isArray(resp.items) ? resp.items : (Array.isArray(resp.interactions) ? resp.interactions : []);
+    const rawList = Array.isArray(resp.items) ? resp.items : (Array.isArray(resp.interactions) ? resp.interactions : []);
+    cachedInteractions = rawList.map((item) => {
+      if (item && (isMartinBrudePhone(item.wa_id) || isMartinBrudePhone(item.phone_formatted))) {
+        return { ...item, patient_name: "Martín Brude" };
+      }
+      return item;
+    });
     applyFilters(!force);
 
     if (refreshBtn && force) {

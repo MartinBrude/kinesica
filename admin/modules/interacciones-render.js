@@ -5,6 +5,7 @@
 
 import { escapeHtml } from "./dom.js?v=78";
 import { buildWhatsAppUrl } from "./interacciones-message.js";
+import { isMartinBrudePhone } from "./phone-search.js?v=2";
 
 const MONTH_NAMES = [
   "enero", "febrero", "marzo", "abril", "mayo", "junio",
@@ -53,17 +54,20 @@ export function formatDateHeader(dateStr) {
   return `${dayName} ${d} de ${monthName} de ${y}${prefix}`;
 }
 
-export function renderChatMessages(messages, patientName) {
+export function renderChatMessages(messages, patientName, waId = null) {
   if (!Array.isArray(messages) || messages.length === 0) {
     return `<div style="text-align: center; font-size: 13px; color: var(--muted);">Sin mensajes registrados.</div>`;
   }
+
+  const isMartin = isMartinBrudePhone(waId) || (patientName && String(patientName).toLowerCase().includes("martín brude"));
+  const resolvedPatientName = isMartin ? "Martín Brude" : (String(patientName || "").trim() || "Paciente");
 
   return messages
     .filter((m) => m && typeof m === "object")
     .map((m) => {
       const isPatient = m.from === "patient";
       const bubbleClass = isPatient ? "chat-bubble-patient" : "chat-bubble-clara";
-      const senderTitle = isPatient ? (String(patientName || "Paciente").trim() || "Paciente") : "🤖 Clara (Asistente Virtual)";
+      const senderTitle = isPatient ? resolvedPatientName : "🤖 Clara (Asistente Virtual)";
       const rawText = String(m.text || "");
       const formattedText = escapeHtml(rawText).replace(/\n/g, "<br>");
 
@@ -82,7 +86,9 @@ export function buildInteractionCardHtml(conv, itemIdx, senderName) {
   const cleanWa = String(conv?.wa_id || "").replace(/[^0-9]/g, "");
   const senderStr = typeof senderName === "string" ? senderName : (senderName?.name || senderName?.username || "");
   const waUrl = buildWhatsAppUrl(cleanWa, senderStr);
-  const name = String(conv?.patient_name || "").trim() || "Paciente sin nombre";
+  const isMartin = isMartinBrudePhone(cleanWa) || isMartinBrudePhone(conv?.phone_formatted);
+  const rawName = String(conv?.patient_name || "").trim();
+  const name = isMartin ? "Martín Brude" : (rawName || "Paciente sin nombre");
   const phoneDisplay = String(conv?.phone_formatted || "").trim() || (cleanWa ? `+${cleanWa}` : "Sin teléfono");
   const timeStr = String(conv?.time || "").trim();
   const rawCategory = String(conv?.category_label || "Consulta WhatsApp");
@@ -150,7 +156,7 @@ export function buildInteractionCardHtml(conv, itemIdx, senderName) {
       </button>
 
       <div class="interaccion-chat-thread" id="${threadId}" hidden>
-        ${renderChatMessages(conv?.messages || [], name)}
+        ${renderChatMessages(conv?.messages || [], name, cleanWa)}
       </div>
     </article>
   `;

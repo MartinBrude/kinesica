@@ -7,6 +7,7 @@ import {
 } from "../admin/modules/interacciones-message.js";
 import { buildInteractionCardHtml } from "../admin/modules/interacciones-render.js";
 import { filterInteractionsList, renderStatsHeader } from "../admin/modules/interacciones-filter.js";
+import { isMartinBrudePhone, getKnownContactName } from "../admin/modules/phone-search.js";
 
 console.log("— verify-interacciones-whatsapp —");
 
@@ -147,5 +148,40 @@ assert.ok(fakeStatsEl.innerHTML.includes('data-filter="archived"'));
 assert.ok(fakeStatsEl.innerHTML.includes("2 archivadas"));
 assert.ok(!fakeStatsEl.innerHTML.includes('<span class="interacciones-stat-pill">👥'));
 assert.equal(fakeTotalText, "👥 2 personas");
+
+// 6. Tests de identificación de Martín Brude (+34 658 44 49 35)
+assert.ok(isMartinBrudePhone("+34 658 44 49 35"));
+assert.ok(isMartinBrudePhone("34658444935"));
+assert.ok(isMartinBrudePhone("658444935"));
+assert.ok(isMartinBrudePhone("+34658444935"));
+assert.equal(isMartinBrudePhone("5491161164311"), false);
+assert.equal(getKnownContactName("+34 658 44 49 35"), "Martín Brude");
+assert.equal(getKnownContactName("34658444935"), "Martín Brude");
+
+// Verificación de tarjeta sin nombre inicial para +34 658 44 49 35
+const cardMartinPhone = buildInteractionCardHtml({
+  id: "exec_test_martin",
+  wa_id: "34658444935",
+  phone_formatted: "+34 658 44 49 35",
+  patient_name: "", // vacío a propósito
+  time: "12:00",
+  summary: "Prueba desde España",
+  messages: [{ from: "patient", text: "Hola Clara" }],
+}, 0, "Norberto");
+
+assert.ok(cardMartinPhone.includes("Martín Brude"), "Debe mostrar 'Martín Brude' como nombre");
+assert.ok(cardMartinPhone.includes('<div class="interaccion-avatar" aria-hidden="true">M</div>'), "Inicial debe ser M");
+assert.ok(cardMartinPhone.includes('<div class="chat-bubble-sender">Martín Brude</div>'), "Burbuja de mensaje debe decir Martín Brude");
+
+// Búsqueda tolerante en interacciones
+const testListMartin = [
+  { id: "m1", wa_id: "34658444935", phone_formatted: "+34 658 44 49 35", patient_name: "Martín Brude", answered: false, archived: false },
+  { id: "o1", wa_id: "5491169289637", phone_formatted: "+54 9 11 6928-9637", patient_name: "Olivia Di Carlo", answered: false, archived: false },
+];
+assert.equal(filterInteractionsList(testListMartin, "martin").length, 1, "Búsqueda 'martin' debe encontrar a Martín Brude");
+assert.equal(filterInteractionsList(testListMartin, "martín").length, 1, "Búsqueda 'martín' con tilde debe encontrar a Martín Brude");
+assert.equal(filterInteractionsList(testListMartin, "brude").length, 1, "Búsqueda 'brude' debe encontrar a Martín Brude");
+assert.equal(filterInteractionsList(testListMartin, "658").length, 1, "Búsqueda '658' debe encontrar a Martín Brude");
+assert.equal(filterInteractionsList(testListMartin, "+34 658 44 49 35").length, 1, "Búsqueda por teléfono completo debe encontrar a Martín Brude");
 
 console.log("interacciones WhatsApp: ok (todas las pruebas pasaron)");
