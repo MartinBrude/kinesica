@@ -56,35 +56,9 @@ function isDesktopBrowser() {
   return !isMobileUA && !isTouchMac;
 }
 
-var desktopClickBound = false;
-
 function initDesktopWhatsAppClickHandler() {
-  if (desktopClickBound || !isDesktopBrowser()) return;
-  desktopClickBound = true;
-
-  document.addEventListener("click", function (e) {
-    var link =
-      e.target && e.target.closest
-        ? e.target.closest(
-            ".dynamic-whatsapp-link, .dynamic-whatsapp-url, #whatsapp-link, a[href*='wa.me/'], a[href*='whatsapp://']"
-          )
-        : null;
-    if (!link) return;
-
-    var href = link.getAttribute("href") || "";
-    var digitsMatch = href.match(/(?:phone=|wa\.me\/)(\d+)/);
-    var site = window.KINESICA_SITE || {};
-    var cfg = site.contact || {};
-    var digits =
-      cfg.activeWhatsappDigits || (digitsMatch && digitsMatch[1]) || cfg.whatsappDigits || "";
-    if (!digits) return;
-
-    var sanitized = String(digits).replace(/\D/g, "");
-
-    // Evita abrir una pestaña web adicional o la página intermedia api.whatsapp.com
-    e.preventDefault();
-    window.location.href = "whatsapp://send?phone=" + sanitized;
-  });
+  // Enlaces estándar con https://wa.me/ y target="_blank" para soporte universal
+  // (tanto WhatsApp Desktop nativo como WhatsApp Web, sin bloqueos de Chrome)
 }
 
 var CLARA_WHATSAPP_DIGITS = "5491131781733";
@@ -218,18 +192,14 @@ function kinesicaApplyWhatsAppContact() {
     whatsappText: currentDisplay,
   };
 
-  var isDesktop = isDesktopBrowser();
-  var whatsappBase = isDesktop ? "whatsapp://send?phone=" : "https://wa.me/";
+  var whatsappBase = "https://wa.me/";
 
   function setupWhatsAppLinks(selector, phone) {
     var sanitized = String(phone).replace(/\D/g, "");
     document.querySelectorAll(selector).forEach(function (el) {
       el.href = whatsappBase + sanitized;
-      if (isDesktop) {
-        el.removeAttribute("target");
-      } else {
-        el.setAttribute("target", "_blank");
-      }
+      el.setAttribute("target", "_blank");
+      el.setAttribute("rel", "noopener noreferrer");
     });
   }
 
