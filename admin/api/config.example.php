@@ -21,10 +21,12 @@ return [
         'martin' => 'martin.brude@gmail.com',
         'norberto' => 'norberto1712@gmail.com',
         'maria' => 'manosmagicas7116@gmail.com',
+        'facundo' => 'facundovivardo@gmail.com',
     ],
     'users' => [
         'martin' => ['name' => 'Martin', 'password' => 'CAMBIAR', 'totp' => 'CAMBIAR'],
         'norberto' => ['name' => 'Norberto', 'password' => 'CAMBIAR', 'totp' => 'CAMBIAR'],
         'maria' => ['name' => 'María', 'password' => 'CAMBIAR', 'totp' => 'CAMBIAR'],
+        'facundo' => ['name' => 'Facundo Vivardo', 'password' => 'CAMBIAR', 'totp' => 'CAMBIAR'],
     ],
 ];

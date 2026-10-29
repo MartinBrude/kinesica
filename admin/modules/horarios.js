@@ -6,6 +6,7 @@
 
 import { api } from "./api.js?v=77";
 import { escapeHtml, dialogAlert, switchActiveView } from "./dom.js?v=78";
+import { getSessionUser } from "./auth.js?v=81";
 import {
   DEFAULT_HEADER_SCHEDULE,
   DEFAULT_PRACTITIONER_HOURS,
@@ -136,7 +137,16 @@ function refreshUI() {
     );
   }
 
-  if (btnSave) btnSave.disabled = !validation.isValid;
+  const isColaborador = getSessionUser()?.role === "colaborador";
+  if (btnSave) {
+    btnSave.disabled = !validation.isValid;
+    if (isColaborador) btnSave.hidden = true;
+  }
+  if (isColaborador) {
+    document.querySelectorAll("#view-horarios input, #view-horarios select").forEach((el) => {
+      el.disabled = true;
+    });
+  }
 
   if (!validation.isValid) {
     showStatusBanner("error", validation.errors);
@@ -181,6 +191,10 @@ export function initHorariosModule() {
 
   if (btnSave) {
     btnSave.addEventListener("click", async () => {
+      if (getSessionUser()?.role === "colaborador") {
+        dialogAlert("Los usuarios con rol Colaborador tienen permisos de solo lectura.");
+        return;
+      }
       const validation = validateHoursDraft(draftHours);
       if (!validation.isValid) {
         showStatusBanner("error", validation.errors);

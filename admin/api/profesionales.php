@@ -21,10 +21,12 @@ if ($method === 'GET') {
     $stmt = $pdo->query(
         'SELECT username, display_name, first_name, last_name, email, telefono, role, active, totp_confirmed, login_count
          FROM users 
-         ORDER BY (role = "admin") DESC, (username = "norberto") DESC, (username = "maria") DESC, display_name ASC'
+         ORDER BY (role = "admin") DESC, (username = "norberto") DESC, (username = "maria") DESC, (username = "facundo") DESC, display_name ASC'
     );
     $users = $stmt->fetchAll();
     foreach ($users as &$u) {
+        $u['name'] = (string) ($u['display_name'] ?: trim(($u['first_name'] ?? '') . ' ' . ($u['last_name'] ?? '')));
+        if ($u['name'] === '') $u['name'] = (string) $u['username'];
         $u['active'] = (int) ($u['active'] ?? 1);
         $u['totp_confirmed'] = (int) ($u['totp_confirmed'] ?? 0);
         $u['login_count'] = (int) ($u['login_count'] ?? 0);
@@ -35,6 +37,7 @@ if ($method === 'GET') {
         'status' => 'success',
         'count' => count($users),
         'users' => $users,
+        'profesionales' => $users,
     ]);
 }
 
@@ -59,7 +62,7 @@ if ($action === 'create') {
     if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         json_out(422, ['error' => 'El correo electrónico no es válido.']);
     }
-    if (!in_array($role, ['admin', 'professional'], true)) {
+    if (!in_array($role, ['admin', 'professional', 'colaborador'], true)) {
         $role = 'professional';
     }
 
@@ -133,7 +136,7 @@ if ($action === 'update') {
     if ($username === '') json_out(422, ['error' => 'Usuario no especificado.']);
     if ($firstName === '' || $lastName === '') json_out(422, ['error' => 'El nombre y el apellido son obligatorios.']);
     if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) json_out(422, ['error' => 'El correo electrónico no es válido.']);
-    if (!in_array($role, ['admin', 'professional'], true)) $role = 'professional';
+    if (!in_array($role, ['admin', 'professional', 'colaborador'], true)) $role = 'professional';
     if ($username === 'martin') $role = 'admin';
 
     $chkMail = $pdo->prepare('SELECT username FROM users WHERE email = :e AND username != :u LIMIT 1');

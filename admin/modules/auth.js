@@ -21,36 +21,38 @@ export { setGateMessage };
 let sessionUser = null;
 let authed = false;
 
-const viewGate = document.querySelector("#view-gate");
-const loginForm = document.querySelector("#login-form");
-const enrollForm = document.querySelector("#enroll-form");
-const forgotForm = document.querySelector("#forgot-form");
-const resetForm = document.querySelector("#reset-form");
-const emailCodeForm = document.querySelector("#email-code-form");
-const logoutBtn = document.querySelector("#btn-logout");
+const qs = (sel) => (typeof document !== "undefined" ? document.querySelector(sel) : null);
 
-const enrollAccountEl = document.querySelector("#enroll-account");
-const enrollSecretEl = document.querySelector("#enroll-secret");
+const viewGate = qs("#view-gate");
+const loginForm = qs("#login-form");
+const enrollForm = qs("#enroll-form");
+const forgotForm = qs("#forgot-form");
+const resetForm = qs("#reset-form");
+const emailCodeForm = qs("#email-code-form");
+const logoutBtn = qs("#btn-logout");
 
-const loginErrorEl = document.querySelector("#login-error");
-const loginCodeSentNote = document.querySelector("#login-code-sent-note");
-const btnLoginSendEmailCode = document.querySelector("#btn-login-send-email-code");
-const enrollErrorEl = document.querySelector("#enroll-error");
-const forgotErrorEl = document.querySelector("#forgot-error");
-const resetErrorEl = document.querySelector("#reset-error");
-const emailCodeRequestError = document.querySelector("#email-code-request-error");
-const emailCodeVerifyError = document.querySelector("#email-code-verify-error");
-const emailCodeSentNote = document.querySelector("#email-code-sent-note");
+const enrollAccountEl = qs("#enroll-account");
+const enrollSecretEl = qs("#enroll-secret");
 
-const btnForgot = document.querySelector("#btn-forgot");
-const btnForgotBack = document.querySelector("#btn-forgot-back");
-const btnEmailCode = document.querySelector("#btn-email-code");
-const btnEmailCodeBack = document.querySelector("#btn-email-code-back");
-const btnSendEmailCode = document.querySelector("#btn-send-email-code");
-const btnVerifyEmailCode = document.querySelector("#btn-verify-email-code");
-const btnResendEmailCode = document.querySelector("#btn-resend-email-code");
-const emailCodeStepRequest = document.querySelector("#email-code-step-request");
-const emailCodeStepVerify = document.querySelector("#email-code-step-verify");
+const loginErrorEl = qs("#login-error");
+const loginCodeSentNote = qs("#login-code-sent-note");
+const btnLoginSendEmailCode = qs("#btn-login-send-email-code");
+const enrollErrorEl = qs("#enroll-error");
+const forgotErrorEl = qs("#forgot-error");
+const resetErrorEl = qs("#reset-error");
+const emailCodeRequestError = qs("#email-code-request-error");
+const emailCodeVerifyError = qs("#email-code-verify-error");
+const emailCodeSentNote = qs("#email-code-sent-note");
+
+const btnForgot = qs("#btn-forgot");
+const btnForgotBack = qs("#btn-forgot-back");
+const btnEmailCode = qs("#btn-email-code");
+const btnEmailCodeBack = qs("#btn-email-code-back");
+const btnSendEmailCode = qs("#btn-send-email-code");
+const btnVerifyEmailCode = qs("#btn-verify-email-code");
+const btnResendEmailCode = qs("#btn-resend-email-code");
+const emailCodeStepRequest = qs("#email-code-step-request");
+const emailCodeStepVerify = qs("#email-code-step-verify");
 
 export function getSessionUser() {
   return sessionUser;
@@ -59,21 +61,21 @@ export function getSessionUser() {
 export function setSessionUser(user) {
   sessionUser = user;
   authed = Boolean(user);
-  const userLabel = document.querySelector("#session-user-name");
+  const userLabel = qs("#session-user-name");
   if (user) {
     saveAuthStorage(user);
     if (userLabel) {
       userLabel.textContent = user.name || user.username || "";
       userLabel.hidden = false;
     }
-    document.documentElement.classList.add("is-authenticated");
+    if (typeof document !== "undefined") document.documentElement.classList.add("is-authenticated");
   } else {
     clearAuthStorage();
     if (userLabel) {
       userLabel.textContent = "";
       userLabel.hidden = true;
     }
-    document.documentElement.classList.remove("is-authenticated");
+    if (typeof document !== "undefined") document.documentElement.classList.remove("is-authenticated");
   }
 }
 

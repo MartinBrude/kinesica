@@ -30,6 +30,9 @@ if ($method === 'POST') {
     require __DIR__ . '/lib.php';
     require_header();
     $user = require_auth();
+    if (is_colaborador($user)) {
+        json_out(403, ['error' => 'Los usuarios con rol Colaborador tienen permisos de solo lectura y no pueden modificar textos ni configuraciones.']);
+    }
 
     $input = read_json();
     $userName = (string) ($user['name'] ?: $user['username']);

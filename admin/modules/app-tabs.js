@@ -53,6 +53,11 @@ export function switchTab(tab) {
     btnInteracciones?.classList.add("is-active");
     showInteraccionesView();
   } else if (tab === "admin") {
+    const user = getSessionUser();
+    if (!user || user.role !== "admin") {
+      switchTab("inicio");
+      return;
+    }
     btnAdmin?.classList.add("is-active");
     showAdminView();
   } else {

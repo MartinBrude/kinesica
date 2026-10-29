@@ -5,6 +5,7 @@
 
 import { api } from "./api.js?v=77";
 import { escapeHtml } from "./dom.js?v=78";
+import { getSessionUser } from "./auth.js?v=81";
 import {
   isValidAdminEmail,
   suggestAdminEmailDomain,
@@ -13,6 +14,7 @@ import {
 
 export function openFullPacienteModal(paciente = null, onReload = null) {
   const isEdit = Boolean(paciente);
+  const isColaborador = getSessionUser()?.role === "colaborador";
   const backdrop = document.createElement("div");
   backdrop.className = "paciente-modal-backdrop";
 
@@ -24,14 +26,20 @@ export function openFullPacienteModal(paciente = null, onReload = null) {
     apellidoVal = parts.slice(1).join(" ") || "";
   }
 
+  const modalTitle = isColaborador ? "Datos del Paciente" : (isEdit ? "Editar Paciente" : "Nuevo Paciente");
+  const readOnlyBanner = isColaborador
+    ? '<div style="background:#fef3c7; color:#92400e; padding:10px 14px; border-radius:6px; margin-bottom:14px; font-size:13px; font-weight:500;">👁️ Modo solo lectura (Colaborador): Datos del paciente en modo de solo consulta.</div>'
+    : '';
+
   backdrop.innerHTML = `
     <div class="paciente-modal-card">
       <div class="paciente-modal-header">
-        <h2>${isEdit ? "Editar Paciente" : "Nuevo Paciente"}</h2>
+        <h2>${escapeHtml(modalTitle)}</h2>
         <button type="button" class="btn ghost btn-close-modal">✕</button>
       </div>
       <form id="form-full-paciente">
         <div class="paciente-modal-body">
+          ${readOnlyBanner}
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
             <div class="paciente-modal-field">
               <label>Nombre *</label>
@@ -104,8 +112,8 @@ export function openFullPacienteModal(paciente = null, onReload = null) {
           <p id="modal-p-error" style="color:#dc2626; font-size:13px; margin:0;" hidden></p>
         </div>
         <div class="paciente-modal-footer">
-          <button type="button" class="btn light btn-close-modal">Cancelar</button>
-          <button type="submit" class="btn green" id="btn-submit-paciente">${isEdit ? "Guardar Cambios" : "Crear Paciente"}</button>
+          <button type="button" class="btn light btn-close-modal">${isColaborador ? "Cerrar" : "Cancelar"}</button>
+          ${isColaborador ? "" : `<button type="submit" class="btn green" id="btn-submit-paciente">${isEdit ? "Guardar Cambios" : "Crear Paciente"}</button>`}
         </div>
       </form>
     </div>
@@ -114,6 +122,12 @@ export function openFullPacienteModal(paciente = null, onReload = null) {
   document.body.append(backdrop);
   const close = () => backdrop.remove();
   backdrop.querySelectorAll(".btn-close-modal").forEach((b) => b.addEventListener("click", close));
+
+  if (isColaborador) {
+    backdrop.querySelectorAll("input, textarea, select").forEach((el) => {
+      el.disabled = true;
+    });
+  }
 
   const form = backdrop.querySelector("#form-full-paciente");
   const errorEl = backdrop.querySelector("#modal-p-error");

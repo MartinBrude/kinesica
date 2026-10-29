@@ -8,6 +8,7 @@ import { escapeHtml, debounce, dialogAlert, dialogConfirm, switchActiveView } fr
 import { phoneMatches } from "./phone-search.js?v=1";
 import { formatDisplayPhone } from "./pacientes-format.js";
 import { openFullPacienteModal } from "./pacientes-modal.js";
+import { getSessionUser } from "./auth.js?v=81";
 
 export { formatDisplayPhone };
 
@@ -23,6 +24,8 @@ let pacientesCache = [];
 let activeFilterProf = "todos";
 
 export function showPacientesView() {
+  const isColaborador = getSessionUser()?.role === "colaborador";
+  if (btnNuevo) btnNuevo.hidden = isColaborador;
   const view = switchActiveView("view-pacientes");
   if (view) {
     try {
@@ -138,6 +141,18 @@ export function renderPacientesTable() {
     const waLink = rawTel ? `https://wa.me/${rawTel}` : "#";
     const displayTel = formatDisplayPhone(rawTel);
 
+    const isColaborador = getSessionUser()?.role === "colaborador";
+    const deleteBtn = isColaborador
+      ? ""
+      : `<button type="button" class="btn ghost btn-delete-paciente btn-icon-del" data-id="${p.id}" data-name="${escapeHtml(fullNameForConfirm)}" title="Eliminar paciente" aria-label="Eliminar paciente">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              <line x1="10" y1="11" x2="10" y2="17"></line>
+              <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+          </button>`;
+
     tr.innerHTML = `
       <td><strong style="color: var(--navy);">${escapeHtml(displayName)}</strong>${contactBadge}</td>
       <td><div class="phone-cell">${rawTel ? `<a class="phone-link" href="${waLink}" target="_blank" rel="noopener" title="Abrir chat de WhatsApp">📲 ${escapeHtml(displayTel)}</a>` : '<span style="color:var(--muted)">Sin teléfono</span>'}</div></td>
@@ -147,15 +162,8 @@ export function renderPacientesTable() {
       <td><small>${p.motivo_consulta ? escapeHtml(p.motivo_consulta) : "—"}</small></td>
       <td style="text-align: right;">
         <div class="pacientes-actions">
-          <button type="button" class="btn light btn-edit-paciente" data-id="${p.id}" title="Editar paciente">Editar</button>
-          <button type="button" class="btn ghost btn-delete-paciente btn-icon-del" data-id="${p.id}" data-name="${escapeHtml(fullNameForConfirm)}" title="Eliminar paciente" aria-label="Eliminar paciente">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <polyline points="3 6 5 6 21 6"></polyline>
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-              <line x1="10" y1="11" x2="10" y2="17"></line>
-              <line x1="14" y1="11" x2="14" y2="17"></line>
-            </svg>
-          </button>
+          <button type="button" class="btn light btn-edit-paciente" data-id="${p.id}" title="${isColaborador ? "Ver datos del paciente" : "Editar paciente"}">${isColaborador ? "Ver datos" : "Editar"}</button>
+          ${deleteBtn}
         </div>
       </td>
     `;

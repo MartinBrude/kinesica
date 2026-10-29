@@ -10,6 +10,7 @@
 import { renderOptCText, REMINDER_TEMPLATE_TEXT } from "./menu-texts.js?v=2";
 import { api } from "./api.js?v=77";
 import { dialogAlert } from "./dom.js?v=78";
+import { getSessionUser } from "./auth.js?v=81";
 import { appendChatMessage, resetChatDemo, initChatSimulator, setChatContext } from "./chat-simulator.js?v=9";
 import { DEFAULT_CLARA_TEXTS, bindConfigInputs, populateClaraInputs } from "./config-defaults.js";
 import { getNextAvailableLetter, renderCustomOptionsList } from "./config-options.js";
@@ -163,6 +164,23 @@ function applyConfigResult(res) {
   if (res.custom_menu_options) currentTexts.custom_menu_options = res.custom_menu_options;
   renderTexts(currentTexts);
   rememberLoadedTexts(res);
+
+  const isColaborador = getSessionUser()?.role === "colaborador";
+  if (isColaborador) {
+    if (btnSaveTexts) btnSaveTexts.hidden = true;
+    if (btnSaveMailsPolicies) btnSaveMailsPolicies.hidden = true;
+    if (btnAddCustomOption) btnAddCustomOption.hidden = true;
+    document.querySelectorAll("#view-clara input, #view-clara textarea").forEach((el) => {
+      el.readOnly = true;
+    });
+    if (textsStatusBanner) {
+      textsStatusBanner.hidden = false;
+      textsStatusBanner.style.background = "#fef3c7";
+      textsStatusBanner.style.color = "#92400e";
+      textsStatusBanner.style.borderColor = "#fde68a";
+      textsStatusBanner.textContent = "👁️ Modo de solo lectura (Colaborador): Podés consultar los textos y opciones de Clara, pero no modificarlos.";
+    }
+  }
 }
 
 async function loadConfigData() {
@@ -188,7 +206,12 @@ export function initConfiguracionModule(callbacks = {}) {
     renderCustomOptionsList(customOptionsContainer, customOptionsEmpty, customMenuOptions, dialogAlert);
   });
 
-  const onSave = (btn) => saveTextsAndPolicies({
+  const onSave = (btn) => {
+    if (getSessionUser()?.role === "colaborador") {
+      dialogAlert("Los usuarios con rol Colaborador tienen permisos de solo lectura.");
+      return;
+    }
+    return saveTextsAndPolicies({
     triggerBtn: btn,
     btnSaveTexts,
     btnSaveMailsPolicies,
@@ -204,6 +227,7 @@ export function initConfiguracionModule(callbacks = {}) {
     dialogAlert,
     loadConfigData,
   });
+};
 
   btnSaveTexts?.addEventListener("click", () => onSave(btnSaveTexts));
   btnSaveMailsPolicies?.addEventListener("click", () => onSave(btnSaveMailsPolicies));

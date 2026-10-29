@@ -47,6 +47,17 @@ function is_admin(?array $auth = null): bool
     return false;
 }
 
+function is_colaborador(?array $auth = null): bool
+{
+    if ($auth !== null && isset($auth['role'])) {
+        return $auth['role'] === 'colaborador';
+    }
+    if (session_status() === PHP_SESSION_ACTIVE && !empty($_SESSION['role'])) {
+        return $_SESSION['role'] === 'colaborador';
+    }
+    return false;
+}
+
 function base32_decode(string $value): string
 {
     $alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
@@ -116,8 +127,13 @@ function ensure_users_role_column(): void
     try {
         $cols = db()->query("SHOW COLUMNS FROM users LIKE 'role'")->fetch();
         if (!$cols) {
-            db()->exec("ALTER TABLE users ADD role ENUM('admin', 'professional') NOT NULL DEFAULT 'professional'");
+            db()->exec("ALTER TABLE users ADD role VARCHAR(32) NOT NULL DEFAULT 'professional'");
             db()->exec("UPDATE users SET role = 'admin' WHERE username = 'martin'");
+        } else {
+            $type = strtolower((string) ($cols['Type'] ?? ''));
+            if (strpos($type, 'colaborador') === false && strpos($type, 'varchar') === false) {
+                db()->exec("ALTER TABLE users MODIFY COLUMN role VARCHAR(32) NOT NULL DEFAULT 'professional'");
+            }
         }
         $colActive = db()->query("SHOW COLUMNS FROM users LIKE 'active'")->fetch();
         if (!$colActive) {
@@ -144,6 +160,7 @@ function ensure_users_role_column(): void
             'martin' => ['name' => 'Martín', 'email' => 'martin.brude@gmail.com', 'telefono' => '', 'first_name' => 'Martín', 'last_name' => 'Brude', 'role' => 'admin'],
             'norberto' => ['name' => 'Norberto', 'email' => 'norberto1712@gmail.com', 'telefono' => '5491161564311', 'first_name' => 'Norberto', 'last_name' => 'Brude', 'role' => 'admin'],
             'maria' => ['name' => 'María', 'email' => 'manosmagicas7116@gmail.com', 'telefono' => '5491128531224', 'first_name' => 'María', 'last_name' => 'Gulin', 'role' => 'professional'],
+            'facundo' => ['name' => 'Facundo Vivardo', 'email' => 'facundovivardo@gmail.com', 'telefono' => '', 'first_name' => 'Facundo', 'last_name' => 'Vivardo', 'role' => 'colaborador'],
         ];
 
         $ins = db()->prepare(
@@ -154,7 +171,8 @@ function ensure_users_role_column(): void
                  telefono = COALESCE(NULLIF(telefono, ""), VALUES(telefono)),
                  first_name = COALESCE(NULLIF(first_name, ""), VALUES(first_name)),
                  last_name = COALESCE(NULLIF(last_name, ""), VALUES(last_name)),
-                 display_name = IF(display_name = "" OR display_name IS NULL, VALUES(display_name), display_name)'
+                 display_name = IF(display_name = "" OR display_name IS NULL, VALUES(display_name), display_name),
+                 role = IF(role = "" OR role IS NULL, VALUES(role), role)'
         );
 
         foreach ($seedUsers as $uName => $uData) {
@@ -174,5 +192,10 @@ function user_role(string $username): string
     $stmt = db()->prepare('SELECT role FROM users WHERE username = :username LIMIT 1');
     $stmt->execute(['username' => $username]);
     $role = $stmt->fetchColumn();
-    return $role ? (string) $role : ($username === 'martin' ? 'admin' : 'professional');
+    if ($role) {
+        return (string) $role;
+    }
+    if ($username === 'martin') return 'admin';
+    if ($username === 'facundo') return 'colaborador';
+    return 'professional';
 }

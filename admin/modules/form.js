@@ -5,7 +5,7 @@
  */
 
 import { patientKey, validateField, getSessionIndex } from "../ficha-rules.mjs?v=89";
-import { dialogConfirm } from "./dom.js?v=78";
+import { dialogConfirm, dialogAlert } from "./dom.js?v=78";
 import { setupInputRestrictions } from "./form-restrictions.js";
 import { syncFotoPreview, getCurrentFotos, getUploadInFlight, initFormPhotos } from "./form-photos.js";
 import { singles, todayISO, evaMeta, syncEva, syncAge, syncFollowups, setupSingleButtons } from "./form-eva.js";
@@ -100,10 +100,39 @@ export function fillForm(data, allFichas = []) {
 
   const sessionUser = typeof activeSessionUserGetter === "function" ? activeSessionUserGetter() : null;
   const isAdmin = sessionUser?.role === "admin" || sessionUser?.username === "martin";
+  const isColaborador = sessionUser?.role === "colaborador";
   const profField = document.querySelector("#field-profesional");
   if (profField) profField.hidden = !isAdmin;
   if (form.elements.profesional) {
     form.elements.profesional.value = data.profesional || (sessionUser?.username === "maria" ? "maria" : "norberto");
+  }
+
+  const btnSave = form.querySelector('button[type="submit"]');
+  if (btnSave) btnSave.hidden = isColaborador;
+
+  let colabBanner = document.querySelector("#form-colaborador-banner");
+  if (isColaborador) {
+    if (!colabBanner) {
+      colabBanner = document.createElement("div");
+      colabBanner.id = "form-colaborador-banner";
+      colabBanner.className = "horarios-alert-box";
+      colabBanner.style.margin = "16px 0";
+      colabBanner.style.background = "#fef3c7";
+      colabBanner.style.color = "#92400e";
+      colabBanner.style.borderColor = "#fde68a";
+      colabBanner.textContent = "👁️ Modo de visualización (Colaborador): Historia clínica en modo solo lectura. Podés imprimirla y compararla, pero no modificarla.";
+      form.prepend(colabBanner);
+    } else {
+      colabBanner.hidden = false;
+    }
+    form.querySelectorAll("input, textarea, select").forEach((el) => {
+      el.disabled = true;
+    });
+  } else if (colabBanner) {
+    colabBanner.hidden = true;
+    form.querySelectorAll("input, textarea, select").forEach((el) => {
+      el.disabled = false;
+    });
   }
 
   const pSessions = (data.dni || data.nombre)
@@ -190,6 +219,11 @@ export function initForm({ onSave, onBack, onCompare, onPrint, getSessionUser })
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
+    const sessionUser = typeof activeSessionUserGetter === "function" ? activeSessionUserGetter() : null;
+    if (sessionUser?.role === "colaborador") {
+      dialogAlert("Los usuarios con rol Colaborador tienen permisos de solo lectura.");
+      return;
+    }
     submitFichaForm({
       form,
       data: readForm(),

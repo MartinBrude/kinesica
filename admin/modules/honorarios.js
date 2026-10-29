@@ -6,6 +6,7 @@
 
 import { api } from "./api.js?v=77";
 import { escapeHtml, dialogAlert, switchActiveView } from "./dom.js?v=78";
+import { getSessionUser } from "./auth.js?v=81";
 
 const viewHonorarios = document.querySelector("#view-honorarios");
 const inputAtm = document.querySelector("#input-fee-atm");
@@ -82,6 +83,21 @@ export async function loadHonorarios() {
         }
       }
       updatePreview();
+      const isColaborador = getSessionUser()?.role === "colaborador";
+      if (isColaborador) {
+        if (inputAtm) inputAtm.disabled = true;
+        if (inputGeneral) inputGeneral.disabled = true;
+        if (inputPayment) inputPayment.disabled = true;
+        if (btnSave) btnSave.hidden = true;
+        if (statusBanner) {
+          statusBanner.className = "horarios-alert-box";
+          statusBanner.style.background = "#fef3c7";
+          statusBanner.style.color = "#92400e";
+          statusBanner.style.borderColor = "#fde68a";
+          statusBanner.textContent = "👁️ Modo de solo lectura (Colaborador): Aranceles y formas de pago de solo consulta.";
+          statusBanner.hidden = false;
+        }
+      }
     }
   } catch (err) {
     console.error("Error al cargar honorarios:", err);
@@ -106,6 +122,10 @@ export function initHonorariosModule() {
   });
 
   btnSave?.addEventListener("click", async () => {
+    if (getSessionUser()?.role === "colaborador") {
+      dialogAlert("Los usuarios con rol Colaborador tienen permisos de solo lectura.");
+      return;
+    }
     btnSave.disabled = true;
     if (statusBanner) statusBanner.hidden = true;
 

@@ -180,6 +180,11 @@
   color: #475569;
 }
 
+.prof-role-badge.colaborador {
+  background: #fef3c7;
+  color: #92400e;
+}
+
 /* Acciones en tabla */
 .prof-actions-td {
   text-align: right;

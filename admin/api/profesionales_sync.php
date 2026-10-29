@@ -31,7 +31,7 @@ function sync_settings_practitioner(string $username, string $email, string $pho
                 $stmt = db()->query(
                     'SELECT username, display_name, first_name, last_name, email, telefono, active 
                      FROM users 
-                     WHERE username != "martin" AND active = 1 
+                     WHERE username != "martin" AND (role IS NULL OR role != "colaborador") AND active = 1 
                      ORDER BY (username = "norberto") DESC, (username = "maria") DESC, display_name ASC'
                 );
                 $activeProfs = $stmt->fetchAll();

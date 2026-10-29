@@ -7,6 +7,7 @@ import { debounce, dialogAlert, dialogConfirm } from "./dom.js?v=78";
 import { downloadJSON, SEED_PEOPLE } from "./library-io.js";
 import { setLibraryPage } from "./library-pager.js";
 import { exampleFicha } from "../ficha-rules.mjs?v=87";
+import { getSessionUser } from "./auth.js?v=81";
 
 export function initLibraryToolbar({
   searchInput,
@@ -94,7 +95,14 @@ export function initLibraryToolbar({
   }
 
   if (btnNew) {
+    if (getSessionUser()?.role === "colaborador") {
+      btnNew.hidden = true;
+    }
     btnNew.addEventListener("click", () => {
+      if (getSessionUser()?.role === "colaborador") {
+        dialogAlert("Los usuarios con rol Colaborador tienen permisos de solo lectura.");
+        return;
+      }
       const { focusedPatient, callbacks } = getState();
       const items = visibleFichas();
       if (focusedPatient) {

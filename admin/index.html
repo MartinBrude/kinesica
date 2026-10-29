@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/admin/styles.css?v=118">
-  <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1793278157">
+  <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1793281933">
   <script>
     (function () {
       try {
@@ -96,10 +96,10 @@
       <form id="email-code-form" class="hero-card gate-card" method="POST" hidden>
         <div class="gate-fields">
           <h1>Código al mail</h1>
-          <p>Ingresá con un código de seguridad de 6 dígitos enviado a tu correo (María, Norberto o Martín).</p>
+          <p>Ingresá con un código de seguridad de 6 dígitos enviado a tu correo.</p>
           <div id="email-code-step-request">
             <label>Usuario o Correo
-              <input name="username" autocomplete="username" placeholder="maria, norberto o martin" required>
+              <input name="username" autocomplete="username" placeholder="usuario o correo registrado" required>
             </label>
             <p id="email-code-request-error" class="gate-error" hidden></p>
             <button type="button" class="btn green" id="btn-send-email-code">Enviar código al mail</button>
@@ -1256,6 +1256,7 @@
                 <select id="admin-prof-role">
                   <option value="professional">Profesional (Historias clínicas y agenda propia)</option>
                   <option value="admin">Administrador (Control total del sistema)</option>
+                  <option value="colaborador">Colaborador (Visualización sin administración ni modificaciones)</option>
                 </select>
               </div>
             </div>
@@ -1905,7 +1906,7 @@
         <div class="form-footer">
           <button type="button" class="btn ghost" id="btn-prev">← Anterior</button>
           <button type="button" class="btn light" id="btn-next">Siguiente →</button>
-          <button type="submit" class="btn green">Guardar sesión</button>
+          <button type="submit" class="btn green" id="btn-save-session">Guardar sesión</button>
         </div>
       </form>
     </section>
@@ -2033,7 +2034,7 @@
     })();
   </script>
   <div id="print-root"></div>
-  <script src="/booking/booking-bundle.min.js?v=1793278157" defer></script>
+  <script src="/booking/booking-bundle.min.js?v=1793281933" defer></script>
   <script type="module" src="/admin/app.js?v=156"></script>
 </body>
 </html>

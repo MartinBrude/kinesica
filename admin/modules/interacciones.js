@@ -7,7 +7,7 @@
 
 import { api } from "./api.js?v=77";
 import { getSessionUser } from "./auth.js?v=81";
-import { escapeHtml, switchActiveView, dialogConfirm } from "./dom.js?v=78";
+import { escapeHtml, switchActiveView, dialogConfirm, dialogAlert } from "./dom.js?v=78";
 import {
   formatDateHeader,
   buildInteractionCardHtml,
@@ -156,6 +156,10 @@ function renderInteractions(items) {
   bindInteractionEvents(container, {
     getSessionUser,
     onArchive: async ({ convId, convName, isArchived }) => {
+      if (getSessionUser()?.role === "colaborador") {
+        dialogAlert("Los usuarios con rol Colaborador tienen permisos de solo lectura.");
+        return;
+      }
       const q = isArchived
         ? `¿Desarchivar la conversación con "${convName}"? Volverá a la lista activa.`
         : `¿Archivar la conversación con "${convName}"? Se retirará de la lista activa.`;
@@ -182,6 +186,11 @@ function renderInteractions(items) {
       }
     },
     onToggleAnswered: async ({ convId, convKey, isChecked, chk, cardEl, pillEl }) => {
+      if (getSessionUser()?.role === "colaborador") {
+        if (chk) chk.checked = !isChecked;
+        dialogAlert("Los usuarios con rol Colaborador tienen permisos de solo lectura.");
+        return;
+      }
       const setVisualStatus = (ans) => {
         if (cardEl) cardEl.classList.toggle("is-answered", ans);
         if (pillEl) {

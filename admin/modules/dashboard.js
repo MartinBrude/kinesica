@@ -20,6 +20,10 @@ let activeClara = localStorage.getItem("kinesica_clara_active") === "1";
 let activeBooking = localStorage.getItem("kinesica_booking_active") === "1";
 
 export function showDashboardView() {
+  const isColaborador = getSessionUser()?.role === "colaborador";
+  if (claraToggleBtn) claraToggleBtn.disabled = isColaborador;
+  if (bookingToggleBtn) bookingToggleBtn.disabled = isColaborador;
+
   const view = switchActiveView("view-dashboard");
   if (view) {
     try {
@@ -122,6 +126,10 @@ export function initDashboardModule(callbacks = {}) {
 
   // Toggle de Clara desde el dashboard
   claraToggleBtn?.addEventListener("click", async () => {
+    if (getSessionUser()?.role === "colaborador") {
+      dialogAlert("Los usuarios con rol Colaborador tienen permisos de solo lectura.");
+      return;
+    }
     const nextState = !activeClara;
     claraToggleBtn.disabled = true;
     try {
@@ -142,6 +150,10 @@ export function initDashboardModule(callbacks = {}) {
 
   // Toggle de Booking desde el dashboard
   bookingToggleBtn?.addEventListener("click", async () => {
+    if (getSessionUser()?.role === "colaborador") {
+      dialogAlert("Los usuarios con rol Colaborador tienen permisos de solo lectura.");
+      return;
+    }
     const nextState = !activeBooking;
     bookingToggleBtn.disabled = true;
     try {

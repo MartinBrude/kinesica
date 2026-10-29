@@ -14,6 +14,9 @@ if ($method === 'GET') {
 }
 
 if ($method === 'POST') {
+    if (is_colaborador($auth)) {
+        json_out(403, ['error' => 'Los usuarios con rol Colaborador tienen permisos de solo lectura y no pueden modificar historias clínicas.']);
+    }
     $data = read_json();
     $uuidRe = '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i';
     if (!is_string($data['id'] ?? null) || !preg_match($uuidRe, $data['id'])) {
@@ -213,6 +216,9 @@ if ($method === 'POST') {
 }
 
 if ($method === 'DELETE') {
+    if (is_colaborador($auth)) {
+        json_out(403, ['error' => 'Los usuarios con rol Colaborador no tienen permisos para eliminar historias clínicas.']);
+    }
     $id = (string) ($_GET['id'] ?? '');
     if (!preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $id)) {
         json_out(422, ['error' => 'Ficha inválida']);

@@ -119,6 +119,10 @@ try {
         if ($data === null) $data = read_json();
         $action = $data['action'] ?? 'upsert';
 
+        if (is_colaborador($auth) && $action !== 'get_email_by_phone') {
+            json_out(403, ['status' => 'error', 'message' => 'Los usuarios con rol Colaborador tienen permisos de solo lectura.']);
+        }
+
         if ($action === 'get_email_by_phone') {
             $phone = clean_phone_number((string) ($data['telefono'] ?? ''));
             if ($phone !== '') {
@@ -183,11 +187,17 @@ try {
     }
 
     if ($method === 'PUT') {
+        if (is_colaborador($auth)) {
+            json_out(403, ['status' => 'error', 'message' => 'Los usuarios con rol Colaborador tienen permisos de solo lectura.']);
+        }
         if ($data === null) $data = read_json();
         kinesica_pacientes_update($pdo, $data);
     }
 
     if ($method === 'DELETE') {
+        if (is_colaborador($auth)) {
+            json_out(403, ['status' => 'error', 'message' => 'Los usuarios con rol Colaborador no tienen permiso para eliminar pacientes']);
+        }
         $user = $auth['username'] ?? '';
         $allowedUsers = ['martin', 'norberto', 'maria'];
         if (!is_admin($auth) && !in_array($user, $allowedUsers, true)) {

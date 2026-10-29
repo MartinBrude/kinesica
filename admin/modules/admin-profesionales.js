@@ -52,7 +52,7 @@ export function openCreateModal() {
 
 export function openEditModal(prof) {
   currentEditingUser = prof;
-  if (modalTitle) modalTitle.textContent = `Editar a ${prof.name}`;
+  if (modalTitle) modalTitle.textContent = `Editar a ${prof.name || prof.display_name || prof.username}`;
   if (inputUsername) {
     inputUsername.value = prof.username;
     inputUsername.parentElement.hidden = false;
@@ -159,7 +159,7 @@ export function renderProfesionales(profesionales, onReload) {
 
       const tdName = document.createElement("td");
       const nameStrong = document.createElement("strong");
-      nameStrong.textContent = prof.name;
+      nameStrong.textContent = prof.name || prof.display_name || prof.username;
       const userSub = document.createElement("div");
       userSub.style.fontSize = "12px";
       userSub.style.color = "var(--muted)";
@@ -174,8 +174,17 @@ export function renderProfesionales(profesionales, onReload) {
 
       const tdRole = document.createElement("td");
       const roleBadge = document.createElement("span");
-      roleBadge.className = `prof-role-badge ${prof.role === "admin" ? "admin" : "professional"}`;
-      roleBadge.textContent = prof.role === "admin" ? "Admin" : "Profesional";
+      let roleLabel = "Profesional";
+      let roleClass = "professional";
+      if (prof.role === "admin") {
+        roleLabel = "Admin";
+        roleClass = "admin";
+      } else if (prof.role === "colaborador") {
+        roleLabel = "Colaborador";
+        roleClass = "colaborador";
+      }
+      roleBadge.className = `prof-role-badge ${roleClass}`;
+      roleBadge.textContent = roleLabel;
       tdRole.append(roleBadge);
 
       const tdStatus = document.createElement("td");
@@ -221,8 +230,11 @@ export function renderProfesionales(profesionales, onReload) {
 export async function loadProfesionalesData(onReload) {
   try {
     const data = await api("profesionales.php");
-    if (!data || !Array.isArray(data.profesionales)) return;
-    cachedProfesionales = data.profesionales;
+    const list = Array.isArray(data?.profesionales)
+      ? data.profesionales
+      : (Array.isArray(data?.users) ? data.users : null);
+    if (!list) return;
+    cachedProfesionales = list;
     renderProfesionales(cachedProfesionales, onReload);
   } catch (err) {
     dialogAlert("Error al cargar datos de administración: " + (err.message || "Error desconocido"));

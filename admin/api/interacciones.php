@@ -85,6 +85,10 @@ if ($method === 'POST') {
     $input = read_json();
     $action = (string) ($input['action'] ?? '');
 
+    if (!$isBotAuth && is_colaborador($auth ?? null) && ($action === 'archive' || $action === 'unarchive' || $action === 'sync_all' || $action === 'toggle_answered')) {
+        json_out(403, ['error' => 'Los usuarios con rol Colaborador tienen permisos de solo lectura y no pueden modificar ni archivar conversaciones.']);
+    }
+
     if ($action === 'archive' || $action === 'unarchive' || $action === 'toggle_answered') {
         $id = trim((string) ($input['id'] ?? ''));
         if ($id === '') {

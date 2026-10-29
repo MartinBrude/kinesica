@@ -5,6 +5,7 @@
 
 import { api } from "./api.js?v=77";
 import { renderReminderPreview } from "./menu-texts.js?v=2";
+import { getSessionUser } from "./auth.js?v=81";
 
 export function bindPolicyElements() {
   return {
@@ -66,6 +67,10 @@ export function setupConfigToggles({
   onAlert,
 }) {
   cfgClaraToggleBtn?.addEventListener("click", async () => {
+    if (getSessionUser()?.role === "colaborador") {
+      if (typeof onAlert === "function") onAlert("Los usuarios con rol Colaborador tienen permisos de solo lectura.");
+      return;
+    }
     const nextState = !getClaraActive();
     cfgClaraToggleBtn.disabled = true;
     try {
@@ -83,6 +88,10 @@ export function setupConfigToggles({
   });
 
   cfgBookingToggleBtn?.addEventListener("click", async () => {
+    if (getSessionUser()?.role === "colaborador") {
+      if (typeof onAlert === "function") onAlert("Los usuarios con rol Colaborador tienen permisos de solo lectura.");
+      return;
+    }
     const nextState = !getBookingActive();
     cfgBookingToggleBtn.disabled = true;
     try {

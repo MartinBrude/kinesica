@@ -80,7 +80,8 @@ export function renderChatMessages(messages, patientName) {
 
 export function buildInteractionCardHtml(conv, itemIdx, senderName) {
   const cleanWa = String(conv?.wa_id || "").replace(/[^0-9]/g, "");
-  const waUrl = buildWhatsAppUrl(cleanWa, senderName);
+  const senderStr = typeof senderName === "string" ? senderName : (senderName?.name || senderName?.username || "");
+  const waUrl = buildWhatsAppUrl(cleanWa, senderStr);
   const name = String(conv?.patient_name || "").trim() || "Paciente sin nombre";
   const phoneDisplay = String(conv?.phone_formatted || "").trim() || (cleanWa ? `+${cleanWa}` : "Sin teléfono");
   const timeStr = String(conv?.time || "").trim();
@@ -95,6 +96,16 @@ export function buildInteractionCardHtml(conv, itemIdx, senderName) {
 
   const isArchived = Boolean(conv?.archived);
   const archiveLabel = isArchived ? "Desarchivar conversación" : "Archivar conversación";
+  const isColaborador = Boolean(typeof senderName === "object" && senderName?.role === "colaborador");
+  const archiveBtnHtml = isColaborador
+    ? ""
+    : `<button type="button" class="btn-archive-interaction ${isArchived ? "is-archived" : ""}" data-conv-id="${escapeHtml(conv?.id || convKey)}" data-conv-name="${escapeHtml(name)}" data-archived="${isArchived ? "1" : "0"}" title="${archiveLabel}" aria-label="${archiveLabel}">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="21 8 21 21 3 21 3 8"></polyline>
+        <rect x="1" y="3" width="22" height="5"></rect>
+        <line x1="10" y1="12" x2="14" y2="12"></line>
+      </svg>
+    </button>`;
 
   return `
     <article class="interaccion-card ${isAnswered ? "is-answered" : ""} ${isArchived ? "is-archived" : ""}" id="${cardId}">
@@ -115,7 +126,7 @@ export function buildInteractionCardHtml(conv, itemIdx, senderName) {
 
         <div class="interaccion-actions">
           <label class="interaccion-answered-label" title="Marcar si ya se le respondió al paciente">
-            <input type="checkbox" class="interaccion-answered-checkbox" data-conv-id="${escapeHtml(conv?.id || convKey)}" data-conv-key="${convKey}" ${isAnswered ? "checked" : ""}>
+            <input type="checkbox" class="interaccion-answered-checkbox" data-conv-id="${escapeHtml(conv?.id || convKey)}" data-conv-key="${convKey}" ${isAnswered ? "checked" : ""} ${isColaborador ? 'disabled="disabled"' : ""}>
             <span>Consulta respondida</span>
           </label>
 
@@ -126,13 +137,7 @@ export function buildInteractionCardHtml(conv, itemIdx, senderName) {
             Abrir WhatsApp
           </a>
 
-          <button type="button" class="btn-archive-interaction ${isArchived ? "is-archived" : ""}" data-conv-id="${escapeHtml(conv?.id || convKey)}" data-conv-name="${escapeHtml(name)}" data-archived="${isArchived ? "1" : "0"}" title="${archiveLabel}" aria-label="${archiveLabel}">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <polyline points="21 8 21 21 3 21 3 8"></polyline>
-              <rect x="1" y="3" width="22" height="5"></rect>
-              <line x1="10" y1="12" x2="14" y2="12"></line>
-            </svg>
-          </button>
+          ${archiveBtnHtml}
         </div>
       </div>
 

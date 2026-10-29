@@ -109,7 +109,10 @@ export function initPopstateRouter({ loadAll, fillForm, showForm, showCompare, s
       else if (route.view === "consultorio" || route.view === "horarios" || route.view === "honorarios") switchTab("consultorio");
       else if (route.view === "clara" || route.view === "configuracion") switchTab("clara");
       else if (route.view === "interacciones" || route.view === "chats") switchTab("interacciones");
-      else if (route.view === "admin" || route.view === "administracion") switchTab("admin");
+      else if (route.view === "admin" || route.view === "administracion") {
+        if (getSessionUser()?.role === "admin") switchTab("admin");
+        else switchTab("inicio");
+      }
       else switchTab("inicio");
     } finally {
       syncUrlWithViewState(event.state, false, true);
