@@ -21,6 +21,8 @@ let filteredInteractions = [];
 let currentPage = 0;
 let pageSize = 20;
 let activeStatusFilter = "all"; // "all" | "pending" | "answered"
+let autoRefreshTimer = null;
+let isRefreshing = false;
 
 export function showInteraccionesView() {
   const view = switchActiveView("view-interacciones");
@@ -30,33 +32,87 @@ export function showInteraccionesView() {
     sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "interacciones" }));
   } catch {}
 
-  loadInteracciones();
+  loadInteracciones(true);
+  startAutoRefresh();
 }
 
 export function hideInteraccionesView() {
   const view = document.getElementById("view-interacciones");
   if (view) view.hidden = true;
+  stopAutoRefresh();
+}
+
+function startAutoRefresh() {
+  stopAutoRefresh();
+  autoRefreshTimer = setInterval(() => {
+    const view = document.getElementById("view-interacciones");
+    if (view && !view.hidden && document.visibilityState === "visible") {
+      loadInteracciones(false);
+    }
+  }, 25000);
+}
+
+function stopAutoRefresh() {
+  if (autoRefreshTimer) {
+    clearInterval(autoRefreshTimer);
+    autoRefreshTimer = null;
+  }
 }
 
 export async function loadInteracciones(force = false) {
   const container = document.getElementById("interacciones-list-container");
+  const refreshBtn = document.getElementById("btn-refresh-interacciones");
   if (!container) return;
 
-  if (container.children.length === 0 || force) {
+  if (isRefreshing) return;
+  isRefreshing = true;
+
+  if (refreshBtn && force) {
+    refreshBtn.disabled = true;
+    refreshBtn.style.opacity = "0.75";
+    refreshBtn.innerHTML = `↻ Actualizando...`;
+  }
+
+  if (container.children.length === 0) {
     container.innerHTML = `<div style="text-align:center;padding:40px;color:var(--muted);"><span class="loading-spinner"></span> Cargando conversaciones recientes...</div>`;
   }
 
   try {
-    const resp = await api("interacciones.php");
+    const query = force
+      ? `interacciones.php?sync=1&_t=${Date.now()}`
+      : `interacciones.php?_t=${Date.now()}`;
+    const resp = await api(query, { cache: "no-store" });
     const isOk = Boolean(resp && (resp.ok === true || resp.status === "success" || Array.isArray(resp.items) || Array.isArray(resp.interactions)));
     if (!isOk) {
-      container.innerHTML = `<div class="interacciones-empty"><p>⚠️ No se pudieron cargar las interacciones en este momento.</p></div>`;
+      if (cachedInteractions.length === 0) {
+        container.innerHTML = `<div class="interacciones-empty"><p>⚠️ No se pudieron cargar las interacciones en este momento.</p></div>`;
+      }
       return;
     }
     cachedInteractions = Array.isArray(resp.items) ? resp.items : (Array.isArray(resp.interactions) ? resp.interactions : []);
-    applyFilters(true);
+    applyFilters(!force);
+
+    if (refreshBtn && force) {
+      refreshBtn.innerHTML = `✓ Actualizado`;
+      setTimeout(() => {
+        if (refreshBtn) {
+          refreshBtn.disabled = false;
+          refreshBtn.style.opacity = "1";
+          refreshBtn.innerHTML = `↻ Actualizar`;
+        }
+      }, 1200);
+    }
   } catch (err) {
-    container.innerHTML = `<div class="interacciones-empty"><p>⚠️ Error al conectar con el servidor: ${escapeHtml(err.message || String(err))}</p></div>`;
+    if (cachedInteractions.length === 0) {
+      container.innerHTML = `<div class="interacciones-empty"><p>⚠️ Error al conectar con el servidor: ${escapeHtml(err.message || String(err))}</p></div>`;
+    }
+    if (refreshBtn && force) {
+      refreshBtn.disabled = false;
+      refreshBtn.style.opacity = "1";
+      refreshBtn.innerHTML = `↻ Actualizar`;
+    }
+  } finally {
+    isRefreshing = false;
   }
 }
 
@@ -252,4 +308,14 @@ export function initInteraccionesModule() {
 
   if (searchInput) searchInput.addEventListener("input", () => applyFilters(true));
   if (refreshBtn) refreshBtn.addEventListener("click", () => loadInteracciones(true));
+
+  const triggerTabFocusRefresh = () => {
+    const view = document.getElementById("view-interacciones");
+    if (view && !view.hidden && document.visibilityState === "visible") {
+      loadInteracciones(false);
+    }
+  };
+
+  document.addEventListener("visibilitychange", triggerTabFocusRefresh);
+  window.addEventListener("focus", triggerTabFocusRefresh);
 }
