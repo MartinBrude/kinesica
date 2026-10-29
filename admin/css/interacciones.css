@@ -152,6 +152,40 @@ button.interacciones-stat-pill {
   outline-offset: 1px;
 }
 
+/* Cápsula Archivadas: Inactivo vs Activo */
+.filter-pill.filter-archived {
+  background: #f1f5f9;
+  color: #475569;
+  border-color: #cbd5e1;
+}
+
+.filter-pill.filter-archived:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+}
+
+.filter-pill.filter-archived.is-active {
+  background: #475569;
+  color: #ffffff;
+  border-color: #334155;
+  box-shadow: 0 2px 8px rgba(71, 85, 105, 0.35);
+  font-weight: 700;
+}
+
+/* Detalle sutil del total de contactos */
+.interacciones-total-detail {
+  display: inline-flex;
+  align-items: center;
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 500;
+  padding: 4px 10px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+
 /* Cápsula Pendientes: Inactivo vs Activo */
 .filter-pill.filter-pending {
   background: #fef5e7;

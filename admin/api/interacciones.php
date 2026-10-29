@@ -50,17 +50,21 @@ if ($method === 'GET') {
     $items = [];
     $answeredCount = 0;
     $unansweredCount = 0;
+    $archivedCount = 0;
     $grouped = [];
-    $includeArchived = !empty($_GET['archived']);
 
     foreach ($rawItems as &$it) {
         $it['answered'] = !empty($it['answered']);
         $it['archived'] = !empty($it['archived']);
-        if ($includeArchived || !$it['archived']) {
-            $items[] = $it;
-            $it['answered'] ? $answeredCount++ : $unansweredCount++;
-            $grouped[$it['date'] ?? 'Otras fechas'][] = $it;
+        $items[] = $it;
+        if ($it['archived']) {
+            $archivedCount++;
+        } elseif ($it['answered']) {
+            $answeredCount++;
+        } else {
+            $unansweredCount++;
         }
+        $grouped[$it['date'] ?? 'Otras fechas'][] = $it;
     }
     unset($it);
 
@@ -70,6 +74,7 @@ if ($method === 'GET') {
         'total' => count($items),
         'answered_count' => $answeredCount,
         'unanswered_count' => $unansweredCount,
+        'archived_count' => $archivedCount,
         'items' => $items,
         'interactions' => $items,
         'grouped' => $grouped,
@@ -80,7 +85,7 @@ if ($method === 'POST') {
     $input = read_json();
     $action = (string) ($input['action'] ?? '');
 
-    if ($action === 'archive' || $action === 'toggle_answered') {
+    if ($action === 'archive' || $action === 'unarchive' || $action === 'toggle_answered') {
         $id = trim((string) ($input['id'] ?? ''));
         if ($id === '') {
             json_out(400, ['error' => 'id es requerido']);
@@ -93,6 +98,9 @@ if ($method === 'POST') {
                 if ($action === 'archive') {
                     $it['archived'] = true;
                     $it['archived_at'] = $nowIso;
+                } elseif ($action === 'unarchive') {
+                    $it['archived'] = false;
+                    $it['archived_at'] = null;
                 } else {
                     $answered = (bool) ($input['answered'] ?? false);
                     $it['answered'] = $answered;

@@ -109,6 +109,7 @@ function renderInteractions(items) {
     let emptyMsg = "No se encontraron conversaciones con los filtros actuales.";
     if (activeStatusFilter === "pending") emptyMsg = "No hay consultas pendientes de respuesta.";
     else if (activeStatusFilter === "answered") emptyMsg = "No hay consultas marcadas como respondidas.";
+    else if (activeStatusFilter === "archived") emptyMsg = "No hay conversaciones archivadas.";
 
     container.innerHTML = `
       <div class="interacciones-empty">
@@ -154,27 +155,30 @@ function renderInteractions(items) {
   container.innerHTML = html;
   bindInteractionEvents(container, {
     getSessionUser,
-    onArchive: async ({ convId, convName }) => {
-      const ok = await dialogConfirm(
-        `¿Archivar la conversación con "${convName}"? Se retirará de la lista.`,
-        { okText: "Archivar", cancelText: "Cancelar" }
-      );
+    onArchive: async ({ convId, convName, isArchived }) => {
+      const q = isArchived
+        ? `¿Desarchivar la conversación con "${convName}"? Volverá a la lista activa.`
+        : `¿Archivar la conversación con "${convName}"? Se retirará de la lista activa.`;
+      const ok = await dialogConfirm(q, {
+        okText: isArchived ? "Desarchivar" : "Archivar",
+        cancelText: "Cancelar"
+      });
       if (!ok) return;
 
       const targetConv = cachedInteractions.find((i) => i.id === convId);
-      if (targetConv) targetConv.archived = true;
+      if (targetConv) targetConv.archived = !isArchived;
       applyFilters(false);
 
       try {
         const resp = await api("interacciones.php", {
           method: "POST",
-          body: JSON.stringify({ action: "archive", id: convId }),
+          body: JSON.stringify({ action: isArchived ? "unarchive" : "archive", id: convId }),
         });
-        if (!resp || !resp.ok) throw new Error(resp?.error || "Error al archivar");
+        if (!resp || !resp.ok) throw new Error(resp?.error || "Error al actualizar archivo");
       } catch (err) {
-        if (targetConv) targetConv.archived = false;
+        if (targetConv) targetConv.archived = isArchived;
         applyFilters(false);
-        console.error("Error al archivar interacción:", err);
+        console.error("Error al archivar/desarchivar interacción:", err);
       }
     },
     onToggleAnswered: async ({ convId, convKey, isChecked, chk, cardEl, pillEl }) => {

@@ -93,8 +93,11 @@ export function buildInteractionCardHtml(conv, itemIdx, senderName) {
   const isAnswered = Boolean(conv?.answered);
   const initial = name !== "Paciente sin nombre" ? name.charAt(0).toUpperCase() : "👤";
 
+  const isArchived = Boolean(conv?.archived);
+  const archiveLabel = isArchived ? "Desarchivar conversación" : "Archivar conversación";
+
   return `
-    <article class="interaccion-card ${isAnswered ? "is-answered" : ""}" id="${cardId}">
+    <article class="interaccion-card ${isAnswered ? "is-answered" : ""} ${isArchived ? "is-archived" : ""}" id="${cardId}">
       <div class="interaccion-header">
         <div class="interaccion-user-info">
           <div class="interaccion-avatar" aria-hidden="true">${escapeHtml(initial)}</div>
@@ -123,7 +126,7 @@ export function buildInteractionCardHtml(conv, itemIdx, senderName) {
             Abrir WhatsApp
           </a>
 
-          <button type="button" class="btn-archive-interaction" data-conv-id="${escapeHtml(conv?.id || convKey)}" data-conv-name="${escapeHtml(name)}" title="Archivar conversación" aria-label="Archivar conversación">
+          <button type="button" class="btn-archive-interaction ${isArchived ? "is-archived" : ""}" data-conv-id="${escapeHtml(conv?.id || convKey)}" data-conv-name="${escapeHtml(name)}" data-archived="${isArchived ? "1" : "0"}" title="${archiveLabel}" aria-label="${archiveLabel}">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <polyline points="21 8 21 21 3 21 3 8"></polyline>
               <rect x="1" y="3" width="22" height="5"></rect>
@@ -218,9 +221,10 @@ export function bindInteractionEvents(container, { onToggleAnswered, onArchive, 
     btn.addEventListener("click", () => {
       const convId = btn.getAttribute("data-conv-id");
       const convName = btn.getAttribute("data-conv-name") || "este contacto";
+      const isArchived = btn.getAttribute("data-archived") === "1";
       const cardEl = btn.closest(".interaccion-card");
       if (typeof onArchive === "function") {
-        onArchive({ convId, convName, btn, cardEl });
+        onArchive({ convId, convName, isArchived, btn, cardEl });
       }
     });
   });
