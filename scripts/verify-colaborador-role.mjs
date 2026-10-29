@@ -18,8 +18,16 @@ assert.match(profPhp, /\$u\['name'\]\s*=/);
 assert.match(profPhp, /colaborador/);
 
 // 3. Verificar que profesionales_sync.php excluya a colaboradores de las opciones clínicas de WhatsApp
+// y que NO requiera settings.php (evitando exit anticipado en GET)
 const profSync = fs.readFileSync("admin/api/profesionales_sync.php", "utf8");
 assert.match(profSync, /role != "colaborador"/);
+assert.ok(!profSync.includes("require_once __DIR__ . '/settings.php'"), "profesionales_sync.php no debe requerir settings.php");
+assert.match(profSync, /kinesica_settings_storage\.php/);
+
+// 3b. Verificar inclusión segura de settings.php y lib_auth.php
+const settingsPhpRaw = fs.readFileSync("admin/api/settings.php", "utf8");
+assert.match(settingsPhpRaw, /KINESICA_SETTINGS_INCLUDED/);
+assert.match(libAuth, /SHOW COLUMNS FROM users LIKE 'login_count'/);
 
 // 4. Verificar fichas.php
 const fichasPhp = fs.readFileSync("admin/api/fichas.php", "utf8");

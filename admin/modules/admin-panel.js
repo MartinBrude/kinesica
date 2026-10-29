@@ -11,13 +11,13 @@ import {
   loadProfesionalesData,
   closeProfModal,
   isProfModalOpen,
-} from "./admin-profesionales.js";
+} from "./admin-profesionales.js?v=82";
 import {
   initGastosUI,
   loadGastosData,
   closeGastoModal,
   isGastoModalOpen,
-} from "./admin-gastos.js";
+} from "./admin-gastos.js?v=82";
 
 const viewAdmin = document.querySelector("#view-admin");
 

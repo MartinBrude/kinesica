@@ -1,6 +1,10 @@
 <?php
 declare(strict_types=1);
 
+if (defined('KINESICA_SETTINGS_INCLUDED')) {
+    return;
+}
+
 define('KINESICA_HORARIOS_INCLUDED', true);
 require_once __DIR__ . '/horarios.php';
 

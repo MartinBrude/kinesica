@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/settings.php';
+require_once __DIR__ . '/kinesica_settings_storage.php';
 
 function sync_settings_practitioner(string $username, string $email, string $phone, bool $active = true): void
 {

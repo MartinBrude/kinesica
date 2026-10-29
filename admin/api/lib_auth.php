@@ -155,6 +155,10 @@ function ensure_users_role_column(): void
         if (!$colLastName) {
             db()->exec("ALTER TABLE users ADD last_name VARCHAR(60) NULL DEFAULT NULL");
         }
+        $colLoginCount = db()->query("SHOW COLUMNS FROM users LIKE 'login_count'")->fetch();
+        if (!$colLoginCount) {
+            db()->exec("ALTER TABLE users ADD login_count INT UNSIGNED NOT NULL DEFAULT 0");
+        }
 
         $seedUsers = [
             'martin' => ['name' => 'Martín', 'email' => 'martin.brude@gmail.com', 'telefono' => '', 'first_name' => 'Martín', 'last_name' => 'Brude', 'role' => 'admin'],

@@ -9,7 +9,7 @@ import { showLibrary } from "./library.js?v=93";
 import { showPacientesView, hidePacientesView } from "./pacientes.js?v=3";
 import { showDashboardView, hideDashboardView, updateDashboardClara, updateDashboardBooking } from "./dashboard.js?v=10";
 import { showConsultorioView, hideConsultorioView, showClaraView, hideClaraView } from "./configuracion.js?v=28";
-import { showAdminView, hideAdminView } from "./admin-panel.js?v=9";
+import { showAdminView, hideAdminView } from "./admin-panel.js?v=10";
 import { showInteraccionesView, hideInteraccionesView } from "./interacciones.js?v=4";
 import { applyHoursToRuntime } from "./horarios.js?v=3";
 
