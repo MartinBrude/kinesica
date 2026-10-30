@@ -10,7 +10,7 @@ import { showPacientesView, hidePacientesView } from "./pacientes.js?v=3";
 import { showDashboardView, hideDashboardView, updateDashboardClara, updateDashboardBooking } from "./dashboard.js?v=10";
 import { showConsultorioView, hideConsultorioView, showClaraView, hideClaraView } from "./configuracion.js?v=28";
 import { showAdminView, hideAdminView } from "./admin-panel.js?v=10";
-import { showInteraccionesView, hideInteraccionesView } from "./interacciones.js?v=6";
+import { showInteraccionesView, hideInteraccionesView } from "./interacciones.js?v=7";
 import { applyHoursToRuntime } from "./horarios.js?v=3";
 
 export function switchTab(tab) {

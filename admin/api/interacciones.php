@@ -158,15 +158,16 @@ if ($method === 'GET') {
         error_log('interacciones GET: ' . $e->getMessage());
         json_out(503, ['error' => 'Base de datos no disponible. Los mensajes entrantes se siguen guardando y aparecerán al recuperarse.', 'spool_pending' => interacciones_spool_pending_count()]);
     }
+    $items = $view['items'];
     json_out(200, [
         'ok' => true,
         'status' => 'success',
-        'total' => count($view['items']),
+        'total' => count($items),
         'answered_count' => $view['answered_count'],
         'unanswered_count' => $view['unanswered_count'],
         'archived_count' => $view['archived_count'],
-        'items' => $view['items'],
-        'interactions' => $view['items'],
+        'items' => $items,
+        'interactions' => $items,
         'grouped' => $view['grouped'],
         'health' => $health,
         'sync' => $house['reconcile'],

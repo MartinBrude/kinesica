@@ -860,10 +860,9 @@ await test("kinesica_extract_ficha_photos extrae y deduplica fotos válidas en u
   assert.match(fichasPhp, /kinesica_extract_ficha_photos\(\$prevData\)/, "fichas.php debe usar kinesica_extract_ficha_photos en DELETE");
 });
 
-await test("interacciones.php limita almacenamiento a 1000 items más recientes y cumple contrato frontend", () => {
+await test("interacciones.php utiliza almacenamiento durable y cumple contrato frontend", () => {
   const interaccionesPhp = fs.readFileSync(path.join(adminDir, "api/interacciones.php"), "utf8");
-  assert.match(interaccionesPhp, /count\(\$items\)\s*>\s*1000/, "interacciones.php debe limitar el total de items a 1000");
-  assert.match(interaccionesPhp, /interacciones\.json/, "interacciones.php debe leer de interacciones.json");
+  assert.match(interaccionesPhp, /lib_interacciones_view\.php/, "interacciones.php debe incluir lib_interacciones_view.php");
   assert.match(interaccionesPhp, /'ok'\s*=>\s*true/, "interacciones.php GET debe retornar ok => true");
   assert.match(interaccionesPhp, /'items'\s*=>\s*\$items/, "interacciones.php GET debe retornar items => $items");
 });

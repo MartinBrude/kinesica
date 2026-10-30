@@ -16,6 +16,7 @@ import {
 } from "./interacciones-render.js?v=2";
 import { filterInteractionsList, renderStatsHeader } from "./interacciones-filter.js?v=2";
 import { isMartinBrudePhone } from "./phone-search.js?v=2";
+import { renderInteraccionesHealth } from "./interacciones-health.js?v=1";
 
 let cachedInteractions = [];
 let filteredInteractions = [];
@@ -98,6 +99,7 @@ export async function loadInteracciones(force = false) {
       return item;
     });
     applyFilters(!force);
+    renderInteraccionesHealth(document.getElementById("interacciones-stats"), resp.health, resp.sync);
 
     if (refreshBtn && force) {
       refreshBtn.innerHTML = `✓ Actualizado`;
