@@ -16,9 +16,17 @@ $pdo->exec(
         display_name VARCHAR(80) NOT NULL,
         password_hash VARCHAR(255) NOT NULL,
         totp_secret VARCHAR(64) NOT NULL,
-        totp_confirmed TINYINT(1) NOT NULL DEFAULT 0
+        totp_confirmed TINYINT(1) NOT NULL DEFAULT 0,
+        role VARCHAR(32) NOT NULL DEFAULT \'professional\',
+        active TINYINT(1) NOT NULL DEFAULT 1,
+        email VARCHAR(120) NULL DEFAULT NULL,
+        telefono VARCHAR(30) NULL DEFAULT NULL,
+        first_name VARCHAR(60) NULL DEFAULT NULL,
+        last_name VARCHAR(60) NULL DEFAULT NULL,
+        login_count INT UNSIGNED NOT NULL DEFAULT 0
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4'
 );
+ensure_users_role_column(true);
 $pdo->exec(
     'CREATE TABLE IF NOT EXISTS fichas (
         id CHAR(36) PRIMARY KEY,

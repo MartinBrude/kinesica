@@ -13,17 +13,25 @@ if (!is_admin($auth)) {
     json_out(403, ['error' => 'Acceso denegado. Se requieren permisos de administrador.']);
 }
 
-ensure_users_role_column();
-
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 if ($method === 'GET') {
-    $stmt = $pdo->query(
-        'SELECT username, display_name, first_name, last_name, email, telefono, role, active, totp_confirmed, login_count
-         FROM users 
-         ORDER BY (role = "admin") DESC, (username = "norberto") DESC, (username = "maria") DESC, (username = "facundo") DESC, display_name ASC'
-    );
-    $users = $stmt->fetchAll();
+    try {
+        $stmt = $pdo->query(
+            'SELECT username, display_name, first_name, last_name, email, telefono, role, active, totp_confirmed, login_count
+             FROM users 
+             ORDER BY (role = "admin") DESC, (username = "norberto") DESC, (username = "maria") DESC, (username = "facundo") DESC, display_name ASC'
+        );
+        $users = $stmt->fetchAll();
+    } catch (Throwable $e) {
+        ensure_users_role_column(true);
+        $stmt = $pdo->query(
+            'SELECT username, display_name, first_name, last_name, email, telefono, role, active, totp_confirmed, login_count
+             FROM users 
+             ORDER BY (role = "admin") DESC, (username = "norberto") DESC, (username = "maria") DESC, (username = "facundo") DESC, display_name ASC'
+        );
+        $users = $stmt->fetchAll();
+    }
     foreach ($users as &$u) {
         $u['name'] = (string) ($u['display_name'] ?: trim(($u['first_name'] ?? '') . ' ' . ($u['last_name'] ?? '')));
         if ($u['name'] === '') $u['name'] = (string) $u['username'];

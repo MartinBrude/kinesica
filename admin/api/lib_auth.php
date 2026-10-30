@@ -10,7 +10,6 @@ function require_auth(): array
     $username = (string) $_SESSION['user'];
     $role = (string) ($_SESSION['role'] ?? 'professional');
     try {
-        ensure_users_role_column();
         $stmt = db()->prepare('SELECT display_name, role, active FROM users WHERE username = :username LIMIT 1');
         $stmt->execute(['username' => $username]);
         $row = $stmt->fetch();
@@ -28,6 +27,27 @@ function require_auth(): array
             }
         }
     } catch (Throwable $e) {
+        // En caso de error por esquema incompleto en primer arranque, intentar migrar una vez y reintentar
+        try {
+            ensure_users_role_column(true);
+            $stmt = db()->prepare('SELECT display_name, role, active FROM users WHERE username = :username LIMIT 1');
+            $stmt->execute(['username' => $username]);
+            $row = $stmt->fetch();
+            if ($row) {
+                if (isset($row['active']) && (int) $row['active'] === 0) {
+                    $_SESSION = [];
+                    json_out(401, ['login' => true]);
+                }
+                if (!empty($row['role'])) {
+                    $role = (string) $row['role'];
+                    $_SESSION['role'] = $role;
+                }
+                if (!empty($row['display_name'])) {
+                    $_SESSION['name'] = (string) $row['display_name'];
+                }
+            }
+        } catch (Throwable $e2) {
+        }
     }
     return [
         'username' => $username,
@@ -104,7 +124,6 @@ function user_email(string $username): string
     if ($username === '') {
         return '';
     }
-    ensure_users_role_column();
     try {
         $stmt = db()->prepare('SELECT email FROM users WHERE username = :username LIMIT 1');
         $stmt->execute(['username' => $username]);
@@ -118,10 +137,15 @@ function user_email(string $username): string
     return (string) ($emails[$username] ?? '');
 }
 
-function ensure_users_role_column(): void
+function ensure_users_role_column(bool $force = false): void
 {
     static $checked = false;
-    if ($checked) {
+    if ($checked && !$force) {
+        return;
+    }
+    $marker = __DIR__ . '/data/.users_schema_migrated';
+    if (!$force && is_file($marker)) {
+        $checked = true;
         return;
     }
     try {
@@ -160,6 +184,23 @@ function ensure_users_role_column(): void
             db()->exec("ALTER TABLE users ADD login_count INT UNSIGNED NOT NULL DEFAULT 0");
         }
 
+        $dir = dirname($marker);
+        if (!is_dir($dir)) {
+            @mkdir($dir, 0775, true);
+        }
+        @file_put_contents($marker, (string) time());
+    } catch (Throwable $e) {}
+    $checked = true;
+}
+
+function seed_default_users(?PDO $pdo = null): void
+{
+    $pdo = $pdo ?? db();
+    try {
+        $cnt = (int) $pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
+        if ($cnt > 0) {
+            return;
+        }
         $seedUsers = [
             'martin' => ['name' => 'Martín', 'email' => 'martin.brude@gmail.com', 'telefono' => '+34 658 44 49 35', 'first_name' => 'Martín', 'last_name' => 'Brude', 'role' => 'admin'],
             'norberto' => ['name' => 'Norberto', 'email' => 'norberto1712@gmail.com', 'telefono' => '5491161564311', 'first_name' => 'Norberto', 'last_name' => 'Brude', 'role' => 'admin'],
@@ -167,16 +208,9 @@ function ensure_users_role_column(): void
             'facundo' => ['name' => 'Facundo Vivardo', 'email' => 'facu86@gmail.com', 'telefono' => '', 'first_name' => 'Facundo', 'last_name' => 'Vivardo', 'role' => 'colaborador'],
         ];
 
-        $ins = db()->prepare(
+        $ins = $pdo->prepare(
             'INSERT INTO users (username, display_name, password_hash, totp_secret, totp_confirmed, role, active, email, telefono, first_name, last_name, login_count)
-             VALUES (:username, :name, "", "", 0, :role, 1, :email, :telefono, :first_name, :last_name, 0)
-             ON DUPLICATE KEY UPDATE
-                 email = COALESCE(NULLIF(email, ""), VALUES(email)),
-                 telefono = COALESCE(NULLIF(telefono, ""), VALUES(telefono)),
-                 first_name = COALESCE(NULLIF(first_name, ""), VALUES(first_name)),
-                 last_name = COALESCE(NULLIF(last_name, ""), VALUES(last_name)),
-                 display_name = IF(display_name = "" OR display_name IS NULL, VALUES(display_name), display_name),
-                 role = IF(role = "" OR role IS NULL, VALUES(role), role)'
+             VALUES (:username, :name, "", "", 0, :role, 1, :email, :telefono, :first_name, :last_name, 0)'
         );
 
         foreach ($seedUsers as $uName => $uData) {
@@ -186,21 +220,20 @@ function ensure_users_role_column(): void
                 'first_name' => $uData['first_name'], 'last_name' => $uData['last_name'],
             ]);
         }
-        db()->exec("UPDATE users SET email = 'facu86@gmail.com' WHERE username = 'facundo' AND (email != 'facu86@gmail.com' OR email IS NULL)");
-        db()->exec("UPDATE users SET telefono = '+34 658 44 49 35' WHERE username = 'martin' AND (telefono != '+34 658 44 49 35' OR telefono IS NULL)");
     } catch (Throwable $e) {}
-    $checked = true;
 }
 
 function user_role(string $username): string
 {
-    ensure_users_role_column();
-    $stmt = db()->prepare('SELECT role FROM users WHERE username = :username LIMIT 1');
-    $stmt->execute(['username' => $username]);
-    $role = $stmt->fetchColumn();
-    if ($role) {
-        return (string) $role;
-    }
+    try {
+        $stmt = db()->prepare('SELECT role FROM users WHERE username = :username LIMIT 1');
+        $stmt->execute(['username' => $username]);
+        $role = $stmt->fetchColumn();
+        if ($role) {
+            return (string) $role;
+        }
+    } catch (Throwable $e) {}
+
     if ($username === 'martin') return 'admin';
     if ($username === 'facundo') return 'colaborador';
     return 'professional';

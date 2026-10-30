@@ -11,6 +11,15 @@ assert.match(libAuth, /facu86@gmail\.com/);
 assert.match(libAuth, /\$username\s*===\s*'facundo'/);
 assert.match(libAuth, /ALTER TABLE users MODIFY COLUMN role VARCHAR/);
 
+// 1b. Verificar que ensure_users_role_column NO ejecute seeds ni pise datos en cada petición
+assert.ok(!libAuth.includes("UPDATE users SET email = 'facu86@gmail.com'"), "lib_auth.php no debe forzar el email de Facundo con UPDATE en cada petición");
+assert.ok(!libAuth.includes("UPDATE users SET telefono = '+34 658 44 49 35'"), "lib_auth.php no debe forzar el teléfono de Martín con UPDATE en cada petición");
+assert.ok(!/function ensure_users_role_column[^{]*\{[^}]*INSERT\s+INTO\s+users/s.test(libAuth), "ensure_users_role_column no debe insertar usuarios (seeds)");
+assert.ok(!/function require_auth[^{]*\{[^}]*\bensure_users_role_column\(\s*\);/s.test(libAuth), "require_auth no debe ejecutar ensure_users_role_column en el camino normal");
+assert.match(libAuth, /\.users_schema_migrated/, "ensure_users_role_column debe usar un archivo marcador para no repetir DDL");
+const libPhp = fs.readFileSync("admin/api/lib.php", "utf8");
+assert.ok(!libPhp.includes("ensure_users_role_column"), "lib.php no debe invocar ensure_users_role_column en resolve_username");
+
 // 2. Verificar profesionales.php
 const profPhp = fs.readFileSync("admin/api/profesionales.php", "utf8");
 assert.match(profPhp, /'users'\s*=>\s*\$users/);

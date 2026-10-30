@@ -17,7 +17,6 @@ function resolve_username(string $identifier): string
     $clean = mb_strtolower(trim($identifier), 'UTF-8');
     $clean = strtr($clean, ['á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u', 'ü' => 'u']);
     if ($clean === '') return '';
-    ensure_users_role_column();
     try {
         $stmt = db()->prepare('SELECT username FROM users WHERE username = :u OR LOWER(email) = :e LIMIT 1');
         $stmt->execute(['u' => $clean, 'e' => trim($identifier)]);
