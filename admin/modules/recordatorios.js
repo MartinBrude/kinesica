@@ -7,12 +7,12 @@ import { switchActiveView } from "./dom.js?v=78";
 import {
   renderRecordatoriosList,
   renderRecordatoriosPager,
-} from "./recordatorios-render.js?v=1";
+} from "./recordatorios-render.js?v=2";
 import {
   filterRecordatoriosList,
   renderRecordatoriosStats,
-} from "./recordatorios-filter.js?v=1";
-import { renderRecordatoriosRules } from "./recordatorios-rules.js?v=1";
+} from "./recordatorios-filter.js?v=2";
+import { renderRecordatoriosRules } from "./recordatorios-rules.js?v=2";
 
 let cachedItems = [];
 let cachedCounts = {};

@@ -7,7 +7,7 @@ declare(strict_types=1);
  */
 
 const RECORDATORIOS_MAX_BATCH = 200;
-const RECORDATORIOS_STATUSES = ['sent', 'failed', 'missing_phone', 'skipped', 'run_skipped'];
+const RECORDATORIOS_STATUSES = ['sent', 'sent_email', 'failed', 'missing_phone', 'skipped', 'run_skipped'];
 const RECORDATORIOS_SKIP_REASONS = [
     'clara_inactive', 'cancelled', 'blocked', 'waitlist', 'non_appointment',
     'duplicate', 'not_tomorrow', 'other',

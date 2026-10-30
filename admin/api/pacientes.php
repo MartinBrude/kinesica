@@ -69,19 +69,26 @@ try {
         $action = $_GET['action'] ?? '';
 
         if ($action === 'directory' || $action === 'get_directory') {
-            $stmt = $pdo->query('SELECT nombre, apellido, nombre_completo, telefono FROM pacientes WHERE telefono IS NOT NULL AND telefono != ""');
+            $stmt = $pdo->query('SELECT nombre, apellido, nombre_completo, telefono, email FROM pacientes');
             $directory = [];
+            $emails = [];
             while ($row = $stmt->fetch()) {
-                $tel = (string) $row['telefono'];
-                $norm = normalize_search_key($row['nombre_completo']);
-                if ($norm !== '') $directory[$norm] = $tel;
-                if (!empty($row['nombre_completo'])) $directory[$row['nombre_completo']] = $tel;
+                $tel = trim((string) ($row['telefono'] ?? ''));
+                $email = trim((string) ($row['email'] ?? ''));
+                $keys = [];
+                $norm = normalize_search_key($row['nombre_completo'] ?? '');
+                if ($norm !== '') $keys[] = $norm;
+                if (!empty($row['nombre_completo'])) $keys[] = (string) $row['nombre_completo'];
                 $firstLast = trim(($row['nombre'] ?? '') . ' ' . ($row['apellido'] ?? ''));
-                if ($firstLast !== '') $directory[$firstLast] = $tel;
+                if ($firstLast !== '') $keys[] = $firstLast;
                 $lastFirst = trim(($row['apellido'] ?? '') . ' ' . ($row['nombre'] ?? ''));
-                if ($lastFirst !== '') $directory[$lastFirst] = $tel;
+                if ($lastFirst !== '') $keys[] = $lastFirst;
+                foreach (array_unique($keys) as $k) {
+                    if ($tel !== '') $directory[$k] = $tel;
+                    if ($email !== '' && is_valid_email_strict($email)) $emails[$k] = strtolower($email);
+                }
             }
-            json_out(200, ['status' => 'success', 'directory' => $directory]);
+            json_out(200, ['status' => 'success', 'directory' => $directory, 'emails' => $emails]);
         }
 
         if ($action === 'get_email_by_phone') {

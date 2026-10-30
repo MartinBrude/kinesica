@@ -209,10 +209,19 @@ function handleInsertPatient(sheet, payload) {
 function handleGetDirectory(sheet) {
   const data = sheet.getDataRange().getValues();
   const directory = {};
+  const emails = {};
   for (let i = 1; i < data.length; i++) {
     const rawName = String(data[i][0] || "").trim();
     const cleanName = rawName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     const rawPhone = String(data[i][2] || "").replace(/[^0-9]/g, '');
+    let email = "";
+    for (let c = 0; c < data[i].length; c++) {
+      const value = String(data[i][c] || "").trim();
+      if (isValidEmailAddress(value)) {
+        email = value.toLowerCase();
+        break;
+      }
+    }
     if (cleanName && rawPhone && rawPhone.length >= 8) {
       let phone = rawPhone;
       if (phone.startsWith('549') && phone.length >= 12) phone = phone.substring(0, 13);
@@ -220,12 +229,16 @@ function handleGetDirectory(sheet) {
       else if (phone.startsWith('11') && phone.length === 10) phone = '549' + phone;
       directory[cleanName] = phone;
     }
+    if (cleanName && email) {
+      emails[cleanName] = email;
+    }
   }
   return createJsonResponse({
     status: "success",
     action: "get_directory",
     total: Object.keys(directory).length,
-    directory: directory
+    directory: directory,
+    emails: emails
   });
 }
 

@@ -21,7 +21,7 @@ export function formatRunDayHeader(isoDay) {
 }
 
 function statusClass(status) {
-  if (status === "sent") return "is-sent";
+  if (status === "sent" || status === "sent_email") return "is-sent";
   if (status === "failed") return "is-failed";
   if (status === "missing_phone") return "is-phone";
   if (status === "run_skipped" || status === "skipped") return "is-skipped";
@@ -33,7 +33,10 @@ export function buildRecordatorioCardHtml(item) {
   const statusLabel = escapeHtml(item.status_label || item.status || "");
   const appt =
     [item.appointment_date, item.appointment_time].filter(Boolean).join(" · ") || "—";
-  const phone = item.wa_id ? escapeHtml(item.wa_id) : "—";
+  const viaEmail = item.status === "sent_email";
+  const contact = viaEmail
+    ? (item.error_message ? `Email: ${escapeHtml(item.error_message)}` : "Email")
+    : `WhatsApp: ${item.wa_id ? escapeHtml(item.wa_id) : "—"}`;
   const reason = item.skip_reason_label
     ? `<span class="recordatorio-reason">${escapeHtml(item.skip_reason_label)}</span>`
     : "";
@@ -58,7 +61,7 @@ export function buildRecordatorioCardHtml(item) {
       ${summary}
       <div class="recordatorio-meta">
         <span>Turno: ${escapeHtml(appt)}</span>
-        <span>WhatsApp: ${phone}</span>
+        <span>${contact}</span>
         <span>Corrida: ${escapeHtml(item.run_at_local || item.run_at || "")}</span>
       </div>
       ${err}

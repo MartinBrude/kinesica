@@ -13,8 +13,8 @@ export function renderRecordatoriosRules(el) {
           <li><strong>Alcance:</strong> solo turnos del <em>día siguiente</em> en el calendario <code>consultorio</code>.</li>
           <li><strong>Clara activa:</strong> si el bot está pausado en admin (<code>clara_active</code>), la corrida se omite por completo.</li>
           <li><strong>Se omiten:</strong> cancelados/anulados, bloqueos, lista de espera, feriados/vacaciones y eventos que no son turnos.</li>
-          <li><strong>Teléfono:</strong> primero en el evento de Calendar; si falta, el directorio de Pacientes. Sin número → no se envía y se alerta a Norberto.</li>
-          <li><strong>Envío:</strong> plantilla Meta <code>recordatorio_turno_kinesica</code> (Confirmar / Cancelar). Fallos de Meta (p. ej. ventana 24h) se registran como fallidos y alertan al equipo.</li>
+          <li><strong>Contacto:</strong> teléfono primero (evento de Calendar → directorio de Pacientes). Si no hay teléfono pero hay email (evento o directorio) → se envía el recordatorio por correo. Si no hay teléfono ni email → se alerta a Norberto por WhatsApp.</li>
+          <li><strong>Envío WhatsApp:</strong> plantilla Meta <code>recordatorio_turno_kinesica</code> (Confirmar / Cancelar). Fallos de Meta (p. ej. ventana 24h) se registran como fallidos y alertan al equipo.</li>
           <li><strong>Respuestas:</strong> Confirmar/Cancelar las procesa Clara en el chat en vivo; no aparecen como mutaciones en este listado.</li>
         </ul>
       </div>

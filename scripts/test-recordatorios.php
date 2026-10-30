@@ -51,6 +51,14 @@ $sent = recordatorios_normalize_item([
 ], 'n8n-1', 1700000000);
 eq($sent['wa_id'], '5491144556677', 'wa_id limpio');
 eq($sent['event_key'], 'rem:n8n-1:calABC:sent', 'clave sent');
+$sentMail = recordatorios_normalize_item([
+    'status' => 'sent_email',
+    'calendar_event_id' => 'calMail',
+    'patient_name' => 'Ana',
+    'error_message' => 'ana@example.com',
+], 'n8n-1b', 1700000001);
+eq($sentMail['status'] ?? '', 'sent_email', 'status sent_email aceptado');
+eq($sentMail['event_key'], 'rem:n8n-1b:calMail:sent_email', 'clave sent_email');
 
 $badSkip = recordatorios_normalize_item([
     'status' => 'skipped',

@@ -4,6 +4,7 @@
 
 const STATUS_FILTERS = {
   sent: "sent",
+  sent_email: "sent_email",
   failed: "failed",
   missing_phone: "missing_phone",
   skipped: "skipped",
@@ -54,10 +55,13 @@ export function renderRecordatoriosStats(statsEl, { counts, activeStatusFilter }
     </button>`;
   };
   const skippedCount = (c.skipped || 0) + (c.run_skipped || 0);
+  const sentWa = c.sent || 0;
+  const sentMail = c.sent_email || 0;
   statsEl.innerHTML = [
-    pill("sent", "✓ Enviados", c.sent, "filter-sent"),
+    pill("sent", "✓ WhatsApp", sentWa, "filter-sent"),
+    pill("sent_email", "✉ Email", sentMail, "filter-sent"),
     pill("failed", "✕ Fallidos", c.failed, "filter-failed"),
-    pill("missing_phone", "☎ Sin teléfono", c.missing_phone, "filter-phone"),
+    pill("missing_phone", "☎ Sin contacto", c.missing_phone, "filter-phone"),
     pill("skipped", "⊘ Omitidos", skippedCount, "filter-skipped"),
   ].join("");
 }
