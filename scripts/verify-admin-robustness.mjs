@@ -867,16 +867,23 @@ await test("interacciones.php utiliza almacenamiento durable y cumple contrato f
   assert.match(interaccionesPhp, /'items'\s*=>\s*\$items/, "interacciones.php GET debe retornar items => $items");
 });
 
-await test("recordatorios.php ingest + vista SPA", () => {
+await test("recordatorios.php ingest + vista SPA + reconcile", () => {
   const remPhp = fs.readFileSync(path.join(adminDir, "api/recordatorios.php"), "utf8");
   assert.match(remPhp, /lib_recordatorios_view\.php/, "recordatorios.php debe incluir lib_recordatorios_view.php");
+  assert.match(remPhp, /lib_recordatorios_n8n\.php/, "recordatorios.php debe incluir lib_recordatorios_n8n.php");
   assert.match(remPhp, /action === 'ingest'/, "recordatorios.php debe soportar ingest");
+  assert.match(remPhp, /'reconcile'/, "recordatorios.php debe soportar reconcile");
   assert.match(remPhp, /'items'\s*=>\s*\$view\['items'\]/, "recordatorios.php GET debe retornar items");
+  assert.ok(fs.existsSync(path.join(adminDir, "api/lib_recordatorios_n8n.php")), "lib_recordatorios_n8n.php");
   assert.ok(fs.existsSync(path.join(adminDir, "modules/recordatorios.js")), "modulo recordatorios.js");
   assert.ok(fs.existsSync(path.join(adminDir, "css/recordatorios.css")), "css recordatorios.css");
+  const remN8n = fs.readFileSync(path.join(adminDir, "api/lib_recordatorios_n8n.php"), "utf8");
+  assert.match(remN8n, /baseline_ts/, "reconcile usa baseline_ts post-deploy");
+  assert.match(remN8n, /n8n_recordatorios_workflow_id/, "workflow id dedicado de recordatorios");
   const indexHtml = fs.readFileSync(path.join(adminDir, "index.html"), "utf8");
   assert.match(indexHtml, /id="view-recordatorios"/, "shell view-recordatorios");
   assert.match(indexHtml, /id="nav-btn-recordatorios"/, "nav Recordatorios");
+  assert.match(indexHtml, /id="recordatorios-sync"/, "indicador sync");
 });
 
 await test("todos los imports y exports en admin resuelven correctamente", () => {

@@ -75,7 +75,11 @@ if (r.status !== 0) {
       cleanup(1);
     } else {
       let status = 0;
-      for (const script of ["scripts/test-interacciones.php", "scripts/test-interacciones-http.php"]) {
+      for (const script of [
+        "scripts/test-interacciones.php",
+        "scripts/test-interacciones-http.php",
+        "scripts/test-recordatorios.php",
+      ]) {
         const t = spawnSync(php, [script], {
           stdio: "inherit",
           env: { ...process.env, KT_DB_HOST: "127.0.0.1", KT_DB_PORT: String(port), KT_DB_NAME: "kt", KT_DB_USER: "kt", KT_DB_PASS: "kt", KT_TMP: tmp },

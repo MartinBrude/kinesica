@@ -17,7 +17,9 @@ return [
     // 'n8n_url' => 'https://n8n.ejemplo.com',
     // 'n8n_user' => '',
     // 'n8n_password' => '',
-    // 'n8n_workflow_id' => '',
+    // 'n8n_workflow_id' => '', // Interacciones (chat Clara)
+    // 'n8n_recordatorios_workflow_id' => 'pDJHgYUv2jBLhKCQ', // Recordatorios 24h (solo corridas post-deploy)
+
     'mail_from' => 'no-reply@kinesica.com.ar',
     'admin_url' => 'https://www.kinesica.com.ar/admin/',
     // Token permanente Meta WhatsApp Cloud API (mismo que n8n / Apps Script).

@@ -13,6 +13,35 @@ const RECORDATORIOS_SKIP_REASONS = [
     'duplicate', 'not_tomorrow', 'other',
 ];
 
+function recordatorios_dir(): string
+{
+    $dir = defined('KINESICA_RECORDATORIOS_DIR') ? (string) KINESICA_RECORDATORIOS_DIR : (string) getenv('KINESICA_RECORDATORIOS_DIR');
+    if ($dir === '') {
+        $dir = defined('KINESICA_INTERACCIONES_DIR') ? (string) KINESICA_INTERACCIONES_DIR : (string) getenv('KINESICA_INTERACCIONES_DIR');
+    }
+    if ($dir === '') {
+        $dir = __DIR__ . '/data';
+    }
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0755, true);
+    }
+    return $dir;
+}
+
+function recordatorios_write_atomic(string $path, string $contents): bool
+{
+    $tmp = $path . '.tmp-' . bin2hex(random_bytes(4));
+    if (@file_put_contents($tmp, $contents, LOCK_EX) !== strlen($contents)) {
+        @unlink($tmp);
+        return false;
+    }
+    if (!@rename($tmp, $path)) {
+        @unlink($tmp);
+        return false;
+    }
+    return true;
+}
+
 function recordatorios_pdo(?PDO $pdo = null): PDO
 {
     return $pdo ?? db();
