@@ -8,6 +8,13 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/lib_interacciones_store.php';
 
+/** Ventana por defecto del panel (días locales del consultorio). */
+const INTERACCIONES_DEFAULT_DAYS = 30;
+/** Máximo pedible por query ?days= (evita tirar de todo el historial). */
+const INTERACCIONES_MAX_DAYS = 90;
+/** Tope de eventos crudos por request (los más recientes dentro de la ventana). */
+const INTERACCIONES_MAX_EVENTS = 5000;
+
 function interacciones_phone_format(string $digits): string
 {
     $d = interacciones_clean_wa_id($digits);
@@ -108,24 +115,41 @@ function interacciones_hidden_twins(array $events): array
 }
 
 /**
- * @return array{items:list<array>,answered_count:int,unanswered_count:int,archived_count:int,grouped:array}
+ * Vista de conversaciones. $days = null deja el historial completo (tests / dump);
+ * con entero aplica ventana acotada al inicio del día local (consultorio).
+ *
+ * @return array{items:list<array>,answered_count:int,unanswered_count:int,archived_count:int,grouped:array,days:?int,since_utc:?string,events_capped:bool}
  */
-function interacciones_load_view(?PDO $pdo = null, ?string $sinceUtc = null): array
+function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
 {
     $pdo = interacciones_pdo($pdo);
     interacciones_ensure_schema($pdo);
     $tz = interacciones_tz();
+    $sinceUtc = null;
+    $daysOut = null;
+    if ($days !== null) {
+        $daysOut = max(1, min(INTERACCIONES_MAX_DAYS, $days));
+        // Inicio del día local hace (N-1) días → N días calendario completos, sin partir conversaciones.
+        $sinceLocal = (new DateTimeImmutable('today', $tz))->modify('-' . ($daysOut - 1) . ' days');
+        $sinceUtc = $sinceLocal->setTimezone(new DateTimeZone('UTC'))->format('Y-m-d H:i:s');
+    }
+
+    // Más recientes primero + tope; luego se reordenan ASC para armar el hilo.
     $sql = 'SELECT id, event_key, wa_id, direction, body, ts_utc, patient_name FROM interaccion_eventos';
     $params = [];
     if ($sinceUtc !== null) {
         $sql .= ' WHERE ts_utc >= :since';
         $params['since'] = $sinceUtc;
     }
-    $stmt = $pdo->prepare($sql . ' ORDER BY ts_utc ASC, id ASC');
+    $sql .= ' ORDER BY ts_utc DESC, id DESC LIMIT ' . (int) INTERACCIONES_MAX_EVENTS;
+    $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    $eventsCapped = count($rows) >= INTERACCIONES_MAX_EVENTS;
+    $rows = array_reverse($rows);
 
     $convs = [];
-    while ($row = $stmt->fetch()) {
+    foreach ($rows as $row) {
         $ts = (new DateTimeImmutable((string) $row['ts_utc'], new DateTimeZone('UTC')))->getTimestamp();
         $local = (new DateTimeImmutable('@' . $ts))->setTimezone($tz);
         $key = $row['wa_id'] . '_' . $local->format('Y-m-d');
@@ -206,6 +230,9 @@ function interacciones_load_view(?PDO $pdo = null, ?string $sinceUtc = null): ar
         'unanswered_count' => $counts['unanswered'],
         'archived_count' => $counts['archived'],
         'grouped' => $grouped,
+        'days' => $daysOut,
+        'since_utc' => $sinceUtc,
+        'events_capped' => $eventsCapped,
     ];
 }
 

@@ -22,13 +22,20 @@ function absoluteTime(iso) {
     : "";
 }
 
-export function buildHealthParts(health, sync) {
+export function buildHealthParts(health, sync, opts = {}) {
   const parts = [];
   if (!health) return parts;
   if (health.last_message_at) {
     parts.push({ text: `Último mensaje recibido: ${absoluteTime(health.last_message_at)} (${relativeTime(health.last_message_at)})` });
   } else {
     parts.push({ text: "Aún no hay mensajes registrados" });
+  }
+  const days = Number(opts.days);
+  if (Number.isFinite(days) && days > 0) {
+    parts.push({ text: `Lista: últimos ${days} días` });
+  }
+  if (opts.eventsCapped) {
+    parts.push({ text: "⚠️ Ventana acotada por volumen; ampliá los días si hace falta historial más viejo", warn: true });
   }
   if (Number(health.spool_pending) > 0) {
     parts.push({ text: `⚠️ ${health.spool_pending} mensaje(s) en cola local; se importan solos`, warn: true });
@@ -43,7 +50,7 @@ export function buildHealthParts(health, sync) {
   return parts;
 }
 
-export function renderInteraccionesHealth(anchorEl, health, sync) {
+export function renderInteraccionesHealth(anchorEl, health, sync, opts = {}) {
   if (!anchorEl) return;
   let el = document.getElementById("interacciones-health");
   if (!el) {
@@ -53,7 +60,7 @@ export function renderInteraccionesHealth(anchorEl, health, sync) {
     anchorEl.insertAdjacentElement("afterend", el);
   }
   el.replaceChildren(
-    ...buildHealthParts(health, sync).map(({ text, warn }) => {
+    ...buildHealthParts(health, sync, opts).map(({ text, warn }) => {
       const span = document.createElement("span");
       span.textContent = text;
       if (warn) span.style.color = "#b45309";

@@ -373,6 +373,26 @@ $only = [15 => $execs[15]];
 interacciones_reconcile($pdo, 6, fake_n8n($only, 50, $log, false), $conf);
 eq(count_events($pdo), 2, 'push + pull del mismo mensaje no duplican');
 
+// ---------------------------------------------------------------- ventana por días
+section('Vista: ventana por días (no tira de todo el historial)');
+$pdo = fresh('days');
+$now = time();
+interacciones_store_events([
+    ev('5491100002001', 'patient', 'viejo', $now - (40 * 86400), 'wamid.OLD'),
+    ev('5491100002002', 'patient', 'reciente', $now - 3600, 'wamid.NEW'),
+], $pdo);
+$full = interacciones_load_view($pdo);
+eq(count($full['items']), 2, 'sin days = historial completo');
+eq($full['days'], null, 'days null sin filtro');
+$win = interacciones_load_view($pdo, 7);
+eq(count($win['items']), 1, '7 días excluye el de hace 40');
+eq($win['items'][0]['wa_id'], '5491100002002', 'queda el reciente');
+eq($win['days'], 7, 'days reflejado');
+ok(is_string($win['since_utc']) && $win['since_utc'] !== '', 'since_utc presente');
+eq($win['events_capped'], false, 'pocos eventos no capean');
+$clamped = interacciones_load_view($pdo, 999);
+eq($clamped['days'], INTERACCIONES_MAX_DAYS, 'days se acota al máximo');
+
 echo "\n";
 if ($fails > 0) {
     echo "❌ $fails comprobaciones fallaron ($passed OK)\n";

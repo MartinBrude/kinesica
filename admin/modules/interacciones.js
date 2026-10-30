@@ -16,12 +16,14 @@ import {
 } from "./interacciones-render.js?v=2";
 import { filterInteractionsList, renderStatsHeader } from "./interacciones-filter.js?v=2";
 import { isMartinBrudePhone } from "./phone-search.js?v=2";
-import { renderInteraccionesHealth } from "./interacciones-health.js?v=1";
+import { renderInteraccionesHealth } from "./interacciones-health.js?v=2";
 
 let cachedInteractions = [];
 let filteredInteractions = [];
 let currentPage = 0;
 let pageSize = 20;
+/** Ventana pedida al servidor (días locales). Debe coincidir con INTERACCIONES_DEFAULT_DAYS. */
+let daysWindow = 30;
 let activeStatusFilter = "all"; // "all" | "pending" | "answered"
 let autoRefreshTimer = null;
 let isRefreshing = false;
@@ -84,9 +86,8 @@ export async function loadInteracciones(force = false) {
   }
 
   try {
-    const query = force
-      ? `interacciones.php?sync=1&_t=${Date.now()}`
-      : `interacciones.php?_t=${Date.now()}`;
+    const syncQ = force ? "&sync=1" : "";
+    const query = `interacciones.php?days=${encodeURIComponent(String(daysWindow))}${syncQ}&_t=${Date.now()}`;
     const resp = await api(query, { cache: "no-store" });
     const isOk = Boolean(resp && (resp.ok === true || resp.status === "success" || Array.isArray(resp.items) || Array.isArray(resp.interactions)));
     if (!isOk) {
@@ -94,6 +95,9 @@ export async function loadInteracciones(force = false) {
         container.innerHTML = `<div class="interacciones-empty"><p>⚠️ No se pudieron cargar las interacciones en este momento.</p></div>`;
       }
       return;
+    }
+    if (typeof resp.days === "number" && resp.days > 0) {
+      daysWindow = resp.days;
     }
     const rawList = Array.isArray(resp.items) ? resp.items : (Array.isArray(resp.interactions) ? resp.interactions : []);
     cachedInteractions = rawList.map((item) => {
@@ -103,7 +107,10 @@ export async function loadInteracciones(force = false) {
       return item;
     });
     applyFilters(!force);
-    renderInteraccionesHealth(document.getElementById("interacciones-stats"), resp.health, resp.sync);
+    renderInteraccionesHealth(document.getElementById("interacciones-stats"), resp.health, resp.sync, {
+      days: daysWindow,
+      eventsCapped: Boolean(resp.events_capped),
+    });
 
     if (refreshBtn && force) {
       refreshBtn.innerHTML = `✓ Actualizado`;
@@ -303,7 +310,17 @@ export function initInteraccionesModule() {
   const searchInput = document.getElementById("interacciones-search");
   const refreshBtn = document.getElementById("btn-refresh-interacciones");
   const pageSizeSelect = document.getElementById("interacciones-page-size");
+  const daysSelect = document.getElementById("interacciones-days");
   const statsEl = document.getElementById("interacciones-stats");
+
+  if (daysSelect) {
+    daysWindow = Number(daysSelect.value) || 30;
+    daysSelect.addEventListener("change", (e) => {
+      daysWindow = Math.max(1, Math.min(90, Number(e.target.value) || 30));
+      currentPage = 0;
+      loadInteracciones(true);
+    });
+  }
 
   if (pageSizeSelect) {
     pageSize = Number(pageSizeSelect.value) || 20;

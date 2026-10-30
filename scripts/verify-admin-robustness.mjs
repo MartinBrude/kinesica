@@ -865,6 +865,15 @@ await test("interacciones.php utiliza almacenamiento durable y cumple contrato f
   assert.match(interaccionesPhp, /lib_interacciones_view\.php/, "interacciones.php debe incluir lib_interacciones_view.php");
   assert.match(interaccionesPhp, /'ok'\s*=>\s*true/, "interacciones.php GET debe retornar ok => true");
   assert.match(interaccionesPhp, /'items'\s*=>\s*\$items/, "interacciones.php GET debe retornar items => $items");
+  assert.match(interaccionesPhp, /INTERACCIONES_DEFAULT_DAYS/, "GET usa ventana por días");
+  assert.match(interaccionesPhp, /\$_GET\['days'\]/, "acepta ?days=");
+  const viewPhp = fs.readFileSync(path.join(adminDir, "api/lib_interacciones_view.php"), "utf8");
+  assert.match(viewPhp, /INTERACCIONES_DEFAULT_DAYS\s*=\s*30/, "default 30 días");
+  assert.match(viewPhp, /INTERACCIONES_MAX_EVENTS/, "tope de eventos por request");
+  const interJs = fs.readFileSync(path.join(adminDir, "modules/interacciones.js"), "utf8");
+  assert.match(interJs, /days=\$\{/, "frontend pide days= al cargar");
+  const indexHtml = fs.readFileSync(path.join(adminDir, "index.html"), "utf8");
+  assert.match(indexHtml, /id="interacciones-days"/, "selector de ventana de días");
 });
 
 await test("recordatorios.php ingest + vista SPA + reconcile", () => {

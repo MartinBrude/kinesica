@@ -152,8 +152,9 @@ $auth = require_auth();
 
 if ($method === 'GET') {
     $house = interacciones_run_housekeeping(!empty($_GET['sync']));
+    $days = isset($_GET['days']) ? (int) $_GET['days'] : INTERACCIONES_DEFAULT_DAYS;
     try {
-        $view = interacciones_load_view();
+        $view = interacciones_load_view(null, $days);
         $health = interacciones_health();
     } catch (Throwable $e) {
         error_log('interacciones GET: ' . $e->getMessage());
@@ -164,6 +165,9 @@ if ($method === 'GET') {
         'ok' => true,
         'status' => 'success',
         'total' => count($items),
+        'days' => $view['days'],
+        'since_utc' => $view['since_utc'],
+        'events_capped' => $view['events_capped'],
         'answered_count' => $view['answered_count'],
         'unanswered_count' => $view['unanswered_count'],
         'archived_count' => $view['archived_count'],
