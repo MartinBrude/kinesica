@@ -1,0 +1,221 @@
+/**
+ * Kinésica Admin — Vista Recordatorios 24h
+ */
+
+.recordatorios-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin: 16px 0 20px;
+  padding: 14px 18px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.recordatorios-search-box {
+  display: flex;
+  flex: 1;
+  min-width: 240px;
+  align-items: center;
+  position: relative;
+}
+
+.recordatorios-search-box input {
+  width: 100%;
+  padding: 9px 14px 9px 36px;
+  font-size: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--navy);
+}
+
+.recordatorios-search-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.recordatorios-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+}
+
+.recordatorios-stat-pill {
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--navy);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.recordatorios-stat-pill.is-active {
+  border-color: var(--navy);
+  background: rgba(11, 37, 69, 0.08);
+  font-weight: 600;
+}
+
+.recordatorios-stat-pill.filter-failed.is-active {
+  border-color: #b42318;
+  background: #fef3f2;
+  color: #b42318;
+}
+
+.recordatorios-stat-pill.filter-sent.is-active {
+  border-color: #027a48;
+  background: #ecfdf3;
+  color: #027a48;
+}
+
+.recordatorios-rules {
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.recordatorios-rules-summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--navy);
+  font-size: 14px;
+}
+
+.recordatorios-rules-list {
+  margin: 10px 0 0;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.recordatorios-rules-list li {
+  margin-bottom: 6px;
+}
+
+.recordatorios-rules-list code {
+  font-size: 12px;
+  background: var(--bg);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.recordatorios-day-header {
+  margin: 22px 0 10px;
+  font-size: 15px;
+  color: var(--navy);
+  text-transform: capitalize;
+}
+
+.recordatorio-card {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  border-left: 4px solid var(--line);
+}
+
+.recordatorio-card.is-sent {
+  border-left-color: #027a48;
+}
+
+.recordatorio-card.is-failed {
+  border-left-color: #b42318;
+}
+
+.recordatorio-card.is-phone {
+  border-left-color: #b54708;
+}
+
+.recordatorio-card.is-skipped {
+  border-left-color: #667085;
+}
+
+.recordatorio-card-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.recordatorio-status-pill {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--muted);
+}
+
+.recordatorio-status-pill.is-sent {
+  background: #ecfdf3;
+  color: #027a48;
+}
+
+.recordatorio-status-pill.is-failed {
+  background: #fef3f2;
+  color: #b42318;
+}
+
+.recordatorio-status-pill.is-phone {
+  background: #fffaeb;
+  color: #b54708;
+}
+
+.recordatorio-status-pill.is-skipped {
+  background: #f2f4f7;
+  color: #475467;
+}
+
+.recordatorio-reason {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.recordatorio-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.recordatorio-summary,
+.recordatorio-error {
+  margin: 4px 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.recordatorio-error {
+  color: #b42318;
+}
+
+.recordatorios-empty {
+  text-align: center;
+  padding: 40px 16px;
+  color: var(--muted);
+  background: var(--white);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+}
+
+.recordatorios-pager {
+  margin: 20px auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}

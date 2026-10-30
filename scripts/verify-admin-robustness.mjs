@@ -836,7 +836,7 @@ await test("Protección de manual.html, /docs/ y recursos internos de /admin/ so
 await test("ALL_ADMIN_VIEWS coincide exactamente con las secciones .view de admin/index.html", () => {
   const indexHtml = fs.readFileSync(path.join(adminDir, "index.html"), "utf8");
   const matches = [...indexHtml.matchAll(/<section\s+[^>]*id="(view-[a-z0-9_-]+)"[^>]*class="[^"]*\bview\b[^"]*"/g)].map((m) => m[1]);
-  assert.equal(matches.length, 10, "Deben existir 10 vistas principales en index.html");
+  assert.equal(matches.length, 11, "Deben existir 11 vistas principales en index.html");
   assert.deepEqual(
     [...matches].sort(),
     [...ALL_ADMIN_VIEWS].sort(),
@@ -865,6 +865,18 @@ await test("interacciones.php utiliza almacenamiento durable y cumple contrato f
   assert.match(interaccionesPhp, /lib_interacciones_view\.php/, "interacciones.php debe incluir lib_interacciones_view.php");
   assert.match(interaccionesPhp, /'ok'\s*=>\s*true/, "interacciones.php GET debe retornar ok => true");
   assert.match(interaccionesPhp, /'items'\s*=>\s*\$items/, "interacciones.php GET debe retornar items => $items");
+});
+
+await test("recordatorios.php ingest + vista SPA", () => {
+  const remPhp = fs.readFileSync(path.join(adminDir, "api/recordatorios.php"), "utf8");
+  assert.match(remPhp, /lib_recordatorios_view\.php/, "recordatorios.php debe incluir lib_recordatorios_view.php");
+  assert.match(remPhp, /action === 'ingest'/, "recordatorios.php debe soportar ingest");
+  assert.match(remPhp, /'items'\s*=>\s*\$view\['items'\]/, "recordatorios.php GET debe retornar items");
+  assert.ok(fs.existsSync(path.join(adminDir, "modules/recordatorios.js")), "modulo recordatorios.js");
+  assert.ok(fs.existsSync(path.join(adminDir, "css/recordatorios.css")), "css recordatorios.css");
+  const indexHtml = fs.readFileSync(path.join(adminDir, "index.html"), "utf8");
+  assert.match(indexHtml, /id="view-recordatorios"/, "shell view-recordatorios");
+  assert.match(indexHtml, /id="nav-btn-recordatorios"/, "nav Recordatorios");
 });
 
 await test("todos los imports y exports en admin resuelven correctamente", () => {

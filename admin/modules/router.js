@@ -21,6 +21,7 @@ export function parseAdminRouteFromLocation() {
   if (head === "consultorio" || head === "horarios" || head === "honorarios") return { view: "consultorio" };
   if (head === "clara" || head === "configuracion") return { view: "clara" };
   if (head === "interacciones" || head === "chats" || head === "mensajes") return { view: "interacciones" };
+  if (head === "recordatorios" || head === "reminders") return { view: "recordatorios" };
   if (head === "administracion" || head === "admin" || head === "sistema") return { view: "admin" };
   if (head === "ficha") return { view: "form", id: parts[1] ? decodeURIComponent(parts[1]) : "" };
   if (head === "comparar") return { view: "compare" };
@@ -59,6 +60,9 @@ export function syncUrlWithViewState(state, isInitialBoot = false, isHandlingPop
   } else if (v === "interacciones" || v === "chats") {
     targetPath = "/admin/interacciones";
     docTitle = "Kinésica — Interacciones WhatsApp";
+  } else if (v === "recordatorios" || v === "reminders") {
+    targetPath = "/admin/recordatorios";
+    docTitle = "Kinésica — Recordatorios";
   } else if (v === "admin" || v === "administracion") {
     targetPath = "/admin/administracion";
     docTitle = "Kinésica — Administración";
@@ -109,6 +113,7 @@ export function initPopstateRouter({ loadAll, fillForm, showForm, showCompare, s
       else if (route.view === "consultorio" || route.view === "horarios" || route.view === "honorarios") switchTab("consultorio");
       else if (route.view === "clara" || route.view === "configuracion") switchTab("clara");
       else if (route.view === "interacciones" || route.view === "chats") switchTab("interacciones");
+      else if (route.view === "recordatorios" || route.view === "reminders") switchTab("recordatorios");
       else if (route.view === "admin" || route.view === "administracion") {
         if (getSessionUser()?.role === "admin") switchTab("admin");
         else switchTab("inicio");

@@ -17,6 +17,7 @@ import { initAdminModule } from "./admin-panel.js?v=10";
 import { initConfiguracionModule } from "./configuracion.js?v=28";
 import { initDashboardModule, updateDashboardClara, updateDashboardBooking } from "./dashboard.js?v=10";
 import { initInteraccionesModule } from "./interacciones.js?v=7";
+import { initRecordatoriosModule } from "./recordatorios.js?v=1";
 
 export function initAppControllers({
   loadAll,
@@ -119,4 +120,5 @@ export function initAppControllers({
     },
   });
   initInteraccionesModule();
+  initRecordatoriosModule();
 }

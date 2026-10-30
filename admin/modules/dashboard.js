@@ -112,6 +112,7 @@ export function initDashboardModule(callbacks = {}) {
   attachCard("#dash-card-consultorio", () => callbacks.onNavigate?.("consultorio"));
   attachCard("#dash-card-clara", () => callbacks.onNavigate?.("clara"));
   attachCard("#dash-card-interacciones", () => callbacks.onNavigate?.("interacciones"));
+  attachCard("#dash-card-recordatorios", () => callbacks.onNavigate?.("recordatorios"));
 
   // Card de turnera (abre el modal accesible de reservas)
   const agendarCard = document.querySelector("#dash-card-agendar");

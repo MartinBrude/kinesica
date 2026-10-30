@@ -148,6 +148,7 @@ export const ALL_ADMIN_VIEWS = [
   "view-clara",
   "view-admin",
   "view-interacciones",
+  "view-recordatorios",
   "view-form",
   "view-compare",
 ];
