@@ -9,10 +9,16 @@ declare(strict_types=1);
 function kinesica_config_candidate_paths(): array
 {
     $domainRoot = dirname(__DIR__, 3);
-    return [
+    $paths = [
         $domainRoot . '/private/admin-config.php',
         __DIR__ . '/config.php',
     ];
+    // Solo para pruebas automatizadas: config alternativa por variable de entorno.
+    $override = getenv('KINESICA_ADMIN_CONFIG');
+    if (is_string($override) && $override !== '' && is_file($override)) {
+        array_unshift($paths, $override);
+    }
+    return $paths;
 }
 
 function cfg(): array
