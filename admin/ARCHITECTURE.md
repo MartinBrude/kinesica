@@ -177,7 +177,7 @@ flowchart LR
         Profesionales["profesionales.php"] --> ProfSync["profesionales_sync.php"]
         Profesionales --> ProfInvite["profesionales_invite.php"]
         Gastos["gastos.php"] --> GastosIO["gastos_io.php"]
-        Interacciones["interacciones.php"] --> InteraccionesSeed["interacciones_seed.php"]
+        Interacciones["interacciones.php"] --> InteraccionesStore["lib_interacciones_*.php"]
     end
 
     EndpointsAPI --> CoreLibs
@@ -214,8 +214,8 @@ flowchart LR
   - `gastos.php`: Endpoint de cálculo y reporte contable de costos de infraestructura.
   - `gastos_io.php`: Lectura, serialización atómica y normalización multimoneda (EUR/USD/ARS) sobre `gastos.json`.
 - **Interacciones WhatsApp**:
-  - `interacciones.php`: Endpoint de registro y visualización de conversaciones de pacientes.
-  - `interacciones_seed.php`: Inicialización de conversaciones de prueba y límite estricto de historial (1000 items máximo).
+  - `interacciones.php`: Endpoint de ingesta (bot) y lectura/estado (sesión); secreto de bot no permite leer.
+  - `lib_interacciones_store.php` / `_spool.php` / `_view.php` / `_state.php` / `_n8n.php`: almacén durable idempotente, spool en disco, vista por día, flags y reconciliador n8n.
 
 ---
 

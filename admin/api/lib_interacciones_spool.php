@@ -61,13 +61,19 @@ function interacciones_spool_pending_count(): int
 {
     $dir = interacciones_spool_dir();
     $count = 0;
-    foreach (glob($dir . '/*.jsonl') ?: [] as $file) {
+    // Solo pending + batch (no corrupt-* ni otros).
+    foreach (array_merge(
+        glob($dir . '/pending.jsonl') ?: [],
+        glob($dir . '/batch-*.jsonl') ?: []
+    ) as $file) {
         $fh = @fopen($file, 'rb');
         if ($fh === false) {
             continue;
         }
-        while (fgets($fh) !== false) {
-            $count++;
+        while (($line = fgets($fh)) !== false) {
+            if (trim($line) !== '') {
+                $count++;
+            }
         }
         fclose($fh);
     }
@@ -115,13 +121,20 @@ function interacciones_spool_drain(?PDO $pdo = null, int $maxSeconds = 3): array
             }
             $allOk = true;
             $n = 0;
+            $corrupt = '';
             while (($line = fgets($fh)) !== false) {
-                $ev = json_decode(trim($line), true);
+                $trimmed = trim($line);
+                if ($trimmed === '') {
+                    continue;
+                }
+                $ev = json_decode($trimmed, true);
                 if (!is_array($ev)) {
+                    $corrupt .= $line;
                     continue;
                 }
                 $norm = interacciones_normalize_event($ev, (string) ($ev['source'] ?? 'spool'));
                 if ($norm === null) {
+                    $corrupt .= $line;
                     continue;
                 }
                 try {
@@ -134,6 +147,10 @@ function interacciones_spool_drain(?PDO $pdo = null, int $maxSeconds = 3): array
             }
             fclose($fh);
             if ($allOk) {
+                if ($corrupt !== '') {
+                    $corruptPath = $dir . '/corrupt-' . gmdate('YmdHis') . '-' . bin2hex(random_bytes(3)) . '.jsonl';
+                    @file_put_contents($corruptPath, $corrupt, LOCK_EX);
+                }
                 @unlink($batch);
                 $out['processed'] += $n;
             } else {

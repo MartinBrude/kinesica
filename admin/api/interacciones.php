@@ -17,8 +17,6 @@ require_once __DIR__ . '/lib_interacciones_view.php';
 require_once __DIR__ . '/lib_interacciones_state.php';
 require_once __DIR__ . '/lib_interacciones_n8n.php';
 
-const INTERACCIONES_LEGACY_SECRET = 'kinesica_webhook_secret_2026';
-
 function interacciones_request_secret(): string
 {
     $headers = function_exists('getallheaders') ? getallheaders() : [];
@@ -42,9 +40,12 @@ function interacciones_bot_authenticated(): bool
             $valid[] = $v;
         }
     }
-    // Transición: el nodo actual de n8n usa este valor. Desactivar con 'allow_legacy_bot_secret' => false tras rotar.
-    if ((cfg()['allow_legacy_bot_secret'] ?? true) !== false) {
-        $valid[] = INTERACCIONES_LEGACY_SECRET;
+    // Legado solo si se activa EXPLÍCITAMENTE en config.php (nunca hardcodeado en el repo).
+    if ((cfg()['allow_legacy_bot_secret'] ?? false) === true) {
+        $legacy = trim((string) (cfg()['legacy_bot_secret'] ?? ''));
+        if ($legacy !== '' && $legacy !== 'CAMBIAR') {
+            $valid[] = $legacy;
+        }
     }
     foreach ($valid as $secret) {
         if (hash_equals($secret, $given)) {

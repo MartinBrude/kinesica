@@ -125,6 +125,15 @@ eq($d['remaining'], 1, 'si el insert falla, el lote rotado sigue pendiente');
 $pdo->exec('RENAME TABLE interaccion_eventos_off TO interaccion_eventos');
 $d = interacciones_spool_drain($pdo, 2);
 eq([count_events($pdo), $d['remaining']], [1, 0], 'se recupera cuando la BD vuelve');
+// Líneas JSON corruptas: se cuarentenan, no se pierden al borrar el batch.
+$pdo = fresh('spool3');
+$spoolDir = interacciones_spool_dir();
+file_put_contents($spoolDir . '/pending.jsonl', "{no-json\n" . json_encode(ev('5491100000003', 'patient', 'ok-tras-corrupto', 1790000600, 'S3')) . "\n");
+$d = interacciones_spool_drain($pdo, 2);
+eq([count_events($pdo), $d['remaining']], [1, 0], 'línea válida se guarda y el spool queda vacío');
+$corruptFiles = glob($spoolDir . '/corrupt-*.jsonl') ?: [];
+eq(count($corruptFiles), 1, 'línea corrupta queda en corrupt-*.jsonl');
+ok(str_contains((string) file_get_contents($corruptFiles[0]), '{no-json'), 'el contenido corrupto se conserva');
 
 // ---------------------------------------------------------------- concurrencia
 section('Concurrencia (procesos reales en paralelo)');
@@ -324,13 +333,20 @@ for ($i = 1; $i <= 12; $i++) {
     $execs[$i] = ['wf' => 'WF', 'tree' => tree('549110000100' . ($i % 3), "mensaje $i", "wamid.R$i", 1790000000 + $i * 60, $i % 4 === 0 ? null : "respuesta $i")];
 }
 $execs[13] = ['wf' => 'OTRO', 'tree' => tree('5491100009999', 'ajeno', 'wamid.X', 1790000900, 'x')];
-$execs[14] = ['wf' => 'WF', 'tree' => ['resultData' => ['runData' => []]]];
+// Success sin payload: no se marca done (reintento). Error terminal vacío sí se cierra.
+$execs[14] = ['wf' => 'WF', 'status' => 'success', 'tree' => ['resultData' => ['runData' => []]]];
+$execs[16] = ['wf' => 'WF', 'status' => 'error', 'tree' => ['resultData' => ['runData' => []]]];
 $log = [];
 $r = interacciones_reconcile($pdo, 6, fake_n8n($execs, 5, $log), $conf);
-eq($r['status'], 'ok', 'reconcilia con login automático (401 -> login)');
+eq($r['status'], 'partial', 'success vacío deja la corrida parcial (no cierra el id)');
 ok(in_array('POST https://n8n.test/rest/login', $log, true), 'hizo login');
 eq(count_events($pdo), 12 + 9, '12 mensajes de paciente + 9 respuestas (3 ejecuciones sin respuesta de Clara igual se guardan)');
 eq((int) $pdo->query("SELECT COUNT(*) FROM interaccion_eventos WHERE body = 'ajeno'")->fetchColumn(), 0, 'workflow ajeno ignorado');
+$stateAfter = interacciones_reconcile_state();
+ok(!in_array(14, array_map('intval', $stateAfter['done_ids'] ?? []), true), 'exec success vacía NO está en done_ids');
+ok(in_array(16, array_map('intval', $stateAfter['done_ids'] ?? []), true), 'exec error vacía SÍ se marca done');
+// Quitar el success vacío para poder verificar idempotencia de lo ya importado
+unset($execs[14]);
 $log2 = [];
 $r2 = interacciones_reconcile($pdo, 6, fake_n8n($execs, 5, $log2, false), $conf);
 eq([$r2['status'], $r2['imported']], ['ok', 0], 'segunda corrida: nada nuevo');

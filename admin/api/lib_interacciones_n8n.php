@@ -114,6 +114,13 @@ function interacciones_reconcile(?PDO $pdo = null, int $maxSeconds = 6, ?callabl
                 }
                 $result['scanned']++;
                 $events = interacciones_events_from_execution($tree, (string) $id, $ex['startedAt'] ?? null, $ex['stoppedAt'] ?? null);
+                // Success sin eventos parseables: no marcar done (nodo renombrado / flatted raro).
+                // Errores terminales de n8n sin payload sí se cierran para no re-fetch infinito.
+                $terminalEmpty = $events === [] && in_array($status, ['error', 'crashed', 'canceled'], true);
+                if ($events === [] && !$terminalEmpty) {
+                    $hadError = true;
+                    continue;
+                }
                 $stored = interacciones_store_events($events, $pdo);
                 if ($stored['failed'] > 0) {
                     $hadError = true;

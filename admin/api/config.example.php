@@ -9,6 +9,15 @@ return [
     ],
     'install_token' => 'CAMBIAR',
     'webhook_secret' => 'CAMBIAR',
+    // Interacciones WhatsApp: n8n debe enviar X-Kinesica-Bot-Secret = webhook_secret.
+    // Solo durante rotación: allow_legacy_bot_secret => true + legacy_bot_secret (valor viejo, NO en git).
+    'allow_legacy_bot_secret' => false,
+    'legacy_bot_secret' => '',
+    // Reconciliador (importa desde n8n lo que el push no entregó). Sin defaults.
+    // 'n8n_url' => 'https://n8n.ejemplo.com',
+    // 'n8n_user' => '',
+    // 'n8n_password' => '',
+    // 'n8n_workflow_id' => '',
     'mail_from' => 'no-reply@kinesica.com.ar',
     'admin_url' => 'https://www.kinesica.com.ar/admin/',
     // Token permanente Meta WhatsApp Cloud API (mismo que n8n / Apps Script).

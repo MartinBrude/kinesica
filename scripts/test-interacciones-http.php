@@ -85,11 +85,16 @@ $pdo->exec('DROP TABLE IF EXISTS interaccion_estado');
 
 $portA = random_int(40000, 45000);
 $portB = $portA + 1;
-// A: secreto nuevo + secreto legado aceptado (transición). B: legado desactivado.
-$A = start_server($tmp, 'a', ['webhook_secret' => 'secreto-nuevo'], $portA);
-$B = start_server($tmp, 'b', ['webhook_secret' => 'secreto-nuevo', 'allow_legacy_bot_secret' => false], $portB);
+// A: secreto nuevo + legado explícito en config (rotación). B: legado desactivado (default seguro).
+$A = start_server($tmp, 'a', [
+    'webhook_secret' => 'secreto-nuevo',
+    'allow_legacy_bot_secret' => true,
+    'legacy_bot_secret' => 'secreto-legado-solo-en-config',
+], $portA);
+$B = start_server($tmp, 'b', ['webhook_secret' => 'secreto-nuevo'], $portB);
 $bot = ['X-Kinesica-Bot-Secret: secreto-nuevo'];
-$legacy = ['X-Kinesica-Bot-Secret: kinesica_webhook_secret_2026'];
+$legacy = ['X-Kinesica-Bot-Secret: secreto-legado-solo-en-config'];
+$hardcodedLeak = ['X-Kinesica-Bot-Secret: kinesica_webhook_secret_2026'];
 $ts = 1793268000;
 
 echo "• Ingesta con secreto del bot\n";
@@ -106,9 +111,11 @@ eq($r['status'], 400, 'eventos inválidos => 400 (n8n lo verá y reintentará/al
 $r = http($A['base'], 'POST', '/interacciones.php', ['action' => 'ingest', 'events' => array_fill(0, 201, $ev[0])], $bot);
 eq($r['status'], 413, 'lote excesivo => 413');
 $r = http($A['base'], 'POST', '/interacciones.php', ['wa_id' => '5491100000008', 'patient_message' => 'nodo viejo', 'clara_reply' => 'ok', 'patient_name' => 'Viejo'], $legacy);
-eq([$r['status'], $r['json']['stored'] ?? null], [200, 2], 'nodo viejo de n8n (formato legado + secreto legado) sigue funcionando');
+eq([$r['status'], $r['json']['stored'] ?? null], [200, 2], 'nodo viejo de n8n (formato legado + secreto en config) sigue funcionando');
+$r = http($A['base'], 'POST', '/interacciones.php', ['wa_id' => '5491100000008', 'patient_message' => 'leak', 'clara_reply' => 'x'], $hardcodedLeak);
+ok($r['status'] === 403 || $r['status'] === 401, 'string hardcodeado del repo NO autentica (' . $r['status'] . ')');
 $r = http($B['base'], 'POST', '/interacciones.php', ['wa_id' => '5491100000009', 'patient_message' => 'x', 'clara_reply' => 'y'], $legacy);
-ok($r['status'] === 403 || $r['status'] === 401, 'con allow_legacy_bot_secret=false el secreto legado se rechaza (' . $r['status'] . ')');
+ok($r['status'] === 403 || $r['status'] === 401, 'sin allow_legacy_bot_secret el secreto legado se rechaza (' . $r['status'] . ')');
 $r = http($B['base'], 'POST', '/interacciones.php', ['wa_id' => '5491100000009', 'patient_message' => 'x', 'clara_reply' => 'y'], $bot);
 eq($r['status'], 200, '...y el secreto nuevo funciona');
 $r = http($A['base'], 'POST', '/interacciones.php', ['action' => 'sync_all', 'items' => [['wa_id' => '5491100000010', 'date' => '2026-10-29', 'messages' => [['from' => 'patient', 'time' => '10:00', 'text' => 'legacy sync']]]]], $bot);

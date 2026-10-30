@@ -25,6 +25,8 @@ let pageSize = 20;
 let activeStatusFilter = "all"; // "all" | "pending" | "answered"
 let autoRefreshTimer = null;
 let isRefreshing = false;
+/** Escrituras en vuelo: el auto-refresh no debe pisar updates optimistas. */
+let pendingMutations = 0;
 
 export function showInteraccionesView() {
   const view = switchActiveView("view-interacciones");
@@ -67,6 +69,8 @@ export async function loadInteracciones(force = false) {
   if (!container) return;
 
   if (isRefreshing) return;
+  // Poll automático: no reemplazar cache mientras hay archive/toggle en curso.
+  if (!force && pendingMutations > 0) return;
   isRefreshing = true;
 
   if (refreshBtn && force) {
@@ -238,6 +242,7 @@ function renderInteractions(items) {
       if (targetConv) targetConv.archived = !isArchived;
       applyFilters(false);
 
+      pendingMutations++;
       try {
         const resp = await api("interacciones.php", {
           method: "POST",
@@ -248,6 +253,8 @@ function renderInteractions(items) {
         if (targetConv) targetConv.archived = isArchived;
         applyFilters(false);
         console.error("Error al archivar/desarchivar interacción:", err);
+      } finally {
+        pendingMutations = Math.max(0, pendingMutations - 1);
       }
     },
     onToggleAnswered: async ({ convId, convKey, isChecked, chk, cardEl, pillEl }) => {
@@ -271,6 +278,7 @@ function renderInteractions(items) {
       if (activeStatusFilter !== "all") applyFilters(false);
       else updateStatsHeader();
 
+      pendingMutations++;
       try {
         const resp = await api("interacciones.php", {
           method: "POST",
@@ -284,6 +292,8 @@ function renderInteractions(items) {
         if (activeStatusFilter !== "all") applyFilters(false);
         else updateStatsHeader();
         console.error("Error al persistir consulta respondida:", err);
+      } finally {
+        pendingMutations = Math.max(0, pendingMutations - 1);
       }
     },
   });
