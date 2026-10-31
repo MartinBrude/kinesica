@@ -60,6 +60,18 @@ $sentMail = recordatorios_normalize_item([
 eq($sentMail['status'] ?? '', 'sent_email', 'status sent_email aceptado');
 eq($sentMail['event_key'], 'rem:n8n-1b:calMail:sent_email', 'clave sent_email');
 
+$pending = recordatorios_normalize_item([
+    'status' => 'pending',
+    'calendar_event_id' => 'calPending',
+    'patient_name' => 'Valeria',
+    'wa_id' => '5491122334455',
+    'appointment_date' => '2026-11-01',
+    'appointment_time' => '11:00 hs',
+], 'n8n-1c', 1700000002);
+eq($pending['status'] ?? '', 'pending', 'status pending aceptado');
+eq($pending['event_key'], 'rem:n8n-1c:calPending:pending', 'clave pending');
+eq(recordatorios_status_label('pending'), 'Por ser enviado', 'label por ser enviado');
+
 $badSkip = recordatorios_normalize_item([
     'status' => 'skipped',
     'calendar_event_id' => 'c1',

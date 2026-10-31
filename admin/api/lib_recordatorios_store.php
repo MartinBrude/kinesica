@@ -7,7 +7,7 @@ declare(strict_types=1);
  */
 
 const RECORDATORIOS_MAX_BATCH = 200;
-const RECORDATORIOS_STATUSES = ['sent', 'sent_email', 'failed', 'missing_phone', 'skipped', 'run_skipped'];
+const RECORDATORIOS_STATUSES = ['pending', 'sent', 'sent_email', 'failed', 'missing_phone', 'skipped', 'run_skipped'];
 const RECORDATORIOS_SKIP_REASONS = [
     'clara_inactive', 'cancelled', 'blocked', 'waitlist', 'non_appointment',
     'duplicate', 'not_tomorrow', 'other',
@@ -217,4 +217,38 @@ function recordatorios_store_items(array $items, ?PDO $pdo = null): array
         $res['failed'] = count($items) - $res['stored'] - $res['duplicates'];
     }
     return $res;
+}
+
+function recordatorios_find_item_by_id(int $id, ?PDO $pdo = null): ?array
+{
+    $pdo = recordatorios_pdo($pdo);
+    recordatorios_ensure_schema($pdo);
+    $stmt = $pdo->prepare('SELECT * FROM recordatorio_eventos WHERE id = :id LIMIT 1');
+    $stmt->execute(['id' => $id]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    return is_array($row) ? $row : null;
+}
+
+function recordatorios_update_outcome(int $id, array $updates, ?PDO $pdo = null): bool
+{
+    $pdo = recordatorios_pdo($pdo);
+    recordatorios_ensure_schema($pdo);
+    $existing = recordatorios_find_item_by_id($id, $pdo);
+    if (!$existing) {
+        return false;
+    }
+    $allowed = ['status', 'wa_id', 'error_code', 'error_message', 'run_at', 'received_at', 'event_key'];
+    $set = [];
+    $params = ['id' => $id];
+    foreach ($allowed as $f) {
+        if (array_key_exists($f, $updates)) {
+            $set[] = "$f = :$f";
+            $params[$f] = $updates[$f];
+        }
+    }
+    if (!$set) {
+        return false;
+    }
+    $sql = 'UPDATE recordatorio_eventos SET ' . implode(', ', $set) . ' WHERE id = :id';
+    return $pdo->prepare($sql)->execute($params);
 }

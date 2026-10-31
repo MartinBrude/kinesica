@@ -3,16 +3,17 @@
  */
 
 import { api } from "./api.js?v=77";
-import { switchActiveView } from "./dom.js?v=78";
+import { switchActiveView, escapeHtml } from "./dom.js?v=78";
+import { dialogAlert } from "./dom-dialogs.js?v=77";
 import {
   renderRecordatoriosList,
   renderRecordatoriosPager,
-} from "./recordatorios-render.js?v=2";
+} from "./recordatorios-render.js?v=3";
 import {
   filterRecordatoriosList,
   renderRecordatoriosStats,
-} from "./recordatorios-filter.js?v=2";
-import { renderRecordatoriosRules } from "./recordatorios-rules.js?v=2";
+} from "./recordatorios-filter.js?v=3";
+import { renderRecordatoriosRules } from "./recordatorios-rules.js?v=3";
 
 let cachedItems = [];
 let cachedCounts = {};
@@ -22,6 +23,25 @@ let pageSize = 20;
 let activeStatusFilter = "all";
 let autoRefreshTimer = null;
 let isRefreshing = false;
+
+function recalculateCounts() {
+  const counts = {
+    pending: 0,
+    sent: 0,
+    sent_email: 0,
+    failed: 0,
+    missing_phone: 0,
+    skipped: 0,
+    run_skipped: 0,
+  };
+  for (const it of cachedItems) {
+    const st = it.status;
+    if (counts[st] !== undefined) {
+      counts[st]++;
+    }
+  }
+  cachedCounts = counts;
+}
 
 export function showRecordatoriosView() {
   const view = switchActiveView("view-recordatorios");
@@ -160,6 +180,131 @@ export async function loadRecordatorios(force = false) {
   }
 }
 
+function openRecordatorioDispatchModal(item, onSuccess) {
+  const backdrop = document.createElement("div");
+  backdrop.className = "recordatorio-modal-backdrop";
+  backdrop.setAttribute("role", "dialog");
+  backdrop.setAttribute("aria-modal", "true");
+
+  const name = escapeHtml(item.patient_name || item.event_summary || "Paciente");
+  const appt = escapeHtml([item.appointment_date, item.appointment_time].filter(Boolean).join(" · ") || "Sin fecha/hora");
+  const isFailed = item.status === "failed" || item.status === "missing_phone";
+  const title = isFailed ? "Disparar recordatorio manualmente" : "Enviar recordatorio ahora";
+  const currentError = item.error_message || item.error_code || "";
+
+  backdrop.innerHTML = `
+    <div class="recordatorio-modal-card">
+      <div class="recordatorio-modal-header">
+        <h3>⚡ ${title}</h3>
+        <button type="button" class="btn ghost btn-close-modal" aria-label="Cerrar">✕</button>
+      </div>
+      <div class="recordatorio-modal-body">
+        <div class="recordatorio-modal-info">
+          <div><strong>Paciente:</strong> ${name}</div>
+          <div><strong>Turno:</strong> ${appt}</div>
+          ${item.event_summary && item.event_summary !== item.patient_name ? `<div><strong>Detalle:</strong> ${escapeHtml(item.event_summary)}</div>` : ""}
+          ${isFailed && currentError ? `<div style="color:#b42318;margin-top:6px;font-size:12px;"><strong>Motivo de fallo previo:</strong> ${escapeHtml(currentError)}</div>` : ""}
+        </div>
+        <div class="recordatorio-modal-field">
+          <label for="dispatch-phone">Número de WhatsApp (con código de país, ej: 54911...):</label>
+          <input type="tel" id="dispatch-phone" value="${escapeHtml(item.wa_id || "")}" placeholder="5491144556677" autocomplete="off" />
+        </div>
+        <div class="recordatorio-modal-field">
+          <label for="dispatch-email">Correo electrónico (para fallback o envío por email):</label>
+          <input type="email" id="dispatch-email" value="${escapeHtml(item.email || "")}" placeholder="paciente@ejemplo.com" autocomplete="off" />
+        </div>
+        <div class="recordatorio-modal-field">
+          <label for="dispatch-channel">Canal de envío:</label>
+          <select id="dispatch-channel">
+            <option value="auto" selected>Automático (WhatsApp con fallback a Email)</option>
+            <option value="whatsapp">Solo WhatsApp (Plantilla oficial)</option>
+            <option value="email">Solo Correo Electrónico</option>
+          </select>
+        </div>
+      </div>
+      <div class="recordatorio-modal-actions">
+        <button type="button" class="btn light btn-close-modal">Cancelar</button>
+        <button type="button" class="btn green" id="btn-submit-dispatch">⚡ Enviar recordatorio</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(backdrop);
+  const phoneInput = backdrop.querySelector("#dispatch-phone");
+  phoneInput?.focus();
+
+  const close = () => {
+    backdrop.remove();
+    document.removeEventListener("keydown", onKeyDown);
+  };
+
+  const onKeyDown = (e) => {
+    if (e.key === "Escape") close();
+  };
+  document.addEventListener("keydown", onKeyDown);
+
+  backdrop.querySelectorAll(".btn-close-modal").forEach((btn) => {
+    btn.addEventListener("click", close);
+  });
+  backdrop.addEventListener("click", (e) => {
+    if (e.target === backdrop) close();
+  });
+
+  const submitBtn = backdrop.querySelector("#btn-submit-dispatch");
+  submitBtn?.addEventListener("click", async () => {
+    const phone = backdrop.querySelector("#dispatch-phone")?.value.trim() || "";
+    const email = backdrop.querySelector("#dispatch-email")?.value.trim() || "";
+    const channel = backdrop.querySelector("#dispatch-channel")?.value || "auto";
+
+    if (channel === "email" && !email) {
+      dialogAlert("Por favor ingresá una dirección de correo válida para enviar por email.", { type: "danger" });
+      return;
+    }
+    if (channel === "whatsapp" && !phone) {
+      dialogAlert("Por favor ingresá un número de teléfono para enviar por WhatsApp.", { type: "danger" });
+      return;
+    }
+    if (channel === "auto" && !phone && !email) {
+      dialogAlert("Ingresá al menos un número de WhatsApp o un correo electrónico para despachar el recordatorio.", { type: "danger" });
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Enviando recordatorio…";
+
+    try {
+      const resp = await api("recordatorios.php", {
+        method: "POST",
+        body: {
+          action: "dispatch",
+          id: item.id,
+          wa_id: phone,
+          email: email,
+          channel: channel,
+        },
+      });
+
+      if (resp && (resp.ok || resp.status === "success")) {
+        close();
+        if (resp.item) {
+          onSuccess(resp.item);
+        } else {
+          loadRecordatorios(false);
+        }
+        dialogAlert(resp.message || "Recordatorio enviado correctamente.", { type: "success" });
+      } else {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "⚡ Enviar recordatorio";
+        dialogAlert(resp?.error || "No se pudo enviar el recordatorio.", { type: "danger" });
+      }
+    } catch {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "⚡ Enviar recordatorio";
+      dialogAlert("Error al conectar con el servidor para disparar el recordatorio.", { type: "danger" });
+    }
+  });
+}
+
 export function initRecordatoriosModule() {
   renderRecordatoriosRules(document.getElementById("recordatorios-rules"));
   document.getElementById("btn-refresh-recordatorios")?.addEventListener("click", () => {
@@ -181,5 +326,20 @@ export function initRecordatoriosModule() {
     activeStatusFilter = activeStatusFilter === next ? "all" : next;
     currentPage = 0;
     applyFiltersAndRender();
+  });
+  document.getElementById("recordatorios-list-container")?.addEventListener("click", (e) => {
+    const btn = e.target.closest('[data-action="dispatch-manual"]');
+    if (!btn) return;
+    const id = btn.getAttribute("data-id");
+    const item = cachedItems.find((it) => String(it.id) === String(id));
+    if (!item) return;
+    openRecordatorioDispatchModal(item, (updatedItem) => {
+      const idx = cachedItems.findIndex((it) => String(it.id) === String(updatedItem.id));
+      if (idx !== -1) {
+        cachedItems[idx] = updatedItem;
+      }
+      recalculateCounts();
+      applyFiltersAndRender();
+    });
   });
 }

@@ -17,6 +17,7 @@ function recordatorios_tz(): DateTimeZone
 function recordatorios_status_label(string $status): string
 {
     return match ($status) {
+        'pending' => 'Por ser enviado',
         'sent' => 'Enviado (WhatsApp)',
         'sent_email' => 'Enviado (email)',
         'failed' => 'Fallido',
@@ -68,6 +69,7 @@ function recordatorios_load_view(?PDO $pdo = null, int $days = RECORDATORIOS_DEF
 
     $tz = recordatorios_tz();
     $counts = [
+        'pending' => 0,
         'sent' => 0,
         'sent_email' => 0,
         'failed' => 0,

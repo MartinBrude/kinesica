@@ -1,10 +1,13 @@
 /**
  * Filtros y píldoras de conteo para Recordatorios.
+ * Agrupa según el ciclo de vida: Enviados, Por ser enviados, Fallidos en enviarse y Omitidos.
  */
 
 const STATUS_FILTERS = {
+  all: "all",
   sent: "sent",
   sent_email: "sent_email",
+  pending: "pending",
   failed: "failed",
   missing_phone: "missing_phone",
   skipped: "skipped",
@@ -25,7 +28,13 @@ export function filterRecordatoriosList(items, term, activeStatusFilter) {
   return (items || []).filter((item) => {
     if (!item || typeof item !== "object") return false;
     const status = String(item.status || "");
-    if (activeStatusFilter === "skipped") {
+    if (activeStatusFilter === "sent") {
+      if (status !== "sent" && status !== "sent_email") return false;
+    } else if (activeStatusFilter === "pending") {
+      if (status !== "pending") return false;
+    } else if (activeStatusFilter === "failed") {
+      if (status !== "failed" && status !== "missing_phone") return false;
+    } else if (activeStatusFilter === "skipped") {
       if (status !== "skipped" && status !== "run_skipped") return false;
     } else if (activeStatusFilter !== "all" && STATUS_FILTERS[activeStatusFilter]) {
       if (status !== activeStatusFilter) return false;
@@ -45,23 +54,33 @@ export function filterRecordatoriosList(items, term, activeStatusFilter) {
 export function renderRecordatoriosStats(statsEl, { counts, activeStatusFilter }) {
   if (!statsEl) return;
   const c = counts || {};
-  const pill = (filter, label, count, extraClass = "") => {
+  const pill = (filter, label, count, extraClass = "", title = "") => {
     const active = activeStatusFilter === filter;
     return `<button type="button"
       class="recordatorios-stat-pill filter-pill ${extraClass} ${active ? "is-active" : ""}"
       data-filter="${filter}"
-      aria-pressed="${active}">
+      aria-pressed="${active}"
+      title="${title}">
       ${label} ${count || 0}
     </button>`;
   };
-  const skippedCount = (c.skipped || 0) + (c.run_skipped || 0);
+
   const sentWa = c.sent || 0;
   const sentMail = c.sent_email || 0;
+  const sentTotal = sentWa + sentMail;
+  const pendingCount = c.pending || 0;
+  const failedCount = (c.failed || 0) + (c.missing_phone || 0);
+  const skippedCount = (c.skipped || 0) + (c.run_skipped || 0);
+  const total = sentTotal + pendingCount + failedCount + skippedCount;
+
+  const sentDetail = sentMail > 0 ? ` (${sentWa} WA · ${sentMail} Mail)` : (sentWa > 0 ? " (WA)" : "");
+  const failedClass = failedCount > 0 ? "filter-failed has-alert" : "filter-failed";
+
   statsEl.innerHTML = [
-    pill("sent", "✓ WhatsApp", sentWa, "filter-sent"),
-    pill("sent_email", "✉ Email", sentMail, "filter-sent"),
-    pill("failed", "✕ Fallidos", c.failed, "filter-failed"),
-    pill("missing_phone", "☎ Sin contacto", c.missing_phone, "filter-phone"),
-    pill("skipped", "⊘ Omitidos", skippedCount, "filter-skipped"),
+    pill("all", "📋 Todos", total, "", "Ver todos los recordatorios"),
+    pill("sent", `✓ Enviados${sentDetail}`, sentTotal, "filter-sent", "Filtrar recordatorios enviados por WhatsApp o correo"),
+    pill("pending", "⏳ Por ser enviados", pendingCount, "filter-pending", "Filtrar recordatorios pendientes por ser enviados"),
+    pill("failed", "✕ Fallaron en enviarse", failedCount, failedClass, "Filtrar recordatorios que fallaron o sin contacto (disparables manualmente)"),
+    pill("skipped", "⊘ Omitidos", skippedCount, "filter-skipped", "Filtrar turnos omitidos según reglas"),
   ].join("");
 }

@@ -21,6 +21,7 @@ export function formatRunDayHeader(isoDay) {
 }
 
 function statusClass(status) {
+  if (status === "pending") return "is-pending";
   if (status === "sent" || status === "sent_email") return "is-sent";
   if (status === "failed") return "is-failed";
   if (status === "missing_phone") return "is-phone";
@@ -41,7 +42,7 @@ export function buildRecordatorioCardHtml(item) {
     ? `<span class="recordatorio-reason">${escapeHtml(item.skip_reason_label)}</span>`
     : "";
   const err =
-    item.status === "failed" && (item.error_code || item.error_message)
+    (item.status === "failed" || item.status === "missing_phone") && (item.error_code || item.error_message)
       ? `<p class="recordatorio-error">${escapeHtml(
           [item.error_code, item.error_message].filter(Boolean).join(" — ")
         )}</p>`
@@ -50,6 +51,23 @@ export function buildRecordatorioCardHtml(item) {
     item.event_summary && item.event_summary !== item.patient_name
       ? `<p class="recordatorio-summary">${escapeHtml(item.event_summary)}</p>`
       : "";
+
+  let actionBtn = "";
+  if (item.status === "failed" || item.status === "missing_phone") {
+    actionBtn = `
+      <div class="recordatorio-card-actions">
+        <button type="button" class="btn light btn-trigger-recordatorio is-failed" data-action="dispatch-manual" data-id="${escapeHtml(item.id)}" title="Disparar recordatorio manualmente">
+          ⚡ Disparar manualmente
+        </button>
+      </div>`;
+  } else if (item.status === "pending") {
+    actionBtn = `
+      <div class="recordatorio-card-actions">
+        <button type="button" class="btn light btn-trigger-recordatorio is-pending" data-action="dispatch-manual" data-id="${escapeHtml(item.id)}" title="Enviar recordatorio ahora">
+          ⚡ Enviar ahora
+        </button>
+      </div>`;
+  }
 
   return `<article class="recordatorio-card ${statusClass(item.status)}" data-id="${escapeHtml(item.id)}">
     <div class="recordatorio-card-main">
@@ -62,10 +80,11 @@ export function buildRecordatorioCardHtml(item) {
       <div class="recordatorio-meta">
         <span>Turno: ${escapeHtml(appt)}</span>
         <span>${contact}</span>
-        <span>Corrida: ${escapeHtml(item.run_at_local || item.run_at || "")}</span>
+        <span>${item.status === "pending" ? "Programado" : "Corrida"}: ${escapeHtml(item.run_at_local || item.run_at || "")}</span>
       </div>
       ${err}
     </div>
+    ${actionBtn}
   </article>`;
 }
 
