@@ -9,7 +9,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/lib_interacciones_store.php';
 
 /** Ventana por defecto del panel (días locales del consultorio). */
-const INTERACCIONES_DEFAULT_DAYS = 30;
+const INTERACCIONES_DEFAULT_DAYS = 7;
 /** Máximo pedible por query ?days= (evita tirar de todo el historial). */
 const INTERACCIONES_MAX_DAYS = 90;
 /** Tope de eventos crudos por request (los más recientes dentro de la ventana). */

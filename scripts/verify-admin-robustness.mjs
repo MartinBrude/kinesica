@@ -868,7 +868,7 @@ await test("interacciones.php utiliza almacenamiento durable y cumple contrato f
   assert.match(interaccionesPhp, /INTERACCIONES_DEFAULT_DAYS/, "GET usa ventana por días");
   assert.match(interaccionesPhp, /\$_GET\['days'\]/, "acepta ?days=");
   const viewPhp = fs.readFileSync(path.join(adminDir, "api/lib_interacciones_view.php"), "utf8");
-  assert.match(viewPhp, /INTERACCIONES_DEFAULT_DAYS\s*=\s*30/, "default 30 días");
+  assert.match(viewPhp, /INTERACCIONES_DEFAULT_DAYS\s*=\s*7/, "default 7 días");
   assert.match(viewPhp, /INTERACCIONES_MAX_EVENTS/, "tope de eventos por request");
   const interJs = fs.readFileSync(path.join(adminDir, "modules/interacciones.js"), "utf8");
   assert.match(interJs, /days=\$\{/, "frontend pide days= al cargar");

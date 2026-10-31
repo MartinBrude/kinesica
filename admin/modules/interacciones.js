@@ -23,7 +23,7 @@ let filteredInteractions = [];
 let currentPage = 0;
 let pageSize = 20;
 /** Ventana pedida al servidor (días locales). Debe coincidir con INTERACCIONES_DEFAULT_DAYS. */
-let daysWindow = 30;
+let daysWindow = 7;
 let activeStatusFilter = "all"; // "all" | "pending" | "answered"
 let autoRefreshTimer = null;
 let isRefreshing = false;
@@ -314,9 +314,9 @@ export function initInteraccionesModule() {
   const statsEl = document.getElementById("interacciones-stats");
 
   if (daysSelect) {
-    daysWindow = Number(daysSelect.value) || 30;
+    daysWindow = Number(daysSelect.value) || 7;
     daysSelect.addEventListener("change", (e) => {
-      daysWindow = Math.max(1, Math.min(90, Number(e.target.value) || 30));
+      daysWindow = Math.max(1, Math.min(90, Number(e.target.value) || 7));
       currentPage = 0;
       loadInteracciones(true);
     });
