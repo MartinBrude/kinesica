@@ -22,6 +22,20 @@ function normalize(s) {
     .replace(/[\u0300-\u036f]/g, "");
 }
 
+export function isBlockedRecordatorio(item) {
+  if (!item || typeof item !== "object") return false;
+  const reason = String(item.skip_reason || "").toLowerCase();
+  if (reason === "blocked") return true;
+  const name = String(item.patient_name || "").toLowerCase();
+  const summary = String(item.event_summary || "").toLowerCase();
+  return (
+    name.includes("no dar") ||
+    summary.includes("no dar") ||
+    name.includes("bloqueado") ||
+    summary.includes("bloqueado")
+  );
+}
+
 export function filterRecordatoriosList(items, term, activeStatusFilter) {
   const rawTerm = String(term || "").trim();
   const cleanTerm = normalize(rawTerm);
@@ -29,6 +43,7 @@ export function filterRecordatoriosList(items, term, activeStatusFilter) {
 
   return (items || []).filter((item) => {
     if (!item || typeof item !== "object") return false;
+    if (isBlockedRecordatorio(item)) return false;
     const status = String(item.status || "");
     if (activeStatusFilter === "sent") {
       if (status !== "sent" && status !== "sent_email") return false;

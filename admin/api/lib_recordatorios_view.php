@@ -44,6 +44,22 @@ function recordatorios_skip_label(string $reason): string
     };
 }
 
+function recordatorios_is_blocked_event(array $r): bool
+{
+    $reason = strtolower(trim((string) ($r['skip_reason'] ?? '')));
+    if ($reason === 'blocked') {
+        return true;
+    }
+    $name = mb_strtolower(trim((string) ($r['patient_name'] ?? '')));
+    $summary = mb_strtolower(trim((string) ($r['event_summary'] ?? '')));
+    foreach (['no dar', 'bloqueado', 'bloqueo'] as $kw) {
+        if (str_contains($name, $kw) || str_contains($summary, $kw)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 /**
  * @return array{items:list,grouped:array,counts:array,total:int,days:int}
  */
@@ -59,13 +75,19 @@ function recordatorios_load_view(?PDO $pdo = null, int $days = RECORDATORIOS_DEF
     try {
         $todayBA = (new DateTimeImmutable('now', recordatorios_tz()))->format('Y-m-d');
         $pdo->prepare('DELETE FROM recordatorio_eventos WHERE status = "pending" AND appointment_date IS NOT NULL AND appointment_date != "" AND appointment_date < :today')->execute(['today' => $todayBA]);
+        $pdo->exec("DELETE FROM recordatorio_eventos WHERE skip_reason = 'blocked' OR LOWER(patient_name) LIKE '%no dar%' OR LOWER(event_summary) LIKE '%no dar%' OR LOWER(patient_name) LIKE '%bloqueado%' OR LOWER(event_summary) LIKE '%bloqueado%'");
     } catch (Throwable $e) {}
 
     $stmt = $pdo->prepare(
         'SELECT id, event_key, exec_id, run_at, appointment_date, appointment_time, calendar_event_id,
                 patient_name, wa_id, status, skip_reason, error_code, error_message, event_summary, received_at
          FROM recordatorio_eventos
-         WHERE run_at >= :since OR status = "pending"
+         WHERE (run_at >= :since OR status = "pending")
+           AND skip_reason != "blocked"
+           AND LOWER(patient_name) NOT LIKE "%no dar%"
+           AND LOWER(event_summary) NOT LIKE "%no dar%"
+           AND LOWER(patient_name) NOT LIKE "%bloqueado%"
+           AND LOWER(event_summary) NOT LIKE "%bloqueado%"
          ORDER BY run_at DESC, id DESC
          LIMIT 2000'
     );
@@ -86,6 +108,9 @@ function recordatorios_load_view(?PDO $pdo = null, int $days = RECORDATORIOS_DEF
     $grouped = [];
 
     foreach ($rows as $r) {
+        if (recordatorios_is_blocked_event($r)) {
+            continue;
+        }
         $status = (string) ($r['status'] ?? '');
         if (isset($counts[$status])) {
             $counts[$status]++;

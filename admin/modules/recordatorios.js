@@ -12,7 +12,7 @@ import {
 import {
   filterRecordatoriosList,
   renderRecordatoriosStats,
-} from "./recordatorios-filter.js?v=5";
+} from "./recordatorios-filter.js?v=6";
 import { renderRecordatoriosRules } from "./recordatorios-rules.js?v=3";
 
 let cachedItems = [];
@@ -27,6 +27,20 @@ let hasLoadedOnce = false;
 let lastLoadedAt = 0;
 const CACHE_TTL_MS = 60000;
 
+export function isBlockedRecordatorio(item) {
+  if (!item || typeof item !== "object") return false;
+  const reason = String(item.skip_reason || "").toLowerCase();
+  if (reason === "blocked") return true;
+  const name = String(item.patient_name || "").toLowerCase();
+  const summary = String(item.event_summary || "").toLowerCase();
+  return (
+    name.includes("no dar") ||
+    summary.includes("no dar") ||
+    name.includes("bloqueado") ||
+    summary.includes("bloqueado")
+  );
+}
+
 function recalculateCounts() {
   const counts = {
     pending: 0,
@@ -38,6 +52,7 @@ function recalculateCounts() {
     run_skipped: 0,
   };
   for (const it of cachedItems) {
+    if (isBlockedRecordatorio(it)) continue;
     const st = it.status;
     if (counts[st] !== undefined) {
       counts[st]++;
@@ -229,7 +244,8 @@ export async function loadRecordatorios(force = false) {
       }
       return;
     }
-    cachedItems = Array.isArray(resp.items) ? resp.items : [];
+    const rawItems = Array.isArray(resp.items) ? resp.items : [];
+    cachedItems = rawItems.filter((it) => !isBlockedRecordatorio(it));
     recalculateCounts();
     if (resp.counts && typeof resp.counts === "object") {
       cachedCounts = { ...cachedCounts, ...resp.counts };

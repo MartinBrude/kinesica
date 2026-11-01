@@ -127,6 +127,13 @@ function recordatorios_normalize_item(array $in, string $execId, int $runAt): ?a
     if ($status === 'run_skipped' && $skip === '') {
         $skip = 'clara_inactive';
     }
+
+    $name = mb_strtolower(trim((string) ($in['patient_name'] ?? $in['patient_full_name'] ?? '')));
+    $summary = mb_strtolower(trim((string) ($in['event_summary'] ?? '')));
+    if ($skip === 'blocked' || str_contains($name, 'no dar') || str_contains($summary, 'no dar') || str_contains($name, 'bloqueado') || str_contains($summary, 'bloqueado')) {
+        return null;
+    }
+
     $safeExec = substr(preg_replace('/[^A-Za-z0-9_\-]/', '', $execId) ?? '', 0, 64);
     if ($safeExec === '') {
         $safeExec = 'na';

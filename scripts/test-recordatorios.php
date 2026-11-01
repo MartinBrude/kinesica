@@ -79,6 +79,22 @@ $badSkip = recordatorios_normalize_item([
 ], 'e', 1);
 eq($badSkip['skip_reason'], 'other', 'skip_reason desconocido → other');
 
+eq(recordatorios_normalize_item([
+    'status' => 'skipped',
+    'calendar_event_id' => 'c_no_dar',
+    'skip_reason' => 'blocked',
+    'patient_name' => 'No dar',
+], 'e', 1), null, 'skip_reason blocked se descarta por completo');
+
+eq(recordatorios_normalize_item([
+    'status' => 'pending',
+    'calendar_event_id' => 'c_no_dar_2',
+    'patient_name' => 'No dar turno',
+], 'e', 1), null, 'patient_name No dar turno se descarta');
+
+eq(recordatorios_is_blocked_event(['patient_name' => 'No dar', 'event_summary' => '']), true, 'recordatorios_is_blocked_event detecta No dar');
+eq(recordatorios_is_blocked_event(['patient_name' => 'Augusto Oviedo', 'event_summary' => '']), false, 'recordatorios_is_blocked_event permite paciente real');
+
 section('Parse árbol Build*');
 function rem_tree(array $batches): array
 {
