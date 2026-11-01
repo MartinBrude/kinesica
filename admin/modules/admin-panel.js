@@ -11,7 +11,7 @@ import {
   loadProfesionalesData,
   closeProfModal,
   isProfModalOpen,
-} from "./admin-profesionales.js?v=82";
+} from "./admin-profesionales.js?v=83";
 import {
   initGastosUI,
   loadGastosData,

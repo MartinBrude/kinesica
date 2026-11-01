@@ -1,12 +1,14 @@
 /**
  * Kinésica Admin - Gestión de Profesionales del Equipo
- * Altas, bajas lógicas, edición de datos, roles (admin/profesional) y reenvío de accesos.
+ * Altas, bajas lógicas, edición de datos, roles (admin/profesional/colaborador),
+ * reenvío de accesos y vista de detalle limpio de usuario.
  */
 
 import { api } from "./api.js?v=77";
 import { escapeHtml, dialogAlert, dialogConfirm } from "./dom.js?v=78";
 import { formatDisplayPhone } from "./phone-format.js";
 
+// Modal Alta / Edición
 const profTableBody = document.querySelector("#admin-prof-tbody");
 const btnNuevoProf = document.querySelector("#admin-btn-nuevo-prof");
 const modalEl = document.querySelector("#admin-prof-modal");
@@ -22,19 +24,79 @@ const btnCloseModal = document.querySelector("#admin-prof-modal-close");
 const btnCancelModal = document.querySelector("#admin-prof-modal-cancel");
 const btnSaveModal = document.querySelector("#admin-prof-modal-save");
 
+// Modal Vista Detalle
+const detailModalEl = document.querySelector("#admin-prof-detail-modal");
+const detailCloseBtn = document.querySelector("#admin-prof-detail-close");
+const detailModalCloseBtn = document.querySelector("#admin-prof-detail-modal-close");
+const detailModalEditBtn = document.querySelector("#admin-prof-detail-modal-edit");
+const detailAvatar = document.querySelector("#admin-prof-detail-avatar");
+const detailName = document.querySelector("#admin-prof-detail-name");
+const detailUsername = document.querySelector("#admin-prof-detail-username");
+const detailRoleBadge = document.querySelector("#admin-prof-detail-role-badge");
+const detailStatusBadge = document.querySelector("#admin-prof-detail-status-badge");
+const detailEmail = document.querySelector("#admin-prof-detail-email");
+const detailEmailLink = document.querySelector("#admin-prof-detail-email-link");
+const detailCopyEmailBtn = document.querySelector("#admin-prof-detail-copy-email");
+const detailPhone = document.querySelector("#admin-prof-detail-phone");
+const detailPhoneLink = document.querySelector("#admin-prof-detail-phone-link");
+const detailWaBtn = document.querySelector("#admin-prof-detail-wa-btn");
+const detailRoleDesc = document.querySelector("#admin-prof-detail-role-desc");
+const detailTotp = document.querySelector("#admin-prof-detail-totp");
+const detailLogins = document.querySelector("#admin-prof-detail-logins");
+
 let currentEditingUser = null;
+let currentDetailUser = null;
 let cachedProfesionales = [];
 
+/**
+ * Obtiene las iniciales a partir del nombre para el avatar circular.
+ */
+export function getInitials(name) {
+  if (!name) return "U";
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+/**
+ * Paleta de colores consistente y armónica para el avatar.
+ */
+export function getAvatarColor(username, name) {
+  const map = {
+    norberto: "linear-gradient(135deg, #0b2545, #1d4ed8)",
+    maria: "linear-gradient(135deg, #047857, #10b981)",
+    martin: "linear-gradient(135deg, #4338ca, #6366f1)",
+    facundo: "linear-gradient(135deg, #b45309, #f59e0b)",
+  };
+  const u = String(username || "").toLowerCase();
+  if (map[u]) return map[u];
+  const list = [
+    "linear-gradient(135deg, #0b2545, #1d4ed8)",
+    "linear-gradient(135deg, #047857, #10b981)",
+    "linear-gradient(135deg, #4338ca, #6366f1)",
+    "linear-gradient(135deg, #b45309, #f59e0b)",
+    "linear-gradient(135deg, #be185d, #ec4899)",
+    "linear-gradient(135deg, #0e7490, #06b6d4)",
+  ];
+  let h = 0;
+  const s = (username || name || "u").toLowerCase();
+  for (let i = 0; i < s.length; i++) h = s.charCodeAt(i) + ((h << 5) - h);
+  return list[Math.abs(h) % list.length];
+}
+
 export function isProfModalOpen() {
-  return modalEl && !modalEl.hidden;
+  return (modalEl && !modalEl.hidden) || (detailModalEl && !detailModalEl.hidden);
 }
 
 export function closeProfModal() {
   if (modalEl) modalEl.hidden = true;
+  if (detailModalEl) detailModalEl.hidden = true;
   currentEditingUser = null;
+  currentDetailUser = null;
 }
 
 export function openCreateModal() {
+  closeProfModal();
   currentEditingUser = null;
   if (modalTitle) modalTitle.textContent = "Nuevo Profesional";
   if (inputUsername) {
@@ -52,6 +114,7 @@ export function openCreateModal() {
 }
 
 export function openEditModal(prof) {
+  closeProfModal();
   currentEditingUser = prof;
   if (modalTitle) modalTitle.textContent = `Editar a ${prof.name || prof.display_name || prof.username}`;
   if (inputUsername) {
@@ -69,6 +132,122 @@ export function openEditModal(prof) {
 
   if (modalEl) modalEl.hidden = false;
   inputFirstName?.focus();
+}
+
+/**
+ * Abre la Vista Detalle limpia sin acciones ruidosas.
+ */
+export function openDetailModal(prof) {
+  if (!detailModalEl) return;
+  closeProfModal();
+  currentDetailUser = prof;
+
+  const displayName = prof.name || prof.display_name || prof.username;
+  const initials = getInitials(displayName);
+  const avatarBg = getAvatarColor(prof.username, displayName);
+
+  if (detailAvatar) {
+    detailAvatar.textContent = initials;
+    detailAvatar.style.background = avatarBg;
+  }
+  if (detailName) detailName.textContent = displayName;
+  if (detailUsername) detailUsername.textContent = `@${prof.username}`;
+
+  // Rol y Permisos
+  let roleLabel = "Profesional";
+  let roleClass = "professional";
+  let roleDesc = "Cuenta de Profesional de la salud: acceso a historias clínicas, fichas de pacientes, turnera propia y visualización de recordatorios.";
+  if (prof.role === "admin") {
+    roleLabel = "Admin";
+    roleClass = "admin";
+    roleDesc = "Cuenta de Administrador con control total del sistema: gestión de usuarios, configuración del consultorio, registro de gastos, reportes y control del bot Clara.";
+  } else if (prof.role === "colaborador") {
+    roleLabel = "Colaborador";
+    roleClass = "colaborador";
+    roleDesc = "Cuenta de Colaborador: acceso de consulta y lectura a fichas y reportes sin facultades de edición ni administración.";
+  }
+
+  if (detailRoleBadge) {
+    detailRoleBadge.className = `prof-role-badge ${roleClass}`;
+    detailRoleBadge.textContent = roleLabel.toUpperCase();
+  }
+  if (detailRoleDesc) {
+    detailRoleDesc.textContent = roleDesc;
+  }
+
+  // Estado
+  if (detailStatusBadge) {
+    detailStatusBadge.className = `prof-status-badge ${prof.active ? "active" : "inactive"}`;
+    detailStatusBadge.innerHTML = `<span class="prof-status-dot"></span>${prof.active ? "Activo" : "Inactivo"}`;
+  }
+
+  // Email
+  if (detailEmail) detailEmail.textContent = prof.email || "No registrado";
+  if (detailEmailLink) {
+    if (prof.email) {
+      detailEmailLink.href = `mailto:${prof.email}`;
+      detailEmailLink.style.pointerEvents = "auto";
+      detailEmailLink.style.opacity = "1";
+    } else {
+      detailEmailLink.removeAttribute("href");
+      detailEmailLink.style.pointerEvents = "none";
+      detailEmailLink.style.opacity = "0.7";
+    }
+  }
+  if (detailCopyEmailBtn) {
+    detailCopyEmailBtn.hidden = !prof.email;
+    detailCopyEmailBtn.onclick = (e) => {
+      e.stopPropagation();
+      if (prof.email) {
+        navigator.clipboard?.writeText(prof.email).then(() => {
+          const originalText = detailCopyEmailBtn.innerHTML;
+          detailCopyEmailBtn.textContent = "¡Copiado!";
+          setTimeout(() => { detailCopyEmailBtn.innerHTML = originalText; }, 1600);
+        });
+      }
+    };
+  }
+
+  // Teléfono
+  const formattedPhone = prof.telefono ? formatDisplayPhone(prof.telefono) : "";
+  if (detailPhone) detailPhone.textContent = formattedPhone || "No registrado";
+  if (detailPhoneLink) {
+    if (prof.telefono) {
+      detailPhoneLink.href = `tel:${prof.telefono}`;
+      detailPhoneLink.style.pointerEvents = "auto";
+      detailPhoneLink.style.opacity = "1";
+    } else {
+      detailPhoneLink.removeAttribute("href");
+      detailPhoneLink.style.pointerEvents = "none";
+      detailPhoneLink.style.opacity = "0.7";
+    }
+  }
+  if (detailWaBtn) {
+    const rawDigits = String(prof.telefono || "").replace(/\D/g, "");
+    if (rawDigits.length >= 8) {
+      detailWaBtn.hidden = false;
+      detailWaBtn.href = `https://wa.me/${rawDigits}`;
+    } else {
+      detailWaBtn.hidden = true;
+    }
+  }
+
+  // Seguridad: 2FA
+  if (detailTotp) {
+    if (prof.totp_confirmed) {
+      detailTotp.innerHTML = `<span style="color:#059669; font-weight:600;">● Verificado y protegido con App Authenticator (2FA activo)</span>`;
+    } else {
+      detailTotp.innerHTML = `<span style="color:#d97706; font-weight:600;">⚠️ Pendiente de verificación (se configurará en el próximo ingreso)</span>`;
+    }
+  }
+
+  // Historial de accesos
+  if (detailLogins) {
+    const count = prof.login_count || 0;
+    detailLogins.textContent = `${count} ${count === 1 ? "inicio" : "inicios"} de sesión registrados`;
+  }
+
+  detailModalEl.hidden = false;
 }
 
 export async function handleSaveProfessional(e, onReload) {
@@ -131,7 +310,7 @@ export async function handleToggleActive(prof, onReload) {
   const isActivating = !prof.active;
   const msg = isActivating
     ? `¿Deseás reactivar la cuenta de ${escapeHtml(prof.name)}? Volverá a tener acceso y aparecerá en las turneras y notificaciones.`
-    : `¿Estás seguro de dar de baja a ${escapeHtml(prof.name)}? La cuenta quedará suspendida (no podrá iniciar sesión ni se ofrecerá en reservas activas). Las historias clínicas existentes no se perderán.`;
+    : `¿Deseás dar de baja temporalmente a ${escapeHtml(prof.name)}? Su sesión quedará bloqueada y no podrá ingresar al sistema hasta que lo reactives.`;
 
   const ok = await dialogConfirm(msg);
   if (!ok) return;
@@ -142,22 +321,19 @@ export async function handleToggleActive(prof, onReload) {
       body: JSON.stringify({
         action: "toggle_active",
         username: prof.username,
+        active: isActivating ? 1 : 0,
       }),
     });
-    dialogAlert(res.message || "Estado actualizado.");
+    dialogAlert(res.message || (isActivating ? "Cuenta reactivada." : "Cuenta dada de baja."));
     if (typeof onReload === "function") await onReload();
   } catch (err) {
-    dialogAlert("Error al cambiar estado: " + (err.message || "Error desconocido"));
+    dialogAlert("Error al modificar estado: " + (err.message || "Error desconocido"));
   }
 }
 
 export async function handleResendInvite(prof) {
-  if (!prof.email) {
-    dialogAlert("El usuario no tiene un correo configurado.");
-    return;
-  }
   const ok = await dialogConfirm(
-    `¿Enviar correo de acceso a ${prof.name || prof.username} (${prof.email}) para que cree o restablezca su contraseña?`
+    `¿Deseás reenviar el correo de acceso a ${escapeHtml(prof.name)} (${escapeHtml(prof.email)})? Recibirá un enlace seguro para crear su contraseña.`
   );
   if (!ok) return;
 
@@ -181,22 +357,46 @@ export function renderProfesionales(profesionales, onReload) {
     ...profesionales.map((prof) => {
       const tr = document.createElement("tr");
       if (!prof.active) tr.className = "is-inactive";
+      tr.title = "Hacé clic en la fila para ver la ficha detallada";
+      tr.addEventListener("click", () => openDetailModal(prof));
 
+      // 1. Columna Profesional: Avatar con iniciales + Nombre + @username
       const tdName = document.createElement("td");
-      const nameStrong = document.createElement("strong");
-      nameStrong.textContent = prof.name || prof.display_name || prof.username;
-      const userSub = document.createElement("div");
-      userSub.style.fontSize = "12px";
-      userSub.style.color = "var(--muted)";
-      userSub.textContent = `@${prof.username}`;
-      tdName.append(nameStrong, userSub);
+      const userCell = document.createElement("div");
+      userCell.className = "prof-user-cell";
 
+      const displayName = prof.name || prof.display_name || prof.username;
+      const avatar = document.createElement("div");
+      avatar.className = "prof-avatar";
+      avatar.textContent = getInitials(displayName);
+      avatar.style.background = getAvatarColor(prof.username, displayName);
+
+      const userMeta = document.createElement("div");
+      userMeta.className = "prof-user-meta";
+
+      const nameStrong = document.createElement("strong");
+      nameStrong.className = "prof-name";
+      nameStrong.textContent = displayName;
+
+      const userSub = document.createElement("span");
+      userSub.className = "prof-username";
+      userSub.textContent = `@${prof.username}`;
+
+      userMeta.append(nameStrong, userSub);
+      userCell.append(avatar, userMeta);
+      tdName.append(userCell);
+
+      // 2. Columna Email
       const tdEmail = document.createElement("td");
+      tdEmail.className = "prof-email-cell";
       tdEmail.textContent = prof.email || "—";
 
+      // 3. Columna Teléfono (white-space: nowrap para evitar saltos de línea antiestéticos)
       const tdPhone = document.createElement("td");
+      tdPhone.className = "prof-phone-cell";
       tdPhone.textContent = prof.telefono ? formatDisplayPhone(prof.telefono) : "—";
 
+      // 4. Columna Rol
       const tdRole = document.createElement("td");
       const roleBadge = document.createElement("span");
       let roleLabel = "Profesional";
@@ -212,41 +412,75 @@ export function renderProfesionales(profesionales, onReload) {
       roleBadge.textContent = roleLabel;
       tdRole.append(roleBadge);
 
+      // 5. Columna Estado con punto indicador visual
       const tdStatus = document.createElement("td");
       const statusBadge = document.createElement("span");
       statusBadge.className = `prof-status-badge ${prof.active ? "active" : "inactive"}`;
-      statusBadge.textContent = prof.active ? "Activo" : "Inactivo";
+      const statusDot = document.createElement("span");
+      statusDot.className = "prof-status-dot";
+      statusBadge.append(statusDot, document.createTextNode(prof.active ? "Activo" : "Inactivo"));
       tdStatus.append(statusBadge);
 
+      // 6. Columna Acciones: Botón principal "Ver detalle" + acciones secundarias
       const tdActions = document.createElement("td");
       tdActions.className = "prof-actions-td";
       const actionsWrap = document.createElement("div");
       actionsWrap.className = "prof-actions-cell";
 
+      // Botón Ver Detalle
+      const btnDetail = document.createElement("button");
+      btnDetail.type = "button";
+      btnDetail.className = "btn btn-prof-detail";
+      btnDetail.innerHTML = `
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+        Detalle
+      `;
+      btnDetail.title = "Ver ficha y datos del profesional sin acciones";
+      btnDetail.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openDetailModal(prof);
+      });
+      actionsWrap.append(btnDetail);
+
+      // Botón Editar
       const btnEdit = document.createElement("button");
       btnEdit.type = "button";
       btnEdit.className = "btn ghost btn-prof-edit";
       btnEdit.textContent = "Editar";
-      btnEdit.addEventListener("click", () => openEditModal(prof));
+      btnEdit.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openEditModal(prof);
+      });
       actionsWrap.append(btnEdit);
 
+      // Botón Enviar acceso
       if (prof.email) {
         const btnInvite = document.createElement("button");
         btnInvite.type = "button";
         btnInvite.className = "btn ghost btn-prof-invite";
         btnInvite.textContent = "Enviar acceso";
         btnInvite.title = "Enviar correo con enlace para crear contraseña";
-        btnInvite.addEventListener("click", () => handleResendInvite(prof));
+        btnInvite.addEventListener("click", (e) => {
+          e.stopPropagation();
+          handleResendInvite(prof);
+        });
         actionsWrap.append(btnInvite);
       }
 
+      // Botón Dar de baja / Reactivar
       if (prof.username !== "martin") {
         const btnToggle = document.createElement("button");
         btnToggle.type = "button";
         btnToggle.className = `btn ${prof.active ? "ghost" : "green"} btn-prof-toggle`;
         btnToggle.style.color = prof.active ? "#dc2626" : "";
         btnToggle.textContent = prof.active ? "Dar de baja" : "Reactivar";
-        btnToggle.addEventListener("click", () => handleToggleActive(prof, onReload));
+        btnToggle.addEventListener("click", (e) => {
+          e.stopPropagation();
+          handleToggleActive(prof, onReload);
+        });
         actionsWrap.append(btnToggle);
       } else {
         const spacer = document.createElement("span");
@@ -277,11 +511,24 @@ export async function loadProfesionalesData(onReload) {
 }
 
 export function initProfesionalesUI({ onReload }) {
+  // Modal de Alta / Edición
   btnNuevoProf?.addEventListener("click", openCreateModal);
   btnCloseModal?.addEventListener("click", closeProfModal);
   btnCancelModal?.addEventListener("click", closeProfModal);
   formEl?.addEventListener("submit", (e) => handleSaveProfessional(e, onReload));
   modalEl?.addEventListener("click", (e) => {
     if (e.target === modalEl) closeProfModal();
+  });
+
+  // Modal de Detalle
+  detailCloseBtn?.addEventListener("click", closeProfModal);
+  detailModalCloseBtn?.addEventListener("click", closeProfModal);
+  detailModalEl?.addEventListener("click", (e) => {
+    if (e.target === detailModalEl) closeProfModal();
+  });
+  detailModalEditBtn?.addEventListener("click", () => {
+    if (currentDetailUser) {
+      openEditModal(currentDetailUser);
+    }
   });
 }
