@@ -8,7 +8,7 @@ import { dialogAlert } from "./dom-dialogs.js?v=77";
 import {
   renderRecordatoriosList,
   renderRecordatoriosPager,
-} from "./recordatorios-render.js?v=5";
+} from "./recordatorios-render.js?v=6";
 import {
   filterRecordatoriosList,
   renderRecordatoriosStats,

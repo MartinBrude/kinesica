@@ -30,6 +30,39 @@ function statusClass(status) {
   return "";
 }
 
+function getTimingMetaHtml(item) {
+  const localTime = item.run_at_local || item.run_at || "";
+  const timeOnly = localTime ? localTime.split(" ")[1] || localTime : "";
+
+  if (item.status === "pending") {
+    let dispatchSchedule = "Hoy 18:00 hs";
+    if (item.appointment_date) {
+      try {
+        const [y, m, d] = item.appointment_date.split("-").map(Number);
+        const dt = new Date(y, m - 1, d);
+        const dayOfWeek = dt.getDay(); // 0: Dom, 1: Lun, 2: Mar, 3: Mie, 4: Jue, 5: Vie, 6: Sab
+        if (dayOfWeek === 1) {
+          dispatchSchedule = "Domingo 18:00 hs";
+        } else if (dayOfWeek >= 2 && dayOfWeek <= 5) {
+          dispatchSchedule = "Día previo 10:00 hs";
+        }
+      } catch {}
+    }
+    const detectedStr = timeOnly ? ` · Detectado: ${escapeHtml(timeOnly)} hs` : "";
+    return `<span>Envío automático: <strong>${escapeHtml(dispatchSchedule)}</strong>${detectedStr}</span>`;
+  }
+
+  if (item.status === "sent" || item.status === "sent_email") {
+    return `<span>Enviado: ${escapeHtml(localTime)}</span>`;
+  }
+
+  if (item.status === "failed" || item.status === "missing_phone") {
+    return `<span>Falló en corrida: ${escapeHtml(localTime)}</span>`;
+  }
+
+  return `<span>Corrida: ${escapeHtml(localTime)}</span>`;
+}
+
 export function buildRecordatorioCardHtml(item) {
   const name = escapeHtml(item.patient_name || item.event_summary || "—");
   const statusLabel = escapeHtml(item.status_label || item.status || "");
@@ -95,7 +128,7 @@ export function buildRecordatorioCardHtml(item) {
       <div class="recordatorio-meta">
         <span>Turno: ${escapeHtml(appt)}</span>
         <span>${contact}</span>
-        <span>${item.status === "pending" ? "Programado" : "Corrida"}: ${escapeHtml(item.run_at_local || item.run_at || "")}</span>
+        ${getTimingMetaHtml(item)}
       </div>
       ${err}
     </div>
