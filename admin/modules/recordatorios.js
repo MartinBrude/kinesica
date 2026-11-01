@@ -8,11 +8,11 @@ import { dialogAlert } from "./dom-dialogs.js?v=77";
 import {
   renderRecordatoriosList,
   renderRecordatoriosPager,
-} from "./recordatorios-render.js?v=4";
+} from "./recordatorios-render.js?v=5";
 import {
   filterRecordatoriosList,
   renderRecordatoriosStats,
-} from "./recordatorios-filter.js?v=4";
+} from "./recordatorios-filter.js?v=5";
 import { renderRecordatoriosRules } from "./recordatorios-rules.js?v=3";
 
 let cachedItems = [];
@@ -44,6 +44,7 @@ function recalculateCounts() {
     }
   }
   cachedCounts = counts;
+  return counts;
 }
 
 export function showRecordatoriosView() {
@@ -151,8 +152,9 @@ function applyFiltersAndRender() {
     },
   });
 
+  const counts = recalculateCounts();
   renderRecordatoriosStats(document.getElementById("recordatorios-stats"), {
-    counts: cachedCounts,
+    counts,
     activeStatusFilter,
   });
 
@@ -228,7 +230,10 @@ export async function loadRecordatorios(force = false) {
       return;
     }
     cachedItems = Array.isArray(resp.items) ? resp.items : [];
-    cachedCounts = resp.counts && typeof resp.counts === "object" ? resp.counts : {};
+    recalculateCounts();
+    if (resp.counts && typeof resp.counts === "object") {
+      cachedCounts = { ...cachedCounts, ...resp.counts };
+    }
     hasLoadedOnce = true;
     lastLoadedAt = Date.now();
     renderRecordatoriosSync(resp);
@@ -399,6 +404,7 @@ export function initRecordatoriosModule() {
     applyFiltersAndRender();
   });
   document.getElementById("recordatorios-stats")?.addEventListener("click", (e) => {
+    if (!hasLoadedOnce && isRefreshing) return;
     const btn = e.target.closest("[data-filter]");
     if (!btn) return;
     const next = btn.getAttribute("data-filter") || "all";

@@ -51,7 +51,11 @@ export function filterRecordatoriosList(items, term, activeStatusFilter) {
       normalize(phoneFormatted).includes(cleanTerm) ||
       (digitsTerm.length >= 3 && waDigits.includes(digitsTerm));
     const reasonMatch = normalize(item.skip_reason_label || item.skip_reason).includes(cleanTerm);
-    return nameMatch || summaryMatch || phoneMatch || reasonMatch;
+    const isMissingPhone = !item.wa_id && (item.status === "pending" || item.status === "missing_phone");
+    const missingPhoneMatch =
+      isMissingPhone &&
+      (cleanTerm.includes("telefono") || cleanTerm.includes("whatsapp") || cleanTerm.includes("sin"));
+    return nameMatch || summaryMatch || phoneMatch || reasonMatch || missingPhoneMatch;
   });
 }
 

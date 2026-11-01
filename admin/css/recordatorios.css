@@ -161,6 +161,36 @@
   border-left-color: #b54708;
 }
 
+.recordatorio-card.is-missing-contact {
+  background: #fffdfa;
+  border-left-color: #f79009;
+}
+
+.recordatorio-warning-pill {
+  font-size: 11px;
+  font-weight: 600;
+  color: #b54708;
+  background: #fffaeb;
+  border: 1px solid #fedf89;
+  border-radius: 999px;
+  padding: 2px 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.recordatorio-contact-warning {
+  color: #b54708;
+  font-weight: 600;
+}
+
+.recordatorio-warning-text {
+  color: #b54708;
+  font-size: 12px;
+  margin: 6px 0 0;
+  font-weight: 500;
+}
+
 .recordatorio-card.is-skipped {
   border-left-color: #667085;
 }

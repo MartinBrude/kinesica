@@ -36,9 +36,18 @@ export function buildRecordatorioCardHtml(item) {
   const appt =
     [item.appointment_date, item.appointment_time].filter(Boolean).join(" · ") || "—";
   const viaEmail = item.status === "sent_email";
+  const isMissingPhone = !item.wa_id && !viaEmail && item.status !== "skipped" && item.status !== "run_skipped";
+
   const contact = viaEmail
     ? (item.error_message ? `Email: ${escapeHtml(item.error_message)}` : "Email")
-    : `WhatsApp: ${item.wa_id ? escapeHtml(formatDisplayPhone(item.wa_id)) : "—"}`;
+    : (item.wa_id
+        ? `WhatsApp: ${escapeHtml(formatDisplayPhone(item.wa_id))}`
+        : `<span class="recordatorio-contact-warning">⚠️ Sin WhatsApp registrado</span>`);
+
+  const warningPill = isMissingPhone && item.status === "pending"
+    ? `<span class="recordatorio-warning-pill" title="No figura teléfono en el turno ni en el directorio">⚠️ Falta teléfono</span>`
+    : "";
+
   const reason = item.skip_reason_label
     ? `<span class="recordatorio-reason">${escapeHtml(item.skip_reason_label)}</span>`
     : "";
@@ -47,7 +56,9 @@ export function buildRecordatorioCardHtml(item) {
       ? `<p class="recordatorio-error">${escapeHtml(
           [item.error_code, item.error_message].filter(Boolean).join(" — ")
         )}</p>`
-      : "";
+      : (isMissingPhone && item.status === "pending"
+          ? `<p class="recordatorio-warning-text">⚠️ No se encontró número de WhatsApp para este paciente. Podés cargarlo antes de la corrida o usar <em>⚡ Enviar ahora</em> para ingresarlo manualmente.</p>`
+          : "");
   const summary =
     item.event_summary && item.event_summary !== item.patient_name
       ? `<p class="recordatorio-summary">${escapeHtml(item.event_summary)}</p>`
@@ -70,11 +81,14 @@ export function buildRecordatorioCardHtml(item) {
       </div>`;
   }
 
-  return `<article class="recordatorio-card ${statusClass(item.status)}" data-id="${escapeHtml(item.id)}">
+  const phoneCardClass = isMissingPhone && item.status === "pending" ? "is-missing-contact" : "";
+
+  return `<article class="recordatorio-card ${statusClass(item.status)} ${phoneCardClass}" data-id="${escapeHtml(item.id)}">
     <div class="recordatorio-card-main">
       <div class="recordatorio-card-title">
         <strong>${name}</strong>
         <span class="recordatorio-status-pill ${statusClass(item.status)}">${statusLabel}</span>
+        ${warningPill}
         ${reason}
       </div>
       ${summary}
