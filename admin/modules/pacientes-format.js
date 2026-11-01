@@ -3,52 +3,7 @@
  * Utilidades para normalización de teléfonos, formato internacional y detección de errores de tipeo.
  */
 
-/**
- * Formatea un número de teléfono para lectura clara (ej: 5491161164311 -> (+54) 9 11 6116 4311)
- * @param {string} raw
- * @returns {string}
- */
-export function formatDisplayPhone(raw) {
-  if (!raw) return "";
-  const digits = String(raw).replace(/\D/g, "");
-  if (!digits) return raw;
-
-  if (digits.startsWith("549")) {
-    const rest = digits.slice(3);
-    if (rest.startsWith("11") && rest.length === 10) {
-      return `(+54) 9 11 ${rest.slice(2, 6)} ${rest.slice(6)}`;
-    }
-    if (rest.length === 10) {
-      return `(+54) 9 ${rest.slice(0, 3)} ${rest.slice(3, 6)} ${rest.slice(6)}`;
-    }
-    if (rest.length >= 8) {
-      const p1 = rest.slice(rest.length - 8, rest.length - 4);
-      const p2 = rest.slice(rest.length - 4);
-      const area = rest.slice(0, rest.length - 8);
-      return `(+54) 9 ${area} ${p1} ${p2}`;
-    }
-    return `(+54) 9 ${rest}`;
-  }
-
-  if (digits.startsWith("54") && digits.length >= 10) {
-    const rest = digits.slice(2);
-    if (rest.startsWith("11") && rest.length === 10) {
-      return `(+54) 11 ${rest.slice(2, 6)} ${rest.slice(6)}`;
-    }
-    return `(+54) ${rest}`;
-  }
-
-  if (digits.startsWith("34") && digits.length === 11) {
-    const rest = digits.slice(2);
-    return `(+34) ${rest.slice(0, 3)} ${rest.slice(3, 5)} ${rest.slice(5, 7)} ${rest.slice(7)}`;
-  }
-
-  if (digits.startsWith("11") && digits.length === 10) {
-    return `11 ${digits.slice(2, 6)} ${digits.slice(6)}`;
-  }
-
-  return `+${digits}`;
-}
+export { formatDisplayPhone, cleanPhoneDigits } from "./phone-format.js";
 
 export function isValidAdminEmail(raw) {
   const s = String(raw || "").trim();

@@ -3,6 +3,8 @@
  * Reglas de búsqueda por texto/teléfono/mensaje y renderizado de píldoras de conteo.
  */
 
+import { formatDisplayPhone } from "./phone-format.js";
+
 export function filterInteractionsList(items, term, activeStatusFilter) {
   const rawTerm = String(term || "").trim();
   const normalize = (s) =>
@@ -27,7 +29,7 @@ export function filterInteractionsList(items, term, activeStatusFilter) {
     if (!cleanTerm) return true;
 
     const waDigits = String(item.wa_id || "").replace(/\D/g, "");
-    const phoneFormatted = String(item.phone_formatted || "");
+    const phoneFormatted = formatDisplayPhone(item.phone_formatted || item.wa_id);
     const isMartin =
       waDigits === "34658444935" ||
       waDigits.endsWith("658444935") ||

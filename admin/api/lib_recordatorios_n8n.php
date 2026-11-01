@@ -268,3 +268,51 @@ function recordatorios_reconcile_save(array $state, array $result, bool $ok): vo
     }
     recordatorios_write_atomic(recordatorios_reconcile_state_path(), json_encode($state));
 }
+
+function recordatorios_prevision_state_path(): string
+{
+    return recordatorios_dir() . '/recordatorios_prevision_state.json';
+}
+
+function recordatorios_prevision_due(int $minIntervalSeconds = 300): bool
+{
+    $d = json_decode((string) @file_get_contents(recordatorios_prevision_state_path()), true);
+    $last = (int) ($d['last_run_ts'] ?? 0);
+    return time() - $last >= $minIntervalSeconds;
+}
+
+function recordatorios_trigger_prevision(?array $config = null): ?array
+{
+    $conf = $config ?? recordatorios_reconcile_config();
+    if (!$conf || empty($conf['n8n_url'])) {
+        return null;
+    }
+    $url = $conf['n8n_url'] . '/webhook/recordatorios-prevision';
+    $secret = trim((string) (cfg()['webhook_secret'] ?? ''));
+    if (!function_exists('curl_init')) {
+        return null;
+    }
+    $ch = curl_init($url);
+    $headers = [
+        'Content-Type: application/json',
+        'X-Kinesica-Bot-Secret: ' . $secret,
+    ];
+    curl_setopt_array($ch, [
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => json_encode(['action' => 'preview', 'timestamp' => time()]),
+        CURLOPT_HTTPHEADER => $headers,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => 8,
+        CURLOPT_CONNECTTIMEOUT => 3,
+        CURLOPT_SSL_VERIFYPEER => true,
+    ]);
+    $resp = curl_exec($ch);
+    $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    $state = ['last_run_ts' => time(), 'status' => $code];
+    @file_put_contents(recordatorios_prevision_state_path(), json_encode($state));
+    if ($code >= 200 && $code < 300 && is_string($resp)) {
+        return json_decode($resp, true);
+    }
+    return null;
+}

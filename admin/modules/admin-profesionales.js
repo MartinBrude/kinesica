@@ -5,6 +5,7 @@
 
 import { api } from "./api.js?v=77";
 import { escapeHtml, dialogAlert, dialogConfirm } from "./dom.js?v=78";
+import { formatDisplayPhone } from "./phone-format.js";
 
 const profTableBody = document.querySelector("#admin-prof-tbody");
 const btnNuevoProf = document.querySelector("#admin-btn-nuevo-prof");
@@ -194,7 +195,7 @@ export function renderProfesionales(profesionales, onReload) {
       tdEmail.textContent = prof.email || "—";
 
       const tdPhone = document.createElement("td");
-      tdPhone.textContent = prof.telefono || "—";
+      tdPhone.textContent = prof.telefono ? formatDisplayPhone(prof.telefono) : "—";
 
       const tdRole = document.createElement("td");
       const roleBadge = document.createElement("span");

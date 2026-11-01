@@ -56,11 +56,16 @@ function recordatorios_load_view(?PDO $pdo = null, int $days = RECORDATORIOS_DEF
         ->modify('-' . $days . ' days')
         ->format('Y-m-d H:i:s');
 
+    try {
+        $todayBA = (new DateTimeImmutable('now', recordatorios_tz()))->format('Y-m-d');
+        $pdo->prepare('DELETE FROM recordatorio_eventos WHERE status = "pending" AND appointment_date IS NOT NULL AND appointment_date != "" AND appointment_date < :today')->execute(['today' => $todayBA]);
+    } catch (Throwable $e) {}
+
     $stmt = $pdo->prepare(
         'SELECT id, event_key, exec_id, run_at, appointment_date, appointment_time, calendar_event_id,
                 patient_name, wa_id, status, skip_reason, error_code, error_message, event_summary, received_at
          FROM recordatorio_eventos
-         WHERE run_at >= :since
+         WHERE run_at >= :since OR status = "pending"
          ORDER BY run_at DESC, id DESC
          LIMIT 2000'
     );

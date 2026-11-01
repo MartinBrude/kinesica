@@ -22,13 +22,50 @@ function interacciones_phone_format(string $digits): string
         return 'Desconocido';
     }
     if (strncmp($d, '54911', 5) === 0 && strlen($d) === 13) {
-        return '+54 9 11 ' . substr($d, 5, 4) . '-' . substr($d, 9);
+        return '(+54) 9 11 ' . substr($d, 5, 4) . ' ' . substr($d, 9);
     }
     if (strncmp($d, '549', 3) === 0 && strlen($d) >= 12) {
-        return '+' . $d;
+        $rest = substr($d, 3);
+        if (strlen($rest) === 10) {
+            return '(+54) 9 ' . substr($rest, 0, 3) . ' ' . substr($rest, 3, 3) . ' ' . substr($rest, 6);
+        }
+        if (strlen($rest) >= 8) {
+            $p1 = substr($rest, -8, 4);
+            $p2 = substr($rest, -4);
+            $area = substr($rest, 0, -8);
+            return '(+54) 9 ' . $area . ' ' . $p1 . ' ' . $p2;
+        }
+        return '(+54) 9 ' . $rest;
+    }
+    if (strncmp($d, '54', 2) === 0 && strlen($d) >= 10) {
+        $rest = substr($d, 2);
+        if (strncmp($rest, '11', 2) === 0 && strlen($rest) === 10) {
+            return '(+54) 11 ' . substr($rest, 2, 4) . ' ' . substr($rest, 6);
+        }
+        return '(+54) ' . $rest;
+    }
+    if (strncmp($d, '011', 3) === 0 && strlen($d) === 11) {
+        return '(+54) 9 11 ' . substr($d, 3, 4) . ' ' . substr($d, 7);
+    }
+    if ((strncmp($d, '11', 2) === 0 || strncmp($d, '15', 2) === 0) && strlen($d) === 10) {
+        return '(+54) 9 11 ' . substr($d, 2, 4) . ' ' . substr($d, 6);
     }
     if (strncmp($d, '34', 2) === 0 && strlen($d) === 11) {
-        return '+34 ' . substr($d, 2, 3) . ' ' . substr($d, 5, 2) . ' ' . substr($d, 7, 2) . ' ' . substr($d, 9);
+        return '(+34) ' . substr($d, 2, 3) . ' ' . substr($d, 5, 2) . ' ' . substr($d, 7, 2) . ' ' . substr($d, 9);
+    }
+    if (strlen($d) === 9 && in_array($d[0], ['6', '7', '8', '9'], true)) {
+        return '(+34) ' . substr($d, 0, 3) . ' ' . substr($d, 3, 2) . ' ' . substr($d, 5, 2) . ' ' . substr($d, 7);
+    }
+    if (strncmp($d, '598', 3) === 0 && strlen($d) >= 11) {
+        $rest = substr($d, 3);
+        return '(+598) ' . substr($rest, 0, 2) . ' ' . substr($rest, 2, 3) . ' ' . substr($rest, 5);
+    }
+    if (strncmp($d, '56', 2) === 0 && strlen($d) >= 11) {
+        $rest = substr($d, 2);
+        return '(+56) ' . substr($rest, 0, 1) . ' ' . substr($rest, 1, 4) . ' ' . substr($rest, 5);
+    }
+    if (strncmp($d, '1', 1) === 0 && strlen($d) === 11) {
+        return '(+1) ' . substr($d, 1, 3) . ' ' . substr($d, 4, 3) . ' ' . substr($d, 7);
     }
     return '+' . $d;
 }

@@ -86,13 +86,20 @@ function recordatorios_handle_ingest(array $input): void
 
 function recordatorios_run_housekeeping(bool $force): array
 {
-    $out = ['reconcile' => null];
+    $out = ['reconcile' => null, 'prevision' => null];
     try {
         if (recordatorios_reconcile_due($force ? 10 : 60)) {
             $out['reconcile'] = recordatorios_reconcile(null, 6);
         }
     } catch (Throwable $e) {
         error_log('recordatorios housekeeping: ' . $e->getMessage());
+    }
+    try {
+        if ($force || recordatorios_prevision_due(300)) {
+            $out['prevision'] = recordatorios_trigger_prevision();
+        }
+    } catch (Throwable $e) {
+        error_log('recordatorios prevision: ' . $e->getMessage());
     }
     return $out;
 }

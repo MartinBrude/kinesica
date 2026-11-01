@@ -3,6 +3,8 @@
  * Agrupa según el ciclo de vida: Enviados, A enviar, Fallidos en enviarse y Omitidos.
  */
 
+import { formatDisplayPhone } from "./phone-format.js";
+
 const STATUS_FILTERS = {
   all: "all",
   sent: "sent",
@@ -41,10 +43,12 @@ export function filterRecordatoriosList(items, term, activeStatusFilter) {
     }
     if (!cleanTerm) return true;
     const waDigits = String(item.wa_id || "").replace(/\D/g, "");
+    const phoneFormatted = formatDisplayPhone(item.wa_id);
     const nameMatch = normalize(item.patient_name).includes(cleanTerm);
     const summaryMatch = normalize(item.event_summary).includes(cleanTerm);
     const phoneMatch =
       normalize(item.wa_id).includes(cleanTerm) ||
+      normalize(phoneFormatted).includes(cleanTerm) ||
       (digitsTerm.length >= 3 && waDigits.includes(digitsTerm));
     const reasonMatch = normalize(item.skip_reason_label || item.skip_reason).includes(cleanTerm);
     return nameMatch || summaryMatch || phoneMatch || reasonMatch;

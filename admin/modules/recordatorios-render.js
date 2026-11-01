@@ -3,6 +3,7 @@
  */
 
 import { escapeHtml } from "./dom.js?v=78";
+import { formatDisplayPhone } from "./phone-format.js";
 
 export function formatRunDayHeader(isoDay) {
   if (!isoDay || isoDay === "sin-fecha") return "Sin fecha";
@@ -37,7 +38,7 @@ export function buildRecordatorioCardHtml(item) {
   const viaEmail = item.status === "sent_email";
   const contact = viaEmail
     ? (item.error_message ? `Email: ${escapeHtml(item.error_message)}` : "Email")
-    : `WhatsApp: ${item.wa_id ? escapeHtml(item.wa_id) : "—"}`;
+    : `WhatsApp: ${item.wa_id ? escapeHtml(formatDisplayPhone(item.wa_id)) : "—"}`;
   const reason = item.skip_reason_label
     ? `<span class="recordatorio-reason">${escapeHtml(item.skip_reason_label)}</span>`
     : "";

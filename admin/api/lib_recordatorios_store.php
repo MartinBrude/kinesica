@@ -209,6 +209,11 @@ function recordatorios_store_items(array $items, ?PDO $pdo = null): array
         $pdo = recordatorios_pdo($pdo);
         recordatorios_ensure_schema($pdo);
         foreach ($items as $ev) {
+            if ($ev['status'] !== 'pending' && $ev['calendar_event_id'] !== '' && $ev['calendar_event_id'] !== '_run') {
+                try {
+                    $pdo->prepare('DELETE FROM recordatorio_eventos WHERE calendar_event_id = :cal AND status = "pending"')->execute(['cal' => $ev['calendar_event_id']]);
+                } catch (Throwable $delEx) {}
+            }
             $outcome = recordatorios_insert_item($pdo, $ev);
             $res[$outcome === 'stored' ? 'stored' : 'duplicates']++;
         }
