@@ -375,13 +375,13 @@ function openRecordatorioDispatchModal(item, onSuccess) {
     try {
       const resp = await api("recordatorios.php", {
         method: "POST",
-        body: {
+        body: JSON.stringify({
           action: "dispatch",
           id: item.id,
           wa_id: phone,
           email: email,
           channel: channel,
-        },
+        }),
       });
 
       if (resp && (resp.ok || resp.status === "success")) {
@@ -397,10 +397,13 @@ function openRecordatorioDispatchModal(item, onSuccess) {
         submitBtn.textContent = "⚡ Enviar recordatorio";
         dialogAlert(resp?.error || "No se pudo enviar el recordatorio.", { type: "danger" });
       }
-    } catch {
+    } catch (err) {
       submitBtn.disabled = false;
       submitBtn.textContent = "⚡ Enviar recordatorio";
-      dialogAlert("Error al conectar con el servidor para disparar el recordatorio.", { type: "danger" });
+      const errorMsg =
+        (err && (err.payload?.error || err.message)) ||
+        "Error al conectar con el servidor para disparar el recordatorio.";
+      dialogAlert(errorMsg, { type: "danger" });
     }
   });
 }

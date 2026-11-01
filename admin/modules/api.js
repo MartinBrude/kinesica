@@ -22,27 +22,38 @@ export function setAuthRequiredHandler(handler) {
  * @throws {Error} Error estructurado con propiedad .auth en caso de 401 o .network si no hay conexión
  */
 export async function api(path, options = {}) {
+  const fetchOptions = { ...options };
   const headers = {
     "X-Kinesica": "1",
-    ...(options.headers || {}),
+    ...(fetchOptions.headers || {}),
   };
 
-  if (options.body && typeof options.body === "string") {
-    headers["Content-Type"] = "application/json";
+  if (fetchOptions.body) {
+    if (
+      typeof fetchOptions.body === "object" &&
+      !(fetchOptions.body instanceof FormData) &&
+      !(fetchOptions.body instanceof URLSearchParams) &&
+      !(fetchOptions.body instanceof Blob)
+    ) {
+      fetchOptions.body = JSON.stringify(fetchOptions.body);
+      headers["Content-Type"] = "application/json";
+    } else if (typeof fetchOptions.body === "string" && !headers["Content-Type"]) {
+      headers["Content-Type"] = "application/json";
+    }
   }
 
   const timeout = new AbortController();
   const timer = setTimeout(() => timeout.abort(), 30000);
-  if (options.signal) {
-    if (options.signal.aborted) timeout.abort();
-    else options.signal.addEventListener("abort", () => timeout.abort(), { once: true });
+  if (fetchOptions.signal) {
+    if (fetchOptions.signal.aborted) timeout.abort();
+    else fetchOptions.signal.addEventListener("abort", () => timeout.abort(), { once: true });
   }
 
   let res;
   try {
     res = await fetch(`api/${path}`, {
       credentials: "same-origin",
-      ...options,
+      ...fetchOptions,
       headers,
       signal: timeout.signal,
     });
