@@ -15,6 +15,7 @@ export function renderRecordatoriosRules(el) {
           <li><strong>Se omiten:</strong> cancelados/anulados, bloqueos, lista de espera, feriados/vacaciones y eventos que no son turnos.</li>
           <li><strong>Contacto:</strong> teléfono primero (evento de Calendar → directorio de Pacientes). Si no hay teléfono pero hay email (evento o directorio) → se envía el recordatorio por correo. Si no hay teléfono ni email → se alerta a Norberto por WhatsApp.</li>
           <li><strong>Envío WhatsApp:</strong> plantilla Meta <code>recordatorio_turno_kinesica</code> (Confirmar / Cancelar). Fallos de Meta (p. ej. ventana 24h) se registran como fallidos y alertan al equipo.</li>
+          <li><strong>Frecuencia máxima:</strong> no se envía ni intenta enviar recordatorio más de una vez por día a nadie. Se deduplica automáticamente por teléfono, email o paciente tanto en la misma corrida como entre corridas del mismo día.</li>
           <li><strong>Disparo manual:</strong> los recordatorios fallidos o pendientes pueden dispararse manualmente haciendo clic en <em>⚡ Disparar manualmente</em> para enviarlos por WhatsApp o Email y corregir el contacto si fuera necesario.</li>
           <li><strong>Respuestas:</strong> Confirmar/Cancelar las procesa Clara en el chat en vivo; no aparecen como mutaciones en este listado.</li>
         </ul>

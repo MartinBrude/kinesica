@@ -215,6 +215,51 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
         $firstName = $parts[0];
     }
 
+    // Regla estricta: No debe intentar enviarse recordatorio más de una vez por día a nadie
+    if (in_array($item['status'], ['sent', 'sent_email'], true)) {
+        return ['ok' => false, 'error' => 'Este recordatorio ya fue enviado exitosamente hoy.'];
+    }
+
+    try {
+        $pdo = recordatorios_pdo();
+        $cleanPhoneEnd = $phone !== '' ? substr(recordatorios_clean_wa_id($phone), -10) : '';
+        $pName = trim((string) ($item['patient_name'] ?? ''));
+        $today = gmdate('Y-m-d');
+
+        $conds = [];
+        $chkParams = ['id' => $id, 'today' => $today];
+        if ($cleanPhoneEnd !== '') {
+            $conds[] = 'RIGHT(wa_id, 10) = :phone_end';
+            $chkParams['phone_end'] = $cleanPhoneEnd;
+        }
+        if ($email !== '') {
+            $conds[] = 'LOWER(error_message) LIKE :email_match';
+            $chkParams['email_match'] = '%' . $email . '%';
+        }
+        if ($pName !== '' && $pName !== 'Estimado/a paciente') {
+            $conds[] = 'LOWER(patient_name) = LOWER(:pname)';
+            $chkParams['pname'] = $pName;
+        }
+
+        if (!empty($conds)) {
+            $chkSql = 'SELECT id, status, appointment_time, received_at FROM recordatorio_eventos
+                WHERE id != :id
+                  AND status IN ("sent", "sent_email")
+                  AND DATE(received_at) = :today
+                  AND (' . implode(' OR ', $conds) . ')
+                LIMIT 1';
+            $stmt = $pdo->prepare($chkSql);
+            $stmt->execute($chkParams);
+            $alreadySent = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($alreadySent) {
+                return [
+                    'ok' => false,
+                    'error' => 'Ya se envió un recordatorio hoy a este paciente (' . ($alreadySent['status'] === 'sent' ? 'WhatsApp' : 'Email') . '). Máximo 1 envío por día.',
+                ];
+            }
+        }
+    } catch (Throwable $e) {}
+
     // 1. Enviar por Email si el canal elegido es 'email' o si 'auto' sin teléfono pero con email
     if ($channel === 'email' || ($channel === 'auto' && $phone === '' && $email !== '')) {
         if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {

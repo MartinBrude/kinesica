@@ -115,7 +115,7 @@ function send_whatsapp_reminder_template(string $to, array $data): array
         'type' => 'template',
         'template' => [
             'name' => 'recordatorio_turno_kinesica',
-            'language' => ['code' => 'es'],
+            'language' => ['code' => 'es_AR'],
             'components' => [
                 [
                     'type' => 'body',
@@ -136,12 +136,6 @@ function send_whatsapp_reminder_template(string $to, array $data): array
                     'type' => 'button',
                     'sub_type' => 'quick_reply',
                     'index' => '1',
-                    'parameters' => [['type' => 'payload', 'payload' => 'reprogramar_turno']],
-                ],
-                [
-                    'type' => 'button',
-                    'sub_type' => 'quick_reply',
-                    'index' => '2',
                     'parameters' => [['type' => 'payload', 'payload' => 'cancelar_turno']],
                 ],
             ],
