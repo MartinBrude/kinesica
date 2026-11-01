@@ -61,6 +61,139 @@ function recordatorios_is_blocked_event(array $r): bool
 }
 
 /**
+ * Formatea una fila de recordatorio_eventos para la SPA.
+ *
+ * @param array<string,mixed> $r
+ * @return array<string,mixed>
+ */
+function recordatorios_format_item(array $r, ?string $email = null): array
+{
+    $status = (string) ($r['status'] ?? '');
+    $runUtc = (string) ($r['run_at'] ?? '');
+    $runDay = '';
+    $runLocal = $runUtc;
+    try {
+        $dt = new DateTimeImmutable($runUtc . ' UTC');
+        $local = $dt->setTimezone(recordatorios_tz());
+        $runDay = $local->format('Y-m-d');
+        $runLocal = $local->format('Y-m-d H:i');
+    } catch (Throwable $e) {
+        $runDay = substr($runUtc, 0, 10);
+    }
+
+    $resolvedEmail = $email;
+    if ($resolvedEmail === null || $resolvedEmail === '') {
+        $resolvedEmail = recordatorios_extract_contact_email((string) ($r['error_message'] ?? ''));
+    }
+
+    return [
+        'id' => (string) ($r['id'] ?? ''),
+        'event_key' => (string) ($r['event_key'] ?? ''),
+        'exec_id' => (string) ($r['exec_id'] ?? ''),
+        'run_at' => $runUtc,
+        'run_at_local' => $runLocal,
+        'run_day' => $runDay,
+        'appointment_date' => isset($r['appointment_date']) && $r['appointment_date'] !== null ? (string) $r['appointment_date'] : '',
+        'appointment_time' => (string) ($r['appointment_time'] ?? ''),
+        'calendar_event_id' => (string) ($r['calendar_event_id'] ?? ''),
+        'patient_name' => (string) ($r['patient_name'] ?? ''),
+        'wa_id' => (string) ($r['wa_id'] ?? ''),
+        'email' => (string) ($resolvedEmail ?? ''),
+        'status' => $status,
+        'status_label' => recordatorios_status_label($status),
+        'skip_reason' => (string) ($r['skip_reason'] ?? ''),
+        'skip_reason_label' => recordatorios_skip_label((string) ($r['skip_reason'] ?? '')),
+        'error_code' => (string) ($r['error_code'] ?? ''),
+        'error_message' => (string) ($r['error_message'] ?? ''),
+        'event_summary' => (string) ($r['event_summary'] ?? ''),
+    ];
+}
+
+function recordatorios_extract_contact_email(string $errorMessage): string
+{
+    if (preg_match('/^contact_email:([^\s|]+)/i', trim($errorMessage), $m)) {
+        return strtolower(trim($m[1]));
+    }
+    if (filter_var(trim($errorMessage), FILTER_VALIDATE_EMAIL)) {
+        return strtolower(trim($errorMessage));
+    }
+    return '';
+}
+
+/**
+ * Busca emails del directorio para enriquecer la vista (por teléfono o nombre).
+ *
+ * @param list<array<string,mixed>> $rows
+ * @return array{by_phone: array<string,string>, by_name: array<string,string>}
+ */
+function recordatorios_lookup_directory_contacts(PDO $pdo, array $rows): array
+{
+    $out = ['by_phone' => [], 'by_name' => []];
+    try {
+        $phones = [];
+        $names = [];
+        foreach ($rows as $r) {
+            $phoneEnd = substr(recordatorios_clean_wa_id((string) ($r['wa_id'] ?? '')), -10);
+            if (strlen($phoneEnd) >= 8) {
+                $phones[$phoneEnd] = true;
+            }
+            $name = trim((string) ($r['patient_name'] ?? ''));
+            if ($name !== '' && mb_strlen($name) >= 3) {
+                $names[mb_strtolower($name)] = $name;
+            }
+        }
+        if (!$phones && !$names) {
+            return $out;
+        }
+
+        if ($phones) {
+            $ends = array_keys($phones);
+            $placeholders = implode(',', array_fill(0, count($ends), '?'));
+            $stmt = $pdo->prepare(
+                "SELECT telefono, email, nombre_completo FROM pacientes
+                 WHERE email IS NOT NULL AND email != ''
+                   AND RIGHT(REPLACE(REPLACE(REPLACE(telefono, ' ', ''), '-', ''), '+', ''), 10) IN ($placeholders)
+                 LIMIT 500"
+            );
+            $stmt->execute($ends);
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $end = substr(preg_replace('/\D+/', '', (string) ($row['telefono'] ?? '')) ?? '', -10);
+                $email = strtolower(trim((string) ($row['email'] ?? '')));
+                if ($end !== '' && $email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    $out['by_phone'][$end] = $email;
+                }
+            }
+        }
+
+        if ($names) {
+            $nameList = array_values($names);
+            $conds = [];
+            $params = [];
+            foreach ($nameList as $i => $name) {
+                $conds[] = 'LOWER(nombre_completo) = LOWER(?)';
+                $params[] = $name;
+            }
+            $stmt = $pdo->prepare(
+                'SELECT nombre_completo, telefono, email FROM pacientes
+                 WHERE email IS NOT NULL AND email != "" AND (' . implode(' OR ', $conds) . ')
+                 LIMIT 500'
+            );
+            $stmt->execute($params);
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $key = mb_strtolower(trim((string) ($row['nombre_completo'] ?? '')));
+                $email = strtolower(trim((string) ($row['email'] ?? '')));
+                if ($key !== '' && $email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    $out['by_name'][$key] = $email;
+                }
+            }
+        }
+    } catch (Throwable $e) {
+        // Directorio opcional: no bloquear la vista.
+    }
+    return $out;
+}
+
+/**
  * @return array{items:list,grouped:array,counts:array,total:int,days:int}
  */
 function recordatorios_load_view(?PDO $pdo = null, int $days = RECORDATORIOS_DEFAULT_DAYS): array
@@ -104,8 +237,8 @@ function recordatorios_load_view(?PDO $pdo = null, int $days = RECORDATORIOS_DEF
     );
     $stmt->execute(['since' => $since]);
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    $directory = recordatorios_lookup_directory_contacts($pdo, $rows);
 
-    $tz = recordatorios_tz();
     $counts = [
         'pending' => 0,
         'sent' => 0,
@@ -126,41 +259,17 @@ function recordatorios_load_view(?PDO $pdo = null, int $days = RECORDATORIOS_DEF
         if (isset($counts[$status])) {
             $counts[$status]++;
         }
-        $runUtc = (string) ($r['run_at'] ?? '');
-        $runDay = '';
-        $runLocal = $runUtc;
-        try {
-            $dt = new DateTimeImmutable($runUtc . ' UTC');
-            $local = $dt->setTimezone($tz);
-            $runDay = $local->format('Y-m-d');
-            $runLocal = $local->format('Y-m-d H:i');
-        } catch (Throwable $e) {
-            $runDay = substr($runUtc, 0, 10);
+        $phoneEnd = substr(recordatorios_clean_wa_id((string) ($r['wa_id'] ?? '')), -10);
+        $nameKey = mb_strtolower(trim((string) ($r['patient_name'] ?? '')));
+        $email = '';
+        if ($phoneEnd !== '' && isset($directory['by_phone'][$phoneEnd])) {
+            $email = $directory['by_phone'][$phoneEnd];
+        } elseif ($nameKey !== '' && isset($directory['by_name'][$nameKey])) {
+            $email = $directory['by_name'][$nameKey];
         }
-        $item = [
-            'id' => (string) ($r['id'] ?? ''),
-            'event_key' => (string) ($r['event_key'] ?? ''),
-            'exec_id' => (string) ($r['exec_id'] ?? ''),
-            'run_at' => $runUtc,
-            'run_at_local' => $runLocal,
-            'run_day' => $runDay,
-            'appointment_date' => $r['appointment_date'] !== null ? (string) $r['appointment_date'] : '',
-            'appointment_time' => (string) ($r['appointment_time'] ?? ''),
-            'calendar_event_id' => (string) ($r['calendar_event_id'] ?? ''),
-            'patient_name' => (string) ($r['patient_name'] ?? ''),
-            'wa_id' => (string) ($r['wa_id'] ?? ''),
-            'status' => $status,
-            'status_label' => recordatorios_status_label($status),
-            'skip_reason' => (string) ($r['skip_reason'] ?? ''),
-            'skip_reason_label' => recordatorios_skip_label((string) ($r['skip_reason'] ?? '')),
-            'error_code' => (string) ($r['error_code'] ?? ''),
-            'error_message' => (string) ($r['error_message'] ?? ''),
-            'event_summary' => (string) ($r['event_summary'] ?? ''),
-        ];
+        $item = recordatorios_format_item($r, $email !== '' ? $email : null);
         $items[] = $item;
-        if ($runDay === '') {
-            $runDay = 'sin-fecha';
-        }
+        $runDay = $item['run_day'] !== '' ? $item['run_day'] : 'sin-fecha';
         if (!isset($grouped[$runDay])) {
             $grouped[$runDay] = [];
         }

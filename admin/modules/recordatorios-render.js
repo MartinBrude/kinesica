@@ -69,52 +69,75 @@ export function buildRecordatorioCardHtml(item) {
   const appt =
     [item.appointment_date, item.appointment_time].filter(Boolean).join(" · ") || "—";
   const viaEmail = item.status === "sent_email";
-  const isMissingPhone = !item.wa_id && !viaEmail && item.status !== "skipped" && item.status !== "run_skipped";
+  const hasEmail = !!(item.email && String(item.email).includes("@"));
+  const isMissingPhone =
+    !item.wa_id && !viaEmail && item.status !== "run_skipped";
+  const needsContact =
+    !item.wa_id &&
+    ["pending", "missing_phone", "failed", "skipped"].includes(String(item.status || ""));
 
-  const contact = viaEmail
-    ? (item.error_message ? `Email: ${escapeHtml(item.error_message)}` : "Email")
-    : (item.wa_id
-        ? `WhatsApp: ${escapeHtml(formatDisplayPhone(item.wa_id))}`
-        : `<span class="recordatorio-contact-warning">⚠️ Sin WhatsApp registrado</span>`);
+  const contactBits = [];
+  if (item.wa_id) {
+    contactBits.push(`WhatsApp: ${escapeHtml(formatDisplayPhone(item.wa_id))}`);
+  }
+  if (hasEmail) {
+    contactBits.push(`Email: ${escapeHtml(item.email)}`);
+  } else if (viaEmail && item.error_message) {
+    contactBits.push(`Email: ${escapeHtml(item.error_message)}`);
+  }
+  const contact = contactBits.length
+    ? contactBits.join(" · ")
+    : `<span class="recordatorio-contact-warning">⚠️ Sin WhatsApp ni email registrados</span>`;
 
-  const warningPill = isMissingPhone && item.status === "pending"
+  const warningPill = isMissingPhone && (item.status === "pending" || item.status === "missing_phone")
     ? `<span class="recordatorio-warning-pill" title="No figura teléfono en el turno ni en el directorio">⚠️ Falta teléfono</span>`
     : "";
 
   const reason = item.skip_reason_label
     ? `<span class="recordatorio-reason">${escapeHtml(item.skip_reason_label)}</span>`
     : "";
-  const err =
-    (item.status === "failed" || item.status === "missing_phone") && (item.error_code || item.error_message)
-      ? `<p class="recordatorio-error">${escapeHtml(
-          [item.error_code, item.error_message].filter(Boolean).join(" — ")
-        )}</p>`
-      : (isMissingPhone && item.status === "pending"
-          ? `<p class="recordatorio-warning-text">⚠️ No se encontró número de WhatsApp para este paciente. Podés cargarlo antes de la corrida o usar <em>⚡ Enviar ahora</em> para ingresarlo manualmente.</p>`
-          : "");
+  const showRawError =
+    (item.status === "failed" || item.status === "missing_phone") &&
+    (item.error_code || item.error_message) &&
+    !String(item.error_message || "").startsWith("contact_email:");
+  const err = showRawError
+    ? `<p class="recordatorio-error">${escapeHtml(
+        [item.error_code, item.error_message].filter(Boolean).join(" — ")
+      )}</p>`
+    : isMissingPhone && (item.status === "pending" || item.status === "missing_phone")
+      ? `<p class="recordatorio-warning-text">⚠️ No se encontró número de WhatsApp para este paciente. Podés <em>cargar el contacto</em> antes de la corrida o usar <em>⚡ Enviar ahora</em>.</p>`
+      : "";
   const summary =
     item.event_summary && item.event_summary !== item.patient_name
       ? `<p class="recordatorio-summary">${escapeHtml(item.event_summary)}</p>`
       : "";
 
-  let actionBtn = "";
+  const actions = [];
+  if (needsContact) {
+    actions.push(`
+        <button type="button" class="btn light btn-load-contact" data-action="save-contact" data-id="${escapeHtml(item.id)}" title="Cargar teléfono y/o email en el directorio">
+          ＋ Cargar contacto
+        </button>`);
+  }
   if (item.status === "failed" || item.status === "missing_phone") {
-    actionBtn = `
-      <div class="recordatorio-card-actions">
+    actions.push(`
         <button type="button" class="btn light btn-trigger-recordatorio is-failed" data-action="dispatch-manual" data-id="${escapeHtml(item.id)}" title="Disparar recordatorio manualmente">
           ⚡ Disparar manualmente
-        </button>
-      </div>`;
+        </button>`);
   } else if (item.status === "pending") {
-    actionBtn = `
-      <div class="recordatorio-card-actions">
+    actions.push(`
         <button type="button" class="btn light btn-trigger-recordatorio is-pending" data-action="dispatch-manual" data-id="${escapeHtml(item.id)}" title="Enviar recordatorio ahora">
           ⚡ Enviar ahora
-        </button>
-      </div>`;
+        </button>`);
   }
+  const actionBtn = actions.length
+    ? `<div class="recordatorio-card-actions">${actions.join("")}</div>`
+    : "";
 
-  const phoneCardClass = isMissingPhone && item.status === "pending" ? "is-missing-contact" : "";
+  const phoneCardClass =
+    isMissingPhone && (item.status === "pending" || item.status === "missing_phone")
+      ? "is-missing-contact"
+      : "";
 
   return `<article class="recordatorio-card ${statusClass(item.status)} ${phoneCardClass}" data-id="${escapeHtml(item.id)}">
     <div class="recordatorio-card-main">

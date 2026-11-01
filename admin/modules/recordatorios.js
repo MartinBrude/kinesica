@@ -8,12 +8,12 @@ import { dialogAlert } from "./dom-dialogs.js?v=77";
 import {
   renderRecordatoriosList,
   renderRecordatoriosPager,
-} from "./recordatorios-render.js?v=6";
+} from "./recordatorios-render.js?v=7";
 import {
   filterRecordatoriosList,
   renderRecordatoriosStats,
 } from "./recordatorios-filter.js?v=6";
-import { renderRecordatoriosRules } from "./recordatorios-rules.js?v=3";
+import { renderRecordatoriosRules } from "./recordatorios-rules.js?v=4";
 
 let cachedItems = [];
 let cachedCounts = {};
@@ -297,40 +297,75 @@ export async function loadRecordatorios(force = false) {
   }
 }
 
-function openRecordatorioDispatchModal(item, onSuccess) {
+function applyRecordatorioItemUpdate(updatedItem) {
+  const idx = cachedItems.findIndex((it) => String(it.id) === String(updatedItem.id));
+  if (idx !== -1) {
+    cachedItems[idx] = { ...cachedItems[idx], ...updatedItem };
+  } else {
+    cachedItems.unshift(updatedItem);
+  }
+  recalculateCounts();
+  applyFiltersAndRender();
+}
+
+function openRecordatorioContactModal(item, { mode = "contact", onSuccess } = {}) {
   const backdrop = document.createElement("div");
   backdrop.className = "recordatorio-modal-backdrop";
   backdrop.setAttribute("role", "dialog");
   backdrop.setAttribute("aria-modal", "true");
 
   const name = escapeHtml(item.patient_name || item.event_summary || "Paciente");
-  const appt = escapeHtml([item.appointment_date, item.appointment_time].filter(Boolean).join(" · ") || "Sin fecha/hora");
+  const appt = escapeHtml(
+    [item.appointment_date, item.appointment_time].filter(Boolean).join(" · ") || "Sin fecha/hora"
+  );
+  const isDispatch = mode === "dispatch";
   const isFailed = item.status === "failed" || item.status === "missing_phone";
-  const title = isFailed ? "Disparar recordatorio manualmente" : "Enviar recordatorio ahora";
-  const currentError = item.error_message || item.error_code || "";
+  const title = isDispatch
+    ? isFailed
+      ? "Disparar recordatorio manualmente"
+      : "Enviar recordatorio ahora"
+    : "Cargar teléfono / email";
+  const currentError =
+    item.error_message && !String(item.error_message).startsWith("contact_email:")
+      ? item.error_message || item.error_code || ""
+      : item.error_code || "";
+  const missingHint = !item.wa_id
+    ? `<p class="recordatorio-modal-hint">Este paciente no tiene WhatsApp en el turno ni en el directorio. Cargalo acá para la corrida automática y futuros recordatorios.</p>`
+    : "";
 
   backdrop.innerHTML = `
     <div class="recordatorio-modal-card">
       <div class="recordatorio-modal-header">
-        <h3>⚡ ${title}</h3>
+        <h3>${isDispatch ? "⚡" : "＋"} ${title}</h3>
         <button type="button" class="btn ghost btn-close-modal" aria-label="Cerrar">✕</button>
       </div>
       <div class="recordatorio-modal-body">
         <div class="recordatorio-modal-info">
           <div><strong>Paciente:</strong> ${name}</div>
           <div><strong>Turno:</strong> ${appt}</div>
-          ${item.event_summary && item.event_summary !== item.patient_name ? `<div><strong>Detalle:</strong> ${escapeHtml(item.event_summary)}</div>` : ""}
-          ${isFailed && currentError ? `<div style="color:#b42318;margin-top:6px;font-size:12px;"><strong>Motivo de fallo previo:</strong> ${escapeHtml(currentError)}</div>` : ""}
+          ${
+            item.event_summary && item.event_summary !== item.patient_name
+              ? `<div><strong>Detalle:</strong> ${escapeHtml(item.event_summary)}</div>`
+              : ""
+          }
+          ${
+            isFailed && currentError
+              ? `<div style="color:#b42318;margin-top:6px;font-size:12px;"><strong>Motivo de fallo previo:</strong> ${escapeHtml(currentError)}</div>`
+              : ""
+          }
         </div>
+        ${missingHint}
         <div class="recordatorio-modal-field">
-          <label for="dispatch-phone">Número de WhatsApp (con código de país, ej: 54911...):</label>
+          <label for="dispatch-phone">WhatsApp (con código de país, ej: 54911…):</label>
           <input type="tel" id="dispatch-phone" value="${escapeHtml(item.wa_id || "")}" placeholder="5491144556677" autocomplete="off" />
         </div>
         <div class="recordatorio-modal-field">
-          <label for="dispatch-email">Correo electrónico (para fallback o envío por email):</label>
+          <label for="dispatch-email">Correo electrónico:</label>
           <input type="email" id="dispatch-email" value="${escapeHtml(item.email || "")}" placeholder="paciente@ejemplo.com" autocomplete="off" />
         </div>
-        <div class="recordatorio-modal-field">
+        ${
+          isDispatch
+            ? `<div class="recordatorio-modal-field">
           <label for="dispatch-channel">Canal de envío:</label>
           <select id="dispatch-channel">
             <option value="auto" selected>Automático (WhatsApp con fallback a Email)</option>
@@ -338,28 +373,42 @@ function openRecordatorioDispatchModal(item, onSuccess) {
             <option value="email">Solo Correo Electrónico</option>
           </select>
         </div>
+        <label class="recordatorio-modal-check">
+          <input type="checkbox" id="dispatch-save-contact" checked />
+          Guardar también en el directorio de pacientes
+        </label>`
+            : `<p class="recordatorio-modal-hint">Se guarda en el directorio de pacientes y en este recordatorio. No envía el mensaje todavía.</p>`
+        }
       </div>
       <div class="recordatorio-modal-actions">
         <button type="button" class="btn light btn-close-modal">Cancelar</button>
-        <button type="button" class="btn green" id="btn-submit-dispatch">⚡ Enviar recordatorio</button>
+        ${
+          isDispatch
+            ? `<button type="button" class="btn green" id="btn-submit-dispatch">⚡ Enviar recordatorio</button>`
+            : `<button type="button" class="btn green" id="btn-submit-contact">Guardar contacto</button>
+               ${
+                 item.status === "pending" || item.status === "failed" || item.status === "missing_phone"
+                   ? `<button type="button" class="btn light" id="btn-submit-contact-send">Guardar y enviar</button>`
+                   : ""
+               }`
+        }
       </div>
     </div>
   `;
 
   document.body.appendChild(backdrop);
   const phoneInput = backdrop.querySelector("#dispatch-phone");
-  phoneInput?.focus();
+  if (!item.wa_id) phoneInput?.focus();
+  else backdrop.querySelector("#dispatch-email")?.focus();
 
   const close = () => {
     backdrop.remove();
     document.removeEventListener("keydown", onKeyDown);
   };
-
   const onKeyDown = (e) => {
     if (e.key === "Escape") close();
   };
   document.addEventListener("keydown", onKeyDown);
-
   backdrop.querySelectorAll(".btn-close-modal").forEach((btn) => {
     btn.addEventListener("click", close);
   });
@@ -367,28 +416,69 @@ function openRecordatorioDispatchModal(item, onSuccess) {
     if (e.target === backdrop) close();
   });
 
-  const submitBtn = backdrop.querySelector("#btn-submit-dispatch");
-  submitBtn?.addEventListener("click", async () => {
-    const phone = backdrop.querySelector("#dispatch-phone")?.value.trim() || "";
-    const email = backdrop.querySelector("#dispatch-email")?.value.trim() || "";
-    const channel = backdrop.querySelector("#dispatch-channel")?.value || "auto";
+  const readFields = () => ({
+    phone: backdrop.querySelector("#dispatch-phone")?.value.trim() || "",
+    email: backdrop.querySelector("#dispatch-email")?.value.trim() || "",
+    channel: backdrop.querySelector("#dispatch-channel")?.value || "auto",
+    saveContact: backdrop.querySelector("#dispatch-save-contact")
+      ? !!backdrop.querySelector("#dispatch-save-contact")?.checked
+      : true,
+  });
 
+  const saveContactOnly = async (btn) => {
+    const { phone, email } = readFields();
+    if (!phone && !email) {
+      dialogAlert("Ingresá al menos un WhatsApp o un correo electrónico.", { type: "danger" });
+      return false;
+    }
+    const prev = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "Guardando…";
+    try {
+      const resp = await api("recordatorios.php", {
+        method: "POST",
+        body: JSON.stringify({
+          action: "save_contact",
+          id: item.id,
+          wa_id: phone,
+          email,
+        }),
+      });
+      if (resp && (resp.ok || resp.status === "success")) {
+        if (resp.item) onSuccess?.(resp.item);
+        else loadRecordatorios(false);
+        return resp;
+      }
+      dialogAlert(resp?.error || "No se pudo guardar el contacto.", { type: "danger" });
+      return false;
+    } catch (err) {
+      dialogAlert(
+        (err && (err.payload?.error || err.message)) || "Error al guardar el contacto.",
+        { type: "danger" }
+      );
+      return false;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = prev;
+    }
+  };
+
+  const dispatchSend = async (btn, { phone, email, channel, saveContact }) => {
     if (channel === "email" && !email) {
-      dialogAlert("Por favor ingresá una dirección de correo válida para enviar por email.", { type: "danger" });
+      dialogAlert("Ingresá un correo válido para enviar por email.", { type: "danger" });
       return;
     }
     if (channel === "whatsapp" && !phone) {
-      dialogAlert("Por favor ingresá un número de teléfono para enviar por WhatsApp.", { type: "danger" });
+      dialogAlert("Ingresá un número de WhatsApp.", { type: "danger" });
       return;
     }
     if (channel === "auto" && !phone && !email) {
-      dialogAlert("Ingresá al menos un número de WhatsApp o un correo electrónico para despachar el recordatorio.", { type: "danger" });
+      dialogAlert("Ingresá al menos un WhatsApp o un correo.", { type: "danger" });
       return;
     }
-
-    submitBtn.disabled = true;
-    submitBtn.textContent = "Enviando recordatorio…";
-
+    const prev = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "Enviando…";
     try {
       const resp = await api("recordatorios.php", {
         method: "POST",
@@ -396,33 +486,54 @@ function openRecordatorioDispatchModal(item, onSuccess) {
           action: "dispatch",
           id: item.id,
           wa_id: phone,
-          email: email,
-          channel: channel,
+          email,
+          channel,
+          save_contact: saveContact,
         }),
       });
-
       if (resp && (resp.ok || resp.status === "success")) {
         close();
-        if (resp.item) {
-          onSuccess(resp.item);
-        } else {
-          loadRecordatorios(false);
-        }
+        if (resp.item) onSuccess?.(resp.item);
+        else loadRecordatorios(false);
         dialogAlert(resp.message || "Recordatorio enviado correctamente.", { type: "success" });
       } else {
-        submitBtn.disabled = false;
-        submitBtn.textContent = "⚡ Enviar recordatorio";
         dialogAlert(resp?.error || "No se pudo enviar el recordatorio.", { type: "danger" });
       }
     } catch (err) {
-      submitBtn.disabled = false;
-      submitBtn.textContent = "⚡ Enviar recordatorio";
-      const errorMsg =
+      dialogAlert(
         (err && (err.payload?.error || err.message)) ||
-        "Error al conectar con el servidor para disparar el recordatorio.";
-      dialogAlert(errorMsg, { type: "danger" });
+          "Error al conectar con el servidor para disparar el recordatorio.",
+        { type: "danger" }
+      );
+    } finally {
+      btn.disabled = false;
+      btn.textContent = prev;
+    }
+  };
+
+  backdrop.querySelector("#btn-submit-contact")?.addEventListener("click", async (e) => {
+    const resp = await saveContactOnly(e.currentTarget);
+    if (resp) {
+      close();
+      dialogAlert(resp.message || "Contacto guardado.", { type: "success" });
     }
   });
+
+  backdrop.querySelector("#btn-submit-contact-send")?.addEventListener("click", async (e) => {
+    const btn = e.currentTarget;
+    const fields = readFields();
+    const saved = await saveContactOnly(btn);
+    if (!saved) return;
+    await dispatchSend(btn, { ...fields, saveContact: false, channel: fields.phone ? "auto" : "email" });
+  });
+
+  backdrop.querySelector("#btn-submit-dispatch")?.addEventListener("click", async (e) => {
+    await dispatchSend(e.currentTarget, readFields());
+  });
+}
+
+function openRecordatorioDispatchModal(item, onSuccess) {
+  openRecordatorioContactModal(item, { mode: "dispatch", onSuccess });
 }
 
 export function initRecordatoriosModule() {
@@ -458,18 +569,22 @@ export function initRecordatoriosModule() {
       applyFiltersAndRender();
       return;
     }
+    const contactBtn = e.target.closest('[data-action="save-contact"]');
+    if (contactBtn) {
+      const id = contactBtn.getAttribute("data-id");
+      const item = cachedItems.find((it) => String(it.id) === String(id));
+      if (!item) return;
+      openRecordatorioContactModal(item, {
+        mode: "contact",
+        onSuccess: applyRecordatorioItemUpdate,
+      });
+      return;
+    }
     const btn = e.target.closest('[data-action="dispatch-manual"]');
     if (!btn) return;
     const id = btn.getAttribute("data-id");
     const item = cachedItems.find((it) => String(it.id) === String(id));
     if (!item) return;
-    openRecordatorioDispatchModal(item, (updatedItem) => {
-      const idx = cachedItems.findIndex((it) => String(it.id) === String(updatedItem.id));
-      if (idx !== -1) {
-        cachedItems[idx] = updatedItem;
-      }
-      recalculateCounts();
-      applyFiltersAndRender();
-    });
+    openRecordatorioDispatchModal(item, applyRecordatorioItemUpdate);
   });
 }

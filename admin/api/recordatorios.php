@@ -14,6 +14,191 @@ require_once __DIR__ . '/lib_recordatorios_view.php';
 require_once __DIR__ . '/lib_recordatorios_n8n.php';
 require_once __DIR__ . '/lib_whatsapp.php';
 require_once __DIR__ . '/lib_mail.php';
+require_once __DIR__ . '/pacientes_helpers.php';
+
+/**
+ * Normaliza teléfono argentino a E.164-ish (549…).
+ */
+function recordatorios_normalize_phone_input(string $raw): string
+{
+    if (function_exists('clean_phone_number')) {
+        return clean_phone_number($raw);
+    }
+    $phone = recordatorios_clean_wa_id($raw);
+    if (strlen($phone) === 10 && str_starts_with($phone, '11')) {
+        return '549' . $phone;
+    }
+    if (strlen($phone) === 11 && str_starts_with($phone, '54') && !str_starts_with($phone, '549')) {
+        return '549' . substr($phone, 2);
+    }
+    return $phone;
+}
+
+/**
+ * Guarda teléfono/email en el directorio de pacientes (sin cortar la request).
+ *
+ * @return array{ok:bool, phone?:string, email?:string, error?:string}
+ */
+function recordatorios_persist_directory_contact(string $patientName, string $phone, string $email): array
+{
+    $phone = recordatorios_normalize_phone_input($phone);
+    $email = strtolower(trim($email));
+    if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return ['ok' => false, 'error' => 'El correo electrónico no es válido'];
+    }
+    if ($phone === '' && $email === '') {
+        return ['ok' => false, 'error' => 'Ingresá un teléfono o un correo'];
+    }
+
+    $name = trim($patientName);
+    if ($name === '') {
+        $name = 'Paciente';
+    }
+    $parts = preg_split('/\s+/u', $name, 2, PREG_SPLIT_NO_EMPTY) ?: [];
+    $nombre = $parts[0] ?? $name;
+    $apellido = $parts[1] ?? '';
+
+    try {
+        $pdo = recordatorios_pdo();
+        ensure_pacientes_tables($pdo);
+
+        if ($phone !== '') {
+            if (strlen($phone) < 6 || strlen($phone) > 16) {
+                return ['ok' => false, 'error' => 'Número de WhatsApp inválido o incompleto'];
+            }
+            $stmt = $pdo->prepare(
+                'INSERT INTO pacientes (telefono, nombre, apellido, nombre_completo, nombre_pila, email, origen)
+                 VALUES (:tel, :nombre, :apellido, :full, :pila, :email, :origen)
+                 ON DUPLICATE KEY UPDATE
+                    nombre = CASE WHEN VALUES(nombre) != "" THEN VALUES(nombre) ELSE nombre END,
+                    apellido = CASE WHEN VALUES(apellido) != "" THEN VALUES(apellido) ELSE apellido END,
+                    nombre_completo = CASE WHEN VALUES(nombre_completo) != "" THEN VALUES(nombre_completo) ELSE nombre_completo END,
+                    nombre_pila = CASE WHEN VALUES(nombre_pila) != "" THEN VALUES(nombre_pila) ELSE nombre_pila END,
+                    email = COALESCE(VALUES(email), email)'
+            );
+            $stmt->execute([
+                'tel' => $phone,
+                'nombre' => mb_substr($nombre, 0, 60, 'UTF-8'),
+                'apellido' => mb_substr($apellido, 0, 60, 'UTF-8'),
+                'full' => mb_substr($name, 0, 120, 'UTF-8'),
+                'pila' => mb_substr($nombre, 0, 60, 'UTF-8'),
+                'email' => $email !== '' ? $email : null,
+                'origen' => 'admin',
+            ]);
+            return ['ok' => true, 'phone' => $phone, 'email' => $email];
+        }
+
+        // Solo email: actualizar paciente existente por nombre o crear placeholder no es posible sin teléfono único.
+        $stmt = $pdo->prepare(
+            'UPDATE pacientes SET email = :email
+             WHERE LOWER(nombre_completo) = LOWER(:full) AND (email IS NULL OR email = "")
+             LIMIT 1'
+        );
+        $stmt->execute(['email' => $email, 'full' => $name]);
+        if ($stmt->rowCount() < 1) {
+            $stmt2 = $pdo->prepare(
+                'UPDATE pacientes SET email = :email WHERE LOWER(nombre_completo) = LOWER(:full) LIMIT 1'
+            );
+            $stmt2->execute(['email' => $email, 'full' => $name]);
+            if ($stmt2->rowCount() < 1) {
+                return [
+                    'ok' => false,
+                    'error' => 'Para guardar solo el mail, el paciente debe existir en el directorio o cargá también un WhatsApp',
+                ];
+            }
+        }
+        return ['ok' => true, 'phone' => '', 'email' => $email];
+    } catch (Throwable $e) {
+        error_log('recordatorios persist contact: ' . $e->getMessage());
+        return ['ok' => false, 'error' => 'No se pudo guardar el contacto en el directorio'];
+    }
+}
+
+/**
+ * Actualiza el recordatorio con el contacto cargado desde el admin.
+ *
+ * @return array{ok:bool, item?:array, message?:string, error?:string, directory?:array}
+ */
+function recordatorios_save_contact(int $id, array $input, array $auth): array
+{
+    $item = recordatorios_find_item_by_id($id);
+    if (!$item) {
+        return ['ok' => false, 'error' => 'Registro de recordatorio no encontrado'];
+    }
+
+    $rawPhone = trim((string) ($input['wa_id'] ?? $input['phone'] ?? ''));
+    $phone = recordatorios_normalize_phone_input($rawPhone);
+    $email = strtolower(trim((string) ($input['email'] ?? '')));
+    if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return ['ok' => false, 'error' => 'El correo electrónico no es válido'];
+    }
+    if ($phone === '' && $email === '') {
+        return ['ok' => false, 'error' => 'Ingresá un número de WhatsApp o un correo electrónico'];
+    }
+
+    $patientName = trim((string) ($item['patient_name'] ?: $item['event_summary'] ?: ''));
+    $dir = recordatorios_persist_directory_contact($patientName, $phone, $email);
+    $dirOk = !empty($dir['ok']);
+    // Si hay WhatsApp, el directorio debe aceptarlo; si solo mail y no hay ficha, igual lo guardamos en el recordatorio.
+    if (!$dirOk && $phone !== '') {
+        return ['ok' => false, 'error' => (string) ($dir['error'] ?? 'No se pudo guardar el contacto')];
+    }
+
+    $updates = [];
+    if ($phone !== '') {
+        $updates['wa_id'] = $phone;
+    }
+    $user = (string) ($auth['username'] ?? $auth['name'] ?? 'admin');
+    if ($email !== '') {
+        // Conservar email en el registro cuando aún no se envió (para el modal y fallback).
+        if (in_array((string) $item['status'], ['pending', 'missing_phone', 'failed', 'skipped'], true)) {
+            $updates['error_message'] = 'contact_email:' . $email . ' (Cargado por ' . $user . ')';
+        }
+    } elseif ($phone !== '' && str_starts_with((string) ($item['error_message'] ?? ''), 'contact_email:')) {
+        $updates['error_message'] = 'WhatsApp cargado por ' . $user;
+    }
+
+    $status = (string) ($item['status'] ?? '');
+    if ($status === 'missing_phone' && ($phone !== '' || $email !== '')) {
+        $updates['status'] = 'pending';
+        $updates['error_code'] = '';
+        if ($phone !== '' && empty($updates['error_message'])) {
+            $updates['error_message'] = 'Contacto cargado por ' . $user;
+        }
+    }
+
+    if ($updates) {
+        recordatorios_update_outcome($id, $updates);
+    }
+    $updated = recordatorios_find_item_by_id($id);
+    $viewItem = recordatorios_format_item($updated ?: $item, $email !== '' ? $email : null);
+    if ($phone !== '') {
+        $viewItem['wa_id'] = $phone;
+    }
+    if ($email !== '') {
+        $viewItem['email'] = $email;
+    }
+
+    $parts = [];
+    if ($phone !== '') {
+        $parts[] = 'WhatsApp ' . $phone;
+    }
+    if ($email !== '') {
+        $parts[] = 'email ' . $email;
+    }
+    $msg = 'Contacto guardado (' . implode(' · ', $parts) . ') en este recordatorio';
+    $msg .= $dirOk ? ' y en el directorio de pacientes.' : '.';
+    if (!$dirOk && !empty($dir['error'])) {
+        $msg .= ' Aviso: ' . $dir['error'] . '.';
+    }
+    return [
+        'ok' => true,
+        'status' => 'success',
+        'message' => $msg,
+        'item' => $viewItem,
+        'directory' => $dir,
+    ];
+}
 
 function recordatorios_request_secret(): string
 {
@@ -168,14 +353,12 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
     }
 
     $rawPhone = trim((string) ($input['wa_id'] ?? $input['phone'] ?? $item['wa_id'] ?? ''));
-    $phone = preg_replace('/\D+/', '', $rawPhone) ?? '';
-    if (strlen($phone) === 10 && str_starts_with($phone, '11')) {
-        $phone = '549' . $phone;
-    } elseif (strlen($phone) === 11 && str_starts_with($phone, '54') && !str_starts_with($phone, '549')) {
-        $phone = '549' . substr($phone, 2);
-    }
+    $phone = recordatorios_normalize_phone_input($rawPhone);
 
     $email = strtolower(trim((string) ($input['email'] ?? '')));
+    if ($email === '') {
+        $email = recordatorios_extract_contact_email((string) ($item['error_message'] ?? ''));
+    }
     if ($email === '' && $item['status'] === 'sent_email') {
         $email = strtolower(trim((string) $item['error_message']));
     }
@@ -189,6 +372,13 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
                 $email = strtolower(trim((string) $foundEmail));
             }
         } catch (Throwable $e) {}
+    }
+
+    // Persistir contacto cargado en el modal para próximas corridas / directorio.
+    $saveContact = !isset($input['save_contact']) || !empty($input['save_contact']);
+    if ($saveContact && ($phone !== '' || $email !== '')) {
+        $patientName = trim((string) ($item['patient_name'] ?: $item['event_summary'] ?: ''));
+        recordatorios_persist_directory_contact($patientName, $phone, $email);
     }
 
     $channel = strtolower(trim((string) ($input['channel'] ?? 'auto')));
@@ -298,7 +488,7 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
                 'status' => 'success',
                 'message' => 'Recordatorio enviado por correo a ' . $email,
                 'channel' => 'email',
-                'item' => $updated,
+                'item' => recordatorios_format_item($updated ?: $item, $email),
             ];
         }
         return ['ok' => false, 'error' => 'No se pudo enviar el correo a ' . $email];
@@ -338,7 +528,7 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
             'status' => 'success',
             'message' => 'Recordatorio enviado por WhatsApp a ' . $phone,
             'channel' => 'whatsapp',
-            'item' => $updated,
+            'item' => recordatorios_format_item($updated ?: $item, $email !== '' ? $email : null),
         ];
     }
 
@@ -374,7 +564,7 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
                 'status' => 'success',
                 'message' => 'WhatsApp no entregó, pero se envió exitosamente por correo a ' . $email,
                 'channel' => 'email',
-                'item' => $updated,
+                'item' => recordatorios_format_item($updated ?: $item, $email),
             ];
         }
     }
@@ -393,6 +583,18 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
 
 if ($action === 'reconcile') {
     json_out(200, ['ok' => true] + recordatorios_reconcile(null, 8));
+}
+
+if ($action === 'save_contact' || $action === 'update_contact') {
+    $id = (int) ($input['id'] ?? 0);
+    if ($id <= 0) {
+        json_out(400, ['error' => 'ID de recordatorio inválido']);
+    }
+    $res = recordatorios_save_contact($id, $input, $auth);
+    if (!empty($res['ok'])) {
+        json_out(200, $res);
+    }
+    json_out(400, $res);
 }
 
 if ($action === 'dispatch' || $action === 'retry' || $action === 'send_manual') {
