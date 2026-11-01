@@ -89,22 +89,70 @@ export function buildRecordatorioCardHtml(item) {
   </article>`;
 }
 
-export function renderRecordatoriosList(container, items) {
+export function renderRecordatoriosList(container, items, state = {}) {
   if (!container) return;
-  if (!items.length) {
-    container.innerHTML = `<div class="recordatorios-empty"><p>No hay recordatorios para mostrar con este filtro.</p></div>`;
+  const list = Array.isArray(items) ? items : [];
+
+  if (!list.length) {
+    if (state.isLoading || (!state.hasLoadedOnce && state.isRefreshing)) {
+      container.innerHTML = `
+        <div class="recordatorios-empty is-loading">
+          <span class="recordatorios-spinner" aria-hidden="true"></span>
+          <p>Cargando recordatorios...</p>
+        </div>`;
+      return;
+    }
+
+    const totalCached = typeof state.totalCached === "number" ? state.totalCached : 0;
+    if (totalCached === 0) {
+      const refreshNotice = state.isRefreshing
+        ? `<p class="recordatorios-empty-refreshing"><span class="recordatorios-spinner-sm" aria-hidden="true"></span> Recargando datos desde el servidor…</p>`
+        : "";
+      container.innerHTML = `
+        <div class="recordatorios-empty">
+          <p>No hay recordatorios registrados en los últimos 14 días.</p>
+          ${refreshNotice}
+        </div>`;
+      return;
+    }
+
+    let filterLabel = "con este filtro";
+    if (state.activeStatusFilter === "pending") filterLabel = "pendientes de enviar (⏳ A enviar)";
+    else if (state.activeStatusFilter === "sent") filterLabel = "enviados (✓ Enviados)";
+    else if (state.activeStatusFilter === "failed") filterLabel = "que hayan fallado o sin teléfono (✕ Fallaron)";
+    else if (state.activeStatusFilter === "skipped") filterLabel = "omitidos (⊘ Omitidos)";
+
+    if (state.searchTerm) {
+      filterLabel += ` que coincidan con "${escapeHtml(state.searchTerm)}"`;
+    }
+
+    const refreshNotice = state.isRefreshing
+      ? `<p class="recordatorios-empty-refreshing"><span class="recordatorios-spinner-sm" aria-hidden="true"></span> Recargando datos desde el servidor…</p>`
+      : "";
+
+    container.innerHTML = `
+      <div class="recordatorios-empty">
+        <p>No se encontraron recordatorios ${filterLabel}.</p>
+        ${refreshNotice}
+        <div class="recordatorios-empty-actions">
+          <button type="button" class="btn light btn-reset-recordatorios-filter" data-action="reset-filters">
+            Restablecer filtros (ver todos: ${totalCached})
+          </button>
+        </div>
+      </div>`;
     return;
   }
+
   const byDay = new Map();
-  for (const item of items) {
+  for (const item of list) {
     const day = item.run_day || "sin-fecha";
     if (!byDay.has(day)) byDay.set(day, []);
     byDay.get(day).push(item);
   }
   const parts = [];
-  for (const [day, list] of byDay) {
+  for (const [day, dayList] of byDay) {
     parts.push(`<h2 class="recordatorios-day-header">${escapeHtml(formatRunDayHeader(day))}</h2>`);
-    for (const item of list) {
+    for (const item of dayList) {
       parts.push(buildRecordatorioCardHtml(item));
     }
   }

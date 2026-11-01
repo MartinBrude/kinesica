@@ -8,7 +8,7 @@ import { dialogAlert } from "./dom-dialogs.js?v=77";
 import {
   renderRecordatoriosList,
   renderRecordatoriosPager,
-} from "./recordatorios-render.js?v=3";
+} from "./recordatorios-render.js?v=4";
 import {
   filterRecordatoriosList,
   renderRecordatoriosStats,
@@ -23,6 +23,9 @@ let pageSize = 20;
 let activeStatusFilter = "all";
 let autoRefreshTimer = null;
 let isRefreshing = false;
+let hasLoadedOnce = false;
+let lastLoadedAt = 0;
+const CACHE_TTL_MS = 60000;
 
 function recalculateCounts() {
   const counts = {
@@ -50,7 +53,13 @@ export function showRecordatoriosView() {
     sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "recordatorios" }));
   } catch {}
   renderRecordatoriosRules(document.getElementById("recordatorios-rules"));
-  loadRecordatorios(true);
+
+  const isFresh = hasLoadedOnce && (Date.now() - lastLoadedAt < CACHE_TTL_MS);
+  if (isFresh) {
+    applyFiltersAndRender();
+  } else {
+    loadRecordatorios(false);
+  }
   startAutoRefresh();
 }
 
@@ -64,10 +73,16 @@ function startAutoRefresh() {
   stopAutoRefresh();
   autoRefreshTimer = setInterval(() => {
     const view = document.getElementById("view-recordatorios");
-    if (view && !view.hidden && document.visibilityState === "visible") {
+    if (
+      view &&
+      !view.hidden &&
+      document.visibilityState === "visible" &&
+      !document.querySelector(".recordatorio-modal-backdrop") &&
+      Date.now() - lastLoadedAt >= 30000
+    ) {
       loadRecordatorios(false);
     }
-  }, 30000);
+  }, 45000);
 }
 
 function stopAutoRefresh() {
@@ -77,14 +92,55 @@ function stopAutoRefresh() {
   }
 }
 
+function updateHeaderAndTotal(total) {
+  const totalEl = document.getElementById("recordatorios-total");
+  if (!totalEl) return;
+  const countText = `${total} registro${total === 1 ? "" : "s"}`;
+  if (isRefreshing) {
+    totalEl.innerHTML = `${countText} <span class="recordatorios-reloading-badge"><span class="recordatorios-spinner-sm" aria-hidden="true"></span> Recargando…</span>`;
+  } else {
+    totalEl.textContent = countText;
+  }
+}
+
 function applyFiltersAndRender() {
+  const container = document.getElementById("recordatorios-list-container");
   const search = document.getElementById("recordatorios-search")?.value || "";
+
+  if (!hasLoadedOnce && isRefreshing) {
+    if (container) {
+      renderRecordatoriosList(container, [], {
+        isLoading: true,
+        isRefreshing: true,
+        hasLoadedOnce: false,
+        totalCached: 0,
+        activeStatusFilter,
+        searchTerm: search,
+      });
+    }
+    renderRecordatoriosStats(document.getElementById("recordatorios-stats"), {
+      counts: cachedCounts,
+      activeStatusFilter,
+    });
+    updateHeaderAndTotal(0);
+    return;
+  }
+
   filteredItems = filterRecordatoriosList(cachedItems, search, activeStatusFilter);
   const total = filteredItems.length;
   const maxPage = Math.max(0, Math.ceil(total / pageSize) - 1);
   if (currentPage > maxPage) currentPage = maxPage;
   const slice = filteredItems.slice(currentPage * pageSize, currentPage * pageSize + pageSize);
-  renderRecordatoriosList(document.getElementById("recordatorios-list-container"), slice);
+
+  renderRecordatoriosList(container, slice, {
+    isLoading: false,
+    isRefreshing,
+    hasLoadedOnce,
+    totalCached: cachedItems.length,
+    activeStatusFilter,
+    searchTerm: search,
+  });
+
   renderRecordatoriosPager(document.getElementById("recordatorios-pager"), {
     currentPage,
     pageSize,
@@ -94,14 +150,13 @@ function applyFiltersAndRender() {
       applyFiltersAndRender();
     },
   });
+
   renderRecordatoriosStats(document.getElementById("recordatorios-stats"), {
     counts: cachedCounts,
     activeStatusFilter,
   });
-  const totalEl = document.getElementById("recordatorios-total");
-  if (totalEl) {
-    totalEl.textContent = `${total} registro${total === 1 ? "" : "s"}`;
-  }
+
+  updateHeaderAndTotal(total);
 }
 
 function renderRecordatoriosSync(resp) {
@@ -146,13 +201,22 @@ export async function loadRecordatorios(force = false) {
   const refreshBtn = document.getElementById("btn-refresh-recordatorios");
   if (!container || isRefreshing) return;
   isRefreshing = true;
-  if (refreshBtn && force) {
+
+  if (refreshBtn) {
     refreshBtn.disabled = true;
-    refreshBtn.textContent = "↻ Actualizando...";
+    refreshBtn.innerHTML = `<span class="recordatorios-spinner-sm" aria-hidden="true"></span> Actualizando...`;
+    refreshBtn.style.opacity = "0.75";
   }
-  if (!container.children.length) {
-    container.innerHTML = `<div class="recordatorios-empty"><p>Cargando recordatorios...</p></div>`;
+
+  if (!hasLoadedOnce || !cachedItems.length) {
+    container.innerHTML = `
+      <div class="recordatorios-empty is-loading">
+        <span class="recordatorios-spinner" aria-hidden="true"></span>
+        <p>Cargando recordatorios...</p>
+      </div>`;
   }
+  updateHeaderAndTotal(filteredItems.length);
+
   try {
     const syncQ = force ? "&sync=1" : "";
     const resp = await api(`recordatorios.php?days=14${syncQ}&_t=${Date.now()}`, { cache: "no-store" });
@@ -165,17 +229,32 @@ export async function loadRecordatorios(force = false) {
     }
     cachedItems = Array.isArray(resp.items) ? resp.items : [];
     cachedCounts = resp.counts && typeof resp.counts === "object" ? resp.counts : {};
+    hasLoadedOnce = true;
+    lastLoadedAt = Date.now();
     renderRecordatoriosSync(resp);
     applyFiltersAndRender();
+
+    if (refreshBtn && force) {
+      refreshBtn.textContent = "✓ Actualizado";
+      setTimeout(() => {
+        if (refreshBtn && !isRefreshing) {
+          refreshBtn.textContent = "↻ Actualizar";
+          refreshBtn.disabled = false;
+          refreshBtn.style.opacity = "1";
+        }
+      }, 1500);
+    }
   } catch {
     if (!cachedItems.length) {
       container.innerHTML = `<div class="recordatorios-empty"><p>Error al cargar recordatorios.</p></div>`;
     }
   } finally {
     isRefreshing = false;
-    if (refreshBtn) {
+    updateHeaderAndTotal(filteredItems.length);
+    if (refreshBtn && (!force || refreshBtn.textContent !== "✓ Actualizado")) {
       refreshBtn.disabled = false;
       refreshBtn.textContent = "↻ Actualizar";
+      refreshBtn.style.opacity = "1";
     }
   }
 }
@@ -328,6 +407,15 @@ export function initRecordatoriosModule() {
     applyFiltersAndRender();
   });
   document.getElementById("recordatorios-list-container")?.addEventListener("click", (e) => {
+    const resetBtn = e.target.closest('[data-action="reset-filters"]');
+    if (resetBtn) {
+      activeStatusFilter = "all";
+      const searchInput = document.getElementById("recordatorios-search");
+      if (searchInput) searchInput.value = "";
+      currentPage = 0;
+      applyFiltersAndRender();
+      return;
+    }
     const btn = e.target.closest('[data-action="dispatch-manual"]');
     if (!btn) return;
     const id = btn.getAttribute("data-id");
