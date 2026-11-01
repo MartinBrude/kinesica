@@ -8,12 +8,12 @@ import { dialogAlert } from "./dom-dialogs.js?v=77";
 import {
   renderRecordatoriosList,
   renderRecordatoriosPager,
-} from "./recordatorios-render.js?v=7";
+} from "./recordatorios-render.js?v=8";
 import {
   filterRecordatoriosList,
   renderRecordatoriosStats,
 } from "./recordatorios-filter.js?v=6";
-import { renderRecordatoriosRules } from "./recordatorios-rules.js?v=4";
+import { renderRecordatoriosRules } from "./recordatorios-rules.js?v=5";
 
 let cachedItems = [];
 let cachedCounts = {};
@@ -387,7 +387,10 @@ function openRecordatorioContactModal(item, { mode = "contact", onSuccess } = {}
             ? `<button type="button" class="btn green" id="btn-submit-dispatch">⚡ Enviar recordatorio</button>`
             : `<button type="button" class="btn green" id="btn-submit-contact">Guardar contacto</button>
                ${
-                 item.status === "pending" || item.status === "failed" || item.status === "missing_phone"
+                 item.status === "pending" ||
+                 item.status === "failed" ||
+                 item.status === "missing_phone" ||
+                 item.status === "skipped"
                    ? `<button type="button" class="btn light" id="btn-submit-contact-send">Guardar y enviar</button>`
                    : ""
                }`

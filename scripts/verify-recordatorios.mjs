@@ -33,9 +33,11 @@ if (
   !php.includes("action === 'ingest'") ||
   !php.includes("lib_recordatorios_view.php") ||
   !php.includes("lib_recordatorios_n8n.php") ||
-  !php.includes("'reconcile'")
+  !php.includes("'reconcile'") ||
+  !php.includes("save_contact") ||
+  !php.includes("recordatorios_persist_directory_contact")
 ) {
-  console.error("✗ recordatorios.php no cumple contrato ingest/vista/reconcile");
+  console.error("✗ recordatorios.php no cumple contrato ingest/vista/reconcile/save_contact");
   process.exit(1);
 }
 
@@ -55,16 +57,28 @@ if (!js.includes("recordatorios-sync") || !js.includes("renderRecordatoriosSync"
   console.error("✗ recordatorios.js sin indicador de sync");
   process.exit(1);
 }
+if (!js.includes("save_contact") || !js.includes('mode: "contact"')) {
+  console.error("✗ recordatorios.js sin flujo de carga de contacto");
+  process.exit(1);
+}
 
-const r = spawnSync("php", [path.join(root, "scripts/test-recordatorios.php")], {
-  encoding: "utf8",
-  cwd: root,
-});
-process.stdout.write(r.stdout || "");
-process.stderr.write(r.stderr || "");
-if (r.status !== 0) {
-  console.error("✗ test-recordatorios.php falló");
-  process.exit(r.status || 1);
+const render = fs.readFileSync(path.join(admin, "modules/recordatorios-render.js"), "utf8");
+if (!render.includes('data-action="save-contact"') || !render.includes("escapeHtml(item.email)")) {
+  console.error("✗ recordatorios-render.js sin botón/escape de contacto");
+  process.exit(1);
+}
+
+for (const script of ["scripts/test-recordatorios.php", "scripts/test-recordatorios-contact.php"]) {
+  const r = spawnSync("php", [path.join(root, script)], {
+    encoding: "utf8",
+    cwd: root,
+  });
+  process.stdout.write(r.stdout || "");
+  process.stderr.write(r.stderr || "");
+  if (r.status !== 0) {
+    console.error(`✗ ${script} falló`);
+    process.exit(r.status || 1);
+  }
 }
 
 console.log("recordatorios: ok");

@@ -112,6 +112,19 @@ export function buildRecordatorioCardHtml(item) {
       ? `<p class="recordatorio-summary">${escapeHtml(item.event_summary)}</p>`
       : "";
 
+  const alreadySent = item.status === "sent" || item.status === "sent_email";
+  const hasPhone = !!item.wa_id;
+  // Enviar manual si hay teléfono/email y aún no se envió (incluye pending, fallidos y omitidos).
+  // También en pending/failed/missing_phone sin contacto: el modal permite cargarlo al vuelo.
+  const canManualSend =
+    !alreadySent &&
+    item.status !== "run_skipped" &&
+    (hasPhone ||
+      hasEmail ||
+      item.status === "pending" ||
+      item.status === "failed" ||
+      item.status === "missing_phone");
+
   const actions = [];
   if (needsContact) {
     actions.push(`
@@ -119,15 +132,16 @@ export function buildRecordatorioCardHtml(item) {
           ＋ Cargar contacto
         </button>`);
   }
-  if (item.status === "failed" || item.status === "missing_phone") {
+  if (canManualSend) {
+    const isRetry = item.status === "failed" || item.status === "missing_phone";
+    const sendLabel = isRetry ? "⚡ Disparar manualmente" : "⚡ Enviar ahora";
+    const sendClass = isRetry ? "is-failed" : "is-pending";
+    const sendTitle = hasPhone || hasEmail
+      ? "Enviar recordatorio ahora por WhatsApp o email"
+      : "Abrir envío manual (podés cargar el teléfono o email antes de mandar)";
     actions.push(`
-        <button type="button" class="btn light btn-trigger-recordatorio is-failed" data-action="dispatch-manual" data-id="${escapeHtml(item.id)}" title="Disparar recordatorio manualmente">
-          ⚡ Disparar manualmente
-        </button>`);
-  } else if (item.status === "pending") {
-    actions.push(`
-        <button type="button" class="btn light btn-trigger-recordatorio is-pending" data-action="dispatch-manual" data-id="${escapeHtml(item.id)}" title="Enviar recordatorio ahora">
-          ⚡ Enviar ahora
+        <button type="button" class="btn light btn-trigger-recordatorio ${sendClass}" data-action="dispatch-manual" data-id="${escapeHtml(item.id)}" title="${sendTitle}">
+          ${sendLabel}
         </button>`);
   }
   const actionBtn = actions.length

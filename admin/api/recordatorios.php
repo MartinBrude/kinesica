@@ -66,15 +66,16 @@ function recordatorios_persist_directory_contact(string $patientName, string $ph
             if (strlen($phone) < 6 || strlen($phone) > 16) {
                 return ['ok' => false, 'error' => 'Número de WhatsApp inválido o incompleto'];
             }
+            // En colisión de teléfono: NO pisar nombre de un paciente existente; solo completar vacíos y email.
             $stmt = $pdo->prepare(
                 'INSERT INTO pacientes (telefono, nombre, apellido, nombre_completo, nombre_pila, email, origen)
                  VALUES (:tel, :nombre, :apellido, :full, :pila, :email, :origen)
                  ON DUPLICATE KEY UPDATE
-                    nombre = CASE WHEN VALUES(nombre) != "" THEN VALUES(nombre) ELSE nombre END,
-                    apellido = CASE WHEN VALUES(apellido) != "" THEN VALUES(apellido) ELSE apellido END,
-                    nombre_completo = CASE WHEN VALUES(nombre_completo) != "" THEN VALUES(nombre_completo) ELSE nombre_completo END,
-                    nombre_pila = CASE WHEN VALUES(nombre_pila) != "" THEN VALUES(nombre_pila) ELSE nombre_pila END,
-                    email = COALESCE(VALUES(email), email)'
+                    email = COALESCE(VALUES(email), email),
+                    nombre = CASE WHEN nombre IS NULL OR nombre = "" THEN VALUES(nombre) ELSE nombre END,
+                    apellido = CASE WHEN apellido IS NULL OR apellido = "" THEN VALUES(apellido) ELSE apellido END,
+                    nombre_completo = CASE WHEN nombre_completo IS NULL OR nombre_completo = "" THEN VALUES(nombre_completo) ELSE nombre_completo END,
+                    nombre_pila = CASE WHEN nombre_pila IS NULL OR nombre_pila = "" THEN VALUES(nombre_pila) ELSE nombre_pila END'
             );
             $stmt->execute([
                 'tel' => $phone,
@@ -148,17 +149,26 @@ function recordatorios_save_contact(int $id, array $input, array $auth): array
     if ($phone !== '') {
         $updates['wa_id'] = $phone;
     }
-    $user = (string) ($auth['username'] ?? $auth['name'] ?? 'admin');
+    $user = preg_replace('/[^\p{L}\p{N}._@\-\s]/u', '', (string) ($auth['username'] ?? $auth['name'] ?? 'admin')) ?: 'admin';
+    $user = mb_substr($user, 0, 40, 'UTF-8');
+    $status = (string) ($item['status'] ?? '');
+    $prevErr = (string) ($item['error_message'] ?? '');
     if ($email !== '') {
-        // Conservar email en el registro cuando aún no se envió (para el modal y fallback).
-        if (in_array((string) $item['status'], ['pending', 'missing_phone', 'failed', 'skipped'], true)) {
+        // Guardar email en el registro sin borrar el error Meta de un fallo previo.
+        if (in_array($status, ['pending', 'missing_phone', 'skipped'], true)) {
             $updates['error_message'] = 'contact_email:' . $email . ' (Cargado por ' . $user . ')';
+        } elseif ($status === 'failed') {
+            if (str_starts_with($prevErr, 'contact_email:')) {
+                $updates['error_message'] = 'contact_email:' . $email . ' (Cargado por ' . $user . ')';
+            } elseif ($prevErr === '') {
+                $updates['error_message'] = 'contact_email:' . $email . ' (Cargado por ' . $user . ')';
+            }
+            // Si había un error Meta, se conserva; el email queda en el directorio / campo email de la vista.
         }
-    } elseif ($phone !== '' && str_starts_with((string) ($item['error_message'] ?? ''), 'contact_email:')) {
+    } elseif ($phone !== '' && str_starts_with($prevErr, 'contact_email:')) {
         $updates['error_message'] = 'WhatsApp cargado por ' . $user;
     }
 
-    $status = (string) ($item['status'] ?? '');
     if ($status === 'missing_phone' && ($phone !== '' || $email !== '')) {
         $updates['status'] = 'pending';
         $updates['error_code'] = '';
