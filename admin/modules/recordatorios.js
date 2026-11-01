@@ -12,7 +12,7 @@ import {
 import {
   filterRecordatoriosList,
   renderRecordatoriosStats,
-} from "./recordatorios-filter.js?v=3";
+} from "./recordatorios-filter.js?v=4";
 import { renderRecordatoriosRules } from "./recordatorios-rules.js?v=3";
 
 let cachedItems = [];

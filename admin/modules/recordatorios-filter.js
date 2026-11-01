@@ -1,6 +1,6 @@
 /**
  * Filtros y píldoras de conteo para Recordatorios.
- * Agrupa según el ciclo de vida: Enviados, Por ser enviados, Fallidos en enviarse y Omitidos.
+ * Agrupa según el ciclo de vida: Enviados, A enviar, Fallidos en enviarse y Omitidos.
  */
 
 const STATUS_FILTERS = {
@@ -79,7 +79,7 @@ export function renderRecordatoriosStats(statsEl, { counts, activeStatusFilter }
   statsEl.innerHTML = [
     pill("all", "📋 Todos", total, "", "Ver todos los recordatorios"),
     pill("sent", `✓ Enviados${sentDetail}`, sentTotal, "filter-sent", "Filtrar recordatorios enviados por WhatsApp o correo"),
-    pill("pending", "⏳ Por ser enviados", pendingCount, "filter-pending", "Filtrar recordatorios pendientes por ser enviados"),
+    pill("pending", "⏳ A enviar", pendingCount, "filter-pending", "Filtrar recordatorios pendientes por ser enviados"),
     pill("failed", "✕ Fallaron en enviarse", failedCount, failedClass, "Filtrar recordatorios que fallaron o sin contacto (disparables manualmente)"),
     pill("skipped", "⊘ Omitidos", skippedCount, "filter-skipped", "Filtrar turnos omitidos según reglas"),
   ].join("");

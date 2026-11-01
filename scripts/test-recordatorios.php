@@ -70,7 +70,7 @@ $pending = recordatorios_normalize_item([
 ], 'n8n-1c', 1700000002);
 eq($pending['status'] ?? '', 'pending', 'status pending aceptado');
 eq($pending['event_key'], 'rem:n8n-1c:calPending:pending', 'clave pending');
-eq(recordatorios_status_label('pending'), 'Por ser enviado', 'label por ser enviado');
+eq(recordatorios_status_label('pending'), 'A enviar', 'label a enviar');
 
 $badSkip = recordatorios_normalize_item([
     'status' => 'skipped',
