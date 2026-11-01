@@ -259,9 +259,9 @@ El flujo técnico detrás de escena se basa en cinco pilares automatizados:
    - **Lunes a Jueves a las 10:00 hs:** Busca los turnos del día hábil posterior (martes a viernes).
    - *(Los viernes y sábados no se despachan recordatorios porque el consultorio no atiende fines de semana).*  
    Al ejecutarse:
-   - **Filtra cancelaciones y bloqueos:** Ignora eventos con status cancelado o que contengan en título o descripción palabras como `[CANCELADO]`, `[ANULADO]`, `[SUSPENDIDO]`, `[BAJA]`, `[BLOQUEADO]`, `feriado` o `vacaciones`.
+   - **Filtra cancelaciones y bloqueos:** Ignora eventos con status cancelado o que contengan en título o descripción palabras como `[CANCELADO]`, `[ANULADO]`, `[SUSPENDIDO]`, `[BAJA]`, `[BLOQUEADO]`, `feriado`, `vacaciones` o la convención de bloqueo **`no dar` / `no dar turno`** (el sistema identifica de inmediato que no es un paciente real, no busca teléfonos en el directorio, lo clasifica como bloqueo en omitidos y no despacha ningún mensaje).
    - **Extrae el nombre de pila:** Clara limpia etiquetas y apellidos para saludar con empatía y cercanía (*"¡Hola Lucas! 🌿"* en vez del frío *"Hola Lucas Méndez"*).
-   - **Resuelve el número de WhatsApp:** Primero busca el teléfono en la **descripción** o título del evento (`📱 WhatsApp: 54911...`). Si no figura en el evento, recurre al **Directorio Dinámico de Pacientes** de Kinésica. Si el teléfono no está ni en la cita ni en el directorio, el sistema no puede despachar el mensaje y el paciente se queda sin recordatorio.
+   - **Resuelve el número de WhatsApp:** Primero busca el teléfono en la **descripción** o título del evento (`📱 WhatsApp: 54911...`). Si no figura en el evento, recurre al **Directorio Dinámico de Pacientes** de Kinésica. Si el teléfono no está ni en la cita ni en el directorio, el turno aparece en `/admin/recordatorios` con alerta de teléfono faltante para que el equipo pueda completarlo a tiempo.
 5. 🔄 **Actualización e Impacto Bidireccional en Tiempo Real:**  
    - Si el paciente toca **`[✅ Confirmo]`** en WhatsApp, el bot acusa recibo y edita automáticamente el evento en Google Calendar anteponiendo `[CONFIRMADO]` al título (ej: `🩺 [CONFIRMADO] Lucas Méndez`).
    - Si el paciente toca **`[❌ Cancelar]`**, el sistema anula directamente ese turno (verificando que el botón corresponda al teléfono del paciente) en Google Calendar, le avisa al profesional a cargo (Norberto o María) y comprueba si hay pacientes en la **Lista de Espera Inteligente** (registrada en la hoja de Google Sheets) para ofrecerles el hueco liberado.
@@ -311,7 +311,7 @@ Google Calendar (calendario **`consultorio`**) es la **única fuente de verdad**
 | **3. Carga del teléfono (WhatsApp)** | **Cargar el celular 1 sola vez por cualquiera de estas 2 vías:**<br>• **Opción A (Planilla):** Asentar Nombre y Celular en el [Google Sheets](https://docs.google.com/spreadsheets/d/1kyGkYea0Iu_OrXxF-yONqhs2rG1O8YUWbbSmQe37GCk/edit).<br>• **Opción B (1º turno):** Escribir en la descripción `📱 WhatsApp: 54911...` solo la 1ª vez.<br>*(En las sesiones 2ª en adelante, la descripción puede dejarse vacía).* | • Olvidar anotar el WhatsApp en la 1ª sesión de un paciente nuevo.<br>• Perder tiempo volviendo a escribir el teléfono en cada sesión de pacientes habituales. | El bot memoriza el teléfono en su Directorio Dinámico permanente. Para los turnos siguientes, con solo el nombre en el título, rescata el teléfono automáticamente. |
 | **4. DNI / Documento** | No es obligatorio en el día a día. Se registra en la admisión/planilla o cuando el paciente agenda en la web o por chat (si desea aportarlo). | Exigir o cargar el DNI en cada sesión manual en Google Calendar. | El DNI es opcional y solo se solicita una única vez al ingresar al consultorio. No es requisito para despachar recordatorios diarios. |
 | **5. Duración y Horarios** | Exactamente **60 minutos** (1 hora), pudiendo iniciar en hora en punto (:00) o y media (:30) según la disponibilidad vigente (ej: 15:30 a 16:30 hs) dentro del rango de atención del consultorio. | • Turnos de duraciones distintas a 60 min (15, 30 o 45 min).<br>• Superponer eventos a la misma hora. | Hay **1 sola camilla física**. Duraciones irregulares descalibran los huecos libres y las superposiciones colapsan la atención presencial. |
-| **6. Bloqueos personales (almuerzos, trámites)** | Crear evento en el calendario **`consultorio`** con el título `🚫 [BLOQUEADO]` en el horario requerido. | • Anotarlo en el calendario personal.<br>• Pedirle a Clara por WhatsApp que bloquee horarios. | Clara reconoce `🚫 [BLOQUEADO]` como horario ocupado y no lo ofrece. El bot de recordatorios no envía ningún WhatsApp por este evento. |
+| **6. Bloqueos de agenda (almuerzos, trámites o "No dar")** | Crear evento en el calendario **`consultorio`** con el título `🚫 [BLOQUEADO]`, `[BLOQUEADO]` o simplemente **`No dar` / `No dar turno`** en el horario requerido. | • Anotarlo en el calendario personal.<br>• Creer que "No dar" es un nombre de paciente.<br>• Pedirle a Clara por WhatsApp que bloquee horarios. | Clara reconoce el evento como horario ocupado y no lo ofrece. El sistema de recordatorios sabe que **`No dar` es un bloqueo de turno y no una persona**: no intenta extraer teléfonos ni genera falsas alertas de contacto faltante. |
 | **7. Vacaciones / Receso** | Crear evento de **día completo** en **`consultorio`** titulado `🏖️ [VACACIONES CONSULTORIO - CERRADO]` (o con la palabra `Vacaciones` / `Cerrado`). | Cerrar el consultorio sin marcar el evento de día completo en `consultorio`. | Clara y la turnera web detectan el cierre de día completo y no ofrecen ni confirman turnos en esas fechas. |
 | **8. Cancelaciones manuales** | • **Recomendado:** Eliminar el turno directamente en Google Calendar (tacho de basura). El hueco queda liberado al instante.<br>• **Historial:** Si desean conservarlo, anteponer `[CANCELADO]` o `[ANULADO]` al título en Google Calendar. | • Escribir `"Cancelado"` en un turno que sigue activo y en pie.<br>• Pedirle a Clara por WhatsApp que anule turnos de pacientes. | Las cancelaciones de los profesionales se gestionan siempre en Google Calendar. El bot detecta `[CANCELADO]` y anula de inmediato el recordatorio de las 24 hs. |
 | **9. Uso de Clara por Kinesiólogos** | Recibir alertas internas de turnos y usar comandos de control (`pausar bot`, `reanudar bot`, `olvidar <paciente>`, `modo menu` / `modo ia`). | Pedirle a Clara por WhatsApp que les agende un turno, cree bloqueos o cancele citas de pacientes por chat. | Clara reconoce sus celulares como administradores. Los turnos, bloqueos y cancelaciones de citas se gestionan en Google Calendar. |
@@ -333,6 +333,20 @@ Cuando un turno se agenda correctamente en Google Calendar y Clara está activa 
    El paciente confirma su presencia con un solo toque. El sistema actualiza Google Calendar al instante cambiando el título a **`🩺 [CONFIRMADO] Nombre Paciente`**, permitiendo que Norberto y María vean de un vistazo en la agenda quiénes ya confirmaron para el día.
 2. **`[❌ Cancelar]`**:  
    El paciente avisa que no puede asistir. El sistema anula o elimina el evento en Google Calendar liberando la camilla, le envía una notificación inmediata al profesional a cargo (Norberto o María) y revisa si hay alguien en la **Lista de Espera** (en Google Sheets) para avisarle del lugar disponible.
+
+#### 📊 3.3.1. Supervisión, Detección de Teléfonos Faltantes y Despacho Manual (`/admin/recordatorios`)
+
+El consultorio cuenta con un panel especializado de supervisión en **[https://www.kinesica.com.ar/admin/recordatorios](https://www.kinesica.com.ar/admin/recordatorios)** que permite auditar en vivo el estado de todos los recordatorios:
+
+1. **Previsión "A enviar" y Detección Temprana de Teléfonos Faltantes:**  
+   Muestra todos los turnos agendados para la próxima jornada de atención (mañana, o lunes si es fin de semana). Si a algún paciente le falta el teléfono registrado en el evento o en el directorio, el sistema lo resalta claramente con una advertencia visual (*"Falta teléfono registrado"*). Esto permite al equipo cargar el celular en Google Sheets o en la descripción del evento antes de la hora del cron automático (10:00 hs / 18:00 hs).
+2. **Historial de "Enviados":**  
+   Registra la confirmación de entrega en tiempo real, detallando si se despachó por la API oficial de WhatsApp o si se activó la contingencia automática por correo electrónico ante caídas de Meta.
+3. **Pestañas "Fallidos" y "Omitidos":**  
+   - **Fallidos:** Turnos donde no pudo entregarse el mensaje por problemas en el número o línea.  
+   - **Omitidos:** Registros que el sistema descartó intencionalmente por ser bloqueos operativos (`No dar`, `No dar turno`, `[BLOQUEADO]`, `vacaciones`) o citas previamente canceladas.
+4. **Botón `⚡ Disparar manualmente`:**  
+   Permite forzar la ejecución del envío en cualquier momento directamente desde el navegador (con ventana de confirmación), ideal si se acaban de completar números de teléfono faltantes o para pruebas inmediatas sin esperar el cron de n8n.
 
 ---
 
@@ -391,7 +405,8 @@ Cuando alguno de los dos le escribe a Clara, ella los saluda por su nombre (*"Ho
 Norberto y María la miran en Google Calendar. Clara no arma esa lista por WhatsApp. Si le escriben `"agenda hoy"` o `"¿quién viene?"`, les indica que la vean en el calendario.
 
 ### 🚫 B. Bloquear un horario para no atender
-Norberto y María marcan ese horario ellos mismos en Google Calendar (`🚫 [BLOQUEADO]`). Clara no crea el bloqueo por chat; si se lo piden por WhatsApp, responde: *"Hola [Norberto/María]. Los bloqueos los marcás en Google Calendar."*
+Norberto y María marcan ese horario ellos mismos en Google Calendar (`🚫 [BLOQUEADO]`, `[BLOQUEADO]` o simplemente **`No dar` / `No dar turno`**). Clara no crea el bloqueo por chat; si se lo piden por WhatsApp, responde: *"Hola [Norberto/María]. Los bloqueos los marcás en Google Calendar."*  
+*(El sistema reconoce de forma nativa que `No dar` es un bloqueo de turno y no un paciente: no busca teléfonos en el directorio, lo excluye de recordatorios y no genera avisos de contacto faltante).*
 
 ### 🏖️ C. Vacaciones o receso del consultorio
 * **Cómo cargarlo (recomendado):** Crear un evento de **día completo** en el calendario **`consultorio`** de Google Calendar con el título `🏖️ [VACACIONES CONSULTORIO - CERRADO]` (o que incluya la palabra `Vacaciones` / `Cerrado`) abarcando las fechas del receso.
@@ -535,9 +550,11 @@ Guardá esta tablita a mano para gestionar a Clara desde el celular de **Norbert
 | Qué querés hacer | Cómo hacerlo |
 |---|---|
 | **Ver la agenda del día** | En **Google Calendar (`consultorio`)**. Clara no lista la agenda por WhatsApp. |
-| **Cerrar un hueco específico (bloqueo)** | En **Google Calendar (`consultorio`)** creando un evento `🚫 [BLOQUEADO]`. Clara no crea bloqueos por chat. |
+| **Cerrar un hueco específico (bloqueo)** | En **Google Calendar (`consultorio`)** creando un evento `🚫 [BLOQUEADO]` o simplemente **`No dar` / `No dar turno`**. Clara no crea bloqueos por chat. |
 | **Cerrar por vacaciones o receso** | En **Google Calendar (`consultorio`)** creando un evento de **día completo** `🏖️ [VACACIONES CONSULTORIO - CERRADO]`. |
 | **Anular o cancelar el turno de un paciente** | En **Google Calendar (`consultorio`)** eliminando el evento o anteponiendo `[CANCELADO]`. Clara no cancela turnos de pacientes por chat para los profesionales. |
+| **Monitorear recordatorios de 24 hs** | En el Panel Admin → pestaña **Recordatorios** (`/admin/recordatorios`). Previsualiza los turnos de mañana en "A enviar", alerta si falta teléfono y permite envíos con `⚡ Disparar manualmente`. |
+| **Auditar conversaciones de WhatsApp** | En el Panel Admin → pestaña **Interacciones** (`/admin/interacciones`). Revisa mensajes de Clara, derivaciones a profesionales (`wa.me`) e historial por paciente. |
 | **Cambiar horarios de atención u honorarios ($)** | En el Panel Admin → pestaña **Consultorio** (`/admin/consultorio`). |
 | **Editar los textos del menú de Clara (A–E, F...)** | En el Panel Admin → pestaña **Clara & Mensajes** (`/admin/clara`). |
 | **Pausar todo el bot (Pausa general)** | Tocando **"Pausar bot"** en `/admin/` o escribiéndole a Clara: `"pausar bot"`, `"lo atiendo yo"` o `"silencio"` (se reanuda solo a las 8 hs si nadie lo reactiva antes). |

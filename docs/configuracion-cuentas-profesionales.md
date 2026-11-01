@@ -1,7 +1,7 @@
 # Guía de Acceso, Cuentas y Uso del Panel de Administración
 
-> **Instructivo para el equipo profesional de Kinésica** (Lic. Norberto Brude y Lic. María Gulín).  
-> Paso a paso para ingresar al sistema (con código por correo electrónico o con la app Authenticator del celular), cambiar o recuperar la contraseña, gestionar cuentas y recorrer todas las secciones del panel `/admin/`.
+> **Instructivo para el equipo de Kinésica** (Lic. Norberto Brude, Lic. María Gulín, Martín Brude y colaboradores).  
+> Paso a paso para ingresar al sistema (con código por correo electrónico o con la app Authenticator del celular), cambiar o recuperar la contraseña, gestionar cuentas de usuarios y recorrer todas las secciones del panel `/admin/`.
 
 ---
 
@@ -14,21 +14,45 @@ Podés acceder desde cualquier computadora, tablet o teléfono con navegador web
 
 ---
 
-## 👤 Cuentas, Roles y Alta de Profesionales
+## 👤 Cuentas, Roles y Gestión de Usuarios
 
-| Profesional | Usuario (o ingreso por email) | Correo asociado | Rol en el sistema | Segundo factor (2FA) |
-| :--- | :--- | :--- | :--- | :--- |
-| **Lic. Norberto Brude** | `norberto` | `norberto1712@gmail.com` | **Administrador** (acceso total + pestaña Administración) | Código por mail o App Authenticator |
-| **Lic. María Gulín** | `maria` | `manosmagicas7116@gmail.com` | **Profesional** (acceso clínico y configuración operativa) | Código por mail o App Authenticator |
-| **Martín Brude** | `martin` | `martin.brude@gmail.com` | **Administrador** (soporte técnico y administración) | Código por mail o App Authenticator |
+| Usuario | Nombre completo | Correo asociado | Teléfono | Rol en el sistema | Segundo factor (2FA) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `@norberto` | **Lic. Norberto Brude** | `norberto1712@gmail.com` | `+54 9 11 6156-4311` | **Administrador** (acceso total) | Código por mail o App Authenticator |
+| `@maria` | **Lic. María Gulín** | `consultorio.kinesica@gmail.com` | `+54 9 11 2853-1224` | **Administrador** (acceso total y clínico) | Código por mail o App Authenticator |
+| `@martin` | **Martín Brude** | `martin.brude@gmail.com` | `+34 658 44 49 35` | **Administrador** (soporte técnico y desarrollo) | Código por mail o App Authenticator |
+| `@facundo` | **Facundo Vivardo** | `facu86@gmail.com` | `+54 9 11 6484-0132` | **Colaborador** (gestión y soporte) | Código por mail o App Authenticator |
+
+### 🎭 Jerarquía de Roles
+- **👑 Administrador (`admin`):** Acceso total a todas las secciones del panel, incluyendo la pestaña **Administración** (`/admin/administracion`), altas, bajas y edición de usuarios, gastos operativos, configuración clínica, simulador de Clara y auditoría.
+- **🩺 Profesional (`professional`):** Acceso completo al área operativa y médica: Historias Clínicas (fichas ATM CDI-TTM), Directorio de Pacientes, Consultorio (agenda y honorarios) y Recordatorios.
+- **🤝 Colaborador (`colaborador`):** Acceso enfocado en tareas de apoyo, visualización y gestión operativa sin permisos de modificación de credenciales o configuración sensible de administradores.
 
 > [!TIP]
 > **Podés ingresar con tu usuario o con tu correo electrónico:**  
-> En el casillero **"Usuario"** de la pantalla de acceso podés escribir indistintamente tu nombre de usuario (`norberto`, `maria`) o tu dirección de email completa (`norberto1712@gmail.com`, `manosmagicas7116@gmail.com`).
+> En el casillero **"Usuario"** de la pantalla de acceso podés escribir indistintamente tu nombre de usuario (`norberto`, `maria`, `facundo`) o tu dirección de email completa (`consultorio.kinesica@gmail.com`, etc.).
 
-> [!NOTE]
-> **¿Cómo se da de alta a un nuevo profesional en el futuro?**  
-> Desde la pestaña **Administración** (`/admin/administracion`), cualquier administrador (**Norberto** o **Martín**) puede hacer clic en **"+ Agregar profesional"**, completar su nombre, usuario, correo y rol (`Profesional` o `Administrador`). El sistema le envía automáticamente un correo de bienvenida con un **enlace válido por 48 horas** para que elija su propia contraseña personal.
+---
+
+### 👥 Administración de Usuarios y Ficha de Detalle
+
+Desde la pestaña **Administración** (`/admin/administracion`), los administradores disponen de un módulo moderno de gestión de usuarios:
+
+1. **Botón "+ Nuevo usuario":**  
+   Permite dar de alta a un profesional o colaborador indicando su nombre, apellido, usuario, correo, teléfono y asignando su rol (`Administrador`, `Profesional` o `Colaborador`). Al crearlo, el sistema le envía automáticamente un correo de bienvenida con un **enlace válido por 48 horas** para definir su contraseña personal.
+
+2. **Tabla Minimalista de Usuarios:**  
+   Para mantener la pantalla limpia y legible en cualquier dispositivo, la grilla principal muestra únicamente el **Profesional/Usuario** (avatar y arroba), su **Rol** (badge identificador), su **Estado** (Activo / Inactivo) y el botón **"Ver ficha"**.
+
+3. **Vista Detalle (Ficha de Usuario):**  
+   Al presionar **"Ver ficha"**, se abre un modal completo que centraliza la información y las acciones operativas:
+   - **Datos de Contacto:** Visualización clara de email y teléfono con botones directos para **copiar al portapapeles** y **abrir chat de WhatsApp (`wa.me`)** en un clic.
+   - **Permisos del Rol:** Resumen explicativo de los permisos asignados según su categoría.
+   - **Seguridad y Accesos:** Estado del segundo factor de autenticación (2FA enrolado vía App Authenticator o vía correo electrónico), fecha y hora del último ingreso y antigüedad de la cuenta.
+   - **Acciones Centralizadas:**
+     - ✏️ **Editar datos:** Modificar nombre, teléfono, correo o rol.
+     - ✉️ **Enviar acceso:** Dispara al instante un correo seguro para restablecer o crear contraseña.
+     - 🚫 / 🔄 **Dar de baja / Reactivar:** Cambia el estado a *Inactivo* (o lo reactiva) sin borrar historiales clínicos ni desvincular registros de pacientes.
 
 ---
 
@@ -73,7 +97,7 @@ Si preferís no abrir el correo cada vez que ingresás, podés vincular por úni
 Si querés cambiar tu contraseña por una nueva o si la olvidaste:
 
 1. En la pantalla de ingreso de **[https://www.kinesica.com.ar/admin/](https://www.kinesica.com.ar/admin/)**, hacé clic en **"Olvidé mi contraseña"** (si ya tenías sesión abierta, primero tocá **"Salir"** arriba a la derecha).
-2. Escribí tu usuario (`norberto` o `maria`) o tu correo registrado (`norberto1712@gmail.com` o `manosmagicas7116@gmail.com`) y hacé clic en **"Enviar enlace"**.
+2. Escribí tu usuario (`norberto`, `maria` o `facundo`) o tu correo registrado (`norberto1712@gmail.com`, `consultorio.kinesica@gmail.com`, etc.) y hacé clic en **"Enviar enlace"**.
 3. Abrí tu correo en Gmail y buscá el mensaje con asunto:  
    📩 **"Contraseña de Kinésica"**.
 4. Hacé clic en el enlace del correo *(por seguridad vence a los 30 minutos; si es un enlace de bienvenida para una cuenta nueva, dura 48 horas)*.
@@ -86,16 +110,19 @@ Si querés cambiar tu contraseña por una nueva o si la olvidaste:
 
 ## 🧭 Mapa del Panel de Administración (`/admin/`)
 
-Una vez adentro del sistema, en la barra superior contás con las siguientes secciones:
+Una vez adentro del sistema, en la barra de navegación contás con las siguientes secciones:
 
 | Pestaña | Ruta directa | Qué podés hacer en esta sección |
 | :--- | :--- | :--- |
-| **🏠 Inicio** | `/admin/` | Ver de un vistazo si **Clara (WhatsApp)** y las **Reservas Web** están activas o pausadas (con botones rápidos para pausar/activar al instante) y acceder a las tareas más frecuentes. |
-| **📋 Historias Clínicas** | `/admin/fichas` | Crear y editar fichas clínicas de **ATM (criterios CDI-TTM)** en 6 pasos (con escala visual EVA y fotos clínicas), comparar la evolución sesión a sesión (**"Comparar sesiones"**) e imprimir o guardar informes A4 en PDF con firma y sello digital. |
-| **👥 Pacientes** | `/admin/pacientes` | Consultar el **Directorio Unificado de Pacientes**, buscar por nombre, DNI o teléfono, ver su historial de sesiones y abrir o crear fichas vinculadas con un clic. |
-| **🕒 Consultorio** | `/admin/consultorio` | Modificar en vivo los **horarios de atención** de cada profesional (con control automático de **1 sola camilla física**), el horario visible en el encabezado de la web y los **honorarios vigentes** (`$ ATM`, `$ General` y medios de pago). |
-| **💬 Clara & Mensajes** | `/admin/clara` | Editar todos los textos del menú de Clara (`A` a `E`, submenús, opciones adicionales `F`, `G`..., textos de recordatorios de 24 hs) y probar cómo responde en el **Simulador Interactivo de WhatsApp** en vivo. |
-| **⚙️ Administración** *(solo rol Admin: Norberto y Martín)* | `/admin/administracion` | Gestionar cuentas del equipo (agregar profesionales, editar teléfonos/emails, asignar rol **Admin** o **Profesional**, suspender cuentas o reenviar enlace de contraseña), llevar el control de **Gastos operativos** (con cotización histórica EUR/USD/ARS) y abrir la Planilla de Google Sheets o este Manual. |
+| **🏠 Inicio** | `/admin/` | Ver de un vistazo el estado general del consultorio, si **Clara (WhatsApp)** y las **Reservas Web** están activas o pausadas (con botones rápidos para alternar al instante) y accesos directos a las tareas más frecuentes. |
+| **📋 Historias Clínicas** | `/admin/fichas` | Crear y editar fichas clínicas de **ATM (criterios CDI-TTM)** en 6 pasos (con escala visual EVA y fotos clínicas), comparar la evolución sesión a sesión (**"Comparar sesiones"**) e imprimir o exportar informes A4 en PDF con firma y sello digital. |
+| **👥 Pacientes** | `/admin/pacientes` | Consultar el **Directorio Unificado de Pacientes**, buscar por nombre, DNI o teléfono, revisar historial de sesiones y abrir o crear fichas vinculadas con un solo clic. |
+| **🕒 Consultorio** | `/admin/consultorio` | Configurar los **horarios de atención** de cada profesional (con control automático de **1 sola camilla física**), el texto visible en el encabezado de la web y los **honorarios vigentes** (`$ ATM`, `$ General` y medios de pago). |
+| **💬 Clara & Mensajes** | `/admin/clara` | Editar los textos del menú de Clara (`A` a `E`, submenús, opciones adicionales `F`, `G`... y textos de recordatorios de 24 hs) y probar cómo responde en tiempo real con el **Simulador Interactivo de WhatsApp**. |
+| **📱 Interacciones** | `/admin/interacciones` | Auditar las conversaciones de WhatsApp en tiempo real: ver mensajes recibidos, respuestas automáticas de Clara, derivaciones a profesionales (`wa.me`) y filtrar por paciente o fecha. |
+| **⏰ Recordatorios** | `/admin/recordatorios` | Supervisar el despacho de recordatorios de 24 hs: ver la previsión de turnos de mañana en **"A enviar"** (detectando a tiempo pacientes sin teléfono cargado), historial de mensajes **"Enviados"** (WhatsApp o Email de contingencia), **"Fallidos"**, **"Omitidos"** (bloqueos como `No dar` o cancelados) y disparar envíos manuales con el botón **`⚡ Disparar manualmente`**. |
+| **⚙️ Administración** *(solo rol Admin)* | `/admin/administracion` | Gestión de cuentas del equipo (botón **"+ Nuevo usuario"**, tabla de usuarios, vista detalle con edición, envío de accesos y bajas/reactivaciones), control de **Gastos operativos** (con cotización histórica EUR/USD/ARS) y acceso a Google Sheets y Manual. |
+| **📖 Manual** | `/admin/manual.html` | Visualizador centralizado e interactivo de toda la documentación operativa y técnica del consultorio. |
 
 ---
 
@@ -124,4 +151,4 @@ Una vez adentro del sistema, en la barra superior contás con las siguientes sec
 - [ ] Entré a `kinesica.com.ar/admin/` con mi usuario (o email) y mi contraseña.
 - [ ] Elegí cómo validar el segundo paso: **Código por mail** (llega a mi Gmail) o **Google Authenticator** en el celular.
 - [ ] Configuré mi contraseña personal de al menos 10 caracteres desde *"Olvidé mi contraseña"* (o desde el enlace de bienvenida).
-- [ ] ¡Ya puedo gestionar historias clínicas de ATM, pacientes, horarios, honorarios, textos de Clara y administración!
+- [ ] ¡Ya puedo gestionar historias clínicas de ATM, pacientes, horarios, honorarios, recordatorios y administración!
