@@ -1,7 +1,7 @@
 /**
  * Kinésica Admin - Gestión de Profesionales del Equipo
  * Altas, bajas lógicas, edición de datos, roles (admin/profesional/colaborador),
- * reenvío de accesos y vista de detalle limpio de usuario.
+ * reenvío de accesos y vista de detalle de usuario.
  */
 
 import { api } from "./api.js?v=77";
@@ -28,7 +28,10 @@ const btnSaveModal = document.querySelector("#admin-prof-modal-save");
 const detailModalEl = document.querySelector("#admin-prof-detail-modal");
 const detailCloseBtn = document.querySelector("#admin-prof-detail-close");
 const detailModalCloseBtn = document.querySelector("#admin-prof-detail-modal-close");
-const detailModalEditBtn = document.querySelector("#admin-prof-detail-modal-edit");
+const detailBtnEdit = document.querySelector("#admin-prof-detail-btn-edit");
+const detailBtnInvite = document.querySelector("#admin-prof-detail-btn-invite");
+const detailBtnToggle = document.querySelector("#admin-prof-detail-btn-toggle");
+
 const detailAvatar = document.querySelector("#admin-prof-detail-avatar");
 const detailName = document.querySelector("#admin-prof-detail-name");
 const detailUsername = document.querySelector("#admin-prof-detail-username");
@@ -47,6 +50,7 @@ const detailLogins = document.querySelector("#admin-prof-detail-logins");
 let currentEditingUser = null;
 let currentDetailUser = null;
 let cachedProfesionales = [];
+let reloadCallback = null;
 
 /**
  * Obtiene las iniciales a partir del nombre para el avatar circular.
@@ -135,11 +139,11 @@ export function openEditModal(prof) {
 }
 
 /**
- * Abre la Vista Detalle limpia sin acciones ruidosas.
+ * Abre la Vista Detalle completa donde se centraliza toda la información y acciones.
  */
 export function openDetailModal(prof) {
   if (!detailModalEl) return;
-  closeProfModal();
+  if (modalEl) modalEl.hidden = true;
   currentDetailUser = prof;
 
   const displayName = prof.name || prof.display_name || prof.username;
@@ -247,6 +251,30 @@ export function openDetailModal(prof) {
     detailLogins.textContent = `${count} ${count === 1 ? "inicio" : "inicios"} de sesión registrados`;
   }
 
+  // Acciones en la Vista Detalle:
+  // 1. Dar de baja / Reactivar
+  if (detailBtnToggle) {
+    if (prof.username === "martin") {
+      detailBtnToggle.hidden = true;
+    } else {
+      detailBtnToggle.hidden = false;
+      if (prof.active) {
+        detailBtnToggle.className = "btn ghost btn-prof-toggle-danger";
+        detailBtnToggle.textContent = "Dar de baja";
+        detailBtnToggle.title = "Suspender temporalmente la cuenta del profesional";
+      } else {
+        detailBtnToggle.className = "btn ghost btn-prof-toggle-reactivate";
+        detailBtnToggle.textContent = "Reactivar cuenta";
+        detailBtnToggle.title = "Reactivar el acceso de la cuenta del profesional";
+      }
+    }
+  }
+
+  // 2. Enviar acceso
+  if (detailBtnInvite) {
+    detailBtnInvite.hidden = !prof.email;
+  }
+
   detailModalEl.hidden = false;
 }
 
@@ -269,6 +297,7 @@ export async function handleSaveProfessional(e, onReload) {
 
   if (btnSaveModal) btnSaveModal.disabled = true;
   try {
+    let updatedUser = null;
     if (currentEditingUser) {
       const res = await api("profesionales.php", {
         method: "POST",
@@ -283,6 +312,15 @@ export async function handleSaveProfessional(e, onReload) {
         }),
       });
       dialogAlert(res.message || "Profesional actualizado correctamente.");
+      updatedUser = res.user || {
+        ...currentEditingUser,
+        name: `${firstName} ${lastName}`,
+        first_name: firstName,
+        last_name: lastName,
+        email,
+        telefono,
+        role,
+      };
     } else {
       const res = await api("profesionales.php", {
         method: "POST",
@@ -299,6 +337,9 @@ export async function handleSaveProfessional(e, onReload) {
     }
     closeProfModal();
     if (typeof onReload === "function") await onReload();
+    if (updatedUser) {
+      openDetailModal(updatedUser);
+    }
   } catch (err) {
     dialogAlert("Error al guardar: " + (err.message || "Error desconocido"));
   } finally {
@@ -325,7 +366,11 @@ export async function handleToggleActive(prof, onReload) {
       }),
     });
     dialogAlert(res.message || (isActivating ? "Cuenta reactivada." : "Cuenta dada de baja."));
+    prof.active = isActivating ? 1 : 0;
     if (typeof onReload === "function") await onReload();
+    if (currentDetailUser && currentDetailUser.username === prof.username) {
+      openDetailModal(prof);
+    }
   } catch (err) {
     dialogAlert("Error al modificar estado: " + (err.message || "Error desconocido"));
   }
@@ -351,8 +396,13 @@ export async function handleResendInvite(prof) {
   }
 }
 
+/**
+ * Renderizado de tabla limpia: solo Profesional, Rol, Estado y botón Detalle.
+ * Teléfono, email y acciones se gestionan exclusivamente en la Vista Detalle.
+ */
 export function renderProfesionales(profesionales, onReload) {
   if (!profTableBody) return;
+  reloadCallback = onReload;
   profTableBody.replaceChildren(
     ...profesionales.map((prof) => {
       const tr = document.createElement("tr");
@@ -386,17 +436,7 @@ export function renderProfesionales(profesionales, onReload) {
       userCell.append(avatar, userMeta);
       tdName.append(userCell);
 
-      // 2. Columna Email
-      const tdEmail = document.createElement("td");
-      tdEmail.className = "prof-email-cell";
-      tdEmail.textContent = prof.email || "—";
-
-      // 3. Columna Teléfono (white-space: nowrap para evitar saltos de línea antiestéticos)
-      const tdPhone = document.createElement("td");
-      tdPhone.className = "prof-phone-cell";
-      tdPhone.textContent = prof.telefono ? formatDisplayPhone(prof.telefono) : "—";
-
-      // 4. Columna Rol
+      // 2. Columna Rol
       const tdRole = document.createElement("td");
       const roleBadge = document.createElement("span");
       let roleLabel = "Profesional";
@@ -412,7 +452,7 @@ export function renderProfesionales(profesionales, onReload) {
       roleBadge.textContent = roleLabel;
       tdRole.append(roleBadge);
 
-      // 5. Columna Estado con punto indicador visual
+      // 3. Columna Estado con punto indicador visual
       const tdStatus = document.createElement("td");
       const statusBadge = document.createElement("span");
       statusBadge.className = `prof-status-badge ${prof.active ? "active" : "inactive"}`;
@@ -421,13 +461,12 @@ export function renderProfesionales(profesionales, onReload) {
       statusBadge.append(statusDot, document.createTextNode(prof.active ? "Activo" : "Inactivo"));
       tdStatus.append(statusBadge);
 
-      // 6. Columna Acciones: Botón principal "Ver detalle" + acciones secundarias
+      // 4. Columna Ficha: Botón directo a Vista Detalle
       const tdActions = document.createElement("td");
       tdActions.className = "prof-actions-td";
       const actionsWrap = document.createElement("div");
       actionsWrap.className = "prof-actions-cell";
 
-      // Botón Ver Detalle
       const btnDetail = document.createElement("button");
       btnDetail.type = "button";
       btnDetail.className = "btn btn-prof-detail";
@@ -436,61 +475,17 @@ export function renderProfesionales(profesionales, onReload) {
           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
           <circle cx="12" cy="12" r="3"></circle>
         </svg>
-        Detalle
+        Ver detalle
       `;
-      btnDetail.title = "Ver ficha y datos del profesional sin acciones";
+      btnDetail.title = "Ver ficha y datos del profesional";
       btnDetail.addEventListener("click", (e) => {
         e.stopPropagation();
         openDetailModal(prof);
       });
       actionsWrap.append(btnDetail);
 
-      // Botón Editar
-      const btnEdit = document.createElement("button");
-      btnEdit.type = "button";
-      btnEdit.className = "btn ghost btn-prof-edit";
-      btnEdit.textContent = "Editar";
-      btnEdit.addEventListener("click", (e) => {
-        e.stopPropagation();
-        openEditModal(prof);
-      });
-      actionsWrap.append(btnEdit);
-
-      // Botón Enviar acceso
-      if (prof.email) {
-        const btnInvite = document.createElement("button");
-        btnInvite.type = "button";
-        btnInvite.className = "btn ghost btn-prof-invite";
-        btnInvite.textContent = "Enviar acceso";
-        btnInvite.title = "Enviar correo con enlace para crear contraseña";
-        btnInvite.addEventListener("click", (e) => {
-          e.stopPropagation();
-          handleResendInvite(prof);
-        });
-        actionsWrap.append(btnInvite);
-      }
-
-      // Botón Dar de baja / Reactivar
-      if (prof.username !== "martin") {
-        const btnToggle = document.createElement("button");
-        btnToggle.type = "button";
-        btnToggle.className = `btn ${prof.active ? "ghost" : "green"} btn-prof-toggle`;
-        btnToggle.style.color = prof.active ? "#dc2626" : "";
-        btnToggle.textContent = prof.active ? "Dar de baja" : "Reactivar";
-        btnToggle.addEventListener("click", (e) => {
-          e.stopPropagation();
-          handleToggleActive(prof, onReload);
-        });
-        actionsWrap.append(btnToggle);
-      } else {
-        const spacer = document.createElement("span");
-        spacer.className = "btn-prof-spacer";
-        spacer.setAttribute("aria-hidden", "true");
-        actionsWrap.append(spacer);
-      }
-
       tdActions.append(actionsWrap);
-      tr.append(tdName, tdEmail, tdPhone, tdRole, tdStatus, tdActions);
+      tr.append(tdName, tdRole, tdStatus, tdActions);
       return tr;
     })
   );
@@ -498,6 +493,7 @@ export function renderProfesionales(profesionales, onReload) {
 
 export async function loadProfesionalesData(onReload) {
   try {
+    reloadCallback = onReload;
     const data = await api("profesionales.php");
     const list = Array.isArray(data?.profesionales)
       ? data.profesionales
@@ -511,6 +507,8 @@ export async function loadProfesionalesData(onReload) {
 }
 
 export function initProfesionalesUI({ onReload }) {
+  reloadCallback = onReload;
+
   // Modal de Alta / Edición
   btnNuevoProf?.addEventListener("click", openCreateModal);
   btnCloseModal?.addEventListener("click", closeProfModal);
@@ -526,9 +524,26 @@ export function initProfesionalesUI({ onReload }) {
   detailModalEl?.addEventListener("click", (e) => {
     if (e.target === detailModalEl) closeProfModal();
   });
-  detailModalEditBtn?.addEventListener("click", () => {
+
+  // Acciones dentro de la Vista Detalle:
+  // 1. Editar
+  detailBtnEdit?.addEventListener("click", () => {
     if (currentDetailUser) {
       openEditModal(currentDetailUser);
+    }
+  });
+
+  // 2. Enviar acceso por email
+  detailBtnInvite?.addEventListener("click", () => {
+    if (currentDetailUser) {
+      handleResendInvite(currentDetailUser);
+    }
+  });
+
+  // 3. Dar de baja / Reactivar
+  detailBtnToggle?.addEventListener("click", () => {
+    if (currentDetailUser) {
+      handleToggleActive(currentDetailUser, reloadCallback);
     }
   });
 }
