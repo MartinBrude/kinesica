@@ -205,7 +205,7 @@ export function renderPager({ totalRows, totalPages, currentPage, pageSize, onPa
   pagerEl.append(prevBtn, span, nextBtn);
 }
 
-export function bindInteractionEvents(container, { onToggleAnswered, onArchive, getSessionUser }) {
+export function bindInteractionEvents(container, { onToggleAnswered, onArchive, onThreadToggle, getSessionUser }) {
   if (!container) return;
   container.querySelectorAll("[data-thread-toggle]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -213,9 +213,13 @@ export function bindInteractionEvents(container, { onToggleAnswered, onArchive, 
       const threadEl = document.getElementById(targetId);
       if (!threadEl) return;
       threadEl.hidden = !threadEl.hidden;
+      const isOpen = !threadEl.hidden;
       const span = btn.querySelector("span");
       if (span) {
-        span.textContent = !threadEl.hidden ? span.textContent.replace("▶", "▼") : span.textContent.replace("▼", "▶");
+        span.textContent = isOpen ? span.textContent.replace("▶", "▼") : span.textContent.replace("▼", "▶");
+      }
+      if (typeof onThreadToggle === "function") {
+        onThreadToggle({ threadId: targetId, isOpen, btn, threadEl });
       }
     });
   });

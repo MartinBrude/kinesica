@@ -16,7 +16,7 @@ import { initHonorariosModule } from "./honorarios.js?v=2";
 import { initAdminModule } from "./admin-panel.js?v=11";
 import { initConfiguracionModule } from "./configuracion.js?v=28";
 import { initDashboardModule, updateDashboardClara, updateDashboardBooking } from "./dashboard.js?v=10";
-import { initInteraccionesModule } from "./interacciones.js?v=9";
+import { initInteraccionesModule } from "./interacciones.js?v=11";
 import { initRecordatoriosModule } from "./recordatorios.js?v=10";
 
 export function initAppControllers({

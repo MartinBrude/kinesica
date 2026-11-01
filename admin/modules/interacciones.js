@@ -13,7 +13,7 @@ import {
   buildInteractionCardHtml,
   renderPager,
   bindInteractionEvents,
-} from "./interacciones-render.js?v=2";
+} from "./interacciones-render.js?v=3";
 import { filterInteractionsList, renderStatsHeader } from "./interacciones-filter.js?v=2";
 import { isMartinBrudePhone } from "./phone-search.js?v=2";
 import { renderInteraccionesHealth } from "./interacciones-health.js?v=2";
@@ -29,6 +29,8 @@ let autoRefreshTimer = null;
 let isRefreshing = false;
 /** Escrituras en vuelo: el auto-refresh no debe pisar updates optimistas. */
 let pendingMutations = 0;
+/** IDs de hilos de chat abiertos; se conservan al re-renderizar (auto-refresh). */
+const expandedThreadIds = new Set();
 
 export function showInteraccionesView() {
   const view = switchActiveView("view-interacciones");
@@ -55,7 +57,7 @@ function startAutoRefresh() {
     if (view && !view.hidden && document.visibilityState === "visible") {
       loadInteracciones(false);
     }
-  }, 25000);
+  }, 5 * 60 * 1000);
 }
 
 function stopAutoRefresh() {
@@ -106,7 +108,8 @@ export async function loadInteracciones(force = false) {
       }
       return item;
     });
-    applyFilters(!force);
+    // No resetear página ni cerrar conversaciones abiertas en sync/auto-refresh.
+    applyFilters(false);
     renderInteraccionesHealth(document.getElementById("interacciones-stats"), resp.health, resp.sync, {
       days: daysWindow,
       eventsCapped: Boolean(resp.events_capped),
@@ -177,9 +180,34 @@ function renderCurrentView() {
   });
 }
 
+function captureExpandedThreads(container) {
+  if (!container) return;
+  container.querySelectorAll(".interaccion-chat-thread").forEach((el) => {
+    if (!el.id) return;
+    if (el.hidden) expandedThreadIds.delete(el.id);
+    else expandedThreadIds.add(el.id);
+  });
+}
+
+function restoreExpandedThreads(container) {
+  if (!container || expandedThreadIds.size === 0) return;
+  expandedThreadIds.forEach((threadId) => {
+    const threadEl = container.querySelector(`#${CSS.escape(threadId)}`);
+    if (!threadEl) return;
+    threadEl.hidden = false;
+    const btn = container.querySelector(`[data-thread-toggle="${threadId.replace(/"/g, "")}"]`);
+    const span = btn?.querySelector("span");
+    if (span && span.textContent.includes("▶")) {
+      span.textContent = span.textContent.replace("▶", "▼");
+    }
+  });
+}
+
 function renderInteractions(items) {
   const container = document.getElementById("interacciones-list-container");
   if (!container) return;
+
+  captureExpandedThreads(container);
 
   if (!items || items.length === 0) {
     let emptyMsg = "No se encontraron conversaciones con los filtros actuales.";
@@ -229,8 +257,14 @@ function renderInteractions(items) {
   });
 
   container.innerHTML = html;
+  restoreExpandedThreads(container);
   bindInteractionEvents(container, {
     getSessionUser,
+    onThreadToggle: ({ threadId, isOpen }) => {
+      if (!threadId) return;
+      if (isOpen) expandedThreadIds.add(threadId);
+      else expandedThreadIds.delete(threadId);
+    },
     onArchive: async ({ convId, convName, isArchived }) => {
       if (getSessionUser()?.role === "colaborador") {
         dialogAlert("Los usuarios con rol Colaborador tienen permisos de solo lectura.");
