@@ -227,6 +227,7 @@ function recordatorios_store_items(array $items, ?PDO $pdo = null): array
     } catch (Throwable $e) {
         error_log('recordatorios store: ' . $e->getMessage());
         $res['failed'] = count($items) - $res['stored'] - $res['duplicates'];
+        $res['debug_error'] = $e->getMessage();
     }
     return $res;
 }

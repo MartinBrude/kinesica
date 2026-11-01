@@ -108,6 +108,16 @@ function send_whatsapp_reminder_template(string $to, array $data): array
     $time = trim((string) ($data['formatted_time'] ?? ''));
     $indicaciones = trim((string) ($data['indicaciones'] ?? '📍 Te esperamos en Charcas 3889, 5º, B (Palermo).'));
 
+    // Meta Cloud API rechaza saltos de línea (\r, \n), tabs y más de 4 espacios seguidos en parámetros
+    $cleanParam = static function (string $text): string {
+        $singleLine = str_replace(["\r\n", "\r", "\n"], ' | ', $text);
+        return preg_replace('/\s+/', ' ', trim($singleLine)) ?? $text;
+    };
+    $patient = $cleanParam($patient);
+    $tipo = $cleanParam($tipo);
+    $time = $cleanParam($time);
+    $indicaciones = $cleanParam($indicaciones);
+
     $graphBody = [
         'messaging_product' => 'whatsapp',
         'recipient_type' => 'individual',

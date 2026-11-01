@@ -213,6 +213,25 @@ function renderRecordatoriosSync(resp) {
   el.className = "recordatorios-sync" + (status === "partial" || status === "not_configured" ? " is-partial" : status === "ok" ? " is-ok" : "");
 }
 
+function deduplicateRecordatorios(items) {
+  const seen = new Set();
+  const deduped = [];
+  for (const it of items) {
+    const calId = (it.calendar_event_id || "").trim();
+    const pName = (it.patient_name || "").trim().toLowerCase();
+    const apptDate = (it.appointment_date || "").trim();
+    const apptTime = (it.appointment_time || "").trim();
+    const slotKey = pName && apptDate ? `${pName}|${apptDate}|${apptTime}` : "";
+    const key = calId && calId !== "_run" ? `cal:${calId}` : (slotKey ? `slot:${slotKey}` : `id:${it.id}`);
+    if (seen.has(key)) {
+      continue;
+    }
+    seen.add(key);
+    deduped.push(it);
+  }
+  return deduped;
+}
+
 export async function loadRecordatorios(force = false) {
   const container = document.getElementById("recordatorios-list-container");
   const refreshBtn = document.getElementById("btn-refresh-recordatorios");
@@ -245,11 +264,9 @@ export async function loadRecordatorios(force = false) {
       return;
     }
     const rawItems = Array.isArray(resp.items) ? resp.items : [];
-    cachedItems = rawItems.filter((it) => !isBlockedRecordatorio(it));
-    recalculateCounts();
-    if (resp.counts && typeof resp.counts === "object") {
-      cachedCounts = { ...cachedCounts, ...resp.counts };
-    }
+    const validItems = rawItems.filter((it) => !isBlockedRecordatorio(it));
+    cachedItems = deduplicateRecordatorios(validItems);
+    cachedCounts = recalculateCounts();
     hasLoadedOnce = true;
     lastLoadedAt = Date.now();
     renderRecordatoriosSync(resp);
