@@ -489,7 +489,7 @@ await test("módulo de Horarios de Atención está integrado en HTML, JS y API",
 
 await test("vía alternativa de login por código al mail disponible para María, Norberto y Martín", async () => {
   // 1. Integridad HTML del Gate
-  assert.ok(html.includes('id="btn-email-code"'), "Debe existir botón para activar login alternativo por mail");
+  assert.ok(html.includes('id="btn-login-send-email-code"') || html.includes('id="btn-email-code"'), "Debe existir acción para solicitar código al mail en el login");
   assert.ok(html.includes('id="email-code-form"'), "Debe existir formulario #email-code-form");
   assert.ok(html.includes('id="email-code-step-request"'), "Debe existir paso 1 de solicitud de código");
   assert.ok(html.includes('id="email-code-step-verify"'), "Debe existir paso 2 de verificación de código");

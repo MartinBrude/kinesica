@@ -39,7 +39,7 @@ Para proteger la confidencialidad médica de las historias clínicas, además de
 ### 📧 Método 1 (Más simple, sin instalar nada): Código de 6 dígitos por Correo Electrónico
 1. Entrá a **[https://www.kinesica.com.ar/admin/](https://www.kinesica.com.ar/admin/)**.
 2. Escribí tu **Usuario** (o tu email) y tu **Contraseña**.
-3. Debajo del casillero de código, hacé clic en **`¿No tenés la app? Enviame un código al mail`** (o en el botón **`Ingresar con código al mail`**).
+3. Debajo del casillero de código, hacé clic en **`¿No tenés la app? Enviame un código al mail`**.
 4. En segundos vas a recibir un correo en tu Gmail con el asunto **"Código de acceso a Kinésica"** y un número grande de **6 dígitos** (válido durante **15 minutos** y de un solo uso).
 5. Escribí esos 6 dígitos en el campo **"Código"** y hacé clic en **"Entrar"**.
 
@@ -111,7 +111,7 @@ Una vez adentro del sistema, en la barra superior contás con las siguientes sec
 - Si se ingresan datos incorrectos 5 veces seguidas, el sistema protege la cuenta bloqueando nuevos intentos durante **30 minutos** (o **15 minutos** para el envío de códigos por correo). Esperá ese lapso e intentá nuevamente.
 
 ### 3. ¿Qué hago si cambié o perdí el teléfono?
-- **Para entrar enseguida:** Usá el enlace **"¿No tenés la app? Enviame un código al mail"** o el botón **"Ingresar con código al mail"** en la pantalla de login. Entrás con el código que llega a tu Gmail sin necesitar el teléfono.
+- **Para entrar enseguida:** Usá el enlace **"¿No tenés la app? Enviame un código al mail"** en la pantalla de login. Entrás con el código que llega a tu Gmail sin necesitar el teléfono.
 - **Para pasar Google Authenticator al teléfono nuevo:** En la app del teléfono viejo tocá el menú ➔ **"Transferir cuentas"** ➔ **"Exportar cuentas"** y escaneá el QR desde el teléfono nuevo. Si no tenés el teléfono viejo, desde **Administración** (o avisándole a Martín) se puede reiniciar la vinculación TOTP.
 
 ### 4. ¿Cómo cerrar la sesión de forma segura?
