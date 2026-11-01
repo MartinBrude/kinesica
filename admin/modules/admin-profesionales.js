@@ -102,7 +102,7 @@ export function closeProfModal() {
 export function openCreateModal() {
   closeProfModal();
   currentEditingUser = null;
-  if (modalTitle) modalTitle.textContent = "Nuevo Profesional";
+  if (modalTitle) modalTitle.textContent = "Nuevo usuario";
   if (inputUsername) {
     inputUsername.value = "";
     inputUsername.parentElement.hidden = true;
@@ -333,7 +333,7 @@ export async function handleSaveProfessional(e, onReload) {
           role,
         }),
       });
-      dialogAlert(res.message || "Profesional dado de alta. Se envió el link a su correo.");
+      dialogAlert(res.message || "Usuario dado de alta. Se envió el link a su correo.");
     }
     closeProfModal();
     if (typeof onReload === "function") await onReload();
