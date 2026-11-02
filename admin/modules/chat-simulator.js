@@ -191,12 +191,23 @@ function handleChatUserInput(inputRaw) {
     return;
   }
 
-  setTimeout(() => {
-    const fallbackMsg = (chatLang === "en")
-      ? "I'm sorry, I couldn't understand that option. Please reply with one of the menu letters or type *MENU* 🙌."
-      : "Disculpame, no llegué a comprender esa opción. Por favor ingresá una de las letras del menú o escribí *MENU* 🙌.";
-    appendChatMessage(fallbackMsg, "bot");
-  }, 500);
+  // Texto libre que no es A–E: ofrecer contacto con un profesional (opción E).
+  const startsWithGreeting = /^(?:hola|buenas|buen\s+d[ií]a|hello|hi|hey|good\s+(?:morning|afternoon|evening)|qu[eé]\s+tal|c[oó]mo\s+est[aá]s?)\b/iu.test(norm);
+  if (startsWithGreeting || norm.length <= 2) {
+    const menuMsg = (chatLang === "en")
+      ? (ctx.inputs.menuWelcomeEn?.value?.trim() || ctx.getTexts().menu_welcome_en || ctx.defaults.menu_welcome_en)
+      : (ctx.inputs.menuWelcome?.value?.trim() || ctx.getTexts().menu_welcome || ctx.defaults.menu_welcome);
+    setTimeout(() => appendChatMessage(menuMsg, "bot"), 500);
+    return;
+  }
+  const intro = (chatLang === "en")
+    ? "Would you like to speak directly with one of our practitioners?\n\n"
+    : "¿Querés hablar directamente con uno de los profesionales?\n\n";
+  const optE = (chatLang === "en")
+    ? (ctx.inputs.optEEn?.value?.trim() || ctx.getTexts().opt_e_text_en || ctx.defaults.opt_e_text_en)
+    : (ctx.inputs.optE?.value?.trim() || ctx.getTexts().opt_e_text || ctx.defaults.opt_e_text);
+  chatSubmenu = "profesional";
+  setTimeout(() => appendChatMessage(intro + optE, "bot"), 500);
 }
 
 export function initChatSimulator() {
