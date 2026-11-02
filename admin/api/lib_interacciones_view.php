@@ -160,6 +160,54 @@ function interacciones_lookup_directory_names(PDO $pdo, array $waIds): array
     return $out;
 }
 
+/**
+ * Fallback: nombre desde recordatorios enviados (mismo teléfono, últimos días).
+ *
+ * @param list<string> $waIds
+ * @return array<string,string> match_key => patient_name
+ */
+function interacciones_lookup_recordatorio_names(PDO $pdo, array $waIds): array
+{
+    $out = [];
+    $ends = [];
+    foreach ($waIds as $wa) {
+        $key = interacciones_phone_match_key((string) $wa);
+        if ($key !== '') {
+            $ends[$key] = true;
+        }
+    }
+    if (!$ends) {
+        return $out;
+    }
+    try {
+        $exists = $pdo->query("SHOW TABLES LIKE 'recordatorio_eventos'");
+        if (!$exists || !$exists->fetchColumn()) {
+            return $out;
+        }
+        $stmt = $pdo->query(
+            "SELECT wa_id, patient_name FROM recordatorio_eventos
+             WHERE wa_id IS NOT NULL AND wa_id != ''
+               AND patient_name IS NOT NULL AND TRIM(patient_name) != ''
+               AND status IN ('sent', 'sent_email', 'pending', 'failed', 'missing_phone')
+             ORDER BY id DESC
+             LIMIT 2000"
+        );
+        if ($stmt === false) {
+            return $out;
+        }
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $key = interacciones_phone_match_key((string) ($row['wa_id'] ?? ''));
+            $name = trim((string) ($row['patient_name'] ?? ''));
+            if ($key !== '' && $name !== '' && isset($ends[$key]) && !isset($out[$key])) {
+                $out[$key] = mb_substr($name, 0, 120, 'UTF-8');
+            }
+        }
+    } catch (Throwable $e) {
+        // Recordatorios opcionales.
+    }
+    return $out;
+}
+
 /** @return array{0:string,1:string} [category, label] */
 function interacciones_classify(string $firstPatientBody, string $waId): array
 {
@@ -255,8 +303,13 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
     foreach ($rows as $row) {
         $ts = (new DateTimeImmutable((string) $row['ts_utc'], new DateTimeZone('UTC')))->getTimestamp();
         $local = (new DateTimeImmutable('@' . $ts))->setTimezone($tz);
-        $key = $row['wa_id'] . '_' . $local->format('Y-m-d');
-        $convs[$key]['wa_id'] = $row['wa_id'];
+        // Canonicaliza 54 11… → 549 11… para no duplicar el mismo contacto el mismo día.
+        $wa = interacciones_clean_wa_id((string) $row['wa_id']);
+        if ($wa === '') {
+            $wa = (string) $row['wa_id'];
+        }
+        $key = $wa . '_' . $local->format('Y-m-d');
+        $convs[$key]['wa_id'] = $wa;
         $convs[$key]['date'] = $local->format('Y-m-d');
         $convs[$key]['events'][] = [
             'id' => (int) $row['id'], 'event_key' => (string) $row['event_key'], 'direction' => (string) $row['direction'],
@@ -270,6 +323,7 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
     }
 
     $dirNames = [];
+    $reminderNames = [];
     try {
         if (!function_exists('clean_phone_number') || !function_exists('ensure_pacientes_tables')) {
             $helpers = __DIR__ . '/pacientes_helpers.php';
@@ -277,12 +331,12 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
                 require_once $helpers;
             }
         }
-        $dirNames = interacciones_lookup_directory_names(
-            $pdo,
-            array_values(array_unique(array_map(static fn(array $c): string => (string) $c['wa_id'], $convs)))
-        );
+        $waList = array_values(array_unique(array_map(static fn(array $c): string => (string) $c['wa_id'], $convs)));
+        $dirNames = interacciones_lookup_directory_names($pdo, $waList);
+        $reminderNames = interacciones_lookup_recordatorio_names($pdo, $waList);
     } catch (Throwable $e) {
         $dirNames = [];
+        $reminderNames = [];
     }
 
     $items = [];
@@ -319,7 +373,7 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
         }
         if ($name === '') {
             $matchKey = interacciones_phone_match_key((string) $c['wa_id']);
-            $name = (string) ($dirNames[$matchKey] ?? '');
+            $name = (string) ($dirNames[$matchKey] ?? $reminderNames[$matchKey] ?? '');
         }
         $archived = !empty($st['archived']);
         $answered = !empty($st['answered']);

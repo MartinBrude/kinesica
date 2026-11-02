@@ -109,9 +109,34 @@ function interacciones_parse_ts($value, int $fallback): int
     return $fallback;
 }
 
+/**
+ * Normaliza wa_id a dígitos. Para celulares AR unifica 54 11… → 549 11…
+ * (Meta a veces manda sin el 9; el recordatorio/n8n con 549 → dos hilos si no se unifica).
+ * No aplica clean_phone_number a números no AR (p. ej. +34).
+ */
 function interacciones_clean_wa_id(string $raw): string
 {
-    return preg_replace('/\D/', '', $raw) ?? '';
+    if (!function_exists('clean_phone_number')) {
+        $helpers = __DIR__ . '/pacientes_helpers.php';
+        if (is_file($helpers)) {
+            require_once $helpers;
+        }
+    }
+    $digits = preg_replace('/\D/', '', $raw) ?? '';
+    if ($digits === '') {
+        return '';
+    }
+    $isAr = str_starts_with($digits, '54')
+        || str_starts_with($digits, '0')
+        || (strlen($digits) === 10 && (str_starts_with($digits, '11') || str_starts_with($digits, '15')))
+        || strlen($digits) === 8;
+    if ($isAr && function_exists('clean_phone_number')) {
+        $normalized = clean_phone_number($digits);
+        if ($normalized !== '') {
+            return $normalized;
+        }
+    }
+    return $digits;
 }
 
 /**

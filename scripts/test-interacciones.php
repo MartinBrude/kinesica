@@ -400,6 +400,8 @@ eq(interacciones_phone_match_key('5491167406801'), '1167406801', 'match key WA A
 eq(interacciones_phone_match_key('+54 9 11 6740-6801'), '1167406801', 'match key formateado');
 eq(interacciones_phone_match_key('15 6740 6801'), '1167406801', 'match key 15… → 11…');
 eq(interacciones_phone_format('5491167406801'), '(+54) 9 11 6740 6801', 'formato display Alejandro');
+eq(interacciones_clean_wa_id('541167406801'), '5491167406801', '54 11… sin 9 → 549 11…');
+eq(interacciones_clean_wa_id('34658444935'), '34658444935', 'número ES no se fuerza a 549');
 
 $pdo = fresh('dir-names');
 ensure_pacientes_tables($pdo);
@@ -445,6 +447,34 @@ $viewDir2 = interacciones_load_view($pdo);
 $orphan = array_values(array_filter($viewDir2['items'], fn($i) => $i['wa_id'] === '5491199990001'))[0] ?? null;
 eq($orphan['patient_name'] ?? 'missing', '', 'sin directorio no inventa nombre');
 $pdo->exec('DELETE FROM pacientes WHERE telefono LIKE "%67406801%" OR telefono LIKE "%45559988%" OR telefono LIKE "%00009988%"');
+
+section('Vista: fusiona hilos 54 11… y 549 11… del mismo día');
+$pdo = fresh('merge-wa');
+$mergeTs = (new DateTimeImmutable('2026-11-01 21:10:00', new DateTimeZone('America/Argentina/Buenos_Aires')))->setTimezone(new DateTimeZone('UTC'))->format('Y-m-d H:i:s');
+$pdo->prepare(
+    'INSERT INTO interaccion_eventos (event_key, wa_id, direction, body, ts_utc, patient_name, source, received_at)
+     VALUES (:k, :wa, :dir, :body, :ts, :name, :src, UTC_TIMESTAMP())'
+)->execute(['k' => 'hist:54', 'wa' => '541167406801', 'dir' => 'patient', 'body' => 'Confirmo', 'ts' => $mergeTs, 'name' => '', 'src' => 'test']);
+$pdo->prepare(
+    'INSERT INTO interaccion_eventos (event_key, wa_id, direction, body, ts_utc, patient_name, source, received_at)
+     VALUES (:k, :wa, :dir, :body, :ts, :name, :src, UTC_TIMESTAMP())'
+)->execute(['k' => 'hist:549', 'wa' => '5491167406801', 'dir' => 'clara', 'body' => 'Gracias por confirmar', 'ts' => $mergeTs, 'name' => '', 'src' => 'test']);
+ensure_pacientes_tables($pdo);
+$pdo->prepare(
+    'INSERT INTO pacientes (telefono, nombre, apellido, nombre_completo, nombre_pila, origen)
+     VALUES (:tel, :nom, :ape, :full, :pila, :origen)
+     ON DUPLICATE KEY UPDATE nombre_completo = VALUES(nombre_completo)'
+)->execute([
+    'tel' => '5491167406801', 'nom' => 'Alejandro', 'ape' => 'Rosenfeld',
+    'full' => 'Alejandro Rosenfeld', 'pila' => 'Alejandro', 'origen' => 'admin',
+]);
+$mergeView = interacciones_load_view($pdo);
+eq(count($mergeView['items']), 1, 'un solo contacto (fusiona formatos de teléfono)');
+eq($mergeView['items'][0]['wa_id'], '5491167406801', 'wa_id canónico 549…');
+eq($mergeView['items'][0]['phone_formatted'], '(+54) 9 11 6740 6801', 'un solo formato en UI');
+eq(count($mergeView['items'][0]['messages']), 2, 'mensajes de ambos wa_id en el mismo hilo');
+eq($mergeView['items'][0]['patient_name'], 'Alejandro Rosenfeld', 'nombre desde directorio tras fusionar');
+$pdo->exec('DELETE FROM pacientes WHERE telefono LIKE "%67406801%"');
 
 echo "\n";
 if ($fails > 0) {
