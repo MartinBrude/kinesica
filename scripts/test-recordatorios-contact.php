@@ -98,6 +98,8 @@ ok(str_contains($render, 'escapeHtml(item.email)'), 'email escapado en card');
 ok(str_contains($render, 'data-action="save-contact"'), 'botón cargar contacto');
 ok(str_contains($render, 'needsContact'), 'flag needsContact');
 ok(str_contains($render, 'canManualSend'), 'flag envío manual con teléfono');
+ok(preg_match('/canManualSend\s*=\s*\n?\s*!alreadySent[\s\S]*?\(hasPhone\s*\|\|\s*hasEmail\)/', $render) === 1, 'enviar solo si hay WhatsApp o email');
+ok(!str_contains($render, 'Abrir envío manual (podés cargar'), 'sin envío si falta contacto');
 ok(str_contains($render, 'alreadySent'), 'no reenvía si ya enviado');
 
 $js = file_get_contents($root . '/admin/modules/recordatorios.js') ?: '';

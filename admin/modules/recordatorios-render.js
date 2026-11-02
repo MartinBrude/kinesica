@@ -105,7 +105,7 @@ export function buildRecordatorioCardHtml(item) {
         [item.error_code, item.error_message].filter(Boolean).join(" — ")
       )}</p>`
     : isMissingPhone && (item.status === "pending" || item.status === "missing_phone")
-      ? `<p class="recordatorio-warning-text">⚠️ No se encontró número de WhatsApp para este paciente. Podés <em>cargar el contacto</em> antes de la corrida o usar <em>⚡ Enviar ahora</em>.</p>`
+      ? `<p class="recordatorio-warning-text">⚠️ No se encontró número de WhatsApp para este paciente. Usá <em>＋ Cargar contacto</em> para cargar teléfono y/o email.</p>`
       : "";
   const summary =
     item.event_summary && item.event_summary !== item.patient_name
@@ -114,16 +114,12 @@ export function buildRecordatorioCardHtml(item) {
 
   const alreadySent = item.status === "sent" || item.status === "sent_email";
   const hasPhone = !!item.wa_id;
-  // Enviar manual si hay teléfono/email y aún no se envió (incluye pending, fallidos y omitidos).
-  // También en pending/failed/missing_phone sin contacto: el modal permite cargarlo al vuelo.
+  // Enviar manual solo si hay WhatsApp o email y aún no se envió.
+  // Sin contacto: solo «Cargar contacto» (el envío no tiene sentido).
   const canManualSend =
     !alreadySent &&
     item.status !== "run_skipped" &&
-    (hasPhone ||
-      hasEmail ||
-      item.status === "pending" ||
-      item.status === "failed" ||
-      item.status === "missing_phone");
+    (hasPhone || hasEmail);
 
   const actions = [];
   if (needsContact) {
@@ -136,11 +132,8 @@ export function buildRecordatorioCardHtml(item) {
     const isRetry = item.status === "failed" || item.status === "missing_phone";
     const sendLabel = isRetry ? "⚡ Disparar manualmente" : "⚡ Enviar ahora";
     const sendClass = isRetry ? "is-failed" : "is-pending";
-    const sendTitle = hasPhone || hasEmail
-      ? "Enviar recordatorio ahora por WhatsApp o email"
-      : "Abrir envío manual (podés cargar el teléfono o email antes de mandar)";
     actions.push(`
-        <button type="button" class="btn light btn-trigger-recordatorio ${sendClass}" data-action="dispatch-manual" data-id="${escapeHtml(item.id)}" title="${sendTitle}">
+        <button type="button" class="btn light btn-trigger-recordatorio ${sendClass}" data-action="dispatch-manual" data-id="${escapeHtml(item.id)}" title="Enviar recordatorio ahora por WhatsApp o email">
           ${sendLabel}
         </button>`);
   }

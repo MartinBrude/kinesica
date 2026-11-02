@@ -17,7 +17,7 @@ export function renderRecordatoriosRules(el) {
           <li><strong>Envío WhatsApp:</strong> plantilla Meta <code>recordatorio_turno_kinesica</code> (Confirmar / Cancelar). Fallos de Meta (p. ej. ventana 24h) se registran como fallidos y alertan al equipo.</li>
           <li><strong>Frecuencia máxima:</strong> no se envía ni intenta enviar recordatorio más de una vez por día a nadie. Se deduplica automáticamente por teléfono, email o paciente tanto en la misma corrida como entre corridas del mismo día.</li>
           <li><strong>Cargar contacto:</strong> si falta WhatsApp, usá <em>＋ Cargar contacto</em> para cargar teléfono y/o email en el directorio de pacientes sin enviar todavía. También podés hacerlo al disparar manualmente.</li>
-          <li><strong>Disparo manual:</strong> si hay WhatsApp (o email) y todavía no se envió, aparece <em>⚡ Enviar ahora</em> (también en omitidos). En fallidos: <em>⚡ Disparar manualmente</em>.</li>
+          <li><strong>Disparo manual:</strong> solo si hay WhatsApp o email y todavía no se envió aparece <em>⚡ Enviar ahora</em> (también en omitidos). Sin contacto: solo <em>＋ Cargar contacto</em>. En fallidos con contacto: <em>⚡ Disparar manualmente</em>.</li>
           <li><strong>Respuestas:</strong> Confirmar/Cancelar las procesa Clara en el chat en vivo; no aparecen como mutaciones en este listado.</li>
         </ul>
       </div>

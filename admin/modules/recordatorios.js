@@ -8,12 +8,12 @@ import { dialogAlert } from "./dom-dialogs.js?v=77";
 import {
   renderRecordatoriosList,
   renderRecordatoriosPager,
-} from "./recordatorios-render.js?v=8";
+} from "./recordatorios-render.js?v=9";
 import {
   filterRecordatoriosList,
   renderRecordatoriosStats,
 } from "./recordatorios-filter.js?v=6";
-import { renderRecordatoriosRules } from "./recordatorios-rules.js?v=5";
+import { renderRecordatoriosRules } from "./recordatorios-rules.js?v=6";
 
 let cachedItems = [];
 let cachedCounts = {};
