@@ -94,6 +94,72 @@ function interacciones_known_name(string $waId): string
     return interacciones_known_names()[$d] ?? '';
 }
 
+/**
+ * Clave de cruce teléfono WhatsApp ↔ directorio de pacientes (últimos 10 dígitos).
+ * Usa clean_phone_number cuando está disponible para unificar 15… / 11… / 549….
+ */
+function interacciones_phone_match_key(string $raw): string
+{
+    $digits = '';
+    if (function_exists('clean_phone_number')) {
+        $digits = clean_phone_number($raw);
+    }
+    if ($digits === '') {
+        $digits = interacciones_clean_wa_id($raw);
+    }
+    if ($digits === '') {
+        return '';
+    }
+    $end = substr($digits, -10);
+    return strlen($end) >= 8 ? $end : $digits;
+}
+
+/**
+ * Resuelve nombres del directorio de pacientes por teléfono (match por últimos 10 dígitos).
+ *
+ * @param list<string> $waIds
+ * @return array<string,string> match_key => nombre_completo
+ */
+function interacciones_lookup_directory_names(PDO $pdo, array $waIds): array
+{
+    $out = [];
+    $ends = [];
+    foreach ($waIds as $wa) {
+        $key = interacciones_phone_match_key((string) $wa);
+        if ($key !== '') {
+            $ends[$key] = true;
+        }
+    }
+    if (!$ends) {
+        return $out;
+    }
+    try {
+        if (function_exists('ensure_pacientes_tables')) {
+            ensure_pacientes_tables($pdo);
+        }
+        // Match en PHP (clean_phone_number unifica 15…/11…/549…). El directorio es chico.
+        $stmt = $pdo->query(
+            "SELECT telefono, nombre_completo FROM pacientes
+             WHERE telefono IS NOT NULL AND telefono != ''
+               AND nombre_completo IS NOT NULL AND TRIM(nombre_completo) != ''
+             LIMIT 5000"
+        );
+        if ($stmt === false) {
+            return $out;
+        }
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $key = interacciones_phone_match_key((string) ($row['telefono'] ?? ''));
+            $name = trim((string) ($row['nombre_completo'] ?? ''));
+            if ($key !== '' && $name !== '' && isset($ends[$key]) && !isset($out[$key])) {
+                $out[$key] = mb_substr($name, 0, 120, 'UTF-8');
+            }
+        }
+    } catch (Throwable $e) {
+        // Directorio opcional: no bloquear la vista de interacciones.
+    }
+    return $out;
+}
+
 /** @return array{0:string,1:string} [category, label] */
 function interacciones_classify(string $firstPatientBody, string $waId): array
 {
@@ -203,6 +269,22 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
         $estado[(string) $st['conversation_key']] = $st;
     }
 
+    $dirNames = [];
+    try {
+        if (!function_exists('clean_phone_number') || !function_exists('ensure_pacientes_tables')) {
+            $helpers = __DIR__ . '/pacientes_helpers.php';
+            if (is_file($helpers)) {
+                require_once $helpers;
+            }
+        }
+        $dirNames = interacciones_lookup_directory_names(
+            $pdo,
+            array_values(array_unique(array_map(static fn(array $c): string => (string) $c['wa_id'], $convs)))
+        );
+    } catch (Throwable $e) {
+        $dirNames = [];
+    }
+
     $items = [];
     $counts = ['answered' => 0, 'unanswered' => 0, 'archived' => 0];
     foreach ($convs as $key => $c) {
@@ -234,6 +316,10 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
         $name = interacciones_known_name((string) $c['wa_id']);
         if ($name === '') {
             $name = (string) (($st['patient_name'] ?? '') !== '' ? $st['patient_name'] : $lastName);
+        }
+        if ($name === '') {
+            $matchKey = interacciones_phone_match_key((string) $c['wa_id']);
+            $name = (string) ($dirNames[$matchKey] ?? '');
         }
         $archived = !empty($st['archived']);
         $answered = !empty($st['answered']);

@@ -393,6 +393,59 @@ eq($win['events_capped'], false, 'pocos eventos no capean');
 $clamped = interacciones_load_view($pdo, 999);
 eq($clamped['days'], INTERACCIONES_MAX_DAYS, 'days se acota al máximo');
 
+// ---------------------------------------------------------------- directorio de pacientes
+section('Vista: asocia teléfono al nombre del directorio de pacientes');
+require_once $root . '/admin/api/pacientes_helpers.php';
+eq(interacciones_phone_match_key('5491167406801'), '1167406801', 'match key WA AR');
+eq(interacciones_phone_match_key('+54 9 11 6740-6801'), '1167406801', 'match key formateado');
+eq(interacciones_phone_match_key('15 6740 6801'), '1167406801', 'match key 15… → 11…');
+eq(interacciones_phone_format('5491167406801'), '(+54) 9 11 6740 6801', 'formato display Alejandro');
+
+$pdo = fresh('dir-names');
+ensure_pacientes_tables($pdo);
+$pdo->exec('DELETE FROM pacientes WHERE telefono LIKE "%67406801%" OR telefono LIKE "%00009988%"');
+$ins = $pdo->prepare(
+    'INSERT INTO pacientes (telefono, nombre, apellido, nombre_completo, nombre_pila, origen)
+     VALUES (:tel, :nom, :ape, :full, :pila, :origen)
+     ON DUPLICATE KEY UPDATE nombre_completo = VALUES(nombre_completo), nombre = VALUES(nombre), apellido = VALUES(apellido)'
+);
+$ins->execute([
+    'tel' => '5491167406801',
+    'nom' => 'Alejandro',
+    'ape' => 'Rosenfeld',
+    'full' => 'Alejandro Rosenfeld',
+    'pila' => 'Alejandro',
+    'origen' => 'admin',
+]);
+$ins->execute([
+    'tel' => '15 4555-9988',
+    'nom' => 'Lucia',
+    'ape' => 'Test',
+    'full' => 'Lucía Test',
+    'pila' => 'Lucía',
+    'origen' => 'admin',
+]);
+$baseDir = (new DateTimeImmutable('2026-11-02 10:00:00', new DateTimeZone('America/Argentina/Buenos_Aires')))->getTimestamp();
+interacciones_store_events([
+    ev('5491167406801', 'patient', 'Me hice un bloqueo radicular', $baseDir, 'DIR1'),
+    ev('5491167406801', 'clara', '¿Querés hablar con un profesional?', $baseDir + 2, 'DIR1'),
+    ev('5491145559988', 'patient', 'Hola', $baseDir + 10, 'DIR2'),
+], $pdo);
+$viewDir = interacciones_load_view($pdo);
+$byDir = [];
+foreach ($viewDir['items'] as $it) {
+    $byDir[$it['wa_id']] = $it;
+}
+eq($byDir['5491167406801']['patient_name'], 'Alejandro Rosenfeld', 'Alejandro Rosenfeld asociado por teléfono');
+eq($byDir['5491167406801']['phone_formatted'], '(+54) 9 11 6740 6801', 'teléfono formateado');
+eq($byDir['5491145559988']['patient_name'], 'Lucía Test', 'asocia aunque el directorio tenga 15…');
+// Sin fila en directorio → sigue vacío
+interacciones_store_events([ev('5491199990001', 'patient', 'sin ficha', $baseDir + 20, 'DIR3')], $pdo);
+$viewDir2 = interacciones_load_view($pdo);
+$orphan = array_values(array_filter($viewDir2['items'], fn($i) => $i['wa_id'] === '5491199990001'))[0] ?? null;
+eq($orphan['patient_name'] ?? 'missing', '', 'sin directorio no inventa nombre');
+$pdo->exec('DELETE FROM pacientes WHERE telefono LIKE "%67406801%" OR telefono LIKE "%45559988%" OR telefono LIKE "%00009988%"');
+
 echo "\n";
 if ($fails > 0) {
     echo "❌ $fails comprobaciones fallaron ($passed OK)\n";
