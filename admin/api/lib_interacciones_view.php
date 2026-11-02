@@ -208,9 +208,61 @@ function interacciones_lookup_recordatorio_names(PDO $pdo, array $waIds): array
     return $out;
 }
 
+/**
+ * True si el texto es la confirmación del recordatorio 24h (botón Confirmo / payload).
+ * Esas hilos no requieren acción en el panel → van como respondidas.
+ */
+function interacciones_is_turn_confirmation(string $body): bool
+{
+    $raw = trim($body);
+    if ($raw === '') {
+        return false;
+    }
+    if (preg_match('/^confirmar_turno(?::|$)/i', $raw)) {
+        return true;
+    }
+    $plain = mb_strtolower($raw, 'UTF-8');
+    $plain = strtr($plain, [
+        'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u', 'ü' => 'u', 'ñ' => 'n',
+    ]);
+    $plain = preg_replace('/[^a-z0-9\s]/u', ' ', $plain) ?? $plain;
+    $plain = trim(preg_replace('/\s+/u', ' ', $plain) ?? $plain);
+    return (bool) preg_match('/^confirm[oa](?:r)?(?: el turno)?$/u', $plain);
+}
+
+/**
+ * @param list<array{from?:string,text?:string}> $messages
+ */
+function interacciones_thread_is_turn_confirmation(array $messages): bool
+{
+    $patientTexts = [];
+    foreach ($messages as $m) {
+        if (($m['from'] ?? '') !== 'patient') {
+            continue;
+        }
+        $text = trim((string) ($m['text'] ?? ''));
+        if ($text === '') {
+            continue;
+        }
+        $patientTexts[] = $text;
+    }
+    if (!$patientTexts) {
+        return false;
+    }
+    foreach ($patientTexts as $text) {
+        if (!interacciones_is_turn_confirmation($text)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 /** @return array{0:string,1:string} [category, label] */
 function interacciones_classify(string $firstPatientBody, string $waId): array
 {
+    if (interacciones_is_turn_confirmation($firstPatientBody)) {
+        return ['confirmacion_turno', '✅ Confirmación de turno'];
+    }
     $lower = mb_strtolower($firstPatientBody, 'UTF-8');
     if (strpos($lower, 'osde') !== false || strpos($lower, 'obra social') !== false) {
         return ['cobertura', '💳 Cobertura OSDE / Prepaga'];
@@ -366,7 +418,12 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
             $lastTs = max($lastTs, $ev['ts']);
         }
         $st = $estado[$key] ?? [];
+        $isTurnConfirm = interacciones_thread_is_turn_confirmation($messages);
         [$cat, $catLabel] = interacciones_classify($firstPatient, (string) $c['wa_id']);
+        if ($isTurnConfirm) {
+            $cat = 'confirmacion_turno';
+            $catLabel = '✅ Confirmación de turno';
+        }
         $name = interacciones_known_name((string) $c['wa_id']);
         if ($name === '') {
             $name = (string) (($st['patient_name'] ?? '') !== '' ? $st['patient_name'] : $lastName);
@@ -376,7 +433,8 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
             $name = (string) ($dirNames[$matchKey] ?? $reminderNames[$matchKey] ?? '');
         }
         $archived = !empty($st['archived']);
-        $answered = !empty($st['answered']);
+        // Confirmación del recordatorio: no hay nada que hacer → ya figura respondida.
+        $answered = !empty($st['answered']) || $isTurnConfirm;
         $counts[$archived ? 'archived' : ($answered ? 'answered' : 'unanswered')]++;
         $items[] = [
             'id' => $key,

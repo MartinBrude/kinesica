@@ -448,6 +448,25 @@ $orphan = array_values(array_filter($viewDir2['items'], fn($i) => $i['wa_id'] ==
 eq($orphan['patient_name'] ?? 'missing', '', 'sin directorio no inventa nombre');
 $pdo->exec('DELETE FROM pacientes WHERE telefono LIKE "%67406801%" OR telefono LIKE "%45559988%" OR telefono LIKE "%00009988%"');
 
+section('Vista: confirmación de turno ya figura respondida');
+ok(interacciones_is_turn_confirmation('Confirmo'), 'Confirmo');
+ok(interacciones_is_turn_confirmation('✅ Confirmo'), 'emoji + Confirmo');
+ok(interacciones_is_turn_confirmation('Confirmo 👍'), 'Confirmo + thumb');
+ok(interacciones_is_turn_confirmation('confirmar_turno:evt123'), 'payload confirmar_turno');
+ok(!interacciones_is_turn_confirmation('Hola, confirmo que voy y además quiero mover el turno'), 'texto largo no es solo confirmación');
+$pdo = fresh('confirm-answered');
+$cBase = (new DateTimeImmutable('2026-11-01 21:10:00', new DateTimeZone('America/Argentina/Buenos_Aires')))->getTimestamp();
+interacciones_store_events([
+    ev('5491167406801', 'patient', 'Confirmo', $cBase, 'CONF1'),
+    ev('5491167406801', 'clara', 'Gracias por confirmar tu turno 🙌', $cBase + 2, 'CONF1'),
+], $pdo);
+$cView = interacciones_load_view($pdo);
+eq(count($cView['items']), 1, 'un hilo de confirmación');
+eq($cView['items'][0]['answered'], true, 'confirmación marcada respondida');
+eq($cView['items'][0]['category'], 'confirmacion_turno', 'categoría confirmación');
+eq($cView['answered_count'], 1, 'contador answered');
+eq($cView['unanswered_count'], 0, 'no queda pendiente');
+
 section('Vista: fusiona hilos 54 11… y 549 11… del mismo día');
 $pdo = fresh('merge-wa');
 $mergeTs = (new DateTimeImmutable('2026-11-01 21:10:00', new DateTimeZone('America/Argentina/Buenos_Aires')))->setTimezone(new DateTimeZone('UTC'))->format('Y-m-d H:i:s');
