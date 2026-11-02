@@ -231,6 +231,51 @@ function interacciones_is_turn_confirmation(string $body): bool
 }
 
 /**
+ * Hilos de diagnóstico / opciones PRUEBA que no deben quedar pendientes en el panel.
+ *
+ * @param list<array{from?:string,text?:string}> $messages
+ */
+function interacciones_thread_is_diagnostic_noise(array $messages, string $patientName = ''): bool
+{
+    if (preg_match('/^test$/iu', trim($patientName))) {
+        return true;
+    }
+    $patientTexts = [];
+    $claraTexts = [];
+    foreach ($messages as $m) {
+        $text = trim((string) ($m['text'] ?? ''));
+        if ($text === '') {
+            continue;
+        }
+        if (($m['from'] ?? '') === 'patient') {
+            $patientTexts[] = $text;
+        } elseif (($m['from'] ?? '') === 'clara') {
+            $claraTexts[] = $text;
+        }
+    }
+    if (!$patientTexts) {
+        return false;
+    }
+    $allPatientDiagnostic = true;
+    foreach ($patientTexts as $text) {
+        if (!preg_match('/^test(?:\s+de\s+diagn[oó]stico)?$/iu', $text)
+            && !preg_match('/^PRUEBA[-\s]?\d+/iu', $text)) {
+            $allPatientDiagnostic = false;
+            break;
+        }
+    }
+    if ($allPatientDiagnostic) {
+        return true;
+    }
+    foreach ($claraTexts as $text) {
+        if (preg_match('/^respuesta\s+de\s+prueba\b/iu', $text) || preg_match('/\bPRUEBA-\d+/u', $text)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
  * @param list<array{from?:string,text?:string}> $messages
  */
 function interacciones_thread_is_turn_confirmation(array $messages): bool
@@ -419,11 +464,6 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
         }
         $st = $estado[$key] ?? [];
         $isTurnConfirm = interacciones_thread_is_turn_confirmation($messages);
-        [$cat, $catLabel] = interacciones_classify($firstPatient, (string) $c['wa_id']);
-        if ($isTurnConfirm) {
-            $cat = 'confirmacion_turno';
-            $catLabel = '✅ Confirmación de turno';
-        }
         $name = interacciones_known_name((string) $c['wa_id']);
         if ($name === '') {
             $name = (string) (($st['patient_name'] ?? '') !== '' ? $st['patient_name'] : $lastName);
@@ -432,9 +472,18 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
             $matchKey = interacciones_phone_match_key((string) $c['wa_id']);
             $name = (string) ($dirNames[$matchKey] ?? $reminderNames[$matchKey] ?? '');
         }
+        $isDiagNoise = interacciones_thread_is_diagnostic_noise($messages, $name);
+        [$cat, $catLabel] = interacciones_classify($firstPatient, (string) $c['wa_id']);
+        if ($isTurnConfirm) {
+            $cat = 'confirmacion_turno';
+            $catLabel = '✅ Confirmación de turno';
+        } elseif ($isDiagNoise) {
+            $cat = 'prueba_admin';
+            $catLabel = '🧪 Prueba Técnica';
+        }
         $archived = !empty($st['archived']);
-        // Confirmación del recordatorio: no hay nada que hacer → ya figura respondida.
-        $answered = !empty($st['answered']) || $isTurnConfirm;
+        // Confirmación del recordatorio o ruido de prueba: no quedan pendientes.
+        $answered = !empty($st['answered']) || $isTurnConfirm || $isDiagNoise;
         $counts[$archived ? 'archived' : ($answered ? 'answered' : 'unanswered')]++;
         $items[] = [
             'id' => $key,

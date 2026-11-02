@@ -113,6 +113,13 @@ export function validateCustomOptions(customMenuOptions, onAlert) {
       if (typeof onAlert === "function") onAlert(`Por favor ingresá la respuesta para la opción ${l}.`);
       return null;
     }
+    const blob = `${label} ${response}`;
+    if (/PRUEBA[-\s]?\d*/i.test(blob) || /^respuesta\s+de\s+prueba\b/i.test(response) || /test\s+de\s+diagn[oó]stico/i.test(blob)) {
+      if (typeof onAlert === "function") {
+        onAlert(`La opción ${l} parece texto de prueba. No la guardes en producción: los pacientes la verían en WhatsApp.`);
+      }
+      return null;
+    }
     cleanCustom.push({ letter: l, label: label || `Opción ${l}`, response });
   }
   return cleanCustom;

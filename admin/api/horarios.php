@@ -118,9 +118,17 @@ function load_full_runtime_settings(string $file): array
             $letter = strtoupper(trim((string) ($row['letter'] ?? '')));
             $label = trim((string) ($row['label'] ?? ($row['title'] ?? '')));
             $response = trim((string) ($row['response'] ?? ($row['text'] ?? '')));
-            if ($letter !== '' && ($label !== '' || $response !== '')) {
-                $customOptions[] = ['letter' => $letter, 'label' => $label, 'response' => $response];
+            if ($letter === '' || ($label === '' && $response === '')) {
+                continue;
             }
+            // Oculta leftovers de prueba (PRUEBA-N / "respuesta de prueba") para que no lleguen a WhatsApp.
+            $blob = $label . ' ' . $response;
+            if (preg_match('/PRUEBA[-\s]?\d*/iu', $blob)
+                || preg_match('/^respuesta\s+de\s+prueba\b/iu', $response)
+                || preg_match('/test\s+de\s+diagn[oó]stico/iu', $blob)) {
+                continue;
+            }
+            $customOptions[] = ['letter' => $letter, 'label' => $label, 'response' => $response];
         }
     }
     $claraTexts['custom_menu_options'] = $customOptions;

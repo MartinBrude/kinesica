@@ -448,6 +448,20 @@ $orphan = array_values(array_filter($viewDir2['items'], fn($i) => $i['wa_id'] ==
 eq($orphan['patient_name'] ?? 'missing', '', 'sin directorio no inventa nombre');
 $pdo->exec('DELETE FROM pacientes WHERE telefono LIKE "%67406801%" OR telefono LIKE "%45559988%" OR telefono LIKE "%00009988%"');
 
+section('Vista: ruido de prueba no queda pendiente');
+$pdo = fresh('diag-noise');
+$dBase = (new DateTimeImmutable('2026-11-02 13:30:00', new DateTimeZone('America/Argentina/Buenos_Aires')))->getTimestamp();
+interacciones_store_events([
+    ev('5491100998877', 'patient', 'test de diagnostico', $dBase, 'DIAG1'),
+    ev('5491100998877', 'clara', 'respuesta de prueba', $dBase + 1, 'DIAG1'),
+], $pdo);
+// Forzar nombre "Test" como en el panel
+$pdo->prepare('UPDATE interaccion_eventos SET patient_name = :n WHERE wa_id = :wa')->execute(['n' => 'Test', 'wa' => '5491100998877']);
+$dView = interacciones_load_view($pdo);
+eq($dView['items'][0]['answered'], true, 'hilo de prueba marcado respondido');
+eq($dView['items'][0]['category'], 'prueba_admin', 'categoría prueba técnica');
+eq($dView['unanswered_count'], 0, 'no ensucia pendientes');
+
 section('Vista: confirmación de turno ya figura respondida');
 ok(interacciones_is_turn_confirmation('Confirmo'), 'Confirmo');
 ok(interacciones_is_turn_confirmation('✅ Confirmo'), 'emoji + Confirmo');

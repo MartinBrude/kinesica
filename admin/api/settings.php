@@ -131,6 +131,12 @@ if ($method === 'POST') {
                         $response = trim((string) ($row['response'] ?? ($row['text'] ?? '')));
                         if ($letter === '' || in_array($letter, $reserved, true)) continue;
                         if ($label === '' && $response === '') continue;
+                        // No publicar opciones de prueba en WhatsApp real.
+                        if (preg_match('/PRUEBA[-\s]?\d*/iu', $label . ' ' . $response)
+                            || preg_match('/^respuesta\s+de\s+prueba\b/iu', $response)
+                            || preg_match('/^test\s+de\s+diagn[oó]stico\b/iu', $label . ' ' . $response)) {
+                            json_out(400, ['error' => "La opción {$letter} parece texto de prueba (PRUEBA / respuesta de prueba). Sacala antes de guardar."]);
+                        }
                         $cleanOpts[] = ['letter' => $letter, 'label' => $label, 'response' => $response];
                     }
                 }
