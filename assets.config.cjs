@@ -18,6 +18,7 @@ const CSS_SOURCES = [
   "css/style.css",
   "css/whatsapp.css",
   "css/cv.css",
+  "css/profesionales.css",
   "css/home-v2.css",
   "booking/booking-widget.css",
 ];
