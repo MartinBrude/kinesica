@@ -3,7 +3,7 @@
  */
 
 import { escapeHtml } from "./dom.js?v=78";
-import { formatDisplayPhone } from "./phone-format.js";
+import { formatDisplayPhone, extractPhoneCandidate } from "./phone-format.js";
 
 export function formatRunDayHeader(isoDay) {
   if (!isoDay || isoDay === "sin-fecha") return "Sin fecha";
@@ -19,6 +19,22 @@ export function formatRunDayHeader(isoDay) {
   } catch {
     return isoDay;
   }
+}
+
+export function isAppointmentPast(apptDate, apptTime) {
+  if (!apptDate) return false;
+  let timeStr = "23:59:59";
+  if (apptTime) {
+    const m = String(apptTime).match(/(\d{1,2}):(\d{2})/);
+    if (m) {
+      timeStr = m[1].padStart(2, "0") + ":" + m[2] + ":00";
+    }
+  }
+  // Buenos Aires es UTC-3 sin horario de verano
+  const isoStr = apptDate + "T" + timeStr + "-03:00";
+  const apptDt = new Date(isoStr);
+  if (Number.isNaN(apptDt.getTime())) return false;
+  return apptDt.getTime() < Date.now();
 }
 
 function statusClass(status) {
@@ -70,15 +86,25 @@ export function buildRecordatorioCardHtml(item) {
     [item.appointment_date, item.appointment_time].filter(Boolean).join(" · ") || "—";
   const viaEmail = item.status === "sent_email";
   const hasEmail = !!(item.email && String(item.email).includes("@"));
+
+  // Resolver wa_id con fallback si vino vacío pero está en event_summary o patient_name
+  let effectiveWaId = item.wa_id || "";
+  if (!effectiveWaId) {
+    const candidate = extractPhoneCandidate(item.event_summary || "") || extractPhoneCandidate(item.patient_name || "");
+    if (candidate) {
+      effectiveWaId = candidate;
+    }
+  }
+
   const isMissingPhone =
-    !item.wa_id && !viaEmail && item.status !== "run_skipped";
+    !effectiveWaId && !viaEmail && item.status !== "run_skipped";
   const needsContact =
-    !item.wa_id &&
+    !effectiveWaId &&
     ["pending", "missing_phone", "failed", "skipped"].includes(String(item.status || ""));
 
   const contactBits = [];
-  if (item.wa_id) {
-    contactBits.push(`WhatsApp: ${escapeHtml(formatDisplayPhone(item.wa_id))}`);
+  if (effectiveWaId) {
+    contactBits.push(`WhatsApp: ${escapeHtml(formatDisplayPhone(effectiveWaId))}`);
   }
   if (hasEmail) {
     contactBits.push(`Email: ${escapeHtml(item.email)}`);
@@ -112,12 +138,14 @@ export function buildRecordatorioCardHtml(item) {
       ? `<p class="recordatorio-summary">${escapeHtml(item.event_summary)}</p>`
       : "";
 
+  const isPast = isAppointmentPast(item.appointment_date, item.appointment_time);
   const alreadySent = item.status === "sent" || item.status === "sent_email";
-  const hasPhone = !!item.wa_id;
-  // Enviar manual solo si hay WhatsApp o email y aún no se envió.
+  const hasPhone = !!effectiveWaId;
+  // Enviar manual solo si hay WhatsApp o email, aún no se envió y el turno NO expiró / ya pasó.
   // Sin contacto: solo «Cargar contacto» (el envío no tiene sentido).
   const canManualSend =
     !alreadySent &&
+    !isPast &&
     item.status !== "run_skipped" &&
     (hasPhone || hasEmail);
 

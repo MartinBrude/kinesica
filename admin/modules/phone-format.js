@@ -92,3 +92,49 @@ export function formatDisplayPhone(raw) {
 
   return `+${digits}`;
 }
+
+/**
+ * Intenta extraer un número de teléfono candidato desde un texto (resumen del turno o nombre).
+ * @param {string} text
+ * @returns {string}
+ */
+export function extractPhoneCandidate(text) {
+  if (!text) return "";
+  const t = String(text).trim();
+  if (!t) return "";
+
+  // 1. Prefijado explícito: tel, cel, whatsapp, etc.
+  const mPref = t.match(/(?:(?:whatsapp|wa\.me|tel|cel|telefono|celular|movil)[:\s\/]*)+([+]?[-0-9\s()]{8,22})/i);
+  if (mPref) {
+    const digits = cleanPhoneDigits(mPref[1]);
+    if (digits.length >= 8 && digits.length <= 15) {
+      return digits;
+    }
+  }
+
+  // 2. Formato internacional con +
+  const mIntl = t.match(/\+\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{3,4}[-.\s]?\d{3,4}/);
+  if (mIntl) {
+    return cleanPhoneDigits(mIntl[0]);
+  }
+
+  // 3. Formato argentino 10 dígitos (11..., 15...) con o sin prefijo 549/011
+  const mAr10 = t.match(/(?:\+?54\s*9?\s*)?(?:0?11|15)[-.\s]?\d{4}[-.\s]?\d{4}\b/);
+  if (mAr10) {
+    return cleanPhoneDigits(mAr10[0]);
+  }
+
+  // 4. Bloque continuo de 10 dígitos
+  const m10 = t.match(/\b\d{10}\b/);
+  if (m10) {
+    return cleanPhoneDigits(m10[0]);
+  }
+
+  // 5. Bloque general de 8 a 13 dígitos
+  const mAny = t.match(/\b\d{8,13}\b/);
+  if (mAny) {
+    return cleanPhoneDigits(mAny[0]);
+  }
+
+  return "";
+}

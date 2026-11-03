@@ -157,7 +157,29 @@ function recordatorios_format_item(array $r, ?string $email = null): array
         'error_code' => (string) ($r['error_code'] ?? ''),
         'error_message' => (string) ($r['error_message'] ?? ''),
         'event_summary' => (string) ($r['event_summary'] ?? ''),
+        'is_past' => recordatorios_is_appointment_past(isset($r['appointment_date']) ? (string) $r['appointment_date'] : null, (string) ($r['appointment_time'] ?? '')),
     ];
+}
+
+function recordatorios_is_appointment_past(?string $apptDate, ?string $apptTime): bool
+{
+    if (!$apptDate || trim($apptDate) === '') {
+        return false;
+    }
+    $timeStr = '23:59:59';
+    if ($apptTime && trim($apptTime) !== '') {
+        if (preg_match('/(\d{1,2}):(\d{2})/', $apptTime, $m)) {
+            $timeStr = sprintf('%02d:%02d:00', (int) $m[1], (int) $m[2]);
+        }
+    }
+    try {
+        $tz = recordatorios_tz();
+        $apptDt = new DateTimeImmutable(trim($apptDate) . ' ' . $timeStr, $tz);
+        $now = new DateTimeImmutable('now', $tz);
+        return $apptDt < $now;
+    } catch (Throwable) {
+        return false;
+    }
 }
 
 function recordatorios_extract_contact_email(string $errorMessage): string

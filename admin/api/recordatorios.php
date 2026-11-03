@@ -423,6 +423,11 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
         return ['ok' => false, 'error' => 'Este recordatorio ya fue enviado exitosamente hoy.'];
     }
 
+    // Regla: No tiene sentido enviar recordatorio si el turno ya pasó
+    if (function_exists('recordatorios_is_appointment_past') && recordatorios_is_appointment_past($apptDate, $apptTime)) {
+        return ['ok' => false, 'error' => 'El horario del turno ya pasó. No se puede enviar un recordatorio.'];
+    }
+
     try {
         $pdo = recordatorios_pdo();
         $cleanPhoneEnd = $phone !== '' ? substr(recordatorios_clean_wa_id($phone), -10) : '';
