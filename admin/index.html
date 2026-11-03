@@ -1234,6 +1234,53 @@
             </div>
           </div>
         </article>
+
+        <!-- SECCIÓN 4: REPORTE Y SEGUIMIENTO DE ERRORES -->
+        <article class="admin-card" id="admin-errores-card">
+          <div class="admin-card-header">
+            <div class="admin-card-titles">
+              <h2 class="admin-card-title">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                Reporte y Seguimiento de Errores
+              </h2>
+              <p class="admin-card-desc">Registro detallado de incidencias, sección afectada, comportamiento actual vs. esperado, adjuntos y resolución.</p>
+            </div>
+            <div class="admin-gastos-header-actions">
+              <span class="gastos-count-pill" id="admin-errores-count-label">0 pendientes</span>
+              <button type="button" class="btn green" id="admin-btn-nuevo-error">+ Reportar Error</button>
+            </div>
+          </div>
+          <div class="admin-card-body">
+            <!-- Filtros de Estado -->
+            <div class="admin-errores-toolbar">
+              <div class="admin-errores-filters">
+                <button type="button" class="btn light btn-sm admin-errores-filter-btn is-active" data-filter="todos">Todos</button>
+                <button type="button" class="btn light btn-sm admin-errores-filter-btn" data-filter="pendientes">Pendientes</button>
+                <button type="button" class="btn light btn-sm admin-errores-filter-btn" data-filter="resueltos">Resueltos</button>
+              </div>
+            </div>
+
+            <!-- Tabla de Errores -->
+            <div class="prof-table-wrapper">
+              <table class="prof-table">
+                <thead>
+                  <tr>
+                    <th>Estado</th>
+                    <th>Sección</th>
+                    <th>Info / Resumen</th>
+                    <th>Comportamiento (Actual vs Esperado)</th>
+                    <th>Multimedia</th>
+                    <th>Fecha</th>
+                    <th style="text-align: right;">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-errores-tbody">
+                  <!-- Renderizado dinámico -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </article>
       </div>
 
       <!-- MODAL DE ALTA / EDICIÓN DE PROFESIONAL -->
@@ -1461,6 +1508,60 @@
             <div class="prof-modal-footer">
               <button type="button" class="btn ghost" id="admin-gasto-modal-cancel">Cancelar</button>
               <button type="submit" class="btn green" id="admin-gasto-modal-save">Guardar Gasto</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- MODAL DE REPORTE DE ERROR -->
+      <div id="admin-error-modal" class="prof-modal-backdrop" hidden>
+        <div class="prof-modal-card gasto-modal-card" role="dialog" aria-modal="true" aria-labelledby="admin-error-modal-title">
+          <div class="prof-modal-header">
+            <h3 id="admin-error-modal-title">Reportar Error en el Sistema</h3>
+            <button type="button" class="prof-modal-close" id="admin-error-modal-close" aria-label="Cerrar">&times;</button>
+          </div>
+          <form id="admin-error-form">
+            <div class="prof-modal-body">
+              <div class="prof-form-row cols-2">
+                <div class="prof-form-group">
+                  <label for="admin-error-seccion">Sección afectada *</label>
+                  <select id="admin-error-seccion" required>
+                    <option value="" disabled selected>Seleccioná la sección afectada...</option>
+                  </select>
+                </div>
+                <div class="prof-form-group">
+                  <label for="admin-error-info">Info / Título breve del problema *</label>
+                  <input type="text" id="admin-error-info" required placeholder="Ej: No se actualiza el selector de fechas al cambiar de profesional">
+                </div>
+              </div>
+
+              <div class="prof-form-group">
+                <label for="admin-error-actual">Comportamiento actual (¿Qué pasa ahora?) *</label>
+                <textarea id="admin-error-actual" required rows="3" placeholder="Describí detalladamente lo que ocurre actualmente y los pasos para reproducirlo..."></textarea>
+              </div>
+
+              <div class="prof-form-group">
+                <label for="admin-error-esperado">Comportamiento esperado (¿Qué debería pasar?) *</label>
+                <textarea id="admin-error-esperado" required rows="3" placeholder="Describí qué debería hacer el sistema correctamente..."></textarea>
+              </div>
+
+              <div class="prof-form-row cols-2">
+                <div class="prof-form-group">
+                  <label for="admin-error-foto-file">Captura / Foto (archivo o enlace)</label>
+                  <input type="file" id="admin-error-foto-file" accept="image/*">
+                  <input type="url" id="admin-error-foto-url" placeholder="O pegá un enlace de imagen (https://...)" style="margin-top: 6px;">
+                  <img id="admin-error-foto-preview" src="" alt="Vista previa de foto" class="error-preview-thumbnail" hidden>
+                </div>
+                <div class="prof-form-group">
+                  <label for="admin-error-video">Video (enlace Loom, Drive, YouTube o MP4)</label>
+                  <input type="url" id="admin-error-video" placeholder="https://www.loom.com/share/... o enlace de video">
+                  <span class="prof-form-help">Podés pegar un enlace de Loom, Google Drive, YouTube o archivo de video.</span>
+                </div>
+              </div>
+            </div>
+            <div class="prof-modal-footer">
+              <button type="button" class="btn ghost" id="admin-error-modal-cancel">Cancelar</button>
+              <button type="submit" class="btn green" id="admin-error-modal-save">Guardar Reporte</button>
             </div>
           </form>
         </div>

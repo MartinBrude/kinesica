@@ -18,6 +18,12 @@ import {
   closeGastoModal,
   isGastoModalOpen,
 } from "./admin-gastos.js?v=82";
+import {
+  initErroresUI,
+  loadErroresData,
+  closeErrorModal,
+  isErrorModalOpen,
+} from "./admin-errores.js";
 
 const viewAdmin = document.querySelector("#view-admin");
 
@@ -45,17 +51,20 @@ export async function loadAdminData() {
   await Promise.allSettled([
     loadProfesionalesData(loadAdminData),
     loadGastosData(loadAdminData),
+    loadErroresData(loadAdminData),
   ]);
 }
 
 export function initAdminModule() {
   initProfesionalesUI({ onReload: loadAdminData });
   initGastosUI({ onReload: loadAdminData });
+  initErroresUI({ onReload: loadAdminData });
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       if (isProfModalOpen()) closeProfModal();
       if (isGastoModalOpen()) closeGastoModal();
+      if (isErrorModalOpen()) closeErrorModal();
     }
   });
 }
