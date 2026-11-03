@@ -273,98 +273,40 @@
   line-height: 1.45;
 }
 
-/* Fee display at bottom of choice card / button */
+/* Fee display at bottom of choice card — visible ONLY upon click / selection, subtle and elegant */
 .kinesica-booking-container .kb-choice-card .kb-choice-fee,
 .kb-choice-card .kb-choice-fee {
-  margin-top: 10px;
-  padding-top: 8px;
-  border-top: 1px dashed #e2e8f0;
-  font-size: 13px;
+  display: none;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(0, 95, 153, 0.12);
+  font-size: 12.5px;
   color: var(--kin-text-muted);
+}
+
+.kinesica-booking-container .kb-choice-card.selected .kb-choice-fee,
+.kb-choice-card.selected .kb-choice-fee {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 6px;
-  transition: border-color 0.2s ease;
+  animation: kbFadeIn 0.2s ease-out;
 }
 
 .kinesica-booking-container .kb-choice-card .kb-choice-fee .kb-fee-label,
 .kb-choice-card .kb-choice-fee .kb-fee-label {
-  font-size: 11.5px;
+  font-size: 12px;
   color: #64748b;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: normal;
 }
 
 .kinesica-booking-container .kb-choice-card .kb-choice-fee .kb-fee-amount,
 .kb-choice-card .kb-choice-fee .kb-fee-amount {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--kin-primary);
-}
-
-.kb-choice-card:hover .kb-choice-fee {
-  border-top-color: #cbd5e1;
-}
-
-.kb-choice-card.selected .kb-choice-fee {
-  border-top-color: rgba(0, 95, 153, 0.25);
-}
-
-.kb-choice-card.selected .kb-choice-fee .kb-fee-amount {
-  color: #004b7a;
-  font-size: 15.5px;
-}
-
-/* Callout de honorarios al pie del paso 1 */
-.kb-step1-fee-box {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  border-left: 4px solid #16a34a;
-  border-radius: 8px;
-  text-align: left;
-  font-size: 13px;
-  line-height: 1.4;
-  color: #14532d;
-}
-
-.kb-step1-fee-box .kb-fee-icon {
-  font-size: 18px;
-  flex-shrink: 0;
-}
-
-.kb-step1-fee-box .kb-fee-line {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
   font-size: 13.5px;
-}
-
-.kb-step1-fee-box .kb-fee-label-text {
   font-weight: 600;
-  color: #166534;
-}
-
-.kb-step1-fee-box .kb-fee-val {
-  font-size: 16px;
-  font-weight: 700;
-  color: #166534;
-}
-
-.kb-step1-fee-box .kb-fee-dur {
-  font-size: 12px;
-  color: #4b5563;
-}
-
-.kb-step1-fee-box .kb-fee-subline {
-  font-size: 11.5px;
-  color: #4b5563;
-  margin-top: 1px;
+  color: var(--kin-primary);
 }
 
 /* Informative Callout (Primera vez) */

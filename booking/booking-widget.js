@@ -482,16 +482,7 @@
     }
 
     updateStep1FeeBanner(techniqueId) {
-      const box = this.container.querySelector("#kb-step1-fee-box");
-      const valEl = this.container.querySelector("#kb-step1-fee-value");
-      if (!box || !valEl) return;
-      if (!techniqueId) {
-        box.style.display = "none";
-        return;
-      }
-      const fee = this.getFeeForTechnique(techniqueId);
-      valEl.textContent = this.formatFee(fee);
-      box.style.display = "flex";
+      // Sutil: el valor se muestra en la parte baja de la tarjeta seleccionada (.kb-choice-fee)
     }
 
     t(key) {
@@ -601,19 +592,8 @@
                 </div>
               </div>
 
-              <div class="kb-step1-footer" style="margin-top: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
-                <div id="kb-step1-fee-box" class="kb-step1-fee-box" style="display: none;">
-                  <span class="kb-fee-icon" aria-hidden="true">💳</span>
-                  <div class="kb-fee-details">
-                    <div class="kb-fee-line">
-                      <span class="kb-fee-label-text">${this.t("fee")}:</span>
-                      <strong id="kb-step1-fee-value" class="kb-fee-val"></strong>
-                      <span class="kb-fee-dur">(${this.t("sessionHourShort")})</span>
-                    </div>
-                    <div class="kb-fee-subline">${this.t("paymentMethodsNote")}</div>
-                  </div>
-                </div>
-                <button class="kb-btn kb-btn-primary" id="kb-btn-next-1" disabled style="margin-left: auto;">
+              <div class="kb-step1-footer" style="margin-top: 20px; display: flex; align-items: center; justify-content: flex-end;">
+                <button class="kb-btn kb-btn-primary" id="kb-btn-next-1" disabled>
                   ${this.t("seeSlots")}
                 </button>
               </div>
