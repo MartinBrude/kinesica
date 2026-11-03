@@ -11,6 +11,7 @@ import {
   suggestAdminEmailDomain,
   inspectAdminPhone,
 } from "./pacientes-format.js";
+import { patientHasReview } from "./pacientes.js";
 
 export function openFullPacienteModal(paciente = null, onReload = null) {
   const isEdit = Boolean(paciente);
@@ -83,6 +84,13 @@ export function openFullPacienteModal(paciente = null, onReload = null) {
           <div class="paciente-modal-field">
             <label>Notas Clínicas / Administrativas</label>
             <textarea id="modal-p-notas" rows="2" placeholder="Observaciones opcionales" maxlength="2000">${escapeHtml(paciente?.notas || "")}</textarea>
+          </div>
+          <div class="paciente-modal-field" style="margin-top: 10px; padding: 10px 12px; background: #fefce8; border: 1px solid #fef08a; border-radius: 8px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13.5px; font-weight: 600; color: #854d0e; margin: 0;">
+              <input type="checkbox" id="modal-p-dejo-review" ${patientHasReview(paciente) ? "checked" : ""}>
+              <span>⭐ Ya dejó reseña en Google</span>
+            </label>
+            <small style="color: #a16207; display: block; margin-top: 3px; font-size: 11.5px;">Si está marcado, no se mostrará el botón "Pedir review" en la lista de pacientes.</small>
           </div>
           <div style="margin-top: 12px; padding: 12px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
             <div style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 8px; text-transform: uppercase;">
@@ -160,6 +168,7 @@ export function openFullPacienteModal(paciente = null, onReload = null) {
     const contactoTel = backdrop.querySelector("#modal-p-contacto-tel")?.value.trim() || "";
     const contactoEmail = backdrop.querySelector("#modal-p-contacto-email")?.value.trim() || "";
     const contactoNotas = backdrop.querySelector("#modal-p-contacto-notas")?.value.trim() || "";
+    const dejoReview = backdrop.querySelector("#modal-p-dejo-review")?.checked ? 1 : 0;
 
     if (!nombre || !apellido || !tel) {
       errorEl.textContent = "Nombre, apellido y teléfono son obligatorios.";
@@ -227,6 +236,7 @@ export function openFullPacienteModal(paciente = null, onReload = null) {
         contacto_telefono: contactoTel,
         contacto_email: contactoEmail,
         contacto_notas: contactoNotas,
+        dejo_review: dejoReview,
       };
       if (isEdit) {
         await api("pacientes.php", { method: "PUT", body: JSON.stringify({ id: paciente.id, ...payload }) });

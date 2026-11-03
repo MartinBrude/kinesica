@@ -176,7 +176,19 @@
 .pacientes-actions {
   display: flex;
   gap: 6px;
+  align-items: center;
   justify-content: flex-end;
+}
+
+.btn-review-invite {
+  transition: all 0.15s ease;
+}
+
+.btn-review-invite:hover {
+  background: #ccfbf1 !important;
+  border-color: #5eead4 !important;
+  color: #0f766e !important;
+  transform: translateY(-1px);
 }
 
 /* Modal de edición de paciente */

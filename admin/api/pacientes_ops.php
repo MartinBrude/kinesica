@@ -142,22 +142,28 @@ function kinesica_pacientes_update(PDO $pdo, array $data): void
         json_out(422, ['status' => 'error', 'message' => 'El correo electrónico de contacto no es válido']);
     }
     $contactoNotas = !empty($data['contacto_notas']) ? mb_substr(trim((string) $data['contacto_notas']), 0, 100, 'UTF-8') : null;
+    $dejoReview = isset($data['dejo_review']) ? (!empty($data['dejo_review']) ? 1 : 0) : null;
 
     $stmt = $pdo->prepare('
         UPDATE pacientes SET
             telefono = :tel, nombre = :nombre, apellido = :apellido, nombre_completo = :nom,
             nombre_pila = :pila, dni = :dni, email = :email, profesional_habitual = :prof,
             motivo_consulta = :motivo, notas = :notas, contacto_nombre = :contacto_nombre,
-            contacto_telefono = :contacto_telefono, contacto_email = :contacto_email, contacto_notas = :contacto_notas
+            contacto_telefono = :contacto_telefono, contacto_email = :contacto_email, contacto_notas = :contacto_notas' .
+            ($dejoReview !== null ? ', dejo_review = :dejo_review' : '') . '
         WHERE id = :id
     ');
-    $stmt->execute([
+    $params = [
         'tel' => $phone, 'nombre' => $nombre, 'apellido' => $apellido, 'nom' => $nombreCompleto,
         'pila' => $nombrePila, 'dni' => $dni, 'email' => $email, 'prof' => $profesional,
         'motivo' => $motivo, 'notas' => $notas, 'contacto_nombre' => $contactoNombre,
         'contacto_telefono' => $contactoTel, 'contacto_email' => $contactoEmail,
         'contacto_notas' => $contactoNotas, 'id' => $id,
-    ]);
+    ];
+    if ($dejoReview !== null) {
+        $params['dejo_review'] = $dejoReview;
+    }
+    $stmt->execute($params);
 
     json_out(200, ['status' => 'success', 'message' => 'Paciente actualizado con éxito']);
 }

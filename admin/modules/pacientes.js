@@ -12,6 +12,52 @@ import { getSessionUser } from "./auth.js?v=81";
 
 export { formatDisplayPhone };
 
+export const GOOGLE_REVIEW_INVITE_URL = "https://search.google.com/local/writereview?placeid=ChIJZ2mPW9K1vJUR3J5kGRi5gws";
+
+/**
+ * Genera el mensaje personalizado de WhatsApp para invitar al paciente a dejar una reseña.
+ * @param {object} p
+ * @returns {string}
+ */
+export function buildReviewInviteMessage(p) {
+  const firstName = (p?.nombre_pila || p?.nombre || "").trim();
+  const saludo = firstName ? `Hola ${firstName}, ¿cómo estás?` : "Hola, ¿cómo estás?";
+  return `${saludo} Te escribo de Kinésica. Esperamos que te estés sintiendo muy bien. Si tenés un minuto, nos ayudaría mucho a crecer si nos dejás una breve reseña de tu experiencia en Google: ${GOOGLE_REVIEW_INVITE_URL} ¡Muchas gracias por tu apoyo!`;
+}
+
+/**
+ * Determina si un paciente ya dejó una reseña (por flag manual o match con Google Reviews).
+ * @param {object} p
+ * @returns {boolean}
+ */
+export function patientHasReview(p) {
+  if (p && (Number(p.dejo_review) === 1 || p.dejo_review === true || p.dejo_review === "1")) {
+    return true;
+  }
+  const reviews = typeof window !== "undefined" && window.KINESICA_GOOGLE_REVIEWS?.reviews;
+  if (!Array.isArray(reviews) || reviews.length === 0) return false;
+
+  const normalize = (str) =>
+    String(str || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9\s]/g, "")
+      .trim();
+
+  const pFull = normalize(p?.nombre_completo || `${p?.nombre || ""} ${p?.apellido || ""}`);
+  const pNom = normalize(p?.nombre || "");
+  const pAp = normalize(p?.apellido || "");
+
+  return reviews.some((r) => {
+    const auth = normalize(r?.author || "");
+    if (!auth) return false;
+    if (pFull && (auth === pFull || auth.includes(pFull) || pFull.includes(auth))) return true;
+    if (pNom && pAp && auth.includes(pNom) && auth.includes(pAp)) return true;
+    return false;
+  });
+}
+
 const viewPacientes = typeof document !== "undefined" ? document.querySelector("#view-pacientes") : null;
 const listEl = typeof document !== "undefined" ? document.querySelector("#pacientes-list-tbody") : null;
 const searchInput = typeof document !== "undefined" ? document.querySelector("#search-pacientes") : null;
@@ -142,6 +188,22 @@ export function renderPacientesTable() {
     const waLink = cleanDigits ? `https://wa.me/${cleanDigits}` : "#";
     const displayTel = formatDisplayPhone(rawTel);
 
+    const hasReview = patientHasReview(p);
+    const reviewMsg = buildReviewInviteMessage(p);
+    const waReviewLink = cleanDigits ? `https://wa.me/${cleanDigits}?text=${encodeURIComponent(reviewMsg)}` : "#";
+
+    const reviewAction = hasReview
+      ? `<span class="badge-review-ok" title="Ya dejó una reseña en Google" style="display:inline-flex; align-items:center; gap:4px; font-size:11.5px; padding:3px 8px; border-radius:6px; background:#fef9c3; color:#854d0e; font-weight:600; border:1px solid #fde047;">
+           <span aria-hidden="true">⭐</span> Con review
+         </span>`
+      : (cleanDigits
+          ? `<a class="btn light btn-review-invite" href="${waReviewLink}" target="_blank" rel="noopener" title="Enviar WhatsApp invitando a dejar una reseña en Google" style="color:#0f766e; border-color:#99f6e4; background:#f0fdfa; display:inline-flex; align-items:center; gap:4px; font-size:12px; padding:4px 9px; font-weight:600; text-decoration:none;">
+               <span aria-hidden="true">⭐</span> Pedir review
+             </a>`
+          : `<span class="btn light" title="Sin teléfono para WhatsApp" style="opacity:0.45; cursor:not-allowed; display:inline-flex; align-items:center; gap:4px; font-size:12px; padding:4px 9px;">
+               <span aria-hidden="true">⭐</span> Pedir review
+             </span>`);
+
     const isColaborador = getSessionUser()?.role === "colaborador";
     const deleteBtn = isColaborador
       ? ""
@@ -163,6 +225,7 @@ export function renderPacientesTable() {
       <td><small>${p.motivo_consulta ? escapeHtml(p.motivo_consulta) : "—"}</small></td>
       <td style="text-align: right;">
         <div class="pacientes-actions">
+          ${reviewAction}
           <button type="button" class="btn light btn-edit-paciente" data-id="${p.id}" title="${isColaborador ? "Ver datos del paciente" : "Editar paciente"}">${isColaborador ? "Ver datos" : "Editar"}</button>
           ${deleteBtn}
         </div>

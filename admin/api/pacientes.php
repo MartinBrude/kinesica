@@ -186,6 +186,15 @@ try {
             json_out(200, ['status' => 'success', 'id' => $id, 'nuevo_telefono' => $newPhone]);
         }
 
+        if ($action === 'toggle_review') {
+            $id = (int) ($data['id'] ?? 0);
+            if ($id <= 0) json_out(422, ['status' => 'error', 'message' => 'ID inválido']);
+            $val = !empty($data['dejo_review']) ? 1 : 0;
+            $stmt = $pdo->prepare('UPDATE pacientes SET dejo_review = :val WHERE id = :id');
+            $stmt->execute(['val' => $val, 'id' => $id]);
+            json_out(200, ['status' => 'success', 'id' => $id, 'dejo_review' => $val]);
+        }
+
         if (str_starts_with($action, 'waitlist_') || str_ends_with($action, '_waitlist')) {
             kinesica_pacientes_waitlist_ops($pdo, $action, $data);
         }

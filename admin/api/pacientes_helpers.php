@@ -114,6 +114,7 @@ function ensure_pacientes_tables(PDO $pdo): void
             contacto_telefono VARCHAR(30) NULL,
             contacto_email VARCHAR(120) NULL,
             contacto_notas VARCHAR(100) NULL,
+            dejo_review TINYINT(1) NOT NULL DEFAULT 0,
             created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
             updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             INDEX idx_pacientes_dni (dni),
@@ -121,6 +122,10 @@ function ensure_pacientes_tables(PDO $pdo): void
             INDEX idx_pacientes_nombre (nombre, apellido)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     ');
+
+    try {
+        $pdo->exec('ALTER TABLE pacientes ADD COLUMN dejo_review TINYINT(1) NOT NULL DEFAULT 0');
+    } catch (Throwable) {}
 
     $pdo->exec('
         CREATE TABLE IF NOT EXISTS lista_espera (
