@@ -20,9 +20,15 @@ let activeClara = localStorage.getItem("kinesica_clara_active") === "1";
 let activeBooking = localStorage.getItem("kinesica_booking_active") === "1";
 
 export function showDashboardView() {
-  const isColaborador = getSessionUser()?.role === "colaborador";
+  const user = getSessionUser();
+  const isColaborador = user?.role === "colaborador";
   if (claraToggleBtn) claraToggleBtn.disabled = isColaborador;
   if (bookingToggleBtn) bookingToggleBtn.disabled = isColaborador;
+
+  const dashCardAdmin = document.querySelector("#dash-card-admin");
+  if (dashCardAdmin) {
+    dashCardAdmin.hidden = !user || user.role !== "admin";
+  }
 
   const view = switchActiveView("view-dashboard");
   if (view) {
@@ -113,6 +119,7 @@ export function initDashboardModule(callbacks = {}) {
   attachCard("#dash-card-clara", () => callbacks.onNavigate?.("clara"));
   attachCard("#dash-card-interacciones", () => callbacks.onNavigate?.("interacciones"));
   attachCard("#dash-card-recordatorios", () => callbacks.onNavigate?.("recordatorios"));
+  attachCard("#dash-card-admin", () => callbacks.onNavigate?.("admin"));
 
   // Card de turnera (abre el modal accesible de reservas)
   const agendarCard = document.querySelector("#dash-card-agendar");

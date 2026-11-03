@@ -115,26 +115,29 @@ export function extractPhoneCandidate(text) {
     }
   }
 
+  // Descartar menciones explícitas de DNI para que sus dígitos no se confundan con un teléfono
+  const withoutDni = t.replace(/(?:dni|doc(?:umento)?|c\.?i\.?|d\.?u\.?|pasaporte)[:\s\.]*[\d\.\-]+/gi, " ");
+
   // 2. Formato internacional con +
-  const mIntl = t.match(/\+\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{3,4}[-.\s]?\d{3,4}/);
+  const mIntl = withoutDni.match(/\+\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{3,4}[-.\s]?\d{3,4}/);
   if (mIntl) {
     return cleanPhoneDigits(mIntl[0]);
   }
 
   // 3. Formato argentino 10 dígitos (11..., 15...) con o sin prefijo 549/011
-  const mAr10 = t.match(/(?:\+?54\s*9?\s*)?(?:0?11|15)[-.\s]?\d{4}[-.\s]?\d{4}\b/);
+  const mAr10 = withoutDni.match(/(?:\+?54\s*9?\s*)?(?:0?11|15)[-.\s]?\d{4}[-.\s]?\d{4}\b/);
   if (mAr10) {
     return cleanPhoneDigits(mAr10[0]);
   }
 
-  // 4. Bloque continuo de 10 dígitos
-  const m10 = t.match(/\b\d{10}\b/);
+  // 4. Bloque continuo de 10 dígitos con prefijo móvil verosímil
+  const m10 = withoutDni.match(/\b(?:11|15|549)\d{8,10}\b/);
   if (m10) {
     return cleanPhoneDigits(m10[0]);
   }
 
-  // 5. Bloque general de 8 a 13 dígitos
-  const mAny = t.match(/\b\d{8,13}\b/);
+  // 5. Bloque general de 10 a 13 dígitos
+  const mAny = withoutDni.match(/\b\d{10,13}\b/);
   if (mAny) {
     return cleanPhoneDigits(mAny[0]);
   }

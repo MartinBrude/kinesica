@@ -56,7 +56,7 @@ export function syncUrlWithViewState(state, isInitialBoot = false, isHandlingPop
     docTitle = "Kinésica — Consultorio";
   } else if (v === "clara" || v === "configuracion") {
     targetPath = "/admin/clara";
-    docTitle = "Kinésica — Clara & Mensajes";
+    docTitle = "Kinésica — Clara";
   } else if (v === "interacciones" || v === "chats") {
     targetPath = "/admin/interacciones";
     docTitle = "Kinésica — Interacciones WhatsApp";

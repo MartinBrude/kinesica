@@ -76,6 +76,18 @@ if ($method === 'POST') {
         json_out(422, ['error' => 'Formato no admitido. Se admiten archivos MP4, WebM, MOV o M4V.']);
     }
 
+    if (function_exists('finfo_open')) {
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        if ($finfo) {
+            $mime = (string) finfo_file($finfo, $uploaded['tmp_name']);
+            finfo_close($finfo);
+            $validMimes = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-m4v', 'application/octet-stream'];
+            if (!in_array($mime, $validMimes, true) && !str_starts_with($mime, 'video/')) {
+                json_out(422, ['error' => 'El archivo subido no contiene un formato de video válido.']);
+            }
+        }
+    }
+
     $targetDir = __DIR__ . '/../uploads';
     if (!is_dir($targetDir)) {
         mkdir($targetDir, 0755, true);

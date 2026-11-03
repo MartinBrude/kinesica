@@ -68,6 +68,14 @@ if ($action === 'create') {
         json_out(422, ['error' => 'El comportamiento esperado es obligatorio.']);
     }
 
+    $safeUrlPattern = '/^(?:https?:\/\/|\/admin\/api\/(?:foto|video)\.php|\/admin\/uploads\/)/i';
+    if ($foto !== '' && (!preg_match($safeUrlPattern, $foto) || preg_match('/[\r\n\t]/', $foto))) {
+        json_out(422, ['error' => 'La URL o ruta de la foto no es válida.']);
+    }
+    if ($video !== '' && (!preg_match($safeUrlPattern, $video) || preg_match('/[\r\n\t]/', $video))) {
+        json_out(422, ['error' => 'La URL o ruta del video no es válida.']);
+    }
+
     try {
         $id = 'err_' . bin2hex(random_bytes(6));
     } catch (Throwable $e) {

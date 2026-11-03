@@ -89,10 +89,15 @@ export function renderErrores(errores, onReload) {
     const tdMedia = document.createElement("td");
     tdMedia.className = "error-media-td";
     const mediaLinks = [];
-    if (item.foto) {
+    const isSafeMediaUrl = (url) => {
+      if (!url || typeof url !== "string") return false;
+      const u = url.trim().toLowerCase();
+      return u.startsWith("https://") || u.startsWith("http://") || u.startsWith("/admin/api/") || u.startsWith("/admin/uploads/");
+    };
+    if (item.foto && isSafeMediaUrl(item.foto)) {
       mediaLinks.push(`<a href="${escapeHtml(item.foto)}" target="_blank" rel="noopener noreferrer" class="error-media-pill">📷 Foto</a>`);
     }
-    if (item.video) {
+    if (item.video && isSafeMediaUrl(item.video)) {
       mediaLinks.push(`<a href="${escapeHtml(item.video)}" target="_blank" rel="noopener noreferrer" class="error-media-pill">🎬 Video</a>`);
     }
     tdMedia.innerHTML = mediaLinks.length > 0 ? mediaLinks.join(" ") : '<span style="color:var(--muted)">—</span>';

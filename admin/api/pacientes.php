@@ -73,7 +73,8 @@ try {
             $directory = [];
             $emails = [];
             while ($row = $stmt->fetch()) {
-                $tel = trim((string) ($row['telefono'] ?? ''));
+                $rawTel = trim((string) ($row['telefono'] ?? ''));
+                $tel = clean_phone_number($rawTel);
                 $email = trim((string) ($row['email'] ?? ''));
                 $keys = [];
                 $norm = normalize_search_key($row['nombre_completo'] ?? '');

@@ -15,7 +15,6 @@ import { showRecordatoriosView, hideRecordatoriosView } from "./recordatorios.js
 import { applyHoursToRuntime } from "./horarios.js?v=3";
 
 export function switchTab(tab) {
-  const btnInicio = document.querySelector("#nav-btn-inicio");
   const btnFichas = document.querySelector("#nav-btn-fichas");
   const btnPacientes = document.querySelector("#nav-btn-pacientes");
   const btnConsultorio = document.querySelector("#nav-btn-consultorio");
@@ -24,7 +23,6 @@ export function switchTab(tab) {
   const btnRecordatorios = document.querySelector("#nav-btn-recordatorios");
   const btnAdmin = document.querySelector("#nav-btn-admin");
 
-  btnInicio?.classList.remove("is-active");
   btnFichas?.classList.remove("is-active");
   btnPacientes?.classList.remove("is-active");
   btnConsultorio?.classList.remove("is-active");
@@ -42,7 +40,6 @@ export function switchTab(tab) {
   hideAdminView();
 
   if (tab === "inicio") {
-    btnInicio?.classList.add("is-active");
     showDashboardView();
   } else if (tab === "pacientes") {
     btnPacientes?.classList.add("is-active");
@@ -76,6 +73,8 @@ export function switchTab(tab) {
 export function unmountAdminChannels() {
   const nav = document.getElementById("admin-nav");
   if (nav) nav.hidden = true;
+  const dashCardAdmin = document.getElementById("dash-card-admin");
+  if (dashCardAdmin) dashCardAdmin.hidden = true;
 }
 
 export function mountAdminChannels() {
@@ -90,10 +89,11 @@ export function mountAdminChannels() {
     adminNav.hidden = false;
     const btnAdmin = document.getElementById("nav-btn-admin");
     if (btnAdmin) btnAdmin.hidden = user.role !== "admin";
+    const dashCardAdmin = document.getElementById("dash-card-admin");
+    if (dashCardAdmin) dashCardAdmin.hidden = user.role !== "admin";
 
     if (!adminNav.dataset.bound) {
       adminNav.dataset.bound = "1";
-      document.getElementById("nav-btn-inicio")?.addEventListener("click", () => switchTab("inicio"));
       document.getElementById("nav-btn-fichas")?.addEventListener("click", () => switchTab("fichas"));
       document.getElementById("nav-btn-pacientes")?.addEventListener("click", () => switchTab("pacientes"));
       document.getElementById("nav-btn-consultorio")?.addEventListener("click", () => switchTab("consultorio"));

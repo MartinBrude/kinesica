@@ -31,7 +31,19 @@ function is_tk3_or_blocked_name(string $text): bool
 
 function clean_phone_number(string $raw): string
 {
-    $digits = preg_replace('/\D+/', '', $raw) ?? '';
+    $t = trim($raw);
+    if ($t === '' || str_starts_with($t, 'sin-tel') || str_starts_with($t, 'sin-telefono') || str_starts_with($t, 'ficha-')) {
+        return '';
+    }
+
+    // Descartar prefijos de texto habituales ("WhatsApp:", "tel:", etc.)
+    $withoutPrefix = preg_replace('/^(?:whatsapp|wa\.me|tel|cel|movil)[:\s\/]*/iu', '', $t) ?? $t;
+    // Si contiene letras sueltas que no eran prefijos conocidos, no es un teléfono válido
+    if (preg_match('/[a-zA-Z]/', $withoutPrefix)) {
+        return '';
+    }
+
+    $digits = preg_replace('/\D+/', '', $withoutPrefix) ?? '';
     if ($digits === '') return '';
 
     if (str_starts_with($digits, '00')) {
@@ -221,8 +233,8 @@ function sync_pacientes_from_fichas(PDO $pdo, ?string $singleId = null, ?array $
         // Intentar ubicar paciente existente por DNI o por nombre
         $existing = null;
         if ($dniClean !== '') {
-            $stmtFind = $pdo->prepare('SELECT id, telefono, nombre_completo, dni, motivo_consulta, profesional_habitual FROM pacientes WHERE dni = :dni OR dni LIKE :dni_pattern LIMIT 1');
-            $stmtFind->execute(['dni' => $dniClean, 'dni_pattern' => '%' . $dniClean . '%']);
+            $stmtFind = $pdo->prepare('SELECT id, telefono, nombre_completo, dni, motivo_consulta, profesional_habitual FROM pacientes WHERE dni = :dni OR REPLACE(REPLACE(COALESCE(dni, ""), ".", ""), " ", "") = :dni_clean LIMIT 1');
+            $stmtFind->execute(['dni' => $dniClean, 'dni_clean' => $dniClean]);
             $existing = $stmtFind->fetch(PDO::FETCH_ASSOC);
         }
 

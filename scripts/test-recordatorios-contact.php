@@ -90,6 +90,10 @@ eq(clean_phone_number('+54 9 11 4555-6677'), '5491145556677', 'internacional');
 eq(clean_phone_number('5491145556677'), '5491145556677', 'ya normalizado');
 eq(clean_phone_number('abc'), '', 'solo letras → vacío');
 eq(clean_phone_number('15 4555-6677'), '5491145556677', '15… porteño → 54911…');
+eq(clean_phone_number('sin-tel-dni-35123456'), '', 'placeholder sin-tel-dni descartado');
+eq(clean_phone_number('sin-tel-f-123456789012'), '', 'placeholder sin-tel-f descartado');
+eq(clean_phone_number('ficha-001'), '', 'placeholder ficha- descartado');
+eq(clean_phone_number('WhatsApp: +54 9 11 4555-6677'), '5491145556677', 'prefijo whatsapp ignorado correctamente');
 
 section('XSS / escape contrato frontend');
 $render = file_get_contents($root . '/admin/modules/recordatorios-render.js') ?: '';
