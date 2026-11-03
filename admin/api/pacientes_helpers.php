@@ -24,10 +24,17 @@ function clean_phone_number(string $raw): string
     if (str_starts_with($digits, '54')) {
         $rest = substr($digits, 2);
         if (str_starts_with($rest, '0')) $rest = substr($rest, 1);
+        if (str_starts_with($rest, '15')) $rest = '11' . substr($rest, 2);
+        if (preg_match('/^(11|2\d{2,3}|3\d{2,3})15(\d{6,8})$/', $rest, $m)) {
+            $rest = $m[1] . $m[2];
+        }
         return '549' . $rest;
     }
     if (str_starts_with($digits, '0')) {
         $digits = substr($digits, 1);
+    }
+    if (preg_match('/^(11|2\d{2,3}|3\d{2,3})15(\d{6,8})$/', $digits, $m)) {
+        $digits = $m[1] . $m[2];
     }
     if (str_starts_with($digits, '15')) {
         $digits = '11' . substr($digits, 2);

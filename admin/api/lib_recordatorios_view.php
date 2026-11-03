@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/lib_recordatorios_store.php';
+require_once __DIR__ . '/pacientes_helpers.php';
 
 const RECORDATORIOS_DEFAULT_DAYS = 14;
 
@@ -23,7 +24,7 @@ function recordatorios_status_label(string $status): string
         'failed' => 'Fallido',
         'missing_phone' => 'Sin teléfono ni mail',
         'skipped' => 'Omitido',
-        'run_skipped' => 'Corrida omitida',
+        'run_skipped' => 'Ejecución omitida',
         default => $status,
     };
 }
@@ -36,7 +37,7 @@ function recordatorios_skip_label(string $reason): string
         'blocked' => 'Bloqueo / no disponible',
         'waitlist' => 'Lista de espera',
         'non_appointment' => 'No es un turno',
-        'duplicate' => 'Duplicado en la corrida',
+        'duplicate' => 'Duplicado en la ejecución',
         'not_tomorrow' => 'Fuera de mañana',
         'other' => 'Otro',
         '' => '',
@@ -58,6 +59,38 @@ function recordatorios_is_blocked_event(array $r): bool
         }
     }
     return false;
+}
+
+function recordatorios_extract_phone_candidate(string $text): string
+{
+    $t = trim($text);
+    if ($t === '') {
+        return '';
+    }
+
+    if (preg_match('/(?:(?:whatsapp|wa\.me|tel|cel|telefono|celular|movil)[:\s\/]*)+([+]?[-0-9\s()]{8,22})/iu', $t, $m)) {
+        $digits = preg_replace('/\D+/', '', $m[1]);
+        if (strlen($digits) >= 8 && strlen($digits) <= 15) {
+            return clean_phone_number($m[1]);
+        }
+    }
+
+    if (preg_match('/\+\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{3,4}[-.\s]?\d{3,4}/', $t, $m)) {
+        return clean_phone_number($m[0]);
+    }
+
+    if (preg_match('/(?:\+?54\s*9?\s*)?(?:\b0?11\b|\b15\b)?[-.\s]?\d{4}[-.\s]?\d{4}\b/', $t, $m)) {
+        $cleaned = clean_phone_number($m[0]);
+        if (strlen($cleaned) >= 8) {
+            return $cleaned;
+        }
+    }
+
+    if (preg_match('/\b\d{8,13}\b/', $t, $m)) {
+        return clean_phone_number($m[0]);
+    }
+
+    return '';
 }
 
 /**
@@ -86,6 +119,17 @@ function recordatorios_format_item(array $r, ?string $email = null): array
         $resolvedEmail = recordatorios_extract_contact_email((string) ($r['error_message'] ?? ''));
     }
 
+    $waId = (string) ($r['wa_id'] ?? '');
+    if ($waId === '') {
+        $candidate = recordatorios_extract_phone_candidate((string) ($r['event_summary'] ?? ''));
+        if ($candidate === '') {
+            $candidate = recordatorios_extract_phone_candidate((string) ($r['patient_name'] ?? ''));
+        }
+        if ($candidate !== '') {
+            $waId = $candidate;
+        }
+    }
+
     return [
         'id' => (string) ($r['id'] ?? ''),
         'event_key' => (string) ($r['event_key'] ?? ''),
@@ -97,7 +141,7 @@ function recordatorios_format_item(array $r, ?string $email = null): array
         'appointment_time' => (string) ($r['appointment_time'] ?? ''),
         'calendar_event_id' => (string) ($r['calendar_event_id'] ?? ''),
         'patient_name' => (string) ($r['patient_name'] ?? ''),
-        'wa_id' => (string) ($r['wa_id'] ?? ''),
+        'wa_id' => $waId,
         'email' => (string) ($resolvedEmail ?? ''),
         'status' => $status,
         'status_label' => recordatorios_status_label($status),
