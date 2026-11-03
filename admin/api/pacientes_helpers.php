@@ -10,6 +10,25 @@ function normalize_search_key(string $str): string
     return preg_replace('/[^a-z0-9]/', '', $unaccent) ?? '';
 }
 
+function is_tk3_or_blocked_name(string $text): bool
+{
+    $t = trim($text);
+    if ($t === '') {
+        return false;
+    }
+    // Coincide con Tk3, TK 3, tk-3, tk_3, [TK3], etc. pero no con otros apellidos o nombres
+    if (preg_match('/(^|[\s\-_\[\(])tk[\s\-_]*3($|[\s\-_\]\)])/iu', $t)) {
+        return true;
+    }
+    $norm = mb_strtolower($t, 'UTF-8');
+    foreach (['no dar', 'bloqueado', 'bloqueo', 'feriado', 'vacaciones'] as $kw) {
+        if (str_contains($norm, $kw)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 function clean_phone_number(string $raw): string
 {
     $digits = preg_replace('/\D+/', '', $raw) ?? '';
@@ -132,6 +151,10 @@ function ensure_pacientes_tables(PDO $pdo): void
 
     try {
         $pdo->exec('ALTER TABLE pacientes ADD COLUMN dejo_review TINYINT(1) NOT NULL DEFAULT 0');
+    } catch (Throwable) {}
+
+    try {
+        $pdo->exec("DELETE FROM pacientes WHERE LOWER(nombre_completo) LIKE '%tk3%' OR LOWER(nombre_completo) LIKE '%tk 3%' OR LOWER(nombre) LIKE '%tk3%' OR LOWER(nombre) LIKE '%tk 3%'");
     } catch (Throwable) {}
 
     $pdo->exec('

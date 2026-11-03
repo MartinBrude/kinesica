@@ -25,6 +25,10 @@ function kinesica_pacientes_upsert(PDO $pdo, array $data): void
         json_out(422, ['status' => 'error', 'message' => 'El nombre y apellido son obligatorios']);
     }
 
+    if (is_tk3_or_blocked_name($nombreCompleto) || is_tk3_or_blocked_name($nombre)) {
+        json_out(422, ['status' => 'error', 'message' => 'El nombre no corresponde a un paciente válido']);
+    }
+
     $nombrePila = mb_substr(trim((string) ($data['nombre_pila'] ?? '')), 0, 60, 'UTF-8');
     if ($nombrePila === '') $nombrePila = extract_first_name($nombreCompleto);
 
@@ -115,6 +119,10 @@ function kinesica_pacientes_update(PDO $pdo, array $data): void
 
     if (strlen($phone) < 6 || strlen($phone) > 16 || preg_match('/^(\d)\1+$/', $phone) || $nombreCompleto === '') {
         json_out(422, ['status' => 'error', 'message' => 'Nombre, apellido y teléfono son obligatorios']);
+    }
+
+    if (is_tk3_or_blocked_name($nombreCompleto) || is_tk3_or_blocked_name($nombre)) {
+        json_out(422, ['status' => 'error', 'message' => 'El nombre no corresponde a un paciente válido']);
     }
 
     $check = $pdo->prepare('SELECT id, nombre_completo FROM pacientes WHERE telefono = :tel AND id != :id');

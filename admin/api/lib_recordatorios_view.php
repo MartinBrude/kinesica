@@ -51,10 +51,17 @@ function recordatorios_is_blocked_event(array $r): bool
     if ($reason === 'blocked') {
         return true;
     }
-    $name = mb_strtolower(trim((string) ($r['patient_name'] ?? '')));
-    $summary = mb_strtolower(trim((string) ($r['event_summary'] ?? '')));
-    foreach (['no dar', 'bloqueado', 'bloqueo'] as $kw) {
-        if (str_contains($name, $kw) || str_contains($summary, $kw)) {
+    $name = (string) ($r['patient_name'] ?? '');
+    $summary = (string) ($r['event_summary'] ?? '');
+    if (function_exists('is_tk3_or_blocked_name')) {
+        if (is_tk3_or_blocked_name($name) || is_tk3_or_blocked_name($summary)) {
+            return true;
+        }
+    }
+    $nameLower = mb_strtolower(trim($name));
+    $summaryLower = mb_strtolower(trim($summary));
+    foreach (['no dar', 'bloqueado', 'bloqueo', 'tk3', 'tk 3'] as $kw) {
+        if (str_contains($nameLower, $kw) || str_contains($summaryLower, $kw)) {
             return true;
         }
     }
@@ -252,7 +259,7 @@ function recordatorios_load_view(?PDO $pdo = null, int $days = RECORDATORIOS_DEF
     try {
         $todayBA = (new DateTimeImmutable('now', recordatorios_tz()))->format('Y-m-d');
         $pdo->prepare('DELETE FROM recordatorio_eventos WHERE status = "pending" AND appointment_date IS NOT NULL AND appointment_date != "" AND appointment_date < :today')->execute(['today' => $todayBA]);
-        $pdo->exec("DELETE FROM recordatorio_eventos WHERE skip_reason = 'blocked' OR LOWER(patient_name) LIKE '%no dar%' OR LOWER(event_summary) LIKE '%no dar%' OR LOWER(patient_name) LIKE '%bloqueado%' OR LOWER(event_summary) LIKE '%bloqueado%'");
+        $pdo->exec("DELETE FROM recordatorio_eventos WHERE skip_reason = 'blocked' OR LOWER(patient_name) LIKE '%no dar%' OR LOWER(event_summary) LIKE '%no dar%' OR LOWER(patient_name) LIKE '%bloqueado%' OR LOWER(event_summary) LIKE '%bloqueado%' OR LOWER(patient_name) LIKE '%tk3%' OR LOWER(event_summary) LIKE '%tk3%' OR LOWER(patient_name) LIKE '%tk 3%' OR LOWER(event_summary) LIKE '%tk 3%'");
         // En MySQL: limpiar registros duplicados manteniendo el último resultado relevante
         $pdo->exec("DELETE r1 FROM recordatorio_eventos r1
                     JOIN recordatorio_eventos r2
@@ -276,6 +283,10 @@ function recordatorios_load_view(?PDO $pdo = null, int $days = RECORDATORIOS_DEF
            AND LOWER(event_summary) NOT LIKE "%no dar%"
            AND LOWER(patient_name) NOT LIKE "%bloqueado%"
            AND LOWER(event_summary) NOT LIKE "%bloqueado%"
+           AND LOWER(patient_name) NOT LIKE "%tk3%"
+           AND LOWER(event_summary) NOT LIKE "%tk3%"
+           AND LOWER(patient_name) NOT LIKE "%tk 3%"
+           AND LOWER(event_summary) NOT LIKE "%tk 3%"
          ORDER BY run_at DESC, id DESC
          LIMIT 2000'
     );
