@@ -505,4 +505,21 @@ test("REGLA 11D: formatClaraScheduleSummary genera el bloque de horarios legible
   assert.ok(summary.includes("Miércoles: 09:00 a 16:30 hs"));
 });
 
+test("REGLA 12: Honorarios dinámicos por disciplina (ATM vs General) y sincronización con Admin", () => {
+  assert.strictEqual(engine.getFeeForTechnique("atm"), 65000);
+  assert.strictEqual(engine.getFeeForTechnique("osteopatia"), 75000);
+  assert.strictEqual(engine.getFeeForTechnique("rpg"), 75000);
+  assert.strictEqual(engine.getFeeForTechnique("paciente"), 75000);
+
+  // Simular cambio dinámico desde el Admin (settings.php)
+  engine.setRuntimeFees({ atm: 70000, general: 80000, payment_methods: "Efectivo o Transferencia" });
+  assert.strictEqual(engine.getFeeForTechnique("atm"), 70000);
+  assert.strictEqual(engine.getFeeForTechnique("osteopatia"), 80000);
+
+  // Restaurar valores estándar
+  engine.setRuntimeFees(engine.DEFAULT_FEES);
+  assert.strictEqual(engine.getFeeForTechnique("atm"), 65000);
+  assert.strictEqual(engine.getFeeForTechnique("osteopatia"), 75000);
+});
+
 console.log(`\n🎉 Resultado: ${passed}/${total} tests superados con éxito.\n`);

@@ -104,6 +104,14 @@ function syncPublicSettings() {
       window.KinesicaBookingEngine.setPractitionerHours(settings.practitioner_hours);
     }
 
+    if (
+      settings.fees &&
+      window.KinesicaBookingEngine &&
+      typeof window.KinesicaBookingEngine.setRuntimeFees === "function"
+    ) {
+      window.KinesicaBookingEngine.setRuntimeFees(settings.fees);
+    }
+
     if (settings.header_schedule && settings.header_schedule.opens && settings.header_schedule.closes) {
       updateHeaderSchedule(settings.header_schedule.opens, settings.header_schedule.closes);
     }

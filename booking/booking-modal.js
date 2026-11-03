@@ -177,11 +177,29 @@
           window.KinesicaBookingEngine.setPractitionerHours(hours);
         }
       };
+      const applyFees = (fees) => {
+        if (
+          fees &&
+          window.KinesicaBookingEngine &&
+          typeof window.KinesicaBookingEngine.setRuntimeFees === "function"
+        ) {
+          window.KinesicaBookingEngine.setRuntimeFees(fees);
+        }
+        if (inlineWidgetInstance && typeof inlineWidgetInstance.updateFees === "function") {
+          inlineWidgetInstance.updateFees(fees);
+        }
+        if (widgetInstance && typeof widgetInstance.updateFees === "function") {
+          widgetInstance.updateFees(fees);
+        }
+      };
 
       try {
         const cached = JSON.parse(localStorage.getItem("kinesica_public_settings") || "null");
         if (cached && cached.practitioner_hours) {
           applyHours(cached.practitioner_hours);
+        }
+        if (cached && cached.fees) {
+          applyFees(cached.fees);
         }
       } catch (_) {}
 
@@ -195,6 +213,9 @@
             } catch (_) {}
             if (data.practitioner_hours) {
               applyHours(data.practitioner_hours);
+            }
+            if (data.fees) {
+              applyFees(data.fees);
             }
           }
         })

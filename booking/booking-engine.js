@@ -47,6 +47,37 @@
 
   const MAX_BOOKING_DAYS = 60;
 
+  const DEFAULT_FEES = {
+    atm: 65000,
+    general: 75000,
+    payment_methods: "Efectivo o transferencia bancaria",
+  };
+
+  let runtimeFees = Object.assign({}, DEFAULT_FEES);
+
+  function setRuntimeFees(fees) {
+    if (fees && typeof fees === "object") {
+      if (typeof fees.atm === "number" || (typeof fees.atm === "string" && !isNaN(Number(fees.atm)))) {
+        runtimeFees.atm = Number(fees.atm);
+      }
+      if (typeof fees.general === "number" || (typeof fees.general === "string" && !isNaN(Number(fees.general)))) {
+        runtimeFees.general = Number(fees.general);
+      }
+      if (typeof fees.payment_methods === "string" && fees.payment_methods.trim()) {
+        runtimeFees.payment_methods = fees.payment_methods.trim();
+      }
+    }
+    return Object.assign({}, runtimeFees);
+  }
+
+  function getRuntimeFees() {
+    return Object.assign({}, runtimeFees);
+  }
+
+  function getFeeForTechnique(techniqueId) {
+    return techniqueId === "atm" ? runtimeFees.atm : runtimeFees.general;
+  }
+
   // Horario semanal por defecto por profesional. Clave = día JS (0 domingo … 6 sábado).
   // María: Lunes 9 a 17, Martes 9 a 16, Viernes 9 a 13.
   // Norberto: Lunes 17:30 a 19:30, Martes 16:30 a 19:30, Miércoles 9 a 16:30, Jueves 15 a 19, Viernes 13:30 a 19:30.
@@ -699,6 +730,10 @@
     DEFAULT_PRACTITIONER_HOURS: DEFAULT_PRACTITIONER_HOURS,
     PRACTITIONER_HOURS: PRACTITIONER_HOURS,
     MAX_BOOKING_DAYS: MAX_BOOKING_DAYS,
+    DEFAULT_FEES: DEFAULT_FEES,
+    setRuntimeFees: setRuntimeFees,
+    getRuntimeFees: getRuntimeFees,
+    getFeeForTechnique: getFeeForTechnique,
     DEFAULT_ARGENTINA_HOLIDAYS: DEFAULT_ARGENTINA_HOLIDAYS,
     clonePractitionerHours: clonePractitionerHours,
     validatePractitionerHours: validatePractitionerHours,

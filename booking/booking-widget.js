@@ -107,6 +107,10 @@
       at: "a las",
       hs: "hs",
       eventId: "Identificador de cita:",
+      sessionFee: "Valor sesión",
+      sessionHourShort: "1 hora",
+      paymentMethodsNote: "Se abona en efectivo o transferencia bancaria",
+      fee: "Valor a abonar",
       techniques: {
         osteopatia: "Osteopatía",
         acupuntura: "Acupuntura",
@@ -197,6 +201,10 @@
       at: "at",
       hs: "",
       eventId: "Booking reference:",
+      sessionFee: "Session fee",
+      sessionHourShort: "1 hour",
+      paymentMethodsNote: "Paid in cash or bank transfer",
+      fee: "Amount to pay",
       techniques: {
         osteopatia: "Osteopathy",
         acupuntura: "Acupuncture",
@@ -287,6 +295,10 @@
       at: "à",
       hs: "",
       eventId: "Référence :",
+      sessionFee: "Tarif séance",
+      sessionHourShort: "1 heure",
+      paymentMethodsNote: "Règlement en espèces ou virement bancaire",
+      fee: "Montant à régler",
       techniques: {
         osteopatia: "Ostéopathie",
         acupuntura: "Acupuncture",
@@ -377,6 +389,10 @@
       at: "às",
       hs: "h",
       eventId: "Identificador:",
+      sessionFee: "Valor sessão",
+      sessionHourShort: "1 hora",
+      paymentMethodsNote: "Pago em dinheiro ou transferência bancária",
+      fee: "Valor a pagar",
       techniques: {
         osteopatia: "Osteopatia",
         acupuntura: "Acupuntura",
@@ -424,7 +440,58 @@
         confirmedBooking: null,
       };
 
+      this.fees = (engine && typeof engine.getRuntimeFees === "function") ? engine.getRuntimeFees() : { atm: 65000, general: 75000, payment_methods: "Efectivo o transferencia bancaria" };
+      try {
+        const cached = JSON.parse(localStorage.getItem("kinesica_public_settings") || "null");
+        if (cached && cached.fees) {
+          this.fees = Object.assign({}, this.fees, cached.fees);
+          if (engine && typeof engine.setRuntimeFees === "function") engine.setRuntimeFees(cached.fees);
+        }
+      } catch (_) {}
+
       this.init();
+    }
+
+    formatFee(amount) {
+      const num = Number(amount || 0);
+      const formatted = num.toLocaleString("es-AR");
+      if (this.lang === "en") {
+        return `ARS ${formatted}`;
+      }
+      return `$${formatted}`;
+    }
+
+    getFeeForTechnique(techniqueId) {
+      if (techniqueId === "atm") {
+        return (this.fees && this.fees.atm) || 65000;
+      }
+      return (this.fees && this.fees.general) || 75000;
+    }
+
+    updateFees(fees) {
+      if (!fees || typeof fees !== "object") return;
+      this.fees = Object.assign({}, this.fees, fees);
+      if (engine && typeof engine.setRuntimeFees === "function") {
+        engine.setRuntimeFees(fees);
+      }
+      this.renderTechniqueChoices();
+      this.renderExistingPractitionerChoices();
+      if (this.state.techniqueId) {
+        this.updateStep1FeeBanner(this.state.techniqueId);
+      }
+    }
+
+    updateStep1FeeBanner(techniqueId) {
+      const box = this.container.querySelector("#kb-step1-fee-box");
+      const valEl = this.container.querySelector("#kb-step1-fee-value");
+      if (!box || !valEl) return;
+      if (!techniqueId) {
+        box.style.display = "none";
+        return;
+      }
+      const fee = this.getFeeForTechnique(techniqueId);
+      valEl.textContent = this.formatFee(fee);
+      box.style.display = "flex";
     }
 
     t(key) {
@@ -473,6 +540,16 @@
         this.client.prewarm();
       }
       this.prefetchUpcomingDays();
+      if (typeof fetch === "function") {
+        fetch("/admin/api/settings.php", { cache: "no-cache" })
+          .then((r) => (r.ok ? r.json() : null))
+          .then((data) => {
+            if (data && typeof data === "object" && data.fees) {
+              this.updateFees(data.fees);
+            }
+          })
+          .catch(() => {});
+      }
 
       this.setStep(1);
     }
@@ -524,8 +601,19 @@
                 </div>
               </div>
 
-              <div style="margin-top: 16px; text-align: right;">
-                <button class="kb-btn kb-btn-primary" id="kb-btn-next-1" disabled>
+              <div class="kb-step1-footer" style="margin-top: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                <div id="kb-step1-fee-box" class="kb-step1-fee-box" style="display: none;">
+                  <span class="kb-fee-icon" aria-hidden="true">💳</span>
+                  <div class="kb-fee-details">
+                    <div class="kb-fee-line">
+                      <span class="kb-fee-label-text">${this.t("fee")}:</span>
+                      <strong id="kb-step1-fee-value" class="kb-fee-val"></strong>
+                      <span class="kb-fee-dur">(${this.t("sessionHourShort")})</span>
+                    </div>
+                    <div class="kb-fee-subline">${this.t("paymentMethodsNote")}</div>
+                  </div>
+                </div>
+                <button class="kb-btn kb-btn-primary" id="kb-btn-next-1" disabled style="margin-left: auto;">
                   ${this.t("seeSlots")}
                 </button>
               </div>
@@ -905,23 +993,38 @@
       });
       const practitionerBox = this.container.querySelector("#kb-practitioner-box");
       if (practitionerBox) practitionerBox.style.display = "none";
+      this.updateStep1FeeBanner(null);
       this.syncStep1Continue();
     }
 
     renderExistingPractitionerChoices() {
       const grid = this.container.querySelector("#kb-existing-practitioner-grid");
+      if (!grid) return;
       grid.innerHTML = "";
+      const genFee = this.getFeeForTechnique("general");
+      const genFormatted = this.formatFee(genFee);
       Object.keys(engine.PRACTITIONERS).forEach((id) => {
         const card = document.createElement("div");
         card.className = "kb-choice-card";
+        if (this.state.practitionerId === id && this.state.techniqueId === "paciente") {
+          card.classList.add("selected");
+        }
         card.dataset.practitioner = id;
-        card.innerHTML = `<h3>${this.practitionerFullName(id)}</h3>`;
+        card.innerHTML = `
+          <h3>${this.practitionerFullName(id)}</h3>
+          <p>${this.t("sessionHour")}</p>
+          <div class="kb-choice-fee">
+            <span class="kb-fee-label">${this.t("sessionFee")}:</span>
+            <strong class="kb-fee-amount">${genFormatted}</strong>
+          </div>
+        `;
         card.addEventListener("click", () => {
           this.state.practitionerId = id;
           this.state.techniqueId = "paciente";
           grid.querySelectorAll(".kb-choice-card").forEach((c) => {
             c.classList.toggle("selected", c.dataset.practitioner === id);
           });
+          this.updateStep1FeeBanner("paciente");
           this.syncStep1Continue();
         });
         grid.appendChild(card);
@@ -930,12 +1033,24 @@
 
     renderTechniqueChoices() {
       const grid = this.container.querySelector("#kb-technique-grid");
+      if (!grid) return;
       grid.innerHTML = "";
       engine.TECHNIQUES.filter((technique) => !technique.internal).forEach((technique) => {
         const card = document.createElement("div");
         card.className = "kb-choice-card";
+        if (this.state.techniqueId === technique.id) {
+          card.classList.add("selected");
+        }
         card.dataset.technique = technique.id;
-        card.innerHTML = `<h3>${this.techniqueLabel(technique)}</h3>`;
+        const fee = this.getFeeForTechnique(technique.id);
+        const feeFormatted = this.formatFee(fee);
+        card.innerHTML = `
+          <h3>${this.techniqueLabel(technique)}</h3>
+          <div class="kb-choice-fee">
+            <span class="kb-fee-label">${this.t("sessionFee")}:</span>
+            <strong class="kb-fee-amount">${feeFormatted}</strong>
+          </div>
+        `;
         card.addEventListener("click", () => this.selectTechnique(technique.id));
         grid.appendChild(card);
       });
@@ -953,6 +1068,7 @@
       this.container.querySelectorAll("#kb-technique-grid .kb-choice-card").forEach((card) => {
         card.classList.toggle("selected", card.dataset.technique === techniqueId);
       });
+      this.updateStep1FeeBanner(techniqueId);
       this.renderPractitionerChoices(technique);
       this.syncStep1Continue();
     }
@@ -1642,6 +1758,7 @@
         <div><strong>${this.t("practitioner")}:</strong> ${professional}</div>
         <div><strong>${this.t("patient")}:</strong> ${payload.nombre}</div>
         <div><strong>${this.t("when")}:</strong> ${this.formatConfirmationWhen(payload.date, payload.time)}</div>
+        <div><strong>${this.t("fee")}:</strong> ${this.formatFee(this.getFeeForTechnique(payload.techniqueId))} <span style="font-size: 12px; color: var(--kin-text-muted);">(${this.t("paymentMethodsNote")})</span></div>
         ${payload.email ? `<div><strong>${this.t("email")}:</strong> ${payload.email}</div>` : ""}
         <div style="margin-top: 6px; font-size: 12px; color: var(--kin-text-muted);">
           ${this.t("eventId")} <code>${result.eventId || "OK"}</code>

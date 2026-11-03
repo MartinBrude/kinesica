@@ -153,7 +153,7 @@ export function initHonorariosModule() {
 
       if (statusBanner) {
         statusBanner.className = "horarios-alert-box is-success";
-        statusBanner.textContent = "✅ Honorarios actualizados correctamente. Ya están vigentes en las respuestas de WhatsApp de Clara.";
+        statusBanner.textContent = "✅ Honorarios actualizados correctamente. Ya están vigentes en las respuestas de WhatsApp de Clara y en la turnera web.";
         statusBanner.hidden = false;
       }
       loadHonorarios();
