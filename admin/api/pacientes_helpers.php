@@ -154,7 +154,7 @@ function ensure_pacientes_tables(PDO $pdo): void
     } catch (Throwable) {}
 
     try {
-        $pdo->exec("DELETE FROM pacientes WHERE LOWER(nombre_completo) LIKE '%tk3%' OR LOWER(nombre_completo) LIKE '%tk 3%' OR LOWER(nombre) LIKE '%tk3%' OR LOWER(nombre) LIKE '%tk 3%'");
+        $pdo->exec("DELETE FROM pacientes WHERE LOWER(nombre_completo) LIKE '%tk3%' OR LOWER(nombre_completo) LIKE '%tk 3%' OR LOWER(nombre) LIKE '%tk3%' OR LOWER(nombre) LIKE '%tk 3%' OR LOWER(nombre_completo) LIKE '%no dar%' OR LOWER(nombre) LIKE '%no dar%' OR LOWER(apellido) LIKE '%no dar%'");
     } catch (Throwable) {}
 
     $pdo->exec('
