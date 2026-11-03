@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/pacientes_helpers.php';
+
 /**
  * Almacén durable de outcomes de recordatorios WhatsApp 24h (ingest desde n8n).
  * Solo se AGREGA: claves únicas = idempotencia ante reintentos del workflow.
@@ -232,6 +234,41 @@ function recordatorios_store_items(array $items, ?PDO $pdo = null): array
             }
             $outcome = recordatorios_insert_item($pdo, $ev);
             $res[$outcome === 'stored' ? 'stored' : 'duplicates']++;
+
+            // Auto-sincronización con el directorio de pacientes:
+            // Si el turno trae teléfono y nombre real de paciente, registrar/completar en `pacientes`.
+            if (!empty($ev['wa_id']) && !empty($ev['patient_name'])) {
+                $rawPhone = clean_phone_number((string) $ev['wa_id']);
+                $rawName = trim((string) $ev['patient_name']);
+                if (strlen($rawPhone) >= 6 && strlen($rawPhone) <= 16 && $rawName !== '' && $rawName !== 'Estimado/a paciente' && $rawName !== 'Paciente') {
+                    if (function_exists('is_tk3_or_blocked_name') && !is_tk3_or_blocked_name($rawName)) {
+                        try {
+                            ensure_pacientes_tables($pdo);
+                            $parts = preg_split('/\s+/u', $rawName, 2, PREG_SPLIT_NO_EMPTY) ?: [];
+                            $nom = $parts[0] ?? $rawName;
+                            $ape = $parts[1] ?? '';
+                            $pila = function_exists('extract_first_name') ? extract_first_name($rawName) : $nom;
+
+                            $stmtPac = $pdo->prepare(
+                                'INSERT INTO pacientes (telefono, nombre, apellido, nombre_completo, nombre_pila, origen)
+                                 VALUES (:tel, :nombre, :apellido, :full, :pila, "admin")
+                                 ON DUPLICATE KEY UPDATE
+                                    nombre = CASE WHEN nombre IS NULL OR nombre = "" THEN VALUES(nombre) ELSE nombre END,
+                                    apellido = CASE WHEN apellido IS NULL OR apellido = "" THEN VALUES(apellido) ELSE apellido END,
+                                    nombre_completo = CASE WHEN nombre_completo IS NULL OR nombre_completo = "" THEN VALUES(nombre_completo) ELSE nombre_completo END,
+                                    nombre_pila = CASE WHEN nombre_pila IS NULL OR nombre_pila = "" THEN VALUES(nombre_pila) ELSE nombre_pila END'
+                            );
+                            $stmtPac->execute([
+                                'tel' => $rawPhone,
+                                'nombre' => mb_substr($nom, 0, 60, 'UTF-8'),
+                                'apellido' => mb_substr($ape, 0, 60, 'UTF-8'),
+                                'full' => mb_substr($rawName, 0, 120, 'UTF-8'),
+                                'pila' => mb_substr($pila, 0, 60, 'UTF-8'),
+                            ]);
+                        } catch (Throwable $pacEx) {}
+                    }
+                }
+            }
         }
     } catch (Throwable $e) {
         error_log('recordatorios store: ' . $e->getMessage());
