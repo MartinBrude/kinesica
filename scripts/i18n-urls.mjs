@@ -45,6 +45,13 @@ export const STEMS = [
   ...PATHOLOGY_STEMS,
 ];
 
+/**
+ * Páginas que existen solo en español (sin /en, /fr, /pt todavía).
+ * No llevan hreflang ni alternates en el sitemap. Al crear las traducciones,
+ * mover el stem a STEMS y quitarlo de esta lista.
+ */
+export const ES_ONLY_STEMS = ["profesionales"];
+
 /** Public absolute URL for a page. */
 export function absoluteUrl(lang, stem) {
   const entry = langByCode(lang);

@@ -60,11 +60,10 @@ function renderDeletionCard(sec, form, lang, copy) {
                 .join("\n              ")}
             </div>
 
-            <form class="privacy-request-form" action="https://api.web3forms.com/submit" method="POST" data-lang="${escAttr(
+            <form class="privacy-request-form" action="/api/send-contact.php" method="POST" data-lang="${escAttr(
               lang,
-            )}" data-access-key="${escAttr(CONTACT.web3formsKey)}" novalidate>
-              <input type="hidden" name="access_key" value="${escAttr(CONTACT.web3formsKey)}" />
-              <input type="hidden" name="from_name" value="Kinésica Web" />
+            )}" novalidate>
+              <input type="hidden" name="type" value="privacidad" />
               <input type="checkbox" name="botcheck" class="hidden" style="display: none;" tabindex="-1" autocomplete="off" />
               <div class="privacy-form-grid">
                 <div class="privacy-form-group">

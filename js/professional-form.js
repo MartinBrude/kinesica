@@ -1,6 +1,6 @@
 /**
  * Manejo interactivo del formulario de Red Profesional y Contacto Interdisciplinario.
- * Envía la consulta directamente a Norberto Brude vía la API de Web3Forms.
+ * Envía la consulta a Norberto Brude vía /api/send-contact.php (servidor PHP propio).
  */
 (function () {
   "use strict";
@@ -14,12 +14,6 @@
       form.querySelector('button[type="submit"]') ||
       form.querySelector(".btn-submit-professional");
     var alertBox = form.querySelector(".professional-form-alert");
-
-    var accessKey =
-      form.getAttribute("data-access-key") ||
-      (form.querySelector('[name="access_key"]')
-        ? form.querySelector('[name="access_key"]').value
-        : "6f3383f7-9d3c-4b37-88eb-b029427a6540");
 
     var initialBtnHtml = submitBtn ? submitBtn.innerHTML : "";
 
@@ -117,23 +111,17 @@
 
       var formattedText = buildFormattedMessage(data);
       var payload = {
-        access_key: accessKey,
-        subject:
-          "[Kinésica - Red Profesional] Contacto de: " +
-          data.name +
-          (data.specialty ? " (" + data.specialty + ")" : ""),
-        from_name: "Kinésica Web (Red Profesional)",
-        to_email: "norberto1712@gmail.com",
-        to_name: "Norberto Silvio Brude",
+        type: "profesional",
+        lang: "es",
         name: data.name,
-        email: data.email || "no-reply@kinesica.com.ar",
+        email: data.email,
         phone: data.phone || "No especificado",
         specialty: data.specialty || "No especificada",
         motive: data.motive || "Consulta",
         message: formattedText,
       };
 
-      fetch("https://api.web3forms.com/submit", {
+      fetch("/api/send-contact.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -156,7 +144,7 @@
             form.reset();
           } else {
             var errMsg =
-              (result.data && result.data.message) ||
+              (result.status === 429 && result.data && result.data.error) ||
               "Ocurrió un error al enviar el mensaje. Por favor intentá nuevamente o escribinos directamente por WhatsApp.";
             showAlert(errMsg, true);
           }

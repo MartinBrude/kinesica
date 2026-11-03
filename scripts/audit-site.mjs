@@ -15,6 +15,7 @@ import {
   stemFromFile,
   HTML_LANG,
   HREFLANG,
+  ES_ONLY_STEMS,
 } from "./i18n-urls.mjs";
 import {
   LANG_CODES,
@@ -98,6 +99,11 @@ function auditLangPicker(html, file) {
 
   if (usesJsShell(html)) {
     const stem = stemFromFile(file);
+    if (ES_ONLY_STEMS.includes(stem)) {
+      // Solo en español: sin hreflang (no hay traducciones publicadas).
+      auditJsShellScripts(html, file);
+      return;
+    }
     const hreflangs = extractHreflangs(html);
     for (const code of LANG_CODES) {
       const expected = absoluteUrl(code, stem);
@@ -214,7 +220,11 @@ for (const file of htmlFiles) {
     add("warning", file, "Missing canonical URL");
 
   const hreflangs = extractHreflangs(html);
-  if (!file.includes("404") && file !== "404-router.html") {
+  if (
+    !file.includes("404") &&
+    file !== "404-router.html" &&
+    !ES_ONLY_STEMS.includes(stemFromFile(file))
+  ) {
     const langs = hreflangs.map((h) => h.lang);
     if (!langs.includes("fr") && !file.startsWith("fr/"))
       add("warning", file, "Missing hreflang fr");

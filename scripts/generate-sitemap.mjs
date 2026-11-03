@@ -6,7 +6,13 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { STEMS, absoluteUrl, repoPath, HREFLANG } from "./i18n-urls.mjs";
+import {
+  STEMS,
+  ES_ONLY_STEMS,
+  absoluteUrl,
+  repoPath,
+  HREFLANG,
+} from "./i18n-urls.mjs";
 import { LANG_CODES } from "./languages.mjs";
 import { PATHOLOGIES } from "./pathology-content.mjs";
 
@@ -64,11 +70,9 @@ for (const stem of STEMS) {
 }
 
 /**
- * Páginas solo en español (sin versiones /en, /fr, /pt todavía).
- * Se listan sin xhtml:link para no declarar alternates inexistentes.
- * Al crear las traducciones, mover el stem a STEMS (i18n-urls.mjs).
+ * Páginas solo en español (ES_ONLY_STEMS en i18n-urls.mjs): se listan sin
+ * xhtml:link para no declarar alternates inexistentes.
  */
-const ES_ONLY_STEMS = ["profesionales"];
 const esOnlyStems = new Set();
 for (const stem of ES_ONLY_STEMS) {
   const rel = repoPath("es", stem);

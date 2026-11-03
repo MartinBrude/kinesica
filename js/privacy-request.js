@@ -1,6 +1,6 @@
 /**
  * Interactive Personal Data Deletion Request handler.
- * Handles client-side validation and automated delivery via Web3Forms API.
+ * Handles client-side validation and delivery via /api/send-contact.php (own PHP server).
  */
 (function () {
   "use strict";
@@ -14,12 +14,6 @@
       form.querySelector('button[type="submit"]') ||
       form.querySelector(".privacy-btn-primary");
     var alertBox = form.querySelector(".privacy-form-alert");
-
-    var accessKey =
-      form.getAttribute("data-access-key") ||
-      (form.querySelector('[name="access_key"]')
-        ? form.querySelector('[name="access_key"]').value
-        : "6f3383f7-9d3c-4b37-88eb-b029427a6540");
 
     var pageLang = form.getAttribute("data-lang") || "es";
 
@@ -198,18 +192,17 @@
 
       var formattedMessage = buildFormattedText(data);
       var payload = {
-        access_key: accessKey,
-        subject: t.subject + " - " + data.name,
-        from_name: "Kinésica Web",
+        type: "privacidad",
+        lang: pageLang,
         name: data.name,
-        email: data.email || "no-reply@kinesica.com.ar",
+        email: data.email,
         phone: data.phone || t.notProvided,
         scope: data.scope || t.notProvided,
         details: data.details || t.notProvided,
         message: formattedMessage,
       };
 
-      fetch("https://api.web3forms.com/submit", {
+      fetch("/api/send-contact.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -228,9 +221,7 @@
             showAlert(t.success, false);
             form.reset();
           } else {
-            var errMsg =
-              (result.data && result.data.message) || t.error;
-            showAlert(errMsg, true);
+            showAlert(t.error, true);
           }
         })
         .catch(function () {
