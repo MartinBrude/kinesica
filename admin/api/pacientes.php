@@ -69,7 +69,7 @@ try {
         $action = $_GET['action'] ?? '';
 
         if ($action === 'directory' || $action === 'get_directory') {
-            $stmt = $pdo->query('SELECT nombre, apellido, nombre_completo, telefono, email FROM pacientes');
+            $stmt = $pdo->query("SELECT nombre, apellido, nombre_completo, telefono, email FROM pacientes WHERE LOWER(nombre_completo) NOT LIKE '%tk3%' AND LOWER(nombre_completo) NOT LIKE '%tk 3%'");
             $directory = [];
             $emails = [];
             while ($row = $stmt->fetch()) {
@@ -111,14 +111,15 @@ try {
         if ($q !== '') {
             $stmt = $pdo->prepare('
                 SELECT * FROM pacientes 
-                WHERE nombre_completo LIKE :q OR nombre LIKE :q OR apellido LIKE :q OR telefono LIKE :q OR dni LIKE :q OR email LIKE :q OR contacto_nombre LIKE :q OR contacto_telefono LIKE :q
+                WHERE (nombre_completo LIKE :q OR nombre LIKE :q OR apellido LIKE :q OR telefono LIKE :q OR dni LIKE :q OR email LIKE :q OR contacto_nombre LIKE :q OR contacto_telefono LIKE :q)
+                  AND LOWER(nombre_completo) NOT LIKE "%tk3%" AND LOWER(nombre_completo) NOT LIKE "%tk 3%"
                 ORDER BY CASE WHEN apellido != "" THEN apellido ELSE nombre_completo END ASC, nombre ASC LIMIT 100
             ');
             $stmt->execute(['q' => "%$q%"]);
             json_out(200, ['status' => 'success', 'items' => $stmt->fetchAll()]);
         }
 
-        $stmt = $pdo->query('SELECT * FROM pacientes ORDER BY CASE WHEN apellido != "" THEN apellido ELSE nombre_completo END ASC, nombre ASC');
+        $stmt = $pdo->query('SELECT * FROM pacientes WHERE LOWER(nombre_completo) NOT LIKE "%tk3%" AND LOWER(nombre_completo) NOT LIKE "%tk 3%" ORDER BY CASE WHEN apellido != "" THEN apellido ELSE nombre_completo END ASC, nombre ASC');
         json_out(200, ['status' => 'success', 'items' => $stmt->fetchAll()]);
     }
 
@@ -166,6 +167,9 @@ try {
                 $apellido = $parts[1] ?? '';
             }
             if ($phone === '' || $nombreCompleto === '') json_out(422, ['status' => 'error', 'message' => 'Teléfono y nombre requeridos']);
+            if (is_tk3_or_blocked_name($nombreCompleto) || is_tk3_or_blocked_name($nombre)) {
+                json_out(422, ['status' => 'error', 'message' => 'El nombre no corresponde a un paciente válido']);
+            }
             $stmt = $pdo->prepare('UPDATE pacientes SET nombre = :nombre, apellido = :apellido, nombre_completo = :full, nombre_pila = :pila WHERE telefono = :tel');
             $stmt->execute(['nombre' => $nombre, 'apellido' => $apellido, 'full' => $nombreCompleto, 'pila' => extract_first_name($nombreCompleto), 'tel' => $phone]);
             json_out(200, ['status' => 'success', 'updated' => $stmt->rowCount()]);

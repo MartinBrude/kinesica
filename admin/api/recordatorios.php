@@ -54,6 +54,9 @@ function recordatorios_persist_directory_contact(string $patientName, string $ph
     if ($name === '') {
         $name = 'Paciente';
     }
+    if (is_tk3_or_blocked_name($name)) {
+        return ['ok' => false, 'error' => 'El contacto no corresponde a un paciente válido'];
+    }
     $parts = preg_split('/\s+/u', $name, 2, PREG_SPLIT_NO_EMPTY) ?: [];
     $nombre = $parts[0] ?? $name;
     $apellido = $parts[1] ?? '';

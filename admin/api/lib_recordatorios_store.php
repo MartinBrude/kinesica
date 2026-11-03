@@ -128,9 +128,18 @@ function recordatorios_normalize_item(array $in, string $execId, int $runAt): ?a
         $skip = 'clara_inactive';
     }
 
-    $name = mb_strtolower(trim((string) ($in['patient_name'] ?? $in['patient_full_name'] ?? '')));
-    $summary = mb_strtolower(trim((string) ($in['event_summary'] ?? '')));
-    if ($skip === 'blocked' || str_contains($name, 'no dar') || str_contains($summary, 'no dar') || str_contains($name, 'bloqueado') || str_contains($summary, 'bloqueado')) {
+    $nameRaw = (string) ($in['patient_name'] ?? $in['patient_full_name'] ?? '');
+    $summaryRaw = (string) ($in['event_summary'] ?? '');
+    $name = mb_strtolower(trim($nameRaw));
+    $summary = mb_strtolower(trim($summaryRaw));
+
+    if (function_exists('is_tk3_or_blocked_name')) {
+        if (is_tk3_or_blocked_name($nameRaw) || is_tk3_or_blocked_name($summaryRaw)) {
+            return null;
+        }
+    }
+
+    if ($skip === 'blocked' || str_contains($name, 'no dar') || str_contains($summary, 'no dar') || str_contains($name, 'bloqueado') || str_contains($summary, 'bloqueado') || str_contains($name, 'tk3') || str_contains($summary, 'tk3') || str_contains($name, 'tk 3') || str_contains($summary, 'tk 3')) {
         return null;
     }
 
