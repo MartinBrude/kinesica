@@ -150,7 +150,7 @@
           setLoading(false);
           if (result.ok && result.data && result.data.success) {
             showAlert(
-              "¡Muchas gracias por comunicarte! El mensaje fue enviado con éxito a Norberto Silvio Brude (norberto1712@gmail.com). Nos pondremos en contacto a la brevedad.",
+              "¡Muchas gracias por comunicarte! El mensaje fue enviado con éxito. Nos pondremos en contacto a la brevedad.",
               false
             );
             form.reset();
