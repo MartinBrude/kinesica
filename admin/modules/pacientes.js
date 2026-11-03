@@ -15,12 +15,57 @@ export { formatDisplayPhone };
 export const GOOGLE_REVIEW_INVITE_URL = "https://search.google.com/local/writereview?placeid=ChIJZ2mPW9K1vJUR3J5kGRi5gws";
 
 /**
+ * Extrae y formatea el nombre de pila del paciente garantizando que esté cargado.
+ * @param {object} p
+ * @returns {string}
+ */
+export function getPatientFirstName(p) {
+  let raw = (p?.nombre_pila || "").trim();
+  if (!raw) {
+    const formatted = formatPatientName(p);
+    raw = (formatted?.nombre || "").trim();
+  }
+  if (!raw && p?.nombre) {
+    raw = String(p.nombre).trim();
+  }
+  if (!raw && p?.nombre_completo) {
+    const clean = String(p.nombre_completo).trim().replace(/^(lic\.|dr\.|dra\.|sr\.|sra\.)\s+/i, "");
+    if (clean.includes(",")) {
+      const parts = clean.split(",");
+      raw = (parts[1] || parts[0]).trim();
+    } else {
+      raw = clean;
+    }
+  }
+
+  if (!raw || raw.toLowerCase() === "paciente" || raw.toLowerCase() === "sin nombre") {
+    return "";
+  }
+
+  const words = raw.split(/\s+/).filter(Boolean);
+  if (words.length === 0) return "";
+
+  let first = words[0];
+  if (words.length >= 2) {
+    const compound = first.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    if (["maria", "juan", "ana", "jose"].includes(compound)) {
+      first = `${first} ${words[1]}`;
+    }
+  }
+
+  return first
+    .split(/\s+/)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(" ");
+}
+
+/**
  * Genera el mensaje personalizado de WhatsApp para invitar al paciente a dejar una reseña.
  * @param {object} p
  * @returns {string}
  */
 export function buildReviewInviteMessage(p) {
-  const firstName = (p?.nombre_pila || p?.nombre || "").trim();
+  const firstName = getPatientFirstName(p);
   const saludo = firstName ? `Hola ${firstName}, ¿cómo estás?` : "Hola, ¿cómo estás?";
   return `${saludo} Te escribo de Kinésica. Esperamos que te estés sintiendo muy bien. Si tenés un minuto, nos ayudaría mucho a crecer si nos dejás una breve reseña de tu experiencia en Google: ${GOOGLE_REVIEW_INVITE_URL} ¡Muchas gracias por tu apoyo!`;
 }
@@ -189,18 +234,20 @@ export function renderPacientesTable() {
     const displayTel = formatDisplayPhone(rawTel);
 
     const hasReview = patientHasReview(p);
+    const firstName = getPatientFirstName(p);
+    const hasLoadedName = Boolean(firstName);
     const reviewMsg = buildReviewInviteMessage(p);
-    const waReviewLink = cleanDigits ? `https://wa.me/${cleanDigits}?text=${encodeURIComponent(reviewMsg)}` : "#";
+    const waReviewLink = (cleanDigits && hasLoadedName) ? `https://wa.me/${cleanDigits}?text=${encodeURIComponent(reviewMsg)}` : "#";
 
     const reviewAction = hasReview
       ? `<span class="badge-review-ok" title="Ya dejó una reseña en Google" style="display:inline-flex; align-items:center; gap:4px; font-size:11.5px; padding:3px 8px; border-radius:6px; background:#fef9c3; color:#854d0e; font-weight:600; border:1px solid #fde047;">
            <span aria-hidden="true">⭐</span> Con review
          </span>`
-      : (cleanDigits
-          ? `<a class="btn light btn-review-invite" href="${waReviewLink}" target="_blank" rel="noopener" title="Enviar WhatsApp invitando a dejar una reseña en Google" style="color:#0f766e; border-color:#99f6e4; background:#f0fdfa; display:inline-flex; align-items:center; gap:4px; font-size:12px; padding:4px 9px; font-weight:600; text-decoration:none;">
+      : (cleanDigits && hasLoadedName
+          ? `<a class="btn light btn-review-invite" href="${waReviewLink}" target="_blank" rel="noopener" title="Enviar WhatsApp a ${escapeHtml(firstName)} invitándole a dejar una reseña en Google" style="color:#0f766e; border-color:#99f6e4; background:#f0fdfa; display:inline-flex; align-items:center; gap:4px; font-size:12px; padding:4px 9px; font-weight:600; text-decoration:none;">
                <span aria-hidden="true">⭐</span> Pedir review
              </a>`
-          : `<span class="btn light" title="Sin teléfono para WhatsApp" style="opacity:0.45; cursor:not-allowed; display:inline-flex; align-items:center; gap:4px; font-size:12px; padding:4px 9px;">
+          : `<span class="btn light" title="${!hasLoadedName ? "El nombre del paciente debe estar cargado para pedirle review" : "Sin teléfono para WhatsApp"}" style="opacity:0.45; cursor:not-allowed; display:inline-flex; align-items:center; gap:4px; font-size:12px; padding:4px 9px;">
                <span aria-hidden="true">⭐</span> Pedir review
              </span>`);
 
