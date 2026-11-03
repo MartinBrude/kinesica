@@ -66,8 +66,8 @@ export function getPatientFirstName(p) {
  */
 export function buildReviewInviteMessage(p) {
   const firstName = getPatientFirstName(p);
-  const saludo = firstName ? `Hola ${firstName}, ¿cómo estás?` : "Hola, ¿cómo estás?";
-  return `${saludo} Te escribo de Kinésica. Esperamos que te estés sintiendo muy bien. Si tenés un minuto, nos ayudaría mucho a crecer si nos dejás una breve reseña de tu experiencia en Google: ${GOOGLE_REVIEW_INVITE_URL} ¡Muchas gracias por tu apoyo!`;
+  const saludo = firstName ? `Hola ${firstName}!` : "Hola!";
+  return `${saludo}\nTe escribo de Kinésica. Esperamos que te estés sintiendo muy bien.\nSi tenés un minuto, nos ayudaría mucho a crecer una breve reseña de tu experiencia: ${GOOGLE_REVIEW_INVITE_URL}\n¡Muchas gracias por tu apoyo!`;
 }
 
 /**
