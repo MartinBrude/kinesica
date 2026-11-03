@@ -129,15 +129,13 @@ $specialty = kinesica_contact_line($data['specialty'] ?? '', 120);
 $motive = kinesica_contact_line($data['motive'] ?? '', 160);
 $scope = kinesica_contact_line($data['scope'] ?? '', 200);
 $message = kinesica_contact_text($data['message'] ?? '', 4000);
+$statement = kinesica_contact_text($data['statement'] ?? '', 800);
 
 if ($name === '' || ($email === '' && $phone === '')) {
     kinesica_contact_respond(400, ['success' => false, 'error' => 'Nombre y un correo o teléfono son requeridos.']);
 }
 if ($email !== '' && !kinesica_contact_valid_email($email)) {
     kinesica_contact_respond(400, ['success' => false, 'error' => 'Correo electrónico con formato inválido.']);
-}
-if ($message === '') {
-    kinesica_contact_respond(400, ['success' => false, 'error' => 'Mensaje vacío.']);
 }
 
 $clientIp = (string) ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
@@ -185,15 +183,111 @@ if (!kinesica_contact_valid_email($mailFrom)) {
 $replyTo = kinesica_contact_valid_email($email) ? $email : $mailFrom;
 
 $fromName = $type === 'profesional' ? 'Kinésica Web (Red Profesional)' : 'Kinésica Web (Privacidad)';
-$bodyLines = [
-    $message,
-    '',
-    '--',
-    'Formulario: ' . ($type === 'profesional' ? 'Red Profesional' : 'Privacidad (eliminación de datos)') . ' · idioma: ' . $lang,
-    'Responder a: ' . ($email !== '' ? $email : ($phone !== '' ? $phone : 'sin datos')),
-    'Recibido: ' . (new DateTime('now', new DateTimeZone('America/Argentina/Buenos_Aires')))->format('d/m/Y H:i') . ' (hora de Buenos Aires)',
-];
-$textBody = implode("\n", $bodyLines);
+$receivedAt = (new DateTime('now', new DateTimeZone('America/Argentina/Buenos_Aires')))->format('d/m/Y H:i');
+$langNames = ['es' => 'Español', 'en' => 'English', 'fr' => 'Français', 'pt' => 'Português'];
+
+if ($type === 'profesional') {
+    $heading = 'Nuevo contacto profesional';
+    $lead = 'Un colega escribió desde la página de <strong>Red Profesional</strong> del sitio.';
+    $rows = [
+        'Nombre' => $name,
+        'Especialidad' => $specialty,
+        'Correo' => $email,
+        'Teléfono' => $phone,
+        'Motivo' => $motive,
+    ];
+    $messageTitle = 'Mensaje';
+    $messageBody = $message;
+} else {
+    $heading = 'Solicitud de eliminación de datos';
+    $lead = 'Se recibió una solicitud desde la página de <strong>Privacidad</strong> (Ley 25.326 / RGPD / LGPD). '
+        . 'Plazo de respuesta: 5 días hábiles.';
+    $rows = [
+        'Nombre' => $name,
+        'Correo' => $email,
+        'Teléfono' => $phone,
+        'Alcance' => $scope,
+        'Idioma' => $langNames[$lang] ?? $lang,
+    ];
+    $messageTitle = 'Detalles adicionales';
+    $messageBody = $message;
+}
+$rows['Recibido'] = $receivedAt . ' (hora de Buenos Aires)';
+$rows = array_filter($rows, static fn($v) => $v !== '' && $v !== 'No especificado' && $v !== 'No especificada');
+$emptyMessage = '(Sin mensaje adicional)';
+
+// Texto plano (alternativa)
+$textLines = [mb_strtoupper($heading), str_repeat('-', 40)];
+foreach ($rows as $label => $value) {
+    $textLines[] = $label . ': ' . $value;
+}
+$textLines[] = '';
+$textLines[] = $messageTitle . ':';
+$textLines[] = $messageBody !== '' ? $messageBody : $emptyMessage;
+if ($statement !== '') {
+    $textLines[] = '';
+    $textLines[] = '"' . $statement . '"';
+}
+$textLines[] = '';
+$textLines[] = $email !== '' ? 'Para responder, contestá a este correo (Reply-To: ' . $email . ').' : 'Sin correo: contactar por teléfono.';
+$textBody = implode("\n", $textLines);
+
+// HTML (misma identidad visual que los mails de turnos)
+$e = static fn(string $v): string => htmlspecialchars($v, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+$rowsHtml = '';
+foreach ($rows as $label => $value) {
+    $valueHtml = $e($value);
+    if ($label === 'Correo') {
+        $valueHtml = '<a href="mailto:' . $e($value) . '" style="color:#005f99;text-decoration:none;">' . $valueHtml . '</a>';
+    }
+    $rowsHtml .= '<tr>'
+        . '<td style="padding:6px 14px 6px 0;color:#005f99;font-weight:600;font-size:14px;vertical-align:top;white-space:nowrap;">' . $e($label) . '</td>'
+        . '<td style="padding:6px 0;color:#334155;font-size:15px;vertical-align:top;">' . $valueHtml . '</td>'
+        . '</tr>';
+}
+$messageHtml = $messageBody !== ''
+    ? nl2br($e($messageBody), false)
+    : '<span style="color:#94a3b8;">' . $e($emptyMessage) . '</span>';
+$statementHtml = $statement !== ''
+    ? '<p style="margin:14px 0 0 0;padding-left:12px;border-left:3px solid #cbd5e1;color:#64748b;font-size:13px;font-style:italic;">' . $e($statement) . '</p>'
+    : '';
+$replySubject = rawurlencode('Re: ' . $subject);
+$buttonHtml = $email !== ''
+    ? '<p style="text-align:center;margin:26px 0 4px 0;"><a href="mailto:' . $e($email) . '?subject=' . $replySubject . '" '
+        . 'style="display:inline-block;background-color:#005f99;color:#ffffff;text-decoration:none;font-weight:600;font-size:15px;padding:12px 26px;border-radius:8px;">'
+        . 'Responder a ' . $e(mb_substr($name, 0, 40)) . '</a></p>'
+    : '';
+
+$htmlBody = '<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>' . $e($heading) . ' - Kinésica</title>
+</head>
+<body style="margin:0;padding:20px;background-color:#f5f7fa;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Arial,sans-serif;">
+  <div style="max-width:580px;margin:0 auto;background-color:#ffffff;border-radius:10px;overflow:hidden;border:1px solid #e5e9f0;">
+    <div style="padding:26px 20px 18px 20px;text-align:center;border-bottom:2px solid #005f99;">
+      <img src="https://www.kinesica.com.ar/images/logo.png" alt="Kinésica" style="max-width:170px;height:auto;display:block;margin:0 auto;">
+    </div>
+    <div style="padding:28px 26px;color:#2c3e50;font-size:15px;line-height:1.6;">
+      <h1 style="font-size:20px;font-weight:600;color:#1a252f;margin:0 0 10px 0;">' . $e($heading) . '</h1>
+      <p style="color:#556575;margin:0 0 22px 0;">' . $lead . '</p>
+      <div style="background-color:#f8fafc;border:1px solid #e2e8f0;border-left:4px solid #005f99;border-radius:6px;padding:12px 18px;margin-bottom:22px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;width:100%;">' . $rowsHtml . '</table>
+      </div>
+      <div style="font-size:13px;font-weight:600;color:#005f99;text-transform:uppercase;letter-spacing:0.04em;margin:0 0 8px 0;">' . $e($messageTitle) . '</div>
+      <div style="background-color:#ffffff;border:1px solid #e2e8f0;border-radius:6px;padding:14px 16px;color:#334155;font-size:15px;line-height:1.6;">' . $messageHtml . '</div>
+      ' . $statementHtml . '
+      ' . $buttonHtml . '
+    </div>
+    <div style="text-align:center;padding:20px;font-size:12px;color:#8a99a8;background-color:#f8fafc;border-top:1px solid #edf2f7;">
+      <p style="margin:0 0 6px 0;"><strong>Kinésica</strong> · Terapias Manuales &amp; Rehabilitación</p>
+      <p style="margin:0;"><a href="https://www.kinesica.com.ar" style="color:#005f99;text-decoration:none;font-weight:500;">www.kinesica.com.ar</a></p>
+    </div>
+  </div>
+</body>
+</html>';
 
 // --- Envío: Resend (si hay API key) y fallback mail() ---
 $apiKey = trim((string) (
@@ -216,6 +310,7 @@ if ($apiKey !== '' && function_exists('curl_init')) {
             'from' => $resendFrom,
             'to' => [$to],
             'subject' => $subject,
+            'html' => $htmlBody,
             'text' => $textBody,
             'reply_to' => $replyTo,
         ]),
@@ -230,19 +325,28 @@ if ($apiKey !== '' && function_exists('curl_init')) {
     error_log('[send-contact] Resend falló (' . $httpCode . '): ' . ($curlError ?: substr((string) $response, 0, 300)));
 }
 
+$boundary = 'bnd_' . md5(uniqid((string) mt_rand(), true));
 $headers = implode("\r\n", [
     'MIME-Version: 1.0',
-    'Content-Type: text/plain; charset=UTF-8',
-    'Content-Transfer-Encoding: 8bit',
+    'Content-Type: multipart/alternative; boundary="' . $boundary . '"',
     'From: =?UTF-8?B?' . base64_encode($fromName) . '?= <' . $mailFrom . '>',
     'Reply-To: ' . $replyTo,
     'X-Mailer: PHP/' . phpversion(),
 ]) . "\r\n";
+$mailBody = "--{$boundary}\r\n"
+    . "Content-Type: text/plain; charset=UTF-8\r\n"
+    . "Content-Transfer-Encoding: base64\r\n\r\n"
+    . chunk_split(base64_encode($textBody)) . "\r\n"
+    . "--{$boundary}\r\n"
+    . "Content-Type: text/html; charset=UTF-8\r\n"
+    . "Content-Transfer-Encoding: base64\r\n\r\n"
+    . chunk_split(base64_encode($htmlBody)) . "\r\n"
+    . "--{$boundary}--\r\n";
 $encodedSubject = '=?UTF-8?B?' . base64_encode($subject) . '?=';
 
-$sent = @mail($to, $encodedSubject, $textBody, $headers, '-f ' . $mailFrom);
+$sent = @mail($to, $encodedSubject, $mailBody, $headers, '-f ' . $mailFrom);
 if (!$sent) {
-    $sent = @mail($to, $encodedSubject, $textBody, $headers);
+    $sent = @mail($to, $encodedSubject, $mailBody, $headers);
 }
 if ($sent) {
     kinesica_contact_respond(200, ['success' => true]);

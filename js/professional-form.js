@@ -78,25 +78,6 @@
       return true;
     }
 
-    function buildFormattedMessage(data) {
-      var lines = [
-        "CONTACTO DESDE LA RED PROFESIONAL DE KINÉSICA",
-        "Destinatario: Norberto Silvio Brude <norberto1712@gmail.com>",
-        "==================================================",
-        "Profesional: " + data.name,
-        "Especialidad / Rol: " + (data.specialty || "No especificada"),
-        "Email: " + (data.email || "No especificado"),
-        "Teléfono / WhatsApp: " + (data.phone || "No especificado"),
-        "Motivo principal: " + (data.motive || "Consulta general"),
-        "",
-        "Mensaje o propuesta:",
-        data.message || "(Sin mensaje adicional)",
-        "==================================================",
-        "Fecha: " + new Date().toLocaleString("es-AR", { timeZone: "America/Argentina/Buenos_Aires" }),
-      ];
-      return lines.join("\n");
-    }
-
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       hideAlert();
@@ -109,16 +90,15 @@
 
       setLoading(true);
 
-      var formattedText = buildFormattedMessage(data);
       var payload = {
         type: "profesional",
         lang: "es",
         name: data.name,
         email: data.email,
-        phone: data.phone || "No especificado",
-        specialty: data.specialty || "No especificada",
-        motive: data.motive || "Consulta",
-        message: formattedText,
+        phone: data.phone,
+        specialty: data.specialty,
+        motive: data.motive,
+        message: data.message,
       };
 
       fetch("/api/send-contact.php", {

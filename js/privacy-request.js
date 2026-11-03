@@ -159,25 +159,6 @@
       return true;
     }
 
-    function buildFormattedText(data) {
-      var lines = [
-        t.title,
-        "--------------------------------------------------",
-        t.name + ": " + (data.name || t.notProvided),
-        t.email + ": " + (data.email || t.notProvided),
-        t.phone + ": " + (data.phone || t.notProvided),
-        t.scope + ": " + (data.scope || t.notProvided),
-        "",
-        t.details + ":",
-        data.details || t.notProvided,
-        "",
-        t.statement,
-        "--------------------------------------------------",
-        "Fecha / Date: " + new Date().toLocaleDateString(),
-      ];
-      return lines.join("\n");
-    }
-
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       hideAlert();
@@ -190,16 +171,15 @@
 
       setLoading(true);
 
-      var formattedMessage = buildFormattedText(data);
       var payload = {
         type: "privacidad",
         lang: pageLang,
         name: data.name,
         email: data.email,
-        phone: data.phone || t.notProvided,
-        scope: data.scope || t.notProvided,
-        details: data.details || t.notProvided,
-        message: formattedMessage,
+        phone: data.phone,
+        scope: data.scope,
+        message: data.details,
+        statement: t.statement,
       };
 
       fetch("/api/send-contact.php", {
