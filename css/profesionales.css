@@ -260,11 +260,9 @@
 
 .network-form-actions {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  margin-top: 14px;
+  justify-content: center;
+  margin-top: 18px;
 }
 
 .btn-submit-professional {
@@ -286,22 +284,6 @@
   color: #ffffff;
   transform: translateY(-1px);
   box-shadow: 0 6px 20px rgba(0, 95, 153, 0.35);
-}
-
-.network-whatsapp-alt {
-  font-size: 13.5px;
-  color: #64748b;
-}
-
-.network-whatsapp-alt a {
-  color: #15803d;
-  font-weight: 600;
-  text-decoration: underline;
-  margin-left: 4px;
-}
-
-.network-whatsapp-alt a:hover {
-  color: #166534;
 }
 
 .professional-form-alert {
