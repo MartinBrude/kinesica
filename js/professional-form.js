@@ -87,6 +87,7 @@
     function buildFormattedMessage(data) {
       var lines = [
         "CONTACTO DESDE LA RED PROFESIONAL DE KINÉSICA",
+        "Destinatario: Norberto Silvio Brude <norberto1712@gmail.com>",
         "==================================================",
         "Profesional: " + data.name,
         "Especialidad / Rol: " + (data.specialty || "No especificada"),
@@ -122,6 +123,8 @@
           data.name +
           (data.specialty ? " (" + data.specialty + ")" : ""),
         from_name: "Kinésica Web (Red Profesional)",
+        to_email: "norberto1712@gmail.com",
+        to_name: "Norberto Silvio Brude",
         name: data.name,
         email: data.email || "no-reply@kinesica.com.ar",
         phone: data.phone || "No especificado",
@@ -147,7 +150,7 @@
           setLoading(false);
           if (result.ok && result.data && result.data.success) {
             showAlert(
-              "¡Muchas gracias por comunicarte! El mensaje fue enviado con éxito a Norberto Brude. Nos pondremos en contacto a la brevedad.",
+              "¡Muchas gracias por comunicarte! El mensaje fue enviado con éxito a Norberto Silvio Brude (norberto1712@gmail.com). Nos pondremos en contacto a la brevedad.",
               false
             );
             form.reset();
