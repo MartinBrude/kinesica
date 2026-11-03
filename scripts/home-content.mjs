@@ -543,7 +543,7 @@ function teamAboutSection(lang) {
       ? [
           '              <div class="about-professionals-action">',
           '                <a href="/profesionales.html" class="btn btn-about-professionals">',
-          '                  <i class="fa fa-user-md" aria-hidden="true"></i> Red de profesionales &amp; interconsulta &rarr;',
+          '                  <i class="fa fa-user-md" aria-hidden="true"></i> Contacto inter-profesional &rarr;',
           "                </a>",
           "              </div>",
         ]
