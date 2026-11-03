@@ -133,10 +133,35 @@ export function buildRecordatorioCardHtml(item) {
     : isMissingPhone && (item.status === "pending" || item.status === "missing_phone")
       ? `<p class="recordatorio-warning-text">⚠️ No se encontró número de WhatsApp para este paciente. Usá <em>＋ Cargar contacto</em> para cargar teléfono y/o email.</p>`
       : "";
-  const summary =
-    item.event_summary && item.event_summary !== item.patient_name
-      ? `<p class="recordatorio-summary">${escapeHtml(item.event_summary)}</p>`
-      : "";
+
+  // Ocultar resumen si solo repite el nombre del paciente, etiquetas de turno y/o su teléfono
+  const displaySummary = (() => {
+    const rawSummary = String(item.event_summary || "").trim();
+    if (!rawSummary) return "";
+    const pName = String(item.patient_name || "").trim();
+    if (rawSummary === pName) return "";
+
+    // Eliminar etiquetas entre corchetes ([NORBERTO], [TURNO]), emojis iniciales
+    let clean = rawSummary.replace(/\[[^\]]*\]/g, "").replace(/^[^\wáéíóúÁÉÍÓÚñÑüÜ]+/g, "").trim();
+
+    // Eliminar dígitos del teléfono si está presente
+    if (effectiveWaId) {
+      const rawDigits = String(effectiveWaId).replace(/\D/g, "");
+      if (rawDigits.length >= 8) {
+        clean = clean.replace(new RegExp(rawDigits.slice(-8), "g"), "");
+      }
+    }
+    // Dejar solo texto
+    const textOnly = clean.replace(/[0-9\+\-\(\)\s]+/g, " ").trim();
+    if (!textOnly || textOnly.toLowerCase() === pName.toLowerCase()) {
+      return "";
+    }
+    return rawSummary;
+  })();
+
+  const summary = displaySummary
+    ? `<p class="recordatorio-summary">${escapeHtml(displaySummary)}</p>`
+    : "";
 
   const isPast = isAppointmentPast(item.appointment_date, item.appointment_time);
   const alreadySent = item.status === "sent" || item.status === "sent_email";
