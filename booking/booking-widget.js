@@ -981,8 +981,6 @@
       const grid = this.container.querySelector("#kb-existing-practitioner-grid");
       if (!grid) return;
       grid.innerHTML = "";
-      const genFee = this.getFeeForTechnique("general");
-      const genFormatted = this.formatFee(genFee);
       Object.keys(engine.PRACTITIONERS).forEach((id) => {
         const card = document.createElement("div");
         card.className = "kb-choice-card";
@@ -993,10 +991,6 @@
         card.innerHTML = `
           <h3>${this.practitionerFullName(id)}</h3>
           <p>${this.t("sessionHour")}</p>
-          <div class="kb-choice-fee">
-            <span class="kb-fee-label">${this.t("sessionFee")}:</span>
-            <strong class="kb-fee-amount">${genFormatted}</strong>
-          </div>
         `;
         card.addEventListener("click", () => {
           this.state.practitionerId = id;
@@ -1004,7 +998,6 @@
           grid.querySelectorAll(".kb-choice-card").forEach((c) => {
             c.classList.toggle("selected", c.dataset.practitioner === id);
           });
-          this.updateStep1FeeBanner("paciente");
           this.syncStep1Continue();
         });
         grid.appendChild(card);
@@ -1727,6 +1720,7 @@
 
       const technique = engine.getTechnique(payload.techniqueId);
       const professional = this.practitionerFullName(payload.practitionerId) || this.t("bySchedulePro");
+      const isExisting = Boolean(payload.esPaciente || this.state.existingPatient || payload.techniqueId === "paciente");
       q("#kb-success-title").textContent = this.t("success");
 
       const summaryBox = q("#kb-success-summary");
@@ -1738,7 +1732,7 @@
         <div><strong>${this.t("practitioner")}:</strong> ${professional}</div>
         <div><strong>${this.t("patient")}:</strong> ${payload.nombre}</div>
         <div><strong>${this.t("when")}:</strong> ${this.formatConfirmationWhen(payload.date, payload.time)}</div>
-        <div><strong>${this.t("fee")}:</strong> ${this.formatFee(this.getFeeForTechnique(payload.techniqueId))} <span style="font-size: 12px; color: var(--kin-text-muted);">(${this.t("paymentMethodsNote")})</span></div>
+        ${!isExisting ? `<div><strong>${this.t("fee")}:</strong> ${this.formatFee(this.getFeeForTechnique(payload.techniqueId))} <span style="font-size: 12px; color: var(--kin-text-muted);">(${this.t("paymentMethodsNote")})</span></div>` : ""}
         ${payload.email ? `<div><strong>${this.t("email")}:</strong> ${payload.email}</div>` : ""}
         <div style="margin-top: 6px; font-size: 12px; color: var(--kin-text-muted);">
           ${this.t("eventId")} <code>${result.eventId || "OK"}</code>
