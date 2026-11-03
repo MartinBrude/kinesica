@@ -108,20 +108,20 @@ export function buildRecordatorioCardHtml(item) {
     const waUrl = rawDigits ? `https://wa.me/${rawDigits}` : "";
     const phoneFormatted = escapeHtml(formatDisplayPhone(effectiveWaId));
     if (waUrl) {
-      contactBits.push(`<span>WhatsApp: <a href="${waUrl}" target="_blank" rel="noopener noreferrer" class="recordatorio-contact-link recordatorio-wa-link" title="Abrir chat en WhatsApp">💬 ${phoneFormatted}</a></span>`);
+      contactBits.push(`<a href="${waUrl}" target="_blank" rel="noopener noreferrer" class="recordatorio-contact-link recordatorio-wa-link" title="Abrir chat en WhatsApp">💬 ${phoneFormatted}</a>`);
     } else {
-      contactBits.push(`<span>WhatsApp: ${phoneFormatted}</span>`);
+      contactBits.push(`<span>${phoneFormatted}</span>`);
     }
   }
   const effectiveEmail = (hasEmail ? item.email : (viaEmail && item.error_message ? item.error_message : "")).trim();
   if (effectiveEmail && effectiveEmail.includes("@")) {
     const mailtoUrl = `mailto:${encodeURIComponent(effectiveEmail)}`;
     const emailEscaped = escapeHtml(item.email);
-    contactBits.push(`<span>Email: <a href="${mailtoUrl}" class="recordatorio-contact-link recordatorio-email-link" title="Enviar correo">✉️ ${emailEscaped}</a></span>`);
+    contactBits.push(`<a href="${mailtoUrl}" class="recordatorio-contact-link recordatorio-email-link" title="Enviar correo">✉️ ${emailEscaped}</a>`);
   }
   const contact = contactBits.length
     ? contactBits.join(" · ")
-    : `<span class="recordatorio-contact-warning">⚠️ Sin WhatsApp ni email registrados</span>`;
+    : `<span class="recordatorio-contact-warning">⚠️ Sin contacto registrado</span>`;
 
   const warningPill = isMissingPhone && (item.status === "pending" || item.status === "missing_phone")
     ? `<span class="recordatorio-warning-pill" title="No figura teléfono en el turno ni en el directorio">⚠️ Falta teléfono</span>`
