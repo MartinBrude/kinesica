@@ -211,7 +211,7 @@ export function renderPacientesTable() {
   }
 
   if (filtered.length === 0) {
-    listEl.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 32px; color: var(--muted);">No se encontraron pacientes que coincidan con la búsqueda.</td></tr>`;
+    listEl.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 32px; color: var(--muted);">No se encontraron pacientes que coincidan con la búsqueda.</td></tr>`;
     return;
   }
 
@@ -266,8 +266,7 @@ export function renderPacientesTable() {
     tr.innerHTML = `
       <td><strong style="color: var(--navy);">${escapeHtml(displayName)}</strong>${contactBadge}</td>
       <td><div class="phone-cell">${cleanDigits ? `<a class="phone-link" href="${waLink}" target="_blank" rel="noopener" title="Abrir chat de WhatsApp (${escapeHtml(displayTel)})">WhatsApp</a>` : '<span style="color:var(--muted)">Sin teléfono</span>'}</div></td>
-      <td>${p.email ? `<a class="email-link" href="mailto:${escapeHtml(p.email)}" title="Enviar correo a ${escapeHtml(p.email)}">✉️ ${escapeHtml(p.email)}</a>` : '<span style="color:var(--muted)">—</span>'}</td>
-      <td>${p.dni ? escapeHtml(p.dni) : '<span style="color:var(--muted)">—</span>'}</td>
+      <td>${p.email ? `<a class="email-link" href="mailto:${escapeHtml(p.email)}" title="Enviar correo a ${escapeHtml(p.email)}">Email</a>` : '<span style="color:var(--muted)">—</span>'}</td>
       <td><span class="badge-prof ${escapeHtml(p.profesional_habitual || "indistinto")}">${escapeHtml(p.profesional_habitual || "indistinto")}</span></td>
       <td><small>${p.motivo_consulta ? escapeHtml(p.motivo_consulta) : "—"}</small></td>
       <td style="text-align: right;">
