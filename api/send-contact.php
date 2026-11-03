@@ -5,7 +5,8 @@
  *
  * Reemplaza a Web3Forms: el mail se envía desde este servidor (Resend si hay
  * API key; si no, mail() del MTA) hacia una dirección fija del lado servidor.
- * El destinatario nunca se toma del request.
+ * El destinatario es siempre norberto1712@gmail.com (salvo 'contact_to' en la config
+ * del servidor) y nunca se toma del request.
  */
 
 header('Content-Type: application/json; charset=utf-8');
@@ -171,7 +172,9 @@ foreach (['config.php', 'mail.php'] as $f) {
     }
 }
 
-$to = trim((string) ($localCfg['contact_to'] ?? ($localCfg['user_emails']['norberto'] ?? 'norberto1712@gmail.com')));
+// Destino fijo: Norberto. No depende de user_emails (cuentas del admin); solo se
+// puede cambiar con 'contact_to' en admin/api/config.php o mail.php.
+$to = trim((string) ($localCfg['contact_to'] ?? 'norberto1712@gmail.com'));
 if (!kinesica_contact_valid_email($to)) {
     $to = 'norberto1712@gmail.com';
 }
