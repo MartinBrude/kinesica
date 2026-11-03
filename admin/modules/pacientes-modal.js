@@ -27,6 +27,11 @@ export function openFullPacienteModal(paciente = null, onReload = null) {
     apellidoVal = parts.slice(1).join(" ") || "";
   }
 
+  let telVal = paciente?.telefono || "";
+  if (telVal.startsWith("sin-tel-") || telVal.startsWith("sin-telefono-") || telVal.startsWith("ficha-")) {
+    telVal = "";
+  }
+
   const modalTitle = isColaborador ? "Datos del Paciente" : (isEdit ? "Editar Paciente" : "Nuevo Paciente");
   const readOnlyBanner = isColaborador
     ? '<div style="background:#fef3c7; color:#92400e; padding:10px 14px; border-radius:6px; margin-bottom:14px; font-size:13px; font-weight:500;">👁️ Modo solo lectura (Colaborador): Datos del paciente en modo de solo consulta.</div>'
@@ -54,7 +59,7 @@ export function openFullPacienteModal(paciente = null, onReload = null) {
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
             <div class="paciente-modal-field">
               <label>Teléfono (WhatsApp) *</label>
-              <input type="tel" id="modal-p-tel" value="${escapeHtml(paciente?.telefono || "")}" placeholder="Ej: 11 6123-4567 o +34..." maxlength="24" inputmode="tel" required>
+              <input type="tel" id="modal-p-tel" value="${escapeHtml(telVal)}" placeholder="Ej: 11 6123-4567 o +34..." maxlength="24" inputmode="tel" required>
               <small>Para WhatsApp y recordatorios automáticos.</small>
             </div>
             <div class="paciente-modal-field">

@@ -75,4 +75,11 @@ function kinesica_fichas_save_record(PDO $pdo, array $auth, string $id, array $d
     );
     $stmt->execute(['id' => $id, 'payload' => $payload, 'profesional' => $profesional, 'user' => $auth['username']]);
     $pdo->commit();
+
+    try {
+        require_once __DIR__ . '/pacientes_helpers.php';
+        if (function_exists('sync_pacientes_from_fichas')) {
+            sync_pacientes_from_fichas($pdo, $id, $data, $profesional);
+        }
+    } catch (Throwable) {}
 }
