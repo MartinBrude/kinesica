@@ -1,11 +1,11 @@
 /** AUTO-GENERATED — no editar. Fuente: npm run reviews:fetch */
 window.KINESICA_GOOGLE_REVIEWS = {
   "placeId": "ChIJZ2mPW9K1vJUR3J5kGRi5gws",
-  "fetchedAt": "2026-10-27T17:35:43.135Z",
+  "fetchedAt": "2026-11-03T02:48:42.971Z",
   "displayName": "Kinesica",
   "googleMapsUri": "https://maps.google.com/?cid=829710269522681564&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA",
   "rating": 5,
-  "userRatingCount": 35,
+  "userRatingCount": 36,
   "reviews": [
     {
       "author": "Manu Covic",
@@ -14,7 +14,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
       "rating": 5,
       "text": "Norberto me ayudó mucho y saco dolores dorsales y de rodilla que venia padeciendo. El trato muy amigable y profesional. Lo recomiendo completamente!",
       "language": "es",
-      "relativeTime": "Hace una semana",
+      "relativeTime": "Hace 2 semanas",
       "publishTime": "2026-10-17T15:27:44.938806512Z"
     },
     {
@@ -34,7 +34,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
       "rating": 5,
       "text": "Profesional muy responsable, respetuoso y con una excelente escucha lo cual es un gran valor para la especialidad . Tratamiento muy personalizado con diferentes técnicas, acorde a la necesidad de la consulta. Muy satisfecha!",
       "language": "es",
-      "relativeTime": "Hace 1 mes",
+      "relativeTime": "Hace 2 meses",
       "publishTime": "2026-09-01T17:22:51.713761464Z"
     },
     {
@@ -65,7 +65,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Norberto me ayudó mucho y saco dolores dorsales y de rodilla que venia padeciendo. El trato muy amigable y profesional. Lo recomiendo completamente!",
         "language": "es",
-        "relativeTime": "Hace una semana",
+        "relativeTime": "Hace 2 semanas",
         "publishTime": "2026-10-17T15:27:44.938806512Z"
       },
       {
@@ -85,7 +85,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Profesional muy responsable, respetuoso y con una excelente escucha lo cual es un gran valor para la especialidad . Tratamiento muy personalizado con diferentes técnicas, acorde a la necesidad de la consulta. Muy satisfecha!",
         "language": "es",
-        "relativeTime": "Hace 1 mes",
+        "relativeTime": "Hace 2 meses",
         "publishTime": "2026-09-01T17:22:51.713761464Z"
       },
       {
@@ -115,7 +115,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Norberto helped me a lot and relieved the back and knee pain I'd been suffering from. He was very friendly and professional. I highly recommend him!",
         "language": "en",
-        "relativeTime": "a week ago",
+        "relativeTime": "2 weeks ago",
         "publishTime": "2026-10-17T15:27:44.938806512Z"
       },
       {
@@ -165,7 +165,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Norberto m'a beaucoup aidé et a soulagé mes douleurs au dos et au genou. Il était très sympathique et professionnel. Je le recommande vivement !",
         "language": "fr",
-        "relativeTime": "il y a une semaine",
+        "relativeTime": "il y a 2 semaines",
         "publishTime": "2026-10-17T15:27:44.938806512Z"
       },
       {
@@ -185,7 +185,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Un professionnel très responsable et respectueux, doté d'une excellente capacité d'écoute, un atout précieux dans cette spécialité. Le traitement est très personnalisé et utilise différentes techniques adaptées aux besoins de chaque patient. J'en suis très satisfait !",
         "language": "fr",
-        "relativeTime": "il y a un mois",
+        "relativeTime": "il y a 2 mois",
         "publishTime": "2026-09-01T17:22:51.713761464Z"
       },
       {
@@ -215,7 +215,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Norberto me ajudou muito e aliviou as dores nas costas e nos joelhos que eu vinha sentindo. Ele foi muito simpático e profissional. Recomendo-o fortemente!",
         "language": "pt",
-        "relativeTime": "há uma semana",
+        "relativeTime": "há 2 semanas",
         "publishTime": "2026-10-17T15:27:44.938806512Z"
       },
       {
@@ -235,7 +235,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Uma profissional extremamente responsável e respeitosa, com excelentes habilidades de escuta, o que é inestimável nesta especialidade. O tratamento é muito personalizado, utilizando diversas técnicas adaptadas às necessidades de cada paciente. Estou muito satisfeita!",
         "language": "pt",
-        "relativeTime": "há um mês",
+        "relativeTime": "há 2 meses",
         "publishTime": "2026-09-01T17:22:51.713761464Z"
       },
       {
