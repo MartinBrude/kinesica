@@ -211,6 +211,16 @@
   margin: 0;
 }
 
+.network-card-desc a {
+  color: var(--primary-color, #005f99);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.network-card-desc a:hover {
+  text-decoration: none;
+}
+
 /* Card del Formulario */
 .network-form-card {
   background: #ffffff;

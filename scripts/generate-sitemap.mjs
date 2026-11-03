@@ -63,6 +63,28 @@ for (const stem of STEMS) {
   }
 }
 
+/**
+ * Páginas solo en español (sin versiones /en, /fr, /pt todavía).
+ * Se listan sin xhtml:link para no declarar alternates inexistentes.
+ * Al crear las traducciones, mover el stem a STEMS (i18n-urls.mjs).
+ */
+const ES_ONLY_STEMS = ["profesionales"];
+const esOnlyStems = new Set();
+for (const stem of ES_ONLY_STEMS) {
+  const rel = repoPath("es", stem);
+  if (!fs.existsSync(path.join(ROOT, rel))) {
+    console.warn("skip missing:", rel);
+    continue;
+  }
+  esOnlyStems.add(stem);
+  entries.push({
+    loc: absoluteUrl("es", stem),
+    lastmod: lastmod("es", stem),
+    priority: priority("es", stem),
+    stem,
+  });
+}
+
 entries.sort((a, b) => a.loc.localeCompare(b.loc));
 
 const body = entries
@@ -71,8 +93,7 @@ const body = entries
   <loc>${e.loc}</loc>
   <lastmod>${e.lastmod}</lastmod>
   <priority>${e.priority}</priority>
-${xhtmlLinks(e.stem)}
-</url>`,
+${esOnlyStems.has(e.stem) ? "" : xhtmlLinks(e.stem) + "\n"}</url>`,
   )
   .join("\n");
 

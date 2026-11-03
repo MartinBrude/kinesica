@@ -192,6 +192,13 @@ const mainPagesEs = [
     "Kinesiólogo y osteópata; formación y experiencia profesional.",
   ],
   [
+    "Red profesional e interconsulta",
+    "es",
+    "profesionales",
+    metaDescription("es", "profesionales") ||
+      "Red profesional e interconsulta: colaboración con médicos, odontólogos y kinesiólogos para derivaciones y casos clínicos.",
+  ],
+  [
     "Política de privacidad",
     "es",
     "privacidad",
