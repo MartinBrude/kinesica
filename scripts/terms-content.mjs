@@ -71,7 +71,7 @@ export const TERMS = {
         title: "5. Honorarios y medios de pago",
         paragraphs: [
           "Los aranceles de las sesiones se comunican con total claridad al momento del contacto inicial o consulta previa.",
-          "El pago de las sesiones se realiza en moneda de curso legal (pesos argentinos) conforme a los medios acordados (efectivo, transferencias u otros medios habilitados en el consultorio).",
+          "El pago de las sesiones se realiza en moneda de curso legal (pesos argentinos) en efectivo o mediante transferencia bancaria.",
         ],
       },
       {
@@ -170,7 +170,7 @@ export const TERMS = {
         title: "5. Fees and Payment Methods",
         paragraphs: [
           "Session fees are clearly communicated upon initial inquiry or before appointment confirmation.",
-          "Payments are made in legal tender according to agreed payment channels (cash, bank transfers, or accepted electronic payment options).",
+          "Payments are made in legal tender in cash or via bank transfer.",
         ],
       },
       {
@@ -269,7 +269,7 @@ export const TERMS = {
         title: "5. Honoraires et modalités de règlement",
         paragraphs: [
           "Le tarif des séances est précisé en toute transparence dès le premier contact.",
-          "Le règlement s'effectue en monnaie légale selon les modalités convenues lors de la prise de rendez-vous.",
+          "Le règlement s'effectue en monnaie légale en espèces ou par virement bancaire.",
         ],
       },
       {
@@ -367,7 +367,7 @@ export const TERMS = {
         title: "5. Valores e formas de pagamento",
         paragraphs: [
           "Os valores das sessões são informados de forma transparente no contato inicial antes da confirmação do agendamento.",
-          "O pagamento é realizado em moeda corrente de acordo com os meios disponibilizados no consultório.",
+          "O pagamento é realizado em moeda corrente em dinheiro ou por transferência bancária.",
         ],
       },
       {

@@ -109,8 +109,7 @@
     "currenciesAccepted": "ARS",
     "paymentAccepted": [
       "Cash",
-      "Credit Card",
-      "Debit Card"
+      "Bank Transfer"
     ],
     "priceRange": "$$",
     "founder": {
@@ -455,8 +454,7 @@
     "currenciesAccepted": "ARS",
     "paymentAccepted": [
       "Cash",
-      "Credit Card",
-      "Debit Card"
+      "Bank Transfer"
     ],
     "priceRange": "$$",
     "founder": {
@@ -801,8 +799,7 @@
     "currenciesAccepted": "ARS",
     "paymentAccepted": [
       "Cash",
-      "Credit Card",
-      "Debit Card"
+      "Bank Transfer"
     ],
     "priceRange": "$$",
     "founder": {
@@ -1143,8 +1140,7 @@
     "currenciesAccepted": "ARS",
     "paymentAccepted": [
       "Cash",
-      "Credit Card",
-      "Debit Card"
+      "Bank Transfer"
     ],
     "priceRange": "$$",
     "founder": {

@@ -838,6 +838,7 @@ function handleBookAppointment(payload) {
     osteopatia: "Osteopatía",
     acupuntura: "Acupuntura",
     rpg: "RPG",
+    atm: "ATM",
     neurodinamia: "Neurodinamia",
     viscerales: "Manipulaciones viscerales (Barral)",
     posturologia: "Posturología",

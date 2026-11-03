@@ -3,7 +3,7 @@
  * Restricciones de 1 sola camilla física, duración mínima de 60 min y generación de resúmenes.
  */
 
-export const DEFAULT_HEADER_SCHEDULE = { opens: "08:00", closes: "19:00" };
+export const DEFAULT_HEADER_SCHEDULE = { opens: "08:00", closes: "19:30" };
 
 export const DEFAULT_PRACTITIONER_HOURS = {
   norberto: {

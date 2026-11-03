@@ -37,6 +37,7 @@
     { id: "osteopatia", label: "Osteopatía", practitioners: ["norberto"] },
     { id: "acupuntura", label: "Acupuntura", practitioners: ["maria"] },
     { id: "rpg", label: "RPG", practitioners: ["norberto", "maria"] },
+    { id: "atm", label: "ATM (Bruxismo / Mandíbula)", practitioners: ["norberto", "maria"] },
     { id: "neurodinamia", label: "Neurodinamia", practitioners: ["norberto", "maria"] },
     { id: "viscerales", label: "Manipulaciones viscerales (Barral)", practitioners: ["norberto"] },
     { id: "posturologia", label: "Posturología", practitioners: ["maria"] },

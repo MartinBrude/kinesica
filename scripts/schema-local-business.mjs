@@ -365,7 +365,7 @@ export function buildPhysiotherapyClinic(lang, { includeReviews = false } = {}) 
     additionalType: "https://schema.org/Physiotherapy",
     availableLanguage: LANG_CODES,
     currenciesAccepted: "ARS",
-    paymentAccepted: ["Cash", "Credit Card", "Debit Card"],
+    paymentAccepted: ["Cash", "Bank Transfer"],
     priceRange: "$$",
     founder: {
       "@type": "Person",

@@ -34,7 +34,7 @@ function load_full_runtime_settings(string $file): array
         'clara_active' => false,
         'booking_active' => true,
         'practitioner_hours' => $defaultHours,
-        'header_schedule' => ['opens' => '08:00', 'closes' => '19:00'],
+        'header_schedule' => ['opens' => '08:00', 'closes' => '19:30'],
         'horarios_updated_at' => null,
         'horarios_updated_by' => null,
     ];

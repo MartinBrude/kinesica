@@ -35,6 +35,7 @@ export const SHARED_BUNDLES = {
     "js/faq-accordion.js",
     "js/map-embed-facade.js",
     "js/methods-scroller.js",
+    "js/professional-form.js",
   ],
   "js/reviews.min.js": [
     "partials/google-reviews-data.js",

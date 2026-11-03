@@ -112,6 +112,8 @@ test("REGLA 1C: Acupuntura solo la atiende María y RPG la atienden ambos", () =
   assert.strictEqual(engine.practitionerOffersTechnique("maria", "acupuntura"), true);
   assert.strictEqual(engine.practitionerOffersTechnique("norberto", "acupuntura"), false);
   assert.strictEqual(engine.practitionerOffersTechnique("norberto", "rpg"), true);
+  assert.strictEqual(engine.practitionerOffersTechnique("norberto", "atm"), true);
+  assert.strictEqual(engine.practitionerOffersTechnique("maria", "atm"), true);
   assert.strictEqual(engine.practitionerOffersTechnique("maria", "posturologia"), true);
   assert.strictEqual(engine.practitionerOffersTechnique("norberto", "viscerales"), true);
   assert.strictEqual(engine.practitionerOffersTechnique("maria", "viscerales"), false);
