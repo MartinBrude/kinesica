@@ -229,9 +229,10 @@ export function renderPacientesTable() {
       : "";
 
     const rawTel = p.telefono || "";
-    const cleanDigits = String(rawTel).replace(/\D/g, "");
+    const isPlaceholderTel = String(rawTel).startsWith("sin-tel-") || String(rawTel).startsWith("sin-telefono-") || String(rawTel).startsWith("ficha-");
+    const cleanDigits = isPlaceholderTel ? "" : String(rawTel).replace(/\D/g, "");
     const waLink = cleanDigits ? `https://wa.me/${cleanDigits}` : "#";
-    const displayTel = formatDisplayPhone(rawTel);
+    const displayTel = isPlaceholderTel ? "" : formatDisplayPhone(rawTel);
 
     const hasReview = patientHasReview(p);
     const firstName = getPatientFirstName(p);

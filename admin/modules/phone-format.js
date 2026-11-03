@@ -25,6 +25,9 @@ export function cleanPhoneDigits(raw) {
 export function formatDisplayPhone(raw) {
   if (!raw) return "";
   const str = String(raw).trim();
+  if (str.startsWith("sin-tel-") || str.startsWith("sin-telefono-") || str.startsWith("ficha-")) {
+    return "";
+  }
   const digits = cleanPhoneDigits(str);
   if (!digits) return str;
 
