@@ -538,6 +538,17 @@ function teamAboutSection(lang) {
     ];
   });
 
+  const professionalsAction =
+    lang === "es"
+      ? [
+          '              <div class="about-professionals-action">',
+          '                <a href="/profesionales.html" class="btn btn-about-professionals">',
+          '                  <i class="fa fa-user-md" aria-hidden="true"></i> Red de profesionales &amp; interconsulta &rarr;',
+          "                </a>",
+          "              </div>",
+        ]
+      : [];
+
   return [
     "<section class=\"space-medium section-intro section-intro--about\">",
     "      <div class=\"container\">",
@@ -550,6 +561,7 @@ function teamAboutSection(lang) {
     "              <p class=\"section-lead\">",
     `                ${copy.lead}`,
     "              </p>",
+    ...professionalsAction,
     "            </div>",
     "            <!-- /.section title end-->",
     "          </div>",

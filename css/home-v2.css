@@ -787,6 +787,37 @@ body.page-home-v2 .section-intro--about .section-lead {
   color: #334155;
 }
 
+body.page-home-v2 .section-intro--about .about-professionals-action {
+  margin: -0.75rem 0 2.25rem;
+  text-align: left;
+}
+
+body.page-home-v2 .btn-about-professionals {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: color-mix(in srgb, var(--primary-color) 8%, transparent);
+  color: var(--primary-color);
+  border: 1.5px solid color-mix(in srgb, var(--primary-color) 35%, transparent);
+  border-radius: 9999px;
+  padding: 8px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: none;
+  text-decoration: none;
+}
+
+body.page-home-v2 .btn-about-professionals:hover,
+body.page-home-v2 .btn-about-professionals:focus {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--primary-color) 25%, transparent);
+  text-decoration: none;
+}
+
 body.page-home-v2 .section-intro--about .section-title::after {
   content: "";
   position: absolute;
