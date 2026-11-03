@@ -435,6 +435,43 @@
   color: var(--muted);
 }
 
+.recordatorio-contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 1px 7px;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.recordatorio-wa-link {
+  color: #15803d;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+}
+
+.recordatorio-wa-link:hover {
+  background: #dcfce7;
+  color: #166534;
+  border-color: #86efac;
+  text-decoration: none;
+}
+
+.recordatorio-email-link {
+  color: #1d4ed8;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+}
+
+.recordatorio-email-link:hover {
+  background: #dbeafe;
+  color: #1e40af;
+  border-color: #93c5fd;
+  text-decoration: none;
+}
+
 .recordatorio-summary,
 .recordatorio-error {
   margin: 4px 0;

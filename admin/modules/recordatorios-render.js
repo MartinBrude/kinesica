@@ -104,12 +104,20 @@ export function buildRecordatorioCardHtml(item) {
 
   const contactBits = [];
   if (effectiveWaId) {
-    contactBits.push(`WhatsApp: ${escapeHtml(formatDisplayPhone(effectiveWaId))}`);
+    const rawDigits = String(effectiveWaId).replace(/\D/g, "");
+    const waUrl = rawDigits ? `https://wa.me/${rawDigits}` : "";
+    const phoneFormatted = escapeHtml(formatDisplayPhone(effectiveWaId));
+    if (waUrl) {
+      contactBits.push(`<span>WhatsApp: <a href="${waUrl}" target="_blank" rel="noopener noreferrer" class="recordatorio-contact-link recordatorio-wa-link" title="Abrir chat en WhatsApp">💬 ${phoneFormatted}</a></span>`);
+    } else {
+      contactBits.push(`<span>WhatsApp: ${phoneFormatted}</span>`);
+    }
   }
-  if (hasEmail) {
-    contactBits.push(`Email: ${escapeHtml(item.email)}`);
-  } else if (viaEmail && item.error_message) {
-    contactBits.push(`Email: ${escapeHtml(item.error_message)}`);
+  const effectiveEmail = (hasEmail ? item.email : (viaEmail && item.error_message ? item.error_message : "")).trim();
+  if (effectiveEmail && effectiveEmail.includes("@")) {
+    const mailtoUrl = `mailto:${encodeURIComponent(effectiveEmail)}`;
+    const emailEscaped = escapeHtml(item.email);
+    contactBits.push(`<span>Email: <a href="${mailtoUrl}" class="recordatorio-contact-link recordatorio-email-link" title="Enviar correo">✉️ ${emailEscaped}</a></span>`);
   }
   const contact = contactBits.length
     ? contactBits.join(" · ")
