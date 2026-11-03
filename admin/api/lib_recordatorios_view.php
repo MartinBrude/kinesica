@@ -24,7 +24,7 @@ function recordatorios_status_label(string $status): string
         'failed' => 'Fallido',
         'missing_phone' => 'Sin teléfono ni mail',
         'skipped' => 'Omitido',
-        'run_skipped' => 'Corrida omitida',
+        'run_skipped' => 'Ejecución omitida',
         default => $status,
     };
 }
@@ -37,7 +37,7 @@ function recordatorios_skip_label(string $reason): string
         'blocked' => 'Bloqueo / no disponible',
         'waitlist' => 'Lista de espera',
         'non_appointment' => 'No es un turno',
-        'duplicate' => 'Duplicado en la corrida',
+        'duplicate' => 'Duplicado en la ejecución',
         'not_tomorrow' => 'Fuera de mañana',
         'other' => 'Otro',
         '' => '',

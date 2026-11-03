@@ -57,10 +57,10 @@ function getTimingMetaHtml(item) {
   }
 
   if (item.status === "failed" || item.status === "missing_phone") {
-    return `<span>Falló en corrida: ${escapeHtml(localTime)}</span>`;
+    return `<span>Falló en ejecución: ${escapeHtml(localTime)}</span>`;
   }
 
-  return `<span>Corrida: ${escapeHtml(localTime)}</span>`;
+  return `<span>Ejecución: ${escapeHtml(localTime)}</span>`;
 }
 
 export function buildRecordatorioCardHtml(item) {

@@ -330,7 +330,7 @@ function openRecordatorioContactModal(item, { mode = "contact", onSuccess } = {}
       ? item.error_message || item.error_code || ""
       : item.error_code || "";
   const missingHint = !item.wa_id
-    ? `<p class="recordatorio-modal-hint">Este paciente no tiene WhatsApp en el turno ni en el directorio. Cargalo acá para la corrida automática y futuros recordatorios.</p>`
+    ? `<p class="recordatorio-modal-hint">Este paciente no tiene WhatsApp en el turno ni en el directorio. Cargalo acá para la ejecución automática y futuros recordatorios.</p>`
     : "";
 
   backdrop.innerHTML = `
