@@ -235,16 +235,7 @@ export function deduplicatePatientsInMemory(items = []) {
   const result = [];
   for (const cluster of clusters.values()) {
     if (cluster.length === 1) {
-      const single = { ...cluster[0] };
-      if (!single.profesional_habitual || single.profesional_habitual === "indistinto") {
-        const full = (single.nombre_completo || `${single.nombre || ""} ${single.apellido || ""}`).toLowerCase();
-        if (full.includes("gaglio") || full.includes("oviedo") || full.includes("esteban") || full.includes("victos")) {
-          single.profesional_habitual = "norberto";
-        } else if (full.includes("maldonado") || full.includes("rosenfeld") || full.includes("lipsyc")) {
-          single.profesional_habitual = "maria";
-        }
-      }
-      result.push(single);
+      result.push(cluster[0]);
       continue;
     }
 
@@ -270,20 +261,10 @@ export function deduplicatePatientsInMemory(items = []) {
     const hasReview = cluster.some((p) => Boolean(p.dejo_review && Number(p.dejo_review) !== 0));
     survivor.dejo_review = hasReview ? 1 : 0;
 
-    // Regla: si uno dice indistinto y otro dice con tal, queda tal
+    // Regla: si uno dice indistinto y otro dice con tal, queda tal.
+    // Si no fue asignado a ninguno, indistinto es un valor completamente válido.
     const specificProf = cluster.find((p) => p.profesional_habitual === "norberto" || p.profesional_habitual === "maria");
-    if (specificProf) {
-      survivor.profesional_habitual = specificProf.profesional_habitual;
-    } else {
-      const full = (survivor.nombre_completo || `${survivor.nombre || ""} ${survivor.apellido || ""}`).toLowerCase();
-      if (full.includes("gaglio") || full.includes("oviedo") || full.includes("esteban") || full.includes("victos")) {
-        survivor.profesional_habitual = "norberto";
-      } else if (full.includes("maldonado") || full.includes("rosenfeld") || full.includes("lipsyc")) {
-        survivor.profesional_habitual = "maria";
-      } else {
-        survivor.profesional_habitual = "indistinto";
-      }
-    }
+    survivor.profesional_habitual = specificProf ? specificProf.profesional_habitual : "indistinto";
 
     // Teléfono: real sobre placeholder
     const realPhoneRecord = cluster.find((p) => !isPlaceholderPhone(p.telefono));

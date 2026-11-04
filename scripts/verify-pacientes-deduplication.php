@@ -193,6 +193,7 @@ $indistintoPatients = [
     ['id' => 205, 'tel' => 'sin-tel-lipsyc', 'nom' => 'Silvana', 'ape' => 'Lipsyc', 'full' => 'Silvana Lipsyc', 'exp' => 'maria'],
     ['id' => 206, 'tel' => '5491149927754', 'nom' => 'Jorge', 'ape' => 'Esteban', 'full' => 'Jorge Esteban', 'exp' => 'norberto'],
     ['id' => 207, 'tel' => 'sin-tel-victos', 'nom' => 'Claudia', 'ape' => 'Victos', 'full' => 'Claudia Victos María', 'exp' => 'norberto'],
+    ['id' => 208, 'tel' => '5491100000000', 'nom' => 'Pablo', 'ape' => 'SinTurno', 'full' => 'Pablo SinTurno', 'exp' => 'indistinto'],
 ];
 
 $insStmt = $pdo->prepare("INSERT INTO pacientes (id, telefono, nombre, apellido, nombre_completo, nombre_pila, profesional_habitual) VALUES (:id, :tel, :nom, :ape, :full, :pila, 'indistinto')");
@@ -208,15 +209,16 @@ foreach ($indistintoPatients as $ip) {
 }
 
 $resolvedCount = resolve_indistinto_pacientes_from_calendar($pdo);
-if ($resolvedCount < count($indistintoPatients)) {
-    echo "ERROR: resolve_indistinto_pacientes_from_calendar resolvió $resolvedCount de " . count($indistintoPatients) . "\n";
+// Se deben haber resuelto los 7 agendados, y Pablo SinTurno debe permanecer como indistinto
+if ($resolvedCount !== 7) {
+    echo "ERROR: resolve_indistinto_pacientes_from_calendar resolvió $resolvedCount (se esperaban exactamente 7 de los agendados)\n";
     exit(1);
 }
 
 foreach ($indistintoPatients as $ip) {
     $chk = $pdo->query("SELECT profesional_habitual FROM pacientes WHERE id = {$ip['id']}")->fetch(PDO::FETCH_ASSOC);
     if (!$chk || $chk['profesional_habitual'] !== $ip['exp']) {
-        echo "ERROR: Paciente {$ip['full']} no se resolvió a {$ip['exp']} (quedó: " . ($chk['profesional_habitual'] ?? 'null') . ")\n";
+        echo "ERROR: Paciente {$ip['full']} no quedó en {$ip['exp']} (quedó: " . ($chk['profesional_habitual'] ?? 'null') . ")\n";
         exit(1);
     }
 }

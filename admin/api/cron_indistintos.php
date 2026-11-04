@@ -48,10 +48,16 @@ try {
     ensure_pacientes_tables($pdo);
     deduplicate_pacientes_table($pdo);
 
+    // 1. Primero verificar si existen pacientes con profesional indistinto
     $stmtBefore = $pdo->query("SELECT COUNT(*) FROM pacientes WHERE profesional_habitual = 'indistinto' OR profesional_habitual IS NULL OR profesional_habitual = ''");
     $indistintosBefore = $stmtBefore ? (int) $stmtBefore->fetchColumn() : 0;
 
-    $resolvedCount = resolve_indistinto_pacientes_from_calendar($pdo);
+    $resolvedCount = 0;
+    // 2. Solo si hay indistintos, verificar si están agendados y asignarles profesional
+    // Si no tienen turnos agendados con un profesional específico, 'indistinto' es un valor válido y se conserva.
+    if ($indistintosBefore > 0) {
+        $resolvedCount = resolve_indistinto_pacientes_from_calendar($pdo);
+    }
 
     $stmtAfter = $pdo->query("SELECT COUNT(*) FROM pacientes WHERE profesional_habitual = 'indistinto' OR profesional_habitual IS NULL OR profesional_habitual = ''");
     $indistintosAfter = $stmtAfter ? (int) $stmtAfter->fetchColumn() : 0;
