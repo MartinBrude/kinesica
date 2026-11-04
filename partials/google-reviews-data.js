@@ -1,12 +1,22 @@
 /** AUTO-GENERATED — no editar. Fuente: npm run reviews:fetch */
 window.KINESICA_GOOGLE_REVIEWS = {
   "placeId": "ChIJZ2mPW9K1vJUR3J5kGRi5gws",
-  "fetchedAt": "2026-11-03T02:48:42.971Z",
+  "fetchedAt": "2026-11-04T19:27:25.210Z",
   "displayName": "Kinesica",
   "googleMapsUri": "https://maps.google.com/?cid=829710269522681564&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA",
   "rating": 5,
   "userRatingCount": 36,
   "reviews": [
+    {
+      "author": "Luis Cortese",
+      "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocKHw33qtZKyrTdsc0rvFIOwrB6-lzDLrjp7hEo2iCqJZIe30A=s128-c0x00000000-cc-rp-mo-ba3",
+      "authorProfile": "https://www.google.com/maps/contrib/102362965674413224091/reviews",
+      "rating": 5,
+      "text": "Muy contento con la atención recibida.\nMuy profesional y me pasó tips claves.\nMuchas gracias 🫂",
+      "language": "es",
+      "relativeTime": "Hace 2 semanas",
+      "publishTime": "2026-10-20T13:37:59.681175507Z"
+    },
     {
       "author": "Manu Covic",
       "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjXT_z1Jocd8RtQKJjZNPHtT6nWADbK9htmMD0ZnLXcr5WYoZBU=s128-c0x00000000-cc-rp-mo-ba4",
@@ -24,18 +34,8 @@ window.KINESICA_GOOGLE_REVIEWS = {
       "rating": 5,
       "text": "Muy contenta con la atención. Norberto destaca por su profesionalismo, puntualidad y trato cercano. Me ayudó mucho con mi recuperación mediante un tratamiento personalizado. Totalmente recomendable si buscás un especialista de confianza.",
       "language": "es",
-      "relativeTime": "Hace 1 mes",
-      "publishTime": "2026-09-05T09:51:49.661002767Z"
-    },
-    {
-      "author": "Mabel Luján",
-      "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjVBfQZpjPw8LN5V7jT-CmJiCzsIWu7SIBXRqourAQTOJvmxQLse=s128-c0x00000000-cc-rp-mo",
-      "authorProfile": "https://www.google.com/maps/contrib/115447603217467401197/reviews",
-      "rating": 5,
-      "text": "Profesional muy responsable, respetuoso y con una excelente escucha lo cual es un gran valor para la especialidad . Tratamiento muy personalizado con diferentes técnicas, acorde a la necesidad de la consulta. Muy satisfecha!",
-      "language": "es",
       "relativeTime": "Hace 2 meses",
-      "publishTime": "2026-09-01T17:22:51.713761464Z"
+      "publishTime": "2026-09-05T09:51:49.661002767Z"
     },
     {
       "author": "Mariana González Cadahía",
@@ -59,6 +59,16 @@ window.KINESICA_GOOGLE_REVIEWS = {
   "byLang": {
     "es": [
       {
+        "author": "Luis Cortese",
+        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocKHw33qtZKyrTdsc0rvFIOwrB6-lzDLrjp7hEo2iCqJZIe30A=s128-c0x00000000-cc-rp-mo-ba3",
+        "authorProfile": "https://www.google.com/maps/contrib/102362965674413224091/reviews",
+        "rating": 5,
+        "text": "Muy contento con la atención recibida.\nMuy profesional y me pasó tips claves.\nMuchas gracias 🫂",
+        "language": "es",
+        "relativeTime": "Hace 2 semanas",
+        "publishTime": "2026-10-20T13:37:59.681175507Z"
+      },
+      {
         "author": "Manu Covic",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjXT_z1Jocd8RtQKJjZNPHtT6nWADbK9htmMD0ZnLXcr5WYoZBU=s128-c0x00000000-cc-rp-mo-ba4",
         "authorProfile": "https://www.google.com/maps/contrib/101062939083218654733/reviews",
@@ -75,18 +85,8 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Muy contenta con la atención. Norberto destaca por su profesionalismo, puntualidad y trato cercano. Me ayudó mucho con mi recuperación mediante un tratamiento personalizado. Totalmente recomendable si buscás un especialista de confianza.",
         "language": "es",
-        "relativeTime": "Hace 1 mes",
-        "publishTime": "2026-09-05T09:51:49.661002767Z"
-      },
-      {
-        "author": "Mabel Luján",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjVBfQZpjPw8LN5V7jT-CmJiCzsIWu7SIBXRqourAQTOJvmxQLse=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/115447603217467401197/reviews",
-        "rating": 5,
-        "text": "Profesional muy responsable, respetuoso y con una excelente escucha lo cual es un gran valor para la especialidad . Tratamiento muy personalizado con diferentes técnicas, acorde a la necesidad de la consulta. Muy satisfecha!",
-        "language": "es",
         "relativeTime": "Hace 2 meses",
-        "publishTime": "2026-09-01T17:22:51.713761464Z"
+        "publishTime": "2026-09-05T09:51:49.661002767Z"
       },
       {
         "author": "Mariana González Cadahía",
@@ -125,7 +125,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "I'm very happy with the service. Norberto stands out for his professionalism, punctuality, and friendly approach. He greatly helped my recovery with a personalized treatment plan. I highly recommend him if you're looking for a trustworthy specialist.",
         "language": "en",
-        "relativeTime": "a month ago",
+        "relativeTime": "2 months ago",
         "publishTime": "2026-09-05T09:51:49.661002767Z"
       },
       {
@@ -159,6 +159,16 @@ window.KINESICA_GOOGLE_REVIEWS = {
     ],
     "fr": [
       {
+        "author": "Luis Cortese",
+        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocKHw33qtZKyrTdsc0rvFIOwrB6-lzDLrjp7hEo2iCqJZIe30A=s128-c0x00000000-cc-rp-mo-ba3",
+        "authorProfile": "https://www.google.com/maps/contrib/102362965674413224091/reviews",
+        "rating": 5,
+        "text": "Très satisfaite du service reçu.\n\nTrès professionnel et de précieux conseils.\n\nMerci beaucoup 🫂",
+        "language": "fr",
+        "relativeTime": "il y a 2 semaines",
+        "publishTime": "2026-10-20T13:37:59.681175507Z"
+      },
+      {
         "author": "Manu Covic",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjXT_z1Jocd8RtQKJjZNPHtT6nWADbK9htmMD0ZnLXcr5WYoZBU=s128-c0x00000000-cc-rp-mo-ba4",
         "authorProfile": "https://www.google.com/maps/contrib/101062939083218654733/reviews",
@@ -175,18 +185,8 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Je suis très satisfait du service. Norberto se distingue par son professionnalisme, sa ponctualité et sa gentillesse. Il a grandement contribué à ma guérison grâce à un plan de traitement personnalisé. Je le recommande vivement si vous recherchez un spécialiste de confiance.",
         "language": "fr",
-        "relativeTime": "il y a un mois",
-        "publishTime": "2026-09-05T09:51:49.661002767Z"
-      },
-      {
-        "author": "Mabel Luján",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjVBfQZpjPw8LN5V7jT-CmJiCzsIWu7SIBXRqourAQTOJvmxQLse=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/115447603217467401197/reviews",
-        "rating": 5,
-        "text": "Un professionnel très responsable et respectueux, doté d'une excellente capacité d'écoute, un atout précieux dans cette spécialité. Le traitement est très personnalisé et utilise différentes techniques adaptées aux besoins de chaque patient. J'en suis très satisfait !",
-        "language": "fr",
         "relativeTime": "il y a 2 mois",
-        "publishTime": "2026-09-01T17:22:51.713761464Z"
+        "publishTime": "2026-09-05T09:51:49.661002767Z"
       },
       {
         "author": "Mariana González Cadahía",
@@ -209,6 +209,16 @@ window.KINESICA_GOOGLE_REVIEWS = {
     ],
     "pt": [
       {
+        "author": "Luis Cortese",
+        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocKHw33qtZKyrTdsc0rvFIOwrB6-lzDLrjp7hEo2iCqJZIe30A=s128-c0x00000000-cc-rp-mo-ba3",
+        "authorProfile": "https://www.google.com/maps/contrib/102362965674413224091/reviews",
+        "rating": 5,
+        "text": "Fiquei muito feliz com o serviço que recebi.\n\nMuito profissional e me deu dicas muito importantes.\n\nMuito obrigada! 🫂",
+        "language": "pt",
+        "relativeTime": "há 2 semanas",
+        "publishTime": "2026-10-20T13:37:59.681175507Z"
+      },
+      {
         "author": "Manu Covic",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjXT_z1Jocd8RtQKJjZNPHtT6nWADbK9htmMD0ZnLXcr5WYoZBU=s128-c0x00000000-cc-rp-mo-ba4",
         "authorProfile": "https://www.google.com/maps/contrib/101062939083218654733/reviews",
@@ -225,18 +235,8 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Estou muito satisfeita com o serviço. Norberto se destaca pelo profissionalismo, pontualidade e cordialidade. Ele contribuiu muito para a minha recuperação com um plano de tratamento personalizado. Recomendo-o fortemente se você procura um especialista de confiança.",
         "language": "pt",
-        "relativeTime": "há um mês",
-        "publishTime": "2026-09-05T09:51:49.661002767Z"
-      },
-      {
-        "author": "Mabel Luján",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjVBfQZpjPw8LN5V7jT-CmJiCzsIWu7SIBXRqourAQTOJvmxQLse=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/115447603217467401197/reviews",
-        "rating": 5,
-        "text": "Uma profissional extremamente responsável e respeitosa, com excelentes habilidades de escuta, o que é inestimável nesta especialidade. O tratamento é muito personalizado, utilizando diversas técnicas adaptadas às necessidades de cada paciente. Estou muito satisfeita!",
-        "language": "pt",
         "relativeTime": "há 2 meses",
-        "publishTime": "2026-09-01T17:22:51.713761464Z"
+        "publishTime": "2026-09-05T09:51:49.661002767Z"
       },
       {
         "author": "Mariana González Cadahía",
