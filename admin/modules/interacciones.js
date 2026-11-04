@@ -24,7 +24,7 @@ let currentPage = 0;
 let pageSize = 20;
 /** Ventana pedida al servidor (días locales). Debe coincidir con INTERACCIONES_DEFAULT_DAYS. */
 let daysWindow = 7;
-let activeStatusFilter = "all"; // "all" | "pending" | "answered"
+let activeStatusFilter = "pending"; // "all" | "pending" | "answered" | "archived"
 let autoRefreshTimer = null;
 let isRefreshing = false;
 /** Escrituras en vuelo: el auto-refresh no debe pisar updates optimistas. */
@@ -40,6 +40,7 @@ export function showInteraccionesView() {
     sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "interacciones" }));
   } catch {}
 
+  activeStatusFilter = "pending";
   loadInteracciones(true);
   startAutoRefresh();
 }

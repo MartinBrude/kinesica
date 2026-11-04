@@ -149,6 +149,12 @@ assert.ok(fakeStatsEl.innerHTML.includes("2 archivadas"));
 assert.ok(!fakeStatsEl.innerHTML.includes('<span class="interacciones-stat-pill">👥'));
 assert.equal(fakeTotalText, "👥 2 personas");
 
+// Test de renderStatsHeader con filtro 'pending' activo por defecto
+renderStatsHeader(fakeStatsEl, { cachedInteractions: sampleList, activeStatusFilter: "pending" });
+assert.ok(fakeStatsEl.innerHTML.includes('data-filter="pending"'));
+assert.ok(fakeStatsEl.innerHTML.includes("filter-pending is-active"));
+assert.ok(fakeStatsEl.innerHTML.includes('aria-pressed="true"'));
+
 // 6. Tests de identificación de Martín Brude (+34 658 44 49 35)
 assert.ok(isMartinBrudePhone("+34 658 44 49 35"));
 assert.ok(isMartinBrudePhone("34658444935"));

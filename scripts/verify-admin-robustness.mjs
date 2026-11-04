@@ -872,6 +872,7 @@ await test("interacciones.php utiliza almacenamiento durable y cumple contrato f
   assert.match(viewPhp, /INTERACCIONES_MAX_EVENTS/, "tope de eventos por request");
   const interJs = fs.readFileSync(path.join(adminDir, "modules/interacciones.js"), "utf8");
   assert.match(interJs, /days=\$\{/, "frontend pide days= al cargar");
+  assert.match(interJs, /activeStatusFilter\s*=\s*["']pending["']/, "filtro de interacciones por defecto es pendientes");
   const indexHtml = fs.readFileSync(path.join(adminDir, "index.html"), "utf8");
   assert.match(indexHtml, /id="interacciones-days"/, "selector de ventana de días");
 });

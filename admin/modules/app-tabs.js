@@ -10,7 +10,7 @@ import { showPacientesView, hidePacientesView } from "./pacientes.js?v=5";
 import { showDashboardView, hideDashboardView, updateDashboardClara, updateDashboardBooking } from "./dashboard.js?v=11";
 import { showConsultorioView, hideConsultorioView, showClaraView, hideClaraView } from "./configuracion.js?v=28";
 import { showAdminView, hideAdminView } from "./admin-panel.js?v=13";
-import { showInteraccionesView, hideInteraccionesView } from "./interacciones.js?v=11";
+import { showInteraccionesView, hideInteraccionesView } from "./interacciones.js?v=12";
 import { showRecordatoriosView, hideRecordatoriosView } from "./recordatorios.js?v=11";
 import { applyHoursToRuntime } from "./horarios.js?v=3";
 
