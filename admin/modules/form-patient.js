@@ -14,7 +14,7 @@ let directoryPacientesCache = [];
 let directoryLoaded = false;
 
 export async function fetchDirectoryPacientes() {
-  if (directoryLoaded && directoryPacientesCache.length > 0) return directoryPacientesCache;
+  if (directoryLoaded) return directoryPacientesCache;
   try {
     const res = await api("pacientes.php");
     const items = Array.isArray(res?.items) ? res.items : (Array.isArray(res) ? res : []);
@@ -156,14 +156,24 @@ export function populatePatientPicker(allFichas = [], selectedKey = "", extraPac
   if (dirPacientes && dirPacientes.length > 0) {
     for (const p of dirPacientes) {
       const pDniClean = String(p.dni || "").replace(/[^0-9kK]/g, "");
-      const pNameNorm = String(p.nombre_completo || `${p.nombre || ""} ${p.apellido || ""}`).toLowerCase().trim();
+      const pNameNorm = String(p.nombre_completo || `${p.nombre || ""} ${p.apellido || ""}`)
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
       if (!pNameNorm && !pDniClean) continue;
 
       const hasFicha = fichasPatients.some((f) => {
         const fDniClean = String(f.dni || "").replace(/[^0-9kK]/g, "");
-        const fNameNorm = String(f.nombre || "").toLowerCase().trim();
+        const fNameNorm = String(f.nombre || "")
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/\s+/g, " ")
+          .trim();
         if (pDniClean && fDniClean && pDniClean === fDniClean) return true;
-        if (!pDniClean && !fDniClean && pNameNorm && fNameNorm && pNameNorm === fNameNorm) return true;
+        if (pNameNorm && fNameNorm && pNameNorm === fNameNorm) return true;
         return false;
       });
 
@@ -287,12 +297,12 @@ export function setupPatientHandlers({
             }
           }
           if (match.motivo_consulta) {
-            const mot = match.motivo_consulta.toLowerCase();
+            const mot = match.motivo_consulta.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
             let matchedVal = "";
-            if (mot.includes("traum")) matchedVal = "Traumático";
+            if (mot.includes("no traum")) matchedVal = "No Traumático";
+            else if (mot.includes("traum")) matchedVal = "Traumático";
             else if (mot.includes("brux")) matchedVal = "Bruxismo";
             else if (mot.includes("quirurg") || mot.includes("post")) matchedVal = "Pos Quirúrgico";
-            else if (mot.includes("no traum")) matchedVal = "No Traumático";
             if (matchedVal) {
               document.querySelectorAll('[data-single="motivo"] button').forEach((btn) => {
                 btn.classList.toggle("on", btn.dataset.value === matchedVal);

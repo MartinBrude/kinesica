@@ -9,6 +9,7 @@ import { phoneMatches } from "./phone-search.js?v=1";
 import { formatDisplayPhone } from "./pacientes-format.js";
 import { openFullPacienteModal } from "./pacientes-modal.js";
 import { getSessionUser } from "./auth.js?v=81";
+import { invalidateDirectoryCache } from "./form-patient.js";
 
 export { formatDisplayPhone };
 
@@ -136,6 +137,7 @@ export async function loadPacientes() {
   try {
     const res = await api("pacientes.php");
     pacientesCache = Array.isArray(res?.items) ? res.items : (Array.isArray(res) ? res : []);
+    invalidateDirectoryCache();
     renderPacientesTable();
   } catch (err) {
     listEl.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px; color: #dc2626;">Error al cargar pacientes: ${escapeHtml(err.message)}</td></tr>`;
@@ -298,6 +300,7 @@ export function renderPacientesTable() {
         try {
           await api(`pacientes.php?id=${btn.dataset.id}`, { method: "DELETE" });
           pacientesCache = pacientesCache.filter((p) => String(p.id) !== String(btn.dataset.id));
+          invalidateDirectoryCache();
           renderPacientesTable();
         } catch (err) {
           dialogAlert(`No se pudo eliminar el paciente: ${err.message}`);

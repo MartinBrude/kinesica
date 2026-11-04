@@ -44,11 +44,26 @@ export async function saveTextsAndPolicies({
     b.textContent = "Guardando...";
   });
 
-  const restoreButtons = () => {
-    allSaveButtons.forEach((b) => {
-      b.disabled = false;
-      b.textContent = originalTexts.get(b) || "Guardar cambios";
-    });
+  let restored = false;
+  const restoreButtons = (feedbackText = "") => {
+    if (restored) return;
+    restored = true;
+    if (feedbackText) {
+      allSaveButtons.forEach((b) => {
+        b.disabled = false;
+        b.textContent = feedbackText;
+      });
+      setTimeout(() => {
+        allSaveButtons.forEach((b) => {
+          b.textContent = originalTexts.get(b) || "Guardar cambios";
+        });
+      }, 2500);
+    } else {
+      allSaveButtons.forEach((b) => {
+        b.disabled = false;
+        b.textContent = originalTexts.get(b) || "Guardar cambios";
+      });
+    }
   };
 
   const cleanCustom = validateCustomOptions(customMenuOptions, dialogAlert);
@@ -73,7 +88,7 @@ export async function saveTextsAndPolicies({
       banner.hidden = false;
       setTimeout(() => { banner.hidden = true; }, 4000);
     }
-    restoreButtons();
+    restoreButtons("Sin cambios pendientes");
     return;
   }
   const payload = { base_revision: textsRevision, clara_texts: changedTexts };
@@ -100,7 +115,9 @@ export async function saveTextsAndPolicies({
     showSuccess(textsStatusBanner, "✓ Textos y opciones del menú guardados con éxito.");
     showSuccess(mailsStatusBanner, "✓ Políticas y pautas de mails guardadas con éxito.");
     if (typeof resetChatDemo === "function") resetChatDemo();
+    restoreButtons("✓ Guardado con éxito");
   } catch (err) {
+    restoreButtons();
     if (err?.status === 409) {
       dialogAlert(err.message || "Los textos se modificaron desde otra sesión. Recargá la página antes de guardar.");
     } else {
