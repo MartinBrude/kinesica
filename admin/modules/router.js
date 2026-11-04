@@ -20,7 +20,7 @@ export function parseAdminRouteFromLocation() {
   if (head === "pacientes") return { view: "pacientes" };
   if (head === "consultorio" || head === "horarios" || head === "honorarios") return { view: "consultorio" };
   if (head === "clara" || head === "configuracion") return { view: "clara" };
-  if (head === "interacciones" || head === "chats" || head === "mensajes") return { view: "interacciones" };
+  if (head === "interacciones" || head === "chats" || head === "mensajes" || head === "whatsapp") return { view: "interacciones" };
   if (head === "recordatorios" || head === "reminders") return { view: "recordatorios" };
   if (head === "administracion" || head === "admin" || head === "sistema") return { view: "admin" };
   if (head === "ficha") return { view: "form", id: parts[1] ? decodeURIComponent(parts[1]) : "" };
@@ -57,12 +57,12 @@ export function syncUrlWithViewState(state, isInitialBoot = false, isHandlingPop
   } else if (v === "clara" || v === "configuracion") {
     targetPath = "/admin/clara";
     docTitle = "Kinésica — Clara";
-  } else if (v === "interacciones" || v === "chats") {
+  } else if (v === "interacciones" || v === "chats" || v === "whatsapp") {
     targetPath = "/admin/interacciones";
-    docTitle = "Kinésica — Interacciones WhatsApp";
+    docTitle = "Kinésica — Bandeja de Interacciones";
   } else if (v === "recordatorios" || v === "reminders") {
     targetPath = "/admin/recordatorios";
-    docTitle = "Kinésica — Recordatorios";
+    docTitle = "Kinésica — Registro de Recordatorios";
   } else if (v === "admin" || v === "administracion") {
     targetPath = "/admin/administracion";
     docTitle = "Kinésica — Administración";

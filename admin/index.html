@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=120">
+  <link rel="stylesheet" href="/admin/styles.css?v=121">
   <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1793720845">
   <script>
     (function () {
@@ -56,20 +56,22 @@
         <!-- GRUPO 2: CONSULTORIO (Turnos, Horarios y Honorarios) -->
         <button type="button" class="btn ghost" id="nav-btn-consultorio">Consultorio</button>
 
-        <!-- GRUPO 3: CLARA & MENSAJES (Interacciones, Recordatorios y Configuración) -->
-        <div class="nav-dropdown" id="nav-group-clara">
-          <button type="button" class="btn ghost nav-dropdown-trigger" id="nav-btn-clara-group" aria-expanded="false" aria-haspopup="true">
-            <span>Clara & Mensajes</span>
+        <!-- GRUPO 3: WHATSAPP (Bandeja de Interacciones y Registro de Recordatorios) -->
+        <div class="nav-dropdown" id="nav-group-whatsapp">
+          <button type="button" class="btn ghost nav-dropdown-trigger" id="nav-btn-whatsapp" aria-expanded="false" aria-haspopup="true">
+            <span>WhatsApp</span>
             <svg class="nav-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
           </button>
-          <div class="nav-dropdown-menu" id="nav-menu-clara" role="menu">
-            <button type="button" class="nav-dropdown-item" id="nav-btn-interacciones" role="menuitem">Interacciones WhatsApp</button>
-            <button type="button" class="nav-dropdown-item" id="nav-btn-recordatorios" role="menuitem">Recordatorios (24h)</button>
-            <button type="button" class="nav-dropdown-item" id="nav-btn-clara" role="menuitem">Configuración de Clara</button>
+          <div class="nav-dropdown-menu" id="nav-menu-whatsapp" role="menu">
+            <button type="button" class="nav-dropdown-item" id="nav-btn-interacciones" role="menuitem">Bandeja de Interacciones</button>
+            <button type="button" class="nav-dropdown-item" id="nav-btn-recordatorios" role="menuitem">Registro de Recordatorios</button>
           </div>
         </div>
 
-        <!-- GRUPO 4: ADMINISTRACIÓN (Usuarios, Gastos, Errores) -->
+        <!-- GRUPO 4: CLARA (Configuración: Bot, Respuestas, Plantilla, Políticas, Simulador) -->
+        <button type="button" class="btn ghost" id="nav-btn-clara">Clara</button>
+
+        <!-- GRUPO 5: ADMINISTRACIÓN (Usuarios, Gastos, Errores) -->
         <button type="button" class="btn ghost" id="nav-btn-admin" hidden>Administración</button>
       </nav>
       <div class="session-box">
@@ -281,14 +283,14 @@
                 <span class="dash-card-arrow" aria-hidden="true">→</span>
               </div>
               <p class="dash-card-desc">
-                Mensajes de bienvenida en WhatsApp, recordatorios automáticos (24hs), políticas de cancelación y simulador en vivo.
+                Bot, respuestas automáticas, plantilla de recordatorios, políticas y simulador en vivo.
               </p>
             </div>
           </div>
         </article>
 
-        <!-- 5. Interacciones WhatsApp (Clara) -->
-        <article class="dash-card" id="dash-card-interacciones" role="button" tabindex="0" aria-label="Abrir Interacciones de WhatsApp">
+        <!-- 5. Interacciones WhatsApp -->
+        <article class="dash-card" id="dash-card-interacciones" role="button" tabindex="0" aria-label="Abrir Bandeja de Interacciones">
           <div class="dash-card-header">
             <div class="dash-icon-box green" aria-hidden="true" style="background: #e2f4ea; color: #128c7e;">
               <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -297,7 +299,7 @@
             </div>
             <div class="dash-card-meta">
               <div class="dash-card-title">
-                <span>Interacciones WhatsApp</span>
+                <span>Bandeja de Interacciones</span>
                 <span class="dash-card-arrow" aria-hidden="true">→</span>
               </div>
               <p class="dash-card-desc">
@@ -307,8 +309,8 @@
           </div>
         </article>
 
-        <!-- 6. Recordatorios -->
-        <article class="dash-card" id="dash-card-recordatorios" role="button" tabindex="0" aria-label="Abrir historial de Recordatorios">
+        <!-- 6. Registro de Recordatorios -->
+        <article class="dash-card" id="dash-card-recordatorios" role="button" tabindex="0" aria-label="Abrir Registro de Recordatorios">
           <div class="dash-card-header">
             <div class="dash-icon-box" aria-hidden="true" style="background: #eef4ff; color: #3538cd;">
               <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -318,7 +320,7 @@
             </div>
             <div class="dash-card-meta">
               <div class="dash-card-title">
-                <span>Recordatorios</span>
+                <span>Registro de Recordatorios</span>
                 <span class="dash-card-arrow" aria-hidden="true">→</span>
               </div>
               <p class="dash-card-desc">
@@ -703,7 +705,7 @@
                 <span class="dash-status-dot active" id="cfg-clara-dot"></span>
                 <div>
                   <div style="font-weight: 700; font-size: 14px; color: var(--navy);" id="cfg-clara-status-text">Clara WhatsApp: Activa</div>
-                  <small style="color: var(--muted); font-size: 12px;">Botón web + recordatorios 24h (el chat siempre responde)</small>
+                  <small style="color: var(--muted); font-size: 12px;">Botón web + recordatorios (el chat siempre responde)</small>
                 </div>
               </div>
               <button type="button" class="btn light" id="cfg-btn-toggle-clara" style="font-size: 13px; padding: 6px 14px;">Pausar bot</button>
@@ -1028,14 +1030,14 @@
         </div>
       </details>
 
-      <!-- SECCIÓN COLAPSABLE 3: RECORDATORIOS -->
+      <!-- SECCIÓN COLAPSABLE 3: PLANTILLA Y TEXTOS DE RECORDATORIO -->
       <details class="admin-collapsible-card">
         <summary class="admin-collapsible-summary">
           <div class="admin-collapsible-header-left">
             <span class="admin-collapsible-icon" aria-hidden="true">📲</span>
             <div class="admin-collapsible-titles">
-              <h2 class="admin-collapsible-title">Recordatorios de Turnos (WhatsApp)</h2>
-              <p class="admin-collapsible-desc">Mensaje e indicaciones enviadas automáticamente a los pacientes 24 hs antes de su cita.</p>
+              <h2 class="admin-collapsible-title">Plantilla y Textos de Recordatorio</h2>
+              <p class="admin-collapsible-desc">Mensaje modelo e indicaciones enviadas automáticamente a los pacientes antes de su cita.</p>
             </div>
           </div>
           <div class="admin-collapsible-header-right">
@@ -1047,7 +1049,7 @@
 
         <div class="admin-collapsible-body">
           <div style="margin-bottom: 18px; display: flex; justify-content: flex-end; align-items: center;">
-            <button type="button" class="btn green" id="btn-save-clara-recordatorios">Guardar recordatorios</button>
+            <button type="button" class="btn green" id="btn-save-clara-recordatorios">Guardar plantilla</button>
           </div>
           <div style="display:flex; flex-direction:column; gap:22px;">
             <div>
@@ -1622,13 +1624,13 @@
       </div>
     </section>
 
-    <!-- 7. INTERACCIONES WHATSAPP (CLARA) -->
+    <!-- 7. BANDEJA DE INTERACCIONES WHATSAPP -->
     <section id="view-interacciones" class="view" hidden>
       <div class="hero-card" style="margin-bottom: 20px;">
         <div class="hero-copy">
           <span class="doc-icon" aria-hidden="true"></span>
           <div>
-            <h1 class="hero-title">Interacciones de WhatsApp (Clara)</h1>
+            <h1 class="hero-title">Bandeja de Interacciones (WhatsApp)</h1>
             <p class="hero-desc" style="margin: 4px 0 0; color: var(--muted); font-size: 14px;">
               Historial de pacientes que le escribieron a Clara por WhatsApp, qué consultaron y acceso directo para responderles en un click.
             </p>
@@ -1675,15 +1677,15 @@
       <nav id="interacciones-pager" class="library-pager interacciones-pager" hidden></nav>
     </section>
 
-    <!-- 8. RECORDATORIOS WHATSAPP 24H -->
+    <!-- 8. REGISTRO DE RECORDATORIOS WHATSAPP -->
     <section id="view-recordatorios" class="view" hidden>
       <div class="hero-card" style="margin-bottom: 20px;">
         <div class="hero-copy">
           <span class="doc-icon" aria-hidden="true"></span>
           <div>
-            <h1 class="hero-title">Recordatorios de turnos (WhatsApp)</h1>
+            <h1 class="hero-title">Registro de Recordatorios (WhatsApp)</h1>
             <p class="hero-desc" style="margin: 4px 0 0; color: var(--muted); font-size: 14px;">
-              Historial de la ejecución automática de 24 hs: enviados, fallidos, sin teléfono u omitidos.
+              Historial de la ejecución automática: enviados, fallidos, sin teléfono u omitidos.
             </p>
           </div>
         </div>
@@ -2330,7 +2332,7 @@
             else if (head === "pacientes") saved = { view: "pacientes" };
             else if (head === "consultorio" || head === "horarios" || head === "honorarios") saved = { view: "consultorio" };
             else if (head === "clara" || head === "configuracion") saved = { view: "clara" };
-            else if (head === "interacciones" || head === "chats" || head === "mensajes") saved = { view: "interacciones" };
+            else if (head === "interacciones" || head === "chats" || head === "mensajes" || head === "whatsapp") saved = { view: "interacciones" };
             else if (head === "recordatorios" || head === "reminders") saved = { view: "recordatorios" };
             else if (head === "administracion" || head === "admin" || head === "sistema") saved = { view: "admin" };
             else if (head === "ficha" && parts[1]) saved = { view: "form", id: decodeURIComponent(parts[1]) };
@@ -2377,6 +2379,6 @@
   <div id="print-root"></div>
   <script src="/partials/google-reviews-data.min.js?v=1793720845" defer></script>
   <script src="/booking/booking-bundle.min.js?v=1793720845" defer></script>
-  <script type="module" src="/admin/app.js?v=162"></script>
+  <script type="module" src="/admin/app.js?v=163"></script>
 </body>
 </html>

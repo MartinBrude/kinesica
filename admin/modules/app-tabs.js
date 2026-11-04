@@ -19,20 +19,20 @@ export function switchTab(tab) {
   const btnFichas = document.querySelector("#nav-btn-fichas");
   const btnPacientes = document.querySelector("#nav-btn-pacientes");
   const btnConsultorio = document.querySelector("#nav-btn-consultorio");
-  const btnClaraGroup = document.querySelector("#nav-btn-clara-group");
-  const btnClara = document.querySelector("#nav-btn-clara");
+  const btnWhatsapp = document.querySelector("#nav-btn-whatsapp");
   const btnInteracciones = document.querySelector("#nav-btn-interacciones");
   const btnRecordatorios = document.querySelector("#nav-btn-recordatorios");
+  const btnClara = document.querySelector("#nav-btn-clara");
   const btnAdmin = document.querySelector("#nav-btn-admin");
 
   btnClinica?.classList.remove("is-active");
   btnFichas?.classList.remove("is-active");
   btnPacientes?.classList.remove("is-active");
   btnConsultorio?.classList.remove("is-active");
-  btnClaraGroup?.classList.remove("is-active");
-  btnClara?.classList.remove("is-active");
+  btnWhatsapp?.classList.remove("is-active");
   btnInteracciones?.classList.remove("is-active");
   btnRecordatorios?.classList.remove("is-active");
+  btnClara?.classList.remove("is-active");
   btnAdmin?.classList.remove("is-active");
 
   document.querySelectorAll(".nav-dropdown").forEach((el) => {
@@ -58,15 +58,14 @@ export function switchTab(tab) {
     btnConsultorio?.classList.add("is-active");
     showConsultorioView();
   } else if (tab === "clara" || tab === "configuracion") {
-    btnClaraGroup?.classList.add("is-active");
     btnClara?.classList.add("is-active");
     showClaraView();
-  } else if (tab === "interacciones" || tab === "chats") {
-    btnClaraGroup?.classList.add("is-active");
+  } else if (tab === "interacciones" || tab === "chats" || tab === "whatsapp") {
+    btnWhatsapp?.classList.add("is-active");
     btnInteracciones?.classList.add("is-active");
     showInteraccionesView();
   } else if (tab === "recordatorios" || tab === "reminders") {
-    btnClaraGroup?.classList.add("is-active");
+    btnWhatsapp?.classList.add("is-active");
     btnRecordatorios?.classList.add("is-active");
     showRecordatoriosView();
   } else if (tab === "admin") {
@@ -126,7 +125,7 @@ export function mountAdminChannels() {
       };
 
       setupDropdown(document.getElementById("nav-group-clinica"), document.getElementById("nav-btn-clinica"));
-      setupDropdown(document.getElementById("nav-group-clara"), document.getElementById("nav-btn-clara-group"));
+      setupDropdown(document.getElementById("nav-group-whatsapp"), document.getElementById("nav-btn-whatsapp"));
 
       document.addEventListener("click", (e) => {
         if (!e.target.closest(".nav-dropdown")) {

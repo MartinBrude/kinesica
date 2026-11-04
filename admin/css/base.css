@@ -395,6 +395,7 @@ main {
     min-width: 190px;
     max-width: calc(100vw - 24px);
   }
+  #nav-group-whatsapp .nav-dropdown-menu,
   #nav-group-clara .nav-dropdown-menu {
     left: auto;
     right: 0;
