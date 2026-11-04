@@ -24,6 +24,8 @@ import {
   formatSessionBadgeText,
   shouldOmitInvariableFields,
   assignProfesional as assignProfHelper,
+  sanitizePersonName,
+  hasDisallowedNameChars,
 } from "./ficha-rules-patient.mjs";
 
 import { emptyFicha, exampleFicha } from "./ficha-rules-defaults.mjs";
@@ -45,6 +47,8 @@ export {
   getSessionIndex,
   formatSessionBadgeText,
   shouldOmitInvariableFields,
+  sanitizePersonName,
+  hasDisallowedNameChars,
   emptyFicha,
   exampleFicha,
 };
@@ -136,6 +140,10 @@ export function coerceFicha(input = {}) {
     }
   }
   out.eva = Math.max(0, Math.min(10, Math.round(out.eva || 0)));
+
+  if (out.nombre) {
+    out.nombre = sanitizePersonName(out.nombre);
+  }
 
   if (out.edad) {
     const cleanEdad = String(out.edad).replace(/\D/g, "");

@@ -167,6 +167,37 @@ function ensure_pacientes_tables(PDO $pdo): void
 
     try {
         $pdo->exec("DELETE FROM pacientes WHERE LOWER(nombre_completo) LIKE '%tk3%' OR LOWER(nombre_completo) LIKE '%tk 3%' OR LOWER(nombre) LIKE '%tk3%' OR LOWER(nombre) LIKE '%tk 3%' OR LOWER(nombre_completo) LIKE '%no dar%' OR LOWER(nombre) LIKE '%no dar%' OR LOWER(apellido) LIKE '%no dar%'");
+
+        // Limpieza de caracteres no permitidos persistidos (comas, saltos de línea y emojis) en pacientes
+        $pdo->exec("UPDATE pacientes SET 
+            nombre = TRIM(REPLACE(REPLACE(REPLACE(nombre, '\r', ' '), '\n', ' '), ',', '')),
+            apellido = TRIM(REPLACE(REPLACE(REPLACE(apellido, '\r', ' '), '\n', ' '), ',', '')),
+            nombre_completo = TRIM(REPLACE(REPLACE(REPLACE(nombre_completo, '\r', ' '), '\n', ' '), ',', '')),
+            nombre_pila = TRIM(REPLACE(REPLACE(REPLACE(nombre_pila, '\r', ' '), '\n', ' '), ',', '')),
+            contacto_nombre = CASE WHEN contacto_nombre IS NOT NULL THEN TRIM(REPLACE(REPLACE(REPLACE(contacto_nombre, '\r', ' '), '\n', ' '), ',', '')) ELSE NULL END
+        WHERE nombre LIKE '%,%' OR nombre LIKE '%\n%' OR nombre LIKE '%\r%'
+           OR apellido LIKE '%,%' OR apellido LIKE '%\n%' OR apellido LIKE '%\r%'
+           OR nombre_completo LIKE '%,%' OR nombre_completo LIKE '%\n%' OR nombre_completo LIKE '%\r%'
+           OR contacto_nombre LIKE '%,%' OR contacto_nombre LIKE '%\n%' OR contacto_nombre LIKE '%\r%'");
+
+        $pdo->exec("UPDATE lista_espera SET
+            paciente_nombre = TRIM(REPLACE(REPLACE(REPLACE(paciente_nombre, '\r', ' '), '\n', ' '), ',', ''))
+        WHERE paciente_nombre LIKE '%,%' OR paciente_nombre LIKE '%\n%' OR paciente_nombre LIKE '%\r%'");
+
+        $stmtSanitize = $pdo->query("SELECT id, nombre, apellido, nombre_completo, contacto_nombre FROM pacientes");
+        if ($stmtSanitize) {
+            $updateStmt = $pdo->prepare("UPDATE pacientes SET nombre = :nom, apellido = :ape, nombre_completo = :full, nombre_pila = :pila, contacto_nombre = :cont WHERE id = :id");
+            while ($row = $stmtSanitize->fetch(PDO::FETCH_ASSOC)) {
+                $nom = sanitize_patient_name($row['nombre'] ?? '');
+                $ape = sanitize_patient_name($row['apellido'] ?? '');
+                $full = sanitize_patient_name($row['nombre_completo'] ?? '');
+                $cont = isset($row['contacto_nombre']) && $row['contacto_nombre'] !== null ? sanitize_patient_name($row['contacto_nombre']) : null;
+                if ($nom !== $row['nombre'] || $ape !== $row['apellido'] || $full !== $row['nombre_completo'] || $cont !== ($row['contacto_nombre'] ?? null)) {
+                    $pila = extract_first_name($full);
+                    $updateStmt->execute(['id' => (int) $row['id'], 'nom' => $nom, 'ape' => $ape, 'full' => $full, 'pila' => $pila, 'cont' => $cont]);
+                }
+            }
+        }
     } catch (Throwable) {}
 
     $pdo->exec('
@@ -220,7 +251,7 @@ function sync_pacientes_from_fichas(PDO $pdo, ?string $singleId = null, ?array $
         $payload = is_array($row['payload'] ?? null) ? $row['payload'] : json_decode((string) ($row['payload'] ?? ''), true);
         if (!is_array($payload)) continue;
 
-        $nombreRaw = trim((string) ($payload['nombre'] ?? ''));
+        $nombreRaw = sanitize_patient_name(trim((string) ($payload['nombre'] ?? '')));
         if ($nombreRaw === '' || is_tk3_or_blocked_name($nombreRaw)) continue;
 
         $dniRaw = trim((string) ($payload['dni'] ?? ''));

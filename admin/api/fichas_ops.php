@@ -27,6 +27,9 @@ function kinesica_fichas_get_all(PDO $pdo): void
     foreach ($rows as $row) {
         $item = json_decode($row['payload'], true);
         if (is_array($item)) {
+            if (isset($item['nombre'])) {
+                $item['nombre'] = sanitize_patient_name((string) $item['nombre']);
+            }
             $items[] = $item;
         }
     }

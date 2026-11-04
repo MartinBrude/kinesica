@@ -33,6 +33,9 @@ if ($method === 'POST') {
         if (isset($data[$key]) && !is_string($data[$key])) json_out(422, ['error' => 'El campo ' . $key . ' debe ser texto']);
         if (isset($data[$key])) $data[$key] = trim($data[$key]);
     }
+    if (isset($data['nombre'])) {
+        $data['nombre'] = sanitize_patient_name((string) $data['nombre']);
+    }
     if (!empty($data['fotoUrl']) && !preg_match('#^(/admin/)?api/foto\.php\?file=[a-f0-9]{32,64}\.(jpe?g|png|webp)$#i', (string) $data['fotoUrl'])) {
         json_out(422, ['error' => 'La URL de la foto no es válida']);
     }

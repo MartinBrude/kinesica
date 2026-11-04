@@ -3,6 +3,23 @@
  * Normalización de DNI, cálculo de clave de paciente, edad y derivación de sesiones.
  */
 
+export const EMOJI_REGEX = /[\p{Extended_Pictographic}\p{Emoji_Presentation}\u2600-\u27BF\uFE00-\uFE0F]/gu;
+
+export function sanitizePersonName(str) {
+  if (!str) return "";
+  return String(str)
+    .replace(/[\r\n]+/g, " ")
+    .replace(/,/g, "")
+    .replace(EMOJI_REGEX, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+export function hasDisallowedNameChars(str) {
+  if (!str) return false;
+  return /,|[\r\n]|[\p{Extended_Pictographic}\p{Emoji_Presentation}\u2600-\u27BF\uFE00-\uFE0F]/u.test(str);
+}
+
 export function normalizeDni(dni) {
   const digits = String(dni || "").replace(/\D/g, "");
   if (digits.length >= 4 && !/[a-zA-Z]/.test(String(dni || ""))) {

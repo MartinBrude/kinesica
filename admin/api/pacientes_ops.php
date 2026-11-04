@@ -9,9 +9,9 @@ function kinesica_pacientes_upsert(PDO $pdo, array $data): void
         json_out(422, ['status' => 'error', 'message' => 'Número de teléfono inválido o incompleto']);
     }
 
-    $nombre = mb_substr(trim((string) ($data['nombre'] ?? '')), 0, 60, 'UTF-8');
-    $apellido = mb_substr(trim((string) ($data['apellido'] ?? '')), 0, 60, 'UTF-8');
-    $nombreCompleto = mb_substr(trim((string) ($data['nombre_completo'] ?? $data['nombre_apellido'] ?? '')), 0, 120, 'UTF-8');
+    $nombre = mb_substr(sanitize_patient_name((string) ($data['nombre'] ?? '')), 0, 60, 'UTF-8');
+    $apellido = mb_substr(sanitize_patient_name((string) ($data['apellido'] ?? '')), 0, 60, 'UTF-8');
+    $nombreCompleto = mb_substr(sanitize_patient_name((string) ($data['nombre_completo'] ?? $data['nombre_apellido'] ?? '')), 0, 120, 'UTF-8');
 
     if ($nombreCompleto === '' && ($nombre !== '' || $apellido !== '')) {
         $nombreCompleto = trim($nombre . ' ' . $apellido);
@@ -48,7 +48,7 @@ function kinesica_pacientes_upsert(PDO $pdo, array $data): void
     $origen = in_array($data['origen'] ?? '', ['whatsapp', 'web', 'admin'], true) ? $data['origen'] : 'whatsapp';
 
     $contactoNombre = isset($data['contacto_nombre']) && trim((string) $data['contacto_nombre']) !== '' 
-        ? mb_substr(trim((string) $data['contacto_nombre']), 0, 120, 'UTF-8') : null;
+        ? mb_substr(sanitize_patient_name((string) $data['contacto_nombre']), 0, 120, 'UTF-8') : null;
     $contactoTelRaw = (string) ($data['contacto_telefono'] ?? '');
     $contactoTel = $contactoTelRaw !== '' ? clean_phone_number($contactoTelRaw) : null;
     if ($contactoTel === '') $contactoTel = null;
@@ -105,9 +105,9 @@ function kinesica_pacientes_update(PDO $pdo, array $data): void
     if ($id <= 0) json_out(422, ['status' => 'error', 'message' => 'ID inválido']);
 
     $phone = clean_phone_number((string) ($data['telefono'] ?? ''));
-    $nombre = mb_substr(trim((string) ($data['nombre'] ?? '')), 0, 60, 'UTF-8');
-    $apellido = mb_substr(trim((string) ($data['apellido'] ?? '')), 0, 60, 'UTF-8');
-    $nombreCompleto = mb_substr(trim((string) ($data['nombre_completo'] ?? '')), 0, 120, 'UTF-8');
+    $nombre = mb_substr(sanitize_patient_name((string) ($data['nombre'] ?? '')), 0, 60, 'UTF-8');
+    $apellido = mb_substr(sanitize_patient_name((string) ($data['apellido'] ?? '')), 0, 60, 'UTF-8');
+    $nombreCompleto = mb_substr(sanitize_patient_name((string) ($data['nombre_completo'] ?? '')), 0, 120, 'UTF-8');
 
     if ($nombreCompleto === '' && ($nombre !== '' || $apellido !== '')) {
         $nombreCompleto = trim($nombre . ' ' . $apellido);
@@ -141,7 +141,7 @@ function kinesica_pacientes_update(PDO $pdo, array $data): void
     $profesional = in_array($data['profesional_habitual'] ?? '', ['norberto', 'maria', 'indistinto'], true) ? $data['profesional_habitual'] : 'indistinto';
     $motivo = !empty($data['motivo_consulta']) ? mb_substr(trim((string) $data['motivo_consulta']), 0, 255, 'UTF-8') : null;
     $notas = !empty($data['notas']) ? mb_substr(trim((string) $data['notas']), 0, 2000, 'UTF-8') : null;
-    $contactoNombre = !empty($data['contacto_nombre']) ? mb_substr(trim((string) $data['contacto_nombre']), 0, 120, 'UTF-8') : null;
+    $contactoNombre = !empty($data['contacto_nombre']) ? mb_substr(sanitize_patient_name((string) $data['contacto_nombre']), 0, 120, 'UTF-8') : null;
     $contactoTelRaw = (string) ($data['contacto_telefono'] ?? '');
     $contactoTel = $contactoTelRaw !== '' ? clean_phone_number($contactoTelRaw) : null;
     if ($contactoTel === '') $contactoTel = null;
@@ -180,7 +180,7 @@ function kinesica_pacientes_waitlist_ops(PDO $pdo, string $action, array $data):
 {
     if ($action === 'waitlist_insert' || $action === 'insert_waitlist') {
         $phone = clean_phone_number((string) ($data['telefono'] ?? $data['paciente_telefono'] ?? ''));
-        $nombre = trim((string) ($data['nombre'] ?? $data['paciente_nombre'] ?? ''));
+        $nombre = sanitize_patient_name(trim((string) ($data['nombre'] ?? $data['paciente_nombre'] ?? '')));
         $horario = trim((string) ($data['rango_horario_preferido'] ?? ''));
         $dias = trim((string) ($data['dias_preferidos'] ?? ''));
         $profesional = in_array($data['profesional'] ?? '', ['norberto', 'maria', 'indistinto'], true) ? $data['profesional'] : 'indistinto';

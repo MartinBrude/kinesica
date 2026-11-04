@@ -164,10 +164,8 @@ export async function loadHorariosFromServer() {
       isDirty = false;
       applyHoursToRuntime(res.practitioner_hours);
       if (res.header_schedule?.opens && res.header_schedule?.closes) {
-        draftHeaderSchedule = {
-          opens: res.header_schedule.opens,
-          closes: res.header_schedule.closes,
-        };
+        draftHeaderSchedule.opens = res.header_schedule.opens;
+        draftHeaderSchedule.closes = res.header_schedule.closes;
       }
       updateMetaTimestamp(res.updated_at, res.updated_by);
       refreshUI();
@@ -214,10 +212,8 @@ export function initHorariosModule() {
         isDirty = false;
         applyHoursToRuntime(res.practitioner_hours || validation.normalized);
         if (res.header_schedule?.opens && res.header_schedule?.closes) {
-          draftHeaderSchedule = {
-            opens: res.header_schedule.opens,
-            closes: res.header_schedule.closes,
-          };
+          draftHeaderSchedule.opens = res.header_schedule.opens;
+          draftHeaderSchedule.closes = res.header_schedule.closes;
         }
         updateMetaTimestamp(res.updated_at, res.updated_by);
         refreshUI();

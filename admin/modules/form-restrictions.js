@@ -3,6 +3,8 @@
  * Previene caracteres inválidos, controla rangos de edad, EVA y campos numéricos.
  */
 
+import { sanitizePersonName } from "../ficha-rules.mjs?v=91";
+
 export function setupInputRestrictions(formEl) {
   if (!formEl) return;
 
@@ -129,7 +131,7 @@ export function setupInputRestrictions(formEl) {
     });
   }
 
-  // 4. Nombre completo: no permite dígitos
+  // 4. Nombre completo: no permite dígitos, comas, emojis ni saltos de línea
   const nombreInput = formEl.elements.nombre;
   if (nombreInput) {
     nombreInput.addEventListener("keydown", (e) => {
@@ -147,16 +149,25 @@ export function setupInputRestrictions(formEl) {
       ) {
         return;
       }
-      if (/^\d$/.test(e.key)) {
+      if (/^\d$/.test(e.key) || e.key === ",") {
         e.preventDefault();
       }
     });
 
     nombreInput.addEventListener("input", () => {
-      const clean = nombreInput.value.replace(/\d/g, "");
+      const clean = sanitizePersonName(nombreInput.value.replace(/\d/g, ""));
       if (nombreInput.value !== clean) {
         nombreInput.value = clean;
       }
+    });
+
+    nombreInput.addEventListener("paste", () => {
+      setTimeout(() => {
+        const clean = sanitizePersonName(nombreInput.value.replace(/\d/g, ""));
+        if (nombreInput.value !== clean) {
+          nombreInput.value = clean;
+        }
+      }, 0);
     });
   }
 }

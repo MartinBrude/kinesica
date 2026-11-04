@@ -133,11 +133,11 @@ function load_full_runtime_settings(string $file): array
     }
     $claraTexts['custom_menu_options'] = $customOptions;
 
-    $defaultHeaderSchedule = ['opens' => '08:00', 'closes' => '19:00'];
+    $defaultHeaderSchedule = ['opens' => '08:00', 'closes' => '19:30'];
     $headerSchedule = $defaultHeaderSchedule;
     if (isset($data['header_schedule']) && is_array($data['header_schedule'])) {
         $rawOpens = trim((string) ($data['header_schedule']['opens'] ?? '08:00'));
-        $rawCloses = trim((string) ($data['header_schedule']['closes'] ?? '19:00'));
+        $rawCloses = trim((string) ($data['header_schedule']['closes'] ?? '19:30'));
         if (preg_match('/^([01]\d|2[0-3]):(00|30)$/', $rawOpens) && preg_match('/^([01]\d|2[0-3]):(00|30)$/', $rawCloses)) {
             $headerSchedule = ['opens' => $rawOpens, 'closes' => $rawCloses];
         }
@@ -175,7 +175,7 @@ if ($method === 'GET') {
         'practitioner_hours' => $current['practitioner_hours'],
         'practitioner_hours_py' => $current['practitioner_hours_py'],
         'clara_schedule_summary' => $current['clara_schedule_summary'],
-        'header_schedule' => $current['header_schedule'] ?? ['opens' => '08:00', 'closes' => '19:00'],
+        'header_schedule' => $current['header_schedule'] ?? ['opens' => '08:00', 'closes' => '19:30'],
         'updated_at' => $current['horarios_updated_at'],
         'updated_by' => $current['horarios_updated_by'],
     ], JSON_UNESCAPED_UNICODE);

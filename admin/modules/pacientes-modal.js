@@ -12,6 +12,7 @@ import {
   inspectAdminPhone,
 } from "./pacientes-format.js";
 import { patientHasReview } from "./pacientes.js";
+import { sanitizePersonName, hasDisallowedNameChars } from "../ficha-rules.mjs?v=91";
 
 export function openFullPacienteModal(paciente = null, onReload = null) {
   const isEdit = Boolean(paciente);
@@ -148,6 +149,19 @@ export function openFullPacienteModal(paciente = null, onReload = null) {
   const confirmedWeirdPhones = new Set();
   const confirmedSuspiciousEmails = new Set();
 
+  ["#modal-p-nombre", "#modal-p-apellido", "#modal-p-contacto-nombre"].forEach((sel) => {
+    const el = backdrop.querySelector(sel);
+    if (el) {
+      el.addEventListener("input", () => {
+        const cleaned = sanitizePersonName(el.value);
+        if (cleaned !== el.value) {
+          el.value = cleaned;
+        }
+        errorEl.hidden = true;
+      });
+    }
+  });
+
   ["#modal-p-tel", "#modal-p-contacto-tel"].forEach((sel) => {
     const el = backdrop.querySelector(sel);
     if (el) el.addEventListener("input", () => {
@@ -161,15 +175,25 @@ export function openFullPacienteModal(paciente = null, onReload = null) {
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const nombre = backdrop.querySelector("#modal-p-nombre").value.trim();
-    const apellido = backdrop.querySelector("#modal-p-apellido").value.trim();
+    const rawNombre = backdrop.querySelector("#modal-p-nombre").value;
+    const rawApellido = backdrop.querySelector("#modal-p-apellido").value;
+    const rawContactoNombre = backdrop.querySelector("#modal-p-contacto-nombre")?.value || "";
+
+    if (hasDisallowedNameChars(rawNombre) || hasDisallowedNameChars(rawApellido) || hasDisallowedNameChars(rawContactoNombre)) {
+      errorEl.textContent = "El nombre y apellido no permiten comas, emojis ni saltos de línea.";
+      errorEl.hidden = false;
+      return;
+    }
+
+    const nombre = sanitizePersonName(rawNombre);
+    const apellido = sanitizePersonName(rawApellido);
     const tel = backdrop.querySelector("#modal-p-tel").value.trim();
     const email = backdrop.querySelector("#modal-p-email").value.trim();
     const dni = backdrop.querySelector("#modal-p-dni").value.trim();
     const prof = backdrop.querySelector("#modal-p-prof").value;
     const motivo = backdrop.querySelector("#modal-p-motivo").value.trim();
     const notas = backdrop.querySelector("#modal-p-notas").value.trim();
-    const contactoNombre = backdrop.querySelector("#modal-p-contacto-nombre")?.value.trim() || "";
+    const contactoNombre = sanitizePersonName(rawContactoNombre);
     const contactoTel = backdrop.querySelector("#modal-p-contacto-tel")?.value.trim() || "";
     const contactoEmail = backdrop.querySelector("#modal-p-contacto-email")?.value.trim() || "";
     const contactoNotas = backdrop.querySelector("#modal-p-contacto-notas")?.value.trim() || "";

@@ -27,6 +27,11 @@ export function validateField(key, value, allData = {}) {
     }
     case "nombre": {
       if (!str) return "Falta completar el nombre completo";
+      if (/[\r\n]/.test(str)) return "El nombre no puede contener saltos de línea";
+      if (/,/.test(str)) return "El nombre no puede contener comas";
+      if (/[\p{Extended_Pictographic}\p{Emoji_Presentation}\u2600-\u27BF\uFE00-\uFE0F]/u.test(str)) {
+        return "El nombre no puede contener emojis";
+      }
       if (/\d/.test(str)) return "El nombre no puede contener números";
       if (str.length < 2) return "El nombre completo debe tener al menos 2 letras";
       return null;

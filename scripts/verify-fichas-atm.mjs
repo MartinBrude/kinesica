@@ -27,6 +27,7 @@ import {
   formatSessionBadgeText,
   shouldOmitInvariableFields,
   formatSide,
+  sanitizePersonName,
 } from "../admin/ficha-rules.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -267,7 +268,11 @@ assert.ok(validateField("edad", "34 años"), "Edad con sufijo debe ser inválida
 
 // Verificación en campos de texto y documento (DNI / Pasaporte admite letras)
 assert.ok(validateField("nombre", "Ana 2"), "Nombre con números debe ser inválido");
+assert.ok(validateField("nombre", "Ana, María"), "Nombre con comas debe ser inválido");
+assert.ok(validateField("nombre", "Ana\nMaría"), "Nombre con saltos de línea debe ser inválido");
+assert.ok(validateField("nombre", "Ana María 👍"), "Nombre con emojis debe ser inválido");
 assert.equal(validateField("nombre", "Ana María"), null, "Nombre válido debe ser aceptado");
+assert.equal(sanitizePersonName("Ana,  María 👍\r\n"), "Ana María", "sanitizePersonName debe eliminar comas, emojis y saltos de línea");
 assert.equal(validateField("dni", "34abc109"), null, "DNI/Pasaporte con letras debe ser válido");
 assert.equal(validateField("dni", "AB 123456"), null, "Pasaporte con letras debe ser válido");
 assert.ok(validateField("dni", "1"), "DNI/Pasaporte muy corto debe ser inválido");

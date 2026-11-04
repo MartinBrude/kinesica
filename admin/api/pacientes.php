@@ -159,9 +159,9 @@ try {
 
         if ($action === 'update_name') {
             $phone = clean_phone_number((string) ($data['telefono'] ?? ''));
-            $nombre = trim((string) ($data['nombre'] ?? ''));
-            $apellido = trim((string) ($data['apellido'] ?? ''));
-            $nombreCompleto = trim((string) ($data['nombre_completo'] ?? $data['nombre_apellido'] ?? ''));
+            $nombre = sanitize_patient_name((string) ($data['nombre'] ?? ''));
+            $apellido = sanitize_patient_name((string) ($data['apellido'] ?? ''));
+            $nombreCompleto = sanitize_patient_name((string) ($data['nombre_completo'] ?? $data['nombre_apellido'] ?? ''));
             if ($nombreCompleto === '' && ($nombre !== '' || $apellido !== '')) $nombreCompleto = trim($nombre . ' ' . $apellido);
             elseif ($nombreCompleto !== '' && $nombre === '' && $apellido === '') {
                 $parts = preg_split('/\s+/u', $nombreCompleto, 2, PREG_SPLIT_NO_EMPTY) ?: [];

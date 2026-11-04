@@ -66,7 +66,7 @@
   },
   "header_schedule": {
     "opens": "08:00",
-    "closes": "19:00"
+    "closes": "19:30"
   },
   "clara_texts": {
     "menu_welcome": "¡Hola! Te damos la bienvenida a *Kinésica* 🩺\n\nPor favor, respondé con la letra de la opción que necesitás:\n\n*A.* 📅 Turnos (agendar, consultar o cancelar)\n*B.* 📍 Ubicación y horarios del consultorio\n*C.* 💳 Honorarios y cobertura (obras sociales / reintegros)\n*D.* 👕 ¿Cómo venir vestido/a a la sesión?\n*E.* 💬 Comunicarte con un profesional (Lic. Norberto Brude / Lic. María Gulin)\n*F.* 🌐 English\n\n_(Escribí la letra de la opción deseada, por ejemplo *A* o *C*)_",
