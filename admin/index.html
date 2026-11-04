@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=122">
+  <link rel="stylesheet" href="/admin/styles.css?v=123">
   <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1793720845">
   <script>
     (function () {
@@ -1202,7 +1202,7 @@
       <div class="hero-card" style="margin-bottom: 24px;">
         <div class="hero-copy">
           <span class="doc-icon" aria-hidden="true"></span>
-          <h1 class="hero-title">Administración del Sistema</h1>
+          <h1 class="hero-title" id="admin-hero-title">Administración del Sistema</h1>
         </div>
       </div>
 
@@ -1239,7 +1239,7 @@
         </article>
 
         <!-- SECCIÓN 3: REGISTRO DE GASTOS -->
-        <article class="admin-card" id="admin-gastos-card">
+        <article class="admin-card" id="admin-gastos-card" hidden>
           <div class="admin-card-header">
             <div class="admin-card-titles">
               <h2 class="admin-card-title">
@@ -1303,7 +1303,7 @@
         </article>
 
         <!-- SECCIÓN 4: REPORTE Y SEGUIMIENTO DE ERRORES -->
-        <article class="admin-card" id="admin-errores-card">
+        <article class="admin-card" id="admin-errores-card" hidden>
           <div class="admin-card-header">
             <div class="admin-card-titles">
               <h2 class="admin-card-title">
@@ -1350,7 +1350,7 @@
         </article>
 
         <!-- SECCIÓN 5: COPIAS DE SEGURIDAD Y RESGUARDO -->
-        <article class="admin-card" id="admin-backups-card">
+        <article class="admin-card" id="admin-backups-card" hidden>
           <div class="admin-card-header">
             <div class="admin-card-titles">
               <h2 class="admin-card-title">
@@ -2445,6 +2445,22 @@
           } else if (saved.view === "admin") {
             var adm = document.getElementById("view-admin");
             if (adm) adm.hidden = false;
+            var sec = (saved && saved.section) || "usuarios";
+            var cu = document.getElementById("admin-usuarios-card");
+            var cg = document.getElementById("admin-gastos-card");
+            var ce = document.getElementById("admin-errores-card");
+            var cb = document.getElementById("admin-backups-card");
+            if (cu) cu.hidden = sec !== "usuarios";
+            if (cg) cg.hidden = sec !== "gastos";
+            if (ce) ce.hidden = sec !== "errores";
+            if (cb) cb.hidden = sec !== "backups";
+            var ht = document.getElementById("admin-hero-title");
+            if (ht) {
+              if (sec === "gastos") ht.textContent = "Administración · Registro de Gastos";
+              else if (sec === "errores") ht.textContent = "Administración · Reporte de Errores";
+              else if (sec === "backups") ht.textContent = "Administración · Copias de Seguridad";
+              else ht.textContent = "Administración · Usuarios";
+            }
           }
         }
       } catch (_) {}
@@ -2453,6 +2469,6 @@
   <div id="print-root"></div>
   <script src="/partials/google-reviews-data.min.js?v=1793720845" defer></script>
   <script src="/booking/booking-bundle.min.js?v=1793720845" defer></script>
-  <script type="module" src="/admin/app.js?v=164"></script>
+  <script type="module" src="/admin/app.js?v=165"></script>
 </body>
 </html>

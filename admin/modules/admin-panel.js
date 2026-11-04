@@ -27,43 +27,57 @@ import {
 
 const viewAdmin = document.querySelector("#view-admin");
 
-export function scrollToAdminSection(section) {
-  if (!section) return;
-  const map = {
-    usuarios: "admin-usuarios-card",
-    profesionales: "admin-usuarios-card",
-    gastos: "admin-gastos-card",
-    errores: "admin-errores-card",
-    backups: "admin-backups-card",
-    copias: "admin-backups-card",
-    "copias-seguridad": "admin-backups-card",
-  };
-  const targetId = map[String(section).toLowerCase()];
-  if (!targetId) return;
+export function setAdminActiveSection(section = "usuarios") {
+  const norm = String(section || "").toLowerCase().trim();
+  let target = "usuarios";
+  if (norm === "gastos") target = "gastos";
+  else if (norm === "errores" || norm === "reportes") target = "errores";
+  else if (norm === "backups" || norm === "copias" || norm === "copias-seguridad") target = "backups";
 
-  setTimeout(() => {
-    const el = document.getElementById(targetId);
-    if (!el) return;
-    el.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, 60);
+  const cardUsuarios = document.getElementById("admin-usuarios-card");
+  const cardGastos = document.getElementById("admin-gastos-card");
+  const cardErrores = document.getElementById("admin-errores-card");
+  const cardBackups = document.getElementById("admin-backups-card");
+
+  if (cardUsuarios) cardUsuarios.hidden = target !== "usuarios";
+  if (cardGastos) cardGastos.hidden = target !== "gastos";
+  if (cardErrores) cardErrores.hidden = target !== "errores";
+  if (cardBackups) cardBackups.hidden = target !== "backups";
+
+  const heroTitle = document.getElementById("admin-hero-title");
+  if (heroTitle) {
+    const titles = {
+      usuarios: "Administración · Usuarios",
+      gastos: "Administración · Registro de Gastos",
+      errores: "Administración · Reporte de Errores",
+      backups: "Administración · Copias de Seguridad",
+    };
+    heroTitle.textContent = titles[target] || "Administración del Sistema";
+  }
+
+  window.scrollTo({ top: 0, behavior: "instant" });
 }
 
-export function showAdminView(section = null) {
+export const scrollToAdminSection = setAdminActiveSection;
+
+export function showAdminView(section = "usuarios") {
   const user = getSessionUser();
   if (!user || user.role !== "admin") {
     dialogAlert("Sección reservada exclusivamente a administradores.");
     return;
   }
 
+  const validSection = ["usuarios", "gastos", "errores", "backups"].includes(String(section).toLowerCase())
+    ? String(section).toLowerCase()
+    : "usuarios";
+
   const view = switchActiveView("view-admin");
   if (view) {
     try {
-      sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "admin", section: section || "" }));
+      sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "admin", section: validSection }));
     } catch {}
+    setAdminActiveSection(validSection);
     loadAdminData();
-    if (section) {
-      scrollToAdminSection(section);
-    }
   }
 }
 
