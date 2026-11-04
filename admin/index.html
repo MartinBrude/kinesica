@@ -10,13 +10,16 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=123">
+  <link rel="stylesheet" href="/admin/styles.css?v=124">
   <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1793720845">
   <script>
     (function () {
       try {
         if (localStorage.getItem("kinesica_logged_in") === "1") {
           document.documentElement.classList.add("is-authenticated");
+        }
+        if (localStorage.getItem("kinesica_user_role") === "admin") {
+          document.documentElement.classList.add("is-admin-role");
         }
       } catch (_) {}
     })();
@@ -30,6 +33,10 @@
     }
     html:not(.is-authenticated) #btn-logout,
     html:not(.is-authenticated) #admin-nav {
+      display: none !important;
+    }
+    html:not(.is-admin-role) #dash-card-admin,
+    html:not(.is-admin-role) #nav-group-admin {
       display: none !important;
     }
   </style>
@@ -72,7 +79,7 @@
         <button type="button" class="btn ghost" id="nav-btn-clara">Clara</button>
 
         <!-- GRUPO 5: ADMINISTRACIÓN (Usuarios, Gastos, Reporte de errores, Copias de seguridad) -->
-        <div class="nav-dropdown" id="nav-group-admin" hidden>
+        <div class="nav-dropdown" id="nav-group-admin">
           <button type="button" class="btn ghost nav-dropdown-trigger" id="nav-btn-admin" aria-expanded="false" aria-haspopup="true">
             <span>Administración</span>
             <svg class="nav-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -352,7 +359,7 @@
         </article>
 
         <!-- 7. Administración -->
-        <article class="dash-card" id="dash-card-admin" role="button" tabindex="0" aria-label="Abrir Administración" hidden>
+        <article class="dash-card" id="dash-card-admin" role="button" tabindex="0" aria-label="Abrir Administración">
           <div class="dash-card-header">
             <div class="dash-icon-box" aria-hidden="true" style="background: #f1f5f9; color: #334155;">
               <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -2389,6 +2396,8 @@
           if (groupAdmin) groupAdmin.hidden = role !== "admin";
           var btnAdmin = document.getElementById("nav-btn-admin");
           if (btnAdmin) btnAdmin.hidden = role !== "admin";
+          var dashCardAdmin = document.getElementById("dash-card-admin");
+          if (dashCardAdmin) dashCardAdmin.hidden = role !== "admin";
           var saved = null;
           try {
             saved = JSON.parse(sessionStorage.getItem("kinesica_admin_view") || "null");
@@ -2469,6 +2478,6 @@
   <div id="print-root"></div>
   <script src="/partials/google-reviews-data.min.js?v=1793720845" defer></script>
   <script src="/booking/booking-bundle.min.js?v=1793720845" defer></script>
-  <script type="module" src="/admin/app.js?v=165"></script>
+  <script type="module" src="/admin/app.js?v=166"></script>
 </body>
 </html>

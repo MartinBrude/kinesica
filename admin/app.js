@@ -24,7 +24,7 @@ import {
   showGate,
   hideGate,
   initAuth,
-} from "./modules/auth.js?v=81";
+} from "./modules/auth.js?v=82";
 
 import {
   blank,
@@ -60,7 +60,7 @@ import {
   switchTab,
   mountAdminChannels,
   unmountAdminChannels,
-} from "./modules/app-tabs.js?v=2";
+} from "./modules/app-tabs.js?v=3";
 
 import {
   initAppControllers,

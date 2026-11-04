@@ -4,10 +4,10 @@
  */
 
 import { api } from "./api.js?v=77";
-import { getSessionUser } from "./auth.js?v=81";
+import { getSessionUser } from "./auth.js?v=82";
 import { showLibrary } from "./library.js?v=93";
 import { showPacientesView, hidePacientesView } from "./pacientes.js?v=3";
-import { showDashboardView, hideDashboardView, updateDashboardClara, updateDashboardBooking } from "./dashboard.js?v=10";
+import { showDashboardView, hideDashboardView, updateDashboardClara, updateDashboardBooking } from "./dashboard.js?v=11";
 import { showConsultorioView, hideConsultorioView, showClaraView, hideClaraView } from "./configuracion.js?v=28";
 import { showAdminView, hideAdminView } from "./admin-panel.js?v=13";
 import { showInteraccionesView, hideInteraccionesView } from "./interacciones.js?v=11";
@@ -119,6 +119,9 @@ export function switchTab(tab, subtab) {
 }
 
 export function unmountAdminChannels() {
+  if (typeof document !== "undefined") {
+    document.documentElement.classList.remove("is-admin-role");
+  }
   const nav = document.getElementById("admin-nav");
   if (nav) nav.hidden = true;
   const navGroupAdmin = document.getElementById("nav-group-admin");
@@ -134,6 +137,14 @@ export function mountAdminChannels() {
   if (!user) {
     unmountAdminChannels();
     return;
+  }
+
+  if (typeof document !== "undefined") {
+    if (user.role === "admin") {
+      document.documentElement.classList.add("is-admin-role");
+    } else {
+      document.documentElement.classList.remove("is-admin-role");
+    }
   }
 
   const adminNav = document.getElementById("admin-nav");

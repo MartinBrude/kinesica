@@ -68,21 +68,34 @@ export function setSessionUser(user) {
       userLabel.textContent = user.name || user.username || "";
       userLabel.hidden = false;
     }
-    if (typeof document !== "undefined") document.documentElement.classList.add("is-authenticated");
+    if (typeof document !== "undefined") {
+      document.documentElement.classList.add("is-authenticated");
+      if (user.role === "admin") {
+        document.documentElement.classList.add("is-admin-role");
+      } else {
+        document.documentElement.classList.remove("is-admin-role");
+      }
+    }
   } else {
     clearAuthStorage();
     if (userLabel) {
       userLabel.textContent = "";
       userLabel.hidden = true;
     }
-    if (typeof document !== "undefined") document.documentElement.classList.remove("is-authenticated");
+    if (typeof document !== "undefined") {
+      document.documentElement.classList.remove("is-authenticated");
+      document.documentElement.classList.remove("is-admin-role");
+    }
   }
 }
 
 export function showGate(data = {}) {
   authed = false;
   clearAuthStorage();
-  document.documentElement.classList.remove("is-authenticated");
+  if (typeof document !== "undefined") {
+    document.documentElement.classList.remove("is-authenticated");
+    document.documentElement.classList.remove("is-admin-role");
+  }
 
   switchActiveView("view-gate");
   if (logoutBtn) logoutBtn.hidden = true;

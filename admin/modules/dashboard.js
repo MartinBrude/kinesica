@@ -27,7 +27,8 @@ export function showDashboardView() {
 
   const dashCardAdmin = document.querySelector("#dash-card-admin");
   if (dashCardAdmin) {
-    dashCardAdmin.hidden = !user || user.role !== "admin";
+    const role = user?.role || (typeof localStorage !== "undefined" ? localStorage.getItem("kinesica_user_role") : null);
+    dashCardAdmin.hidden = role !== "admin";
   }
 
   const view = switchActiveView("view-dashboard");
