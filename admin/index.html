@@ -1335,6 +1335,61 @@
             </div>
           </div>
         </article>
+
+        <!-- SECCIÓN 5: COPIAS DE SEGURIDAD Y RESGUARDO -->
+        <article class="admin-card" id="admin-backups-card">
+          <div class="admin-card-header">
+            <div class="admin-card-titles">
+              <h2 class="admin-card-title">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                Copias de Seguridad y Resguardo (Backups)
+              </h2>
+              <p class="admin-card-desc">Protocolo operativo de respaldo y recuperación ante desastres para la base de datos de Kinésica y el bot Clara.</p>
+            </div>
+            <div class="admin-gastos-header-actions">
+              <a href="/admin/manual.html#doc-backups" target="_blank" rel="noopener noreferrer" class="btn green" style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                📖 Guía de Recuperación ↗
+              </a>
+            </div>
+          </div>
+          <div class="admin-card-body">
+            <div class="gastos-summary-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+              <div class="gastos-stat-card card-eur">
+                <span class="stat-name">1. Kinésica Web (MariaDB)</span>
+                <span class="stat-equiv" style="margin-top: 6px; line-height: 1.5; color: var(--navy); font-weight: 500;">
+                  Tablas de pacientes, fichas clínicas, turnos y auditoría.
+                </span>
+                <span class="stat-equiv" style="margin-top: 8px;">
+                  • <strong>Manual:</strong> Descarga inmediata en Pacientes → <em>Exportar Backup SQL</em>.<br>
+                  • <strong>Automático:</strong> Cron semanal en Hostinger (domingos 03:00 AM) vía <code>admin/api/backup.php</code>.<br>
+                  • <strong>Recuperación:</strong> 1 clic en phpMyAdmin (Importar .sql).
+                </span>
+              </div>
+              <div class="gastos-stat-card card-usd">
+                <span class="stat-name">2. Kinésica Bot (Clara / n8n)</span>
+                <span class="stat-equiv" style="margin-top: 6px; line-height: 1.5; color: var(--navy); font-weight: 500;">
+                  Base SQLite, flujos JSON, claves y Google Apps Script.
+                </span>
+                <span class="stat-equiv" style="margin-top: 8px;">
+                  • <strong>Manual:</strong> <code>python3 scripts/backup_bot.py</code> (136 KB).<br>
+                  • <strong>Automático:</strong> Cron semanal en el VPS (domingos 04:00 AM).<br>
+                  • <strong>Recuperación:</strong> Descomprimir <code>.tar.gz</code> y ejecutar <code>deploy.py</code>.
+                </span>
+              </div>
+              <div class="gastos-stat-card card-ars">
+                <span class="stat-name">3. Retención y Google Cloud</span>
+                <span class="stat-equiv" style="margin-top: 6px; line-height: 1.5; color: var(--navy); font-weight: 500;">
+                  Política de rotación y copias espejo.
+                </span>
+                <span class="stat-equiv" style="margin-top: 8px;">
+                  • <strong>Rotación:</strong> 8 semanas de historial sin costo extra ($0).<br>
+                  • <strong>Calendar:</strong> Papelera de reciclaje de 30 días en Google Calendar.<br>
+                  • <strong>Sheets:</strong> Historial nativo de versiones en Google Sheets.
+                </span>
+              </div>
+            </div>
+          </div>
+        </article>
       </div>
 
       <!-- MODAL DE ALTA / EDICIÓN DE PROFESIONAL -->
