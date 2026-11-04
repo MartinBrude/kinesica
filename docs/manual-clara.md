@@ -597,7 +597,7 @@ Para facilitar la comunicación ágil entre el equipo clínico y el soporte téc
 El panel `/admin/` cuenta con una distribución ergonómica optimizada:
 * **Dashboard Principal (`/admin/`):** Presenta el saludo del día, estado en vivo de Clara (Activa / Pausada con botón toggle) y accesos directos destacados:
   - **`📖 Manual de Usuario ↗`:** Abre este visualizador interactivo centralizado (`/admin/manual.html`).
-  - **`📊 Planilla Google Sheets ↗`:** Abre directamente la hoja de cálculo oficial en Google Drive.
+  - **`📊 Profesionales para contactar ↗`:** Abre directamente la hoja de cálculo oficial en Google Drive.
 * **Operación Médica y Diaria:** Pestañas directas para *Historias Clínicas*, *Pacientes*, *Recordatorios* e *Interacciones*.
 * **Configuración del Consultorio y Bot:** Pestañas para *Consultorio* (horarios y honorarios) y *Clara & Mensajes* (textos del menú determinista).
 * **Menú Desplegable "Administración":** Menú superior que aísla de forma segura los módulos avanzados: *Usuarios y Cuentas (2FA)*, *Gastos Operativos*, *Base de Datos y Backups* y *Reportar Error*.
