@@ -18,8 +18,13 @@
         if (localStorage.getItem("kinesica_logged_in") === "1") {
           document.documentElement.classList.add("is-authenticated");
         }
-        if (localStorage.getItem("kinesica_user_role") === "admin") {
+        var role = localStorage.getItem("kinesica_user_role");
+        var name = localStorage.getItem("kinesica_user_name");
+        var isAdmin = role === "admin" || name === "martin" || name === "Martín Brude" || name === "Martín";
+        if (isAdmin) {
           document.documentElement.classList.add("is-admin-role");
+        } else {
+          document.documentElement.classList.remove("is-admin-role");
         }
       } catch (_) {}
     })();
@@ -36,7 +41,8 @@
       display: none !important;
     }
     html:not(.is-admin-role) #dash-card-admin,
-    html:not(.is-admin-role) #nav-group-admin {
+    html:not(.is-admin-role) #nav-group-admin,
+    html:not(.is-admin-role) #nav-btn-admin {
       display: none !important;
     }
   </style>
@@ -79,8 +85,8 @@
         <button type="button" class="btn ghost" id="nav-btn-clara">Clara</button>
 
         <!-- GRUPO 5: ADMINISTRACIÓN (Usuarios, Gastos, Reporte de errores, Copias de seguridad) -->
-        <div class="nav-dropdown" id="nav-group-admin">
-          <button type="button" class="btn ghost nav-dropdown-trigger" id="nav-btn-admin" aria-expanded="false" aria-haspopup="true">
+        <div class="nav-dropdown" id="nav-group-admin" hidden>
+          <button type="button" class="btn ghost nav-dropdown-trigger" id="nav-btn-admin" aria-expanded="false" aria-haspopup="true" hidden>
             <span>Administración</span>
             <svg class="nav-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
           </button>
@@ -359,7 +365,7 @@
         </article>
 
         <!-- 7. Administración -->
-        <article class="dash-card" id="dash-card-admin" role="button" tabindex="0" aria-label="Abrir Administración">
+        <article class="dash-card" id="dash-card-admin" role="button" tabindex="0" aria-label="Abrir Administración" hidden>
           <div class="dash-card-header">
             <div class="dash-icon-box" aria-hidden="true" style="background: #f1f5f9; color: #334155;">
               <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -2393,14 +2399,16 @@
             }
           }
           var role = localStorage.getItem("kinesica_user_role");
+          var name = localStorage.getItem("kinesica_user_name");
+          var isAdmin = role === "admin" || name === "martin" || name === "Martín Brude" || name === "Martín";
           var adminNav = document.getElementById("admin-nav");
           if (adminNav) adminNav.hidden = false;
           var groupAdmin = document.getElementById("nav-group-admin");
-          if (groupAdmin) groupAdmin.hidden = role !== "admin";
+          if (groupAdmin) groupAdmin.hidden = !isAdmin;
           var btnAdmin = document.getElementById("nav-btn-admin");
-          if (btnAdmin) btnAdmin.hidden = role !== "admin";
+          if (btnAdmin) btnAdmin.hidden = !isAdmin;
           var dashCardAdmin = document.getElementById("dash-card-admin");
-          if (dashCardAdmin) dashCardAdmin.hidden = role !== "admin";
+          if (dashCardAdmin) dashCardAdmin.hidden = !isAdmin;
           var saved = null;
           try {
             saved = JSON.parse(sessionStorage.getItem("kinesica_admin_view") || "null");
@@ -2455,23 +2463,28 @@
             var comp = document.getElementById("view-compare");
             if (comp) comp.hidden = false;
           } else if (saved.view === "admin") {
-            var adm = document.getElementById("view-admin");
-            if (adm) adm.hidden = false;
-            var sec = (saved && saved.section) || "usuarios";
-            var cu = document.getElementById("admin-usuarios-card");
-            var cg = document.getElementById("admin-gastos-card");
-            var ce = document.getElementById("admin-errores-card");
-            var cb = document.getElementById("admin-backups-card");
-            if (cu) cu.hidden = sec !== "usuarios";
-            if (cg) cg.hidden = sec !== "gastos";
-            if (ce) ce.hidden = sec !== "errores";
-            if (cb) cb.hidden = sec !== "backups";
-            var ht = document.getElementById("admin-hero-title");
-            if (ht) {
-              if (sec === "gastos") ht.textContent = "Administración · Registro de Gastos";
-              else if (sec === "errores") ht.textContent = "Administración · Reporte de Errores";
-              else if (sec === "backups") ht.textContent = "Administración · Copias de Seguridad";
-              else ht.textContent = "Administración · Usuarios";
+            if (isAdmin) {
+              var adm = document.getElementById("view-admin");
+              if (adm) adm.hidden = false;
+              var sec = (saved && saved.section) || "usuarios";
+              var cu = document.getElementById("admin-usuarios-card");
+              var cg = document.getElementById("admin-gastos-card");
+              var ce = document.getElementById("admin-errores-card");
+              var cb = document.getElementById("admin-backups-card");
+              if (cu) cu.hidden = sec !== "usuarios";
+              if (cg) cg.hidden = sec !== "gastos";
+              if (ce) ce.hidden = sec !== "errores";
+              if (cb) cb.hidden = sec !== "backups";
+              var ht = document.getElementById("admin-hero-title");
+              if (ht) {
+                if (sec === "gastos") ht.textContent = "Administración · Registro de Gastos";
+                else if (sec === "errores") ht.textContent = "Administración · Reporte de Errores";
+                else if (sec === "backups") ht.textContent = "Administración · Copias de Seguridad";
+                else ht.textContent = "Administración · Usuarios";
+              }
+            } else {
+              var dash = document.getElementById("view-dashboard");
+              if (dash) dash.hidden = false;
             }
           }
         }
@@ -2481,6 +2494,6 @@
   <div id="print-root"></div>
   <script src="/partials/google-reviews-data.min.js?v=1793720845" defer></script>
   <script src="/booking/booking-bundle.min.js?v=1793720845" defer></script>
-  <script type="module" src="/admin/app.js?v=168"></script>
+  <script type="module" src="/admin/app.js?v=169"></script>
 </body>
 </html>

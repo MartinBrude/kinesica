@@ -63,7 +63,10 @@ export const scrollToAdminSection = setAdminActiveSection;
 export function showAdminView(section = "usuarios") {
   const user = getSessionUser();
   if (!user || user.role !== "admin") {
-    dialogAlert("Sección reservada exclusivamente a administradores.");
+    // Si no es administrador, no debe acceder ni ver modal de error: redirigir silenciosamente al inicio
+    try {
+      import("./app-tabs.js").then((m) => m.switchTab("inicio"));
+    } catch (_) {}
     return;
   }
 

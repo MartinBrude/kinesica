@@ -134,28 +134,24 @@ export function unmountAdminChannels() {
 
 export function mountAdminChannels() {
   const user = getSessionUser();
-  if (!user) {
+  if (!user || user.role !== "admin") {
     unmountAdminChannels();
     return;
   }
 
   if (typeof document !== "undefined") {
-    if (user.role === "admin") {
-      document.documentElement.classList.add("is-admin-role");
-    } else {
-      document.documentElement.classList.remove("is-admin-role");
-    }
+    document.documentElement.classList.add("is-admin-role");
   }
 
   const adminNav = document.getElementById("admin-nav");
   if (adminNav) {
     adminNav.hidden = false;
     const navGroupAdmin = document.getElementById("nav-group-admin");
-    if (navGroupAdmin) navGroupAdmin.hidden = user.role !== "admin";
+    if (navGroupAdmin) navGroupAdmin.hidden = false;
     const btnAdmin = document.getElementById("nav-btn-admin");
-    if (btnAdmin) btnAdmin.hidden = user.role !== "admin";
+    if (btnAdmin) btnAdmin.hidden = false;
     const dashCardAdmin = document.getElementById("dash-card-admin");
-    if (dashCardAdmin) dashCardAdmin.hidden = user.role !== "admin";
+    if (dashCardAdmin) dashCardAdmin.hidden = false;
 
     if (!adminNav.dataset.bound) {
       adminNav.dataset.bound = "1";
