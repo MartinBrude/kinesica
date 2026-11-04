@@ -207,6 +207,8 @@ export function initForm({ onSave, onBack, onCompare, onPrint, getSessionUser })
   });
 
   form.addEventListener("input", (e) => {
+    const alertEl = document.querySelector("#form-step-alert");
+    if (alertEl) alertEl.hidden = true;
     if (e.target.classList.contains("input-error") && e.target.value.trim()) {
       if (!validateField(e.target.name, e.target.value, readForm())) {
         e.target.classList.remove("input-error");

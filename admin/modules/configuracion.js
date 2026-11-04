@@ -231,6 +231,9 @@ export function initConfiguracionModule(callbacks = {}) {
 
   btnSaveTexts?.addEventListener("click", () => onSave(btnSaveTexts));
   btnSaveMailsPolicies?.addEventListener("click", () => onSave(btnSaveMailsPolicies));
+  document.querySelector("#btn-save-clara-global")?.addEventListener("click", (e) => onSave(e.currentTarget));
+  document.querySelector("#btn-save-clara-recordatorios")?.addEventListener("click", (e) => onSave(e.currentTarget));
+  document.querySelector("#btn-save-clara-politicas")?.addEventListener("click", (e) => onSave(e.currentTarget));
 
   const syncAndPreview = (source, target) => {
     if (target && source) target.value = source.value;

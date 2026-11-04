@@ -263,6 +263,101 @@ main {
   padding: 12px;
 }
 
+/* NAVEGACIÓN AGRUPADA Y DROPDOWNS */
+.nav-dropdown {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.nav-dropdown-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.nav-dropdown-trigger .nav-chevron {
+  transition: transform 0.2s ease;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.nav-dropdown.is-open .nav-dropdown-trigger .nav-chevron {
+  transform: rotate(180deg);
+}
+
+.nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 210px;
+  background: #ffffff;
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: 10px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+  padding: 6px;
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 1000;
+}
+
+.nav-dropdown.is-open .nav-dropdown-menu {
+  display: flex;
+}
+
+@media (min-width: 801px) {
+  .nav-dropdown:hover .nav-dropdown-menu {
+    display: flex;
+  }
+}
+
+.nav-dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--navy, #1e293b);
+  font-size: 13.5px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.nav-dropdown-item:hover {
+  background: #f1f5f9;
+  color: var(--primary, #005f99);
+}
+
+.nav-dropdown-item.is-active {
+  background: rgba(0, 95, 153, 0.1);
+  color: var(--primary, #005f99);
+  font-weight: 700;
+}
+
+/* ALERTA SUAVE DE PASO EN FORMULARIO CLÍNICO */
+.form-step-inline-alert {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  padding: 11px 16px;
+  border-radius: var(--radius, 8px);
+  font-size: 13.5px;
+  font-weight: 500;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.08);
+}
+
 @media (max-width: 800px) {
   .topbar {
     min-height: auto;
@@ -288,14 +383,13 @@ main {
     margin-top: 4px;
     padding-top: 6px;
     border-top: 1px solid var(--sky);
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    flex-wrap: nowrap;
-    white-space: nowrap;
+    overflow: visible;
+    flex-wrap: wrap;
+    gap: 4px;
+    white-space: normal;
   }
-  .admin-nav::-webkit-scrollbar {
-    display: none;
+  .nav-dropdown-menu {
+    min-width: 190px;
   }
   .admin-nav .btn {
     padding: 7px 11px;

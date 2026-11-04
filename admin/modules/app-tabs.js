@@ -15,21 +15,30 @@ import { showRecordatoriosView, hideRecordatoriosView } from "./recordatorios.js
 import { applyHoursToRuntime } from "./horarios.js?v=3";
 
 export function switchTab(tab) {
+  const btnClinica = document.querySelector("#nav-btn-clinica");
   const btnFichas = document.querySelector("#nav-btn-fichas");
   const btnPacientes = document.querySelector("#nav-btn-pacientes");
   const btnConsultorio = document.querySelector("#nav-btn-consultorio");
+  const btnClaraGroup = document.querySelector("#nav-btn-clara-group");
   const btnClara = document.querySelector("#nav-btn-clara");
   const btnInteracciones = document.querySelector("#nav-btn-interacciones");
   const btnRecordatorios = document.querySelector("#nav-btn-recordatorios");
   const btnAdmin = document.querySelector("#nav-btn-admin");
 
+  btnClinica?.classList.remove("is-active");
   btnFichas?.classList.remove("is-active");
   btnPacientes?.classList.remove("is-active");
   btnConsultorio?.classList.remove("is-active");
+  btnClaraGroup?.classList.remove("is-active");
   btnClara?.classList.remove("is-active");
   btnInteracciones?.classList.remove("is-active");
   btnRecordatorios?.classList.remove("is-active");
   btnAdmin?.classList.remove("is-active");
+
+  document.querySelectorAll(".nav-dropdown").forEach((el) => {
+    el.classList.remove("is-open");
+    el.querySelector(".nav-dropdown-trigger")?.setAttribute("aria-expanded", "false");
+  });
 
   hideDashboardView();
   hidePacientesView();
@@ -42,18 +51,22 @@ export function switchTab(tab) {
   if (tab === "inicio") {
     showDashboardView();
   } else if (tab === "pacientes") {
+    btnClinica?.classList.add("is-active");
     btnPacientes?.classList.add("is-active");
     showPacientesView();
   } else if (tab === "consultorio" || tab === "horarios" || tab === "honorarios") {
     btnConsultorio?.classList.add("is-active");
     showConsultorioView();
   } else if (tab === "clara" || tab === "configuracion") {
+    btnClaraGroup?.classList.add("is-active");
     btnClara?.classList.add("is-active");
     showClaraView();
   } else if (tab === "interacciones" || tab === "chats") {
+    btnClaraGroup?.classList.add("is-active");
     btnInteracciones?.classList.add("is-active");
     showInteraccionesView();
   } else if (tab === "recordatorios" || tab === "reminders") {
+    btnClaraGroup?.classList.add("is-active");
     btnRecordatorios?.classList.add("is-active");
     showRecordatoriosView();
   } else if (tab === "admin") {
@@ -65,6 +78,7 @@ export function switchTab(tab) {
     btnAdmin?.classList.add("is-active");
     showAdminView();
   } else {
+    btnClinica?.classList.add("is-active");
     btnFichas?.classList.add("is-active");
     showLibrary();
   }
@@ -94,6 +108,44 @@ export function mountAdminChannels() {
 
     if (!adminNav.dataset.bound) {
       adminNav.dataset.bound = "1";
+
+      const setupDropdown = (groupEl, triggerBtn) => {
+        if (!groupEl || !triggerBtn) return;
+        triggerBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const isOpen = groupEl.classList.contains("is-open");
+          document.querySelectorAll(".nav-dropdown").forEach((el) => {
+            if (el !== groupEl) {
+              el.classList.remove("is-open");
+              el.querySelector(".nav-dropdown-trigger")?.setAttribute("aria-expanded", "false");
+            }
+          });
+          groupEl.classList.toggle("is-open", !isOpen);
+          triggerBtn.setAttribute("aria-expanded", String(!isOpen));
+        });
+      };
+
+      setupDropdown(document.getElementById("nav-group-clinica"), document.getElementById("nav-btn-clinica"));
+      setupDropdown(document.getElementById("nav-group-clara"), document.getElementById("nav-btn-clara-group"));
+
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest(".nav-dropdown")) {
+          document.querySelectorAll(".nav-dropdown").forEach((el) => {
+            el.classList.remove("is-open");
+            el.querySelector(".nav-dropdown-trigger")?.setAttribute("aria-expanded", "false");
+          });
+        }
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          document.querySelectorAll(".nav-dropdown").forEach((el) => {
+            el.classList.remove("is-open");
+            el.querySelector(".nav-dropdown-trigger")?.setAttribute("aria-expanded", "false");
+          });
+        }
+      });
+
       document.getElementById("nav-btn-fichas")?.addEventListener("click", () => switchTab("fichas"));
       document.getElementById("nav-btn-pacientes")?.addEventListener("click", () => switchTab("pacientes"));
       document.getElementById("nav-btn-consultorio")?.addEventListener("click", () => switchTab("consultorio"));

@@ -28,24 +28,27 @@ export async function saveTextsAndPolicies({
     return;
   }
   const isMailsBtn = triggerBtn === btnSaveMailsPolicies;
-  if (btnSaveTexts) {
-    btnSaveTexts.disabled = true;
-    if (!isMailsBtn) btnSaveTexts.textContent = "Guardando...";
-  }
-  if (btnSaveMailsPolicies) {
-    btnSaveMailsPolicies.disabled = true;
-    if (isMailsBtn) btnSaveMailsPolicies.textContent = "Guardando...";
-  }
+  const allSaveButtons = [
+    btnSaveTexts,
+    btnSaveMailsPolicies,
+    triggerBtn,
+    document.querySelector("#btn-save-clara-global"),
+    document.querySelector("#btn-save-clara-recordatorios"),
+    document.querySelector("#btn-save-clara-politicas"),
+  ].filter(Boolean);
+
+  const originalTexts = new Map();
+  allSaveButtons.forEach((b) => {
+    originalTexts.set(b, b.textContent);
+    b.disabled = true;
+    b.textContent = "Guardando...";
+  });
 
   const restoreButtons = () => {
-    if (btnSaveTexts) {
-      btnSaveTexts.disabled = false;
-      btnSaveTexts.textContent = "Guardar textos y políticas";
-    }
-    if (btnSaveMailsPolicies) {
-      btnSaveMailsPolicies.disabled = false;
-      btnSaveMailsPolicies.textContent = "Guardar políticas en mails";
-    }
+    allSaveButtons.forEach((b) => {
+      b.disabled = false;
+      b.textContent = originalTexts.get(b) || "Guardar cambios";
+    });
   };
 
   const cleanCustom = validateCustomOptions(customMenuOptions, dialogAlert);

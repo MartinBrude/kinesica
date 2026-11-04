@@ -3,11 +3,33 @@
  */
 
 import { patientKey, getUniquePatients } from "../ficha-rules.mjs?v=89";
+import { api } from "./api.js?v=77";
 
 const form = document.querySelector("#ficha");
 
 let identityKey = "";
 let identityEdited = false;
+
+let directoryPacientesCache = [];
+let directoryLoaded = false;
+
+export async function fetchDirectoryPacientes() {
+  if (directoryLoaded && directoryPacientesCache.length > 0) return directoryPacientesCache;
+  try {
+    const res = await api("pacientes.php");
+    const items = Array.isArray(res?.items) ? res.items : (Array.isArray(res) ? res : []);
+    directoryPacientesCache = items;
+    directoryLoaded = true;
+    return directoryPacientesCache;
+  } catch {
+    return [];
+  }
+}
+
+export function invalidateDirectoryCache() {
+  directoryLoaded = false;
+  directoryPacientesCache = [];
+}
 
 export function getIdentityKey() {
   return identityKey;
@@ -121,20 +143,75 @@ export function setPatientLocked(locked, patientData = null, sessionCount = 0, i
   setDniPower(powerBtn ? powerBtn.classList.contains("is-on") : true);
 }
 
-export function populatePatientPicker(allFichas = [], selectedKey = "") {
+export function populatePatientPicker(allFichas = [], selectedKey = "", extraPacientes = null) {
   const select = document.querySelector("#patient-quick-select");
   const card = document.querySelector("#patient-picker-card");
   if (!select) return;
-  const patients = getUniquePatients(allFichas);
-  if (card) card.hidden = patients.length === 0;
-  select.innerHTML = '<option value="">— Cargar nuevo paciente (o seleccionar existente) —</option>';
-  for (const p of patients) {
-    const opt = document.createElement("option");
-    opt.value = p.key;
-    opt.textContent = `${p.nombre} (DNI ${p.dni || "—"}) · ${p.sessions.length} ses.`;
-    select.append(opt);
+
+  const fichasPatients = getUniquePatients(allFichas);
+  const dirPacientes = Array.isArray(extraPacientes) ? extraPacientes : directoryPacientesCache;
+
+  // Filtrar pacientes registrados en pacientes.php que aún no tienen ninguna historia clínica abierta
+  const registeredOnly = [];
+  if (dirPacientes && dirPacientes.length > 0) {
+    for (const p of dirPacientes) {
+      const pDniClean = String(p.dni || "").replace(/[^0-9kK]/g, "");
+      const pNameNorm = String(p.nombre_completo || `${p.nombre || ""} ${p.apellido || ""}`).toLowerCase().trim();
+      if (!pNameNorm && !pDniClean) continue;
+
+      const hasFicha = fichasPatients.some((f) => {
+        const fDniClean = String(f.dni || "").replace(/[^0-9kK]/g, "");
+        const fNameNorm = String(f.nombre || "").toLowerCase().trim();
+        if (pDniClean && fDniClean && pDniClean === fDniClean) return true;
+        if (!pDniClean && !fDniClean && pNameNorm && fNameNorm && pNameNorm === fNameNorm) return true;
+        return false;
+      });
+
+      if (!hasFicha) {
+        registeredOnly.push(p);
+      }
+    }
   }
+
+  const total = fichasPatients.length + registeredOnly.length;
+  if (card) card.hidden = total === 0;
+
+  select.innerHTML = '<option value="">— Cargar nuevo paciente (o seleccionar existente) —</option>';
+
+  if (fichasPatients.length > 0) {
+    const groupFichas = document.createElement("optgroup");
+    groupFichas.label = "Pacientes con Historias Clínicas";
+    for (const p of fichasPatients) {
+      const opt = document.createElement("option");
+      opt.value = p.key;
+      opt.textContent = `${p.nombre} (DNI ${p.dni || "—"}) · ${p.sessions.length} ses.`;
+      groupFichas.append(opt);
+    }
+    select.append(groupFichas);
+  }
+
+  if (registeredOnly.length > 0) {
+    const groupDir = document.createElement("optgroup");
+    groupDir.label = "Pacientes registrados (sin historia previa)";
+    for (const p of registeredOnly) {
+      const opt = document.createElement("option");
+      const fullName = (p.nombre_completo || `${p.nombre || ""} ${p.apellido || ""}`).trim();
+      opt.value = `dir:${p.id}`;
+      opt.textContent = `${fullName} (DNI ${p.dni || "—"})${p.profesional_habitual && p.profesional_habitual !== "indistinto" ? ` · ${p.profesional_habitual}` : ""}`;
+      groupDir.append(opt);
+    }
+    select.append(groupDir);
+  }
+
   select.value = selectedKey || "";
+
+  if (!directoryLoaded && !extraPacientes) {
+    fetchDirectoryPacientes().then((pacientes) => {
+      if (pacientes && pacientes.length > 0) {
+        populatePatientPicker(allFichas, select.value, pacientes);
+      }
+    });
+  }
 }
 
 export function clearPatientInputs() {
@@ -195,6 +272,43 @@ export function setupPatientHandlers({
         if (typeof onValidationChange === "function") onValidationChange();
         return;
       }
+
+      if (selectedKey.startsWith("dir:")) {
+        const pId = selectedKey.replace("dir:", "");
+        const match = directoryPacientesCache.find((p) => String(p.id) === String(pId));
+        if (match) {
+          clearPatientInputs();
+          const fullName = (match.nombre_completo || `${match.nombre || ""} ${match.apellido || ""}`).trim();
+          form.elements.nombre.value = fullName;
+          form.elements.dni.value = match.dni || "";
+          if (form.elements.profesional && match.profesional_habitual) {
+            if (match.profesional_habitual === "norberto" || match.profesional_habitual === "maria") {
+              form.elements.profesional.value = match.profesional_habitual;
+            }
+          }
+          if (match.motivo_consulta) {
+            const mot = match.motivo_consulta.toLowerCase();
+            let matchedVal = "";
+            if (mot.includes("traum")) matchedVal = "Traumático";
+            else if (mot.includes("brux")) matchedVal = "Bruxismo";
+            else if (mot.includes("quirurg") || mot.includes("post")) matchedVal = "Pos Quirúrgico";
+            else if (mot.includes("no traum")) matchedVal = "No Traumático";
+            if (matchedVal) {
+              document.querySelectorAll('[data-single="motivo"] button').forEach((btn) => {
+                btn.classList.toggle("on", btn.dataset.value === matchedVal);
+              });
+              if (typeof onSelectPatientMotivo === "function") onSelectPatientMotivo(matchedVal);
+            }
+          }
+          setPatientLocked(false, { nombre: fullName, dni: match.dni }, 0, false, true);
+          const sessionBadge = document.querySelector("#session-count-badge");
+          if (sessionBadge) sessionBadge.textContent = "1ª Consulta · Evaluación inicial";
+          if (typeof onValidationChange === "function") onValidationChange();
+          form.elements.nacimiento?.focus();
+          return;
+        }
+      }
+
       const all = (typeof getCurrentAllFichas === "function" ? getCurrentAllFichas() : []) || [];
       const match = all.find((f) => patientKey(f) === selectedKey);
       if (match) {

@@ -24,6 +24,8 @@ export function setStep(num) {
  * @param {number} [index=0] Índice del paso
  */
 export function showStep(index = 0) {
+  const alertEl = document.querySelector("#form-step-alert");
+  if (alertEl) alertEl.hidden = true;
   const num = Number(index);
   const validStep = (Number.isInteger(num) && num >= 0 && num <= 5) ? num : 0;
   step = validStep;
@@ -117,37 +119,57 @@ export function highlightErrorFields(keys = []) {
 
 export async function advanceNextStep(data) {
   if (!form) return;
+  const alertEl = document.querySelector("#form-step-alert");
   if (step === 0) {
     const missingKeys = missingFieldKeys(data);
     if (missingKeys.length) {
       highlightMissingFields(missingKeys);
-      await dialogAlert(`Falta completar: ${missingFields(data).join(", ")}.`);
+      if (alertEl) {
+        alertEl.textContent = `⚠️ Por favor completá los campos obligatorios: ${missingFields(data).join(", ")}.`;
+        alertEl.hidden = false;
+      }
       const firstMissing = form.elements[missingKeys[0]] || form.querySelector(".input-error");
-      if (firstMissing) firstMissing.focus();
+      if (firstMissing) {
+        firstMissing.focus();
+        firstMissing.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
       return;
     }
     const val = validateStep(0, data);
     if (!val.isValid) {
       highlightErrorFields(Object.keys(val.errors));
-      await dialogAlert(val.firstError);
+      if (alertEl) {
+        alertEl.textContent = `⚠️ ${val.firstError}`;
+        alertEl.hidden = false;
+      }
       const firstMissing = form.elements[val.firstErrorKey] || form.querySelector(".input-error");
-      if (firstMissing) firstMissing.focus();
+      if (firstMissing) {
+        firstMissing.focus();
+        firstMissing.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
       return;
     }
   } else if (step === 1) {
     const val = validateStep(1, data);
     if (!val.isValid) {
       highlightErrorFields(Object.keys(val.errors));
-      await dialogAlert(val.firstError);
+      if (alertEl) {
+        alertEl.textContent = `⚠️ ${val.firstError}`;
+        alertEl.hidden = false;
+      }
       const sideInputs = {
         ruidos: form.elements.ruidosIzq,
         dolorCondilar: form.elements.condilarIzq,
         desviacion: form.elements.desvIzq,
       };
       const firstMissing = form.elements[val.firstErrorKey] || sideInputs[val.firstErrorKey] || form.querySelector(".input-error");
-      if (firstMissing) firstMissing.focus();
+      if (firstMissing) {
+        firstMissing.focus();
+        firstMissing.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
       return;
     }
   }
+  if (alertEl) alertEl.hidden = true;
   showStep(Math.min(5, step + 1));
 }
