@@ -27,7 +27,28 @@ import {
 
 const viewAdmin = document.querySelector("#view-admin");
 
-export function showAdminView() {
+export function scrollToAdminSection(section) {
+  if (!section) return;
+  const map = {
+    usuarios: "admin-usuarios-card",
+    profesionales: "admin-usuarios-card",
+    gastos: "admin-gastos-card",
+    errores: "admin-errores-card",
+    backups: "admin-backups-card",
+    copias: "admin-backups-card",
+    "copias-seguridad": "admin-backups-card",
+  };
+  const targetId = map[String(section).toLowerCase()];
+  if (!targetId) return;
+
+  setTimeout(() => {
+    const el = document.getElementById(targetId);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, 60);
+}
+
+export function showAdminView(section = null) {
   const user = getSessionUser();
   if (!user || user.role !== "admin") {
     dialogAlert("Sección reservada exclusivamente a administradores.");
@@ -37,9 +58,12 @@ export function showAdminView() {
   const view = switchActiveView("view-admin");
   if (view) {
     try {
-      sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "admin" }));
+      sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "admin", section: section || "" }));
     } catch {}
     loadAdminData();
+    if (section) {
+      scrollToAdminSection(section);
+    }
   }
 }
 

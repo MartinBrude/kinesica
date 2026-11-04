@@ -22,7 +22,11 @@ export function parseAdminRouteFromLocation() {
   if (head === "clara" || head === "configuracion") return { view: "clara" };
   if (head === "interacciones" || head === "chats" || head === "mensajes" || head === "whatsapp") return { view: "interacciones" };
   if (head === "recordatorios" || head === "reminders") return { view: "recordatorios" };
-  if (head === "administracion" || head === "admin" || head === "sistema") return { view: "admin" };
+  if (head === "administracion" || head === "admin" || head === "sistema") return { view: "admin", section: parts[1] || "" };
+  if (head === "usuarios" || head === "profesionales") return { view: "admin", section: "usuarios" };
+  if (head === "gastos") return { view: "admin", section: "gastos" };
+  if (head === "errores" || head === "reportes") return { view: "admin", section: "errores" };
+  if (head === "backups" || head === "copias" || head === "copias-seguridad") return { view: "admin", section: "backups" };
   if (head === "ficha") return { view: "form", id: parts[1] ? decodeURIComponent(parts[1]) : "" };
   if (head === "comparar") return { view: "compare" };
   return null;
@@ -64,8 +68,23 @@ export function syncUrlWithViewState(state, isInitialBoot = false, isHandlingPop
     targetPath = "/admin/recordatorios";
     docTitle = "Kinésica — Registro de Recordatorios";
   } else if (v === "admin" || v === "administracion") {
-    targetPath = "/admin/administracion";
-    docTitle = "Kinésica — Administración";
+    const sec = state.section;
+    if (sec === "gastos") {
+      targetPath = "/admin/gastos";
+      docTitle = "Kinésica — Gastos";
+    } else if (sec === "errores") {
+      targetPath = "/admin/errores";
+      docTitle = "Kinésica — Reporte de Errores";
+    } else if (sec === "backups") {
+      targetPath = "/admin/backups";
+      docTitle = "Kinésica — Copias de Seguridad";
+    } else if (sec === "usuarios") {
+      targetPath = "/admin/usuarios";
+      docTitle = "Kinésica — Usuarios";
+    } else {
+      targetPath = "/admin/administracion";
+      docTitle = "Kinésica — Administración";
+    }
   }
 
   try {
@@ -115,7 +134,7 @@ export function initPopstateRouter({ loadAll, fillForm, showForm, showCompare, s
       else if (route.view === "interacciones" || route.view === "chats") switchTab("interacciones");
       else if (route.view === "recordatorios" || route.view === "reminders") switchTab("recordatorios");
       else if (route.view === "admin" || route.view === "administracion") {
-        if (getSessionUser()?.role === "admin") switchTab("admin");
+        if (getSessionUser()?.role === "admin") switchTab("admin", route.section);
         else switchTab("inicio");
       }
       else switchTab("inicio");

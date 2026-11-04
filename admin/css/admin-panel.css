@@ -22,6 +22,7 @@
   border: 1px solid var(--line);
   box-shadow: var(--shadow);
   overflow: hidden;
+  scroll-margin-top: 80px;
 }
 
 .admin-card-header {

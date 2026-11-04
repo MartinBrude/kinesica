@@ -9,12 +9,12 @@ import { showLibrary } from "./library.js?v=93";
 import { showPacientesView, hidePacientesView } from "./pacientes.js?v=3";
 import { showDashboardView, hideDashboardView, updateDashboardClara, updateDashboardBooking } from "./dashboard.js?v=10";
 import { showConsultorioView, hideConsultorioView, showClaraView, hideClaraView } from "./configuracion.js?v=28";
-import { showAdminView, hideAdminView } from "./admin-panel.js?v=11";
+import { showAdminView, hideAdminView } from "./admin-panel.js?v=12";
 import { showInteraccionesView, hideInteraccionesView } from "./interacciones.js?v=11";
 import { showRecordatoriosView, hideRecordatoriosView } from "./recordatorios.js?v=11";
 import { applyHoursToRuntime } from "./horarios.js?v=3";
 
-export function switchTab(tab) {
+export function switchTab(tab, subtab) {
   const btnClinica = document.querySelector("#nav-btn-clinica");
   const btnFichas = document.querySelector("#nav-btn-fichas");
   const btnPacientes = document.querySelector("#nav-btn-pacientes");
@@ -24,6 +24,10 @@ export function switchTab(tab) {
   const btnRecordatorios = document.querySelector("#nav-btn-recordatorios");
   const btnClara = document.querySelector("#nav-btn-clara");
   const btnAdmin = document.querySelector("#nav-btn-admin");
+  const btnAdminUsuarios = document.querySelector("#nav-btn-admin-usuarios");
+  const btnAdminGastos = document.querySelector("#nav-btn-admin-gastos");
+  const btnAdminErrores = document.querySelector("#nav-btn-admin-errores");
+  const btnAdminBackups = document.querySelector("#nav-btn-admin-backups");
 
   btnClinica?.classList.remove("is-active");
   btnFichas?.classList.remove("is-active");
@@ -34,6 +38,10 @@ export function switchTab(tab) {
   btnRecordatorios?.classList.remove("is-active");
   btnClara?.classList.remove("is-active");
   btnAdmin?.classList.remove("is-active");
+  btnAdminUsuarios?.classList.remove("is-active");
+  btnAdminGastos?.classList.remove("is-active");
+  btnAdminErrores?.classList.remove("is-active");
+  btnAdminBackups?.classList.remove("is-active");
 
   document.querySelectorAll(".nav-dropdown").forEach((el) => {
     el.classList.remove("is-open");
@@ -68,14 +76,41 @@ export function switchTab(tab) {
     btnWhatsapp?.classList.add("is-active");
     btnRecordatorios?.classList.add("is-active");
     showRecordatoriosView();
-  } else if (tab === "admin") {
+  } else if (
+    tab === "admin" ||
+    tab === "administracion" ||
+    tab === "usuarios" ||
+    tab === "gastos" ||
+    tab === "errores" ||
+    tab === "reportes" ||
+    tab === "backups" ||
+    tab === "copias" ||
+    tab === "copias-seguridad"
+  ) {
     const user = getSessionUser();
     if (!user || user.role !== "admin") {
       switchTab("inicio");
       return;
     }
     btnAdmin?.classList.add("is-active");
-    showAdminView();
+    let section = subtab || null;
+    if (!section) {
+      if (tab === "usuarios") section = "usuarios";
+      else if (tab === "gastos") section = "gastos";
+      else if (tab === "errores" || tab === "reportes") section = "errores";
+      else if (tab === "backups" || tab === "copias" || tab === "copias-seguridad") section = "backups";
+      else section = "usuarios";
+    }
+    if (section === "gastos") {
+      btnAdminGastos?.classList.add("is-active");
+    } else if (section === "errores") {
+      btnAdminErrores?.classList.add("is-active");
+    } else if (section === "backups") {
+      btnAdminBackups?.classList.add("is-active");
+    } else {
+      btnAdminUsuarios?.classList.add("is-active");
+    }
+    showAdminView(section);
   } else {
     btnClinica?.classList.add("is-active");
     btnFichas?.classList.add("is-active");
@@ -86,6 +121,10 @@ export function switchTab(tab) {
 export function unmountAdminChannels() {
   const nav = document.getElementById("admin-nav");
   if (nav) nav.hidden = true;
+  const navGroupAdmin = document.getElementById("nav-group-admin");
+  if (navGroupAdmin) navGroupAdmin.hidden = true;
+  const btnAdmin = document.getElementById("nav-btn-admin");
+  if (btnAdmin) btnAdmin.hidden = true;
   const dashCardAdmin = document.getElementById("dash-card-admin");
   if (dashCardAdmin) dashCardAdmin.hidden = true;
 }
@@ -100,6 +139,8 @@ export function mountAdminChannels() {
   const adminNav = document.getElementById("admin-nav");
   if (adminNav) {
     adminNav.hidden = false;
+    const navGroupAdmin = document.getElementById("nav-group-admin");
+    if (navGroupAdmin) navGroupAdmin.hidden = user.role !== "admin";
     const btnAdmin = document.getElementById("nav-btn-admin");
     if (btnAdmin) btnAdmin.hidden = user.role !== "admin";
     const dashCardAdmin = document.getElementById("dash-card-admin");
@@ -126,6 +167,7 @@ export function mountAdminChannels() {
 
       setupDropdown(document.getElementById("nav-group-clinica"), document.getElementById("nav-btn-clinica"));
       setupDropdown(document.getElementById("nav-group-whatsapp"), document.getElementById("nav-btn-whatsapp"));
+      setupDropdown(document.getElementById("nav-group-admin"), document.getElementById("nav-btn-admin"));
 
       document.addEventListener("click", (e) => {
         if (!e.target.closest(".nav-dropdown")) {
@@ -151,7 +193,10 @@ export function mountAdminChannels() {
       document.getElementById("nav-btn-clara")?.addEventListener("click", () => switchTab("clara"));
       document.getElementById("nav-btn-interacciones")?.addEventListener("click", () => switchTab("interacciones"));
       document.getElementById("nav-btn-recordatorios")?.addEventListener("click", () => switchTab("recordatorios"));
-      document.getElementById("nav-btn-admin")?.addEventListener("click", () => switchTab("admin"));
+      document.getElementById("nav-btn-admin-usuarios")?.addEventListener("click", () => switchTab("admin", "usuarios"));
+      document.getElementById("nav-btn-admin-gastos")?.addEventListener("click", () => switchTab("admin", "gastos"));
+      document.getElementById("nav-btn-admin-errores")?.addEventListener("click", () => switchTab("admin", "errores"));
+      document.getElementById("nav-btn-admin-backups")?.addEventListener("click", () => switchTab("admin", "backups"));
       document.getElementById("brand-logo")?.addEventListener("click", (e) => {
         e.preventDefault();
         switchTab("inicio");

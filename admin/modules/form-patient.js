@@ -5,7 +5,7 @@
 import { patientKey, getUniquePatients } from "../ficha-rules.mjs?v=89";
 import { api } from "./api.js?v=77";
 
-const form = document.querySelector("#ficha");
+const form = typeof document !== "undefined" ? document.querySelector("#ficha") : null;
 
 let identityKey = "";
 let identityEdited = false;

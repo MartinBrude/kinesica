@@ -304,6 +304,11 @@ main {
   z-index: 1000;
 }
 
+#nav-group-admin .nav-dropdown-menu {
+  left: auto;
+  right: 0;
+}
+
 .nav-dropdown.is-open .nav-dropdown-menu {
   display: flex;
 }
@@ -396,7 +401,8 @@ main {
     max-width: calc(100vw - 24px);
   }
   #nav-group-whatsapp .nav-dropdown-menu,
-  #nav-group-clara .nav-dropdown-menu {
+  #nav-group-clara .nav-dropdown-menu,
+  #nav-group-admin .nav-dropdown-menu {
     left: auto;
     right: 0;
   }

@@ -135,7 +135,7 @@ async function refresh() {
 
   if ((!formView || formView.hidden) && (!compareView || compareView.hidden)) {
     if (saved?.view === "compare" && saved.pKey) showCompare(saved.pKey, saved.xId, saved.yId);
-    else if (saved?.view) switchTab(saved.view);
+    else if (saved?.view) switchTab(saved.view, saved.section);
     else switchTab("inicio");
   }
 
@@ -167,7 +167,7 @@ async function refresh() {
     }
   }
 
-  if (saved?.view) switchTab(saved.view);
+  if (saved?.view) switchTab(saved.view, saved.section);
   else switchTab("inicio");
   isInitialBoot = false;
 }
