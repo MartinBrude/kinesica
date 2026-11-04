@@ -4,7 +4,7 @@
  */
 
 import { escapeHtml } from "./dom.js?v=78";
-import { api } from "./api.js?v=78";
+import { api } from "./api.js?v=77";
 import { renderOptCText, renderOptCTextEn } from "./menu-texts.js?v=2";
 
 export function getNowTimeStr() {

@@ -5,10 +5,10 @@
 
 import { api } from "./api.js?v=77";
 import { escapeHtml, debounce, dialogAlert, dialogConfirm, switchActiveView } from "./dom.js?v=78";
-import { phoneMatches } from "./phone-search.js?v=1";
+import { phoneMatches } from "./phone-search.js?v=2";
 import { formatDisplayPhone, capitalizePersonName } from "./pacientes-format.js";
 import { openFullPacienteModal } from "./pacientes-modal.js";
-import { getSessionUser } from "./auth.js?v=81";
+import { getSessionUser } from "./auth.js?v=83";
 import { invalidateDirectoryCache } from "./form-patient.js";
 
 export { formatDisplayPhone };

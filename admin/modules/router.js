@@ -3,7 +3,7 @@
  * Gestiona History API (pushState/replaceState), popstate y correspondencia de rutas con vistas.
  */
 
-import { getSessionUser } from "./auth.js?v=81";
+import { getSessionUser } from "./auth.js?v=83";
 
 export function parseAdminRouteFromLocation() {
   if (typeof window === "undefined" || !window.location) return null;

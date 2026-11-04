@@ -55,6 +55,17 @@ const emailCodeStepRequest = qs("#email-code-step-request");
 const emailCodeStepVerify = qs("#email-code-step-verify");
 
 export function getSessionUser() {
+  if (sessionUser) return sessionUser;
+  if (typeof window !== "undefined" && window.localStorage) {
+    try {
+      const logged = localStorage.getItem("kinesica_logged_in") === "1";
+      const role = localStorage.getItem("kinesica_user_role");
+      const name = localStorage.getItem("kinesica_user_name");
+      if (logged && role) {
+        return { name: name || "", username: name || "", role };
+      }
+    } catch (_) {}
+  }
   return sessionUser;
 }
 

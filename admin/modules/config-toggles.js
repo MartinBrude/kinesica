@@ -5,7 +5,7 @@
 
 import { api } from "./api.js?v=77";
 import { renderReminderPreview } from "./menu-texts.js?v=2";
-import { getSessionUser } from "./auth.js?v=81";
+import { getSessionUser } from "./auth.js?v=83";
 
 export function bindPolicyElements() {
   return {

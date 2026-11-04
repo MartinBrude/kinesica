@@ -5,7 +5,7 @@
 
 import { api } from "./api.js?v=77";
 import { escapeHtml } from "./dom.js?v=78";
-import { getSessionUser } from "./auth.js?v=81";
+import { getSessionUser } from "./auth.js?v=83";
 import {
   isValidAdminEmail,
   suggestAdminEmailDomain,

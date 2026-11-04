@@ -934,6 +934,39 @@ await test("todos los imports y exports en admin resuelven correctamente", () =>
   }
 });
 
+await test("todos los imports con query version en admin están unificados (sin discrepancia de versiones)", () => {
+  function getCodeFiles(dir) {
+    const res = [];
+    for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, ent.name);
+      if (ent.isDirectory()) res.push(...getCodeFiles(full));
+      else if (ent.name.endsWith(".js") || ent.name.endsWith(".mjs") || ent.name.endsWith(".html")) res.push(full);
+    }
+    return res;
+  }
+  const files = getCodeFiles(adminDir);
+  const moduleVersions = {};
+  for (const f of files) {
+    const content = fs.readFileSync(f, "utf8");
+    const re = /(?:from\s+["']|src=["'])([^"']+\.js\?v=\d+)/g;
+    let m;
+    while ((m = re.exec(content)) !== null) {
+      const [mod, ver] = m[1].split("?v=");
+      const base = path.basename(mod);
+      if (!moduleVersions[base]) moduleVersions[base] = new Set();
+      moduleVersions[base].add(`${ver} (${path.basename(f)})`);
+    }
+  }
+  for (const [mod, vers] of Object.entries(moduleVersions)) {
+    const uniqueV = new Set([...vers].map((v) => v.split(" ")[0]));
+    assert.equal(
+      uniqueV.size,
+      1,
+      `Discrepancia de versiones en ${mod}: ${[...vers].join(", ")}`
+    );
+  }
+});
+
 await test("todos los enlaces en documentación markdown resuelven a archivos existentes", () => {
   function getMdFiles(dir) {
     const res = [];

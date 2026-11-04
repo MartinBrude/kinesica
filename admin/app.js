@@ -24,7 +24,7 @@ import {
   showGate,
   hideGate,
   initAuth,
-} from "./modules/auth.js?v=82";
+} from "./modules/auth.js?v=83";
 
 import {
   blank,

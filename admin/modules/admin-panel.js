@@ -4,7 +4,7 @@
  * Supervisa el equipo de profesionales (altas/bajas) y el balance de gastos operativos multimoneda.
  */
 
-import { getSessionUser } from "./auth.js?v=81";
+import { getSessionUser } from "./auth.js?v=83";
 import { dialogAlert, switchActiveView } from "./dom.js?v=78";
 import {
   initProfesionalesUI,
