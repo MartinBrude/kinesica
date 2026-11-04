@@ -435,6 +435,261 @@ function deduplicate_pacientes_table(PDO $pdo): int
     }
 }
 
+/**
+ * Infiere el profesional asignado ('norberto' o 'maria') según el día y horario del turno,
+ * el correo del creador del evento o metadatos del calendario.
+ * Retorna 'indistinto' si no puede ser determinado con certeza.
+ *
+ * Restricciones físicas del consultorio:
+ * - 1 sola camilla física (jamás hay turnos solapados de ambos profesionales).
+ * - Miércoles: Norberto exclusivo (09:00 a 16:30). María no atiende.
+ * - Jueves: Norberto exclusivo (15:00 a 19:00). María no atiende.
+ * - Lunes: María de 09:00 a 17:00 | Norberto de 17:30 a 19:30.
+ * - Martes: María de 09:00 a 16:00 | Norberto de 16:30 a 19:30.
+ * - Viernes: María de 09:00 a 13:00 | Norberto de 13:30 a 19:30.
+ */
+function infer_practitioner_from_schedule(?string $dateOrDow, ?string $time = null, ?string $creatorOrSummary = null): string
+{
+    // 1. Detección por creador del evento o mención explícita
+    if ($creatorOrSummary !== null && $creatorOrSummary !== '') {
+        $meta = mb_strtolower($creatorOrSummary, 'UTF-8');
+        if (str_contains($meta, 'norberto1712@gmail.com') || preg_match('/\b(?:norberto|lic\.?\s*brude)\b/u', $meta)) {
+            return 'norberto';
+        }
+        if (str_contains($meta, 'manosmagicas7116@gmail.com') || preg_match('/\b(?:maria|gulin|lic\.?\s*gulin)\b/u', $meta)) {
+            return 'maria';
+        }
+    }
+
+    if ($dateOrDow === null || trim($dateOrDow) === '') {
+        return 'indistinto';
+    }
+
+    $dow = null;
+    $trimmed = trim($dateOrDow);
+
+    // Si $trimmed es un dígito de día de semana (1=Lun .. 7=Dom)
+    if (ctype_digit($trimmed) && (int) $trimmed >= 1 && (int) $trimmed <= 7) {
+        $dow = (int) $trimmed;
+    } elseif (preg_match('/\b(?:miercoles|miércoles|mie|mié)\b/ui', $trimmed)) {
+        $dow = 3;
+    } elseif (preg_match('/\b(?:jueves|jue)\b/ui', $trimmed)) {
+        $dow = 4;
+    } elseif (preg_match('/\b(?:lunes|lun)\b/ui', $trimmed)) {
+        $dow = 1;
+    } elseif (preg_match('/\b(?:martes|mar)\b/ui', $trimmed)) {
+        $dow = 2;
+    } elseif (preg_match('/\b(?:viernes|vie)\b/ui', $trimmed)) {
+        $dow = 5;
+    } else {
+        // Tratar como fecha (ISO 8601 o YYYY-MM-DD o con hora)
+        try {
+            $tz = new DateTimeZone('America/Argentina/Buenos_Aires');
+            $dt = new DateTimeImmutable($trimmed, $tz);
+            $dow = (int) $dt->format('N'); // 1 = Monday .. 7 = Sunday
+            if (($time === null || trim($time) === '') && preg_match('/[T\s](\d{1,2}:\d{2})/', $trimmed, $m)) {
+                $time = $m[1];
+            }
+        } catch (Throwable) {
+            $dow = null;
+        }
+    }
+
+    if ($dow === null) {
+        return 'indistinto';
+    }
+
+    // Miércoles y Jueves son 100% exclusivos de Norberto (María no atiende ningún turno)
+    if ($dow === 3 || $dow === 4) {
+        return 'norberto';
+    }
+
+    // Parsear la hora (formato HH:MM)
+    $minutes = null;
+    if ($time !== null && trim($time) !== '') {
+        if (preg_match('/(\d{1,2}):(\d{2})/', trim($time), $tm)) {
+            $h = (int) $tm[1];
+            $m = (int) $tm[2];
+            $minutes = $h * 60 + $m;
+        }
+    }
+
+    // Si no hay hora especificada en Lunes, Martes o Viernes, no se puede deducir solo con el día
+    if ($minutes === null) {
+        return 'indistinto';
+    }
+
+    // Lunes (1): María 09:00 a 17:00 (540-1020 min) | Norberto 17:30 a 19:30 (1050-1170 min)
+    if ($dow === 1) {
+        if ($minutes >= 17 * 60 + 15) { // 17:15 en adelante
+            return 'norberto';
+        }
+        return 'maria';
+    }
+
+    // Martes (2): María 09:00 a 16:00 (540-960 min) | Norberto 16:30 a 19:30 (990-1170 min)
+    if ($dow === 2) {
+        if ($minutes >= 16 * 60 + 15) { // 16:15 en adelante
+            return 'norberto';
+        }
+        return 'maria';
+    }
+
+    // Viernes (5): María 09:00 a 13:00 (540-780 min) | Norberto 13:30 a 19:30 (810-1170 min)
+    if ($dow === 5) {
+        if ($minutes >= 13 * 60 + 15) { // 13:15 en adelante
+            return 'norberto';
+        }
+        return 'maria';
+    }
+
+    return 'indistinto';
+}
+
+/**
+ * Resuelve y actualiza pacientes que tengan 'indistinto' comparando contra
+ * los turnos registrados en Google Calendar y la tabla recordatorio_eventos.
+ */
+function resolve_indistinto_pacientes_from_calendar(PDO $pdo): int
+{
+    $updatedCount = 0;
+    try {
+        // 1. Mapeo verificado de turnos históricos y agendados en Google Calendar
+        // de pacientes que figuraban como 'indistinto'.
+        $calendarSeedResolutions = [
+            'gaglio silvina' => 'norberto',       // Miércoles 14:00 - norberto1712@gmail.com
+            'silvina gaglio' => 'norberto',
+            'maldonado ana' => 'maria',           // Lunes 12:00 - manosmagicas7116@gmail.com
+            'ana maldonado' => 'maria',
+            'augusto oviedo' => 'norberto',       // Lunes 17:30 - norberto1712@gmail.com
+            'oviedo augusto' => 'norberto',
+            'alejandro rosenfeld' => 'maria',     // Lunes 10:00 - manosmagicas7116@gmail.com
+            'rosenfeld alejandro' => 'maria',
+            'lipsyc silvana' => 'maria',          // Lunes 11:00 - manosmagicas7116@gmail.com
+            'silvana lipsyc' => 'maria',
+            'esteban jorge' => 'norberto',        // Miércoles 11:15 - norberto1712@gmail.com
+            'jorge esteban' => 'norberto',
+            'claudia victos' => 'norberto',       // Martes 18:00 - norberto1712@gmail.com
+            'victos claudia' => 'norberto',
+            'claudia maria victos' => 'norberto',
+            'claudia victos maria' => 'norberto',
+            'ma claudia victos' => 'norberto',
+        ];
+
+        // Teléfonos conocidos de calendar
+        $calendarPhoneResolutions = [
+            '5491154562619' => 'norberto', // Augusto Oviedo 1154562619
+            '5491149927754' => 'norberto', // Jorge Esteban 1149927754
+        ];
+
+        // Obtener todos los pacientes que estén en 'indistinto' o vacíos
+        $stmtIndistintos = $pdo->query("
+            SELECT id, telefono, nombre, apellido, nombre_completo, profesional_habitual 
+            FROM pacientes 
+            WHERE profesional_habitual = 'indistinto' OR profesional_habitual IS NULL OR profesional_habitual = ''
+        ");
+        if (!$stmtIndistintos) {
+            return 0;
+        }
+
+        $indistintos = $stmtIndistintos->fetchAll(PDO::FETCH_ASSOC);
+        if (empty($indistintos)) {
+            return 0;
+        }
+
+        // Consultar eventos de recordatorios si la tabla existe
+        $eventosMap = [];
+        try {
+            $stmtEv = $pdo->query("
+                SELECT patient_name, wa_id, appointment_date, appointment_time, event_summary 
+                FROM recordatorio_eventos 
+                WHERE (appointment_date IS NOT NULL AND appointment_date != '') 
+                   OR (event_summary IS NOT NULL AND event_summary != '')
+                ORDER BY run_at DESC
+            ");
+            if ($stmtEv) {
+                while ($ev = $stmtEv->fetch(PDO::FETCH_ASSOC)) {
+                    $inferred = infer_practitioner_from_schedule(
+                        (string) ($ev['appointment_date'] ?? ''),
+                        (string) ($ev['appointment_time'] ?? ''),
+                        (string) ($ev['event_summary'] ?? '')
+                    );
+                    if ($inferred !== 'indistinto') {
+                        $wa = preg_replace('/\D+/', '', (string) ($ev['wa_id'] ?? ''));
+                        if ($wa !== '') {
+                            $eventosMap['phone_' . $wa] = $inferred;
+                            if (strlen($wa) >= 8) {
+                                $eventosMap['phone_' . substr($wa, -8)] = $inferred;
+                            }
+                        }
+                        $nameKey = canonical_patient_name_key((string) ($ev['patient_name'] ?? ''));
+                        if ($nameKey !== '') {
+                            $eventosMap['name_' . $nameKey] = $inferred;
+                        }
+                    }
+                }
+            }
+        } catch (Throwable) {}
+
+        $updateStmt = $pdo->prepare("
+            UPDATE pacientes 
+            SET profesional_habitual = :prof 
+            WHERE id = :id AND (profesional_habitual = 'indistinto' OR profesional_habitual IS NULL OR profesional_habitual = '')
+        ");
+
+        foreach ($indistintos as $p) {
+            $id = (int) $p['id'];
+            $targetProf = null;
+
+            // 1. Por teléfono directo
+            $cleanTel = preg_replace('/\D+/', '', (string) ($p['telefono'] ?? ''));
+            if ($cleanTel !== '' && isset($calendarPhoneResolutions[$cleanTel])) {
+                $targetProf = $calendarPhoneResolutions[$cleanTel];
+            } elseif ($cleanTel !== '' && isset($eventosMap['phone_' . $cleanTel])) {
+                $targetProf = $eventosMap['phone_' . $cleanTel];
+            } elseif (strlen($cleanTel) >= 8 && isset($eventosMap['phone_' . substr($cleanTel, -8)])) {
+                $targetProf = $eventosMap['phone_' . substr($cleanTel, -8)];
+            }
+
+            // 2. Por coincidencia de nombre si aún no se determinó
+            if ($targetProf === null) {
+                $fullName = trim(($p['nombre_completo'] ?? '') ?: (($p['nombre'] ?? '') . ' ' . ($p['apellido'] ?? '')));
+                $nKey = canonical_patient_name_key($fullName);
+                if ($nKey !== '' && isset($calendarSeedResolutions[$nKey])) {
+                    $targetProf = $calendarSeedResolutions[$nKey];
+                } elseif ($nKey !== '' && isset($eventosMap['name_' . $nKey])) {
+                    $targetProf = $eventosMap['name_' . $nKey];
+                } else {
+                    // Tokens parciales (por ejemplo "claudia victos" dentro de "claudia maria victos")
+                    foreach ($calendarSeedResolutions as $seedKey => $profVal) {
+                        $seedTokens = explode(' ', $seedKey);
+                        $matchAllTokens = true;
+                        foreach ($seedTokens as $st) {
+                            if (!str_contains($nKey, $st)) {
+                                $matchAllTokens = false;
+                                break;
+                            }
+                        }
+                        if ($matchAllTokens) {
+                            $targetProf = $profVal;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if ($targetProf === 'norberto' || $targetProf === 'maria') {
+                $updateStmt->execute(['prof' => $targetProf, 'id' => $id]);
+                $updatedCount++;
+            }
+        }
+    } catch (Throwable $e) {
+        error_log('resolve_indistinto_pacientes_from_calendar error: ' . $e->getMessage());
+    }
+
+    return $updatedCount;
+}
+
 function ensure_pacientes_tables(PDO $pdo, bool $force = false): void
 {
     static $checked = false;
@@ -598,6 +853,9 @@ function ensure_pacientes_tables(PDO $pdo, bool $force = false): void
     try {
         deduplicate_pacientes_table($pdo);
     } catch (Throwable) {}
+    try {
+        resolve_indistinto_pacientes_from_calendar($pdo);
+    } catch (Throwable) {}
 }
 
 /**
@@ -734,5 +992,8 @@ function sync_pacientes_from_fichas(PDO $pdo, ?string $singleId = null, ?array $
 
     try {
         deduplicate_pacientes_table($pdo);
+    } catch (Throwable) {}
+    try {
+        resolve_indistinto_pacientes_from_calendar($pdo);
     } catch (Throwable) {}
 }

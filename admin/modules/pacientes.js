@@ -235,7 +235,16 @@ export function deduplicatePatientsInMemory(items = []) {
   const result = [];
   for (const cluster of clusters.values()) {
     if (cluster.length === 1) {
-      result.push(cluster[0]);
+      const single = { ...cluster[0] };
+      if (!single.profesional_habitual || single.profesional_habitual === "indistinto") {
+        const full = (single.nombre_completo || `${single.nombre || ""} ${single.apellido || ""}`).toLowerCase();
+        if (full.includes("gaglio") || full.includes("oviedo") || full.includes("esteban") || full.includes("victos")) {
+          single.profesional_habitual = "norberto";
+        } else if (full.includes("maldonado") || full.includes("rosenfeld") || full.includes("lipsyc")) {
+          single.profesional_habitual = "maria";
+        }
+      }
+      result.push(single);
       continue;
     }
 
@@ -266,7 +275,14 @@ export function deduplicatePatientsInMemory(items = []) {
     if (specificProf) {
       survivor.profesional_habitual = specificProf.profesional_habitual;
     } else {
-      survivor.profesional_habitual = "indistinto";
+      const full = (survivor.nombre_completo || `${survivor.nombre || ""} ${survivor.apellido || ""}`).toLowerCase();
+      if (full.includes("gaglio") || full.includes("oviedo") || full.includes("esteban") || full.includes("victos")) {
+        survivor.profesional_habitual = "norberto";
+      } else if (full.includes("maldonado") || full.includes("rosenfeld") || full.includes("lipsyc")) {
+        survivor.profesional_habitual = "maria";
+      } else {
+        survivor.profesional_habitual = "indistinto";
+      }
     }
 
     // Teléfono: real sobre placeholder

@@ -112,17 +112,17 @@ Si querés cambiar tu contraseña por una nueva o si la olvidaste:
 
 Una vez adentro del sistema, en la barra de navegación contás con las siguientes secciones:
 
-| Pestaña | Ruta directa | Qué podés hacer en esta sección |
+| Pestaña / Módulo | Ruta directa | Qué podés hacer en esta sección |
 | :--- | :--- | :--- |
-| **🏠 Inicio** | `/admin/` | Ver de un vistazo el estado general del consultorio, si **Clara (WhatsApp)** y las **Reservas Web** están activas o pausadas (con botones rápidos para alternar al instante) y accesos directos a las tareas más frecuentes. |
-| **📋 Historias Clínicas** | `/admin/fichas` | Crear y editar fichas clínicas de **ATM (criterios CDI-TTM)** en 6 pasos (con escala visual EVA y fotos clínicas), comparar la evolución sesión a sesión (**"Comparar sesiones"**) e imprimir o exportar informes A4 en PDF con firma y sello digital. |
-| **👥 Pacientes** | `/admin/pacientes` | Consultar el **Directorio Unificado de Pacientes**, buscar por nombre, DNI o teléfono, revisar historial de sesiones y abrir o crear fichas vinculadas con un solo clic. |
-| **🕒 Consultorio** | `/admin/consultorio` | Configurar los **horarios de atención** de cada profesional (con control automático de **1 sola camilla física**), el texto visible en el encabezado de la web y los **honorarios vigentes** (`$ ATM`, `$ General` y medios de pago). |
-| **💬 Clara & Mensajes** | `/admin/clara` | Editar los textos del menú de Clara (`A` a `E`, submenús, opciones adicionales `F`, `G`... y textos de recordatorios de 24 hs) y probar cómo responde en tiempo real con el **Simulador Interactivo de WhatsApp**. |
-| **📱 Interacciones** | `/admin/interacciones` | Auditar las conversaciones de WhatsApp en tiempo real: ver mensajes recibidos, respuestas automáticas de Clara, derivaciones a profesionales (`wa.me`) y filtrar por paciente o fecha. |
-| **⏰ Recordatorios** | `/admin/recordatorios` | Supervisar el despacho de recordatorios de 24 hs: ver la previsión de turnos de mañana en **"A enviar"** (detectando a tiempo pacientes sin teléfono cargado), historial de mensajes **"Enviados"** (WhatsApp o Email de contingencia), **"Fallidos"**, **"Omitidos"** (bloqueos como `No dar` o cancelados) y disparar envíos manuales con el botón **`⚡ Disparar manualmente`**. |
-| **⚙️ Administración** *(solo rol Admin)* | `/admin/administracion` | Gestión de cuentas del equipo (botón **"+ Nuevo usuario"**, tabla de usuarios, vista detalle con edición, envío de accesos y bajas/reactivaciones), control de **Gastos operativos** (con cotización histórica EUR/USD/ARS) y acceso a Google Sheets y Manual. |
-| **📖 Manual** | `/admin/manual.html` | Visualizador centralizado e interactivo de toda la documentación operativa y técnica del consultorio. |
+| **🏠 Inicio (Dashboard)** | `/admin/` | Estado general del consultorio, control en vivo de **Clara (WhatsApp)** con botones de pausa/reanudación y accesos directos destacados: **`📖 Manual de Usuario ↗`** y **`📊 Planilla Google Sheets ↗`**. |
+| **📋 Historias Clínicas** | `/admin/fichas` | Crear y editar fichas clínicas de **ATM (criterios CDI-TTM)** en 6 pasos (con motivo específico de **Bruxismo**, escala EVA y fotos clínicas), sincronización automática con el Directorio de Pacientes, comparación de sesiones e informes A4 en PDF. |
+| **👥 Pacientes** | `/admin/pacientes` | Consultar el **Directorio Unificado de Pacientes** (nombres normalizados en Title Case, DNI resguardado en ficha), enlace directo `WhatsApp` y botón **`⭐ Pedir review`** para invitar por WhatsApp a calificar en Google Maps a pacientes que aún no tienen reseña. |
+| **🕒 Consultorio** | `/admin/consultorio` | Configurar los **horarios de atención** de cada profesional de lunes a viernes hasta las 19:30 hs (con control automático de **1 sola camilla física**) y los **honorarios vigentes** (`$ ATM`, `$ General` y medios de pago). |
+| **💬 Clara & Mensajes** | `/admin/clara` | Editar los textos del menú de Clara (`A` a `E`, submenús, opciones adicionales `F`, `G`...) y probar cómo responde en tiempo real con el **Simulador Interactivo de WhatsApp**. |
+| **📱 Interacciones** | `/admin/interacciones` | Auditar las conversaciones de WhatsApp en tiempo real: ver mensajes recibidos, respuestas automáticas de Clara, derivaciones a profesionales (`wa.me`), estado `answered` e historial con paginación completa. |
+| **⏰ Recordatorios** | `/admin/recordatorios` | Supervisar el despacho de recordatorios automáticos (domingos 18:00 hs y lunes a jueves 10:00 hs): previsión en **"A enviar"**, botón **`＋ Cargar contacto`** para añadir WhatsApp o Email al directorio, enlaces directos `WhatsApp`/`Email`, y botones de despacho **`⚡ Enviar ahora`** o **`⚡ Disparar manualmente`**. |
+| **⚙️ Menú Administración** *(solo rol Admin)* | Menú superior `/admin/administracion` | Menú desplegable en el encabezado con 4 módulos aislados:<br>1. **Usuarios y Cuentas:** altas (**"+ Nuevo usuario"**), bajas, roles (Admin/Profesional/Colaborador) y 2FA.<br>2. **Gastos Operativos:** control mensual y multidivisa (EUR/USD/ARS).<br>3. **Base de Datos y Backups:** descarga inmediata de copias de seguridad y rotación de 8 semanas ([Manual de Backups](backups-y-recuperacion.md)).<br>4. **Reportar Error:** formulario para reportar fallos adjuntando capturas y videos desde la computadora o el celular. |
+| **📖 Manual de Usuario** | `/admin/manual.html` | Visualizador centralizado e interactivo de toda la documentación operativa y técnica del consultorio. |
 
 ---
 

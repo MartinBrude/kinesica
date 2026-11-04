@@ -248,33 +248,53 @@ function recordatorios_store_items(array $items, ?PDO $pdo = null): array
                                 ? find_existing_patient_match($pdo, $rawPhone, $rawName)
                                 : null;
 
+                            $profInferred = function_exists('infer_practitioner_from_schedule')
+                                ? infer_practitioner_from_schedule(
+                                    (string) ($ev['appointment_date'] ?? ''),
+                                    (string) ($ev['appointment_time'] ?? ''),
+                                    (string) (($ev['event_summary'] ?? '') . ' ' . ($ev['creator'] ?? ''))
+                                )
+                                : 'indistinto';
+
                             if ($existing) {
                                 $existingId = (int) $existing['id'];
+                                $updates = [];
+                                $params = ['id' => $existingId];
                                 if (function_exists('is_placeholder_phone') && is_placeholder_phone((string) ($existing['telefono'] ?? ''))) {
-                                    $pdo->prepare('UPDATE pacientes SET telefono = :tel WHERE id = :id')
-                                        ->execute(['tel' => $rawPhone, 'id' => $existingId]);
+                                    $updates[] = 'telefono = :tel';
+                                    $params['tel'] = $rawPhone;
+                                }
+                                if (($existing['profesional_habitual'] ?? 'indistinto') === 'indistinto' && $profInferred !== 'indistinto') {
+                                    $updates[] = 'profesional_habitual = :prof';
+                                    $params['prof'] = $profInferred;
+                                }
+                                if (!empty($updates)) {
+                                    $pdo->prepare('UPDATE pacientes SET ' . implode(', ', $updates) . ' WHERE id = :id')->execute($params);
                                 }
                             } else {
-                                $parts = preg_split('/\s+/u', $rawName, 2, PREG_SPLIT_NO_EMPTY) ?: [];
-                                $nom = $parts[0] ?? $rawName;
+                                $cleanNom = function_exists('sanitize_patient_name') ? sanitize_patient_name($rawName) : $rawName;
+                                $parts = preg_split('/\s+/u', $cleanNom, 2, PREG_SPLIT_NO_EMPTY) ?: [];
+                                $nom = $parts[0] ?? $cleanNom;
                                 $ape = $parts[1] ?? '';
-                                $pila = function_exists('extract_first_name') ? extract_first_name($rawName) : $nom;
+                                $pila = function_exists('extract_first_name') ? extract_first_name($cleanNom) : $nom;
 
                                 $stmtPac = $pdo->prepare(
-                                    'INSERT INTO pacientes (telefono, nombre, apellido, nombre_completo, nombre_pila, origen)
-                                     VALUES (:tel, :nombre, :apellido, :full, :pila, "admin")
+                                    'INSERT INTO pacientes (telefono, nombre, apellido, nombre_completo, nombre_pila, profesional_habitual, origen)
+                                     VALUES (:tel, :nombre, :apellido, :full, :pila, :prof, "admin")
                                      ON DUPLICATE KEY UPDATE
                                         nombre = CASE WHEN nombre IS NULL OR nombre = "" THEN VALUES(nombre) ELSE nombre END,
                                         apellido = CASE WHEN apellido IS NULL OR apellido = "" THEN VALUES(apellido) ELSE apellido END,
                                         nombre_completo = CASE WHEN nombre_completo IS NULL OR nombre_completo = "" THEN VALUES(nombre_completo) ELSE nombre_completo END,
-                                        nombre_pila = CASE WHEN nombre_pila IS NULL OR nombre_pila = "" THEN VALUES(nombre_pila) ELSE nombre_pila END'
+                                        nombre_pila = CASE WHEN nombre_pila IS NULL OR nombre_pila = "" THEN VALUES(nombre_pila) ELSE nombre_pila END,
+                                        profesional_habitual = CASE WHEN profesional_habitual = "indistinto" AND VALUES(profesional_habitual) != "indistinto" THEN VALUES(profesional_habitual) ELSE profesional_habitual END'
                                 );
                                 $stmtPac->execute([
                                     'tel' => $rawPhone,
                                     'nombre' => mb_substr($nom, 0, 60, 'UTF-8'),
                                     'apellido' => mb_substr($ape, 0, 60, 'UTF-8'),
-                                    'full' => mb_substr($rawName, 0, 120, 'UTF-8'),
+                                    'full' => mb_substr($cleanNom, 0, 120, 'UTF-8'),
                                     'pila' => mb_substr($pila, 0, 60, 'UTF-8'),
+                                    'prof' => $profInferred,
                                 ]);
                             }
                         } catch (Throwable $pacEx) {}

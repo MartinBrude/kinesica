@@ -6,6 +6,8 @@ import {
   isPlaceholderPhone,
   deduplicatePatientsInMemory,
 } from "../admin/modules/pacientes.js";
+import { inferPractitionerFromSlot } from "../admin/modules/horarios-validator.js";
+import { CONTACT } from "./site-contact.mjs";
 
 console.log("— Iniciando verificación de deduplicación de pacientes —");
 
@@ -110,6 +112,21 @@ const testDistinct = [
 ];
 const resDistinct = deduplicatePatientsInMemory(testDistinct);
 assert.equal(resDistinct.length, 2, "Pacientes distintos no se deben mezclar");
+
+// 5. Inferencia de profesional por horario (JS)
+assert.equal(inferPractitionerFromSlot("2026-11-11", "14:00"), "norberto", "Miércoles 14:00 -> Norberto");
+assert.equal(inferPractitionerFromSlot("2026-11-04", "11:15"), "norberto", "Miércoles 11:15 -> Norberto");
+assert.equal(inferPractitionerFromSlot("2026-11-12", "16:00"), "norberto", "Jueves 16:00 -> Norberto");
+assert.equal(inferPractitionerFromSlot("2026-11-16", "10:00"), "maria", "Lunes 10:00 -> María");
+assert.equal(inferPractitionerFromSlot("2026-11-16", "11:00"), "maria", "Lunes 11:00 -> María");
+assert.equal(inferPractitionerFromSlot("2026-11-16", "12:00"), "maria", "Lunes 12:00 -> María");
+assert.equal(inferPractitionerFromSlot("2026-11-16", "17:30"), "norberto", "Lunes 17:30 -> Norberto");
+assert.equal(inferPractitionerFromSlot("2026-10-13", "18:00"), "norberto", "Martes 18:00 -> Norberto");
+assert.equal(inferPractitionerFromSlot("2026-10-13", "10:00"), "maria", "Martes 10:00 -> María");
+assert.equal(inferPractitionerFromSlot("2026-11-20", "10:00"), "maria", "Viernes 10:00 -> María");
+assert.equal(inferPractitionerFromSlot("2026-11-20", "15:00"), "norberto", "Viernes 15:00 -> Norberto");
+assert.equal(inferPractitionerFromSlot("", "", CONTACT.email), "norberto", "Creator Norberto");
+assert.equal(inferPractitionerFromSlot("", "", "manosmagicas7116@gmail.com"), "maria", "Creator María");
 
 console.log("✓ Pruebas en memoria JS: OK");
 

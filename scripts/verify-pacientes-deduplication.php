@@ -159,4 +159,66 @@ if (!$payload99 || ($payload99['nombre'] ?? '') !== 'Ana Clara Perez') {
     exit(1);
 }
 
+// 6. Verificación de inferencia de profesionales por horario (regla de 1 sola camilla)
+$schedTests = [
+    ['2026-11-11', '14:00', null, 'norberto'], // Miércoles 14:00 -> Norberto
+    ['2026-11-04', '11:15', null, 'norberto'], // Miércoles 11:15 -> Norberto
+    ['2026-11-12', '16:00', null, 'norberto'], // Jueves 16:00 -> Norberto
+    ['2026-11-16', '10:00', null, 'maria'],    // Lunes 10:00 -> María
+    ['2026-11-16', '11:00', null, 'maria'],    // Lunes 11:00 -> María
+    ['2026-11-16', '12:00', null, 'maria'],    // Lunes 12:00 -> María
+    ['2026-11-16', '17:30', null, 'norberto'], // Lunes 17:30 -> Norberto
+    ['2026-10-13', '18:00', null, 'norberto'], // Martes 18:00 -> Norberto
+    ['2026-10-13', '10:00', null, 'maria'],    // Martes 10:00 -> María
+    ['2026-11-20', '10:00', null, 'maria'],    // Viernes 10:00 -> María
+    ['2026-11-20', '15:00', null, 'norberto'], // Viernes 15:00 -> Norberto
+    [null, null, 'Creado por norberto1712@gmail.com', 'norberto'],
+    [null, null, 'Turno manosmagicas7116@gmail.com', 'maria'],
+];
+
+foreach ($schedTests as [$date, $time, $meta, $expectedProf]) {
+    $inferred = infer_practitioner_from_schedule($date, $time, $meta);
+    if ($inferred !== $expectedProf) {
+        echo "ERROR: infer_practitioner_from_schedule('$date', '$time', '$meta') dio '$inferred', se esperaba '$expectedProf'\n";
+        exit(1);
+    }
+}
+
+// 7. Verificación de resolución de pacientes indistintos de Google Calendar
+$indistintoPatients = [
+    ['id' => 201, 'tel' => 'sin-tel-gaglio', 'nom' => 'Silvina', 'ape' => 'Gaglio', 'full' => 'Silvina Gaglio', 'exp' => 'norberto'],
+    ['id' => 202, 'tel' => 'sin-tel-maldonado', 'nom' => 'Ana', 'ape' => 'Maldonado', 'full' => 'Ana Maldonado', 'exp' => 'maria'],
+    ['id' => 203, 'tel' => '5491154562619', 'nom' => 'Augusto', 'ape' => 'Oviedo', 'full' => 'Augusto Oviedo', 'exp' => 'norberto'],
+    ['id' => 204, 'tel' => 'sin-tel-rosenfeld', 'nom' => 'Alejandro', 'ape' => 'Rosenfeld', 'full' => 'Alejandro Rosenfeld', 'exp' => 'maria'],
+    ['id' => 205, 'tel' => 'sin-tel-lipsyc', 'nom' => 'Silvana', 'ape' => 'Lipsyc', 'full' => 'Silvana Lipsyc', 'exp' => 'maria'],
+    ['id' => 206, 'tel' => '5491149927754', 'nom' => 'Jorge', 'ape' => 'Esteban', 'full' => 'Jorge Esteban', 'exp' => 'norberto'],
+    ['id' => 207, 'tel' => 'sin-tel-victos', 'nom' => 'Claudia', 'ape' => 'Victos', 'full' => 'Claudia Victos María', 'exp' => 'norberto'],
+];
+
+$insStmt = $pdo->prepare("INSERT INTO pacientes (id, telefono, nombre, apellido, nombre_completo, nombre_pila, profesional_habitual) VALUES (:id, :tel, :nom, :ape, :full, :pila, 'indistinto')");
+foreach ($indistintoPatients as $ip) {
+    $insStmt->execute([
+        'id' => $ip['id'],
+        'tel' => $ip['tel'],
+        'nom' => $ip['nom'],
+        'ape' => $ip['ape'],
+        'full' => $ip['full'],
+        'pila' => $ip['nom'],
+    ]);
+}
+
+$resolvedCount = resolve_indistinto_pacientes_from_calendar($pdo);
+if ($resolvedCount < count($indistintoPatients)) {
+    echo "ERROR: resolve_indistinto_pacientes_from_calendar resolvió $resolvedCount de " . count($indistintoPatients) . "\n";
+    exit(1);
+}
+
+foreach ($indistintoPatients as $ip) {
+    $chk = $pdo->query("SELECT profesional_habitual FROM pacientes WHERE id = {$ip['id']}")->fetch(PDO::FETCH_ASSOC);
+    if (!$chk || $chk['profesional_habitual'] !== $ip['exp']) {
+        echo "ERROR: Paciente {$ip['full']} no se resolvió a {$ip['exp']} (quedó: " . ($chk['profesional_habitual'] ?? 'null') . ")\n";
+        exit(1);
+    }
+}
+
 echo "OK_PHP_TESTS\n";

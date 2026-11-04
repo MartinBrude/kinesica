@@ -201,3 +201,71 @@ export function buildClaraPreviewText(hoursInput) {
   });
   return lines.join("\n");
 }
+
+/**
+ * Infiere si un turno corresponde a Norberto o María según día, horario y metadatos.
+ * Respeta la regla física de 1 sola camilla: turnos de ambos jamás se solapan.
+ * - Miércoles y Jueves: Norberto (María no atiende).
+ * - Lunes: María 09:00 a 17:00 | Norberto 17:30 a 19:30.
+ * - Martes: María 09:00 a 16:00 | Norberto 16:30 a 19:30.
+ * - Viernes: María 09:00 a 13:00 | Norberto 13:30 a 19:30.
+ *
+ * @param {string|number} dateOrDow
+ * @param {string} [timeStr]
+ * @param {string} [creatorOrSummary]
+ * @returns {"norberto"|"maria"|"indistinto"}
+ */
+export function inferPractitionerFromSlot(dateOrDow, timeStr = "", creatorOrSummary = "") {
+  if (creatorOrSummary) {
+    const meta = String(creatorOrSummary).toLowerCase();
+    if (meta.includes("norberto1712@gmail.com") || /\b(?:norberto|lic\.?\s*brude)\b/i.test(meta)) {
+      return "norberto";
+    }
+    if (meta.includes("manosmagicas7116@gmail.com") || /\b(?:maria|gulin|lic\.?\s*gulin)\b/i.test(meta)) {
+      return "maria";
+    }
+  }
+
+  let dow = null;
+  const raw = String(dateOrDow || "").trim();
+  if (/^[1-7]$/.test(raw)) {
+    dow = parseInt(raw, 10);
+  } else if (/\b(?:miercoles|miércoles|mie|mié)\b/i.test(raw)) {
+    dow = 3;
+  } else if (/\b(?:jueves|jue)\b/i.test(raw)) {
+    dow = 4;
+  } else if (/\b(?:lunes|lun)\b/i.test(raw)) {
+    dow = 1;
+  } else if (/\b(?:martes|mar)\b/i.test(raw)) {
+    dow = 2;
+  } else if (/\b(?:viernes|vie)\b/i.test(raw)) {
+    dow = 5;
+  } else if (raw) {
+    const d = new Date(raw.includes("T") ? raw : `${raw}T12:00:00-03:00`);
+    if (!isNaN(d.getTime())) {
+      const getDay = d.getDay(); // 0 Sun, 1 Mon ... 6 Sat
+      dow = getDay === 0 ? 7 : getDay;
+      if (!timeStr && raw.includes("T")) {
+        const timePart = raw.split("T")[1];
+        if (timePart) timeStr = timePart.substring(0, 5);
+      }
+    }
+  }
+
+  if (!dow) return "indistinto";
+  if (dow === 3 || dow === 4) return "norberto";
+
+  let minutes = null;
+  if (timeStr && /^\d{1,2}:\d{2}/.test(timeStr.trim())) {
+    const [h, m] = timeStr.trim().split(":").map((v) => parseInt(v, 10));
+    minutes = h * 60 + (m || 0);
+  }
+
+  if (minutes === null) return "indistinto";
+
+  if (dow === 1) return minutes >= 17 * 60 + 15 ? "norberto" : "maria";
+  if (dow === 2) return minutes >= 16 * 60 + 15 ? "norberto" : "maria";
+  if (dow === 5) return minutes >= 13 * 60 + 15 ? "norberto" : "maria";
+
+  return "indistinto";
+}

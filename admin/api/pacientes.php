@@ -64,6 +64,7 @@ try {
     $pdo = db();
     ensure_pacientes_tables($pdo);
     deduplicate_pacientes_table($pdo);
+    resolve_indistinto_pacientes_from_calendar($pdo);
     $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
     if ($method === 'GET') {
@@ -154,11 +155,12 @@ try {
             json_out(200, ['status' => $sent ? 'success' : 'error', 'message' => $sent ? 'Correo enviado' : 'Error al enviar correo']);
         }
 
-        if ($action === 'deduplicate') {
+        if ($action === 'deduplicate' || $action === 'resolve_indistintos') {
             $merged = deduplicate_pacientes_table($pdo);
+            $resolved = resolve_indistinto_pacientes_from_calendar($pdo);
             $cntStmt = $pdo->query('SELECT COUNT(*) FROM pacientes');
             $total = (int) $cntStmt->fetchColumn();
-            json_out(200, ['status' => 'success', 'merged' => $merged, 'total' => $total]);
+            json_out(200, ['status' => 'success', 'merged' => $merged, 'resolved' => $resolved, 'total' => $total]);
         }
 
         if ($action === 'upsert' || $action === 'insert') {
