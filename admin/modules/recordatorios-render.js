@@ -4,6 +4,7 @@
 
 import { escapeHtml } from "./dom.js?v=78";
 import { formatDisplayPhone, extractPhoneCandidate } from "./phone-format.js";
+import { capitalizePersonName } from "./pacientes-format.js";
 
 export function formatRunDayHeader(isoDay) {
   if (!isoDay || isoDay === "sin-fecha") return "Sin fecha";
@@ -80,7 +81,7 @@ function getTimingMetaHtml(item) {
 }
 
 export function buildRecordatorioCardHtml(item) {
-  const name = escapeHtml(item.patient_name || item.event_summary || "—");
+  const name = escapeHtml(item.patient_name ? capitalizePersonName(item.patient_name) : (item.event_summary || "—"));
   const statusLabel = escapeHtml(item.status_label || item.status || "");
   const appt =
     [item.appointment_date, item.appointment_time].filter(Boolean).join(" · ") || "—";

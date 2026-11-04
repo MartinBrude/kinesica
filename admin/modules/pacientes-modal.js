@@ -12,7 +12,7 @@ import {
   inspectAdminPhone,
 } from "./pacientes-format.js";
 import { patientHasReview } from "./pacientes.js";
-import { sanitizePersonName, hasDisallowedNameChars } from "../ficha-rules.mjs?v=91";
+import { sanitizePersonName, capitalizePersonName, hasDisallowedNameChars } from "../ficha-rules.mjs?v=91";
 
 export function openFullPacienteModal(paciente = null, onReload = null) {
   const isEdit = Boolean(paciente);
@@ -27,6 +27,9 @@ export function openFullPacienteModal(paciente = null, onReload = null) {
     nombreVal = parts[0] || "";
     apellidoVal = parts.slice(1).join(" ") || "";
   }
+  nombreVal = capitalizePersonName(nombreVal);
+  apellidoVal = capitalizePersonName(apellidoVal);
+  const contactoNombreVal = capitalizePersonName(paciente?.contacto_nombre || "");
 
   let telVal = paciente?.telefono || "";
   if (telVal.startsWith("sin-tel-") || telVal.startsWith("sin-telefono-") || telVal.startsWith("ficha-")) {
@@ -105,7 +108,7 @@ export function openFullPacienteModal(paciente = null, onReload = null) {
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 8px;">
               <div class="paciente-modal-field">
                 <label>Nombre de quien agenda</label>
-                <input type="text" id="modal-p-contacto-nombre" value="${escapeHtml(paciente?.contacto_nombre || "")}" placeholder="Ej: Laura Gómez (familiar / cónyuge / secretaria)" maxlength="120">
+                <input type="text" id="modal-p-contacto-nombre" value="${escapeHtml(contactoNombreVal)}" placeholder="Ej: Laura Gómez (familiar / cónyuge / secretaria)" maxlength="120">
               </div>
               <div class="paciente-modal-field">
                 <label>Teléfono de contacto (WhatsApp)</label>
@@ -153,11 +156,15 @@ export function openFullPacienteModal(paciente = null, onReload = null) {
     const el = backdrop.querySelector(sel);
     if (el) {
       el.addEventListener("input", () => {
-        const cleaned = sanitizePersonName(el.value);
-        if (cleaned !== el.value) {
-          el.value = cleaned;
+        const raw = el.value.replace(/[\r\n,]/g, "");
+        const formatted = capitalizePersonName(raw);
+        if (el.value !== formatted) {
+          el.value = formatted;
         }
         errorEl.hidden = true;
+      });
+      el.addEventListener("blur", () => {
+        el.value = sanitizePersonName(el.value);
       });
     }
   });

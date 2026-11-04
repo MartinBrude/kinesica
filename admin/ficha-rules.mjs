@@ -24,6 +24,7 @@ import {
   formatSessionBadgeText,
   shouldOmitInvariableFields,
   assignProfesional as assignProfHelper,
+  capitalizePersonName,
   sanitizePersonName,
   hasDisallowedNameChars,
 } from "./ficha-rules-patient.mjs";
@@ -47,6 +48,7 @@ export {
   getSessionIndex,
   formatSessionBadgeText,
   shouldOmitInvariableFields,
+  capitalizePersonName,
   sanitizePersonName,
   hasDisallowedNameChars,
   emptyFicha,

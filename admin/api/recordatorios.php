@@ -69,6 +69,23 @@ function recordatorios_persist_directory_contact(string $patientName, string $ph
             if (strlen($phone) < 6 || strlen($phone) > 16) {
                 return ['ok' => false, 'error' => 'Número de WhatsApp inválido o incompleto'];
             }
+            $existing = function_exists('find_existing_patient_match')
+                ? find_existing_patient_match($pdo, $phone, $name)
+                : null;
+
+            if ($existing) {
+                $existingId = (int) $existing['id'];
+                if (function_exists('is_placeholder_phone') && is_placeholder_phone((string) ($existing['telefono'] ?? ''))) {
+                    $pdo->prepare('UPDATE pacientes SET telefono = :tel WHERE id = :id')
+                        ->execute(['tel' => $phone, 'id' => $existingId]);
+                }
+                if ($email !== '' && empty($existing['email'])) {
+                    $pdo->prepare('UPDATE pacientes SET email = :email WHERE id = :id')
+                        ->execute(['email' => $email, 'id' => $existingId]);
+                }
+                return ['ok' => true, 'phone' => $phone, 'email' => $email];
+            }
+
             // En colisión de teléfono: NO pisar nombre de un paciente existente; solo completar vacíos y email.
             $stmt = $pdo->prepare(
                 'INSERT INTO pacientes (telefono, nombre, apellido, nombre_completo, nombre_pila, email, origen)

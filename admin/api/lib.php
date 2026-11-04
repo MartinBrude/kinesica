@@ -119,6 +119,17 @@ function kinesica_extract_ficha_photos(array $item): array
     return array_keys($files);
 }
 
+function capitalize_patient_name(string $str): string
+{
+    if ($str === '') {
+        return '';
+    }
+    return (string) preg_replace_callback('/[\p{L}]+/u', static function (array $m): string {
+        $word = $m[0];
+        return mb_strtoupper(mb_substr($word, 0, 1, 'UTF-8'), 'UTF-8') . mb_strtolower(mb_substr($word, 1, null, 'UTF-8'), 'UTF-8');
+    }, $str);
+}
+
 function sanitize_patient_name(string $str): string
 {
     $str = str_replace(["\r", "\n"], ' ', $str);
@@ -127,7 +138,11 @@ function sanitize_patient_name(string $str): string
     if ($clean === null) {
         $clean = $str;
     }
-    return trim(preg_replace('/\s+/u', ' ', $clean) ?? $clean);
+    $trimmed = trim(preg_replace('/\s+/u', ' ', $clean) ?? $clean);
+    if ($trimmed === '') {
+        return '';
+    }
+    return capitalize_patient_name($trimmed);
 }
 
 function name_has_disallowed_chars(string $str): bool

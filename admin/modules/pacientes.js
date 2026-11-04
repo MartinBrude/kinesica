@@ -6,7 +6,7 @@
 import { api } from "./api.js?v=77";
 import { escapeHtml, debounce, dialogAlert, dialogConfirm, switchActiveView } from "./dom.js?v=78";
 import { phoneMatches } from "./phone-search.js?v=1";
-import { formatDisplayPhone } from "./pacientes-format.js";
+import { formatDisplayPhone, capitalizePersonName } from "./pacientes-format.js";
 import { openFullPacienteModal } from "./pacientes-modal.js";
 import { getSessionUser } from "./auth.js?v=81";
 import { invalidateDirectoryCache } from "./form-patient.js";
@@ -131,14 +131,214 @@ export function hidePacientesView() {
   if (viewPacientes) viewPacientes.hidden = true;
 }
 
+/**
+ * Genera una clave canónica a partir del nombre del paciente (ignorando acentos, orden y prefijos honoríficos).
+ * @param {string} str
+ * @returns {string}
+ */
+export function canonicalPatientNameKey(str) {
+  if (!str) return "";
+  let s = String(str).trim();
+  s = s.replace(/^(?:lic\.|lic|dr\.|dr|dra\.|dra|sr\.|sr|sra\.|sra)\s+/iu, "");
+  s = s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  s = s.replace(/[^a-z0-9]+/g, " ");
+  const tokens = s.trim().split(/\s+/).filter(Boolean);
+  if (!tokens.length) return "";
+  if (tokens.length >= 2) tokens.sort();
+  return tokens.join(" ");
+}
+
+/**
+ * Limpia y normaliza el DNI del paciente.
+ * @param {string|number|null} raw
+ * @returns {string}
+ */
+export function cleanPatientDni(raw) {
+  if (!raw) return "";
+  const s = String(raw).trim().toLowerCase();
+  if (!s || s === "no provisto" || s === "null") return "";
+  const digits = s.replace(/\D/g, "");
+  return digits.length >= 5 ? digits : "";
+}
+
+/**
+ * Determina si el número es un identificador placeholder temporal.
+ * @param {string} phone
+ * @returns {boolean}
+ */
+export function isPlaceholderPhone(phone) {
+  const p = String(phone || "").trim();
+  if (!p) return true;
+  return p.startsWith("sin-tel-") || p.startsWith("sin-tel") || p.startsWith("sin-telefono") || p.startsWith("ficha-");
+}
+
+/**
+ * Deduplica una lista de pacientes en memoria consolidando según las reglas de negocio:
+ * - "si uno dice con review y otro sin, queda que si"
+ * - "si uno dice indistinto y otro dice con tal, queda tal"
+ * - teléfono real prevalece sobre placeholder
+ * - preserva DNI, email, motivos y notas
+ * @param {Array} items
+ * @returns {Array}
+ */
+export function deduplicatePatientsInMemory(items = []) {
+  if (!Array.isArray(items) || items.length <= 1) return items || [];
+
+  const n = items.length;
+  const parent = Array.from({ length: n }, (_, i) => i);
+  const find = (i) => {
+    if (parent[i] === i) return i;
+    return (parent[i] = find(parent[i]));
+  };
+  const union = (i, j) => {
+    const rootI = find(i);
+    const rootJ = find(j);
+    if (rootI !== rootJ) parent[rootI] = rootJ;
+  };
+
+  const byDni = new Map();
+  const byName = new Map();
+  const byPhone = new Map();
+
+  items.forEach((p, idx) => {
+    let dni = cleanPatientDni(p.dni);
+    if (!dni && String(p.telefono || "").startsWith("sin-tel-dni-")) {
+      dni = String(p.telefono).slice(12);
+    }
+    if (dni) {
+      if (byDni.has(dni)) union(idx, byDni.get(dni));
+      else byDni.set(dni, idx);
+    }
+
+    const full = (p.nombre_completo || "").trim() || `${p.nombre || ""} ${p.apellido || ""}`.trim();
+    const nameKey = canonicalPatientNameKey(full);
+    if (nameKey && nameKey.includes(" ")) {
+      if (byName.has(nameKey)) union(idx, byName.get(nameKey));
+      else byName.set(nameKey, idx);
+    }
+
+    const rawPhone = String(p.telefono || "").trim();
+    const cleanPhone = rawPhone.replace(/\D/g, "");
+    if (cleanPhone && !isPlaceholderPhone(rawPhone)) {
+      if (byPhone.has(cleanPhone)) union(idx, byPhone.get(cleanPhone));
+      else byPhone.set(cleanPhone, idx);
+    }
+  });
+
+  const clusters = new Map();
+  for (let i = 0; i < n; i++) {
+    const root = find(i);
+    if (!clusters.has(root)) clusters.set(root, []);
+    clusters.get(root).push(items[i]);
+  }
+
+  const result = [];
+  for (const cluster of clusters.values()) {
+    if (cluster.length === 1) {
+      result.push(cluster[0]);
+      continue;
+    }
+
+    cluster.sort((a, b) => {
+      const aReal = !isPlaceholderPhone(a.telefono);
+      const bReal = !isPlaceholderPhone(b.telefono);
+      if (aReal !== bReal) return aReal ? -1 : 1;
+
+      const aReview = Boolean(a.dejo_review && Number(a.dejo_review) !== 0);
+      const bReview = Boolean(b.dejo_review && Number(b.dejo_review) !== 0);
+      if (aReview !== bReview) return aReview ? -1 : 1;
+
+      const aProf = a.profesional_habitual === "norberto" || a.profesional_habitual === "maria";
+      const bProf = b.profesional_habitual === "norberto" || b.profesional_habitual === "maria";
+      if (aProf !== bProf) return aProf ? -1 : 1;
+
+      return (Number(a.id) || 0) - (Number(b.id) || 0);
+    });
+
+    const survivor = { ...cluster[0] };
+
+    // Regla: si uno dice con review y otro sin, queda que si
+    const hasReview = cluster.some((p) => Boolean(p.dejo_review && Number(p.dejo_review) !== 0));
+    survivor.dejo_review = hasReview ? 1 : 0;
+
+    // Regla: si uno dice indistinto y otro dice con tal, queda tal
+    const specificProf = cluster.find((p) => p.profesional_habitual === "norberto" || p.profesional_habitual === "maria");
+    if (specificProf) {
+      survivor.profesional_habitual = specificProf.profesional_habitual;
+    } else {
+      survivor.profesional_habitual = "indistinto";
+    }
+
+    // Teléfono: real sobre placeholder
+    const realPhoneRecord = cluster.find((p) => !isPlaceholderPhone(p.telefono));
+    if (realPhoneRecord) {
+      survivor.telefono = realPhoneRecord.telefono;
+    }
+
+    // DNI
+    if (!survivor.dni) {
+      const withDni = cluster.find((p) => cleanPatientDni(p.dni));
+      if (withDni) survivor.dni = cleanPatientDni(withDni.dni);
+    }
+
+    // Email
+    if (!survivor.email) {
+      const withEmail = cluster.find((p) => p.email && String(p.email).includes("@"));
+      if (withEmail) survivor.email = withEmail.email;
+    }
+
+    // Motivo
+    const motivos = cluster.map((p) => (p.motivo_consulta || "").trim()).filter(Boolean);
+    if (motivos.length > 0) {
+      survivor.motivo_consulta = Array.from(new Set(motivos)).join(" / ");
+    }
+
+    // Notas
+    const notasList = cluster.map((p) => (p.notas || "").trim()).filter(Boolean);
+    if (notasList.length > 0) {
+      survivor.notas = Array.from(new Set(notasList)).join("\n");
+    }
+
+    // Contacto
+    if (!survivor.contacto_nombre) {
+      const withContact = cluster.find((p) => p.contacto_nombre);
+      if (withContact) {
+        survivor.contacto_nombre = withContact.contacto_nombre;
+        survivor.contacto_telefono = withContact.contacto_telefono || survivor.contacto_telefono;
+        survivor.contacto_email = withContact.contacto_email || survivor.contacto_email;
+        survivor.contacto_notas = withContact.contacto_notas || survivor.contacto_notas;
+      }
+    }
+
+    // Nombre con acento
+    const accentedName = cluster.find((p) => /[áéíóúÁÉÍÓÚñÑ]/.test(p.nombre_completo || ""));
+    if (accentedName && !/[áéíóúÁÉÍÓÚñÑ]/.test(survivor.nombre_completo || "")) {
+      survivor.nombre_completo = accentedName.nombre_completo;
+      if (accentedName.nombre) survivor.nombre = accentedName.nombre;
+      if (accentedName.apellido) survivor.apellido = accentedName.apellido;
+    }
+
+    result.push(survivor);
+  }
+
+  return result;
+}
+
 export async function loadPacientes() {
   if (!listEl) return;
   listEl.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px; color: var(--muted);">Cargando directorio de pacientes…</td></tr>`;
   try {
     const res = await api("pacientes.php");
-    pacientesCache = Array.isArray(res?.items) ? res.items : (Array.isArray(res) ? res : []);
+    const raw = Array.isArray(res?.items) ? res.items : (Array.isArray(res) ? res : []);
+    const deduplicated = deduplicatePatientsInMemory(raw);
+    pacientesCache = deduplicated;
     invalidateDirectoryCache();
     renderPacientesTable();
+
+    // Si había duplicados en la respuesta cruda, llamar a deduplicar en el backend en segundo plano
+    if (raw.length !== deduplicated.length) {
+      api("pacientes.php", { method: "POST", body: JSON.stringify({ action: "deduplicate" }) }).catch(() => {});
+    }
   } catch (err) {
     listEl.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px; color: #dc2626;">Error al cargar pacientes: ${escapeHtml(err.message)}</td></tr>`;
   }
@@ -166,11 +366,14 @@ export function formatPatientName(p) {
     }
   }
 
+  ap = capitalizePersonName(ap);
+  nom = capitalizePersonName(nom);
+
   let display = "";
   if (ap && nom) display = `${ap}, ${nom}`;
   else if (ap) display = ap;
   else if (nom) display = nom;
-  else display = (p?.nombre_completo || "").trim() || "Paciente";
+  else display = capitalizePersonName((p?.nombre_completo || "").trim()) || "Paciente";
 
   return { apellido: ap, nombre: nom, display };
 }
@@ -222,11 +425,11 @@ export function renderPacientesTable() {
     const tr = document.createElement("tr");
     const formattedName = formatPatientName(p);
     const displayName = formattedName.display;
-    const fullNameForConfirm = p.nombre_completo || [p.nombre, p.apellido].filter(Boolean).join(" ") || displayName;
+    const fullNameForConfirm = capitalizePersonName(p.nombre_completo || [formattedName.nombre, formattedName.apellido].filter(Boolean).join(" ") || displayName);
 
     const contactBadge = (p.contacto_nombre || p.contacto_telefono)
       ? `<div style="font-size: 11px; color: #475569; margin-top: 3px; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; display: inline-block;">
-           👤 Contacto / Agendó: <strong>${escapeHtml(p.contacto_nombre || "Familiar")}</strong>${p.contacto_telefono ? ` (${escapeHtml(formatDisplayPhone(p.contacto_telefono))})` : ""}${p.contacto_notas ? ` • ${escapeHtml(p.contacto_notas)}` : ""}
+           👤 Contacto / Agendó: <strong>${escapeHtml(capitalizePersonName(p.contacto_nombre) || "Familiar")}</strong>${p.contacto_telefono ? ` (${escapeHtml(formatDisplayPhone(p.contacto_telefono))})` : ""}${p.contacto_notas ? ` • ${escapeHtml(p.contacto_notas)}` : ""}
          </div>`
       : "";
 
@@ -322,6 +525,29 @@ export function initPacientesModule() {
   }
   if (btnNuevo) {
     btnNuevo.addEventListener("click", () => openFullPacienteModal(null, loadPacientes));
+  }
+  const btnDeduplicate = typeof document !== "undefined" ? document.querySelector("#btn-deduplicate-pacientes") : null;
+  if (btnDeduplicate) {
+    btnDeduplicate.addEventListener("click", async () => {
+      btnDeduplicate.disabled = true;
+      const origText = btnDeduplicate.textContent;
+      btnDeduplicate.textContent = "Deduplicando…";
+      try {
+        const res = await api("pacientes.php", { method: "POST", body: JSON.stringify({ action: "deduplicate" }) });
+        await loadPacientes();
+        const merged = res?.merged ?? 0;
+        if (merged > 0) {
+          await dialogAlert(`Directorio optimizado: se consolidaron ${merged} registro${merged === 1 ? "" : "s"} duplicado${merged === 1 ? "" : "s"}.`);
+        } else {
+          await dialogAlert("El directorio ya está completamente deduplicado. No se encontraron duplicados.");
+        }
+      } catch (err) {
+        await dialogAlert(`Error al deduplicar pacientes: ${err.message}`);
+      } finally {
+        btnDeduplicate.disabled = false;
+        btnDeduplicate.textContent = origText;
+      }
+    });
   }
   if (btnBackupSql) {
     btnBackupSql.addEventListener("click", async () => {

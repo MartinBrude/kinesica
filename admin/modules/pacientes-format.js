@@ -5,6 +5,21 @@
 
 export { formatDisplayPhone, cleanPhoneDigits } from "./phone-format.js";
 
+/**
+ * Normaliza nombres y apellidos de pacientes para que solo la inicial esté en mayúscula.
+ * Preserva espacios y caracteres especiales como apóstrofes o guiones.
+ * @param {string} str
+ * @returns {string}
+ */
+export function capitalizePersonName(str) {
+  if (!str) return "";
+  return String(str).replace(/\p{L}+/gu, (match) => {
+    const chars = Array.from(match);
+    if (chars.length === 0) return "";
+    return chars[0].toUpperCase() + chars.slice(1).join("").toLowerCase();
+  });
+}
+
 export function isValidAdminEmail(raw) {
   const s = String(raw || "").trim();
   if (!s) return true;

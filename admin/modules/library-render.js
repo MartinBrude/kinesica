@@ -3,7 +3,7 @@
  * Agrupa las historias clínicas por paciente, aplica filtros/ordenamiento y renderiza los acordeones DOM.
  */
 
-import { patientKey } from "../ficha-rules.mjs?v=87";
+import { patientKey, capitalizePersonName } from "../ficha-rules.mjs?v=87";
 import { escapeHtml } from "./dom.js?v=78";
 import { patientGroupRow } from "./library-rows.js?v=3";
 import { setLibraryPage } from "./library-pager.js";
@@ -51,10 +51,11 @@ export function renderLibraryList({
     for (const item of items) {
       const key = patientKey(item);
       if (!seenPatients.has(key)) {
-        seenPatients.set(key, item.nombre || "Sin nombre");
+        const cleanName = capitalizePersonName(item.nombre) || "Sin nombre";
+        seenPatients.set(key, cleanName);
         const opt = document.createElement("option");
         opt.value = key;
-        opt.textContent = `${item.nombre || "Sin nombre"} (DNI ${item.dni || "—"})`;
+        opt.textContent = `${cleanName} (DNI ${item.dni || "—"})`;
         patientSelect.append(opt);
       }
     }
@@ -85,7 +86,7 @@ export function renderLibraryList({
   const fragment = document.createDocumentFragment();
 
   if (focusedPatient && groups.length) {
-    const pName = groups[0][1][0]?.nombre || "Paciente";
+    const pName = capitalizePersonName(groups[0][1][0]?.nombre) || "Paciente";
     const filterBanner = document.createElement("div");
     filterBanner.className = "card-row";
     filterBanner.style.background = "var(--sky)";

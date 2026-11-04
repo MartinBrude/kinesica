@@ -2,7 +2,7 @@
  * Kinésica Admin - Filiación y Selector de Paciente del Formulario
  */
 
-import { patientKey, getUniquePatients } from "../ficha-rules.mjs?v=89";
+import { patientKey, getUniquePatients, capitalizePersonName } from "../ficha-rules.mjs?v=89";
 import { api } from "./api.js?v=77";
 
 const form = typeof document !== "undefined" ? document.querySelector("#ficha") : null;
@@ -106,7 +106,7 @@ export function setPatientLocked(locked, patientData = null, sessionCount = 0, i
     document.querySelectorAll('[data-single="motivo"] button').forEach((btn) => (btn.disabled = true));
     if (banner) banner.hidden = false;
     if (newToggle) newToggle.hidden = false;
-    if (nameSpan) nameSpan.textContent = patientData?.nombre || form?.elements.nombre?.value || "";
+    if (nameSpan) nameSpan.textContent = capitalizePersonName(patientData?.nombre || form?.elements.nombre?.value || "");
     if (dniSpan) dniSpan.textContent = patientData?.dni || form?.elements.dni?.value || "—";
     if (sessionsSpan) {
       sessionsSpan.textContent = sessionCount > 0
@@ -194,7 +194,7 @@ export function populatePatientPicker(allFichas = [], selectedKey = "", extraPac
     for (const p of fichasPatients) {
       const opt = document.createElement("option");
       opt.value = p.key;
-      opt.textContent = `${p.nombre} (DNI ${p.dni || "—"}) · ${p.sessions.length} ses.`;
+      opt.textContent = `${capitalizePersonName(p.nombre)} (DNI ${p.dni || "—"}) · ${p.sessions.length} ses.`;
       groupFichas.append(opt);
     }
     select.append(groupFichas);
@@ -205,7 +205,7 @@ export function populatePatientPicker(allFichas = [], selectedKey = "", extraPac
     groupDir.label = "Pacientes registrados (sin historia previa)";
     for (const p of registeredOnly) {
       const opt = document.createElement("option");
-      const fullName = (p.nombre_completo || `${p.nombre || ""} ${p.apellido || ""}`).trim();
+      const fullName = capitalizePersonName((p.nombre_completo || `${p.nombre || ""} ${p.apellido || ""}`).trim());
       opt.value = `dir:${p.id}`;
       opt.textContent = `${fullName} (DNI ${p.dni || "—"})${p.profesional_habitual && p.profesional_habitual !== "indistinto" ? ` · ${p.profesional_habitual}` : ""}`;
       groupDir.append(opt);

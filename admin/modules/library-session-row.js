@@ -6,6 +6,7 @@
 import { escapeHtml, dialogConfirm } from "./dom.js?v=78";
 import { formatDate } from "./api.js?v=77";
 import { getSessionUser } from "./auth.js?v=81";
+import { capitalizePersonName } from "../ficha-rules.mjs?v=87";
 
 export function sessionRow(item, patient, callbacks = {}, sessionIndex = 1, totalSessions = 1) {
   const row = document.createElement("div");
@@ -107,7 +108,7 @@ export function sessionRow(item, patient, callbacks = {}, sessionIndex = 1, tota
     </svg>`;
     delBtn.addEventListener("click", async (e) => {
       e.stopPropagation();
-      const name = patient?.nombre || item.nombre || "esta ficha";
+      const name = capitalizePersonName(patient?.nombre || item.nombre) || "esta ficha";
       const ok = await dialogConfirm(`¿Quitar la ficha de ${name} del ${formatDate(item.fechaSesion)}? Esta acción no se puede deshacer.`, { danger: true });
       if (!ok) return;
       if (callbacks.onDelete) callbacks.onDelete(item);

@@ -16,10 +16,24 @@ assert.match(pac, /phoneMatches\(p\.telefono, query\)/);
 assert.match(pac, /phoneMatches\(p\.contacto_telefono, query\)/);
 assert.match(pac, /formatPatientName/);
 
-// Verificar formato de nombre Apellido, Nombre(s)
+// Verificar formato de nombre Apellido, Nombre(s) y capitalización solo inicial
 import { formatPatientName } from "../admin/modules/pacientes.js";
+import { capitalizePersonName, sanitizePersonName } from "../admin/ficha-rules.mjs";
+
 assert.equal(formatPatientName({ apellido: "Pérez", nombre: "Juan Carlos" }).display, "Pérez, Juan Carlos");
 assert.equal(formatPatientName({ nombre_completo: "Ana Clara Gómez" }).display, "Gómez, Ana Clara");
+assert.equal(formatPatientName({ apellido: "PÉREZ", nombre: "JUAN CARLOS" }).display, "Pérez, Juan Carlos");
+assert.equal(formatPatientName({ apellido: "pérez", nombre: "juan carlos" }).display, "Pérez, Juan Carlos");
+assert.equal(formatPatientName({ nombre_completo: "FLORENCIA MARÍA GONZÁLEZ" }).display, "González, Florencia María");
+assert.equal(formatPatientName({ apellido: "d'alessandro", nombre: "maría-laura" }).display, "D'Alessandro, María-Laura");
+assert.equal(formatPatientName({ nombre_completo: "álvarez" }).display, "Álvarez");
+
+assert.equal(capitalizePersonName("FLORENCIA"), "Florencia");
+assert.equal(capitalizePersonName("gonzález"), "González");
+assert.equal(capitalizePersonName("MARÍA LAURA"), "María Laura");
+assert.equal(capitalizePersonName("juan-carlos"), "Juan-Carlos");
+assert.equal(capitalizePersonName("d'alessandro"), "D'Alessandro");
+assert.equal(sanitizePersonName("  FLORENCIA, GONZALEZ 👍\r\n"), "Florencia Gonzalez");
 
 // Verificar permisos de eliminación en pacientes.php
 const pacPhp = readFileSync("admin/api/pacientes.php", "utf8");

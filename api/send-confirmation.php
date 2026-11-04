@@ -188,11 +188,12 @@ if ($rawPhone !== '') {
         $phone = $normalizePhone($rawPhone);
 
         if (strlen($phone) >= 6 && !preg_match('/^(\d)\1+$/', $phone)) {
-            $fullName = mb_substr(trim($paciente), 0, 120, 'UTF-8');
+            $fullName = mb_substr(sanitize_patient_name($paciente), 0, 120, 'UTF-8');
             $parts = preg_split('/\s+/u', $fullName, 2, PREG_SPLIT_NO_EMPTY) ?: [];
             $nom = mb_substr($parts[0] ?? $fullName, 0, 60, 'UTF-8');
             $ape = mb_substr($parts[1] ?? '', 0, 60, 'UTF-8');
-            $pila = $nom;
+            @require_once dirname(__DIR__) . '/admin/api/pacientes_helpers.php';
+            $pila = function_exists('extract_first_name') ? extract_first_name($fullName) : $nom;
             $dniVal = !empty($data['dni']) && trim((string) $data['dni']) !== 'No provisto' ? mb_substr(trim((string) $data['dni']), 0, 20, 'UTF-8') : null;
             $motivoVal = !empty($data['motivo']) ? mb_substr(trim((string) $data['motivo']), 0, 255, 'UTF-8') : (!empty($servicio) ? mb_substr($servicio, 0, 255, 'UTF-8') : null);
 
@@ -203,13 +204,24 @@ if ($rawPhone !== '') {
                 $profVal = 'maria';
             }
 
-            $contactoNombre = !empty($data['contactoNombre']) ? mb_substr(trim((string) $data['contactoNombre']), 0, 120, 'UTF-8') : (!empty($data['contacto_nombre']) ? mb_substr(trim((string) $data['contacto_nombre']), 0, 120, 'UTF-8') : null);
+            $contactoNombre = !empty($data['contactoNombre']) ? mb_substr(sanitize_patient_name((string) $data['contactoNombre']), 0, 120, 'UTF-8') : (!empty($data['contacto_nombre']) ? mb_substr(sanitize_patient_name((string) $data['contacto_nombre']), 0, 120, 'UTF-8') : null);
             $contactoTelRaw = !empty($data['contactoTelefono']) ? (string) $data['contactoTelefono'] : (!empty($data['contacto_telefono']) ? (string) $data['contacto_telefono'] : '');
             $contactoTel = $contactoTelRaw !== '' ? $normalizePhone($contactoTelRaw) : null;
             if ($contactoTel === '') {
                 $contactoTel = null;
             }
             $contactoNotas = !empty($data['contactoNotas']) ? mb_substr(trim((string) $data['contactoNotas']), 0, 100, 'UTF-8') : (!empty($data['contacto_notas']) ? mb_substr(trim((string) $data['contacto_notas']), 0, 100, 'UTF-8') : null);
+
+            @require_once dirname(__DIR__) . '/admin/api/pacientes_helpers.php';
+            if (function_exists('find_existing_patient_match')) {
+                try {
+                    $existing = find_existing_patient_match($db, $phone, $fullName, $dniVal);
+                    if ($existing && function_exists('is_placeholder_phone') && is_placeholder_phone((string) ($existing['telefono'] ?? ''))) {
+                        $db->prepare('UPDATE pacientes SET telefono = :tel WHERE id = :id')
+                            ->execute(['tel' => $phone, 'id' => (int) $existing['id']]);
+                    }
+                } catch (Throwable) {}
+            }
 
             $stmtUpsert = $db->prepare('
                 INSERT INTO pacientes (

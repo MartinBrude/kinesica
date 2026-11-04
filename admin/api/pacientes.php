@@ -63,6 +63,7 @@ try {
     $auth = authenticate_request($data);
     $pdo = db();
     ensure_pacientes_tables($pdo);
+    deduplicate_pacientes_table($pdo);
     $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
     if ($method === 'GET') {
@@ -151,6 +152,13 @@ try {
             $text = (string) ($data['text'] ?? strip_tags($html));
             $sent = send_html_mail($to, $subject, $html, $text);
             json_out(200, ['status' => $sent ? 'success' : 'error', 'message' => $sent ? 'Correo enviado' : 'Error al enviar correo']);
+        }
+
+        if ($action === 'deduplicate') {
+            $merged = deduplicate_pacientes_table($pdo);
+            $cntStmt = $pdo->query('SELECT COUNT(*) FROM pacientes');
+            $total = (int) $cntStmt->fetchColumn();
+            json_out(200, ['status' => 'success', 'merged' => $merged, 'total' => $total]);
         }
 
         if ($action === 'upsert' || $action === 'insert') {

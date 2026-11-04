@@ -7,6 +7,7 @@ import { escapeHtml } from "./dom.js?v=78";
 import { buildWhatsAppUrl } from "./interacciones-message.js";
 import { isMartinBrudePhone } from "./phone-search.js?v=2";
 import { formatDisplayPhone } from "./phone-format.js";
+import { capitalizePersonName } from "./pacientes-format.js";
 
 const MONTH_NAMES = [
   "enero", "febrero", "marzo", "abril", "mayo", "junio",
@@ -89,7 +90,7 @@ export function buildInteractionCardHtml(conv, itemIdx, senderName) {
   const waUrl = buildWhatsAppUrl(cleanWa, senderStr);
   const isMartin = isMartinBrudePhone(cleanWa) || isMartinBrudePhone(conv?.phone_formatted);
   const rawName = String(conv?.patient_name || "").trim();
-  const name = isMartin ? "Martín Brude" : (rawName || "Paciente sin nombre");
+  const name = isMartin ? "Martín Brude" : (capitalizePersonName(rawName) || "Paciente sin nombre");
   const phoneDisplay = (conv?.phone_formatted ? formatDisplayPhone(conv.phone_formatted) : "") || (cleanWa ? formatDisplayPhone(cleanWa) : "Sin teléfono");
   const timeStr = String(conv?.time || "").trim();
   const rawCategory = String(conv?.category_label || "Consulta WhatsApp");

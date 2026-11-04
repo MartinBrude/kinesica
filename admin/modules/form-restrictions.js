@@ -3,7 +3,7 @@
  * Previene caracteres inválidos, controla rangos de edad, EVA y campos numéricos.
  */
 
-import { sanitizePersonName } from "../ficha-rules.mjs?v=91";
+import { sanitizePersonName, capitalizePersonName } from "../ficha-rules.mjs?v=91";
 
 export function setupInputRestrictions(formEl) {
   if (!formEl) return;
@@ -155,10 +155,15 @@ export function setupInputRestrictions(formEl) {
     });
 
     nombreInput.addEventListener("input", () => {
-      const clean = sanitizePersonName(nombreInput.value.replace(/\d/g, ""));
-      if (nombreInput.value !== clean) {
-        nombreInput.value = clean;
+      const raw = nombreInput.value.replace(/\d/g, "").replace(/[\r\n,]/g, "");
+      const formatted = capitalizePersonName(raw);
+      if (nombreInput.value !== formatted) {
+        nombreInput.value = formatted;
       }
+    });
+
+    nombreInput.addEventListener("blur", () => {
+      nombreInput.value = sanitizePersonName(nombreInput.value.replace(/\d/g, ""));
     });
 
     nombreInput.addEventListener("paste", () => {

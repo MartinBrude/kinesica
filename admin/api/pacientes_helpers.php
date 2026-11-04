@@ -123,43 +123,404 @@ function extract_first_name(string $fullName): string
     if (count($words) >= 2) {
         $compound = mb_strtolower($first, 'UTF-8');
         if (in_array($compound, ['maria', 'maría', 'juan', 'ana', 'jose', 'josé'], true)) {
-            return $first . ' ' . $words[1];
+            $comp = $first . ' ' . $words[1];
+            return function_exists('capitalize_patient_name') ? capitalize_patient_name($comp) : $comp;
         }
     }
-    return $first;
+    return function_exists('capitalize_patient_name') ? capitalize_patient_name($first) : $first;
 }
 
-function ensure_pacientes_tables(PDO $pdo): void
+function canonical_patient_name_key(string $str): string
+{
+    $s = trim($str);
+    if ($s === '') return '';
+    $s = preg_replace('/^(?:lic\.|lic|dr\.|dr|dra\.|dra|sr\.|sr|sra\.|sra)\s+/iu', '', $s) ?? $s;
+    $s = mb_strtolower($s, 'UTF-8');
+    $unaccent = strtr($s, [
+        'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u', 'ü' => 'u', 'ñ' => 'n',
+        'à' => 'a', 'è' => 'e', 'ì' => 'i', 'ò' => 'o', 'ù' => 'u',
+        'â' => 'a', 'ê' => 'e', 'î' => 'i', 'ô' => 'o', 'û' => 'u',
+        'ä' => 'a', 'ë' => 'e', 'ï' => 'i', 'ö' => 'o',
+    ]);
+    $cleaned = preg_replace('/[^a-z0-9]+/u', ' ', $unaccent) ?? '';
+    $tokens = preg_split('/\s+/u', trim($cleaned), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+    if (empty($tokens)) return '';
+    if (count($tokens) >= 2) {
+        sort($tokens, SORT_STRING);
+    }
+    return implode(' ', $tokens);
+}
+
+function clean_patient_dni(?string $raw): string
+{
+    if ($raw === null) return '';
+    $t = trim($raw);
+    if ($t === '' || strcasecmp($t, 'No provisto') === 0 || strcasecmp($t, 'null') === 0) return '';
+    $digits = preg_replace('/[^0-9]/', '', $t) ?? '';
+    if (strlen($digits) < 5) return '';
+    return $digits;
+}
+
+function is_placeholder_phone(string $phone): bool
+{
+    $p = trim($phone);
+    if ($p === '') return true;
+    return str_starts_with($p, 'sin-tel-') 
+        || str_starts_with($p, 'sin-tel') 
+        || str_starts_with($p, 'sin-telefono') 
+        || str_starts_with($p, 'ficha-');
+}
+
+function merge_prof_values(string $p1, string $p2): string
+{
+    $v1 = in_array($p1, ['norberto', 'maria'], true) ? $p1 : 'indistinto';
+    $v2 = in_array($p2, ['norberto', 'maria'], true) ? $p2 : 'indistinto';
+    if ($v1 !== 'indistinto' && $v2 === 'indistinto') return $v1;
+    if ($v2 !== 'indistinto' && $v1 === 'indistinto') return $v2;
+    if ($v1 !== 'indistinto' && $v2 !== 'indistinto') return $v1;
+    return 'indistinto';
+}
+
+function find_existing_patient_match(PDO $pdo, ?string $phone, ?string $name = null, ?string $dni = null): ?array
+{
+    // 1. Teléfono real
+    $cleanPhone = clean_phone_number((string) ($phone ?? ''));
+    if ($cleanPhone !== '' && !is_placeholder_phone($cleanPhone)) {
+        $stmt = $pdo->prepare('SELECT * FROM pacientes WHERE telefono = :tel LIMIT 1');
+        $stmt->execute(['tel' => $cleanPhone]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($row) return $row;
+    }
+
+    // 2. DNI limpio o placeholder de DNI
+    $cleanDni = clean_patient_dni($dni);
+    if ($cleanDni !== '') {
+        $stmt = $pdo->prepare('
+            SELECT * FROM pacientes 
+            WHERE dni = :dni 
+               OR REPLACE(REPLACE(COALESCE(dni, ""), ".", ""), " ", "") = :clean
+               OR telefono = :telDni
+            LIMIT 1
+        ');
+        $stmt->execute(['dni' => $cleanDni, 'clean' => $cleanDni, 'telDni' => 'sin-tel-dni-' . $cleanDni]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($row) return $row;
+    }
+
+    // 3. Clave canónica de nombre (si tiene al menos 2 tokens)
+    if ($name !== null && trim($name) !== '') {
+        $nameKey = canonical_patient_name_key($name);
+        if ($nameKey !== '' && str_contains($nameKey, ' ')) {
+            $stmt = $pdo->prepare('
+                SELECT * FROM pacientes 
+                WHERE LOWER(nombre_completo) = :full 
+                   OR LOWER(TRIM(CONCAT(nombre, " ", apellido))) = :full
+                   OR LOWER(TRIM(CONCAT(apellido, " ", nombre))) = :full
+                LIMIT 1
+            ');
+            $stmt->execute(['full' => mb_strtolower(trim($name), 'UTF-8')]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($row) return $row;
+
+            $stmtAll = $pdo->query('SELECT id, telefono, nombre, apellido, nombre_completo, dni, profesional_habitual, dejo_review FROM pacientes');
+            if ($stmtAll) {
+                while ($cand = $stmtAll->fetch(PDO::FETCH_ASSOC)) {
+                    $candFull = trim(($cand['nombre_completo'] ?? '') ?: (($cand['nombre'] ?? '') . ' ' . ($cand['apellido'] ?? '')));
+                    if (canonical_patient_name_key($candFull) === $nameKey) {
+                        return $cand;
+                    }
+                }
+            }
+        }
+    }
+
+    return null;
+}
+
+function deduplicate_pacientes_table(PDO $pdo): int
+{
+    try {
+        $stmt = $pdo->query('SELECT * FROM pacientes ORDER BY id ASC');
+        if (!$stmt) return 0;
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if (count($rows) <= 1) return 0;
+
+        $n = count($rows);
+        $parent = range(0, $n - 1);
+        $find = function (int $i) use (&$parent, &$find): int {
+            if ($parent[$i] === $i) return $i;
+            return $parent[$i] = $find($parent[$i]);
+        };
+        $union = function (int $i, int $j) use (&$parent, &$find): void {
+            $rootI = $find($i);
+            $rootJ = $find($j);
+            if ($rootI !== $rootJ) {
+                $parent[$rootI] = $rootJ;
+            }
+        };
+
+        $byDni = [];
+        $byName = [];
+        $byPhone = [];
+
+        foreach ($rows as $idx => $r) {
+            $dni = clean_patient_dni($r['dni'] ?? null);
+            if ($dni === '' && str_starts_with((string) ($r['telefono'] ?? ''), 'sin-tel-dni-')) {
+                $dni = substr((string) $r['telefono'], 12);
+            }
+            if ($dni !== '') {
+                if (isset($byDni[$dni])) $union($idx, $byDni[$dni]);
+                else $byDni[$dni] = $idx;
+            }
+
+            $full = trim(($r['nombre_completo'] ?? '') ?: (($r['nombre'] ?? '') . ' ' . ($r['apellido'] ?? '')));
+            $nameKey = canonical_patient_name_key($full);
+            if ($nameKey !== '' && str_contains($nameKey, ' ')) {
+                if (isset($byName[$nameKey])) $union($idx, $byName[$nameKey]);
+                else $byName[$nameKey] = $idx;
+            }
+
+            $rawPhone = (string) ($r['telefono'] ?? '');
+            $cleanPhone = clean_phone_number($rawPhone);
+            if ($cleanPhone !== '' && !is_placeholder_phone($cleanPhone)) {
+                if (isset($byPhone[$cleanPhone])) $union($idx, $byPhone[$cleanPhone]);
+                else $byPhone[$cleanPhone] = $idx;
+            }
+        }
+
+        $clusters = [];
+        for ($i = 0; $i < $n; $i++) {
+            $root = $find($i);
+            $clusters[$root][] = $rows[$i];
+        }
+
+        $mergedTotal = 0;
+        foreach ($clusters as $cluster) {
+            if (count($cluster) <= 1) continue;
+
+            usort($cluster, function ($a, $b) {
+                $aReal = !is_placeholder_phone((string) ($a['telefono'] ?? ''));
+                $bReal = !is_placeholder_phone((string) ($b['telefono'] ?? ''));
+                if ($aReal !== $bReal) return $aReal ? -1 : 1;
+
+                $aReview = !empty($a['dejo_review']);
+                $bReview = !empty($b['dejo_review']);
+                if ($aReview !== $bReview) return $aReview ? -1 : 1;
+
+                $aProf = in_array($a['profesional_habitual'] ?? '', ['norberto', 'maria'], true);
+                $bProf = in_array($b['profesional_habitual'] ?? '', ['norberto', 'maria'], true);
+                if ($aProf !== $bProf) return $aProf ? -1 : 1;
+
+                return ((int) $a['id']) - ((int) $b['id']);
+            });
+
+            $survivor = $cluster[0];
+            $survivorId = (int) $survivor['id'];
+            $deleteIds = [];
+
+            $mergedReview = 0;
+            $mergedProf = 'indistinto';
+            $mergedDni = clean_patient_dni($survivor['dni'] ?? null);
+            $mergedEmail = trim((string) ($survivor['email'] ?? ''));
+            $mergedMotivo = trim((string) ($survivor['motivo_consulta'] ?? ''));
+            $mergedNotas = trim((string) ($survivor['notas'] ?? ''));
+            $mergedContactoNom = $survivor['contacto_nombre'] ?? null;
+            $mergedContactoTel = $survivor['contacto_telefono'] ?? null;
+            $mergedContactoEmail = $survivor['contacto_email'] ?? null;
+            $mergedContactoNotas = $survivor['contacto_notas'] ?? null;
+            $mergedNombre = $survivor['nombre'] ?? '';
+            $mergedApellido = $survivor['apellido'] ?? '';
+            $mergedFull = $survivor['nombre_completo'] ?? '';
+            $mergedPila = $survivor['nombre_pila'] ?? '';
+
+            foreach ($cluster as $c) {
+                if ((int) $c['id'] !== $survivorId) {
+                    $deleteIds[] = (int) $c['id'];
+                }
+                // Regla: si uno dice con review y otro sin, queda que si
+                if (!empty($c['dejo_review'])) {
+                    $mergedReview = 1;
+                }
+                // Regla: si uno dice indistinto y otro dice con tal, queda tal
+                $cProf = $c['profesional_habitual'] ?? 'indistinto';
+                if ($mergedProf === 'indistinto' && in_array($cProf, ['norberto', 'maria'], true)) {
+                    $mergedProf = $cProf;
+                }
+                if ($mergedDni === '') {
+                    $cDni = clean_patient_dni($c['dni'] ?? null);
+                    if ($cDni === '' && str_starts_with((string) ($c['telefono'] ?? ''), 'sin-tel-dni-')) {
+                        $cDni = substr((string) $c['telefono'], 12);
+                    }
+                    if ($cDni !== '') $mergedDni = $cDni;
+                }
+                if ($mergedEmail === '' && !empty($c['email'])) {
+                    $mergedEmail = trim((string) $c['email']);
+                }
+                $cMotivo = trim((string) ($c['motivo_consulta'] ?? ''));
+                if ($cMotivo !== '') {
+                    if ($mergedMotivo === '') $mergedMotivo = $cMotivo;
+                    elseif (!str_contains(mb_strtolower($mergedMotivo, 'UTF-8'), mb_strtolower($cMotivo, 'UTF-8')) && !str_contains(mb_strtolower($cMotivo, 'UTF-8'), mb_strtolower($mergedMotivo, 'UTF-8'))) {
+                        $mergedMotivo .= ' / ' . $cMotivo;
+                    }
+                }
+                $cNotas = trim((string) ($c['notas'] ?? ''));
+                if ($cNotas !== '') {
+                    if ($mergedNotas === '') $mergedNotas = $cNotas;
+                    elseif (!str_contains($mergedNotas, $cNotas)) {
+                        $mergedNotas .= "\n" . $cNotas;
+                    }
+                }
+                if (!$mergedContactoNom && !empty($c['contacto_nombre'])) $mergedContactoNom = $c['contacto_nombre'];
+                if (!$mergedContactoTel && !empty($c['contacto_telefono'])) $mergedContactoTel = $c['contacto_telefono'];
+                if (!$mergedContactoEmail && !empty($c['contacto_email'])) $mergedContactoEmail = $c['contacto_email'];
+                if (!$mergedContactoNotas && !empty($c['contacto_notas'])) $mergedContactoNotas = $c['contacto_notas'];
+
+                if (empty($mergedApellido) && !empty($c['apellido'])) {
+                    $mergedApellido = $c['apellido'];
+                    $mergedNombre = $c['nombre'] ?: $mergedNombre;
+                }
+                if (preg_match('/[áéíóúÁÉÍÓÚñÑ]/u', (string) ($c['nombre_completo'] ?? '')) && !preg_match('/[áéíóúÁÉÍÓÚñÑ]/u', $mergedFull)) {
+                    $mergedFull = $c['nombre_completo'];
+                    if (!empty($c['nombre'])) $mergedNombre = $c['nombre'];
+                    if (!empty($c['apellido'])) $mergedApellido = $c['apellido'];
+                }
+            }
+
+            if (count($deleteIds) > 0) {
+                $inClause = implode(',', $deleteIds);
+                $pdo->exec("DELETE FROM pacientes WHERE id IN ($inClause)");
+
+                $upd = $pdo->prepare('
+                    UPDATE pacientes SET
+                        nombre = :nom,
+                        apellido = :ape,
+                        nombre_completo = :full,
+                        nombre_pila = :pila,
+                        dni = :dni,
+                        email = :email,
+                        profesional_habitual = :prof,
+                        motivo_consulta = :motivo,
+                        notas = :notas,
+                        contacto_nombre = :cnom,
+                        contacto_telefono = :ctel,
+                        contacto_email = :cemail,
+                        contacto_notas = :cnot,
+                        dejo_review = :rev
+                    WHERE id = :id
+                ');
+                $upd->execute([
+                    'nom' => $mergedNombre,
+                    'ape' => $mergedApellido,
+                    'full' => $mergedFull,
+                    'pila' => $mergedPila ?: extract_first_name($mergedFull),
+                    'dni' => $mergedDni !== '' ? $mergedDni : null,
+                    'email' => $mergedEmail !== '' ? $mergedEmail : null,
+                    'prof' => $mergedProf,
+                    'motivo' => $mergedMotivo !== '' ? mb_substr($mergedMotivo, 0, 255, 'UTF-8') : null,
+                    'notas' => $mergedNotas !== '' ? mb_substr($mergedNotas, 0, 2000, 'UTF-8') : null,
+                    'cnom' => $mergedContactoNom,
+                    'ctel' => $mergedContactoTel,
+                    'cemail' => $mergedContactoEmail,
+                    'cnot' => $mergedContactoNotas,
+                    'rev' => $mergedReview,
+                    'id' => $survivorId,
+                ]);
+                $mergedTotal += count($deleteIds);
+            }
+        }
+        return $mergedTotal;
+    } catch (Throwable $e) {
+        error_log('deduplicate_pacientes_table error: ' . $e->getMessage());
+        return 0;
+    }
+}
+
+function ensure_pacientes_tables(PDO $pdo, bool $force = false): void
 {
     static $checked = false;
-    if ($checked) return;
+    if ($checked && !$force) return;
 
-    $pdo->exec('
-        CREATE TABLE IF NOT EXISTS pacientes (
-            id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-            telefono VARCHAR(30) NOT NULL UNIQUE,
-            nombre VARCHAR(60) NOT NULL,
-            apellido VARCHAR(60) NOT NULL,
-            nombre_completo VARCHAR(120) NOT NULL,
-            nombre_pila VARCHAR(60) NOT NULL,
-            dni VARCHAR(20) NULL,
-            email VARCHAR(120) NULL,
-            profesional_habitual ENUM("norberto", "maria", "indistinto") NOT NULL DEFAULT "indistinto",
-            motivo_consulta VARCHAR(255) NULL,
-            notas TEXT NULL,
-            origen ENUM("whatsapp", "web", "admin") NOT NULL DEFAULT "whatsapp",
-            contacto_nombre VARCHAR(120) NULL,
-            contacto_telefono VARCHAR(30) NULL,
-            contacto_email VARCHAR(120) NULL,
-            contacto_notas VARCHAR(100) NULL,
-            dejo_review TINYINT(1) NOT NULL DEFAULT 0,
-            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            INDEX idx_pacientes_dni (dni),
-            INDEX idx_pacientes_email (email),
-            INDEX idx_pacientes_nombre (nombre, apellido)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-    ');
+    $driver = (string) $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+    if ($driver === 'sqlite') {
+        $pdo->exec('
+            CREATE TABLE IF NOT EXISTS pacientes (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                telefono TEXT NOT NULL UNIQUE,
+                nombre TEXT NOT NULL,
+                apellido TEXT NOT NULL,
+                nombre_completo TEXT NOT NULL,
+                nombre_pila TEXT NOT NULL,
+                dni TEXT,
+                email TEXT,
+                profesional_habitual TEXT NOT NULL DEFAULT "indistinto",
+                motivo_consulta TEXT,
+                notas TEXT,
+                origen TEXT NOT NULL DEFAULT "whatsapp",
+                contacto_nombre TEXT,
+                contacto_telefono TEXT,
+                contacto_email TEXT,
+                contacto_notas TEXT,
+                dejo_review INTEGER NOT NULL DEFAULT 0,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        ');
+        $pdo->exec('
+            CREATE TABLE IF NOT EXISTS lista_espera (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                paciente_telefono TEXT NOT NULL,
+                paciente_nombre TEXT NOT NULL,
+                rango_horario_preferido TEXT NULL,
+                dias_preferidos TEXT NULL,
+                profesional TEXT NOT NULL DEFAULT "indistinto",
+                estado TEXT NOT NULL DEFAULT "activa",
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        ');
+    } else {
+        $pdo->exec('
+            CREATE TABLE IF NOT EXISTS pacientes (
+                id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                telefono VARCHAR(30) NOT NULL UNIQUE,
+                nombre VARCHAR(60) NOT NULL,
+                apellido VARCHAR(60) NOT NULL,
+                nombre_completo VARCHAR(120) NOT NULL,
+                nombre_pila VARCHAR(60) NOT NULL,
+                dni VARCHAR(20) NULL,
+                email VARCHAR(120) NULL,
+                profesional_habitual ENUM("norberto", "maria", "indistinto") NOT NULL DEFAULT "indistinto",
+                motivo_consulta VARCHAR(255) NULL,
+                notas TEXT NULL,
+                origen ENUM("whatsapp", "web", "admin") NOT NULL DEFAULT "whatsapp",
+                contacto_nombre VARCHAR(120) NULL,
+                contacto_telefono VARCHAR(30) NULL,
+                contacto_email VARCHAR(120) NULL,
+                contacto_notas VARCHAR(100) NULL,
+                dejo_review TINYINT(1) NOT NULL DEFAULT 0,
+                created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                INDEX idx_pacientes_dni (dni),
+                INDEX idx_pacientes_email (email),
+                INDEX idx_pacientes_nombre (nombre, apellido)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        ');
+        $pdo->exec('
+            CREATE TABLE IF NOT EXISTS lista_espera (
+                id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                paciente_telefono VARCHAR(30) NOT NULL,
+                paciente_nombre VARCHAR(120) NOT NULL,
+                rango_horario_preferido VARCHAR(120) NULL,
+                dias_preferidos VARCHAR(120) NULL,
+                profesional ENUM("norberto", "maria", "indistinto") NOT NULL DEFAULT "indistinto",
+                estado ENUM("activa", "contactado", "asignado", "cancelada") NOT NULL DEFAULT "activa",
+                created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                INDEX idx_espera_telefono (paciente_telefono),
+                INDEX idx_espera_estado (estado)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        ');
+    }
 
     try {
         $pdo->exec('ALTER TABLE pacientes ADD COLUMN dejo_review TINYINT(1) NOT NULL DEFAULT 0');
@@ -198,27 +559,44 @@ function ensure_pacientes_tables(PDO $pdo): void
                 }
             }
         }
-    } catch (Throwable) {}
 
-    $pdo->exec('
-        CREATE TABLE IF NOT EXISTS lista_espera (
-            id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-            paciente_telefono VARCHAR(30) NOT NULL,
-            paciente_nombre VARCHAR(120) NOT NULL,
-            rango_horario_preferido VARCHAR(120) NULL,
-            dias_preferidos VARCHAR(120) NULL,
-            profesional ENUM("norberto", "maria", "indistinto") NOT NULL DEFAULT "indistinto",
-            estado ENUM("activa", "contactado", "asignado", "cancelada") NOT NULL DEFAULT "activa",
-            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            INDEX idx_espera_telefono (paciente_telefono),
-            INDEX idx_espera_estado (estado)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-    ');
+        try {
+            $stmtSanitizeEsp = $pdo->query("SELECT id, paciente_nombre FROM lista_espera");
+            if ($stmtSanitizeEsp) {
+                $updateEspStmt = $pdo->prepare("UPDATE lista_espera SET paciente_nombre = :nom WHERE id = :id");
+                while ($row = $stmtSanitizeEsp->fetch(PDO::FETCH_ASSOC)) {
+                    $cleanNom = sanitize_patient_name($row['paciente_nombre'] ?? '');
+                    if ($cleanNom !== ($row['paciente_nombre'] ?? '')) {
+                        $updateEspStmt->execute(['id' => (int) $row['id'], 'nom' => $cleanNom]);
+                    }
+                }
+            }
+        } catch (Throwable) {}
+
+        try {
+            $stmtSanitizeFichas = $pdo->query("SELECT id, payload FROM fichas");
+            if ($stmtSanitizeFichas) {
+                $updateFichaStmt = $pdo->prepare("UPDATE fichas SET payload = :p WHERE id = :id");
+                while ($row = $stmtSanitizeFichas->fetch(PDO::FETCH_ASSOC)) {
+                    $payload = json_decode((string) ($row['payload'] ?? ''), true);
+                    if (is_array($payload) && isset($payload['nombre'])) {
+                        $cleanNom = sanitize_patient_name((string) $payload['nombre']);
+                        if ($cleanNom !== $payload['nombre']) {
+                            $payload['nombre'] = $cleanNom;
+                            $updateFichaStmt->execute(['id' => (string) $row['id'], 'p' => json_encode($payload, JSON_UNESCAPED_UNICODE)]);
+                        }
+                    }
+                }
+            }
+        } catch (Throwable) {}
+    } catch (Throwable) {}
 
     $checked = true;
     try {
-        sync_pacientes_from_fichas($pdo);
+        sync_pacientes_from_fichas($pdo, null, null, null, $force);
+    } catch (Throwable) {}
+    try {
+        deduplicate_pacientes_table($pdo);
     } catch (Throwable) {}
 }
 
@@ -226,12 +604,12 @@ function ensure_pacientes_tables(PDO $pdo): void
  * Sincroniza pacientes desde las historias clínicas (`fichas`) hacia la tabla `pacientes`.
  * Si se pasa $singleId o $singlePayload, sincroniza una ficha puntual; de lo contrario procesa todas.
  */
-function sync_pacientes_from_fichas(PDO $pdo, ?string $singleId = null, ?array $singlePayload = null, ?string $singleProf = null): void
+function sync_pacientes_from_fichas(PDO $pdo, ?string $singleId = null, ?array $singlePayload = null, ?string $singleProf = null, bool $force = false): void
 {
     static $syncedAll = false;
 
     if ($singleId === null && $singlePayload === null) {
-        if ($syncedAll) return;
+        if ($syncedAll && !$force) return;
         $syncedAll = true;
         try {
             $stmt = $pdo->query('SELECT id, payload, profesional FROM fichas ORDER BY updated_at ASC');
@@ -254,34 +632,28 @@ function sync_pacientes_from_fichas(PDO $pdo, ?string $singleId = null, ?array $
         $nombreRaw = sanitize_patient_name(trim((string) ($payload['nombre'] ?? '')));
         if ($nombreRaw === '' || is_tk3_or_blocked_name($nombreRaw)) continue;
 
+        if (isset($payload['nombre']) && $nombreRaw !== $payload['nombre'] && !empty($row['id'])) {
+            $payload['nombre'] = $nombreRaw;
+            try {
+                $upFicha = $pdo->prepare('UPDATE fichas SET payload = :p WHERE id = :id');
+                $upFicha->execute(['p' => json_encode($payload, JSON_UNESCAPED_UNICODE), 'id' => (string) $row['id']]);
+            } catch (Throwable) {}
+        }
+
         $dniRaw = trim((string) ($payload['dni'] ?? ''));
-        $dniClean = preg_replace('/[^0-9kK]/', '', $dniRaw) ?? '';
+        $dniClean = clean_patient_dni($dniRaw);
 
         $motivoRaw = trim((string) ($payload['motivo'] ?? ''));
         $profRaw = strtolower(trim((string) ($row['profesional'] ?? $payload['profesional'] ?? '')));
         $prof = in_array($profRaw, ['norberto', 'maria'], true) ? $profRaw : 'indistinto';
 
-        // Intentar ubicar paciente existente por DNI o por nombre
-        $existing = null;
-        if ($dniClean !== '') {
-            $stmtFind = $pdo->prepare('SELECT id, telefono, nombre_completo, dni, motivo_consulta, profesional_habitual FROM pacientes WHERE dni = :dni OR REPLACE(REPLACE(COALESCE(dni, ""), ".", ""), " ", "") = :dni_clean LIMIT 1');
-            $stmtFind->execute(['dni' => $dniClean, 'dni_clean' => $dniClean]);
-            $existing = $stmtFind->fetch(PDO::FETCH_ASSOC);
-        }
-
-        if (!$existing) {
-            $normName = normalize_search_key($nombreRaw);
-            if ($normName !== '') {
-                $stmtFind = $pdo->prepare('SELECT id, telefono, nombre_completo, dni, motivo_consulta, profesional_habitual FROM pacientes WHERE LOWER(nombre_completo) = :full OR LOWER(TRIM(CONCAT(nombre, " ", apellido))) = :full LIMIT 1');
-                $stmtFind->execute(['full' => mb_strtolower($nombreRaw, 'UTF-8')]);
-                $existing = $stmtFind->fetch(PDO::FETCH_ASSOC);
-            }
-        }
+        // Intentar ubicar paciente existente por DNI, teléfono o clave canónica de nombre
+        $existing = find_existing_patient_match($pdo, null, $nombreRaw, $dniClean !== '' ? $dniClean : null);
 
         if ($existing) {
-            // Actualizar campos faltantes
+            // Actualizar campos faltantes respetando reglas
             $updates = [];
-            $params = ['id' => $existing['id']];
+            $params = ['id' => (int) $existing['id']];
             if (empty($existing['dni']) && $dniClean !== '') {
                 $updates[] = 'dni = :dni';
                 $params['dni'] = mb_substr($dniClean, 0, 20, 'UTF-8');
@@ -290,9 +662,12 @@ function sync_pacientes_from_fichas(PDO $pdo, ?string $singleId = null, ?array $
                 $updates[] = 'motivo_consulta = :motivo';
                 $params['motivo'] = mb_substr($motivoRaw, 0, 255, 'UTF-8');
             }
-            if (($existing['profesional_habitual'] === 'indistinto' || empty($existing['profesional_habitual'])) && $prof !== 'indistinto') {
+            // Regla: si uno dice indistinto y otro dice con tal, queda tal
+            $existingProf = $existing['profesional_habitual'] ?? 'indistinto';
+            $mergedProf = merge_prof_values($existingProf, $prof);
+            if ($mergedProf !== $existingProf) {
                 $updates[] = 'profesional_habitual = :prof';
-                $params['prof'] = $prof;
+                $params['prof'] = $mergedProf;
             }
             if (count($updates) > 0) {
                 try {
@@ -356,4 +731,8 @@ function sync_pacientes_from_fichas(PDO $pdo, ?string $singleId = null, ?array $
             ]);
         } catch (Throwable) {}
     }
+
+    try {
+        deduplicate_pacientes_table($pdo);
+    } catch (Throwable) {}
 }

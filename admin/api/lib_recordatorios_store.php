@@ -244,27 +244,39 @@ function recordatorios_store_items(array $items, ?PDO $pdo = null): array
                     if (function_exists('is_tk3_or_blocked_name') && !is_tk3_or_blocked_name($rawName)) {
                         try {
                             ensure_pacientes_tables($pdo);
-                            $parts = preg_split('/\s+/u', $rawName, 2, PREG_SPLIT_NO_EMPTY) ?: [];
-                            $nom = $parts[0] ?? $rawName;
-                            $ape = $parts[1] ?? '';
-                            $pila = function_exists('extract_first_name') ? extract_first_name($rawName) : $nom;
+                            $existing = function_exists('find_existing_patient_match')
+                                ? find_existing_patient_match($pdo, $rawPhone, $rawName)
+                                : null;
 
-                            $stmtPac = $pdo->prepare(
-                                'INSERT INTO pacientes (telefono, nombre, apellido, nombre_completo, nombre_pila, origen)
-                                 VALUES (:tel, :nombre, :apellido, :full, :pila, "admin")
-                                 ON DUPLICATE KEY UPDATE
-                                    nombre = CASE WHEN nombre IS NULL OR nombre = "" THEN VALUES(nombre) ELSE nombre END,
-                                    apellido = CASE WHEN apellido IS NULL OR apellido = "" THEN VALUES(apellido) ELSE apellido END,
-                                    nombre_completo = CASE WHEN nombre_completo IS NULL OR nombre_completo = "" THEN VALUES(nombre_completo) ELSE nombre_completo END,
-                                    nombre_pila = CASE WHEN nombre_pila IS NULL OR nombre_pila = "" THEN VALUES(nombre_pila) ELSE nombre_pila END'
-                            );
-                            $stmtPac->execute([
-                                'tel' => $rawPhone,
-                                'nombre' => mb_substr($nom, 0, 60, 'UTF-8'),
-                                'apellido' => mb_substr($ape, 0, 60, 'UTF-8'),
-                                'full' => mb_substr($rawName, 0, 120, 'UTF-8'),
-                                'pila' => mb_substr($pila, 0, 60, 'UTF-8'),
-                            ]);
+                            if ($existing) {
+                                $existingId = (int) $existing['id'];
+                                if (function_exists('is_placeholder_phone') && is_placeholder_phone((string) ($existing['telefono'] ?? ''))) {
+                                    $pdo->prepare('UPDATE pacientes SET telefono = :tel WHERE id = :id')
+                                        ->execute(['tel' => $rawPhone, 'id' => $existingId]);
+                                }
+                            } else {
+                                $parts = preg_split('/\s+/u', $rawName, 2, PREG_SPLIT_NO_EMPTY) ?: [];
+                                $nom = $parts[0] ?? $rawName;
+                                $ape = $parts[1] ?? '';
+                                $pila = function_exists('extract_first_name') ? extract_first_name($rawName) : $nom;
+
+                                $stmtPac = $pdo->prepare(
+                                    'INSERT INTO pacientes (telefono, nombre, apellido, nombre_completo, nombre_pila, origen)
+                                     VALUES (:tel, :nombre, :apellido, :full, :pila, "admin")
+                                     ON DUPLICATE KEY UPDATE
+                                        nombre = CASE WHEN nombre IS NULL OR nombre = "" THEN VALUES(nombre) ELSE nombre END,
+                                        apellido = CASE WHEN apellido IS NULL OR apellido = "" THEN VALUES(apellido) ELSE apellido END,
+                                        nombre_completo = CASE WHEN nombre_completo IS NULL OR nombre_completo = "" THEN VALUES(nombre_completo) ELSE nombre_completo END,
+                                        nombre_pila = CASE WHEN nombre_pila IS NULL OR nombre_pila = "" THEN VALUES(nombre_pila) ELSE nombre_pila END'
+                                );
+                                $stmtPac->execute([
+                                    'tel' => $rawPhone,
+                                    'nombre' => mb_substr($nom, 0, 60, 'UTF-8'),
+                                    'apellido' => mb_substr($ape, 0, 60, 'UTF-8'),
+                                    'full' => mb_substr($rawName, 0, 120, 'UTF-8'),
+                                    'pila' => mb_substr($pila, 0, 60, 'UTF-8'),
+                                ]);
+                            }
                         } catch (Throwable $pacEx) {}
                     }
                 }

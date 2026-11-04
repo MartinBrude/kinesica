@@ -6,7 +6,7 @@
 
 import { dialogConfirm } from "./dom.js?v=78";
 import { formatDate } from "./api.js?v=77";
-import { patientKey, ageOn } from "../ficha-rules.mjs?v=87";
+import { patientKey, ageOn, capitalizePersonName } from "../ficha-rules.mjs?v=87";
 import { sessionRow } from "./library-session-row.js";
 import { getSessionUser } from "./auth.js?v=81";
 
@@ -57,7 +57,8 @@ export function patientGroupRow(key, sessions, callbacks = {}) {
   titleRow.className = "patient-title-row";
 
   const nameEl = document.createElement("h3");
-  nameEl.textContent = latest.nombre || "Sin nombre";
+  const cleanPatientName = capitalizePersonName(latest.nombre) || "Sin nombre";
+  nameEl.textContent = cleanPatientName;
 
   const sessBadge = document.createElement("span");
   sessBadge.className = "patient-badge";
@@ -112,7 +113,7 @@ export function patientGroupRow(key, sessions, callbacks = {}) {
   newSess.type = "button";
   newSess.className = "btn light";
   newSess.textContent = "+ Nueva sesión";
-  newSess.title = `Registrar una nueva consulta para ${latest.nombre || "este paciente"}`;
+  newSess.title = `Registrar una nueva consulta para ${cleanPatientName}`;
   newSess.addEventListener("click", (e) => {
     e.stopPropagation();
     if (callbacks.onNewSession) {
@@ -127,8 +128,8 @@ export function patientGroupRow(key, sessions, callbacks = {}) {
   printGroup.className = "btn green";
   printGroup.textContent = isMulti ? "Historial PDF" : "PDF";
   printGroup.title = isMulti
-    ? `Imprimir historial completo de ${latest.nombre || "este paciente"}`
-    : `Imprimir ficha de ${latest.nombre || "este paciente"}`;
+    ? `Imprimir historial completo de ${cleanPatientName}`
+    : `Imprimir ficha de ${cleanPatientName}`;
   printGroup.addEventListener("click", (e) => {
     e.stopPropagation();
     if (isMulti) {
@@ -171,7 +172,7 @@ export function patientGroupRow(key, sessions, callbacks = {}) {
     del.addEventListener("click", async (e) => {
       e.stopPropagation();
       const all = rowsCtx.loadAll().filter((item) => patientKey(item) === key);
-      const name = latest.nombre || "este paciente";
+      const name = cleanPatientName;
       if (isMulti) {
         const countStr = all.length === 1 ? "la sesión" : `las ${all.length} sesiones`;
         const ok = await dialogConfirm(`¿Quitar ${countStr} de ${name}? Esta acción no se puede deshacer.`, { danger: true });

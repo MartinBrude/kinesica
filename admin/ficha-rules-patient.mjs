@@ -5,14 +5,25 @@
 
 export const EMOJI_REGEX = /[\p{Extended_Pictographic}\p{Emoji_Presentation}\u2600-\u27BF\uFE00-\uFE0F]/gu;
 
+export function capitalizePersonName(str) {
+  if (!str) return "";
+  return String(str).replace(/\p{L}+/gu, (match) => {
+    const chars = Array.from(match);
+    if (chars.length === 0) return "";
+    return chars[0].toUpperCase() + chars.slice(1).join("").toLowerCase();
+  });
+}
+
 export function sanitizePersonName(str) {
   if (!str) return "";
-  return String(str)
+  const cleaned = String(str)
     .replace(/[\r\n]+/g, " ")
     .replace(/,/g, "")
     .replace(EMOJI_REGEX, "")
     .replace(/\s+/g, " ")
     .trim();
+  if (!cleaned) return "";
+  return capitalizePersonName(cleaned);
 }
 
 export function hasDisallowedNameChars(str) {
