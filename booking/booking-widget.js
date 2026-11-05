@@ -571,8 +571,13 @@
         fetch("/admin/api/settings.php", { cache: "no-cache" })
           .then((r) => (r.ok ? r.json() : null))
           .then((data) => {
-            if (data && typeof data === "object" && data.fees) {
-              this.updateFees(data.fees);
+            if (data && typeof data === "object") {
+              if (data.practitioner_hours && engine && typeof engine.setPractitionerHours === "function") {
+                engine.setPractitionerHours(data.practitioner_hours);
+              }
+              if (data.fees) {
+                this.updateFees(data.fees);
+              }
             }
           })
           .catch(() => {});
@@ -1248,7 +1253,8 @@
       let scanned = 0;
       const days = [];
       const MAX_DAYS_AHEAD = (engine && engine.MAX_BOOKING_DAYS) || 60;
-      while (days.length < limit && scanned < MAX_DAYS_AHEAD) {
+      const effectiveLimit = typeof limit === "number" && limit > 0 ? limit : MAX_DAYS_AHEAD;
+      while (days.length < effectiveLimit && scanned < MAX_DAYS_AHEAD) {
         scanned += 1;
         const iso = engine.formatDateIso(checkDate);
         const current = new Date(checkDate);
@@ -1264,7 +1270,7 @@
       this._prefetchRun = true;
       this._prefetchedSlots = this._prefetchedSlots || {};
       const cacheGen = this._slotCacheGen || 0;
-      const days = this.collectAttendanceDays(7);
+      const days = this.collectAttendanceDays(14);
       const run = async () => {
         let rangeOk = false;
         if (this.client && typeof this.client.getSlotsRange === "function") {
@@ -1371,6 +1377,46 @@
       return onDuty;
     }
 
+    createDateCard(day) {
+      const card = document.createElement("div");
+      card.className = "kb-date-card";
+      card.dataset.date = day.iso;
+      card.innerHTML = `
+        <div class="kb-date-dow">${this.copy.dows[day.current.getDay()]}</div>
+        <div class="kb-date-day">${day.current.getDate()}</div>
+        <div class="kb-date-month">${this.copy.months[day.current.getMonth()]}</div>
+      `;
+      card.addEventListener("click", () => {
+        this.selectDate(day.iso);
+      });
+      return card;
+    }
+
+    async replenishCarouselIfNeeded(seq) {
+      const targetDays = this._targetCarouselDays || 10;
+      const carousel = this.container.querySelector("#kb-date-carousel");
+      if (!carousel) return;
+      while (
+        seq === this._carouselSeq &&
+        carousel.querySelectorAll(".kb-date-card").length < targetDays &&
+        Array.isArray(this._reserveAttendanceDays) &&
+        this._reserveAttendanceDays.length > 0
+      ) {
+        const nextDay = this._reserveAttendanceDays.shift();
+        if (!nextDay || carousel.querySelector(`.kb-date-card[data-date="${nextDay.iso}"]`)) {
+          continue;
+        }
+        try {
+          const slots = await this.fetchFilteredSlots(nextDay.iso);
+          if (seq !== this._carouselSeq) return;
+          this._prefetchedSlots[nextDay.iso] = slots;
+          if (slots && slots.length > 0) {
+            carousel.appendChild(this.createDateCard(nextDay));
+          }
+        } catch (err) {}
+      }
+    }
+
     async renderDateCarousel() {
       this._carouselSeq = (this._carouselSeq || 0) + 1;
       const seq = this._carouselSeq;
@@ -1395,22 +1441,19 @@
         } else {
           this._prefetchedSlots = this._prefetchedSlots || {};
         }
-        const days = this.collectAttendanceDays(10);
+        const targetDays = 10;
+        this._targetCarouselDays = targetDays;
+        const allCandidateDays = this.collectAttendanceDays(30);
+        const days = allCandidateDays.slice(0, targetDays);
+        this._reserveAttendanceDays = allCandidateDays.slice(targetDays);
+
+        if (this.client && typeof this.client.getSlotsRange === "function" && allCandidateDays.length > 0) {
+          this.client.getSlotsRange(allCandidateDays.map((day) => day.iso)).catch(() => {});
+        }
 
         let firstAvailable = null;
         days.forEach((day) => {
-          const card = document.createElement("div");
-          card.className = "kb-date-card";
-          card.dataset.date = day.iso;
-          card.innerHTML = `
-            <div class="kb-date-dow">${this.copy.dows[day.current.getDay()]}</div>
-            <div class="kb-date-day">${day.current.getDate()}</div>
-            <div class="kb-date-month">${this.copy.months[day.current.getMonth()]}</div>
-          `;
-          card.addEventListener("click", () => {
-            this.selectDate(day.iso);
-          });
-          carousel.appendChild(card);
+          carousel.appendChild(this.createDateCard(day));
           if (!firstAvailable) firstAvailable = day.iso;
         });
 
@@ -1446,6 +1489,7 @@
           } catch (err) {}
         }));
       }
+      await this.replenishCarouselIfNeeded(seq);
     }
 
     async fetchFilteredSlots(dateIso, forceRefresh = false) {
@@ -1596,8 +1640,14 @@
           const card = this.container.querySelector(`.kb-date-card[data-date="${dateIso}"]`);
           const next = card && card.nextElementSibling;
           if (card) card.remove();
+          this.replenishCarouselIfNeeded(this._carouselSeq).catch(() => {});
           if (next && next.dataset.date) {
             this.selectDate(next.dataset.date);
+            return;
+          }
+          const firstRemaining = this.container.querySelector(".kb-date-card[data-date]");
+          if (firstRemaining && firstRemaining.dataset.date) {
+            this.selectDate(firstRemaining.dataset.date);
             return;
           }
           empty.style.display = "flex";

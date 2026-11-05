@@ -257,5 +257,88 @@ await test("4. Nivel 3 (si fallara también el respaldo): ofrece teléfono de No
   assert.equal(expiredRes.status, "error");
 });
 
+await test("5. Carrusel de María repone automáticamente días disponibles cuando hay fechas llenas (mantiene 10 días visibles)", async () => {
+  const widgetProto = BookingWidget.prototype;
+  const fakeWidget = Object.create(widgetProto);
+  fakeWidget.state = {
+    techniqueId: "acupuntura",
+    practitionerId: "maria",
+    appointmentType: "session",
+    selectedDate: null,
+    selectedTime: null,
+  };
+  fakeWidget.copy = {
+    dows: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
+    months: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+  };
+
+  // Recolectar los 30 candidatos de María dentro de los 60 días
+  const allMariaDays = fakeWidget.collectAttendanceDays(30);
+  assert.ok(allMariaDays.length >= 15, `María debe tener al menos 15 días de atención en 60 días (obtenidos: ${allMariaDays.length})`);
+
+  // Simulamos que 5 de los primeros 10 días de María están completamente ocupados (0 slots),
+  // exactamente como ocurría en producción cuando el carrusel quedaba en solo 5 días.
+  const fullDates = new Set(allMariaDays.slice(1, 6).map((d) => d.iso));
+
+  // Mock DOM mínimo para probar pruneEmptyDays + replenishCarouselIfNeeded
+  const cards = [];
+  const carouselEl = {
+    innerHTML: "",
+    appendChild(card) {
+      cards.push(card);
+    },
+    querySelectorAll(sel) {
+      if (sel === ".kb-date-card") return cards;
+      return [];
+    },
+    querySelector(sel) {
+      const m = sel.match(/\[data-date="([^"]+)"\]/);
+      if (m) return cards.find((c) => c.dataset.date === m[1]) || null;
+      return null;
+    },
+  };
+
+  fakeWidget.container = {
+    querySelector(sel) {
+      if (sel === "#kb-date-carousel") return carouselEl;
+      const m = sel.match(/\.kb-date-card\[data-date="([^"]+)"\]/);
+      if (m) return cards.find((c) => c.dataset.date === m[1]) || null;
+      return null;
+    },
+  };
+  fakeWidget.createDateCard = (day) => {
+    const card = {
+      dataset: { date: day.iso },
+      classList: { contains: () => false },
+      remove() {
+        const idx = cards.indexOf(card);
+        if (idx !== -1) cards.splice(idx, 1);
+      },
+    };
+    return card;
+  };
+  fakeWidget.fetchFilteredSlots = async (iso) => {
+    if (fullDates.has(iso)) return [];
+    return [{ time: "10:00" }];
+  };
+
+  fakeWidget._carouselSeq = 1;
+  fakeWidget._targetCarouselDays = 10;
+  fakeWidget._prefetchedSlots = {};
+  const initial10 = allMariaDays.slice(0, 10);
+  fakeWidget._reserveAttendanceDays = allMariaDays.slice(10);
+  initial10.forEach((d) => carouselEl.appendChild(fakeWidget.createDateCard(d)));
+
+  await fakeWidget.pruneEmptyDays(initial10.slice(1), 1);
+  assert.equal(
+    cards.length,
+    10,
+    `Tras descartar 5 días llenos de María, el carrusel debe reponer desde las semanas siguientes y mostrar 10 días (mostró: ${cards.length})`
+  );
+  for (const c of cards) {
+    assert.ok(!fullDates.has(c.dataset.date), `El día lleno ${c.dataset.date} no debe quedar en el carrusel`);
+  }
+});
+
 fs.rmSync(tmpDir, { recursive: true, force: true });
 console.log(`\n🎉 ${passed}/${passed} verificaciones de respaldo de calendario superadas con éxito.`);

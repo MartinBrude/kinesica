@@ -265,8 +265,8 @@
       }
       const dates = [];
       const start = new Date();
-      // 2 semanas (14 días corridos) es suficiente para cubrir la agenda inmediata
-      for (let i = 0; i < 14; i += 1) {
+      // 45 días corridos para cubrir el carrusel completo incluso cuando el profesional atiende menos días por semana
+      for (let i = 0; i < 45; i += 1) {
         const day = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
         const y = day.getFullYear();
         const m = String(day.getMonth() + 1).padStart(2, "0");
