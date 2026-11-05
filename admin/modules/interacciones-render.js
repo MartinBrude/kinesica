@@ -87,8 +87,7 @@ export function renderChatMessages(messages, patientName, waId = null) {
 
 export function buildInteractionCardHtml(conv, itemIdx, senderName) {
   const cleanWa = String(conv?.wa_id || "").replace(/[^0-9]/g, "");
-  const senderStr = typeof senderName === "string" ? senderName : (senderName?.name || senderName?.username || "");
-  const waUrl = buildWhatsAppUrl(cleanWa, senderStr);
+  const waUrl = buildWhatsAppUrl(cleanWa, senderName);
   const isMartin = isMartinBrudePhone(cleanWa) || isMartinBrudePhone(conv?.phone_formatted);
   const rawName = String(conv?.patient_name || "").trim();
   const name = isMartin ? "Martín Brude" : (capitalizePersonName(rawName) || "Paciente sin nombre");

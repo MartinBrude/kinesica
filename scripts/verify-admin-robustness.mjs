@@ -896,6 +896,10 @@ await test("interacciones.php utiliza almacenamiento durable y cumple contrato f
   const interJs = fs.readFileSync(path.join(adminDir, "modules/interacciones.js"), "utf8");
   assert.match(interJs, /days=\$\{/, "frontend pide days= al cargar");
   assert.match(interJs, /activeStatusFilter\s*=\s*["']pending["']/, "filtro de interacciones por defecto es pendientes");
+  assert.match(interJs, /AUTO_REFRESH_INTERVAL_MS\s*=\s*30\s*\*\s*60\s*\*\s*1000/, "auto-refresh de interacciones cada 30 minutos");
+  assert.match(interJs, /AUTO_REFRESH_START_HOUR\s*=\s*9/, "auto-refresh inicia a las 9 hs");
+  assert.match(interJs, /AUTO_REFRESH_END_HOUR\s*=\s*19/, "auto-refresh finaliza a las 19 hs");
+  assert.match(interJs, /isWithinAutoRefreshHours\(\)/, "auto-refresh verifica franja horaria de 9 a 19");
   const indexHtml = fs.readFileSync(path.join(adminDir, "index.html"), "utf8");
   assert.match(indexHtml, /id="interacciones-days"/, "selector de ventana de días");
 });

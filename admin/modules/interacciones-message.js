@@ -9,7 +9,11 @@ export function resolveSenderName(userOrName) {
   if (typeof userOrName === "string") {
     raw = userOrName;
   } else if (userOrName && typeof userOrName === "object") {
-    raw = userOrName.first_name || userOrName.name || userOrName.username || "";
+    const fullFromParts = [userOrName.first_name, userOrName.last_name]
+      .map((part) => String(part || "").trim())
+      .filter(Boolean)
+      .join(" ");
+    raw = fullFromParts || userOrName.name || userOrName.first_name || userOrName.username || "";
   }
 
   if (!raw && typeof localStorage !== "undefined") {
@@ -19,17 +23,20 @@ export function resolveSenderName(userOrName) {
   }
 
   const str = String(raw || "").trim();
-  if (!str) return "Norberto";
+  if (!str) return "Norberto Brude";
 
-  if (/mar[ií]a/i.test(str)) return "María";
-  if (/mart[ií]n/i.test(str)) return "Martín";
-  if (/norberto/i.test(str)) return "Norberto";
+  if (/mar[ií]a/i.test(str)) return "María Gulin";
+  if (/mart[ií]n/i.test(str)) return "Martín Brude";
+  if (/norberto/i.test(str)) return "Norberto Brude";
+  if (/facundo/i.test(str)) return "Facundo Vivardo";
 
   const cleaned = str.replace(/^(lic\.|dr\.|dra\.|licda\.)\s+/i, "").trim();
-  const firstWord = cleaned.split(/\s+/)[0] || "";
-  if (!firstWord) return "Norberto";
+  const words = cleaned.split(/\s+/).filter(Boolean);
+  if (words.length === 0) return "Norberto Brude";
 
-  return firstWord.charAt(0).toUpperCase() + firstWord.slice(1).toLowerCase();
+  return words
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
 }
 
 export function buildWhatsAppFollowupMessage(userOrName) {

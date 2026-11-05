@@ -18,6 +18,10 @@ import { filterInteractionsList, renderStatsHeader } from "./interacciones-filte
 import { isMartinBrudePhone } from "./phone-search.js?v=2";
 import { renderInteraccionesHealth } from "./interacciones-health.js?v=2";
 
+export const AUTO_REFRESH_INTERVAL_MS = 30 * 60 * 1000;
+export const AUTO_REFRESH_START_HOUR = 9;
+export const AUTO_REFRESH_END_HOUR = 19;
+
 let cachedInteractions = [];
 let filteredInteractions = [];
 let currentPage = 0;
@@ -27,10 +31,21 @@ let daysWindow = 7;
 let activeStatusFilter = "pending"; // "all" | "pending" | "answered" | "archived"
 let autoRefreshTimer = null;
 let isRefreshing = false;
+let lastLoadedAt = 0;
 /** Escrituras en vuelo: el auto-refresh no debe pisar updates optimistas. */
 let pendingMutations = 0;
 /** IDs de hilos de chat abiertos; se conservan al re-renderizar (auto-refresh). */
 const expandedThreadIds = new Set();
+
+export function isWithinAutoRefreshHours(date = new Date()) {
+  const d = date instanceof Date ? date : new Date(date);
+  if (Number.isNaN(d.getTime())) return false;
+  const totalMinutes = d.getHours() * 60 + d.getMinutes();
+  return (
+    totalMinutes >= AUTO_REFRESH_START_HOUR * 60 &&
+    totalMinutes <= AUTO_REFRESH_END_HOUR * 60
+  );
+}
 
 export function showInteraccionesView() {
   const view = switchActiveView("view-interacciones");
@@ -55,10 +70,15 @@ function startAutoRefresh() {
   stopAutoRefresh();
   autoRefreshTimer = setInterval(() => {
     const view = document.getElementById("view-interacciones");
-    if (view && !view.hidden && document.visibilityState === "visible") {
+    if (
+      view &&
+      !view.hidden &&
+      document.visibilityState === "visible" &&
+      isWithinAutoRefreshHours()
+    ) {
       loadInteracciones(false);
     }
-  }, 5 * 60 * 1000);
+  }, AUTO_REFRESH_INTERVAL_MS);
 }
 
 function stopAutoRefresh() {
@@ -102,6 +122,7 @@ export async function loadInteracciones(force = false) {
     if (typeof resp.days === "number" && resp.days > 0) {
       daysWindow = resp.days;
     }
+    lastLoadedAt = Date.now();
     const rawList = Array.isArray(resp.items) ? resp.items : (Array.isArray(resp.interactions) ? resp.interactions : []);
     cachedInteractions = rawList.map((item) => {
       if (item && (isMartinBrudePhone(item.wa_id) || isMartinBrudePhone(item.phone_formatted))) {
@@ -382,7 +403,13 @@ export function initInteraccionesModule() {
 
   const triggerTabFocusRefresh = () => {
     const view = document.getElementById("view-interacciones");
-    if (view && !view.hidden && document.visibilityState === "visible") {
+    if (
+      view &&
+      !view.hidden &&
+      document.visibilityState === "visible" &&
+      isWithinAutoRefreshHours() &&
+      Date.now() - lastLoadedAt >= AUTO_REFRESH_INTERVAL_MS
+    ) {
       loadInteracciones(false);
     }
   };
