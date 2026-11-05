@@ -42,6 +42,7 @@ export const STEMS = [
   "rpg",
   "privacidad",
   "condiciones",
+  "encuesta",
   ...PATHOLOGY_STEMS,
 ];
 

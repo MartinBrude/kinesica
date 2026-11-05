@@ -113,7 +113,7 @@ if (!empty($data['botcheck'])) {
 }
 
 $type = kinesica_contact_line($data['type'] ?? '', 20);
-if (!in_array($type, ['profesional', 'privacidad'], true)) {
+if (!in_array($type, ['profesional', 'privacidad', 'encuesta'], true)) {
     kinesica_contact_respond(400, ['success' => false, 'error' => 'Tipo de formulario inválido.']);
 }
 
@@ -131,22 +131,90 @@ $scope = kinesica_contact_line($data['scope'] ?? '', 200);
 $message = kinesica_contact_text($data['message'] ?? '', 4000);
 $statement = kinesica_contact_text($data['statement'] ?? '', 800);
 
-if ($name === '' || ($email === '' && $phone === '')) {
-    kinesica_contact_respond(400, ['success' => false, 'error' => 'Nombre y un correo o teléfono son requeridos.']);
-}
-if ($email !== '' && !kinesica_contact_valid_email($email)) {
-    kinesica_contact_respond(400, ['success' => false, 'error' => 'Correo electrónico con formato inválido.']);
-}
+// Campos exclusivos de la encuesta de satisfacción anónima
+$experiencia = (int) ($data['experiencia'] ?? 0);
+$tratamientoResultado = kinesica_contact_line($data['tratamiento_resultado'] ?? '', 40);
+$tratamientoLabel = kinesica_contact_line($data['tratamiento_label'] ?? '', 160);
+$recomendaria = kinesica_contact_line($data['recomendaria'] ?? '', 20);
+$recomendariaLabel = kinesica_contact_line($data['recomendaria_label'] ?? '', 80);
+$comentarios = kinesica_contact_text($data['comentarios'] ?? ($data['message'] ?? ''), 4000);
 
 $clientIp = (string) ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
-if (!kinesica_contact_rate_ok('ip:' . $clientIp, 6, 3600)
-    || ($email !== '' && !kinesica_contact_rate_ok('email:' . strtolower($email), 4, 3600))) {
-    kinesica_contact_respond(429, ['success' => false, 'error' => 'Demasiados envíos. Probá de nuevo más tarde.']);
+
+if ($type === 'encuesta') {
+    $allowedTratamientos = [
+        'excelente' => 'Muy bien, noto una gran mejoría',
+        'bien' => 'Bien, siento avances progresivos',
+        'reciente' => 'Recién empiezo, aún es pronto para evaluar',
+        'poco' => 'Por ahora siento pocos cambios',
+        'sin_cambios' => 'Todavía no noto mejoría',
+    ];
+    $allowedRecomendaria = [
+        'si' => 'Sí, totalmente',
+        'tal_vez' => 'Tal vez',
+        'no' => 'Por ahora no',
+    ];
+    if ($experiencia < 1 || $experiencia > 5
+        || !isset($allowedTratamientos[$tratamientoResultado])
+        || !isset($allowedRecomendaria[$recomendaria])) {
+        kinesica_contact_respond(400, ['success' => false, 'error' => 'Por favor completá las preguntas de la encuesta.']);
+    }
+    if (!kinesica_contact_rate_ok('encuesta_ip:' . $clientIp, 10, 3600)) {
+        kinesica_contact_respond(429, ['success' => false, 'error' => 'Demasiados envíos. Probá de nuevo más tarde.']);
+    }
+
+    $tratamientoEs = $allowedTratamientos[$tratamientoResultado];
+    $recomendariaEs = $allowedRecomendaria[$recomendaria];
+
+    // Guardar en almacenamiento del Admin (admin/api/data/encuestas.json)
+    $encuestaSaved = false;
+    $encuestasIoPath = __DIR__ . '/../admin/api/encuestas_io.php';
+    if (is_file($encuestasIoPath)) {
+        require_once $encuestasIoPath;
+        try {
+            try {
+                $encId = 'enc_' . bin2hex(random_bytes(6));
+            } catch (Throwable $e) {
+                $encId = 'enc_' . uniqid('', true);
+            }
+            $nuevaEncuesta = [
+                'id' => $encId,
+                'experiencia' => $experiencia,
+                'tratamiento_resultado' => $tratamientoResultado,
+                'tratamiento_label' => $tratamientoEs,
+                'recomendaria' => $recomendaria,
+                'recomendaria_label' => $recomendariaEs,
+                'comentarios' => $comentarios,
+                'lang' => $lang,
+                'created_at' => gmdate('Y-m-d\TH:i:s\Z'),
+            ];
+            $lista = kinesica_encuestas_load();
+            array_unshift($lista, $nuevaEncuesta);
+            kinesica_encuestas_save($lista);
+            $encuestaSaved = true;
+        } catch (Throwable $e) {
+            error_log('[send-contact] No se pudo guardar encuesta en disco: ' . $e->getMessage());
+        }
+    }
+} else {
+    if ($name === '' || ($email === '' && $phone === '')) {
+        kinesica_contact_respond(400, ['success' => false, 'error' => 'Nombre y un correo o teléfono son requeridos.']);
+    }
+    if ($email !== '' && !kinesica_contact_valid_email($email)) {
+        kinesica_contact_respond(400, ['success' => false, 'error' => 'Correo electrónico con formato inválido.']);
+    }
+    if (!kinesica_contact_rate_ok('ip:' . $clientIp, 6, 3600)
+        || ($email !== '' && !kinesica_contact_rate_ok('email:' . strtolower($email), 4, 3600))) {
+        kinesica_contact_respond(429, ['success' => false, 'error' => 'Demasiados envíos. Probá de nuevo más tarde.']);
+    }
 }
 
 // --- Asunto según formulario ---
 if ($type === 'profesional') {
     $subject = '[Kinésica - Red Profesional] Contacto de: ' . $name . ($specialty !== '' ? ' (' . $specialty . ')' : '');
+} elseif ($type === 'encuesta') {
+    $starsStr = str_repeat('★', $experiencia) . str_repeat('☆', 5 - $experiencia);
+    $subject = '[Kinésica - Encuesta] Nueva respuesta anónima (' . $starsStr . ' ' . $experiencia . '/5 · Recomendaría: ' . $recomendariaEs . ')';
 } else {
     $privacySubjects = [
         'es' => '[Kinésica] Solicitud de eliminación de datos personales',
@@ -182,7 +250,13 @@ if (!kinesica_contact_valid_email($mailFrom)) {
 }
 $replyTo = kinesica_contact_valid_email($email) ? $email : $mailFrom;
 
-$fromName = $type === 'profesional' ? 'Kinésica Web (Red Profesional)' : 'Kinésica Web (Privacidad)';
+if ($type === 'profesional') {
+    $fromName = 'Kinésica Web (Red Profesional)';
+} elseif ($type === 'encuesta') {
+    $fromName = 'Kinésica Web (Encuesta de Satisfacción)';
+} else {
+    $fromName = 'Kinésica Web (Privacidad)';
+}
 $receivedAt = (new DateTime('now', new DateTimeZone('America/Argentina/Buenos_Aires')))->format('d/m/Y H:i');
 $langNames = ['es' => 'Español', 'en' => 'English', 'fr' => 'Français', 'pt' => 'Português'];
 
@@ -198,6 +272,19 @@ if ($type === 'profesional') {
     ];
     $messageTitle = 'Mensaje';
     $messageBody = $message;
+} elseif ($type === 'encuesta') {
+    $ratingLabelsEs = [1 => 'Mala', 2 => 'Regular', 3 => 'Buena', 4 => 'Muy buena', 5 => 'Excelente'];
+    $starsStr = str_repeat('★', $experiencia) . str_repeat('☆', 5 - $experiencia);
+    $heading = 'Nueva respuesta de encuesta anónima';
+    $lead = 'Un paciente completó la <strong>Encuesta de Satisfacción Anónima</strong> en el sitio web.';
+    $rows = [
+        'Experiencia general' => $starsStr . ' (' . $experiencia . '/5 — ' . ($ratingLabelsEs[$experiencia] ?? '') . ')',
+        'Resultado del tratamiento' => $tratamientoEs,
+        '¿Nos recomendaría?' => $recomendariaEs,
+        'Idioma' => $langNames[$lang] ?? $lang,
+    ];
+    $messageTitle = 'Comentarios / Sugerencias para mejorar';
+    $messageBody = $comentarios;
 } else {
     $heading = 'Solicitud de eliminación de datos';
     $lead = 'Se recibió una solicitud desde la página de <strong>Privacidad</strong> (Ley 25.326 / RGPD / LGPD). '
@@ -229,7 +316,11 @@ if ($statement !== '') {
     $textLines[] = '"' . $statement . '"';
 }
 $textLines[] = '';
-$textLines[] = $email !== '' ? 'Para responder, contestá a este correo (Reply-To: ' . $email . ').' : 'Sin correo: contactar por teléfono.';
+if ($type === 'encuesta') {
+    $textLines[] = 'Encuesta 100% anónima — también disponible en el Panel de Control (/admin/encuestas).';
+} else {
+    $textLines[] = $email !== '' ? 'Para responder, contestá a este correo (Reply-To: ' . $email . ').' : 'Sin correo: contactar por teléfono.';
+}
 $textBody = implode("\n", $textLines);
 
 // HTML (misma identidad visual que los mails de turnos)
@@ -252,11 +343,17 @@ $statementHtml = $statement !== ''
     ? '<p style="margin:14px 0 0 0;padding-left:12px;border-left:3px solid #cbd5e1;color:#64748b;font-size:13px;font-style:italic;">' . $e($statement) . '</p>'
     : '';
 $replySubject = rawurlencode('Re: ' . $subject);
-$buttonHtml = $email !== ''
-    ? '<p style="text-align:center;margin:26px 0 4px 0;"><a href="mailto:' . $e($email) . '?subject=' . $replySubject . '" '
+if ($type === 'encuesta') {
+    $buttonHtml = '<p style="text-align:center;margin:26px 0 4px 0;"><a href="https://www.kinesica.com.ar/admin/encuestas" '
         . 'style="display:inline-block;background-color:#005f99;color:#ffffff;text-decoration:none;font-weight:600;font-size:15px;padding:12px 26px;border-radius:8px;">'
-        . 'Responder a ' . $e(mb_substr($name, 0, 40)) . '</a></p>'
-    : '';
+        . 'Ver encuestas en el Panel Admin</a></p>';
+} else {
+    $buttonHtml = $email !== ''
+        ? '<p style="text-align:center;margin:26px 0 4px 0;"><a href="mailto:' . $e($email) . '?subject=' . $replySubject . '" '
+            . 'style="display:inline-block;background-color:#005f99;color:#ffffff;text-decoration:none;font-weight:600;font-size:15px;padding:12px 26px;border-radius:8px;">'
+            . 'Responder a ' . $e(mb_substr($name, 0, 40)) . '</a></p>'
+        : '';
+}
 
 $htmlBody = '<!DOCTYPE html>
 <html lang="es">
@@ -348,7 +445,7 @@ $sent = @mail($to, $encodedSubject, $mailBody, $headers, '-f ' . $mailFrom);
 if (!$sent) {
     $sent = @mail($to, $encodedSubject, $mailBody, $headers);
 }
-if ($sent) {
+if ($sent || ($type === 'encuesta' && !empty($encuestaSaved))) {
     kinesica_contact_respond(200, ['success' => true]);
 }
 

@@ -42,6 +42,7 @@
     "build:articulos": "node scripts/generate-article-thumbnails.mjs && node scripts/build-articulos-pages.mjs && node scripts/sync-nav-articles-menu.mjs && node scripts/inject-local-schema.mjs && node scripts/inject-static-shell.mjs && npm run assets:build && node scripts/apply-seo-performance.mjs",
     "build:404": "node scripts/build-404-pages.mjs && node scripts/inject-static-shell.mjs && node scripts/apply-seo-performance.mjs",
     "build:privacy": "node scripts/build-privacy-pages.mjs && node scripts/inject-static-shell.mjs && npm run assets:build && node scripts/apply-seo-performance.mjs",
+    "build:encuesta": "node scripts/build-encuesta-pages.mjs && node scripts/inject-static-shell.mjs && npm run assets:build && node scripts/apply-seo-performance.mjs && npm run seo:sitemap",
     "build:terms": "node scripts/build-terms-pages.mjs && node scripts/inject-static-shell.mjs && npm run assets:build && node scripts/apply-seo-performance.mjs",
     "build:agendar": "node scripts/build-agendar-pages.mjs && node scripts/inject-local-schema.mjs && node scripts/inject-static-shell.mjs && npm run assets:build && node scripts/apply-seo-performance.mjs",
     "build:home": "node scripts/build-home-pages.mjs && node scripts/inject-local-schema.mjs && node scripts/inject-static-shell.mjs && node scripts/verify-home-pages.mjs && npm run assets:build && node scripts/apply-seo-performance.mjs && npm run seo:sitemap && npm run seo:llms",

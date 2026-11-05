@@ -870,7 +870,7 @@ await test("Protección de manual.html, /docs/ y recursos internos de /admin/ so
 await test("ALL_ADMIN_VIEWS coincide exactamente con las secciones .view de admin/index.html", () => {
   const indexHtml = fs.readFileSync(path.join(adminDir, "index.html"), "utf8");
   const matches = [...indexHtml.matchAll(/<section\s+[^>]*id="(view-[a-z0-9_-]+)"[^>]*class="[^"]*\bview\b[^"]*"/g)].map((m) => m[1]);
-  assert.equal(matches.length, 11, "Deben existir 11 vistas principales en index.html");
+  assert.equal(matches.length, 12, "Deben existir 12 vistas principales en index.html");
   assert.deepEqual(
     [...matches].sort(),
     [...ALL_ADMIN_VIEWS].sort(),
@@ -932,6 +932,35 @@ await test("recordatorios.php ingest + vista SPA + reconcile", () => {
   assert.match(indexHtml, /id="view-recordatorios"/, "shell view-recordatorios");
   assert.match(indexHtml, /id="nav-btn-recordatorios"/, "nav Recordatorios");
   assert.match(indexHtml, /id="recordatorios-sync"/, "indicador sync");
+});
+
+await test("encuestas.php + vista SPA + wiring de navegación", () => {
+  const encPhp = fs.readFileSync(path.join(adminDir, "api/encuestas.php"), "utf8");
+  assert.match(encPhp, /encuestas_io\.php/, "encuestas.php debe incluir encuestas_io.php");
+  assert.match(encPhp, /kinesica_encuestas_load/, "encuestas.php GET carga respuestas");
+  assert.match(encPhp, /action === 'delete'/, "encuestas.php debe soportar delete");
+  assert.ok(fs.existsSync(path.join(adminDir, "api/encuestas_io.php")), "encuestas_io.php");
+  assert.ok(fs.existsSync(path.join(adminDir, "modules/encuestas.js")), "modulo encuestas.js");
+  const encJs = fs.readFileSync(path.join(adminDir, "modules/encuestas.js"), "utf8");
+  assert.match(encJs, /export function showEncuestasView/, "showEncuestasView exportado");
+  assert.match(encJs, /export function initEncuestasModule/, "initEncuestasModule exportado");
+  const tabsJs = fs.readFileSync(path.join(adminDir, "modules/app-tabs.js"), "utf8");
+  assert.match(tabsJs, /showEncuestasView/, "app-tabs cablea showEncuestasView");
+  assert.match(tabsJs, /nav-btn-encuestas/, "app-tabs escucha nav-btn-encuestas");
+  const routerJs = fs.readFileSync(path.join(adminDir, "modules/router.js"), "utf8");
+  assert.match(routerJs, /encuestas/, "router reconoce /admin/encuestas");
+  const initJs = fs.readFileSync(path.join(adminDir, "modules/app-init.js"), "utf8");
+  assert.match(initJs, /initEncuestasModule/, "app-init inicializa encuestas");
+  const dashJs = fs.readFileSync(path.join(adminDir, "modules/dashboard.js"), "utf8");
+  assert.match(dashJs, /dash-card-encuestas/, "dashboard cablea card de encuestas");
+  const indexHtml = fs.readFileSync(path.join(adminDir, "index.html"), "utf8");
+  assert.match(indexHtml, /id="view-encuestas"/, "shell view-encuestas");
+  assert.match(indexHtml, /id="nav-btn-encuestas"/, "nav Encuestas");
+  assert.match(indexHtml, /id="dash-card-encuestas"/, "card dashboard Encuestas");
+  assert.match(indexHtml, /id="encuestas-tbody"/, "tabla de respuestas");
+  const sendContact = fs.readFileSync(path.join(root, "api/send-contact.php"), "utf8");
+  assert.match(sendContact, /'encuesta'/, "send-contact acepta type encuesta");
+  assert.match(sendContact, /kinesica_encuestas_save/, "send-contact persiste encuesta en admin");
 });
 
 await test("todos los imports y exports en admin resuelven correctamente", () => {

@@ -284,7 +284,7 @@ const COPY = {
 };
 
 const SERVICE_STEMS = STEMS.filter(
-  (s) => !["index", "articulos", "cv", "privacidad", "condiciones"].includes(s),
+  (s) => !["index", "articulos", "cv", "privacidad", "condiciones", "encuesta"].includes(s),
 );
 
 

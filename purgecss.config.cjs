@@ -40,6 +40,7 @@ const dynamicSafelist = [
   "sticky-wrapper",
   "lang-picker",
   "is-open",
+  "is-selected",
   "google-reviews-grid--loading",
   "google-review-star--on",
   "faq-accordion",

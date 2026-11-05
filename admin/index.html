@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/admin/styles.css?v=124">
-  <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1793901876">
+  <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1793918801">
   <script>
     (function () {
       try {
@@ -83,6 +83,9 @@
 
         <!-- GRUPO 4: CLARA (Configuración: Bot, Respuestas, Plantilla, Políticas, Simulador) -->
         <button type="button" class="btn ghost" id="nav-btn-clara">Clara</button>
+
+        <!-- ENCUESTAS DE SATISFACCIÓN ANÓNIMAS -->
+        <button type="button" class="btn ghost" id="nav-btn-encuestas">Encuestas</button>
 
         <!-- GRUPO 5: ADMINISTRACIÓN (Usuarios, Gastos, Reporte de errores, Copias de seguridad) -->
         <div class="nav-dropdown" id="nav-group-admin" hidden>
@@ -360,6 +363,24 @@
               </div>
               <p class="dash-card-desc">
                 Historial de envíos automáticos: enviados, fallidos, sin teléfono u omitidos por regla.
+              </p>
+            </div>
+          </div>
+        </article>
+
+        <!-- Encuestas de satisfacción -->
+        <article class="dash-card" id="dash-card-encuestas" role="button" tabindex="0" aria-label="Abrir Encuestas de Satisfacción">
+          <div class="dash-card-header">
+            <div class="dash-icon-box" aria-hidden="true" style="background: #fffbeb; color: #b45309;">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+            </div>
+            <div class="dash-card-meta">
+              <div class="dash-card-title">
+                <span>Encuestas de Satisfacción</span>
+                <span class="dash-card-arrow" aria-hidden="true">→</span>
+              </div>
+              <p class="dash-card-desc">
+                Respuestas anónimas de pacientes: experiencia, evolución del tratamiento, recomendación y sugerencias.
               </p>
             </div>
           </div>
@@ -1830,6 +1851,70 @@
       <nav id="recordatorios-pager" class="library-pager recordatorios-pager" hidden></nav>
     </section>
 
+    <!-- 9. ENCUESTAS DE SATISFACCIÓN ANÓNIMAS -->
+    <section id="view-encuestas" class="view" hidden>
+      <div class="hero-card" style="margin-bottom: 20px;">
+        <div class="hero-copy">
+          <span class="doc-icon" aria-hidden="true"></span>
+          <div>
+            <h1 class="hero-title">Encuestas de Satisfacción</h1>
+            <p class="hero-desc" style="margin: 4px 0 0; color: var(--muted); font-size: 14px;">
+              Respuestas anónimas enviadas por pacientes desde la web (/encuesta.html).
+            </p>
+          </div>
+        </div>
+        <div class="hero-actions" style="margin: 0; display: flex; gap: 8px; flex-wrap: wrap;">
+          <a href="/encuesta.html" target="_blank" rel="noopener noreferrer" class="btn light" style="text-decoration: none;">Ver encuesta ↗</a>
+          <button type="button" class="btn light" id="btn-copy-encuesta-link">📋 Copiar enlace</button>
+          <button type="button" class="btn light" id="btn-refresh-encuestas">↻ Actualizar</button>
+        </div>
+      </div>
+
+      <div class="gastos-summary-grid">
+        <div class="gastos-stat-card card-eur">
+          <span class="stat-name">Experiencia promedio</span>
+          <span class="stat-count" id="encuestas-kpi-avg">—</span>
+          <span class="stat-equiv" id="encuestas-kpi-avg-sub">Sin respuestas registradas aún</span>
+        </div>
+        <div class="gastos-stat-card card-usd">
+          <span class="stat-name">¿Nos recomendaría?</span>
+          <span class="stat-count" id="encuestas-kpi-rec">—</span>
+          <span class="stat-equiv" id="encuestas-kpi-rec-sub">Sin datos de recomendación</span>
+        </div>
+        <div class="gastos-stat-card card-ars">
+          <span class="stat-name">Resultado del tratamiento</span>
+          <span class="stat-count" id="encuestas-kpi-trat">—</span>
+          <span class="stat-equiv" id="encuestas-kpi-trat-sub">Sin datos de evolución clínica</span>
+        </div>
+      </div>
+
+      <div class="admin-errores-toolbar" style="margin-top: 20px;">
+        <div class="admin-errores-filters">
+          <button type="button" class="btn light btn-sm encuestas-filter-btn is-active" data-filter="todas">Todas</button>
+          <button type="button" class="btn light btn-sm encuestas-filter-btn" data-filter="comentarios">Con comentarios</button>
+          <button type="button" class="btn light btn-sm encuestas-filter-btn" data-filter="positivas">4–5 ★</button>
+          <button type="button" class="btn light btn-sm encuestas-filter-btn" data-filter="mejorar">A mejorar</button>
+        </div>
+        <span class="gastos-count-pill" id="encuestas-count-label">0 respuestas</span>
+      </div>
+
+      <div class="prof-table-wrapper">
+        <table class="prof-table">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Experiencia</th>
+              <th>Tratamiento</th>
+              <th>Recomendaría</th>
+              <th>Comentarios para mejorar</th>
+              <th style="text-align: right;">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="encuestas-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
     <section id="view-form" class="view" hidden>
       <div class="form-nav">
         <button type="button" class="btn ghost" id="btn-back">← Fichas</button>
@@ -2447,6 +2532,7 @@
             else if (head === "clara" || head === "configuracion") saved = { view: "clara" };
             else if (head === "interacciones" || head === "chats" || head === "mensajes" || head === "whatsapp") saved = { view: "interacciones" };
             else if (head === "recordatorios" || head === "reminders") saved = { view: "recordatorios" };
+            else if (head === "encuestas") saved = { view: "encuestas" };
             else if (head === "administracion" || head === "admin" || head === "sistema") saved = { view: "admin", section: parts[1] || "" };
             else if (head === "usuarios" || head === "profesionales") saved = { view: "admin", section: "usuarios" };
             else if (head === "gastos") saved = { view: "admin", section: "gastos" };
@@ -2479,6 +2565,9 @@
           } else if (saved.view === "recordatorios" || saved.view === "reminders") {
             var rem = document.getElementById("view-recordatorios");
             if (rem) rem.hidden = false;
+          } else if (saved.view === "encuestas") {
+            var enc = document.getElementById("view-encuestas");
+            if (enc) enc.hidden = false;
           } else if (saved.view === "form") {
             var form = document.getElementById("view-form");
             if (form) form.hidden = false;
@@ -2522,8 +2611,8 @@
     <span>Cargando…</span>
   </div>
   <div id="print-root"></div>
-  <script src="/partials/google-reviews-data.min.js?v=1793901876" defer></script>
-  <script src="/booking/booking-bundle.min.js?v=1793901876" defer></script>
-  <script type="module" src="/admin/app.js?v=170"></script>
+  <script src="/partials/google-reviews-data.min.js?v=1793918801" defer></script>
+  <script src="/booking/booking-bundle.min.js?v=1793918801" defer></script>
+  <script type="module" src="/admin/app.js?v=171"></script>
 </body>
 </html>

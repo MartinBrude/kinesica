@@ -7,11 +7,12 @@ import { api } from "./api.js?v=77";
 import { getSessionUser } from "./auth.js?v=83";
 import { showLibrary } from "./library.js?v=93";
 import { showPacientesView, hidePacientesView } from "./pacientes.js?v=5";
-import { showDashboardView, hideDashboardView, updateDashboardClara, updateDashboardBooking } from "./dashboard.js?v=11";
+import { showDashboardView, hideDashboardView, updateDashboardClara, updateDashboardBooking } from "./dashboard.js?v=12";
 import { showConsultorioView, hideConsultorioView, showClaraView, hideClaraView } from "./configuracion.js?v=29";
 import { showAdminView, hideAdminView } from "./admin-panel.js?v=14";
 import { showInteraccionesView, hideInteraccionesView } from "./interacciones.js?v=12";
 import { showRecordatoriosView, hideRecordatoriosView } from "./recordatorios.js?v=11";
+import { showEncuestasView, hideEncuestasView } from "./encuestas.js?v=1";
 import { applyHoursToRuntime } from "./horarios.js?v=3";
 
 export function closeAllDropdowns() {
@@ -29,6 +30,7 @@ export function switchTab(tab, subtab) {
   const btnWhatsapp = document.querySelector("#nav-btn-whatsapp");
   const btnInteracciones = document.querySelector("#nav-btn-interacciones");
   const btnRecordatorios = document.querySelector("#nav-btn-recordatorios");
+  const btnEncuestas = document.querySelector("#nav-btn-encuestas");
   const btnClara = document.querySelector("#nav-btn-clara");
   const btnAdmin = document.querySelector("#nav-btn-admin");
   const btnAdminUsuarios = document.querySelector("#nav-btn-admin-usuarios");
@@ -46,6 +48,7 @@ export function switchTab(tab, subtab) {
   hideClaraView();
   hideInteraccionesView();
   hideRecordatoriosView();
+  hideEncuestasView();
   hideAdminView();
 
   if (tab === "inicio") {
@@ -68,6 +71,9 @@ export function switchTab(tab, subtab) {
     btnWhatsapp?.classList.add("is-active");
     btnRecordatorios?.classList.add("is-active");
     showRecordatoriosView();
+  } else if (tab === "encuestas" || tab === "encuesta") {
+    btnEncuestas?.classList.add("is-active");
+    showEncuestasView();
   } else if (
     tab === "admin" ||
     tab === "administracion" ||
@@ -187,7 +193,7 @@ export function mountAdminChannels() {
       setupDropdown(document.getElementById("nav-group-whatsapp"), document.getElementById("nav-btn-whatsapp"));
       setupDropdown(document.getElementById("nav-group-admin"), document.getElementById("nav-btn-admin"));
 
-      ["#nav-btn-consultorio", "#nav-btn-clara", "#brand-logo"].forEach((id) => {
+      ["#nav-btn-consultorio", "#nav-btn-clara", "#nav-btn-encuestas", "#brand-logo"].forEach((id) => {
         document.querySelector(id)?.addEventListener("mouseenter", closeAllDropdowns);
       });
 
@@ -205,6 +211,7 @@ export function mountAdminChannels() {
       document.getElementById("nav-btn-clara")?.addEventListener("click", () => switchTab("clara"));
       document.getElementById("nav-btn-interacciones")?.addEventListener("click", () => switchTab("interacciones"));
       document.getElementById("nav-btn-recordatorios")?.addEventListener("click", () => switchTab("recordatorios"));
+      document.getElementById("nav-btn-encuestas")?.addEventListener("click", () => switchTab("encuestas"));
       document.getElementById("nav-btn-admin-usuarios")?.addEventListener("click", () => switchTab("admin", "usuarios"));
       document.getElementById("nav-btn-admin-gastos")?.addEventListener("click", () => switchTab("admin", "gastos"));
       document.getElementById("nav-btn-admin-errores")?.addEventListener("click", () => switchTab("admin", "errores"));

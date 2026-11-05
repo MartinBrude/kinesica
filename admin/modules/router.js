@@ -22,6 +22,7 @@ export function parseAdminRouteFromLocation() {
   if (head === "clara" || head === "configuracion") return { view: "clara" };
   if (head === "interacciones" || head === "chats" || head === "mensajes" || head === "whatsapp") return { view: "interacciones" };
   if (head === "recordatorios" || head === "reminders") return { view: "recordatorios" };
+  if (head === "encuestas" || head === "encuesta") return { view: "encuestas" };
   if (head === "administracion" || head === "admin" || head === "sistema") return { view: "admin", section: parts[1] || "" };
   if (head === "usuarios" || head === "profesionales") return { view: "admin", section: "usuarios" };
   if (head === "gastos") return { view: "admin", section: "gastos" };
@@ -68,6 +69,9 @@ export function syncUrlWithViewState(state, isInitialBoot = false, isHandlingPop
   } else if (v === "recordatorios" || v === "reminders") {
     targetPath = "/admin/recordatorios";
     docTitle = "Kinésica — Registro de Recordatorios";
+  } else if (v === "encuestas" || v === "encuesta") {
+    targetPath = "/admin/encuestas";
+    docTitle = "Kinésica — Encuestas de Satisfacción";
   } else if (v === "admin" || v === "administracion") {
     const sec = state.section;
     if (sec === "gastos") {
@@ -137,6 +141,7 @@ export function initPopstateRouter({ loadAll, fillForm, showForm, showCompare, s
       else if (route.view === "clara" || route.view === "configuracion") switchTab("clara");
       else if (route.view === "interacciones" || route.view === "chats") switchTab("interacciones");
       else if (route.view === "recordatorios" || route.view === "reminders") switchTab("recordatorios");
+      else if (route.view === "encuestas" || route.view === "encuesta") switchTab("encuestas");
       else if (route.view === "admin" || route.view === "administracion") {
         if (getSessionUser()?.role === "admin") switchTab("admin", route.section);
         else switchTab("inicio");
