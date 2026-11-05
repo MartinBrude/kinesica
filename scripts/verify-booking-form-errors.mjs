@@ -194,4 +194,102 @@ test("email con typo de dominio evidente: repregunta una vez y luego deja pasar"
   assert.deepEqual(second, []);
 });
 
+test("i18n: los 4 idiomas definen los textos de fallback de horarios hacia el Lic. Norberto Brude", () => {
+  for (const k of ["slotError", "slotFallbackText", "slotFallbackBtn"]) {
+    assert.equal((src.match(new RegExp(`\\b${k}: "`, "g")) || []).length, 4, k);
+  }
+  assert.match(src, /id="kb-slots-error-fallback"/);
+  assert.match(src, /id="kb-btn-fallback-whatsapp"/);
+});
+
+function makeSlotsWidget(clientMock) {
+  const els = {
+    "kb-slots-loading": { style: { display: "none" } },
+    "kb-slots-empty": { style: { display: "none" } },
+    "kb-slots-error": { style: { display: "none" } },
+    "kb-slots-grid": { style: { display: "none" }, innerHTML: "" },
+    "kb-slots-error-text": { textContent: "" },
+    "kb-slots-error-fallback": { textContent: "" },
+    "kb-btn-fallback-whatsapp": { textContent: "", onclick: null },
+    "kb-btn-retry-slots": { textContent: "", onclick: null },
+    "kb-btn-next-2": { disabled: false },
+  };
+  const w = Object.create(BookingWidget.prototype);
+  w.container = { querySelector: (sel) => els[sel.replace(/^#/, "")] || null };
+  w.state = {
+    selectedDate: "2026-10-07",
+    selectedTime: "10:00",
+    availableSlots: [{ time: "10:00" }],
+    practitionerId: "norberto",
+    techniqueId: "osteopatia",
+    appointmentType: "session",
+  };
+  w.copy = {
+    slotError: "No pudimos cargar o procesar los horarios disponibles en este momento.",
+    slotFallbackText: "Podés contactar directamente al Lic. Norberto Brude para agendar tu turno:",
+    slotFallbackBtn: "Contactar al Lic. Norberto Brude por WhatsApp →",
+    retry: "↺ Reintentar",
+  };
+  w.client = clientMock;
+  return { w, els };
+}
+
+await (async () => {
+  // Caso 1: Falla la request de horarios
+  let reqAttempts = 0;
+  let cacheCleared = 0;
+  const { w: wReq, els: elsReq } = makeSlotsWidget({
+    hasCachedSlots: () => false,
+    clearCache: () => {
+      cacheCleared += 1;
+    },
+    getAvailableSlots: async () => {
+      reqAttempts += 1;
+      throw new Error("Network timeout");
+    },
+  });
+  let openedPractitioner = null;
+  wReq.openPractitionerWhatsApp = (id) => {
+    openedPractitioner = id;
+  };
+  await wReq.loadSlotsForDate("2026-10-07", true);
+  assert.equal(elsReq["kb-slots-loading"].style.display, "none");
+  assert.equal(elsReq["kb-slots-error"].style.display, "flex");
+  assert.equal(elsReq["kb-btn-next-2"].disabled, true);
+  assert.equal(wReq.state.selectedTime, null);
+  assert.match(elsReq["kb-slots-error-text"].textContent, /horarios disponibles/i);
+  assert.match(elsReq["kb-slots-error-fallback"].textContent, /Lic\. Norberto Brude/);
+  assert.match(elsReq["kb-btn-fallback-whatsapp"].textContent, /Lic\. Norberto Brude/);
+  assert.equal(elsReq["kb-btn-retry-slots"].textContent, "↺ Reintentar");
+  assert.equal(typeof elsReq["kb-btn-fallback-whatsapp"].onclick, "function");
+  assert.equal(typeof elsReq["kb-btn-retry-slots"].onclick, "function");
+  elsReq["kb-btn-fallback-whatsapp"].onclick();
+  assert.equal(openedPractitioner, "norberto");
+  assert.equal(wReq.practitionerWhatsappUrl("norberto"), "https://wa.me/5491161564311");
+  // Verificar que el botón Retry vuelve a traer los horarios limpiando caché
+  await elsReq["kb-btn-retry-slots"].onclick();
+  assert.equal(reqAttempts, 2);
+  assert.equal(cacheCleared, 1);
+  n += 1;
+
+  // Caso 2: Falla el procesamiento de horarios (formato inválido devuelto por el servidor)
+  const { w: wProc, els: elsProc } = makeSlotsWidget({
+    hasCachedSlots: () => false,
+    getAvailableSlots: async () => ({
+      status: "success",
+      availableSlots: [{ time: "horario-corrupto" }],
+    }),
+  });
+  let openedProc = null;
+  wProc.openPractitionerWhatsApp = (id) => {
+    openedProc = id;
+  };
+  await wProc.loadSlotsForDate("2026-10-07", true);
+  assert.equal(elsProc["kb-slots-error"].style.display, "flex");
+  assert.match(elsProc["kb-slots-error-fallback"].textContent, /Lic\. Norberto Brude/);
+  elsProc["kb-btn-fallback-whatsapp"].onclick();
+  assert.equal(openedProc, "norberto");
+  n += 1;
+})();
+
 console.log(`formulario de datos (errores por campo): ok (${n} pruebas)`);

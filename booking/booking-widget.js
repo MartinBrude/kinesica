@@ -95,7 +95,9 @@
       noDays: "No hay días con horarios disponibles en las próximas semanas.",
       slotTitle: "Elegí el horario de la sesión",
       slotTitleWith: "Elegí el horario de la sesión con",
-      slotError: "Error al consultar disponibilidad:",
+      slotError: "No pudimos cargar o procesar los horarios disponibles en este momento.",
+      slotFallbackText: "Podés contactar directamente al Lic. Norberto Brude para agendar tu turno:",
+      slotFallbackBtn: "Contactar al Lic. Norberto Brude por WhatsApp →",
       summaryKind: "🩺 Turno presencial de 1 hora",
       technique: "Técnica",
       practitioner: "Profesional",
@@ -189,7 +191,9 @@
       noDays: "No days with available times in the coming weeks.",
       slotTitle: "Choose a session time",
       slotTitleWith: "Choose a session time with",
-      slotError: "Could not check availability:",
+      slotError: "We could not load or process the available times right now.",
+      slotFallbackText: "You can contact Lic. Norberto Brude directly to book your appointment:",
+      slotFallbackBtn: "Contact Lic. Norberto Brude on WhatsApp →",
       summaryKind: "🩺 One-hour in-person session",
       technique: "Technique",
       practitioner: "Practitioner",
@@ -283,7 +287,9 @@
       noDays: "Aucun jour avec des horaires disponibles dans les prochaines semaines.",
       slotTitle: "Choisissez l'horaire de la séance",
       slotTitleWith: "Choisissez l'horaire de la séance avec",
-      slotError: "Erreur lors de la consultation des disponibilités :",
+      slotError: "Impossible de charger ou de traiter les horaires disponibles pour le moment.",
+      slotFallbackText: "Vous pouvez contacter directement le Lic. Norberto Brude pour prendre rendez-vous :",
+      slotFallbackBtn: "Contacter le Lic. Norberto Brude sur WhatsApp →",
       summaryKind: "🩺 Séance en cabinet d'une heure",
       technique: "Technique",
       practitioner: "Praticien",
@@ -377,7 +383,9 @@
       noDays: "Não há dias com horários disponíveis nas próximas semanas.",
       slotTitle: "Escolha o horário da sessão",
       slotTitleWith: "Escolha o horário da sessão com",
-      slotError: "Erro ao consultar a disponibilidade:",
+      slotError: "Não foi possível carregar ou processar os horários disponíveis neste momento.",
+      slotFallbackText: "Você pode entrar em contato diretamente com o Lic. Norberto Brude para agendar sua consulta:",
+      slotFallbackBtn: "Falar com o Lic. Norberto Brude no WhatsApp →",
       summaryKind: "🩺 Sessão presencial de 1 hora",
       technique: "Técnica",
       practitioner: "Profissional",
@@ -616,9 +624,13 @@
                 <div id="kb-slots-empty" class="kb-state-box" style="display: none;">
                   <span>${this.t("emptyDay")}</span>
                 </div>
-                <div id="kb-slots-error" class="kb-state-box" style="display: none; border-color: var(--kin-danger); color: var(--kin-danger);">
-                  <span id="kb-slots-error-text"></span>
-                  <button class="kb-btn kb-btn-secondary" id="kb-btn-retry-slots" style="margin-top: 6px; font-size: 13px; padding: 6px 14px;">${this.t("retry")}</button>
+                <div id="kb-slots-error" class="kb-state-box kb-state-box-error" role="alert" style="display: none;">
+                  <span id="kb-slots-error-text" class="kb-slots-error-title">${this.t("slotError")}</span>
+                  <p id="kb-slots-error-fallback" class="kb-slots-error-fallback">${this.t("slotFallbackText")}</p>
+                  <div class="kb-slots-error-actions">
+                    <button type="button" class="kb-btn kb-btn-whatsapp" id="kb-btn-fallback-whatsapp">${this.t("slotFallbackBtn")}</button>
+                    <button type="button" class="kb-btn kb-btn-secondary" id="kb-btn-retry-slots">${this.t("retry")}</button>
+                  </div>
                 </div>
                 <div class="kb-slots-grid" id="kb-slots-grid"></div>
               </div>
@@ -842,6 +854,13 @@
         this.clearError();
         this.setStep(1);
       });
+
+      const fallbackWaBtn = q("#kb-btn-fallback-whatsapp");
+      if (fallbackWaBtn) {
+        fallbackWaBtn.addEventListener("click", () => {
+          this.openPractitionerWhatsApp("norberto");
+        });
+      }
 
       q("#kb-btn-next-2").addEventListener("click", () => {
         if (!this.state.selectedDate || !this.state.selectedTime) {
@@ -1328,56 +1347,59 @@
       this._carouselSeq = (this._carouselSeq || 0) + 1;
       const seq = this._carouselSeq;
       const carousel = this.container.querySelector("#kb-date-carousel");
-      carousel.innerHTML = "";
+      if (carousel) carousel.innerHTML = "";
 
       const loading = this.container.querySelector("#kb-slots-loading");
       const empty = this.container.querySelector("#kb-slots-empty");
+      const errorBox = this.container.querySelector("#kb-slots-error");
       const grid = this.container.querySelector("#kb-slots-grid");
       if (loading) loading.style.display = "flex";
       if (empty) empty.style.display = "none";
+      if (errorBox) errorBox.style.display = "none";
       if (grid) grid.style.display = "none";
 
-      const filterKey = `${this.state.techniqueId || ""}_${this.state.practitionerId || ""}_${this.state.appointmentType || ""}`;
-      if (this._lastFilterKey !== filterKey) {
-        this._lastFilterKey = filterKey;
-        this._slotCacheGen = (this._slotCacheGen || 0) + 1;
-        this._prefetchedSlots = {};
-      } else {
-        this._prefetchedSlots = this._prefetchedSlots || {};
-      }
-      const days = this.collectAttendanceDays(10);
-
-      let firstAvailable = null;
-      days.forEach((day) => {
-        const card = document.createElement("div");
-        card.className = "kb-date-card";
-        card.dataset.date = day.iso;
-        card.innerHTML = `
-          <div class="kb-date-dow">${this.copy.dows[day.current.getDay()]}</div>
-          <div class="kb-date-day">${day.current.getDate()}</div>
-          <div class="kb-date-month">${this.copy.months[day.current.getMonth()]}</div>
-        `;
-        card.addEventListener("click", () => {
-          this.selectDate(day.iso);
-        });
-        carousel.appendChild(card);
-        if (!firstAvailable) firstAvailable = day.iso;
-      });
-
-      if (seq !== this._carouselSeq) return;
-      if (!firstAvailable) {
-        if (loading) loading.style.display = "none";
-        if (empty) {
-          empty.style.display = "flex";
-          empty.querySelector("span").textContent = this.t("noDays");
+      try {
+        const filterKey = `${this.state.techniqueId || ""}_${this.state.practitionerId || ""}_${this.state.appointmentType || ""}`;
+        if (this._lastFilterKey !== filterKey) {
+          this._lastFilterKey = filterKey;
+          this._slotCacheGen = (this._slotCacheGen || 0) + 1;
+          this._prefetchedSlots = {};
+        } else {
+          this._prefetchedSlots = this._prefetchedSlots || {};
         }
-        return;
+        const days = this.collectAttendanceDays(10);
+
+        let firstAvailable = null;
+        days.forEach((day) => {
+          const card = document.createElement("div");
+          card.className = "kb-date-card";
+          card.dataset.date = day.iso;
+          card.innerHTML = `
+            <div class="kb-date-dow">${this.copy.dows[day.current.getDay()]}</div>
+            <div class="kb-date-day">${day.current.getDate()}</div>
+            <div class="kb-date-month">${this.copy.months[day.current.getMonth()]}</div>
+          `;
+          card.addEventListener("click", () => {
+            this.selectDate(day.iso);
+          });
+          carousel.appendChild(card);
+          if (!firstAvailable) firstAvailable = day.iso;
+        });
+
+        if (seq !== this._carouselSeq) return;
+        if (!firstAvailable) {
+          this.showSlotsError(new Error(this.t("noDays")), null);
+          return;
+        }
+        const selected = this.state.selectedDate && carousel.querySelector(`[data-date="${this.state.selectedDate}"]`)
+          ? this.state.selectedDate
+          : firstAvailable;
+        this.selectDate(selected);
+        this.pruneEmptyDays(days.filter((day) => day.iso !== selected), seq);
+      } catch (err) {
+        if (seq !== this._carouselSeq) return;
+        this.showSlotsError(err, null);
       }
-      const selected = this.state.selectedDate && carousel.querySelector(`[data-date="${this.state.selectedDate}"]`)
-        ? this.state.selectedDate
-        : firstAvailable;
-      this.selectDate(selected);
-      this.pruneEmptyDays(days.filter((day) => day.iso !== selected), seq);
     }
 
     async pruneEmptyDays(days, seq) {
@@ -1404,7 +1426,18 @@
         practitionerId: this.state.practitionerId,
         techniqueId: this.state.techniqueId,
       });
-      let slots = this.filterSlotsWithBuffer(res.availableSlots || [], dateIso, this.state.appointmentType);
+      if (!res || res.status === "error" || !Array.isArray(res.availableSlots)) {
+        throw new Error((res && res.message) || "Error al procesar los horarios disponibles");
+      }
+      const validSlots = [];
+      for (let i = 0; i < res.availableSlots.length; i += 1) {
+        const slot = res.availableSlots[i];
+        if (!slot || typeof slot.time !== "string" || !/^\d{2}:\d{2}$/.test(slot.time.trim())) {
+          throw new Error("Formato de horario inválido al procesar la disponibilidad");
+        }
+        validSlots.push(Object.assign({}, slot, { time: slot.time.trim() }));
+      }
+      let slots = this.filterSlotsWithBuffer(validSlots, dateIso, this.state.appointmentType);
       const chosen = engine.getTechnique(this.state.techniqueId);
       slots = this.restrictToPractitioner(slots, dateIso);
       if (!this.state.practitionerId && chosen && chosen.bySchedule) {
@@ -1431,6 +1464,59 @@
       await this.loadSlotsForDate(dateIso);
     }
 
+    showSlotsError(err, dateIso) {
+      const loading = this.container.querySelector("#kb-slots-loading");
+      const empty = this.container.querySelector("#kb-slots-empty");
+      const errorBox = this.container.querySelector("#kb-slots-error");
+      const grid = this.container.querySelector("#kb-slots-grid");
+      const nextBtn = this.container.querySelector("#kb-btn-next-2");
+
+      this.state.selectedTime = null;
+      this.state.availableSlots = [];
+      if (nextBtn) nextBtn.disabled = true;
+
+      if (loading) loading.style.display = "none";
+      if (empty) empty.style.display = "none";
+      if (grid) {
+        grid.style.display = "none";
+        grid.innerHTML = "";
+      }
+      if (!errorBox) return;
+
+      errorBox.style.display = "flex";
+      const errorText = this.container.querySelector("#kb-slots-error-text");
+      if (errorText) {
+        errorText.textContent = this.t("slotError");
+      }
+      const fallbackText = this.container.querySelector("#kb-slots-error-fallback");
+      if (fallbackText) {
+        fallbackText.textContent = this.t("slotFallbackText");
+      }
+      const waBtn = this.container.querySelector("#kb-btn-fallback-whatsapp");
+      if (waBtn) {
+        waBtn.textContent = this.t("slotFallbackBtn");
+        waBtn.onclick = () => this.openPractitionerWhatsApp("norberto");
+      }
+      const retryBtn = this.container.querySelector("#kb-btn-retry-slots");
+      if (retryBtn) {
+        retryBtn.textContent = this.t("retry");
+        retryBtn.onclick = () => {
+          const targetDate = dateIso || this.state.selectedDate;
+          if (this._prefetchedSlots && targetDate) {
+            delete this._prefetchedSlots[targetDate];
+          }
+          if (this.client && typeof this.client.clearCache === "function") {
+            this.client.clearCache();
+          }
+          if (targetDate) {
+            this.loadSlotsForDate(targetDate, true);
+          } else {
+            this.renderDateCarousel();
+          }
+        };
+      }
+    }
+
     async loadSlotsForDate(dateIso, forceRefresh = false) {
       this._slotReqSeq = (this._slotReqSeq || 0) + 1;
       const currentReq = this._slotReqSeq;
@@ -1441,7 +1527,7 @@
       const grid = this.container.querySelector("#kb-slots-grid");
 
       const hasWarm = !forceRefresh && (
-        (this._prefetchedSlots && this._prefetchedSlots[dateIso]) ||
+        (this._prefetchedSlots && Array.isArray(this._prefetchedSlots[dateIso])) ||
         (this.client && typeof this.client.hasCachedSlots === "function" && this.client.hasCachedSlots(dateIso))
       );
       loading.style.display = hasWarm ? "none" : "flex";
@@ -1451,12 +1537,22 @@
       grid.innerHTML = "";
 
       try {
-        const slots = this.restrictToPractitioner(
-          (!forceRefresh && this._prefetchedSlots && this._prefetchedSlots[dateIso])
-            ? this._prefetchedSlots[dateIso]
-            : await this.fetchFilteredSlots(dateIso, forceRefresh),
-          dateIso
+        const hasPrefetched = Boolean(
+          !forceRefresh && this._prefetchedSlots && Object.prototype.hasOwnProperty.call(this._prefetchedSlots, dateIso)
         );
+        const rawSlots = hasPrefetched
+          ? this._prefetchedSlots[dateIso]
+          : await this.fetchFilteredSlots(dateIso, forceRefresh);
+        if (!Array.isArray(rawSlots)) {
+          throw new Error("Error al procesar los horarios disponibles");
+        }
+        for (let i = 0; i < rawSlots.length; i += 1) {
+          const slot = rawSlots[i];
+          if (!slot || typeof slot.time !== "string" || !/^\d{2}:\d{2}$/.test(slot.time.trim())) {
+            throw new Error("Formato de horario inválido al procesar la disponibilidad");
+          }
+        }
+        const slots = this.restrictToPractitioner(rawSlots, dateIso);
         if (currentReq !== this._slotReqSeq) return;
 
         loading.style.display = "none";
@@ -1499,13 +1595,7 @@
         });
       } catch (err) {
         if (currentReq !== this._slotReqSeq) return;
-        loading.style.display = "none";
-        errorBox.style.display = "flex";
-        this.container.querySelector("#kb-slots-error-text").textContent = `${this.t("slotError")} ${err.message}`;
-        const retryBtn = this.container.querySelector("#kb-btn-retry-slots");
-        if (retryBtn) {
-          retryBtn.onclick = () => this.loadSlotsForDate(dateIso, true);
-        }
+        this.showSlotsError(err, dateIso);
       }
     }
 

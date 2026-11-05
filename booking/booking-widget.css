@@ -469,6 +469,38 @@
   gap: 12px;
 }
 
+.kb-state-box-error {
+  background: var(--kin-danger-bg);
+  border: 1.5px solid #fecaca;
+  color: var(--kin-text-heading);
+  padding: 24px 20px;
+  gap: 10px;
+}
+
+.kb-slots-error-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--kin-danger);
+  line-height: 1.4;
+}
+
+.kb-slots-error-fallback {
+  margin: 0;
+  font-size: 14px;
+  color: var(--kin-text-body);
+  line-height: 1.5;
+  max-width: 520px;
+}
+
+.kb-slots-error-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 6px;
+}
+
 /* Animated Spinner */
 .kb-spinner {
   width: 32px;
@@ -711,6 +743,21 @@
 .kb-btn-secondary:hover {
   background: #e5e7eb;
   color: var(--kin-navy);
+}
+
+.kb-btn-whatsapp {
+  background: #128c7e;
+  color: #ffffff;
+  font-size: 14px;
+  padding: 10px 18px;
+  box-shadow: 0 4px 12px rgba(18, 140, 126, 0.22);
+}
+
+.kb-btn-whatsapp:hover:not(:disabled) {
+  background: #0d7367;
+  color: #ffffff;
+  box-shadow: 0 6px 16px rgba(18, 140, 126, 0.32);
+  transform: translateY(-1px);
 }
 
 /* Success Card */
