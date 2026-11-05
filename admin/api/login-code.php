@@ -82,14 +82,23 @@ $stmt->execute(['username' => $username]);
 $user = $stmt->fetch();
 
 if ($user && isset($user['active']) && (int) $user['active'] === 0) {
-    json_out(403, ['error' => 'Cuenta suspendida o inactiva. Comunicate con el administrador.']);
+    login_code_register_attempt($username);
+    json_out(200, [
+        'ok' => true,
+        'sent' => true,
+        'username' => $username,
+        'message' => 'Si el usuario tiene correo, te enviamos un código. Revisá tu bandeja de entrada.',
+    ]);
 }
 
 $email = user_email($username);
 if (!$user || $email === '') {
     login_code_register_attempt($username);
-    json_out(404, [
-        'error' => 'Usuario o correo no reconocido. Verificá los datos e intentá de nuevo.',
+    json_out(200, [
+        'ok' => true,
+        'sent' => true,
+        'username' => $username,
+        'message' => 'Si el usuario tiene correo, te enviamos un código. Revisá tu bandeja de entrada.',
     ]);
 }
 
@@ -100,13 +109,12 @@ login_code_store($username, $code, 15);
 
 $sent = send_login_code_email($email, (string) ($user['display_name'] ?? $username), $code);
 if (!$sent) {
-    json_out(502, ['error' => 'No se pudo enviar el correo con el código. Intentá de nuevo en unos instantes.']);
+    error_log('login-code: no se pudo enviar el código para ' . $username);
 }
 
 json_out(200, [
     'ok' => true,
     'sent' => true,
     'username' => $username,
-    'emailMasked' => mask_email($email),
-    'message' => 'Te enviamos un código de 6 dígitos a ' . mask_email($email) . '. Ingresalo a continuación.',
+    'message' => 'Si el usuario tiene correo, te enviamos un código. Revisá tu bandeja de entrada.',
 ]);

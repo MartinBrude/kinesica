@@ -3,9 +3,12 @@ declare(strict_types=1);
 
 require __DIR__ . '/lib.php';
 
-$token = $_GET['t'] ?? '';
+$token = (string) ($_GET['t'] ?? '');
 $expected = (string) (cfg()['install_token'] ?? '');
-if ($expected === '' || !hash_equals($expected, $token)) {
+
+// La instalación no debe quedar expuesta como endpoint web. Ejecutarla por HTTP
+// permitiría alterar el esquema y regenerar la configuración de producción.
+if (PHP_SAPI !== 'cli' || $expected === '' || in_array($expected, ['disabled', 'CAMBIAR'], true) || !hash_equals($expected, $token)) {
     json_out(404, ['error' => 'No encontrado']);
 }
 

@@ -28,6 +28,16 @@ AddType application/javascript .mjs .js
   </IfModule>
 </FilesMatch>
 
+<FilesMatch "^install\.php$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>
+
 <FilesMatch "\.(sql|bak|old|log|md|json|sha256|lock)$">
   <IfModule mod_authz_core.c>
     Require all denied
