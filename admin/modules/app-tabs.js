@@ -28,6 +28,7 @@ export function switchTab(tab, subtab) {
   const btnAdminGastos = document.querySelector("#nav-btn-admin-gastos");
   const btnAdminErrores = document.querySelector("#nav-btn-admin-errores");
   const btnAdminBackups = document.querySelector("#nav-btn-admin-backups");
+  const btnAdminServicios = document.querySelector("#nav-btn-admin-servicios");
 
   btnClinica?.classList.remove("is-active");
   btnFichas?.classList.remove("is-active");
@@ -42,6 +43,7 @@ export function switchTab(tab, subtab) {
   btnAdminGastos?.classList.remove("is-active");
   btnAdminErrores?.classList.remove("is-active");
   btnAdminBackups?.classList.remove("is-active");
+  btnAdminServicios?.classList.remove("is-active");
 
   document.querySelectorAll(".nav-dropdown").forEach((el) => {
     el.classList.remove("is-open");
@@ -85,7 +87,10 @@ export function switchTab(tab, subtab) {
     tab === "reportes" ||
     tab === "backups" ||
     tab === "copias" ||
-    tab === "copias-seguridad"
+    tab === "copias-seguridad" ||
+    tab === "servicios" ||
+    tab === "consumos" ||
+    tab === "cuotas"
   ) {
     const user = getSessionUser();
     if (!user || user.role !== "admin") {
@@ -99,6 +104,7 @@ export function switchTab(tab, subtab) {
       else if (tab === "gastos") section = "gastos";
       else if (tab === "errores" || tab === "reportes") section = "errores";
       else if (tab === "backups" || tab === "copias" || tab === "copias-seguridad") section = "backups";
+      else if (tab === "servicios" || tab === "consumos" || tab === "cuotas") section = "servicios";
       else section = "usuarios";
     }
     if (section === "gastos") {
@@ -107,6 +113,8 @@ export function switchTab(tab, subtab) {
       btnAdminErrores?.classList.add("is-active");
     } else if (section === "backups") {
       btnAdminBackups?.classList.add("is-active");
+    } else if (section === "servicios") {
+      btnAdminServicios?.classList.add("is-active");
     } else {
       btnAdminUsuarios?.classList.add("is-active");
     }
@@ -204,6 +212,7 @@ export function mountAdminChannels() {
       document.getElementById("nav-btn-admin-gastos")?.addEventListener("click", () => switchTab("admin", "gastos"));
       document.getElementById("nav-btn-admin-errores")?.addEventListener("click", () => switchTab("admin", "errores"));
       document.getElementById("nav-btn-admin-backups")?.addEventListener("click", () => switchTab("admin", "backups"));
+      document.getElementById("nav-btn-admin-servicios")?.addEventListener("click", () => switchTab("admin", "servicios"));
       document.getElementById("brand-logo")?.addEventListener("click", (e) => {
         e.preventDefault();
         switchTab("inicio");

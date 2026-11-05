@@ -95,6 +95,7 @@
             <button type="button" class="nav-dropdown-item" id="nav-btn-admin-gastos" role="menuitem">Gastos</button>
             <button type="button" class="nav-dropdown-item" id="nav-btn-admin-errores" role="menuitem">Reporte de errores</button>
             <button type="button" class="nav-dropdown-item" id="nav-btn-admin-backups" role="menuitem">Copias de seguridad</button>
+            <button type="button" class="nav-dropdown-item" id="nav-btn-admin-servicios" role="menuitem">Consumos y Servicios</button>
           </div>
         </div>
       </nav>
@@ -1419,6 +1420,28 @@
             </div>
           </div>
         </article>
+
+        <!-- SECCIÓN 6: CONSUMOS Y CUOTAS DE SERVICIOS -->
+        <article class="admin-card" id="admin-servicios-card" hidden>
+          <div class="admin-card-header">
+            <div class="admin-card-titles">
+              <h2 class="admin-card-title">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                Consumos y Cuotas de Servicios
+              </h2>
+              <p class="admin-card-desc">Supervisión en tiempo real de consumo, cuotas gratuitas mensuales y alertas de cobro en WhatsApp (Meta), IA (Gemini), Resend y Hosting.</p>
+            </div>
+            <div class="admin-gastos-header-actions">
+              <span class="gastos-count-pill" id="admin-servicios-period-label">Período: Mes actual</span>
+              <button type="button" class="btn light btn-sm" id="admin-btn-servicios-reload">↻ Actualizar métricas</button>
+            </div>
+          </div>
+          <div class="admin-card-body">
+            <div id="admin-servicios-content">
+              <div style="padding: 32px 16px; text-align: center; color: var(--muted);">Cargando métricas de servicios...</div>
+            </div>
+          </div>
+        </article>
       </div>
 
       <!-- MODAL DE ALTA / EDICIÓN DE PROFESIONAL -->
@@ -2471,15 +2494,18 @@
               var cg = document.getElementById("admin-gastos-card");
               var ce = document.getElementById("admin-errores-card");
               var cb = document.getElementById("admin-backups-card");
+              var cs = document.getElementById("admin-servicios-card");
               if (cu) cu.hidden = sec !== "usuarios";
               if (cg) cg.hidden = sec !== "gastos";
               if (ce) ce.hidden = sec !== "errores";
               if (cb) cb.hidden = sec !== "backups";
+              if (cs) cs.hidden = sec !== "servicios";
               var ht = document.getElementById("admin-hero-title");
               if (ht) {
                 if (sec === "gastos") ht.textContent = "Administración · Registro de Gastos";
                 else if (sec === "errores") ht.textContent = "Administración · Reporte de Errores";
                 else if (sec === "backups") ht.textContent = "Administración · Copias de Seguridad";
+                else if (sec === "servicios") ht.textContent = "Administración · Consumos y Servicios";
                 else ht.textContent = "Administración · Usuarios";
               }
             } else {
