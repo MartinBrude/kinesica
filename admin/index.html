@@ -505,7 +505,7 @@
           </thead>
           <tbody id="pacientes-list-tbody">
             <tr>
-              <td colspan="6" style="text-align:center; padding: 24px; color: var(--muted);">Cargando directorio de pacientes…</td>
+              <td colspan="6" style="text-align:center; padding: 24px; color: var(--muted);"><span class="loading-spinner" aria-hidden="true"></span>Cargando directorio de pacientes…</td>
             </tr>
           </tbody>
         </table>
@@ -1438,7 +1438,7 @@
           </div>
           <div class="admin-card-body">
             <div id="admin-servicios-content">
-              <div style="padding: 32px 16px; text-align: center; color: var(--muted);">Cargando métricas de servicios...</div>
+              <div style="padding: 32px 16px; text-align: center; color: var(--muted);"><span class="loading-spinner" aria-hidden="true"></span>Cargando métricas de servicios...</div>
             </div>
           </div>
         </article>
@@ -2517,6 +2517,10 @@
       } catch (_) {}
     })();
   </script>
+  <div id="admin-global-loader" class="admin-global-loader" role="status" aria-live="polite" hidden>
+    <span class="loading-spinner" aria-hidden="true"></span>
+    <span>Cargando…</span>
+  </div>
   <div id="print-root"></div>
   <script src="/partials/google-reviews-data.min.js?v=1793881068" defer></script>
   <script src="/booking/booking-bundle.min.js?v=1793881068" defer></script>

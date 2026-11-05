@@ -323,7 +323,7 @@ export function deduplicatePatientsInMemory(items = []) {
 
 export async function loadPacientes() {
   if (!listEl) return;
-  listEl.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px; color: var(--muted);">Cargando directorio de pacientes…</td></tr>`;
+  listEl.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px; color: var(--muted);"><span class="loading-spinner" aria-hidden="true"></span>Cargando directorio de pacientes…</td></tr>`;
   try {
     const res = await api("pacientes.php");
     const raw = Array.isArray(res?.items) ? res.items : (Array.isArray(res) ? res : []);

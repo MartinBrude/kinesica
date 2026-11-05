@@ -5,6 +5,37 @@
  */
 
 let onAuthRequiredHandler = null;
+let inFlightRequests = 0;
+let slowLoaderTimer = null;
+
+export const SLOW_REQUEST_THRESHOLD_MS = 200;
+
+function beginGlobalLoading() {
+  if (typeof document === "undefined") return;
+  inFlightRequests += 1;
+  if (inFlightRequests === 1 && !slowLoaderTimer) {
+    slowLoaderTimer = setTimeout(() => {
+      slowLoaderTimer = null;
+      if (inFlightRequests > 0) {
+        const loader = document.getElementById("admin-global-loader");
+        if (loader) loader.hidden = false;
+      }
+    }, SLOW_REQUEST_THRESHOLD_MS);
+  }
+}
+
+function endGlobalLoading() {
+  if (typeof document === "undefined") return;
+  inFlightRequests = Math.max(0, inFlightRequests - 1);
+  if (inFlightRequests === 0) {
+    if (slowLoaderTimer) {
+      clearTimeout(slowLoaderTimer);
+      slowLoaderTimer = null;
+    }
+    const loader = document.getElementById("admin-global-loader");
+    if (loader) loader.hidden = true;
+  }
+}
 
 /**
  * Registra el callback global que se ejecutará cuando la API responda con 401 Unauthorized.
@@ -50,29 +81,35 @@ export async function api(path, options = {}) {
   }
 
   let res;
+  let parsed = null;
+  beginGlobalLoading();
   try {
-    res = await fetch(`api/${path}`, {
-      credentials: "same-origin",
-      ...fetchOptions,
-      headers,
-      signal: timeout.signal,
-    });
-  } catch (cause) {
-    const aborted = cause && (cause.name === "AbortError" || cause.name === "TimeoutError");
-    const error = new Error(
-      aborted
-        ? "El servidor no respondió a tiempo. Intentá de nuevo."
-        : "Sin conexión con el servidor. Revisá tu internet e intentá de nuevo."
-    );
-    error.network = true;
-    error.timeout = aborted;
-    error.cause = cause;
-    throw error;
-  } finally {
-    clearTimeout(timer);
-  }
+    try {
+      res = await fetch(`api/${path}`, {
+        credentials: "same-origin",
+        ...fetchOptions,
+        headers,
+        signal: timeout.signal,
+      });
+    } catch (cause) {
+      const aborted = cause && (cause.name === "AbortError" || cause.name === "TimeoutError");
+      const error = new Error(
+        aborted
+          ? "El servidor no respondió a tiempo. Intentá de nuevo."
+          : "Sin conexión con el servidor. Revisá tu internet e intentá de nuevo."
+      );
+      error.network = true;
+      error.timeout = aborted;
+      error.cause = cause;
+      throw error;
+    } finally {
+      clearTimeout(timer);
+    }
 
-  const parsed = await res.json().catch(() => null);
+    parsed = await res.json().catch(() => null);
+  } finally {
+    endGlobalLoading();
+  }
   const data = parsed !== null && typeof parsed === "object" ? parsed : {};
 
   if (res.status === 401 && !data.error) {
