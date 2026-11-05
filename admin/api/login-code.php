@@ -13,7 +13,47 @@ $rawUsername = (string) ($body['username'] ?? '');
 $username = resolve_username($rawUsername);
 $password = (string) ($body['password'] ?? '');
 $code = (string) ($body['code'] ?? '');
-$action = (string) ($body['action'] ?? ($code !== '' ? 'verify' : 'send'));
+$token = (string) ($body['token'] ?? '');
+$action = (string) ($body['action'] ?? ($token !== '' ? 'magic' : ($code !== '' ? 'verify' : 'send')));
+
+if ($action === 'magic') {
+    $magicUsername = login_magic_token_verify($token);
+    if ($magicUsername === null || $magicUsername === '') {
+        json_out(401, ['error' => 'El enlace de acceso es inválido o ya expiró. Solicitá un nuevo código.']);
+    }
+    if (login_is_locked($magicUsername)) {
+        json_out(429, ['error' => login_block_message()]);
+    }
+
+    $stmt = db()->prepare('SELECT * FROM users WHERE username = :username LIMIT 1');
+    $stmt->execute(['username' => $magicUsername]);
+    $user = $stmt->fetch();
+
+    if (!$user) {
+        json_out(401, ['error' => 'El enlace de acceso es inválido o ya expiró.']);
+    }
+    if (isset($user['active']) && (int) $user['active'] === 0) {
+        json_out(403, ['error' => 'Cuenta suspendida o inactiva. Comunicate con el administrador.']);
+    }
+
+    login_clear_failures($magicUsername);
+    login_record_success($magicUsername);
+    login_code_clear_attempts($magicUsername);
+
+    start_session();
+    session_regenerate_id(true);
+    $_SESSION['user'] = $user['username'];
+    $_SESSION['name'] = $user['display_name'];
+    $_SESSION['role'] = (string) ($user['role'] ?? user_role($user['username']));
+    $_SESSION['full'] = true;
+
+    json_out(200, [
+        'ok' => true,
+        'username' => $user['username'],
+        'name' => $user['display_name'],
+        'role' => $_SESSION['role'],
+    ]);
+}
 
 if ($username === '') {
     json_out(400, ['error' => 'Ingresá tu usuario o correo electrónico.']);
@@ -106,8 +146,9 @@ login_code_register_attempt($username);
 
 $code = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 login_code_store($username, $code, 15);
+$magicToken = login_magic_token_store($username, 15);
 
-$sent = send_login_code_email($email, (string) ($user['display_name'] ?? $username), $code);
+$sent = send_login_code_email($email, (string) ($user['display_name'] ?? $username), $code, $magicToken);
 if (!$sent) {
     error_log('login-code: no se pudo enviar el código para ' . $username);
 }

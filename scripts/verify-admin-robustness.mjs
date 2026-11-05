@@ -531,7 +531,17 @@ await test("vía alternativa de login por código al mail disponible para María
   assert.match(loginCodePhp, /password_verify/, "login-code.php debe verificar contraseña de la cuenta");
   assert.match(loginCodePhp, /login_code_verify/, "login-code.php debe verificar código de un solo uso");
   assert.match(loginCodePhp, /login_code_store/, "login-code.php debe almacenar hash del código temporal");
+  assert.match(loginCodePhp, /login_magic_token_store/, "login-code.php debe generar token mágico de acceso directo");
+  assert.match(loginCodePhp, /login_magic_token_verify/, "login-code.php debe verificar token mágico de un solo uso");
   assert.match(loginCodePhp, /send_login_code_email/, "login-code.php debe enviar código por correo");
+
+  const libCodesPhp = fs.readFileSync(path.join(adminDir, "api/lib_codes.php"), "utf8");
+  assert.match(libCodesPhp, /function login_magic_token_store/, "lib_codes.php debe definir login_magic_token_store");
+  assert.match(libCodesPhp, /function login_magic_token_verify/, "lib_codes.php debe definir login_magic_token_verify");
+
+  const appJs = fs.readFileSync(path.join(adminDir, "app.js"), "utf8");
+  assert.match(appJs, /searchParams\.get\(["']magic["']\)/, "app.js debe detectar el parámetro ?magic= en la URL");
+  assert.match(appJs, /action:\s*["']magic["']/, "app.js debe consumir el token mágico contra login-code.php");
 
   const totpPhp = fs.readFileSync(path.join(adminDir, "api/totp.php"), "utf8");
   assert.match(totpPhp, /password_verify/, "totp.php debe exigir y verificar contraseña en confirmación de enrolamiento");
@@ -543,6 +553,7 @@ await test("vía alternativa de login por código al mail disponible para María
   assert.match(libPhp, /function login_code_verify/, "lib.php debe incluir login_code_verify");
   assert.match(libPhp, /function login_code_store/, "lib.php debe incluir login_code_store");
   assert.match(libPhp, /function send_login_code_email/, "lib.php debe incluir send_login_code_email");
+  assert.match(libPhp, /Ingresar a Kinésica directamente/, "send_login_code_email debe incluir el botón de ingreso directo");
   assert.match(libPhp, /for \(\$i = -1; \$i <= 1; \$i\+\+\)/, "totp_valid debe operar con tolerancia de ±1 intervalo (30s)");
 
   const loginPhp = fs.readFileSync(path.join(adminDir, "api/login.php"), "utf8");

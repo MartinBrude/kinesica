@@ -21,6 +21,7 @@ import {
 import {
   getSessionUser,
   setSessionUser,
+  setGateMessage,
   showGate,
   hideGate,
   initAuth,
@@ -211,12 +212,40 @@ initAppControllers({
 
 initPopstateRouter({ loadAll, fillForm, showForm, showCompare, switchTab });
 
-const resetToken = new URLSearchParams(location.search).get("reset");
+const searchParams = new URLSearchParams(location.search);
+const resetToken = searchParams.get("reset");
+const magicToken = searchParams.get("magic");
 const resetFormEl = document.querySelector("#reset-form");
 
 if (resetToken && resetFormEl) {
   resetFormEl.dataset.token = resetToken;
   showGate({ reset: true });
+} else if (magicToken) {
+  try {
+    history.replaceState(null, "", location.pathname);
+  } catch {}
+  api("login-code.php", {
+    method: "POST",
+    body: JSON.stringify({ action: "magic", token: magicToken }),
+  })
+    .then(async (data) => {
+      setSessionUser({ username: data.username, name: data.name, role: data.role });
+      hideGate();
+      await refresh();
+      switchTab("inicio");
+      mountAdminChannels();
+    })
+    .catch((err) => {
+      showGate({ login: true });
+      const loginErrorEl = document.querySelector("#login-error");
+      if (loginErrorEl) {
+        setGateMessage(
+          loginErrorEl,
+          err.message || "El enlace de acceso es inválido o ya expiró.",
+          false
+        );
+      }
+    });
 } else {
   refresh().catch((error) => {
     if (!error.auth) showGate({ login: true });

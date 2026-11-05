@@ -85,3 +85,34 @@ function login_code_clear_attempts(string $identifier): void
     db()->prepare('DELETE FROM login_code_attempts WHERE attempt_key = :key')
         ->execute(['key' => login_code_attempt_key($identifier)]);
 }
+
+function login_magic_token_store(string $username, int $validMinutes = 15): string
+{
+    $username = resolve_username($username);
+    ensure_login_codes();
+    $token = bin2hex(random_bytes(32));
+    $hash = hash('sha256', 'magic:' . $token);
+    $expires = gmdate('Y-m-d H:i:s', time() + ($validMinutes * 60));
+    db()->prepare('INSERT INTO login_codes (code_hash, username, expires_at) VALUES (:hash, :username, :expires)')
+        ->execute(['hash' => $hash, 'username' => $username, 'expires' => $expires]);
+    return $token;
+}
+
+function login_magic_token_verify(string $token): ?string
+{
+    $clean = strtolower(trim($token));
+    if (!preg_match('/^[a-f0-9]{64}$/', $clean)) {
+        return null;
+    }
+    ensure_login_codes();
+    $hash = hash('sha256', 'magic:' . $clean);
+    $pdo = db();
+    $stmt = $pdo->prepare('SELECT username FROM login_codes WHERE code_hash = :hash AND expires_at > UTC_TIMESTAMP() LIMIT 1');
+    $stmt->execute(['hash' => $hash]);
+    $username = $stmt->fetchColumn();
+    if ($username) {
+        $pdo->prepare('DELETE FROM login_codes WHERE username = :username')->execute(['username' => (string) $username]);
+        return (string) $username;
+    }
+    return null;
+}

@@ -96,20 +96,32 @@ function login_code_verify(string $username, string $code): bool
     return false;
 }
 
-function send_login_code_email(string $to, string $displayName, string $code): bool
+function send_login_code_email(string $to, string $displayName, string $code, string $magicToken = ''): bool
 {
     $subject = 'Código de acceso a Kinésica';
     $cleanCode = str_pad(trim($code), 6, '0', STR_PAD_LEFT);
     $greeting = $displayName !== '' ? 'Hola ' . htmlspecialchars($displayName, ENT_QUOTES, 'UTF-8') . ',' : 'Hola,';
     $greetingPlain = $displayName !== '' ? "Hola {$displayName}," : "Hola,";
 
+    $base = rtrim((string) (cfg()['admin_url'] ?? 'https://www.kinesica.com.ar/admin/'), '/') . '/';
+    $magicUrl = $magicToken !== '' ? ($base . '?magic=' . rawurlencode($magicToken)) : '';
+    $magicUrlEsc = htmlspecialchars($magicUrl, ENT_QUOTES, 'UTF-8');
+
+    $buttonHtml = $magicUrl !== ''
+        ? '<div style="text-align:center;margin:22px 0 10px">'
+            . '<a href="' . $magicUrlEsc . '" style="display:inline-block;padding:14px 28px;background:#005f99;color:#ffffff !important;text-decoration:none;border-radius:8px;font-weight:700;font-size:15px">Ingresar a Kinésica directamente →</a>'
+            . '</div>'
+            . '<p style="font-size:12px;color:#64748b;text-align:center;margin:8px 0 0">O ingresá manualmente el código de 6 dígitos en la pantalla de acceso.</p>'
+        : '';
+
     $html = <<<HTML
 <!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Código de acceso</title>
 <style>body{margin:0;padding:24px;background:#f4f6f9;font-family:sans-serif}.wrapper{max-width:480px;margin:0 auto;background:#fff;border-radius:12px;padding:24px;border:1px solid #e2e8f0}.code-number{font-family:monospace;font-size:36px;font-weight:700;letter-spacing:4px;color:#005f99;text-align:center;padding:16px;background:#f0f7fc;border-radius:10px}</style></head>
-<body><div class="wrapper"><h2>Kinésica · Panel de Control</h2><p>{$greeting}</p><div class="code-number">{$cleanCode}</div><p style="font-size:13px;color:#64748b;margin-top:16px">Válido por 15 minutos · Un solo uso</p></div></body></html>
+<body><div class="wrapper"><h2>Kinésica · Panel de Control</h2><p>{$greeting}</p><div class="code-number">{$cleanCode}</div>{$buttonHtml}<p style="font-size:13px;color:#64748b;margin-top:16px">Válido por 15 minutos · Un solo uso</p></div></body></html>
 HTML;
 
-    $text = "{$cleanCode}\n\nUsá este código para iniciar sesión en Kinésica.\n\n{$greetingPlain}\nVálido 15 minutos.";
+    $magicText = $magicUrl !== '' ? "\n\nO entrá directamente haciendo clic acá:\n{$magicUrl}" : '';
+    $text = "{$cleanCode}\n\nUsá este código para iniciar sesión en Kinésica.{$magicText}\n\n{$greetingPlain}\nVálido 15 minutos.";
     return send_html_mail($to, $subject, $html, $text);
 }
 
