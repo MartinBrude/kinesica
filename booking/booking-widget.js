@@ -98,6 +98,8 @@
       slotError: "No pudimos cargar o procesar los horarios disponibles en este momento.",
       slotFallbackText: "Podés contactar directamente al Lic. Norberto Brude para agendar tu turno:",
       slotFallbackBtn: "Contactar al Lic. Norberto Brude por WhatsApp →",
+      slotFallbackTextMaria: "Podés contactar directamente a la Lic. María Gulín para agendar tu turno:",
+      slotFallbackBtnMaria: "Contactar a la Lic. María Gulín por WhatsApp →",
       summaryKind: "🩺 Turno presencial de 1 hora",
       technique: "Técnica",
       practitioner: "Profesional",
@@ -194,6 +196,8 @@
       slotError: "We could not load or process the available times right now.",
       slotFallbackText: "You can contact Lic. Norberto Brude directly to book your appointment:",
       slotFallbackBtn: "Contact Lic. Norberto Brude on WhatsApp →",
+      slotFallbackTextMaria: "You can contact Lic. María Gulín directly to book your appointment:",
+      slotFallbackBtnMaria: "Contact Lic. María Gulín on WhatsApp →",
       summaryKind: "🩺 One-hour in-person session",
       technique: "Technique",
       practitioner: "Practitioner",
@@ -290,6 +294,8 @@
       slotError: "Impossible de charger ou de traiter les horaires disponibles pour le moment.",
       slotFallbackText: "Vous pouvez contacter directement le Lic. Norberto Brude pour prendre rendez-vous :",
       slotFallbackBtn: "Contacter le Lic. Norberto Brude sur WhatsApp →",
+      slotFallbackTextMaria: "Vous pouvez contacter directement la Lic. María Gulín pour prendre rendez-vous :",
+      slotFallbackBtnMaria: "Contacter la Lic. María Gulín sur WhatsApp →",
       summaryKind: "🩺 Séance en cabinet d'une heure",
       technique: "Technique",
       practitioner: "Praticien",
@@ -386,6 +392,8 @@
       slotError: "Não foi possível carregar ou processar os horários disponíveis neste momento.",
       slotFallbackText: "Você pode entrar em contato diretamente com o Lic. Norberto Brude para agendar sua consulta:",
       slotFallbackBtn: "Falar com o Lic. Norberto Brude no WhatsApp →",
+      slotFallbackTextMaria: "Você pode entrar em contato diretamente com a Lic. María Gulín para agendar sua consulta:",
+      slotFallbackBtnMaria: "Falar com a Lic. María Gulín no WhatsApp →",
       summaryKind: "🩺 Sessão presencial de 1 hora",
       technique: "Técnica",
       practitioner: "Profissional",
@@ -524,6 +532,23 @@
       } else if (typeof window !== "undefined") {
         window.location.href = url;
       }
+    }
+
+    fallbackPractitionerId() {
+      const techniqueId = this.state && this.state.techniqueId;
+      const technique =
+        engine && typeof engine.getTechnique === "function"
+          ? engine.getTechnique(techniqueId)
+          : null;
+      if (
+        technique &&
+        Array.isArray(technique.practitioners) &&
+        technique.practitioners.length === 1 &&
+        technique.practitioners[0] === "maria"
+      ) {
+        return "maria";
+      }
+      return "norberto";
     }
 
     techniqueLabel(technique) {
@@ -857,9 +882,9 @@
 
       const fallbackWaBtn = q("#kb-btn-fallback-whatsapp");
       if (fallbackWaBtn) {
-        fallbackWaBtn.addEventListener("click", () => {
-          this.openPractitionerWhatsApp("norberto");
-        });
+        fallbackWaBtn.onclick = () => {
+          this.openPractitionerWhatsApp(this.fallbackPractitionerId());
+        };
       }
 
       q("#kb-btn-next-2").addEventListener("click", () => {
@@ -1488,14 +1513,20 @@
       if (errorText) {
         errorText.textContent = this.t("slotError");
       }
+      const fallbackPrac = this.fallbackPractitionerId();
+      const isMaria = fallbackPrac === "maria";
       const fallbackText = this.container.querySelector("#kb-slots-error-fallback");
       if (fallbackText) {
-        fallbackText.textContent = this.t("slotFallbackText");
+        fallbackText.textContent = this.t(
+          isMaria ? "slotFallbackTextMaria" : "slotFallbackText"
+        );
       }
       const waBtn = this.container.querySelector("#kb-btn-fallback-whatsapp");
       if (waBtn) {
-        waBtn.textContent = this.t("slotFallbackBtn");
-        waBtn.onclick = () => this.openPractitionerWhatsApp("norberto");
+        waBtn.textContent = this.t(
+          isMaria ? "slotFallbackBtnMaria" : "slotFallbackBtn"
+        );
+        waBtn.onclick = () => this.openPractitionerWhatsApp(fallbackPrac);
       }
       const retryBtn = this.container.querySelector("#kb-btn-retry-slots");
       if (retryBtn) {

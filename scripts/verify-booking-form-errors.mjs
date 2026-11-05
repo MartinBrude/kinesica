@@ -195,8 +195,14 @@ test("email con typo de dominio evidente: repregunta una vez y luego deja pasar"
   assert.deepEqual(second, []);
 });
 
-test("i18n: los 4 idiomas definen los textos de fallback de horarios hacia el Lic. Norberto Brude", () => {
-  for (const k of ["slotError", "slotFallbackText", "slotFallbackBtn"]) {
+test("i18n: los 4 idiomas definen los textos de fallback de horarios hacia el Lic. Norberto Brude y la Lic. María Gulín", () => {
+  for (const k of [
+    "slotError",
+    "slotFallbackText",
+    "slotFallbackBtn",
+    "slotFallbackTextMaria",
+    "slotFallbackBtnMaria",
+  ]) {
     assert.equal((src.match(new RegExp(`\\b${k}: "`, "g")) || []).length, 4, k);
   }
   assert.match(src, /id="kb-slots-error-fallback"/);
@@ -229,6 +235,8 @@ function makeSlotsWidget(clientMock) {
     slotError: "No pudimos cargar o procesar los horarios disponibles en este momento.",
     slotFallbackText: "Podés contactar directamente al Lic. Norberto Brude para agendar tu turno:",
     slotFallbackBtn: "Contactar al Lic. Norberto Brude por WhatsApp →",
+    slotFallbackTextMaria: "Podés contactar directamente a la Lic. María Gulín para agendar tu turno:",
+    slotFallbackBtnMaria: "Contactar a la Lic. María Gulín por WhatsApp →",
     retry: "↺ Reintentar",
   };
   w.client = clientMock;
@@ -290,6 +298,38 @@ await (async () => {
   assert.match(elsProc["kb-slots-error-fallback"].textContent, /Lic\. Norberto Brude/);
   elsProc["kb-btn-fallback-whatsapp"].onclick();
   assert.equal(openedProc, "norberto");
+  n += 1;
+
+  // Caso 3: Disciplinas exclusivas de María (Acupuntura y Posturología) derivan al WhatsApp de María
+  for (const mariaTech of ["acupuntura", "posturologia"]) {
+    const { w: wMaria, els: elsMaria } = makeSlotsWidget({
+      hasCachedSlots: () => false,
+      getAvailableSlots: async () => {
+        throw new Error("Network timeout");
+      },
+    });
+    wMaria.state.techniqueId = mariaTech;
+    wMaria.state.practitionerId = "maria";
+    let openedMaria = null;
+    wMaria.openPractitionerWhatsApp = (id) => {
+      openedMaria = id;
+    };
+    await wMaria.loadSlotsForDate("2026-10-07", true);
+    assert.equal(elsMaria["kb-slots-error"].style.display, "flex");
+    assert.match(elsMaria["kb-slots-error-fallback"].textContent, /Lic\. María Gulín/);
+    assert.match(elsMaria["kb-btn-fallback-whatsapp"].textContent, /Lic\. María Gulín/);
+    elsMaria["kb-btn-fallback-whatsapp"].onclick();
+    assert.equal(openedMaria, "maria");
+    assert.match(wMaria.practitionerWhatsappUrl("maria"), /^https:\/\/wa\.me\/5491128531224$/);
+    n += 1;
+  }
+
+  // Caso 4: Disciplinas compartidas o exclusivas de Norberto derivan a Norberto
+  for (const otherTech of ["osteopatia", "viscerales", "rpg", "atm", "neurodinamia", "no-se"]) {
+    const { w: wOther } = makeSlotsWidget({ hasCachedSlots: () => false });
+    wOther.state.techniqueId = otherTech;
+    assert.equal(wOther.fallbackPractitionerId(), "norberto", otherTech);
+  }
   n += 1;
 })();
 
