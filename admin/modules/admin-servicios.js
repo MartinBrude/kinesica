@@ -67,10 +67,11 @@ export function renderServicios(data) {
   const lnk = data.links || {};
 
   const waConvs = wa.month_active_conversations || 0;
-  const waExcess = Math.max(0, waConvs - (wa.free_conversations_limit || 1000));
+  const waLimit = wa.free_conversations_limit || 1000;
+  const waExcess = Math.max(0, waConvs - waLimit);
   const waTemplates = wa.month_utility_templates_sent || 0;
-  const waHasExcess = waExcess > 0 || waTemplates > 0;
-  const waEstUsd = waHasExcess ? Math.round((waExcess * 0.045 + waTemplates * 0.038) * 100) / 100 : 0;
+  const waHasExcess = waExcess > 0;
+  const waEstUsd = waHasExcess ? Math.round(waExcess * 0.045 * 100) / 100 : 0;
 
   container.innerHTML = `
     <div class="servicios-grid">
@@ -79,20 +80,22 @@ export function renderServicios(data) {
         icon: "💬",
         title: "WhatsApp Cloud API (Meta)",
         sub: "Atención de Clara y avisos",
-        badge: waHasExcess ? '<span class="status-pill status-warn">Facturable (Excedente/Plantillas)</span>' : computeStatusBadge(waConvs, wa.free_conversations_limit || 1000),
+        badge: waHasExcess
+          ? `<span class="status-pill status-danger">⚠️ ${waExcess} convs en exceso</span>`
+          : computeStatusBadge(waConvs, waLimit),
         bodyHtml: `
-          <div class="metric-row"><span class="metric-label">Conversaciones activas:</span><span class="metric-val"><strong>${waConvs}</strong> / ${wa.free_conversations_limit || 1000}</span></div>
-          ${renderProgressBar(waConvs, wa.free_conversations_limit || 1000)}
+          <div class="metric-row"><span class="metric-label">Conversaciones activas:</span><span class="metric-val"><strong>${waConvs}</strong> / ${waLimit}</span></div>
+          ${renderProgressBar(waConvs, waLimit)}
           <div class="metric-breakdown">
             <div>📥 Mensajes recibidos: <strong>${wa.month_inbound_messages || 0}</strong> · 📤 Enviados: <strong>${wa.month_outbound_messages || 0}</strong></div>
-            <div>📅 Recordatorios 24h: <strong>${waTemplates}</strong> plantillas utility</div>
-            ${waHasExcess ? `<div class="metric-billable-alert">⚠️ Consumo facturable estimado: ~US$ ${waEstUsd}</div>` : ""}
+            <div>📅 Recordatorios 24h: <strong>${waTemplates}</strong> plantillas enviadas</div>
+            ${waHasExcess ? `<div class="metric-billable-alert">⚠️ Excedente sobre cuota gratuita: ${waExcess} conversaciones (~US$ ${waEstUsd})</div>` : ""}
           </div>
         `,
-        note: "1.000 conversaciones/mes gratuitas iniciadas por pacientes. Las plantillas y excedentes facturan según tarifa Meta.",
+        note: "1.000 conversaciones/mes gratuitas. Solo genera facturación si se superan las 1.000 en el mes calendario.",
         link: lnk.meta_billing,
         linkText: "Facturación Meta ↗",
-        gasto: { concepto: "Meta WhatsApp Cloud API", detalle: `Excedente/Plantillas ${periodMonth} (${waTemplates} recordatorios${waExcess > 0 ? `, ${waExcess} convs excedidas` : ""})`, moneda: "USD", monto: waEstUsd > 0 ? waEstUsd : "" },
+        gasto: { concepto: "Meta WhatsApp Cloud API", detalle: `Excedente ${periodMonth} (${waExcess} convs sobre 1.000)`, moneda: "USD", monto: waEstUsd > 0 ? waEstUsd : "" },
       })}
 
       <!-- 2. GEMINI (IA DE CLARA) -->
