@@ -29,12 +29,12 @@ function formatCalendarSummary(data) {
     const who = PRACTITIONERS[data.practitionerId];
     const whoTag = who ? `[${who.name.toUpperCase()}] ` : "";
     if (isMenor && familiar) {
-      return `🩺 ${whoTag}[TURNO - MENOR] ${nombre} (Familiar: ${familiar})`;
+      return `🩺 ${whoTag}[MENOR] ${nombre} (Familiar: ${familiar})`;
     }
     if (esParaTercero && familiar) {
-      return `🩺 ${whoTag}[TURNO] ${nombre} (Agendó: ${familiar})`;
+      return `🩺 ${whoTag}${nombre} (Agendó: ${familiar})`;
     }
-    return `🩺 ${whoTag}[TURNO] ${nombre}`;
+    return `🩺 ${whoTag}${nombre}`;
   }
 
   /**

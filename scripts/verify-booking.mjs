@@ -232,7 +232,7 @@ test("REGLA 5: Títulos y descripciones cumplen el estándar exacto de Kinésica
     practitionerId: "norberto",
     nombre: "Lucas Méndez",
   });
-  assert.strictEqual(sessionSummary, "🩺 [NORBERTO] [TURNO] Lucas Méndez");
+  assert.strictEqual(sessionSummary, "🩺 [NORBERTO] Lucas Méndez");
 
   const menorSummary = formatCalendarSummary({
     appointmentType: "session",
@@ -240,7 +240,7 @@ test("REGLA 5: Títulos y descripciones cumplen el estándar exacto de Kinésica
     isMenor: true,
     nombreFamiliar: "Lucas Méndez",
   });
-  assert.strictEqual(menorSummary, "🩺 [TURNO - MENOR] Tobías Méndez (Familiar: Lucas Méndez)");
+  assert.strictEqual(menorSummary, "🩺 [MENOR] Tobías Méndez (Familiar: Lucas Méndez)");
 
   const description = formatCalendarDescription({
     telefono: "+54 9 11 6156-4311",

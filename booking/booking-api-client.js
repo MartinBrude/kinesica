@@ -39,7 +39,7 @@
       {
         start: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 11, 0).getTime(),
         end: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 12, 0).getTime(),
-        title: "🩺 [TURNO] Paciente Ocupado 11hs",
+        title: "🩺 Paciente Ocupado 11hs",
       },
       {
         start: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 15, 0).getTime(),

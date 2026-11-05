@@ -829,10 +829,10 @@ function handleBookAppointment(payload) {
   const whoTag = whoName ? "[" + whoName.toUpperCase() + "] " : "";
   const familiarTitle = contactoNombre || nombreFamiliar;
   const summary = (isMenor && familiarTitle)
-    ? "🩺 " + whoTag + "[TURNO - MENOR] " + nombre + " (Familiar: " + familiarTitle + ")"
+    ? "🩺 " + whoTag + "[MENOR] " + nombre + " (Familiar: " + familiarTitle + ")"
     : (esParaTercero && familiarTitle)
-      ? "🩺 " + whoTag + "[TURNO] " + nombre + " (Agendó: " + familiarTitle + ")"
-      : "🩺 " + whoTag + "[TURNO] " + nombre;
+      ? "🩺 " + whoTag + nombre + " (Agendó: " + familiarTitle + ")"
+      : "🩺 " + whoTag + nombre;
 
   const techniqueLabels = {
     osteopatia: "Osteopatía",
