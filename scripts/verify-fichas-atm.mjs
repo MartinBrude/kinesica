@@ -242,7 +242,7 @@ const coerced = coerceFicha({
 });
 assert.equal(coerced.nombre, "Juan Pérez");
 assert.equal(coerced.eva, 10, "EVA debe estar acotado entre 0 y 10");
-assert.equal(coerced.ruidosIzq, true, "Booleano debe ser estricto");
+assert.equal(coerced.ruidosIzq, false, "Booleano debe rechazar strings no canónicos");
 assert.deepEqual(coerced.cdi, ["I.a"], "CDI solo debe admitir strings");
 
 // Verificación de coerción y sanitización de campos numéricos (no permiten texto)
@@ -643,4 +643,3 @@ const matchesAnotaciones = (html.match(/name="anotaciones"/g) || []).length;
 assert.equal(matchesAnotaciones, 1, "Debe haber exactamente un textarea de anotaciones en toda la ficha (solo en tab 6)");
 
 console.log("fichas ATM: ok");
-

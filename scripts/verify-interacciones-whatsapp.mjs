@@ -106,15 +106,16 @@ const sampleList = [
   { id: "2", wa_id: "549112", patient_name: "Beto", answered: true, archived: false },
   { id: "3", wa_id: "549113", patient_name: "Carlos", answered: false, archived: true },
   { id: "4", wa_id: "549114", patient_name: "Diana", answered: true, archived: true },
+  { id: "5", wa_id: "549115", patient_name: "Eva", answered: "false", archived: "0" },
 ];
 
 const allActive = filterInteractionsList(sampleList, "", "all");
-assert.equal(allActive.length, 2);
-assert.deepEqual(allActive.map((i) => i.id), ["1", "2"]);
+assert.equal(allActive.length, 3);
+assert.deepEqual(allActive.map((i) => i.id), ["1", "2", "5"]);
 
 const onlyPending = filterInteractionsList(sampleList, "", "pending");
-assert.equal(onlyPending.length, 1);
-assert.equal(onlyPending[0].id, "1");
+assert.equal(onlyPending.length, 2);
+assert.deepEqual(onlyPending.map((i) => i.id), ["1", "5"]);
 
 const onlyAnswered = filterInteractionsList(sampleList, "", "answered");
 assert.equal(onlyAnswered.length, 1);
@@ -147,7 +148,7 @@ renderStatsHeader(fakeStatsEl, { cachedInteractions: sampleList, activeStatusFil
 assert.ok(fakeStatsEl.innerHTML.includes('data-filter="archived"'));
 assert.ok(fakeStatsEl.innerHTML.includes("2 archivadas"));
 assert.ok(!fakeStatsEl.innerHTML.includes('<span class="interacciones-stat-pill">👥'));
-assert.equal(fakeTotalText, "👥 2 personas");
+assert.equal(fakeTotalText, "👥 3 personas");
 
 // Test de renderStatsHeader con filtro 'pending' activo por defecto
 renderStatsHeader(fakeStatsEl, { cachedInteractions: sampleList, activeStatusFilter: "pending" });

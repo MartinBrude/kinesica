@@ -18,7 +18,7 @@ export function setAuthRequiredHandler(handler) {
  * Realiza una petición HTTP JSON contra el backend del módulo admin.
  * @param {string} path Ruta relativa dentro de /admin/api/ (ej: "fichas.php")
  * @param {RequestInit} [options={}] Opciones estándar de fetch
- * @returns {Promise<any>} Respuesta deserializada en JSON
+ * @returns {Promise<unknown>} Respuesta deserializada en JSON
  * @throws {Error} Error estructurado con propiedad .auth en caso de 401 o .network si no hay conexión
  */
 export async function api(path, options = {}) {
@@ -72,7 +72,8 @@ export async function api(path, options = {}) {
     clearTimeout(timer);
   }
 
-  const data = await res.json().catch(() => ({}));
+  const parsed = await res.json().catch(() => null);
+  const data = parsed !== null && typeof parsed === "object" ? parsed : {};
 
   if (res.status === 401 && !data.error) {
     if (typeof onAuthRequiredHandler === "function") {

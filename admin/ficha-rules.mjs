@@ -55,6 +55,15 @@ export {
   exampleFicha,
 };
 
+export function parseBoolean(value) {
+  if (value === true || value === false) return value;
+  if (typeof value !== "string") return null;
+  const normalized = value.trim().toLowerCase();
+  if (normalized === "true" || normalized === "1") return true;
+  if (normalized === "false" || normalized === "0") return false;
+  return null;
+}
+
 export function todayISO() {
   const d = new Date();
   const y = d.getFullYear();
@@ -131,7 +140,7 @@ export function coerceFicha(input = {}) {
   for (const [key, defaultVal] of Object.entries(template)) {
     const val = input?.[key];
     if (typeof defaultVal === "boolean") {
-      out[key] = Boolean(val);
+      out[key] = parseBoolean(val) ?? defaultVal;
     } else if (typeof defaultVal === "number") {
       const num = Number(val);
       out[key] = Number.isFinite(num) ? num : defaultVal;

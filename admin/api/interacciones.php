@@ -197,7 +197,11 @@ if (in_array($action, ['archive', 'unarchive', 'toggle_answered'], true)) {
     if ($id === '') {
         json_out(400, ['error' => 'id es requerido']);
     }
-    if (!interacciones_set_state(db(), $id, $action, (string) ($auth['name'] ?? $auth['username'] ?? ''), (bool) ($input['answered'] ?? false))) {
+    $answered = kinesica_strict_boolean($input['answered'] ?? false);
+    if ($answered === null) {
+        json_out(422, ['error' => 'El campo answered debe ser booleano']);
+    }
+    if (!interacciones_set_state(db(), $id, $action, (string) ($auth['name'] ?? $auth['username'] ?? ''), $answered)) {
         json_out(404, ['error' => 'Conversación no encontrada']);
     }
     json_out(200, ['ok' => true, 'id' => $id, 'action' => $action]);

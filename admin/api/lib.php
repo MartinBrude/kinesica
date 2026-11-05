@@ -12,6 +12,16 @@ require_once __DIR__ . '/lib_codes.php';
 require_once __DIR__ . '/lib_mail.php';
 require_once __DIR__ . '/lib_whatsapp.php';
 
+function kinesica_strict_boolean(mixed $value): ?bool
+{
+    if (is_bool($value)) return $value;
+    if (!is_string($value)) return null;
+    $normalized = strtolower(trim($value));
+    if ($normalized === 'true' || $normalized === '1') return true;
+    if ($normalized === 'false' || $normalized === '0') return false;
+    return null;
+}
+
 function resolve_username(string $identifier): string
 {
     $clean = mb_strtolower(trim($identifier), 'UTF-8');

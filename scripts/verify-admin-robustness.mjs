@@ -21,6 +21,7 @@ import {
   getUniquePatients,
   matchFichaSearch,
   nextSession,
+  parseBoolean,
   normalizeDni,
   patientKey,
   dniNameConflict,
@@ -57,6 +58,21 @@ await test("coerceFicha tolera null, undefined y tipos erróneos", () => {
     assert.equal(typeof out.eva, "number");
     assert.ok(out.eva >= 0 && out.eva <= 10);
   }
+});
+
+await test("parseBoolean solo acepta valores booleanos canónicos", () => {
+  assert.equal(parseBoolean(true), true);
+  assert.equal(parseBoolean(false), false);
+  assert.equal(parseBoolean("true"), true);
+  assert.equal(parseBoolean("0"), false);
+  assert.equal(parseBoolean(" false "), false);
+  assert.equal(parseBoolean("verdad"), null);
+  assert.equal(parseBoolean("no"), null);
+  assert.equal(parseBoolean(1), null);
+  const coerced = coerceFicha({ sinDocumento: "false", ruidosIzq: "0", habitoBruxismo: "verdad" });
+  assert.equal(coerced.sinDocumento, false);
+  assert.equal(coerced.ruidosIzq, false);
+  assert.equal(coerced.habitoBruxismo, false);
 });
 
 await test("coerceFicha acota EVA y descarta basura numérica", () => {
@@ -281,6 +297,13 @@ await test("api propaga el mensaje del servidor en errores 4xx/5xx", async () =>
 
 await test("api tolera respuestas que no son JSON", async () => {
   mockFetch(() => ({ status: 200, ok: true, json: async () => { throw new SyntaxError("x"); } }));
+  assert.deepEqual(await api("me.php"), {});
+});
+
+await test("api normaliza respuestas JSON escalares a un objeto vacío", async () => {
+  mockFetch(() => jsonResponse(200, "respuesta inesperada"));
+  assert.deepEqual(await api("me.php"), {});
+  mockFetch(() => jsonResponse(200, null));
   assert.deepEqual(await api("me.php"), {});
 });
 

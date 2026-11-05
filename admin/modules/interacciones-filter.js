@@ -4,6 +4,7 @@
  */
 
 import { formatDisplayPhone } from "./phone-format.js";
+import { parseBoolean } from "../ficha-rules.mjs?v=89";
 
 export function filterInteractionsList(items, term, activeStatusFilter) {
   const rawTerm = String(term || "").trim();
@@ -18,13 +19,13 @@ export function filterInteractionsList(items, term, activeStatusFilter) {
 
   return items.filter((item) => {
     if (!item || typeof item !== "object") return false;
-    const isArchived = Boolean(item.archived);
+    const isArchived = parseBoolean(item.archived) === true;
     if (activeStatusFilter === "archived") {
       if (!isArchived) return false;
     } else {
       if (isArchived) return false;
-      if (activeStatusFilter === "pending" && Boolean(item.answered)) return false;
-      if (activeStatusFilter === "answered" && !item.answered) return false;
+      if (activeStatusFilter === "pending" && parseBoolean(item.answered) === true) return false;
+      if (activeStatusFilter === "answered" && parseBoolean(item.answered) !== true) return false;
     }
     if (!cleanTerm) return true;
 
@@ -58,10 +59,10 @@ export function filterInteractionsList(items, term, activeStatusFilter) {
 
 export function renderStatsHeader(statsEl, { cachedInteractions, activeStatusFilter }) {
   if (!statsEl) return;
-  const activeList = cachedInteractions.filter((i) => i && !i.archived);
-  const archivedList = cachedInteractions.filter((i) => i && Boolean(i.archived));
+  const activeList = cachedInteractions.filter((i) => i && parseBoolean(i.archived) !== true);
+  const archivedList = cachedInteractions.filter((i) => i && parseBoolean(i.archived) === true);
   const totalContacts = new Set(activeList.map((i) => String(i?.wa_id || ""))).size;
-  const answeredCount = activeList.filter((i) => Boolean(i?.answered)).length;
+  const answeredCount = activeList.filter((i) => parseBoolean(i?.answered) === true).length;
   const pendingCount = activeList.length - answeredCount;
   const archivedCount = archivedList.length;
 

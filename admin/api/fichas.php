@@ -27,6 +27,24 @@ if ($method === 'POST') {
     if (!kinesica_fichas_check_structure($data)) {
         json_out(422, ['error' => 'La ficha contiene campos con formato o tamaño no válido']);
     }
+    $booleanFields = [
+        'sinDocumento', 'ruidosIzq', 'ruidosDer', 'faseApertura', 'faseCierre',
+        'ruidoClic', 'ruidoCrep', 'condilarIzq', 'condilarDer', 'desvIzq', 'desvDer',
+        'desvCorregida', 'deflexion', 'desvIzqPost', 'desvDerPost', 'desvCorregidaPost',
+        'deflexionPost', 'maseteroIzq', 'maseteroDer', 'temporalIzq', 'temporalDer',
+        'pterMedIzq', 'pterMedDer', 'pterLatIzq', 'pterLatDer', 'discoConIzq',
+        'discoConDer', 'discoSinIzq', 'discoSinDer', 'trapecioIzq', 'trapecioDer',
+        'ecomIzq', 'ecomDer', 'suboccipitalIzq', 'suboccipitalDer',
+        'habitoApretamiento', 'habitoBruxismo', 'habitoMasticacionUni', 'habitoOnicofagia',
+    ];
+    foreach ($booleanFields as $key) {
+        if (!array_key_exists($key, $data)) continue;
+        $parsed = kinesica_strict_boolean($data[$key]);
+        if ($parsed === null) {
+            json_out(422, ['error' => 'El campo ' . $key . ' debe ser booleano']);
+        }
+        $data[$key] = $parsed;
+    }
 
     $textFields = ['nombre', 'dni', 'motivo', 'antecedentes', 'anotaciones', 'fotoUrl'];
     foreach ($textFields as $key) {
@@ -77,7 +95,7 @@ if ($method === 'POST') {
         'motivo' => 'el motivo de consulta',
         'antecedentes' => 'los antecedentes clínicos',
     ];
-    $sinDocumento = filter_var($data['sinDocumento'] ?? false, FILTER_VALIDATE_BOOLEAN);
+    $sinDocumento = $data['sinDocumento'] ?? false;
     $data['sinDocumento'] = $sinDocumento;
     if ($sinDocumento) {
         $data['dni'] = '';
@@ -123,8 +141,13 @@ if ($method === 'POST') {
         $answer = $data[$field] ?? '';
         if (!in_array($answer, ['Sí', 'No', ''], true)) json_out(422, ['error' => 'Valor no válido en ' . $label]);
         $data[$field] = $answer;
-        $data[$left] = $answer === 'Sí' && filter_var($data[$left] ?? false, FILTER_VALIDATE_BOOLEAN);
-        $data[$right] = $answer === 'Sí' && filter_var($data[$right] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $leftValue = kinesica_strict_boolean($data[$left] ?? false);
+        $rightValue = kinesica_strict_boolean($data[$right] ?? false);
+        if ($leftValue === null || $rightValue === null) {
+            json_out(422, ['error' => 'Los lados de ' . $label . ' deben ser booleanos']);
+        }
+        $data[$left] = $answer === 'Sí' && $leftValue;
+        $data[$right] = $answer === 'Sí' && $rightValue;
         if ($answer === 'Sí' && !$data[$left] && !$data[$right]) {
             json_out(422, ['error' => 'Debe indicar el lado (izquierdo y/o derecho) en ' . $label]);
         }

@@ -8,6 +8,7 @@ import { buildWhatsAppUrl } from "./interacciones-message.js";
 import { isMartinBrudePhone } from "./phone-search.js?v=2";
 import { formatDisplayPhone } from "./phone-format.js";
 import { capitalizePersonName } from "./pacientes-format.js";
+import { parseBoolean } from "../ficha-rules.mjs?v=89";
 
 const MONTH_NAMES = [
   "enero", "febrero", "marzo", "abril", "mayo", "junio",
@@ -99,10 +100,10 @@ export function buildInteractionCardHtml(conv, itemIdx, senderName) {
   const convKey = String(conv?.id || `conv_${cleanWa || itemIdx}`).replace(/[^a-zA-Z0-9_-]/g, "_");
   const cardId = `conv-card-${convKey}`;
   const threadId = `thread-${convKey}`;
-  const isAnswered = Boolean(conv?.answered);
+  const isAnswered = parseBoolean(conv?.answered) === true;
   const initial = name !== "Paciente sin nombre" ? name.charAt(0).toUpperCase() : "👤";
 
-  const isArchived = Boolean(conv?.archived);
+  const isArchived = parseBoolean(conv?.archived) === true;
   const archiveLabel = isArchived ? "Desarchivar conversación" : "Archivar conversación";
   const isColaborador = Boolean(typeof senderName === "object" && senderName?.role === "colaborador");
   const archiveBtnHtml = isColaborador
