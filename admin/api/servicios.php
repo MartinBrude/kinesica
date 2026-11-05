@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 /**
  * Kinésica Admin - API de Métricas de Servicios, Cuotas y Consumo
- * Endpoint protegido para administradores. Supervisa volumen de WhatsApp, IA, Emails y Base de Datos.
+ * Endpoint protegido para administradores.
+ * Supervisa los servicios activos: WhatsApp (Meta), IA Gemini (Google), Places (Google Cloud) y Hostinger (Web, MariaDB, Correo).
  */
 
 require __DIR__ . '/lib.php';
@@ -22,8 +23,6 @@ $startOfMonth = (new DateTimeImmutable('first day of this month 00:00:00', $tz))
 $startOfToday = (new DateTimeImmutable('today 00:00:00', $tz))->format('Y-m-d H:i:s');
 
 $c = cfg();
-
-$resendKey = (string) (getenv('RESEND_API_KEY') ?: ($_SERVER['RESEND_API_KEY'] ?? $_ENV['RESEND_API_KEY'] ?? $c['resend_api_key'] ?? ''));
 $waToken = (string) (getenv('WHATSAPP_TOKEN') ?: ($_SERVER['WHATSAPP_TOKEN'] ?? $_ENV['WHATSAPP_TOKEN'] ?? $c['whatsapp_token'] ?? ''));
 
 $whatsapp = [
@@ -43,38 +42,34 @@ $gemini = [
     'month_requests' => 0,
 ];
 
-$resend = [
-    'configured' => $resendKey !== '',
-    'daily_free_limit' => 100,
-    'month_free_limit' => 3000,
-    'today_sent' => 0,
-    'month_sent' => 0,
-];
-
-$database = [
+$hostinger = [
     'connected' => false,
     'size_mb' => 0.0,
     'tables' => [],
+    'today_emails' => 0,
+    'month_emails' => 0,
+    'daily_email_limit' => 1000,
+    'plan_type' => 'Business Web Hosting (Abono periódico fijo)',
 ];
 
 try {
     $pdo = db();
-    $database['connected'] = true;
+    $hostinger['connected'] = true;
 
-    // Tamaño total de la base de datos
+    // Tamaño total de la base de datos MariaDB
     $dbName = (string) ($c['db']['name'] ?? 'u696348908_atm');
     $sizeStmt = $pdo->prepare('SELECT ROUND(SUM(data_length + index_length) / 1024 / 1024, 2) AS mb FROM information_schema.tables WHERE table_schema = :db');
     $sizeStmt->execute(['db' => $dbName]);
-    $database['size_mb'] = (float) ($sizeStmt->fetchColumn() ?: 0.0);
+    $hostinger['size_mb'] = (float) ($sizeStmt->fetchColumn() ?: 0.0);
 
     // Conteo por tablas principales
     $tablesToCheck = ['fichas', 'pacientes', 'lista_espera', 'interaccion_eventos', 'recordatorio_eventos', 'users', 'login_codes'];
     foreach ($tablesToCheck as $tbl) {
         try {
             $cnt = (int) $pdo->query("SELECT COUNT(*) FROM `$tbl`")->fetchColumn();
-            $database['tables'][$tbl] = $cnt;
+            $hostinger['tables'][$tbl] = $cnt;
         } catch (Throwable $_) {
-            $database['tables'][$tbl] = 0;
+            $hostinger['tables'][$tbl] = 0;
         }
     }
 
@@ -120,23 +115,23 @@ try {
         }
     } catch (Throwable $_) {}
 
-    // Métricas Email (login_codes)
+    // Correos enviados por el servidor local de Hostinger (mail()) registrados como login_codes
     try {
         $stmtMailM = $pdo->prepare('SELECT COUNT(*) FROM login_codes WHERE created_at >= :since');
         $stmtMailM->execute(['since' => $startOfMonth]);
-        $resend['month_sent'] = (int) $stmtMailM->fetchColumn();
+        $hostinger['month_emails'] = (int) $stmtMailM->fetchColumn();
 
         $stmtMailD = $pdo->prepare('SELECT COUNT(*) FROM login_codes WHERE created_at >= :today');
         $stmtMailD->execute(['today' => $startOfToday]);
-        $resend['today_sent'] = (int) $stmtMailD->fetchColumn();
+        $hostinger['today_emails'] = (int) $stmtMailD->fetchColumn();
     } catch (Throwable $_) {}
 
 } catch (Throwable $e) {
-    $database['connected'] = false;
-    $database['error'] = $e->getMessage();
+    $hostinger['connected'] = false;
+    $hostinger['error'] = $e->getMessage();
 }
 
-// Almacenamiento uploads
+// Almacenamiento uploads en disco
 $uploadsDir = __DIR__ . '/uploads';
 $uploadsCount = 0;
 $uploadsBytes = 0;
@@ -173,15 +168,13 @@ json_out(200, [
     'whatsapp' => $whatsapp,
     'gemini' => $gemini,
     'google_cloud' => $googleCloud,
-    'resend' => $resend,
-    'database' => $database,
+    'hostinger' => $hostinger,
     'storage' => $storage,
     'links' => [
         'meta_billing' => 'https://business.facebook.com/billing_hub',
         'meta_whatsapp' => 'https://developers.facebook.com/apps/',
         'google_cloud_billing' => 'https://console.cloud.google.com/billing',
         'google_ai_studio' => 'https://aistudio.google.com/app/plan_information',
-        'resend_dashboard' => 'https://resend.com/emails',
         'hostinger' => 'https://hpanel.hostinger.com/',
         'github_actions' => 'https://github.com/settings/billing',
     ],

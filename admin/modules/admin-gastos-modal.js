@@ -118,20 +118,23 @@ export function recalcModalCurrencies() {
   if (inputGastoMontoArs) inputGastoMontoArs.value = ars.toFixed(2);
 }
 
-export function openCreateGastoModal() {
+export function openCreateGastoModal(defaults = {}) {
   currentEditingGasto = null;
   if (modalGastoTitle) modalGastoTitle.textContent = "Nuevo Gasto";
   if (inputGastoId) inputGastoId.value = "";
-  if (inputGastoConcepto) inputGastoConcepto.value = "";
-  if (inputGastoDetalle) inputGastoDetalle.value = "";
-  const today = new Date().toISOString().split("T")[0];
+  if (inputGastoConcepto) inputGastoConcepto.value = defaults.concepto || "";
+  if (inputGastoDetalle) inputGastoDetalle.value = defaults.detalle || "";
+  const today = defaults.fecha || new Date().toISOString().split("T")[0];
   if (inputGastoFecha) inputGastoFecha.value = today;
-  if (inputGastoMonto) inputGastoMonto.value = "";
-  if (selectGastoMoneda) selectGastoMoneda.value = "EUR";
+  if (inputGastoMonto) inputGastoMonto.value = defaults.monto != null ? String(defaults.monto) : "";
+  const mon = (defaults.moneda || "EUR").toUpperCase();
+  if (selectGastoMoneda) selectGastoMoneda.value = mon;
   if (inputGastoMontoEur) inputGastoMontoEur.value = "";
   if (inputGastoMontoUsd) inputGastoMontoUsd.value = "";
   if (inputGastoMontoArs) inputGastoMontoArs.value = "";
-  fetchRatesForDate(today, false);
+  fetchRatesForDate(today, false).then(() => {
+    recalcModalCurrencies();
+  });
   if (modalGastoEl) modalGastoEl.hidden = false;
   inputGastoConcepto?.focus();
 }
