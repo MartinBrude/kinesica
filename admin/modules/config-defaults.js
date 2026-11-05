@@ -158,6 +158,20 @@ export function bindConfigInputs() {
   };
 }
 
+export function isIncompleteClaraTextStub(key, text) {
+  const t = String(text || "").trim();
+  if (!t) return true;
+  if (key === "menu_welcome_en") return !t.includes("\n") || !/\*?A[.)*]/i.test(t);
+  if (key === "submenu_turnos_text_en" || key === "opt_e_text_en") return !t.includes("\n") || !/\*?1[.)*]/.test(t) || !/\*?2[.)*]/.test(t);
+  if (key === "opt_a_text_en") return !/https?:\/\/|kinesica\.com\.ar/i.test(t);
+  if (key === "opt_b_text_en") return !t.includes("\n") && !/charcas|3889|maps/i.test(t);
+  if (key === "opt_c_text_en") return !t.includes("\n") && !/\{honorario|ars\s*\d|\$\s*\d/i.test(t);
+  if (key === "opt_d_text_en") return !t.includes("\n") && t.length < 50;
+  if (key === "opt_a2_text_en") return !/passport|id\b|dni|document/i.test(t) && t.length < 80;
+  if (key === "opt_e1_text_en" || key === "opt_e2_text_en" || key === "opt_e3_text_en") return !/whatsapp|shortly|contact/i.test(t) && t.length < 75;
+  return false;
+}
+
 export function populateClaraInputs(inputs, data, defaults) {
   const map = {
     menuWelcome: "menu_welcome",
@@ -184,6 +198,11 @@ export function populateClaraInputs(inputs, data, defaults) {
     optE3En: "opt_e3_text_en",
   };
   for (const [prop, key] of Object.entries(map)) {
-    if (inputs[prop]) inputs[prop].value = data[key] || defaults[key] || "";
+    const rawVal = (data && typeof data[key] === "string") ? data[key].trim() : "";
+    const effectiveVal = (rawVal && !isIncompleteClaraTextStub(key, rawVal)) ? rawVal : (defaults[key] || "");
+    if (inputs[prop]) inputs[prop].value = effectiveVal;
+    if (data && isIncompleteClaraTextStub(key, rawVal) && defaults[key]) {
+      data[key] = defaults[key];
+    }
   }
 }
