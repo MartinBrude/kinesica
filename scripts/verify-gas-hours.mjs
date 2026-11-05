@@ -34,6 +34,7 @@ function load({ adminHours, status = 200, throws = false, events = [], props = {
     },
     CacheService: { getScriptCache: () => ({ get: (k) => store[k] || null, put: (k, v) => { store[k] = v; } }) },
     PropertiesService: { getScriptProperties: () => ({ getProperty: (k) => (k in props ? props[k] : null), setProperty: (k, v) => { props[k] = v; } }) },
+    LockService: { getScriptLock: () => ({ tryLock: () => true, releaseLock() {} }) },
     SpreadsheetApp: {
       openById: () => ({
         getActiveSheet: () => ({

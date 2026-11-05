@@ -26,6 +26,13 @@
     { telefono: "5491100002222", nombre: "Paciente Demo Dos" },
   ];
 
+  function createBookingRequestId() {
+    if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+      return crypto.randomUUID();
+    }
+    return `web-${Date.now()}-${Math.random().toString(36).slice(2, 12)}`;
+  }
+
   function getMockEvents() {
     try {
       const stored = localStorage.getItem(MOCK_STORAGE_KEY);
@@ -123,12 +130,131 @@
         this.options.apiUrl ||
         (typeof window !== "undefined" && window.KINESICA_SITE && window.KINESICA_SITE.bookingApiUrl) ||
         null;
+      this.backupApiUrl =
+        this.options.backupApiUrl !== undefined
+          ? this.options.backupApiUrl
+          : "/admin/api/calendar_backup.php";
       this.isMock = !this.apiUrl || this.options.forceMock === true;
       this._slotsCache = {};
       this._inFlightSlots = {};
       this._rangeInFlight = null;
       this._rangeUnsupported = false;
       this._prewarmedAt = 0;
+    }
+
+    getBackupApiUrl() {
+      if (!this.backupApiUrl || this.isMock) return null;
+      return this.backupApiUrl;
+    }
+
+    /**
+     * Sincronización pasiva en segundo plano (Piggybacking):
+     * Cuando Google Calendar responde OK, actualiza silenciosamente la copia de respaldo del servidor.
+     */
+    syncBackupSlots(payload) {
+      const backupUrl = this.getBackupApiUrl();
+      if (!backupUrl || typeof fetch !== "function") return;
+      try {
+        fetch(`${backupUrl}?action=sync_client_slots`, {
+          method: "POST",
+          mode: "cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(Object.assign({ action: "sync_client_slots" }, payload)),
+        }).catch(() => {});
+      } catch (e) {}
+    }
+
+    async fetchSlotsFromBackup(dateStr, options) {
+      const backupUrl = this.getBackupApiUrl();
+      if (!backupUrl || typeof fetch !== "function") return null;
+      const practitionerId = (options && options.practitionerId) || "";
+      const query = new URLSearchParams({
+        action: "get_slots",
+        date: dateStr,
+        type: "session",
+        practitioner: practitionerId,
+      });
+      const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+      const timeoutId = controller ? setTimeout(() => controller.abort(), 8000) : null;
+      try {
+        const res = await fetch(`${backupUrl}?${query.toString()}`, {
+          method: "GET",
+          mode: "cors",
+          signal: controller ? controller.signal : undefined,
+        });
+        if (timeoutId) clearTimeout(timeoutId);
+        if (!res.ok) return null;
+        const json = await res.json();
+        if (!json || json.status !== "success" || !Array.isArray(json.availableSlots)) {
+          return null;
+        }
+        return json;
+      } catch (e) {
+        if (timeoutId) clearTimeout(timeoutId);
+        return null;
+      }
+    }
+
+    async fetchSlotsRangeFromBackup(from, to) {
+      const backupUrl = this.getBackupApiUrl();
+      if (!backupUrl || typeof fetch !== "function") return null;
+      const query = new URLSearchParams({
+        action: "get_slots_range",
+        from: from,
+        to: to,
+      });
+      const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+      const timeoutId = controller ? setTimeout(() => controller.abort(), 10000) : null;
+      try {
+        const res = await fetch(`${backupUrl}?${query.toString()}`, {
+          method: "GET",
+          mode: "cors",
+          signal: controller ? controller.signal : undefined,
+        });
+        if (timeoutId) clearTimeout(timeoutId);
+        if (!res.ok) return null;
+        const json = await res.json();
+        if (!json || json.status !== "success" || !json.days) {
+          return null;
+        }
+        return json;
+      } catch (e) {
+        if (timeoutId) clearTimeout(timeoutId);
+        return null;
+      }
+    }
+
+    async bookViaBackup(payload) {
+      const backupUrl = this.getBackupApiUrl();
+      if (!backupUrl || typeof fetch !== "function") return null;
+      const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+      const timeoutId = controller ? setTimeout(() => controller.abort(), 15000) : null;
+      try {
+        const res = await fetch(`${backupUrl}?action=book`, {
+          method: "POST",
+          mode: "cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(Object.assign({}, payload, { action: "book" })),
+          signal: controller ? controller.signal : undefined,
+        });
+        if (timeoutId) clearTimeout(timeoutId);
+        const json = await res.json();
+        if (json && json.status === "conflict") {
+          const conflictErr = new Error(
+            json.message || "El horario seleccionado acaba de ser reservado por otro paciente. Por favor selecciona otro horario disponible."
+          );
+          conflictErr.isConflict = true;
+          throw conflictErr;
+        }
+        if (!res.ok || !json || json.status !== "success") {
+          return null;
+        }
+        return json;
+      } catch (err) {
+        if (timeoutId) clearTimeout(timeoutId);
+        if (err && err.isConflict) throw err;
+        return null;
+      }
     }
 
     setApiUrl(url) {
@@ -317,12 +443,25 @@
 
       const reqPromise = (async () => {
         try {
-          const result = await fetchWithRetry(0);
-          this._slotsCache[cacheKey] = {
-            data: result,
-            timestamp: Date.now(),
-          };
-          return result;
+          try {
+            const result = await fetchWithRetry(0);
+            this._slotsCache[cacheKey] = {
+              data: result,
+              timestamp: Date.now(),
+            };
+            this.syncBackupSlots({ date: dateStr, availableSlots: result.availableSlots });
+            return result;
+          } catch (primaryErr) {
+            const backupResult = await this.fetchSlotsFromBackup(dateStr, options);
+            if (backupResult) {
+              this._slotsCache[cacheKey] = {
+                data: backupResult,
+                timestamp: Date.now(),
+              };
+              return backupResult;
+            }
+            throw primaryErr;
+          }
         } finally {
           delete this._inFlightSlots[cacheKey];
         }
@@ -377,15 +516,33 @@
           const json = await res.json();
           if (!json || json.status === "error" || !json.days) {
             const message = json && json.message ? json.message : "";
-            if (message.indexOf("no reconocida") !== -1) this._rangeUnsupported = true;
+            if (message.indexOf("no reconocida") !== -1) {
+              this._rangeUnsupported = true;
+              return false;
+            }
+            const backupRange = await this.fetchSlotsRangeFromBackup(from, to);
+            if (backupRange && backupRange.days) {
+              const now = Date.now();
+              applyStoredDays(this._slotsCache, backupRange.days, now);
+              writeStoredRange(from, to, backupRange.days);
+              return true;
+            }
             return false;
           }
           const now = Date.now();
           applyStoredDays(this._slotsCache, json.days, now);
           writeStoredRange(from, to, json.days);
+          this.syncBackupSlots({ days: json.days });
           return true;
         } catch (err) {
           if (timeoutId) clearTimeout(timeoutId);
+          const backupRange = await this.fetchSlotsRangeFromBackup(from, to);
+          if (backupRange && backupRange.days) {
+            const now = Date.now();
+            applyStoredDays(this._slotsCache, backupRange.days, now);
+            writeStoredRange(from, to, backupRange.days);
+            return true;
+          }
           return false;
         } finally {
           if (typeof window !== "undefined") window.__kinesicaSlotsRangePromise = null;
@@ -433,6 +590,7 @@
 
     /**
      * Envía la reserva a Google Calendar (o al mock local).
+     * Si Google Calendar falla por caída o timeout, conmuta de forma 100% transparente al Modo Respaldo.
      */
     async bookAppointment(data) {
       // Validación previa en cliente usando el motor de reglas
@@ -485,6 +643,8 @@
       // como en el cuerpo POST en formato JSON
       const effectiveUrl = this.getEffectiveApiUrl();
       const hoursSig = currentHoursSignature();
+      // Se conserva en el objeto para que un reintento tras un timeout sea idempotente.
+      if (!data.bookingRequestId) data.bookingRequestId = createBookingRequestId();
       const query = new URLSearchParams({
         action: "book",
         tipo: data.tipo || "",
@@ -501,6 +661,7 @@
         isMenor: data.isMenor ? "true" : "false",
         nombreFamiliar: data.nombreFamiliar || "",
         notas: data.notas || "",
+        bookingRequestId: data.bookingRequestId,
         hours: hoursSig,
       });
 
@@ -511,6 +672,7 @@
       // El script crea el evento y después avisa por WhatsApp. 25s cortaba la espera con el turno ya agendado.
       const timeoutId = controller ? setTimeout(() => controller.abort(), 55000) : null;
       let res;
+      let primaryError = null;
       try {
         res = await fetch(url, {
           method: "POST",
@@ -522,22 +684,54 @@
         });
       } catch (err) {
         if (err && err.name === "AbortError") {
-          throw new Error("La reserva tardó demasiado. Revisá el calendario antes de intentar de nuevo: el turno puede haber quedado agendado.");
+          primaryError = new Error("La reserva tardó demasiado. Revisá el calendario antes de intentar de nuevo: el turno puede haber quedado agendado.");
+        } else {
+          primaryError = err;
         }
-        throw err;
       } finally {
         if (timeoutId) clearTimeout(timeoutId);
       }
 
-      if (!res.ok) {
-        throw new Error(`Error de comunicación con el servidor (${res.status})`);
+      if (!primaryError && res && res.ok) {
+        try {
+          const json = await res.json();
+          if (json && json.status === "success") {
+            this.clearCache();
+            return json;
+          }
+          if (json && json.status === "conflict") {
+            const conflictErr = new Error(json.message || "El horario seleccionado acaba de ser reservado por otro paciente.");
+            conflictErr.isConflict = true;
+            throw conflictErr;
+          }
+          const msg = (json && json.message) || "Error al registrar la cita en Google Calendar";
+          // Si es un error de validación de reglas (horario inválido, fecha pasada), no usar respaldo
+          if (/fuera del horario|anticipaci[oó]n|fechas pasadas|requerid|inv[aá]lid/i.test(msg)) {
+            const valErr = new Error(msg);
+            valErr.isValidation = true;
+            throw valErr;
+          }
+          primaryError = new Error(msg);
+        } catch (parseOrLogicErr) {
+          if (parseOrLogicErr && (parseOrLogicErr.isConflict || parseOrLogicErr.isValidation)) {
+            throw parseOrLogicErr;
+          }
+          primaryError = parseOrLogicErr;
+        }
+      } else if (!primaryError) {
+        primaryError = new Error(`Error de comunicación con el servidor (${res ? res.status : "sin respuesta"})`);
       }
 
-      const json = await res.json();
-      if (json.status !== "success") {
-        throw new Error(json.message || "Error al registrar la cita en Google Calendar");
+      // Nivel 2: Conmutación silenciosa al Modo Respaldo (auditoría a Norberto)
+      const backupResult = await this.bookViaBackup(payload);
+      if (backupResult) {
+        this.clearCache();
+        return backupResult;
       }
-      return json;
+
+      const finalErr = primaryError || new Error("Error al registrar la cita");
+      finalErr.bothSystemsFailed = true;
+      throw finalErr;
     }
 
     clearCache() {

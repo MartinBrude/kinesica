@@ -84,6 +84,12 @@ El archivo [`google-apps-script.js`](./google-apps-script.js) contiene el backen
    - *Quién tiene acceso:* **Cualquier persona**
 5. Copiá la URL del Webhook generada y agregala en tu configuración o en el selector del prototipo. ¡Listo! El módulo leerá y escribirá directamente en el Google Calendar `consultorio` y le notificará a Norberto a su WhatsApp personal.
 
+### Protección ante cortes o doble clic
+
+El flujo de **Confirmar reserva** genera una clave idempotente por intento. Google Apps Script la guarda junto con el resultado y reutiliza el mismo `eventId` si el navegador reintenta después de un timeout. Además, `LockService` comprueba la disponibilidad y crea el evento como una única operación lógica, evitando dos reservas simultáneas del mismo horario.
+
+Después de modificar [`google-apps-script.js`](./google-apps-script.js), hay que copiarlo al proyecto de Apps Script y crear una nueva implementación/version de la aplicación web. La página pública usa el bundle regenerado, pero Google no actualiza automáticamente el código desplegado.
+
 ---
 
 ## 🧩 5. Cómo Embeber el Widget en Cualquier Página

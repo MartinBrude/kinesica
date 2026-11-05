@@ -536,6 +536,9 @@
 
     fallbackPractitionerId() {
       const techniqueId = this.state && this.state.techniqueId;
+      if (techniqueId === "paciente" && this.state && this.state.practitionerId === "maria") {
+        return "maria";
+      }
       const technique =
         engine && typeof engine.getTechnique === "function"
           ? engine.getTechnique(techniqueId)
@@ -1785,7 +1788,9 @@
         this.renderConfirmation(payload, result);
         this.setStep(4);
       } catch (err) {
-        this.showError(err.message);
+        this.showError(err.message, {
+          offerWhatsAppFallback: Boolean(err && err.bothSystemsFailed),
+        });
       } finally {
         btnSubmit.disabled = false;
         btnSubmit.textContent = this.t("confirm");
@@ -1913,15 +1918,34 @@
       }
     }
 
-    showError(msg) {
+    showError(msg, opts) {
       const banner = this.container.querySelector("#kb-error-banner");
+      if (!banner) return;
       banner.textContent = msg;
+      if (opts && opts.offerWhatsAppFallback && typeof document !== "undefined") {
+        const fallbackPrac = this.fallbackPractitionerId();
+        const isMaria = fallbackPrac === "maria";
+        const wrap = document.createElement("div");
+        wrap.style.marginTop = "10px";
+        const p = document.createElement("p");
+        p.style.margin = "0 0 8px 0";
+        p.textContent = this.t(isMaria ? "slotFallbackTextMaria" : "slotFallbackText");
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "kb-btn kb-btn-whatsapp";
+        btn.textContent = this.t(isMaria ? "slotFallbackBtnMaria" : "slotFallbackBtn");
+        btn.onclick = () => this.openPractitionerWhatsApp(fallbackPrac);
+        wrap.appendChild(p);
+        wrap.appendChild(btn);
+        banner.appendChild(wrap);
+      }
       banner.classList.add("visible");
-      banner.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      if (banner.scrollIntoView) banner.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
 
     clearError() {
       const banner = this.container.querySelector("#kb-error-banner");
+      if (!banner) return;
       banner.textContent = "";
       banner.classList.remove("visible");
     }
