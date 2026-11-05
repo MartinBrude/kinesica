@@ -53,6 +53,7 @@ import {
 } from "./page-shell.mjs";
 import { FOUNDER } from "./site-contact.mjs";
 import { BUSINESS_ID } from "./schema-local-business.mjs";
+import { PATHOLOGY_RED_FLAGS } from "./pathology-red-flags.mjs";
 
 const ROOT = repoRoot(import.meta.url);
 
@@ -219,10 +220,11 @@ function firstSentence(text) {
   return match ? match[0] : plain;
 }
 
-function buildUrgentCareSection(lang, name) {
+function buildUrgentCareSection(lang, name, stem) {
   const ui = PATHOLOGY_PAGE_UI[lang];
   const conditionsHref = sitePath(lang, "condiciones");
-  const items = ui.urgentList
+  const urgentList = PATHOLOGY_RED_FLAGS[stem]?.[lang] || ui.urgentList;
+  const items = urgentList
     .map((item) => `              <li>${escHtml(item)}</li>`)
     .join("\n");
   return `    <section class="pathology-urgent-care space-medium">
@@ -316,7 +318,7 @@ ${complications}
         </div>
       </div>
     </section>
-${buildUrgentCareSection(lang, name)}
+${buildUrgentCareSection(lang, name, pathology.stem)}
     <section class="pathology-techniques space-medium bg-light">
       <div class="container">
         <div class="row">

@@ -43,6 +43,7 @@ import {
   getMethodServiceCopy,
 } from "./schema-local-business.mjs";
 import { FOUNDER } from "./site-contact.mjs";
+import { METHOD_FAQS } from "./method-faq-content.mjs";
 
 const ROOT = repoRoot(import.meta.url);
 
@@ -185,6 +186,24 @@ function buildHtml(stem, lang) {
       },
     },
   };
+  const methodFaqs = METHOD_FAQS[stem]?.[lang] || [];
+  const faqSchema = methodFaqs.length
+    ? {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "@id": `${canonical}#faq`,
+        inLanguage: SCHEMA_LANGUAGE[lang],
+        mainEntityOfPage: canonical,
+        mainEntity: methodFaqs.map((faq) => ({
+          "@type": "Question",
+          name: faq.q,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: faq.a,
+          },
+        })),
+      }
+    : null;
 
   return `<!doctype html>
 <html lang="${HTML_LANG[lang]}">
@@ -210,6 +229,7 @@ ${headStandardStylesheets(p)}  <script src="${p}partials/gtm-head.min.js" defer>
 ${jsonLdScript(homePageBreadcrumbSchema(lang, ui.homeLabel, data.breadcrumb, canonical))}
 ${jsonLdScript(therapySchema, { id: "kinesica-method-therapy" })}
 ${jsonLdScript(pageSchema)}
+${faqSchema ? jsonLdScript(faqSchema) : ""}
 </head>
 
 <body>

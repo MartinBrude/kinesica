@@ -120,6 +120,10 @@ export const PATHOLOGY_FAQS = {
       {
         "q": "¿Se puede volver a moverse y entrenar con lumbalgia?",
         "a": "Sí. El objetivo del tratamiento es recuperar movilidad y fuerza con ejercicio progresivo, ajustar cargas y reducir el miedo al movimiento para retomar actividades con más confianza."
+      },
+      {
+        "q": "¿Cuándo consultar por dolor lumbar?",
+        "a": "Consultá pronto si el dolor aparece tras un traumatismo, empeora rápidamente o se acompaña de fiebre, pérdida de fuerza, adormecimiento en la zona genital o cambios en el control de la vejiga o el intestino. Si esos signos son intensos o progresivos, buscá atención médica urgente."
       }
     ],
     "en": [
@@ -138,6 +142,10 @@ export const PATHOLOGY_FAQS = {
       {
         "q": "Can you return to activity and exercise with low back pain?",
         "a": "Yes. Care focuses on restoring movement and strength with progressive exercise, load adjustment, and practical education to regain confidence in daily activity."
+      },
+      {
+        "q": "When should you seek care for lower back pain?",
+        "a": "Seek prompt care if pain follows major trauma, worsens quickly, or comes with fever, weakness, numbness around the genitals, or changes in bladder or bowel control. Severe or progressive signs require urgent medical attention."
       }
     ],
     "fr": [
@@ -156,6 +164,10 @@ export const PATHOLOGY_FAQS = {
       {
         "q": "Peut-on reprendre l'activité physique avec une lombalgie ?",
         "a": "Oui. La prise en charge vise à retrouver mobilité et force avec des exercices progressifs, une adaptation des charges et des repères pour reprendre les activités en confiance."
+      },
+      {
+        "q": "Quand consulter pour une douleur lombaire ?",
+        "a": "Consultez rapidement si la douleur survient après un traumatisme important, s'aggrave vite ou s'accompagne de fièvre, de faiblesse, d'un engourdissement génital ou de troubles urinaires ou intestinaux. Des signes sévères ou progressifs nécessitent une prise en charge urgente."
       }
     ],
     "pt": [
@@ -174,6 +186,10 @@ export const PATHOLOGY_FAQS = {
       {
         "q": "É possível voltar a se movimentar e treinar com lombalgia?",
         "a": "Sim. O tratamento busca recuperar mobilidade e força com exercícios graduais, ajuste de carga e educação para retomar atividades com mais confiança."
+      },
+      {
+        "q": "Quando procurar atendimento por dor lombar?",
+        "a": "Procure atendimento rapidamente se a dor surgir após um trauma importante, piorar depressa ou vier acompanhada de febre, fraqueza, dormência na região genital ou alterações no controle da bexiga ou do intestino. Sinais intensos ou progressivos exigem avaliação médica urgente."
       }
     ]
   },
