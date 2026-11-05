@@ -8,6 +8,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
+import { waMeUrl } from "./site-contact.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const require = createRequire(import.meta.url);
@@ -265,7 +266,7 @@ await (async () => {
   assert.equal(typeof elsReq["kb-btn-retry-slots"].onclick, "function");
   elsReq["kb-btn-fallback-whatsapp"].onclick();
   assert.equal(openedPractitioner, "norberto");
-  assert.equal(wReq.practitionerWhatsappUrl("norberto"), "https://wa.me/5491161564311");
+  assert.equal(wReq.practitionerWhatsappUrl("norberto"), waMeUrl());
   // Verificar que el botón Retry vuelve a traer los horarios limpiando caché
   await elsReq["kb-btn-retry-slots"].onclick();
   assert.equal(reqAttempts, 2);
