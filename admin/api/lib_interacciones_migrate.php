@@ -36,7 +36,7 @@ function interacciones_export_all(?PDO $pdo = null): array
 {
     $pdo = interacciones_pdo($pdo);
     interacciones_ensure_schema($pdo);
-    $events = $pdo->query('SELECT event_key, wa_id, direction, body, ts_utc, patient_name, source, exec_id, received_at FROM interaccion_eventos ORDER BY id ASC')->fetchAll();
+    $events = $pdo->query('SELECT event_key, wa_id, direction, body, ts_utc, patient_name, source, exec_id, media_id, media_type, media_mime, media_filename, received_at FROM interaccion_eventos ORDER BY id ASC')->fetchAll();
     $estado = $pdo->query('SELECT * FROM interaccion_estado')->fetchAll();
     return ['version' => 1, 'exported_at' => gmdate('c'), 'events' => $events, 'estado' => $estado];
 }
@@ -72,6 +72,8 @@ function interacciones_restore_from_backup(string $file, ?PDO $pdo = null): arra
             'event_key' => $row['event_key'] ?? '', 'wa_id' => $row['wa_id'] ?? '', 'direction' => $row['direction'] ?? '',
             'body' => $row['body'] ?? '', 'ts' => $row['ts_utc'] ?? null, 'patient_name' => $row['patient_name'] ?? '',
             'source' => $row['source'] ?? 'restore', 'exec_id' => $row['exec_id'] ?? '',
+            'media_id' => $row['media_id'] ?? null, 'media_type' => $row['media_type'] ?? null,
+            'media_mime' => $row['media_mime'] ?? null, 'media_filename' => $row['media_filename'] ?? null,
         ], 'restore');
         if ($ev !== null) {
             $res[interacciones_insert_event($pdo, $ev) === 'stored' ? 'stored' : 'duplicates']++;

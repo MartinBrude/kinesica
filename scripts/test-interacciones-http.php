@@ -95,7 +95,8 @@ $B = start_server($tmp, 'b', ['webhook_secret' => 'secreto-nuevo'], $portB);
 $bot = ['X-Kinesica-Bot-Secret: secreto-nuevo'];
 $legacy = ['X-Kinesica-Bot-Secret: secreto-legado-solo-en-config'];
 $hardcodedLeak = ['X-Kinesica-Bot-Secret: kinesica_webhook_secret_2026'];
-$ts = 1793268000;
+$ts = time() - 3600;
+$todayLocal = (new DateTimeImmutable('@' . $ts))->setTimezone(new DateTimeZone('America/Argentina/Buenos_Aires'))->format('Y-m-d');
 
 echo "• Ingesta con secreto del bot\n";
 $ev = [['wa_id' => '5491100000007', 'direction' => 'patient', 'body' => 'Hola desde n8n', 'message_id' => 'wamid.H1', 'ts' => $ts, 'patient_name' => 'Paciente Uno'],
@@ -118,7 +119,7 @@ $r = http($B['base'], 'POST', '/interacciones.php', ['wa_id' => '5491100000009',
 ok($r['status'] === 403 || $r['status'] === 401, 'sin allow_legacy_bot_secret el secreto legado se rechaza (' . $r['status'] . ')');
 $r = http($B['base'], 'POST', '/interacciones.php', ['wa_id' => '5491100000009', 'patient_message' => 'x', 'clara_reply' => 'y'], $bot);
 eq($r['status'], 200, '...y el secreto nuevo funciona');
-$r = http($A['base'], 'POST', '/interacciones.php', ['action' => 'sync_all', 'items' => [['wa_id' => '5491100000010', 'date' => '2026-10-29', 'messages' => [['from' => 'patient', 'time' => '10:00', 'text' => 'legacy sync']]]]], $bot);
+$r = http($A['base'], 'POST', '/interacciones.php', ['action' => 'sync_all', 'items' => [['wa_id' => '5491100000010', 'date' => $todayLocal, 'messages' => [['from' => 'patient', 'time' => '10:00', 'text' => 'legacy sync']]]]], $bot);
 eq([$r['status'], $r['json']['stored'] ?? null], [200, 1], 'sync_all (script viejo) acepta items');
 
 echo "• Lectura: el secreto del bot NO da acceso\n";
@@ -168,6 +169,30 @@ eq($n, 7, 'ningún intento rechazado escribió datos (7 eventos esperados)');
 echo "• Reconciliación sin configurar\n";
 $r = http($A['base'], 'POST', '/interacciones.php', ['action' => 'reconcile'], $bot);
 eq([$r['status'], $r['json']['status'] ?? null], [200, 'not_configured'], 'reconcile informa not_configured (no usa credenciales por defecto)');
+
+echo "• Archivos adjuntos HTTP (interacciones_media.php)\n";
+$pdfBytes = "%PDF-1.4\n1 0 obj\n<< /Type /Catalog >>\nendobj\n%%EOF\n";
+$r = http($A['base'], 'POST', '/interacciones_media.php', [
+    'media_id' => 'http_media_001',
+    'data_base64' => base64_encode($pdfBytes),
+    'mime_type' => 'application/pdf',
+    'filename' => 'estudio_atm.pdf',
+], ['X-Kinesica-Bot-Secret: incorrecto']);
+eq($r['status'], 401, 'POST media con secreto inválido => 401');
+
+$r = http($A['base'], 'POST', '/interacciones_media.php', [
+    'media_id' => 'http_media_001',
+    'data_base64' => base64_encode($pdfBytes),
+    'mime_type' => 'application/pdf',
+    'filename' => 'estudio_atm.pdf',
+], $bot);
+eq([$r['status'], $r['json']['ok'] ?? null], [200, true], 'POST media con secreto válido => 200');
+
+$r = http($A['base'], 'GET', '/interacciones_media.php?media_id=http_media_001');
+ok(in_array($r['status'], [401, 403], true), 'GET media sin sesión => rechazado (' . $r['status'] . ')');
+
+$r = http($A['base'], 'GET', '/interacciones_media.php?media_id=http_media_001', null, $admin);
+eq([$r['status'], $r['raw']], [200, $pdfBytes], 'GET media con sesión admin devuelve el archivo intacto');
 
 foreach ([$A, $B] as $s) {
     proc_terminate($s['proc']);

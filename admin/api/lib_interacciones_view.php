@@ -327,6 +327,83 @@ function interacciones_iso(?string $utc): ?string
 }
 
 /**
+ * Construye el descriptor de archivo adjunto para un mensaje a partir de la BD y/o el sidecar en disco.
+ *
+ * @return array{media_id:string,type:string,mime:string,filename:string,available:bool,url:string,download_url:string}|null
+ */
+function interacciones_build_attachment_view(?string $mediaId, ?string $mediaType, ?string $mediaMime, ?string $mediaFilename): ?array
+{
+    $mid = interacciones_clean_media_id((string) ($mediaId ?? ''));
+    if ($mid === '') {
+        return null;
+    }
+    $type = trim((string) ($mediaType ?? ''));
+    $mime = trim((string) ($mediaMime ?? ''));
+    $filename = trim((string) ($mediaFilename ?? ''));
+    $available = false;
+
+    $dir = interacciones_media_dir();
+    $metaFile = $dir . '/' . $mid . '.json';
+    if (is_file($metaFile)) {
+        $meta = json_decode((string) @file_get_contents($metaFile), true);
+        if (is_array($meta)) {
+            if ($mime === '' && !empty($meta['mime_type'])) {
+                $mime = (string) $meta['mime_type'];
+            }
+            if ($filename === '' && !empty($meta['filename'])) {
+                $filename = (string) $meta['filename'];
+            }
+            if ($type === '' && !empty($meta['media_type'])) {
+                $type = (string) $meta['media_type'];
+            }
+            $storedFile = isset($meta['stored_file']) ? basename((string) $meta['stored_file']) : '';
+            if ($storedFile !== '' && is_file($dir . '/' . $storedFile)) {
+                $available = true;
+            }
+        }
+    }
+
+    if ($type === '') {
+        if (str_starts_with($mime, 'image/')) {
+            $type = 'imagen';
+        } elseif (str_starts_with($mime, 'audio/')) {
+            $type = 'audio';
+        } elseif (str_starts_with($mime, 'video/')) {
+            $type = 'video';
+        } else {
+            $type = 'documento';
+        }
+    }
+    if ($mime === '') {
+        $mime = match ($type) {
+            'imagen' => 'image/jpeg',
+            'audio' => 'audio/ogg',
+            'video' => 'video/mp4',
+            default => 'application/pdf',
+        };
+    }
+    if ($filename === '') {
+        $filename = match ($type) {
+            'imagen' => 'imagen_adjunta.jpg',
+            'audio' => 'audio_voz.ogg',
+            'video' => 'video_adjunto.mp4',
+            default => 'documento.pdf',
+        };
+    }
+
+    $q = rawurlencode($mid);
+    return [
+        'media_id' => $mid,
+        'type' => $type,
+        'mime' => $mime,
+        'filename' => $filename,
+        'available' => $available,
+        'url' => '/admin/api/interacciones_media.php?media_id=' . $q,
+        'download_url' => '/admin/api/interacciones_media.php?media_id=' . $q . '&download=1',
+    ];
+}
+
+/**
  * Oculta (solo en la vista) eventos "gemelos": el mismo mensaje registrado por una fuente sin id de WhatsApp
  * y por otra con id. Empareja 1 a 1; nada se borra.
  *
@@ -383,7 +460,7 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
     }
 
     // Más recientes primero + tope; luego se reordenan ASC para armar el hilo.
-    $sql = 'SELECT id, event_key, wa_id, direction, body, ts_utc, patient_name FROM interaccion_eventos';
+    $sql = 'SELECT id, event_key, wa_id, direction, body, ts_utc, patient_name, media_id, media_type, media_mime, media_filename FROM interaccion_eventos';
     $params = [];
     if ($sinceUtc !== null) {
         $sql .= ' WHERE ts_utc >= :since';
@@ -411,6 +488,10 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
         $convs[$key]['events'][] = [
             'id' => (int) $row['id'], 'event_key' => (string) $row['event_key'], 'direction' => (string) $row['direction'],
             'body' => (string) $row['body'], 'ts' => $ts, 'name' => (string) $row['patient_name'],
+            'media_id' => isset($row['media_id']) ? (string) $row['media_id'] : '',
+            'media_type' => isset($row['media_type']) ? (string) $row['media_type'] : '',
+            'media_mime' => isset($row['media_mime']) ? (string) $row['media_mime'] : '',
+            'media_filename' => isset($row['media_filename']) ? (string) $row['media_filename'] : '',
         ];
     }
 
@@ -444,16 +525,30 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
         $firstPatient = '';
         $lastName = '';
         $lastTs = 0;
+        $hasAttachment = false;
         foreach ($c['events'] as $ev) {
             if (isset($hidden[$ev['id']])) {
                 continue;
             }
-            $messages[] = [
+            $msgItem = [
                 'from' => $ev['direction'],
                 'time' => (new DateTimeImmutable('@' . $ev['ts']))->setTimezone($tz)->format('H:i'),
                 'text' => $ev['body'],
                 'ts' => gmdate('Y-m-d\TH:i:s\Z', $ev['ts']),
             ];
+            if ($ev['direction'] === 'patient' && !empty($ev['media_id'])) {
+                $att = interacciones_build_attachment_view(
+                    $ev['media_id'],
+                    $ev['media_type'] ?? '',
+                    $ev['media_mime'] ?? '',
+                    $ev['media_filename'] ?? ''
+                );
+                if ($att !== null) {
+                    $msgItem['attachment'] = $att;
+                    $hasAttachment = true;
+                }
+            }
+            $messages[] = $msgItem;
             if ($firstPatient === '' && $ev['direction'] === 'patient') {
                 $firstPatient = $ev['body'];
             }
@@ -500,6 +595,7 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
             'category' => (string) (($st['category'] ?? '') !== '' ? $st['category'] : $cat),
             'category_label' => (string) (($st['category_label'] ?? '') !== '' ? $st['category_label'] : $catLabel),
             'summary' => (string) (($st['summary'] ?? '') !== '' ? $st['summary'] : mb_substr($firstPatient, 0, 120, 'UTF-8')),
+            'has_attachment' => $hasAttachment,
             'messages' => $messages,
         ];
     }

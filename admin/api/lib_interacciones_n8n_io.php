@@ -50,10 +50,23 @@ function interacciones_events_from_execution(array $tree, string $execId, ?strin
     }
     $ts = interacciones_parse_ts($j['timestamp'] ?? null, interacciones_parse_ts($startedAt, time()));
     $msgId = trim((string) ($j['message_id'] ?? ''));
+    $fvm = $run['Format Validated Message'][0]['data']['main'][0][0]['json'] ?? [];
+    $deb = $run['Consolidate Debounced Message'][0]['data']['main'][0][0]['json'] ?? [];
+    $mediaId = trim((string) ($fvm['media_id'] ?? $deb['attachment_id'] ?? $j['attachment_id'] ?? $deb['audio_id'] ?? $j['audio_id'] ?? ''));
+    $mediaType = trim((string) ($fvm['attachment_type'] ?? $deb['attachment_type'] ?? $j['attachment_type'] ?? ((!empty($j['is_audio']) || !empty($deb['is_audio'])) ? 'audio' : '')));
+    $mediaMime = trim((string) ($fvm['attachment_mime'] ?? $deb['attachment_mime'] ?? $j['attachment_mime'] ?? ''));
+    $mediaFilename = trim((string) ($fvm['attachment_filename'] ?? $deb['attachment_filename'] ?? $j['attachment_filename'] ?? ''));
     $events = [];
     $base = ['wa_id' => $wa, 'exec_id' => $execId, 'message_id' => $msgId];
     $patient = interacciones_normalize_event($base + [
-        'direction' => 'patient', 'body' => $msg, 'ts' => $ts, 'patient_name' => (string) ($j['patient_name'] ?? ''),
+        'direction' => 'patient',
+        'body' => $msg,
+        'ts' => $ts,
+        'patient_name' => (string) ($j['patient_name'] ?? ''),
+        'media_id' => $mediaId,
+        'media_type' => $mediaType,
+        'media_mime' => $mediaMime,
+        'media_filename' => $mediaFilename,
     ], 'n8n-pull');
     if ($patient !== null) {
         $events[] = $patient;

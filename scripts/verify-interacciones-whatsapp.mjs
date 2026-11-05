@@ -5,7 +5,7 @@ import {
   buildWhatsAppFollowupMessage,
   buildWhatsAppUrl,
 } from "../admin/modules/interacciones-message.js";
-import { buildInteractionCardHtml } from "../admin/modules/interacciones-render.js";
+import { buildInteractionCardHtml, renderAttachmentHtml } from "../admin/modules/interacciones-render.js";
 import { filterInteractionsList, renderStatsHeader } from "../admin/modules/interacciones-filter.js";
 import { isMartinBrudePhone, getKnownContactName } from "../admin/modules/phone-search.js";
 
@@ -190,5 +190,60 @@ assert.equal(filterInteractionsList(testListMartin, "martín").length, 1, "Búsq
 assert.equal(filterInteractionsList(testListMartin, "brude").length, 1, "Búsqueda 'brude' debe encontrar a Martín Brude");
 assert.equal(filterInteractionsList(testListMartin, "658").length, 1, "Búsqueda '658' debe encontrar a Martín Brude");
 assert.equal(filterInteractionsList(testListMartin, "+34 658 44 49 35").length, 1, "Búsqueda por teléfono completo debe encontrar a Martín Brude");
+
+// 7. Renderizado de archivos adjuntos en burbuja de chat (imagen, PDF, audio)
+const cardWithAttachments = buildInteractionCardHtml({
+  id: "conv_att_1",
+  wa_id: "5491155667788",
+  phone_formatted: "(+54) 9 11 5566 7788",
+  patient_name: "Lucía Gómez",
+  time: "14:30",
+  summary: "[Envío de documento PDF]",
+  has_attachment: true,
+  messages: [
+    {
+      from: "patient",
+      time: "14:30",
+      text: '[Envío de documento PDF / archivo adjunto: "orden_medica.pdf"]',
+      attachment: {
+        media_id: "meta_doc_987",
+        type: "documento",
+        mime: "application/pdf",
+        filename: "orden_medica.pdf",
+        url: "/admin/api/interacciones_media.php?media_id=meta_doc_987",
+        download_url: "/admin/api/interacciones_media.php?media_id=meta_doc_987&download=1",
+      },
+    },
+    {
+      from: "patient",
+      time: "14:31",
+      text: "[Envío de imagen / foto adjunta]",
+      attachment: {
+        media_id: "meta_img_654",
+        type: "imagen",
+        mime: "image/jpeg",
+        filename: "comprobante.jpg",
+        url: "/admin/api/interacciones_media.php?media_id=meta_img_654",
+        download_url: "/admin/api/interacciones_media.php?media_id=meta_img_654&download=1",
+      },
+    },
+  ],
+}, 0, "Norberto");
+
+assert.ok(cardWithAttachments.includes("interaccion-badge-attachment"), "Debe mostrar badge de archivo adjunto en cabecera");
+assert.ok(cardWithAttachments.includes("chat-attachment-document"), "Debe renderizar tarjeta de documento PDF");
+assert.ok(cardWithAttachments.includes("orden_medica.pdf"), "Debe mostrar el nombre del archivo PDF");
+assert.ok(cardWithAttachments.includes('/admin/api/interacciones_media.php?media_id=meta_doc_987&amp;download=1'), "Debe incluir link de descarga del PDF");
+assert.ok(cardWithAttachments.includes("chat-attachment-preview-img"), "Debe renderizar vista previa de imagen");
+assert.ok(cardWithAttachments.includes('download="comprobante.jpg"'), "Debe incluir atributo download con el nombre de la imagen");
+
+const audioHtml = renderAttachmentHtml({
+  media_id: "meta_aud_321",
+  type: "audio",
+  mime: "audio/ogg",
+  filename: "nota_voz.ogg",
+});
+assert.ok(audioHtml.includes("<audio controls"), "Debe renderizar reproductor de audio");
+assert.ok(audioHtml.includes("Descargar audio"), "Debe incluir botón de descarga de audio");
 
 console.log("interacciones WhatsApp: ok (todas las pruebas pasaron)");

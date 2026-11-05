@@ -82,12 +82,23 @@ function interacciones_handle_ingest(array $input): void
     interacciones_ingest_response($events, $invalid);
 }
 
-/** Formato del nodo viejo de n8n: {wa_id, patient_message, clara_reply, patient_name}. */
+/** Formato del nodo viejo de n8n: {wa_id, patient_message, clara_reply, patient_name, media_*}. */
 function interacciones_handle_legacy_push(array $input): void
 {
-    $base = ['wa_id' => $input['wa_id'] ?? '', 'patient_name' => $input['patient_name'] ?? ''];
+    $base = [
+        'wa_id' => $input['wa_id'] ?? '',
+        'patient_name' => $input['patient_name'] ?? '',
+        'message_id' => $input['message_id'] ?? '',
+    ];
     $events = [];
-    $p = interacciones_normalize_event($base + ['direction' => 'patient', 'body' => $input['patient_message'] ?? ''], 'legacy-push');
+    $p = interacciones_normalize_event($base + [
+        'direction' => 'patient',
+        'body' => $input['patient_message'] ?? '',
+        'media_id' => $input['media_id'] ?? $input['attachment_id'] ?? $input['audio_id'] ?? '',
+        'media_type' => $input['media_type'] ?? $input['attachment_type'] ?? '',
+        'media_mime' => $input['media_mime'] ?? $input['attachment_mime'] ?? '',
+        'media_filename' => $input['media_filename'] ?? $input['attachment_filename'] ?? '',
+    ], 'legacy-push');
     if ($p !== null) {
         $events[] = $p;
     }

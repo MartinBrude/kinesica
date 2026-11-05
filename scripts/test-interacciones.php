@@ -509,6 +509,64 @@ eq(count($mergeView['items'][0]['messages']), 2, 'mensajes de ambos wa_id en el 
 eq($mergeView['items'][0]['patient_name'], 'Alejandro Rosenfeld', 'nombre desde directorio tras fusionar');
 $pdo->exec('DELETE FROM pacientes WHERE telefono LIKE "%67406801%"');
 
+section('Archivos adjuntos (media_id, persistencia binaria y vista)');
+$pdo = fresh('attachments');
+$attTs = (new DateTimeImmutable('2026-11-04 14:30:00', new DateTimeZone('America/Argentina/Buenos_Aires')))->getTimestamp();
+$attEv = interacciones_normalize_event([
+    'wa_id' => '5491155667788',
+    'direction' => 'patient',
+    'body' => '[Envío de documento PDF / archivo adjunto: "orden_medica.pdf"]',
+    'ts' => $attTs,
+    'message_id' => 'wamid.ATT1',
+    'patient_name' => 'Lucía Gómez',
+    'media_id' => 'meta_doc_987654',
+    'media_type' => 'documento',
+    'media_mime' => 'application/pdf',
+    'media_filename' => 'orden_medica.pdf',
+], 'push');
+$attReply = ev('5491155667788', 'clara', '¡Recibido! Ya le avisé al profesional.', $attTs + 2, 'wamid.ATT1');
+interacciones_store_events([$attEv, $attReply], $pdo);
+
+// Antes de subir el binario, la vista ya expone la metadata del adjunto con available=false
+$attView1 = interacciones_load_view($pdo);
+$msgAtt1 = $attView1['items'][0]['messages'][0]['attachment'] ?? null;
+eq($attView1['items'][0]['has_attachment'] ?? false, true, 'conversación marca has_attachment=true');
+eq($msgAtt1['media_id'] ?? null, 'meta_doc_987654', 'media_id en mensaje');
+eq($msgAtt1['filename'] ?? null, 'orden_medica.pdf', 'filename en mensaje');
+eq($msgAtt1['available'] ?? null, false, 'available=false antes de subir el binario');
+
+// Subir binario PDF válido
+$fakePdf = "%PDF-1.4\n1 0 obj\n<< /Type /Catalog >>\nendobj\n%%EOF\n";
+$saveRes = interacciones_media_save([
+    'media_id' => 'meta_doc_987654',
+    'data_base64' => base64_encode($fakePdf),
+    'mime_type' => 'application/pdf',
+    'filename' => 'orden_medica.pdf',
+    'media_type' => 'documento',
+    'wa_id' => '5491155667788',
+    'message_id' => 'wamid.ATT1',
+], $pdo);
+eq($saveRes['ok'] ?? false, true, 'interacciones_media_save guarda PDF válido');
+
+// Rechazar archivo ejecutable/HTML malicioso
+$badSave = interacciones_media_save([
+    'media_id' => 'meta_bad_111',
+    'data_base64' => base64_encode('<!DOCTYPE html><script>alert(1)</script>'),
+    'mime_type' => 'text/html',
+    'filename' => 'exploit.html',
+], $pdo);
+eq($badSave['ok'] ?? true, false, 'interacciones_media_save rechaza text/html');
+
+$resolved = interacciones_media_resolve('meta_doc_987654');
+ok($resolved !== null && is_file($resolved['path']), 'interacciones_media_resolve encuentra el archivo en disco');
+eq($resolved['mime_type'] ?? null, 'application/pdf', 'MIME resuelto es application/pdf');
+
+$attView2 = interacciones_load_view($pdo);
+$msgAtt2 = $attView2['items'][0]['messages'][0]['attachment'] ?? null;
+eq($msgAtt2['available'] ?? false, true, 'available=true luego de guardar el binario');
+eq($msgAtt2['url'] ?? '', '/admin/api/interacciones_media.php?media_id=meta_doc_987654', 'URL de visualización');
+eq($msgAtt2['download_url'] ?? '', '/admin/api/interacciones_media.php?media_id=meta_doc_987654&download=1', 'URL de descarga');
+
 echo "\n";
 if ($fails > 0) {
     echo "❌ $fails comprobaciones fallaron ($passed OK)\n";
