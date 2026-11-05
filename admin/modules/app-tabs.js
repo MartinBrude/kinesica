@@ -14,6 +14,13 @@ import { showInteraccionesView, hideInteraccionesView } from "./interacciones.js
 import { showRecordatoriosView, hideRecordatoriosView } from "./recordatorios.js?v=11";
 import { applyHoursToRuntime } from "./horarios.js?v=3";
 
+export function closeAllDropdowns() {
+  document.querySelectorAll(".nav-dropdown").forEach((el) => {
+    el.classList.remove("is-open");
+    el.querySelector(".nav-dropdown-trigger")?.setAttribute("aria-expanded", "false");
+  });
+}
+
 export function switchTab(tab, subtab) {
   const btnClinica = document.querySelector("#nav-btn-clinica");
   const btnFichas = document.querySelector("#nav-btn-fichas");
@@ -30,25 +37,8 @@ export function switchTab(tab, subtab) {
   const btnAdminBackups = document.querySelector("#nav-btn-admin-backups");
   const btnAdminServicios = document.querySelector("#nav-btn-admin-servicios");
 
-  btnClinica?.classList.remove("is-active");
-  btnFichas?.classList.remove("is-active");
-  btnPacientes?.classList.remove("is-active");
-  btnConsultorio?.classList.remove("is-active");
-  btnWhatsapp?.classList.remove("is-active");
-  btnInteracciones?.classList.remove("is-active");
-  btnRecordatorios?.classList.remove("is-active");
-  btnClara?.classList.remove("is-active");
-  btnAdmin?.classList.remove("is-active");
-  btnAdminUsuarios?.classList.remove("is-active");
-  btnAdminGastos?.classList.remove("is-active");
-  btnAdminErrores?.classList.remove("is-active");
-  btnAdminBackups?.classList.remove("is-active");
-  btnAdminServicios?.classList.remove("is-active");
-
-  document.querySelectorAll(".nav-dropdown").forEach((el) => {
-    el.classList.remove("is-open");
-    el.querySelector(".nav-dropdown-trigger")?.setAttribute("aria-expanded", "false");
-  });
+  document.querySelectorAll(".admin-nav .btn, .admin-nav .nav-dropdown-item").forEach((b) => b.classList.remove("is-active"));
+  closeAllDropdowns();
 
   hideDashboardView();
   hidePacientesView();
@@ -166,17 +156,30 @@ export function mountAdminChannels() {
 
       const setupDropdown = (groupEl, triggerBtn) => {
         if (!groupEl || !triggerBtn) return;
-        triggerBtn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          const isOpen = groupEl.classList.contains("is-open");
+        groupEl.addEventListener("mouseenter", () => {
           document.querySelectorAll(".nav-dropdown").forEach((el) => {
             if (el !== groupEl) {
               el.classList.remove("is-open");
               el.querySelector(".nav-dropdown-trigger")?.setAttribute("aria-expanded", "false");
             }
           });
-          groupEl.classList.toggle("is-open", !isOpen);
-          triggerBtn.setAttribute("aria-expanded", String(!isOpen));
+          groupEl.classList.add("is-open");
+          triggerBtn.setAttribute("aria-expanded", "true");
+        });
+
+        groupEl.addEventListener("mouseleave", () => {
+          groupEl.classList.remove("is-open");
+          triggerBtn.setAttribute("aria-expanded", "false");
+        });
+
+        triggerBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const isOpen = groupEl.classList.contains("is-open");
+          closeAllDropdowns();
+          if (!isOpen) {
+            groupEl.classList.add("is-open");
+            triggerBtn.setAttribute("aria-expanded", "true");
+          }
         });
       };
 
@@ -184,22 +187,16 @@ export function mountAdminChannels() {
       setupDropdown(document.getElementById("nav-group-whatsapp"), document.getElementById("nav-btn-whatsapp"));
       setupDropdown(document.getElementById("nav-group-admin"), document.getElementById("nav-btn-admin"));
 
+      ["#nav-btn-consultorio", "#nav-btn-clara", "#brand-logo"].forEach((id) => {
+        document.querySelector(id)?.addEventListener("mouseenter", closeAllDropdowns);
+      });
+
       document.addEventListener("click", (e) => {
-        if (!e.target.closest(".nav-dropdown")) {
-          document.querySelectorAll(".nav-dropdown").forEach((el) => {
-            el.classList.remove("is-open");
-            el.querySelector(".nav-dropdown-trigger")?.setAttribute("aria-expanded", "false");
-          });
-        }
+        if (!e.target.closest(".nav-dropdown")) closeAllDropdowns();
       });
 
       document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") {
-          document.querySelectorAll(".nav-dropdown").forEach((el) => {
-            el.classList.remove("is-open");
-            el.querySelector(".nav-dropdown-trigger")?.setAttribute("aria-expanded", "false");
-          });
-        }
+        if (e.key === "Escape") closeAllDropdowns();
       });
 
       document.getElementById("nav-btn-fichas")?.addEventListener("click", () => switchTab("fichas"));

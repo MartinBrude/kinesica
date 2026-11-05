@@ -157,6 +157,12 @@ $storage = [
     'uploads_size_mb' => round($uploadsBytes / (1024 * 1024), 2),
 ];
 
+$googleCloud = [
+    'places_api' => 'Places API (New) & Maps JS',
+    'sync_frequency' => '1 consulta diaria en GitHub Actions (~30/mes)',
+    'free_credit' => 'USD $200 / mes de crédito en Google Cloud',
+];
+
 json_out(200, [
     'period' => [
         'month' => $now->format('F Y'),
@@ -166,6 +172,7 @@ json_out(200, [
     ],
     'whatsapp' => $whatsapp,
     'gemini' => $gemini,
+    'google_cloud' => $googleCloud,
     'resend' => $resend,
     'database' => $database,
     'storage' => $storage,
@@ -175,6 +182,7 @@ json_out(200, [
         'google_cloud_billing' => 'https://console.cloud.google.com/billing',
         'google_ai_studio' => 'https://aistudio.google.com/app/plan_information',
         'resend_dashboard' => 'https://resend.com/emails',
+        'hostinger' => 'https://hpanel.hostinger.com/',
         'github_actions' => 'https://github.com/settings/billing',
     ],
 ]);

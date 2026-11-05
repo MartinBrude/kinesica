@@ -304,6 +304,15 @@ main {
   z-index: 1000;
 }
 
+.nav-dropdown-menu::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: 0;
+  right: 0;
+  height: 8px;
+}
+
 #nav-group-admin .nav-dropdown-menu {
   left: auto;
   right: 0;
