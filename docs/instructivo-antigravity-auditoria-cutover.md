@@ -204,18 +204,87 @@ Guardá el informe en `docs/audit-antigravity-cutover.md` (o adjunto al PR).
 
 ---
 
-## Mensaje corto para pegar
+## Mensaje para pegar a Antigravity
 
 ```text
-Branch feature/datos-relacionales. Etapas 0–10 en CÓDIGO (migs 001–014).
+# Kinésica — Auditoría cutover refactor datos relacionales
 
-REGLA: no debe perderse data productiva ni funcionalidad activa.
-- ensure_* siguen ON (no se apagan tras 014)
-- soft-delete conserva filas; sin DROP de columnas legacy
-- dual-write JSON-first
+## Contexto del producto
+Admin/API de un centro de kinesiología (Palermo). MariaDB operativa +
+panel admin PHP + integraciones WhatsApp/Clara (n8n), recordatorios,
+Google Calendar / GAS. El sitio estático SEO (ES/EN/FR/PT) NO entra en
+este refactor.
 
-Tu trabajo: AUDITAR todo y decidir Go / Go-staging-only / No-go para cutover ops.
-Seguí docs/instructivo-antigravity-auditoria-cutover.md al pie.
-Entregá docs/audit-antigravity-cutover.md con la plantilla.
-Blockers de pérdida de data o rotura de features = No-go.
+## Por qué el refactor
+Antes: identidad de facto por teléfono UNIQUE, fichas con payload JSON,
+relaciones por nombre/tel/wa_id, settings/gastos/encuestas en JSON,
+DDL vía ensure_* en requests. Eso genera drift al cambiar teléfono,
+duplicados ambiguos y riesgo de mezclar historias clínicas.
+
+Objetivo: MariaDB como fuente de verdad de identidad y relaciones
+(paciente_id / profesional_id / turno_id), sin big bang, con
+compatibilidad durante la transición.
+
+## Plan (docs/plan-refactor-datos-relacionales.md)
+Roadmap por etapas con flags (default false):
+  REL_WRITE_IDS  — persistir IDs en writes
+  REL_READ_IDS   — leer/enrich por ID
+  REL_ENFORCE_FK — asserts app (FKs SQL = mig 013)
+
+Principios: no fusionar ambiguos; ON DELETE RESTRICT en clínicos;
+soft-delete; migraciones versionadas (checksum); no loguear PII completa;
+autorizar todo write con IDs (IDOR).
+
+Fuera de alcance: SEO estático, unificar Clara SQLite, hardening auth
+completo, sustituir Google Calendar (solo espejo local).
+
+## Qué está en código (branch feature/datos-relacionales)
+Etapas 0–10 implementadas. Migraciones 001…014.
+
+  0–5 MVP: audit, migrate runner, contactos, resolve/backfill,
+      profesionales, fichas + version/409, flags
+  6 Turnos sombra (006), UNIQUE calendar_event_id, cancel→recordatorios,
+      sync campaña/booking/GAS
+  7 WhatsApp estado↔paciente (007), encuestas dual-write (008),
+      link_paciente
+  8 Config overlay/mirror (009–011), gastos dual-write (012),
+      auditoría; errores JSON diferido; secrets fuera de tablas
+  9 FKs RESTRICT (013), soft-delete pacientes, mapper PDO,
+      asserts si enforce_fk
+ 10 Identidad por paciente_id explícito, soft-delete profesionales,
+      archive JSON, mig 014 marcador — SIN DROP de columnas;
+      ensure_* SIGUEN ON (red de seguridad idempotente)
+
+Mapa de código: docs/codigo-datos-relacionales.md
+Runbook staging: docs/runbook-datos-relacionales-antigravity.md
+Etapas: docs/etapa7…etapa10-*.md
+
+## REGLA NO NEGOCIABLE
+No debe perderse data productiva ni funcionalidad activa.
+- soft-delete conserva filas (deleted_at); API pacientes no hard-delete
+- dual-write JSON-first (si DB falla, JSON queda)
+- ensure_* activos tras 014 (no apagar puentes operativos)
+- sin DROP de telefono / fichas.profesional / denormalizados en este cutover
+- búsqueda UX ?q= y contratos Clara/n8n/GAS intactos
+- fallback resolve por tel/nombre SOLO si no hay paciente_id
+
+Violación de data o features = No-go / BLOCKER.
+
+## Tu trabajo (NO reimplementar etapa 10)
+1) Auditar todo lo actuado (tests + diseño + ops staging).
+2) Decidir: Go prod | Go staging only | No-go.
+3) Entregar docs/audit-antigravity-cutover.md con la plantilla.
+
+Seguí al pie: docs/instructivo-antigravity-auditoria-cutover.md
+
+Comandos:
+  git checkout feature/datos-relacionales
+  npm run admin:test
+  # staging (token = install_token):
+  php admin/api/migrate.php --status --token="$INSTALL_TOKEN"
+  php admin/api/audit_relational.php --token="$INSTALL_TOKEN" \
+    --out=docs/audit-report-cutover.json --md=docs/audit-report-cutover.md
+
+Solo hotfixeá si es trivial y bloquea la suite; si no, listá blockers.
+No DROPs, no fusión automática, no tocar Clara SQLite ni SEO.
 ```
