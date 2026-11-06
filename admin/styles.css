@@ -31,9 +31,9 @@
 .admin-booking-patient-bar {
   position: relative;
   z-index: 3;
-  display: grid;
-  grid-template-columns: minmax(180px, 1fr) minmax(260px, 1.4fr) auto;
-  align-items: end;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   gap: 14px;
   padding: 16px 20px;
   color: var(--navy);
@@ -124,4 +124,182 @@
 
 .kb-admin-mode .kb-step1-followup .kb-choice-card {
   padding: 12px 14px;
+}
+
+/* Turnera profesional: buscador de paciente (eje del paso 1). */
+.admin-patient-picker {
+  margin-bottom: 18px;
+}
+
+.admin-patient-picker-label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--navy, #0f2a44);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.admin-patient-picker-row {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.admin-patient-picker-combo {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-patient-picker-combo input {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 14px;
+  font: inherit;
+  font-size: 15px;
+  color: var(--navy, #0f2a44);
+  background: #fff;
+  border: 1.5px solid var(--line, #cbd5e1);
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
+.admin-patient-picker-combo input:focus {
+  outline: none;
+  border-color: #2b7a9b;
+  box-shadow: 0 0 0 3px rgba(43, 122, 155, 0.15);
+}
+
+.admin-patient-results {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 320px;
+  margin: 0;
+  padding: 4px;
+  overflow-y: auto;
+  list-style: none;
+  background: #fff;
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: 10px;
+  box-shadow: 0 12px 28px rgba(15, 42, 68, 0.14);
+}
+
+.admin-patient-result {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.admin-patient-result strong {
+  color: var(--navy, #0f2a44);
+  font-size: 14px;
+}
+
+.admin-patient-result span,
+.admin-patient-empty {
+  color: var(--muted, #64748b);
+  font-size: 12px;
+}
+
+.admin-patient-empty {
+  padding: 10px 12px;
+}
+
+.admin-patient-result.is-active,
+.admin-patient-result:hover {
+  background: #eef6f9;
+}
+
+.admin-patient-new,
+.admin-patient-change {
+  padding: 0 16px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f6481;
+  white-space: nowrap;
+  cursor: pointer;
+  background: #eef6f9;
+  border: 1.5px solid #cfe3ec;
+  border-radius: 10px;
+}
+
+.admin-patient-new:hover,
+.admin-patient-change:hover {
+  background: #e0eff5;
+}
+
+.admin-patient-picker-hint {
+  margin-top: 6px;
+  color: var(--muted, #64748b);
+  font-size: 12px;
+}
+
+.admin-patient-selected {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  background: #eef6f9;
+  border: 1.5px solid #cfe3ec;
+  border-radius: 10px;
+}
+
+.admin-patient-selected[hidden],
+.admin-patient-picker-search[hidden] {
+  display: none;
+}
+
+.admin-patient-selected > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-patient-selected strong {
+  color: var(--navy, #0f2a44);
+  font-size: 15px;
+}
+
+.admin-patient-selected span {
+  color: var(--muted, #64748b);
+  font-size: 12px;
+}
+
+.admin-patient-change {
+  min-height: 36px;
+  background: #fff;
+}
+
+@media (max-width: 600px) {
+  .admin-patient-picker-row {
+    flex-direction: column;
+  }
+
+  .admin-patient-new {
+    min-height: 42px;
+  }
+}
+
+.kb-admin-mode #kb-step-1 {
+  min-height: 420px;
+}
+
+.kb-admin-mode .kb-admin-data .kb-form-group[hidden],
+.kb-admin-mode .kb-admin-missing-note[hidden] {
+  display: none;
+}
+
+.kb-admin-mode .kb-admin-missing-note {
+  margin-bottom: 10px;
+  color: #92400e;
+  font-size: 13px;
+  font-weight: 600;
 }

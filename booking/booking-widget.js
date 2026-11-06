@@ -644,15 +644,9 @@
       const phoneRow = q("#kb-group-telefono")?.closest(".kb-form-row");
       [nombreGroup, emailGroup, phoneRow].forEach((el) => el && dataBox.appendChild(el));
 
-      const empty = document.createElement("div");
-      empty.id = "kb-admin-empty";
-      empty.className = "kb-admin-empty";
-      empty.textContent = "Elegí un paciente del directorio o «Paciente de primera vez» para empezar.";
-
-      if (step1 && title) {
-        title.after(empty);
-        empty.after(dataBox);
-      }
+      // El selector de paciente (lo inyecta ADMIN) reemplaza la pregunta para pacientes.
+      if (title) title.remove();
+      if (step1) step1.prepend(dataBox);
 
       const next2 = q("#kb-btn-next-2");
       if (next2) next2.textContent = "Confirmar turno";
@@ -1187,13 +1181,30 @@
       });
       const isNew = this.state.existingPatient === false;
       const hasSelection = Boolean(patient) || isNew;
-      const empty = q("#kb-admin-empty");
-      if (empty) empty.hidden = hasSelection;
+      const footer = q("#kb-step-1 .kb-step1-footer");
+      if (footer) footer.style.visibility = hasSelection ? "visible" : "hidden";
+      // Registrado: solo se piden los datos que faltan en el directorio
+      // (los existentes ya se ven en la tarjeta del paciente seleccionado).
+      let missing = 0;
+      Object.keys(values).forEach((selector) => {
+        const group = q(selector)?.closest(".kb-form-group");
+        if (!group) return;
+        const show = !patient || !q(selector).value;
+        group.hidden = !show;
+        if (patient && show) missing += 1;
+      });
       const dataBox = q("#kb-admin-data");
-      if (dataBox) dataBox.hidden = !hasSelection;
-      const title = q("#kb-step-1 > .kb-section-title");
-      if (title) {
-        title.textContent = patient ? "Paciente registrado" : isNew ? "Paciente de primera vez" : "Seleccioná un paciente";
+      if (dataBox) {
+        dataBox.hidden = !hasSelection || (Boolean(patient) && missing === 0);
+        let note = q("#kb-admin-missing-note");
+        if (!note) {
+          note = document.createElement("div");
+          note.id = "kb-admin-missing-note";
+          note.className = "kb-admin-missing-note";
+          note.textContent = "Faltan datos en el directorio para agendar:";
+          dataBox.prepend(note);
+        }
+        note.hidden = !patient;
       }
       const whoTitle = q("#kb-existing-box .kb-section-title");
       if (whoTitle) whoTitle.textContent = "¿Con quién se atiende?";
