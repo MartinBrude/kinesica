@@ -87,7 +87,7 @@ function send_whatsapp_template_alert(string $to, array $tpl): array
  * Envía plantilla recordatorio_turno_kinesica vía Graph API.
  *
  * @param string $to
- * @param array{patient_name?: string, tipo_cita?: string, formatted_time?: string, indicaciones?: string} $data
+ * @param array{patient_name?: string, tipo_cita?: string, formatted_time?: string, indicaciones?: string, event_id?: string} $data
  * @return array{ok: bool, http_code: int, error?: string, response?: string}
  */
 function send_whatsapp_reminder_template(string $to, array $data): array
@@ -107,6 +107,7 @@ function send_whatsapp_reminder_template(string $to, array $data): array
     $tipo = trim((string) ($data['tipo_cita'] ?? 'sesión en el consultorio'));
     $time = trim((string) ($data['formatted_time'] ?? ''));
     $indicaciones = trim((string) ($data['indicaciones'] ?? '📍 Te esperamos en Charcas 3889, 5º, B (Palermo).'));
+    $eventId = trim((string) ($data['event_id'] ?? ''));
 
     // Meta Cloud API rechaza saltos de línea (\r, \n), tabs y más de 4 espacios seguidos en parámetros
     $cleanParam = static function (string $text): string {
@@ -117,6 +118,9 @@ function send_whatsapp_reminder_template(string $to, array $data): array
     $tipo = $cleanParam($tipo);
     $time = $cleanParam($time);
     $indicaciones = $cleanParam($indicaciones);
+
+    $confirmPayload = 'confirmar_turno' . ($eventId !== '' ? (':' . $eventId) : '');
+    $cancelPayload = 'cancelar_turno' . ($eventId !== '' ? (':' . $eventId) : '');
 
     $graphBody = [
         'messaging_product' => 'whatsapp',
@@ -140,13 +144,13 @@ function send_whatsapp_reminder_template(string $to, array $data): array
                     'type' => 'button',
                     'sub_type' => 'quick_reply',
                     'index' => '0',
-                    'parameters' => [['type' => 'payload', 'payload' => 'confirmar_turno']],
+                    'parameters' => [['type' => 'payload', 'payload' => $confirmPayload]],
                 ],
                 [
                     'type' => 'button',
                     'sub_type' => 'quick_reply',
                     'index' => '1',
-                    'parameters' => [['type' => 'payload', 'payload' => 'cancelar_turno']],
+                    'parameters' => [['type' => 'payload', 'payload' => $cancelPayload]],
                 ],
             ],
         ],

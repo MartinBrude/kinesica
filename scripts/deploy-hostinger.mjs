@@ -21,10 +21,10 @@ const DOMAIN = "kinesica.com.ar";
 const REQUIRED_LOCAL_SECRETS = [
   "admin/api/config.php",
   "admin/api/mail.php",
+  "admin/api/whatsapp.php",
 ];
 
 const OPTIONAL_LOCAL_SECRETS = [
-  "admin/api/whatsapp.php",
   "admin/api/bot_token.sha256",
 ];
 

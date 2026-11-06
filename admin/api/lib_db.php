@@ -38,18 +38,23 @@ function cfg(): array
         if ($cfg === [] && is_file(__DIR__ . '/config.example.php')) {
             $cfg = require __DIR__ . '/config.example.php';
         }
-        $mailFile = __DIR__ . '/mail.php';
-        if (is_file($mailFile)) {
-            $mail = require $mailFile;
-            if (is_array($mail)) {
-                $cfg = array_merge($cfg, $mail);
+        $domainRoot = dirname(__DIR__, 3);
+        foreach ([$domainRoot . '/private/mail.php', __DIR__ . '/mail.php'] as $mailFile) {
+            if (is_file($mailFile)) {
+                $mail = require $mailFile;
+                if (is_array($mail)) {
+                    $cfg = array_merge($cfg, $mail);
+                    break;
+                }
             }
         }
-        $waFile = __DIR__ . '/whatsapp.php';
-        if (is_file($waFile)) {
-            $wa = require $waFile;
-            if (is_array($wa)) {
-                $cfg = array_merge($cfg, $wa);
+        foreach ([$domainRoot . '/private/whatsapp.php', __DIR__ . '/whatsapp.php'] as $waFile) {
+            if (is_file($waFile)) {
+                $wa = require $waFile;
+                if (is_array($wa)) {
+                    $cfg = array_merge($cfg, $wa);
+                    break;
+                }
             }
         }
     }

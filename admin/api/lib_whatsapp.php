@@ -16,8 +16,27 @@ function whatsapp_credentials(): array
     );
     $phoneId = (string) (
         getenv('WHATSAPP_PHONE_NUMBER_ID')
-        ?: ($_SERVER['WHATSAPP_PHONE_NUMBER_ID'] ?? $_ENV['WHATSAPP_PHONE_NUMBER_ID'] ?? cfg()['whatsapp_phone_number_id'] ?? '1340013275870491')
+        ?: ($_SERVER['WHATSAPP_PHONE_NUMBER_ID'] ?? $_ENV['WHATSAPP_PHONE_NUMBER_ID'] ?? cfg()['whatsapp_phone_number_id'] ?? '')
     );
+
+    if (trim($token) === '' && function_exists('db')) {
+        try {
+            $pdo = db();
+            $stmt = $pdo->prepare('SELECT value_json FROM configuraciones WHERE config_key = "whatsapp_credentials" LIMIT 1');
+            $stmt->execute();
+            $raw = $stmt->fetchColumn();
+            if ($raw) {
+                $saved = json_decode((string) $raw, true);
+                if (is_array($saved)) {
+                    $token = (string) ($saved['whatsapp_token'] ?? $saved['token'] ?? '');
+                    if ($phoneId === '') {
+                        $phoneId = (string) ($saved['whatsapp_phone_number_id'] ?? $saved['phone_number_id'] ?? '');
+                    }
+                }
+            }
+        } catch (Throwable $e) {}
+    }
+
     return [
         'token' => trim($token),
         'phone_number_id' => trim($phoneId) !== '' ? trim($phoneId) : '1340013275870491',

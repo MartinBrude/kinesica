@@ -578,12 +578,8 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
         'tipo_cita' => $tipoCita,
         'formatted_time' => $apptTime !== '' ? $apptTime : 'horario convenido',
         'indicaciones' => $indicaciones,
+        'event_id' => (string) ($item['calendar_event_id'] ?? ''),
     ]);
-
-    if (!$waRes['ok']) {
-        $body = "¡Hola {$firstName}! 🌿 Te escribo desde Kinésica para recordarte tu {$tipoCita} programada para mañana a las {$apptTime}.\n{$indicaciones}\n\nPor favor confirmá tu asistencia seleccionando una de las opciones o respondiendo a este mensaje 🙌";
-        $waRes = send_whatsapp_alert_payload(['to' => $phone, 'body' => $body]);
-    }
 
     if (!empty($waRes['ok'])) {
         $newKey = 'rem:' . $item['exec_id'] . ':' . $item['calendar_event_id'] . ':sent:' . time();
