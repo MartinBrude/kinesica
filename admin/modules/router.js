@@ -29,6 +29,7 @@ export function parseAdminRouteFromLocation() {
   if (head === "errores" || head === "reportes") return { view: "admin", section: "errores" };
   if (head === "backups" || head === "copias" || head === "copias-seguridad") return { view: "admin", section: "backups" };
   if (head === "servicios" || head === "consumos" || head === "cuotas") return { view: "admin", section: "servicios" };
+  if (head === "campana" || head === "campaña" || head === "turnos-campana") return { view: "admin", section: "campana" };
   if (head === "ficha") return { view: "form", id: parts[1] ? decodeURIComponent(parts[1]) : "" };
   if (head === "comparar") return { view: "compare" };
   return null;
@@ -86,6 +87,9 @@ export function syncUrlWithViewState(state, isInitialBoot = false, isHandlingPop
     } else if (sec === "servicios" || sec === "consumos" || sec === "cuotas") {
       targetPath = "/admin/servicios";
       docTitle = "Kinésica — Consumos y Servicios";
+    } else if (sec === "campana" || sec === "campaña" || sec === "turnos-campana") {
+      targetPath = "/admin/campana";
+      docTitle = "Kinésica — Turnos de campaña";
     } else if (sec === "usuarios") {
       targetPath = "/admin/usuarios";
       docTitle = "Kinésica — Usuarios";
