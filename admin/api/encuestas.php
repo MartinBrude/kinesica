@@ -1,6 +1,14 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * API admin de encuestas de satisfacción (anónimas).
+ *
+ * Lectura: MariaDB `encuestas` si hay filas (mig 008); si no, JSON legacy.
+ * Escritura/borrado: dual-write vía encuestas_io.php (JSON + DB).
+ * Docs: docs/codigo-datos-relacionales.md
+ */
+
 require __DIR__ . '/lib.php';
 require_once __DIR__ . '/encuestas_io.php';
 
@@ -10,6 +18,7 @@ $auth = require_auth();
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 if ($method === 'GET') {
+    // REL: load preferirá DB tras backfill/dual-write (encuestas_io).
     $encuestas = kinesica_encuestas_load();
     usort($encuestas, static function (array $a, array $b): int {
         return strcmp((string) ($b['created_at'] ?? ''), (string) ($a['created_at'] ?? ''));
@@ -82,6 +91,7 @@ if ($action === 'delete') {
         json_out(422, ['error' => 'ID no especificado.']);
     }
 
+    // Partir del JSON canónico de espejo + DB para no perder filas solo-DB.
     $encuestas = kinesica_encuestas_load();
     $filtrados = array_values(array_filter($encuestas, static fn (array $e): bool => ($e['id'] ?? '') !== $id));
 
@@ -89,6 +99,7 @@ if ($action === 'delete') {
         json_out(404, ['error' => 'Respuesta de encuesta no encontrada.']);
     }
 
+    // REL: save sincroniza JSON y DELETE en MariaDB.
     kinesica_encuestas_save($filtrados);
     json_out(200, [
         'status' => 'success',

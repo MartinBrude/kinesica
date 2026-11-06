@@ -274,8 +274,33 @@ function openAdminBooking() {
       isModal: true,
       adminMode: true,
       onClose: closeAdminBooking,
-      onBookingSuccess: async (payload) => {
+      onBookingSuccess: async (payload, result) => {
         if (!widget.state.adminPatient) await persistFirstVisit(payload);
+        // REL: espejo turnos sombra tras book exitoso (no bloquea UI si falla).
+        try {
+          const eventId = result?.eventId || result?.event_id || "";
+          if (eventId) {
+            const patient = widget.state.adminPatient;
+            await api("turnos.php", {
+              method: "POST",
+              body: {
+                action: "register",
+                eventId,
+                date: payload?.date || "",
+                time: payload?.time || "",
+                nombre: payload?.nombre || "",
+                telefono: payload?.telefono || "",
+                dni: payload?.dni || "",
+                practitionerId: payload?.practitionerId || "",
+                paciente_id: patient?.id || null,
+                summary: result?.summary || payload?.nombre || "",
+                source: "booking",
+              },
+            });
+          }
+        } catch (err) {
+          console.warn("No se pudo registrar el turno sombra:", err);
+        }
       },
     });
     picker = buildPicker();

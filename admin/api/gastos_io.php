@@ -1,6 +1,16 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Persistencia de gastos (etapa 8).
+ *
+ * - MariaDB `gastos` (mig 012): primario si tiene filas.
+ * - JSON (`data/gastos.json` o seed): espejo + fallback pre-migrate.
+ * - save: dual-write best-effort (JSON primero; DB no bloquea al admin).
+ *
+ * Docs: docs/etapa8-config-gastos.md
+ */
+
 function kinesica_gastos_runtime_file(): string
 {
     return __DIR__ . '/data/gastos.json';
@@ -17,7 +27,8 @@ function kinesica_gastos_source_file(): string
     return is_file($runtime) ? $runtime : kinesica_gastos_seed_file();
 }
 
-function kinesica_gastos_load(): array
+/** Solo JSON (backfill / espejo). */
+function kinesica_gastos_load_json_only(): array
 {
     $file = kinesica_gastos_source_file();
     if (!is_file($file)) {
@@ -28,7 +39,39 @@ function kinesica_gastos_load(): array
     return is_array($data) ? $data : [];
 }
 
-function kinesica_gastos_save(array $gastos): void
+function kinesica_gastos_pdo(): ?PDO
+{
+    try {
+        if (function_exists('db')) {
+            return db();
+        }
+        require_once __DIR__ . '/lib.php';
+        return db();
+    } catch (Throwable) {
+        return null;
+    }
+}
+
+function kinesica_gastos_load(): array
+{
+    $pdo = kinesica_gastos_pdo();
+    if ($pdo instanceof PDO) {
+        try {
+            require_once __DIR__ . '/lib_relational_gastos.php';
+            if (kinesica_rel_gastos_ready($pdo)) {
+                $fromDb = kinesica_rel_gastos_load_db($pdo);
+                if ($fromDb !== []) {
+                    return $fromDb;
+                }
+            }
+        } catch (Throwable $e) {
+            error_log('kinesica gastos load db: ' . $e->getMessage());
+        }
+    }
+    return kinesica_gastos_load_json_only();
+}
+
+function kinesica_gastos_save(array $gastos, string $actor = ''): void
 {
     $runtime = kinesica_gastos_runtime_file();
     $dir = dirname($runtime);
@@ -49,6 +92,39 @@ function kinesica_gastos_save(array $gastos): void
     } finally {
         flock($lock, LOCK_UN);
         fclose($lock);
+    }
+
+    // REL: espejo MariaDB (best-effort).
+    $pdo = kinesica_gastos_pdo();
+    if (!$pdo instanceof PDO) {
+        return;
+    }
+    try {
+        require_once __DIR__ . '/lib_relational_gastos.php';
+        if (!kinesica_rel_gastos_ready($pdo)) {
+            return;
+        }
+        $ids = [];
+        foreach ($gastos as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+            $id = (string) ($item['id'] ?? '');
+            if ($id === '') {
+                continue;
+            }
+            $ids[$id] = true;
+            kinesica_rel_gasto_upsert($pdo, $item, $actor);
+        }
+        $existing = $pdo->query('SELECT id FROM gastos')->fetchAll(PDO::FETCH_COLUMN) ?: [];
+        foreach ($existing as $eid) {
+            $eid = (string) $eid;
+            if (!isset($ids[$eid])) {
+                kinesica_rel_gasto_delete($pdo, $eid, $actor);
+            }
+        }
+    } catch (Throwable $e) {
+        error_log('kinesica gastos save db mirror: ' . $e->getMessage());
     }
 }
 

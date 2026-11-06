@@ -8,6 +8,8 @@ $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 require_header();
 $auth = require_auth();
 $pdo = db();
+// REL: puente columnas paciente_id/profesional_id/version (fichas_ops.php / mig 002+004).
+kinesica_fichas_ensure_rel_columns($pdo);
 
 if ($method === 'GET') {
     kinesica_fichas_get_all($pdo);
@@ -227,7 +229,11 @@ if ($method === 'POST') {
     $data['profesionalNombre'] = $clinicians[$profesional] ?? $profesional;
     $data['savedAt'] = gmdate('c');
 
-    kinesica_fichas_save_record($pdo, $auth, $id, $data, $profesional);
+    $saveMeta = kinesica_fichas_save_record($pdo, $auth, $id, $data, $profesional);
+    // REL: devolver version de columna (optimistic locking; 409 si conflicto en save).
+    if (!empty($saveMeta['version'])) {
+        $data['version'] = (int) $saveMeta['version'];
+    }
 
     if (is_array($prevItem)) {
         $prevFiles = kinesica_extract_ficha_photos($prevItem);

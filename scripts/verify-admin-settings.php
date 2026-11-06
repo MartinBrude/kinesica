@@ -15,6 +15,7 @@ foreach (['confirmation-mail-lib.php'] as $f) copy(__DIR__ . "/../api/$f", "$roo
 file_put_contents("$root/admin/api/lib.php", '<?php
 function require_header(): void {}
 function require_auth(): array { return ["name" => "Test", "username" => "test"]; }
+function is_colaborador(?array $auth = null): bool { return false; }
 function read_json(): array { return $GLOBALS["__input"] ?? []; }
 function json_out(int $code, array $data): void { echo json_encode(["__code" => $code] + $data, JSON_UNESCAPED_UNICODE); exit; }
 ');
@@ -83,7 +84,8 @@ $t = kinesica_mail_texts(kinesica_read_settings(kinesica_admin_settings_file("$r
 check($t['confirmation_notes'] === $notes, 'mail usa data/settings.json');
 
 // 9. Cliente: no guarda antes de cargar, envía sólo cambios y la revisión.
-$js = file_get_contents(__DIR__ . '/../admin/modules/configuracion.js');
+$js = file_get_contents(__DIR__ . '/../admin/modules/configuracion.js')
+    . file_get_contents(__DIR__ . '/../admin/modules/config-save.js');
 check(str_contains($js, 'if (!textsLoaded || !loadedFormValues)'), 'bloquea guardado hasta cargar');
 check(str_contains($js, 'base_revision: textsRevision') && str_contains($js, 'changedTexts'), 'envía sólo cambios + revisión');
 check(str_contains($js, 'err?.status === 409'), 'maneja 409');

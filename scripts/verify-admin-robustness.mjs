@@ -377,6 +377,7 @@ await test("los ids usados por querySelector/getElementById existen en el HTML o
     "cfg-reminder-preview",
     "btn-save-mails-policies",
     "mails-texts-status-banner",
+    "kb-step-1",
   ]);
   for (const file of jsFiles) {
     const src = fs.readFileSync(file, "utf8");

@@ -2,7 +2,13 @@
 declare(strict_types=1);
 
 /**
- * Kinésica Admin - Gestión y Validación de Horarios de Profesionales
+ * Horarios de profesionales + carga unificada de settings runtime.
+ *
+ * `load_full_runtime_settings()` aplica defaults (horas, fees, Clara) sobre
+ * el blob de settings. REL etapa 8: lee vía `kinesica_settings_load()`
+ * (JSON + overlay `configuraciones`). POST guarda con lock + mirror DB.
+ *
+ * Docs: docs/etapa8-config-gastos.md
  */
 
 require_once __DIR__ . '/horarios_validator.php';
@@ -39,11 +45,28 @@ function load_full_runtime_settings(string $file): array
         'horarios_updated_by' => null,
     ];
 
-    if (!is_file($file)) return $defaults;
-    $raw = @file_get_contents($file);
-    if ($raw === false) return $defaults;
-    $data = json_decode($raw, true);
-    if (!is_array($data)) return $defaults;
+    // REL: overlay configuraciones (etapa 8); fallback a JSON crudo si no hay DB.
+    require_once __DIR__ . '/kinesica_settings_storage.php';
+    $source = kinesica_settings_source_file();
+    $rpFile = is_file($file) ? realpath($file) : false;
+    $rpSource = is_file($source) ? realpath($source) : false;
+    $useOverlay = ($rpFile !== false && $rpSource !== false && $rpFile === $rpSource)
+        || $file === $source
+        || $file === kinesica_settings_runtime_file()
+        || $file === kinesica_settings_seed_file();
+
+    if ($useOverlay) {
+        $data = kinesica_settings_load();
+    } elseif (is_file($file)) {
+        $raw = @file_get_contents($file);
+        $decoded = $raw === false ? null : json_decode($raw, true);
+        $data = is_array($decoded) ? $decoded : [];
+    } else {
+        $data = [];
+    }
+    if ($data === []) {
+        return $defaults;
+    }
 
     $hours = $defaultHours;
     if (isset($data['practitioner_hours']) && is_array($data['practitioner_hours'])) {
@@ -241,7 +264,7 @@ if ($method === 'POST') {
         $raw['horarios_updated_at'] = $now;
         $raw['horarios_updated_by'] = $userName;
         return $raw;
-    });
+    }, $userName);
 
     $resp = load_full_runtime_settings($settingsFile);
     json_out(200, [

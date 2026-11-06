@@ -1239,7 +1239,57 @@ function handleBookAppointment(payload) {
     }
   }
 
+  // 7. Espejo local turnos (MariaDB) — best-effort; no bloquea la reserva.
+  try {
+    mirrorTurnoToAdmin({
+      eventId: bookingResult.eventId,
+      date: dateStr,
+      time: timeStr,
+      nombre: nombre,
+      telefono: telefono,
+      dni: dni,
+      practitionerId: practitionerId,
+      summary: summary
+    });
+  } catch (errMirror) {
+    console.error("mirrorTurnoToAdmin: " + errMirror);
+  }
+
   return createJsonResponse(bookingResult);
+}
+
+/**
+ * POST action=register a admin/api/turnos.php (secret = GAS_API_SECRET / WEBHOOK_SECRET).
+ * Script property opcional: TURNOS_MIRROR_URL (default producción).
+ */
+function mirrorTurnoToAdmin(data) {
+  const props = PropertiesService.getScriptProperties();
+  const url = props.getProperty("TURNOS_MIRROR_URL")
+    || "https://www.kinesica.com.ar/admin/api/turnos.php";
+  const secret = props.getProperty("GAS_API_SECRET") || props.getProperty("WEBHOOK_SECRET") || "";
+  if (!secret || !data || !data.eventId) {
+    return;
+  }
+  const payload = {
+    action: "register",
+    secret: secret,
+    eventId: String(data.eventId || ""),
+    date: String(data.date || ""),
+    time: String(data.time || ""),
+    nombre: String(data.nombre || ""),
+    telefono: String(data.telefono || ""),
+    dni: String(data.dni || ""),
+    practitionerId: String(data.practitionerId || ""),
+    summary: String(data.summary || ""),
+    source: "gas"
+  };
+  UrlFetchApp.fetch(url, {
+    method: "post",
+    contentType: "application/json",
+    payload: JSON.stringify(payload),
+    muteHttpExceptions: true,
+    followRedirects: true
+  });
 }
 
 /**

@@ -58,6 +58,7 @@ function recordatorios_ensure_schema(?PDO $pdo = null): void
     if (isset($done[$pdo])) {
         return;
     }
+    // REL: puente idempotente (no DROP). Activo como red de seguridad productiva.
     $pdo->exec(
         'CREATE TABLE IF NOT EXISTS recordatorio_eventos (
             id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -81,6 +82,25 @@ function recordatorios_ensure_schema(?PDO $pdo = null): void
             KEY idx_appt_date (appointment_date)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
     );
+    // REL: puente paciente_id/turno_id (mig 002). Retirar tras etapa 10.
+    try {
+        require_once __DIR__ . '/lib_migrations.php';
+        kinesica_migrations_add_column_if_missing(
+            $pdo,
+            'recordatorio_eventos',
+            'paciente_id',
+            'INT UNSIGNED NULL',
+            'INTEGER NULL'
+        );
+        kinesica_migrations_add_column_if_missing(
+            $pdo,
+            'recordatorio_eventos',
+            'turno_id',
+            'INT UNSIGNED NULL',
+            'INTEGER NULL'
+        );
+    } catch (Throwable $e) {
+    }
     $done[$pdo] = true;
 }
 
@@ -204,11 +224,49 @@ function recordatorios_is_duplicate_error(PDOException $e): bool
 /** @return string 'stored'|'duplicate' */
 function recordatorios_insert_item(PDO $pdo, array $ev): string
 {
-    $sql = 'INSERT INTO recordatorio_eventos
-        (event_key, exec_id, run_at, appointment_date, appointment_time, calendar_event_id,
-         patient_name, wa_id, status, skip_reason, error_code, error_message, event_summary, received_at)
-        VALUES
-        (:k, :exec, :run, :ad, :at, :cal, :name, :wa, :st, :sk, :ec, :em, :sum, :rcv)';
+    // REL: paciente_id en insert recordatorios solo con REL_WRITE_IDS.
+    $pacienteId = null;
+    $turnoId = null;
+    $hasPacienteCol = false;
+    $hasTurnoCol = false;
+    try {
+        require_once __DIR__ . '/lib_relational_resolve.php';
+        require_once __DIR__ . '/lib_migrations.php';
+        $hasPacienteCol = kinesica_migrations_column_exists($pdo, 'recordatorio_eventos', 'paciente_id');
+        $hasTurnoCol = kinesica_migrations_column_exists($pdo, 'recordatorio_eventos', 'turno_id');
+        if (kinesica_rel_write_ids() && $hasPacienteCol) {
+            $pacienteId = kinesica_rel_resolve_paciente_id_or_note($pdo, 'recordatorios', [
+                'wa_id' => (string) ($ev['wa_id'] ?? ''),
+                'phone' => (string) ($ev['wa_id'] ?? ''),
+                'dni' => (string) ($ev['dni'] ?? ''),
+                'nombre' => (string) ($ev['patient_name'] ?? ''),
+            ]);
+        }
+        // REL: sombra turnos + turno_id (no requiere WRITE_IDS; UNIQUE por calendar_event_id).
+        if ($hasTurnoCol) {
+            require_once __DIR__ . '/lib_relational_turnos.php';
+            $cal = (string) ($ev['calendar_event_id'] ?? '');
+            if (kinesica_rel_normalize_calendar_event_id($cal) !== '') {
+                $turnoId = kinesica_rel_upsert_turno_by_calendar_event($pdo, [
+                    'calendar_event_id' => $cal,
+                    'paciente_id' => $pacienteId,
+                    'starts_at' => kinesica_rel_turnos_datetime_from_appt(
+                        isset($ev['appointment_date']) ? (string) $ev['appointment_date'] : null,
+                        (string) ($ev['appointment_time'] ?? '')
+                    ),
+                    'status' => 'scheduled',
+                    'summary' => (string) ($ev['event_summary'] ?? ''),
+                    'patient_name_snapshot' => (string) ($ev['patient_name'] ?? ''),
+                    'source' => 'recordatorio',
+                ]);
+            }
+        }
+    } catch (Throwable) {
+    }
+
+    $cols = 'event_key, exec_id, run_at, appointment_date, appointment_time, calendar_event_id,
+             patient_name, wa_id, status, skip_reason, error_code, error_message, event_summary, received_at';
+    $vals = ':k, :exec, :run, :ad, :at, :cal, :name, :wa, :st, :sk, :ec, :em, :sum, :rcv';
     $params = [
         'k' => $ev['event_key'],
         'exec' => $ev['exec_id'],
@@ -225,6 +283,17 @@ function recordatorios_insert_item(PDO $pdo, array $ev): string
         'sum' => $ev['event_summary'],
         'rcv' => gmdate('Y-m-d H:i:s'),
     ];
+    if ($hasPacienteCol) {
+        $cols .= ', paciente_id';
+        $vals .= ', :pid';
+        $params['pid'] = $pacienteId;
+    }
+    if ($hasTurnoCol) {
+        $cols .= ', turno_id';
+        $vals .= ', :tid';
+        $params['tid'] = $turnoId;
+    }
+    $sql = "INSERT INTO recordatorio_eventos ({$cols}) VALUES ({$vals})";
     try {
         $pdo->prepare($sql)->execute($params);
         return 'stored';

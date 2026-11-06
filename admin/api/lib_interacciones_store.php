@@ -76,6 +76,7 @@ function interacciones_ensure_schema(?PDO $pdo = null): void
     if (isset($done[$pdo])) {
         return;
     }
+    // REL: puente idempotente (no DROP). Se mantiene activo para no romper media_/schema.
     $pdo->exec(
         'CREATE TABLE IF NOT EXISTS interaccion_eventos (
             id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -110,6 +111,18 @@ function interacciones_ensure_schema(?PDO $pdo = null): void
         }
     } catch (Throwable $e) {
     }
+    // REL: puente columna paciente_id (mig 002). Retirar tras etapa 10.
+    try {
+        require_once __DIR__ . '/lib_migrations.php';
+        kinesica_migrations_add_column_if_missing(
+            $pdo,
+            'interaccion_eventos',
+            'paciente_id',
+            'INT UNSIGNED NULL',
+            'INTEGER NULL'
+        );
+    } catch (Throwable $e) {
+    }
     $pdo->exec(
         'CREATE TABLE IF NOT EXISTS interaccion_estado (
             conversation_key VARCHAR(64) NOT NULL PRIMARY KEY,
@@ -127,6 +140,25 @@ function interacciones_ensure_schema(?PDO $pdo = null): void
             KEY idx_legacy (legacy_id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
     );
+    // REL: puente estado.paciente_id / wa_id (mig 007).
+    try {
+        require_once __DIR__ . '/lib_migrations.php';
+        kinesica_migrations_add_column_if_missing(
+            $pdo,
+            'interaccion_estado',
+            'paciente_id',
+            'INT UNSIGNED NULL',
+            'INTEGER NULL'
+        );
+        kinesica_migrations_add_column_if_missing(
+            $pdo,
+            'interaccion_estado',
+            'wa_id',
+            'VARCHAR(32) NULL',
+            'TEXT NULL'
+        );
+    } catch (Throwable $e) {
+    }
     $done[$pdo] = true;
 }
 
@@ -248,8 +280,34 @@ function interacciones_normalize_event(array $in, string $defaultSource = 'push'
  */
 function interacciones_insert_event(PDO $pdo, array $ev): string
 {
-    $sql = 'INSERT INTO interaccion_eventos (event_key, wa_id, direction, body, ts_utc, patient_name, source, exec_id, media_id, media_type, media_mime, media_filename, received_at)
-            VALUES (:k, :wa, :dir, :body, :ts, :name, :src, :exec, :mid, :mtype, :mmime, :mfile, :rcv)';
+    // REL: paciente_id en insert WA solo con REL_WRITE_IDS (lib_relational_resolve.php).
+    $pacienteId = null;
+    try {
+        require_once __DIR__ . '/lib_relational_resolve.php';
+        require_once __DIR__ . '/lib_migrations.php';
+        if (kinesica_rel_write_ids() && kinesica_migrations_column_exists($pdo, 'interaccion_eventos', 'paciente_id')) {
+            $pacienteId = kinesica_rel_resolve_paciente_id_or_note($pdo, 'interacciones', [
+                'wa_id' => (string) ($ev['wa_id'] ?? ''),
+                'nombre' => (string) ($ev['patient_name'] ?? ''),
+            ]);
+        }
+    } catch (Throwable) {
+    }
+
+    $hasPacienteCol = false;
+    try {
+        require_once __DIR__ . '/lib_migrations.php';
+        $hasPacienteCol = kinesica_migrations_column_exists($pdo, 'interaccion_eventos', 'paciente_id');
+    } catch (Throwable) {
+    }
+
+    if ($hasPacienteCol) {
+        $sql = 'INSERT INTO interaccion_eventos (event_key, wa_id, paciente_id, direction, body, ts_utc, patient_name, source, exec_id, media_id, media_type, media_mime, media_filename, received_at)
+                VALUES (:k, :wa, :pid, :dir, :body, :ts, :name, :src, :exec, :mid, :mtype, :mmime, :mfile, :rcv)';
+    } else {
+        $sql = 'INSERT INTO interaccion_eventos (event_key, wa_id, direction, body, ts_utc, patient_name, source, exec_id, media_id, media_type, media_mime, media_filename, received_at)
+                VALUES (:k, :wa, :dir, :body, :ts, :name, :src, :exec, :mid, :mtype, :mmime, :mfile, :rcv)';
+    }
     $params = [
         'k' => $ev['event_key'], 'wa' => $ev['wa_id'], 'dir' => $ev['direction'], 'body' => $ev['body'],
         'ts' => gmdate('Y-m-d H:i:s', (int) $ev['ts']), 'name' => $ev['patient_name'], 'src' => $ev['source'],
@@ -260,8 +318,23 @@ function interacciones_insert_event(PDO $pdo, array $ev): string
         'mfile' => $ev['media_filename'] ?? null,
         'rcv' => gmdate('Y-m-d H:i:s'),
     ];
+    if ($hasPacienteCol) {
+        $params['pid'] = $pacienteId;
+    }
     try {
         $pdo->prepare($sql)->execute($params);
+        // REL: tocar conversación (estado) con paciente_id / wa_id (mig 007).
+        try {
+            require_once __DIR__ . '/lib_relational_interacciones.php';
+            kinesica_rel_touch_interaccion_estado_paciente(
+                $pdo,
+                (string) ($ev['wa_id'] ?? ''),
+                (int) ($ev['ts'] ?? time()),
+                $pacienteId,
+                (string) ($ev['patient_name'] ?? '')
+            );
+        } catch (Throwable) {
+        }
         return 'stored';
     } catch (PDOException $e) {
         if (!interacciones_is_duplicate_error($e)) {

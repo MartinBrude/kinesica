@@ -188,9 +188,14 @@ if ($type === 'encuesta') {
                 'lang' => $lang,
                 'created_at' => gmdate('Y-m-d\TH:i:s\Z'),
             ];
-            $lista = kinesica_encuestas_load();
-            array_unshift($lista, $nuevaEncuesta);
-            kinesica_encuestas_save($lista);
+            // REL: append → JSON + espejo MariaDB (mig 008) si está disponible.
+            if (function_exists('kinesica_encuestas_append')) {
+                kinesica_encuestas_append($nuevaEncuesta);
+            } else {
+                $lista = kinesica_encuestas_load();
+                array_unshift($lista, $nuevaEncuesta);
+                kinesica_encuestas_save($lista);
+            }
             $encuestaSaved = true;
         } catch (Throwable $e) {
             error_log('[send-contact] No se pudo guardar encuesta en disco: ' . $e->getMessage());

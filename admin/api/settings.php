@@ -1,6 +1,16 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * API settings (Clara, fees, flags, textos). Comparte loaders con horarios.php.
+ *
+ * GET: settings efectivos (overlay DB etapa 8).
+ * POST: mutate bajo lock; conflict 409 si `clara_texts_revision` no coincide;
+ *       espejo allowlisted → `configuraciones` + auditoría.
+ *
+ * Docs: docs/etapa8-config-gastos.md
+ */
+
 if (defined('KINESICA_SETTINGS_INCLUDED')) {
     return;
 }
@@ -147,7 +157,7 @@ if ($method === 'POST') {
             }
 
             return $raw;
-        });
+        }, $userName);
     } catch (KinesicaSettingsConflict $e) {
         json_out(409, ['error' => $e->getMessage(), 'conflict' => true, 'current' => get_runtime_settings(kinesica_settings_source_file())]);
     } catch (Throwable $e) {
