@@ -129,6 +129,9 @@ if ($assetName !== '') {
         'mockup_google_calendar_correcto.jpg' => ['path' => 'assets/mockup_google_calendar_correcto.jpg', 'mime' => 'image/jpeg'],
         'comparativa_agendamiento_dos_donts.jpg' => ['path' => 'assets/comparativa_agendamiento_dos_donts.jpg', 'mime' => 'image/jpeg'],
         'mockup_agendar_web.png' => ['path' => 'assets/mockup_agendar_web.png', 'mime' => 'image/png'],
+        'admin-agendar-buscar-paciente.svg' => ['path' => 'assets/admin-agendar-buscar-paciente.svg', 'mime' => 'image/svg+xml'],
+        'admin-agendar-paciente-seleccionado.svg' => ['path' => 'assets/admin-agendar-paciente-seleccionado.svg', 'mime' => 'image/svg+xml'],
+        'admin-agendar-horario.svg' => ['path' => 'assets/admin-agendar-horario.svg', 'mime' => 'image/svg+xml'],
         'pacientes_primera_sesion.xlsx' => [
             'path' => 'pacientes_primera_sesion.xlsx',
             'mime' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',

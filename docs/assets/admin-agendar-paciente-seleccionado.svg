@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
+  <title id="title">Paciente seleccionado en Admin</title>
+  <desc id="desc">Paciente encontrado y selección de técnica en la turnera Admin.</desc>
+  <rect width="1200" height="620" rx="24" fill="#eef4f7"/><rect x="48" y="36" width="1104" height="548" rx="18" fill="#fff" stroke="#d8e2e8"/>
+  <text x="82" y="82" font-family="Arial,sans-serif" font-size="25" font-weight="700" fill="#0f2a44">Paciente seleccionado</text>
+  <rect x="82" y="116" width="1036" height="96" rx="14" fill="#f0faf5" stroke="#b9e4c9" stroke-width="2"/>
+  <text x="108" y="146" font-family="Arial,sans-serif" font-size="12" font-weight="800" fill="#187044">PACIENTE ENCONTRADO</text>
+  <text x="108" y="174" font-family="Arial,sans-serif" font-size="20" font-weight="700" fill="#0f2a44">María González</text><text x="108" y="196" font-family="Arial,sans-serif" font-size="14" fill="#64748b">11 5555-1234 · DNI 32.456.789</text>
+  <rect x="988" y="145" width="102" height="38" rx="9" fill="#fff" stroke="#cfe3ec"/><text x="1011" y="169" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#1f6481">Cambiar</text>
+  <text x="82" y="258" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#0f2a44">Técnica</text>
+  <rect x="82" y="280" width="318" height="86" rx="12" fill="#eef6f9" stroke="#2b7a9b" stroke-width="2"/><text x="108" y="316" font-family="Arial,sans-serif" font-size="17" font-weight="700" fill="#0f2a44">Paciente habitual</text><text x="108" y="342" font-family="Arial,sans-serif" font-size="13" fill="#64748b">Profesional habitual preseleccionado</text>
+  <rect x="420" y="280" width="318" height="86" rx="12" fill="#fff" stroke="#d8e2e8"/><text x="446" y="316" font-family="Arial,sans-serif" font-size="17" font-weight="700" fill="#0f2a44">RPG</text><text x="446" y="342" font-family="Arial,sans-serif" font-size="13" fill="#64748b">Elegí otra técnica si corresponde</text>
+  <rect x="758" y="280" width="318" height="86" rx="12" fill="#fff" stroke="#d8e2e8"/><text x="784" y="316" font-family="Arial,sans-serif" font-size="17" font-weight="700" fill="#0f2a44">Osteopatía</text><text x="784" y="342" font-family="Arial,sans-serif" font-size="13" fill="#64748b">Según el motivo de consulta</text>
+  <rect x="82" y="452" width="1036" height="8" rx="4" fill="#2b7a9b"/><text x="82" y="497" font-family="Arial,sans-serif" font-size="15" fill="#64748b">Los datos del paciente ya están cargados. No hace falta completar mail ni documento.</text>
+  <rect x="896" y="514" width="222" height="42" rx="9" fill="#2b7a9b"/><text x="933" y="541" font-family="Arial,sans-serif" font-size="15" font-weight="700" fill="#fff">Ver horarios →</text>
+</svg>
