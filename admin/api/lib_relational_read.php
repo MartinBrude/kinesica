@@ -101,6 +101,26 @@ function kinesica_rel_fetch_pacientes_map(PDO $pdo, array $ids): array
 }
 
 /**
+ * Nombre para mostrar desde fila canónica de pacientes.
+ *
+ * @param array{nombre_completo?:string,nombre?:string,apellido?:string}|null $paciente
+ */
+function kinesica_rel_paciente_display_name(?array $paciente): string
+{
+    if ($paciente === null) {
+        return '';
+    }
+    $display = trim((string) ($paciente['nombre_completo'] ?? ''));
+    if ($display === '') {
+        $display = trim(trim((string) ($paciente['nombre'] ?? '')) . ' ' . trim((string) ($paciente['apellido'] ?? '')));
+    }
+    if ($display !== '' && function_exists('sanitize_patient_name')) {
+        return sanitize_patient_name($display);
+    }
+    return $display;
+}
+
+/**
  * Enriquece payload de ficha con datos canónicos del directorio.
  *
  * @param array<string,mixed> $payload
@@ -112,22 +132,20 @@ function kinesica_rel_enrich_ficha_payload(array $payload, ?array $paciente): ar
     if ($paciente === null) {
         return ['payload' => $payload, 'used_id' => false];
     }
-    $display = trim($paciente['nombre_completo'] !== ''
-        ? $paciente['nombre_completo']
-        : trim($paciente['nombre'] . ' ' . $paciente['apellido']));
+    $display = kinesica_rel_paciente_display_name($paciente);
     if ($display !== '') {
-        $payload['nombre'] = function_exists('sanitize_patient_name')
-            ? sanitize_patient_name($display)
-            : $display;
+        $payload['nombre'] = $display;
     }
     if ($paciente['dni'] !== '') {
         $payload['dni'] = $paciente['dni'];
     }
     $payload['paciente_id'] = $paciente['id'];
-    if ($paciente['telefono'] !== '' && empty($payload['telefono'])) {
+    $tel = trim((string) ($payload['telefono'] ?? ''));
+    if ($paciente['telefono'] !== '' && $tel === '') {
         $payload['telefono'] = $paciente['telefono'];
     }
-    if ($paciente['email'] !== '' && empty($payload['email'])) {
+    $email = trim((string) ($payload['email'] ?? ''));
+    if ($paciente['email'] !== '' && $email === '') {
         $payload['email'] = $paciente['email'];
     }
     return ['payload' => $payload, 'used_id' => true];
@@ -143,13 +161,9 @@ function kinesica_rel_enrich_lista_row(array $row, ?array $paciente): array
     if ($paciente === null) {
         return ['row' => $row, 'used_id' => false];
     }
-    $display = trim($paciente['nombre_completo'] !== ''
-        ? $paciente['nombre_completo']
-        : trim($paciente['nombre'] . ' ' . $paciente['apellido']));
+    $display = kinesica_rel_paciente_display_name($paciente);
     if ($display !== '') {
-        $row['paciente_nombre'] = function_exists('sanitize_patient_name')
-            ? sanitize_patient_name($display)
-            : $display;
+        $row['paciente_nombre'] = $display;
     }
     if ($paciente['telefono'] !== '') {
         $row['paciente_telefono'] = $paciente['telefono'];
@@ -254,14 +268,8 @@ function kinesica_rel_display_from_paciente(?array $paciente): array
     if ($paciente === null) {
         return ['name' => '', 'email' => '', 'phone' => ''];
     }
-    $name = trim($paciente['nombre_completo'] !== ''
-        ? $paciente['nombre_completo']
-        : trim($paciente['nombre'] . ' ' . $paciente['apellido']));
-    if ($name !== '' && function_exists('sanitize_patient_name')) {
-        $name = sanitize_patient_name($name);
-    }
     return [
-        'name' => $name,
+        'name' => kinesica_rel_paciente_display_name($paciente),
         'email' => $paciente['email'],
         'phone' => $paciente['telefono'],
     ];

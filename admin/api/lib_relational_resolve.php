@@ -20,6 +20,48 @@ require_once __DIR__ . '/lib_relational_flags.php';
 require_once __DIR__ . '/lib_migrations.php';
 
 /**
+ * Parsea un ID positivo desde hint/body. Rechaza bools y strings no enteros puros.
+ */
+function kinesica_rel_parse_positive_id(mixed $raw): int
+{
+    if (is_bool($raw) || $raw === null || $raw === '') {
+        return 0;
+    }
+    if (is_int($raw)) {
+        return $raw > 0 ? $raw : 0;
+    }
+    if (is_float($raw)) {
+        if (!is_finite($raw) || floor($raw) !== $raw) {
+            return 0;
+        }
+        return ((int) $raw) > 0 ? (int) $raw : 0;
+    }
+    if (is_string($raw)) {
+        $t = trim($raw);
+        if ($t === '' || !ctype_digit($t)) {
+            return 0;
+        }
+        $n = (int) $t;
+        return $n > 0 ? $n : 0;
+    }
+    return 0;
+}
+
+/**
+ * ¿La fila de pacientes está soft-deleted? (deleted_at ausente = activo).
+ *
+ * @param array<string,mixed> $row
+ */
+function kinesica_rel_paciente_row_is_deleted(array $row): bool
+{
+    if (!array_key_exists('deleted_at', $row)) {
+        return false;
+    }
+    $v = $row['deleted_at'];
+    return $v !== null && $v !== '';
+}
+
+/**
  * @param array{paciente_id?:int|string,phone?:string,wa_id?:string,dni?:string,nombre?:string} $hints
  * @param array{ignore_flag?:bool} $opts ignore_flag=true para backfill CLI aunque REL_WRITE_IDS esté off
  * @return array{paciente_id:?int,status:string,reason:string,candidates:int}
@@ -34,12 +76,24 @@ function kinesica_rel_resolve_paciente(PDO $pdo, array $hints, array $opts = [])
         return ['paciente_id' => null, 'status' => 'unmatched', 'reason' => 'sin_tabla_pacientes', 'candidates' => 0];
     }
 
+    $hasDeletedAt = kinesica_migrations_column_exists($pdo, 'pacientes', 'deleted_at');
+
     // Etapa 10: si ya viene paciente_id explícito, no join por tel/nombre.
-    $explicitId = isset($hints['paciente_id']) ? (int) $hints['paciente_id'] : 0;
+    $explicitId = kinesica_rel_parse_positive_id($hints['paciente_id'] ?? null);
     if ($explicitId > 0) {
-        $chk = $pdo->prepare('SELECT id FROM pacientes WHERE id = :id LIMIT 1');
+        $cols = $hasDeletedAt ? 'id, deleted_at' : 'id';
+        $chk = $pdo->prepare("SELECT {$cols} FROM pacientes WHERE id = :id LIMIT 1");
         $chk->execute(['id' => $explicitId]);
-        if ($chk->fetchColumn()) {
+        $row = $chk->fetch(PDO::FETCH_ASSOC);
+        if (is_array($row)) {
+            if ($hasDeletedAt && kinesica_rel_paciente_row_is_deleted($row)) {
+                return [
+                    'paciente_id' => null,
+                    'status' => 'unmatched',
+                    'reason' => 'paciente_id_eliminado',
+                    'candidates' => 0,
+                ];
+            }
             return [
                 'paciente_id' => $explicitId,
                 'status' => 'matched',
@@ -80,7 +134,8 @@ function kinesica_rel_resolve_paciente(PDO $pdo, array $hints, array $opts = [])
                 }
                 $matches = array_values($byId);
             }
-        } catch (Throwable) {
+        } catch (Throwable $e) {
+            error_log('kinesica rel resolve contactos lookup: ' . $e->getMessage());
         }
         if (count($matches) === 1) {
             return [
@@ -136,23 +191,30 @@ function kinesica_rel_resolve_paciente(PDO $pdo, array $hints, array $opts = [])
     }
 
     // 3) Nombre único solo si no hubo teléfono (evita vincular mal cuando el wa/tel no matcheó).
-    //    Requiere DNI en hints como dato complementario.
+    //    Requiere DNI en hints: el paciente debe tener ese DNI o DNI vacío (nunca un DNI distinto).
     if ($nameKey !== '' && $phone === '' && $dni !== '') {
         $matches = kinesica_rel_find_pacientes_by_name_key($pdo, $nameKey);
-        if (count($matches) === 1) {
+        $compatible = [];
+        foreach ($matches as $m) {
+            $rowDni = clean_patient_dni($m['dni'] ?? null);
+            if ($rowDni === '' || $rowDni === $dni) {
+                $compatible[] = $m;
+            }
+        }
+        if (count($compatible) === 1) {
             return [
-                'paciente_id' => (int) $matches[0]['id'],
+                'paciente_id' => (int) $compatible[0]['id'],
                 'status' => 'matched',
                 'reason' => 'nombre_unico_con_dni_hint',
                 'candidates' => 1,
             ];
         }
-        if (count($matches) > 1) {
+        if (count($compatible) > 1) {
             return [
                 'paciente_id' => null,
                 'status' => 'ambiguous',
                 'reason' => 'nombre_ambiguo',
-                'candidates' => count($matches),
+                'candidates' => count($compatible),
             ];
         }
     }
@@ -168,11 +230,39 @@ function kinesica_rel_resolve_paciente(PDO $pdo, array $hints, array $opts = [])
 /**
  * @return list<array<string,mixed>>
  */
+/**
+ * Columnas base + opcionales. Solo filas activas (sin soft-delete).
+ *
+ * @return list<array<string,mixed>>
+ */
+function kinesica_rel_fetch_pacientes_rows_for_resolve(PDO $pdo): array
+{
+    $cols = ['id', 'telefono', 'nombre_completo'];
+    if (kinesica_migrations_column_exists($pdo, 'pacientes', 'dni')) {
+        $cols[] = 'dni';
+    }
+    $hasDeletedAt = kinesica_migrations_column_exists($pdo, 'pacientes', 'deleted_at');
+    if ($hasDeletedAt) {
+        $cols[] = 'deleted_at';
+    }
+    $sql = 'SELECT ' . implode(', ', $cols) . ' FROM pacientes';
+    if ($hasDeletedAt) {
+        $sql .= ' WHERE deleted_at IS NULL';
+    }
+    return $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC) ?: [];
+}
+
+/**
+ * @return list<array<string,mixed>>
+ */
 function kinesica_rel_find_pacientes_by_phone(PDO $pdo, string $normPhone): array
 {
-    $rows = $pdo->query('SELECT id, telefono, nombre_completo, dni FROM pacientes')->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    $rows = kinesica_rel_fetch_pacientes_rows_for_resolve($pdo);
     $out = [];
     foreach ($rows as $row) {
+        if (kinesica_rel_paciente_row_is_deleted($row)) {
+            continue;
+        }
         $raw = (string) ($row['telefono'] ?? '');
         if (is_placeholder_phone($raw)) {
             continue;
@@ -195,9 +285,12 @@ function kinesica_rel_find_pacientes_by_phone(PDO $pdo, string $normPhone): arra
  */
 function kinesica_rel_find_pacientes_by_dni(PDO $pdo, string $dni): array
 {
-    $rows = $pdo->query('SELECT id, telefono, nombre_completo, dni FROM pacientes')->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    $rows = kinesica_rel_fetch_pacientes_rows_for_resolve($pdo);
     $out = [];
     foreach ($rows as $row) {
+        if (kinesica_rel_paciente_row_is_deleted($row)) {
+            continue;
+        }
         if (clean_patient_dni($row['dni'] ?? null) === $dni) {
             $out[] = $row;
         }
@@ -210,9 +303,12 @@ function kinesica_rel_find_pacientes_by_dni(PDO $pdo, string $dni): array
  */
 function kinesica_rel_find_pacientes_by_name_key(PDO $pdo, string $nameKey): array
 {
-    $rows = $pdo->query('SELECT id, telefono, nombre_completo, dni FROM pacientes')->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    $rows = kinesica_rel_fetch_pacientes_rows_for_resolve($pdo);
     $out = [];
     foreach ($rows as $row) {
+        if (kinesica_rel_paciente_row_is_deleted($row)) {
+            continue;
+        }
         if (canonical_patient_name_key((string) ($row['nombre_completo'] ?? '')) === $nameKey) {
             $out[] = $row;
         }

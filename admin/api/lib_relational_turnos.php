@@ -143,11 +143,11 @@ function kinesica_rel_upsert_turno_by_calendar_event(PDO $pdo, array $data): ?in
             'source' => $source,
         ]);
     } catch (PDOException $e) {
-        // Carrera: otro proceso insertó el mismo calendar_event_id.
+        // Carrera: otro proceso insertó el mismo calendar_event_id → merge (no descartar datos).
         $find->execute(['c' => $calId]);
         $again = $find->fetch(PDO::FETCH_ASSOC);
         if (is_array($again)) {
-            return (int) $again['id'];
+            return kinesica_rel_upsert_turno_by_calendar_event($pdo, $data);
         }
         throw $e;
     }
@@ -460,7 +460,8 @@ function kinesica_rel_register_turno_from_booking(PDO $pdo, array $booking): ?in
             if (($res['status'] ?? '') === 'matched' && !empty($res['paciente_id'])) {
                 $pacienteId = (int) $res['paciente_id'];
             }
-        } catch (Throwable) {
+        } catch (Throwable $e) {
+            error_log('kinesica turnos booking resolve paciente: ' . $e->getMessage());
             $pacienteId = 0;
         }
     }
@@ -471,7 +472,8 @@ function kinesica_rel_register_turno_from_booking(PDO $pdo, array $booking): ?in
         try {
             require_once __DIR__ . '/lib_relational_resolve.php';
             $profesionalId = kinesica_rel_resolve_profesional_id($pdo, $slug, ['ignore_flag' => true]);
-        } catch (Throwable) {
+        } catch (Throwable $e) {
+            error_log('kinesica turnos booking resolve profesional: ' . $e->getMessage());
             $profesionalId = null;
         }
     }

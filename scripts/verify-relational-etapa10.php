@@ -114,6 +114,13 @@ assert_true($count === 1, 'soft-delete conserva fila');
 $delAt = $pdo->query('SELECT deleted_at FROM pacientes WHERE id = 1')->fetchColumn();
 assert_true($delAt !== null && $delAt !== '', 'deleted_at set');
 
+$delRes = kinesica_rel_resolve_paciente($pdo, ['paciente_id' => 1], ['ignore_flag' => true]);
+assert_true(($delRes['status'] ?? '') === 'unmatched', 'explicit id soft-deleted → unmatched');
+assert_true(($delRes['reason'] ?? '') === 'paciente_id_eliminado', 'reason eliminado');
+
+$byPhoneDel = kinesica_rel_resolve_paciente($pdo, ['phone' => '5491111111111'], ['ignore_flag' => true]);
+assert_true(($byPhoneDel['status'] ?? '') === 'unmatched', 'tel de soft-deleted no matchea');
+
 $profId = (int) $pdo->query("SELECT id FROM profesionales WHERE slug = 'norberto' LIMIT 1")->fetchColumn();
 assert_true($profId > 0, 'seed norberto existe');
 $sd = kinesica_rel_profesional_soft_delete($pdo, $profId);

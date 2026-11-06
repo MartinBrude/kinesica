@@ -2,7 +2,7 @@
  * Kinésica Admin - Lectura y Serialización del Formulario de Ficha
  */
 
-import { emptyFicha, coerceFicha, ageOn } from "../ficha-rules.mjs?v=89";
+import { emptyFicha, coerceFicha, ageOn } from "../ficha-rules.mjs?v=90";
 import { todayISO } from "./form-eva.js";
 
 export function getBlankFicha() {
@@ -43,6 +43,10 @@ export function readFormData({ form, currentId, singles, getCurrentFotos }) {
   const fotos = typeof getCurrentFotos === "function" ? getCurrentFotos() : [];
   raw.fotosUrls = [...fotos];
   raw.fotoUrl = fotos[0] || "";
+  // Preserve relational meta from singles (fillForm) before coerce strips unknowns.
+  if (singles.version != null) raw.version = singles.version;
+  if (singles.paciente_id != null) raw.paciente_id = singles.paciente_id;
+  if (singles.profesional_id != null) raw.profesional_id = singles.profesional_id;
   return coerceFicha(raw);
 }
 

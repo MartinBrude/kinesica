@@ -4,7 +4,7 @@
  * validación suave y soporte para características opcionales.
  */
 
-import { patientKey, validateField, getSessionIndex } from "../ficha-rules.mjs?v=89";
+import { patientKey, validateField, getSessionIndex } from "../ficha-rules.mjs?v=90";
 import { dialogConfirm, dialogAlert } from "./dom.js?v=78";
 import { setupInputRestrictions } from "./form-restrictions.js";
 import { syncFotoPreview, getCurrentFotos, getUploadInFlight, initFormPhotos } from "./form-photos.js";
@@ -56,6 +56,11 @@ export function fillForm(data, allFichas = []) {
     if (key === "id" || key === "savedAt" || key === "cdi") continue;
     const el = form.elements[key];
     if (!el) {
+      // version / paciente_id / profesional_id: round-trip sin input visible
+      if (key === "version" || key === "paciente_id" || key === "profesional_id") {
+        if (value != null && value !== "") singles[key] = value;
+        continue;
+      }
       if (form.querySelector(`[data-single="${key}"]`)) singles[key] = value || "";
       continue;
     }

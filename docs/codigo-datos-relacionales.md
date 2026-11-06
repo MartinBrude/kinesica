@@ -97,12 +97,19 @@ Defaults: todo `false`. Caché en proceso: `kinesica_rel_flags_reset_cache()`.
 
 Orden (sin fusión automática):
 
-1. Teléfono normalizado en `pacientes` **o** `paciente_contactos`
-2. DNI único
-3. Nombre único + hint DNI (sin teléfono en el hint)
-4. Ambiguo (tel compartido / DNI dup) → `null` + métrica
+1. `paciente_id` explícito (etapa 10) — rechaza inexistente / soft-deleted
+2. Teléfono normalizado en `pacientes` **o** `paciente_contactos` (excluye soft-deleted)
+3. DNI único
+4. Nombre único + hint DNI (sin teléfono): solo si el DNI del paciente es vacío o igual al hint
+5. Ambiguo (tel compartido / DNI dup) → `null` + métrica
 
+Parseo de IDs: solo enteros positivos puros (`ctype_digit` / int); no `(int)"12abc"`.
+Flags: `kinesica_rel_coerce_bool` (evita `(bool)"false" === true`).
 Backfill CLI usa `ignore_flag` para resolver aunque `write_ids` esté off.
+Fichas: resolve por tel/nombre solo **rellena** `paciente_id` NULL; override solo con ID explícito.
+Optimistic lock: GET incluye `version`; el form hace round-trip; save con `version` stale → 409.
+Turnos: carrera UNIQUE reintenta merge (no descarta el segundo writer).
+Integridad: `apply_fks` deriva nombres desde `kinesica_rel_integrity_fk_specs()`.
 
 ## Métricas en disco (`admin/api/data/`, gitignored)
 

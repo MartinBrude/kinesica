@@ -349,21 +349,25 @@ function kinesica_pacientes_waitlist_ops(PDO $pdo, string $action, array $data):
         $horario = trim((string) ($data['rango_horario_preferido'] ?? ''));
         $dias = trim((string) ($data['dias_preferidos'] ?? ''));
         $profesional = in_array($data['profesional'] ?? '', ['norberto', 'maria', 'indistinto'], true) ? $data['profesional'] : 'indistinto';
-        $pacienteIdExplicit = (int) ($data['paciente_id'] ?? 0);
-
         require_once __DIR__ . '/lib_migrations.php';
         // REL: identidad preferida = paciente_id; teléfono/nombre denormalizados para vista.
         require_once __DIR__ . '/lib_relational_resolve.php';
+        $pacienteIdExplicit = kinesica_rel_parse_positive_id($data['paciente_id'] ?? null);
         $pacienteId = null;
         $profesionalId = null;
 
         if ($pacienteIdExplicit > 0) {
+            $hasDel = kinesica_migrations_column_exists($pdo, 'pacientes', 'deleted_at');
+            $cols = 'id, telefono, nombre_completo, nombre, apellido'
+                . ($hasDel ? ', deleted_at' : '');
             $find = $pdo->prepare(
-                'SELECT id, telefono, nombre_completo, nombre, apellido FROM pacientes WHERE id = :id LIMIT 1'
+                "SELECT {$cols} FROM pacientes WHERE id = :id LIMIT 1"
             );
             $find->execute(['id' => $pacienteIdExplicit]);
             $prow = $find->fetch(PDO::FETCH_ASSOC);
-            if (!is_array($prow)) {
+            if (!is_array($prow)
+                || ($hasDel && kinesica_rel_paciente_row_is_deleted($prow))
+            ) {
                 json_out(422, ['status' => 'error', 'message' => 'paciente_id inválido']);
             }
             $pacienteId = (int) $prow['id'];
@@ -401,7 +405,8 @@ function kinesica_pacientes_waitlist_ops(PDO $pdo, string $action, array $data):
                         'nombre' => $nombre,
                     ]);
                 }
-            } catch (Throwable) {
+            } catch (Throwable $e) {
+                error_log('kinesica waitlist resolve paciente: ' . $e->getMessage());
                 $pacienteId = null;
             }
         }
@@ -411,7 +416,8 @@ function kinesica_pacientes_waitlist_ops(PDO $pdo, string $action, array $data):
                 (string) $profesional,
                 ['ignore_flag' => true]
             );
-        } catch (Throwable) {
+        } catch (Throwable $e) {
+            error_log('kinesica waitlist resolve profesional: ' . $e->getMessage());
             $profesionalId = null;
         }
 
@@ -446,7 +452,8 @@ function kinesica_pacientes_waitlist_ops(PDO $pdo, string $action, array $data):
     if ($action === 'waitlist_remove' || $action === 'remove_waitlist') {
         $id = (int) ($data['id'] ?? 0);
         $phone = clean_phone_number((string) ($data['telefono'] ?? ''));
-        $pacienteId = (int) ($data['paciente_id'] ?? 0);
+        require_once __DIR__ . '/lib_relational_resolve.php';
+        $pacienteId = kinesica_rel_parse_positive_id($data['paciente_id'] ?? null);
         if ($id > 0) {
             $pdo->prepare('UPDATE lista_espera SET estado = "asignado" WHERE id = :id')->execute(['id' => $id]);
         } elseif ($pacienteId > 0) {
@@ -473,7 +480,8 @@ function kinesica_pacientes_waitlist_ops(PDO $pdo, string $action, array $data):
                              WHERE paciente_id = :pid AND estado = "activa"'
                         )->execute(['pid' => (int) $resolved['paciente_id']]);
                     }
-                } catch (Throwable) {
+                } catch (Throwable $e) {
+                    error_log('kinesica waitlist_remove resolve: ' . $e->getMessage());
                 }
             }
         }

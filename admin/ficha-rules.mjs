@@ -131,6 +131,11 @@ export function nextSession(item, fechaSesion) {
   copy.fechaSesion = fechaSesion || "";
   copy.edad = ageOn(item?.nacimiento, fechaSesion);
   if (CLINICIANS[item?.profesional]) copy.profesional = item.profesional;
+  // Nueva sesión del mismo paciente: conservar vínculo canónico (sin version de la ficha previa).
+  const pid = Number(item?.paciente_id);
+  if (Number.isInteger(pid) && pid > 0) copy.paciente_id = pid;
+  const prid = Number(item?.profesional_id);
+  if (Number.isInteger(prid) && prid > 0) copy.profesional_id = prid;
   return copy;
 }
 
@@ -177,6 +182,20 @@ export function coerceFicha(input = {}) {
   if (input?.savedAt) out.savedAt = String(input.savedAt);
   if (input?.profesional) out.profesional = String(input.profesional);
   if (input?.profesionalNombre) out.profesionalNombre = String(input.profesionalNombre);
+
+  // Metadatos relacionales (no están en emptyFicha; round-trip para locking / IDs).
+  if (input?.version != null && input.version !== "") {
+    const v = Number(input.version);
+    if (Number.isInteger(v) && v > 0) out.version = v;
+  }
+  if (input?.paciente_id != null && input.paciente_id !== "") {
+    const pid = Number(input.paciente_id);
+    if (Number.isInteger(pid) && pid > 0) out.paciente_id = pid;
+  }
+  if (input?.profesional_id != null && input.profesional_id !== "") {
+    const prid = Number(input.profesional_id);
+    if (Number.isInteger(prid) && prid > 0) out.profesional_id = prid;
+  }
 
   if (out.fotoUrl && out.fotosUrls.length === 0) {
     out.fotosUrls = [out.fotoUrl];

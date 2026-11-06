@@ -83,6 +83,15 @@ assert_true($nulled === 1, 'null orphan fichas.paciente_id');
 $orphanVal = $pdo->query("SELECT paciente_id FROM fichas WHERE id = 'f_orphan'")->fetchColumn();
 assert_true($orphanVal === null || $orphanVal === '', 'orphan nulled');
 
+assert_true(
+    kinesica_rel_integrity_fk_name('fichas', 'paciente_id') === 'fk_fichas_paciente',
+    'fk name fichas.paciente'
+);
+assert_true(
+    kinesica_rel_integrity_fk_name('recordatorio_eventos', 'turno_id') === 'fk_recordatorio_eventos_turno',
+    'fk name recordatorio.turno'
+);
+
 // enforce_fk assert
 putenv('KINESICA_REL_ENFORCE_FK=1');
 kinesica_rel_flags_reset_cache();

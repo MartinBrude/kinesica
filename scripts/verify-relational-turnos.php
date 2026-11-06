@@ -65,6 +65,18 @@ assert_true((int) $row['paciente_id'] === 10, 'no pisa paciente_id con NULL');
 assert_true((string) $row['summary'] === 'Actualizada', 'actualiza summary');
 assert_true((string) $row['source'] === 'recordatorio', 'actualiza source');
 
+// Merge en carrera: simular "ya existe" con datos nuevos (path de reintento post-UNIQUE).
+$idRace = kinesica_rel_upsert_turno_by_calendar_event($pdo, [
+    'calendar_event_id' => 'cal-abc',
+    'paciente_id' => 77,
+    'summary' => 'Tras carrera',
+    'source' => 'booking',
+]);
+assert_true($idRace === $id1, 'carrera/reintento mismo id');
+$rowRace = $pdo->query("SELECT paciente_id, summary FROM turnos WHERE id = {$id1}")->fetch(PDO::FETCH_ASSOC);
+assert_true((int) $rowRace['paciente_id'] === 77, 'carrera mergea paciente_id nuevo');
+assert_true((string) $rowRace['summary'] === 'Tras carrera', 'carrera mergea summary');
+
 assert_true(kinesica_rel_normalize_calendar_event_id('') === '', 'vacío rechazado');
 assert_true(kinesica_rel_normalize_calendar_event_id('_run') === '', '_run rechazado');
 assert_true(kinesica_rel_upsert_turno_by_calendar_event($pdo, [

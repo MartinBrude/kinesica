@@ -64,6 +64,26 @@ assert_true($r['status'] === 'ambiguous' && $r['paciente_id'] === null, 'teléfo
 $r = kinesica_rel_resolve_paciente($pdo, ['wa_id' => '5491199990000', 'nombre' => 'Nadie']);
 assert_true($r['status'] === 'unmatched', 'sin coincidencia');
 
+// Nombre único + DNI hint: no vincular si el DNI del paciente es otro
+$pdo->exec("INSERT INTO pacientes (telefono, nombre_completo, dni) VALUES ('5491100000001', 'Nombre Unico Test', '40111222')");
+$r = kinesica_rel_resolve_paciente($pdo, [
+    'nombre' => 'Nombre Unico Test',
+    'dni' => '99999888',
+]);
+assert_true($r['status'] === 'unmatched' && $r['paciente_id'] === null, 'nombre+dni distinto → unmatched');
+
+$r = kinesica_rel_resolve_paciente($pdo, [
+    'nombre' => 'Ana Gómez',
+    'dni' => '30111222',
+]);
+// Ana ya matchea por DNI en paso 2
+assert_true($r['status'] === 'matched' && $r['paciente_id'] === 1, 'nombre+dni coherente vía dni');
+
+// ID parse: strings no numéricos no se castean a basura
+assert_true(kinesica_rel_parse_positive_id('12abc') === 0, 'parse id rechaza 12abc');
+assert_true(kinesica_rel_parse_positive_id('42') === 42, 'parse id acepta string dígitos');
+assert_true(kinesica_rel_parse_positive_id(true) === 0, 'parse id rechaza bool');
+
 // Lista espera write path simulation
 $pdo->exec(
     'CREATE TABLE lista_espera (

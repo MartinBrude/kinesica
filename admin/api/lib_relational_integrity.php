@@ -326,7 +326,22 @@ function kinesica_rel_json_out_if_integrity(Throwable $e): bool
 }
 
 /**
+ * Nombre de constraint FK alineado a mig 013 / specs.
+ */
+function kinesica_rel_integrity_fk_name(string $table, string $column): string
+{
+    $suffix = match ($column) {
+        'paciente_id' => 'paciente',
+        'profesional_id' => 'profesional',
+        'turno_id' => 'turno',
+        default => preg_replace('/_id$/', '', $column) ?: $column,
+    };
+    return "fk_{$table}_{$suffix}";
+}
+
+/**
  * Aplica FKs RESTRICT de etapa 9 (idempotente). Usado por mig 013.
+ * Fuente de verdad: kinesica_rel_integrity_fk_specs().
  *
  * @return array{added:list<string>,skipped:list<string>}
  */
@@ -334,23 +349,22 @@ function kinesica_rel_integrity_apply_fks(PDO $pdo): array
 {
     $added = [];
     $skipped = [];
-    $map = [
-        ['paciente_contactos', 'fk_paciente_contactos_paciente', 'paciente_id', 'pacientes'],
-        ['fichas', 'fk_fichas_paciente', 'paciente_id', 'pacientes'],
-        ['fichas', 'fk_fichas_profesional', 'profesional_id', 'profesionales'],
-        ['lista_espera', 'fk_lista_espera_paciente', 'paciente_id', 'pacientes'],
-        ['lista_espera', 'fk_lista_espera_profesional', 'profesional_id', 'profesionales'],
-        ['turnos', 'fk_turnos_paciente', 'paciente_id', 'pacientes'],
-        ['turnos', 'fk_turnos_profesional', 'profesional_id', 'profesionales'],
-        ['interaccion_eventos', 'fk_interaccion_eventos_paciente', 'paciente_id', 'pacientes'],
-        ['interaccion_estado', 'fk_interaccion_estado_paciente', 'paciente_id', 'pacientes'],
-        ['recordatorio_eventos', 'fk_recordatorio_eventos_paciente', 'paciente_id', 'pacientes'],
-        ['recordatorio_eventos', 'fk_recordatorio_eventos_turno', 'turno_id', 'turnos'],
-        ['encuestas', 'fk_encuestas_paciente', 'paciente_id', 'pacientes'],
-    ];
-    foreach ($map as [$table, $name, $col, $parent]) {
+    foreach (kinesica_rel_integrity_fk_specs() as $spec) {
+        $table = $spec['table'];
+        $col = $spec['column'];
+        $parent = $spec['parent'];
+        $name = kinesica_rel_integrity_fk_name($table, $col);
         try {
-            if (kinesica_migrations_add_fk_if_missing($pdo, $table, $name, $col, $parent, 'id', 'RESTRICT', 'RESTRICT')) {
+            if (kinesica_migrations_add_fk_if_missing(
+                $pdo,
+                $table,
+                $name,
+                $col,
+                $parent,
+                $spec['parent_column'],
+                'RESTRICT',
+                'RESTRICT'
+            )) {
                 $added[] = $name;
             } else {
                 $skipped[] = $name;

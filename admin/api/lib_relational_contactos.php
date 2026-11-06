@@ -296,11 +296,19 @@ function kinesica_rel_find_pacientes_by_contacto_phone(PDO $pdo, string $normPho
     if ($normPhone === '' || !kinesica_rel_contactos_ready($pdo)) {
         return [];
     }
+    $cols = ['p.id', 'p.telefono', 'p.nombre_completo'];
+    if (kinesica_migrations_column_exists($pdo, 'pacientes', 'dni')) {
+        $cols[] = 'p.dni';
+    }
+    $deletedFilter = '';
+    if (kinesica_migrations_column_exists($pdo, 'pacientes', 'deleted_at')) {
+        $deletedFilter = ' AND p.deleted_at IS NULL';
+    }
     $stmt = $pdo->prepare(
-        'SELECT p.id, p.telefono, p.nombre_completo, p.dni
+        'SELECT ' . implode(', ', $cols) . '
          FROM paciente_contactos c
          INNER JOIN pacientes p ON p.id = c.paciente_id
-         WHERE c.tipo = :tipo AND c.valor_normalizado = :norm'
+         WHERE c.tipo = :tipo AND c.valor_normalizado = :norm' . $deletedFilter
     );
     $stmt->execute(['tipo' => 'telefono', 'norm' => $normPhone]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];

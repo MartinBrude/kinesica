@@ -32,6 +32,30 @@ function kinesica_rel_flags_defaults(): array
 }
 
 /**
+ * Bool seguro: evita el pie de PHP donde (bool)"false" === true.
+ */
+function kinesica_rel_coerce_bool(mixed $raw): bool
+{
+    if (is_bool($raw)) {
+        return $raw;
+    }
+    if (is_int($raw) || is_float($raw)) {
+        return ((int) $raw) === 1;
+    }
+    if (is_string($raw)) {
+        $v = strtolower(trim($raw));
+        if (in_array($v, ['1', 'true', 'yes', 'on'], true)) {
+            return true;
+        }
+        if (in_array($v, ['0', 'false', 'no', 'off', ''], true)) {
+            return false;
+        }
+        return false;
+    }
+    return false;
+}
+
+/**
  * @return array{cache:?array{write_ids:bool,read_ids:bool,enforce_fk:bool}}
  */
 function &kinesica_rel_flags_state(): array
@@ -56,7 +80,7 @@ function kinesica_rel_flags(): array
     if (is_array($fromSettings)) {
         foreach (array_keys($flags) as $key) {
             if (array_key_exists($key, $fromSettings)) {
-                $flags[$key] = (bool) $fromSettings[$key];
+                $flags[$key] = kinesica_rel_coerce_bool($fromSettings[$key]);
             }
         }
     }
@@ -71,7 +95,7 @@ function kinesica_rel_flags(): array
         if ($env === false || $env === '') {
             continue;
         }
-        $flags[$key] = in_array(strtolower(trim((string) $env)), ['1', 'true', 'yes', 'on'], true);
+        $flags[$key] = kinesica_rel_coerce_bool($env);
     }
 
     $state['cache'] = $flags;
@@ -120,13 +144,13 @@ function kinesica_rel_flags_save(array $partial): array
         if (is_array($existing)) {
             foreach (array_keys($flags) as $key) {
                 if (array_key_exists($key, $existing)) {
-                    $flags[$key] = (bool) $existing[$key];
+                    $flags[$key] = kinesica_rel_coerce_bool($existing[$key]);
                 }
             }
         }
         foreach (array_keys($flags) as $key) {
             if (array_key_exists($key, $partial)) {
-                $flags[$key] = (bool) $partial[$key];
+                $flags[$key] = kinesica_rel_coerce_bool($partial[$key]);
             }
         }
         $current['relational_flags'] = $flags;
