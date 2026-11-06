@@ -457,11 +457,11 @@ export function renderPacientesTable() {
            <span aria-hidden="true">⭐</span> Con review
          </span>`
       : (cleanDigits && hasLoadedName
-          ? `<a class="btn light btn-review-invite" href="${waReviewLink}" target="_blank" rel="noopener" title="Enviar WhatsApp a ${escapeHtml(firstName)} invitándole a dejar una reseña en Google" style="color:#0f766e; border-color:#99f6e4; background:#f0fdfa; display:inline-flex; align-items:center; gap:4px; font-size:12px; padding:4px 9px; font-weight:600; text-decoration:none;">
-               <span aria-hidden="true">⭐</span> Pedir review
+          ? `<a class="btn light btn-review-invite" href="${waReviewLink}" target="_blank" rel="noopener" title="Enviar WhatsApp a ${escapeHtml(firstName)} invitándole a dejar una reseña en Google" style="color:#0f766e; border-color:#99f6e4; background:#f0fdfa; gap:4px; font-size:12px; padding:4px 9px; font-weight:600; text-decoration:none;">
+               <span aria-hidden="true">⭐</span><span>Pedir review</span>
              </a>`
-          : `<span class="btn light" title="${!hasLoadedName ? "El nombre del paciente debe estar cargado para pedirle review" : "Sin teléfono para WhatsApp"}" style="opacity:0.45; cursor:not-allowed; display:inline-flex; align-items:center; gap:4px; font-size:12px; padding:4px 9px;">
-               <span aria-hidden="true">⭐</span> Pedir review
+          : `<span class="btn light btn-review-invite" title="${!hasLoadedName ? "El nombre del paciente debe estar cargado para pedirle review" : "Sin teléfono para WhatsApp"}" style="opacity:0.45; cursor:not-allowed; gap:4px; font-size:12px; padding:4px 9px;">
+               <span aria-hidden="true">⭐</span><span>Pedir review</span>
              </span>`);
 
     const isColaborador = getSessionUser()?.role === "colaborador";
@@ -472,16 +472,16 @@ export function renderPacientesTable() {
            <span aria-hidden="true">📋</span> Encuesta enviada
          </span>`;
     } else if (isColaborador) {
-      encuestaAction = `<span class="btn light" title="Los colaboradores no pueden disparar envíos de Clara" style="opacity:0.45; cursor:not-allowed; display:inline-flex; align-items:center; gap:4px; font-size:12px; padding:4px 9px;">
-           <span aria-hidden="true">📋</span> Pedir encuesta
+      encuestaAction = `<span class="btn light btn-encuesta-invite" title="Los colaboradores no pueden disparar envíos de Clara" style="opacity:0.45; cursor:not-allowed; gap:4px; font-size:12px; padding:4px 9px;">
+           <span aria-hidden="true">📋</span><span>Pedir encuesta</span>
          </span>`;
     } else if (cleanDigits && hasLoadedName) {
-      encuestaAction = `<button type="button" class="btn light btn-encuesta-invite" data-id="${p.id}" data-name="${escapeHtml(firstName)}" title="Que Clara envíe por WhatsApp la invitación a la breve encuesta" style="color:#4338ca; border-color:#c7d2fe; background:#eef2ff; display:inline-flex; align-items:center; gap:4px; font-size:12px; padding:4px 9px; font-weight:600;">
-           <span aria-hidden="true">📋</span> Pedir encuesta
+      encuestaAction = `<button type="button" class="btn light btn-encuesta-invite" data-id="${p.id}" data-name="${escapeHtml(firstName)}" title="Que Clara envíe por WhatsApp la invitación a la breve encuesta" style="color:#4338ca; border-color:#c7d2fe; background:#eef2ff; gap:4px; font-size:12px; padding:4px 9px; font-weight:600;">
+           <span aria-hidden="true">📋</span><span>Pedir encuesta</span>
          </button>`;
     } else {
-      encuestaAction = `<span class="btn light" title="${!hasLoadedName ? "El nombre del paciente debe estar cargado para pedirle la encuesta" : "Sin teléfono para WhatsApp"}" style="opacity:0.45; cursor:not-allowed; display:inline-flex; align-items:center; gap:4px; font-size:12px; padding:4px 9px;">
-           <span aria-hidden="true">📋</span> Pedir encuesta
+      encuestaAction = `<span class="btn light btn-encuesta-invite" title="${!hasLoadedName ? "El nombre del paciente debe estar cargado para pedirle la encuesta" : "Sin teléfono para WhatsApp"}" style="opacity:0.45; cursor:not-allowed; gap:4px; font-size:12px; padding:4px 9px;">
+           <span aria-hidden="true">📋</span><span>Pedir encuesta</span>
          </span>`;
     }
 
