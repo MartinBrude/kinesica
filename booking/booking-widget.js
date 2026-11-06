@@ -490,8 +490,20 @@
       if (engine && typeof engine.setRuntimeFees === "function") {
         engine.setRuntimeFees(fees);
       }
-      this.renderTechniqueChoices();
-      this.renderExistingPractitionerChoices();
+      // Actualizar montos in-place: un re-render completo del grid provoca un flash
+      // visible cuando el paciente ya eligió "No" y ve las técnicas.
+      const techGrid = this.container.querySelector("#kb-technique-grid");
+      if (!techGrid || techGrid.children.length === 0) {
+        this.renderTechniqueChoices();
+      } else {
+        techGrid.querySelectorAll(".kb-choice-card").forEach((card) => {
+          const id = card.dataset.technique;
+          const amountEl = card.querySelector(".kb-fee-amount");
+          if (id && amountEl) {
+            amountEl.textContent = this.formatFee(this.getFeeForTechnique(id));
+          }
+        });
+      }
       if (this.state.techniqueId) {
         this.updateStep1FeeBanner(this.state.techniqueId);
       }
@@ -1018,13 +1030,23 @@
       });
       const existingBox = this.container.querySelector("#kb-existing-box");
       const newBox = this.container.querySelector("#kb-new-box");
-      existingBox.style.display = isExisting ? "block" : "none";
-      newBox.style.display = isExisting ? "none" : "block";
-      this.container.querySelectorAll("#kb-existing-practitioner-grid .kb-choice-card, #kb-technique-grid .kb-choice-card").forEach((card) => {
+      // Alternar con clase (no solo style.display) para un reveal controlado sin flash.
+      if (existingBox) {
+        existingBox.style.display = isExisting ? "block" : "none";
+        existingBox.classList.toggle("kb-reveal-open", isExisting);
+      }
+      if (newBox) {
+        newBox.style.display = isExisting ? "none" : "block";
+        newBox.classList.toggle("kb-reveal-open", !isExisting);
+      }
+      this.container.querySelectorAll("#kb-existing-practitioner-grid .kb-choice-card.selected, #kb-technique-grid .kb-choice-card.selected").forEach((card) => {
         card.classList.remove("selected");
       });
       const practitionerBox = this.container.querySelector("#kb-practitioner-box");
-      if (practitionerBox) practitionerBox.style.display = "none";
+      if (practitionerBox) {
+        practitionerBox.style.display = "none";
+        practitionerBox.classList.remove("kb-reveal-open");
+      }
       this.updateStep1FeeBanner(null);
       this.syncStep1Continue();
     }
@@ -1040,10 +1062,7 @@
           card.classList.add("selected");
         }
         card.dataset.practitioner = id;
-        card.innerHTML = `
-          <h3>${this.practitionerFullName(id)}</h3>
-          <p>${this.t("sessionHour")}</p>
-        `;
+        card.innerHTML = `<h3>${this.practitionerFullName(id)}</h3>`;
         card.addEventListener("click", () => {
           this.state.practitionerId = id;
           this.state.techniqueId = "paciente";
@@ -1181,13 +1200,22 @@
       });
 
       const existingBox = q("#kb-existing-box");
-      if (existingBox) existingBox.style.display = "none";
+      if (existingBox) {
+        existingBox.style.display = "none";
+        existingBox.classList.remove("kb-reveal-open");
+      }
 
       const newBox = q("#kb-new-box");
-      if (newBox) newBox.style.display = "none";
+      if (newBox) {
+        newBox.style.display = "none";
+        newBox.classList.remove("kb-reveal-open");
+      }
 
       const practitionerBox = q("#kb-practitioner-box");
-      if (practitionerBox) practitionerBox.style.display = "none";
+      if (practitionerBox) {
+        practitionerBox.style.display = "none";
+        practitionerBox.classList.remove("kb-reveal-open");
+      }
 
       const carousel = q("#kb-date-carousel");
       if (carousel) carousel.innerHTML = "";
