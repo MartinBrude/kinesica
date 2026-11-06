@@ -273,6 +273,8 @@ En desarrollo se eliminan solo tablas nuevas. En producción se usa migración i
 
 Activar `REL_WRITE_IDS=true` (lectura legacy hasta que `REL_READ_IDS` esté listo).
 
+Lecturas: [`lib_relational_read.php`](../admin/api/lib_relational_read.php) — con `REL_READ_IDS` las vistas de fichas, lista de espera, interacciones y recordatorios prefieren datos canónicos por `paciente_id` y registran fallback en `rel_read_fallback.jsonl`.
+
 Añadir temporalmente:
 
 ~~~text

@@ -107,7 +107,13 @@ try {
 
         if ($action === 'waitlist') {
             $stmt = $pdo->query('SELECT * FROM lista_espera WHERE estado = "activa" ORDER BY created_at DESC');
-            json_out(200, ['status' => 'success', 'items' => $stmt->fetchAll()]);
+            $items = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            try {
+                require_once __DIR__ . '/lib_relational_read.php';
+                $items = kinesica_rel_map_lista_rows($pdo, $items);
+            } catch (Throwable) {
+            }
+            json_out(200, ['status' => 'success', 'items' => $items]);
         }
 
         $q = trim((string) ($_GET['q'] ?? ''));

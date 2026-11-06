@@ -154,3 +154,13 @@ php admin/api/backfill_relational.php --dry-run --only=fichas,lista_espera --tok
 - No toca filas ambiguas ni ya linkeadas.
 - Idempotente: segunda pasada → `updated: 0`.
 - Orden sugerido post-migrate: audit → backfill dry-run → backfill apply → audit de nuevo.
+
+## Lecturas con REL_READ_IDS (etapa 3)
+
+Código: `lib_relational_read.php`. Con `relational_flags.read_ids` o `KINESICA_REL_READ_IDS=1`:
+
+- **Fichas** (`GET fichas`): overlay de `nombre`/`dni`/contacto desde `pacientes` si hay `paciente_id`.
+- **Lista de espera**: overlay de `paciente_nombre` / `paciente_telefono` canónicos.
+- **Interacciones / recordatorios**: priorizan nombre (y email/tel) del directorio por `paciente_id`.
+- Sin ID o ID huérfano → fallback legacy + línea en `admin/api/data/rel_read_fallback.jsonl`.
+- Con flag en `false` (default) el comportamiento es idéntico al anterior.

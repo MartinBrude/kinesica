@@ -48,18 +48,15 @@ function kinesica_fichas_check_structure(array $data): bool
 
 function kinesica_fichas_get_all(PDO $pdo): void
 {
-    $rows = $pdo->query('SELECT payload FROM fichas ORDER BY updated_at DESC')->fetchAll();
-    $items = [];
-    foreach ($rows as $row) {
-        $item = json_decode($row['payload'], true);
-        if (is_array($item)) {
-            if (isset($item['nombre'])) {
-                $item['nombre'] = sanitize_patient_name((string) $item['nombre']);
-            }
-            $items[] = $item;
-        }
-    }
-    json_out(200, $items);
+    kinesica_fichas_ensure_rel_columns($pdo);
+    require_once __DIR__ . '/lib_migrations.php';
+    require_once __DIR__ . '/lib_relational_read.php';
+    $hasPid = kinesica_migrations_column_exists($pdo, 'fichas', 'paciente_id');
+    $sql = $hasPid
+        ? 'SELECT payload, paciente_id FROM fichas ORDER BY updated_at DESC'
+        : 'SELECT payload FROM fichas ORDER BY updated_at DESC';
+    $rows = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    json_out(200, kinesica_rel_map_ficha_rows($pdo, $rows));
 }
 
 function kinesica_fichas_find_inherited_owner(PDO $pdo, string $id, array $data, string $incomingDoc, string $incomingName, array $clinicians, callable $docKey, callable $nameKey): string

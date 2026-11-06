@@ -346,9 +346,17 @@ function recordatorios_load_view(?PDO $pdo = null, int $days = RECORDATORIOS_DEF
                      )");
     } catch (Throwable $e) {}
 
+    $hasPacienteCol = false;
+    try {
+        require_once __DIR__ . '/lib_migrations.php';
+        $hasPacienteCol = kinesica_migrations_column_exists($pdo, 'recordatorio_eventos', 'paciente_id');
+    } catch (Throwable) {
+    }
+    $selectPid = $hasPacienteCol ? ', paciente_id' : '';
     $stmt = $pdo->prepare(
         'SELECT id, event_key, exec_id, run_at, appointment_date, appointment_time, calendar_event_id,
-                patient_name, wa_id, status, skip_reason, error_code, error_message, event_summary, received_at
+                patient_name, wa_id, status, skip_reason, error_code, error_message, event_summary, received_at'
+        . $selectPid . '
          FROM recordatorio_eventos
          WHERE (run_at >= :since OR status = "pending")
            AND status != "run_skipped"
@@ -368,6 +376,23 @@ function recordatorios_load_view(?PDO $pdo = null, int $days = RECORDATORIOS_DEF
     $stmt->execute(['since' => $since]);
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
     $directory = recordatorios_lookup_directory_contacts($pdo, $rows);
+
+    $pacientesById = [];
+    try {
+        require_once __DIR__ . '/lib_relational_read.php';
+        if (kinesica_rel_read_ids() && $hasPacienteCol) {
+            $pids = [];
+            foreach ($rows as $r) {
+                $pid = isset($r['paciente_id']) ? (int) $r['paciente_id'] : 0;
+                if ($pid > 0) {
+                    $pids[] = $pid;
+                }
+            }
+            $pacientesById = kinesica_rel_fetch_pacientes_map($pdo, $pids);
+        }
+    } catch (Throwable) {
+        $pacientesById = [];
+    }
 
     $counts = [
         'pending' => 0,
@@ -392,12 +417,32 @@ function recordatorios_load_view(?PDO $pdo = null, int $days = RECORDATORIOS_DEF
         $phoneEnd = substr(recordatorios_clean_wa_id((string) ($r['wa_id'] ?? '')), -10);
         $nameKey = mb_strtolower(trim((string) ($r['patient_name'] ?? '')));
         $email = '';
-        if ($phoneEnd !== '' && isset($directory['by_phone'][$phoneEnd])) {
-            $email = $directory['by_phone'][$phoneEnd];
-        } elseif ($nameKey !== '' && isset($directory['by_name'][$nameKey])) {
-            $email = $directory['by_name'][$nameKey];
+        $pid = isset($r['paciente_id']) ? (int) $r['paciente_id'] : 0;
+        if ($pid > 0 && isset($pacientesById[$pid])) {
+            $disp = kinesica_rel_display_from_paciente($pacientesById[$pid]);
+            if ($disp['name'] !== '') {
+                $r['patient_name'] = $disp['name'];
+            }
+            if ($disp['phone'] !== '' && trim((string) ($r['wa_id'] ?? '')) === '') {
+                $r['wa_id'] = preg_replace('/\D+/', '', $disp['phone']) ?? $disp['phone'];
+            }
+            if ($disp['email'] !== '') {
+                $email = $disp['email'];
+            }
+        } elseif (function_exists('kinesica_rel_read_ids') && kinesica_rel_read_ids()) {
+            kinesica_rel_note_read_fallback('recordatorios', $pid > 0 ? 'paciente_id_huerfano' : 'sin_paciente_id');
+        }
+        if ($email === '') {
+            if ($phoneEnd !== '' && isset($directory['by_phone'][$phoneEnd])) {
+                $email = $directory['by_phone'][$phoneEnd];
+            } elseif ($nameKey !== '' && isset($directory['by_name'][$nameKey])) {
+                $email = $directory['by_name'][$nameKey];
+            }
         }
         $item = recordatorios_format_item($r, $email !== '' ? $email : null);
+        if ($pid > 0) {
+            $item['paciente_id'] = $pid;
+        }
         $items[] = $item;
         $runDay = $item['run_day'] !== '' ? $item['run_day'] : 'sin-fecha';
         if (!isset($grouped[$runDay])) {

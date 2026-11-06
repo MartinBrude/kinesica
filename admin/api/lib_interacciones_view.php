@@ -460,7 +460,15 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
     }
 
     // Más recientes primero + tope; luego se reordenan ASC para armar el hilo.
-    $sql = 'SELECT id, event_key, wa_id, direction, body, ts_utc, patient_name, media_id, media_type, media_mime, media_filename FROM interaccion_eventos';
+    $hasPacienteCol = false;
+    try {
+        require_once __DIR__ . '/lib_migrations.php';
+        $hasPacienteCol = kinesica_migrations_column_exists($pdo, 'interaccion_eventos', 'paciente_id');
+    } catch (Throwable) {
+    }
+    $sql = 'SELECT id, event_key, wa_id, direction, body, ts_utc, patient_name, media_id, media_type, media_mime, media_filename'
+        . ($hasPacienteCol ? ', paciente_id' : '')
+        . ' FROM interaccion_eventos';
     $params = [];
     if ($sinceUtc !== null) {
         $sql .= ' WHERE ts_utc >= :since';
@@ -472,6 +480,23 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
     $eventsCapped = count($rows) >= INTERACCIONES_MAX_EVENTS;
     $rows = array_reverse($rows);
+
+    $pacienteIdsForRead = [];
+    $pacientesById = [];
+    try {
+        require_once __DIR__ . '/lib_relational_read.php';
+        if (kinesica_rel_read_ids() && $hasPacienteCol) {
+            foreach ($rows as $row) {
+                $pid = isset($row['paciente_id']) ? (int) $row['paciente_id'] : 0;
+                if ($pid > 0) {
+                    $pacienteIdsForRead[] = $pid;
+                }
+            }
+            $pacientesById = kinesica_rel_fetch_pacientes_map($pdo, $pacienteIdsForRead);
+        }
+    } catch (Throwable) {
+        $pacientesById = [];
+    }
 
     $convs = [];
     foreach ($rows as $row) {
@@ -485,9 +510,18 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
         $key = $wa . '_' . $local->format('Y-m-d');
         $convs[$key]['wa_id'] = $wa;
         $convs[$key]['date'] = $local->format('Y-m-d');
+        $eventName = (string) $row['patient_name'];
+        $pid = $hasPacienteCol && isset($row['paciente_id']) ? (int) $row['paciente_id'] : 0;
+        if ($pid > 0 && isset($pacientesById[$pid])) {
+            $disp = kinesica_rel_display_from_paciente($pacientesById[$pid]);
+            if ($disp['name'] !== '') {
+                $eventName = $disp['name'];
+            }
+            $convs[$key]['paciente_id'] = $pid;
+        }
         $convs[$key]['events'][] = [
             'id' => (int) $row['id'], 'event_key' => (string) $row['event_key'], 'direction' => (string) $row['direction'],
-            'body' => (string) $row['body'], 'ts' => $ts, 'name' => (string) $row['patient_name'],
+            'body' => (string) $row['body'], 'ts' => $ts, 'name' => $eventName,
             'media_id' => isset($row['media_id']) ? (string) $row['media_id'] : '',
             'media_type' => isset($row['media_type']) ? (string) $row['media_type'] : '',
             'media_mime' => isset($row['media_mime']) ? (string) $row['media_mime'] : '',
@@ -559,7 +593,17 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
         }
         $st = $estado[$key] ?? [];
         $isTurnConfirm = interacciones_thread_is_turn_confirmation($messages);
-        $name = interacciones_known_name((string) $c['wa_id']);
+        $name = '';
+        $convPid = isset($c['paciente_id']) ? (int) $c['paciente_id'] : 0;
+        if ($convPid > 0 && isset($pacientesById[$convPid])) {
+            $name = kinesica_rel_display_from_paciente($pacientesById[$convPid])['name'];
+        }
+        if ($name === '') {
+            if (function_exists('kinesica_rel_read_ids') && kinesica_rel_read_ids()) {
+                kinesica_rel_note_read_fallback('interacciones', 'sin_paciente_id');
+            }
+            $name = interacciones_known_name((string) $c['wa_id']);
+        }
         if ($name === '') {
             $name = (string) (($st['patient_name'] ?? '') !== '' ? $st['patient_name'] : $lastName);
         }
