@@ -52,7 +52,7 @@ export function filterRecordatoriosList(items, term, activeStatusFilter) {
     } else if (activeStatusFilter === "failed") {
       if (status !== "failed" && status !== "missing_phone") return false;
     } else if (activeStatusFilter === "skipped") {
-      if (status !== "skipped" && status !== "run_skipped") return false;
+      if (status !== "skipped") return false;
     } else if (activeStatusFilter !== "all" && STATUS_FILTERS[activeStatusFilter]) {
       if (status !== activeStatusFilter) return false;
     }
@@ -93,7 +93,7 @@ export function renderRecordatoriosStats(statsEl, { counts, activeStatusFilter }
   const sentTotal = sentWa + sentMail;
   const pendingCount = c.pending || 0;
   const failedCount = (c.failed || 0) + (c.missing_phone || 0);
-  const skippedCount = (c.skipped || 0) + (c.run_skipped || 0);
+  const skippedCount = c.skipped || 0;
   const total = sentTotal + pendingCount + failedCount + skippedCount;
 
   const sentDetail = sentMail > 0 ? ` (${sentWa} WA · ${sentMail} Mail)` : (sentWa > 0 ? " (WA)" : "");

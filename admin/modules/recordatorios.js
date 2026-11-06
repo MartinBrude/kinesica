@@ -13,8 +13,9 @@ import {
 import {
   filterRecordatoriosList,
   renderRecordatoriosStats,
-} from "./recordatorios-filter.js?v=6";
+} from "./recordatorios-filter.js?v=7";
 import { renderRecordatoriosRules } from "./recordatorios-rules.js?v=6";
+import { setListControlsEnabled } from "./list-controls.js?v=1";
 
 let cachedItems = [];
 let cachedCounts = {};
@@ -30,8 +31,10 @@ const CACHE_TTL_MS = 60000;
 
 export function isBlockedRecordatorio(item) {
   if (!item || typeof item !== "object") return false;
+  const status = String(item.status || "").toLowerCase();
+  if (status === "run_skipped") return true;
   const reason = String(item.skip_reason || "").toLowerCase();
-  if (reason === "blocked") return true;
+  if (reason === "blocked" || reason === "clara_inactive") return true;
   const name = String(item.patient_name || "").toLowerCase();
   const summary = String(item.event_summary || "").toLowerCase();
   return (
@@ -248,6 +251,11 @@ export async function loadRecordatorios(force = false) {
   const refreshBtn = document.getElementById("btn-refresh-recordatorios");
   if (!container || isRefreshing) return;
   isRefreshing = true;
+  const filterRoots = [
+    document.querySelector(".recordatorios-toolbar"),
+    document.getElementById("recordatorios-stats"),
+  ];
+  setListControlsEnabled(filterRoots, false);
 
   if (refreshBtn) {
     refreshBtn.disabled = true;
@@ -299,6 +307,7 @@ export async function loadRecordatorios(force = false) {
     }
   } finally {
     isRefreshing = false;
+    setListControlsEnabled(filterRoots, true);
     updateHeaderAndTotal(filteredItems.length);
     if (refreshBtn && (!force || refreshBtn.textContent !== "✓ Actualizado")) {
       refreshBtn.disabled = false;
@@ -565,16 +574,18 @@ export function initRecordatoriosModule() {
     loadRecordatorios(true);
   });
   document.getElementById("recordatorios-search")?.addEventListener("input", () => {
+    if (isRefreshing) return;
     currentPage = 0;
     applyFiltersAndRender();
   });
   document.getElementById("recordatorios-page-size")?.addEventListener("change", (e) => {
+    if (isRefreshing) return;
     pageSize = Math.max(10, parseInt(e.target.value, 10) || 20);
     currentPage = 0;
     applyFiltersAndRender();
   });
   document.getElementById("recordatorios-stats")?.addEventListener("click", (e) => {
-    if (!hasLoadedOnce && isRefreshing) return;
+    if (isRefreshing) return;
     const btn = e.target.closest("[data-filter]");
     if (!btn) return;
     const next = btn.getAttribute("data-filter") || "all";

@@ -36,9 +36,8 @@ section('Normalización');
 eq(recordatorios_normalize_item(['status' => 'bogus', 'calendar_event_id' => 'x'], 'e1', 100), null, 'status inválido');
 eq(recordatorios_normalize_item(['status' => 'sent'], 'e1', 100), null, 'sin calendar_event_id se rechaza');
 $run = recordatorios_normalize_item(['status' => 'run_skipped', 'skip_reason' => 'clara_inactive'], 'exec-99', 1700000000);
-eq($run['status'], 'run_skipped', 'run_skipped ok');
-eq($run['calendar_event_id'], '_run', 'run_skipped usa _run');
-eq($run['event_key'], 'rem:exec-99:_run:run_skipped', 'clave run_skipped');
+eq($run, null, 'run_skipped / Clara inactiva no se persiste en el historial');
+eq(recordatorios_normalize_item(['status' => 'skipped', 'skip_reason' => 'clara_inactive', 'calendar_event_id' => 'x'], 'e1', 100), null, 'clara_inactive se rechaza');
 
 $sent = recordatorios_normalize_item([
     'status' => 'sent',

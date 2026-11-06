@@ -7,6 +7,7 @@
 import { api, formatDate } from "./api.js?v=78";
 import { getSessionUser } from "./auth.js?v=83";
 import { escapeHtml, dialogAlert, dialogConfirm, switchActiveView } from "./dom.js?v=78";
+import { setListControlsEnabled } from "./list-controls.js?v=1";
 
 let cachedEncuestas = [];
 let cachedTotales = null;
@@ -209,7 +210,13 @@ async function handleDeleteEncuesta(item) {
   }
 }
 
+let encuestasLoading = false;
+
 export async function loadEncuestasData() {
+  if (encuestasLoading) return;
+  encuestasLoading = true;
+  const filterRoot = document.querySelector("#view-encuestas .admin-errores-filters");
+  setListControlsEnabled(filterRoot, false);
   try {
     const data = await api("encuestas.php");
     if (data && Array.isArray(data.encuestas)) {
@@ -218,11 +225,15 @@ export async function loadEncuestasData() {
     }
   } catch (_) {
     // Modo offline o sin red
+  } finally {
+    encuestasLoading = false;
+    setListControlsEnabled(filterRoot, true);
   }
   renderEncuestas();
 }
 
 export function setEncuestasFilter(filter) {
+  if (encuestasLoading) return;
   currentFilter = filter;
   document.querySelectorAll(".encuestas-filter-btn").forEach((btn) => {
     btn.classList.toggle("is-active", btn.dataset.filter === filter);

@@ -10,6 +10,7 @@ import { formatDisplayPhone, capitalizePersonName } from "./pacientes-format.js"
 import { openFullPacienteModal } from "./pacientes-modal.js?v=2";
 import { getSessionUser } from "./auth.js?v=83";
 import { invalidateDirectoryCache } from "./form-patient.js";
+import { setListControlsEnabled } from "./list-controls.js?v=1";
 
 export { formatDisplayPhone };
 
@@ -332,6 +333,8 @@ export function deduplicatePatientsInMemory(items = []) {
 
 export async function loadPacientes() {
   if (!listEl) return;
+  const toolbar = document.querySelector(".pacientes-toolbar");
+  setListControlsEnabled(toolbar, false, { extra: [searchInput, profFilter] });
   listEl.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px; color: var(--muted);"><span class="loading-spinner" aria-hidden="true"></span>Cargando directorio de pacientes…</td></tr>`;
   try {
     const res = await api("pacientes.php");
@@ -345,6 +348,8 @@ export async function loadPacientes() {
     // carga: competía con el alta y podía timeout/ocultar pacientes recién creados.
   } catch (err) {
     listEl.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px; color: #dc2626;">Error al cargar pacientes: ${escapeHtml(err.message)}</td></tr>`;
+  } finally {
+    setListControlsEnabled(toolbar, true, { extra: [searchInput, profFilter] });
   }
 }
 

@@ -6,13 +6,13 @@
 import { api } from "./api.js?v=78";
 import { getSessionUser } from "./auth.js?v=83";
 import { showLibrary } from "./library.js?v=93";
-import { showPacientesView, hidePacientesView } from "./pacientes.js?v=9";
+import { showPacientesView, hidePacientesView } from "./pacientes.js?v=10";
 import { showDashboardView, hideDashboardView, updateDashboardClara, updateDashboardBooking } from "./dashboard.js?v=12";
 import { showConsultorioView, hideConsultorioView, showClaraView, hideClaraView } from "./configuracion.js?v=29";
-import { showAdminView, hideAdminView } from "./admin-panel.js?v=15";
-import { showInteraccionesView, hideInteraccionesView } from "./interacciones.js?v=12";
-import { showRecordatoriosView, hideRecordatoriosView } from "./recordatorios.js?v=13";
-import { showEncuestasView, hideEncuestasView } from "./encuestas.js?v=1";
+import { showAdminView, hideAdminView } from "./admin-panel.js?v=16";
+import { showInteraccionesView, hideInteraccionesView } from "./interacciones.js?v=13";
+import { showRecordatoriosView, hideRecordatoriosView } from "./recordatorios.js?v=15";
+import { showEncuestasView, hideEncuestasView } from "./encuestas.js?v=2";
 import { applyHoursToRuntime } from "./horarios.js?v=3";
 
 export function closeAllDropdowns() {

@@ -28,6 +28,21 @@
   display: none !important;
 }
 
+/* Listados: bloquear búsqueda/filtros mientras cargan */
+.list-controls-locked {
+  opacity: 0.72;
+  transition: opacity 0.15s ease;
+}
+.list-controls-locked input,
+.list-controls-locked select,
+.list-controls-locked button[data-filter],
+.list-controls-locked .filter-pill,
+.list-controls-locked .encuestas-filter-btn,
+.list-controls-locked .admin-errores-filter-btn {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 html,
 body {
   overflow-x: hidden;

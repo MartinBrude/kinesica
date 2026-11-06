@@ -17,6 +17,7 @@ import {
 import { filterInteractionsList, renderStatsHeader } from "./interacciones-filter.js?v=2";
 import { isMartinBrudePhone } from "./phone-search.js?v=2";
 import { renderInteraccionesHealth } from "./interacciones-health.js?v=2";
+import { setListControlsEnabled } from "./list-controls.js?v=1";
 
 export const AUTO_REFRESH_INTERVAL_MS = 30 * 60 * 1000;
 export const AUTO_REFRESH_START_HOUR = 9;
@@ -97,6 +98,11 @@ export async function loadInteracciones(force = false) {
   // Poll automático: no reemplazar cache mientras hay archive/toggle en curso.
   if (!force && pendingMutations > 0) return;
   isRefreshing = true;
+  const filterRoots = [
+    document.querySelector(".interacciones-toolbar"),
+    document.getElementById("interacciones-stats"),
+  ];
+  setListControlsEnabled(filterRoots, false);
 
   if (refreshBtn && force) {
     refreshBtn.disabled = true;
@@ -158,6 +164,7 @@ export async function loadInteracciones(force = false) {
     }
   } finally {
     isRefreshing = false;
+    setListControlsEnabled(filterRoots, true);
   }
 }
 
@@ -381,6 +388,7 @@ export function initInteraccionesModule() {
   if (pageSizeSelect) {
     pageSize = Number(pageSizeSelect.value) || 20;
     pageSizeSelect.addEventListener("change", (e) => {
+      if (isRefreshing) return;
       pageSize = Number(e.target.value) || 20;
       currentPage = 0;
       renderCurrentView();
@@ -389,6 +397,7 @@ export function initInteraccionesModule() {
 
   if (statsEl) {
     statsEl.addEventListener("click", (e) => {
+      if (isRefreshing) return;
       const btn = e.target.closest(".filter-pill");
       if (!btn) return;
       const filterType = btn.getAttribute("data-filter");
@@ -398,7 +407,12 @@ export function initInteraccionesModule() {
     });
   }
 
-  if (searchInput) searchInput.addEventListener("input", () => applyFilters(true));
+  if (searchInput) {
+    searchInput.addEventListener("input", () => {
+      if (isRefreshing) return;
+      applyFilters(true);
+    });
+  }
   if (refreshBtn) refreshBtn.addEventListener("click", () => loadInteracciones(true));
 
   const triggerTabFocusRefresh = () => {

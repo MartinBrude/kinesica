@@ -12,6 +12,7 @@ import {
   setErrorSaveButtonDisabled,
   bindErrorModalEvents,
 } from "./admin-errores-modal.js";
+import { setListControlsEnabled } from "./list-controls.js?v=1";
 
 export { isErrorModalOpen, closeErrorModal };
 
@@ -23,7 +24,10 @@ const countPill = document.querySelector("#admin-errores-count-label");
 const tbody = document.querySelector("#admin-errores-tbody");
 const filterBtns = document.querySelectorAll(".admin-errores-filter-btn");
 
+let erroresLoading = false;
+
 export function setErroresFilter(filter, onReload) {
+  if (erroresLoading) return;
   currentFilter = filter;
   filterBtns.forEach((btn) => {
     btn.classList.toggle("is-active", btn.dataset.filter === filter);
@@ -189,6 +193,11 @@ export async function handleDeleteError(item, onReload) {
 }
 
 export async function loadErroresData(onReload) {
+  if (erroresLoading) return;
+  erroresLoading = true;
+  const filterRoot = document.querySelector("#view-admin .admin-errores-filters")
+    || document.querySelector(".admin-errores-filters");
+  setListControlsEnabled(filterRoot, false, { extra: Array.from(filterBtns) });
   try {
     const data = await api("errores.php");
     if (data && Array.isArray(data.errores)) {
@@ -196,6 +205,9 @@ export async function loadErroresData(onReload) {
     }
   } catch (_) {
     // Modo offline o sin red
+  } finally {
+    erroresLoading = false;
+    setListControlsEnabled(filterRoot, true, { extra: Array.from(filterBtns) });
   }
   renderErrores(cachedErrores, onReload);
 }

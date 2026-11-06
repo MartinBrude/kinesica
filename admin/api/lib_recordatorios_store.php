@@ -117,17 +117,19 @@ function recordatorios_normalize_item(array $in, string $execId, int $runAt): ?a
         return null;
     }
     $calId = trim((string) ($in['calendar_event_id'] ?? $in['event_id'] ?? ''));
+    // "Corrida omitida / Clara inactiva" no aporta al historial clínico: no se guarda.
     if ($status === 'run_skipped') {
-        $calId = $calId !== '' ? $calId : '_run';
-    } elseif ($calId === '') {
+        return null;
+    }
+    if ($calId === '') {
         return null;
     }
     $skip = strtolower(trim((string) ($in['skip_reason'] ?? '')));
+    if ($skip === 'clara_inactive') {
+        return null;
+    }
     if ($skip !== '' && !in_array($skip, RECORDATORIOS_SKIP_REASONS, true)) {
         $skip = 'other';
-    }
-    if ($status === 'run_skipped' && $skip === '') {
-        $skip = 'clara_inactive';
     }
 
     $nameRaw = (string) ($in['patient_name'] ?? $in['patient_full_name'] ?? '');
