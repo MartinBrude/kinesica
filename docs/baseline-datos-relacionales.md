@@ -132,3 +132,25 @@ Código: `lib_relational_resolve.php`. Con `relational_flags.write_ids` o `KINES
 - Ambiguo / sin match → `paciente_id` null + línea en `admin/api/data/rel_unlinked.jsonl` (sin PII completa).
 - `profesional_id` queda null hasta existir tabla `profesionales`.
 - Legacy (teléfono/nombre/`wa_id`) sigue funcionando con el flag en `false`.
+
+## Backfill de filas existentes
+
+CLI: `php admin/api/backfill_relational.php` (`npm run admin:backfill`).
+
+```bash
+# Siempre primero dry-run (no escribe)
+php admin/api/backfill_relational.php --dry-run --token="$INSTALL_TOKEN" \
+  --out=docs/backfill-report.json
+
+# Aplicar solo matches inequívocos (paciente_id IS NULL)
+php admin/api/backfill_relational.php --apply --token="$INSTALL_TOKEN" \
+  --out=docs/backfill-report-apply.json
+
+# Tablas puntuales
+php admin/api/backfill_relational.php --dry-run --only=fichas,lista_espera --token="$INSTALL_TOKEN"
+```
+
+- No requiere `REL_WRITE_IDS` (usa `ignore_flag` en el resolver).
+- No toca filas ambiguas ni ya linkeadas.
+- Idempotente: segunda pasada → `updated: 0`.
+- Orden sugerido post-migrate: audit → backfill dry-run → backfill apply → audit de nuevo.

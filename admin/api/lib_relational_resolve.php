@@ -12,11 +12,13 @@ require_once __DIR__ . '/lib_migrations.php';
 
 /**
  * @param array{phone?:string,wa_id?:string,dni?:string,nombre?:string} $hints
+ * @param array{ignore_flag?:bool} $opts ignore_flag=true para backfill CLI aunque REL_WRITE_IDS esté off
  * @return array{paciente_id:?int,status:string,reason:string,candidates:int}
  */
-function kinesica_rel_resolve_paciente(PDO $pdo, array $hints): array
+function kinesica_rel_resolve_paciente(PDO $pdo, array $hints, array $opts = []): array
 {
-    if (!kinesica_rel_write_ids()) {
+    $ignoreFlag = !empty($opts['ignore_flag']);
+    if (!$ignoreFlag && !kinesica_rel_write_ids()) {
         return ['paciente_id' => null, 'status' => 'disabled', 'reason' => 'REL_WRITE_IDS off', 'candidates' => 0];
     }
     if (!kinesica_migrations_table_exists($pdo, 'pacientes')) {

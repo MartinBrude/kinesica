@@ -301,6 +301,8 @@ Los writes deben resolver y escribir el ID cuando sea posible, mantener el fallb
 
 Las nuevas operaciones escriben relaciones canónicas y el porcentaje de fallback baja de forma sostenida (ver umbrales).
 
+Backfill de históricos: [`admin/api/backfill_relational.php`](../admin/api/backfill_relational.php) (`--dry-run` / `--apply`). Solo rellena `paciente_id` NULL con matches inequívocos; ambiguos quedan para revisión manual.
+
 ### Rollback
 
 Desactivar `REL_READ_IDS` / `REL_WRITE_IDS` y conservar los datos para reintentar.
