@@ -97,9 +97,14 @@ function campana_fetch_appointments_from_gas(string $from, string $to): array
     if (($decoded['status'] ?? '') !== 'success') {
         $msg = (string) ($decoded['message'] ?? 'Error GAS list_appointments');
         if (stripos($msg, 'no reconocida') !== false) {
-            $msg = 'El Apps Script en producción todavía no tiene list_appointments (sigue en v19). '
+            $msg = 'El Apps Script en producción todavía no tiene list_appointments. '
                 . 'Pegá booking/google-apps-script.js en el editor de GAS y hacé Deploy → Manage deployments → Edit → New version. '
-                . 'El ping debe devolver code_version v20-list-appointments.';
+                . 'El ping debe devolver code_version v21-list-appointments-auth.';
+        } elseif (stripos($msg, 'unauthorized') !== false) {
+            $msg = 'Secret no autorizado contra Apps Script. '
+                . 'En Script properties de GAS, GAS_API_SECRET (o WEBHOOK_SECRET) debe coincidir con webhook_secret de config.php '
+                . '(o definí gas_api_secret en config.php con el valor de GAS_API_SECRET). '
+                . 'Después redeploy si cambiaste el código a v21.';
         }
         return [
             'ok' => false,
