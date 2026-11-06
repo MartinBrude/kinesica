@@ -238,8 +238,13 @@ function kinesica_rel_backfill_paciente_contactos(PDO $pdo, bool $apply): array
         return $stats;
     }
 
+    $hasCTel = kinesica_migrations_column_exists($pdo, 'pacientes', 'contacto_telefono');
+    $hasCEmail = kinesica_migrations_column_exists($pdo, 'pacientes', 'contacto_email');
+    $cTelCol = $hasCTel ? 'contacto_telefono' : 'NULL AS contacto_telefono';
+    $cEmailCol = $hasCEmail ? 'contacto_email' : 'NULL AS contacto_email';
+
     $rows = $pdo->query(
-        'SELECT id, telefono, email, contacto_telefono, contacto_email FROM pacientes'
+        "SELECT id, telefono, email, {$cTelCol}, {$cEmailCol} FROM pacientes"
     )->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
     foreach ($rows as $row) {

@@ -349,6 +349,19 @@ function kinesica_rel_integrity_apply_fks(PDO $pdo): array
 {
     $added = [];
     $skipped = [];
+
+    // En MySQL/MariaDB asegurar que la clave primaria pacientes.id sea INT UNSIGNED
+    // para coincidir con el tipo INT UNSIGNED de las columnas paciente_id foráneas.
+    if (!kinesica_migrations_is_sqlite($pdo)) {
+        try {
+            if (kinesica_migrations_table_exists($pdo, 'pacientes')) {
+                $pdo->exec('ALTER TABLE pacientes MODIFY id INT UNSIGNED NOT NULL AUTO_INCREMENT');
+            }
+        } catch (Throwable $e) {
+            error_log('kinesica ensure pacientes.id INT UNSIGNED: ' . $e->getMessage());
+        }
+    }
+
     foreach (kinesica_rel_integrity_fk_specs() as $spec) {
         $table = $spec['table'];
         $col = $spec['column'];

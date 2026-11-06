@@ -95,13 +95,13 @@ if ($outJson !== '') {
 $summary = ['mode' => $report['mode'], 'tables' => []];
 foreach ($report['tables'] as $name => $t) {
     $summary['tables'][$name] = [
-        'scanned' => $t['scanned'],
-        'already_set' => $t['already_set'],
-        'matched' => $t['matched'],
-        'updated' => $t['updated'],
-        'ambiguous' => $t['ambiguous'],
-        'unmatched' => $t['unmatched'],
-        'skipped_no_column' => $t['skipped_no_column'],
+        'scanned' => $t['scanned'] ?? 0,
+        'already_set' => $t['already_set'] ?? 0,
+        'matched' => $t['matched'] ?? 0,
+        'updated' => $t['updated'] ?? 0,
+        'ambiguous' => $t['ambiguous'] ?? 0,
+        'unmatched' => $t['unmatched'] ?? 0,
+        'skipped_no_column' => $t['skipped_no_column'] ?? false,
     ];
 }
 echo json_encode(['ok' => true, 'summary' => $summary], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . "\n";
