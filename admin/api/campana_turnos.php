@@ -95,9 +95,15 @@ function campana_fetch_appointments_from_gas(string $from, string $to): array
         return ['ok' => false, 'error' => 'Respuesta inválida de GAS', 'http_code' => $httpCode];
     }
     if (($decoded['status'] ?? '') !== 'success') {
+        $msg = (string) ($decoded['message'] ?? 'Error GAS list_appointments');
+        if (stripos($msg, 'no reconocida') !== false) {
+            $msg = 'El Apps Script en producción todavía no tiene list_appointments (sigue en v19). '
+                . 'Pegá booking/google-apps-script.js en el editor de GAS y hacé Deploy → Manage deployments → Edit → New version. '
+                . 'El ping debe devolver code_version v20-list-appointments.';
+        }
         return [
             'ok' => false,
-            'error' => (string) ($decoded['message'] ?? 'Error GAS list_appointments'),
+            'error' => $msg,
             'http_code' => $httpCode,
         ];
     }
