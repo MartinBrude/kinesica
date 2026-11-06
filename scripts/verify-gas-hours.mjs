@@ -52,6 +52,8 @@ function load({ adminHours, status = 200, throws = false, events = [], props = {
           getTitle: () => e.title,
           getStartTime: () => new Date(e.start),
           getEndTime: () => new Date(e.end),
+          getId: () => e.id || "evt-test",
+          getDescription: () => e.description || "",
         })),
       }),
     },
@@ -161,6 +163,7 @@ test("sin GAS_API_SECRET configurado: unauthorized aunque se mande secret", () =
   for (const body of [
     ctx.doGet({ parameter: { action: "get_directory", secret: SECRET } }).text,
     ctx.doGet({ parameter: { action: "check_patient", telefono: "1122223333", secret: SECRET } }).text,
+    ctx.doGet({ parameter: { action: "list_appointments", dateFrom: "2026-01-01", dateTo: "2026-01-31", secret: SECRET } }).text,
     post(ctx, { action: "check_patient", telefono: "1122223333", secret: SECRET }),
   ]) {
     assert.deepEqual(JSON.parse(body), { status: "error", message: "unauthorized" });
@@ -175,12 +178,41 @@ test("secret ausente o incorrecto: unauthorized sin datos", () => {
     for (const body of [
       ctx.doGet({ parameter: { action: "get_directory", ...p } }).text,
       ctx.doGet({ parameter: { action: "check_patient", telefono: "1122223333", ...p } }).text,
+      ctx.doGet({ parameter: { action: "list_appointments", dateFrom: "2026-01-01", dateTo: "2026-01-31", ...p } }).text,
       post(ctx, { action: "check_patient", telefono: "1122223333", ...p }),
     ]) {
       assert.deepEqual(JSON.parse(body), { status: "error", message: "unauthorized" });
       assert.ok(!leaks(body));
     }
   }
+});
+
+test("list_appointments con secret: filtra bloqueos y parsea paciente/teléfono", () => {
+  const day = "2026-03-10";
+  const events = [
+    {
+      id: "e1",
+      title: "🩺 [NORBERTO] Ana Pérez",
+      start: `${day}T14:00:00-03:00`,
+      end: `${day}T15:00:00-03:00`,
+      description: "📱 WhatsApp: 11 5555-6666 | 🌿 Origen: Reserva Web Oficial Kinésica",
+    },
+    {
+      id: "e2",
+      title: "NO DAR turno mañana",
+      start: `${day}T10:00:00-03:00`,
+      end: `${day}T11:00:00-03:00`,
+    },
+  ];
+  const { ctx } = load({ adminHours: ALL_WEEK, props: { GAS_API_SECRET: SECRET }, events });
+  const res = JSON.parse(ctx.doGet({
+    parameter: { action: "list_appointments", dateFrom: day, dateTo: day, secret: SECRET },
+  }).text);
+  assert.equal(res.status, "success");
+  assert.equal(res.total, 1);
+  assert.equal(res.appointments[0].patientName, "Ana Pérez");
+  assert.equal(res.appointments[0].date, day);
+  assert.ok(String(res.appointments[0].phone).includes("1155556666") || String(res.appointments[0].phone).includes("55556666"));
 });
 
 test("secret correcto: check_patient y get_directory responden como antes", () => {
@@ -239,7 +271,7 @@ test("guarda la última copia buena y la usa si luego falla settings.php", () =>
 test("ping informa admin_hours (sólo lectura)", () => {
   let ping = JSON.parse(load({ adminHours: ADMIN }).ctx.doGet({ parameter: { action: "ping" } }).text);
   assert.equal(ping.status, "online");
-  assert.equal(ping.code_version, "v19-phone-id");
+  assert.equal(ping.code_version, "v20-list-appointments");
   assert.deepEqual([ping.admin_hours.loaded, ping.admin_hours.http_code, ping.admin_hours.source], [true, 200, "admin"]);
   assert.ok(ping.admin_hours.fetched_at);
   ping = JSON.parse(load({ byUrl: { www: { status: 403, body: "x" }, apex: { throws: "DNS error" } } }).ctx.doGet({ parameter: { action: "ping" } }).text);

@@ -9,7 +9,7 @@ import { showLibrary } from "./library.js?v=93";
 import { showPacientesView, hidePacientesView } from "./pacientes.js?v=10";
 import { showDashboardView, hideDashboardView, updateDashboardClara, updateDashboardBooking } from "./dashboard.js?v=12";
 import { showConsultorioView, hideConsultorioView, showClaraView, hideClaraView } from "./configuracion.js?v=29";
-import { showAdminView, hideAdminView } from "./admin-panel.js?v=16";
+import { showAdminView, hideAdminView } from "./admin-panel.js?v=17";
 import { showInteraccionesView, hideInteraccionesView } from "./interacciones.js?v=13";
 import { showRecordatoriosView, hideRecordatoriosView } from "./recordatorios.js?v=15";
 import { showEncuestasView, hideEncuestasView } from "./encuestas.js?v=2";
@@ -38,6 +38,7 @@ export function switchTab(tab, subtab) {
   const btnAdminErrores = document.querySelector("#nav-btn-admin-errores");
   const btnAdminBackups = document.querySelector("#nav-btn-admin-backups");
   const btnAdminServicios = document.querySelector("#nav-btn-admin-servicios");
+  const btnAdminCampana = document.querySelector("#nav-btn-admin-campana");
 
   document.querySelectorAll(".admin-nav .btn, .admin-nav .nav-dropdown-item").forEach((b) => b.classList.remove("is-active"));
   closeAllDropdowns();
@@ -86,7 +87,10 @@ export function switchTab(tab, subtab) {
     tab === "copias-seguridad" ||
     tab === "servicios" ||
     tab === "consumos" ||
-    tab === "cuotas"
+    tab === "cuotas" ||
+    tab === "campana" ||
+    tab === "campaña" ||
+    tab === "turnos-campana"
   ) {
     const user = getSessionUser();
     if (!user || user.role !== "admin") {
@@ -101,6 +105,7 @@ export function switchTab(tab, subtab) {
       else if (tab === "errores" || tab === "reportes") section = "errores";
       else if (tab === "backups" || tab === "copias" || tab === "copias-seguridad") section = "backups";
       else if (tab === "servicios" || tab === "consumos" || tab === "cuotas") section = "servicios";
+      else if (tab === "campana" || tab === "campaña" || tab === "turnos-campana") section = "campana";
       else section = "usuarios";
     }
     if (section === "gastos") {
@@ -111,6 +116,8 @@ export function switchTab(tab, subtab) {
       btnAdminBackups?.classList.add("is-active");
     } else if (section === "servicios") {
       btnAdminServicios?.classList.add("is-active");
+    } else if (section === "campana" || section === "campaña" || section === "turnos-campana") {
+      btnAdminCampana?.classList.add("is-active");
     } else {
       btnAdminUsuarios?.classList.add("is-active");
     }
@@ -217,6 +224,7 @@ export function mountAdminChannels() {
       document.getElementById("nav-btn-admin-errores")?.addEventListener("click", () => switchTab("admin", "errores"));
       document.getElementById("nav-btn-admin-backups")?.addEventListener("click", () => switchTab("admin", "backups"));
       document.getElementById("nav-btn-admin-servicios")?.addEventListener("click", () => switchTab("admin", "servicios"));
+      document.getElementById("nav-btn-admin-campana")?.addEventListener("click", () => switchTab("admin", "campana"));
       document.getElementById("brand-logo")?.addEventListener("click", (e) => {
         e.preventDefault();
         switchTab("inicio");

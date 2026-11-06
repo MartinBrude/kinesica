@@ -55,7 +55,7 @@ const ADMIN_HOURS_CACHE_KEY = "admin_practitioner_hours_v1";
 const ADMIN_HOURS_CACHE_SECONDS = 120;
 // Última copia buena de los horarios del admin (persistente): se usa si settings.php no responde.
 const ADMIN_HOURS_LAST_GOOD_PROP = "ADMIN_HOURS_LAST_GOOD";
-const GAS_CODE_VERSION = "v19-phone-id";
+const GAS_CODE_VERSION = "v20-list-appointments";
 const BOOKING_IDEMPOTENCY_PREFIX = "booking_result_v1_";
 
 function isValidHoursObject(h) {
@@ -327,6 +327,9 @@ function doGet(e) {
     } else if (action === "get_directory") {
       if (!isAuthorizedSecret(params)) return unauthorizedResponse();
       return handleGetDirectory();
+    } else if (action === "list_appointments") {
+      if (!isAuthorizedSecret(params)) return unauthorizedResponse();
+      return handleListAppointments(params);
     }
 
     return createJsonResponse({ status: "error", message: "Acción no reconocida en GET" }, 400);
@@ -360,6 +363,9 @@ function doPost(e) {
       return handleGetSlots(payload);
     } else if (action === "get_slots_range") {
       return handleGetSlotsRange(payload);
+    } else if (action === "list_appointments") {
+      if (!isAuthorizedSecret(payload)) return unauthorizedResponse();
+      return handleListAppointments(payload);
     } else if (action === "ping") {
       // Diagnóstico de sólo lectura: de dónde salen los horarios (sin datos de pacientes).
       resolveActivePractitionerHours(payload.hours || null);
@@ -692,6 +698,125 @@ function handleCheckPatient(payload) {
   }
 
   return createJsonResponse({ status: "success", is_habitual: false, name: null });
+}
+
+/**
+ * Extrae el nombre de paciente desde el título de un evento de Calendar
+ * (p. ej. "🩺 [NORBERTO] Juan Pérez (Agendó: María)").
+ */
+function parseAppointmentPatientName(title) {
+  let t = String(title || "").trim();
+  if (!t) return "";
+  // Quitar emoji / símbolos iniciales y tags de profesional / menor.
+  t = t.replace(/^[^\wáéíóúÁÉÍÓÚñÑüÜ\[]+/u, "");
+  t = t.replace(/^\[[^\]]+\]\s*/g, "");
+  t = t.replace(/^\[MENOR\]\s*/i, "");
+  t = t.replace(/\s*\((?:Familiar|Agend[oó]|Adulto[^)]*)\s*:[^)]*\)\s*$/iu, "");
+  t = t.replace(/\s+/g, " ").trim();
+  return t;
+}
+
+/**
+ * Detecta eventos que no son turnos de paciente (bloqueos, feriados, TK3, etc.).
+ */
+function isNonPatientAppointmentTitle(title) {
+  const t = String(title || "").toLowerCase();
+  if (!t.trim()) return true;
+  const blocked = ["no dar", "bloqueado", "bloqueo", "feriado", "vacaciones", "tk3", "tk 3", "lista de espera", "waitlist"];
+  for (let i = 0; i < blocked.length; i++) {
+    if (t.indexOf(blocked[i]) !== -1) return true;
+  }
+  return false;
+}
+
+/**
+ * Extrae un teléfono candidato desde la descripción del evento.
+ */
+function extractPhoneFromAppointmentDescription(description) {
+  const text = String(description || "");
+  const m = text.match(/(?:whatsapp|wa\.me|tel|cel|telefono|celular|movil)[:\s\/]*([+]?[-0-9\s()]{8,22})/i);
+  if (!m) return "";
+  const digits = String(m[1] || "").replace(/\D+/g, "");
+  if (digits.length < 8 || digits.length > 15) return "";
+  return digits;
+}
+
+/**
+ * Lista turnos reales del calendario consultorio en un rango de fechas (YYYY-MM-DD).
+ * Requiere secret == GAS_API_SECRET.
+ */
+function handleListAppointments(params) {
+  const dateFrom = String((params && params.dateFrom) || (params && params.from) || "").trim();
+  const dateTo = String((params && params.dateTo) || (params && params.to) || "").trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateFrom) || !/^\d{4}-\d{2}-\d{2}$/.test(dateTo)) {
+    return createJsonResponse({
+      status: "error",
+      message: "Parámetros dateFrom/dateTo inválidos (requerido YYYY-MM-DD)"
+    }, 400);
+  }
+  if (dateFrom > dateTo) {
+    return createJsonResponse({
+      status: "error",
+      message: "dateFrom no puede ser posterior a dateTo"
+    }, 400);
+  }
+
+  const rangeStart = parseArgentinaDate(dateFrom, "00:00");
+  const rangeEnd = parseArgentinaDate(dateTo, "23:59:59");
+
+  const cal = getKinesicaCalendar();
+  const events = cal.getEvents(rangeStart, rangeEnd);
+  const appointments = [];
+
+  for (let i = 0; i < events.length; i++) {
+    const ev = events[i];
+    const title = String(ev.getTitle() || "").trim();
+    if (isNonPatientAppointmentTitle(title)) continue;
+
+    const patientName = parseAppointmentPatientName(title);
+    if (!patientName || isNonPatientAppointmentTitle(patientName)) continue;
+
+    const start = ev.getStartTime();
+    const date = Utilities.formatDate(start, "America/Argentina/Buenos_Aires", "yyyy-MM-dd");
+    if (date < dateFrom || date > dateTo) continue;
+
+    let description = "";
+    try {
+      description = String(ev.getDescription() || "");
+    } catch (e) {
+      description = "";
+    }
+
+    let eventId = "";
+    try {
+      eventId = String(ev.getId() || "");
+    } catch (e2) {
+      eventId = "";
+    }
+
+    appointments.push({
+      eventId: eventId,
+      title: title,
+      patientName: patientName,
+      date: date,
+      startIso: start.toISOString ? start.toISOString() : String(start),
+      phone: extractPhoneFromAppointmentDescription(description)
+    });
+  }
+
+  appointments.sort(function (a, b) {
+    if (a.date === b.date) return String(a.patientName).localeCompare(String(b.patientName));
+    return a.date < b.date ? -1 : 1;
+  });
+
+  return createJsonResponse({
+    status: "success",
+    action: "list_appointments",
+    dateFrom: dateFrom,
+    dateTo: dateTo,
+    total: appointments.length,
+    appointments: appointments
+  });
 }
 
 /**

@@ -218,6 +218,24 @@ try {
             json_out(200, ['status' => 'success', 'id' => $id, 'dejo_review' => $val]);
         }
 
+        if ($action === 'toggle_campana') {
+            $id = (int) ($data['id'] ?? 0);
+            if ($id <= 0) json_out(422, ['status' => 'error', 'message' => 'ID inválido']);
+            $val = array_key_exists('viene_de_campana', $data)
+                ? (!empty($data['viene_de_campana']) ? 1 : 0)
+                : 1;
+            $stmt = $pdo->prepare('UPDATE pacientes SET viene_de_campana = :val WHERE id = :id');
+            $stmt->execute(['val' => $val, 'id' => $id]);
+            if ($stmt->rowCount() === 0) {
+                $chk = $pdo->prepare('SELECT id FROM pacientes WHERE id = :id LIMIT 1');
+                $chk->execute(['id' => $id]);
+                if (!$chk->fetch()) {
+                    json_out(404, ['status' => 'error', 'message' => 'Paciente no encontrado']);
+                }
+            }
+            json_out(200, ['status' => 'success', 'id' => $id, 'viene_de_campana' => $val]);
+        }
+
         if ($action === 'send_encuesta_invite') {
             $id = (int) ($data['id'] ?? 0);
             if ($id <= 0) json_out(422, ['status' => 'error', 'message' => 'ID inválido']);

@@ -894,6 +894,7 @@ function ensure_pacientes_tables(PDO $pdo, bool $force = false): void
                 contacto_notas TEXT,
                 dejo_review INTEGER NOT NULL DEFAULT 0,
                 encuesta_enviada INTEGER NOT NULL DEFAULT 0,
+                viene_de_campana INTEGER NOT NULL DEFAULT 1,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )
@@ -932,6 +933,7 @@ function ensure_pacientes_tables(PDO $pdo, bool $force = false): void
                 contacto_notas VARCHAR(100) NULL,
                 dejo_review TINYINT(1) NOT NULL DEFAULT 0,
                 encuesta_enviada TINYINT(1) NOT NULL DEFAULT 0,
+                viene_de_campana TINYINT(1) NOT NULL DEFAULT 1,
                 created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 INDEX idx_pacientes_dni (dni),
@@ -962,6 +964,10 @@ function ensure_pacientes_tables(PDO $pdo, bool $force = false): void
 
     try {
         $pdo->exec('ALTER TABLE pacientes ADD COLUMN encuesta_enviada TINYINT(1) NOT NULL DEFAULT 0');
+    } catch (Throwable) {}
+
+    try {
+        $pdo->exec('ALTER TABLE pacientes ADD COLUMN viene_de_campana TINYINT(1) NOT NULL DEFAULT 1');
     } catch (Throwable) {}
 
     $checked = true;

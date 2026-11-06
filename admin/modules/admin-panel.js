@@ -28,6 +28,10 @@ import {
   initServiciosUI,
   loadServiciosData,
 } from "./admin-servicios.js";
+import {
+  initCampanaUI,
+  loadCampanaData,
+} from "./admin-campana.js";
 
 const viewAdmin = document.querySelector("#view-admin");
 
@@ -38,18 +42,21 @@ export function setAdminActiveSection(section = "usuarios") {
   else if (norm === "errores" || norm === "reportes") target = "errores";
   else if (norm === "backups" || norm === "copias" || norm === "copias-seguridad") target = "backups";
   else if (norm === "servicios" || norm === "consumos" || norm === "cuotas") target = "servicios";
+  else if (norm === "campana" || norm === "campaña" || norm === "turnos-campana") target = "campana";
 
   const cardUsuarios = document.getElementById("admin-usuarios-card");
   const cardGastos = document.getElementById("admin-gastos-card");
   const cardErrores = document.getElementById("admin-errores-card");
   const cardBackups = document.getElementById("admin-backups-card");
   const cardServicios = document.getElementById("admin-servicios-card");
+  const cardCampana = document.getElementById("admin-campana-card");
 
   if (cardUsuarios) cardUsuarios.hidden = target !== "usuarios";
   if (cardGastos) cardGastos.hidden = target !== "gastos";
   if (cardErrores) cardErrores.hidden = target !== "errores";
   if (cardBackups) cardBackups.hidden = target !== "backups";
   if (cardServicios) cardServicios.hidden = target !== "servicios";
+  if (cardCampana) cardCampana.hidden = target !== "campana";
 
   const heroTitle = document.getElementById("admin-hero-title");
   if (heroTitle) {
@@ -59,6 +66,7 @@ export function setAdminActiveSection(section = "usuarios") {
       errores: "Administración · Reporte de Errores",
       backups: "Administración · Copias de Seguridad",
       servicios: "Administración · Consumos y Servicios",
+      campana: "Administración · Turnos de campaña",
     };
     heroTitle.textContent = titles[target] || "Administración del Sistema";
   }
@@ -78,8 +86,12 @@ export function showAdminView(section = "usuarios") {
     return;
   }
 
-  const validSection = ["usuarios", "gastos", "errores", "backups", "servicios"].includes(String(section).toLowerCase())
-    ? String(section).toLowerCase()
+  const normSection = String(section || "").toLowerCase();
+  const mappedSection = (normSection === "campaña" || normSection === "turnos-campana")
+    ? "campana"
+    : normSection;
+  const validSection = ["usuarios", "gastos", "errores", "backups", "servicios", "campana"].includes(mappedSection)
+    ? mappedSection
     : "usuarios";
 
   const view = switchActiveView("view-admin");
@@ -102,6 +114,7 @@ export async function loadAdminData() {
     loadGastosData(loadAdminData),
     loadErroresData(loadAdminData),
     loadServiciosData(),
+    loadCampanaData(),
   ]);
 }
 
@@ -110,6 +123,7 @@ export function initAdminModule() {
   initGastosUI({ onReload: loadAdminData });
   initErroresUI({ onReload: loadAdminData });
   initServiciosUI({ onReload: loadAdminData });
+  initCampanaUI();
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {

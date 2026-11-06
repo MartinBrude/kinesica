@@ -9,6 +9,11 @@ return [
     ],
     'install_token' => 'CAMBIAR',
     'webhook_secret' => 'CAMBIAR',
+    // Secret compartido con Apps Script (Script property GAS_API_SECRET).
+    // Usado por campana_turnos.php → action=list_appointments.
+    // Si está vacío se usa webhook_secret.
+    'gas_api_secret' => '',
+    'gas_booking_url' => '',
     // Interacciones WhatsApp: n8n debe enviar X-Kinesica-Bot-Secret = webhook_secret.
     // Solo durante rotación: allow_legacy_bot_secret => true + legacy_bot_secret (valor viejo, NO en git).
     'allow_legacy_bot_secret' => false,
