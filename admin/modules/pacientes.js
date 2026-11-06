@@ -72,6 +72,15 @@ export function buildReviewInviteMessage(p) {
 }
 
 /**
+ * Determina si ya se envió la invitación a la encuesta vía Clara.
+ * @param {object} p
+ * @returns {boolean}
+ */
+export function patientEncuestaEnviada(p) {
+  return Boolean(p && (Number(p.encuesta_enviada) === 1 || p.encuesta_enviada === true || p.encuesta_enviada === "1"));
+}
+
+/**
  * Determina si un paciente ya dejó una reseña (por flag manual o match con Google Reviews).
  * @param {object} p
  * @returns {boolean}
@@ -437,6 +446,7 @@ export function renderPacientesTable() {
     const displayTel = isPlaceholderTel ? "" : formatDisplayPhone(rawTel);
 
     const hasReview = patientHasReview(p);
+    const encuestaEnviada = patientEncuestaEnviada(p);
     const firstName = getPatientFirstName(p);
     const hasLoadedName = Boolean(firstName);
     const reviewMsg = buildReviewInviteMessage(p);
@@ -455,6 +465,26 @@ export function renderPacientesTable() {
              </span>`);
 
     const isColaborador = getSessionUser()?.role === "colaborador";
+
+    let encuestaAction;
+    if (encuestaEnviada) {
+      encuestaAction = `<span class="badge-encuesta-ok" title="Clara ya envió la invitación a la encuesta" style="display:inline-flex; align-items:center; gap:4px; font-size:11.5px; padding:3px 8px; border-radius:6px; background:#eef2ff; color:#3730a3; font-weight:600; border:1px solid #c7d2fe;">
+           <span aria-hidden="true">📋</span> Encuesta enviada
+         </span>`;
+    } else if (isColaborador) {
+      encuestaAction = `<span class="btn light" title="Los colaboradores no pueden disparar envíos de Clara" style="opacity:0.45; cursor:not-allowed; display:inline-flex; align-items:center; gap:4px; font-size:12px; padding:4px 9px;">
+           <span aria-hidden="true">📋</span> Pedir encuesta
+         </span>`;
+    } else if (cleanDigits && hasLoadedName) {
+      encuestaAction = `<button type="button" class="btn light btn-encuesta-invite" data-id="${p.id}" data-name="${escapeHtml(firstName)}" title="Que Clara envíe por WhatsApp la invitación a la breve encuesta" style="color:#4338ca; border-color:#c7d2fe; background:#eef2ff; display:inline-flex; align-items:center; gap:4px; font-size:12px; padding:4px 9px; font-weight:600;">
+           <span aria-hidden="true">📋</span> Pedir encuesta
+         </button>`;
+    } else {
+      encuestaAction = `<span class="btn light" title="${!hasLoadedName ? "El nombre del paciente debe estar cargado para pedirle la encuesta" : "Sin teléfono para WhatsApp"}" style="opacity:0.45; cursor:not-allowed; display:inline-flex; align-items:center; gap:4px; font-size:12px; padding:4px 9px;">
+           <span aria-hidden="true">📋</span> Pedir encuesta
+         </span>`;
+    }
+
     const deleteBtn = isColaborador
       ? ""
       : `<button type="button" class="btn ghost btn-delete-paciente btn-icon-del" data-id="${p.id}" data-name="${escapeHtml(fullNameForConfirm)}" title="Eliminar paciente" aria-label="Eliminar paciente">
@@ -475,6 +505,7 @@ export function renderPacientesTable() {
       <td style="text-align: right;">
         <div class="pacientes-actions">
           ${reviewAction}
+          ${encuestaAction}
           <button type="button" class="btn light btn-edit-paciente" data-id="${p.id}" title="${isColaborador ? "Ver datos del paciente" : "Editar paciente"}">${isColaborador ? "Ver datos" : "Editar"}</button>
           ${deleteBtn}
         </div>
@@ -487,6 +518,42 @@ export function renderPacientesTable() {
     btn.addEventListener("click", () => {
       const paciente = pacientesCache.find((p) => String(p.id) === String(btn.dataset.id));
       if (paciente) openFullPacienteModal(paciente, loadPacientes);
+    });
+  });
+
+  listEl.querySelectorAll(".btn-encuesta-invite").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const id = btn.dataset.id;
+      const name = btn.dataset.name || "el paciente";
+      const confirmed = await dialogConfirm(
+        `¿Que Clara le envíe a ${name} la invitación a la breve encuesta por WhatsApp?\n\nSolo se puede enviar una vez.`,
+        { okText: "Enviar", cancelText: "Cancelar" }
+      );
+      if (!confirmed) return;
+
+      btn.disabled = true;
+      const originalHtml = btn.innerHTML;
+      btn.innerHTML = "Enviando…";
+      try {
+        await api("pacientes.php", {
+          method: "POST",
+          body: JSON.stringify({ action: "send_encuesta_invite", id: Number(id) }),
+        });
+        const paciente = pacientesCache.find((p) => String(p.id) === String(id));
+        if (paciente) paciente.encuesta_enviada = 1;
+        renderPacientesTable();
+      } catch (err) {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+        const msg = String(err?.payload?.message || err?.payload?.error || err?.message || err || "Error desconocido");
+        if (/ya fue enviada/i.test(msg) || err?.status === 409) {
+          const paciente = pacientesCache.find((p) => String(p.id) === String(id));
+          if (paciente) paciente.encuesta_enviada = 1;
+          renderPacientesTable();
+          return;
+        }
+        await dialogAlert(`No se pudo enviar la encuesta: ${msg}`);
+      }
     });
   });
 

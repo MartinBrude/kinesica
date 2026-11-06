@@ -222,7 +222,7 @@ function find_existing_patient_match(PDO $pdo, ?string $phone, ?string $name = n
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if ($row) return $row;
 
-            $stmtAll = $pdo->query('SELECT id, telefono, nombre, apellido, nombre_completo, dni, profesional_habitual, dejo_review FROM pacientes');
+            $stmtAll = $pdo->query('SELECT id, telefono, nombre, apellido, nombre_completo, dni, profesional_habitual, dejo_review, encuesta_enviada FROM pacientes');
             if ($stmtAll) {
                 while ($cand = $stmtAll->fetch(PDO::FETCH_ASSOC)) {
                     $candFull = trim(($cand['nombre_completo'] ?? '') ?: (($cand['nombre'] ?? '') . ' ' . ($cand['apellido'] ?? '')));
@@ -319,6 +319,7 @@ function deduplicate_pacientes_table(PDO $pdo): int
             $deleteIds = [];
 
             $mergedReview = 0;
+            $mergedEncuesta = 0;
             $mergedProf = 'indistinto';
             $mergedDni = clean_patient_dni($survivor['dni'] ?? null);
             $mergedEmail = trim((string) ($survivor['email'] ?? ''));
@@ -340,6 +341,10 @@ function deduplicate_pacientes_table(PDO $pdo): int
                 // Regla: si uno dice con review y otro sin, queda que si
                 if (!empty($c['dejo_review'])) {
                     $mergedReview = 1;
+                }
+                // Regla: si alguna vez se envió encuesta, queda enviada
+                if (!empty($c['encuesta_enviada'])) {
+                    $mergedEncuesta = 1;
                 }
                 // Regla: si uno dice indistinto y otro dice con tal, queda tal
                 $cProf = $c['profesional_habitual'] ?? 'indistinto';
@@ -405,7 +410,8 @@ function deduplicate_pacientes_table(PDO $pdo): int
                         contacto_telefono = :ctel,
                         contacto_email = :cemail,
                         contacto_notas = :cnot,
-                        dejo_review = :rev
+                        dejo_review = :rev,
+                        encuesta_enviada = :encuesta
                     WHERE id = :id
                 ');
                 $upd->execute([
@@ -423,6 +429,7 @@ function deduplicate_pacientes_table(PDO $pdo): int
                     'cemail' => $mergedContactoEmail,
                     'cnot' => $mergedContactoNotas,
                     'rev' => $mergedReview,
+                    'encuesta' => $mergedEncuesta,
                     'id' => $survivorId,
                 ]);
                 $mergedTotal += count($deleteIds);
@@ -716,6 +723,7 @@ function ensure_pacientes_tables(PDO $pdo, bool $force = false): void
                 contacto_email TEXT,
                 contacto_notas TEXT,
                 dejo_review INTEGER NOT NULL DEFAULT 0,
+                encuesta_enviada INTEGER NOT NULL DEFAULT 0,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )
@@ -753,6 +761,7 @@ function ensure_pacientes_tables(PDO $pdo, bool $force = false): void
                 contacto_email VARCHAR(120) NULL,
                 contacto_notas VARCHAR(100) NULL,
                 dejo_review TINYINT(1) NOT NULL DEFAULT 0,
+                encuesta_enviada TINYINT(1) NOT NULL DEFAULT 0,
                 created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 INDEX idx_pacientes_dni (dni),
@@ -779,6 +788,10 @@ function ensure_pacientes_tables(PDO $pdo, bool $force = false): void
 
     try {
         $pdo->exec('ALTER TABLE pacientes ADD COLUMN dejo_review TINYINT(1) NOT NULL DEFAULT 0');
+    } catch (Throwable) {}
+
+    try {
+        $pdo->exec('ALTER TABLE pacientes ADD COLUMN encuesta_enviada TINYINT(1) NOT NULL DEFAULT 0');
     } catch (Throwable) {}
 
     try {

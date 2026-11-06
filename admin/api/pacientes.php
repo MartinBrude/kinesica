@@ -211,6 +211,63 @@ try {
             json_out(200, ['status' => 'success', 'id' => $id, 'dejo_review' => $val]);
         }
 
+        if ($action === 'send_encuesta_invite') {
+            $id = (int) ($data['id'] ?? 0);
+            if ($id <= 0) json_out(422, ['status' => 'error', 'message' => 'ID inválido']);
+
+            $stmt = $pdo->prepare('SELECT id, telefono, nombre, apellido, nombre_completo, nombre_pila, encuesta_enviada FROM pacientes WHERE id = :id LIMIT 1');
+            $stmt->execute(['id' => $id]);
+            $paciente = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$paciente) {
+                json_out(404, ['status' => 'error', 'message' => 'Paciente no encontrado']);
+            }
+            if (!empty($paciente['encuesta_enviada'])) {
+                json_out(409, ['status' => 'error', 'message' => 'La encuesta ya fue enviada a este paciente', 'encuesta_enviada' => 1]);
+            }
+
+            $phone = clean_phone_number((string) ($paciente['telefono'] ?? ''));
+            if ($phone === '' || is_placeholder_phone($phone)) {
+                json_out(422, ['status' => 'error', 'message' => 'El paciente no tiene un teléfono de WhatsApp válido']);
+            }
+
+            $firstName = trim((string) ($paciente['nombre_pila'] ?? ''));
+            if ($firstName === '') {
+                $firstName = trim((string) ($paciente['nombre'] ?? ''));
+            }
+            if ($firstName === '' && !empty($paciente['nombre_completo'])) {
+                $parts = preg_split('/\s+/u', trim((string) $paciente['nombre_completo']), 2, PREG_SPLIT_NO_EMPTY) ?: [];
+                $firstName = $parts[0] ?? '';
+            }
+            $saludo = $firstName !== '' ? ('Hola ' . $firstName . '!') : 'Hola!';
+            $body = $saludo . "\n"
+                . "Te escribo de Kinésica. Nos ayudaría mucho que respondas esta breve encuesta anónima sobre tu experiencia (menos de un minuto):\n"
+                . "https://www.kinesica.com.ar/encuesta.html\n"
+                . "¡Muchas gracias!";
+
+            $waResult = send_whatsapp_alert_payload([
+                'to' => $phone,
+                'body' => $body,
+                'preview_url' => true,
+            ]);
+            if (empty($waResult['ok'])) {
+                $err = (string) ($waResult['error'] ?? 'No se pudo enviar el WhatsApp');
+                json_out(502, [
+                    'status' => 'error',
+                    'message' => $err,
+                    'wa' => $waResult,
+                ]);
+            }
+
+            $upd = $pdo->prepare('UPDATE pacientes SET encuesta_enviada = 1 WHERE id = :id');
+            $upd->execute(['id' => $id]);
+            json_out(200, [
+                'status' => 'success',
+                'id' => $id,
+                'encuesta_enviada' => 1,
+                'via' => $waResult['via'] ?? null,
+            ]);
+        }
+
         if (str_starts_with($action, 'waitlist_') || str_ends_with($action, '_waitlist')) {
             kinesica_pacientes_waitlist_ops($pdo, $action, $data);
         }

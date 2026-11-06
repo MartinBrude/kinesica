@@ -29,7 +29,7 @@ function whatsapp_credentials(): array
  *
  * @return array{ok: bool, http_code: int, error?: string, response?: array}
  */
-function send_whatsapp_text(string $to, string $body): array
+function send_whatsapp_text(string $to, string $body, bool $previewUrl = false): array
 {
     $to = preg_replace('/\D+/', '', $to) ?? '';
     $body = trim($body);
@@ -56,7 +56,7 @@ function send_whatsapp_text(string $to, string $body): array
         'to' => $to,
         'type' => 'text',
         'text' => [
-            'preview_url' => false,
+            'preview_url' => $previewUrl,
             'body' => $body,
         ],
     ], JSON_UNESCAPED_UNICODE);
@@ -175,13 +175,14 @@ function send_whatsapp_alert(string $to, string $body): array
 /**
  * Alerta con campos de plantilla (tpl_*) para el webhook n8n / Graph template.
  *
- * @param array{to:string,body?:string,tpl_patient?:string,tpl_whatsapp?:string,tpl_motivo?:string,tpl_detalle?:string,tpl_btn_phone?:string} $payload
+ * @param array{to:string,body?:string,preview_url?:bool,tpl_patient?:string,tpl_whatsapp?:string,tpl_motivo?:string,tpl_detalle?:string,tpl_btn_phone?:string} $payload
  * @return array{ok: bool, http_code: int, error?: string, via?: string}
  */
 function send_whatsapp_alert_payload(array $payload): array
 {
     $to = preg_replace('/\D+/', '', (string) ($payload['to'] ?? '')) ?? '';
     $body = trim((string) ($payload['body'] ?? ''));
+    $previewUrl = !empty($payload['preview_url']);
     $extra = [];
     foreach (['tpl_patient', 'tpl_whatsapp', 'tpl_motivo', 'tpl_detalle', 'tpl_btn_phone'] as $k) {
         if (isset($payload[$k]) && trim((string) $payload[$k]) !== '') {
@@ -196,7 +197,7 @@ function send_whatsapp_alert_payload(array $payload): array
             $direct['via'] = 'graph-template';
             return $direct;
         }
-        $direct = send_whatsapp_text($to, $body);
+        $direct = send_whatsapp_text($to, $body, $previewUrl);
         $direct['via'] = 'graph';
         return $direct;
     }
