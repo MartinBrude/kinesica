@@ -33,13 +33,31 @@ function interacciones_set_state(PDO $pdo, string $id, string $action, string $b
                 ON DUPLICATE KEY UPDATE archived = VALUES(archived), archived_at = VALUES(archived_at),
                     updated_at = VALUES(updated_at), updated_by = VALUES(updated_by)';
         $pdo->prepare($sql)->execute(['k' => $key, 'f' => $flag, 'at' => $flag ? $now : null, 'now' => $now, 'by' => mb_substr($by, 0, 60, 'UTF-8')]);
-        return true;
+    } else {
+        $sql = 'INSERT INTO interaccion_estado (conversation_key, answered, answered_at, updated_at, updated_by)
+                VALUES (:k, :f, :at, :now, :by)
+                ON DUPLICATE KEY UPDATE answered = VALUES(answered), answered_at = VALUES(answered_at),
+                    updated_at = VALUES(updated_at), updated_by = VALUES(updated_by)';
+        $pdo->prepare($sql)->execute(['k' => $key, 'f' => $answered ? 1 : 0, 'at' => $answered ? $now : null, 'now' => $now, 'by' => mb_substr($by, 0, 60, 'UTF-8')]);
     }
-    $sql = 'INSERT INTO interaccion_estado (conversation_key, answered, answered_at, updated_at, updated_by)
-            VALUES (:k, :f, :at, :now, :by)
-            ON DUPLICATE KEY UPDATE answered = VALUES(answered), answered_at = VALUES(answered_at),
-                updated_at = VALUES(updated_at), updated_by = VALUES(updated_by)';
-    $pdo->prepare($sql)->execute(['k' => $key, 'f' => $answered ? 1 : 0, 'at' => $answered ? $now : null, 'now' => $now, 'by' => mb_substr($by, 0, 60, 'UTF-8')]);
+    // REL (etapa 7): al archivar/responder, intentar vincular paciente_id si falta.
+    try {
+        require_once __DIR__ . '/lib_relational_interacciones.php';
+        if (kinesica_rel_interaccion_estado_has_paciente($pdo)
+            && preg_match('/^(\d{6,32})_(\d{4}-\d{2}-\d{2})$/', (string) $key, $km)
+        ) {
+            $wa = $km[1];
+            $dayStart = (new DateTimeImmutable($km[2] . ' 12:00:00', interacciones_tz()))->getTimestamp();
+            $pid = null;
+            require_once __DIR__ . '/lib_relational_resolve.php';
+            $res = kinesica_rel_resolve_paciente($pdo, ['wa_id' => $wa, 'phone' => $wa], ['ignore_flag' => true]);
+            if (($res['status'] ?? '') === 'matched') {
+                $pid = $res['paciente_id'] ?? null;
+            }
+            kinesica_rel_touch_interaccion_estado_paciente($pdo, $wa, $dayStart, $pid !== null ? (int) $pid : null, '');
+        }
+    } catch (Throwable) {
+    }
     return true;
 }
 

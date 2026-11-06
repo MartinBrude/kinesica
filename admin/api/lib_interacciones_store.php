@@ -76,6 +76,7 @@ function interacciones_ensure_schema(?PDO $pdo = null): void
     if (isset($done[$pdo])) {
         return;
     }
+    // REL: puente idempotente (no DROP). Se mantiene activo para no romper media_/schema.
     $pdo->exec(
         'CREATE TABLE IF NOT EXISTS interaccion_eventos (
             id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -139,6 +140,25 @@ function interacciones_ensure_schema(?PDO $pdo = null): void
             KEY idx_legacy (legacy_id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
     );
+    // REL: puente estado.paciente_id / wa_id (mig 007).
+    try {
+        require_once __DIR__ . '/lib_migrations.php';
+        kinesica_migrations_add_column_if_missing(
+            $pdo,
+            'interaccion_estado',
+            'paciente_id',
+            'INT UNSIGNED NULL',
+            'INTEGER NULL'
+        );
+        kinesica_migrations_add_column_if_missing(
+            $pdo,
+            'interaccion_estado',
+            'wa_id',
+            'VARCHAR(32) NULL',
+            'TEXT NULL'
+        );
+    } catch (Throwable $e) {
+    }
     $done[$pdo] = true;
 }
 
@@ -303,6 +323,18 @@ function interacciones_insert_event(PDO $pdo, array $ev): string
     }
     try {
         $pdo->prepare($sql)->execute($params);
+        // REL: tocar conversación (estado) con paciente_id / wa_id (mig 007).
+        try {
+            require_once __DIR__ . '/lib_relational_interacciones.php';
+            kinesica_rel_touch_interaccion_estado_paciente(
+                $pdo,
+                (string) ($ev['wa_id'] ?? ''),
+                (int) ($ev['ts'] ?? time()),
+                $pacienteId,
+                (string) ($ev['patient_name'] ?? '')
+            );
+        } catch (Throwable) {
+        }
         return 'stored';
     } catch (PDOException $e) {
         if (!interacciones_is_duplicate_error($e)) {

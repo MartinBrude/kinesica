@@ -9,7 +9,11 @@ declare(strict_types=1);
  *  POST action=sync_all     compatibilidad con el script de sincronización (secreto del bot)
  *  POST action=reconcile    fuerza reconciliación con n8n (bot o sesión no-colaborador)
  *  POST archive|unarchive|toggle_answered   solo sesión, no-colaborador; solo cambia flags, nunca borra mensajes
+ *  POST action=link_paciente  asocia conversación → paciente_id (etapa 7; no fusiona historias)
+ *
+ * Modelo: interaccion_eventos ≈ mensajes; interaccion_estado ≈ conversación (día+wa_id).
  * El secreto del bot SOLO sirve para ingestar/reconciliar: nunca para leer conversaciones.
+ * Docs: docs/codigo-datos-relacionales.md
  */
 
 require __DIR__ . '/lib.php';
@@ -216,6 +220,35 @@ if (in_array($action, ['archive', 'unarchive', 'toggle_answered'], true)) {
         json_out(404, ['error' => 'Conversación no encontrada']);
     }
     json_out(200, ['ok' => true, 'id' => $id, 'action' => $action]);
+}
+
+// REL: asociación posterior conversación → paciente (etapa 7).
+if ($action === 'link_paciente') {
+    $id = trim((string) ($input['id'] ?? $input['conversation_key'] ?? ''));
+    $pacienteId = (int) ($input['paciente_id'] ?? 0);
+    if ($id === '' || $pacienteId <= 0) {
+        json_out(422, ['error' => 'id (conversation_key) y paciente_id son requeridos']);
+    }
+    require_once __DIR__ . '/lib_relational_interacciones.php';
+    $res = kinesica_rel_link_interaccion_conversacion(
+        db(),
+        $id,
+        $pacienteId,
+        (string) ($auth['name'] ?? $auth['username'] ?? 'admin')
+    );
+    if (empty($res['ok'])) {
+        $code = ($res['reason'] ?? '') === 'paciente_not_found' ? 404 : 422;
+        json_out($code, [
+            'error' => 'No se pudo vincular la conversación',
+            'reason' => $res['reason'] ?? 'error',
+        ]);
+    }
+    json_out(200, [
+        'ok' => true,
+        'action' => 'link_paciente',
+        'id' => $res['conversation_key'],
+        'paciente_id' => $res['paciente_id'],
+    ]);
 }
 
 json_out(400, ['error' => 'Acción no soportada']);

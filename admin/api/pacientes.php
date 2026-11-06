@@ -71,7 +71,10 @@ try {
         $action = $_GET['action'] ?? '';
 
         if ($action === 'directory' || $action === 'get_directory') {
-            $stmt = $pdo->query("SELECT nombre, apellido, nombre_completo, telefono, email FROM pacientes WHERE LOWER(nombre_completo) NOT LIKE '%tk3%' AND LOWER(nombre_completo) NOT LIKE '%tk 3%' AND LOWER(nombre_completo) NOT LIKE '%no dar%'");
+            // REL: excluir soft-deleted (etapa 9).
+            require_once __DIR__ . '/lib_relational_integrity.php';
+            $alive = kinesica_rel_pacientes_not_deleted_sql($pdo);
+            $stmt = $pdo->query("SELECT nombre, apellido, nombre_completo, telefono, email FROM pacientes WHERE {$alive} AND LOWER(nombre_completo) NOT LIKE '%tk3%' AND LOWER(nombre_completo) NOT LIKE '%tk 3%' AND LOWER(nombre_completo) NOT LIKE '%no dar%'");
             $directory = [];
             $emails = [];
             while ($row = $stmt->fetch()) {
@@ -121,13 +124,17 @@ try {
         if ($q !== '') {
             // Un named param por cláusula: PDO nativo no reutiliza :q.
             $like = '%' . $q . '%';
-            $stmt = $pdo->prepare('
+            // REL: excluir soft-deleted en búsqueda (etapa 9).
+            require_once __DIR__ . '/lib_relational_integrity.php';
+            $alive = kinesica_rel_pacientes_not_deleted_sql($pdo);
+            $stmt = $pdo->prepare("
                 SELECT * FROM pacientes 
-                WHERE (nombre_completo LIKE :q1 OR nombre LIKE :q2 OR apellido LIKE :q3 OR telefono LIKE :q4 OR dni LIKE :q5 OR email LIKE :q6 OR contacto_nombre LIKE :q7 OR contacto_telefono LIKE :q8)
-                  AND LOWER(nombre_completo) NOT LIKE "%tk3%" AND LOWER(nombre_completo) NOT LIKE "%tk 3%"
-                  AND LOWER(nombre_completo) NOT LIKE "%no dar%"
-                ORDER BY CASE WHEN apellido != "" THEN apellido ELSE nombre_completo END ASC, nombre ASC LIMIT 100
-            ');
+                WHERE {$alive}
+                  AND (nombre_completo LIKE :q1 OR nombre LIKE :q2 OR apellido LIKE :q3 OR telefono LIKE :q4 OR dni LIKE :q5 OR email LIKE :q6 OR contacto_nombre LIKE :q7 OR contacto_telefono LIKE :q8)
+                  AND LOWER(nombre_completo) NOT LIKE \"%tk3%\" AND LOWER(nombre_completo) NOT LIKE \"%tk 3%\"
+                  AND LOWER(nombre_completo) NOT LIKE \"%no dar%\"
+                ORDER BY CASE WHEN apellido != \"\" THEN apellido ELSE nombre_completo END ASC, nombre ASC LIMIT 100
+            ");
             $stmt->execute([
                 'q1' => $like, 'q2' => $like, 'q3' => $like, 'q4' => $like,
                 'q5' => $like, 'q6' => $like, 'q7' => $like, 'q8' => $like,
@@ -135,7 +142,10 @@ try {
             json_out(200, ['status' => 'success', 'items' => $stmt->fetchAll()]);
         }
 
-        $stmt = $pdo->query('SELECT * FROM pacientes WHERE LOWER(nombre_completo) NOT LIKE "%tk3%" AND LOWER(nombre_completo) NOT LIKE "%tk 3%" AND LOWER(nombre_completo) NOT LIKE "%no dar%" ORDER BY CASE WHEN apellido != "" THEN apellido ELSE nombre_completo END ASC, nombre ASC');
+        // REL: listado completo sin soft-deleted (etapa 9).
+        require_once __DIR__ . '/lib_relational_integrity.php';
+        $alive = kinesica_rel_pacientes_not_deleted_sql($pdo);
+        $stmt = $pdo->query("SELECT * FROM pacientes WHERE {$alive} AND LOWER(nombre_completo) NOT LIKE \"%tk3%\" AND LOWER(nombre_completo) NOT LIKE \"%tk 3%\" AND LOWER(nombre_completo) NOT LIKE \"%no dar%\" ORDER BY CASE WHEN apellido != \"\" THEN apellido ELSE nombre_completo END ASC, nombre ASC");
         json_out(200, ['status' => 'success', 'items' => $stmt->fetchAll()]);
     }
 
@@ -345,13 +355,31 @@ try {
         }
         $id = (int) ($_GET['id'] ?? 0);
         if ($id <= 0) json_out(422, ['status' => 'error', 'message' => 'ID inválido']);
-        $stmt = $pdo->prepare('DELETE FROM pacientes WHERE id = :id');
-        $stmt->execute(['id' => $id]);
-        json_out(200, ['status' => 'success', 'message' => 'Paciente eliminado']);
+        // REL: soft-delete (deleted_at). Hard-delete choca con FK RESTRICT (etapa 9).
+        require_once __DIR__ . '/lib_relational_integrity.php';
+        $res = kinesica_rel_paciente_soft_delete($pdo, $id);
+        if (!$res['ok']) {
+            $http = $res['code'] === 'not_found' ? 404 : 422;
+            json_out($http, [
+                'status' => 'error',
+                'code' => $res['code'],
+                'message' => $res['message'],
+            ]);
+        }
+        json_out(200, [
+            'status' => 'success',
+            'message' => $res['message'],
+            'soft_delete' => true,
+        ]);
     }
 
     json_out(405, ['status' => 'error', 'message' => 'Método HTTP no permitido']);
 } catch (Throwable $e) {
     error_log('kinesica admin pacientes.php error: ' . $e->getMessage());
+    // REL: FK/UNIQUE → 409/422 sin SQL crudo (lib_relational_integrity.php).
+    require_once __DIR__ . '/lib_relational_integrity.php';
+    if (kinesica_rel_json_out_if_integrity($e)) {
+        // exited via json_out
+    }
     json_out(500, ['status' => 'error', 'message' => 'Error al procesar pacientes: ' . $e->getMessage()]);
 }

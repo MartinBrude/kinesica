@@ -447,6 +447,14 @@ try {
         }
 
         $rows = campana_build_rows($pdo, $gas['appointments'] ?? []);
+        // REL: espejo local turnos por calendar_event_id (best-effort; no falla la UI).
+        try {
+            require_once __DIR__ . '/lib_relational_turnos.php';
+            // Sync sobre todas las citas del rango (antes de unique) para no perder event ids.
+            kinesica_rel_sync_turnos_from_campana_rows($pdo, $rows);
+        } catch (Throwable $e) {
+            error_log('kinesica campana turnos sync: ' . $e->getMessage());
+        }
         if ($unique) {
             $rows = campana_unique_persons($rows);
         }

@@ -487,6 +487,25 @@ try {
         // Notificar EXCLUSIVAMENTE a Norberto para auditoría
         kinesica_backup_notify_norberto_audit($newEntry, $afterMutate, $syncOutcome);
 
+        // REL: espejo local turnos (best-effort; no afecta respuesta al paciente).
+        try {
+            require_once __DIR__ . '/lib_relational_turnos.php';
+            $eventIdOut = (string) ($newEntry['google_event_id'] ?: $newEntry['eventId']);
+            kinesica_rel_register_turno_from_booking(db(), [
+                'eventId' => $eventIdOut,
+                'date' => $dateStr,
+                'time' => $timeStr,
+                'nombre' => $nombre,
+                'telefono' => $telefono,
+                'dni' => $dni,
+                'practitionerId' => $practitionerId,
+                'summary' => $summary,
+                'source' => 'backup',
+            ]);
+        } catch (Throwable $e) {
+            error_log('kinesica calendar_backup turnos mirror: ' . $e->getMessage());
+        }
+
         // Respuesta idéntica al flujo normal: el paciente nunca sabe que operó el modo respaldo
         echo json_encode([
             'status' => 'success',

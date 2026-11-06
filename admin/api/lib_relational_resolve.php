@@ -5,12 +5,14 @@ declare(strict_types=1);
  * Resolución de paciente_id / profesional_id para escrituras.
  *
  * Reglas (plan etapa 3–4):
- * - Orden: teléfono (pacientes + contactos) → DNI único → nombre+DNI sin tel.
+ * - Orden: paciente_id explícito (etapa 10) → teléfono → DNI → nombre+DNI.
+ * - Teléfono/nombre **no** son clave si ya hay paciente_id en hints.
  * - Teléfono compartido con nombres distintos → ambiguous (no fusionar).
  * - Con write_ids off → status disabled (salvo opts.ignore_flag en backfill).
  * - Fallos de match → rel_unlinked.jsonl (sin PII completa).
+ * - Búsqueda UX por teléfono en listados sigue aparte (pacientes.php?q=).
  *
- * Docs: docs/codigo-datos-relacionales.md
+ * Docs: docs/codigo-datos-relacionales.md · docs/etapa10-retiro-compatibilidad.md
  */
 
 require_once __DIR__ . '/pacientes_helpers.php';
@@ -18,7 +20,7 @@ require_once __DIR__ . '/lib_relational_flags.php';
 require_once __DIR__ . '/lib_migrations.php';
 
 /**
- * @param array{phone?:string,wa_id?:string,dni?:string,nombre?:string} $hints
+ * @param array{paciente_id?:int|string,phone?:string,wa_id?:string,dni?:string,nombre?:string} $hints
  * @param array{ignore_flag?:bool} $opts ignore_flag=true para backfill CLI aunque REL_WRITE_IDS esté off
  * @return array{paciente_id:?int,status:string,reason:string,candidates:int}
  */
@@ -30,6 +32,27 @@ function kinesica_rel_resolve_paciente(PDO $pdo, array $hints, array $opts = [])
     }
     if (!kinesica_migrations_table_exists($pdo, 'pacientes')) {
         return ['paciente_id' => null, 'status' => 'unmatched', 'reason' => 'sin_tabla_pacientes', 'candidates' => 0];
+    }
+
+    // Etapa 10: si ya viene paciente_id explícito, no join por tel/nombre.
+    $explicitId = isset($hints['paciente_id']) ? (int) $hints['paciente_id'] : 0;
+    if ($explicitId > 0) {
+        $chk = $pdo->prepare('SELECT id FROM pacientes WHERE id = :id LIMIT 1');
+        $chk->execute(['id' => $explicitId]);
+        if ($chk->fetchColumn()) {
+            return [
+                'paciente_id' => $explicitId,
+                'status' => 'matched',
+                'reason' => 'paciente_id_explicit',
+                'candidates' => 1,
+            ];
+        }
+        return [
+            'paciente_id' => null,
+            'status' => 'unmatched',
+            'reason' => 'paciente_id_inexistente',
+            'candidates' => 0,
+        ];
     }
 
     $phoneRaw = (string) ($hints['phone'] ?? $hints['wa_id'] ?? '');

@@ -2,7 +2,8 @@
 declare(strict_types=1);
 
 /**
- * Puente columnas relacionales en fichas (migraciones 002/004). Retirar tras etapa 10.
+ * Puente columnas relacionales en fichas (migraciones 002/004).
+ * Idempotente (ADD IF MISSING). No se apaga: red de seguridad productiva.
  */
 function kinesica_fichas_ensure_rel_columns(PDO $pdo): void
 {
@@ -158,14 +159,37 @@ function kinesica_fichas_save_record(PDO $pdo, array $auth, string $id, array $d
                 sync_pacientes_from_fichas($pdo, $id, $data, $profesional);
                 $didSync = true;
             }
-            $pacienteId = kinesica_rel_resolve_paciente_id_or_note($pdo, 'fichas', [
+            // REL etapa 10: preferir paciente_id del payload si viene; si no, resolver.
+            $hints = [
                 'dni' => (string) ($data['dni'] ?? ''),
                 'nombre' => (string) ($data['nombre'] ?? ''),
-            ]);
-            $profesionalId = kinesica_rel_resolve_profesional_id($pdo, $profesional);
+            ];
+            if (isset($data['paciente_id']) && (int) $data['paciente_id'] > 0) {
+                $hints['paciente_id'] = (int) $data['paciente_id'];
+            }
+            $pacienteId = kinesica_rel_resolve_paciente_id_or_note($pdo, 'fichas', $hints);
+            if (isset($data['profesional_id']) && (int) $data['profesional_id'] > 0) {
+                $profesionalId = (int) $data['profesional_id'];
+            } else {
+                $profesionalId = kinesica_rel_resolve_profesional_id($pdo, $profesional);
+            }
         } elseif (kinesica_migrations_table_exists($pdo, 'profesionales')) {
             // REL: profesional_id sin WRITE_IDS si ya existe tabla profesionales (mig 005).
             $profesionalId = kinesica_rel_resolve_profesional_id($pdo, $profesional, ['ignore_flag' => true]);
+        }
+    } catch (Throwable) {
+    }
+
+    // REL: con REL_ENFORCE_FK, rechazar IDs inválidos / soft-deleted (lib_relational_integrity.php).
+    try {
+        require_once __DIR__ . '/lib_relational_integrity.php';
+        $chkP = kinesica_rel_assert_paciente_id($pdo, $pacienteId);
+        if ($chkP !== true) {
+            json_out(422, ['status' => 'error', 'code' => $chkP['code'], 'message' => $chkP['message']]);
+        }
+        $chkPr = kinesica_rel_assert_profesional_id($pdo, $profesionalId);
+        if ($chkPr !== true) {
+            json_out(422, ['status' => 'error', 'code' => $chkPr['code'], 'message' => $chkPr['message']]);
         }
     } catch (Throwable) {
     }

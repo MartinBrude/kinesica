@@ -1,6 +1,15 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * API admin de gastos operativos (solo rol admin).
+ *
+ * Persistencia: `gastos_io.php` (JSON + MariaDB dual-write, etapa 8).
+ * Cada create/update/delete pasa `username` como actor → auditoría.
+ *
+ * Docs: docs/etapa8-config-gastos.md
+ */
+
 require __DIR__ . '/lib.php';
 require_once __DIR__ . '/gastos_io.php';
 
@@ -100,7 +109,7 @@ if ($action === 'create') {
 
     $gastos = kinesica_gastos_load();
     array_unshift($gastos, $nuevo);
-    kinesica_gastos_save($gastos);
+    kinesica_gastos_save($gastos, (string) ($auth['username'] ?? ''));
 
     json_out(200, [
         'status' => 'success',
@@ -165,7 +174,7 @@ if ($action === 'update') {
         json_out(404, ['error' => 'Gasto no encontrado para actualizar.']);
     }
 
-    kinesica_gastos_save($gastos);
+    kinesica_gastos_save($gastos, (string) ($auth['username'] ?? ''));
 
     json_out(200, [
         'status' => 'success',
@@ -194,7 +203,7 @@ if ($action === 'delete') {
         json_out(404, ['error' => 'Gasto no encontrado para eliminar.']);
     }
 
-    kinesica_gastos_save($filtered);
+    kinesica_gastos_save($filtered, (string) ($auth['username'] ?? ''));
 
     json_out(200, [
         'status' => 'success',

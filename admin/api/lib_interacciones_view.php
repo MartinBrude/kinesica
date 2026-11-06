@@ -595,7 +595,18 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
         $st = $estado[$key] ?? [];
         $isTurnConfirm = interacciones_thread_is_turn_confirmation($messages);
         $name = '';
-        $convPid = isset($c['paciente_id']) ? (int) $c['paciente_id'] : 0;
+        // REL: preferir paciente_id de la conversación (estado) sobre el derivado de eventos.
+        $convPid = isset($st['paciente_id']) ? (int) $st['paciente_id'] : 0;
+        if ($convPid <= 0) {
+            $convPid = isset($c['paciente_id']) ? (int) $c['paciente_id'] : 0;
+        }
+        if ($convPid > 0 && !isset($pacientesById[$convPid]) && function_exists('kinesica_rel_fetch_pacientes_map')) {
+            try {
+                $extra = kinesica_rel_fetch_pacientes_map($pdo, [$convPid]);
+                $pacientesById += $extra;
+            } catch (Throwable) {
+            }
+        }
         if ($convPid > 0 && isset($pacientesById[$convPid])) {
             $name = kinesica_rel_display_from_paciente($pacientesById[$convPid])['name'];
         }
@@ -625,7 +636,7 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
         // Confirmación del recordatorio o ruido de prueba: no quedan pendientes.
         $answered = !empty($st['answered']) || $isTurnConfirm || $isDiagNoise;
         $counts[$archived ? 'archived' : ($answered ? 'answered' : 'unanswered')]++;
-        $items[] = [
+        $item = [
             'id' => $key,
             'wa_id' => $c['wa_id'],
             'phone_formatted' => interacciones_phone_format((string) $c['wa_id']),
@@ -643,6 +654,11 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
             'has_attachment' => $hasAttachment,
             'messages' => $messages,
         ];
+        // REL: exponer paciente_id canónico (estado > eventos) para UI / link_paciente.
+        if ($convPid > 0) {
+            $item['paciente_id'] = $convPid;
+        }
+        $items[] = $item;
     }
     usort($items, static fn(array $a, array $b): int => strcmp($b['timestamp'], $a['timestamp']));
     $grouped = [];

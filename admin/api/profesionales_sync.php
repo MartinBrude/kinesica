@@ -1,6 +1,17 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Sync profesional → settings (phones/emails/Clara) + tabla `profesionales` (etapa 8).
+ *
+ * Llamado al alta/edición de usuarios profesionales. Actualiza:
+ * - `practitioner_phones` / `practitioner_emails` en settings (dual-write vía update_settings)
+ * - textos Clara menú E con nombres activos
+ * - REL: `profesionales.phone` / `email` (mig 009) best-effort
+ *
+ * Docs: docs/etapa8-config-gastos.md
+ */
+
 require_once __DIR__ . '/kinesica_settings_storage.php';
 
 function sync_settings_practitioner(string $username, string $email, string $phone, bool $active = true): void
@@ -78,8 +89,28 @@ function sync_settings_practitioner(string $username, string $email, string $pho
             } catch (Throwable $t) {}
 
             return $raw;
-        });
+        }, $username !== '' ? $username : 'system');
     } catch (Throwable $e) {
         error_log('Error syncing practitioner to settings: ' . $e->getMessage());
+    }
+
+    // REL: phone/email en profesionales (mig 009; lib_relational_config.php).
+    if ($username === '' || $username === 'martin') {
+        return;
+    }
+    try {
+        require_once __DIR__ . '/lib.php';
+        require_once __DIR__ . '/lib_relational_config.php';
+        $pdo = db();
+        if ($active) {
+            kinesica_rel_profesional_set_contact(
+                $pdo,
+                $username,
+                $phone !== '' ? $phone : null,
+                $email !== '' ? $email : null
+            );
+        }
+    } catch (Throwable $e) {
+        error_log('Error syncing practitioner contact to profesionales: ' . $e->getMessage());
     }
 }

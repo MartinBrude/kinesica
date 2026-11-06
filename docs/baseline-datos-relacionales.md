@@ -5,7 +5,10 @@
 **Fecha:** 2026-11-06  
 **Plan:** [plan-refactor-datos-relacionales.md](plan-refactor-datos-relacionales.md)  
 **Mapa de código:** [codigo-datos-relacionales.md](codigo-datos-relacionales.md)  
-**Runbook staging:** [runbook-datos-relacionales-antigravity.md](runbook-datos-relacionales-antigravity.md)
+**Runbook staging:** [runbook-datos-relacionales-antigravity.md](runbook-datos-relacionales-antigravity.md)  
+**Etapa 7:** [etapa7-whatsapp-encuestas.md](etapa7-whatsapp-encuestas.md)  
+**Etapa 8:** [etapa8-config-gastos.md](etapa8-config-gastos.md)  
+**Etapa 9:** [etapa9-integridad-referencial.md](etapa9-integridad-referencial.md)
 
 ## Objetivo de esta línea base
 
@@ -20,8 +23,10 @@ Inventario de fuentes, DDL en requests y consumidores externos **antes** de acti
 | Fichas clínicas | MariaDB `fichas.payload` JSON | `profesional` texto (username) |
 | WhatsApp eventos | MariaDB `interaccion_eventos` | Clave `event_key`; vínculo por `wa_id` |
 | Recordatorios | MariaDB `recordatorio_eventos` | Clave `event_key`; `calendar_event_id` |
-| Settings / horarios / Clara | `admin/api/data/settings.json` | Lock de archivo |
-| Gastos / encuestas / errores | JSON en `admin/api/` | Fuera del MVP clínico |
+| Settings / horarios / Clara | MariaDB `configuraciones` + JSON espejo | Etapa 8 overlay DB |
+| Gastos | MariaDB `gastos` + JSON espejo | Etapa 8 dual-write |
+| Errores | JSON en `admin/api/` | Diferido (etapa 8 opcional) |
+| Encuestas | MariaDB `encuestas` + JSON espejo | Etapa 7 dual-write |
 | Agenda turnos | Google Calendar | Sin tabla local aún |
 | Bot Clara | SQLite + n8n (VPS) | Fuera del MVP; ver backups |
 
@@ -46,9 +51,10 @@ Inventario de fuentes, DDL en requests y consumidores externos **antes** de acti
 | `fichas.php` | fichas | payload + sync pacientes |
 | `interacciones.php` | eventos | append eventos / estado |
 | `recordatorios.php` | eventos | ingest n8n |
-| `horarios.php` / `settings.php` | settings.json | settings.json |
+| `horarios.php` / `settings.php` | configuraciones overlay + JSON | JSON + configuraciones |
 | `campana_turnos.php` | pacientes + GAS | pacientes |
-| `encuestas.php` / `gastos.php` / `errores.php` | JSON | JSON |
+| `encuestas.php` / `gastos.php` | MariaDB (+ JSON espejo) | dual-write |
+| `errores.php` | JSON | JSON (diferido) |
 | `backup.php` | MariaDB | dump SQL |
 
 ## Consumidores externos
@@ -70,8 +76,42 @@ Runner: `admin/api/lib_migrations.php` + CLI `admin/api/migrate.php`.
 | `002_rel_nullable_ids` | `paciente_id` / `profesional_id` / `turno_id` nullable |
 | `003_pacientes_version_deleted` | `deleted_at`, `version` en pacientes |
 | `004_fichas_version` | `version` en fichas |
+| `005_profesionales` | Catálogo + seed norberto/maria |
+| `006_turnos` | Espejo local turnos; UNIQUE `calendar_event_id` |
+| `007_interaccion_estado_paciente` | Conversación ↔ paciente_id |
+| `008_encuestas` | Respuestas encuesta en MariaDB |
+| `009_profesionales_contactos` | phone/email en profesionales |
+| `010_configuraciones` | Settings operativos key-value |
+| `011_auditoria_cambios` | Historial de config/gastos |
+| `012_gastos` | Gastos en MariaDB |
+| `013_rel_integrity_fks` | FK RESTRICT + CHECK; soft-delete API |
 
 Flags (default `false`): `relational_flags` en settings o env `KINESICA_REL_WRITE_IDS` / `READ_IDS` / `ENFORCE_FK`.
+
+## Turnos sombra (etapa 6 — cerrada)
+
+- Tabla `turnos`: UNIQUE `calendar_event_id`; API `turnos.php` register/cancel.
+- Escrituras: campaña, recordatorios, calendar_backup book, admin booking, mirror GAS.
+- Cancel anula recordatorios pending del mismo `calendar_event_id`.
+- Lista espera: insert acepta `paciente_id`; tel/nombre denormalizados.
+
+## Config / gastos (etapa 8 — cerrada)
+
+- `configuraciones` + `auditoria_cambios` + dual-write settings/gastos.
+- `profesionales.phone` / `email`. Errores JSON diferidos.
+- Doc: [etapa8-config-gastos.md](etapa8-config-gastos.md).
+
+## Integridad (etapa 9 — cerrada en código)
+
+- FKs RESTRICT (mig 013, MariaDB). Soft-delete API pacientes.
+- `REL_ENFORCE_FK` = asserts app tras cutover ops (backup + audit).
+- Doc: [etapa9-integridad-referencial.md](etapa9-integridad-referencial.md).
+
+## Compat (etapa 10 — cerrada en código)
+
+- Resolve por ID; soft-delete; archive JSON; mig 014 marcador. **`ensure_*` activos** (no corte productivo).
+- Sin DROP / sin pérdida de filas. Auditoría: [instructivo-antigravity-auditoria-cutover.md](instructivo-antigravity-auditoria-cutover.md).
+- Doc: [etapa10-retiro-compatibilidad.md](etapa10-retiro-compatibilidad.md).
 
 ## Auditoría (etapa 1)
 

@@ -84,7 +84,7 @@ Viven en configuración runtime del admin (misma familia que settings; preferibl
 |------|---------|--------|
 | `REL_WRITE_IDS` | `false` | En writes, resolver y persistir `paciente_id` / `profesional_id` cuando sea posible; mantener columnas legacy. |
 | `REL_READ_IDS` | `false` | Preferir joins/lecturas por ID; si falta ID, fallback legacy. |
-| `REL_ENFORCE_FK` | `false` | Activar solo en etapa 9: NOT NULL + FOREIGN KEY obligatorias. |
+| `REL_ENFORCE_FK` | `false` | Etapa 9: asserts app de IDs. FKs SQL = mig `013` (MariaDB). NOT NULL masivo = opcional `014`. |
 
 Rollback operativo de una etapa de lectura/escritura: apagar el flag correspondiente sin borrar columnas ni datos ya escritos.
 
@@ -379,28 +379,28 @@ Volver a leer desde el payload existente (`REL_READ_IDS=false`) y mantener las r
 
 ## Etapa 6 — Lista de espera y turnos
 
-Post-MVP.
+Post-MVP. **Cerrada en código (sombra + booking):** migración `006_turnos`, [`lib_relational_turnos.php`](../admin/api/lib_relational_turnos.php), API [`turnos.php`](../admin/api/turnos.php) (register/cancel), sync campaña + recordatorios + `calendar_backup` + admin booking + mirror GAS (`mirrorTurnoToAdmin`), lista_espera por `paciente_id` (tel/nombre denormalizados). Google Calendar sigue siendo la agenda; la camilla única sigue en GAS.
 
 ### Tareas
 
-- Cambiar lista de espera a paciente_id.
-- Crear representación local de turnos.
-- Hacer único calendar_event_id.
-- Hacer idempotente Google Calendar.
-- Relacionar recordatorios con turno_id.
+- Cambiar lista de espera a paciente_id. *(hecho: insert por ID + resolve; tel/nombre cache)*
+- Crear representación local de turnos. *(hecho)*
+- Hacer único calendar_event_id. *(UNIQUE en `turnos`)*
+- Hacer idempotente Google Calendar. *(upsert local + mirror post-book)*
+- Relacionar recordatorios con turno_id. *(insert + backfill + cancel anula pending)*
 
 ### Verificar
 
-- Cambiar teléfono no rompe la lista.
-- Cambiar nombre se refleja en vistas.
-- No hay turnos duplicados.
-- Sigue funcionando la regla de una sola camilla.
-- Cancelar turno actualiza recordatorios.
+- Cambiar teléfono no rompe la lista (si hay `paciente_id`).
+- Cambiar nombre se refleja en vistas (`REL_READ_IDS`).
+- No hay turnos duplicados (UNIQUE `calendar_event_id`).
+- Sigue funcionando la regla de una sola camilla (GAS).
+- Cancelar turno actualiza recordatorios pending → skipped/cancelled.
 - Repetir sync no duplica eventos.
 
 ### Criterio de salida
 
-La agenda usa IDs internos y el calendario externo solo sincroniza.
+Espejo local por IDs + `calendar_event_id`; el calendario externo sigue siendo fuente de verdad de agenda. Deploy del GAS actualizado requerido para mirror en vivo.
 
 ### Rollback
 
@@ -410,28 +410,34 @@ Mantener temporalmente el flujo anterior y conservar los registros locales.
 
 Post-MVP. Coordinar contrato con Clara (solo IDs externos / API); no asumir que SQLite del bot se migra aquí.
 
+**Implementado:** mig `007` (`interaccion_estado.paciente_id`/`wa_id`) + `008_encuestas`; libs `lib_relational_interacciones.php` / `lib_relational_encuestas.php`; dual-write JSON↔DB; backfill `interaccion_estado` + `encuestas`. Modelo conceptual sin rename: estado ≈ conversación, eventos ≈ mensajes. Recordatorios ya tenían `paciente_id`/`turno_id` (etapa 6).
+
 ### Tareas
 
-- Separar conversaciones y mensajes.
-- Asociar conversaciones a paciente_id.
-- Asociar recordatorios a paciente_id y turno_id.
-- Mantener wa_id como dato externo.
-- Conservar snapshots de nombre solo como histórico.
-- Migrar encuestas a una tabla relacional.
+- Separar conversaciones y mensajes. *(conceptual: estado/eventos; sin split físico)*
+- Asociar conversaciones a paciente_id. *(hecho en estado)*
+- Asociar recordatorios a paciente_id y turno_id. *(hecho en etapa 6)*
+- Mantener wa_id como dato externo. *(sí)*
+- Conservar snapshots de nombre solo como histórico. *(patient_name en eventos/estado)*
+- Migrar encuestas a una tabla relacional. *(dual-write + backfill)*
 
 ### Verificar
 
-- Asociación posterior de una conversación.
-- Cambio de teléfono sin nueva historia clínica.
-- Idempotencia por event_key.
-- Métricas coincidentes.
-- Recordatorios basados en datos actuales.
+- Asociación posterior de una conversación. → `POST link_paciente`
+- Cambio de teléfono sin nueva historia clínica. → lecturas por `paciente_id`
+- Idempotencia por event_key. → sin cambio de contrato n8n
+- Métricas coincidentes. → vista + KPI encuestas unificados
+- Recordatorios basados en datos actuales. → etapa 6 + IDs
+
+Detalle operativo: [etapa7-whatsapp-encuestas.md](etapa7-whatsapp-encuestas.md).
 
 ### Criterio de salida
 
-Los sistemas externos siguen funcionando y las relaciones internas usan IDs.
+Los sistemas externos siguen funcionando y las relaciones internas usan IDs. **Cumplido en código** (deploy migrate 007–008 + backfill encuestas/estado en staging).
 
 ## Etapa 8 — Configuración y administración
+
+**Status:** implementada en código (`feature/datos-relacionales`). Doc: [etapa8-config-gastos.md](etapa8-config-gastos.md). Ops: migrate `009`–`012` + backfill `profesionales_contactos,configuraciones,gastos`. Errores JSON sigue diferido.
 
 Post-MVP. Migrar en este orden:
 
@@ -458,6 +464,8 @@ Secrets y tokens no deben vivir en tablas exportables por roles no admin; si set
 Las nuevas escrituras van a MariaDB; los JSON quedan como fallback, backup o exportación.
 
 ## Etapa 9 — Integridad referencial obligatoria
+
+**Status:** implementada en código (`feature/datos-relacionales`). Doc: [etapa9-integridad-referencial.md](etapa9-integridad-referencial.md). Ops: migrate `013` tras backup/audit; luego `REL_ENFORCE_FK=true` en staging. NOT NULL masivo queda opcional (`014` futuro).
 
 ### Precondiciones
 
@@ -492,19 +500,23 @@ Retirar la obligatoriedad de las columnas nuevas mediante migración controlada 
 
 ## Etapa 10 — Retirada de compatibilidad antigua
 
-Solo después de varias iteraciones estables:
+**Status:** implementada en código (`feature/datos-relacionales`). Doc: [etapa10-retiro-compatibilidad.md](etapa10-retiro-compatibilidad.md).  
+**Auditoría cutover:** [instructivo-antigravity-auditoria-cutover.md](instructivo-antigravity-auditoria-cutover.md).
 
-- eliminar búsquedas relacionales por nombre;
-- eliminar búsquedas relacionales por teléfono **como clave de join** (la búsqueda UX por teléfono sigue permitida);
-- retirar columnas duplicadas;
-- retirar DDL dinámico de endpoints;
-- dejar una única fuente de esquema;
-- archivar JSON históricos;
-- actualizar documentación y tests.
+Hecho **sin pérdida de data ni corte de features**:
+
+- resolve prioriza `paciente_id` explícito (fallback tel/nombre si no hay ID);
+- mig `014` marcador + índice soft-delete; **`ensure_*` siguen activos**;
+- soft-delete pacientes/profesionales (filas conservadas);
+- archive JSON (`data/archive/` + export CLI);
+- búsqueda UX por teléfono/nombre **sigue**;
+- sin DROP de columnas legacy.
+
+Pendiente post-auditoría (015+ solo con Go explícito): DROP columnas / NOT NULL.
 
 ### Criterio de salida
 
-Ningún endpoint productivo depende de campos duplicados para identificar pacientes o profesionales.
+Ningún endpoint productivo depende de campos duplicados para identificar pacientes o profesionales. **Cumplido a nivel de join/identidad en código;** DROPs físicos = fase posterior.
 
 ## Umbrales de salida
 

@@ -197,6 +197,31 @@ if ($action === 'toggle_active') {
     $uRow = $uStmt->fetch();
     sync_settings_practitioner($username, (string) ($uRow['email'] ?? ''), (string) ($uRow['telefono'] ?? ''), (bool) $active);
 
+    // REL etapa 10: espejo soft-delete / reactivate en tabla profesionales.
+    try {
+        require_once __DIR__ . '/lib_migrations.php';
+        require_once __DIR__ . '/lib_relational_integrity.php';
+        if (kinesica_migrations_table_exists($pdo, 'profesionales')) {
+            if ($active) {
+                $pdo->prepare(
+                    'UPDATE profesionales SET deleted_at = NULL, active = 1, updated_at = CURRENT_TIMESTAMP
+                     WHERE slug = :s OR username = :u'
+                )->execute(['s' => $username, 'u' => $username]);
+            } else {
+                $find = $pdo->prepare(
+                    'SELECT id FROM profesionales WHERE (slug = :s OR username = :u) LIMIT 1'
+                );
+                $find->execute(['s' => $username, 'u' => $username]);
+                $pid = (int) ($find->fetchColumn() ?: 0);
+                if ($pid > 0) {
+                    kinesica_rel_profesional_soft_delete($pdo, $pid);
+                }
+            }
+        }
+    } catch (Throwable $e) {
+        error_log('profesionales toggle_active REL soft-delete: ' . $e->getMessage());
+    }
+
     json_out(200, [
         'status' => 'success',
         'message' => $active ? 'Cuenta reactivada exitosamente.' : 'Cuenta suspendida temporalmente.',

@@ -12,7 +12,9 @@ declare(strict_types=1);
  * Mapeo plan → clave:
  *   REL_WRITE_IDS  → write_ids   (persistir paciente_id en writes)
  *   REL_READ_IDS   → read_ids    (enriquecer lecturas desde pacientes)
- *   REL_ENFORCE_FK → enforce_fk  (reservado; aún no activa FKs SQL)
+ *   REL_ENFORCE_FK → enforce_fk  (etapa 9: validación app estricta de IDs;
+ *                                  las FKs SQL se aplican con mig 013 en MariaDB
+ *                                  y NO se apagan con el flag — rollback = DROP/restore)
  *
  * Docs: docs/codigo-datos-relacionales.md · docs/plan-refactor-datos-relacionales.md
  */

@@ -3,7 +3,12 @@
 **Branch:** `feature/datos-relacionales`  
 **Plan:** [plan-refactor-datos-relacionales.md](plan-refactor-datos-relacionales.md)  
 **Baseline:** [baseline-datos-relacionales.md](baseline-datos-relacionales.md)  
-**Mapa de código:** [codigo-datos-relacionales.md](codigo-datos-relacionales.md)
+**Mapa de código:** [codigo-datos-relacionales.md](codigo-datos-relacionales.md)  
+**Etapa 7:** [etapa7-whatsapp-encuestas.md](etapa7-whatsapp-encuestas.md)  
+**Etapa 8:** [etapa8-config-gastos.md](etapa8-config-gastos.md)  
+**Etapa 9:** [etapa9-integridad-referencial.md](etapa9-integridad-referencial.md)  
+**Etapa 10:** [etapa10-retiro-compatibilidad.md](etapa10-retiro-compatibilidad.md)  
+**Auditoría cutover (Antigravity):** [instructivo-antigravity-auditoria-cutover.md](instructivo-antigravity-auditoria-cutover.md)
 
 Flags productivos siguen en **false** hasta activarlos en staging. No hace falta prod live: copia restaurada alcanza.
 
@@ -27,7 +32,7 @@ php admin/api/migrate.php --dry-run --token="$INSTALL_TOKEN"
 php admin/api/migrate.php --token="$INSTALL_TOKEN"
 ```
 
-Esperado: `001`…`005` applied (`paciente_contactos`, IDs nullable, version/deleted_at, `profesionales` seed norberto/maria).
+Esperado: `001`…`014` applied (… FKs `013`, marcador compat `014`; `ensure_*` siguen ON).
 
 ## 2. Auditoría (read-only)
 
@@ -48,12 +53,21 @@ php admin/api/backfill_relational.php --apply --token="$INSTALL_TOKEN" \
   --out=docs/backfill-apply.json
 ```
 
-Tablas: fichas, lista_espera, interacciones, recordatorios, `paciente_contactos`, `*_profesional_id`.
+Tablas: fichas, lista_espera, interacciones, recordatorios, `paciente_contactos`, `*_profesional_id`, `turnos`, `recordatorios_turno_id`.
 
 Solo:
 
 ```bash
 php admin/api/backfill_relational.php --only=paciente_contactos,fichas_profesional_id --apply --token="$INSTALL_TOKEN"
+
+# Etapa 6: primero turnos, luego link turno_id
+php admin/api/backfill_relational.php --only=turnos,recordatorios_turno_id --apply --token="$INSTALL_TOKEN"
+
+# Etapa 7: conversaciones + encuestas JSON→DB
+php admin/api/backfill_relational.php --only=interaccion_estado,encuestas --apply --token="$INSTALL_TOKEN"
+
+# Etapa 8: contactos profesionales + settings slices + gastos
+php admin/api/backfill_relational.php --only=profesionales_contactos,configuraciones,gastos --apply --token="$INSTALL_TOKEN"
 ```
 
 ## 4. Activar flags en staging (settings)
@@ -70,7 +84,7 @@ En `admin/api/data/settings.json` (o API settings):
 
 O env: `KINESICA_REL_WRITE_IDS=1` / `KINESICA_REL_READ_IDS=1`.
 
-**No** activar `enforce_fk` aún.
+Activar `enforce_fk` **solo** tras mig 013 + backup/restore OK + humo FK (etapa 9).
 
 ## 5. Humo funcional
 
@@ -78,6 +92,17 @@ O env: `KINESICA_REL_WRITE_IDS=1` / `KINESICA_REL_READ_IDS=1`.
 - Guardar ficha → `paciente_id` / `profesional_id` si match; respuesta con `version`
 - Segundo save con `version` vieja → **409** `ficha_version_conflict`
 - Lista espera / WhatsApp / recordatorios muestran nombre canónico si hay ID
+- Listar campaña → filas en `turnos` por `calendar_event_id` (si mig 006 aplicada)
+- Ingest recordatorio con event id → `turno_id` set
+- Admin booking / backup book → fila en `turnos`
+- `POST turnos.php` cancel → turno cancelled + pending recordatorios skipped
+- Redeploy GAS con `mirrorTurnoToAdmin` (Script property opcional `TURNOS_MIRROR_URL`)
+- Encuesta pública → fila en `encuestas` (y JSON espejo)
+- `POST interacciones.php` `link_paciente` vincula hilo huérfano
+- Guardar settings/horarios/fees/Clara → filas en `configuraciones` + `auditoria_cambios`
+- CRUD gastos → filas en `gastos` (+ JSON espejo)
+- DELETE paciente → soft-delete (`deleted_at`); hard-delete bloqueado por FK si se intenta en SQL
+- Con `enforce_fk`: ficha con `paciente_id` inválido → 422
 - Mirar `admin/api/data/rel_unlinked.jsonl` y `rel_read_fallback.jsonl`
 
 ## 6. Re-auditoría
@@ -97,7 +122,10 @@ Comparar huérfanos / fallback vs informe previo.
 
 ## Qué NO hacer todavía
 
-- `REL_ENFORCE_FK` / FOREIGN KEY obligatorias
-- Borrar columnas `telefono` / `profesional` texto
+- Activar `REL_ENFORCE_FK` en prod sin backup/restore + audit limpio
+- DROP columnas `telefono` / `fichas.profesional` (post-Go; mig 015+)
+- NOT NULL masivo sin 100 % backfill
 - Unificar Clara SQLite
 - Fusionar DNI/teléfono ambiguos en automático
+
+Tras auditoría: veredicto en `docs/audit-antigravity-cutover.md`.

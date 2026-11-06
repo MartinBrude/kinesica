@@ -12,7 +12,11 @@ declare(strict_types=1);
  * Auth: --token / KINESICA_MIGRATE_TOKEN = cfg install_token.
  * Tests: KINESICA_MIGRATE_ALLOW_TEST=1
  *
- * No exponer por HTTP. Docs: docs/codigo-datos-relacionales.md
+ * Aplica `001`…`014` (y siguientes) en orden.
+ * `013`: null orphans + FKs RESTRICT (MariaDB; SQLite ADD FK = no-op).
+ * `014`: marcador etapa 10 + índice soft-delete (ensure_* siguen ON).
+ *
+ * No exponer por HTTP. Docs: docs/codigo-datos-relacionales.md · docs/etapa10-retiro-compatibilidad.md
  */
 
 if (PHP_SAPI !== 'cli') {

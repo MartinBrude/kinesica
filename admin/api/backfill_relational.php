@@ -2,14 +2,20 @@
 declare(strict_types=1);
 
 /**
- * CLI — backfill de IDs / contactos / profesional_id (lib_relational_backfill.php).
+ * CLI — backfill de IDs / contactos / profesional_id / turnos (lib_relational_backfill.php).
  *
  *   php admin/api/backfill_relational.php --dry-run --token=TOKEN
  *   php admin/api/backfill_relational.php --apply --token=TOKEN
- *   php admin/api/backfill_relational.php --only=fichas,paciente_contactos --apply --token=TOKEN
+ *   php admin/api/backfill_relational.php --only=turnos,recordatorios_turno_id --apply --token=TOKEN
+ *   php admin/api/backfill_relational.php --only=interaccion_estado,encuestas --apply --token=TOKEN
+ *   php admin/api/backfill_relational.php --only=profesionales_contactos,configuraciones,gastos --apply --token=TOKEN
  *
  * Default: dry-run. --apply solo rellena columnas NULL con match inequívoco.
- * No requiere REL_WRITE_IDS. Docs: docs/runbook-datos-relacionales-antigravity.md
+ * No requiere REL_WRITE_IDS.
+ * Etapa 8: profesionales_contactos, configuraciones, gastos.
+ * Etapa 9: no backfill propio (FKs vía migrate 013).
+ *
+ * Docs: docs/runbook-datos-relacionales-antigravity.md · docs/codigo-datos-relacionales.md
  */
 
 if (PHP_SAPI !== 'cli') {

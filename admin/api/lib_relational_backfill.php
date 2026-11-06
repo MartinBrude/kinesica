@@ -11,6 +11,10 @@ declare(strict_types=1);
  * - Orquesta también paciente_contactos y profesional_id.
  *
  * CLI: php admin/api/backfill_relational.php --dry-run|--apply [--only=...]
+ *
+ * Slices etapa 8 en `kinesica_rel_backfill_run`: profesionales_contactos,
+ * configuraciones, gastos. Etapa 9 no añade backfill (FKs = migrate 013).
+ *
  * Docs: docs/codigo-datos-relacionales.md · docs/runbook-datos-relacionales-antigravity.md
  */
 
@@ -349,6 +353,11 @@ function kinesica_rel_backfill_run(PDO $pdo, bool $apply, ?array $onlyTables = n
 {
     require_once __DIR__ . '/lib_relational_contactos.php';
     require_once __DIR__ . '/lib_relational_profesionales.php';
+    require_once __DIR__ . '/lib_relational_turnos.php';
+    require_once __DIR__ . '/lib_relational_interacciones.php';
+    require_once __DIR__ . '/lib_relational_encuestas.php';
+    require_once __DIR__ . '/lib_relational_config.php';
+    require_once __DIR__ . '/lib_relational_gastos.php';
     $all = [
         'fichas' => 'kinesica_rel_backfill_fichas',
         'lista_espera' => 'kinesica_rel_backfill_lista_espera',
@@ -357,6 +366,16 @@ function kinesica_rel_backfill_run(PDO $pdo, bool $apply, ?array $onlyTables = n
         'paciente_contactos' => 'kinesica_rel_backfill_paciente_contactos',
         'fichas_profesional_id' => 'kinesica_rel_backfill_fichas_profesional_id',
         'lista_espera_profesional_id' => 'kinesica_rel_backfill_lista_profesional_id',
+        // Etapa 6: primero crear turnos sombra, luego linkear recordatorios.turno_id.
+        'turnos' => 'kinesica_rel_backfill_turnos_from_recordatorios',
+        'recordatorios_turno_id' => 'kinesica_rel_backfill_recordatorios_turno_id',
+        // Etapa 7
+        'interaccion_estado' => 'kinesica_rel_backfill_interaccion_estado',
+        'encuestas' => 'kinesica_rel_backfill_encuestas',
+        // Etapa 8
+        'profesionales_contactos' => 'kinesica_rel_backfill_profesionales_contactos',
+        'configuraciones' => 'kinesica_rel_backfill_configuraciones',
+        'gastos' => 'kinesica_rel_backfill_gastos',
     ];
     $tables = [];
     foreach ($all as $name => $fn) {

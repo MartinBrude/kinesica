@@ -80,6 +80,12 @@ $pdo->exec(
     )'
 );
 $pdo->exec(
+    'CREATE TABLE interaccion_estado (
+        conversation_key TEXT PRIMARY KEY,
+        updated_at TEXT
+    )'
+);
+$pdo->exec(
     'CREATE TABLE recordatorio_eventos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         event_key TEXT NOT NULL UNIQUE,
@@ -105,6 +111,18 @@ assert_true(kinesica_migrations_column_exists($pdo, 'recordatorio_eventos', 'pac
 assert_true(kinesica_migrations_column_exists($pdo, 'recordatorio_eventos', 'turno_id'), 'recordatorio_eventos.turno_id');
 assert_true(kinesica_migrations_column_exists($pdo, 'pacientes', 'deleted_at'), 'pacientes.deleted_at');
 assert_true(kinesica_migrations_column_exists($pdo, 'pacientes', 'version'), 'pacientes.version');
+assert_true(kinesica_migrations_table_exists($pdo, 'turnos'), 'tabla turnos (006)');
+assert_true(kinesica_migrations_table_exists($pdo, 'profesionales'), 'tabla profesionales (005)');
+assert_true(kinesica_migrations_column_exists($pdo, 'interaccion_estado', 'paciente_id'), 'interaccion_estado.paciente_id (007)');
+assert_true(kinesica_migrations_table_exists($pdo, 'encuestas'), 'tabla encuestas (008)');
+assert_true(kinesica_migrations_column_exists($pdo, 'profesionales', 'phone'), 'profesionales.phone (009)');
+assert_true(kinesica_migrations_column_exists($pdo, 'profesionales', 'email'), 'profesionales.email (009)');
+assert_true(kinesica_migrations_table_exists($pdo, 'configuraciones'), 'tabla configuraciones (010)');
+assert_true(kinesica_migrations_table_exists($pdo, 'auditoria_cambios'), 'tabla auditoria_cambios (011)');
+assert_true(kinesica_migrations_table_exists($pdo, 'gastos'), 'tabla gastos (012)');
+assert_true(in_array('013_rel_integrity_fks', $first['applied'], true), '013_rel_integrity_fks aplicada');
+assert_true(in_array('014_etapa10_compat', $first['applied'], true), '014_etapa10_compat aplicada');
+assert_true(kinesica_schema_bridges_should_run($pdo, false) === true, 'bridges siguen on (no corte productivo)');
 
 $second = kinesica_migrations_run($pdo, false);
 assert_true($second['applied'] === [], 'segunda corrida no reaplica');

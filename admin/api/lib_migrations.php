@@ -7,14 +7,15 @@ declare(strict_types=1);
  * Responsabilidad
  * - Descubrir `migrations/NNN_nombre.php` (orden lexicográfico).
  * - Ejecutar `up(PDO)` una sola vez; registrar id + checksum en `schema_migrations`.
- * - Helpers seguros de existencia de tabla/columna/índice (MariaDB y SQLite).
+ * - Helpers seguros: tabla/columna/índice; FK/CHECK (etapa 9, MariaDB; SQLite ADD FK = no-op).
  *
  * Límites
  * - Solo CLI vía `migrate.php` (o tests). No invocar desde requests HTTP del admin.
  * - MySQL hace commit implícito en DDL: las migraciones no van en transacción ahí.
  * - No editar migraciones ya aplicadas en producción (checksum distinto → error).
+ * - FKs InnoDB no se “apagan” con REL_ENFORCE_FK; rollback SQL = DROP CONSTRAINT / restore.
  *
- * Docs: docs/codigo-datos-relacionales.md · docs/plan-refactor-datos-relacionales.md
+ * Docs: docs/codigo-datos-relacionales.md · docs/etapa9-integridad-referencial.md
  */
 
 /** Directorio absoluto de archivos de migración. */
@@ -108,6 +109,125 @@ function kinesica_migrations_add_column_if_missing(
     $pdo->exec('ALTER TABLE `' . str_replace('`', '``', $table) . '` ADD COLUMN `'
         . str_replace('`', '``', $column) . '` ' . $definitionMySql);
     return true;
+}
+
+/**
+ * ¿Existe un FOREIGN KEY con ese nombre de constraint?
+ * SQLite: busca en PRAGMA foreign_key_list por tabla hija (nombre de constraint puede ser vacío).
+ */
+function kinesica_migrations_fk_exists(PDO $pdo, string $table, string $constraintName): bool
+{
+    $table = kinesica_migrations_assert_ident($table);
+    $constraintName = kinesica_migrations_assert_ident($constraintName);
+    if (kinesica_migrations_is_sqlite($pdo)) {
+        // SQLite no guarda nombres de FK de forma fiable en tablas legacy;
+        // usamos un marcador en schema_migrations / skip en ADD.
+        return false;
+    }
+    $stmt = $pdo->prepare(
+        'SELECT 1 FROM information_schema.TABLE_CONSTRAINTS
+         WHERE TABLE_SCHEMA = DATABASE()
+           AND TABLE_NAME = :t
+           AND CONSTRAINT_NAME = :c
+           AND CONSTRAINT_TYPE = \'FOREIGN KEY\'
+         LIMIT 1'
+    );
+    $stmt->execute(['t' => $table, 'c' => $constraintName]);
+    return (bool) $stmt->fetchColumn();
+}
+
+/**
+ * Añade FK idempotente. En SQLite ALTER ADD CONSTRAINT no es portable → no-op
+ * (los verify usan schema con FK en CREATE + PRAGMA foreign_keys=ON).
+ *
+ * @return bool true si se añadió
+ */
+function kinesica_migrations_add_fk_if_missing(
+    PDO $pdo,
+    string $table,
+    string $constraintName,
+    string $column,
+    string $refTable,
+    string $refColumn = 'id',
+    string $onDelete = 'RESTRICT',
+    string $onUpdate = 'RESTRICT'
+): bool {
+    $table = kinesica_migrations_assert_ident($table);
+    $constraintName = kinesica_migrations_assert_ident($constraintName);
+    $column = kinesica_migrations_assert_ident($column);
+    $refTable = kinesica_migrations_assert_ident($refTable);
+    $refColumn = kinesica_migrations_assert_ident($refColumn);
+    $onDelete = strtoupper($onDelete);
+    $onUpdate = strtoupper($onUpdate);
+    foreach ([$onDelete, $onUpdate] as $action) {
+        if (!in_array($action, ['RESTRICT', 'NO ACTION', 'CASCADE', 'SET NULL', 'SET DEFAULT'], true)) {
+            throw new InvalidArgumentException('ON DELETE/UPDATE action inválida');
+        }
+    }
+
+    if (!kinesica_migrations_table_exists($pdo, $table)
+        || !kinesica_migrations_table_exists($pdo, $refTable)
+        || !kinesica_migrations_column_exists($pdo, $table, $column)
+    ) {
+        return false;
+    }
+    if (kinesica_migrations_is_sqlite($pdo)) {
+        return false;
+    }
+    if (kinesica_migrations_fk_exists($pdo, $table, $constraintName)) {
+        return false;
+    }
+
+    $pdo->exec(
+        'ALTER TABLE `' . str_replace('`', '``', $table) . '`
+         ADD CONSTRAINT `' . str_replace('`', '``', $constraintName) . '`
+         FOREIGN KEY (`' . str_replace('`', '``', $column) . '`)
+         REFERENCES `' . str_replace('`', '``', $refTable) . '` (`' . str_replace('`', '``', $refColumn) . '`)
+         ON DELETE ' . $onDelete . ' ON UPDATE ' . $onUpdate
+    );
+    return true;
+}
+
+/**
+ * CHECK constraint idempotente (MariaDB). SQLite: no-op.
+ *
+ * @return bool true si se añadió
+ */
+function kinesica_migrations_add_check_if_missing(
+    PDO $pdo,
+    string $table,
+    string $constraintName,
+    string $expressionSql
+): bool {
+    $table = kinesica_migrations_assert_ident($table);
+    $constraintName = kinesica_migrations_assert_ident($constraintName);
+    if (kinesica_migrations_is_sqlite($pdo) || !kinesica_migrations_table_exists($pdo, $table)) {
+        return false;
+    }
+    $stmt = $pdo->prepare(
+        'SELECT 1 FROM information_schema.TABLE_CONSTRAINTS
+         WHERE TABLE_SCHEMA = DATABASE()
+           AND TABLE_NAME = :t
+           AND CONSTRAINT_NAME = :c
+           AND CONSTRAINT_TYPE = \'CHECK\'
+         LIMIT 1'
+    );
+    $stmt->execute(['t' => $table, 'c' => $constraintName]);
+    if ($stmt->fetchColumn()) {
+        return false;
+    }
+    try {
+        $pdo->exec(
+            'ALTER TABLE `' . str_replace('`', '``', $table) . '`
+             ADD CONSTRAINT `' . str_replace('`', '``', $constraintName) . '`
+             CHECK (' . $expressionSql . ')'
+        );
+        return true;
+    } catch (Throwable $e) {
+        // MariaDB antiguos o expression no soportada: no bloquear migrate.
+        error_log('kinesica migrations CHECK skip ' . $constraintName . ': ' . $e->getMessage());
+        return false;
+    }
 }
 
 /** Crea índice si no existe (nombre e identificadores validados parcialmente). */
@@ -210,6 +330,48 @@ function kinesica_migrations_applied_map(PDO $pdo): array
         $map[(string) $row['id']] = (string) $row['checksum'];
     }
     return $map;
+}
+
+/** ¿Está aplicada la migración `$id`? */
+function kinesica_migrations_is_applied(PDO $pdo, string $id): bool
+{
+    if ($id === '') {
+        return false;
+    }
+    try {
+        $map = kinesica_migrations_applied_map($pdo);
+        return isset($map[$id]);
+    } catch (Throwable) {
+        return false;
+    }
+}
+
+/**
+ * Id de la mig marcador etapa 10 (compat / identidad por ID).
+ * No apaga `ensure_*`: esos puentes siguen como red de seguridad idempotente
+ * para no perder funcionalidad en entornos donde migrate aún no cubrió todo.
+ */
+function kinesica_migrations_rel_schema_cutover_id(): string
+{
+    return '014_etapa10_compat';
+}
+
+/**
+ * ¿Correr `ensure_*` / puentes ALTER en requests?
+ *
+ * Siempre true (salvo tests que mockeen). Política etapa 10 revisada:
+ * - Fuente de verdad de esquema = migrate CLI.
+ * - `ensure_*` permanecen: CREATE IF NOT EXISTS / ADD COLUMN IF MISSING
+ *   (idempotentes, no borran ni pisan datos).
+ * - Apagarlos tras 014 rompía columnas operativas (media_*, encuesta_enviada, …)
+ *   que aún viven en el puente — inaceptable para data/funcionalidad productiva.
+ *
+ * @param bool $force reservado (repair); no cambia el resultado hoy
+ */
+function kinesica_schema_bridges_should_run(PDO $pdo, bool $force = false): bool
+{
+    unset($pdo, $force);
+    return true;
 }
 
 /**

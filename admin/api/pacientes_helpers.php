@@ -947,6 +947,9 @@ function ensure_pacientes_tables(PDO $pdo, bool $force = false): void
     static $checked = false;
     if ($checked && !$force) return;
 
+    // REL: puente DDL idempotente (CREATE/ADD IF NOT EXISTS). No borra datos.
+    // Migrate CLI es la fuente preferida; este ensure no se apaga (seguridad productiva).
+
     $driver = (string) $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
     if ($driver === 'sqlite') {
         $pdo->exec('
