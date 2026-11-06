@@ -631,15 +631,15 @@
               <div class="kb-section-title">${this.t("qPatient")}</div>
               <div class="kb-choice-grid" id="kb-patient-grid"></div>
 
-              <div id="kb-existing-box" style="display: none; margin-top: 18px;">
+              <div id="kb-existing-box" class="kb-step1-followup" hidden>
                 <div class="kb-section-title" style="font-size: 17px;">${this.t("qWho")}</div>
                 <div class="kb-choice-grid" id="kb-existing-practitioner-grid"></div>
               </div>
 
-              <div id="kb-new-box" style="display: none; margin-top: 18px;">
+              <div id="kb-new-box" class="kb-step1-followup" hidden>
                 <div class="kb-section-title" style="font-size: 17px;">${this.t("qTechnique")}</div>
                 <div class="kb-choice-grid" id="kb-technique-grid"></div>
-                <div id="kb-practitioner-box" style="display: none; margin-top: 18px;">
+                <div id="kb-practitioner-box" class="kb-step1-followup" hidden>
                   <div class="kb-section-title" style="font-size: 17px;">${this.t("qPrefer")}</div>
                   <div class="kb-choice-grid" id="kb-practitioner-grid"></div>
                 </div>
@@ -1030,23 +1030,14 @@
       });
       const existingBox = this.container.querySelector("#kb-existing-box");
       const newBox = this.container.querySelector("#kb-new-box");
-      // Alternar con clase (no solo style.display) para un reveal controlado sin flash.
-      if (existingBox) {
-        existingBox.style.display = isExisting ? "block" : "none";
-        existingBox.classList.toggle("kb-reveal-open", isExisting);
-      }
-      if (newBox) {
-        newBox.style.display = isExisting ? "none" : "block";
-        newBox.classList.toggle("kb-reveal-open", !isExisting);
-      }
+      // Mostrar/ocultar al instante (sin fade): un opacity 0→1 deja un hueco blanco = flash.
+      if (existingBox) existingBox.hidden = !isExisting;
+      if (newBox) newBox.hidden = isExisting;
       this.container.querySelectorAll("#kb-existing-practitioner-grid .kb-choice-card.selected, #kb-technique-grid .kb-choice-card.selected").forEach((card) => {
         card.classList.remove("selected");
       });
       const practitionerBox = this.container.querySelector("#kb-practitioner-box");
-      if (practitionerBox) {
-        practitionerBox.style.display = "none";
-        practitionerBox.classList.remove("kb-reveal-open");
-      }
+      if (practitionerBox) practitionerBox.hidden = true;
       this.updateStep1FeeBanner(null);
       this.syncStep1Continue();
     }
@@ -1122,10 +1113,10 @@
       const grid = this.container.querySelector("#kb-practitioner-grid");
       grid.innerHTML = "";
       if (technique.practitioners.length < 2) {
-        box.style.display = "none";
+        if (box) box.hidden = true;
         return;
       }
-      box.style.display = "block";
+      if (box) box.hidden = false;
       const options = technique.practitioners.map((id) => ({
         value: id,
         label: this.practitionerGenderLabel(id),
@@ -1200,22 +1191,13 @@
       });
 
       const existingBox = q("#kb-existing-box");
-      if (existingBox) {
-        existingBox.style.display = "none";
-        existingBox.classList.remove("kb-reveal-open");
-      }
+      if (existingBox) existingBox.hidden = true;
 
       const newBox = q("#kb-new-box");
-      if (newBox) {
-        newBox.style.display = "none";
-        newBox.classList.remove("kb-reveal-open");
-      }
+      if (newBox) newBox.hidden = true;
 
       const practitionerBox = q("#kb-practitioner-box");
-      if (practitionerBox) {
-        practitionerBox.style.display = "none";
-        practitionerBox.classList.remove("kb-reveal-open");
-      }
+      if (practitionerBox) practitionerBox.hidden = true;
 
       const carousel = q("#kb-date-carousel");
       if (carousel) carousel.innerHTML = "";
