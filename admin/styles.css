@@ -261,14 +261,14 @@
   color: #1f6481;
   white-space: nowrap;
   cursor: pointer;
-  background: #eef6f9;
+  background: #fff;
   border: 1.5px solid #cfe3ec;
   border-radius: 10px;
 }
 
 .admin-patient-new:hover,
 .admin-patient-change:hover {
-  background: #e0eff5;
+  background: #f8fbfd;
 }
 
 .admin-patient-picker-hint {
