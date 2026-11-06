@@ -1,6 +1,12 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Tests SQLite — enrich lecturas con REL_READ_IDS + fallback legacy.
+ * Docs: docs/codigo-datos-relacionales.md
+ * Run: php scripts/verify-relational-read.php
+ */
+
 $root = dirname(__DIR__);
 
 if (!function_exists('sanitize_patient_name')) {

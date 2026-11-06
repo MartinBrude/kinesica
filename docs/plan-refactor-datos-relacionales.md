@@ -3,7 +3,9 @@
 **Status:** Draft — implementación en `feature/datos-relacionales`  
 **Última revisión:** 2026-11-06  
 **Ámbito:** plataforma admin/API operativa (no el sitio estático SEO)  
-**Línea base:** [baseline-datos-relacionales.md](baseline-datos-relacionales.md)
+**Línea base:** [baseline-datos-relacionales.md](baseline-datos-relacionales.md)  
+**Mapa de código:** [codigo-datos-relacionales.md](codigo-datos-relacionales.md)  
+**Runbook staging:** [runbook-datos-relacionales-antigravity.md](runbook-datos-relacionales-antigravity.md)
 
 ## Propósito
 

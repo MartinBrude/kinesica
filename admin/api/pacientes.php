@@ -109,6 +109,7 @@ try {
             $stmt = $pdo->query('SELECT * FROM lista_espera WHERE estado = "activa" ORDER BY created_at DESC');
             $items = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
             try {
+                // REL: enrich waitlist si REL_READ_IDS (lib_relational_read.php).
                 require_once __DIR__ . '/lib_relational_read.php';
                 $items = kinesica_rel_map_lista_rows($pdo, $items);
             } catch (Throwable) {

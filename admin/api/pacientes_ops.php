@@ -161,6 +161,7 @@ function kinesica_pacientes_upsert(PDO $pdo, array $data): void
         }
 
         error_log('kinesica pacientes upsert merged id=' . $existingId . ' phone=' . $targetPhone);
+        // REL: espejo legacy → paciente_contactos (lib_relational_contactos.php).
         require_once __DIR__ . '/lib_relational_contactos.php';
         kinesica_rel_sync_paciente_contactos_safe($pdo, $existingId, [
             'telefono' => $targetPhone,
@@ -232,6 +233,7 @@ function kinesica_pacientes_upsert(PDO $pdo, array $data): void
     }
     error_log('kinesica pacientes upsert inserted/updated id=' . $newId . ' phone=' . $phone);
     if ($newId > 0) {
+        // REL: sync contactos tras alta/upsert (lib_relational_contactos.php).
         require_once __DIR__ . '/lib_relational_contactos.php';
         kinesica_rel_sync_paciente_contactos_safe($pdo, $newId, [
             'telefono' => $phone,
@@ -327,6 +329,7 @@ function kinesica_pacientes_update(PDO $pdo, array $data): void
     }
     $stmt->execute($params);
 
+    // REL: sync contactos tras edición (lib_relational_contactos.php).
     require_once __DIR__ . '/lib_relational_contactos.php';
     kinesica_rel_sync_paciente_contactos_safe($pdo, $id, [
         'telefono' => $phone,
@@ -352,6 +355,7 @@ function kinesica_pacientes_waitlist_ops(PDO $pdo, string $action, array $data):
         }
 
         require_once __DIR__ . '/lib_migrations.php';
+        // REL: IDs en lista_espera — paciente_id con WRITE_IDS; profesional_id post-005.
         require_once __DIR__ . '/lib_relational_resolve.php';
         $pacienteId = null;
         $profesionalId = null;

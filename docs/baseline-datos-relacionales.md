@@ -3,7 +3,9 @@
 **Status:** Draft  
 **Branch:** `feature/datos-relacionales`  
 **Fecha:** 2026-11-06  
-**Plan:** [plan-refactor-datos-relacionales.md](plan-refactor-datos-relacionales.md)
+**Plan:** [plan-refactor-datos-relacionales.md](plan-refactor-datos-relacionales.md)  
+**Mapa de código:** [codigo-datos-relacionales.md](codigo-datos-relacionales.md)  
+**Runbook staging:** [runbook-datos-relacionales-antigravity.md](runbook-datos-relacionales-antigravity.md)
 
 ## Objetivo de esta línea base
 

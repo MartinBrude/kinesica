@@ -1,6 +1,12 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Tests SQLite — tabla profesionales, seed, backfill profesional_id, ficha version/409.
+ * Docs: docs/codigo-datos-relacionales.md
+ * Run: php scripts/verify-relational-profesionales.php
+ */
+
 $root = dirname(__DIR__);
 
 if (!function_exists('sanitize_patient_name')) {

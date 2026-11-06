@@ -2,7 +2,9 @@
 declare(strict_types=1);
 
 /**
- * Prueba el runner de migraciones contra SQLite en memoria (idempotencia + columnas).
+ * Tests SQLite — runner de migraciones (idempotencia, columnas, flags default).
+ * Docs: docs/codigo-datos-relacionales.md
+ * Run: php scripts/verify-relational-migrations.php  (también npm run admin:test)
  */
 
 $root = dirname(__DIR__);

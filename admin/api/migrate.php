@@ -2,14 +2,17 @@
 declare(strict_types=1);
 
 /**
- * Aplica migraciones versionadas. Solo CLI.
+ * CLI — aplica migraciones versionadas (lib_migrations.php).
  *
- *   php admin/api/migrate.php
- *   php admin/api/migrate.php --status
- *   php admin/api/migrate.php --dry-run
+ * Uso:
+ *   php admin/api/migrate.php --token=TOKEN
+ *   php admin/api/migrate.php --status --token=TOKEN
+ *   php admin/api/migrate.php --dry-run --token=TOKEN
  *
- * Auth: install_token vía argv --token=... o env KINESICA_MIGRATE_TOKEN
- * (debe coincidir con cfg install_token, salvo en SQLite de pruebas).
+ * Auth: --token / KINESICA_MIGRATE_TOKEN = cfg install_token.
+ * Tests: KINESICA_MIGRATE_ALLOW_TEST=1
+ *
+ * No exponer por HTTP. Docs: docs/codigo-datos-relacionales.md
  */
 
 if (PHP_SAPI !== 'cli') {

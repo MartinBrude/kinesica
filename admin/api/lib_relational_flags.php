@@ -3,12 +3,18 @@ declare(strict_types=1);
 
 /**
  * Feature flags del refactor relacional (etapa 2+).
- * Defaults productivos: todo false. Overrides: settings.relational_flags o env KINESICA_REL_*.
  *
- * Plan: docs/plan-refactor-datos-relacionales.md
- *   REL_WRITE_IDS  → write_ids
- *   REL_READ_IDS   → read_ids
- *   REL_ENFORCE_FK → enforce_fk
+ * Defaults productivos: todo false (comportamiento legacy intacto).
+ * Fuentes (env gana sobre settings):
+ *   settings.json → relational_flags.{write_ids,read_ids,enforce_fk}
+ *   env           → KINESICA_REL_WRITE_IDS / READ_IDS / ENFORCE_FK
+ *
+ * Mapeo plan → clave:
+ *   REL_WRITE_IDS  → write_ids   (persistir paciente_id en writes)
+ *   REL_READ_IDS   → read_ids    (enriquecer lecturas desde pacientes)
+ *   REL_ENFORCE_FK → enforce_fk  (reservado; aún no activa FKs SQL)
+ *
+ * Docs: docs/codigo-datos-relacionales.md · docs/plan-refactor-datos-relacionales.md
  */
 
 require_once __DIR__ . '/kinesica_settings_storage.php';

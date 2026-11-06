@@ -2,7 +2,15 @@
 declare(strict_types=1);
 
 /**
- * Profesionales canónicos + backfill de profesional_id.
+ * Profesionales canónicos (slug norberto/maria → id interno).
+ *
+ * Tabla creada por migrations/005_profesionales.php (seed mínimo).
+ * Backfill de fichas.profesional_id / lista_espera.profesional_id
+ * vía kinesica_rel_backfill_*_profesional_id (también en backfill CLI).
+ *
+ * El texto legacy `profesional` / `profesional_habitual` se mantiene
+ * hasta etapa 10; profesional_id es paralelo y nullable.
+ * Docs: docs/codigo-datos-relacionales.md
  */
 
 require_once __DIR__ . '/lib_migrations.php';

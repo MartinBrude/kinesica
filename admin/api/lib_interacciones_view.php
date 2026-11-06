@@ -481,6 +481,7 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
     $eventsCapped = count($rows) >= INTERACCIONES_MAX_EVENTS;
     $rows = array_reverse($rows);
 
+    // REL: nombres canónicos por paciente_id si REL_READ_IDS (lib_relational_read.php).
     $pacienteIdsForRead = [];
     $pacientesById = [];
     try {

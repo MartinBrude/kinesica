@@ -81,7 +81,7 @@ function recordatorios_ensure_schema(?PDO $pdo = null): void
             KEY idx_appt_date (appointment_date)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
     );
-    // Puente relacional (migración 002). Retirar tras etapa 10.
+    // REL: puente paciente_id/turno_id (mig 002). Retirar tras etapa 10.
     try {
         require_once __DIR__ . '/lib_migrations.php';
         kinesica_migrations_add_column_if_missing(
@@ -223,6 +223,7 @@ function recordatorios_is_duplicate_error(PDOException $e): bool
 /** @return string 'stored'|'duplicate' */
 function recordatorios_insert_item(PDO $pdo, array $ev): string
 {
+    // REL: paciente_id en insert recordatorios solo con REL_WRITE_IDS.
     $pacienteId = null;
     $hasPacienteCol = false;
     try {

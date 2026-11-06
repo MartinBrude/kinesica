@@ -2,7 +2,8 @@
 
 **Branch:** `feature/datos-relacionales`  
 **Plan:** [plan-refactor-datos-relacionales.md](plan-refactor-datos-relacionales.md)  
-**Baseline:** [baseline-datos-relacionales.md](baseline-datos-relacionales.md)
+**Baseline:** [baseline-datos-relacionales.md](baseline-datos-relacionales.md)  
+**Mapa de código:** [codigo-datos-relacionales.md](codigo-datos-relacionales.md)
 
 Flags productivos siguen en **false** hasta activarlos en staging. No hace falta prod live: copia restaurada alcanza.
 

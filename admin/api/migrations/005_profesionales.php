@@ -2,8 +2,8 @@
 declare(strict_types=1);
 
 /**
- * Tabla canónica de profesionales (slug norberto/maria → id interno).
- * Seed mínimo; sync adicional desde users en lib_relational_profesionales.
+ * Migración 005 — profesionales + seed norberto/maria.
+ * Alinea display_name desde users si existe. Ver lib_relational_profesionales.php
  */
 
 return [

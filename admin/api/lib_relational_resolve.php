@@ -2,8 +2,15 @@
 declare(strict_types=1);
 
 /**
- * Resolución de paciente_id / profesional_id para escrituras con REL_WRITE_IDS.
- * No fusiona. Ante ambigüedad devuelve null y deja traza en métricas.
+ * Resolución de paciente_id / profesional_id para escrituras.
+ *
+ * Reglas (plan etapa 3–4):
+ * - Orden: teléfono (pacientes + contactos) → DNI único → nombre+DNI sin tel.
+ * - Teléfono compartido con nombres distintos → ambiguous (no fusionar).
+ * - Con write_ids off → status disabled (salvo opts.ignore_flag en backfill).
+ * - Fallos de match → rel_unlinked.jsonl (sin PII completa).
+ *
+ * Docs: docs/codigo-datos-relacionales.md
  */
 
 require_once __DIR__ . '/pacientes_helpers.php';

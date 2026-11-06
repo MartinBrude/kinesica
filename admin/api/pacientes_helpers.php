@@ -1045,8 +1045,8 @@ function ensure_pacientes_tables(PDO $pdo, bool $force = false): void
         $pdo->exec('ALTER TABLE pacientes ADD COLUMN viene_de_campana TINYINT(1) NOT NULL DEFAULT 1');
     } catch (Throwable) {}
 
-    // Puente etapa 2–3: columnas relacionales si el runner de migraciones aún no corrió.
-    // Fuente de verdad: admin/api/migrations/. Retirar tras etapa 10.
+    // REL: puente DDL columnas (deleted_at/version/paciente_id/profesional_id)
+    // si migrate.php aún no corrió. Fuente: admin/api/migrations/. Retirar tras etapa 10.
     require_once __DIR__ . '/lib_migrations.php';
     try {
         kinesica_migrations_add_column_if_missing(

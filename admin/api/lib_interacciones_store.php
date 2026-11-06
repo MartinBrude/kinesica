@@ -110,7 +110,7 @@ function interacciones_ensure_schema(?PDO $pdo = null): void
         }
     } catch (Throwable $e) {
     }
-    // Puente relacional (migración 002). Retirar tras etapa 10.
+    // REL: puente columna paciente_id (mig 002). Retirar tras etapa 10.
     try {
         require_once __DIR__ . '/lib_migrations.php';
         kinesica_migrations_add_column_if_missing(
@@ -260,6 +260,7 @@ function interacciones_normalize_event(array $in, string $defaultSource = 'push'
  */
 function interacciones_insert_event(PDO $pdo, array $ev): string
 {
+    // REL: paciente_id en insert WA solo con REL_WRITE_IDS (lib_relational_resolve.php).
     $pacienteId = null;
     try {
         require_once __DIR__ . '/lib_relational_resolve.php';

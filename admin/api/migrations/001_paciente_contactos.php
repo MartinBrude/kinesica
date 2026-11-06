@@ -2,8 +2,9 @@
 declare(strict_types=1);
 
 /**
- * Tabla de contactos multi-valor por paciente (teléfonos/emails).
- * Sin UNIQUE global de valor: teléfonos compartidos permitidos tras revisión.
+ * Migración 001 — paciente_contactos.
+ * Multi tel/email por paciente; principal por tipo en aplicación.
+ * Sin UNIQUE global (familia). Sync: lib_relational_contactos.php
  */
 
 return [

@@ -2,7 +2,9 @@
 declare(strict_types=1);
 
 /**
- * Fixtures SQLite para lib_relational_audit (sin DB de producción).
+ * Tests SQLite — lib_relational_audit (clasificaciones, máscaras PII; sin DB prod).
+ * Docs: docs/codigo-datos-relacionales.md
+ * Run: php scripts/verify-relational-audit.php
  */
 
 $root = dirname(__DIR__);

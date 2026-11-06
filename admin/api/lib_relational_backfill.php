@@ -2,8 +2,16 @@
 declare(strict_types=1);
 
 /**
- * Backfill read/write de paciente_id en tablas existentes (etapa 3–4).
- * No fusiona ambiguos. Idempotente: solo toca filas con paciente_id NULL.
+ * Backfill de IDs en filas históricas (etapa 3–4).
+ *
+ * - Dry-run (apply=false): solo cuenta matched/ambiguous/unmatched.
+ * - Apply: UPDATE solo donde paciente_id / profesional_id IS NULL.
+ * - Ambiguos no se tocan (revisión manual).
+ * - No requiere REL_WRITE_IDS (resolve con ignore_flag).
+ * - Orquesta también paciente_contactos y profesional_id.
+ *
+ * CLI: php admin/api/backfill_relational.php --dry-run|--apply [--only=...]
+ * Docs: docs/codigo-datos-relacionales.md · docs/runbook-datos-relacionales-antigravity.md
  */
 
 require_once __DIR__ . '/lib_relational_resolve.php';

@@ -50,6 +50,7 @@ function kinesica_fichas_get_all(PDO $pdo): void
 {
     kinesica_fichas_ensure_rel_columns($pdo);
     require_once __DIR__ . '/lib_migrations.php';
+    // REL: enriquecer filas con datos canónicos si REL_READ_IDS (lib_relational_read.php).
     require_once __DIR__ . '/lib_relational_read.php';
     $hasPid = kinesica_migrations_column_exists($pdo, 'fichas', 'paciente_id');
     $hasVersion = kinesica_migrations_column_exists($pdo, 'fichas', 'version');
@@ -144,6 +145,8 @@ function kinesica_fichas_save_record(PDO $pdo, array $auth, string $id, array $d
         json_out(422, ['error' => 'La ficha contiene datos no válidos']);
     }
 
+    // REL: resolver paciente_id / profesional_id (lib_relational_resolve.php).
+    // paciente_id solo con REL_WRITE_IDS; profesional_id también con ignore_flag post-005.
     $pacienteId = null;
     $profesionalId = null;
     $didSync = false;
@@ -161,7 +164,7 @@ function kinesica_fichas_save_record(PDO $pdo, array $auth, string $id, array $d
             ]);
             $profesionalId = kinesica_rel_resolve_profesional_id($pdo, $profesional);
         } elseif (kinesica_migrations_table_exists($pdo, 'profesionales')) {
-            // Resolver profesional_id también sin WRITE_IDS si la tabla ya existe (migración 005).
+            // REL: profesional_id sin WRITE_IDS si ya existe tabla profesionales (mig 005).
             $profesionalId = kinesica_rel_resolve_profesional_id($pdo, $profesional, ['ignore_flag' => true]);
         }
     } catch (Throwable) {

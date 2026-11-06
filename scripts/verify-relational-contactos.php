@@ -1,6 +1,12 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Tests SQLite — sync paciente_contactos + resolve vía contactos compartidos.
+ * Docs: docs/codigo-datos-relacionales.md
+ * Run: php scripts/verify-relational-contactos.php
+ */
+
 $root = dirname(__DIR__);
 
 if (!function_exists('sanitize_patient_name')) {

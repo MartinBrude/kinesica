@@ -2,7 +2,8 @@
 declare(strict_types=1);
 
 /**
- * Optimistic locking en fichas clínicas (etapa 5).
+ * Migración 004 — fichas.version
+ * Optimistic locking: POST con version obsoleta → 409 (fichas_ops).
  */
 
 return [

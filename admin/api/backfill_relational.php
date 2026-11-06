@@ -2,15 +2,14 @@
 declare(strict_types=1);
 
 /**
- * Backfill de paciente_id en filas existentes. Solo CLI.
+ * CLI — backfill de IDs / contactos / profesional_id (lib_relational_backfill.php).
  *
- *   php admin/api/backfill_relational.php --dry-run --token=...
- *   php admin/api/backfill_relational.php --apply --token=...
- *   php admin/api/backfill_relational.php --apply --only=fichas,lista_espera,paciente_contactos --token=...
- *   php admin/api/backfill_relational.php --dry-run --out=docs/backfill-report.json --token=...
+ *   php admin/api/backfill_relational.php --dry-run --token=TOKEN
+ *   php admin/api/backfill_relational.php --apply --token=TOKEN
+ *   php admin/api/backfill_relational.php --only=fichas,paciente_contactos --apply --token=TOKEN
  *
- * Por defecto es dry-run. --apply escribe solo donde paciente_id IS NULL.
- * No requiere REL_WRITE_IDS (usa ignore_flag en el resolver).
+ * Default: dry-run. --apply solo rellena columnas NULL con match inequívoco.
+ * No requiere REL_WRITE_IDS. Docs: docs/runbook-datos-relacionales-antigravity.md
  */
 
 if (PHP_SAPI !== 'cli') {

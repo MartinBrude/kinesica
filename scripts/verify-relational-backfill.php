@@ -1,6 +1,12 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Tests SQLite — backfill dry-run/apply; ambiguos no se tocan; ignore_flag.
+ * Docs: docs/codigo-datos-relacionales.md · docs/runbook-datos-relacionales-antigravity.md
+ * Run: php scripts/verify-relational-backfill.php
+ */
+
 $root = dirname(__DIR__);
 
 if (!function_exists('sanitize_patient_name')) {

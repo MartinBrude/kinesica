@@ -1,6 +1,12 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Tests SQLite — resolve paciente_id (tel/DNI/nombre, ambiguos, unlinked metric).
+ * Docs: docs/codigo-datos-relacionales.md
+ * Run: php scripts/verify-relational-resolve.php
+ */
+
 $root = dirname(__DIR__);
 
 if (!function_exists('sanitize_patient_name')) {

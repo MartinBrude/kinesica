@@ -2,15 +2,15 @@
 declare(strict_types=1);
 
 /**
- * Auditoría read-only de datos relacionales (etapa 1).
+ * CLI — auditoría read-only (lib_relational_audit.php).
  *
- *   php admin/api/audit_relational.php
- *   php admin/api/audit_relational.php --full-pii
- *   php admin/api/audit_relational.php --out=docs/audit-report.json
- *   php admin/api/audit_relational.php --md=docs/audit-report.md
+ *   php admin/api/audit_relational.php --token=TOKEN
+ *   php admin/api/audit_relational.php --token=TOKEN --out=a.json --md=a.md
+ *   php admin/api/audit_relational.php --token=TOKEN --full-pii   # solo copia local
  *
- * Auth CLI: --token= install_token o KINESICA_AUDIT_TOKEN / KINESICA_MIGRATE_ALLOW_TEST=1 en tests.
- * No modifica la base.
+ * Auth: --token / KINESICA_AUDIT_TOKEN = install_token.
+ * Tests: KINESICA_AUDIT_ALLOW_TEST=1
+ * No modifica la base. Docs: docs/codigo-datos-relacionales.md
  */
 
 if (PHP_SAPI !== 'cli') {

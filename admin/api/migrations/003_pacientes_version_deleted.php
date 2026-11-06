@@ -2,7 +2,8 @@
 declare(strict_types=1);
 
 /**
- * Soft-delete y optimistic locking en pacientes (preparación etapas 4–5 / 9).
+ * Migración 003 — pacientes.deleted_at + pacientes.version
+ * Soft-delete y locking (uso pleno en etapas posteriores).
  */
 
 return [

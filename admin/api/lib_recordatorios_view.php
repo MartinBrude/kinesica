@@ -377,6 +377,7 @@ function recordatorios_load_view(?PDO $pdo = null, int $days = RECORDATORIOS_DEF
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
     $directory = recordatorios_lookup_directory_contacts($pdo, $rows);
 
+    // REL: enrich display name por paciente_id si REL_READ_IDS (lib_relational_read.php).
     $pacientesById = [];
     try {
         require_once __DIR__ . '/lib_relational_read.php';

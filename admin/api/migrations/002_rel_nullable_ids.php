@@ -2,8 +2,9 @@
 declare(strict_types=1);
 
 /**
- * Relaciones opcionales (etapa 3): columnas nullable paciente_id / profesional_id.
- * Sin FOREIGN KEY obligatorias todavía (REL_ENFORCE_FK).
+ * Migración 002 — columnas de relación nullable (etapa 3).
+ * paciente_id / profesional_id / turno_id + índices.
+ * Sin FK obligatorias (REL_ENFORCE_FK / etapa 9).
  */
 
 return [

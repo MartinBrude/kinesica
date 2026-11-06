@@ -3,10 +3,21 @@ declare(strict_types=1);
 
 /**
  * Runner de migraciones versionadas (MariaDB/MySQL + SQLite de pruebas).
- * CLI: php admin/api/migrate.php
- * No debe invocarse desde endpoints normales del admin.
+ *
+ * Responsabilidad
+ * - Descubrir `migrations/NNN_nombre.php` (orden lexicográfico).
+ * - Ejecutar `up(PDO)` una sola vez; registrar id + checksum en `schema_migrations`.
+ * - Helpers seguros de existencia de tabla/columna/índice (MariaDB y SQLite).
+ *
+ * Límites
+ * - Solo CLI vía `migrate.php` (o tests). No invocar desde requests HTTP del admin.
+ * - MySQL hace commit implícito en DDL: las migraciones no van en transacción ahí.
+ * - No editar migraciones ya aplicadas en producción (checksum distinto → error).
+ *
+ * Docs: docs/codigo-datos-relacionales.md · docs/plan-refactor-datos-relacionales.md
  */
 
+/** Directorio absoluto de archivos de migración. */
 function kinesica_migrations_dir(): string
 {
     return __DIR__ . '/migrations';
@@ -34,6 +45,7 @@ function kinesica_migrations_table_exists(PDO $pdo, string $table): bool
     return (bool) $stmt->fetchColumn();
 }
 
+/** Evita interpolar identificadores arbitrarios en DDL. */
 function kinesica_migrations_assert_ident(string $name): string
 {
     if (!preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $name)) {
@@ -69,8 +81,11 @@ function kinesica_migrations_column_exists(PDO $pdo, string $table, string $colu
 }
 
 /**
- * Añade columna si falta. $definitionMySql p.ej. "INT NULL" / "INT NULL AFTER payload".
- * En SQLite se ignora la cláusula AFTER y se usa $definitionSqlite si se pasa.
+ * Añade columna si falta. Idempotente.
+ *
+ * @param string $definitionMySql  p.ej. "INT UNSIGNED NULL AFTER id"
+ * @param string|null $definitionSqlite  si null, se quita la cláusula AFTER
+ * @return bool true si se ejecutó ALTER
  */
 function kinesica_migrations_add_column_if_missing(
     PDO $pdo,
@@ -95,6 +110,7 @@ function kinesica_migrations_add_column_if_missing(
     return true;
 }
 
+/** Crea índice si no existe (nombre e identificadores validados parcialmente). */
 function kinesica_migrations_ensure_index(PDO $pdo, string $table, string $indexName, string $columnsSql): void
 {
     if (!kinesica_migrations_table_exists($pdo, $table)) {
@@ -120,6 +136,7 @@ function kinesica_migrations_ensure_index(PDO $pdo, string $table, string $index
     );
 }
 
+/** Tabla de control del runner. */
 function kinesica_migrations_ensure_control_table(PDO $pdo): void
 {
     if (kinesica_migrations_is_sqlite($pdo)) {
@@ -196,6 +213,8 @@ function kinesica_migrations_applied_map(PDO $pdo): array
 }
 
 /**
+ * Aplica migraciones pendientes.
+ *
  * @return array{applied:list<string>,skipped:list<string>,pending:list<string>}
  */
 function kinesica_migrations_run(PDO $pdo, bool $dryRun = false): array
@@ -251,8 +270,6 @@ function kinesica_migrations_run(PDO $pdo, bool $dryRun = false): array
 }
 
 /**
- * Estado legible para CLI / tests.
- *
  * @return array{applied:list<string>,pending:list<string>}
  */
 function kinesica_migrations_status(PDO $pdo): array
