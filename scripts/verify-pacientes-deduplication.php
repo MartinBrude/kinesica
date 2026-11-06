@@ -303,4 +303,40 @@ if (!preg_match('/[áéíóúÁÉÍÓÚñÑ]/u', (string) $maria['nombre_complet
     exit(1);
 }
 
+// 9. Homónimos con WhatsApp reales distintos NO se unen solo por nombre
+$pdo->exec("DELETE FROM pacientes WHERE id IN (401, 402)");
+$pdo->exec("INSERT INTO pacientes (id, telefono, nombre, apellido, nombre_completo, nombre_pila, profesional_habitual, dejo_review)
+VALUES (401, '5491111111111', 'Juan', 'Perez', 'Juan Perez', 'Juan', 'indistinto', 0)");
+$pdo->exec("INSERT INTO pacientes (id, telefono, nombre, apellido, nombre_completo, nombre_pila, profesional_habitual, dejo_review)
+VALUES (402, '5491122222222', 'Juan', 'Perez', 'Juan Perez', 'Juan', 'maria', 1)");
+
+$mergedHom = deduplicate_pacientes_table($pdo);
+$juanCount = (int) $pdo->query("SELECT COUNT(*) FROM pacientes WHERE id IN (401, 402)")->fetchColumn();
+if ($juanCount !== 2) {
+    echo "ERROR: Homónimos con teléfonos distintos debían quedar 2 filas, hay $juanCount (merged=$mergedHom)\n";
+    exit(1);
+}
+
+// 10. Placeholder + mismo nombre + mismo DNI sí se une; flag campaña se OR-mergea
+$pdo->exec("DELETE FROM pacientes WHERE id IN (501, 502)");
+$pdo->exec("INSERT INTO pacientes (id, telefono, nombre, apellido, nombre_completo, nombre_pila, dni, profesional_habitual, dejo_review, encuesta_enviada, viene_de_campana)
+VALUES (501, 'sin-tel-f-501', 'Lucia', 'Sosa', 'Lucia Sosa', 'Lucia', '55111222', 'indistinto', 0, 1, 0)");
+$pdo->exec("INSERT INTO pacientes (id, telefono, nombre, apellido, nombre_completo, nombre_pila, dni, profesional_habitual, dejo_review, encuesta_enviada, viene_de_campana)
+VALUES (502, '5491199988877', 'Lucía', 'Sosa', 'Lucía Sosa', 'Lucía', '55111222', 'norberto', 0, 0, 1)");
+
+$mergedLucia = deduplicate_pacientes_table($pdo);
+if ($mergedLucia < 1) {
+    echo "ERROR: Lucía Sosa (mismo DNI) debía unificarse\n";
+    exit(1);
+}
+$lucia = $pdo->query("SELECT * FROM pacientes WHERE telefono = '5491199988877' OR id IN (501, 502)")->fetch(PDO::FETCH_ASSOC);
+if (!$lucia || (int) ($lucia['encuesta_enviada'] ?? 0) !== 1) {
+    echo "ERROR: encuesta_enviada debía OR-mergearse a 1\n";
+    exit(1);
+}
+if ((int) ($lucia['viene_de_campana'] ?? 0) !== 1) {
+    echo "ERROR: viene_de_campana debía OR-mergearse a 1\n";
+    exit(1);
+}
+
 echo "OK_PHP_TESTS\n";

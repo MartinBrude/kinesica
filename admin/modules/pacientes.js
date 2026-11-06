@@ -220,18 +220,29 @@ export function deduplicatePatientsInMemory(items = []) {
       else byDni.set(dni, idx);
     }
 
-    const full = (p.nombre_completo || "").trim() || `${p.nombre || ""} ${p.apellido || ""}`.trim();
-    const nameKey = canonicalPatientNameKey(full);
-    if (nameKey && nameKey.includes(" ")) {
-      if (byName.has(nameKey)) union(idx, byName.get(nameKey));
-      else byName.set(nameKey, idx);
-    }
-
     const rawPhone = String(p.telefono || "").trim();
     const cleanPhone = rawPhone.replace(/\D/g, "");
     if (cleanPhone && !isPlaceholderPhone(rawPhone)) {
       if (byPhone.has(cleanPhone)) union(idx, byPhone.get(cleanPhone));
       else byPhone.set(cleanPhone, idx);
+    }
+
+    const full = (p.nombre_completo || "").trim() || `${p.nombre || ""} ${p.apellido || ""}`.trim();
+    const nameKey = canonicalPatientNameKey(full);
+    // Homónimos con WhatsApp reales distintos no se unen solo por nombre.
+    if (nameKey && nameKey.includes(" ")) {
+      if (byName.has(nameKey)) {
+        const other = items[byName.get(nameKey)];
+        const otherPhone = String(other?.telefono || "").trim();
+        const otherClean = otherPhone.replace(/\D/g, "");
+        const aReal = cleanPhone && !isPlaceholderPhone(rawPhone);
+        const bReal = otherClean && !isPlaceholderPhone(otherPhone);
+        if (!(aReal && bReal && cleanPhone !== otherClean)) {
+          union(idx, byName.get(nameKey));
+        }
+      } else {
+        byName.set(nameKey, idx);
+      }
     }
   });
 

@@ -161,6 +161,28 @@ function clean_patient_dni(?string $raw): string
     return $digits;
 }
 
+/**
+ * True si $phone es el DNI disfrazado (p.ej. 28111222 → 5491128111222 vía clean_phone_number).
+ */
+function kinesica_phone_looks_like_dni(string $phone, string $dni): bool
+{
+    $phoneDigits = preg_replace('/\D+/', '', $phone) ?? '';
+    $dniDigits = preg_replace('/\D+/', '', $dni) ?? '';
+    if ($phoneDigits === '' || $dniDigits === '' || strlen($dniDigits) < 5) {
+        return false;
+    }
+    if ($phoneDigits === $dniDigits) {
+        return true;
+    }
+    // 7–8 dígitos → clean_phone_number antepone 11 y luego 549.
+    if (strlen($dniDigits) === 7 || strlen($dniDigits) === 8) {
+        if ($phoneDigits === '11' . $dniDigits || $phoneDigits === '54911' . $dniDigits) {
+            return true;
+        }
+    }
+    return false;
+}
+
 function is_placeholder_phone(string $phone): bool
 {
     $p = trim($phone);
@@ -370,6 +392,21 @@ function kinesica_resolve_merge_phone(PDO $pdo, array $existing, string $newPhon
     return $newClean;
 }
 
+/**
+ * Homónimos con WhatsApp reales distintos no se unen solo por nombre.
+ */
+function kinesica_phones_compatible_for_name_merge(string $phoneA, string $phoneB): bool
+{
+    $aClean = clean_phone_number($phoneA);
+    $bClean = clean_phone_number($phoneB);
+    $aReal = $aClean !== '' && !is_placeholder_phone($phoneA) && !is_placeholder_phone($aClean);
+    $bReal = $bClean !== '' && !is_placeholder_phone($phoneB) && !is_placeholder_phone($bClean);
+    if ($aReal && $bReal && $aClean !== $bClean) {
+        return false;
+    }
+    return true;
+}
+
 function deduplicate_pacientes_table(PDO $pdo): int
 {
     try {
@@ -406,18 +443,28 @@ function deduplicate_pacientes_table(PDO $pdo): int
                 else $byDni[$dni] = $idx;
             }
 
-            $full = trim(($r['nombre_completo'] ?? '') ?: (($r['nombre'] ?? '') . ' ' . ($r['apellido'] ?? '')));
-            $nameKey = canonical_patient_name_key($full);
-            if ($nameKey !== '' && str_contains($nameKey, ' ')) {
-                if (isset($byName[$nameKey])) $union($idx, $byName[$nameKey]);
-                else $byName[$nameKey] = $idx;
-            }
-
             $rawPhone = (string) ($r['telefono'] ?? '');
             $cleanPhone = clean_phone_number($rawPhone);
-            if ($cleanPhone !== '' && !is_placeholder_phone($cleanPhone)) {
+            if ($cleanPhone !== '' && !is_placeholder_phone($cleanPhone) && !is_placeholder_phone($rawPhone)) {
                 if (isset($byPhone[$cleanPhone])) $union($idx, $byPhone[$cleanPhone]);
                 else $byPhone[$cleanPhone] = $idx;
+            }
+
+            $full = trim(($r['nombre_completo'] ?? '') ?: (($r['nombre'] ?? '') . ' ' . ($r['apellido'] ?? '')));
+            $nameKey = canonical_patient_name_key($full);
+            // Nombre solo une si no hay dos WhatsApp reales distintos (homónimos).
+            if ($nameKey !== '' && str_contains($nameKey, ' ')) {
+                if (isset($byName[$nameKey])) {
+                    $otherIdx = $byName[$nameKey];
+                    if (kinesica_phones_compatible_for_name_merge(
+                        (string) ($rows[$otherIdx]['telefono'] ?? ''),
+                        $rawPhone
+                    )) {
+                        $union($idx, $otherIdx);
+                    }
+                } else {
+                    $byName[$nameKey] = $idx;
+                }
             }
         }
 
@@ -464,6 +511,7 @@ function deduplicate_pacientes_table(PDO $pdo): int
 
             $mergedReview = 0;
             $mergedEncuesta = 0;
+            $mergedCampana = 0;
             $mergedProf = 'indistinto';
             $mergedDni = '';
             $mergedEmail = '';
@@ -484,6 +532,9 @@ function deduplicate_pacientes_table(PDO $pdo): int
                 }
                 if (!empty($c['encuesta_enviada'])) {
                     $mergedEncuesta = 1;
+                }
+                if (!empty($c['viene_de_campana'])) {
+                    $mergedCampana = 1;
                 }
                 $mergedProf = merge_prof_values($mergedProf, (string) ($c['profesional_habitual'] ?? 'indistinto'));
 
@@ -558,51 +609,75 @@ function deduplicate_pacientes_table(PDO $pdo): int
             }
 
             if (count($deleteIds) > 0) {
-                $inClause = implode(',', array_map('intval', $deleteIds));
-                $pdo->exec("DELETE FROM pacientes WHERE id IN ($inClause)");
+                $startedTx = false;
+                try {
+                    if (!$pdo->inTransaction()) {
+                        $pdo->beginTransaction();
+                        $startedTx = true;
+                    }
+                    $inClause = implode(',', array_map('intval', $deleteIds));
+                    $pdo->exec("DELETE FROM pacientes WHERE id IN ($inClause)");
 
-                $upd = $pdo->prepare('
-                    UPDATE pacientes SET
-                        telefono = :tel,
-                        nombre = :nom,
-                        apellido = :ape,
-                        nombre_completo = :full,
-                        nombre_pila = :pila,
-                        dni = :dni,
-                        email = :email,
-                        profesional_habitual = :prof,
-                        motivo_consulta = :motivo,
-                        notas = :notas,
-                        origen = :origen,
-                        contacto_nombre = :cnom,
-                        contacto_telefono = :ctel,
-                        contacto_email = :cemail,
-                        contacto_notas = :cnot,
-                        dejo_review = :rev,
-                        encuesta_enviada = :encuesta
-                    WHERE id = :id
-                ');
-                $upd->execute([
-                    'tel' => mb_substr($mergedTel, 0, 30, 'UTF-8'),
-                    'nom' => mb_substr($mergedNombre, 0, 60, 'UTF-8'),
-                    'ape' => mb_substr($mergedApellido, 0, 60, 'UTF-8'),
-                    'full' => mb_substr($mergedFull, 0, 120, 'UTF-8'),
-                    'pila' => mb_substr($mergedPila ?: extract_first_name($mergedFull), 0, 60, 'UTF-8'),
-                    'dni' => $mergedDni !== '' ? mb_substr($mergedDni, 0, 20, 'UTF-8') : null,
-                    'email' => $mergedEmail !== '' ? mb_substr($mergedEmail, 0, 120, 'UTF-8') : null,
-                    'prof' => $mergedProf,
-                    'motivo' => $mergedMotivo !== '' ? mb_substr($mergedMotivo, 0, 255, 'UTF-8') : null,
-                    'notas' => $mergedNotas !== '' ? mb_substr($mergedNotas, 0, 2000, 'UTF-8') : null,
-                    'origen' => in_array($mergedOrigen, ['whatsapp', 'web', 'admin'], true) ? $mergedOrigen : 'whatsapp',
-                    'cnom' => $mergedContactoNom !== '' ? mb_substr($mergedContactoNom, 0, 120, 'UTF-8') : null,
-                    'ctel' => $mergedContactoTel !== '' ? mb_substr($mergedContactoTel, 0, 30, 'UTF-8') : null,
-                    'cemail' => $mergedContactoEmail !== '' ? mb_substr($mergedContactoEmail, 0, 120, 'UTF-8') : null,
-                    'cnot' => $mergedContactoNotas !== '' ? mb_substr($mergedContactoNotas, 0, 100, 'UTF-8') : null,
-                    'rev' => $mergedReview,
-                    'encuesta' => $mergedEncuesta,
-                    'id' => $survivorId,
-                ]);
-                $mergedTotal += count($deleteIds);
+                    $upd = $pdo->prepare('
+                        UPDATE pacientes SET
+                            telefono = :tel,
+                            nombre = :nom,
+                            apellido = :ape,
+                            nombre_completo = :full,
+                            nombre_pila = :pila,
+                            dni = :dni,
+                            email = :email,
+                            profesional_habitual = :prof,
+                            motivo_consulta = :motivo,
+                            notas = :notas,
+                            origen = :origen,
+                            contacto_nombre = :cnom,
+                            contacto_telefono = :ctel,
+                            contacto_email = :cemail,
+                            contacto_notas = :cnot,
+                            dejo_review = :rev,
+                            encuesta_enviada = :encuesta,
+                            viene_de_campana = :campana
+                        WHERE id = :id
+                    ');
+                    $upd->execute([
+                        'tel' => mb_substr($mergedTel, 0, 30, 'UTF-8'),
+                        'nom' => mb_substr($mergedNombre, 0, 60, 'UTF-8'),
+                        'ape' => mb_substr($mergedApellido, 0, 60, 'UTF-8'),
+                        'full' => mb_substr($mergedFull, 0, 120, 'UTF-8'),
+                        'pila' => mb_substr($mergedPila ?: extract_first_name($mergedFull), 0, 60, 'UTF-8'),
+                        'dni' => $mergedDni !== '' ? mb_substr($mergedDni, 0, 20, 'UTF-8') : null,
+                        'email' => $mergedEmail !== '' ? mb_substr($mergedEmail, 0, 120, 'UTF-8') : null,
+                        'prof' => $mergedProf,
+                        'motivo' => $mergedMotivo !== '' ? mb_substr($mergedMotivo, 0, 255, 'UTF-8') : null,
+                        'notas' => $mergedNotas !== '' ? mb_substr($mergedNotas, 0, 2000, 'UTF-8') : null,
+                        'origen' => in_array($mergedOrigen, ['whatsapp', 'web', 'admin'], true) ? $mergedOrigen : 'whatsapp',
+                        'cnom' => $mergedContactoNom !== '' ? mb_substr($mergedContactoNom, 0, 120, 'UTF-8') : null,
+                        'ctel' => $mergedContactoTel !== '' ? mb_substr($mergedContactoTel, 0, 30, 'UTF-8') : null,
+                        'cemail' => $mergedContactoEmail !== '' ? mb_substr($mergedContactoEmail, 0, 120, 'UTF-8') : null,
+                        'cnot' => $mergedContactoNotas !== '' ? mb_substr($mergedContactoNotas, 0, 100, 'UTF-8') : null,
+                        'rev' => $mergedReview,
+                        'encuesta' => $mergedEncuesta,
+                        'campana' => $mergedCampana,
+                        'id' => $survivorId,
+                    ]);
+                    // Confirmar que el survivor sigue existiendo tras el DELETE.
+                    $chk = $pdo->prepare('SELECT id FROM pacientes WHERE id = :id LIMIT 1');
+                    $chk->execute(['id' => $survivorId]);
+                    if (!$chk->fetch()) {
+                        throw new RuntimeException('Survivor desapareció tras DELETE id=' . $survivorId);
+                    }
+                    if ($startedTx) {
+                        $pdo->commit();
+                    }
+                    $mergedTotal += count($deleteIds);
+                } catch (Throwable $clusterErr) {
+                    if ($startedTx && $pdo->inTransaction()) {
+                        $pdo->rollBack();
+                    }
+                    error_log('deduplicate_pacientes_table cluster rollback: ' . $clusterErr->getMessage());
+                    // Seguir con el próximo cluster; no abortar todo el barrido.
+                }
             }
         }
         return $mergedTotal;

@@ -55,7 +55,7 @@ const ADMIN_HOURS_CACHE_KEY = "admin_practitioner_hours_v1";
 const ADMIN_HOURS_CACHE_SECONDS = 120;
 // Última copia buena de los horarios del admin (persistente): se usa si settings.php no responde.
 const ADMIN_HOURS_LAST_GOOD_PROP = "ADMIN_HOURS_LAST_GOOD";
-const GAS_CODE_VERSION = "v22-calendar-kv-parse";
+const GAS_CODE_VERSION = "v23-dni-not-phone";
 const BOOKING_IDEMPOTENCY_PREFIX = "booking_result_v1_";
 
 function isValidHoursObject(h) {
@@ -791,7 +791,7 @@ function extractDigitsDni(raw) {
  */
 function extractContactsFromAppointment(title, description) {
   const phoneKeys = ["telefono", "whatsapp", "wa", "tel", "celular", "movil", "phone"];
-  const dniKeys = ["dni", "documento", "doc", "pasaporte", "document", "passport"];
+  const dniKeys = ["dni", "documento", "doc", "pasaporte", "document", "passport", "ci", "du"];
   const descMap = parseCalendarKvMap(description);
   const titleMap = parseCalendarKvMap(title);
   let phone = "";
@@ -810,18 +810,32 @@ function extractContactsFromAppointment(title, description) {
     if (!dni && titleMap[dniKeys[j]]) dni = extractDigitsDni(titleMap[dniKeys[j]]);
   }
 
-  // Legacy descripción: "WhatsApp: …" / "DNI …"
+  // Legacy DNI primero (CI/DU/documento) para no promoverlo a WhatsApp.
+  if (!dni) {
+    const mDni = String(description || "").match(/\b(?:dni|documento|doc|pasaporte|passport|c\.?i\.?|d\.?u\.?)\b\s*[:#-]?\s*([0-9][0-9.\-\s]{4,18})/i);
+    if (mDni) dni = extractDigitsDni(mDni[1]);
+  }
+  if (!dni) {
+    const mTitleDni = String(title || "").match(/\b(?:dni|documento|doc|pasaporte|passport|c\.?i\.?|d\.?u\.?)\b\s*[:#-]?\s*([0-9][0-9.\-\s]{4,18})/i);
+    if (mTitleDni) dni = extractDigitsDni(mTitleDni[1]);
+  }
+
+  // Legacy descripción: "WhatsApp: …"
   if (!phone) {
     const m = String(description || "").match(/(?:whatsapp|wa\.me|tel|cel|telefono|tel[eé]fono|celular|movil)[:\s\/]*([+]?[-0-9\s()]{8,22})/i);
     if (m) phone = extractDigitsPhone(m[1]);
   }
-  if (!dni) {
-    const mDni = String(description || "").match(/\b(?:dni|documento|doc|pasaporte)\b\s*[:#-]?\s*([0-9][0-9.\-\s]{4,18})/i);
-    if (mDni) dni = extractDigitsDni(mDni[1]);
-  }
-  if (!dni) {
-    const mTitleDni = String(title || "").match(/\b(?:dni|documento|doc|pasaporte)\b\s*[:#-]?\s*([0-9][0-9.\-\s]{4,18})/i);
-    if (mTitleDni) dni = extractDigitsDni(mTitleDni[1]);
+
+  // Si el "teléfono" es el DNI (p.ej. 8 dígitos → 54911########), descartarlo.
+  if (phone && dni) {
+    const phoneDigits = String(phone).replace(/\D+/g, "");
+    if (
+      phoneDigits === dni ||
+      phoneDigits === "11" + dni ||
+      phoneDigits === "54911" + dni
+    ) {
+      phone = "";
+    }
   }
 
   return { phone: phone, dni: dni };

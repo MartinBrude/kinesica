@@ -69,7 +69,7 @@ function kinesica_extract_calendar_contacts(string $titleOrSummary = '', string 
     $titleMap = kinesica_parse_calendar_kv_map($titleOrSummary);
 
     $phoneKeys = ['telefono', 'whatsapp', 'wa', 'tel', 'celular', 'movil', 'phone'];
-    $dniKeys = ['dni', 'documento', 'doc', 'pasaporte', 'document', 'passport'];
+    $dniKeys = ['dni', 'documento', 'doc', 'pasaporte', 'document', 'passport', 'ci', 'du'];
 
     foreach ($phoneKeys as $k) {
         if ($phone === '' && !empty($descMap[$k])) {
@@ -94,6 +94,14 @@ function kinesica_extract_calendar_contacts(string $titleOrSummary = '', string 
         }
     }
 
+    // Legacy DNI primero: así podemos descartar un "teléfono" que sea el documento.
+    if ($dni === '') {
+        $dni = kinesica_extract_dni_loose($description);
+    }
+    if ($dni === '') {
+        $dni = kinesica_extract_dni_loose($titleOrSummary);
+    }
+
     // Legacy: "WhatsApp: …" / dígitos sueltos en descripción, luego título.
     if ($phone === '' && $description !== '' && function_exists('recordatorios_extract_phone_candidate')) {
         $phone = recordatorios_extract_phone_candidate($description);
@@ -102,15 +110,12 @@ function kinesica_extract_calendar_contacts(string $titleOrSummary = '', string 
         $phone = recordatorios_extract_phone_candidate($titleOrSummary);
     }
 
-    // Legacy DNI en descripción/título sin clave estricta: "DNI 30111222" / "Doc 30.111.222"
-    if ($dni === '') {
-        $dni = kinesica_extract_dni_loose($description);
-    }
-    if ($dni === '') {
-        $dni = kinesica_extract_dni_loose($titleOrSummary);
+    if ($phone !== '' && function_exists('is_placeholder_phone') && is_placeholder_phone($phone)) {
+        $phone = '';
     }
 
-    if ($phone !== '' && function_exists('is_placeholder_phone') && is_placeholder_phone($phone)) {
+    // No promover un DNI (ni un telefono: con el mismo número) a WhatsApp.
+    if ($phone !== '' && $dni !== '' && kinesica_phone_looks_like_dni($phone, $dni)) {
         $phone = '';
     }
 
@@ -123,7 +128,7 @@ function kinesica_extract_dni_loose(string $text): string
     if ($t === '') {
         return '';
     }
-    if (preg_match('/\b(?:dni|documento|doc|pasaporte)\b\s*[:#-]?\s*([0-9][0-9.\-\s]{4,18})/iu', $t, $m)) {
+    if (preg_match('/\b(?:dni|documento|doc|pasaporte|passport|c\.?i\.?|d\.?u\.?)\b\s*[:#-]?\s*([0-9][0-9.\-\s]{4,18})/iu', $t, $m)) {
         return clean_patient_dni($m[1]);
     }
     return '';

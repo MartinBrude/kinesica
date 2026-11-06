@@ -36,4 +36,24 @@ eq($c3['phone'], '5491155667788', 'clave:valor en título se conserva como fallb
 $c4 = kinesica_extract_calendar_contacts('Ana', '📱 WhatsApp: 11 9999-8888');
 eq($c4['phone'], '5491199998888', 'legacy emoji WhatsApp');
 
+// DNI solo no debe inventar un WhatsApp (antes: 5491128111222).
+$c5 = kinesica_extract_calendar_contacts('Paciente', 'DNI: 28111222');
+eq($c5['phone'], '', 'DNI solo no es teléfono');
+eq($c5['dni'], '28111222', 'DNI solo se parsea como dni');
+
+$c6 = kinesica_extract_calendar_contacts('Paciente', 'CI: 30111222');
+eq($c6['phone'], '', 'CI solo no es teléfono');
+eq($c6['dni'], '30111222', 'CI se parsea como dni');
+
+$c7 = kinesica_extract_calendar_contacts(
+    'Ana',
+    "documento: 30.111.222\ntelefono: 30111222"
+);
+eq($c7['dni'], '30111222', 'documento + telefono falso: dni ok');
+eq($c7['phone'], '', 'telefono igual al DNI se descarta');
+
+$c8 = kinesica_extract_calendar_contacts('Paciente', 'DU 28.111.222');
+eq($c8['phone'], '', 'DU suelto no es teléfono');
+eq($c8['dni'], '28111222', 'DU suelto es dni');
+
 echo "calendar event parse: ok ($n pruebas)\n";

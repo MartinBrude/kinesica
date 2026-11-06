@@ -83,7 +83,19 @@ function recordatorios_extract_phone_candidate(string $text): string
             if (!empty($map[$k])) {
                 $fromKv = clean_phone_number((string) $map[$k]);
                 if ($fromKv !== '' && (!function_exists('is_placeholder_phone') || !is_placeholder_phone($fromKv))) {
-                    return $fromKv;
+                    // Rechazar si el valor de telefono: es en realidad el DNI del mismo texto.
+                    $dniFromMap = '';
+                    foreach (['dni', 'documento', 'doc', 'pasaporte', 'document', 'passport', 'ci', 'du'] as $dk) {
+                        if ($dniFromMap === '' && !empty($map[$dk]) && function_exists('clean_patient_dni')) {
+                            $dniFromMap = clean_patient_dni((string) $map[$dk]);
+                        }
+                    }
+                    if ($dniFromMap !== '' && function_exists('kinesica_phone_looks_like_dni')
+                        && kinesica_phone_looks_like_dni($fromKv, $dniFromMap)) {
+                        // Seguir buscando otro candidato.
+                    } else {
+                        return $fromKv;
+                    }
                 }
             }
         }
@@ -96,18 +108,31 @@ function recordatorios_extract_phone_candidate(string $text): string
         }
     }
 
-    if (preg_match('/\+\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{3,4}[-.\s]?\d{3,4}/', $t, $m)) {
+    // Descartar menciones de documento para que sus dígitos no se confundan con un teléfono
+    // (alineado con extractPhoneCandidate en phone-format.js).
+    $withoutDni = preg_replace(
+        '/(?:dni|doc(?:umento)?|c\.?i\.?|d\.?u\.?|pasaporte|passport)[:\s.#]*[\d.\-]+/iu',
+        ' ',
+        $t
+    ) ?? $t;
+
+    if (preg_match('/\+\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{3,4}[-.\s]?\d{3,4}/', $withoutDni, $m)) {
         return clean_phone_number($m[0]);
     }
 
-    if (preg_match('/(?:\+?54\s*9?\s*)?(?:\b0?11\b|\b15\b)?[-.\s]?\d{4}[-.\s]?\d{4}\b/', $t, $m)) {
+    if (preg_match('/(?:\+?54\s*9?\s*)?(?:\b0?11\b|\b15\b)?[-.\s]?\d{4}[-.\s]?\d{4}\b/', $withoutDni, $m)) {
         $cleaned = clean_phone_number($m[0]);
         if (strlen($cleaned) >= 8) {
             return $cleaned;
         }
     }
 
-    if (preg_match('/\b\d{8,13}\b/', $t, $m)) {
+    // Bloque continuo con prefijo móvil verosímil (no 7–8 dígitos sueltos típicos de DNI).
+    if (preg_match('/\b(?:11|15|549)\d{8,10}\b/', $withoutDni, $m)) {
+        return clean_phone_number($m[0]);
+    }
+
+    if (preg_match('/\b\d{10,13}\b/', $withoutDni, $m)) {
         return clean_phone_number($m[0]);
     }
 

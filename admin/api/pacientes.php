@@ -255,6 +255,13 @@ try {
                 json_out(422, ['status' => 'error', 'message' => 'El paciente no tiene un teléfono de WhatsApp válido']);
             }
 
+            // Claim atómico antes del WhatsApp: evita doble envío por doble clic / tabs.
+            $claim = $pdo->prepare('UPDATE pacientes SET encuesta_enviada = 1 WHERE id = :id AND encuesta_enviada = 0');
+            $claim->execute(['id' => $id]);
+            if ($claim->rowCount() < 1) {
+                json_out(409, ['status' => 'error', 'message' => 'La encuesta ya fue enviada a este paciente', 'encuesta_enviada' => 1]);
+            }
+
             $firstName = trim((string) ($paciente['nombre_pila'] ?? ''));
             if ($firstName === '') {
                 $firstName = trim((string) ($paciente['nombre'] ?? ''));
@@ -275,6 +282,13 @@ try {
                 'preview_url' => true,
             ]);
             if (empty($waResult['ok'])) {
+                // Liberar el claim para poder reintentar.
+                try {
+                    $release = $pdo->prepare('UPDATE pacientes SET encuesta_enviada = 0 WHERE id = :id AND encuesta_enviada = 1');
+                    $release->execute(['id' => $id]);
+                } catch (Throwable $e) {
+                    error_log('send_encuesta_invite release flag failed: ' . $e->getMessage());
+                }
                 $err = (string) ($waResult['error'] ?? 'No se pudo enviar el WhatsApp');
                 json_out(502, [
                     'status' => 'error',
@@ -283,8 +297,6 @@ try {
                 ]);
             }
 
-            $upd = $pdo->prepare('UPDATE pacientes SET encuesta_enviada = 1 WHERE id = :id');
-            $upd->execute(['id' => $id]);
             json_out(200, [
                 'status' => 'success',
                 'id' => $id,

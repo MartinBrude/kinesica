@@ -6,7 +6,7 @@
 import { api } from "./api.js?v=78";
 import { getSessionUser } from "./auth.js?v=83";
 import { showLibrary } from "./library.js?v=93";
-import { showPacientesView, hidePacientesView } from "./pacientes.js?v=10";
+import { showPacientesView, hidePacientesView } from "./pacientes.js?v=11";
 import { showDashboardView, hideDashboardView, updateDashboardClara, updateDashboardBooking } from "./dashboard.js?v=12";
 import { showConsultorioView, hideConsultorioView, showClaraView, hideClaraView } from "./configuracion.js?v=29";
 import { showAdminView, hideAdminView } from "./admin-panel.js?v=17";

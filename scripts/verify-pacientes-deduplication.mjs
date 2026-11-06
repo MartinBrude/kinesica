@@ -113,6 +113,14 @@ const testDistinct = [
 const resDistinct = deduplicatePatientsInMemory(testDistinct);
 assert.equal(resDistinct.length, 2, "Pacientes distintos no se deben mezclar");
 
+// Homónimos con WhatsApp reales distintos no se unen solo por nombre
+const testHomonyms = [
+  { id: 1, nombre_completo: "Juan Perez", telefono: "5491111111111", profesional_habitual: "indistinto", dejo_review: 0 },
+  { id: 2, nombre_completo: "Juan Perez", telefono: "5491122222222", profesional_habitual: "maria", dejo_review: 1 },
+];
+const resHomonyms = deduplicatePatientsInMemory(testHomonyms);
+assert.equal(resHomonyms.length, 2, "Homónimos con teléfonos distintos no se deben mezclar");
+
 // 5. Inferencia de profesional por horario (JS)
 assert.equal(inferPractitionerFromSlot("2026-11-11", "14:00"), "norberto", "Miércoles 14:00 -> Norberto");
 assert.equal(inferPractitionerFromSlot("2026-11-04", "11:15"), "norberto", "Miércoles 11:15 -> Norberto");
