@@ -72,7 +72,13 @@ function buildPicker() {
   const el = document.createElement("div");
   el.className = "admin-patient-picker";
   el.innerHTML = `
-    <label class="admin-patient-picker-label" for="admin-patient-search">Paciente</label>
+    <div class="admin-patient-picker-heading">
+      <div>
+        <label class="admin-patient-picker-label" for="admin-patient-search">¿A quién le agendamos?</label>
+        <p class="admin-patient-picker-help">Buscá un paciente registrado o cargá una primera visita.</p>
+      </div>
+      <span class="admin-patient-picker-step">Paso 1 de 2</span>
+    </div>
     <div class="admin-patient-picker-search" data-role="search">
       <div class="admin-patient-picker-row">
         <div class="admin-patient-picker-combo">
@@ -87,6 +93,7 @@ function buildPicker() {
     </div>
     <div class="admin-patient-selected" data-role="selected" hidden>
       <div>
+        <span class="admin-patient-selected-badge">Paciente encontrado</span>
         <strong data-role="selected-name"></strong>
         <span data-role="selected-meta"></span>
       </div>

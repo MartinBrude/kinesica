@@ -35,7 +35,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 14px;
-  padding: 16px 20px;
+  padding: 18px 24px;
   color: var(--navy);
   background: #fff;
   border-bottom: 1px solid var(--line);
@@ -45,6 +45,11 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+.admin-booking-patient-bar strong {
+  font-size: 18px;
+  letter-spacing: -0.01em;
 }
 
 .admin-booking-patient-bar > div span {
@@ -128,21 +133,52 @@
 
 /* Turnera profesional: buscador de paciente (eje del paso 1). */
 .admin-patient-picker {
-  margin-bottom: 18px;
+  margin-bottom: 22px;
+  padding: 18px;
+  background: linear-gradient(135deg, #f8fbfd 0%, #eef6f9 100%);
+  border: 1px solid #d8e8ee;
+  border-radius: 14px;
+}
+
+.admin-patient-picker-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
 }
 
 .admin-patient-picker-label {
   display: block;
-  margin-bottom: 8px;
+  margin: 0;
   color: var(--navy, #0f2a44);
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 700;
+}
+
+.admin-patient-picker-help {
+  margin: 5px 0 0;
+  color: var(--muted, #64748b);
+  font-size: 13px;
+}
+
+.admin-patient-picker-step {
+  flex: 0 0 auto;
+  padding: 5px 9px;
+  color: #1f6481;
+  background: #fff;
+  border: 1px solid #cfe3ec;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
 }
 
 .admin-patient-picker-row {
   display: flex;
   gap: 10px;
   align-items: stretch;
+  margin-top: 14px;
 }
 
 .admin-patient-picker-combo {
@@ -246,9 +282,9 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 12px 14px;
-  background: #eef6f9;
-  border: 1.5px solid #cfe3ec;
+  padding: 14px 16px;
+  background: #f0faf5;
+  border: 1.5px solid #b9e4c9;
   border-radius: 10px;
 }
 
@@ -268,6 +304,18 @@
   font-size: 15px;
 }
 
+.admin-patient-selected-badge {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  margin-bottom: 3px;
+  color: #187044;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
 .admin-patient-selected span {
   color: var(--muted, #64748b);
   font-size: 12px;
@@ -279,6 +327,15 @@
 }
 
 @media (max-width: 600px) {
+  .admin-patient-picker {
+    padding: 14px;
+  }
+
+  .admin-patient-picker-heading {
+    flex-direction: column;
+    gap: 8px;
+  }
+
   .admin-patient-picker-row {
     flex-direction: column;
   }

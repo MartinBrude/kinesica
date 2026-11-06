@@ -653,6 +653,8 @@
     }
 
     validateAdminPatientFields() {
+      // Paciente encontrado en el directorio: alcanza con eso, no se exige email ni DNI.
+      if (this.state.adminPatient) return true;
       const q = (sel) => this.container.querySelector(sel);
       this._confirmedPhones = this._confirmedPhones || new Set();
       this._confirmedEmails = this._confirmedEmails || new Set();
@@ -1183,19 +1185,23 @@
       const hasSelection = Boolean(patient) || isNew;
       const footer = q("#kb-step-1 .kb-step1-footer");
       if (footer) footer.style.visibility = hasSelection ? "visible" : "hidden";
-      // Registrado: solo se piden los datos que faltan en el directorio
-      // (los existentes ya se ven en la tarjeta del paciente seleccionado).
-      let missing = 0;
+      // Si el paciente ya fue encontrado, el registro del directorio es la
+      // fuente de verdad: no hay que completar email, documento ni teléfono
+      // para poder agendar. Los datos disponibles viajan en el payload y los
+      // que no existan quedan vacíos, sin bloquear la reserva.
       Object.keys(values).forEach((selector) => {
         const group = q(selector)?.closest(".kb-form-group");
         if (!group) return;
-        const show = !patient || !q(selector).value;
-        group.hidden = !show;
-        if (patient && show) missing += 1;
+        group.hidden = Boolean(patient);
+        const input = q(selector);
+        if (input) {
+          input.required = !patient;
+          input.setAttribute("aria-required", patient ? "false" : "true");
+        }
       });
       const dataBox = q("#kb-admin-data");
       if (dataBox) {
-        dataBox.hidden = !hasSelection || (Boolean(patient) && missing === 0);
+        dataBox.hidden = !hasSelection || Boolean(patient);
         let note = q("#kb-admin-missing-note");
         if (!note) {
           note = document.createElement("div");
@@ -1204,7 +1210,7 @@
           note.textContent = "Faltan datos en el directorio para agendar:";
           dataBox.prepend(note);
         }
-        note.hidden = !patient;
+        note.hidden = true;
       }
       const whoTitle = q("#kb-existing-box .kb-section-title");
       if (whoTitle) whoTitle.textContent = "¿Con quién se atiende?";
@@ -1965,7 +1971,9 @@
       const usesContactPhone = Boolean(isOther && (!telefonoPropio || (checkNoPhone && checkNoPhone.checked)));
       this._confirmedPhones = this._confirmedPhones || new Set();
       this._confirmedEmails = this._confirmedEmails || new Set();
-      const fieldErrors = BookingWidget.validateContactForm({
+      const skipValidation = Boolean(this.options.adminMode && this.state.adminPatient);
+      if (skipValidation && /^sin-/i.test(telefono)) telefono = "";
+      const fieldErrors = skipValidation ? [] : BookingWidget.validateContactForm({
         isOther,
         contactoNombre,
         contactoTelefono,
