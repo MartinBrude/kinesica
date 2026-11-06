@@ -45,6 +45,11 @@ flowchart LR
 
 ---
 
+## Staging antes de migrate en prod
+
+Para probar el refactor relacional sobre una **copia** (no la DB live):  
+[checklist-staging-datos-relacionales.md](checklist-staging-datos-relacionales.md) · `bash scripts/staging-relational-smoke.sh`
+
 ## 🏛️ 2. Kinésica Web: Copias de Seguridad
 
 ### A. Descarga Manual Inmediata (Panel Admin)

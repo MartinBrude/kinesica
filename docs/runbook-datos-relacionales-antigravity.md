@@ -12,6 +12,9 @@
 
 Flags productivos siguen en **false** hasta activarlos en staging. No hace falta prod live: copia restaurada alcanza.
 
+**Checklist rápida (≈10 min):** [checklist-staging-datos-relacionales.md](checklist-staging-datos-relacionales.md)  
+**Script:** `bash scripts/staging-relational-smoke.sh` (requiere `KINESICA_ADMIN_CONFIG` + `INSTALL_TOKEN` de staging).
+
 ## 0. Preflight
 
 ```bash

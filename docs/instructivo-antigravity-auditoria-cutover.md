@@ -105,7 +105,16 @@ rg -n "ON DELETE CASCADE" admin/api/migrations --glob '*.php'
 
 ## Parte 3 — Auditoría ops (staging)
 
-Usá el [runbook](runbook-datos-relacionales-antigravity.md). Token = `install_token`.
+Usá el [checklist staging ≈10 min](checklist-staging-datos-relacionales.md) o el [runbook](runbook-datos-relacionales-antigravity.md). Token = `install_token`.
+
+Atajo:
+
+```bash
+export KINESICA_ADMIN_CONFIG=/ruta/admin-config-staging.php
+export INSTALL_TOKEN='…'
+bash scripts/staging-relational-smoke.sh
+# apply migrate: STAGING_MIGRATE_APPLY=1 bash scripts/staging-relational-smoke.sh
+```
 
 ```bash
 php admin/api/migrate.php --status --token="$INSTALL_TOKEN"

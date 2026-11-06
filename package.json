@@ -8,6 +8,7 @@
     "admin:migrate": "php admin/api/migrate.php",
     "admin:audit": "php admin/api/audit_relational.php",
     "admin:backfill": "php admin/api/backfill_relational.php",
+    "admin:staging-smoke": "bash scripts/staging-relational-smoke.sh",
     "booking:serve": "node scripts/serve-booking-demo.mjs",
     "css:audit": "node scripts/purge-css.mjs --audit",
     "css:audit:bootstrap": "node scripts/purge-css.mjs --audit --profile=bootstrap",
