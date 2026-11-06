@@ -8,6 +8,7 @@ $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 require_header();
 $auth = require_auth();
 $pdo = db();
+kinesica_fichas_ensure_rel_columns($pdo);
 
 if ($method === 'GET') {
     kinesica_fichas_get_all($pdo);

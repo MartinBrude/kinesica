@@ -1045,6 +1045,41 @@ function ensure_pacientes_tables(PDO $pdo, bool $force = false): void
         $pdo->exec('ALTER TABLE pacientes ADD COLUMN viene_de_campana TINYINT(1) NOT NULL DEFAULT 1');
     } catch (Throwable) {}
 
+    // Puente etapa 2–3: columnas relacionales si el runner de migraciones aún no corrió.
+    // Fuente de verdad: admin/api/migrations/. Retirar tras etapa 10.
+    require_once __DIR__ . '/lib_migrations.php';
+    try {
+        kinesica_migrations_add_column_if_missing(
+            $pdo,
+            'pacientes',
+            'deleted_at',
+            'DATETIME NULL DEFAULT NULL',
+            'TEXT NULL'
+        );
+        kinesica_migrations_add_column_if_missing(
+            $pdo,
+            'pacientes',
+            'version',
+            'INT UNSIGNED NOT NULL DEFAULT 1',
+            'INTEGER NOT NULL DEFAULT 1'
+        );
+        kinesica_migrations_add_column_if_missing(
+            $pdo,
+            'lista_espera',
+            'paciente_id',
+            'INT UNSIGNED NULL',
+            'INTEGER NULL'
+        );
+        kinesica_migrations_add_column_if_missing(
+            $pdo,
+            'lista_espera',
+            'profesional_id',
+            'INT UNSIGNED NULL',
+            'INTEGER NULL'
+        );
+    } catch (Throwable) {
+    }
+
     $checked = true;
     // Mantenimiento pesado SOLO con $force (cron / action=deduplicate / scripts).
     // Nunca en el hot path de alta/edición/listado.

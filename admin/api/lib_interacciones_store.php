@@ -110,6 +110,18 @@ function interacciones_ensure_schema(?PDO $pdo = null): void
         }
     } catch (Throwable $e) {
     }
+    // Puente relacional (migración 002). Retirar tras etapa 10.
+    try {
+        require_once __DIR__ . '/lib_migrations.php';
+        kinesica_migrations_add_column_if_missing(
+            $pdo,
+            'interaccion_eventos',
+            'paciente_id',
+            'INT UNSIGNED NULL',
+            'INTEGER NULL'
+        );
+    } catch (Throwable $e) {
+    }
     $pdo->exec(
         'CREATE TABLE IF NOT EXISTS interaccion_estado (
             conversation_key VARCHAR(64) NOT NULL PRIMARY KEY,

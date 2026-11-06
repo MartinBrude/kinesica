@@ -81,6 +81,25 @@ function recordatorios_ensure_schema(?PDO $pdo = null): void
             KEY idx_appt_date (appointment_date)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
     );
+    // Puente relacional (migración 002). Retirar tras etapa 10.
+    try {
+        require_once __DIR__ . '/lib_migrations.php';
+        kinesica_migrations_add_column_if_missing(
+            $pdo,
+            'recordatorio_eventos',
+            'paciente_id',
+            'INT UNSIGNED NULL',
+            'INTEGER NULL'
+        );
+        kinesica_migrations_add_column_if_missing(
+            $pdo,
+            'recordatorio_eventos',
+            'turno_id',
+            'INT UNSIGNED NULL',
+            'INTEGER NULL'
+        );
+    } catch (Throwable $e) {
+    }
     $done[$pdo] = true;
 }
 

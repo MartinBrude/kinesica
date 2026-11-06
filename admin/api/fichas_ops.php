@@ -1,6 +1,32 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Puente columnas relacionales en fichas (migraciones 002/004). Retirar tras etapa 10.
+ */
+function kinesica_fichas_ensure_rel_columns(PDO $pdo): void
+{
+    static $done = null;
+    $done = $done ?? new WeakMap();
+    if (isset($done[$pdo])) {
+        return;
+    }
+    require_once __DIR__ . '/lib_migrations.php';
+    try {
+        kinesica_migrations_add_column_if_missing($pdo, 'fichas', 'paciente_id', 'INT UNSIGNED NULL', 'INTEGER NULL');
+        kinesica_migrations_add_column_if_missing($pdo, 'fichas', 'profesional_id', 'INT UNSIGNED NULL', 'INTEGER NULL');
+        kinesica_migrations_add_column_if_missing(
+            $pdo,
+            'fichas',
+            'version',
+            'INT UNSIGNED NOT NULL DEFAULT 1',
+            'INTEGER NOT NULL DEFAULT 1'
+        );
+    } catch (Throwable) {
+    }
+    $done[$pdo] = true;
+}
+
 function kinesica_fichas_check_structure(array $data): bool
 {
     $checkValue = static function ($value, int $depth = 0) use (&$checkValue): bool {
