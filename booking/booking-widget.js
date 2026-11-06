@@ -575,6 +575,7 @@
 
     init() {
       this.renderSkeleton();
+      if (this.options.adminMode) this.setupAdminLayout();
       this.bindEvents();
       if (this.client && typeof this.client.prewarm === "function") {
         this.client.prewarm();
@@ -597,6 +598,87 @@
       }
 
       this.setStep(1);
+    }
+
+    /**
+     * Turnera profesional (ADMIN): flujo compacto de 2 pasos.
+     *  1) Paciente: datos básicos + técnica/profesional en la MISMA vista.
+     *  2) Horario: al elegir el slot se confirma directamente.
+     * Sin precios, reglas del consultorio ni botones de calendario personal:
+     * esa información es para el paciente, no para quien agenda.
+     */
+    setupAdminLayout() {
+      const q = (sel) => this.container.querySelector(sel);
+      const root = q(".kinesica-booking-container");
+      if (root) root.classList.add("kb-admin-mode");
+
+      const header = q(".kb-header");
+      if (header) header.remove();
+
+      const labels = { 1: "Paciente", 2: "Horario", 4: "Listo" };
+      this.container.querySelectorAll(".kb-step-item").forEach((item) => {
+        const n = Number(item.dataset.stepIndicator);
+        if (n === 3) {
+          item.hidden = true;
+          item.style.display = "none";
+          return;
+        }
+        const num = item.querySelector(".kb-step-num");
+        item.textContent = "";
+        if (num) {
+          num.textContent = n === 4 ? "3" : String(n);
+          item.appendChild(num);
+        }
+        item.appendChild(document.createTextNode(` ${labels[n]}`));
+      });
+
+      // Mover los campos de datos del paciente al paso 1.
+      const step1 = q("#kb-step-1");
+      const title = q("#kb-step-1 > .kb-section-title");
+      const dataBox = document.createElement("div");
+      dataBox.id = "kb-admin-data";
+      dataBox.className = "kb-admin-data";
+      dataBox.hidden = true;
+      const nombreGroup = q("#kb-input-nombre")?.closest(".kb-form-group");
+      const emailGroup = q("#kb-input-email")?.closest(".kb-form-group");
+      const phoneRow = q("#kb-group-telefono")?.closest(".kb-form-row");
+      [nombreGroup, emailGroup, phoneRow].forEach((el) => el && dataBox.appendChild(el));
+
+      const empty = document.createElement("div");
+      empty.id = "kb-admin-empty";
+      empty.className = "kb-admin-empty";
+      empty.textContent = "Elegí un paciente del directorio o «Paciente de primera vez» para empezar.";
+
+      if (step1 && title) {
+        title.after(empty);
+        empty.after(dataBox);
+      }
+
+      const next2 = q("#kb-btn-next-2");
+      if (next2) next2.textContent = "Confirmar turno";
+    }
+
+    validateAdminPatientFields() {
+      const q = (sel) => this.container.querySelector(sel);
+      this._confirmedPhones = this._confirmedPhones || new Set();
+      this._confirmedEmails = this._confirmedEmails || new Set();
+      const errors = BookingWidget.validateContactForm({
+        isOther: false,
+        contactoNombre: "",
+        contactoTelefono: "",
+        nombre: q("#kb-input-nombre").value.trim(),
+        email: q("#kb-input-email") ? q("#kb-input-email").value.trim() : "",
+        telefono: q("#kb-input-telefono").value.trim(),
+        usesContactPhone: false,
+        confirmedPhones: this._confirmedPhones,
+        confirmedEmails: this._confirmedEmails,
+      }, (key) => this.t(key));
+      errors.forEach((err) => {
+        if (err.isSoftPhoneConfirm && err.phoneDigits) this._confirmedPhones.add(err.phoneDigits);
+        if (err.isSoftEmailConfirm && err.emailValue) this._confirmedEmails.add(err.emailValue);
+      });
+      if (errors.length) this.showFieldErrors(errors);
+      return errors.length === 0;
     }
 
     renderSkeleton() {
@@ -884,6 +966,7 @@
           this.openPractitionerWhatsApp(this.state.practitionerId);
           return;
         }
+        if (this.options.adminMode && !this.validateAdminPatientFields()) return;
         const technique = engine.getTechnique(this.state.techniqueId);
         if (!technique) {
           this.showError(this.t("errTechnique"));
@@ -914,6 +997,10 @@
           return;
         }
         this.clearError();
+        if (this.options.adminMode) {
+          this.handleBookingSubmit();
+          return;
+        }
         this.setStep(3);
       });
 
@@ -1056,11 +1143,13 @@
       if (this.state.adminPatient) {
         const habitual = String(this.state.adminPatient.profesional_habitual || "").toLowerCase();
         this.state.practitionerId = ["norberto", "maria"].includes(habitual) ? habitual : null;
+        if (this.state.practitionerId) this.state.techniqueId = "paciente";
         this.container.querySelectorAll("#kb-existing-practitioner-grid .kb-choice-card").forEach((card) => {
           card.classList.toggle("selected", card.dataset.practitioner === this.state.practitionerId);
         });
       }
       this.applyAdminPatientData();
+      this.syncStep1Continue();
     }
 
     setAdminNewPatient() {
@@ -1096,10 +1185,22 @@
           input.removeAttribute("aria-readonly");
         }
       });
-      const label = q("#kb-step-3 .kb-section-title");
-      if (label) label.textContent = patient ? "Datos del paciente registrado" : "Datos del paciente nuevo";
-      const title = q("#kb-step-1 .kb-section-title");
-      if (title && this.options.adminMode) title.textContent = "Paciente seleccionado en ADMIN";
+      const isNew = this.state.existingPatient === false;
+      const hasSelection = Boolean(patient) || isNew;
+      const empty = q("#kb-admin-empty");
+      if (empty) empty.hidden = hasSelection;
+      const dataBox = q("#kb-admin-data");
+      if (dataBox) dataBox.hidden = !hasSelection;
+      const title = q("#kb-step-1 > .kb-section-title");
+      if (title) {
+        title.textContent = patient ? "Paciente registrado" : isNew ? "Paciente de primera vez" : "Seleccioná un paciente";
+      }
+      const whoTitle = q("#kb-existing-box .kb-section-title");
+      if (whoTitle) whoTitle.textContent = "¿Con quién se atiende?";
+      const techTitle = q("#kb-new-box > .kb-section-title");
+      if (techTitle) techTitle.textContent = "Técnica";
+      const preferTitle = q("#kb-practitioner-box .kb-section-title");
+      if (preferTitle) preferTitle.textContent = "Profesional";
     }
 
     renderExistingPractitionerChoices() {
@@ -1139,7 +1240,9 @@
         card.dataset.technique = technique.id;
         const fee = this.getFeeForTechnique(technique.id);
         const feeFormatted = this.formatFee(fee);
-        card.innerHTML = `
+        card.innerHTML = this.options.adminMode
+          ? `<h3>${this.techniqueLabel(technique)}</h3>`
+          : `
           <h3>${this.techniqueLabel(technique)}</h3>
           <div class="kb-choice-fee">
             <span class="kb-fee-label">${this.t("sessionFee")}:</span>
@@ -1311,6 +1414,7 @@
         btnSubmit.disabled = false;
         btnSubmit.textContent = this.t("confirm");
       }
+      if (this.options.adminMode && btnNext2) btnNext2.textContent = "Confirmar turno";
 
       const summaryBox = q("#kb-success-summary");
       if (summaryBox) summaryBox.innerHTML = "";
@@ -1871,6 +1975,7 @@
           }
         });
         this.showFieldErrors(fieldErrors);
+        if (this.options.adminMode) this.setStep(1);
         return;
       }
 
@@ -1906,7 +2011,7 @@
         notas: isOther ? `Agendado por: ${contactoNombre} (${contactoTelefono})` : "",
       };
 
-      const btnSubmit = q("#kb-btn-submit");
+      const btnSubmit = this.options.adminMode ? q("#kb-btn-next-2") : q("#kb-btn-submit");
       btnSubmit.disabled = true;
       btnSubmit.textContent = this.t("saving");
 
@@ -1933,7 +2038,7 @@
         });
       } finally {
         btnSubmit.disabled = false;
-        btnSubmit.textContent = this.t("confirm");
+        btnSubmit.textContent = this.options.adminMode ? "Confirmar turno" : this.t("confirm");
       }
     }
 
@@ -1998,7 +2103,7 @@
         <div><strong>${this.t("practitioner")}:</strong> ${professional}</div>
         <div><strong>${this.t("patient")}:</strong> ${payload.nombre}</div>
         <div><strong>${this.t("when")}:</strong> ${this.formatConfirmationWhen(payload.date, payload.time)}</div>
-        ${!isExisting ? `<div><strong>${this.t("fee")}:</strong> ${this.formatFee(this.getFeeForTechnique(payload.techniqueId))} <span style="font-size: 12px; color: var(--kin-text-muted);">(${this.t("paymentMethodsNote")})</span></div>` : ""}
+        ${!isExisting && !this.options.adminMode ? `<div><strong>${this.t("fee")}:</strong> ${this.formatFee(this.getFeeForTechnique(payload.techniqueId))} <span style="font-size: 12px; color: var(--kin-text-muted);">(${this.t("paymentMethodsNote")})</span></div>` : ""}
         ${payload.email ? `<div><strong>${this.t("email")}:</strong> ${payload.email}</div>` : ""}
         <div style="margin-top: 6px; font-size: 12px; color: var(--kin-text-muted);">
           ${this.t("eventId")} <code>${result.eventId || "OK"}</code>
@@ -2007,11 +2112,16 @@
 
       // Reglas del consultorio sólo si es presencial
       const clinicRules = q("#kb-success-clinic-rules");
-      clinicRules.style.display = "block";
+      clinicRules.style.display = this.options.adminMode ? "none" : "block";
 
       const subtitle = q("#kb-success-subtitle");
       if (subtitle) subtitle.hidden = true;
 
+      const calBox = q("#kb-calendar-sync-box");
+      if (this.options.adminMode) {
+        if (calBox) calBox.style.display = "none";
+        return;
+      }
       this.setupCalendarButtons(payload, result);
     }
 

@@ -95,3 +95,33 @@
     grid-column: 1;
   }
 }
+
+/* Turnera profesional: datos + técnica en el mismo paso. */
+.kb-admin-mode .kb-admin-empty {
+  padding: 18px;
+  color: var(--muted, #64748b);
+  font-size: 14px;
+  text-align: center;
+  background: #f8fafc;
+  border: 1px dashed var(--line, #cbd5e1);
+  border-radius: 10px;
+}
+
+.kb-admin-mode .kb-admin-data {
+  margin-bottom: 18px;
+  padding: 16px 16px 4px;
+  background: #f8fafc;
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: 12px;
+}
+
+.kb-admin-mode .kb-admin-data input[readonly] {
+  color: #334155;
+  background: #eef2f7;
+  border-color: transparent;
+  cursor: default;
+}
+
+.kb-admin-mode .kb-step1-followup .kb-choice-card {
+  padding: 12px 14px;
+}
