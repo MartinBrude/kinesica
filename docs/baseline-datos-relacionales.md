@@ -164,3 +164,12 @@ Código: `lib_relational_read.php`. Con `relational_flags.read_ids` o `KINESICA_
 - **Interacciones / recordatorios**: priorizan nombre (y email/tel) del directorio por `paciente_id`.
 - Sin ID o ID huérfano → fallback legacy + línea en `admin/api/data/rel_read_fallback.jsonl`.
 - Con flag en `false` (default) el comportamiento es idéntico al anterior.
+
+## paciente_contactos
+
+Tabla (migración `001`): varios teléfonos/emails por paciente; un `es_principal` por tipo.
+
+- Sync en altas/ediciones: `lib_relational_contactos.php` desde `telefono` / `email` (principal) y `contacto_*` (secundarios).
+- Backfill: `php admin/api/backfill_relational.php --only=paciente_contactos --dry-run|--apply`
+- Resolve de `paciente_id` también consulta contactos (útil si el tel legacy quedó desfasado).
+- Sin UNIQUE global de teléfono: compartidos siguen siendo revisión manual.

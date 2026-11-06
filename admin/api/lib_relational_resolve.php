@@ -37,9 +37,21 @@ function kinesica_rel_resolve_paciente(PDO $pdo, array $hints, array $opts = [])
     $nombre = trim((string) ($hints['nombre'] ?? ''));
     $nameKey = $nombre !== '' ? canonical_patient_name_key($nombre) : '';
 
-    // 1) Teléfono normalizado exacto
+    // 1) Teléfono normalizado exacto (pacientes.telefono + paciente_contactos)
     if ($phone !== '' && !is_placeholder_phone($phone)) {
         $matches = kinesica_rel_find_pacientes_by_phone($pdo, $phone);
+        try {
+            require_once __DIR__ . '/lib_relational_contactos.php';
+            $fromContactos = kinesica_rel_find_pacientes_by_contacto_phone($pdo, $phone);
+            if ($fromContactos !== []) {
+                $byId = [];
+                foreach (array_merge($matches, $fromContactos) as $m) {
+                    $byId[(int) $m['id']] = $m;
+                }
+                $matches = array_values($byId);
+            }
+        } catch (Throwable) {
+        }
         if (count($matches) === 1) {
             return [
                 'paciente_id' => (int) $matches[0]['id'],

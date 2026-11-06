@@ -161,6 +161,13 @@ function kinesica_pacientes_upsert(PDO $pdo, array $data): void
         }
 
         error_log('kinesica pacientes upsert merged id=' . $existingId . ' phone=' . $targetPhone);
+        require_once __DIR__ . '/lib_relational_contactos.php';
+        kinesica_rel_sync_paciente_contactos_safe($pdo, $existingId, [
+            'telefono' => $targetPhone,
+            'email' => (string) ($finalEmail ?? ''),
+            'contacto_telefono' => (string) ($finalContactoTel ?? ''),
+            'contacto_email' => (string) ($finalContactoEmail ?? ''),
+        ]);
         json_out(200, [
             'status' => 'success',
             'action' => 'upsert',
@@ -224,6 +231,15 @@ function kinesica_pacientes_upsert(PDO $pdo, array $data): void
         $newId = (int) ($find->fetchColumn() ?: 0);
     }
     error_log('kinesica pacientes upsert inserted/updated id=' . $newId . ' phone=' . $phone);
+    if ($newId > 0) {
+        require_once __DIR__ . '/lib_relational_contactos.php';
+        kinesica_rel_sync_paciente_contactos_safe($pdo, $newId, [
+            'telefono' => $phone,
+            'email' => (string) ($email ?? ''),
+            'contacto_telefono' => (string) ($contactoTel ?? ''),
+            'contacto_email' => (string) ($contactoEmail ?? ''),
+        ]);
+    }
     json_out(200, [
         'status' => 'success',
         'action' => 'upsert',
@@ -310,6 +326,14 @@ function kinesica_pacientes_update(PDO $pdo, array $data): void
         $params['dejo_review'] = $dejoReview;
     }
     $stmt->execute($params);
+
+    require_once __DIR__ . '/lib_relational_contactos.php';
+    kinesica_rel_sync_paciente_contactos_safe($pdo, $id, [
+        'telefono' => $phone,
+        'email' => (string) ($email ?? ''),
+        'contacto_telefono' => (string) ($contactoTel ?? ''),
+        'contacto_email' => (string) ($contactoEmail ?? ''),
+    ]);
 
     json_out(200, ['status' => 'success', 'message' => 'Paciente actualizado con éxito']);
 }

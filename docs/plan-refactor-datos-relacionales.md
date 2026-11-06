@@ -146,6 +146,8 @@ paciente_contactos debe permitir varios teléfonos o emails: id, paciente_id, ti
 - Índice no único en `(tipo, valor_normalizado)` para búsqueda.
 - Alta automática solo asocia si hay coincidencia inequívoca; si el teléfono ya pertenece a otro paciente, queda pendiente de revisión (no fusión automática).
 
+Implementación: [`lib_relational_contactos.php`](../admin/api/lib_relational_contactos.php) (sync en upsert/update + backfill `--only=paciente_contactos`).
+
 profesionales debe relacionar cada profesional con users; las tablas funcionales deben usar profesional_id, no textos como norberto o maria.
 
 sesiones_clinicas debe tener paciente_id, profesional_id, fecha, payload_json, version, updated_by y fechas de auditoría.
