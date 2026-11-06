@@ -106,6 +106,9 @@ function recordatorios_persist_directory_contact(string $patientName, string $ph
                 'email' => $email !== '' ? $email : null,
                 'origen' => 'admin',
             ]);
+            if (function_exists('deduplicate_pacientes_table')) {
+                deduplicate_pacientes_table($pdo);
+            }
             return ['ok' => true, 'phone' => $phone, 'email' => $email];
         }
 
@@ -127,6 +130,9 @@ function recordatorios_persist_directory_contact(string $patientName, string $ph
                     'error' => 'Para guardar solo el mail, el paciente debe existir en el directorio o cargá también un WhatsApp',
                 ];
             }
+        }
+        if (function_exists('deduplicate_pacientes_table')) {
+            deduplicate_pacientes_table($pdo);
         }
         return ['ok' => true, 'phone' => '', 'email' => $email];
     } catch (Throwable $e) {

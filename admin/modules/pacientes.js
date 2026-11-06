@@ -341,7 +341,7 @@ export async function loadPacientes() {
     invalidateDirectoryCache();
     renderPacientesTable();
 
-    // Si había duplicados en la respuesta cruda, llamar a deduplicar en el backend en segundo plano
+    // Seguridad: si el listado aún trae duplicados, consolidar en backend sin UI
     if (raw.length !== deduplicated.length) {
       api("pacientes.php", { method: "POST", body: JSON.stringify({ action: "deduplicate" }) }).catch(() => {});
     }
@@ -589,29 +589,6 @@ export function initPacientesModule() {
   }
   if (btnNuevo) {
     btnNuevo.addEventListener("click", () => openFullPacienteModal(null, loadPacientes));
-  }
-  const btnDeduplicate = typeof document !== "undefined" ? document.querySelector("#btn-deduplicate-pacientes") : null;
-  if (btnDeduplicate) {
-    btnDeduplicate.addEventListener("click", async () => {
-      btnDeduplicate.disabled = true;
-      const origText = btnDeduplicate.textContent;
-      btnDeduplicate.textContent = "Deduplicando…";
-      try {
-        const res = await api("pacientes.php", { method: "POST", body: JSON.stringify({ action: "deduplicate" }) });
-        await loadPacientes();
-        const merged = res?.merged ?? 0;
-        if (merged > 0) {
-          await dialogAlert(`Directorio optimizado: se consolidaron ${merged} registro${merged === 1 ? "" : "s"} duplicado${merged === 1 ? "" : "s"}.`);
-        } else {
-          await dialogAlert("El directorio ya está completamente deduplicado. No se encontraron duplicados.");
-        }
-      } catch (err) {
-        await dialogAlert(`Error al deduplicar pacientes: ${err.message}`);
-      } finally {
-        btnDeduplicate.disabled = false;
-        btnDeduplicate.textContent = origText;
-      }
-    });
   }
   if (btnBackupSql) {
     btnBackupSql.addEventListener("click", async () => {
