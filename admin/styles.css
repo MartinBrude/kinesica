@@ -23,3 +23,75 @@
 @import "./css/recordatorios.css?v=5";
 
 
+/* Turnera profesional: selector autenticado de paciente + widget oficial. */
+.admin-booking-dialog {
+  max-width: 820px;
+}
+
+.admin-booking-patient-bar {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) minmax(260px, 1.4fr) auto;
+  align-items: end;
+  gap: 14px;
+  padding: 16px 20px;
+  color: var(--navy);
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-booking-patient-bar > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin-booking-patient-bar > div span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.admin-booking-patient-bar label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.admin-booking-patient-bar select {
+  min-height: 38px;
+  min-width: 0;
+  padding: 8px 10px;
+  color: var(--navy);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font: inherit;
+}
+
+.admin-booking-dialog .kinesica-booking-modal-body {
+  max-height: calc(92vh - 95px);
+  overflow-y: auto;
+  background: #fff;
+}
+
+.admin-booking-dialog .kinesica-booking-container {
+  border-radius: 0 0 16px 16px;
+}
+
+@media (max-width: 700px) {
+  .admin-booking-patient-bar {
+    grid-template-columns: 1fr auto;
+  }
+
+  .admin-booking-patient-bar > div {
+    grid-column: 1 / -1;
+  }
+
+  .admin-booking-patient-bar label {
+    grid-column: 1;
+  }
+}

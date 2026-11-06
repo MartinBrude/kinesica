@@ -17,7 +17,9 @@ function normalizeRoots(root) {
   if (typeof root === "string") {
     return Array.from(document.querySelectorAll(root));
   }
-  if (Array.isArray(root) || root instanceof NodeList || root instanceof HTMLCollection) {
+  const isNodeList = typeof globalThis.NodeList !== "undefined" && root instanceof globalThis.NodeList;
+  const isHtmlCollection = typeof globalThis.HTMLCollection !== "undefined" && root instanceof globalThis.HTMLCollection;
+  if (Array.isArray(root) || isNodeList || isHtmlCollection) {
     return Array.from(root).filter(Boolean);
   }
   return [root];
@@ -36,7 +38,7 @@ export function setListControlsEnabled(root, enabled, opts = {}) {
   for (const r of roots) {
     if (!r || typeof r.querySelectorAll !== "function") continue;
     r.classList.toggle("list-controls-locked", !enabled);
-    if (r instanceof Element) {
+    if (typeof globalThis.Element !== "undefined" && r instanceof globalThis.Element) {
       r.setAttribute("aria-busy", enabled ? "false" : "true");
     }
     r.querySelectorAll(CONTROL_SELECTOR).forEach((el) => nodes.add(el));

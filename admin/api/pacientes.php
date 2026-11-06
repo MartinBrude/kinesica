@@ -140,6 +140,13 @@ try {
             json_out(403, ['status' => 'error', 'message' => 'Los usuarios con rol Colaborador tienen permisos de solo lectura.']);
         }
 
+        // La invitación dispara un mensaje real a un paciente: no debe quedar
+        // disponible para integraciones autenticadas únicamente con el secreto
+        // de webhook.
+        if ($action === 'send_encuesta_invite' && (($auth['type'] ?? '') !== 'session' || !is_admin($auth))) {
+            json_out(403, ['status' => 'error', 'message' => 'Solo un administrador con sesión puede enviar invitaciones de encuesta.']);
+        }
+
         if ($action === 'get_email_by_phone') {
             $phone = clean_phone_number((string) ($data['telefono'] ?? ''));
             if ($phone !== '') {

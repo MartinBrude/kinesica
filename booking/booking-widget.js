@@ -453,6 +453,7 @@
           telefono: "",
           dni: "",
         },
+        adminPatient: null,
         confirmedBooking: null,
       };
 
@@ -629,7 +630,7 @@
             <!-- PASO 1: PACIENTE → PROFESIONAL O TÉCNICA -->
             <div class="kb-step-panel active" id="kb-step-1">
               <div class="kb-section-title">${this.t("qPatient")}</div>
-              <div class="kb-choice-grid" id="kb-patient-grid"></div>
+              <div class="kb-choice-grid" id="kb-patient-grid" ${this.options.adminMode ? 'style="display:none"' : ""}></div>
 
               <div id="kb-existing-box" class="kb-step1-followup" hidden>
                 <div class="kb-section-title" style="font-size: 17px;">${this.t("qWho")}</div>
@@ -693,7 +694,7 @@
               <div class="kb-section-title">${this.t("dataTitle")}</div>
               <div class="kb-section-desc">${this.t("dataDesc")}</div>
 
-              <div class="kb-radio-group">
+              <div class="kb-radio-group" ${this.options.adminMode ? 'style="display:none"' : ""}>
                 <div class="kb-radio-title">¿Para quién es el turno?</div>
                 <div class="kb-radio-options">
                   <label class="kb-radio-label">
@@ -874,7 +875,7 @@
       this.renderTechniqueChoices();
 
       q("#kb-btn-next-1").addEventListener("click", () => {
-        if (this.state.existingPatient === true) {
+        if (this.state.existingPatient === true && !this.options.adminMode) {
           if (!this.state.practitionerId) {
             this.showError(this.t("errWho"));
             return;
@@ -1039,7 +1040,66 @@
       const practitionerBox = this.container.querySelector("#kb-practitioner-box");
       if (practitionerBox) practitionerBox.hidden = true;
       this.updateStep1FeeBanner(null);
+      if (this.options.adminMode) this.applyAdminPatientData();
       this.syncStep1Continue();
+    }
+
+    /**
+     * Selecciona un paciente desde la turnera profesional de ADMIN.
+     * Los datos existentes se muestran como referencia y solo quedan editables
+     * los campos que realmente faltan en el directorio.
+     */
+    setAdminPatient(patient) {
+      if (!this.options.adminMode) return;
+      this.state.adminPatient = patient && typeof patient === "object" ? patient : null;
+      this.selectExistingPatient(Boolean(this.state.adminPatient));
+      if (this.state.adminPatient) {
+        const habitual = String(this.state.adminPatient.profesional_habitual || "").toLowerCase();
+        this.state.practitionerId = ["norberto", "maria"].includes(habitual) ? habitual : null;
+        this.container.querySelectorAll("#kb-existing-practitioner-grid .kb-choice-card").forEach((card) => {
+          card.classList.toggle("selected", card.dataset.practitioner === this.state.practitionerId);
+        });
+      }
+      this.applyAdminPatientData();
+    }
+
+    setAdminNewPatient() {
+      if (!this.options.adminMode) return;
+      this.state.adminPatient = null;
+      this.selectExistingPatient(false);
+      this.applyAdminPatientData();
+    }
+
+    applyAdminPatientData() {
+      if (!this.options.adminMode) return;
+      const patient = this.state.adminPatient;
+      const q = (sel) => this.container.querySelector(sel);
+      const fullName = patient
+        ? String(patient.nombre_completo || `${patient.nombre || ""} ${patient.apellido || ""}`).trim()
+        : "";
+      const values = {
+        "#kb-input-nombre": fullName,
+        "#kb-input-email": patient ? String(patient.email || "") : "",
+        "#kb-input-telefono": patient ? String(patient.telefono || "") : "",
+        "#kb-input-dni": patient ? String(patient.dni || "") : "",
+      };
+      Object.entries(values).forEach(([selector, value]) => {
+        const input = q(selector);
+        if (!input) return;
+        if (patient) {
+          input.value = value;
+          input.readOnly = Boolean(value);
+          input.setAttribute("aria-readonly", input.readOnly ? "true" : "false");
+        } else {
+          input.value = "";
+          input.readOnly = false;
+          input.removeAttribute("aria-readonly");
+        }
+      });
+      const label = q("#kb-step-3 .kb-section-title");
+      if (label) label.textContent = patient ? "Datos del paciente registrado" : "Datos del paciente nuevo";
+      const title = q("#kb-step-1 .kb-section-title");
+      if (title && this.options.adminMode) title.textContent = "Paciente seleccionado en ADMIN";
     }
 
     renderExistingPractitionerChoices() {
@@ -1154,7 +1214,7 @@
         : Boolean(technique);
       if (btn) {
         btn.disabled = !ready;
-        btn.textContent = isExisting ? this.t("openWhatsapp") : this.t("seeSlots");
+        btn.textContent = isExisting && !this.options.adminMode ? this.t("openWhatsapp") : this.t("seeSlots");
       }
     }
 
@@ -1179,6 +1239,7 @@
           telefono: "",
           dni: "",
         },
+        adminPatient: null,
         confirmedBooking: null,
       };
 
@@ -1222,7 +1283,11 @@
 
       ["#kb-input-nombre", "#kb-input-email", "#kb-input-telefono", "#kb-input-dni", "#kb-input-contacto-nombre", "#kb-input-contacto-telefono", "#kb-input-contacto-notas"].forEach((sel) => {
         const input = q(sel);
-        if (input) input.value = "";
+        if (input) {
+          input.value = "";
+          input.readOnly = false;
+          input.removeAttribute("aria-readonly");
+        }
       });
 
       this.clearAllFieldErrors();
@@ -1254,6 +1319,7 @@
       if (clinicRules) clinicRules.style.display = "none";
 
       this.syncStep1Continue();
+      if (this.options.adminMode) this.applyAdminPatientData();
       this.setStep(1);
     }
 
@@ -1847,6 +1913,14 @@
       try {
         const result = await this.client.bookAppointment(payload);
         this.state.confirmedBooking = result;
+
+        if (typeof this.options.onBookingSuccess === "function") {
+          try {
+            await this.options.onBookingSuccess(payload, result);
+          } catch (persistError) {
+            console.warn("No se pudo sincronizar el paciente con ADMIN:", persistError);
+          }
+        }
 
         // Se envía solo en la confirmación de turno
         this.sendConfirmationEmail(payload);
