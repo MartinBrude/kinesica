@@ -7,7 +7,7 @@ require __DIR__ . '/lib.php';
  * Endpoint protegido exclusivamente para administradores (role === 'admin').
  * Sirve:
  * 1. La página HTML del manual (?view=page) cuando se accede a /admin/manual.html
- * 2. Los documentos Markdown (?doc=clara|cuentas|pruebas|whatsapp)
+ * 2. Los documentos Markdown (?doc=clara|agendar|cuentas|pruebas|whatsapp|backups)
  * 3. Los recursos gráficos y plantillas de /docs/ (?asset=...)
  */
 
@@ -91,6 +91,7 @@ if ($docKey !== '') {
 
     $allowedDocs = [
         'clara' => 'manual-clara.md',
+        'agendar' => 'como-agendar.md',
         'cuentas' => 'configuracion-cuentas-profesionales.md',
         'pruebas' => 'guia-pruebas.md',
         'whatsapp' => 'cuenta-whatsapp-clara.md',
@@ -127,6 +128,7 @@ if ($assetName !== '') {
         'tabla_visual_dos_donts.png' => ['path' => 'assets/tabla_visual_dos_donts.png', 'mime' => 'image/png'],
         'mockup_google_calendar_correcto.jpg' => ['path' => 'assets/mockup_google_calendar_correcto.jpg', 'mime' => 'image/jpeg'],
         'comparativa_agendamiento_dos_donts.jpg' => ['path' => 'assets/comparativa_agendamiento_dos_donts.jpg', 'mime' => 'image/jpeg'],
+        'mockup_agendar_web.png' => ['path' => 'assets/mockup_agendar_web.png', 'mime' => 'image/png'],
         'pacientes_primera_sesion.xlsx' => [
             'path' => 'pacientes_primera_sesion.xlsx',
             'mime' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',

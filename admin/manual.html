@@ -210,6 +210,9 @@
       <button type="button" class="manual-tab-btn is-active" data-doc="clara">
         🤖 Manual Operativo de Clara y Calendar
       </button>
+      <button type="button" class="manual-tab-btn" data-doc="agendar">
+        📅 Cómo agendar turnos
+      </button>
       <button type="button" class="manual-tab-btn" data-doc="cuentas">
         🔐 Acceso y Panel de Profesionales
       </button>
@@ -306,6 +309,7 @@
           .replace(/src="(?:\/?docs\/)?assets\/([^"]+)"/g, 'src="/admin/api/manual-doc.php?asset=$1"')
           .replace(/\]\((?:\/?docs\/)?assets\/([^)]+)\)/g, '](/admin/api/manual-doc.php?asset=$1)')
           .replace(/\]\((?:\.\/|\/docs\/)?(?:manual-clara|MANUAL_CLARA)\.md\)/g, '](#doc-clara)')
+          .replace(/\]\((?:\.\/|\/docs\/)?como-agendar\.md\)/g, '](#doc-agendar)')
           .replace(/\]\((?:\.\/|\/docs\/)?configuracion-cuentas-profesionales\.md\)/g, '](#doc-cuentas)')
           .replace(/\]\((?:\.\/|\/docs\/)?guia-pruebas\.md\)/g, '](#doc-pruebas)')
           .replace(/\]\((?:\.\/|\/docs\/)?cuenta-whatsapp-clara\.md\)/g, '](#doc-whatsapp)')
@@ -361,7 +365,7 @@
         const link = ev.target && ev.target.closest ? ev.target.closest("a[href]") : null;
         if (!link) return;
         const href = link.getAttribute("href") || "";
-        const docMatch = href.match(/^#doc-(clara|cuentas|pruebas|whatsapp|backups)$/);
+        const docMatch = href.match(/^#doc-(clara|agendar|cuentas|pruebas|whatsapp|backups)$/);
         if (docMatch) {
           ev.preventDefault();
           history.replaceState(null, "", window.location.pathname);
@@ -406,7 +410,7 @@
           }
           document.documentElement.classList.add("is-admin-verified");
           let initialDoc = "clara";
-          const hashMatch = window.location.hash.match(/^#doc-(clara|cuentas|pruebas|whatsapp|backups)$/);
+          const hashMatch = window.location.hash.match(/^#doc-(clara|agendar|cuentas|pruebas|whatsapp|backups)$/);
           if (hashMatch) {
             initialDoc = hashMatch[1];
           }
