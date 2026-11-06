@@ -123,7 +123,11 @@ export async function api(path, options = {}) {
   }
 
   if (!res.ok) {
-    const error = new Error(data.error || "No se pudo completar");
+    const msg =
+      (typeof data.error === "string" && data.error) ||
+      (typeof data.message === "string" && data.message) ||
+      "No se pudo completar";
+    const error = new Error(msg);
     error.payload = data;
     error.status = res.status;
     throw error;

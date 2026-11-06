@@ -75,26 +75,24 @@ function recordatorios_persist_directory_contact(string $patientName, string $ph
 
             if ($existing) {
                 $existingId = (int) $existing['id'];
-                $existingTel = (string) ($existing['telefono'] ?? '');
-                $shouldSetPhone = function_exists('is_placeholder_phone')
-                    ? is_placeholder_phone($existingTel)
-                    : ($existingTel === '');
-                // Si matcheó por nombre con placeholder, intentar fijar el WhatsApp.
-                // Si el número ya pertenece a otro paciente, no tumbar la operación.
-                if ($shouldSetPhone && $existingTel !== $phone) {
-                    try {
+                $targetPhone = function_exists('kinesica_resolve_merge_phone')
+                    ? kinesica_resolve_merge_phone($pdo, $existing, $phone)
+                    : $phone;
+                // Cargar WhatsApp desde recordatorios debe reflejarse en el directorio.
+                try {
+                    if ($targetPhone !== '' && $targetPhone !== (string) ($existing['telefono'] ?? '')) {
                         $pdo->prepare('UPDATE pacientes SET telefono = :tel WHERE id = :id')
-                            ->execute(['tel' => $phone, 'id' => $existingId]);
-                    } catch (Throwable $dup) {
-                        error_log('recordatorios persist contact phone collision: ' . $dup->getMessage());
-                        // Seguir: el caller puede igual guardar wa_id en el recordatorio.
+                            ->execute(['tel' => $targetPhone, 'id' => $existingId]);
                     }
+                } catch (Throwable $dup) {
+                    error_log('recordatorios persist contact phone collision: ' . $dup->getMessage());
                 }
                 if ($email !== '' && empty($existing['email'])) {
                     $pdo->prepare('UPDATE pacientes SET email = :email WHERE id = :id')
                         ->execute(['email' => $email, 'id' => $existingId]);
                 }
-                return ['ok' => true, 'phone' => $phone, 'email' => $email];
+                error_log('recordatorios persist contact merged id=' . $existingId . ' phone=' . $targetPhone);
+                return ['ok' => true, 'phone' => $targetPhone !== '' ? $targetPhone : $phone, 'email' => $email, 'id' => $existingId];
             }
 
             // En colisión de teléfono: NO pisar nombre de un paciente existente; solo completar vacíos y email.
@@ -108,18 +106,28 @@ function recordatorios_persist_directory_contact(string $patientName, string $ph
                     nombre_completo = CASE WHEN nombre_completo IS NULL OR nombre_completo = "" THEN VALUES(nombre_completo) ELSE nombre_completo END,
                     nombre_pila = CASE WHEN nombre_pila IS NULL OR nombre_pila = "" THEN VALUES(nombre_pila) ELSE nombre_pila END'
             );
+            $cleanNom = function_exists('sanitize_patient_name') ? sanitize_patient_name($nombre) : $nombre;
+            $cleanApe = function_exists('sanitize_patient_name') ? sanitize_patient_name($apellido) : $apellido;
+            $cleanFull = function_exists('sanitize_patient_name') ? sanitize_patient_name($name) : $name;
             $stmt->execute([
                 'tel' => $phone,
-                'nombre' => mb_substr($nombre, 0, 60, 'UTF-8'),
-                'apellido' => mb_substr($apellido, 0, 60, 'UTF-8'),
-                'full' => mb_substr($name, 0, 120, 'UTF-8'),
-                'pila' => mb_substr($nombre, 0, 60, 'UTF-8'),
+                'nombre' => mb_substr($cleanNom, 0, 60, 'UTF-8'),
+                'apellido' => mb_substr($cleanApe, 0, 60, 'UTF-8'),
+                'full' => mb_substr($cleanFull, 0, 120, 'UTF-8'),
+                'pila' => mb_substr($cleanNom !== '' ? $cleanNom : $nombre, 0, 60, 'UTF-8'),
                 'email' => $email !== '' ? $email : null,
                 'origen' => 'admin',
             ]);
+            $newId = (int) $pdo->lastInsertId();
+            if ($newId <= 0) {
+                $find = $pdo->prepare('SELECT id FROM pacientes WHERE telefono = :tel LIMIT 1');
+                $find->execute(['tel' => $phone]);
+                $newId = (int) ($find->fetchColumn() ?: 0);
+            }
+            error_log('recordatorios persist contact inserted id=' . $newId . ' phone=' . $phone);
             // No correr deduplicate_pacientes_table acá: es O(n) sobre todo el directorio
             // y en la carga manual de WhatsApp puede colgar/timeout el request.
-            return ['ok' => true, 'phone' => $phone, 'email' => $email];
+            return ['ok' => true, 'phone' => $phone, 'email' => $email, 'id' => $newId];
         }
 
         // Solo email: actualizar paciente existente por nombre o crear placeholder no es posible sin teléfono único.

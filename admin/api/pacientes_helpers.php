@@ -307,23 +307,30 @@ function find_existing_patient_match(PDO $pdo, ?string $phone, ?string $name = n
     if ($name !== null && trim($name) !== '') {
         $nameKey = canonical_patient_name_key($name);
         if ($nameKey !== '' && str_contains($nameKey, ' ')) {
+            // PDO nativo (ATTR_EMULATE_PREPARES=false) no permite reutilizar el mismo :nombre.
+            $fullLower = mb_strtolower(trim($name), 'UTF-8');
             $stmt = $pdo->prepare('
                 SELECT * FROM pacientes 
-                WHERE LOWER(nombre_completo) = :full 
-                   OR LOWER(TRIM(CONCAT(nombre, " ", apellido))) = :full
-                   OR LOWER(TRIM(CONCAT(apellido, " ", nombre))) = :full
+                WHERE LOWER(nombre_completo) = :full1
+                   OR LOWER(TRIM(CONCAT(nombre, " ", apellido))) = :full2
+                   OR LOWER(TRIM(CONCAT(apellido, " ", nombre))) = :full3
                 LIMIT 1
             ');
-            $stmt->execute(['full' => mb_strtolower(trim($name), 'UTF-8')]);
+            $stmt->execute(['full1' => $fullLower, 'full2' => $fullLower, 'full3' => $fullLower]);
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if ($row) return $row;
 
-            $stmtAll = $pdo->query('SELECT id, telefono, nombre, apellido, nombre_completo, dni, profesional_habitual, dejo_review, encuesta_enviada FROM pacientes');
+            $stmtAll = $pdo->query('SELECT id, nombre, apellido, nombre_completo FROM pacientes');
             if ($stmtAll) {
                 while ($cand = $stmtAll->fetch(PDO::FETCH_ASSOC)) {
                     $candFull = trim(($cand['nombre_completo'] ?? '') ?: (($cand['nombre'] ?? '') . ' ' . ($cand['apellido'] ?? '')));
                     if (canonical_patient_name_key($candFull) === $nameKey) {
-                        return $cand;
+                        // Traer la fila completa: el scan liviano omite email/notas/contacto
+                        // y un UPDATE posterior los pisaba con null.
+                        $fullStmt = $pdo->prepare('SELECT * FROM pacientes WHERE id = :id LIMIT 1');
+                        $fullStmt->execute(['id' => (int) $cand['id']]);
+                        $full = $fullStmt->fetch(PDO::FETCH_ASSOC);
+                        return is_array($full) ? $full : $cand;
                     }
                 }
             }
@@ -331,6 +338,36 @@ function find_existing_patient_match(PDO $pdo, ?string $phone, ?string $name = n
     }
 
     return null;
+}
+
+/**
+ * Resuelve qué teléfono conservar al unificar/actualizar.
+ * Si el admin acaba de cargar un WhatsApp nuevo y el match fue por nombre/DNI,
+ * ese número gana (salvo colisión con otro paciente).
+ */
+function kinesica_resolve_merge_phone(PDO $pdo, array $existing, string $newPhone): string
+{
+    $existingTel = trim((string) ($existing['telefono'] ?? ''));
+    $existingClean = clean_phone_number($existingTel);
+    $newClean = clean_phone_number($newPhone);
+
+    if ($newClean === '') {
+        return $existingTel !== '' ? $existingTel : $newPhone;
+    }
+    if (is_placeholder_phone($existingTel) || $existingClean === '' || $existingClean === $newClean) {
+        return $newClean;
+    }
+
+    try {
+        $stmt = $pdo->prepare('SELECT id FROM pacientes WHERE telefono = :tel AND id != :id LIMIT 1');
+        $stmt->execute(['tel' => $newClean, 'id' => (int) ($existing['id'] ?? 0)]);
+        if ($stmt->fetch()) {
+            return $existingTel; // el nuevo ya pertenece a otro
+        }
+    } catch (Throwable) {
+        return $existingTel;
+    }
+    return $newClean;
 }
 
 function deduplicate_pacientes_table(PDO $pdo): int

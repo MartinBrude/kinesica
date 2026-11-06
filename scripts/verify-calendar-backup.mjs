@@ -215,6 +215,11 @@ await test("3. La alerta de auditoría en modo respaldo va ÚNICAMENTE a Norbert
   assert.ok(!libSrc.includes("541128531224"), "lib_calendar_backup.php no debe enviar alertas de respaldo al teléfono de María");
   assert.ok(!libSrc.includes("manosmagicas7116"), "lib_calendar_backup.php no debe enviar alertas de respaldo al mail de María");
   assert.ok(libSrc.includes("541161564311"), "La alerta de auditoría debe dirigirse a Norberto");
+  // Lecturas de horarios en respaldo NO deben spamear: solo auditoría al agendar.
+  assert.ok(
+    libSrc.includes("KINESICA_BACKUP_READ_ALERTS"),
+    "Las alertas por lectura de horarios deben ser opt-in (KINESICA_BACKUP_READ_ALERTS)"
+  );
 });
 
 await test("4. Nivel 3 (si fallara también el respaldo): ofrece teléfono de Norberto (propias y ambos) o María (exclusivas)", async () => {

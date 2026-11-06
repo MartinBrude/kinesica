@@ -3,7 +3,7 @@
  * Registro de costos en EUR, USD y ARS con cotización histórica del día.
  */
 
-import { api } from "./api.js?v=77";
+import { api } from "./api.js?v=78";
 import { escapeHtml, dialogAlert, dialogConfirm } from "./dom.js?v=78";
 import { SEED_GASTOS, formatMoney, getRecordDailyAmounts } from "./admin-gastos-rates.js";
 import {

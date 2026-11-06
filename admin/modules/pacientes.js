@@ -3,7 +3,7 @@
  * Permite buscar, ver, dar de alta y editar teléfonos para WhatsApp y recordatorios.
  */
 
-import { api } from "./api.js?v=77";
+import { api } from "./api.js?v=78";
 import { escapeHtml, debounce, dialogAlert, dialogConfirm, switchActiveView } from "./dom.js?v=78";
 import { phoneMatches } from "./phone-search.js?v=2";
 import { formatDisplayPhone, capitalizePersonName } from "./pacientes-format.js";
@@ -341,10 +341,8 @@ export async function loadPacientes() {
     invalidateDirectoryCache();
     renderPacientesTable();
 
-    // Seguridad: si el listado aún trae duplicados, consolidar en backend sin UI
-    if (raw.length !== deduplicated.length) {
-      api("pacientes.php", { method: "POST", body: JSON.stringify({ action: "deduplicate" }) }).catch(() => {});
-    }
+    // Dedupe en memoria alcanza para la UI. No disparar POST deduplicate en cada
+    // carga: competía con el alta y podía timeout/ocultar pacientes recién creados.
   } catch (err) {
     listEl.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px; color: #dc2626;">Error al cargar pacientes: ${escapeHtml(err.message)}</td></tr>`;
   }

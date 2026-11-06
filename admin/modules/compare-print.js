@@ -4,7 +4,7 @@
  */
 
 import { CLINICIAN_DETAILS } from "../ficha-rules.mjs?v=90";
-import { formatDate } from "./api.js?v=77";
+import { formatDate } from "./api.js?v=78";
 import { escapeHtml, node } from "./dom.js?v=78";
 
 /**

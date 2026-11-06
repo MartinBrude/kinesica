@@ -13,7 +13,10 @@ require_once __DIR__ . '/lib.php';
 require_once __DIR__ . '/kinesica_settings_storage.php';
 
 const KINESICA_BACKUP_MAX_AGE_SECONDS = 86400; // 24 horas de vigencia máxima de seguridad
-const KINESICA_BACKUP_READ_ALERT_COOLDOWN = 1800; // 30 min entre alertas de lectura en modo respaldo
+// Las lecturas de horarios caen al respaldo con frecuencia por timeouts/cold-start de GAS.
+// No spamear por eso: la alerta externa es solo al AGENDAR en modo respaldo (auditoría).
+// Opt-in de diagnóstico: KINESICA_BACKUP_READ_ALERTS=1 (máx. 1 cada 24 h).
+const KINESICA_BACKUP_READ_ALERT_COOLDOWN = 86400;
 const KINESICA_BACKUP_SESSION_DURATION_MIN = 60;
 const KINESICA_BACKUP_SLOT_STEP_MIN = 30;
 const KINESICA_BACKUP_BUFFER_HOURS = 2;
@@ -497,15 +500,42 @@ function kinesica_backup_notify_norberto_audit(array $bookingEntry, array $backu
 }
 
 /**
- * Envía un aviso moderado (máximo 1 cada 30 min) a Norberto si la lectura de horarios cae en Modo Respaldo.
+ * Registra que una lectura de horarios se sirvió desde el respaldo.
+ * Por defecto NO avisa por mail/WhatsApp: timeouts intermitentes de GAS (cold start)
+ * activan el respaldo sin que el calendario esté caído. La alerta útil es la de
+ * auditoría al agendar (`kinesica_backup_notify_norberto_audit`).
+ *
+ * Diagnóstico opcional: KINESICA_BACKUP_READ_ALERTS=1 (máx. 1 mail/WA cada 24 h).
  */
 function kinesica_backup_notify_norberto_read_fallback(string $contextInfo = ''): void
 {
+    $ageMin = null;
+    $updatedTs = 0;
+    try {
+        $state = kinesica_backup_read();
+        $updatedTs = (int) ($state['updated_ts'] ?? 0);
+        $ageMin = $updatedTs > 0 ? max(0, (int) round((time() - $updatedTs) / 60)) : null;
+    } catch (Throwable $e) {
+        // seguir con log
+    }
+
+    $ageText = $ageMin !== null ? "actualizada hace {$ageMin} min" : 'activa';
+    error_log(
+        'kinesica calendar backup read-fallback'
+        . ($contextInfo !== '' ? " ({$contextInfo})" : '')
+        . "; copia {$ageText}"
+    );
+
     if (getenv('KINESICA_BACKUP_SKIP_EXTERNAL_ALERTS') === '1') {
         return;
     }
+    // Opt-in explícito: no molestar en producción salvo diagnóstico.
+    $allowExternal = getenv('KINESICA_BACKUP_READ_ALERTS');
+    if ($allowExternal !== '1' && $allowExternal !== 'true') {
+        return;
+    }
+
     $shouldAlert = false;
-    $ageMin = null;
     try {
         kinesica_backup_mutate(function (array $state) use (&$shouldAlert, &$ageMin): array {
             $now = time();
@@ -534,10 +564,10 @@ function kinesica_backup_notify_norberto_read_fallback(string $contextInfo = '')
         getenv('NORBERTO_EMAIL')
         ?: ($_SERVER['NORBERTO_EMAIL'] ?? $_ENV['NORBERTO_EMAIL'] ?? cfg()['norberto_email'] ?? 'norberto1712@gmail.com')
     );
-    $ageText = $ageMin !== null ? "actualizada hace {$ageMin} min" : 'activa';
+    $ageLabel = $ageMin !== null ? "actualizada hace {$ageMin} min" : 'activa';
 
     $msg = "⚠️ *[AVISO · MODO RESPALDO DE CALENDARIO ACTIVO]*\n"
-        . "Una consulta de horarios en la web no obtuvo respuesta de Google Calendar a tiempo y fue respondida automáticamente con la copia de respaldo ({$ageText}).\n"
+        . "Una consulta de horarios en la web no obtuvo respuesta de Google Calendar a tiempo y fue respondida automáticamente con la copia de respaldo ({$ageLabel}).\n"
         . ($contextInfo !== '' ? "• *Detalle:* {$contextInfo}\n" : '')
         . "El paciente vio los horarios normalmente. Si concreta la reserva en modo respaldo, recibirás la alerta de auditoría con todos sus datos.";
 

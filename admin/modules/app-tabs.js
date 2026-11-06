@@ -3,7 +3,7 @@
  * Controla la activación de secciones del menú superior y los canales de administración.
  */
 
-import { api } from "./api.js?v=77";
+import { api } from "./api.js?v=78";
 import { getSessionUser } from "./auth.js?v=83";
 import { showLibrary } from "./library.js?v=93";
 import { showPacientesView, hidePacientesView } from "./pacientes.js?v=9";

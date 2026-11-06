@@ -3,7 +3,7 @@
  * Permite solicitar, verificar y reenviar códigos de un solo uso por correo electrónico.
  */
 
-import { api } from "./api.js?v=77";
+import { api } from "./api.js?v=78";
 import { setGateMessage } from "./auth-utils.js";
 
 export function setupEmailCodeFlow({

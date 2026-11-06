@@ -112,14 +112,19 @@ try {
 
         $q = trim((string) ($_GET['q'] ?? ''));
         if ($q !== '') {
+            // Un named param por cláusula: PDO nativo no reutiliza :q.
+            $like = '%' . $q . '%';
             $stmt = $pdo->prepare('
                 SELECT * FROM pacientes 
-                WHERE (nombre_completo LIKE :q OR nombre LIKE :q OR apellido LIKE :q OR telefono LIKE :q OR dni LIKE :q OR email LIKE :q OR contacto_nombre LIKE :q OR contacto_telefono LIKE :q)
+                WHERE (nombre_completo LIKE :q1 OR nombre LIKE :q2 OR apellido LIKE :q3 OR telefono LIKE :q4 OR dni LIKE :q5 OR email LIKE :q6 OR contacto_nombre LIKE :q7 OR contacto_telefono LIKE :q8)
                   AND LOWER(nombre_completo) NOT LIKE "%tk3%" AND LOWER(nombre_completo) NOT LIKE "%tk 3%"
                   AND LOWER(nombre_completo) NOT LIKE "%no dar%"
                 ORDER BY CASE WHEN apellido != "" THEN apellido ELSE nombre_completo END ASC, nombre ASC LIMIT 100
             ');
-            $stmt->execute(['q' => "%$q%"]);
+            $stmt->execute([
+                'q1' => $like, 'q2' => $like, 'q3' => $like, 'q4' => $like,
+                'q5' => $like, 'q6' => $like, 'q7' => $like, 'q8' => $like,
+            ]);
             json_out(200, ['status' => 'success', 'items' => $stmt->fetchAll()]);
         }
 
@@ -156,7 +161,8 @@ try {
         }
 
         if ($action === 'deduplicate' || $action === 'resolve_indistintos') {
-            kinesica_pacientes_run_maintenance_if_due($pdo, true);
+            // Solo dedupe/indistintos livianos. El mantenimiento completo (sync fichas)
+            // queda para cron / force=true; dispararlo acá tumbaba el listado y el alta.
             $merged = deduplicate_pacientes_table($pdo);
             $resolved = resolve_indistinto_pacientes_from_calendar($pdo);
             $cntStmt = $pdo->query('SELECT COUNT(*) FROM pacientes');

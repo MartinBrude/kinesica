@@ -3,7 +3,7 @@
  * Envío diferencial al endpoint settings.php con control de concurrencia optimista (revision).
  */
 
-import { api } from "./api.js?v=77";
+import { api } from "./api.js?v=78";
 import { validateCustomOptions } from "./config-options.js";
 
 export async function saveTextsAndPolicies({

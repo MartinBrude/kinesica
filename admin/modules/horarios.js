@@ -4,7 +4,7 @@
  * validando la restricción de 1 sola camilla física y sincronizando con Agendar y Clara.
  */
 
-import { api } from "./api.js?v=77";
+import { api } from "./api.js?v=78";
 import { escapeHtml, dialogAlert, switchActiveView } from "./dom.js?v=78";
 import { getSessionUser } from "./auth.js?v=83";
 import {

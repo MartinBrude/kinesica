@@ -12,7 +12,7 @@ import {
   api,
   setAuthRequiredHandler,
   formatDate,
-} from "./modules/api.js?v=77";
+} from "./modules/api.js?v=78";
 
 import {
   escapeHtml,

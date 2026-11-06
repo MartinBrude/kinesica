@@ -4,7 +4,7 @@
  * reenvío de accesos y vista de detalle de usuario.
  */
 
-import { api } from "./api.js?v=77";
+import { api } from "./api.js?v=78";
 import { escapeHtml, dialogAlert, dialogConfirm } from "./dom.js?v=78";
 import { formatDisplayPhone } from "./phone-format.js";
 

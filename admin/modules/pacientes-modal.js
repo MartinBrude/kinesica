@@ -3,7 +3,7 @@
  * Diálogo accesible con validación estricta de teléfono E.164, email y sugerencia de dominios.
  */
 
-import { api } from "./api.js?v=77";
+import { api } from "./api.js?v=78";
 import { escapeHtml, dialogAlert } from "./dom.js?v=78";
 import { getSessionUser } from "./auth.js?v=83";
 import {

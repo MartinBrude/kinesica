@@ -2,7 +2,7 @@
  * Kinésica Admin - Modal de Reporte de Errores
  */
 
-import { api } from "./api.js?v=77";
+import { api } from "./api.js?v=78";
 import { dialogAlert } from "./dom.js?v=78";
 import { renderSeccionesOptions } from "./admin-errores-config.js";
 

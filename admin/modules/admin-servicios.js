@@ -4,7 +4,7 @@
  * Permite cargar directamente cualquier excedente o renovación a la vista de Gastos.
  */
 
-import { api } from "./api.js?v=77";
+import { api } from "./api.js?v=78";
 import { escapeHtml } from "./dom.js?v=78";
 
 function computeStatusBadge(used, limit) {

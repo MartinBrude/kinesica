@@ -4,7 +4,7 @@
  */
 
 import { ageOn, patientKey, PATIENT_FIELDS, todayISO } from "../ficha-rules.mjs?v=91";
-import { api } from "./api.js?v=77";
+import { api } from "./api.js?v=78";
 import { dialogAlert } from "./dom.js?v=78";
 import { printItems } from "./print.js?v=82";
 import { initForm } from "./form.js?v=88";

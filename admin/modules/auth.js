@@ -4,7 +4,7 @@
  * reseteo seguro y cierre de sesión.
  */
 
-import { api } from "./api.js?v=77";
+import { api } from "./api.js?v=78";
 import { switchActiveView } from "./dom.js?v=78";
 import {
   setGateMessage,

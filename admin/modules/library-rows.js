@@ -5,7 +5,7 @@
  */
 
 import { dialogConfirm } from "./dom.js?v=78";
-import { formatDate } from "./api.js?v=77";
+import { formatDate } from "./api.js?v=78";
 import { patientKey, ageOn, capitalizePersonName } from "../ficha-rules.mjs?v=87";
 import { sessionRow } from "./library-session-row.js";
 import { getSessionUser } from "./auth.js?v=83";

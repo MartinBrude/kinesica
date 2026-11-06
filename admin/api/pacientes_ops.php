@@ -102,20 +102,32 @@ function kinesica_pacientes_upsert(PDO $pdo, array $data): void
         $finalContactoEmail = $contactoEmail ?: ($existing['contacto_email'] ?? null);
         $finalContactoNotas = $contactoNotas ?: ($existing['contacto_notas'] ?? null);
 
-        $targetPhone = $isExistingPlaceholder ? $phone : $existing['telefono'];
+        // No descartar el WhatsApp que acaba de cargar el admin (match por nombre/DNI).
+        $targetPhone = function_exists('kinesica_resolve_merge_phone')
+            ? kinesica_resolve_merge_phone($pdo, $existing, $phone)
+            : ($isExistingPlaceholder ? $phone : (string) ($existing['telefono'] ?? $phone));
+
+        // Resolver campos en PHP: con ATTR_EMULATE_PREPARES=false no se puede
+        // reutilizar el mismo named param dos veces (CASE WHEN :x THEN :x rompe).
+        $mergeNombre = $nombre !== '' ? $nombre : (string) ($existing['nombre'] ?? '');
+        $mergeApellido = $apellido !== '' ? $apellido : (string) ($existing['apellido'] ?? '');
+        $mergeFull = $nombreCompleto !== '' ? $nombreCompleto : (string) ($existing['nombre_completo'] ?? '');
+        $mergePila = $nombrePila !== '' ? $nombrePila : (string) ($existing['nombre_pila'] ?? '');
+        $mergeOrigen = kinesica_prefer_origen((string) ($existing['origen'] ?? 'whatsapp'), $origen);
 
         $stmtUpd = $pdo->prepare('
             UPDATE pacientes SET
                 telefono = :tel,
-                nombre = CASE WHEN :nom != "" THEN :nom ELSE nombre END,
-                apellido = CASE WHEN :ape != "" THEN :ape ELSE apellido END,
-                nombre_completo = CASE WHEN :full != "" THEN :full ELSE nombre_completo END,
-                nombre_pila = CASE WHEN :pila != "" THEN :pila ELSE nombre_pila END,
+                nombre = :nom,
+                apellido = :ape,
+                nombre_completo = :full,
+                nombre_pila = :pila,
                 dni = :dni,
                 email = :email,
                 profesional_habitual = :prof,
                 motivo_consulta = :motivo,
                 notas = :notas,
+                origen = :origen,
                 contacto_nombre = :cnom,
                 contacto_telefono = :ctel,
                 contacto_email = :cemail,
@@ -123,29 +135,44 @@ function kinesica_pacientes_upsert(PDO $pdo, array $data): void
                 dejo_review = :rev
             WHERE id = :id
         ');
-        $stmtUpd->execute([
-            'tel' => $targetPhone,
-            'nom' => $nombre,
-            'ape' => $apellido,
-            'full' => $nombreCompleto,
-            'pila' => $nombrePila,
-            'dni' => $finalDni ?: null,
-            'email' => $finalEmail ?: null,
-            'prof' => $finalProf,
-            'motivo' => $finalMotivo ? mb_substr($finalMotivo, 0, 255, 'UTF-8') : null,
-            'notas' => $finalNotas ? mb_substr($finalNotas, 0, 2000, 'UTF-8') : null,
-            'cnom' => $finalContactoNom,
-            'ctel' => $finalContactoTel,
-            'cemail' => $finalContactoEmail,
-            'cnot' => $finalContactoNotas,
-            'rev' => $finalReview,
-            'id' => $existingId,
-        ]);
+        try {
+            $stmtUpd->execute([
+                'tel' => $targetPhone,
+                'nom' => $mergeNombre,
+                'ape' => $mergeApellido,
+                'full' => $mergeFull,
+                'pila' => $mergePila,
+                'dni' => $finalDni ?: null,
+                'email' => $finalEmail ?: null,
+                'prof' => $finalProf,
+                'motivo' => $finalMotivo ? mb_substr($finalMotivo, 0, 255, 'UTF-8') : null,
+                'notas' => $finalNotas ? mb_substr($finalNotas, 0, 2000, 'UTF-8') : null,
+                'origen' => $mergeOrigen,
+                'cnom' => $finalContactoNom,
+                'ctel' => $finalContactoTel,
+                'cemail' => $finalContactoEmail,
+                'cnot' => $finalContactoNotas,
+                'rev' => $finalReview,
+                'id' => $existingId,
+            ]);
+        } catch (Throwable $e) {
+            error_log('kinesica pacientes upsert merge: ' . $e->getMessage());
+            json_out(500, ['status' => 'error', 'message' => 'No se pudo guardar el paciente: ' . $e->getMessage()]);
+        }
 
+        error_log('kinesica pacientes upsert merged id=' . $existingId . ' phone=' . $targetPhone);
         json_out(200, [
-            'status' => 'success', 'action' => 'upsert', 'phone' => $targetPhone,
-            'nombre' => $nombre, 'apellido' => $apellido, 'nombre_pila' => $nombrePila,
-            'email' => $finalEmail, 'profesional_habitual' => $finalProf, 'dejo_review' => $finalReview,
+            'status' => 'success',
+            'action' => 'upsert',
+            'merged' => true,
+            'id' => $existingId,
+            'phone' => $targetPhone,
+            'nombre' => $nombre,
+            'apellido' => $apellido,
+            'nombre_pila' => $nombrePila,
+            'email' => $finalEmail,
+            'profesional_habitual' => $finalProf,
+            'dejo_review' => $finalReview,
         ]);
     }
 
@@ -174,19 +201,39 @@ function kinesica_pacientes_upsert(PDO $pdo, array $data): void
             dejo_review = CASE WHEN VALUES(dejo_review) = 1 THEN 1 ELSE dejo_review END
     ');
 
-    $stmt->execute([
-        'telefono' => $phone, 'nombre' => $nombre, 'apellido' => $apellido,
-        'nombre_completo' => $nombreCompleto, 'nombre_pila' => $nombrePila,
-        'dni' => $dni, 'email' => $email, 'profesional_habitual' => $profesional,
-        'motivo_consulta' => $motivo, 'notas' => $notas, 'origen' => $origen,
-        'contacto_nombre' => $contactoNombre, 'contacto_telefono' => $contactoTel,
-        'contacto_email' => $contactoEmail, 'contacto_notas' => $contactoNotas,
-        'dejo_review' => $dejoReview,
-    ]);
+    try {
+        $stmt->execute([
+            'telefono' => $phone, 'nombre' => $nombre, 'apellido' => $apellido,
+            'nombre_completo' => $nombreCompleto, 'nombre_pila' => $nombrePila,
+            'dni' => $dni, 'email' => $email, 'profesional_habitual' => $profesional,
+            'motivo_consulta' => $motivo, 'notas' => $notas, 'origen' => $origen,
+            'contacto_nombre' => $contactoNombre, 'contacto_telefono' => $contactoTel,
+            'contacto_email' => $contactoEmail, 'contacto_notas' => $contactoNotas,
+            'dejo_review' => $dejoReview,
+        ]);
+    } catch (Throwable $e) {
+        error_log('kinesica pacientes upsert insert: ' . $e->getMessage());
+        json_out(500, ['status' => 'error', 'message' => 'No se pudo crear el paciente: ' . $e->getMessage()]);
+    }
 
+    $newId = (int) $pdo->lastInsertId();
+    if ($newId <= 0) {
+        // ON DUPLICATE KEY UPDATE no genera lastInsertId; recuperar por teléfono.
+        $find = $pdo->prepare('SELECT id FROM pacientes WHERE telefono = :tel LIMIT 1');
+        $find->execute(['tel' => $phone]);
+        $newId = (int) ($find->fetchColumn() ?: 0);
+    }
+    error_log('kinesica pacientes upsert inserted/updated id=' . $newId . ' phone=' . $phone);
     json_out(200, [
-        'status' => 'success', 'action' => 'upsert', 'phone' => $phone,
-        'nombre' => $nombre, 'apellido' => $apellido, 'nombre_pila' => $nombrePila, 'email' => $email,
+        'status' => 'success',
+        'action' => 'upsert',
+        'merged' => false,
+        'id' => $newId,
+        'phone' => $phone,
+        'nombre' => $nombre,
+        'apellido' => $apellido,
+        'nombre_pila' => $nombrePila,
+        'email' => $email,
     ]);
 }
 

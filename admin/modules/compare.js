@@ -9,7 +9,7 @@ import {
   patientKey,
   normalizeDni,
 } from "../ficha-rules.mjs?v=90";
-import { formatDate } from "./api.js?v=77";
+import { formatDate } from "./api.js?v=78";
 import { escapeHtml, switchActiveView } from "./dom.js?v=78";
 import { buildComparePrintSheet, printCompare } from "./compare-print.js";
 import { renderCompareTab as renderTabContent, setupCompareOptions, updateCompareBanner } from "./compare-tabs.js";

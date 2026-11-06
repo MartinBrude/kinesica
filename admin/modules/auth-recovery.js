@@ -3,7 +3,7 @@
  * Gestiona el envío de mails con token de reset y la actualización de claves.
  */
 
-import { api } from "./api.js?v=77";
+import { api } from "./api.js?v=78";
 import { setGateMessage } from "./auth-utils.js";
 
 export function setupRecoveryFlow({
