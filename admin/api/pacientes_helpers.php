@@ -36,8 +36,8 @@ function clean_phone_number(string $raw): string
         return '';
     }
 
-    // Descartar prefijos de texto habituales ("WhatsApp:", "tel:", etc.)
-    $withoutPrefix = preg_replace('/^(?:whatsapp|wa\.me|tel|cel|movil)[:\s\/]*/iu', '', $t) ?? $t;
+    // Descartar prefijos de texto habituales ("WhatsApp:", "tel:", "teléfono:", etc.)
+    $withoutPrefix = preg_replace('/^(?:whatsapp|wa\.me|tel[eé]?fono|tel|cel|movil|celular|phone)[:\s\/]*/iu', '', $t) ?? $t;
     // Si contiene letras sueltas que no eran prefijos conocidos, no es un teléfono válido
     if (preg_match('/[a-zA-Z]/', $withoutPrefix)) {
         return '';

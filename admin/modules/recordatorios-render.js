@@ -88,10 +88,13 @@ export function buildRecordatorioCardHtml(item) {
   const viaEmail = item.status === "sent_email";
   const hasEmail = !!(item.email && String(item.email).includes("@"));
 
-  // Resolver wa_id con fallback si vino vacío pero está en event_summary o patient_name
+  // Resolver wa_id con fallback desde descripción/summary (clave:valor telefono/whatsapp/…)
   let effectiveWaId = item.wa_id || "";
   if (!effectiveWaId) {
-    const candidate = extractPhoneCandidate(item.event_summary || "") || extractPhoneCandidate(item.patient_name || "");
+    const candidate =
+      extractPhoneCandidate(item.event_description || "") ||
+      extractPhoneCandidate(item.event_summary || "") ||
+      extractPhoneCandidate(item.patient_name || "");
     if (candidate) {
       effectiveWaId = candidate;
     }

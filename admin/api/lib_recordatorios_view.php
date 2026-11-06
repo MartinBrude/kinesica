@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/lib_recordatorios_store.php';
 require_once __DIR__ . '/pacientes_helpers.php';
+require_once __DIR__ . '/calendar_event_parse.php';
 
 const RECORDATORIOS_DEFAULT_DAYS = 14;
 
@@ -75,7 +76,20 @@ function recordatorios_extract_phone_candidate(string $text): string
         return '';
     }
 
-    if (preg_match('/(?:(?:whatsapp|wa\.me|tel|cel|telefono|celular|movil)[:\s\/]*)+([+]?[-0-9\s()]{8,22})/iu', $t, $m)) {
+    // Preferir clave:valor (telefono/teléfono/whatsapp/…) sin llamar extract_contacts (evita recursión).
+    if (function_exists('kinesica_parse_calendar_kv_map')) {
+        $map = kinesica_parse_calendar_kv_map($t);
+        foreach (['telefono', 'whatsapp', 'wa', 'tel', 'celular', 'movil', 'phone'] as $k) {
+            if (!empty($map[$k])) {
+                $fromKv = clean_phone_number((string) $map[$k]);
+                if ($fromKv !== '' && (!function_exists('is_placeholder_phone') || !is_placeholder_phone($fromKv))) {
+                    return $fromKv;
+                }
+            }
+        }
+    }
+
+    if (preg_match('/(?:(?:whatsapp|wa\.me|tel|cel|telefono|tel[eé]fono|celular|movil)[:\s\/]*)+([+]?[-0-9\s()]{8,22})/iu', $t, $m)) {
         $digits = preg_replace('/\D+/', '', $m[1]);
         if (strlen($digits) >= 8 && strlen($digits) <= 15) {
             return clean_phone_number($m[1]);
@@ -128,12 +142,20 @@ function recordatorios_format_item(array $r, ?string $email = null): array
 
     $waId = (string) ($r['wa_id'] ?? '');
     if ($waId === '') {
-        $candidate = recordatorios_extract_phone_candidate((string) ($r['event_summary'] ?? ''));
-        if ($candidate === '') {
-            $candidate = recordatorios_extract_phone_candidate((string) ($r['patient_name'] ?? ''));
-        }
-        if ($candidate !== '') {
-            $waId = $candidate;
+        $contact = kinesica_extract_calendar_contacts(
+            trim((string) ($r['patient_name'] ?? '') . ' ' . (string) ($r['event_summary'] ?? '')),
+            (string) ($r['event_description'] ?? $r['description'] ?? '')
+        );
+        if ($contact['phone'] !== '') {
+            $waId = $contact['phone'];
+        } else {
+            $candidate = recordatorios_extract_phone_candidate((string) ($r['event_summary'] ?? ''));
+            if ($candidate === '') {
+                $candidate = recordatorios_extract_phone_candidate((string) ($r['patient_name'] ?? ''));
+            }
+            if ($candidate !== '') {
+                $waId = $candidate;
+            }
         }
     }
 
@@ -157,6 +179,8 @@ function recordatorios_format_item(array $r, ?string $email = null): array
         'error_code' => (string) ($r['error_code'] ?? ''),
         'error_message' => (string) ($r['error_message'] ?? ''),
         'event_summary' => (string) ($r['event_summary'] ?? ''),
+        'event_description' => (string) ($r['event_description'] ?? $r['description'] ?? ''),
+        'dni' => (string) ($r['dni'] ?? ''),
         'is_past' => recordatorios_is_appointment_past(isset($r['appointment_date']) ? (string) $r['appointment_date'] : null, (string) ($r['appointment_time'] ?? '')),
     ];
 }

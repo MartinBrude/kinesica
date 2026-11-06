@@ -55,7 +55,7 @@ const ADMIN_HOURS_CACHE_KEY = "admin_practitioner_hours_v1";
 const ADMIN_HOURS_CACHE_SECONDS = 120;
 // Última copia buena de los horarios del admin (persistente): se usa si settings.php no responde.
 const ADMIN_HOURS_LAST_GOOD_PROP = "ADMIN_HOURS_LAST_GOOD";
-const GAS_CODE_VERSION = "v21-list-appointments-auth";
+const GAS_CODE_VERSION = "v22-calendar-kv-parse";
 const BOOKING_IDEMPOTENCY_PREFIX = "booking_result_v1_";
 
 function isValidHoursObject(h) {
@@ -742,15 +742,94 @@ function isNonPatientAppointmentTitle(title) {
 }
 
 /**
- * Extrae un teléfono candidato desde la descripción del evento.
+ * Normaliza claves de "clave:valor" (sin acentos, minúsculas).
  */
-function extractPhoneFromAppointmentDescription(description) {
-  const text = String(description || "");
-  const m = text.match(/(?:whatsapp|wa\.me|tel|cel|telefono|celular|movil)[:\s\/]*([+]?[-0-9\s()]{8,22})/i);
-  if (!m) return "";
-  const digits = String(m[1] || "").replace(/\D+/g, "");
+function normalizeCalendarKvKey(raw) {
+  return String(raw || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "");
+}
+
+/**
+ * Parsea segmentos clave:valor desde descripción/título (líneas o " | ").
+ */
+function parseCalendarKvMap(text) {
+  const raw = String(text || "").trim();
+  if (!raw) return {};
+  const chunks = raw.split(/\s*(?:\||\r\n|\r|\n)\s*/);
+  const map = {};
+  for (let i = 0; i < chunks.length; i++) {
+    let chunk = String(chunks[i] || "").trim();
+    if (!chunk) continue;
+    chunk = chunk.replace(/^[^\wáéíóúÁÉÍÓÚñÑüÜ]+/u, "");
+    const m = chunk.match(/^([^:]{1,40})\s*:\s*(.+)$/);
+    if (!m) continue;
+    const key = normalizeCalendarKvKey(m[1]);
+    const val = String(m[2] || "").trim();
+    if (!key || !val || map[key]) continue;
+    map[key] = val;
+  }
+  return map;
+}
+
+function extractDigitsPhone(raw) {
+  const digits = String(raw || "").replace(/\D+/g, "");
   if (digits.length < 8 || digits.length > 15) return "";
   return digits;
+}
+
+function extractDigitsDni(raw) {
+  const digits = String(raw || "").replace(/\D+/g, "");
+  if (digits.length < 5 || digits.length > 12) return "";
+  return digits;
+}
+
+/**
+ * Teléfono/DNI desde descripción (clave:valor) y fallbacks legacy; el título se conserva como fallback.
+ */
+function extractContactsFromAppointment(title, description) {
+  const phoneKeys = ["telefono", "whatsapp", "wa", "tel", "celular", "movil", "phone"];
+  const dniKeys = ["dni", "documento", "doc", "pasaporte", "document", "passport"];
+  const descMap = parseCalendarKvMap(description);
+  const titleMap = parseCalendarKvMap(title);
+  let phone = "";
+  let dni = "";
+
+  for (let i = 0; i < phoneKeys.length; i++) {
+    if (!phone && descMap[phoneKeys[i]]) phone = extractDigitsPhone(descMap[phoneKeys[i]]);
+  }
+  for (let j = 0; j < dniKeys.length; j++) {
+    if (!dni && descMap[dniKeys[j]]) dni = extractDigitsDni(descMap[dniKeys[j]]);
+  }
+  for (let i = 0; i < phoneKeys.length; i++) {
+    if (!phone && titleMap[phoneKeys[i]]) phone = extractDigitsPhone(titleMap[phoneKeys[i]]);
+  }
+  for (let j = 0; j < dniKeys.length; j++) {
+    if (!dni && titleMap[dniKeys[j]]) dni = extractDigitsDni(titleMap[dniKeys[j]]);
+  }
+
+  // Legacy descripción: "WhatsApp: …" / "DNI …"
+  if (!phone) {
+    const m = String(description || "").match(/(?:whatsapp|wa\.me|tel|cel|telefono|tel[eé]fono|celular|movil)[:\s\/]*([+]?[-0-9\s()]{8,22})/i);
+    if (m) phone = extractDigitsPhone(m[1]);
+  }
+  if (!dni) {
+    const mDni = String(description || "").match(/\b(?:dni|documento|doc|pasaporte)\b\s*[:#-]?\s*([0-9][0-9.\-\s]{4,18})/i);
+    if (mDni) dni = extractDigitsDni(mDni[1]);
+  }
+  if (!dni) {
+    const mTitleDni = String(title || "").match(/\b(?:dni|documento|doc|pasaporte)\b\s*[:#-]?\s*([0-9][0-9.\-\s]{4,18})/i);
+    if (mTitleDni) dni = extractDigitsDni(mTitleDni[1]);
+  }
+
+  return { phone: phone, dni: dni };
+}
+
+/** @deprecated usar extractContactsFromAppointment */
+function extractPhoneFromAppointmentDescription(description) {
+  return extractContactsFromAppointment("", description).phone;
 }
 
 /**
@@ -806,13 +885,16 @@ function handleListAppointments(params) {
       eventId = "";
     }
 
+    const contacts = extractContactsFromAppointment(title, description);
     appointments.push({
       eventId: eventId,
       title: title,
       patientName: patientName,
       date: date,
       startIso: start.toISOString ? start.toISOString() : String(start),
-      phone: extractPhoneFromAppointmentDescription(description)
+      description: description,
+      phone: contacts.phone,
+      dni: contacts.dni
     });
   }
 

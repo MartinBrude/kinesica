@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/pacientes_helpers.php';
+require_once __DIR__ . '/calendar_event_parse.php';
 
 /**
  * Almacén durable de outcomes de recordatorios WhatsApp 24h (ingest desde n8n).
@@ -107,7 +108,7 @@ function recordatorios_parse_run_at($value, int $fallback): int
  * @return array{
  *   event_key:string,exec_id:string,run_at:int,appointment_date:?string,appointment_time:string,
  *   calendar_event_id:string,patient_name:string,wa_id:string,status:string,skip_reason:string,
- *   error_code:string,error_message:string,event_summary:string
+ *   error_code:string,error_message:string,event_summary:string,event_description:string,dni:string
  * }|null
  */
 function recordatorios_normalize_item(array $in, string $execId, int $runAt): ?array
@@ -134,6 +135,7 @@ function recordatorios_normalize_item(array $in, string $execId, int $runAt): ?a
 
     $nameRaw = (string) ($in['patient_name'] ?? $in['patient_full_name'] ?? '');
     $summaryRaw = (string) ($in['event_summary'] ?? '');
+    $descriptionRaw = (string) ($in['event_description'] ?? $in['description'] ?? $in['event_desc'] ?? '');
     $name = mb_strtolower(trim($nameRaw));
     $summary = mb_strtolower(trim($summaryRaw));
 
@@ -161,6 +163,20 @@ function recordatorios_normalize_item(array $in, string $execId, int $runAt): ?a
     if (mb_strlen($errMsg, 'UTF-8') > 500) {
         $errMsg = mb_substr($errMsg, 0, 500, 'UTF-8');
     }
+
+    $waId = substr(recordatorios_clean_wa_id((string) ($in['wa_id'] ?? $in['to'] ?? '')), 0, 32);
+    $contact = kinesica_extract_calendar_contacts(
+        trim($nameRaw . ' ' . $summaryRaw),
+        $descriptionRaw
+    );
+    if ($waId === '' && $contact['phone'] !== '') {
+        $waId = substr(recordatorios_clean_wa_id($contact['phone']), 0, 32);
+    }
+    $dni = clean_patient_dni((string) ($in['dni'] ?? $in['documento'] ?? ''));
+    if ($dni === '' && $contact['dni'] !== '') {
+        $dni = $contact['dni'];
+    }
+
     return [
         'event_key' => substr($key, 0, 160),
         'exec_id' => $safeExec,
@@ -169,12 +185,14 @@ function recordatorios_normalize_item(array $in, string $execId, int $runAt): ?a
         'appointment_time' => substr(trim((string) ($in['appointment_time'] ?? $in['formatted_time'] ?? '')), 0, 16),
         'calendar_event_id' => substr($calId, 0, 128),
         'patient_name' => mb_substr(trim((string) ($in['patient_name'] ?? $in['patient_full_name'] ?? '')), 0, 120, 'UTF-8'),
-        'wa_id' => substr(recordatorios_clean_wa_id((string) ($in['wa_id'] ?? $in['to'] ?? '')), 0, 32),
+        'wa_id' => $waId,
         'status' => $status,
         'skip_reason' => substr($skip, 0, 40),
         'error_code' => substr(trim((string) ($in['error_code'] ?? '')), 0, 32),
         'error_message' => $errMsg,
         'event_summary' => mb_substr(trim((string) ($in['event_summary'] ?? '')), 0, 255, 'UTF-8'),
+        'event_description' => mb_substr(trim($descriptionRaw), 0, 2000, 'UTF-8'),
+        'dni' => $dni,
     ];
 }
 
@@ -270,69 +288,97 @@ function recordatorios_store_items(array $items, ?PDO $pdo = null): array
             $outcome = recordatorios_insert_item($pdo, $ev);
             $res[$outcome === 'stored' ? 'stored' : 'duplicates']++;
 
-            // Auto-sincronización con el directorio de pacientes:
-            // Si el turno trae teléfono y nombre real de paciente, registrar/completar en `pacientes`.
-            if (!empty($ev['wa_id']) && !empty($ev['patient_name'])) {
-                $rawPhone = clean_phone_number((string) $ev['wa_id']);
-                $rawName = trim((string) $ev['patient_name']);
-                if (strlen($rawPhone) >= 6 && strlen($rawPhone) <= 16 && $rawName !== '' && $rawName !== 'Estimado/a paciente' && $rawName !== 'Paciente') {
-                    if (function_exists('is_tk3_or_blocked_name') && !is_tk3_or_blocked_name($rawName)) {
-                        try {
-                            ensure_pacientes_tables($pdo);
-                            $existing = function_exists('find_existing_patient_match')
-                                ? find_existing_patient_match($pdo, $rawPhone, $rawName)
-                                : null;
+            // Auto-sincronización con el directorio de pacientes (teléfono/DNI + nombre).
+            $rawName = trim((string) ($ev['patient_name'] ?? ''));
+            $rawPhone = clean_phone_number((string) ($ev['wa_id'] ?? ''));
+            $rawDni = clean_patient_dni((string) ($ev['dni'] ?? ''));
+            if ($rawDni === '' || $rawPhone === '') {
+                $parsedContact = kinesica_extract_calendar_contacts(
+                    trim($rawName . ' ' . (string) ($ev['event_summary'] ?? '')),
+                    (string) ($ev['event_description'] ?? '')
+                );
+                if ($rawPhone === '' && $parsedContact['phone'] !== '') {
+                    $rawPhone = $parsedContact['phone'];
+                }
+                if ($rawDni === '' && $parsedContact['dni'] !== '') {
+                    $rawDni = $parsedContact['dni'];
+                }
+            }
+            $hasIdentity = ($rawPhone !== '' && strlen($rawPhone) >= 6 && strlen($rawPhone) <= 16) || $rawDni !== '';
+            if ($hasIdentity && $rawName !== '' && $rawName !== 'Estimado/a paciente' && $rawName !== 'Paciente') {
+                if (!function_exists('is_tk3_or_blocked_name') || !is_tk3_or_blocked_name($rawName)) {
+                    try {
+                        ensure_pacientes_tables($pdo);
+                        $existing = function_exists('find_existing_patient_match')
+                            ? find_existing_patient_match(
+                                $pdo,
+                                $rawPhone !== '' ? $rawPhone : null,
+                                $rawName,
+                                $rawDni !== '' ? $rawDni : null
+                            )
+                            : null;
 
-                            $profInferred = function_exists('infer_practitioner_from_schedule')
-                                ? infer_practitioner_from_schedule(
-                                    (string) ($ev['appointment_date'] ?? ''),
-                                    (string) ($ev['appointment_time'] ?? ''),
-                                    (string) (($ev['event_summary'] ?? '') . ' ' . ($ev['creator'] ?? ''))
-                                )
-                                : 'indistinto';
+                        $profInferred = function_exists('infer_practitioner_from_schedule')
+                            ? infer_practitioner_from_schedule(
+                                (string) ($ev['appointment_date'] ?? ''),
+                                (string) ($ev['appointment_time'] ?? ''),
+                                (string) (($ev['event_summary'] ?? '') . ' ' . ($ev['creator'] ?? ''))
+                            )
+                            : 'indistinto';
 
-                            if ($existing) {
-                                $existingId = (int) $existing['id'];
-                                $updates = [];
-                                $params = ['id' => $existingId];
-                                if (function_exists('is_placeholder_phone') && is_placeholder_phone((string) ($existing['telefono'] ?? ''))) {
-                                    $updates[] = 'telefono = :tel';
-                                    $params['tel'] = $rawPhone;
-                                }
-                                if (($existing['profesional_habitual'] ?? 'indistinto') === 'indistinto' && $profInferred !== 'indistinto') {
-                                    $updates[] = 'profesional_habitual = :prof';
-                                    $params['prof'] = $profInferred;
-                                }
-                                if (!empty($updates)) {
-                                    $pdo->prepare('UPDATE pacientes SET ' . implode(', ', $updates) . ' WHERE id = :id')->execute($params);
-                                }
-                            } else {
-                                $cleanNom = function_exists('sanitize_patient_name') ? sanitize_patient_name($rawName) : $rawName;
-                                $parts = preg_split('/\s+/u', $cleanNom, 2, PREG_SPLIT_NO_EMPTY) ?: [];
-                                $nom = $parts[0] ?? $cleanNom;
-                                $ape = $parts[1] ?? '';
-                                $pila = function_exists('extract_first_name') ? extract_first_name($cleanNom) : $nom;
-
-                                $stmtPac = $pdo->prepare(
-                                    'INSERT INTO pacientes (telefono, nombre, apellido, nombre_completo, nombre_pila, profesional_habitual, origen)
-                                     VALUES (:tel, :nombre, :apellido, :full, :pila, :prof, "admin")
-                                     ON DUPLICATE KEY UPDATE
-                                        nombre = CASE WHEN nombre IS NULL OR nombre = "" THEN VALUES(nombre) ELSE nombre END,
-                                        apellido = CASE WHEN apellido IS NULL OR apellido = "" THEN VALUES(apellido) ELSE apellido END,
-                                        nombre_completo = CASE WHEN nombre_completo IS NULL OR nombre_completo = "" THEN VALUES(nombre_completo) ELSE nombre_completo END,
-                                        nombre_pila = CASE WHEN nombre_pila IS NULL OR nombre_pila = "" THEN VALUES(nombre_pila) ELSE nombre_pila END,
-                                        profesional_habitual = CASE WHEN profesional_habitual = "indistinto" AND VALUES(profesional_habitual) != "indistinto" THEN VALUES(profesional_habitual) ELSE profesional_habitual END'
-                                );
-                                $stmtPac->execute([
-                                    'tel' => $rawPhone,
-                                    'nombre' => mb_substr($nom, 0, 60, 'UTF-8'),
-                                    'apellido' => mb_substr($ape, 0, 60, 'UTF-8'),
-                                    'full' => mb_substr($cleanNom, 0, 120, 'UTF-8'),
-                                    'pila' => mb_substr($pila, 0, 60, 'UTF-8'),
-                                    'prof' => $profInferred,
-                                ]);
+                        if ($existing) {
+                            $existingId = (int) $existing['id'];
+                            $updates = [];
+                            $params = ['id' => $existingId];
+                            if (
+                                $rawPhone !== ''
+                                && function_exists('is_placeholder_phone')
+                                && is_placeholder_phone((string) ($existing['telefono'] ?? ''))
+                            ) {
+                                $updates[] = 'telefono = :tel';
+                                $params['tel'] = $rawPhone;
                             }
-                        } catch (Throwable $pacEx) {}
+                            if ($rawDni !== '' && clean_patient_dni((string) ($existing['dni'] ?? '')) === '') {
+                                $updates[] = 'dni = :dni';
+                                $params['dni'] = mb_substr($rawDni, 0, 20, 'UTF-8');
+                            }
+                            if (($existing['profesional_habitual'] ?? 'indistinto') === 'indistinto' && $profInferred !== 'indistinto') {
+                                $updates[] = 'profesional_habitual = :prof';
+                                $params['prof'] = $profInferred;
+                            }
+                            if (!empty($updates)) {
+                                $pdo->prepare('UPDATE pacientes SET ' . implode(', ', $updates) . ' WHERE id = :id')->execute($params);
+                            }
+                        } else {
+                            $cleanNom = function_exists('sanitize_patient_name') ? sanitize_patient_name($rawName) : $rawName;
+                            $parts = preg_split('/\s+/u', $cleanNom, 2, PREG_SPLIT_NO_EMPTY) ?: [];
+                            $nom = $parts[0] ?? $cleanNom;
+                            $ape = $parts[1] ?? '';
+                            $pila = function_exists('extract_first_name') ? extract_first_name($cleanNom) : $nom;
+                            $tel = $rawPhone !== '' ? $rawPhone : ('sin-tel-dni-' . substr($rawDni, 0, 18));
+
+                            $stmtPac = $pdo->prepare(
+                                'INSERT INTO pacientes (telefono, nombre, apellido, nombre_completo, nombre_pila, dni, profesional_habitual, origen)
+                                 VALUES (:tel, :nombre, :apellido, :full, :pila, :dni, :prof, "admin")
+                                 ON DUPLICATE KEY UPDATE
+                                    nombre = CASE WHEN nombre IS NULL OR nombre = "" THEN VALUES(nombre) ELSE nombre END,
+                                    apellido = CASE WHEN apellido IS NULL OR apellido = "" THEN VALUES(apellido) ELSE apellido END,
+                                    nombre_completo = CASE WHEN nombre_completo IS NULL OR nombre_completo = "" THEN VALUES(nombre_completo) ELSE nombre_completo END,
+                                    nombre_pila = CASE WHEN nombre_pila IS NULL OR nombre_pila = "" THEN VALUES(nombre_pila) ELSE nombre_pila END,
+                                    dni = COALESCE(dni, VALUES(dni)),
+                                    profesional_habitual = CASE WHEN profesional_habitual = "indistinto" AND VALUES(profesional_habitual) != "indistinto" THEN VALUES(profesional_habitual) ELSE profesional_habitual END'
+                            );
+                            $stmtPac->execute([
+                                'tel' => $tel,
+                                'nombre' => mb_substr($nom, 0, 60, 'UTF-8'),
+                                'apellido' => mb_substr($ape, 0, 60, 'UTF-8'),
+                                'full' => mb_substr($cleanNom, 0, 120, 'UTF-8'),
+                                'pila' => mb_substr($pila, 0, 60, 'UTF-8'),
+                                'dni' => $rawDni !== '' ? mb_substr($rawDni, 0, 20, 'UTF-8') : null,
+                                'prof' => $profInferred,
+                            ]);
+                        }
+                    } catch (Throwable $pacEx) {
                     }
                 }
             }

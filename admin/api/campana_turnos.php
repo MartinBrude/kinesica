@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 require __DIR__ . '/lib.php';
 require_once __DIR__ . '/pacientes_helpers.php';
+require_once __DIR__ . '/calendar_event_parse.php';
 require_once __DIR__ . '/lib_calendar_backup.php';
 
 require_header();
@@ -140,9 +141,22 @@ function campana_split_name(string $full): array
 /**
  * @return array{id:?int,nombre:string,apellido:string,viene_de_campana:bool}|null
  */
-function campana_match_paciente(PDO $pdo, string $phone, string $patientName): ?array
+function campana_match_paciente(PDO $pdo, string $phone, string $patientName, string $dni = ''): ?array
 {
     $phone = clean_phone_number($phone);
+    $dni = clean_patient_dni($dni);
+    if (function_exists('find_existing_patient_match')) {
+        $existing = find_existing_patient_match(
+            $pdo,
+            $phone !== '' && !is_placeholder_phone($phone) ? $phone : null,
+            $patientName,
+            $dni !== '' ? $dni : null
+        );
+        if ($existing) {
+            return campana_paciente_row($existing);
+        }
+    }
+
     if ($phone !== '' && !is_placeholder_phone($phone)) {
         $stmt = $pdo->prepare(
             'SELECT id, nombre, apellido, nombre_completo, viene_de_campana
@@ -234,8 +248,17 @@ function campana_build_rows(PDO $pdo, array $appointments): array
             continue;
         }
 
+        $description = (string) ($appt['description'] ?? '');
+        $parsed = kinesica_extract_calendar_contacts($title . ' ' . $patientName, $description);
         $phone = clean_phone_number((string) ($appt['phone'] ?? ''));
-        $matched = campana_match_paciente($pdo, $phone, $patientName);
+        if ($phone === '' || is_placeholder_phone($phone)) {
+            $phone = $parsed['phone'];
+        }
+        $dni = clean_patient_dni((string) ($appt['dni'] ?? ''));
+        if ($dni === '') {
+            $dni = $parsed['dni'];
+        }
+        $matched = campana_match_paciente($pdo, $phone, $patientName, $dni);
         $split = campana_split_name($patientName);
 
         $rows[] = [
@@ -246,6 +269,7 @@ function campana_build_rows(PDO $pdo, array $appointments): array
             'viene_de_campana' => $matched['viene_de_campana'] ?? true,
             'calendar_event_id' => (string) ($appt['eventId'] ?? ''),
             'telefono' => $phone,
+            'dni' => $dni,
             'patient_name_raw' => $patientName,
         ];
     }

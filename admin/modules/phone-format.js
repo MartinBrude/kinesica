@@ -134,13 +134,46 @@ export function formatDisplayPhone(raw) {
  * @param {string} text
  * @returns {string}
  */
+function normalizeCalendarKvKey(raw) {
+  return String(raw || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "");
+}
+
+/**
+ * Teléfono desde segmentos clave:valor (telefono/teléfono/whatsapp/…).
+ * @param {string} text
+ * @returns {string}
+ */
+function extractPhoneFromKv(text) {
+  const raw = String(text || "").trim();
+  if (!raw) return "";
+  const chunks = raw.split(/\s*(?:\||\r\n|\r|\n)\s*/);
+  const phoneKeys = new Set(["telefono", "whatsapp", "wa", "tel", "celular", "movil", "phone"]);
+  for (const chunk0 of chunks) {
+    let chunk = String(chunk0 || "").trim().replace(/^[^\wáéíóúÁÉÍÓÚñÑüÜ]+/u, "");
+    const m = chunk.match(/^([^:]{1,40})\s*:\s*(.+)$/);
+    if (!m) continue;
+    const key = normalizeCalendarKvKey(m[1]);
+    if (!phoneKeys.has(key)) continue;
+    const digits = cleanPhoneDigits(m[2]);
+    if (digits.length >= 8 && digits.length <= 15) return digits;
+  }
+  return "";
+}
+
 export function extractPhoneCandidate(text) {
   if (!text) return "";
   const t = String(text).trim();
   if (!t) return "";
 
-  // 1. Prefijado explícito: tel, cel, whatsapp, etc.
-  const mPref = t.match(/(?:(?:whatsapp|wa\.me|tel|cel|telefono|celular|movil)[:\s\/]*)+([+]?[-0-9\s()]{8,22})/i);
+  const fromKv = extractPhoneFromKv(t);
+  if (fromKv) return fromKv;
+
+  // 1. Prefijado explícito: tel, cel, whatsapp, teléfono, etc.
+  const mPref = t.match(/(?:(?:whatsapp|wa\.me|tel|cel|telefono|tel[eé]fono|celular|movil)[:\s\/]*)+([+]?[-0-9\s()]{8,22})/i);
   if (mPref) {
     const digits = cleanPhoneDigits(mPref[1]);
     if (digits.length >= 8 && digits.length <= 15) {

@@ -215,6 +215,25 @@ test("list_appointments con secret: filtra bloqueos y parsea paciente/teléfono"
   assert.ok(String(res.appointments[0].phone).includes("1155556666") || String(res.appointments[0].phone).includes("55556666"));
 });
 
+test("list_appointments parsea telefono/dni clave:valor desde descripción", () => {
+  const day = "2026-03-11";
+  const events = [{
+    id: "e3",
+    title: "🩺 [MARIA] Luis Gómez",
+    start: `${day}T09:00:00-03:00`,
+    end: `${day}T10:00:00-03:00`,
+    description: "teléfono: 11 6000-1111\ndni: 30.111.222\nnotas: ok",
+  }];
+  const { ctx } = load({ adminHours: ALL_WEEK, props: { GAS_API_SECRET: SECRET }, events });
+  const res = JSON.parse(ctx.doGet({
+    parameter: { action: "list_appointments", dateFrom: day, dateTo: day, secret: SECRET },
+  }).text);
+  assert.equal(res.status, "success");
+  assert.equal(res.total, 1);
+  assert.match(String(res.appointments[0].phone), /1160001111|60001111/);
+  assert.equal(String(res.appointments[0].dni), "30111222");
+});
+
 test("secret correcto: check_patient y get_directory responden como antes", () => {
   const { ctx } = load({ adminHours: ALL_WEEK, props: { GAS_API_SECRET: SECRET } });
   const dir = JSON.parse(ctx.doGet({ parameter: { action: "get_directory", secret: SECRET } }).text);
@@ -291,7 +310,7 @@ test("guarda la última copia buena y la usa si luego falla settings.php", () =>
 test("ping informa admin_hours (sólo lectura)", () => {
   let ping = JSON.parse(load({ adminHours: ADMIN }).ctx.doGet({ parameter: { action: "ping" } }).text);
   assert.equal(ping.status, "online");
-  assert.equal(ping.code_version, "v21-list-appointments-auth");
+  assert.equal(ping.code_version, "v22-calendar-kv-parse");
   assert.deepEqual([ping.admin_hours.loaded, ping.admin_hours.http_code, ping.admin_hours.source], [true, 200, "admin"]);
   assert.ok(ping.admin_hours.fetched_at);
   ping = JSON.parse(load({ byUrl: { www: { status: 403, body: "x" }, apex: { throws: "DNS error" } } }).ctx.doGet({ parameter: { action: "ping" } }).text);
