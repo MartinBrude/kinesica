@@ -97,18 +97,81 @@ function kinesica_fichas_save_record(PDO $pdo, array $auth, string $id, array $d
         $pdo->rollBack();
         json_out(422, ['error' => 'La ficha contiene datos no válidos']);
     }
-    $stmt = $pdo->prepare(
-        'INSERT INTO fichas (id, payload, profesional, updated_at, updated_by)
-         VALUES (:id, :payload, :profesional, UTC_TIMESTAMP(), :user)
-         ON DUPLICATE KEY UPDATE payload = VALUES(payload), profesional = VALUES(profesional), updated_at = UTC_TIMESTAMP(), updated_by = VALUES(updated_by)'
-    );
-    $stmt->execute(['id' => $id, 'payload' => $payload, 'profesional' => $profesional, 'user' => $auth['username']]);
+
+    kinesica_fichas_ensure_rel_columns($pdo);
+
+    $pacienteId = null;
+    $profesionalId = null;
+    $didSync = false;
+    try {
+        require_once __DIR__ . '/lib_relational_resolve.php';
+        if (kinesica_rel_write_ids()) {
+            // Sync primero para que el directorio exista antes de resolver.
+            require_once __DIR__ . '/pacientes_helpers.php';
+            if (function_exists('sync_pacientes_from_fichas')) {
+                sync_pacientes_from_fichas($pdo, $id, $data, $profesional);
+                $didSync = true;
+            }
+            $pacienteId = kinesica_rel_resolve_paciente_id_or_note($pdo, 'fichas', [
+                'dni' => (string) ($data['dni'] ?? ''),
+                'nombre' => (string) ($data['nombre'] ?? ''),
+            ]);
+            $profesionalId = kinesica_rel_resolve_profesional_id($pdo, $profesional);
+        }
+    } catch (Throwable) {
+    }
+
+    $hasPacienteCol = kinesica_migrations_column_exists($pdo, 'fichas', 'paciente_id');
+    $hasProfCol = kinesica_migrations_column_exists($pdo, 'fichas', 'profesional_id');
+    $hasVersion = kinesica_migrations_column_exists($pdo, 'fichas', 'version');
+
+    if ($hasPacienteCol || $hasProfCol) {
+        $cols = 'id, payload, profesional, updated_at, updated_by';
+        $vals = ':id, :payload, :profesional, UTC_TIMESTAMP(), :user';
+        $upd = 'payload = VALUES(payload), profesional = VALUES(profesional), updated_at = UTC_TIMESTAMP(), updated_by = VALUES(updated_by)';
+        $params = [
+            'id' => $id,
+            'payload' => $payload,
+            'profesional' => $profesional,
+            'user' => $auth['username'],
+        ];
+        if ($hasPacienteCol) {
+            $cols .= ', paciente_id';
+            $vals .= ', :paciente_id';
+            $upd .= ', paciente_id = COALESCE(VALUES(paciente_id), paciente_id)';
+            $params['paciente_id'] = $pacienteId;
+        }
+        if ($hasProfCol) {
+            $cols .= ', profesional_id';
+            $vals .= ', :profesional_id';
+            $upd .= ', profesional_id = COALESCE(VALUES(profesional_id), profesional_id)';
+            $params['profesional_id'] = $profesionalId;
+        }
+        if ($hasVersion) {
+            $upd .= ', version = version + 1';
+        }
+        $stmt = $pdo->prepare(
+            "INSERT INTO fichas ({$cols}) VALUES ({$vals}) ON DUPLICATE KEY UPDATE {$upd}"
+        );
+        $stmt->execute($params);
+    } else {
+        $stmt = $pdo->prepare(
+            'INSERT INTO fichas (id, payload, profesional, updated_at, updated_by)
+             VALUES (:id, :payload, :profesional, UTC_TIMESTAMP(), :user)
+             ON DUPLICATE KEY UPDATE payload = VALUES(payload), profesional = VALUES(profesional), updated_at = UTC_TIMESTAMP(), updated_by = VALUES(updated_by)'
+        );
+        $stmt->execute(['id' => $id, 'payload' => $payload, 'profesional' => $profesional, 'user' => $auth['username']]);
+    }
     $pdo->commit();
 
-    try {
-        require_once __DIR__ . '/pacientes_helpers.php';
-        if (function_exists('sync_pacientes_from_fichas')) {
-            sync_pacientes_from_fichas($pdo, $id, $data, $profesional);
+    // Sync legacy post-commit solo si no se hizo arriba (flag off).
+    if (!$didSync) {
+        try {
+            require_once __DIR__ . '/pacientes_helpers.php';
+            if (function_exists('sync_pacientes_from_fichas')) {
+                sync_pacientes_from_fichas($pdo, $id, $data, $profesional);
+            }
+        } catch (Throwable) {
         }
-    } catch (Throwable) {}
+    }
 }

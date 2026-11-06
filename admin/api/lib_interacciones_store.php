@@ -260,8 +260,33 @@ function interacciones_normalize_event(array $in, string $defaultSource = 'push'
  */
 function interacciones_insert_event(PDO $pdo, array $ev): string
 {
-    $sql = 'INSERT INTO interaccion_eventos (event_key, wa_id, direction, body, ts_utc, patient_name, source, exec_id, media_id, media_type, media_mime, media_filename, received_at)
-            VALUES (:k, :wa, :dir, :body, :ts, :name, :src, :exec, :mid, :mtype, :mmime, :mfile, :rcv)';
+    $pacienteId = null;
+    try {
+        require_once __DIR__ . '/lib_relational_resolve.php';
+        require_once __DIR__ . '/lib_migrations.php';
+        if (kinesica_rel_write_ids() && kinesica_migrations_column_exists($pdo, 'interaccion_eventos', 'paciente_id')) {
+            $pacienteId = kinesica_rel_resolve_paciente_id_or_note($pdo, 'interacciones', [
+                'wa_id' => (string) ($ev['wa_id'] ?? ''),
+                'nombre' => (string) ($ev['patient_name'] ?? ''),
+            ]);
+        }
+    } catch (Throwable) {
+    }
+
+    $hasPacienteCol = false;
+    try {
+        require_once __DIR__ . '/lib_migrations.php';
+        $hasPacienteCol = kinesica_migrations_column_exists($pdo, 'interaccion_eventos', 'paciente_id');
+    } catch (Throwable) {
+    }
+
+    if ($hasPacienteCol) {
+        $sql = 'INSERT INTO interaccion_eventos (event_key, wa_id, paciente_id, direction, body, ts_utc, patient_name, source, exec_id, media_id, media_type, media_mime, media_filename, received_at)
+                VALUES (:k, :wa, :pid, :dir, :body, :ts, :name, :src, :exec, :mid, :mtype, :mmime, :mfile, :rcv)';
+    } else {
+        $sql = 'INSERT INTO interaccion_eventos (event_key, wa_id, direction, body, ts_utc, patient_name, source, exec_id, media_id, media_type, media_mime, media_filename, received_at)
+                VALUES (:k, :wa, :dir, :body, :ts, :name, :src, :exec, :mid, :mtype, :mmime, :mfile, :rcv)';
+    }
     $params = [
         'k' => $ev['event_key'], 'wa' => $ev['wa_id'], 'dir' => $ev['direction'], 'body' => $ev['body'],
         'ts' => gmdate('Y-m-d H:i:s', (int) $ev['ts']), 'name' => $ev['patient_name'], 'src' => $ev['source'],
@@ -272,6 +297,9 @@ function interacciones_insert_event(PDO $pdo, array $ev): string
         'mfile' => $ev['media_filename'] ?? null,
         'rcv' => gmdate('Y-m-d H:i:s'),
     ];
+    if ($hasPacienteCol) {
+        $params['pid'] = $pacienteId;
+    }
     try {
         $pdo->prepare($sql)->execute($params);
         return 'stored';

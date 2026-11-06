@@ -327,11 +327,43 @@ function kinesica_pacientes_waitlist_ops(PDO $pdo, string $action, array $data):
             json_out(422, ['status' => 'error', 'message' => 'Teléfono y nombre requeridos']);
         }
 
-        $stmt = $pdo->prepare('
-            INSERT INTO lista_espera (paciente_telefono, paciente_nombre, rango_horario_preferido, dias_preferidos, profesional, estado)
-            VALUES (:tel, :nom, :hor, :dias, :prof, "activa")
-        ');
-        $stmt->execute(['tel' => $phone, 'nom' => $nombre, 'hor' => $horario, 'dias' => $dias, 'prof' => $profesional]);
+        require_once __DIR__ . '/lib_migrations.php';
+        require_once __DIR__ . '/lib_relational_resolve.php';
+        $pacienteId = null;
+        $profesionalId = null;
+        if (kinesica_rel_write_ids()) {
+            $pacienteId = kinesica_rel_resolve_paciente_id_or_note($pdo, 'lista_espera', [
+                'phone' => $phone,
+                'nombre' => $nombre,
+            ]);
+            $profesionalId = kinesica_rel_resolve_profesional_id($pdo, (string) $profesional);
+        }
+
+        $hasPacienteCol = kinesica_migrations_column_exists($pdo, 'lista_espera', 'paciente_id');
+        $hasProfCol = kinesica_migrations_column_exists($pdo, 'lista_espera', 'profesional_id');
+        if ($hasPacienteCol || $hasProfCol) {
+            $cols = 'paciente_telefono, paciente_nombre, rango_horario_preferido, dias_preferidos, profesional, estado';
+            $vals = ':tel, :nom, :hor, :dias, :prof, "activa"';
+            $params = ['tel' => $phone, 'nom' => $nombre, 'hor' => $horario, 'dias' => $dias, 'prof' => $profesional];
+            if ($hasPacienteCol) {
+                $cols .= ', paciente_id';
+                $vals .= ', :paciente_id';
+                $params['paciente_id'] = $pacienteId;
+            }
+            if ($hasProfCol) {
+                $cols .= ', profesional_id';
+                $vals .= ', :profesional_id';
+                $params['profesional_id'] = $profesionalId;
+            }
+            $stmt = $pdo->prepare("INSERT INTO lista_espera ({$cols}) VALUES ({$vals})");
+            $stmt->execute($params);
+        } else {
+            $stmt = $pdo->prepare('
+                INSERT INTO lista_espera (paciente_telefono, paciente_nombre, rango_horario_preferido, dias_preferidos, profesional, estado)
+                VALUES (:tel, :nom, :hor, :dias, :prof, "activa")
+            ');
+            $stmt->execute(['tel' => $phone, 'nom' => $nombre, 'hor' => $horario, 'dias' => $dias, 'prof' => $profesional]);
+        }
         json_out(200, ['status' => 'success', 'id' => (int) $pdo->lastInsertId()]);
     }
 

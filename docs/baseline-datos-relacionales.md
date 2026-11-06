@@ -123,3 +123,12 @@ php admin/api/migrate.php --token="$INSTALL_TOKEN"
 - [ ] Guardar JSON + MD del informe
 - [ ] Revisar `manual_review` y clasificar excepciones
 - [ ] No fusionar ni borrar hasta reglas explícitas por caso
+
+## Escritura de IDs (etapa 3, flag off por defecto)
+
+Código: `lib_relational_resolve.php`. Con `relational_flags.write_ids` o `KINESICA_REL_WRITE_IDS=1`:
+
+- Fichas, lista de espera, interacciones y recordatorios intentan persistir `paciente_id`.
+- Ambiguo / sin match → `paciente_id` null + línea en `admin/api/data/rel_unlinked.jsonl` (sin PII completa).
+- `profesional_id` queda null hasta existir tabla `profesionales`.
+- Legacy (teléfono/nombre/`wa_id`) sigue funcionando con el flag en `false`.

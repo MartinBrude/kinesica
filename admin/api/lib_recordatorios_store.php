@@ -223,11 +223,36 @@ function recordatorios_is_duplicate_error(PDOException $e): bool
 /** @return string 'stored'|'duplicate' */
 function recordatorios_insert_item(PDO $pdo, array $ev): string
 {
-    $sql = 'INSERT INTO recordatorio_eventos
-        (event_key, exec_id, run_at, appointment_date, appointment_time, calendar_event_id,
-         patient_name, wa_id, status, skip_reason, error_code, error_message, event_summary, received_at)
-        VALUES
-        (:k, :exec, :run, :ad, :at, :cal, :name, :wa, :st, :sk, :ec, :em, :sum, :rcv)';
+    $pacienteId = null;
+    $hasPacienteCol = false;
+    try {
+        require_once __DIR__ . '/lib_relational_resolve.php';
+        require_once __DIR__ . '/lib_migrations.php';
+        $hasPacienteCol = kinesica_migrations_column_exists($pdo, 'recordatorio_eventos', 'paciente_id');
+        if (kinesica_rel_write_ids() && $hasPacienteCol) {
+            $pacienteId = kinesica_rel_resolve_paciente_id_or_note($pdo, 'recordatorios', [
+                'wa_id' => (string) ($ev['wa_id'] ?? ''),
+                'phone' => (string) ($ev['wa_id'] ?? ''),
+                'dni' => (string) ($ev['dni'] ?? ''),
+                'nombre' => (string) ($ev['patient_name'] ?? ''),
+            ]);
+        }
+    } catch (Throwable) {
+    }
+
+    if ($hasPacienteCol) {
+        $sql = 'INSERT INTO recordatorio_eventos
+            (event_key, exec_id, run_at, appointment_date, appointment_time, calendar_event_id,
+             patient_name, wa_id, paciente_id, status, skip_reason, error_code, error_message, event_summary, received_at)
+            VALUES
+            (:k, :exec, :run, :ad, :at, :cal, :name, :wa, :pid, :st, :sk, :ec, :em, :sum, :rcv)';
+    } else {
+        $sql = 'INSERT INTO recordatorio_eventos
+            (event_key, exec_id, run_at, appointment_date, appointment_time, calendar_event_id,
+             patient_name, wa_id, status, skip_reason, error_code, error_message, event_summary, received_at)
+            VALUES
+            (:k, :exec, :run, :ad, :at, :cal, :name, :wa, :st, :sk, :ec, :em, :sum, :rcv)';
+    }
     $params = [
         'k' => $ev['event_key'],
         'exec' => $ev['exec_id'],
@@ -244,6 +269,9 @@ function recordatorios_insert_item(PDO $pdo, array $ev): string
         'sum' => $ev['event_summary'],
         'rcv' => gmdate('Y-m-d H:i:s'),
     ];
+    if ($hasPacienteCol) {
+        $params['pid'] = $pacienteId;
+    }
     try {
         $pdo->prepare($sql)->execute($params);
         return 'stored';
