@@ -23,7 +23,7 @@ import {
   loadErroresData,
   closeErrorModal,
   isErrorModalOpen,
-} from "./admin-errores.js";
+} from "./admin-errores.js?v=2";
 import {
   initServiciosUI,
   loadServiciosData,

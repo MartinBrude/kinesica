@@ -75,9 +75,20 @@ function recordatorios_persist_directory_contact(string $patientName, string $ph
 
             if ($existing) {
                 $existingId = (int) $existing['id'];
-                if (function_exists('is_placeholder_phone') && is_placeholder_phone((string) ($existing['telefono'] ?? ''))) {
-                    $pdo->prepare('UPDATE pacientes SET telefono = :tel WHERE id = :id')
-                        ->execute(['tel' => $phone, 'id' => $existingId]);
+                $existingTel = (string) ($existing['telefono'] ?? '');
+                $shouldSetPhone = function_exists('is_placeholder_phone')
+                    ? is_placeholder_phone($existingTel)
+                    : ($existingTel === '');
+                // Si matcheó por nombre con placeholder, intentar fijar el WhatsApp.
+                // Si el número ya pertenece a otro paciente, no tumbar la operación.
+                if ($shouldSetPhone && $existingTel !== $phone) {
+                    try {
+                        $pdo->prepare('UPDATE pacientes SET telefono = :tel WHERE id = :id')
+                            ->execute(['tel' => $phone, 'id' => $existingId]);
+                    } catch (Throwable $dup) {
+                        error_log('recordatorios persist contact phone collision: ' . $dup->getMessage());
+                        // Seguir: el caller puede igual guardar wa_id en el recordatorio.
+                    }
                 }
                 if ($email !== '' && empty($existing['email'])) {
                     $pdo->prepare('UPDATE pacientes SET email = :email WHERE id = :id')
@@ -106,9 +117,8 @@ function recordatorios_persist_directory_contact(string $patientName, string $ph
                 'email' => $email !== '' ? $email : null,
                 'origen' => 'admin',
             ]);
-            if (function_exists('deduplicate_pacientes_table')) {
-                deduplicate_pacientes_table($pdo);
-            }
+            // No correr deduplicate_pacientes_table acá: es O(n) sobre todo el directorio
+            // y en la carga manual de WhatsApp puede colgar/timeout el request.
             return ['ok' => true, 'phone' => $phone, 'email' => $email];
         }
 
@@ -130,9 +140,6 @@ function recordatorios_persist_directory_contact(string $patientName, string $ph
                     'error' => 'Para guardar solo el mail, el paciente debe existir en el directorio o cargá también un WhatsApp',
                 ];
             }
-        }
-        if (function_exists('deduplicate_pacientes_table')) {
-            deduplicate_pacientes_table($pdo);
         }
         return ['ok' => true, 'phone' => '', 'email' => $email];
     } catch (Throwable $e) {
@@ -163,14 +170,12 @@ function recordatorios_save_contact(int $id, array $input, array $auth): array
         return ['ok' => false, 'error' => 'Ingresá un número de WhatsApp o un correo electrónico'];
     }
 
-    $patientName = trim((string) ($item['patient_name'] ?: $item['event_summary'] ?: ''));
-    $dir = recordatorios_persist_directory_contact($patientName, $phone, $email);
-    $dirOk = !empty($dir['ok']);
-    // Si hay WhatsApp, el directorio debe aceptarlo; si solo mail y no hay ficha, igual lo guardamos en el recordatorio.
-    if (!$dirOk && $phone !== '') {
-        return ['ok' => false, 'error' => (string) ($dir['error'] ?? 'No se pudo guardar el contacto')];
+    // Validar WhatsApp acá para fallar claro antes de tocar directorio/recordatorio.
+    if ($phone !== '' && (strlen($phone) < 6 || strlen($phone) > 16)) {
+        return ['ok' => false, 'error' => 'Número de WhatsApp inválido o incompleto'];
     }
 
+    // 1) Primero el recordatorio (lo que el usuario ve). El directorio es secundario.
     $updates = [];
     if ($phone !== '') {
         $updates['wa_id'] = $phone;
@@ -204,8 +209,17 @@ function recordatorios_save_contact(int $id, array $input, array $auth): array
     }
 
     if ($updates) {
-        recordatorios_update_outcome($id, $updates);
+        $saved = recordatorios_update_outcome($id, $updates);
+        if (!$saved) {
+            return ['ok' => false, 'error' => 'No se pudo actualizar el recordatorio'];
+        }
     }
+
+    // 2) Directorio (best-effort): no debe tumbar la carga del WhatsApp en el turno.
+    $patientName = trim((string) ($item['patient_name'] ?: $item['event_summary'] ?: ''));
+    $dir = recordatorios_persist_directory_contact($patientName, $phone, $email);
+    $dirOk = !empty($dir['ok']);
+
     $updated = recordatorios_find_item_by_id($id);
     $viewItem = recordatorios_format_item($updated ?: $item, $email !== '' ? $email : null);
     if ($phone !== '') {

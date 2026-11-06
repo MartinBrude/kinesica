@@ -227,10 +227,43 @@ function recordatorios_store_items(array $items, ?PDO $pdo = null): array
         $pdo = recordatorios_pdo($pdo);
         recordatorios_ensure_schema($pdo);
         foreach ($items as $ev) {
-            if ($ev['status'] !== 'pending' && $ev['calendar_event_id'] !== '' && $ev['calendar_event_id'] !== '_run') {
+            $cal = (string) ($ev['calendar_event_id'] ?? '');
+            // Si admin ya cargó WhatsApp en un pending, no pisarlo con un missing_phone vacío de n8n.
+            if (
+                $cal !== '' &&
+                $cal !== '_run' &&
+                ($ev['wa_id'] ?? '') === '' &&
+                in_array((string) ($ev['status'] ?? ''), ['missing_phone', 'failed', 'skipped', 'pending'], true)
+            ) {
                 try {
-                    $pdo->prepare('DELETE FROM recordatorio_eventos WHERE calendar_event_id = :cal AND status = "pending"')->execute(['cal' => $ev['calendar_event_id']]);
-                } catch (Throwable $delEx) {}
+                    $keptStmt = $pdo->prepare(
+                        'SELECT wa_id FROM recordatorio_eventos
+                         WHERE calendar_event_id = :cal AND wa_id IS NOT NULL AND wa_id != ""
+                         ORDER BY id DESC LIMIT 1'
+                    );
+                    $keptStmt->execute(['cal' => $cal]);
+                    $keptWa = $keptStmt->fetchColumn();
+                    if (is_string($keptWa) && $keptWa !== '') {
+                        if (($ev['status'] ?? '') === 'missing_phone') {
+                            // Contacto manual ya resuelve el caso: no insertar otro missing_phone vacío.
+                            $res['duplicates']++;
+                            continue;
+                        }
+                        $ev['wa_id'] = substr($keptWa, 0, 32);
+                    }
+                } catch (Throwable $keepEx) {
+                }
+            }
+            if ($ev['status'] !== 'pending' && $cal !== '' && $cal !== '_run') {
+                try {
+                    // Preservar pending con WhatsApp cargado a mano; solo limpiar pending vacíos.
+                    $pdo->prepare(
+                        'DELETE FROM recordatorio_eventos
+                         WHERE calendar_event_id = :cal AND status = "pending"
+                           AND (wa_id IS NULL OR wa_id = "")'
+                    )->execute(['cal' => $cal]);
+                } catch (Throwable $delEx) {
+                }
             }
             $outcome = recordatorios_insert_item($pdo, $ev);
             $res[$outcome === 'stored' ? 'stored' : 'duplicates']++;

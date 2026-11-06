@@ -181,6 +181,102 @@ function merge_prof_values(string $p1, string $p2): string
     return 'indistinto';
 }
 
+/**
+ * Une textos no vacíos sin duplicar (case-insensitive). Conserva la mayor información.
+ */
+function kinesica_merge_text_keep_max(string $a, string $b, string $sep = "\n"): string
+{
+    $a = trim($a);
+    $b = trim($b);
+    if ($a === '') return $b;
+    if ($b === '') return $a;
+    $aLower = mb_strtolower($a, 'UTF-8');
+    $bLower = mb_strtolower($b, 'UTF-8');
+    if ($aLower === $bLower) {
+        // Misma info: preferir la versión con acentos / más “rica”.
+        $aScore = (preg_match('/[áéíóúÁÉÍÓÚñÑüÜ]/u', $a) ? 2 : 0) + mb_strlen($a, 'UTF-8');
+        $bScore = (preg_match('/[áéíóúÁÉÍÓÚñÑüÜ]/u', $b) ? 2 : 0) + mb_strlen($b, 'UTF-8');
+        return $bScore > $aScore ? $b : $a;
+    }
+    if (str_contains($aLower, $bLower)) return $a;
+    if (str_contains($bLower, $aLower)) return $b;
+    return $a . $sep . $b;
+}
+
+/**
+ * Elige el teléfono más informativo del cluster (real > placeholder con DNI > otro placeholder).
+ */
+function kinesica_pick_best_phone(array $cluster): string
+{
+    $best = '';
+    $bestScore = -1;
+    foreach ($cluster as $c) {
+        $raw = trim((string) ($c['telefono'] ?? ''));
+        if ($raw === '') continue;
+        $clean = clean_phone_number($raw);
+        $score = 0;
+        if ($clean !== '' && !is_placeholder_phone($clean) && !is_placeholder_phone($raw)) {
+            $score = 100 + strlen($clean);
+        } elseif (str_starts_with($raw, 'sin-tel-dni-')) {
+            $score = 50 + strlen($raw);
+        } elseif (!is_placeholder_phone($raw)) {
+            $score = 80 + strlen($raw);
+        } else {
+            $score = 10 + strlen($raw);
+        }
+        if ($score > $bestScore) {
+            $bestScore = $score;
+            $best = ($clean !== '' && !is_placeholder_phone($clean)) ? $clean : $raw;
+        }
+    }
+    return $best;
+}
+
+/**
+ * Elige el bloque de nombre más completo (apellido, acentos, más tokens).
+ *
+ * @return array{nombre:string,apellido:string,nombre_completo:string,nombre_pila:string}
+ */
+function kinesica_pick_richest_name(array $cluster): array
+{
+    $best = ['nombre' => '', 'apellido' => '', 'nombre_completo' => '', 'nombre_pila' => ''];
+    $bestScore = -1;
+    foreach ($cluster as $c) {
+        $nom = trim((string) ($c['nombre'] ?? ''));
+        $ape = trim((string) ($c['apellido'] ?? ''));
+        $full = trim((string) (($c['nombre_completo'] ?? '') ?: trim($nom . ' ' . $ape)));
+        $pila = trim((string) ($c['nombre_pila'] ?? ''));
+        if ($full === '' && $nom === '' && $ape === '') continue;
+        $tokens = preg_split('/\s+/u', $full, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        $score = count($tokens) * 10
+            + ($ape !== '' ? 20 : 0)
+            + ($nom !== '' ? 5 : 0)
+            + (preg_match('/[áéíóúÁÉÍÓÚñÑüÜ]/u', $full) ? 8 : 0)
+            + min(30, mb_strlen($full, 'UTF-8'));
+        if ($score > $bestScore) {
+            $bestScore = $score;
+            $best = [
+                'nombre' => $nom,
+                'apellido' => $ape,
+                'nombre_completo' => $full,
+                'nombre_pila' => $pila !== '' ? $pila : extract_first_name($full),
+            ];
+        }
+    }
+    return $best;
+}
+
+/**
+ * Origen más “humano”: admin > web > whatsapp.
+ */
+function kinesica_prefer_origen(string $current, string $candidate): string
+{
+    $rank = ['admin' => 3, 'web' => 2, 'whatsapp' => 1];
+    $c = $rank[$current] ?? 0;
+    $n = $rank[$candidate] ?? 0;
+    return $n > $c ? $candidate : ($current !== '' ? $current : 'whatsapp');
+}
+
 function find_existing_patient_match(PDO $pdo, ?string $phone, ?string $name = null, ?string $dni = null): ?array
 {
     // 1. Teléfono real
@@ -318,85 +414,119 @@ function deduplicate_pacientes_table(PDO $pdo): int
             $survivorId = (int) $survivor['id'];
             $deleteIds = [];
 
+            // Conservar la mayor información posible entre todos los duplicados del cluster.
+            $namePick = kinesica_pick_richest_name($cluster);
+            $mergedNombre = $namePick['nombre'];
+            $mergedApellido = $namePick['apellido'];
+            $mergedFull = $namePick['nombre_completo'];
+            $mergedPila = $namePick['nombre_pila'];
+            $mergedTel = kinesica_pick_best_phone($cluster);
+            if ($mergedTel === '') {
+                $mergedTel = (string) ($survivor['telefono'] ?? '');
+            }
+
             $mergedReview = 0;
             $mergedEncuesta = 0;
             $mergedProf = 'indistinto';
-            $mergedDni = clean_patient_dni($survivor['dni'] ?? null);
-            $mergedEmail = trim((string) ($survivor['email'] ?? ''));
-            $mergedMotivo = trim((string) ($survivor['motivo_consulta'] ?? ''));
-            $mergedNotas = trim((string) ($survivor['notas'] ?? ''));
-            $mergedContactoNom = $survivor['contacto_nombre'] ?? null;
-            $mergedContactoTel = $survivor['contacto_telefono'] ?? null;
-            $mergedContactoEmail = $survivor['contacto_email'] ?? null;
-            $mergedContactoNotas = $survivor['contacto_notas'] ?? null;
-            $mergedNombre = $survivor['nombre'] ?? '';
-            $mergedApellido = $survivor['apellido'] ?? '';
-            $mergedFull = $survivor['nombre_completo'] ?? '';
-            $mergedPila = $survivor['nombre_pila'] ?? '';
+            $mergedDni = '';
+            $mergedEmail = '';
+            $mergedMotivo = '';
+            $mergedNotas = '';
+            $mergedContactoNom = '';
+            $mergedContactoTel = '';
+            $mergedContactoEmail = '';
+            $mergedContactoNotas = '';
+            $mergedOrigen = 'whatsapp';
 
             foreach ($cluster as $c) {
                 if ((int) $c['id'] !== $survivorId) {
                     $deleteIds[] = (int) $c['id'];
                 }
-                // Regla: si uno dice con review y otro sin, queda que si
                 if (!empty($c['dejo_review'])) {
                     $mergedReview = 1;
                 }
-                // Regla: si alguna vez se envió encuesta, queda enviada
                 if (!empty($c['encuesta_enviada'])) {
                     $mergedEncuesta = 1;
                 }
-                // Regla: si uno dice indistinto y otro dice con tal, queda tal
-                $cProf = $c['profesional_habitual'] ?? 'indistinto';
-                if ($mergedProf === 'indistinto' && in_array($cProf, ['norberto', 'maria'], true)) {
-                    $mergedProf = $cProf;
-                }
-                if ($mergedDni === '') {
-                    $cDni = clean_patient_dni($c['dni'] ?? null);
-                    if ($cDni === '' && str_starts_with((string) ($c['telefono'] ?? ''), 'sin-tel-dni-')) {
-                        $cDni = substr((string) $c['telefono'], 12);
-                    }
-                    if ($cDni !== '') $mergedDni = $cDni;
-                }
-                if ($mergedEmail === '' && !empty($c['email'])) {
-                    $mergedEmail = trim((string) $c['email']);
-                }
-                $cMotivo = trim((string) ($c['motivo_consulta'] ?? ''));
-                if ($cMotivo !== '') {
-                    if ($mergedMotivo === '') $mergedMotivo = $cMotivo;
-                    elseif (!str_contains(mb_strtolower($mergedMotivo, 'UTF-8'), mb_strtolower($cMotivo, 'UTF-8')) && !str_contains(mb_strtolower($cMotivo, 'UTF-8'), mb_strtolower($mergedMotivo, 'UTF-8'))) {
-                        $mergedMotivo .= ' / ' . $cMotivo;
-                    }
-                }
-                $cNotas = trim((string) ($c['notas'] ?? ''));
-                if ($cNotas !== '') {
-                    if ($mergedNotas === '') $mergedNotas = $cNotas;
-                    elseif (!str_contains($mergedNotas, $cNotas)) {
-                        $mergedNotas .= "\n" . $cNotas;
-                    }
-                }
-                if (!$mergedContactoNom && !empty($c['contacto_nombre'])) $mergedContactoNom = $c['contacto_nombre'];
-                if (!$mergedContactoTel && !empty($c['contacto_telefono'])) $mergedContactoTel = $c['contacto_telefono'];
-                if (!$mergedContactoEmail && !empty($c['contacto_email'])) $mergedContactoEmail = $c['contacto_email'];
-                if (!$mergedContactoNotas && !empty($c['contacto_notas'])) $mergedContactoNotas = $c['contacto_notas'];
+                $mergedProf = merge_prof_values($mergedProf, (string) ($c['profesional_habitual'] ?? 'indistinto'));
 
-                if (empty($mergedApellido) && !empty($c['apellido'])) {
-                    $mergedApellido = $c['apellido'];
-                    $mergedNombre = $c['nombre'] ?: $mergedNombre;
+                $cDni = clean_patient_dni($c['dni'] ?? null);
+                if ($cDni === '' && str_starts_with((string) ($c['telefono'] ?? ''), 'sin-tel-dni-')) {
+                    $cDni = substr((string) $c['telefono'], 12);
                 }
-                if (preg_match('/[áéíóúÁÉÍÓÚñÑ]/u', (string) ($c['nombre_completo'] ?? '')) && !preg_match('/[áéíóúÁÉÍÓÚñÑ]/u', $mergedFull)) {
-                    $mergedFull = $c['nombre_completo'];
-                    if (!empty($c['nombre'])) $mergedNombre = $c['nombre'];
-                    if (!empty($c['apellido'])) $mergedApellido = $c['apellido'];
+                if ($mergedDni === '' && $cDni !== '') {
+                    $mergedDni = $cDni;
                 }
+
+                $cEmail = trim((string) ($c['email'] ?? ''));
+                if ($mergedEmail === '' && $cEmail !== '') {
+                    $mergedEmail = $cEmail;
+                } elseif ($mergedEmail !== '' && $cEmail !== '' && strcasecmp($mergedEmail, $cEmail) !== 0) {
+                    // Dos mails distintos: conservar ambos en notas de contacto / notas.
+                    $mergedNotas = kinesica_merge_text_keep_max(
+                        $mergedNotas,
+                        'Email alternativo: ' . $cEmail,
+                        "\n"
+                    );
+                }
+
+                $mergedMotivo = kinesica_merge_text_keep_max(
+                    $mergedMotivo,
+                    trim((string) ($c['motivo_consulta'] ?? '')),
+                    ' / '
+                );
+                $mergedNotas = kinesica_merge_text_keep_max(
+                    $mergedNotas,
+                    trim((string) ($c['notas'] ?? '')),
+                    "\n"
+                );
+
+                $cContactoNom = trim((string) ($c['contacto_nombre'] ?? ''));
+                if ($mergedContactoNom === '' && $cContactoNom !== '') {
+                    $mergedContactoNom = $cContactoNom;
+                } elseif ($mergedContactoNom !== '' && $cContactoNom !== ''
+                    && mb_strtolower($mergedContactoNom, 'UTF-8') !== mb_strtolower($cContactoNom, 'UTF-8')) {
+                    $mergedContactoNotas = kinesica_merge_text_keep_max(
+                        $mergedContactoNotas,
+                        'Otro contacto: ' . $cContactoNom,
+                        ' · '
+                    );
+                }
+
+                $cContactoTel = trim((string) ($c['contacto_telefono'] ?? ''));
+                if ($mergedContactoTel === '' && $cContactoTel !== '') {
+                    $mergedContactoTel = $cContactoTel;
+                }
+                $cContactoEmail = trim((string) ($c['contacto_email'] ?? ''));
+                if ($mergedContactoEmail === '' && $cContactoEmail !== '') {
+                    $mergedContactoEmail = $cContactoEmail;
+                }
+                $mergedContactoNotas = kinesica_merge_text_keep_max(
+                    $mergedContactoNotas,
+                    trim((string) ($c['contacto_notas'] ?? '')),
+                    ' · '
+                );
+
+                $mergedOrigen = kinesica_prefer_origen(
+                    $mergedOrigen,
+                    (string) ($c['origen'] ?? 'whatsapp')
+                );
+            }
+
+            if ($mergedFull === '') {
+                $mergedFull = trim($mergedNombre . ' ' . $mergedApellido);
+            }
+            if ($mergedPila === '') {
+                $mergedPila = extract_first_name($mergedFull);
             }
 
             if (count($deleteIds) > 0) {
-                $inClause = implode(',', $deleteIds);
+                $inClause = implode(',', array_map('intval', $deleteIds));
                 $pdo->exec("DELETE FROM pacientes WHERE id IN ($inClause)");
 
                 $upd = $pdo->prepare('
                     UPDATE pacientes SET
+                        telefono = :tel,
                         nombre = :nom,
                         apellido = :ape,
                         nombre_completo = :full,
@@ -406,6 +536,7 @@ function deduplicate_pacientes_table(PDO $pdo): int
                         profesional_habitual = :prof,
                         motivo_consulta = :motivo,
                         notas = :notas,
+                        origen = :origen,
                         contacto_nombre = :cnom,
                         contacto_telefono = :ctel,
                         contacto_email = :cemail,
@@ -415,19 +546,21 @@ function deduplicate_pacientes_table(PDO $pdo): int
                     WHERE id = :id
                 ');
                 $upd->execute([
-                    'nom' => $mergedNombre,
-                    'ape' => $mergedApellido,
-                    'full' => $mergedFull,
-                    'pila' => $mergedPila ?: extract_first_name($mergedFull),
-                    'dni' => $mergedDni !== '' ? $mergedDni : null,
-                    'email' => $mergedEmail !== '' ? $mergedEmail : null,
+                    'tel' => mb_substr($mergedTel, 0, 30, 'UTF-8'),
+                    'nom' => mb_substr($mergedNombre, 0, 60, 'UTF-8'),
+                    'ape' => mb_substr($mergedApellido, 0, 60, 'UTF-8'),
+                    'full' => mb_substr($mergedFull, 0, 120, 'UTF-8'),
+                    'pila' => mb_substr($mergedPila ?: extract_first_name($mergedFull), 0, 60, 'UTF-8'),
+                    'dni' => $mergedDni !== '' ? mb_substr($mergedDni, 0, 20, 'UTF-8') : null,
+                    'email' => $mergedEmail !== '' ? mb_substr($mergedEmail, 0, 120, 'UTF-8') : null,
                     'prof' => $mergedProf,
                     'motivo' => $mergedMotivo !== '' ? mb_substr($mergedMotivo, 0, 255, 'UTF-8') : null,
                     'notas' => $mergedNotas !== '' ? mb_substr($mergedNotas, 0, 2000, 'UTF-8') : null,
-                    'cnom' => $mergedContactoNom,
-                    'ctel' => $mergedContactoTel,
-                    'cemail' => $mergedContactoEmail,
-                    'cnot' => $mergedContactoNotas,
+                    'origen' => in_array($mergedOrigen, ['whatsapp', 'web', 'admin'], true) ? $mergedOrigen : 'whatsapp',
+                    'cnom' => $mergedContactoNom !== '' ? mb_substr($mergedContactoNom, 0, 120, 'UTF-8') : null,
+                    'ctel' => $mergedContactoTel !== '' ? mb_substr($mergedContactoTel, 0, 30, 'UTF-8') : null,
+                    'cemail' => $mergedContactoEmail !== '' ? mb_substr($mergedContactoEmail, 0, 120, 'UTF-8') : null,
+                    'cnot' => $mergedContactoNotas !== '' ? mb_substr($mergedContactoNotas, 0, 100, 'UTF-8') : null,
                     'rev' => $mergedReview,
                     'encuesta' => $mergedEncuesta,
                     'id' => $survivorId,
@@ -794,10 +927,36 @@ function ensure_pacientes_tables(PDO $pdo, bool $force = false): void
         $pdo->exec('ALTER TABLE pacientes ADD COLUMN encuesta_enviada TINYINT(1) NOT NULL DEFAULT 0');
     } catch (Throwable) {}
 
+    $checked = true;
+    // Mantenimiento pesado SOLO con $force (cron / action=deduplicate / scripts).
+    // Nunca en el hot path de alta/edición/listado.
+    if ($force) {
+        kinesica_pacientes_run_maintenance_if_due($pdo, true);
+    }
+}
+
+/**
+ * Mantenimiento pesado del directorio (sanitize + sync fichas + dedupe + indistintos).
+ * Throttle por marker file para no bloquear POST insert/upsert del admin.
+ */
+function kinesica_pacientes_run_maintenance_if_due(PDO $pdo, bool $force = false): void
+{
+    $dir = __DIR__ . '/data';
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0775, true);
+    }
+    $marker = $dir . '/.pacientes_maintenance';
+    $ttlSeconds = 6 * 3600;
+    if (!$force && is_file($marker)) {
+        $age = time() - (int) @filemtime($marker);
+        if ($age >= 0 && $age < $ttlSeconds) {
+            return;
+        }
+    }
+
     try {
         $pdo->exec("DELETE FROM pacientes WHERE LOWER(nombre_completo) LIKE '%tk3%' OR LOWER(nombre_completo) LIKE '%tk 3%' OR LOWER(nombre) LIKE '%tk3%' OR LOWER(nombre) LIKE '%tk 3%' OR LOWER(nombre_completo) LIKE '%no dar%' OR LOWER(nombre) LIKE '%no dar%' OR LOWER(apellido) LIKE '%no dar%'");
 
-        // Limpieza de caracteres no permitidos persistidos (comas, saltos de línea y emojis) en pacientes
         $pdo->exec("UPDATE pacientes SET 
             nombre = TRIM(REPLACE(REPLACE(REPLACE(nombre, '\r', ' '), '\n', ' '), ',', '')),
             apellido = TRIM(REPLACE(REPLACE(REPLACE(apellido, '\r', ' '), '\n', ' '), ',', '')),
@@ -839,7 +998,8 @@ function ensure_pacientes_tables(PDO $pdo, bool $force = false): void
                     }
                 }
             }
-        } catch (Throwable) {}
+        } catch (Throwable) {
+        }
 
         try {
             $stmtSanitizeFichas = $pdo->query("SELECT id, payload FROM fichas");
@@ -856,19 +1016,25 @@ function ensure_pacientes_tables(PDO $pdo, bool $force = false): void
                     }
                 }
             }
-        } catch (Throwable) {}
-    } catch (Throwable) {}
+        } catch (Throwable) {
+        }
+    } catch (Throwable) {
+    }
 
-    $checked = true;
     try {
         sync_pacientes_from_fichas($pdo, null, null, null, $force);
-    } catch (Throwable) {}
+    } catch (Throwable) {
+    }
     try {
         deduplicate_pacientes_table($pdo);
-    } catch (Throwable) {}
+    } catch (Throwable) {
+    }
     try {
         resolve_indistinto_pacientes_from_calendar($pdo);
-    } catch (Throwable) {}
+    } catch (Throwable) {
+    }
+
+    @file_put_contents($marker, (string) time());
 }
 
 /**
@@ -1002,11 +1168,6 @@ function sync_pacientes_from_fichas(PDO $pdo, ?string $singleId = null, ?array $
             ]);
         } catch (Throwable) {}
     }
-
-    try {
-        deduplicate_pacientes_table($pdo);
-    } catch (Throwable) {}
-    try {
-        resolve_indistinto_pacientes_from_calendar($pdo);
-    } catch (Throwable) {}
+    // Dedupe/indistintos: no acá. Van en kinesica_pacientes_run_maintenance_if_due
+    // o en action=deduplicate. Correrlos tras cada ficha/alta tumba el request.
 }

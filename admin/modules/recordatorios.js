@@ -5,6 +5,7 @@
 import { api } from "./api.js?v=77";
 import { switchActiveView, escapeHtml } from "./dom.js?v=78";
 import { dialogAlert } from "./dom-dialogs.js?v=77";
+import { normalizePhoneForWhatsApp } from "./phone-format.js?v=3";
 import {
   renderRecordatoriosList,
   renderRecordatoriosPager,
@@ -213,23 +214,33 @@ function renderRecordatoriosSync(resp) {
   el.className = "recordatorios-sync" + (status === "partial" || status === "not_configured" ? " is-partial" : status === "ok" ? " is-ok" : "");
 }
 
+function recordatorioDedupeScore(it) {
+  const st = String(it?.status || "");
+  let score = 0;
+  if (it?.wa_id) score += 8;
+  if (it?.email) score += 2;
+  if (st === "sent" || st === "sent_email") score += 16;
+  else if (st === "pending" && it?.wa_id) score += 6;
+  else if (st === "failed") score += 1;
+  else if (st === "missing_phone") score -= 4;
+  return score;
+}
+
 function deduplicateRecordatorios(items) {
-  const seen = new Set();
-  const deduped = [];
+  const best = new Map();
   for (const it of items) {
     const calId = (it.calendar_event_id || "").trim();
     const pName = (it.patient_name || "").trim().toLowerCase();
     const apptDate = (it.appointment_date || "").trim();
     const apptTime = (it.appointment_time || "").trim();
     const slotKey = pName && apptDate ? `${pName}|${apptDate}|${apptTime}` : "";
-    const key = calId && calId !== "_run" ? `cal:${calId}` : (slotKey ? `slot:${slotKey}` : `id:${it.id}`);
-    if (seen.has(key)) {
-      continue;
+    const key = calId && calId !== "_run" ? `cal:${calId}` : slotKey ? `slot:${slotKey}` : `id:${it.id}`;
+    const prev = best.get(key);
+    if (!prev || recordatorioDedupeScore(it) > recordatorioDedupeScore(prev)) {
+      best.set(key, it);
     }
-    seen.add(key);
-    deduped.push(it);
   }
-  return deduped;
+  return Array.from(best.values());
 }
 
 export async function loadRecordatorios(force = false) {
@@ -419,14 +430,23 @@ function openRecordatorioContactModal(item, { mode = "contact", onSuccess } = {}
     if (e.target === backdrop) close();
   });
 
-  const readFields = () => ({
-    phone: backdrop.querySelector("#dispatch-phone")?.value.trim() || "",
-    email: backdrop.querySelector("#dispatch-email")?.value.trim() || "",
-    channel: backdrop.querySelector("#dispatch-channel")?.value || "auto",
-    saveContact: backdrop.querySelector("#dispatch-save-contact")
-      ? !!backdrop.querySelector("#dispatch-save-contact")?.checked
-      : true,
-  });
+  const readFields = () => {
+    const rawPhone = backdrop.querySelector("#dispatch-phone")?.value.trim() || "";
+    const normalized = normalizePhoneForWhatsApp(rawPhone);
+    // Aceptar locales AR (ej. 1158236122 → 5491158236122); si no normaliza, mandar dígitos crudos.
+    const phone = normalized || rawPhone.replace(/\D/g, "");
+    if (normalized && phoneInput && phoneInput.value.trim() !== normalized) {
+      phoneInput.value = normalized;
+    }
+    return {
+      phone,
+      email: backdrop.querySelector("#dispatch-email")?.value.trim() || "",
+      channel: backdrop.querySelector("#dispatch-channel")?.value || "auto",
+      saveContact: backdrop.querySelector("#dispatch-save-contact")
+        ? !!backdrop.querySelector("#dispatch-save-contact")?.checked
+        : true,
+    };
+  };
 
   const saveContactOnly = async (btn) => {
     const { phone, email } = readFields();

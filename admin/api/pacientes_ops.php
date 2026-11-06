@@ -142,8 +142,6 @@ function kinesica_pacientes_upsert(PDO $pdo, array $data): void
             'id' => $existingId,
         ]);
 
-        deduplicate_pacientes_table($pdo);
-
         json_out(200, [
             'status' => 'success', 'action' => 'upsert', 'phone' => $targetPhone,
             'nombre' => $nombre, 'apellido' => $apellido, 'nombre_pila' => $nombrePila,
@@ -185,8 +183,6 @@ function kinesica_pacientes_upsert(PDO $pdo, array $data): void
         'contacto_email' => $contactoEmail, 'contacto_notas' => $contactoNotas,
         'dejo_review' => $dejoReview,
     ]);
-
-    deduplicate_pacientes_table($pdo);
 
     json_out(200, [
         'status' => 'success', 'action' => 'upsert', 'phone' => $phone,
@@ -267,8 +263,6 @@ function kinesica_pacientes_update(PDO $pdo, array $data): void
         $params['dejo_review'] = $dejoReview;
     }
     $stmt->execute($params);
-
-    deduplicate_pacientes_table($pdo);
 
     json_out(200, ['status' => 'success', 'message' => 'Paciente actualizado con éxito']);
 }

@@ -223,4 +223,84 @@ foreach ($indistintoPatients as $ip) {
     }
 }
 
+// 8. Merge debe conservar la mayor información posible entre ambos
+$pdo->exec("DELETE FROM pacientes WHERE id IN (301, 302)");
+$pdo->exec("INSERT INTO pacientes (
+    id, telefono, nombre, apellido, nombre_completo, nombre_pila, dni, email,
+    profesional_habitual, motivo_consulta, notas, origen,
+    contacto_nombre, contacto_telefono, contacto_email, contacto_notas, dejo_review
+) VALUES (
+    301, 'sin-tel-f-301', 'Maria', 'Lopez', 'Maria Lopez', 'Maria', '40999888', 'maria.lopez@example.com',
+    'indistinto', 'Cervicalgia', 'Llega referida por OSDE', 'whatsapp',
+    'Juan Lopez', NULL, 'juan.lopez@example.com', 'Hermano', 0
+)");
+$pdo->exec("INSERT INTO pacientes (
+    id, telefono, nombre, apellido, nombre_completo, nombre_pila, dni, email,
+    profesional_habitual, motivo_consulta, notas, origen,
+    contacto_nombre, contacto_telefono, contacto_email, contacto_notas, dejo_review
+) VALUES (
+    302, '5491177788899', 'María', 'López', 'María López', 'María', NULL, NULL,
+    'norberto', 'Lumbalgia crónica', 'Alergia a AINEs', 'admin',
+    NULL, '5491166677788', NULL, 'Avisar antes', 1
+)");
+
+$mergedMax = deduplicate_pacientes_table($pdo);
+if ($mergedMax < 1) {
+    echo "ERROR: No se unificó el par María López (merged=$mergedMax)\n";
+    exit(1);
+}
+$maria = $pdo->query("SELECT * FROM pacientes WHERE id IN (301, 302) OR telefono = '5491177788899'")->fetch(PDO::FETCH_ASSOC);
+if (!$maria || !preg_match('/l[oó]pez/iu', (string) ($maria['nombre_completo'] ?? ''))) {
+    echo "ERROR: No quedó ninguna fila de María López tras dedupe: " . json_encode($maria) . "\n";
+    exit(1);
+}
+if ($maria['telefono'] !== '5491177788899') {
+    echo "ERROR: Debía conservar el WhatsApp real, quedó: {$maria['telefono']}\n";
+    exit(1);
+}
+if ((int) $maria['dejo_review'] !== 1) {
+    echo "ERROR: dejo_review debía quedar en 1\n";
+    exit(1);
+}
+if ($maria['profesional_habitual'] !== 'norberto') {
+    echo "ERROR: profesional debía quedar norberto, quedó: {$maria['profesional_habitual']}\n";
+    exit(1);
+}
+if ($maria['dni'] !== '40999888') {
+    echo "ERROR: DNI debía conservarse (40999888), quedó: " . ($maria['dni'] ?? 'null') . "\n";
+    exit(1);
+}
+if ($maria['email'] !== 'maria.lopez@example.com') {
+    echo "ERROR: Email debía conservarse, quedó: " . ($maria['email'] ?? 'null') . "\n";
+    exit(1);
+}
+if (!str_contains((string) $maria['motivo_consulta'], 'Cervicalgia') || !str_contains((string) $maria['motivo_consulta'], 'Lumbalgia')) {
+    echo "ERROR: Motivo debía unir ambos textos, quedó: " . ($maria['motivo_consulta'] ?? '') . "\n";
+    exit(1);
+}
+if (!str_contains((string) $maria['notas'], 'OSDE') || !str_contains((string) $maria['notas'], 'AINEs')) {
+    echo "ERROR: Notas debían unir ambos textos, quedó: " . ($maria['notas'] ?? '') . "\n";
+    exit(1);
+}
+if ($maria['origen'] !== 'admin') {
+    echo "ERROR: origen debía preferir admin, quedó: {$maria['origen']}\n";
+    exit(1);
+}
+if (($maria['contacto_nombre'] ?? '') !== 'Juan Lopez') {
+    echo "ERROR: contacto_nombre debía conservarse\n";
+    exit(1);
+}
+if (($maria['contacto_telefono'] ?? '') !== '5491166677788') {
+    echo "ERROR: contacto_telefono debía conservarse\n";
+    exit(1);
+}
+if (($maria['contacto_email'] ?? '') !== 'juan.lopez@example.com') {
+    echo "ERROR: contacto_email debía conservarse\n";
+    exit(1);
+}
+if (!preg_match('/[áéíóúÁÉÍÓÚñÑ]/u', (string) $maria['nombre_completo'])) {
+    echo "ERROR: Debía preferir el nombre con acentos, quedó: {$maria['nombre_completo']}\n";
+    exit(1);
+}
+
 echo "OK_PHP_TESTS\n";

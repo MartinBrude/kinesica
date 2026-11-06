@@ -119,6 +119,14 @@ ok(preg_match("/if \\(\\\$method === 'POST' && \\\$action === 'ingest'\\)/", $ph
 ok(str_contains($php, 'hash_equals'), 'bot secret con hash_equals');
 ok(str_contains($php, 'filter_var($email, FILTER_VALIDATE_EMAIL)'), 'valida email');
 ok(str_contains($php, 'htmlspecialchars($firstName)'), 'mail HTML escapa nombre');
+ok(str_contains($php, 'Primero el recordatorio'), 'save_contact prioriza recordatorio sobre directorio');
+ok(!str_contains($php, 'deduplicate_pacientes_table($pdo)'), 'carga de contacto no corre dedupe O(n)');
+
+$store = file_get_contents($root . '/admin/api/lib_recordatorios_store.php') ?: '';
+ok(str_contains($store, 'Contacto manual ya resuelve'), 'ingest no pisa WhatsApp cargado a mano');
+ok(str_contains($store, 'wa_id IS NULL OR wa_id = ""'), 'delete pending preserva filas con WhatsApp');
+
+ok(str_contains($js, 'recordatorioDedupeScore'), 'SPA prioriza filas con WhatsApp al deduplicar');
 
 section('contrato seguridad estático');
 ok(!preg_match('/\$_GET\[.wa_id/', $php), 'no lee wa_id de GET');

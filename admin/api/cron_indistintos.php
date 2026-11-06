@@ -45,8 +45,7 @@ if (PHP_SAPI !== 'cli') {
 
 try {
     $pdo = db();
-    ensure_pacientes_tables($pdo);
-    deduplicate_pacientes_table($pdo);
+    ensure_pacientes_tables($pdo, true);
 
     // 1. Primero verificar si existen pacientes con profesional indistinto
     $stmtBefore = $pdo->query("SELECT COUNT(*) FROM pacientes WHERE profesional_habitual = 'indistinto' OR profesional_habitual IS NULL OR profesional_habitual = ''");

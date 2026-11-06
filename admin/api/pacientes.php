@@ -63,8 +63,8 @@ try {
     $auth = authenticate_request($data);
     $pdo = db();
     ensure_pacientes_tables($pdo);
-    // Deduplicación: solo en escrituras (upsert/update/update_name/update_phone), no en cada GET.
-    resolve_indistinto_pacientes_from_calendar($pdo);
+    // Mantenimiento pesado (dedupe/sync/indistintos) NO corre en cada request:
+    // está throttled dentro de ensure_pacientes_tables y también vía action=deduplicate.
     $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
     if ($method === 'GET') {
@@ -156,6 +156,7 @@ try {
         }
 
         if ($action === 'deduplicate' || $action === 'resolve_indistintos') {
+            kinesica_pacientes_run_maintenance_if_due($pdo, true);
             $merged = deduplicate_pacientes_table($pdo);
             $resolved = resolve_indistinto_pacientes_from_calendar($pdo);
             $cntStmt = $pdo->query('SELECT COUNT(*) FROM pacientes');
@@ -184,7 +185,6 @@ try {
             }
             $stmt = $pdo->prepare('UPDATE pacientes SET nombre = :nombre, apellido = :apellido, nombre_completo = :full, nombre_pila = :pila WHERE telefono = :tel');
             $stmt->execute(['nombre' => $nombre, 'apellido' => $apellido, 'full' => $nombreCompleto, 'pila' => extract_first_name($nombreCompleto), 'tel' => $phone]);
-            deduplicate_pacientes_table($pdo);
             json_out(200, ['status' => 'success', 'updated' => $stmt->rowCount()]);
         }
 
@@ -200,7 +200,6 @@ try {
             if ($existing) json_out(409, ['status' => 'error', 'message' => 'Ese teléfono ya está asignado al paciente ' . $existing['nombre_completo']]);
             $stmt = $pdo->prepare('UPDATE pacientes SET telefono = :tel WHERE id = :id');
             $stmt->execute(['tel' => $newPhone, 'id' => $id]);
-            deduplicate_pacientes_table($pdo);
             json_out(200, ['status' => 'success', 'id' => $id, 'nuevo_telefono' => $newPhone]);
         }
 

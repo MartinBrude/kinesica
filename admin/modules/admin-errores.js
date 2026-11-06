@@ -136,14 +136,11 @@ export function renderErrores(errores, onReload) {
 
 export async function handleSaveError(e, onReload) {
   if (e) e.preventDefault();
-  const payload = getErrorFormPayload();
-  if (!payload) {
-    dialogAlert("Por favor completá la sección, la información y los comportamientos actual y esperado.");
-    return;
-  }
+  const payload = await getErrorFormPayload();
+  if (!payload) return; // getErrorFormPayload ya mostró el aviso
   setErrorSaveButtonDisabled(true);
   try {
-    const res = await api("errores.php", {
+    await api("errores.php", {
       method: "POST",
       body: JSON.stringify({ action: "create", ...payload }),
     });

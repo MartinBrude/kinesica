@@ -18,6 +18,39 @@ export function cleanPhoneDigits(raw) {
 }
 
 /**
+ * Normaliza un teléfono argentino/local a dígitos E.164-ish (549…).
+ * Alineado con clean_phone_number() del backend.
+ * @param {string|number} raw
+ * @returns {string}
+ */
+export function normalizePhoneForWhatsApp(raw) {
+  const str = String(raw || "").trim();
+  if (!str || /^sin-tel/i.test(str) || /^ficha-/i.test(str)) return "";
+  const withoutPrefix = str.replace(/^(?:whatsapp|wa\.me|tel|cel|movil)[:\s/]*/i, "");
+  if (/[a-zA-Z]/.test(withoutPrefix)) return "";
+  let digits = cleanPhoneDigits(withoutPrefix);
+  if (!digits) return "";
+  if (digits.startsWith("00")) digits = digits.slice(2);
+  if (digits.startsWith("549")) return digits;
+  if (digits.startsWith("54")) {
+    let rest = digits.slice(2);
+    if (rest.startsWith("0")) rest = rest.slice(1);
+    if (rest.startsWith("15")) rest = "11" + rest.slice(2);
+    const m = rest.match(/^(11|2\d{2,3}|3\d{2,3})15(\d{6,8})$/);
+    if (m) rest = m[1] + m[2];
+    return "549" + rest;
+  }
+  if (digits.startsWith("0")) digits = digits.slice(1);
+  const m15 = digits.match(/^(11|2\d{2,3}|3\d{2,3})15(\d{6,8})$/);
+  if (m15) digits = m15[1] + m15[2];
+  if (digits.startsWith("15")) digits = "11" + digits.slice(2);
+  if (digits.length === 8) digits = "11" + digits;
+  if (digits.length === 10 && digits.startsWith("11")) return "549" + digits;
+  if (digits.length >= 10 && digits.length <= 11) return "549" + digits;
+  return digits;
+}
+
+/**
  * Formatea un número de teléfono para lectura unificada y clara.
  * @param {string|number} raw
  * @returns {string}

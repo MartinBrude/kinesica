@@ -4,7 +4,7 @@
  */
 
 import { api } from "./api.js?v=77";
-import { escapeHtml } from "./dom.js?v=78";
+import { escapeHtml, dialogAlert } from "./dom.js?v=78";
 import { getSessionUser } from "./auth.js?v=83";
 import {
   isValidAdminEmail,
@@ -257,35 +257,40 @@ export function openFullPacienteModal(paciente = null, onReload = null) {
     submitBtn.textContent = "Guardando…";
     errorEl.hidden = true;
 
+    const payload = {
+      nombre,
+      apellido,
+      nombre_completo: nombreCompleto,
+      telefono: tel,
+      email,
+      dni,
+      profesional_habitual: prof,
+      motivo_consulta: motivo,
+      notas,
+      contacto_nombre: contactoNombre,
+      contacto_telefono: contactoTel,
+      contacto_email: contactoEmail,
+      contacto_notas: contactoNotas,
+      dejo_review: dejoReview,
+    };
+
+    let saveError = null;
     try {
-      const payload = {
-        nombre,
-        apellido,
-        nombre_completo: nombreCompleto,
-        telefono: tel,
-        email,
-        dni,
-        profesional_habitual: prof,
-        motivo_consulta: motivo,
-        notas,
-        contacto_nombre: contactoNombre,
-        contacto_telefono: contactoTel,
-        contacto_email: contactoEmail,
-        contacto_notas: contactoNotas,
-        dejo_review: dejoReview,
-      };
       if (isEdit) {
         await api("pacientes.php", { method: "PUT", body: JSON.stringify({ id: paciente.id, ...payload }) });
       } else {
         await api("pacientes.php", { method: "POST", body: JSON.stringify({ action: "insert", origen: "admin", ...payload }) });
       }
-      close();
-      if (typeof onReload === "function") await onReload();
     } catch (err) {
-      submitBtn.disabled = false;
-      submitBtn.textContent = isEdit ? "Guardar Cambios" : "Crear Paciente";
-      errorEl.textContent = err.message || "Error al procesar la solicitud";
-      errorEl.hidden = false;
+      saveError = err;
     }
+
+    // Cerrar siempre tras intentar guardar (éxito o fallo de API).
+    close();
+    if (saveError) {
+      await dialogAlert(saveError.message || "Error al procesar la solicitud", { type: "danger" });
+      return;
+    }
+    if (typeof onReload === "function") await onReload();
   });
 }
