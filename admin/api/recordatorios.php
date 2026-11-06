@@ -477,10 +477,20 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
         $pdo = recordatorios_pdo();
         $cleanPhoneEnd = $phone !== '' ? substr(recordatorios_clean_wa_id($phone), -10) : '';
         $pName = trim((string) ($item['patient_name'] ?? ''));
-        $today = gmdate('Y-m-d');
+        // La regla de un envío diario usa el día local de la clínica (Buenos Aires),
+        // aunque received_at se persista en UTC.
+        $localTz = recordatorios_tz();
+        $localDayStart = new DateTimeImmutable('now', $localTz)
+            ->setTime(0, 0, 0)
+            ->setTimezone(new DateTimeZone('UTC'));
+        $localDayEnd = $localDayStart->modify('+1 day');
 
         $conds = [];
-        $chkParams = ['id' => $id, 'today' => $today];
+        $chkParams = [
+            'id' => $id,
+            'day_start' => $localDayStart->format('Y-m-d H:i:s'),
+            'day_end' => $localDayEnd->format('Y-m-d H:i:s'),
+        ];
         if ($cleanPhoneEnd !== '') {
             $conds[] = 'RIGHT(wa_id, 10) = :phone_end';
             $chkParams['phone_end'] = $cleanPhoneEnd;
@@ -498,7 +508,8 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
             $chkSql = 'SELECT id, status, appointment_time, received_at FROM recordatorio_eventos
                 WHERE id != :id
                   AND status IN ("sent", "sent_email")
-                  AND DATE(received_at) = :today
+                  AND received_at >= :day_start
+                  AND received_at < :day_end
                   AND (' . implode(' OR ', $conds) . ')
                 LIMIT 1';
             $stmt = $pdo->prepare($chkSql);
