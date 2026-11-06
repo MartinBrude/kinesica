@@ -190,6 +190,9 @@ function kinesica_rel_map_ficha_rows(PDO $pdo, array $rows): array
                 kinesica_rel_note_read_fallback('fichas', $pid > 0 ? 'paciente_id_huerfano' : 'sin_paciente_id');
             }
         }
+        if (array_key_exists('version', $row) && $row['version'] !== null && $row['version'] !== '') {
+            $item['version'] = (int) $row['version'];
+        }
         $items[] = $item;
     }
     return $items;

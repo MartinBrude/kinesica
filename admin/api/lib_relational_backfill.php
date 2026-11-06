@@ -340,12 +340,15 @@ function kinesica_rel_backfill_recordatorios(PDO $pdo, bool $apply): array
 function kinesica_rel_backfill_run(PDO $pdo, bool $apply, ?array $onlyTables = null): array
 {
     require_once __DIR__ . '/lib_relational_contactos.php';
+    require_once __DIR__ . '/lib_relational_profesionales.php';
     $all = [
         'fichas' => 'kinesica_rel_backfill_fichas',
         'lista_espera' => 'kinesica_rel_backfill_lista_espera',
         'interaccion_eventos' => 'kinesica_rel_backfill_interacciones',
         'recordatorio_eventos' => 'kinesica_rel_backfill_recordatorios',
         'paciente_contactos' => 'kinesica_rel_backfill_paciente_contactos',
+        'fichas_profesional_id' => 'kinesica_rel_backfill_fichas_profesional_id',
+        'lista_espera_profesional_id' => 'kinesica_rel_backfill_lista_profesional_id',
     ];
     $tables = [];
     foreach ($all as $name => $fn) {

@@ -150,6 +150,8 @@ Implementación: [`lib_relational_contactos.php`](../admin/api/lib_relational_co
 
 profesionales debe relacionar cada profesional con users; las tablas funcionales deben usar profesional_id, no textos como norberto o maria.
 
+Implementación parcial: migración `005_profesionales` + [`lib_relational_profesionales.php`](../admin/api/lib_relational_profesionales.php) + optimistic locking `fichas.version` (409 si conflict). Runbook: [runbook-datos-relacionales-antigravity.md](runbook-datos-relacionales-antigravity.md).
+
 sesiones_clinicas debe tener paciente_id, profesional_id, fecha, payload_json, version, updated_by y fechas de auditoría.
 
 lista_espera debe tener paciente_id, profesional_id, preferencias y estado; no debe guardar nombre ni teléfono como identidad (pueden denormalizarse solo para vista/caché).

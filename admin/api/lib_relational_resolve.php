@@ -191,33 +191,17 @@ function kinesica_rel_find_pacientes_by_name_key(PDO $pdo, string $nameKey): arr
 }
 
 /**
- * profesional_id aún no tiene tabla `profesionales` canónica.
- * Hasta etapa 8 devolvemos null (se sigue usando el texto legacy).
+ * @param array{ignore_flag?:bool} $opts
  */
-function kinesica_rel_resolve_profesional_id(PDO $pdo, string $usernameOrSlug): ?int
+function kinesica_rel_resolve_profesional_id(PDO $pdo, string $usernameOrSlug, array $opts = []): ?int
 {
-    if (!kinesica_rel_write_ids()) {
+    $ignoreFlag = !empty($opts['ignore_flag']);
+    if (!$ignoreFlag && !kinesica_rel_write_ids()) {
         return null;
     }
-    if (!kinesica_migrations_table_exists($pdo, 'profesionales')) {
-        return null;
-    }
-    $slug = strtolower(trim($usernameOrSlug));
-    if ($slug === '' || $slug === 'indistinto') {
-        return null;
-    }
-    try {
-        $stmt = $pdo->prepare(
-            'SELECT id FROM profesionales WHERE username = :u OR slug = :s LIMIT 2'
-        );
-        $stmt->execute(['u' => $slug, 's' => $slug]);
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
-        if (count($rows) === 1) {
-            return (int) $rows[0]['id'];
-        }
-    } catch (Throwable) {
-    }
-    return null;
+    require_once __DIR__ . '/lib_relational_profesionales.php';
+    $prof = kinesica_rel_fetch_profesional_by_slug($pdo, $usernameOrSlug);
+    return $prof !== null ? $prof['id'] : null;
 }
 
 function kinesica_rel_unlinked_log_path(): string

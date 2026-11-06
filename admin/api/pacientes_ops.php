@@ -360,7 +360,15 @@ function kinesica_pacientes_waitlist_ops(PDO $pdo, string $action, array $data):
                 'phone' => $phone,
                 'nombre' => $nombre,
             ]);
-            $profesionalId = kinesica_rel_resolve_profesional_id($pdo, (string) $profesional);
+        }
+        try {
+            $profesionalId = kinesica_rel_resolve_profesional_id(
+                $pdo,
+                (string) $profesional,
+                kinesica_rel_write_ids() ? [] : ['ignore_flag' => true]
+            );
+        } catch (Throwable) {
+            $profesionalId = null;
         }
 
         $hasPacienteCol = kinesica_migrations_column_exists($pdo, 'lista_espera', 'paciente_id');

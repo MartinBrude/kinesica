@@ -228,7 +228,10 @@ if ($method === 'POST') {
     $data['profesionalNombre'] = $clinicians[$profesional] ?? $profesional;
     $data['savedAt'] = gmdate('c');
 
-    kinesica_fichas_save_record($pdo, $auth, $id, $data, $profesional);
+    $saveMeta = kinesica_fichas_save_record($pdo, $auth, $id, $data, $profesional);
+    if (!empty($saveMeta['version'])) {
+        $data['version'] = (int) $saveMeta['version'];
+    }
 
     if (is_array($prevItem)) {
         $prevFiles = kinesica_extract_ficha_photos($prevItem);

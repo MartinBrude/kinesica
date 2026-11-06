@@ -52,10 +52,15 @@ function kinesica_fichas_get_all(PDO $pdo): void
     require_once __DIR__ . '/lib_migrations.php';
     require_once __DIR__ . '/lib_relational_read.php';
     $hasPid = kinesica_migrations_column_exists($pdo, 'fichas', 'paciente_id');
-    $sql = $hasPid
-        ? 'SELECT payload, paciente_id FROM fichas ORDER BY updated_at DESC'
-        : 'SELECT payload FROM fichas ORDER BY updated_at DESC';
-    $rows = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    $hasVersion = kinesica_migrations_column_exists($pdo, 'fichas', 'version');
+    $cols = 'payload';
+    if ($hasPid) {
+        $cols .= ', paciente_id';
+    }
+    if ($hasVersion) {
+        $cols .= ', version';
+    }
+    $rows = $pdo->query("SELECT {$cols} FROM fichas ORDER BY updated_at DESC")->fetchAll(PDO::FETCH_ASSOC) ?: [];
     json_out(200, kinesica_rel_map_ficha_rows($pdo, $rows));
 }
 
@@ -87,15 +92,57 @@ function kinesica_fichas_find_inherited_owner(PDO $pdo, string $id, array $data,
     return '';
 }
 
-function kinesica_fichas_save_record(PDO $pdo, array $auth, string $id, array $data, string $profesional): void
+/**
+ * Optimistic locking: si el cliente envía version y no coincide → 409.
+ * Clientes legacy sin version siguen pudiendo guardar.
+ *
+ * @return int versión actual en DB (0 si no hay fila / columna)
+ */
+function kinesica_fichas_assert_version(PDO $pdo, string $id, array $data): int
 {
+    require_once __DIR__ . '/lib_migrations.php';
+    if (!kinesica_migrations_column_exists($pdo, 'fichas', 'version')) {
+        return 0;
+    }
+    $stmt = $pdo->prepare('SELECT version FROM fichas WHERE id = :id LIMIT 1');
+    $stmt->execute(['id' => $id]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!is_array($row)) {
+        return 0;
+    }
+    $dbVersion = (int) ($row['version'] ?? 1);
+    if (!array_key_exists('version', $data)) {
+        return $dbVersion;
+    }
+    $clientVersion = (int) $data['version'];
+    if ($clientVersion > 0 && $clientVersion !== $dbVersion) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        json_out(409, [
+            'error' => 'La ficha fue modificada por otro usuario. Recargá e intentá de nuevo.',
+            'version' => $dbVersion,
+            'code' => 'ficha_version_conflict',
+        ]);
+    }
+    return $dbVersion;
+}
+
+/**
+ * @return array{version:int}
+ */
+function kinesica_fichas_save_record(PDO $pdo, array $auth, string $id, array $data, string $profesional): array
+{
+    kinesica_fichas_ensure_rel_columns($pdo);
+    $currentVersion = kinesica_fichas_assert_version($pdo, $id, $data);
+
+    // No persistir version dentro del JSON clínico (vive en columna).
+    unset($data['version']);
     $payload = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
     if ($payload === false) {
         $pdo->rollBack();
         json_out(422, ['error' => 'La ficha contiene datos no válidos']);
     }
-
-    kinesica_fichas_ensure_rel_columns($pdo);
 
     $pacienteId = null;
     $profesionalId = null;
@@ -103,7 +150,6 @@ function kinesica_fichas_save_record(PDO $pdo, array $auth, string $id, array $d
     try {
         require_once __DIR__ . '/lib_relational_resolve.php';
         if (kinesica_rel_write_ids()) {
-            // Sync primero para que el directorio exista antes de resolver.
             require_once __DIR__ . '/pacientes_helpers.php';
             if (function_exists('sync_pacientes_from_fichas')) {
                 sync_pacientes_from_fichas($pdo, $id, $data, $profesional);
@@ -114,6 +160,9 @@ function kinesica_fichas_save_record(PDO $pdo, array $auth, string $id, array $d
                 'nombre' => (string) ($data['nombre'] ?? ''),
             ]);
             $profesionalId = kinesica_rel_resolve_profesional_id($pdo, $profesional);
+        } elseif (kinesica_migrations_table_exists($pdo, 'profesionales')) {
+            // Resolver profesional_id también sin WRITE_IDS si la tabla ya existe (migración 005).
+            $profesionalId = kinesica_rel_resolve_profesional_id($pdo, $profesional, ['ignore_flag' => true]);
         }
     } catch (Throwable) {
     }
@@ -121,47 +170,48 @@ function kinesica_fichas_save_record(PDO $pdo, array $auth, string $id, array $d
     $hasPacienteCol = kinesica_migrations_column_exists($pdo, 'fichas', 'paciente_id');
     $hasProfCol = kinesica_migrations_column_exists($pdo, 'fichas', 'profesional_id');
     $hasVersion = kinesica_migrations_column_exists($pdo, 'fichas', 'version');
+    $nextVersion = $hasVersion ? ($currentVersion > 0 ? $currentVersion + 1 : 1) : 0;
 
-    if ($hasPacienteCol || $hasProfCol) {
-        $cols = 'id, payload, profesional, updated_at, updated_by';
-        $vals = ':id, :payload, :profesional, UTC_TIMESTAMP(), :user';
-        $upd = 'payload = VALUES(payload), profesional = VALUES(profesional), updated_at = UTC_TIMESTAMP(), updated_by = VALUES(updated_by)';
-        $params = [
-            'id' => $id,
-            'payload' => $payload,
-            'profesional' => $profesional,
-            'user' => $auth['username'],
-        ];
-        if ($hasPacienteCol) {
-            $cols .= ', paciente_id';
-            $vals .= ', :paciente_id';
-            $upd .= ', paciente_id = COALESCE(VALUES(paciente_id), paciente_id)';
-            $params['paciente_id'] = $pacienteId;
-        }
-        if ($hasProfCol) {
-            $cols .= ', profesional_id';
-            $vals .= ', :profesional_id';
-            $upd .= ', profesional_id = COALESCE(VALUES(profesional_id), profesional_id)';
-            $params['profesional_id'] = $profesionalId;
-        }
-        if ($hasVersion) {
-            $upd .= ', version = version + 1';
-        }
-        $stmt = $pdo->prepare(
-            "INSERT INTO fichas ({$cols}) VALUES ({$vals}) ON DUPLICATE KEY UPDATE {$upd}"
-        );
-        $stmt->execute($params);
-    } else {
-        $stmt = $pdo->prepare(
-            'INSERT INTO fichas (id, payload, profesional, updated_at, updated_by)
-             VALUES (:id, :payload, :profesional, UTC_TIMESTAMP(), :user)
-             ON DUPLICATE KEY UPDATE payload = VALUES(payload), profesional = VALUES(profesional), updated_at = UTC_TIMESTAMP(), updated_by = VALUES(updated_by)'
-        );
-        $stmt->execute(['id' => $id, 'payload' => $payload, 'profesional' => $profesional, 'user' => $auth['username']]);
+    $cols = 'id, payload, profesional, updated_at, updated_by';
+    $vals = ':id, :payload, :profesional, UTC_TIMESTAMP(), :user';
+    $upd = 'payload = VALUES(payload), profesional = VALUES(profesional), updated_at = UTC_TIMESTAMP(), updated_by = VALUES(updated_by)';
+    $params = [
+        'id' => $id,
+        'payload' => $payload,
+        'profesional' => $profesional,
+        'user' => $auth['username'],
+    ];
+    if ($hasPacienteCol) {
+        $cols .= ', paciente_id';
+        $vals .= ', :paciente_id';
+        $upd .= ', paciente_id = COALESCE(VALUES(paciente_id), paciente_id)';
+        $params['paciente_id'] = $pacienteId;
     }
+    if ($hasProfCol) {
+        $cols .= ', profesional_id';
+        $vals .= ', :profesional_id';
+        $upd .= ', profesional_id = COALESCE(VALUES(profesional_id), profesional_id)';
+        $params['profesional_id'] = $profesionalId;
+    }
+    if ($hasVersion) {
+        $cols .= ', version';
+        $vals .= ', :version';
+        $upd .= ', version = version + 1';
+        $params['version'] = $nextVersion > 0 ? $nextVersion : 1;
+    }
+    $stmt = $pdo->prepare(
+        "INSERT INTO fichas ({$cols}) VALUES ({$vals}) ON DUPLICATE KEY UPDATE {$upd}"
+    );
+    $stmt->execute($params);
+
+    if ($hasVersion) {
+        $verStmt = $pdo->prepare('SELECT version FROM fichas WHERE id = :id LIMIT 1');
+        $verStmt->execute(['id' => $id]);
+        $nextVersion = (int) ($verStmt->fetchColumn() ?: $nextVersion);
+    }
+
     $pdo->commit();
 
-    // Sync legacy post-commit solo si no se hizo arriba (flag off).
     if (!$didSync) {
         try {
             require_once __DIR__ . '/pacientes_helpers.php';
@@ -171,4 +221,6 @@ function kinesica_fichas_save_record(PDO $pdo, array $auth, string $id, array $d
         } catch (Throwable) {
         }
     }
+
+    return ['version' => $nextVersion];
 }

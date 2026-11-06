@@ -173,3 +173,10 @@ Tabla (migración `001`): varios teléfonos/emails por paciente; un `es_principa
 - Backfill: `php admin/api/backfill_relational.php --only=paciente_contactos --dry-run|--apply`
 - Resolve de `paciente_id` también consulta contactos (útil si el tel legacy quedó desfasado).
 - Sin UNIQUE global de teléfono: compartidos siguen siendo revisión manual.
+
+## Profesionales + version de fichas
+
+- Migración `005_profesionales`: seed `norberto` / `maria`.
+- Backfill: `--only=fichas_profesional_id,lista_espera_profesional_id`.
+- Fichas GET incluyen `version`; POST con `version` obsoleta → **409** (`ficha_version_conflict`). Clientes sin `version` siguen pudiendo guardar.
+- Runbook cocinado: [runbook-datos-relacionales-antigravity.md](runbook-datos-relacionales-antigravity.md).
