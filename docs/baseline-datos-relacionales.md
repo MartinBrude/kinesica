@@ -71,11 +71,33 @@ Runner: `admin/api/lib_migrations.php` + CLI `admin/api/migrate.php`.
 
 Flags (default `false`): `relational_flags` en settings o env `KINESICA_REL_WRITE_IDS` / `READ_IDS` / `ENFORCE_FK`.
 
+## Auditoría (etapa 1)
+
+Script read-only: `php admin/api/audit_relational.php` (también `npm run admin:audit`).
+
+```bash
+# Enmascarado (default) — resumen a stdout
+php admin/api/audit_relational.php --token="$INSTALL_TOKEN"
+
+# Informe persistido
+php admin/api/audit_relational.php --token="$INSTALL_TOKEN" \
+  --out=docs/audit-report.json \
+  --md=docs/audit-report.md
+
+# Solo en máquina local / copia: PII completo
+php admin/api/audit_relational.php --token="$INSTALL_TOKEN" --full-pii --out=/tmp/kinesica-audit-full.json
+```
+
+No fusiona ni borra. Clasifica: candidatos a fusión, teléfonos compartidos, DNI duplicados, fichas huérfanas, lista/WA sin paciente, `event_key` duplicados, lista de revisión manual + reglas.
+
+Tests sintéticos: `node scripts/verify-relational-audit.mjs`.
+
 ## Comandos de verificación
 
 ```bash
 npm run admin:lint
 node scripts/verify-relational-migrations.mjs
+node scripts/verify-relational-audit.mjs
 npm run admin:test
 ```
 
@@ -94,3 +116,10 @@ php admin/api/migrate.php --token="$INSTALL_TOKEN"
 - [ ] Respuestas de referencia (pacientes/fichas/horarios) archivadas
 - [ ] `npm run admin:test` en verde en esta branch
 - [ ] Ventana acordada antes del primer `migrate.php` en Hostinger
+
+## Checklist etapa 1 (auditoría)
+
+- [ ] Correr `audit_relational.php` contra **copia** de producción (no hace falta `--full-pii` para el resumen)
+- [ ] Guardar JSON + MD del informe
+- [ ] Revisar `manual_review` y clasificar excepciones
+- [ ] No fusionar ni borrar hasta reglas explícitas por caso

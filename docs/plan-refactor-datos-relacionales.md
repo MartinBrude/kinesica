@@ -200,6 +200,8 @@ No aplica; esta etapa es de observación.
 
 ## Etapa 1 — Auditoría de datos y esquemas
 
+Implementación: [`admin/api/lib_relational_audit.php`](../admin/api/lib_relational_audit.php) + CLI [`admin/api/audit_relational.php`](../admin/api/audit_relational.php) (`npm run admin:audit`). Ver [baseline-datos-relacionales.md](baseline-datos-relacionales.md).
+
 ### Auditoría de pacientes
 
 Comprobar teléfonos duplicados tras normalización, teléfonos vacíos o inválidos, DNI duplicados, emails duplicados, nombres vacíos o de prueba, diferencias entre nombre, apellido y sus derivados, teléfonos compartidos (candidatos a multi-paciente, no a fusión ciega), pacientes sin identificador confiable, candidatos a fusión y casos que no deben fusionarse.
