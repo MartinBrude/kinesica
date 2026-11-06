@@ -1614,20 +1614,26 @@
       const errorBox = this.container.querySelector("#kb-slots-error");
       const grid = this.container.querySelector("#kb-slots-grid");
 
-      const hasWarm = !forceRefresh && (
-        (this._prefetchedSlots && Array.isArray(this._prefetchedSlots[dateIso])) ||
-        (this.client && typeof this.client.hasCachedSlots === "function" && this.client.hasCachedSlots(dateIso))
+      const hasPrefetched = Boolean(
+        !forceRefresh && this._prefetchedSlots && Object.prototype.hasOwnProperty.call(this._prefetchedSlots, dateIso)
       );
-      loading.style.display = hasWarm ? "none" : "flex";
-      empty.style.display = "none";
-      errorBox.style.display = "none";
-      grid.style.display = "none";
-      grid.innerHTML = "";
+      const hasWarm = hasPrefetched || (
+        !forceRefresh && this.client && typeof this.client.hasCachedSlots === "function" && this.client.hasCachedSlots(dateIso)
+      );
+      // Si ya hay slots en caché, no vaciar el grid (evita flash blanco al cambiar de día).
+      if (!hasWarm) {
+        loading.style.display = "flex";
+        empty.style.display = "none";
+        errorBox.style.display = "none";
+        grid.style.display = "none";
+        grid.innerHTML = "";
+      } else {
+        loading.style.display = "none";
+        empty.style.display = "none";
+        errorBox.style.display = "none";
+      }
 
       try {
-        const hasPrefetched = Boolean(
-          !forceRefresh && this._prefetchedSlots && Object.prototype.hasOwnProperty.call(this._prefetchedSlots, dateIso)
-        );
         const rawSlots = hasPrefetched
           ? this._prefetchedSlots[dateIso]
           : await this.fetchFilteredSlots(dateIso, forceRefresh);

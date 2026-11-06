@@ -153,7 +153,6 @@
 
 .kb-step-panel {
   display: none;
-  animation: kbFadeIn 0.25s ease-out;
 }
 
 .kb-step-panel.active {
@@ -1000,18 +999,18 @@
 .kinesica-booking-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(3, 28, 66, 0.65);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
+  /* Sin backdrop-filter: en macOS/Safari el blur se recompone al crecer el modal (clic en No) y provoca flash. */
+  background: rgba(3, 28, 66, 0.72);
   z-index: 99999;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 20px;
+  padding: 32px 20px 20px;
   box-sizing: border-box;
+  overflow-y: auto;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.25s ease, visibility 0.25s ease;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
 }
 
 .kinesica-booking-modal-overlay.is-open {
@@ -1029,22 +1028,23 @@
   position: relative;
   width: 100%;
   max-width: 720px;
-  max-height: 92vh;
+  max-height: none;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   background: transparent;
   border-radius: 16px;
   box-shadow: 0 25px 60px rgba(3, 28, 66, 0.35), 0 4px 16px rgba(0, 95, 153, 0.12);
   overflow: hidden;
-  transform: translateY(16px) scale(0.98);
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  /* Sin scale/translate en open: evita salto + flash al expandir el paso 1 (Sí/No). */
+  transform: none;
   z-index: 2;
   -webkit-backface-visibility: hidden;
   isolation: isolate;
 }
 
 .kinesica-booking-modal-overlay.is-open .kinesica-booking-modal-dialog {
-  transform: translateY(0) scale(1);
+  transform: none;
 }
 
 .kinesica-booking-modal-dialog .kinesica-booking-container {
