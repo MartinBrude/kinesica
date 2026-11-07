@@ -571,47 +571,171 @@ function openRecordatorioDispatchModal(item, onSuccess) {
   openRecordatorioContactModal(item, { mode: "dispatch", onSuccess });
 }
 
-async function createMartinTestCase() {
-  const btn = document.getElementById("btn-test-recordatorio-martin");
-  if (btn) {
-    btn.disabled = true;
-    btn.textContent = "Creando…";
-  }
+const TEST_CONTACT_STORAGE_KEY = "kinesica_recordatorio_test_contact";
+
+const TEST_CONTACT_DEFAULTS = {
+  martin: { name: "Martín Brude", phone: "34658444935" },
+  norberto: { name: "Norberto Brude", phone: "5491161564311" },
+};
+
+function readStoredTestContact() {
   try {
-    const resp = await api("recordatorios.php", {
-      method: "POST",
-      body: JSON.stringify({ action: "create_test_case" }),
-    });
-    if (resp && (resp.ok || resp.status === "success")) {
-      if (resp.item) applyRecordatorioItemUpdate(resp.item);
-      else await loadRecordatorios(false);
-      dialogAlert(resp.message || "Caso de prueba listo. Usá «Enviar ahora».", { type: "success" });
+    const raw = localStorage.getItem(TEST_CONTACT_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") return null;
+    return {
+      name: String(parsed.name || "").trim(),
+      phone: String(parsed.phone || "").trim(),
+    };
+  } catch {
+    return null;
+  }
+}
+
+function storeTestContact(name, phone) {
+  try {
+    localStorage.setItem(TEST_CONTACT_STORAGE_KEY, JSON.stringify({ name, phone }));
+  } catch {
+    /* ignore */
+  }
+}
+
+function defaultTestContact() {
+  const stored = readStoredTestContact();
+  if (stored?.name && stored?.phone) return stored;
+  const user = getSessionUser();
+  const username = String(user?.username || "").toLowerCase();
+  const known = TEST_CONTACT_DEFAULTS[username];
+  if (known) {
+    return {
+      name: stored?.name || known.name,
+      phone: stored?.phone || known.phone,
+    };
+  }
+  return {
+    name: stored?.name || String(user?.name || "").trim() || "",
+    phone: stored?.phone || "",
+  };
+}
+
+function openTestCaseModal() {
+  if (document.querySelector(".recordatorio-modal-backdrop")) return;
+
+  const defaults = defaultTestContact();
+  const backdrop = document.createElement("div");
+  backdrop.className = "recordatorio-modal-backdrop";
+  backdrop.setAttribute("role", "dialog");
+  backdrop.setAttribute("aria-modal", "true");
+  backdrop.innerHTML = `
+    <div class="recordatorio-modal-card">
+      <div class="recordatorio-modal-header">
+        <h3>＋ Caso de prueba</h3>
+        <button type="button" class="btn ghost btn-close-modal" aria-label="Cerrar">✕</button>
+      </div>
+      <div class="recordatorio-modal-body">
+        <p class="recordatorio-modal-hint">Crea un recordatorio pending para probar el envío manual por WhatsApp. No se guarda en el directorio de pacientes.</p>
+        <div class="recordatorio-modal-field">
+          <label for="test-case-name">Nombre:</label>
+          <input type="text" id="test-case-name" value="${escapeHtml(defaults.name)}" placeholder="Nombre del destinatario" autocomplete="name" />
+        </div>
+        <div class="recordatorio-modal-field">
+          <label for="test-case-phone">WhatsApp (con código de país):</label>
+          <input type="tel" id="test-case-phone" value="${escapeHtml(defaults.phone)}" placeholder="54911… o 346…" autocomplete="tel" />
+        </div>
+      </div>
+      <div class="recordatorio-modal-actions">
+        <button type="button" class="btn light btn-close-modal">Cancelar</button>
+        <button type="button" class="btn green" id="btn-submit-test-case">Crear caso</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(backdrop);
+  const nameInput = backdrop.querySelector("#test-case-name");
+  const phoneInput = backdrop.querySelector("#test-case-phone");
+  (defaults.name ? phoneInput : nameInput)?.focus();
+
+  const close = () => {
+    backdrop.remove();
+    document.removeEventListener("keydown", onKeyDown);
+  };
+  const onKeyDown = (e) => {
+    if (e.key === "Escape") close();
+  };
+  document.addEventListener("keydown", onKeyDown);
+  backdrop.querySelectorAll(".btn-close-modal").forEach((btn) => {
+    btn.addEventListener("click", close);
+  });
+  backdrop.addEventListener("click", (e) => {
+    if (e.target === backdrop) close();
+  });
+
+  backdrop.querySelector("#btn-submit-test-case")?.addEventListener("click", async (e) => {
+    const btn = e.currentTarget;
+    const name = nameInput?.value.trim() || "";
+    const rawPhone = phoneInput?.value.trim() || "";
+    const normalized = normalizePhoneForWhatsApp(rawPhone);
+    const phone = normalized || rawPhone.replace(/\D/g, "");
+    if (normalized && phoneInput && phoneInput.value.trim() !== normalized) {
+      phoneInput.value = normalized;
+    }
+    if (!name) {
+      dialogAlert("Ingresá el nombre del destinatario.", { type: "danger" });
+      nameInput?.focus();
       return;
     }
-    dialogAlert(resp?.error || "No se pudo crear el caso de prueba.", { type: "danger" });
-  } catch (err) {
-    dialogAlert(
-      (err && (err.payload?.error || err.message)) || "Error al crear el caso de prueba.",
-      { type: "danger" }
-    );
-  } finally {
-    if (btn) {
-      btn.disabled = false;
-      btn.textContent = "＋ Caso de prueba (Martín)";
+    if (!phone || phone.length < 8) {
+      dialogAlert("Ingresá un WhatsApp válido (con código de país).", { type: "danger" });
+      phoneInput?.focus();
+      return;
     }
-  }
+
+    const prev = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "Creando…";
+    try {
+      const resp = await api("recordatorios.php", {
+        method: "POST",
+        body: JSON.stringify({
+          action: "create_test_case",
+          patient_name: name,
+          phone,
+        }),
+      });
+      if (resp && (resp.ok || resp.status === "success")) {
+        storeTestContact(name, phone);
+        close();
+        if (resp.item) applyRecordatorioItemUpdate(resp.item);
+        else await loadRecordatorios(false);
+        dialogAlert(resp.message || "Caso de prueba listo. Usá «Enviar ahora».", { type: "success" });
+        return;
+      }
+      dialogAlert(resp?.error || "No se pudo crear el caso de prueba.", { type: "danger" });
+    } catch (err) {
+      dialogAlert(
+        (err && (err.payload?.error || err.message)) || "Error al crear el caso de prueba.",
+        { type: "danger" }
+      );
+    } finally {
+      btn.disabled = false;
+      btn.textContent = prev;
+    }
+  });
 }
 
 export function initRecordatoriosModule() {
   renderRecordatoriosRules(document.getElementById("recordatorios-rules"));
-  const testBtn = document.getElementById("btn-test-recordatorio-martin");
+  const testBtn =
+    document.getElementById("btn-test-recordatorio") ||
+    document.getElementById("btn-test-recordatorio-martin");
   if (testBtn) {
     const user = getSessionUser();
     const canTest = user?.role === "admin" || user?.username === "martin";
     testBtn.hidden = !canTest;
     testBtn.addEventListener("click", () => {
       if (isRefreshing) return;
-      createMartinTestCase();
+      openTestCaseModal();
     });
   }
   document.getElementById("btn-refresh-recordatorios")?.addEventListener("click", () => {

@@ -27,10 +27,6 @@ function recordatorios_normalize_phone_input(string $raw): string
     return recordatorios_clean_wa_id($raw);
 }
 
-/** Caso de prueba manual: Martín @ +34 658 44 49 35 */
-const RECORDATORIOS_TEST_WA = '34658444935';
-const RECORDATORIOS_TEST_NAME = 'Martín Brude';
-
 function recordatorios_is_test_case(array $item): bool
 {
     $cal = (string) ($item['calendar_event_id'] ?? '');
@@ -38,11 +34,12 @@ function recordatorios_is_test_case(array $item): bool
 }
 
 /**
- * Crea (o reutiliza) un recordatorio pending para probar el envío manual a Martín.
+ * Crea (o reutiliza) un recordatorio pending configurable para probar el envío manual.
  *
- * @return array{ok:bool,item?:array,created?:bool,error?:string}
+ * @param array{patient_name?:string,phone?:string,wa_id?:string} $input
+ * @return array{ok:bool,item?:array,created?:bool,error?:string,message?:string}
  */
-function recordatorios_create_manual_test_case(array $auth): array
+function recordatorios_create_manual_test_case(array $auth, array $input = []): array
 {
     $user = (string) ($auth['username'] ?? '');
     $role = (string) ($auth['role'] ?? '');
@@ -50,11 +47,21 @@ function recordatorios_create_manual_test_case(array $auth): array
         return ['ok' => false, 'error' => 'Solo admin puede crear el caso de prueba'];
     }
 
+    $name = trim((string) ($input['patient_name'] ?? $input['name'] ?? ''));
+    $rawPhone = (string) ($input['phone'] ?? $input['wa_id'] ?? '');
+    $wa = recordatorios_normalize_phone_input($rawPhone);
+    if ($name === '') {
+        return ['ok' => false, 'error' => 'Ingresá el nombre del destinatario'];
+    }
+    if ($wa === '' || strlen($wa) < 8) {
+        return ['ok' => false, 'error' => 'Ingresá un WhatsApp válido (con código de país)'];
+    }
+
     try {
         $pdo = recordatorios_pdo();
         recordatorios_ensure_schema($pdo);
 
-        // Reutilizar un pending de prueba aún no enviado (evita acumular filas).
+        // Reutilizar un pending de prueba aún no enviado al mismo número (evita acumular filas).
         $stmt = $pdo->prepare(
             'SELECT * FROM recordatorio_eventos
              WHERE calendar_event_id LIKE :pfx
@@ -64,15 +71,30 @@ function recordatorios_create_manual_test_case(array $auth): array
              LIMIT 1'
         );
         $stmt->execute([
-            'pfx' => 'test:martin:%',
-            'wa' => RECORDATORIOS_TEST_WA,
+            'pfx' => 'test:%',
+            'wa' => $wa,
         ]);
         $existing = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($existing) {
+            // Actualizar nombre si cambió en el formulario.
+            if (trim((string) ($existing['patient_name'] ?? '')) !== $name) {
+                $upd = $pdo->prepare(
+                    'UPDATE recordatorio_eventos
+                     SET patient_name = :name, event_summary = :summary
+                     WHERE id = :id'
+                );
+                $upd->execute([
+                    'name' => $name,
+                    'summary' => '[PRUEBA] ' . $name,
+                    'id' => (int) $existing['id'],
+                ]);
+                $existing['patient_name'] = $name;
+                $existing['event_summary'] = '[PRUEBA] ' . $name;
+            }
             return [
                 'ok' => true,
                 'created' => false,
-                'message' => 'Ya tenés un caso de prueba pendiente. Usá «Enviar ahora».',
+                'message' => 'Ya tenés un caso de prueba pendiente para ese número. Usá «Enviar ahora».',
                 'item' => recordatorios_format_item($existing),
             ];
         }
@@ -82,8 +104,9 @@ function recordatorios_create_manual_test_case(array $auth): array
         $apptDate = $nowLocal->modify('+1 day')->format('Y-m-d');
         $apptTime = '11:00';
         $stamp = $nowLocal->format('Ymd-His');
-        $calId = 'test:martin:' . $stamp;
-        $eventKey = 'test:martin:' . bin2hex(random_bytes(8));
+        $slug = preg_replace('/[^a-z0-9]+/i', '-', strtolower($user !== '' ? $user : 'admin')) ?: 'admin';
+        $calId = 'test:' . $slug . ':' . $stamp;
+        $eventKey = 'test:' . $slug . ':' . bin2hex(random_bytes(8));
         $runAt = time();
 
         $ev = [
@@ -93,13 +116,13 @@ function recordatorios_create_manual_test_case(array $auth): array
             'appointment_date' => $apptDate,
             'appointment_time' => $apptTime,
             'calendar_event_id' => $calId,
-            'patient_name' => RECORDATORIOS_TEST_NAME,
-            'wa_id' => RECORDATORIOS_TEST_WA,
+            'patient_name' => $name,
+            'wa_id' => $wa,
             'status' => 'pending',
             'skip_reason' => '',
             'error_code' => '',
             'error_message' => 'Caso de prueba manual',
-            'event_summary' => '[PRUEBA] ' . RECORDATORIOS_TEST_NAME,
+            'event_summary' => '[PRUEBA] ' . $name,
         ];
         $outcome = recordatorios_insert_item($pdo, $ev);
         if ($outcome === 'duplicate') {
@@ -108,7 +131,6 @@ function recordatorios_create_manual_test_case(array $auth): array
 
         $created = recordatorios_find_item_by_id((int) $pdo->lastInsertId());
         if (!$created) {
-            // Fallback por event_key
             $q = $pdo->prepare('SELECT * FROM recordatorio_eventos WHERE event_key = :k LIMIT 1');
             $q->execute(['k' => $eventKey]);
             $created = $q->fetch(PDO::FETCH_ASSOC) ?: null;
@@ -120,7 +142,7 @@ function recordatorios_create_manual_test_case(array $auth): array
         return [
             'ok' => true,
             'created' => true,
-            'message' => 'Caso de prueba listo: Martín · +34 658 44 49 35. Usá «Enviar ahora».',
+            'message' => 'Caso de prueba listo: ' . $name . ' · ' . $wa . '. Usá «Enviar ahora».',
             'item' => recordatorios_format_item($created),
         ];
     } catch (Throwable $e) {
@@ -806,7 +828,7 @@ if ($action === 'save_contact' || $action === 'update_contact') {
 }
 
 if ($action === 'create_test_case' || $action === 'seed_test') {
-    $res = recordatorios_create_manual_test_case($auth);
+    $res = recordatorios_create_manual_test_case($auth, is_array($input) ? $input : []);
     if (!empty($res['ok'])) {
         json_out(200, $res);
     }
