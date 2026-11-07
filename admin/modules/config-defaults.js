@@ -127,7 +127,9 @@ _(Type *MENU* to see other options)_`,
 
 Por favor confirmá tu asistencia seleccionando una de las opciones a continuación 🙌:`,
   reminder_notes: `📍 Te esperamos en Charcas 3889, 5º, B (Palermo).
+
 ⚠️ Te recordamos que el espacio no cuenta con secretaria, por lo que te pedimos puntualidad estricta para evitar esperas en la entrada y no concurrir con acompañantes (salvo menores de edad o personas que requieran asistencia directa).
+
 Si tenés estudios médicos previos, no olvides traerlos.`
 };
 

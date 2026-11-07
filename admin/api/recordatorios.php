@@ -585,7 +585,7 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
     if ($indicaciones === '') {
         $indicaciones = $isCall
             ? '📞 Norberto se comunicará con vos puntualmente a este número de WhatsApp.'
-            : "📍 Te esperamos en Charcas 3889, 5º, B (Palermo).\n⚠️ Te recordamos puntualidad estricta para evitar esperas y no concurrir con acompañantes (salvo menores o asistencia directa).";
+            : "📍 Te esperamos en Charcas 3889, 5º, B (Palermo).\n\n⚠️ Te recordamos que el espacio no cuenta con secretaria, por lo que te pedimos puntualidad estricta para evitar esperas en la entrada y no concurrir con acompañantes (salvo menores de edad o personas que requieran asistencia directa).\n\nSi tenés estudios médicos previos, no olvides traerlos.";
     }
     // Por si llega desde settings/DB con "\n" escapado como texto.
     $indicaciones = str_replace(['\\r\\n', '\\n', '\\r'], ["\n", "\n", "\n"], $indicaciones);
