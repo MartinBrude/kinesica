@@ -5,7 +5,7 @@
 export function renderRecordatoriosRules(el) {
   if (!el) return;
   el.innerHTML = `
-    <details class="recordatorios-rules" open>
+    <details class="recordatorios-rules">
       <summary class="recordatorios-rules-summary">Reglas del motor de recordatorios</summary>
       <div class="recordatorios-rules-body">
         <ul class="recordatorios-rules-list">

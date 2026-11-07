@@ -14,7 +14,7 @@ import {
   filterRecordatoriosList,
   renderRecordatoriosStats,
 } from "./recordatorios-filter.js?v=7";
-import { renderRecordatoriosRules } from "./recordatorios-rules.js?v=6";
+import { renderRecordatoriosRules } from "./recordatorios-rules.js?v=7";
 import { setListControlsEnabled } from "./list-controls.js?v=1";
 
 let cachedItems = [];

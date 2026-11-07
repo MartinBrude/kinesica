@@ -10,8 +10,8 @@ import { todayISO } from "./form.js?v=88";
 import { sessionRow, patientGroupRow, fichaRow, setRowsContext } from "./library-rows.js?v=3";
 import { downloadJSON, planImport, executeBatchImport } from "./library-io.js";
 import { pageWindow as calcPageWindow } from "./library-pager.js";
-import { initLibraryToolbar } from "./library-toolbar.js";
-import { renderLibraryList } from "./library-render.js";
+import { initLibraryToolbar } from "./library-toolbar.js?v=2";
+import { renderLibraryList } from "./library-render.js?v=2";
 
 export { sessionRow, patientGroupRow, fichaRow, downloadJSON };
 
@@ -27,7 +27,6 @@ const pageSizeSelect = document.querySelector("#page-size");
 const sortPatientsSelect = document.querySelector("#sort-patients");
 const libraryPager = document.querySelector("#library-pager");
 const mineButton = document.querySelector("#btn-mine");
-const filterProfSelect = document.querySelector("#filter-library-prof");
 const btnGroup = document.querySelector("#btn-group");
 const btnNew = document.querySelector("#btn-new");
 const btnSeed = document.querySelector("#btn-seed");
@@ -38,7 +37,6 @@ let libraryLoaded = false;
 let grouped = false;
 let focusedPatient = null;
 let onlyMine = false;
-let activeFilterProf = "todos";
 let mineDefaultApplied = false;
 const expandedPatients = new Set();
 let patientSortMode = "name";
@@ -82,11 +80,6 @@ export function showLibrary() {
 export function visibleFichas(_sessionUser = null) {
   const q = searchInput ? searchInput.value : "";
   return loadAll()
-    .filter((item) => {
-      if (activeFilterProf === "todos") return true;
-      const prof = (item?.profesional || "").toLowerCase();
-      return activeFilterProf === "indistinto" ? (prof === "indistinto" || prof === "") : prof === activeFilterProf;
-    })
     .filter((item) => matchFichaSearch(item, q))
     .sort((a, b) => (b.fechaSesion || "").localeCompare(a.fechaSesion || ""));
 }
@@ -108,7 +101,6 @@ export function renderLibrary() {
     libraryView,
     patientSelect,
     searchInput,
-    filterProfSelect,
     mineButton,
     sortPatientsSelect,
     getState: () => ({
@@ -116,7 +108,6 @@ export function renderLibrary() {
       allFichas: cache,
       focusedPatient,
       patientSortMode,
-      activeFilterProf,
       expandedPatients,
       activeRowCallbacks,
     }),
@@ -174,7 +165,6 @@ export function initLibrary({
     searchInput,
     pageSizeSelect,
     sortPatientsSelect,
-    filterProfSelect,
     mineButton,
     btnGroup,
     patientSelect,
@@ -192,7 +182,6 @@ export function initLibrary({
       if ("onlyMine" in partial) onlyMine = partial.onlyMine;
       if ("grouped" in partial) grouped = partial.grouped;
       if ("focusedPatient" in partial) focusedPatient = partial.focusedPatient;
-      if ("activeFilterProf" in partial) activeFilterProf = partial.activeFilterProf;
       if ("patientSortMode" in partial) patientSortMode = partial.patientSortMode;
     },
     renderLibrary,

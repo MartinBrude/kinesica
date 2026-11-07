@@ -13,7 +13,6 @@ export function initLibraryToolbar({
   searchInput,
   pageSizeSelect,
   sortPatientsSelect,
-  filterProfSelect,
   mineButton,
   btnGroup,
   patientSelect,
@@ -50,14 +49,6 @@ export function initLibraryToolbar({
       try {
         localStorage.setItem("kinesica_patient_sort", sortPatientsSelect.value);
       } catch { /* ignore */ }
-      setLibraryPage(0);
-      renderLibrary();
-    });
-  }
-
-  if (filterProfSelect) {
-    filterProfSelect.addEventListener("change", (e) => {
-      setState({ activeFilterProf: e.target.value, focusedPatient: null });
       setLibraryPage(0);
       renderLibrary();
     });

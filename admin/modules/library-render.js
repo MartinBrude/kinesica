@@ -13,7 +13,6 @@ export function renderLibraryList({
   libraryView,
   patientSelect,
   searchInput,
-  filterProfSelect,
   mineButton,
   sortPatientsSelect,
   getState,
@@ -25,7 +24,7 @@ export function renderLibraryList({
 }) {
   if (!listEl) return;
   const state = getState();
-  const { libraryLoaded, allFichas, focusedPatient, patientSortMode, activeFilterProf, expandedPatients, activeRowCallbacks } = state;
+  const { libraryLoaded, allFichas, focusedPatient, patientSortMode, expandedPatients, activeRowCallbacks } = state;
 
   syncMineButton();
 
@@ -35,10 +34,6 @@ export function renderLibraryList({
   const controlsLocked = noPatients || !libraryLoaded;
   if (patientSelect) patientSelect.disabled = controlsLocked;
   if (searchInput) searchInput.disabled = controlsLocked;
-  if (filterProfSelect) {
-    filterProfSelect.disabled = controlsLocked;
-    filterProfSelect.value = activeFilterProf;
-  }
   if (mineButton) mineButton.disabled = controlsLocked;
   if (sortPatientsSelect) sortPatientsSelect.disabled = controlsLocked;
 
@@ -116,7 +111,7 @@ export function renderLibraryList({
   } else if (!groups.length) {
     const p = document.createElement("p");
     p.className = noPatients ? "empty empty-none" : "empty";
-    p.textContent = searchInput?.value || activeFilterProf !== "todos"
+    p.textContent = searchInput?.value
       ? "No se encontraron pacientes con los filtros actuales."
       : "No hay pacientes guardados todavía.";
     fragment.append(p);

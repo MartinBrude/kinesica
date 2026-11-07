@@ -42,7 +42,7 @@ import {
   patientGroupRow,
   sessionRow,
   downloadJSON,
-} from "./modules/library.js?v=93";
+} from "./modules/library.js?v=94";
 
 import {
   showCompare,
@@ -61,11 +61,11 @@ import {
   switchTab,
   mountAdminChannels,
   unmountAdminChannels,
-} from "./modules/app-tabs.js?v=11";
+} from "./modules/app-tabs.js?v=13";
 
 import {
   initAppControllers,
-} from "./modules/app-init.js?v=7";
+} from "./modules/app-init.js?v=9";
 
 export {
   api,
