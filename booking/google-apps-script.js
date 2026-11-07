@@ -4,20 +4,15 @@
  * Este script se puede desplegar como una Aplicación Web en Google Apps Script
  * (con permisos para Google Calendar y Google Sheets).
  *
- * Configuración en Google Apps Script:
- * 1. Abrir: https://script.google.com/
- * 2. Crear un nuevo proyecto (o agregar este código al proyecto existente de Kinésica).
- * 3. En Configuración del proyecto -> Propiedades de la secuencia de comandos:
- *    - CALENDAR_NAME: "consultorio" (o dejar vacío para usar el calendario principal).
- *    - SPREADSHEET_ID: "1kyGkYea0Iu_OrXxF-yONqhs2rG1O8YUWbbSmQe37GCk"
- *    - WHATSAPP_TOKEN: Token de Meta WhatsApp Cloud API para enviar alertas por WhatsApp a Norberto.
- *    - NORBERTO_PHONE: "541161564311" (opcional, valor por defecto).
- *    - WHATSAPP_PHONE_NUMBER_ID: "1340013275870491" (opcional, valor por defecto).
- *    - N8N_ALERT_WEBHOOK_URL: (Opcional) URL de webhook n8n para despacho vía n8n.
- * 4. Implementar -> Nueva implementación -> Tipo: "Aplicación web":
- *    - Ejecutar como: "Yo" (tu cuenta de Google con acceso al calendario).
- *    - Quién tiene acceso: "Cualquier persona" (para permitir peticiones desde la web).
- * 5. Copiar la URL generada y asignarla en js/site-config.js o en el widget de turnos.
+ * Deploy (clasp, sin copiar/pegar):
+ *   npm run gas:setup   → pegar scriptId en booking/gas/.clasp.json
+ *   npm run gas:login   → una vez
+ *   npm run gas:deploy  → push + actualiza la misma web app (/exec)
+ * Ver booking/README.md §4.
+ *
+ * Propiedades del script (consola GAS): CALENDAR_NAME, SPREADSHEET_ID,
+ * WHATSAPP_TOKEN, NORBERTO_PHONE, WHATSAPP_PHONE_NUMBER_ID, N8N_ALERT_WEBHOOK_URL,
+ * GAS_API_SECRET / WEBHOOK_SECRET, etc.
  */
 
 // Duración y franjas de Kinésica

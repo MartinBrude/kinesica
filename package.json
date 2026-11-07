@@ -4,6 +4,11 @@
   "description": "Static site tooling (CSS purge audit, scripts)",
   "scripts": {
     "booking:test": "node scripts/verify-booking.mjs && node scripts/verify-gas-hours.mjs && node scripts/verify-booking-form-errors.mjs && node scripts/verify-calendar-backup.mjs",
+    "gas:setup": "node scripts/deploy-gas-booking.mjs setup",
+    "gas:login": "node scripts/deploy-gas-booking.mjs login",
+    "gas:push": "node scripts/deploy-gas-booking.mjs push",
+    "gas:deploy": "node scripts/deploy-gas-booking.mjs deploy",
+    "gas:deployments": "node scripts/deploy-gas-booking.mjs deployments",
     "admin:test": "node scripts/verify-fichas-atm.mjs && node scripts/verify-admin-robustness.mjs && node scripts/verify-admin-corpus.mjs && node scripts/verify-admin-menu-texts.mjs && node scripts/verify-no-seed-recipients.mjs && node scripts/verify-pacientes-phone-search.mjs && node scripts/verify-interacciones-whatsapp.mjs && node scripts/verify-colaborador-role.mjs && node scripts/verify-recordatorios.mjs && node scripts/verify-pacientes-deduplication.mjs && node scripts/verify-relational-migrations.mjs && node scripts/verify-relational-audit.mjs && node scripts/verify-relational-resolve.mjs && node scripts/verify-relational-backfill.mjs && node scripts/verify-relational-read.mjs && node scripts/verify-relational-contactos.mjs && node scripts/verify-relational-profesionales.mjs && node scripts/verify-relational-turnos.mjs && node scripts/verify-relational-interacciones.mjs && node scripts/verify-relational-encuestas.mjs && node scripts/verify-relational-config.mjs && node scripts/verify-relational-gastos.mjs && node scripts/verify-relational-fk.mjs && node scripts/verify-relational-etapa10.mjs",
     "admin:migrate": "php admin/api/migrate.php",
     "admin:audit": "php admin/api/audit_relational.php",
@@ -61,6 +66,7 @@
     "admin:lint": "npx --yes eslint@9 --no-config-lookup -c scripts/eslint.admin.config.mjs admin/app.js admin/modules/*.js"
   },
   "devDependencies": {
+    "@google/clasp": "^3.4.1",
     "esbuild": "^0.25.0",
     "puppeteer": "^25.1.0",
     "purgecss": "^7.0.2"

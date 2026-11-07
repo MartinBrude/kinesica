@@ -1,5 +1,7 @@
 node_modules/
 .env
+booking/gas/.clasp.json
+booking/gas/Code.js
 admin/api/config.php
 admin/api/mail.php
 admin/api/whatsapp.php

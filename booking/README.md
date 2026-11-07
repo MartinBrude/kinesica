@@ -65,30 +65,63 @@ Valida:
 
 ## 🌐 4. Conexión con tu Google Calendar Real (Producción)
 
-El archivo [`google-apps-script.js`](./google-apps-script.js) contiene el backend serverless listo para Google Workspace:
+El archivo [`google-apps-script.js`](./google-apps-script.js) es el backend serverless (Calendar + Sheets). El deploy a [script.google.com](https://script.google.com/) se hace con **clasp** (no hace falta copiar/pegar).
 
-1. Abrí [script.google.com](https://script.google.com/) y creá un nuevo proyecto (o abrilo dentro del proyecto de `kinesica-bot`).
-2. Copiá el contenido de [`google-apps-script.js`](./google-apps-script.js).
-3. En **Configuración del proyecto** → **Propiedades de la secuencia de comandos**:
-   - `CALENDAR_NAME`: `consultorio`
-   - `SPREADSHEET_ID`: `1kyGkYea0Iu_OrXxF-yONqhs2rG1O8YUWbbSmQe37GCk`
-   - `WHATSAPP_TOKEN`: Token Bearer de Meta WhatsApp Cloud API (para enviar la alerta inmediata por WhatsApp a Norberto ante cada nueva reserva web).
-   - `NORBERTO_PHONE`: `541161564311` (opcional, configurado por defecto).
-   - `NORBERTO_EMAIL`: `norberto1712@gmail.com` (opcional).
-   - `MARIA_PHONE`: `541128531224` (11 2853-1224; opcional, configurado por defecto).
-   - `MARIA_EMAIL`: `manosmagicas7116@gmail.com` (opcional, configurado por defecto). Se invita al evento y se usa si WhatsApp no sale.
-   - `WHATSAPP_PHONE_NUMBER_ID`: `1340013275870491` (opcional, configurado por defecto).
-   - `N8N_ALERT_WEBHOOK_URL`: (Opcional) Si preferís despachar la alerta mediante un webhook de n8n.
-4. Hacé clic en **Implementar** → **Nueva implementación** → Tipo: **Aplicación web**:
-   - *Ejecutar como:* **Yo**
-   - *Quién tiene acceso:* **Cualquier persona**
-5. Copiá la URL del Webhook generada y agregala en tu configuración o en el selector del prototipo. ¡Listo! El módulo leerá y escribirá directamente en el Google Calendar `consultorio` y le notificará a Norberto a su WhatsApp personal.
+### Deploy automático (recomendado)
+
+Primera vez (una sola):
+
+```bash
+npm install
+npm run gas:setup
+# Pegá el Script ID en booking/gas/.clasp.json
+#   (script.google.com → proyecto de la turnera → ⚙ Configuración → ID del secuencia de comandos)
+npm run gas:login
+npm run gas:deploy
+```
+
+Cada cambio después:
+
+```bash
+# editás booking/google-apps-script.js
+npm run gas:deploy
+```
+
+Eso hace `clasp push` y **actualiza la implementación existente** (misma URL `/exec` de `bookingApiUrl`). **No** uses «Nueva implementación» en la UI ni `clasp create-deployment` sin `-i`: generarían otra URL.
+
+Otros comandos: `npm run gas:push` (solo sube HEAD), `npm run gas:deployments` (lista IDs).
+
+Override opcionales: `GAS_BOOKING_SCRIPT_ID`, `GAS_BOOKING_DEPLOYMENT_ID`, `GAS_DEPLOY_DESCRIPTION`.
+
+> El proyecto del webhook de Sheets/Clara es **otro** scriptId. No lo mezcles con el de la turnera.
+
+### Propiedades del script (una vez, en la consola de GAS)
+
+En **Configuración del proyecto** → **Propiedades de la secuencia de comandos**:
+
+- `CALENDAR_NAME`: `consultorio`
+- `SPREADSHEET_ID`: `1kyGkYea0Iu_OrXxF-yONqhs2rG1O8YUWbbSmQe37GCk`
+- `WHATSAPP_TOKEN`: Token Bearer de Meta WhatsApp Cloud API (alerta inmediata a Norberto).
+- `NORBERTO_PHONE`: `541161564311` (opcional).
+- `NORBERTO_EMAIL`: `norberto1712@gmail.com` (opcional).
+- `MARIA_PHONE`: `541128531224` (opcional).
+- `MARIA_EMAIL`: `manosmagicas7116@gmail.com` (opcional).
+- `WHATSAPP_PHONE_NUMBER_ID`: `1340013275870491` (opcional).
+- `N8N_ALERT_WEBHOOK_URL`: (opcional) webhook n8n.
+- `GAS_API_SECRET` / `WEBHOOK_SECRET`: alineado con el admin (mirror de turnos / backup).
+
+Las propiedades **no** se pisan con `gas:deploy`.
+
+### Primera implementación manual (solo si el proyecto aún no tiene web app)
+
+1. Implementar → **Nueva implementación** → Tipo: **Aplicación web**
+2. Ejecutar como: **Yo** · Quién tiene acceso: **Cualquier persona**
+3. Copiá la URL `/exec` a `js/site-config.js` (`bookingApiUrl`) y a `GAS_BOOKING_DEPLOYMENT_ID` si cambió.
+4. A partir de ahí, solo `npm run gas:deploy`.
 
 ### Protección ante cortes o doble clic
 
 El flujo de **Confirmar reserva** genera una clave idempotente por intento. Google Apps Script la guarda junto con el resultado y reutiliza el mismo `eventId` si el navegador reintenta después de un timeout. Además, `LockService` comprueba la disponibilidad y crea el evento como una única operación lógica, evitando dos reservas simultáneas del mismo horario.
-
-Después de modificar [`google-apps-script.js`](./google-apps-script.js), hay que copiarlo al proyecto de Apps Script y crear una nueva implementación/version de la aplicación web. La página pública usa el bundle regenerado, pero Google no actualiza automáticamente el código desplegado.
 
 ---
 
