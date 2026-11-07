@@ -72,8 +72,20 @@
   min-width: 0;
 }
 
+.lt-field.lt-search {
+  flex: 1 1 260px;
+}
+
+.lt-field.lt-sort {
+  flex: 0 1 220px;
+  min-width: 180px;
+}
+
 .lt-label,
 .lt-sort-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -149,17 +161,10 @@
 }
 
 .lt-sort {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-left: auto;
   color: var(--muted);
 }
 
 .lt-sort select {
-  width: auto;
-  min-width: 180px;
-  padding: 8px 40px 8px 12px;
   font-size: 14px;
   font-weight: 600;
   color: var(--navy);
@@ -528,13 +533,8 @@
     align-items: stretch;
   }
 
-  .lt-sort {
-    margin-left: 0;
-    justify-content: space-between;
-  }
-
-  .lt-sort select {
-    flex: 1;
+  .lt-field.lt-sort {
+    flex: 1 1 180px;
   }
 
   .library-toolbar .btn {
