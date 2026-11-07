@@ -102,7 +102,7 @@ assert.equal(ownsFicha({ profesional: "maria" }, "maria"), true);
 assert.equal(ownsFicha({ profesional: "norberto" }, "maria"), false);
 assert.match(html, /id="btn-mine"/);
 assert.match(html, /Solo mis pacientes/);
-assert.match(html, /id="pdf-patient"/);
+assert.doesNotMatch(html, /id="pdf-patient"/);
 assert.match(html, /placeholder="Nombre o documento"/);
 assert.doesNotMatch(html, /Paciente para el PDF/);
 assert.doesNotMatch(html, /id="btn-demo"/);

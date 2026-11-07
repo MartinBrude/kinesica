@@ -11,7 +11,7 @@ import { setLibraryPage } from "./library-pager.js";
 export function renderLibraryList({
   listEl,
   libraryView,
-  patientSelect,
+  patientSelect = null,
   searchInput,
   mineButton,
   sortPatientsSelect,

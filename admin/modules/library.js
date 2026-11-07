@@ -21,7 +21,6 @@ export function pageWindow(rows) {
 
 const libraryView = document.querySelector("#view-library");
 const listEl = document.querySelector("#library-list");
-const patientSelect = document.querySelector("#pdf-patient");
 const searchInput = document.querySelector("#search");
 const pageSizeSelect = document.querySelector("#page-size");
 const sortPatientsSelect = document.querySelector("#sort-patients");
@@ -99,7 +98,6 @@ export function renderLibrary() {
   renderLibraryList({
     listEl,
     libraryView,
-    patientSelect,
     searchInput,
     mineButton,
     sortPatientsSelect,
@@ -167,7 +165,6 @@ export function initLibrary({
     sortPatientsSelect,
     mineButton,
     btnGroup,
-    patientSelect,
     btnNew,
     btnSeed,
     btnExport,

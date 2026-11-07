@@ -15,7 +15,7 @@ export function initLibraryToolbar({
   sortPatientsSelect,
   mineButton,
   btnGroup,
-  patientSelect,
+  patientSelect = null,
   btnNew,
   btnSeed,
   btnExport,
