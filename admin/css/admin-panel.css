@@ -1322,4 +1322,454 @@
   font-size: 11px;
 }
 
+/* ==========================================================================
+   SECCIÓN 7: CREATIVOS DE CAMPAÑA INSTAGRAM (POMELLI / KINÉSICA)
+   ========================================================================== */
+
+.creativos-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Toolbar de controles */
+.creativos-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding-bottom: 20px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+}
+
+.creativos-format-toggle {
+  display: inline-flex;
+  align-items: center;
+  background: var(--sky);
+  padding: 4px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  gap: 4px;
+}
+
+.creativos-format-toggle .btn {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: none;
+}
+
+.creativos-format-toggle .btn.is-active {
+  background: #ffffff;
+  color: var(--navy);
+  box-shadow: 0 2px 6px rgba(0, 40, 70, 0.1);
+}
+
+.creativos-filters {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.creativos-filter-pill {
+  border: 1px solid var(--line);
+  background: #ffffff;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 13px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.creativos-filter-pill:hover {
+  background: var(--sky);
+  color: var(--navy);
+}
+
+.creativos-filter-pill.is-active {
+  background: var(--navy);
+  color: #ffffff;
+  border-color: var(--navy);
+}
+
+.creativos-search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 260px;
+}
+
+.creativos-search-box svg {
+  position: absolute;
+  left: 11px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.creativos-search-box input {
+  width: 100%;
+  padding: 7px 12px 7px 34px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--ink);
+  background: #ffffff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.creativos-search-box input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(46, 191, 165, 0.18);
+}
+
+/* Grilla de piezas */
+.creativos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 22px;
+}
+
+/* Tarjeta individual de creativo */
+.creativo-card {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 8px rgba(0, 30, 60, 0.04);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.creativo-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(0, 45, 80, 0.12);
+}
+
+/* Contenedor de thumbnail con relación de aspecto */
+.creativo-thumb-box {
+  position: relative;
+  width: 100%;
+  background: #0f1c2e;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.creativo-thumb-box.aspect-feed {
+  aspect-ratio: 4 / 5;
+}
+
+.creativo-thumb-box.aspect-story {
+  aspect-ratio: 9 / 16;
+}
+
+.creativo-thumb-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.creativo-thumb-box:hover img {
+  transform: scale(1.035);
+}
+
+.creativo-format-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(3, 28, 66, 0.82);
+  backdrop-filter: blur(6px);
+  color: #ffffff;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 3px 8px;
+  border-radius: 5px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.creativo-thumb-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(3, 28, 66, 0.5);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 1;
+}
+
+.creativo-thumb-box:hover .creativo-thumb-overlay {
+  opacity: 1;
+}
+
+.creativo-thumb-overlay .btn {
+  background: #ffffff;
+  color: var(--navy);
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  border: none;
+}
+
+/* Cuerpo de información del creativo */
+.creativo-info {
+  padding: 16px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.creativo-pill {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--primary);
+  background: var(--pill);
+  padding: 3px 9px;
+  border-radius: 4px;
+  align-self: flex-start;
+}
+
+.creativo-title {
+  margin: 0;
+  font-size: 15.5px;
+  font-weight: 700;
+  color: var(--navy);
+  line-height: 1.35;
+}
+
+.creativo-desc {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.45;
+  flex: 1;
+}
+
+/* Botones de acción directos */
+.creativo-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  padding-top: 12px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.creativo-actions .btn {
+  font-size: 11.5px;
+  padding: 5px 9px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  justify-content: center;
+  min-width: 80px;
+}
+
+.btn-creativo-copy.btn-copied {
+  background: #10b981 !important;
+  color: #ffffff !important;
+  border-color: #10b981 !important;
+}
+
+/* Modal Lightbox */
+.modal-backdrop-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(3, 28, 66, 0.7);
+  backdrop-filter: blur(4px);
+}
+
+.creativo-modal-card {
+  position: relative;
+  z-index: 10;
+  max-width: 960px;
+  width: 95vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 30, 70, 0.3);
+}
+
+.creativo-modal-header {
+  padding: 16px 22px;
+  background: #fbfcfe;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.creativo-modal-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.creativo-modal-heading {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.creativo-modal-body {
+  display: flex;
+  gap: 24px;
+  padding: 22px;
+  overflow-y: auto;
+  align-items: flex-start;
+}
+
+.creativo-modal-preview {
+  flex: 1;
+  max-width: 440px;
+  background: #0f1c2e;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.creativo-modal-preview-img {
+  width: 100%;
+  max-height: 65vh;
+  object-fit: contain;
+  display: block;
+}
+
+.creativo-modal-sidebar {
+  flex: 1.2;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+}
+
+.creativo-copy-box {
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.creativo-copy-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.creativo-copy-label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.creativo-copy-content {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--ink);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 260px;
+  overflow-y: auto;
+  background: #ffffff;
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+}
+
+.creativo-modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.creativo-dl-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.creativo-modal-dl-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.creativo-modal-dl-buttons .btn {
+  flex: 1;
+  min-width: 180px;
+  justify-content: center;
+  padding: 10px 16px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.creativos-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 50px 20px;
+  color: var(--muted);
+  font-size: 14px;
+  background: #fbfcfe;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+  .creativo-modal-body {
+    flex-direction: column;
+  }
+  .creativo-modal-preview {
+    max-width: 100%;
+  }
+  .creativos-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .creativos-search-box {
+    min-width: 100%;
+  }
+}
+
+
 

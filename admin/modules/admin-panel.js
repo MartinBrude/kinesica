@@ -32,6 +32,10 @@ import {
   initCampanaUI,
   loadCampanaData,
 } from "./admin-campana.js";
+import {
+  initCreativosUI,
+  loadCreativosData,
+} from "./admin-creativos.js";
 
 const viewAdmin = document.querySelector("#view-admin");
 
@@ -43,6 +47,7 @@ export function setAdminActiveSection(section = "usuarios") {
   else if (norm === "backups" || norm === "copias" || norm === "copias-seguridad") target = "backups";
   else if (norm === "servicios" || norm === "consumos" || norm === "cuotas") target = "servicios";
   else if (norm === "campana" || norm === "campaña" || norm === "turnos-campana") target = "campana";
+  else if (norm === "creativos" || norm === "galeria" || norm === "campana-ig" || norm === "instagram") target = "creativos";
 
   const cardUsuarios = document.getElementById("admin-usuarios-card");
   const cardGastos = document.getElementById("admin-gastos-card");
@@ -50,6 +55,7 @@ export function setAdminActiveSection(section = "usuarios") {
   const cardBackups = document.getElementById("admin-backups-card");
   const cardServicios = document.getElementById("admin-servicios-card");
   const cardCampana = document.getElementById("admin-campana-card");
+  const cardCreativos = document.getElementById("admin-creativos-card");
 
   if (cardUsuarios) cardUsuarios.hidden = target !== "usuarios";
   if (cardGastos) cardGastos.hidden = target !== "gastos";
@@ -57,6 +63,7 @@ export function setAdminActiveSection(section = "usuarios") {
   if (cardBackups) cardBackups.hidden = target !== "backups";
   if (cardServicios) cardServicios.hidden = target !== "servicios";
   if (cardCampana) cardCampana.hidden = target !== "campana";
+  if (cardCreativos) cardCreativos.hidden = target !== "creativos";
 
   const heroTitle = document.getElementById("admin-hero-title");
   if (heroTitle) {
@@ -67,6 +74,7 @@ export function setAdminActiveSection(section = "usuarios") {
       backups: "Administración · Copias de Seguridad",
       servicios: "Administración · Consumos y Servicios",
       campana: "Administración · Turnos de campaña",
+      creativos: "Administración · Creativos de Campaña Instagram",
     };
     heroTitle.textContent = titles[target] || "Administración del Sistema";
   }
@@ -89,8 +97,10 @@ export function showAdminView(section = "usuarios") {
   const normSection = String(section || "").toLowerCase();
   const mappedSection = (normSection === "campaña" || normSection === "turnos-campana")
     ? "campana"
+    : (normSection === "galeria" || normSection === "campana-ig" || normSection === "instagram")
+    ? "creativos"
     : normSection;
-  const validSection = ["usuarios", "gastos", "errores", "backups", "servicios", "campana"].includes(mappedSection)
+  const validSection = ["usuarios", "gastos", "errores", "backups", "servicios", "campana", "creativos"].includes(mappedSection)
     ? mappedSection
     : "usuarios";
 
@@ -115,6 +125,7 @@ export async function loadAdminData() {
     loadErroresData(loadAdminData),
     loadServiciosData(),
     loadCampanaData(),
+    loadCreativosData(),
   ]);
 }
 
@@ -124,6 +135,7 @@ export function initAdminModule() {
   initErroresUI({ onReload: loadAdminData });
   initServiciosUI({ onReload: loadAdminData });
   initCampanaUI();
+  initCreativosUI();
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {

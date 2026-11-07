@@ -68,6 +68,7 @@ export function switchTab(tab, subtab) {
   const btnAdminBackups = document.querySelector("#nav-btn-admin-backups");
   const btnAdminServicios = document.querySelector("#nav-btn-admin-servicios");
   const btnAdminCampana = document.querySelector("#nav-btn-admin-campana");
+  const btnAdminCreativos = document.querySelector("#nav-btn-admin-creativos");
 
   document.querySelectorAll(".admin-nav .btn, .admin-nav .nav-dropdown-item").forEach((b) => b.classList.remove("is-active"));
   closeAllDropdowns();
@@ -120,7 +121,12 @@ export function switchTab(tab, subtab) {
     tab === "cuotas" ||
     tab === "campana" ||
     tab === "campaña" ||
-    tab === "turnos-campana"
+    tab === "turnos-campana" ||
+    tab === "creativos" ||
+    tab === "galeria" ||
+    tab === "campana-ig" ||
+    tab === "campanas-ig" ||
+    tab === "instagram"
   ) {
     const user = getSessionUser();
     if (!user || user.role !== "admin") {
@@ -136,6 +142,7 @@ export function switchTab(tab, subtab) {
       else if (tab === "backups" || tab === "copias" || tab === "copias-seguridad") section = "backups";
       else if (tab === "servicios" || tab === "consumos" || tab === "cuotas") section = "servicios";
       else if (tab === "campana" || tab === "campaña" || tab === "turnos-campana") section = "campana";
+      else if (tab === "creativos" || tab === "galeria" || tab === "campana-ig" || tab === "campanas-ig" || tab === "instagram") section = "creativos";
       else section = "usuarios";
     }
     if (section === "gastos") {
@@ -148,6 +155,8 @@ export function switchTab(tab, subtab) {
       btnAdminServicios?.classList.add("is-active");
     } else if (section === "campana" || section === "campaña" || section === "turnos-campana") {
       btnAdminCampana?.classList.add("is-active");
+    } else if (section === "creativos" || section === "galeria" || section === "campana-ig" || section === "campanas-ig" || section === "instagram") {
+      btnAdminCreativos?.classList.add("is-active");
     } else {
       btnAdminUsuarios?.classList.add("is-active");
     }
@@ -253,6 +262,7 @@ function bindAdminNavOnce(adminNav) {
   document.getElementById("nav-btn-admin-backups")?.addEventListener("click", () => switchTab("admin", "backups"));
   document.getElementById("nav-btn-admin-servicios")?.addEventListener("click", () => switchTab("admin", "servicios"));
   document.getElementById("nav-btn-admin-campana")?.addEventListener("click", () => switchTab("admin", "campana"));
+  document.getElementById("nav-btn-admin-creativos")?.addEventListener("click", () => switchTab("admin", "creativos"));
   document.getElementById("brand-logo")?.addEventListener("click", (e) => {
     e.preventDefault();
     switchTab("inicio");

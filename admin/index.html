@@ -112,6 +112,7 @@
             <button type="button" class="nav-dropdown-item" id="nav-btn-admin-backups" role="menuitem">Copias de seguridad</button>
             <button type="button" class="nav-dropdown-item" id="nav-btn-admin-servicios" role="menuitem">Consumos y Servicios</button>
             <button type="button" class="nav-dropdown-item" id="nav-btn-admin-campana" role="menuitem">Turnos de campaña</button>
+            <button type="button" class="nav-dropdown-item" id="nav-btn-admin-creativos" role="menuitem">Creativos Instagram</button>
           </div>
         </div>
       </nav>
@@ -1506,6 +1507,55 @@
             </div>
           </div>
         </article>
+
+        <!-- SECCIÓN 7: CREATIVOS DE CAMPAÑA INSTAGRAM -->
+        <article class="admin-card" id="admin-creativos-card" hidden>
+          <div class="admin-card-header">
+            <div class="admin-card-titles">
+              <h2 class="admin-card-title">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                Creativos de Campaña Instagram
+              </h2>
+              <p class="admin-card-desc">Galería de piezas visuales y textos listos para publicar en Feed (4:5) e Historias (9:16). Diseñados con la identidad visual oficial de Kinésica.</p>
+            </div>
+            <div class="creativos-header-actions">
+              <span class="gastos-count-pill" id="admin-creativos-count-label">18 de 18 piezas</span>
+            </div>
+          </div>
+          <div class="admin-card-body">
+            <!-- Barra de controles: Formato, Filtros y Búsqueda -->
+            <div class="creativos-toolbar">
+              <div class="creativos-format-toggle" role="group" aria-label="Formato de imagen">
+                <button type="button" class="btn light btn-sm is-active" id="btn-creativos-format-feed" title="Ver formato Feed vertical 4:5 (1080x1350)">
+                  <span>📱 Feed (4:5)</span>
+                </button>
+                <button type="button" class="btn light btn-sm" id="btn-creativos-format-story" title="Ver formato Story vertical 9:16 (1080x1920)">
+                  <span>📲 Historias (9:16)</span>
+                </button>
+              </div>
+
+              <div class="creativos-filters" role="group" aria-label="Filtrar por categoría">
+                <button type="button" class="btn light btn-sm creativos-filter-pill is-active" data-filter="todos">Todas</button>
+                <button type="button" class="btn light btn-sm creativos-filter-pill" data-filter="columna">Columna &amp; ATM</button>
+                <button type="button" class="btn light btn-sm creativos-filter-pill" data-filter="articulaciones">Articulaciones</button>
+                <button type="button" class="btn light btn-sm creativos-filter-pill" data-filter="filosofia">Filosofía &amp; Marca</button>
+              </div>
+
+              <div class="creativos-search-box">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="search" id="admin-creativos-search" placeholder="Buscar por patología o palabra clave..." autocomplete="off">
+              </div>
+            </div>
+
+            <!-- Grilla de creativos -->
+            <div class="creativos-grid" id="admin-creativos-grid">
+              <div class="admin-view-loading">
+                <span class="loading-spinner" aria-hidden="true"></span>
+                <span>Cargando creativos de campaña...</span>
+              </div>
+            </div>
+          </div>
+        </article>
       </div>
 
       <!-- MODAL DE ALTA / EDICIÓN DE PROFESIONAL -->
@@ -1791,6 +1841,47 @@
               <button type="submit" class="btn green" id="admin-error-modal-save">Guardar Reporte</button>
             </div>
           </form>
+        </div>
+      </div>
+
+      <!-- MODAL DE VISUALIZACIÓN Y DESCARGA DE CREATIVO (LIGHTBOX) -->
+      <div id="creativo-lightbox-modal" class="prof-modal-backdrop" hidden>
+        <div id="creativo-modal-backdrop" class="modal-backdrop-overlay"></div>
+        <div class="prof-modal-card creativo-modal-card" role="dialog" aria-modal="true" aria-labelledby="creativo-modal-title">
+          <div class="prof-modal-header creativo-modal-header">
+            <div class="creativo-modal-header-info">
+              <span id="creativo-modal-cat" class="creativo-pill">CATEGORÍA</span>
+              <h3 id="creativo-modal-title" class="creativo-modal-heading">Título de la pieza</h3>
+            </div>
+            <button type="button" class="prof-modal-close" id="creativo-modal-close" aria-label="Cerrar">&times;</button>
+          </div>
+          <div class="creativo-modal-body">
+            <div class="creativo-modal-preview">
+              <img id="creativo-modal-img" src="" alt="Vista previa del creativo" class="creativo-modal-preview-img">
+            </div>
+            <div class="creativo-modal-sidebar">
+              <div class="creativo-copy-box">
+                <div class="creativo-copy-header">
+                  <span class="creativo-copy-label">Texto sugerido para Instagram / WhatsApp</span>
+                  <button type="button" class="btn light btn-sm" id="creativo-modal-btn-copy" title="Copiar texto al portapapeles">
+                    📋 Copiar texto
+                  </button>
+                </div>
+                <pre id="creativo-modal-copy" class="creativo-copy-content"></pre>
+              </div>
+              <div class="creativo-modal-actions">
+                <span class="creativo-dl-label">Descargar archivo en alta resolución (PNG):</span>
+                <div class="creativo-modal-dl-buttons">
+                  <a id="creativo-modal-dl-feed" href="" download="" class="btn light">
+                    📥 Descargar Feed (1080×1350)
+                  </a>
+                  <a id="creativo-modal-dl-story" href="" download="" class="btn light">
+                    📥 Descargar Story (1080×1920)
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -2583,6 +2674,9 @@
             else if (head === "gastos") saved = { view: "admin", section: "gastos" };
             else if (head === "errores" || head === "reportes") saved = { view: "admin", section: "errores" };
             else if (head === "backups" || head === "copias" || head === "copias-seguridad") saved = { view: "admin", section: "backups" };
+            else if (head === "servicios" || head === "consumos" || head === "cuotas") saved = { view: "admin", section: "servicios" };
+            else if (head === "campana" || head === "campaña" || head === "turnos-campana") saved = { view: "admin", section: "campana" };
+            else if (head === "creativos" || head === "galeria" || head === "campana-ig" || head === "campanas-ig" || head === "instagram") saved = { view: "admin", section: "creativos" };
             else if (head === "ficha" && parts[1]) saved = { view: "form", id: decodeURIComponent(parts[1]) };
             else if (head === "comparar") saved = saved && saved.view === "compare" ? saved : { view: "compare" };
             try {
@@ -2630,12 +2724,14 @@
               var cb = document.getElementById("admin-backups-card");
               var cs = document.getElementById("admin-servicios-card");
               var cc = document.getElementById("admin-campana-card");
+              var ccr = document.getElementById("admin-creativos-card");
               if (cu) cu.hidden = sec !== "usuarios";
               if (cg) cg.hidden = sec !== "gastos";
               if (ce) ce.hidden = sec !== "errores";
               if (cb) cb.hidden = sec !== "backups";
               if (cs) cs.hidden = sec !== "servicios";
               if (cc) cc.hidden = sec !== "campana";
+              if (ccr) ccr.hidden = sec !== "creativos";
               var ht = document.getElementById("admin-hero-title");
               if (ht) {
                 if (sec === "gastos") ht.textContent = "Administración · Registro de Gastos";
@@ -2643,6 +2739,7 @@
                 else if (sec === "backups") ht.textContent = "Administración · Copias de Seguridad";
                 else if (sec === "servicios") ht.textContent = "Administración · Consumos y Servicios";
                 else if (sec === "campana") ht.textContent = "Administración · Turnos de campaña";
+                else if (sec === "creativos") ht.textContent = "Administración · Creativos de Campaña Instagram";
                 else ht.textContent = "Administración · Usuarios";
               }
             } else {
