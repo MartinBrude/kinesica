@@ -770,14 +770,11 @@ function openTestCaseModal() {
 
 export function initRecordatoriosModule() {
   renderRecordatoriosRules(document.getElementById("recordatorios-rules"));
-  const testBtn =
-    document.getElementById("btn-test-recordatorio") ||
-    document.getElementById("btn-test-recordatorio-martin");
+  const testBtn = document.getElementById("btn-test-recordatorio");
   if (testBtn) {
     const user = getSessionUser();
     const canTest = user?.role === "admin" || user?.username === "martin" || user?.username === "norberto";
     testBtn.hidden = !canTest;
-    testBtn.id = "btn-test-recordatorio";
     testBtn.textContent = "＋ Caso de prueba";
     testBtn.title = "Crear un pending configurable para probar el envío manual por WhatsApp";
     testBtn.addEventListener("click", (e) => {

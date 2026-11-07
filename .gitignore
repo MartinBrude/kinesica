@@ -1,6 +1,7 @@
 node_modules/
 .env
 booking/gas/Code.js
+**/.clasprc.json
 admin/api/config.php
 admin/api/mail.php
 admin/api/whatsapp.php

@@ -34,12 +34,21 @@ function interacciones_sla_norberto_phone(): string
     if ($raw === '' && function_exists('cfg')) {
         $raw = (string) (cfg()['norberto_phone'] ?? '');
     }
-    // Mismo default que clara-alert / backup de calendario (alertas que ya llegan a Norberto).
+    // Celular oficial de Norberto con prefijo móvil 9 para WhatsApp Argentina (Meta Graph API).
     if ($raw === '') {
-        $raw = '541161564311';
+        $raw = '5491161564311';
+    }
+    if (!function_exists('clean_phone_number')) {
+        @require_once __DIR__ . '/pacientes_helpers.php';
+    }
+    if (function_exists('clean_phone_number')) {
+        $normalized = clean_phone_number($raw);
+        if ($normalized !== '') {
+            return $normalized;
+        }
     }
     $digits = preg_replace('/\D+/', '', $raw) ?? '';
-    return $digits !== '' ? $digits : '541161564311';
+    return $digits !== '' ? $digits : '5491161564311';
 }
 
 function interacciones_sla_state_file(): string
