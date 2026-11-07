@@ -314,6 +314,116 @@ Sesiones personalizadas de 50 a 60 minutos, puntuales y sin esperas.
 📍 Charcas 3889, Palermo, CABA
 📲 Agendá tu turno por WhatsApp al +54 9 11 6156-4311
 #KinesiologiaPalermo #TurnosKinesiologia #NorbertoBrude #Kinésica`
+  },
+
+  // Fila 6: Vida cotidiana que interpela (oficina, celular, sueño, hábitos)
+  {
+    id: "19_oficina_espalda",
+    title: "¿Tu oficina te está rompiendo la espalda?",
+    cat: "ERGONOMÍA & POSTURA",
+    group: "filosofia",
+    body: "Pasar 8 horas sentado no es el problema: es cómo tu cuerpo lo compensa. Evaluamos tu biomecánica para que trabajes sin dolor.",
+    feedUrl: "campanas/feed/catalogo_feed_19_oficina_espalda.png",
+    storyUrl: "campanas/story/catalogo_story_19_oficina_espalda.png",
+    copy: `¿Tu oficina te está rompiendo la espalda? 💻🛑
+
+No es “estar sentado”: es la compensación. Hombros adelante, cuello en pantalla y lumbar sin apoyo terminan en contracturas que el analgésico solo apaga por unas horas.
+
+En Kinésica evaluamos tu biomecánica global y tratamos la causa mecánica con terapia manual 1 a 1.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#HomeOffice #DolorLumbar #Ergonomia #KinesiologiaPalermo #Kinésica`
+  },
+  {
+    id: "20_celular_cuello",
+    title: "¿Cuántas horas mirás el celular así?",
+    cat: "CUELLO & CERVICALES",
+    group: "articulaciones",
+    body: "El cuello no está diseñado para mirar hacia abajo todo el día. Liberamos la tensión cervical y realineamos la postura antes de que se vuelva crónica.",
+    feedUrl: "campanas/feed/catalogo_feed_20_celular_cuello.png",
+    storyUrl: "campanas/story/catalogo_story_20_celular_cuello.png",
+    copy: `¿Cuántas horas mirás el celular con la cabeza hacia abajo? 📱😣
+
+Esa postura suma kilos de carga sobre las cervicales. Resultado: tirantez, cefalea tensional y ese “cuello de piedra” al final del día.
+
+En Kinésica liberamos la tensión cervical y reequilibramos la postura para que el hábito no se vuelva lesión crónica.
+
+📍 Charcas 3889, Palermo
+📲 Turnos por WhatsApp: +54 9 11 6156-4311
+#TechNeck #Cervicalgia #DolorDeCuello #Osteopatia #Kinésica`
+  },
+  {
+    id: "21_despertas_peor",
+    title: "¿Te despertás peor de lo que te acostaste?",
+    cat: "CALIDAD DE SUEÑO",
+    group: "filosofia",
+    body: "Si amanecés rígido, con mandíbula apretada o dolor de espalda, tu cuerpo está pidiendo una evaluación mecánica, no más almohadas milagrosas.",
+    feedUrl: "campanas/feed/catalogo_feed_21_despertas_peor.png",
+    storyUrl: "campanas/story/catalogo_story_21_despertas_peor.png",
+    copy: `¿Te despertás peor de lo que te acostaste? 😴⚡
+
+Si amanecés rígido, con mandíbula trabada o la espalda “trabada”, no es solo la almohada: hay una mecánica que durante la noche se agrava (bruxismo, cadena posterior, pelvis).
+
+En Kinésica evaluamos de pies a cabeza y tratamos la causa con terapia manual personalizada.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Bruxismo #DolorDeEspalda #ATM #KinesiologiaPalermo #Kinésica`
+  },
+  {
+    id: "22_alivio_2_dias",
+    title: "Si el alivio dura 2 días, no alcanza",
+    cat: "FILOSOFÍA KINÉSICA",
+    group: "filosofia",
+    body: "El masaje relaja el síntoma. En Kinésica buscamos por qué tu cuerpo se vuelve a contracturar y tratamos la causa mecánica de raíz.",
+    feedUrl: "campanas/feed/catalogo_feed_22_alivio_2_dias.png",
+    storyUrl: "campanas/story/catalogo_story_22_alivio_2_dias.png",
+    copy: `Si el alivio dura 2 días… no alcanza. 🔁
+
+El masaje relaja. Está buenísimo. Pero si la contractura vuelve igual, el cuerpo te está avisando que hay una causa mecánica sin resolver.
+
+En Kinésica no perseguimos el síntoma: evaluamos cadenas musculares, postura y movilidad para que el alivio se sostenga.
+
+📍 Charcas 3889, Palermo
+📲 Turnos WhatsApp: +54 9 11 6156-4311
+#TerapiaManual #CausaRaiz #RPG #Osteopatia #Kinésica`
+  },
+  {
+    id: "23_miedo_moverte",
+    title: "¿Le tenés miedo a moverte?",
+    cat: "REEDUCACIÓN FUNCIONAL",
+    group: "filosofia",
+    body: "Evitar el movimiento por miedo al dolor refuerza el problema. Recuperamos confianza con terapia manual y reeducación postural 1 a 1.",
+    feedUrl: "campanas/feed/catalogo_feed_23_miedo_moverte.png",
+    storyUrl: "campanas/story/catalogo_story_23_miedo_moverte.png",
+    copy: `¿Le tenés miedo a agacharte, girar o levantar algo? 🛑
+
+Evitar el movimiento por miedo al dolor parece protección… pero refuerza la rigidez y la inseguridad. El cuerpo se vuelve más frágil cuanto menos se mueve.
+
+En Kinésica descomprimimos lo que duele y reconstruimos confianza con terapia manual + reeducación postural 1 a 1.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#MiedoAlMovimiento #ReeducacionPostural #RPG #Kinesiologia #Kinésica`
+  },
+  {
+    id: "24_corres_dolor",
+    title: "¿Corrés con dolor y lo naturalizás?",
+    cat: "RUNNING & DEPORTE",
+    group: "articulaciones",
+    body: "Dolor al correr no es parte del entrenamiento. Evaluamos pisada, cadera y columna para que vuelvas a entrenar sin compensar.",
+    feedUrl: "campanas/feed/catalogo_feed_24_corres_dolor.png",
+    storyUrl: "campanas/story/catalogo_story_24_corres_dolor.png",
+    copy: `¿Corrés con dolor y lo naturalizás? 🏃‍♂️⚡
+
+“Es el km”, “es la zapatilla”, “ya se me pasa”. Spoiler: el cuerpo no se acostumbra, compensa. Y esa compensación termina en rodilla, cadera o lumbar.
+
+En Kinésica evaluamos pisada, pelvis y columna para que vuelvas a entrenar sin forzar el síntoma.
+
+📍 Charcas 3889, Palermo
+📲 Turnos por WhatsApp: +54 9 11 6156-4311
+#Running #DolorDeRodilla #KinesiologiaDeportiva #Biomecanica #Kinésica`
   }
 ];
 
