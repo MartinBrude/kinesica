@@ -968,6 +968,674 @@ La rectificación cervical o lumbar rigidiza y duele. Recuperamos movilidad con 
 📍 Charcas 3889, Palermo
 📲 WhatsApp: +54 9 11 6156-4311
 #Rectificacion #Cervical #Lumbar #RPG #Kinésica`
+  },
+
+  // Fila 9: Catálogo — una pieza por cada patología del sitio
+  {
+    id: "58_cat_cefalea",
+    title: "Cefalea: cuando la cabeza no afloja",
+    cat: "CEFALEA",
+    group: "columna",
+    body: "Evaluamos cuello, mandíbula y postura para tratar la causa mecánica del dolor de cabeza.",
+    feedUrl: "campanas/feed/catalogo_feed_58_cat_cefalea.png",
+    storyUrl: "campanas/story/catalogo_story_58_cat_cefalea.png",
+    copy: `Cefalea: cuando la cabeza no afloja 🩺
+
+En Kinésica tratamos cefalea: cuello, mandíbula y postura.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Cefalea #Cervicalgia #ATM #Kinésica`
+  },
+  {
+    id: "59_cat_dorsalgia",
+    title: "Dorsalgia: dolor en la espalda alta",
+    cat: "DORSALGIA",
+    group: "columna",
+    body: "Liberamos la rigidez torácica y las posturas sostenidas que cargan la espalda media.",
+    feedUrl: "campanas/feed/catalogo_feed_59_cat_dorsalgia.png",
+    storyUrl: "campanas/story/catalogo_story_59_cat_dorsalgia.png",
+    copy: `Dorsalgia: dolor en la espalda alta 🩺
+
+En Kinésica tratamos dorsalgia: rigidez torácica y posturas sostenidas.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Dorsalgia #EspaldaAlta #Kinésica`
+  },
+  {
+    id: "60_cat_lumbalgia",
+    title: "Lumbalgia: dolor lumbar recurrente",
+    cat: "LUMBALGIA",
+    group: "columna",
+    body: "Buscamos el origen mecánico en pelvis, cadera y columna con osteopatía y terapia manual 1 a 1.",
+    feedUrl: "campanas/feed/catalogo_feed_60_cat_lumbalgia.png",
+    storyUrl: "campanas/story/catalogo_story_60_cat_lumbalgia.png",
+    copy: `Lumbalgia: dolor lumbar recurrente 🩺
+
+En Kinésica tratamos lumbalgia: pelvis, cadera y columna.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Lumbalgia #DolorLumbar #Osteopatia #Kinésica`
+  },
+  {
+    id: "61_cat_ciatalgia",
+    title: "Ciatalgia: dolor que baja por la pierna",
+    cat: "CIATALGIA",
+    group: "columna",
+    body: "Evaluamos lumbar y nervio ciático con neurodinamia suave, sin forzar el síntoma.",
+    feedUrl: "campanas/feed/catalogo_feed_61_cat_ciatalgia.png",
+    storyUrl: "campanas/story/catalogo_story_61_cat_ciatalgia.png",
+    copy: `Ciatalgia: dolor que baja por la pierna 🩺
+
+En Kinésica tratamos ciatalgia: lumbar y nervio ciático.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Ciatalgia #Neurodinamia #Kinésica`
+  },
+  {
+    id: "62_cat_cervicobraquialgia",
+    title: "Cervicobraquialgia: del cuello al brazo",
+    cat: "CERVICOBRAQUIALGIA",
+    group: "columna",
+    body: "Cuando el dolor nace en el cuello e irradia al brazo, tratamos nervio, articulación y postura.",
+    feedUrl: "campanas/feed/catalogo_feed_62_cat_cervicobraquialgia.png",
+    storyUrl: "campanas/story/catalogo_story_62_cat_cervicobraquialgia.png",
+    copy: `Cervicobraquialgia: del cuello al brazo 🩺
+
+En Kinésica tratamos cervicobraquialgia: nervio, articulación y postura.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Cervicobraquialgia #Cuello #Kinésica`
+  },
+  {
+    id: "63_cat_pubalgia",
+    title: "Pubalgia: dolor en ingle y pubis",
+    cat: "PUBALGIA",
+    group: "articulaciones",
+    body: "Evaluamos cadera, pelvis y cadena aductora para aliviar la pubalgia sin forzar.",
+    feedUrl: "campanas/feed/catalogo_feed_63_cat_pubalgia.png",
+    storyUrl: "campanas/story/catalogo_story_63_cat_pubalgia.png",
+    copy: `Pubalgia: dolor en ingle y pubis 🩺
+
+En Kinésica tratamos pubalgia: cadera, pelvis y cadena aductora.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Pubalgia #Deporte #Kinésica`
+  },
+  {
+    id: "64_cat_gonalgia",
+    title: "Gonalgia: dolor de rodilla",
+    cat: "GONALGIA",
+    group: "articulaciones",
+    body: "La rodilla suele ser víctima de cadera o pie. Reequilibramos el eje para aliviar la gonalgia.",
+    feedUrl: "campanas/feed/catalogo_feed_64_cat_gonalgia.png",
+    storyUrl: "campanas/story/catalogo_story_64_cat_gonalgia.png",
+    copy: `Gonalgia: dolor de rodilla 🩺
+
+En Kinésica tratamos gonalgia: el eje de cadera, rodilla y pie.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Gonalgia #Rodilla #Kinésica`
+  },
+  {
+    id: "65_cat_talalgia",
+    title: "Talalgia: dolor de talón",
+    cat: "TALALGIA",
+    group: "articulaciones",
+    body: "Evaluamos apoyo del pie y cadena posterior para que cada paso deje de doler.",
+    feedUrl: "campanas/feed/catalogo_feed_65_cat_talalgia.png",
+    storyUrl: "campanas/story/catalogo_story_65_cat_talalgia.png",
+    copy: `Talalgia: dolor de talón 🩺
+
+En Kinésica tratamos talalgia: apoyo del pie y cadena posterior.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Talalgia #Pie #Kinésica`
+  },
+  {
+    id: "66_cat_dolor_sacroiliaco",
+    title: "Dolor sacroilíaco: pelvis y zona baja",
+    cat: "DOLOR SACROILÍACO",
+    group: "columna",
+    body: "Liberamos la articulación sacroilíaca y reequilibramos pelvis, cadera y lumbar.",
+    feedUrl: "campanas/feed/catalogo_feed_66_cat_dolor_sacroiliaco.png",
+    storyUrl: "campanas/story/catalogo_story_66_cat_dolor_sacroiliaco.png",
+    copy: `Dolor sacroilíaco: pelvis y zona baja 🩺
+
+En Kinésica tratamos dolor sacroilíaco: pelvis, cadera y lumbar.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Sacroiliaca #Pelvis #Kinésica`
+  },
+  {
+    id: "67_cat_hernia_disco",
+    title: "Hernia de disco: dolor y recuperación",
+    cat: "HERNIA DE DISCO",
+    group: "columna",
+    body: "En muchos casos el tratamiento conservador con RPG y terapia manual descomprime sin cirugía.",
+    feedUrl: "campanas/feed/catalogo_feed_67_cat_hernia_disco.png",
+    storyUrl: "campanas/story/catalogo_story_67_cat_hernia_disco.png",
+    copy: `Hernia de disco: dolor y recuperación 🩺
+
+En Kinésica tratamos hernia de disco: RPG y terapia manual.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#HerniaDeDisco #RPG #Kinésica`
+  },
+  {
+    id: "68_cat_protrusion_discal",
+    title: "Protrusión discal: movilidad sin miedo",
+    cat: "PROTRUSIÓN DISCAL",
+    group: "columna",
+    body: "Con evaluación y progresión mejoramos función y confianza al moverte.",
+    feedUrl: "campanas/feed/catalogo_feed_68_cat_protrusion_discal.png",
+    storyUrl: "campanas/story/catalogo_story_68_cat_protrusion_discal.png",
+    copy: `Protrusión discal: movilidad sin miedo 🩺
+
+En Kinésica tratamos protrusión discal: evaluación y progresión funcional.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#ProtrusionDiscal #Columna #Kinésica`
+  },
+  {
+    id: "69_cat_hipercifosis",
+    title: "Hipercifosis: curvatura dorsal aumentada",
+    cat: "HIPERCIFOSIS",
+    group: "columna",
+    body: "Recuperamos movilidad torácica con RPG para aliviar cuello, hombros y postura.",
+    feedUrl: "campanas/feed/catalogo_feed_69_cat_hipercifosis.png",
+    storyUrl: "campanas/story/catalogo_story_69_cat_hipercifosis.png",
+    copy: `Hipercifosis: curvatura dorsal aumentada 🩺
+
+En Kinésica tratamos hipercifosis: movilidad torácica con RPG.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Hipercifosis #Postura #Kinésica`
+  },
+  {
+    id: "70_cat_hiperlordosis",
+    title: "Hiperlordosis: curva lumbar aumentada",
+    cat: "HIPERLORDOSIS",
+    group: "columna",
+    body: "Reequilibramos pelvis y cadena para que la lordosis deje de sobrecargar la zona baja.",
+    feedUrl: "campanas/feed/catalogo_feed_70_cat_hiperlordosis.png",
+    storyUrl: "campanas/story/catalogo_story_70_cat_hiperlordosis.png",
+    copy: `Hiperlordosis: curva lumbar aumentada 🩺
+
+En Kinésica tratamos hiperlordosis: pelvis y cadena posterior.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Hiperlordosis #Lumbar #Kinésica`
+  },
+  {
+    id: "71_cat_dorso_plano",
+    title: "Dorso plano: rigidez y postura",
+    cat: "DORSO PLANO",
+    group: "columna",
+    body: "Mejoramos movilidad torácica y control para reducir sobrecargas de un dorso rígido.",
+    feedUrl: "campanas/feed/catalogo_feed_71_cat_dorso_plano.png",
+    storyUrl: "campanas/story/catalogo_story_71_cat_dorso_plano.png",
+    copy: `Dorso plano: rigidez y postura 🩺
+
+En Kinésica tratamos dorso plano: movilidad torácica y control.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#DorsoPlano #Columna #Kinésica`
+  },
+  {
+    id: "72_cat_genu_valgo",
+    title: "Genu valgo: rodillas hacia adentro",
+    cat: "GENU VALGO",
+    group: "articulaciones",
+    body: "Trabajamos control de cadera y pie para que la rodilla tolere mejor la carga.",
+    feedUrl: "campanas/feed/catalogo_feed_72_cat_genu_valgo.png",
+    storyUrl: "campanas/story/catalogo_story_72_cat_genu_valgo.png",
+    copy: `Genu valgo: rodillas hacia adentro 🩺
+
+En Kinésica tratamos genu valgo: control de cadera y pie.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#GenuValgo #Rodilla #Kinésica`
+  },
+  {
+    id: "73_cat_genu_varo",
+    title: "Genu varo: rodillas hacia afuera",
+    cat: "GENU VARO",
+    group: "articulaciones",
+    body: "Mejoramos movilidad, fuerza y mecánica para tolerar marcha y entrenamiento.",
+    feedUrl: "campanas/feed/catalogo_feed_73_cat_genu_varo.png",
+    storyUrl: "campanas/story/catalogo_story_73_cat_genu_varo.png",
+    copy: `Genu varo: rodillas hacia afuera 🩺
+
+En Kinésica tratamos genu varo: movilidad, fuerza y mecánica.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#GenuVaro #Rodilla #Kinésica`
+  },
+  {
+    id: "74_cat_pies_planos",
+    title: "Pies planos: apoyo y sobrecarga",
+    cat: "PIES PLANOS",
+    group: "articulaciones",
+    body: "Evaluamos cómo tolera la carga el arco y si repercute en rodilla o espalda.",
+    feedUrl: "campanas/feed/catalogo_feed_74_cat_pies_planos.png",
+    storyUrl: "campanas/story/catalogo_story_74_cat_pies_planos.png",
+    copy: `Pies planos: apoyo y sobrecarga 🩺
+
+En Kinésica tratamos pies planos: carga del arco y compensaciones.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#PiesPlanos #Biomecanica #Kinésica`
+  },
+  {
+    id: "75_cat_escoliosis",
+    title: "Escoliosis: postura, dolor y movimiento",
+    cat: "ESCOLIOSIS",
+    group: "columna",
+    body: "Mejoramos movilidad y fuerza con RPG personalizada, sin milagros estéticos.",
+    feedUrl: "campanas/feed/catalogo_feed_75_cat_escoliosis.png",
+    storyUrl: "campanas/story/catalogo_story_75_cat_escoliosis.png",
+    copy: `Escoliosis: postura, dolor y movimiento 🩺
+
+En Kinésica tratamos escoliosis: RPG personalizada.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Escoliosis #RPG #Kinésica`
+  },
+  {
+    id: "76_cat_epicondilitis_lateral",
+    title: "Epicondilitis lateral: codo de tenista",
+    cat: "EPICONDILITIS LATERAL",
+    group: "articulaciones",
+    body: "También aparece por teclado y sobreuso. Liberamos tendón y cadena del antebrazo.",
+    feedUrl: "campanas/feed/catalogo_feed_76_cat_epicondilitis_lateral.png",
+    storyUrl: "campanas/story/catalogo_story_76_cat_epicondilitis_lateral.png",
+    copy: `Epicondilitis lateral: codo de tenista 🩺
+
+En Kinésica tratamos epicondilitis lateral: tendón y cadena del antebrazo.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Epicondilitis #CodoDeTenista #Kinésica`
+  },
+  {
+    id: "77_cat_epicondilitis_medial",
+    title: "Epicondilitis medial: codo de golfista",
+    cat: "EPICONDILITIS MEDIAL",
+    group: "articulaciones",
+    body: "Tratamos el tendón y la mecánica del antebrazo por agarre y sobreuso.",
+    feedUrl: "campanas/feed/catalogo_feed_77_cat_epicondilitis_medial.png",
+    storyUrl: "campanas/story/catalogo_story_77_cat_epicondilitis_medial.png",
+    copy: `Epicondilitis medial: codo de golfista 🩺
+
+En Kinésica tratamos epicondilitis medial: tendón y mecánica del antebrazo.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#EpicondilitisMedial #Codo #Kinésica`
+  },
+  {
+    id: "78_cat_impingement",
+    title: "Impingement subacromial: pinchazo al elevar",
+    cat: "IMPINGEMENT SUBACROMIAL",
+    group: "articulaciones",
+    body: "Sincronizamos hombro y escápula para que el tendón deje de pinzarse.",
+    feedUrl: "campanas/feed/catalogo_feed_78_cat_impingement.png",
+    storyUrl: "campanas/story/catalogo_story_78_cat_impingement.png",
+    copy: `Impingement subacromial: pinchazo al elevar 🩺
+
+En Kinésica tratamos impingement subacromial: mecánica de hombro y escápula.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Impingement #Hombro #Kinésica`
+  },
+  {
+    id: "79_cat_manguito_rotador",
+    title: "Manguito rotador: dolor y fuerza de hombro",
+    cat: "MANGUITO ROTADOR",
+    group: "articulaciones",
+    body: "Reabrimos el espacio articular y recuperamos fuerza sin forzar el tendón.",
+    feedUrl: "campanas/feed/catalogo_feed_79_cat_manguito_rotador.png",
+    storyUrl: "campanas/story/catalogo_story_79_cat_manguito_rotador.png",
+    copy: `Manguito rotador: dolor y fuerza de hombro 🩺
+
+En Kinésica tratamos manguito rotador: espacio articular y fuerza.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#ManguitoRotador #Hombro #Kinésica`
+  },
+  {
+    id: "80_cat_radiculopatia",
+    title: "Radiculopatía: dolor irradiado y hormigueo",
+    cat: "RADICULOPATÍA",
+    group: "columna",
+    body: "Dosificamos neurodinamia y terapia manual con precisión, sin agravar.",
+    feedUrl: "campanas/feed/catalogo_feed_80_cat_radiculopatia.png",
+    storyUrl: "campanas/story/catalogo_story_80_cat_radiculopatia.png",
+    copy: `Radiculopatía: dolor irradiado y hormigueo 🩺
+
+En Kinésica tratamos radiculopatía: neurodinamia dosificada.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Radiculopatia #Neurodinamia #Kinésica`
+  },
+  {
+    id: "81_cat_meniscopatia",
+    title: "Meniscopatía: dolor y bloqueo de rodilla",
+    cat: "MENISCOPATÍA",
+    group: "articulaciones",
+    body: "Recuperamos movilidad y tolerancia a la carga sin apurar cirugías.",
+    feedUrl: "campanas/feed/catalogo_feed_81_cat_meniscopatia.png",
+    storyUrl: "campanas/story/catalogo_story_81_cat_meniscopatia.png",
+    copy: `Meniscopatía: dolor y bloqueo de rodilla 🩺
+
+En Kinésica tratamos meniscopatía: movilidad y tolerancia a la carga.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Meniscopatia #Rodilla #Kinésica`
+  },
+  {
+    id: "82_cat_fascitis_plantar",
+    title: "Fascitis plantar: dolor en el arco del pie",
+    cat: "FASCITIS PLANTAR",
+    group: "articulaciones",
+    body: "Con carga progresiva y terapia manual el pie recupera tolerancia y función.",
+    feedUrl: "campanas/feed/catalogo_feed_82_cat_fascitis_plantar.png",
+    storyUrl: "campanas/story/catalogo_story_82_cat_fascitis_plantar.png",
+    copy: `Fascitis plantar: dolor en el arco del pie 🩺
+
+En Kinésica tratamos fascitis plantar: carga progresiva y terapia manual.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#FascitisPlantar #Pie #Kinésica`
+  },
+  {
+    id: "83_cat_cervicalgia",
+    title: "Cervicalgia: dolor de cuello",
+    cat: "CERVICALGIA",
+    group: "columna",
+    body: "Mejoramos movilidad y postura con terapia manual sobre la causa mecánica.",
+    feedUrl: "campanas/feed/catalogo_feed_83_cat_cervicalgia.png",
+    storyUrl: "campanas/story/catalogo_story_83_cat_cervicalgia.png",
+    copy: `Cervicalgia: dolor de cuello 🩺
+
+En Kinésica tratamos cervicalgia: movilidad y postura.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Cervicalgia #Cuello #Kinésica`
+  },
+  {
+    id: "84_cat_bruxismo",
+    title: "Bruxismo: tensión de la ATM",
+    cat: "BRUXISMO",
+    group: "columna",
+    body: "Liberamos maseteros, cuello y postura para desactivar el apriete de raíz.",
+    feedUrl: "campanas/feed/catalogo_feed_84_cat_bruxismo.png",
+    storyUrl: "campanas/story/catalogo_story_84_cat_bruxismo.png",
+    copy: `Bruxismo: tensión de la ATM 🩺
+
+En Kinésica tratamos bruxismo: maseteros, cuello y postura.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Bruxismo #ATM #Kinésica`
+  },
+  {
+    id: "85_cat_desplazamiento_disco_atm",
+    title: "Desplazamiento del disco de la ATM",
+    cat: "DISCO ATM",
+    group: "columna",
+    body: "Restauramos el deslizamiento articular con terapia manual suave, sin forzar.",
+    feedUrl: "campanas/feed/catalogo_feed_85_cat_desplazamiento_disco_atm.png",
+    storyUrl: "campanas/story/catalogo_story_85_cat_desplazamiento_disco_atm.png",
+    copy: `Desplazamiento del disco de la ATM 🩺
+
+En Kinésica tratamos desplazamiento del disco de la atm: deslizamiento articular suave.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#ATM #DiscoArticular #Kinésica`
+  },
+  {
+    id: "86_cat_artrosis_atm",
+    title: "Artrosis e inflamación de la ATM",
+    cat: "ARTROSIS ATM",
+    group: "columna",
+    body: "Suavizamos la articulación y liberamos masticatorios para mover la mandíbula con menos dolor.",
+    feedUrl: "campanas/feed/catalogo_feed_86_cat_artrosis_atm.png",
+    storyUrl: "campanas/story/catalogo_story_86_cat_artrosis_atm.png",
+    copy: `Artrosis e inflamación de la ATM 🩺
+
+En Kinésica tratamos artrosis de la atm: articulación y masticatorios.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#ArtrosisATM #Mandibula #Kinésica`
+  },
+  {
+    id: "87_cat_torticolis",
+    title: "Tortícolis: cuello rígido y doloroso",
+    cat: "TORTÍCOLIS",
+    group: "columna",
+    body: "Descomprimimos carillas cervicales y músculos con movilizaciones suaves.",
+    feedUrl: "campanas/feed/catalogo_feed_87_cat_torticolis.png",
+    storyUrl: "campanas/story/catalogo_story_87_cat_torticolis.png",
+    copy: `Tortícolis: cuello rígido y doloroso 🩺
+
+En Kinésica tratamos tortícolis: carillas cervicales y músculos.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Torticolis #Cervicalgia #Kinésica`
+  },
+  {
+    id: "88_cat_artrosis_artritis",
+    title: "Artrosis y artritis: dolor articular",
+    cat: "ARTROSIS Y ARTRITIS",
+    group: "articulaciones",
+    body: "Flexibilizamos cápsula y tejidos para bajar la presión sobre el cartílago.",
+    feedUrl: "campanas/feed/catalogo_feed_88_cat_artrosis_artritis.png",
+    storyUrl: "campanas/story/catalogo_story_88_cat_artrosis_artritis.png",
+    copy: `Artrosis y artritis: dolor articular 🩺
+
+En Kinésica tratamos artrosis y artritis: cápsula y tejidos periarticulares.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Artrosis #Artritis #Kinésica`
+  },
+  {
+    id: "89_cat_hombro_congelado",
+    title: "Hombro congelado: rigidez y dolor",
+    cat: "HOMBRO CONGELADO",
+    group: "articulaciones",
+    body: "Plan gradual para restaurar movimiento sin forzar la cápsula adhesiva.",
+    feedUrl: "campanas/feed/catalogo_feed_89_cat_hombro_congelado.png",
+    storyUrl: "campanas/story/catalogo_story_89_cat_hombro_congelado.png",
+    copy: `Hombro congelado: rigidez y dolor 🩺
+
+En Kinésica tratamos hombro congelado: movimiento gradual de la cápsula.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#HombroCongelado #Capsulitis #Kinésica`
+  },
+  {
+    id: "90_cat_contracturas",
+    title: "Contracturas y secuelas de desgarros",
+    cat: "CONTRACTURAS Y DESGARROS",
+    group: "articulaciones",
+    body: "Recuperamos tejido y carga progresiva para volver a moverte sin miedo a recaer.",
+    feedUrl: "campanas/feed/catalogo_feed_90_cat_contracturas.png",
+    storyUrl: "campanas/story/catalogo_story_90_cat_contracturas.png",
+    copy: `Contracturas y secuelas de desgarros 🩺
+
+En Kinésica tratamos contracturas y desgarros: tejido y carga progresiva.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Contractura #Desgarro #Kinésica`
+  },
+  {
+    id: "91_cat_tunel_carpiano",
+    title: "Túnel carpiano: dolor de muñeca-mano",
+    cat: "TÚNEL CARPIANO",
+    group: "articulaciones",
+    body: "Abordamos muñeca, nervio y cadena del brazo con neurodinamia y terapia manual.",
+    feedUrl: "campanas/feed/catalogo_feed_91_cat_tunel_carpiano.png",
+    storyUrl: "campanas/story/catalogo_story_91_cat_tunel_carpiano.png",
+    copy: `Túnel carpiano: dolor de muñeca-mano 🩺
+
+En Kinésica tratamos túnel carpiano: muñeca, nervio y cadena del brazo.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#TunelCarpiano #Neurodinamia #Kinésica`
+  },
+  {
+    id: "92_cat_coxalgia",
+    title: "Coxalgia: dolor de cadera",
+    cat: "COXALGIA",
+    group: "articulaciones",
+    body: "Puede nacer en la articulación o por compensación de pelvis y lumbar. Evaluamos el conjunto.",
+    feedUrl: "campanas/feed/catalogo_feed_92_cat_coxalgia.png",
+    storyUrl: "campanas/story/catalogo_story_92_cat_coxalgia.png",
+    copy: `Coxalgia: dolor de cadera 🩺
+
+En Kinésica tratamos coxalgia: cadera, pelvis y lumbar.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Coxalgia #Cadera #Kinésica`
+  },
+  {
+    id: "93_cat_oclusion_dental",
+    title: "Oclusión dental y trastornos de la ATM",
+    cat: "OCLUSIÓN DENTAL",
+    group: "columna",
+    body: "La mordida se relaciona con cuello y postura. Tratamos la ATM en conjunto con la cadena cervical.",
+    feedUrl: "campanas/feed/catalogo_feed_93_cat_oclusion_dental.png",
+    storyUrl: "campanas/story/catalogo_story_93_cat_oclusion_dental.png",
+    copy: `Oclusión dental y trastornos de la ATM 🩺
+
+En Kinésica tratamos oclusión dental: ATM y cadena cervical.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#OclusionDental #ATM #Kinésica`
+  },
+  {
+    id: "94_cat_rectificacion",
+    title: "Rectificación cervical y lumbar",
+    cat: "RECTIFICACIÓN",
+    group: "columna",
+    body: "Recuperamos las curvas fisiológicas y la movilidad con reeducación postural.",
+    feedUrl: "campanas/feed/catalogo_feed_94_cat_rectificacion.png",
+    storyUrl: "campanas/story/catalogo_story_94_cat_rectificacion.png",
+    copy: `Rectificación cervical y lumbar 🩺
+
+En Kinésica tratamos rectificación cervical y lumbar: curvas fisiológicas y RPG.
+
+Sesiones 1 a 1 de terapia manual en Palermo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Rectificacion #Columna #Kinésica`
   }
 ];
 
