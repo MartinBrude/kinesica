@@ -749,8 +749,9 @@ input[name="edad"].input-calc {
   display: none;
 }
 
-.mediciones-summary:hover {
-  background: #f1f5f9;
+.mediciones-summary:hover,
+.mediciones-accordion[open] > .mediciones-summary:hover {
+  background: #e2ecf3;
 }
 
 .mediciones-accordion[open] > .mediciones-summary {

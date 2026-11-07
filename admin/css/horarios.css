@@ -676,6 +676,10 @@ details.admin-collapsible-card {
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+details.admin-collapsible-card:hover {
+  border-color: #9bbcd4;
+}
+
 details.admin-collapsible-card[open] {
   box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
 }
@@ -698,8 +702,20 @@ summary.admin-collapsible-summary::-webkit-details-marker {
   display: none;
 }
 
-summary.admin-collapsible-summary:hover {
-  background: #f8fafc;
+summary.admin-collapsible-summary:hover,
+details.admin-collapsible-card[open] > summary.admin-collapsible-summary:hover {
+  background: #e2ecf3;
+}
+
+summary.admin-collapsible-summary:hover .admin-collapsible-chevron,
+details.admin-collapsible-card[open] > summary.admin-collapsible-summary:hover .admin-collapsible-chevron {
+  color: var(--navy);
+}
+
+summary.admin-collapsible-summary:hover .admin-collapsible-icon,
+details.admin-collapsible-card[open] > summary.admin-collapsible-summary:hover .admin-collapsible-icon {
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 40, 70, 0.08);
 }
 
 details.admin-collapsible-card[open] > summary.admin-collapsible-summary {
