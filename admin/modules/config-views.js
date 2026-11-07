@@ -4,8 +4,8 @@
  */
 
 import { switchActiveView } from "./dom.js?v=79";
-import { loadHorariosFromServer } from "./horarios.js?v=3";
-import { loadHonorarios } from "./honorarios.js?v=2";
+import { loadHorariosFromServer } from "./horarios.js?v=4";
+import { loadHonorarios } from "./honorarios.js?v=3";
 
 export function showConsultorioView() {
   const view = switchActiveView("view-consultorio");

@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=132">
+  <link rel="stylesheet" href="/admin/styles.css?v=133">
   <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1794039606">
   <script>
     (function () {
@@ -48,10 +48,22 @@
   </style>
 </head>
 <body>
+  <div class="admin-nav-backdrop" id="admin-nav-backdrop" hidden></div>
   <header class="topbar">
     <a class="brand" href="/admin/" id="brand-logo" title="Ir al Inicio" aria-label="Kinésica - Ir al Inicio">
       <img src="/admin/logo.png?v=22" alt="Kinésica" width="190" height="50">
     </a>
+    <button type="button" class="btn ghost btn-nav-toggle" id="btn-nav-toggle" hidden aria-expanded="false" aria-controls="admin-nav" aria-label="Abrir menú">
+      <svg class="nav-toggle-icon nav-toggle-open" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+        <line x1="4" y1="7" x2="20" y2="7"></line>
+        <line x1="4" y1="12" x2="20" y2="12"></line>
+        <line x1="4" y1="17" x2="20" y2="17"></line>
+      </svg>
+      <svg class="nav-toggle-icon nav-toggle-close" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" hidden>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+        <line x1="6" y1="18" x2="18" y2="6"></line>
+      </svg>
+    </button>
     <div class="top-actions">
       <nav class="admin-nav" id="admin-nav" hidden>
         <!-- GRUPO 1: CLÍNICA (Historias Clínicas y Pacientes) -->
@@ -2544,6 +2556,8 @@
           var isAdmin = role === "admin" || name === "martin" || name === "Martín Brude" || name === "Martín";
           var adminNav = document.getElementById("admin-nav");
           if (adminNav) adminNav.hidden = false;
+          var navToggle = document.getElementById("btn-nav-toggle");
+          if (navToggle) navToggle.hidden = false;
           var groupAdmin = document.getElementById("nav-group-admin");
           if (groupAdmin) groupAdmin.hidden = !isAdmin;
           var btnAdmin = document.getElementById("nav-btn-admin");
@@ -2663,6 +2677,6 @@
   <div id="print-root"></div>
   <script src="/partials/google-reviews-data.min.js?v=1794039606" defer></script>
   <script src="/booking/booking-bundle.min.js?v=1794039606" defer></script>
-  <script type="module" src="/admin/app.js?v=188"></script>
+  <script type="module" src="/admin/app.js?v=189"></script>
 </body>
 </html>

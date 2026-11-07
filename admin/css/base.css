@@ -374,6 +374,25 @@ main {
   font-weight: 700;
 }
 
+.btn-nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.btn-nav-toggle .nav-toggle-icon {
+  display: block;
+}
+
+.admin-nav-backdrop {
+  display: none;
+}
+
 /* ALERTA SUAVE DE PASO EN FORMULARIO CLÍNICO */
 .form-step-inline-alert {
   background: #fef2f2;
@@ -395,7 +414,7 @@ main {
     min-height: auto;
     padding: 10px 14px 8px;
     gap: 10px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: space-between;
   }
   .top-title {
@@ -405,35 +424,87 @@ main {
     width: 130px;
     height: 34px;
   }
-  .top-actions {
+  .btn-nav-toggle {
+    display: inline-flex;
+    order: 2;
     margin-left: auto;
+  }
+  html:not(.is-authenticated) .btn-nav-toggle,
+  #btn-nav-toggle[hidden] {
+    display: none !important;
+  }
+  .top-actions {
+    margin-left: 0;
     gap: 8px;
+    order: 3;
   }
   .admin-nav {
-    order: 3;
-    width: 100%;
-    margin-top: 4px;
-    padding-top: 6px;
-    border-top: 1px solid var(--sky);
-    overflow: visible;
-    flex-wrap: wrap;
+    display: none;
+    position: fixed;
+    top: 58px;
+    left: 12px;
+    right: 12px;
+    z-index: 40;
+    width: auto;
+    max-height: min(70vh, calc(100vh - 80px));
+    overflow: auto;
+    margin: 0;
+    padding: 10px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 16px 36px rgba(3, 28, 66, 0.16);
+    flex-direction: column;
+    align-items: stretch;
+    flex-wrap: nowrap;
     gap: 4px;
     white-space: normal;
   }
+  html.is-nav-open .admin-nav {
+    display: flex;
+  }
+  html.is-nav-open .admin-nav-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 35;
+    background: rgba(3, 28, 66, 0.28);
+  }
+  html.is-nav-open .btn-nav-toggle .nav-toggle-open {
+    display: none;
+  }
+  html.is-nav-open .btn-nav-toggle .nav-toggle-close {
+    display: block;
+  }
+  .nav-dropdown {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
   .nav-dropdown-menu {
-    min-width: 190px;
-    max-width: calc(100vw - 24px);
+    position: static;
+    min-width: 0;
+    max-width: none;
+    width: 100%;
+    box-shadow: none;
+    border: 0;
+    padding: 0 0 0 8px;
+    margin: 0;
   }
-  #nav-group-whatsapp .nav-dropdown-menu,
-  #nav-group-clara .nav-dropdown-menu,
-  #nav-group-admin .nav-dropdown-menu {
-    left: auto;
-    right: 0;
+  .nav-dropdown:not(.is-open) .nav-dropdown-menu {
+    display: none;
   }
-  .admin-nav .btn {
-    padding: 7px 11px;
-    font-size: 13px;
-    flex-shrink: 0;
+  .nav-dropdown.is-open .nav-dropdown-menu {
+    display: flex;
+    flex-direction: column;
+  }
+  .admin-nav .btn,
+  .admin-nav .nav-dropdown-item {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 10px 12px;
+    font-size: 14px;
+    border-radius: 10px;
   }
   .session-box {
     align-items: flex-end;

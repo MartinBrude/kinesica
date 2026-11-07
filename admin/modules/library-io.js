@@ -4,7 +4,7 @@
  */
 
 import { patientKey, coerceFicha } from "../ficha-rules.mjs?v=90";
-import { dialogAlert } from "./dom.js?v=79";
+import { dialogAlert, toast } from "./dom.js?v=79";
 
 export const IMPORT_BATCH = 20;
 
@@ -73,9 +73,9 @@ export async function executeBatchImport(parsed, cache, blankItem, upsert, fileO
     const saved = fichas.length - failed.length;
     const replaced = already ? ` ${already === 1 ? "1 ya estaba y se actualizó." : `${already} ya estaban y se actualizaron.`}` : "";
     if (!failed.length) {
-      dialogAlert((saved === 1 ? "Se importó 1 ficha." : `Se importaron ${saved} fichas.`) + replaced);
+      toast((saved === 1 ? "Se importó 1 ficha." : `Se importaron ${saved} fichas.`) + replaced, { type: "success" });
     } else {
-      dialogAlert(`Se importaron ${saved} de ${fichas.length}.${replaced} ${failed[0]?.message || ""}`.trim());
+      dialogAlert(`Se importaron ${saved} de ${fichas.length}.${replaced} ${failed[0]?.message || ""}`.trim(), { type: "danger" });
     }
   } finally {
     if (fileLabel && previousLabel) fileLabel.textContent = previousLabel;

@@ -5,7 +5,7 @@
 
 import { api } from "./api.js?v=78";
 import { getSessionUser } from "./auth.js?v=83";
-import { dialogAlert, switchActiveView } from "./dom.js?v=79";
+import { dialogAlert, toast, switchActiveView } from "./dom.js?v=79";
 
 const viewDashboard = document.querySelector("#view-dashboard");
 const greetingEl = document.querySelector("#dash-greeting");
@@ -136,10 +136,7 @@ export function initDashboardModule(callbacks = {}) {
 
   // Toggle de Clara desde el dashboard
   claraToggleBtn?.addEventListener("click", async () => {
-    if (getSessionUser()?.role === "colaborador") {
-      dialogAlert("Los usuarios con rol Colaborador tienen permisos de solo lectura.");
-      return;
-    }
+    if (getSessionUser()?.role === "colaborador" || claraToggleBtn.disabled) return;
     const nextState = !activeClara;
     claraToggleBtn.disabled = true;
     try {
@@ -149,21 +146,18 @@ export function initDashboardModule(callbacks = {}) {
       });
       localStorage.setItem("kinesica_clara_active", nextState ? "1" : "0");
       updateDashboardClara(nextState);
-      // Sincronizar también el botón del topbar si existe
       callbacks.onClaraToggled?.(nextState);
+      toast(nextState ? "Clara visible en web + recordatorios." : "Clara oculta en web (sin recordatorios).", { type: "success" });
     } catch {
-      dialogAlert("No se pudo cambiar el estado de Clara.");
+      dialogAlert("No se pudo cambiar el estado de Clara.", { type: "danger" });
     } finally {
-      claraToggleBtn.disabled = false;
+      if (getSessionUser()?.role !== "colaborador") claraToggleBtn.disabled = false;
     }
   });
 
   // Toggle de Booking desde el dashboard
   bookingToggleBtn?.addEventListener("click", async () => {
-    if (getSessionUser()?.role === "colaborador") {
-      dialogAlert("Los usuarios con rol Colaborador tienen permisos de solo lectura.");
-      return;
-    }
+    if (getSessionUser()?.role === "colaborador" || bookingToggleBtn.disabled) return;
     const nextState = !activeBooking;
     bookingToggleBtn.disabled = true;
     try {
@@ -174,10 +168,11 @@ export function initDashboardModule(callbacks = {}) {
       localStorage.setItem("kinesica_booking_active", nextState ? "1" : "0");
       updateDashboardBooking(nextState);
       callbacks.onBookingToggled?.(nextState);
+      toast(nextState ? "Turnera web activada." : "Turnera web pausada.", { type: "success" });
     } catch {
-      dialogAlert("No se pudo cambiar el estado de la turnera web.");
+      dialogAlert("No se pudo cambiar el estado de la turnera web.", { type: "danger" });
     } finally {
-      bookingToggleBtn.disabled = false;
+      if (getSessionUser()?.role !== "colaborador") bookingToggleBtn.disabled = false;
     }
   });
 }

@@ -5,7 +5,7 @@
  */
 
 import { patientKey, validateField, getSessionIndex } from "../ficha-rules.mjs?v=90";
-import { dialogConfirm, dialogAlert } from "./dom.js?v=79";
+import { dialogConfirm } from "./dom.js?v=79";
 import { setupInputRestrictions } from "./form-restrictions.js";
 import { syncFotoPreview, getCurrentFotos, getUploadInFlight, initFormPhotos } from "./form-photos.js";
 import { singles, syncEva, syncAge, syncFollowups, setupSingleButtons } from "./form-eva.js";
@@ -227,10 +227,7 @@ export function initForm({ onSave, onBack, onCompare, onPrint, getSessionUser })
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const sessionUser = typeof activeSessionUserGetter === "function" ? activeSessionUserGetter() : null;
-    if (sessionUser?.role === "colaborador") {
-      dialogAlert("Los usuarios con rol Colaborador tienen permisos de solo lectura.");
-      return;
-    }
+    if (sessionUser?.role === "colaborador") return;
     submitFichaForm({
       form,
       data: readForm(),

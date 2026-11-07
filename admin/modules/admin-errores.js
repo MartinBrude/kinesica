@@ -3,7 +3,7 @@
  */
 
 import { api, formatDate } from "./api.js?v=78";
-import { escapeHtml, dialogAlert, dialogConfirm } from "./dom.js?v=79";
+import { escapeHtml, dialogAlert, dialogConfirm, toast } from "./dom.js?v=79";
 import {
   openErrorModal,
   closeErrorModal,
@@ -148,11 +148,11 @@ export async function handleSaveError(e, onReload) {
       method: "POST",
       body: JSON.stringify({ action: "create", ...payload }),
     });
-    dialogAlert("Error reportado correctamente.");
+    toast("Error reportado correctamente.", { type: "success" });
     closeErrorModal();
     if (typeof onReload === "function") await onReload();
   } catch (err) {
-    dialogAlert("Error al reportar: " + (err.message || "Error desconocido"));
+    dialogAlert("Error al reportar: " + (err.message || "Error desconocido"), { type: "danger" });
   } finally {
     setErrorSaveButtonDisabled(false);
   }

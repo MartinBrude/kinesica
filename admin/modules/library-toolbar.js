@@ -90,10 +90,7 @@ export function initLibraryToolbar({
       btnNew.hidden = true;
     }
     btnNew.addEventListener("click", () => {
-      if (getSessionUser()?.role === "colaborador") {
-        dialogAlert("Los usuarios con rol Colaborador tienen permisos de solo lectura.");
-        return;
-      }
+      if (getSessionUser()?.role === "colaborador" || btnNew.hidden) return;
       const { focusedPatient, callbacks } = getState();
       const items = visibleFichas();
       if (focusedPatient) {

@@ -4,7 +4,7 @@
  */
 
 import { api } from "./api.js?v=78";
-import { escapeHtml, dialogAlert, dialogConfirm } from "./dom.js?v=79";
+import { escapeHtml, dialogAlert, dialogConfirm, toast } from "./dom.js?v=79";
 import { SEED_GASTOS, formatMoney, getRecordDailyAmounts } from "./admin-gastos-rates.js";
 import {
   openCreateGastoModal,
@@ -109,17 +109,17 @@ export async function handleSaveGasto(e, onReload) {
         const idx = cachedGastos.findIndex((g) => g.id === currentEditingGasto.id);
         if (idx !== -1) cachedGastos[idx] = { ...cachedGastos[idx], ...payloadFields };
       });
-      dialogAlert("Gasto actualizado con sus equivalencias del día.");
+      toast("Gasto actualizado con sus equivalencias del día.", { type: "success" });
     } else {
       await api("gastos.php", { method: "POST", body: JSON.stringify({ action: "create", ...payloadFields }) }).catch(() => {
         cachedGastos.unshift({ id: "gasto_" + Date.now(), ...payloadFields });
       });
-      dialogAlert("Gasto registrado con sus equivalencias del día.");
+      toast("Gasto registrado con sus equivalencias del día.", { type: "success" });
     }
     closeGastoModal();
     if (typeof onReload === "function") await onReload();
   } catch (err) {
-    dialogAlert("Error al guardar gasto: " + (err.message || "Error desconocido"));
+    dialogAlert("Error al guardar gasto: " + (err.message || "Error desconocido"), { type: "danger" });
   } finally {
     setGastoSaveButtonDisabled(false);
   }
@@ -132,10 +132,10 @@ export async function handleDeleteGasto(gasto, onReload) {
     await api("gastos.php", { method: "POST", body: JSON.stringify({ action: "delete", id: gasto.id }) }).catch(() => {
       cachedGastos = cachedGastos.filter((g) => g.id !== gasto.id);
     });
-    dialogAlert("Gasto eliminado exitosamente.");
+    toast("Gasto eliminado.", { type: "success" });
     if (typeof onReload === "function") await onReload();
   } catch (err) {
-    dialogAlert("Error al eliminar gasto: " + (err.message || "Error desconocido"));
+    dialogAlert("Error al eliminar gasto: " + (err.message || "Error desconocido"), { type: "danger" });
   }
 }
 

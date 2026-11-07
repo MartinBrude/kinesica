@@ -5,7 +5,7 @@
  */
 
 import { api } from "./api.js?v=78";
-import { escapeHtml, dialogAlert, switchActiveView } from "./dom.js?v=79";
+import { escapeHtml, dialogAlert, toast, switchActiveView } from "./dom.js?v=79";
 import { getSessionUser } from "./auth.js?v=83";
 
 const inputAtm = document.querySelector("#input-fee-atm");
@@ -23,6 +23,23 @@ export const DEFAULT_FEES = {
 };
 
 let currentFees = { ...DEFAULT_FEES };
+let honorariosDirty = false;
+
+function isColaboradorUser() {
+  return getSessionUser()?.role === "colaborador";
+}
+
+function setHonorariosDirty(next) {
+  honorariosDirty = Boolean(next) && !isColaboradorUser();
+  if (btnSave && !btnSave.hidden) {
+    btnSave.disabled = !honorariosDirty;
+  }
+}
+
+function markHonorariosDirty() {
+  if (isColaboradorUser()) return;
+  setHonorariosDirty(true);
+}
 
 export function showHonorariosView() {
   switchActiveView("view-consultorio");
@@ -82,8 +99,8 @@ export async function loadHonorarios() {
         }
       }
       updatePreview();
-      const isColaborador = getSessionUser()?.role === "colaborador";
-      if (isColaborador) {
+      setHonorariosDirty(false);
+      if (isColaboradorUser()) {
         if (inputAtm) inputAtm.disabled = true;
         if (inputGeneral) inputGeneral.disabled = true;
         if (inputPayment) inputPayment.disabled = true;
@@ -93,7 +110,7 @@ export async function loadHonorarios() {
           statusBanner.style.background = "#fef3c7";
           statusBanner.style.color = "#92400e";
           statusBanner.style.borderColor = "#fde68a";
-          statusBanner.textContent = "👁️ Modo de solo lectura (Colaborador): Aranceles y formas de pago de solo consulta.";
+          statusBanner.textContent = "Modo solo lectura (Colaborador): aranceles y formas de pago de solo consulta.";
           statusBanner.hidden = false;
         }
       }
@@ -110,6 +127,7 @@ export function initHonorariosModule() {
       const clean = String(el.value || "").replace(/\D/g, "").slice(0, 8);
       if (clean !== el.value) el.value = clean;
       updatePreview();
+      markHonorariosDirty();
     });
   };
   restrictNumericFee(inputAtm);
@@ -118,13 +136,12 @@ export function initHonorariosModule() {
     const clean = String(inputPayment.value || "").replace(/[<>]/g, "").slice(0, 160);
     if (clean !== inputPayment.value) inputPayment.value = clean;
     updatePreview();
+    markHonorariosDirty();
   });
+  setHonorariosDirty(false);
 
   btnSave?.addEventListener("click", async () => {
-    if (getSessionUser()?.role === "colaborador") {
-      dialogAlert("Los usuarios con rol Colaborador tienen permisos de solo lectura.");
-      return;
-    }
+    if (isColaboradorUser() || btnSave.hidden) return;
     btnSave.disabled = true;
     if (statusBanner) statusBanner.hidden = true;
 
@@ -133,8 +150,8 @@ export function initHonorariosModule() {
     const payment = inputPayment?.value?.trim() || DEFAULT_FEES.payment_methods;
 
     if (isNaN(atm) || atm <= 0 || isNaN(general) || general <= 0) {
-      dialogAlert("Por favor ingresá valores válidos y positivos para los honorarios de ATM y General.");
-      btnSave.disabled = false;
+      dialogAlert("Por favor ingresá valores válidos y positivos para los honorarios de ATM y General.", { type: "danger" });
+      setHonorariosDirty(true);
       return;
     }
 
@@ -155,11 +172,11 @@ export function initHonorariosModule() {
         statusBanner.textContent = "✅ Honorarios actualizados correctamente. Ya están vigentes en las respuestas de WhatsApp de Clara y en la turnera web.";
         statusBanner.hidden = false;
       }
-      loadHonorarios();
+      toast("Honorarios guardados.", { type: "success" });
+      await loadHonorarios();
     } catch (err) {
-      dialogAlert("Error al guardar honorarios: " + (err.message || "Problema de conexión"));
-    } finally {
-      btnSave.disabled = false;
+      dialogAlert("Error al guardar honorarios: " + (err.message || "Problema de conexión"), { type: "danger" });
+      setHonorariosDirty(true);
     }
   });
 }

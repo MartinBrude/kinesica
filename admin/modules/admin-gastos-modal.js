@@ -3,7 +3,7 @@
  * Formulario reactivo con recálculo dinámico en EUR / USD / ARS y búsqueda de TC por fecha.
  */
 
-import { dialogAlert } from "./dom.js?v=79";
+import { toast } from "./dom.js?v=79";
 import {
   historicalRatesByDate,
   getRecordDailyAmounts,
@@ -82,14 +82,19 @@ export async function fetchRatesForDate(fecha, notify = false) {
       if (cleanDate) historicalRatesByDate[cleanDate] = { ...fetched };
       updateModalTcStatus(cleanDate, true);
       recalcModalCurrencies();
-      if (notify) dialogAlert(`Cotización del ${cleanDate || "día"} aplicada: 1 EUR = US$ ${fetched.eurUsd} | $ ${fetched.eurArs.toLocaleString("es-AR")} ARS.`);
+      if (notify) {
+        toast(
+          `Cotización del ${cleanDate || "día"} aplicada: 1 EUR = US$ ${fetched.eurUsd} | $ ${fetched.eurArs.toLocaleString("es-AR")} ARS.`,
+          { type: "info" }
+        );
+      }
       return;
     }
   } catch { /* ignore */ }
   if (cleanDate && historicalRatesByDate[cleanDate]) modalCurrentRates = { ...historicalRatesByDate[cleanDate] };
   updateModalTcStatus(cleanDate, false);
   recalcModalCurrencies();
-  if (notify) dialogAlert("Se aplicó la cotización histórica de referencia para la fecha seleccionada.");
+  if (notify) toast("Se aplicó la cotización histórica de referencia para la fecha seleccionada.", { type: "info" });
 }
 
 function updateModalTcStatus(fecha, fromOnline = false) {

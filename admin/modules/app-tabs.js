@@ -7,19 +7,48 @@ import { api } from "./api.js?v=78";
 import { getSessionUser } from "./auth.js?v=83";
 import { showLibrary } from "./library.js?v=94";
 import { showPacientesView, hidePacientesView } from "./pacientes.js?v=12";
-import { showDashboardView, hideDashboardView, updateDashboardClara, updateDashboardBooking } from "./dashboard.js?v=12";
+import { showDashboardView, hideDashboardView, updateDashboardClara, updateDashboardBooking } from "./dashboard.js?v=13";
 import { showConsultorioView, hideConsultorioView, showClaraView, hideClaraView } from "./configuracion.js?v=30";
 import { showAdminView, hideAdminView } from "./admin-panel.js?v=17";
 import { showInteraccionesView, hideInteraccionesView } from "./interacciones.js?v=15";
 import { showRecordatoriosView, hideRecordatoriosView } from "./recordatorios.js?v=23";
 import { showEncuestasView, hideEncuestasView } from "./encuestas.js?v=2";
-import { applyHoursToRuntime } from "./horarios.js?v=3";
+import { applyHoursToRuntime } from "./horarios.js?v=4";
 
 export function closeAllDropdowns() {
   document.querySelectorAll(".nav-dropdown").forEach((el) => {
     el.classList.remove("is-open");
     el.querySelector(".nav-dropdown-trigger")?.setAttribute("aria-expanded", "false");
   });
+}
+
+export function closeMobileNav() {
+  if (typeof document === "undefined") return;
+  document.documentElement.classList.remove("is-nav-open");
+  const toggle = document.getElementById("btn-nav-toggle");
+  if (toggle) {
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.setAttribute("aria-label", "Abrir menú");
+  }
+  const backdrop = document.getElementById("admin-nav-backdrop");
+  if (backdrop) backdrop.hidden = true;
+}
+
+export function openMobileNav() {
+  if (typeof document === "undefined") return;
+  document.documentElement.classList.add("is-nav-open");
+  const toggle = document.getElementById("btn-nav-toggle");
+  if (toggle) {
+    toggle.setAttribute("aria-expanded", "true");
+    toggle.setAttribute("aria-label", "Cerrar menú");
+  }
+  const backdrop = document.getElementById("admin-nav-backdrop");
+  if (backdrop) backdrop.hidden = false;
+}
+
+export function toggleMobileNav() {
+  if (document.documentElement.classList.contains("is-nav-open")) closeMobileNav();
+  else openMobileNav();
 }
 
 export function switchTab(tab, subtab) {
@@ -42,6 +71,7 @@ export function switchTab(tab, subtab) {
 
   document.querySelectorAll(".admin-nav .btn, .admin-nav .nav-dropdown-item").forEach((b) => b.classList.remove("is-active"));
   closeAllDropdowns();
+  closeMobileNav();
 
   hideDashboardView();
   hidePacientesView();
@@ -129,108 +159,124 @@ export function switchTab(tab, subtab) {
   }
 }
 
+function setAdminOnlyVisibility(isAdmin) {
+  const navGroupAdmin = document.getElementById("nav-group-admin");
+  if (navGroupAdmin) navGroupAdmin.hidden = !isAdmin;
+  const btnAdmin = document.getElementById("nav-btn-admin");
+  if (btnAdmin) btnAdmin.hidden = !isAdmin;
+  const dashCardAdmin = document.getElementById("dash-card-admin");
+  if (dashCardAdmin) dashCardAdmin.hidden = !isAdmin;
+}
+
 export function unmountAdminChannels() {
   if (typeof document !== "undefined") {
     document.documentElement.classList.remove("is-admin-role");
   }
+  closeMobileNav();
   const nav = document.getElementById("admin-nav");
   if (nav) nav.hidden = true;
-  const navGroupAdmin = document.getElementById("nav-group-admin");
-  if (navGroupAdmin) navGroupAdmin.hidden = true;
-  const btnAdmin = document.getElementById("nav-btn-admin");
-  if (btnAdmin) btnAdmin.hidden = true;
-  const dashCardAdmin = document.getElementById("dash-card-admin");
-  if (dashCardAdmin) dashCardAdmin.hidden = true;
+  const navToggle = document.getElementById("btn-nav-toggle");
+  if (navToggle) navToggle.hidden = true;
+  setAdminOnlyVisibility(false);
+}
+
+function bindAdminNavOnce(adminNav) {
+  if (!adminNav || adminNav.dataset.bound === "1") return;
+  adminNav.dataset.bound = "1";
+
+  const setupDropdown = (groupEl, triggerBtn) => {
+    if (!groupEl || !triggerBtn) return;
+    groupEl.addEventListener("mouseenter", () => {
+      if (window.matchMedia("(max-width: 800px)").matches) return;
+      document.querySelectorAll(".nav-dropdown").forEach((el) => {
+        if (el !== groupEl) {
+          el.classList.remove("is-open");
+          el.querySelector(".nav-dropdown-trigger")?.setAttribute("aria-expanded", "false");
+        }
+      });
+      groupEl.classList.add("is-open");
+      triggerBtn.setAttribute("aria-expanded", "true");
+    });
+
+    groupEl.addEventListener("mouseleave", () => {
+      if (window.matchMedia("(max-width: 800px)").matches) return;
+      groupEl.classList.remove("is-open");
+      triggerBtn.setAttribute("aria-expanded", "false");
+    });
+
+    triggerBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = groupEl.classList.contains("is-open");
+      closeAllDropdowns();
+      if (!isOpen) {
+        groupEl.classList.add("is-open");
+        triggerBtn.setAttribute("aria-expanded", "true");
+      }
+    });
+  };
+
+  setupDropdown(document.getElementById("nav-group-clinica"), document.getElementById("nav-btn-clinica"));
+  setupDropdown(document.getElementById("nav-group-whatsapp"), document.getElementById("nav-btn-whatsapp"));
+  setupDropdown(document.getElementById("nav-group-admin"), document.getElementById("nav-btn-admin"));
+
+  ["#nav-btn-consultorio", "#nav-btn-clara", "#nav-btn-encuestas", "#brand-logo"].forEach((id) => {
+    document.querySelector(id)?.addEventListener("mouseenter", closeAllDropdowns);
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".nav-dropdown")) closeAllDropdowns();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closeAllDropdowns();
+      closeMobileNav();
+    }
+  });
+
+  document.getElementById("btn-nav-toggle")?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggleMobileNav();
+  });
+  document.getElementById("admin-nav-backdrop")?.addEventListener("click", () => closeMobileNav());
+
+  document.getElementById("nav-btn-fichas")?.addEventListener("click", () => switchTab("fichas"));
+  document.getElementById("nav-btn-pacientes")?.addEventListener("click", () => switchTab("pacientes"));
+  document.getElementById("nav-btn-consultorio")?.addEventListener("click", () => switchTab("consultorio"));
+  document.getElementById("nav-btn-clara")?.addEventListener("click", () => switchTab("clara"));
+  document.getElementById("nav-btn-interacciones")?.addEventListener("click", () => switchTab("interacciones"));
+  document.getElementById("nav-btn-recordatorios")?.addEventListener("click", () => switchTab("recordatorios"));
+  document.getElementById("nav-btn-encuestas")?.addEventListener("click", () => switchTab("encuestas"));
+  document.getElementById("nav-btn-admin-usuarios")?.addEventListener("click", () => switchTab("admin", "usuarios"));
+  document.getElementById("nav-btn-admin-gastos")?.addEventListener("click", () => switchTab("admin", "gastos"));
+  document.getElementById("nav-btn-admin-errores")?.addEventListener("click", () => switchTab("admin", "errores"));
+  document.getElementById("nav-btn-admin-backups")?.addEventListener("click", () => switchTab("admin", "backups"));
+  document.getElementById("nav-btn-admin-servicios")?.addEventListener("click", () => switchTab("admin", "servicios"));
+  document.getElementById("nav-btn-admin-campana")?.addEventListener("click", () => switchTab("admin", "campana"));
+  document.getElementById("brand-logo")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    switchTab("inicio");
+  });
 }
 
 export function mountAdminChannels() {
   const user = getSessionUser();
-  if (!user || user.role !== "admin") {
+  if (!user) {
     unmountAdminChannels();
     return;
   }
 
+  const isAdmin = user.role === "admin";
   if (typeof document !== "undefined") {
-    document.documentElement.classList.add("is-admin-role");
+    document.documentElement.classList.toggle("is-admin-role", isAdmin);
   }
 
   const adminNav = document.getElementById("admin-nav");
-  if (adminNav) {
-    adminNav.hidden = false;
-    const navGroupAdmin = document.getElementById("nav-group-admin");
-    if (navGroupAdmin) navGroupAdmin.hidden = false;
-    const btnAdmin = document.getElementById("nav-btn-admin");
-    if (btnAdmin) btnAdmin.hidden = false;
-    const dashCardAdmin = document.getElementById("dash-card-admin");
-    if (dashCardAdmin) dashCardAdmin.hidden = false;
-
-    if (!adminNav.dataset.bound) {
-      adminNav.dataset.bound = "1";
-
-      const setupDropdown = (groupEl, triggerBtn) => {
-        if (!groupEl || !triggerBtn) return;
-        groupEl.addEventListener("mouseenter", () => {
-          document.querySelectorAll(".nav-dropdown").forEach((el) => {
-            if (el !== groupEl) {
-              el.classList.remove("is-open");
-              el.querySelector(".nav-dropdown-trigger")?.setAttribute("aria-expanded", "false");
-            }
-          });
-          groupEl.classList.add("is-open");
-          triggerBtn.setAttribute("aria-expanded", "true");
-        });
-
-        groupEl.addEventListener("mouseleave", () => {
-          groupEl.classList.remove("is-open");
-          triggerBtn.setAttribute("aria-expanded", "false");
-        });
-
-        triggerBtn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          const isOpen = groupEl.classList.contains("is-open");
-          closeAllDropdowns();
-          if (!isOpen) {
-            groupEl.classList.add("is-open");
-            triggerBtn.setAttribute("aria-expanded", "true");
-          }
-        });
-      };
-
-      setupDropdown(document.getElementById("nav-group-clinica"), document.getElementById("nav-btn-clinica"));
-      setupDropdown(document.getElementById("nav-group-whatsapp"), document.getElementById("nav-btn-whatsapp"));
-      setupDropdown(document.getElementById("nav-group-admin"), document.getElementById("nav-btn-admin"));
-
-      ["#nav-btn-consultorio", "#nav-btn-clara", "#nav-btn-encuestas", "#brand-logo"].forEach((id) => {
-        document.querySelector(id)?.addEventListener("mouseenter", closeAllDropdowns);
-      });
-
-      document.addEventListener("click", (e) => {
-        if (!e.target.closest(".nav-dropdown")) closeAllDropdowns();
-      });
-
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") closeAllDropdowns();
-      });
-
-      document.getElementById("nav-btn-fichas")?.addEventListener("click", () => switchTab("fichas"));
-      document.getElementById("nav-btn-pacientes")?.addEventListener("click", () => switchTab("pacientes"));
-      document.getElementById("nav-btn-consultorio")?.addEventListener("click", () => switchTab("consultorio"));
-      document.getElementById("nav-btn-clara")?.addEventListener("click", () => switchTab("clara"));
-      document.getElementById("nav-btn-interacciones")?.addEventListener("click", () => switchTab("interacciones"));
-      document.getElementById("nav-btn-recordatorios")?.addEventListener("click", () => switchTab("recordatorios"));
-      document.getElementById("nav-btn-encuestas")?.addEventListener("click", () => switchTab("encuestas"));
-      document.getElementById("nav-btn-admin-usuarios")?.addEventListener("click", () => switchTab("admin", "usuarios"));
-      document.getElementById("nav-btn-admin-gastos")?.addEventListener("click", () => switchTab("admin", "gastos"));
-      document.getElementById("nav-btn-admin-errores")?.addEventListener("click", () => switchTab("admin", "errores"));
-      document.getElementById("nav-btn-admin-backups")?.addEventListener("click", () => switchTab("admin", "backups"));
-      document.getElementById("nav-btn-admin-servicios")?.addEventListener("click", () => switchTab("admin", "servicios"));
-      document.getElementById("nav-btn-admin-campana")?.addEventListener("click", () => switchTab("admin", "campana"));
-      document.getElementById("brand-logo")?.addEventListener("click", (e) => {
-        e.preventDefault();
-        switchTab("inicio");
-      });
-    }
-  }
+  if (adminNav) adminNav.hidden = false;
+  const navToggle = document.getElementById("btn-nav-toggle");
+  if (navToggle) navToggle.hidden = false;
+  setAdminOnlyVisibility(isAdmin);
+  bindAdminNavOnce(adminNav);
 
   api("settings.php")
     .then((data) => {

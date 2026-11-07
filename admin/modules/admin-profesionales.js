@@ -5,7 +5,7 @@
  */
 
 import { api } from "./api.js?v=78";
-import { escapeHtml, dialogAlert, dialogConfirm } from "./dom.js?v=79";
+import { escapeHtml, dialogAlert, dialogConfirm, toast } from "./dom.js?v=79";
 import { formatDisplayPhone } from "./phone-format.js";
 
 // Modal Alta / Edición
@@ -311,7 +311,7 @@ export async function handleSaveProfessional(e, onReload) {
           role,
         }),
       });
-      dialogAlert(res.message || "Profesional actualizado correctamente.");
+      toast(res.message || "Profesional actualizado correctamente.", { type: "success" });
       updatedUser = res.user || {
         ...currentEditingUser,
         name: `${firstName} ${lastName}`,
@@ -333,7 +333,7 @@ export async function handleSaveProfessional(e, onReload) {
           role,
         }),
       });
-      dialogAlert(res.message || "Usuario dado de alta. Se envió el link a su correo.");
+      toast(res.message || "Usuario dado de alta. Se envió el link a su correo.", { type: "success" });
     }
     closeProfModal();
     if (typeof onReload === "function") await onReload();
@@ -341,7 +341,7 @@ export async function handleSaveProfessional(e, onReload) {
       openDetailModal(updatedUser);
     }
   } catch (err) {
-    dialogAlert("Error al guardar: " + (err.message || "Error desconocido"));
+    dialogAlert("Error al guardar: " + (err.message || "Error desconocido"), { type: "danger" });
   } finally {
     if (btnSaveModal) btnSaveModal.disabled = false;
   }
@@ -365,14 +365,14 @@ export async function handleToggleActive(prof, onReload) {
         active: isActivating ? 1 : 0,
       }),
     });
-    dialogAlert(res.message || (isActivating ? "Cuenta reactivada." : "Cuenta dada de baja."));
+    toast(res.message || (isActivating ? "Cuenta reactivada." : "Cuenta dada de baja."), { type: "success" });
     prof.active = isActivating ? 1 : 0;
     if (typeof onReload === "function") await onReload();
     if (currentDetailUser && currentDetailUser.username === prof.username) {
       openDetailModal(prof);
     }
   } catch (err) {
-    dialogAlert("Error al modificar estado: " + (err.message || "Error desconocido"));
+    dialogAlert("Error al modificar estado: " + (err.message || "Error desconocido"), { type: "danger" });
   }
 }
 
@@ -390,9 +390,9 @@ export async function handleResendInvite(prof) {
         username: prof.username,
       }),
     });
-    dialogAlert(res.message || "Se envió el correo de acceso.");
+    toast(res.message || "Se envió el correo de acceso.", { type: "success" });
   } catch (err) {
-    dialogAlert("Error al enviar el acceso: " + (err.message || "Error desconocido"));
+    dialogAlert("Error al enviar el acceso: " + (err.message || "Error desconocido"), { type: "danger" });
   }
 }
 

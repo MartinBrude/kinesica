@@ -5,7 +5,7 @@
  */
 
 import { api } from "./api.js?v=78";
-import { escapeHtml, dialogAlert, switchActiveView } from "./dom.js?v=79";
+import { escapeHtml, dialogAlert, toast, switchActiveView } from "./dom.js?v=79";
 import { getSessionUser } from "./auth.js?v=83";
 import {
   DEFAULT_HEADER_SCHEDULE,
@@ -139,11 +139,11 @@ function refreshUI() {
 
   const isColaborador = getSessionUser()?.role === "colaborador";
   if (btnSave) {
-    btnSave.disabled = !validation.isValid;
+    btnSave.disabled = isColaborador || !validation.isValid || !isDirty;
     if (isColaborador) btnSave.hidden = true;
   }
   if (isColaborador) {
-    document.querySelectorAll("#view-horarios input, #view-horarios select").forEach((el) => {
+    document.querySelectorAll("#view-consultorio input, #view-consultorio select, #view-horarios input, #view-horarios select").forEach((el) => {
       el.disabled = true;
     });
   }
@@ -151,7 +151,7 @@ function refreshUI() {
   if (!validation.isValid) {
     showStatusBanner("error", validation.errors);
   } else if (isDirty) {
-    showStatusBanner("success", ["Horarios válidos (sin superposición de camilla). Hacé clic en «Guardar horarios» para aplicarlos."]);
+    showStatusBanner("success", ["Cambios sin guardar. Horarios válidos (sin superposición de camilla)."]);
   } else {
     showStatusBanner("success", []);
   }
@@ -189,13 +189,14 @@ export function initHorariosModule() {
 
   if (btnSave) {
     btnSave.addEventListener("click", async () => {
-      if (getSessionUser()?.role === "colaborador") {
-        dialogAlert("Los usuarios con rol Colaborador tienen permisos de solo lectura.");
-        return;
-      }
+      if (getSessionUser()?.role === "colaborador" || btnSave.hidden) return;
       const validation = validateHoursDraft(draftHours);
       if (!validation.isValid) {
         showStatusBanner("error", validation.errors);
+        return;
+      }
+      if (!isDirty) {
+        toast("No hay cambios para guardar.", { type: "info" });
         return;
       }
       btnSave.disabled = true;
@@ -218,11 +219,15 @@ export function initHorariosModule() {
         updateMetaTimestamp(res.updated_at, res.updated_by);
         refreshUI();
         showStatusBanner("success", ["✓ Horarios guardados y activos en la turnera Agendar, barra superior y Clara."]);
+        toast("Horarios guardados.", { type: "success" });
       } catch (err) {
         showStatusBanner("error", [err.message || "No se pudieron guardar los horarios."]);
+        dialogAlert(err.message || "No se pudieron guardar los horarios.", { type: "danger" });
       } finally {
-        btnSave.disabled = false;
         btnSave.textContent = originalText;
+        if (getSessionUser()?.role !== "colaborador") {
+          btnSave.disabled = !isDirty || !validateHoursDraft(draftHours).isValid;
+        }
       }
     });
   }
@@ -234,9 +239,10 @@ export function initHorariosModule() {
         await navigator.clipboard.writeText(text);
         const prev = btnCopyClara.textContent;
         btnCopyClara.textContent = "✓ Copiado al portapapeles";
+        toast("Texto de Clara copiado.", { type: "success" });
         setTimeout(() => { btnCopyClara.textContent = prev; }, 2000);
       } catch (_) {
-        dialogAlert("Copiá manualmente el texto del recuadro inferior.");
+        toast("Copiá manualmente el texto del recuadro inferior.", { type: "info" });
       }
     });
   }
