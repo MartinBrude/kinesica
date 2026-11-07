@@ -7,6 +7,8 @@
 
 import { escapeHtml } from "./dom.js?v=79";
 
+const ASSET_V = Date.now();
+
 let activeFormat = "feed"; // 'feed' | 'story'
 let activeFilter = "todos"; // 'todos' | 'columna' | 'articulaciones' | 'filosofia'
 let searchQuery = "";
@@ -294,22 +296,6 @@ El desgaste articular duele cuando los músculos y fascias de alrededor se contr
 
   // Fila 5: Posturología y Consulta Inicial
   {
-    id: "17_pie_plano",
-    title: "Pie plano: el origen del dolor",
-    cat: "POSTUROLOGÍA CLÍNICA",
-    group: "articulaciones",
-    body: "Tratamos la desalineación de la pisada para quitar sobrecarga mecánica en rodillas, caderas y columna lumbar.",
-    feedUrl: "campanas/feed/catalogo_feed_17_pie_plano.png",
-    storyUrl: "campanas/story/catalogo_story_17_pie_plano.png",
-    copy: `Los pies son los cimientos de tu postura. 👣
-
-Una caída del arco plantar (pie plano o valgo) modifica la rotación de las rodillas, desnivela la pelvis y sobrecarga las lumbares. En Kinésica evaluamos tu pisada y el equilibrio de las cadenas ascendentes.
-
-📍 Charcas 3889, Palermo
-📲 WhatsApp directo: +54 9 11 6156-4311
-#PiePlano #Posturologia #Pisada #FascitisPlantar #Kinésica`
-  },
-  {
     id: "18_primera_sesion",
     title: "¿Qué llevar a tu primera sesión?",
     cat: "CONSULTA PERSONALIZADA",
@@ -452,7 +438,8 @@ function renderCreativosGrid() {
 
   grid.innerHTML = filtered
     .map((item) => {
-      const imgUrl = activeFormat === "story" ? item.storyUrl : item.feedUrl;
+      const rawImg = activeFormat === "story" ? item.storyUrl : item.feedUrl;
+      const imgUrl = `${rawImg}?v=${ASSET_V}`;
       const aspectClass = activeFormat === "story" ? "aspect-story" : "aspect-feed";
 
       return `
@@ -471,10 +458,10 @@ function renderCreativosGrid() {
             <p class="creativo-desc">${escapeHtml(item.body)}</p>
 
             <div class="creativo-actions">
-              <a href="${item.feedUrl}" download="kinesica_feed_${item.id}.png" class="btn light btn-sm" title="Descargar imagen en formato Feed 4:5">
+              <a href="${item.feedUrl}?v=${ASSET_V}" download="kinesica_feed_${item.id}.png" class="btn light btn-sm" title="Descargar imagen en formato Feed 4:5">
                 📥 Feed (4:5)
               </a>
-              <a href="${item.storyUrl}" download="kinesica_story_${item.id}.png" class="btn light btn-sm" title="Descargar imagen en formato Story 9:16">
+              <a href="${item.storyUrl}?v=${ASSET_V}" download="kinesica_story_${item.id}.png" class="btn light btn-sm" title="Descargar imagen en formato Story 9:16">
                 📥 Story (9:16)
               </a>
               <button type="button" class="btn light btn-sm btn-creativo-copy" data-id="${item.id}" title="Copiar texto para publicar">
@@ -503,17 +490,17 @@ function openLightboxModal(item) {
 
   const currentImg = activeFormat === "story" ? item.storyUrl : item.feedUrl;
 
-  if (modalImg) modalImg.src = currentImg;
+  if (modalImg) modalImg.src = `${currentImg}?v=${ASSET_V}`;
   if (modalTitle) modalTitle.textContent = item.title;
   if (modalCat) modalCat.textContent = item.cat;
   if (modalCopy) modalCopy.textContent = item.copy || item.body;
 
   if (modalBtnFeed) {
-    modalBtnFeed.href = item.feedUrl;
+    modalBtnFeed.href = `${item.feedUrl}?v=${ASSET_V}`;
     modalBtnFeed.download = `kinesica_feed_${item.id}.png`;
   }
   if (modalBtnStory) {
-    modalBtnStory.href = item.storyUrl;
+    modalBtnStory.href = `${item.storyUrl}?v=${ASSET_V}`;
     modalBtnStory.download = `kinesica_story_${item.id}.png`;
   }
 
