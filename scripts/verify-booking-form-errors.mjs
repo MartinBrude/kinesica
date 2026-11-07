@@ -195,7 +195,7 @@ test("email con typo de dominio evidente: repregunta una vez y luego deja pasar"
   assert.deepEqual(second, []);
 });
 
-test("i18n: los 4 idiomas definen los textos de fallback de horarios hacia el Lic. Norberto Brude y la Lic. María Gulín", () => {
+test("i18n: los 4 idiomas definen los textos de fallback de horarios hacia el Lic. Norberto Brude y la Lic. María Gulin", () => {
   for (const k of [
     "slotError",
     "slotFallbackText",
@@ -235,8 +235,8 @@ function makeSlotsWidget(clientMock) {
     slotError: "No pudimos cargar o procesar los horarios disponibles en este momento.",
     slotFallbackText: "Podés contactar directamente al Lic. Norberto Brude para agendar tu turno:",
     slotFallbackBtn: "Contactar al Lic. Norberto Brude por WhatsApp →",
-    slotFallbackTextMaria: "Podés contactar directamente a la Lic. María Gulín para agendar tu turno:",
-    slotFallbackBtnMaria: "Contactar a la Lic. María Gulín por WhatsApp →",
+    slotFallbackTextMaria: "Podés contactar directamente a la Lic. María Gulin para agendar tu turno:",
+    slotFallbackBtnMaria: "Contactar a la Lic. María Gulin por WhatsApp →",
     retry: "↺ Reintentar",
   };
   w.client = clientMock;
@@ -316,8 +316,8 @@ await (async () => {
     };
     await wMaria.loadSlotsForDate("2026-10-07", true);
     assert.equal(elsMaria["kb-slots-error"].style.display, "flex");
-    assert.match(elsMaria["kb-slots-error-fallback"].textContent, /Lic\. María Gulín/);
-    assert.match(elsMaria["kb-btn-fallback-whatsapp"].textContent, /Lic\. María Gulín/);
+    assert.match(elsMaria["kb-slots-error-fallback"].textContent, /Lic\. María Gulin/);
+    assert.match(elsMaria["kb-btn-fallback-whatsapp"].textContent, /Lic\. María Gulin/);
     elsMaria["kb-btn-fallback-whatsapp"].onclick();
     assert.equal(openedMaria, "maria");
     assert.match(wMaria.practitionerWhatsappUrl("maria"), /^https:\/\/wa\.me\/5491128531224$/);

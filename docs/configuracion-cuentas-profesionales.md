@@ -1,6 +1,6 @@
 # Guía de Acceso, Cuentas y Uso del Panel de Administración
 
-> **Instructivo para el equipo de Kinésica** (Lic. Norberto Brude, Lic. María Gulín, Martín Brude y colaboradores).  
+> **Instructivo para el equipo de Kinésica** (Lic. Norberto Brude, Lic. María Gulin, Martín Brude y colaboradores).  
 > Paso a paso para ingresar al sistema (con código por correo electrónico o con la app Authenticator del celular), cambiar o recuperar la contraseña, gestionar cuentas de usuarios y recorrer todas las secciones del panel `/admin/`.
 
 ---
@@ -19,7 +19,7 @@ Podés acceder desde cualquier computadora, tablet o teléfono con navegador web
 | Usuario | Nombre completo | Correo asociado | Teléfono | Rol en el sistema | Segundo factor (2FA) |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `@norberto` | **Lic. Norberto Brude** | `norberto1712@gmail.com` | `+54 9 11 6156-4311` | **Administrador** (acceso total) | Código por mail o App Authenticator |
-| `@maria` | **Lic. María Gulín** | `consultorio.kinesica@gmail.com` | `+54 9 11 2853-1224` | **Administrador** (acceso total y clínico) | Código por mail o App Authenticator |
+| `@maria` | **Lic. María Gulin** | `consultorio.kinesica@gmail.com` | `+54 9 11 2853-1224` | **Administrador** (acceso total y clínico) | Código por mail o App Authenticator |
 | `@martin` | **Martín Brude** | `martin.brude@gmail.com` | `+34 658 44 49 35` | **Administrador** (soporte técnico y desarrollo) | Código por mail o App Authenticator |
 | `@facundo` | **Facundo Vivardo** | `facu86@gmail.com` | `+54 9 11 6484-0132` | **Colaborador** (gestión y soporte) | Código por mail o App Authenticator |
 

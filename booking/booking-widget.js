@@ -103,8 +103,8 @@
       slotError: "No pudimos cargar o procesar los horarios disponibles en este momento.",
       slotFallbackText: "Podés contactar directamente al Lic. Norberto Brude para agendar tu turno:",
       slotFallbackBtn: "Contactar al Lic. Norberto Brude por WhatsApp →",
-      slotFallbackTextMaria: "Podés contactar directamente a la Lic. María Gulín para agendar tu turno:",
-      slotFallbackBtnMaria: "Contactar a la Lic. María Gulín por WhatsApp →",
+      slotFallbackTextMaria: "Podés contactar directamente a la Lic. María Gulin para agendar tu turno:",
+      slotFallbackBtnMaria: "Contactar a la Lic. María Gulin por WhatsApp →",
       summaryKind: "🩺 Turno presencial de 1 hora",
       technique: "Técnica",
       practitioner: "Profesional",
@@ -206,8 +206,8 @@
       slotError: "We could not load or process the available times right now.",
       slotFallbackText: "You can contact Lic. Norberto Brude directly to book your appointment:",
       slotFallbackBtn: "Contact Lic. Norberto Brude on WhatsApp →",
-      slotFallbackTextMaria: "You can contact Lic. María Gulín directly to book your appointment:",
-      slotFallbackBtnMaria: "Contact Lic. María Gulín on WhatsApp →",
+      slotFallbackTextMaria: "You can contact Lic. María Gulin directly to book your appointment:",
+      slotFallbackBtnMaria: "Contact Lic. María Gulin on WhatsApp →",
       summaryKind: "🩺 One-hour in-person session",
       technique: "Technique",
       practitioner: "Practitioner",
@@ -309,8 +309,8 @@
       slotError: "Impossible de charger ou de traiter les horaires disponibles pour le moment.",
       slotFallbackText: "Vous pouvez contacter directement le Lic. Norberto Brude pour prendre rendez-vous :",
       slotFallbackBtn: "Contacter le Lic. Norberto Brude sur WhatsApp →",
-      slotFallbackTextMaria: "Vous pouvez contacter directement la Lic. María Gulín pour prendre rendez-vous :",
-      slotFallbackBtnMaria: "Contacter la Lic. María Gulín sur WhatsApp →",
+      slotFallbackTextMaria: "Vous pouvez contacter directement la Lic. María Gulin pour prendre rendez-vous :",
+      slotFallbackBtnMaria: "Contacter la Lic. María Gulin sur WhatsApp →",
       summaryKind: "🩺 Séance en cabinet d'une heure",
       technique: "Technique",
       practitioner: "Praticien",
@@ -412,8 +412,8 @@
       slotError: "Não foi possível carregar ou processar os horários disponíveis neste momento.",
       slotFallbackText: "Você pode entrar em contato diretamente com o Lic. Norberto Brude para agendar sua consulta:",
       slotFallbackBtn: "Falar com o Lic. Norberto Brude no WhatsApp →",
-      slotFallbackTextMaria: "Você pode entrar em contato diretamente com a Lic. María Gulín para agendar sua consulta:",
-      slotFallbackBtnMaria: "Falar com a Lic. María Gulín no WhatsApp →",
+      slotFallbackTextMaria: "Você pode entrar em contato diretamente com a Lic. María Gulin para agendar sua consulta:",
+      slotFallbackBtnMaria: "Falar com a Lic. María Gulin no WhatsApp →",
       summaryKind: "🩺 Sessão presencial de 1 hora",
       technique: "Técnica",
       practitioner: "Profissional",
@@ -549,7 +549,7 @@
 
     practitionerFullName(id) {
       if (id === "norberto") return "Norberto Brude";
-      if (id === "maria") return "María Gulín";
+      if (id === "maria") return "María Gulin";
       return this.practitionerGenderLabel(id);
     }
 

@@ -411,7 +411,7 @@ function kinesica_backup_notify_norberto_audit(array $bookingEntry, array $backu
     $payload = is_array($bookingEntry['payload'] ?? null) ? $bookingEntry['payload'] : [];
     $practitionerId = strtolower(trim((string) ($payload['practitionerId'] ?? '')));
     $practitionerLabel = match ($practitionerId) {
-        'maria' => 'Lic. María Gulín',
+        'maria' => 'Lic. María Gulin',
         'norberto' => 'Lic. Norberto Brude',
         default => 'Indistinto (según horario)',
     };

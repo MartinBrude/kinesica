@@ -576,7 +576,7 @@ await test("vía alternativa de login por código al mail disponible para María
     return jsonResponse(200, {
       ok: true,
       username: payloadSent.body.username,
-      name: "Lic. María Gulín",
+      name: "Lic. María Gulin",
     });
   });
 
@@ -594,7 +594,7 @@ await test("vía alternativa de login por código al mail disponible para María
     body: JSON.stringify({ action: "verify", username: "maria", code: "123456" }),
   });
   assert.equal(verifyResult.ok, true);
-  assert.equal(verifyResult.name, "Lic. María Gulín");
+  assert.equal(verifyResult.name, "Lic. María Gulin");
   assert.equal(payloadSent.body.code, "123456");
 });
 

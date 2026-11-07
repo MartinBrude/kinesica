@@ -88,12 +88,12 @@ test("Ambas versiones (HTML y Text) contienen el mismo OTP y datos esenciales", 
   assert.ok(!test1.text.includes("000 405"));
 
   // Prueba con 6 dígitos completos
-  const test2 = renderTemplate("992405", "Lic. María Gulín");
+  const test2 = renderTemplate("992405", "Lic. María Gulin");
   assert.equal(test2.cleanCode, "992405");
   assert.ok(test2.html.includes("<div class=\"code-number\">992405</div>"));
   assert.ok(test2.text.startsWith("992405\n\n"));
-  assert.ok(test2.html.includes("Lic. María Gulín"));
-  assert.ok(test2.text.includes("Lic. María Gulín"));
+  assert.ok(test2.html.includes("Lic. María Gulin"));
+  assert.ok(test2.text.includes("Lic. María Gulin"));
   assert.ok(test2.html.includes("15 minutos"));
   assert.ok(test2.text.includes("15 minutos"));
 });

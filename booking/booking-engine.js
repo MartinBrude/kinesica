@@ -301,7 +301,7 @@
     const lines = ["Horarios oficiales:"];
 
     [
-      { id: "maria", title: "Lic. María Gulín", shortName: "María" },
+      { id: "maria", title: "Lic. María Gulin", shortName: "María" },
       { id: "norberto", title: "Lic. Norberto Brude", shortName: "Norberto" },
     ].forEach(function (prof) {
       lines.push(`- ${prof.title}:`);

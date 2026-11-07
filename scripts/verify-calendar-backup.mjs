@@ -208,7 +208,7 @@ await test("3. La alerta de auditoría en modo respaldo va ÚNICAMENTE a Norbert
   assert.equal(auditOut.notified_to, "norberto_only");
   assert.equal(auditOut.recipient_phone, "541161564311");
   assert.equal(auditOut.recipient_email, CONTACT.email);
-  assert.match(auditOut.message, /Lic\. María Gulín/);
+  assert.match(auditOut.message, /Lic\. María Gulin/);
   assert.match(auditOut.message, /Lucía Fernández/);
 
   const libSrc = fs.readFileSync(path.join(root, "admin/api/lib_calendar_backup.php"), "utf8");

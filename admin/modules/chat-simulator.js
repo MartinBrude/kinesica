@@ -12,7 +12,7 @@ import {
   resolveProfessionalSubmenu,
   notifyProfessionalFromSimulator,
   resolveMainMenuResponse,
-} from "./chat-simulator-engine.js?v=2";
+} from "./chat-simulator-engine.js?v=3";
 
 let ctx = {
   defaults: {},

@@ -499,7 +499,7 @@ test("REGLA 11C: setPractitionerHours actualiza en vivo los turnos ofrecidos por
 
 test("REGLA 11D: formatClaraScheduleSummary genera el bloque de horarios legible para el prompt de Clara", () => {
   const summary = engine.formatClaraScheduleSummary(engine.DEFAULT_PRACTITIONER_HOURS);
-  assert.ok(summary.includes("Lic. María Gulín"));
+  assert.ok(summary.includes("Lic. María Gulin"));
   assert.ok(summary.includes("Lic. Norberto Brude"));
   assert.ok(summary.includes("Lunes: 09:00 a 17:00 hs"));
   assert.ok(summary.includes("Miércoles: 09:00 a 16:30 hs"));

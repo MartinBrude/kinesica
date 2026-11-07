@@ -126,4 +126,34 @@ test("guardar textos no envía reminder_text y los módulos se importan con una 
   }
 });
 
+test("demo Clara: defaults y settings.json traen B sin horarios, D con estudios y A con link", () => {
+  const defaultsSrc = read("admin/modules/config-defaults.js");
+  assert.match(defaultsSrc, /Ubicación del consultorio/);
+  assert.ok(!defaultsSrc.includes("Ubicación y horarios del consultorio"));
+  assert.match(defaultsSrc, /estudios médicos previos/);
+  assert.match(defaultsSrc, /https:\/\/kinesica\.com\.ar\/agendar/);
+  assert.match(defaultsSrc, /Reenviar el enlace para agendar/);
+
+  const settings = JSON.parse(read("admin/api/settings.json"));
+  const t = settings.clara_texts || {};
+  assert.match(t.menu_welcome, /Ubicación del consultorio/);
+  assert.ok(!t.menu_welcome.includes("Ubicación y horarios"));
+  assert.match(t.opt_d_text, /estudios médicos previos/);
+  assert.match(t.submenu_turnos_text, /https:\/\/kinesica\.com\.ar\/agendar/);
+  assert.match(t.submenu_turnos_text, /Reenviar el enlace/);
+  assert.match(t.menu_welcome_en, /Clinic location/);
+  assert.match(t.opt_d_text_en, /medical imaging|MRI/);
+  assert.match(t.submenu_turnos_text_en, /https:\/\/kinesica\.com\.ar\/agendar/);
+});
+
+test("demo Clara: el simulador resuelve A con el texto del submenú (link incluido)", () => {
+  const engine = read("admin/modules/chat-simulator-engine.js");
+  assert.match(engine, /submenuTurnos/);
+  assert.match(engine, /submenu_turnos_text/);
+  assert.match(engine, /nextSubmenu: "turnos"/);
+  const labels = read("admin/index.html");
+  assert.match(labels, /debe incluir el link de \/agendar/);
+  assert.ok(!labels.includes("preguntando si desea agendar nuevo o consultar turnos"));
+});
+
 console.log(`admin menú C: ok (${n} pruebas)`);

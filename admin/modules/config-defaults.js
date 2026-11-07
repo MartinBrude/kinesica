@@ -14,7 +14,7 @@ export const DEFAULT_CLARA_TEXTS = {
 Por favor, respondé con la letra de la opción que necesitás:
 
 *A.* 📅 Turnos (agendar, consultar o cancelar)
-*B.* 📍 Ubicación y horarios del consultorio
+*B.* 📍 Ubicación del consultorio
 *C.* 💳 Honorarios y cobertura (obras sociales / reintegros)
 *D.* 👕 ¿Cómo venir vestido/a a la sesión?
 *E.* 💬 Comunicarte con un profesional (Lic. Norberto Brude / Lic. María Gulin)
@@ -33,7 +33,10 @@ Para ver los días y horarios disponibles en tiempo real con Norberto o María y
   opt_d_text: `👕 *Indumentaria para la sesión:*
 • Ropa interior o pantalón corto para los varones.
 • Ropa interior con corpiño tradicional (no deportivo), malla de 2 piezas o calza corta para las mujeres.
-Si sos menor, vení acompañado/a por un mayor 🙌.`,
+• Si tenés estudios médicos previos (resonancia, radiografías, etc.), traelos o mandanos fotos 🙌.
+Si sos menor, vení acompañado/a por un mayor.
+
+_(Escribí *MENU* para volver a ver las opciones)_`,
   opt_e_text: `💬 *Contacto con un Profesional*
 
 ¿Con quién te gustaría comunicarte?
@@ -43,14 +46,15 @@ Si sos menor, vení acompañado/a por un mayor 🙌.`,
 
 _(Respondé *1*, *2* o *3*, o escribí tu consulta directamente y se la transmitimos)_
 _Escribí *MENU* para volver_`,
-  submenu_turnos_text: `📅 *Gestión de Turnos - Kinésica*
+  submenu_turnos_text: `📅 *Turnos - Kinésica*
 
-Por favor elegí una opción respondiendo *1* o *2*:
+Para agendar tu sesión de 60 minutos:
+👉 *https://kinesica.com.ar/agendar*
 
-*1.* 📅 Agendar un nuevo turno
+*1.* 📅 Reenviar el enlace para agendar
 *2.* 📋 Consultar o cancelar mis turnos
 
-_(Respondé *1* o *2*, o escribí *MENU* para volver al menú principal)_`,
+_(Respondé *2* si ya tenés turno · *MENU* para volver)_`,
   opt_a2_text: `Con este número de WhatsApp no encontramos turnos agendados. Si agendaste con otro teléfono, respondé directamente con tu *DNI o Pasaporte* y lo buscamos.
 
 _(Escribí *MENU* para volver)_`,
@@ -68,7 +72,7 @@ _(Escribí *MENU* si deseás ver otras opciones)_`,
 Please reply with the letter of the option you need:
 
 *A.* 📅 Appointments (book, check or cancel)
-*B.* 📍 Location and office hours
+*B.* 📍 Clinic location
 *C.* 💳 Fees and coverage (health insurance / reimbursement)
 *D.* 👕 Session attire and dress code
 *E.* 💬 Speak with a practitioner (Lic. Norberto Brude / Lic. María Gulin)
@@ -88,6 +92,7 @@ To check available days and times in real time with Norberto or María and book 
 • Underwear or shorts for men.
 • Underwear with a standard (non-sports) bra, a 2-piece swimsuit, or short leggings for women.
 • If you have previous medical imaging or tests (MRI, X-rays), please bring them or send us photos 🙌.
+• If you are a minor, please come with an adult.
 
 _(Type *MENU* to see the options again)_`,
   opt_e_text_en: `💬 *Contact a Practitioner*
@@ -101,12 +106,13 @@ _(Reply *1*, *2* or *3*, or write your question directly and we will pass it alo
 _Type *MENU* to return_`,
   submenu_turnos_text_en: `📅 *Appointments - Kinésica*
 
-Please choose an option by replying *1* or *2*:
+To book your 60-minute session:
+👉 *https://kinesica.com.ar/agendar*
 
-*1.* 📅 Book a new appointment
+*1.* 📅 Resend the booking link
 *2.* 📋 Check or cancel my appointments
 
-_(Reply *1* or *2*, or type *MENU* to return to the main menu)_`,
+_(Reply *2* if you already have an appointment · *MENU* to return)_`,
   opt_a2_text_en: `We couldn't find any scheduled appointments for this WhatsApp number. If you booked using a different phone number, reply directly with your *ID or Passport* and we will look it up.
 
 _(Type *MENU* to return)_`,
@@ -164,7 +170,10 @@ export function isIncompleteClaraTextStub(key, text) {
   const t = String(text || "").trim();
   if (!t) return true;
   if (key === "menu_welcome_en") return !t.includes("\n") || !/\*?A[.)*]/i.test(t);
-  if (key === "submenu_turnos_text_en" || key === "opt_e_text_en") return !t.includes("\n") || !/\*?1[.)*]/.test(t) || !/\*?2[.)*]/.test(t);
+  if (key === "submenu_turnos_text_en") {
+    return !t.includes("\n") || !/https?:\/\/|kinesica\.com\.ar/i.test(t) || !/\*?2[.)*]/.test(t);
+  }
+  if (key === "opt_e_text_en") return !t.includes("\n") || !/\*?1[.)*]/.test(t) || !/\*?2[.)*]/.test(t);
   if (key === "opt_a_text_en") return !/https?:\/\/|kinesica\.com\.ar/i.test(t);
   if (key === "opt_b_text_en") return !t.includes("\n") && !/charcas|3889|maps/i.test(t);
   if (key === "opt_c_text_en") return !t.includes("\n") && !/\{honorario|ars\s*\d|\$\s*\d/i.test(t);
