@@ -45,6 +45,9 @@
       yes: "Sí", no: "No",
       seeSlots: "Ver horarios disponibles →",
       openWhatsapp: "Abrir WhatsApp →",
+      whatsappToPro: "WhatsApp a {name} →",
+      showMoreTechniques: "Ver más técnicas",
+      showFewerTechniques: "Ver menos",
       pickDay: "Elige el día y horario",
       daysLabel: "Días disponibles:",
       slotsLabel: "Horarios disponibles:",
@@ -68,7 +71,7 @@
       phoneConfirm: "¿El número es correcto? Si es de otro país o ya lo revisaste, volvé a tocar Confirmar.",
       phone: "Teléfono / WhatsApp *",
       phonePh: "Ej: +54 9 11 0000-0000",
-      dni: "DNI / Documento *",
+      dni: "DNI / Documento",
       dniPh: "Ej: 00.000.000",
       confirm: "Confirmar Reserva 🌿",
       saving: "Registrando...",
@@ -143,6 +146,9 @@
       yes: "Yes", no: "No",
       seeSlots: "See available times →",
       openWhatsapp: "Open WhatsApp →",
+      whatsappToPro: "WhatsApp {name} →",
+      showMoreTechniques: "Show more techniques",
+      showFewerTechniques: "Show less",
       pickDay: "Choose a day and time",
       daysLabel: "Available days:",
       slotsLabel: "Available times:",
@@ -166,7 +172,7 @@
       phoneConfirm: "Is this phone number correct? If it's from another country or you already checked it, tap Confirm again.",
       phone: "Phone / WhatsApp *",
       phonePh: "e.g. +54 9 11 0000-0000",
-      dni: "ID document *",
+      dni: "ID document",
       dniPh: "e.g. 00.000.000",
       confirm: "Confirm booking 🌿",
       saving: "Saving...",
@@ -241,6 +247,9 @@
       yes: "Oui", no: "Non",
       seeSlots: "Voir les horaires disponibles →",
       openWhatsapp: "Ouvrir WhatsApp →",
+      whatsappToPro: "WhatsApp {name} →",
+      showMoreTechniques: "Voir plus de techniques",
+      showFewerTechniques: "Voir moins",
       pickDay: "Choisissez le jour et l'horaire",
       daysLabel: "Jours disponibles :",
       slotsLabel: "Horaires disponibles :",
@@ -264,7 +273,7 @@
       phoneConfirm: "Ce numéro est-il correct ? S'il est d'un autre pays ou déjà vérifié, appuyez à nouveau sur Confirmer.",
       phone: "Téléphone / WhatsApp *",
       phonePh: "Ex. : +54 9 11 0000-0000",
-      dni: "Pièce d'identité *",
+      dni: "Pièce d'identité",
       dniPh: "Ex. : 00.000.000",
       confirm: "Confirmer la réservation 🌿",
       saving: "Enregistrement...",
@@ -339,6 +348,9 @@
       yes: "Sim", no: "Não",
       seeSlots: "Ver horários disponíveis →",
       openWhatsapp: "Abrir WhatsApp →",
+      whatsappToPro: "WhatsApp {name} →",
+      showMoreTechniques: "Ver mais técnicas",
+      showFewerTechniques: "Ver menos",
       pickDay: "Escolha o dia e o horário",
       daysLabel: "Dias disponíveis:",
       slotsLabel: "Horários disponíveis:",
@@ -362,7 +374,7 @@
       phoneConfirm: "O número está correto? Se for de outro país ou você já conferiu, toque em Confirmar novamente.",
       phone: "Telefone / WhatsApp *",
       phonePh: "Ex.: +54 9 11 0000-0000",
-      dni: "Documento *",
+      dni: "Documento",
       dniPh: "Ex.: 00.000.000",
       confirm: "Confirmar reserva 🌿",
       saving: "Registrando...",
@@ -443,6 +455,7 @@
         techniqueId: null,
         practitionerId: null,
         practitionerPreference: null,
+        showMoreTechniques: false,
         selectedDate: null,
         selectedTime: null,
         availableSlots: [],
@@ -497,7 +510,7 @@
       if (!techGrid || techGrid.children.length === 0) {
         this.renderTechniqueChoices();
       } else {
-        techGrid.querySelectorAll(".kb-choice-card").forEach((card) => {
+        this.container.querySelectorAll("#kb-technique-grid .kb-choice-card, #kb-technique-more-grid .kb-choice-card").forEach((card) => {
           const id = card.dataset.technique;
           const amountEl = card.querySelector(".kb-fee-amount");
           if (id && amountEl) {
@@ -724,8 +737,11 @@
                 </div>
               </div>
 
-              <div class="kb-step1-footer" style="margin-top: 20px; display: flex; align-items: center; justify-content: flex-end;">
-                <button class="kb-btn kb-btn-primary" id="kb-btn-next-1" disabled>
+              <div class="kb-step1-footer">
+                <button type="button" class="kb-btn kb-btn-whatsapp" id="kb-btn-wa-existing" hidden>
+                  ${this.t("openWhatsapp")}
+                </button>
+                <button type="button" class="kb-btn kb-btn-primary" id="kb-btn-next-1" disabled>
                   ${this.t("seeSlots")}
                 </button>
               </div>
@@ -953,19 +969,14 @@
       this.renderTechniqueChoices();
 
       q("#kb-btn-next-1").addEventListener("click", () => {
-        if (this.state.existingPatient === true && !this.options.adminMode) {
-          if (!this.state.practitionerId) {
-            this.showError(this.t("errWho"));
-            return;
-          }
-          this.clearError();
-          this.openPractitionerWhatsApp(this.state.practitionerId);
+        if (this.options.adminMode && !this.validateAdminPatientFields()) return;
+        if (this.state.existingPatient === true && !this.state.practitionerId) {
+          this.showError(this.t("errWho"));
           return;
         }
-        if (this.options.adminMode && !this.validateAdminPatientFields()) return;
         const technique = engine.getTechnique(this.state.techniqueId);
         if (!technique) {
-          this.showError(this.t("errTechnique"));
+          this.showError(this.state.existingPatient === true ? this.t("errWho") : this.t("errTechnique"));
           return;
         }
         this.clearError();
@@ -974,6 +985,18 @@
         this.renderDateCarousel();
         this.setStep(2);
       });
+
+      const waExistingBtn = q("#kb-btn-wa-existing");
+      if (waExistingBtn) {
+        waExistingBtn.addEventListener("click", () => {
+          if (!this.state.practitionerId) {
+            this.showError(this.t("errWho"));
+            return;
+          }
+          this.clearError();
+          this.openPractitionerWhatsApp(this.state.practitionerId);
+        });
+      }
 
       q("#kb-btn-prev-2").addEventListener("click", () => {
         this.clearError();
@@ -1108,6 +1131,7 @@
       this.state.techniqueId = null;
       this.state.practitionerId = null;
       this.state.practitionerPreference = null;
+      this.state.showMoreTechniques = false;
       this.container.querySelectorAll("#kb-patient-grid .kb-choice-card").forEach((card) => {
         const yes = card.dataset.patient === "yes";
         card.classList.toggle("selected", yes === isExisting);
@@ -1117,12 +1141,13 @@
       // Mostrar/ocultar al instante (sin fade): un opacity 0→1 deja un hueco blanco = flash.
       if (existingBox) existingBox.hidden = !isExisting;
       if (newBox) newBox.hidden = isExisting;
-      this.container.querySelectorAll("#kb-existing-practitioner-grid .kb-choice-card.selected, #kb-technique-grid .kb-choice-card.selected").forEach((card) => {
+      this.container.querySelectorAll("#kb-existing-practitioner-grid .kb-choice-card.selected, #kb-technique-grid .kb-choice-card.selected, #kb-technique-more-grid .kb-choice-card.selected").forEach((card) => {
         card.classList.remove("selected");
       });
       const practitionerBox = this.container.querySelector("#kb-practitioner-box");
       if (practitionerBox) practitionerBox.hidden = true;
       this.updateStep1FeeBanner(null);
+      if (!isExisting) this.renderTechniqueChoices();
       if (this.options.adminMode) this.applyAdminPatientData();
       this.syncStep1Continue();
     }
@@ -1244,31 +1269,95 @@
       });
     }
 
-    renderTechniqueChoices() {
-      const grid = this.container.querySelector("#kb-technique-grid");
-      if (!grid) return;
-      grid.innerHTML = "";
-      engine.TECHNIQUES.filter((technique) => !technique.internal).forEach((technique) => {
-        const card = document.createElement("div");
-        card.className = "kb-choice-card";
-        if (this.state.techniqueId === technique.id) {
-          card.classList.add("selected");
-        }
-        card.dataset.technique = technique.id;
-        const fee = this.getFeeForTechnique(technique.id);
-        const feeFormatted = this.formatFee(fee);
-        card.innerHTML = this.options.adminMode
-          ? `<h3>${this.techniqueLabel(technique)}</h3>`
-          : `
+    featuredTechniqueIds() {
+      const ids = (engine && engine.FEATURED_TECHNIQUE_IDS) || ["no-se", "osteopatia", "rpg", "atm"];
+      return ids.slice();
+    }
+
+    buildTechniqueCard(technique) {
+      const card = document.createElement("div");
+      card.className = "kb-choice-card";
+      if (this.state.techniqueId === technique.id) {
+        card.classList.add("selected");
+      }
+      card.dataset.technique = technique.id;
+      const fee = this.getFeeForTechnique(technique.id);
+      const feeFormatted = this.formatFee(fee);
+      card.innerHTML = this.options.adminMode
+        ? `<h3>${this.techniqueLabel(technique)}</h3>`
+        : `
           <h3>${this.techniqueLabel(technique)}</h3>
           <div class="kb-choice-fee">
             <span class="kb-fee-label">${this.t("sessionFee")}:</span>
             <strong class="kb-fee-amount">${feeFormatted}</strong>
           </div>
         `;
-        card.addEventListener("click", () => this.selectTechnique(technique.id));
-        grid.appendChild(card);
+      card.addEventListener("click", () => this.selectTechnique(technique.id));
+      return card;
+    }
+
+    renderTechniqueChoices() {
+      const grid = this.container.querySelector("#kb-technique-grid");
+      if (!grid) return;
+      grid.innerHTML = "";
+
+      const featuredIds = this.featuredTechniqueIds();
+      const all = engine.TECHNIQUES.filter((technique) => !technique.internal);
+      const featured = featuredIds
+        .map((id) => all.find((t) => t.id === id))
+        .filter(Boolean);
+      const more = all.filter((t) => featuredIds.indexOf(t.id) === -1);
+
+      featured.forEach((technique) => {
+        grid.appendChild(this.buildTechniqueCard(technique));
       });
+
+      let moreWrap = this.container.querySelector("#kb-technique-more-wrap");
+      if (!moreWrap) {
+        moreWrap = document.createElement("div");
+        moreWrap.id = "kb-technique-more-wrap";
+        moreWrap.className = "kb-technique-more-wrap";
+        grid.insertAdjacentElement("afterend", moreWrap);
+      }
+      moreWrap.innerHTML = "";
+
+      if (!more.length) {
+        moreWrap.hidden = true;
+        return;
+      }
+      moreWrap.hidden = false;
+
+      const selectedInMore = more.some((t) => t.id === this.state.techniqueId);
+      if (selectedInMore) this.state.showMoreTechniques = true;
+
+      const toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.className = "kb-tech-more-toggle";
+      toggle.id = "kb-btn-tech-more";
+      toggle.setAttribute("aria-expanded", this.state.showMoreTechniques ? "true" : "false");
+      toggle.textContent = this.state.showMoreTechniques
+        ? this.t("showFewerTechniques")
+        : this.t("showMoreTechniques");
+
+      const moreGrid = document.createElement("div");
+      moreGrid.className = "kb-choice-grid kb-technique-more-grid";
+      moreGrid.id = "kb-technique-more-grid";
+      moreGrid.hidden = !this.state.showMoreTechniques;
+      more.forEach((technique) => {
+        moreGrid.appendChild(this.buildTechniqueCard(technique));
+      });
+
+      toggle.addEventListener("click", () => {
+        this.state.showMoreTechniques = !this.state.showMoreTechniques;
+        moreGrid.hidden = !this.state.showMoreTechniques;
+        toggle.setAttribute("aria-expanded", this.state.showMoreTechniques ? "true" : "false");
+        toggle.textContent = this.state.showMoreTechniques
+          ? this.t("showFewerTechniques")
+          : this.t("showMoreTechniques");
+      });
+
+      moreWrap.appendChild(toggle);
+      moreWrap.appendChild(moreGrid);
     }
 
     selectTechnique(techniqueId) {
@@ -1280,7 +1369,7 @@
         : technique.practitioners.length === 1
           ? technique.practitioners[0]
           : null;
-      this.container.querySelectorAll("#kb-technique-grid .kb-choice-card").forEach((card) => {
+      this.container.querySelectorAll("#kb-technique-grid .kb-choice-card, #kb-technique-more-grid .kb-choice-card").forEach((card) => {
         card.classList.toggle("selected", card.dataset.technique === techniqueId);
       });
       this.updateStep1FeeBanner(techniqueId);
@@ -1327,6 +1416,7 @@
 
     syncStep1Continue() {
       const btn = this.container.querySelector("#kb-btn-next-1");
+      const waBtn = this.container.querySelector("#kb-btn-wa-existing");
       const technique = engine.getTechnique(this.state.techniqueId);
       const isExisting = this.state.existingPatient === true;
       const ready = isExisting
@@ -1334,7 +1424,15 @@
         : Boolean(technique);
       if (btn) {
         btn.disabled = !ready;
-        btn.textContent = isExisting && !this.options.adminMode ? this.t("openWhatsapp") : this.t("seeSlots");
+        btn.textContent = this.t("seeSlots");
+      }
+      if (waBtn) {
+        const showWa = isExisting && !this.options.adminMode && Boolean(this.state.practitionerId);
+        waBtn.hidden = !showWa;
+        if (showWa) {
+          const name = this.practitionerFullName(this.state.practitionerId);
+          waBtn.textContent = String(this.t("whatsappToPro") || "").replace("{name}", name);
+        }
       }
     }
 
@@ -1349,6 +1447,7 @@
         techniqueId: null,
         practitionerId: null,
         practitionerPreference: null,
+        showMoreTechniques: false,
         selectedDate: null,
         selectedTime: null,
         availableSlots: [],

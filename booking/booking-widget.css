@@ -208,6 +208,43 @@
   margin-top: 18px;
 }
 
+.kb-step1-footer {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.kb-technique-more-wrap {
+  margin: -8px 0 20px;
+}
+
+.kb-tech-more-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 12px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--kin-primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.kb-tech-more-toggle:hover {
+  color: var(--kin-primary-hover);
+}
+
+.kb-technique-more-grid {
+  margin-bottom: 0;
+}
+
 .kb-choice-card {
   border: 2px solid var(--kin-border);
   background: #ffffff;

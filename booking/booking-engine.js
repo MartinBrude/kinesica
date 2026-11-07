@@ -33,15 +33,17 @@
     maria: { id: "maria", name: "María", whatsapp: "5491128531224" },
   };
 
+  // Orden de UI: destacadas primero (No sé + Osteo/RPG/ATM); el resto bajo "Ver más".
+  const FEATURED_TECHNIQUE_IDS = ["no-se", "osteopatia", "rpg", "atm"];
   const TECHNIQUES = [
+    { id: "no-se", label: "No sé", bySchedule: true, practitioners: ["norberto", "maria"] },
     { id: "osteopatia", label: "Osteopatía", practitioners: ["norberto"] },
-    { id: "acupuntura", label: "Acupuntura", practitioners: ["maria"] },
     { id: "rpg", label: "RPG", practitioners: ["norberto", "maria"] },
     { id: "atm", label: "ATM (Bruxismo / Mandíbula)", practitioners: ["norberto", "maria"] },
+    { id: "acupuntura", label: "Acupuntura", practitioners: ["maria"] },
     { id: "neurodinamia", label: "Neurodinamia", practitioners: ["norberto", "maria"] },
     { id: "viscerales", label: "Manipulaciones viscerales (Barral)", practitioners: ["norberto"] },
     { id: "posturologia", label: "Posturología", practitioners: ["maria"] },
-    { id: "no-se", label: "No sé", bySchedule: true, practitioners: ["norberto", "maria"] },
     { id: "paciente", label: "Paciente en tratamiento", internal: true, practitioners: ["norberto", "maria"] },
   ];
 
@@ -727,6 +729,7 @@
     SAME_DAY_BUFFER_HOURS: SAME_DAY_BUFFER_HOURS,
     PRACTITIONERS: PRACTITIONERS,
     TECHNIQUES: TECHNIQUES,
+    FEATURED_TECHNIQUE_IDS: FEATURED_TECHNIQUE_IDS,
     DEFAULT_PRACTITIONER_HOURS: DEFAULT_PRACTITIONER_HOURS,
     PRACTITIONER_HOURS: PRACTITIONER_HOURS,
     MAX_BOOKING_DAYS: MAX_BOOKING_DAYS,
