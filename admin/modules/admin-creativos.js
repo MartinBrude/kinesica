@@ -424,6 +424,116 @@ En Kinésica evaluamos pisada, pelvis y columna para que vuelvas a entrenar sin 
 📍 Charcas 3889, Palermo
 📲 Turnos por WhatsApp: +54 9 11 6156-4311
 #Running #DolorDeRodilla #KinesiologiaDeportiva #Biomecanica #Kinésica`
+  },
+
+  // Fila 7: ATM — síntomas cotidianos que interpela
+  {
+    id: "25_click_mandibula",
+    title: "¿Te hace click la mandíbula al masticar?",
+    cat: "ATM & MASTICACIÓN",
+    group: "columna",
+    body: "El ruido o el trabado no son normales. Descomprimimos la ATM y liberamos maseteros y pterigoideos con terapia manual suave.",
+    feedUrl: "campanas/feed/catalogo_feed_25_click_mandibula.png",
+    storyUrl: "campanas/story/catalogo_story_25_click_mandibula.png",
+    copy: `¿Te hace click la mandíbula al masticar o bostezar? 🦷⚡
+
+Ese ruido, el trabado o el “salto” articular no son un detalle: marcan sobrecarga en la ATM y en los músculos masticatorios.
+
+En Kinésica descomprimimos la articulación y liberamos maseteros y pterigoideos con terapia manual suave (intra y extraoral).
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#ATM #ClickMandibular #TerapiaManual #KinesiologiaPalermo #Kinésica`
+  },
+  {
+    id: "26_cefalea_atm",
+    title: "Ese dolor de cabeza puede venir de la mandíbula",
+    cat: "ATM & CEFALEA",
+    group: "columna",
+    body: "Muchas cefaleas tensionales arrancan en la ATM y los músculos masticatorios. Tratamos la causa mecánica, no solo el síntoma.",
+    feedUrl: "campanas/feed/catalogo_feed_26_cefalea_atm.png",
+    storyUrl: "campanas/story/catalogo_story_26_cefalea_atm.png",
+    copy: `Ese dolor de cabeza… puede venir de la mandíbula. 🤕
+
+Si la cefalea aparece en sienes, frente o detrás de los ojos y además apretás los dientes, la ATM suele ser el origen mecánico.
+
+En Kinésica tratamos la causa: liberamos masticatorios, alineamos cuello y descomprimimos la articulación.
+
+📍 Charcas 3889, Palermo
+📲 Turnos WhatsApp: +54 9 11 6156-4311
+#CefaleaTensional #ATM #Bruxismo #Osteopatia #Kinésica`
+  },
+  {
+    id: "27_apriete_inconsciente",
+    title: "¿Apretás la mandíbula sin darte cuenta?",
+    cat: "ESTRÉS & ATM",
+    group: "columna",
+    body: "El bruxismo diurno aparece en mails, tráfico y pantallas. Reeducamos la ATM y liberamos la cadena cervical para cortar el circuito de tensión.",
+    feedUrl: "campanas/feed/catalogo_feed_27_apriete_inconsciente.png",
+    storyUrl: "campanas/story/catalogo_story_27_apriete_inconsciente.png",
+    copy: `¿Apretás la mandíbula sin darte cuenta? 😬💻
+
+Mails, tráfico, pantallas: el bruxismo diurno es silencioso. La mandíbula se cierra, el cuello se carga y al final del día aparecen sienes y ATM inflamadas.
+
+En Kinésica liberamos la cadena cervical-mandibular y reeducamos el tono para cortar el circuito de tensión.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#BruxismoDiurno #ATM #Estres #Cervicalgia #Kinésica`
+  },
+  {
+    id: "28_placa_no_basta",
+    title: "La placa protege los dientes, no libera la ATM",
+    cat: "ATM & PLACA",
+    group: "columna",
+    body: "La placa evita el desgaste. La terapia manual desactiva la contractura de maseteros, cuello y postura que mantiene el bruxismo.",
+    feedUrl: "campanas/feed/catalogo_feed_28_placa_no_basta.png",
+    storyUrl: "campanas/story/catalogo_story_28_placa_no_basta.png",
+    copy: `La placa protege los dientes… pero no libera la ATM. 🦷
+
+Es un gran aliado para el esmalte. El problema es que la contractura de maseteros, cuello y postura sigue activa si no se trata.
+
+En Kinésica complementamos el enfoque odontológico con terapia manual para desactivar la causa mecánica del bruxismo.
+
+📍 Charcas 3889, Palermo
+📲 Turnos por WhatsApp: +54 9 11 6156-4311
+#PlacaDeDescanso #ATM #Bruxismo #TerapiaManual #Kinésica`
+  },
+  {
+    id: "29_oido_atm",
+    title: "¿Zumbido o presión en el oído sin infección?",
+    cat: "ATM & OÍDO",
+    group: "columna",
+    body: "La ATM está a milímetros del oído. Una mandíbula bloqueada puede dar plenitud, click o tinnitus. Evaluamos la articulación y el cuello juntos.",
+    feedUrl: "campanas/feed/catalogo_feed_29_oido_atm.png",
+    storyUrl: "campanas/story/catalogo_story_29_oido_atm.png",
+    copy: `¿Zumbido o presión en el oído… y el otorrino dice que no hay infección? 👂
+
+La ATM está a milímetros del oído. Una mandíbula bloqueada o un bruxismo intenso pueden dar plenitud, click o tinnitus.
+
+En Kinésica evaluamos ATM + cuello juntos para descomprimir esa zona tan sensible.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#ATM #Tinnitus #Oido #TerapiaManual #Kinésica`
+  },
+  {
+    id: "30_boca_trabada",
+    title: "¿No podés abrir bien la boca?",
+    cat: "ATM BLOQUEADA",
+    group: "columna",
+    body: "El traba o la apertura limitada pide evaluación urgente de la ATM. Con terapia manual suave restauramos el deslizamiento articular sin forzar.",
+    feedUrl: "campanas/feed/catalogo_feed_30_boca_trabada.png",
+    storyUrl: "campanas/story/catalogo_story_30_boca_trabada.png",
+    copy: `¿No podés abrir bien la boca o se te “traba”? 🛑
+
+La apertura limitada o el bloqueo de la ATM no se resuelve forzando. Hay que restaurar el deslizamiento articular con técnica suave y precisa.
+
+En Kinésica evaluamos la articulación, los masticatorios y el cuello para devolver movilidad sin dolor.
+
+📍 Charcas 3889, Palermo
+📲 Turnos WhatsApp: +54 9 11 6156-4311
+#ATMBloqueada #Trismo #Mandibula #KinesiologiaPalermo #Kinésica`
   }
 ];
 
