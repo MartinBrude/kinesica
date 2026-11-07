@@ -5,7 +5,7 @@
  */
 
 import { patientKey, validateField, getSessionIndex } from "../ficha-rules.mjs?v=90";
-import { dialogConfirm, dialogAlert } from "./dom.js?v=78";
+import { dialogConfirm, dialogAlert } from "./dom.js?v=79";
 import { setupInputRestrictions } from "./form-restrictions.js";
 import { syncFotoPreview, getCurrentFotos, getUploadInFlight, initFormPhotos } from "./form-photos.js";
 import { singles, syncEva, syncAge, syncFollowups, setupSingleButtons } from "./form-eva.js";

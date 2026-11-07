@@ -5,7 +5,7 @@
  */
 
 import { api } from "./api.js?v=78";
-import { escapeHtml, dialogAlert, switchActiveView } from "./dom.js?v=78";
+import { escapeHtml, dialogAlert, switchActiveView } from "./dom.js?v=79";
 import { getSessionUser } from "./auth.js?v=83";
 import {
   DEFAULT_HEADER_SCHEDULE,

@@ -5,7 +5,7 @@
  */
 
 import { api } from "./api.js?v=78";
-import { escapeHtml, dialogAlert, dialogConfirm } from "./dom.js?v=78";
+import { escapeHtml, dialogAlert, dialogConfirm } from "./dom.js?v=79";
 import { formatDisplayPhone } from "./phone-format.js";
 
 // Modal Alta / Edición

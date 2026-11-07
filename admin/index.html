@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=131">
+  <link rel="stylesheet" href="/admin/styles.css?v=132">
   <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1794039606">
   <script>
     (function () {
@@ -719,13 +719,14 @@
 
     <!-- 5. COMUNICACIÓN Y ASISTENTE: CLARA -->
     <section id="view-clara" class="view" hidden>
-      <div class="hero-card" style="margin-bottom: 24px;">
+      <div class="hero-card clara-sticky-hero" style="margin-bottom: 24px;">
         <div class="hero-copy">
           <span class="doc-icon" aria-hidden="true"></span>
           <h1 class="hero-title">Clara</h1>
         </div>
-        <div class="hero-actions" style="margin: 0;">
-          <button type="button" class="btn green btn-save-clara-global" id="btn-save-clara-global">Guardar cambios</button>
+        <div class="hero-actions clara-save-actions" style="margin: 0;">
+          <span id="clara-dirty-badge" class="clara-dirty-badge" hidden>Cambios sin guardar</span>
+          <button type="button" class="btn green btn-save-clara-global" id="btn-save-clara-global" disabled>Guardar cambios</button>
         </div>
       </div>
 
@@ -774,7 +775,7 @@
       </details>
 
       <!-- SECCIÓN COLAPSABLE 2: MENSAJES Y MENÚ DE WHATSAPP -->
-      <details class="admin-collapsible-card">
+      <details class="admin-collapsible-card" open>
         <summary class="admin-collapsible-summary">
           <div class="admin-collapsible-header-left">
             <span class="admin-collapsible-icon" aria-hidden="true">💬</span>
@@ -791,12 +792,6 @@
         </summary>
 
         <div class="admin-collapsible-body">
-          <div style="margin-bottom: 24px; display: flex; justify-content: flex-end; align-items: center; flex-wrap: wrap; gap: 12px;">
-            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-              <button type="button" class="btn green" id="btn-save-clara-texts">Guardar mensajes y políticas</button>
-            </div>
-          </div>
-
           <div id="clara-texts-status-banner" class="horarios-alert-box" role="status" hidden style="margin-bottom: 24px;"></div>
 
           <div style="display:flex; flex-direction:column; gap:24px; margin-bottom: 32px;">
@@ -1096,9 +1091,6 @@
         </summary>
 
         <div class="admin-collapsible-body">
-          <div style="margin-bottom: 18px; display: flex; justify-content: flex-end; align-items: center;">
-            <button type="button" class="btn green" id="btn-save-clara-recordatorios">Guardar plantilla</button>
-          </div>
           <div style="display:flex; flex-direction:column; gap:22px;">
             <div>
               <label for="cfg-clara-reminder-text" style="display:block; font-weight:600; margin-bottom:8px; font-size:14px; color:var(--navy);">
@@ -1150,9 +1142,6 @@
         </summary>
 
         <div class="admin-collapsible-body">
-          <div style="margin-bottom: 18px; display: flex; justify-content: flex-end; align-items: center;">
-            <button type="button" class="btn green" id="btn-save-clara-politicas">Guardar políticas</button>
-          </div>
           <div style="display:flex; flex-direction:column; gap:22px;">
             <div>
               <label for="cfg-cancellation-policy" style="display:block; font-weight:600; margin-bottom:8px; font-size:14px; color:var(--navy);">
@@ -1808,7 +1797,8 @@
             </p>
           </div>
         </div>
-        <div class="hero-actions" style="margin: 0;">
+        <div class="hero-actions" style="margin: 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <span id="interacciones-last-updated" class="interacciones-last-updated" hidden></span>
           <button type="button" class="btn light" id="btn-refresh-interacciones" style="display: inline-flex; align-items: center; gap: 6px;">
             ↻ Actualizar
           </button>
@@ -2673,6 +2663,6 @@
   <div id="print-root"></div>
   <script src="/partials/google-reviews-data.min.js?v=1794039606" defer></script>
   <script src="/booking/booking-bundle.min.js?v=1794039606" defer></script>
-  <script type="module" src="/admin/app.js?v=187"></script>
+  <script type="module" src="/admin/app.js?v=188"></script>
 </body>
 </html>

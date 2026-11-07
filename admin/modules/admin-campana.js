@@ -4,7 +4,7 @@
  */
 
 import { api } from "./api.js?v=78";
-import { escapeHtml, dialogAlert } from "./dom.js?v=78";
+import { escapeHtml, dialogAlert } from "./dom.js?v=79";
 
 let cachedItems = [];
 let loading = false;

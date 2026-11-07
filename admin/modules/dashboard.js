@@ -5,7 +5,7 @@
 
 import { api } from "./api.js?v=78";
 import { getSessionUser } from "./auth.js?v=83";
-import { dialogAlert, switchActiveView } from "./dom.js?v=78";
+import { dialogAlert, switchActiveView } from "./dom.js?v=79";
 
 const viewDashboard = document.querySelector("#view-dashboard");
 const greetingEl = document.querySelector("#dash-greeting");

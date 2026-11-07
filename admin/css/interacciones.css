@@ -3,6 +3,13 @@
  * Estilos para visualización cronológica, agrupamiento por fechas y chat directo.
  */
 
+.interacciones-last-updated {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
 .interacciones-toolbar {
   display: flex;
   flex-wrap: wrap;

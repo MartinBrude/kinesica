@@ -3,7 +3,7 @@
  * Formulario reactivo con recálculo dinámico en EUR / USD / ARS y búsqueda de TC por fecha.
  */
 
-import { dialogAlert } from "./dom.js?v=78";
+import { dialogAlert } from "./dom.js?v=79";
 import {
   historicalRatesByDate,
   getRecordDailyAmounts,

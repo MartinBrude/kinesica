@@ -3,7 +3,7 @@
  * Formulario interactivo para activar días, añadir 2ª franja y seleccionar rangos.
  */
 
-import { escapeHtml } from "./dom.js?v=78";
+import { escapeHtml } from "./dom.js?v=79";
 import {
   DAYS,
   PROF_META,

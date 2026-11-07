@@ -44,6 +44,67 @@ export function dialogConfirm(message, options = {}) {
   );
 }
 
+const TOAST_MAX_VISIBLE = 3;
+const TOAST_DEFAULT_MS = 3200;
+let toastHost = null;
+
+function ensureToastHost() {
+  if (toastHost && document.body.contains(toastHost)) return toastHost;
+  toastHost = document.createElement("div");
+  toastHost.className = "app-toast-host";
+  toastHost.setAttribute("aria-live", "polite");
+  toastHost.setAttribute("aria-relevant", "additions");
+  document.body.append(toastHost);
+  return toastHost;
+}
+
+/**
+ * Aviso no bloqueante (toast). Preferir para éxitos y feedback rutinario.
+ * @param {string} message
+ * @param {{type?: "success" | "danger" | "info", duration?: number}} [options]
+ * @returns {void}
+ */
+export function toast(message, options = {}) {
+  const msgStr = String(message ?? "").trim();
+  if (!msgStr) return;
+
+  const inferredSuccess =
+    options.type === "success" ||
+    /(éxito|correctamente|restauraron|guardados|guardado|importó|importaron|enviado|listo)/i.test(msgStr);
+  const inferredDanger =
+    options.type === "danger" ||
+    (!inferredSuccess && /(error|falló|supera|inválido|no es|no se pudo|falta)/i.test(msgStr));
+  const finalType =
+    options.type || (inferredSuccess ? "success" : inferredDanger ? "danger" : "info");
+  const duration = Math.max(1200, Number(options.duration) || TOAST_DEFAULT_MS);
+
+  const host = ensureToastHost();
+  while (host.children.length >= TOAST_MAX_VISIBLE) {
+    host.firstElementChild?.remove();
+  }
+
+  const el = document.createElement("div");
+  el.className = `app-toast is-${finalType}`;
+  el.setAttribute("role", "status");
+  el.textContent = msgStr;
+  host.append(el);
+
+  // Force reflow so enter transition runs.
+  void el.offsetWidth;
+  el.classList.add("is-visible");
+
+  const dismiss = () => {
+    el.classList.remove("is-visible");
+    el.classList.add("is-leaving");
+    window.setTimeout(() => el.remove(), 220);
+  };
+  const timer = window.setTimeout(dismiss, duration);
+  el.addEventListener("click", () => {
+    window.clearTimeout(timer);
+    dismiss();
+  });
+}
+
 export function openDialog({ message, confirm, danger, okText, cancelText, alertType }) {
   return new Promise((resolve) => {
     const root = document.createElement("div");

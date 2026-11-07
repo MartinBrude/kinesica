@@ -3,7 +3,7 @@
  */
 
 import { api } from "./api.js?v=78";
-import { dialogAlert } from "./dom.js?v=78";
+import { dialogAlert } from "./dom.js?v=79";
 import { renderSeccionesOptions } from "./admin-errores-config.js";
 
 const modalEl = document.querySelector("#admin-error-modal");

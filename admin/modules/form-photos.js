@@ -2,7 +2,7 @@
  * Kinésica Admin - Gestión de Fotografías de la Ficha Clínica
  */
 
-import { dialogAlert, dialogConfirm } from "./dom.js?v=78";
+import { dialogAlert, dialogConfirm } from "./dom.js?v=79";
 import { api } from "./api.js";
 import { compressImage } from "./form-image.js";
 import { renderPhotoGallery } from "./form-photos-ui.js";

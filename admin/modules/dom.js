@@ -3,9 +3,9 @@
  * Utilidades para construcción eficiente de elementos del DOM, prevención de XSS y debounce.
  */
 
-import { dialogAlert, dialogConfirm } from "./dom-dialogs.js";
+import { dialogAlert, dialogConfirm, toast } from "./dom-dialogs.js";
 
-export { dialogAlert, dialogConfirm };
+export { dialogAlert, dialogConfirm, toast };
 
 /**
  * Escapa caracteres especiales HTML para prevenir vulnerabilidades de XSS (Cross-Site Scripting).

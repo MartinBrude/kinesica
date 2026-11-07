@@ -4,7 +4,7 @@
  * e indicadores clínicos (EVA, apertura bucal, CDI).
  */
 
-import { dialogConfirm } from "./dom.js?v=78";
+import { dialogConfirm } from "./dom.js?v=79";
 import { formatDate } from "./api.js?v=78";
 import { patientKey, ageOn, capitalizePersonName } from "../ficha-rules.mjs?v=87";
 import { sessionRow } from "./library-session-row.js";

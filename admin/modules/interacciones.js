@@ -7,7 +7,7 @@
 
 import { api } from "./api.js?v=78";
 import { getSessionUser } from "./auth.js?v=83";
-import { escapeHtml, switchActiveView, dialogConfirm, dialogAlert } from "./dom.js?v=78";
+import { escapeHtml, switchActiveView, dialogConfirm, toast } from "./dom.js?v=79";
 import {
   formatDateHeader,
   buildInteractionCardHtml,
@@ -89,6 +89,22 @@ function stopAutoRefresh() {
   }
 }
 
+function updateLastUpdatedLabel() {
+  const el = document.getElementById("interacciones-last-updated");
+  if (!el) return;
+  if (!lastLoadedAt) {
+    el.hidden = true;
+    el.textContent = "";
+    return;
+  }
+  const d = new Date(lastLoadedAt);
+  const hh = String(d.getHours()).padStart(2, "0");
+  const mm = String(d.getMinutes()).padStart(2, "0");
+  el.hidden = false;
+  el.textContent = `Actualizado ${hh}:${mm}`;
+  el.title = `Última sincronización: ${d.toLocaleString("es-AR")}`;
+}
+
 export async function loadInteracciones(force = false) {
   const container = document.getElementById("interacciones-list-container");
   const refreshBtn = document.getElementById("btn-refresh-interacciones");
@@ -129,6 +145,7 @@ export async function loadInteracciones(force = false) {
       daysWindow = resp.days;
     }
     lastLoadedAt = Date.now();
+    updateLastUpdatedLabel();
     const rawList = Array.isArray(resp.items) ? resp.items : (Array.isArray(resp.interactions) ? resp.interactions : []);
     cachedInteractions = rawList.map((item) => {
       if (item && (isMartinBrudePhone(item.wa_id) || isMartinBrudePhone(item.phone_formatted))) {
@@ -239,10 +256,17 @@ function renderInteractions(items) {
   captureExpandedThreads(container);
 
   if (!items || items.length === 0) {
-    let emptyMsg = "No se encontraron conversaciones con los filtros actuales.";
-    if (activeStatusFilter === "pending") emptyMsg = "No hay consultas pendientes de respuesta.";
-    else if (activeStatusFilter === "answered") emptyMsg = "No hay consultas marcadas como respondidas.";
-    else if (activeStatusFilter === "archived") emptyMsg = "No hay conversaciones archivadas.";
+    const windowLabel = daysWindow === 1 ? "último día" : `últimos ${daysWindow} días`;
+    let emptyMsg = `No hay conversaciones en los ${windowLabel} con los filtros actuales.`;
+    if (activeStatusFilter === "pending") {
+      emptyMsg = `No hay pendientes de respuesta en los ${windowLabel}.`;
+    } else if (activeStatusFilter === "answered") {
+      emptyMsg = `No hay respondidas en los ${windowLabel}.`;
+    } else if (activeStatusFilter === "archived") {
+      emptyMsg = `No hay conversaciones archivadas en los ${windowLabel}.`;
+    } else if (activeStatusFilter === "all") {
+      emptyMsg = `No hay interacciones en los ${windowLabel}.`;
+    }
 
     container.innerHTML = `
       <div class="interacciones-empty">
@@ -295,10 +319,7 @@ function renderInteractions(items) {
       else expandedThreadIds.delete(threadId);
     },
     onArchive: async ({ convId, convName, isArchived }) => {
-      if (getSessionUser()?.role === "colaborador") {
-        dialogAlert("Los usuarios con rol Colaborador tienen permisos de solo lectura.");
-        return;
-      }
+      if (getSessionUser()?.role === "colaborador") return;
       const q = isArchived
         ? `¿Desarchivar la conversación con "${convName}"? Volverá a la lista activa.`
         : `¿Archivar la conversación con "${convName}"? Se retirará de la lista activa.`;
@@ -319,10 +340,12 @@ function renderInteractions(items) {
           body: JSON.stringify({ action: isArchived ? "unarchive" : "archive", id: convId }),
         });
         if (!resp || !resp.ok) throw new Error(resp?.error || "Error al actualizar archivo");
+        toast(isArchived ? "Conversación desarchivada." : "Conversación archivada.", { type: "success" });
       } catch (err) {
         if (targetConv) targetConv.archived = isArchived;
         applyFilters(false);
         console.error("Error al archivar/desarchivar interacción:", err);
+        toast(err?.message || "No se pudo actualizar el archivo.", { type: "danger" });
       } finally {
         pendingMutations = Math.max(0, pendingMutations - 1);
       }
@@ -330,7 +353,6 @@ function renderInteractions(items) {
     onToggleAnswered: async ({ convId, convKey: _convKey, isChecked, chk, cardEl, pillEl }) => {
       if (getSessionUser()?.role === "colaborador") {
         if (chk) chk.checked = !isChecked;
-        dialogAlert("Los usuarios con rol Colaborador tienen permisos de solo lectura.");
         return;
       }
       const setVisualStatus = (ans) => {
@@ -355,6 +377,7 @@ function renderInteractions(items) {
           body: JSON.stringify({ action: "toggle_answered", id: convId, answered: isChecked }),
         });
         if (!resp || !resp.ok) throw new Error(resp?.error || "Error al actualizar estado");
+        toast(isChecked ? "Marcada como respondida." : "Marcada como pendiente.", { type: "success" });
       } catch (err) {
         chk.checked = !isChecked;
         setVisualStatus(!isChecked);
@@ -362,6 +385,7 @@ function renderInteractions(items) {
         if (activeStatusFilter !== "all") applyFilters(false);
         else updateStatsHeader();
         console.error("Error al persistir consulta respondida:", err);
+        toast(err?.message || "No se pudo actualizar el estado.", { type: "danger" });
       } finally {
         pendingMutations = Math.max(0, pendingMutations - 1);
       }

@@ -4,7 +4,7 @@
  */
 
 import { patientKey, capitalizePersonName } from "../ficha-rules.mjs?v=87";
-import { escapeHtml } from "./dom.js?v=78";
+import { escapeHtml } from "./dom.js?v=79";
 import { patientGroupRow } from "./library-rows.js?v=3";
 import { setLibraryPage } from "./library-pager.js";
 

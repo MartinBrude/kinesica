@@ -4,7 +4,7 @@
  */
 
 import { formatDate } from "./api.js?v=78";
-import { escapeHtml } from "./dom.js?v=78";
+import { escapeHtml } from "./dom.js?v=79";
 import { patientKey } from "../ficha-rules.mjs?v=90";
 
 /**

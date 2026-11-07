@@ -3,7 +3,7 @@
  * Genera el marcado para tarjetas de conversación, burbujas de chat, paginador y cabeceras de fecha.
  */
 
-import { escapeHtml } from "./dom.js?v=78";
+import { escapeHtml } from "./dom.js?v=79";
 import { buildWhatsAppUrl } from "./interacciones-message.js";
 import { isMartinBrudePhone } from "./phone-search.js?v=3";
 import { formatDisplayPhone } from "./phone-format.js";

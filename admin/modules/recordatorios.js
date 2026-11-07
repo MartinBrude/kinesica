@@ -3,8 +3,8 @@
  */
 
 import { api } from "./api.js?v=78";
-import { switchActiveView, escapeHtml } from "./dom.js?v=78";
-import { dialogAlert } from "./dom-dialogs.js?v=77";
+import { switchActiveView, escapeHtml, toast } from "./dom.js?v=79";
+import { dialogAlert } from "./dom-dialogs.js?v=78";
 import { normalizePhoneForWhatsApp } from "./phone-format.js?v=5";
 import { getSessionUser } from "./auth.js?v=83";
 import {
@@ -331,6 +331,31 @@ function applyRecordatorioItemUpdate(updatedItem) {
   applyFiltersAndRender();
 }
 
+function markTestFieldError(input, message) {
+  if (!input) return;
+  input.setAttribute("aria-invalid", "true");
+  input.style.borderColor = "#b42318";
+  input.style.boxShadow = "0 0 0 2px rgba(180, 35, 24, 0.15)";
+  input.focus();
+  const field = input.closest(".recordatorio-modal-field");
+  let err = field?.querySelector(".recordatorio-modal-field-error");
+  if (field && !err) {
+    err = document.createElement("p");
+    err.className = "recordatorio-modal-field-error";
+    err.style.cssText = "margin:0;font-size:12px;color:#b42318;";
+    field.appendChild(err);
+  }
+  if (err) err.textContent = message;
+}
+
+function clearTestFieldError(input) {
+  if (!input) return;
+  input.removeAttribute("aria-invalid");
+  input.style.borderColor = "";
+  input.style.boxShadow = "";
+  input.closest(".recordatorio-modal-field")?.querySelector(".recordatorio-modal-field-error")?.remove();
+}
+
 function openRecordatorioContactModal(item, { mode = "contact", onSuccess } = {}) {
   const backdrop = document.createElement("div");
   backdrop.className = "recordatorio-modal-backdrop";
@@ -460,10 +485,26 @@ function openRecordatorioContactModal(item, { mode = "contact", onSuccess } = {}
     };
   };
 
+  const clearDispatchFieldErrors = () => {
+    clearTestFieldError(backdrop.querySelector("#dispatch-phone"));
+    clearTestFieldError(backdrop.querySelector("#dispatch-email"));
+  };
+
+  backdrop.querySelector("#dispatch-phone")?.addEventListener("input", () => {
+    clearTestFieldError(backdrop.querySelector("#dispatch-phone"));
+  });
+  backdrop.querySelector("#dispatch-email")?.addEventListener("input", () => {
+    clearTestFieldError(backdrop.querySelector("#dispatch-email"));
+  });
+
   const saveContactOnly = async (btn) => {
+    clearDispatchFieldErrors();
     const { phone, email } = readFields();
     if (!phone && !email) {
-      dialogAlert("Ingresá al menos un WhatsApp o un correo electrónico.", { type: "danger" });
+      markTestFieldError(
+        backdrop.querySelector("#dispatch-phone"),
+        "Ingresá al menos un WhatsApp o un correo electrónico."
+      );
       return false;
     }
     const prev = btn.textContent;
@@ -499,16 +540,20 @@ function openRecordatorioContactModal(item, { mode = "contact", onSuccess } = {}
   };
 
   const dispatchSend = async (btn, { phone, email, channel, saveContact }) => {
+    clearDispatchFieldErrors();
     if (channel === "email" && !email) {
-      dialogAlert("Ingresá un correo válido para enviar por email.", { type: "danger" });
+      markTestFieldError(backdrop.querySelector("#dispatch-email"), "Ingresá un correo válido para enviar por email.");
       return;
     }
     if (channel === "whatsapp" && !phone) {
-      dialogAlert("Ingresá un número de WhatsApp.", { type: "danger" });
+      markTestFieldError(backdrop.querySelector("#dispatch-phone"), "Ingresá un número de WhatsApp.");
       return;
     }
     if (channel === "auto" && !phone && !email) {
-      dialogAlert("Ingresá al menos un WhatsApp o un correo.", { type: "danger" });
+      markTestFieldError(
+        backdrop.querySelector("#dispatch-phone"),
+        "Ingresá al menos un WhatsApp o un correo."
+      );
       return;
     }
     const prev = btn.textContent;
@@ -530,7 +575,7 @@ function openRecordatorioContactModal(item, { mode = "contact", onSuccess } = {}
         close();
         if (resp.item) onSuccess?.(resp.item);
         else loadRecordatorios(false);
-        dialogAlert(resp.message || "Recordatorio enviado correctamente.", { type: "success" });
+        toast(resp.message || "Recordatorio enviado correctamente.", { type: "success" });
       } else {
         dialogAlert(resp?.error || "No se pudo enviar el recordatorio.", { type: "danger" });
       }
@@ -550,7 +595,7 @@ function openRecordatorioContactModal(item, { mode = "contact", onSuccess } = {}
     const resp = await saveContactOnly(e.currentTarget);
     if (resp) {
       close();
-      dialogAlert(resp.message || "Contacto guardado.", { type: "success" });
+      toast(resp.message || "Contacto guardado.", { type: "success" });
     }
   });
 
@@ -628,31 +673,6 @@ function defaultTestContact() {
     name: stored?.name || String(user?.name || "").trim() || "",
     phone: stored?.phone || "",
   };
-}
-
-function markTestFieldError(input, message) {
-  if (!input) return;
-  input.setAttribute("aria-invalid", "true");
-  input.style.borderColor = "#b42318";
-  input.style.boxShadow = "0 0 0 2px rgba(180, 35, 24, 0.15)";
-  input.focus();
-  const field = input.closest(".recordatorio-modal-field");
-  let err = field?.querySelector(".recordatorio-modal-field-error");
-  if (field && !err) {
-    err = document.createElement("p");
-    err.className = "recordatorio-modal-field-error";
-    err.style.cssText = "margin:0;font-size:12px;color:#b42318;";
-    field.appendChild(err);
-  }
-  if (err) err.textContent = message;
-}
-
-function clearTestFieldError(input) {
-  if (!input) return;
-  input.removeAttribute("aria-invalid");
-  input.style.borderColor = "";
-  input.style.boxShadow = "";
-  input.closest(".recordatorio-modal-field")?.querySelector(".recordatorio-modal-field-error")?.remove();
 }
 
 function openTestCaseModal() {
@@ -752,7 +772,7 @@ function openTestCaseModal() {
         close();
         if (resp.item) applyRecordatorioItemUpdate(resp.item);
         else await loadRecordatorios(false);
-        dialogAlert(resp.message || "Caso de prueba listo. Usá «Enviar ahora».", { type: "success" });
+        toast(resp.message || "Caso de prueba listo. Usá «Enviar ahora».", { type: "success" });
         return;
       }
       dialogAlert(resp?.error || "No se pudo crear el caso de prueba.", { type: "danger" });

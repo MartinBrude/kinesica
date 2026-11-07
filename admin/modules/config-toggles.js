@@ -67,10 +67,7 @@ export function setupConfigToggles({
   onAlert,
 }) {
   cfgClaraToggleBtn?.addEventListener("click", async () => {
-    if (getSessionUser()?.role === "colaborador") {
-      if (typeof onAlert === "function") onAlert("Los usuarios con rol Colaborador tienen permisos de solo lectura.");
-      return;
-    }
+    if (getSessionUser()?.role === "colaborador" || cfgClaraToggleBtn.disabled) return;
     const nextState = !getClaraActive();
     cfgClaraToggleBtn.disabled = true;
     try {
@@ -81,17 +78,14 @@ export function setupConfigToggles({
       localStorage.setItem("kinesica_clara_active", nextState ? "1" : "0");
       onClaraChanged(nextState);
     } catch {
-      if (typeof onAlert === "function") onAlert("No se pudo cambiar el estado de Clara.");
+      if (typeof onAlert === "function") onAlert("No se pudo cambiar el estado de Clara.", { type: "danger" });
     } finally {
-      cfgClaraToggleBtn.disabled = false;
+      if (getSessionUser()?.role !== "colaborador") cfgClaraToggleBtn.disabled = false;
     }
   });
 
   cfgBookingToggleBtn?.addEventListener("click", async () => {
-    if (getSessionUser()?.role === "colaborador") {
-      if (typeof onAlert === "function") onAlert("Los usuarios con rol Colaborador tienen permisos de solo lectura.");
-      return;
-    }
+    if (getSessionUser()?.role === "colaborador" || cfgBookingToggleBtn.disabled) return;
     const nextState = !getBookingActive();
     cfgBookingToggleBtn.disabled = true;
     try {
@@ -102,9 +96,9 @@ export function setupConfigToggles({
       localStorage.setItem("kinesica_booking_active", nextState ? "1" : "0");
       onBookingChanged(nextState);
     } catch {
-      if (typeof onAlert === "function") onAlert("No se pudo cambiar el estado de la turnera.");
+      if (typeof onAlert === "function") onAlert("No se pudo cambiar el estado de la turnera.", { type: "danger" });
     } finally {
-      cfgBookingToggleBtn.disabled = false;
+      if (getSessionUser()?.role !== "colaborador") cfgBookingToggleBtn.disabled = false;
     }
   });
 }

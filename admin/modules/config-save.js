@@ -8,7 +8,6 @@ import { validateCustomOptions } from "./config-options.js";
 
 export async function saveTextsAndPolicies({
   triggerBtn,
-  btnSaveTexts,
   btnSaveMailsPolicies,
   textsStatusBanner,
   mailsStatusBanner,
@@ -20,21 +19,21 @@ export async function saveTextsAndPolicies({
   onSaveSuccess,
   resetChatDemo,
   dialogAlert,
+  toast,
+  onDirtyCleared,
   loadConfigData,
 }) {
+  const notify = typeof toast === "function" ? toast : dialogAlert;
   if (!textsLoaded || !loadedFormValues) {
-    dialogAlert("Todavía se están cargando los textos guardados. Esperá unos segundos e intentá de nuevo.");
+    notify("Todavía se están cargando los textos guardados. Esperá unos segundos e intentá de nuevo.", { type: "info" });
     if (typeof loadConfigData === "function") loadConfigData();
     return;
   }
   const isMailsBtn = triggerBtn === btnSaveMailsPolicies;
   const allSaveButtons = [
-    btnSaveTexts,
     btnSaveMailsPolicies,
     triggerBtn,
     document.querySelector("#btn-save-clara-global"),
-    document.querySelector("#btn-save-clara-recordatorios"),
-    document.querySelector("#btn-save-clara-politicas"),
   ].filter(Boolean);
 
   const originalTexts = new Map();
@@ -45,22 +44,23 @@ export async function saveTextsAndPolicies({
   });
 
   let restored = false;
-  const restoreButtons = (feedbackText = "") => {
+  const restoreButtons = (feedbackText = "", { keepDisabled = false } = {}) => {
     if (restored) return;
     restored = true;
     if (feedbackText) {
       allSaveButtons.forEach((b) => {
-        b.disabled = false;
+        b.disabled = keepDisabled;
         b.textContent = feedbackText;
       });
       setTimeout(() => {
         allSaveButtons.forEach((b) => {
           b.textContent = originalTexts.get(b) || "Guardar cambios";
+          if (!keepDisabled) b.disabled = false;
         });
       }, 2500);
     } else {
       allSaveButtons.forEach((b) => {
-        b.disabled = false;
+        b.disabled = keepDisabled;
         b.textContent = originalTexts.get(b) || "Guardar cambios";
       });
     }
@@ -88,7 +88,9 @@ export async function saveTextsAndPolicies({
       banner.hidden = false;
       setTimeout(() => { banner.hidden = true; }, 4000);
     }
-    restoreButtons("Sin cambios pendientes");
+    if (typeof toast === "function") toast("No hay cambios para guardar.", { type: "info" });
+    if (typeof onDirtyCleared === "function") onDirtyCleared();
+    restoreButtons("Sin cambios pendientes", { keepDisabled: true });
     return;
   }
   const payload = { base_revision: textsRevision, clara_texts: changedTexts };
@@ -114,16 +116,19 @@ export async function saveTextsAndPolicies({
     };
     showSuccess(textsStatusBanner, "✓ Textos y opciones del menú guardados con éxito.");
     showSuccess(mailsStatusBanner, "✓ Políticas y pautas de mails guardadas con éxito.");
+    if (typeof toast === "function") toast("Cambios de Clara guardados.", { type: "success" });
+    if (typeof onDirtyCleared === "function") onDirtyCleared();
     if (typeof resetChatDemo === "function") resetChatDemo();
-    restoreButtons("✓ Guardado con éxito");
+    restoreButtons("✓ Guardado", { keepDisabled: true });
   } catch (err) {
     restoreButtons();
     if (err?.status === 409) {
-      dialogAlert(err.message || "Los textos se modificaron desde otra sesión. Recargá la página antes de guardar.");
+      dialogAlert(err.message || "Los textos se modificaron desde otra sesión. Recargá la página antes de guardar.", { type: "danger" });
     } else {
-      dialogAlert(err?.message || "Error al guardar los textos de Clara.");
+      dialogAlert(err?.message || "Error al guardar los textos de Clara.", { type: "danger" });
     }
   } finally {
+    // restoreButtons is idempotent; only runs if not already restored.
     restoreButtons();
   }
 }

@@ -4,7 +4,7 @@
  */
 
 import { api } from "./api.js?v=78";
-import { escapeHtml, debounce, dialogAlert, dialogConfirm, switchActiveView } from "./dom.js?v=78";
+import { escapeHtml, debounce, dialogAlert, dialogConfirm, switchActiveView } from "./dom.js?v=79";
 import { phoneMatches } from "./phone-search.js?v=3";
 import { formatDisplayPhone, capitalizePersonName } from "./pacientes-format.js";
 import { openFullPacienteModal } from "./pacientes-modal.js?v=2";

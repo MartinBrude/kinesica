@@ -16,7 +16,7 @@ import {
 
 import {
   escapeHtml,
-} from "./modules/dom.js?v=78";
+} from "./modules/dom.js?v=79";
 
 import {
   getSessionUser,
@@ -61,11 +61,11 @@ import {
   switchTab,
   mountAdminChannels,
   unmountAdminChannels,
-} from "./modules/app-tabs.js?v=20";
+} from "./modules/app-tabs.js?v=21";
 
 import {
   initAppControllers,
-} from "./modules/app-init.js?v=16";
+} from "./modules/app-init.js?v=17";
 
 export {
   api,

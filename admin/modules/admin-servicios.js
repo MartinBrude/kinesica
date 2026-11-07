@@ -5,7 +5,7 @@
  */
 
 import { api } from "./api.js?v=78";
-import { escapeHtml } from "./dom.js?v=78";
+import { escapeHtml } from "./dom.js?v=79";
 
 function computeStatusBadge(used, limit) {
   if (!limit || limit <= 0) return '<span class="status-pill status-ok">Ilimitado / Sin costo</span>';

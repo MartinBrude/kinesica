@@ -5,7 +5,7 @@
  */
 
 import { getSessionUser } from "./auth.js?v=83";
-import { switchActiveView } from "./dom.js?v=78";
+import { switchActiveView } from "./dom.js?v=79";
 import {
   initProfesionalesUI,
   loadProfesionalesData,

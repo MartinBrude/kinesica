@@ -3,7 +3,7 @@
  */
 
 import { REQUIRED_FIELDS, validateStep, missingFieldKeys, missingFields } from "../ficha-rules.mjs?v=89";
-import { switchActiveView } from "./dom.js?v=78";
+import { switchActiveView } from "./dom.js?v=79";
 
 const form = document.querySelector("#ficha");
 const btnPrev = document.querySelector("#btn-prev");

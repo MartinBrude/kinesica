@@ -9,7 +9,7 @@
 
 import { renderOptCText, REMINDER_TEMPLATE_TEXT } from "./menu-texts.js?v=3";
 import { api } from "./api.js?v=78";
-import { dialogAlert } from "./dom.js?v=78";
+import { dialogAlert, toast } from "./dom.js?v=79";
 import { getSessionUser } from "./auth.js?v=83";
 import { resetChatDemo, initChatSimulator, setChatContext } from "./chat-simulator.js?v=11";
 import { DEFAULT_CLARA_TEXTS, bindConfigInputs, populateClaraInputs } from "./config-defaults.js?v=3";
@@ -59,12 +59,14 @@ const customOptionsEmpty = document.querySelector("#custom-options-empty");
 const btnAddCustomOption = document.querySelector("#btn-add-custom-option");
 let customMenuOptions = [];
 
-const btnSaveTexts = document.querySelector("#btn-save-clara-texts");
+const btnSaveGlobal = document.querySelector("#btn-save-clara-global");
 const btnSaveMailsPolicies = document.querySelector("#btn-save-mails-policies");
 const textsStatusBanner = document.querySelector("#clara-texts-status-banner");
 const mailsStatusBanner = document.querySelector("#mails-texts-status-banner");
+const dirtyBadge = document.querySelector("#clara-dirty-badge");
 
 let currentTexts = { ...DEFAULT_CLARA_TEXTS };
+let claraDirty = false;
 
 setChatContext({
   defaults: DEFAULT_CLARA_TEXTS,
@@ -78,6 +80,44 @@ let textsRevision = null;
 let loadedFormValues = null;
 let activeClara = false;
 let activeBooking = false;
+
+function isColaboradorUser() {
+  return getSessionUser()?.role === "colaborador";
+}
+
+function setClaraDirty(next) {
+  if (isColaboradorUser()) {
+    claraDirty = false;
+  } else {
+    claraDirty = Boolean(next);
+  }
+  if (dirtyBadge) dirtyBadge.hidden = !claraDirty;
+  if (btnSaveGlobal) {
+    btnSaveGlobal.disabled = !claraDirty || isColaboradorUser();
+    if (!claraDirty && !btnSaveGlobal.textContent.includes("Guardando") && !btnSaveGlobal.textContent.includes("Guardado")) {
+      btnSaveGlobal.textContent = "Guardar cambios";
+    }
+  }
+}
+
+function markClaraDirty() {
+  if (isColaboradorUser() || !textsLoaded) return;
+  setClaraDirty(true);
+}
+
+function clearClaraDirty() {
+  setClaraDirty(false);
+}
+
+function refreshCustomOptionsList() {
+  renderCustomOptionsList(
+    customOptionsContainer,
+    customOptionsEmpty,
+    customMenuOptions,
+    dialogAlert,
+    markClaraDirty
+  );
+}
 
 function refreshReminderPreview() {
   updateReminderPreview({
@@ -93,6 +133,26 @@ function syncTogglesUI(isClaraOn, isBookingOn) {
   activeClara = isClaraOn;
   activeBooking = isBookingOn;
   updateStatusToggles({ ...tog, isClaraOn, isBookingOn });
+}
+
+function applyColaboradorReadOnly() {
+  if (!isColaboradorUser()) return;
+  if (btnSaveGlobal) btnSaveGlobal.hidden = true;
+  if (btnSaveMailsPolicies) btnSaveMailsPolicies.hidden = true;
+  if (btnAddCustomOption) btnAddCustomOption.hidden = true;
+  if (dirtyBadge) dirtyBadge.hidden = true;
+  document.querySelectorAll("#view-clara input, #view-clara textarea").forEach((el) => {
+    el.readOnly = true;
+  });
+  if (tog.cfgClaraToggleBtn) tog.cfgClaraToggleBtn.disabled = true;
+  if (tog.cfgBookingToggleBtn) tog.cfgBookingToggleBtn.disabled = true;
+  if (textsStatusBanner) {
+    textsStatusBanner.hidden = false;
+    textsStatusBanner.style.background = "#fef3c7";
+    textsStatusBanner.style.color = "#92400e";
+    textsStatusBanner.style.borderColor = "#fde68a";
+    textsStatusBanner.textContent = "Modo solo lectura (Colaborador): podés consultar los textos de Clara, pero no modificarlos.";
+  }
 }
 
 function renderTexts(data) {
@@ -117,7 +177,7 @@ function renderTexts(data) {
   } else {
     customMenuOptions = [];
   }
-  renderCustomOptionsList(customOptionsContainer, customOptionsEmpty, customMenuOptions, dialogAlert);
+  refreshCustomOptionsList();
   resetChatDemo();
 }
 
@@ -156,6 +216,7 @@ function rememberLoadedTexts(data) {
   textsRevision = Number(data?.clara_texts_revision ?? 0) || 0;
   loadedFormValues = { texts: readFormTexts(), custom: JSON.stringify(customMenuOptions) };
   textsLoaded = true;
+  clearClaraDirty();
 }
 
 function applyConfigResult(res) {
@@ -164,23 +225,7 @@ function applyConfigResult(res) {
   if (res.custom_menu_options) currentTexts.custom_menu_options = res.custom_menu_options;
   renderTexts(currentTexts);
   rememberLoadedTexts(res);
-
-  const isColaborador = getSessionUser()?.role === "colaborador";
-  if (isColaborador) {
-    if (btnSaveTexts) btnSaveTexts.hidden = true;
-    if (btnSaveMailsPolicies) btnSaveMailsPolicies.hidden = true;
-    if (btnAddCustomOption) btnAddCustomOption.hidden = true;
-    document.querySelectorAll("#view-clara input, #view-clara textarea").forEach((el) => {
-      el.readOnly = true;
-    });
-    if (textsStatusBanner) {
-      textsStatusBanner.hidden = false;
-      textsStatusBanner.style.background = "#fef3c7";
-      textsStatusBanner.style.color = "#92400e";
-      textsStatusBanner.style.borderColor = "#fde68a";
-      textsStatusBanner.textContent = "👁️ Modo de solo lectura (Colaborador): Podés consultar los textos y opciones de Clara, pero no modificarlos.";
-    }
-  }
+  applyColaboradorReadOnly();
 }
 
 async function loadConfigData() {
@@ -189,10 +234,27 @@ async function loadConfigData() {
     if (data) {
       applyConfigResult(data);
       syncTogglesUI(data.clara_active ?? true, data.booking_active ?? true);
+      applyColaboradorReadOnly();
     }
   } catch (err) {
     console.warn("No se pudo cargar la configuración:", err);
   }
+}
+
+function bindClaraDirtyListeners() {
+  const view = document.getElementById("view-clara");
+  if (!view || view.dataset.dirtyBound === "1") return;
+  view.dataset.dirtyBound = "1";
+  view.addEventListener("input", (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+    if (target.matches("textarea, input, select")) markClaraDirty();
+  });
+  view.addEventListener("change", (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+    if (target.matches("textarea, input, select")) markClaraDirty();
+  });
 }
 
 export function initConfiguracionModule(callbacks = {}) {
@@ -200,44 +262,45 @@ export function initConfiguracionModule(callbacks = {}) {
     btn.addEventListener("click", () => switchConfigSubtab(btn.dataset.subtab));
   });
 
+  bindClaraDirtyListeners();
+  clearClaraDirty();
+
   btnAddCustomOption?.addEventListener("click", () => {
+    if (isColaboradorUser()) return;
     const nextL = getNextAvailableLetter(customMenuOptions);
     customMenuOptions.push({ letter: nextL, label: "", response: "" });
-    renderCustomOptionsList(customOptionsContainer, customOptionsEmpty, customMenuOptions, dialogAlert);
+    refreshCustomOptionsList();
+    markClaraDirty();
   });
 
   const onSave = (btn) => {
-    if (getSessionUser()?.role === "colaborador") {
-      dialogAlert("Los usuarios con rol Colaborador tienen permisos de solo lectura.");
-      return;
-    }
+    if (isColaboradorUser()) return;
     return saveTextsAndPolicies({
-    triggerBtn: btn,
-    btnSaveTexts,
-    btnSaveMailsPolicies,
-    textsStatusBanner,
-    mailsStatusBanner,
-    textsLoaded,
-    loadedFormValues,
-    textsRevision,
-    customMenuOptions,
-    readFormTexts,
-    onSaveSuccess: applyConfigResult,
-    resetChatDemo,
-    dialogAlert,
-    loadConfigData,
-  });
-};
+      triggerBtn: btn,
+      btnSaveMailsPolicies,
+      textsStatusBanner,
+      mailsStatusBanner,
+      textsLoaded,
+      loadedFormValues,
+      textsRevision,
+      customMenuOptions,
+      readFormTexts,
+      onSaveSuccess: applyConfigResult,
+      resetChatDemo,
+      dialogAlert,
+      toast,
+      onDirtyCleared: clearClaraDirty,
+      loadConfigData,
+    });
+  };
 
-  btnSaveTexts?.addEventListener("click", () => onSave(btnSaveTexts));
   btnSaveMailsPolicies?.addEventListener("click", () => onSave(btnSaveMailsPolicies));
-  document.querySelector("#btn-save-clara-global")?.addEventListener("click", (e) => onSave(e.currentTarget));
-  document.querySelector("#btn-save-clara-recordatorios")?.addEventListener("click", (e) => onSave(e.currentTarget));
-  document.querySelector("#btn-save-clara-politicas")?.addEventListener("click", (e) => onSave(e.currentTarget));
+  btnSaveGlobal?.addEventListener("click", () => onSave(btnSaveGlobal));
 
   const syncAndPreview = (source, target) => {
     if (target && source) target.value = source.value;
     refreshReminderPreview();
+    markClaraDirty();
   };
   pol.reminderNotes?.addEventListener("input", () => syncAndPreview(pol.reminderNotes, pol.claraReminderNotes));
   pol.claraReminderNotes?.addEventListener("input", () => syncAndPreview(pol.claraReminderNotes, pol.reminderNotes));
@@ -251,11 +314,13 @@ export function initConfiguracionModule(callbacks = {}) {
       activeClara = next;
       syncTogglesUI(next, activeBooking);
       callbacks.onClaraToggled?.(next);
+      toast(next ? "Clara visible en web + recordatorios." : "Clara oculta en web (sin recordatorios).", { type: "success" });
     },
     onBookingChanged: (next) => {
       activeBooking = next;
       syncTogglesUI(activeClara, next);
       callbacks.onBookingToggled?.(next);
+      toast(next ? "Turnera web activada." : "Turnera web pausada.", { type: "success" });
     },
     onAlert: dialogAlert,
   });

@@ -3,7 +3,7 @@
  * Genera el marcado DOM para una sesión particular dentro del acordeón de paciente.
  */
 
-import { escapeHtml, dialogConfirm } from "./dom.js?v=78";
+import { escapeHtml, dialogConfirm } from "./dom.js?v=79";
 import { formatDate } from "./api.js?v=78";
 import { getSessionUser } from "./auth.js?v=83";
 import { capitalizePersonName } from "../ficha-rules.mjs?v=87";

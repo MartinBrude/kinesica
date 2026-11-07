@@ -3,7 +3,7 @@
  * Paginación: ventana ayer–hoy–mañana; el resto, un día por página.
  */
 
-import { escapeHtml } from "./dom.js?v=78";
+import { escapeHtml } from "./dom.js?v=79";
 import { formatDisplayPhone, extractPhoneCandidate } from "./phone-format.js";
 import { capitalizePersonName } from "./pacientes-format.js";
 

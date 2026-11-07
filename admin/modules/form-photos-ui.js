@@ -2,7 +2,7 @@
  * Kinésica Admin - UI de Galería de Fotos del Formulario
  */
 
-import { dialogConfirm } from "./dom.js?v=78";
+import { dialogConfirm } from "./dom.js?v=79";
 
 export function renderPhotoGallery({
   photos,

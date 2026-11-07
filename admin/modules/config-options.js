@@ -15,7 +15,7 @@ export function getNextAvailableLetter(customMenuOptions) {
   return "F";
 }
 
-export function renderCustomOptionsList(container, emptyEl, customMenuOptions, onAlert) {
+export function renderCustomOptionsList(container, emptyEl, customMenuOptions, onAlert, onDirty) {
   if (!container) return;
   container.replaceChildren();
 
@@ -24,6 +24,10 @@ export function renderCustomOptionsList(container, emptyEl, customMenuOptions, o
     return;
   }
   if (emptyEl) emptyEl.hidden = true;
+
+  const markDirty = () => {
+    if (typeof onDirty === "function") onDirty();
+  };
 
   customMenuOptions.forEach((item, index) => {
     const row = document.createElement("div");
@@ -53,6 +57,7 @@ export function renderCustomOptionsList(container, emptyEl, customMenuOptions, o
       }
       e.target.value = val;
       item.letter = val;
+      markDirty();
     });
 
     const titleInput = document.createElement("input");
@@ -62,6 +67,7 @@ export function renderCustomOptionsList(container, emptyEl, customMenuOptions, o
     titleInput.style.cssText = "flex:1; padding:7px 10px; border:1px solid var(--line); border-radius:4px; font-size:14px; background:#fff;";
     titleInput.addEventListener("input", (e) => {
       item.label = e.target.value;
+      markDirty();
     });
 
     const delBtn = document.createElement("button");
@@ -70,7 +76,8 @@ export function renderCustomOptionsList(container, emptyEl, customMenuOptions, o
     delBtn.style.cssText = "background:transparent; border:1px solid #ef4444; color:#ef4444; border-radius:4px; padding:6px 12px; font-size:12px; font-weight:600; cursor:pointer;";
     delBtn.addEventListener("click", () => {
       customMenuOptions.splice(index, 1);
-      renderCustomOptionsList(container, emptyEl, customMenuOptions, onAlert);
+      markDirty();
+      renderCustomOptionsList(container, emptyEl, customMenuOptions, onAlert, onDirty);
     });
 
     topBar.appendChild(letterLabel);
@@ -85,6 +92,7 @@ export function renderCustomOptionsList(container, emptyEl, customMenuOptions, o
     respTextarea.style.cssText = "width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:4px; font-size:13px; font-family:inherit; line-height:1.4; resize:vertical; background:#fff;";
     respTextarea.addEventListener("input", (e) => {
       item.response = e.target.value;
+      markDirty();
     });
 
     row.appendChild(topBar);

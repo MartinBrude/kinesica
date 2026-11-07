@@ -3,7 +3,7 @@
  * Formato Markdown, pie de menú, lógica de ramas conversacionales y alertas a profesionales.
  */
 
-import { escapeHtml } from "./dom.js?v=78";
+import { escapeHtml } from "./dom.js?v=79";
 import { api } from "./api.js?v=78";
 import { renderOptCText, renderOptCTextEn } from "./menu-texts.js?v=3";
 import { isIncompleteClaraTextStub } from "./config-defaults.js?v=3";

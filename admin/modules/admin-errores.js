@@ -3,7 +3,7 @@
  */
 
 import { api, formatDate } from "./api.js?v=78";
-import { escapeHtml, dialogAlert, dialogConfirm } from "./dom.js?v=78";
+import { escapeHtml, dialogAlert, dialogConfirm } from "./dom.js?v=79";
 import {
   openErrorModal,
   closeErrorModal,

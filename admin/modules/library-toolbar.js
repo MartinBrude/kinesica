@@ -3,7 +3,7 @@
  * Configura los eventos de búsqueda, selector de orden, botón "Mis pacientes", agrupación y exportación.
  */
 
-import { debounce, dialogAlert, dialogConfirm } from "./dom.js?v=78";
+import { debounce, dialogAlert, dialogConfirm } from "./dom.js?v=79";
 import { downloadJSON, SEED_PEOPLE } from "./library-io.js";
 import { setLibraryPage } from "./library-pager.js";
 import { exampleFicha } from "../ficha-rules.mjs?v=87";
