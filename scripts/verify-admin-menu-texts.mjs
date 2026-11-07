@@ -132,7 +132,8 @@ test("demo Clara: defaults y settings.json traen B sin horarios, D con estudios 
   assert.ok(!defaultsSrc.includes("Ubicación y horarios del consultorio"));
   assert.match(defaultsSrc, /estudios médicos previos/);
   assert.match(defaultsSrc, /https:\/\/kinesica\.com\.ar\/agendar/);
-  assert.match(defaultsSrc, /Reenviar el enlace para agendar/);
+  assert.match(defaultsSrc, /Consultar o cancelar mis turnos/);
+  assert.ok(!defaultsSrc.includes("Reenviar el enlace para agendar"));
 
   const settings = JSON.parse(read("admin/api/settings.json"));
   const t = settings.clara_texts || {};
@@ -140,10 +141,12 @@ test("demo Clara: defaults y settings.json traen B sin horarios, D con estudios 
   assert.ok(!t.menu_welcome.includes("Ubicación y horarios"));
   assert.match(t.opt_d_text, /estudios médicos previos/);
   assert.match(t.submenu_turnos_text, /https:\/\/kinesica\.com\.ar\/agendar/);
-  assert.match(t.submenu_turnos_text, /Reenviar el enlace/);
+  assert.match(t.submenu_turnos_text, /Consultar o cancelar mis turnos/);
+  assert.ok(!t.submenu_turnos_text.includes("Reenviar el enlace"));
   assert.match(t.menu_welcome_en, /Clinic location/);
   assert.match(t.opt_d_text_en, /medical imaging|MRI/);
   assert.match(t.submenu_turnos_text_en, /https:\/\/kinesica\.com\.ar\/agendar/);
+  assert.ok(!t.submenu_turnos_text_en.includes("Resend the booking link"));
 });
 
 test("demo Clara: el simulador resuelve A con el texto del submenú (link incluido)", () => {

@@ -51,10 +51,9 @@ _Escribí *MENU* para volver_`,
 Para agendar tu sesión de 60 minutos:
 👉 *https://kinesica.com.ar/agendar*
 
-*1.* 📅 Reenviar el enlace para agendar
-*2.* 📋 Consultar o cancelar mis turnos
+*1.* 📋 Consultar o cancelar mis turnos
 
-_(Respondé *2* si ya tenés turno · *MENU* para volver)_`,
+_(Respondé *1* si ya tenés turno · *MENU* para volver)_`,
   opt_a2_text: `Con este número de WhatsApp no encontramos turnos agendados. Si agendaste con otro teléfono, respondé directamente con tu *DNI o Pasaporte* y lo buscamos.
 
 _(Escribí *MENU* para volver)_`,
@@ -109,10 +108,9 @@ _Type *MENU* to return_`,
 To book your 60-minute session:
 👉 *https://kinesica.com.ar/agendar*
 
-*1.* 📅 Resend the booking link
-*2.* 📋 Check or cancel my appointments
+*1.* 📋 Check or cancel my appointments
 
-_(Reply *2* if you already have an appointment · *MENU* to return)_`,
+_(Reply *1* if you already have an appointment · *MENU* to return)_`,
   opt_a2_text_en: `We couldn't find any scheduled appointments for this WhatsApp number. If you booked using a different phone number, reply directly with your *ID or Passport* and we will look it up.
 
 _(Type *MENU* to return)_`,

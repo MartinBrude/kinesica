@@ -12,7 +12,7 @@ import {
   resolveProfessionalSubmenu,
   notifyProfessionalFromSimulator,
   resolveMainMenuResponse,
-} from "./chat-simulator-engine.js?v=3";
+} from "./chat-simulator-engine.js?v=4";
 
 let ctx = {
   defaults: {},
@@ -169,20 +169,25 @@ function handleChatUserInput(inputRaw) {
   }
 
   if (chatSubmenu === "turnos") {
-    if (norm === "1" || norm === "1." || norm === "agendar" || norm === "book" || norm === "schedule") {
-      chatSubmenu = null;
-      const optA = (chatLang === "en")
-        ? pickSimText(ctx.inputs.optAEn, "opt_a_text_en", ctx)
-        : pickSimText(ctx.inputs.optA, "opt_a_text", ctx);
-      setTimeout(() => appendChatMessage(optA, "bot"), 500);
-      return;
-    }
-    if (norm === "2" || norm === "2." || norm === "consultar" || norm === "cancelar" || norm === "check" || norm === "cancel" || norm === "my appointments" || norm === "mis turnos") {
+    // El link de agendar ya viene en el submenú; 1 (y 2 por compat) = consultar/cancelar.
+    if (
+      norm === "1" || norm === "1." || norm === "2" || norm === "2."
+      || norm === "consultar" || norm === "cancelar" || norm === "check" || norm === "cancel"
+      || norm === "my appointments" || norm === "mis turnos"
+    ) {
       chatSubmenu = "buscar_dni";
       const optA2 = (chatLang === "en")
         ? pickSimText(ctx.inputs.optA2En, "opt_a2_text_en", ctx)
         : pickSimText(ctx.inputs.optA2, "opt_a2_text", ctx);
       setTimeout(() => appendChatMessage(optA2, "bot"), 600);
+      return;
+    }
+    if (norm === "agendar" || norm === "book" || norm === "schedule") {
+      chatSubmenu = null;
+      const optA = (chatLang === "en")
+        ? pickSimText(ctx.inputs.optAEn, "opt_a_text_en", ctx)
+        : pickSimText(ctx.inputs.optA, "opt_a_text", ctx);
+      setTimeout(() => appendChatMessage(optA, "bot"), 500);
       return;
     }
   }
