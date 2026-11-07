@@ -10,14 +10,14 @@ import { printItems } from "./print.js?v=82";
 import { initForm } from "./form.js?v=88";
 import { initLibrary } from "./library.js?v=94";
 import { initCompare } from "./compare.js?v=79";
-import { initPacientesModule } from "./pacientes.js?v=11";
+import { initPacientesModule } from "./pacientes.js?v=12";
 import { initHorariosModule } from "./horarios.js?v=3";
 import { initHonorariosModule } from "./honorarios.js?v=2";
 import { initAdminModule } from "./admin-panel.js?v=17";
 import { initConfiguracionModule } from "./configuracion.js?v=29";
 import { initDashboardModule, updateDashboardClara, updateDashboardBooking } from "./dashboard.js?v=12";
-import { initInteraccionesModule } from "./interacciones.js?v=13";
-import { initRecordatoriosModule } from "./recordatorios.js?v=18";
+import { initInteraccionesModule } from "./interacciones.js?v=14";
+import { initRecordatoriosModule } from "./recordatorios.js?v=20";
 import { initEncuestasModule } from "./encuestas.js?v=2";
 import { initAdminBooking } from "./admin-booking.js?v=3";
 

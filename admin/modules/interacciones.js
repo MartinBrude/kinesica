@@ -13,9 +13,9 @@ import {
   buildInteractionCardHtml,
   renderPager,
   bindInteractionEvents,
-} from "./interacciones-render.js?v=3";
+} from "./interacciones-render.js?v=4";
 import { filterInteractionsList, renderStatsHeader } from "./interacciones-filter.js?v=2";
-import { isMartinBrudePhone } from "./phone-search.js?v=2";
+import { isMartinBrudePhone } from "./phone-search.js?v=3";
 import { renderInteraccionesHealth } from "./interacciones-health.js?v=2";
 import { setListControlsEnabled } from "./list-controls.js?v=1";
 

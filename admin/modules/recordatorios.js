@@ -5,7 +5,7 @@
 import { api } from "./api.js?v=78";
 import { switchActiveView, escapeHtml } from "./dom.js?v=78";
 import { dialogAlert } from "./dom-dialogs.js?v=77";
-import { normalizePhoneForWhatsApp } from "./phone-format.js?v=4";
+import { normalizePhoneForWhatsApp } from "./phone-format.js?v=5";
 import { getSessionUser } from "./auth.js?v=83";
 import {
   renderRecordatoriosList,
@@ -391,8 +391,8 @@ function openRecordatorioContactModal(item, { mode = "contact", onSuccess } = {}
             ? `<div class="recordatorio-modal-field">
           <label for="dispatch-channel">Canal de envío:</label>
           <select id="dispatch-channel">
-            <option value="auto" selected>Automático (WhatsApp con fallback a Email)</option>
-            <option value="whatsapp">Solo WhatsApp (Plantilla oficial)</option>
+            <option value="whatsapp" ${String(item.calendar_event_id || "").startsWith("test:") ? "selected" : ""}>Solo WhatsApp (Plantilla oficial)</option>
+            <option value="auto" ${String(item.calendar_event_id || "").startsWith("test:") ? "" : "selected"}>Automático (WhatsApp con fallback a Email)</option>
             <option value="email">Solo Correo Electrónico</option>
           </select>
         </div>

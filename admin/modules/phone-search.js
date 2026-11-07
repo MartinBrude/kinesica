@@ -25,7 +25,14 @@ export function phoneMatches(storedPhone, query) {
 export function isMartinBrudePhone(phone) {
   const digits = String(phone || "").replace(/\D/g, "");
   if (!digits) return false;
-  return digits === "34658444935" || digits === "658444935" || digits.endsWith("34658444935") || digits.endsWith("658444935");
+  // Incluye formas corruptas históricas (549 + 34…) por si quedaron en cache/DB.
+  return (
+    digits === "34658444935" ||
+    digits === "658444935" ||
+    digits === "54934658444935" ||
+    digits.endsWith("34658444935") ||
+    digits.endsWith("658444935")
+  );
 }
 
 export function getKnownContactName(phone) {

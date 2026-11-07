@@ -144,55 +144,17 @@ if ($rawPhone !== '') {
             $db->exec("ALTER TABLE pacientes ADD INDEX idx_pacientes_email (email)");
         }
 
-        // Limpieza y normalización de teléfono (Argentina e internacionales)
-        $normalizePhone = static function (string $raw): string {
-            $trimmed = trim($raw);
-            $hasIntlPrefix = str_starts_with($trimmed, '+') || str_starts_with($trimmed, '00');
-            $digits = preg_replace('/[^0-9]/', '', $trimmed) ?? '';
-            if ($digits === '') {
-                return '';
-            }
-            if (str_starts_with($trimmed, '00') && str_starts_with($digits, '00')) {
-                $digits = substr($digits, 2);
-            }
-            if (str_starts_with($digits, '549') && strlen($digits) >= 12) {
-                return substr($digits, 0, 13);
-            }
-            if (str_starts_with($digits, '54') && !str_starts_with($digits, '549') && strlen($digits) >= 12) {
-                return '549' . substr($digits, 2, 10);
-            }
-            if ($hasIntlPrefix && !str_starts_with($digits, '54')) {
-                return substr($digits, 0, 16);
-            }
-            if (preg_match('/^(?:34\d{9}|598\d{8,9}|56\d{9}|55\d{10,11}|595\d{9}|591\d{8}|51\d{9}|57\d{10}|52\d{10}|1\d{10}|44\d{10}|33\d{9}|39\d{9,10}|49\d{10,11})$/', $digits)) {
-                return $digits;
-            }
-            if (str_starts_with($digits, '0')) {
-                $digits = substr($digits, 1);
-            }
-            if (str_starts_with($digits, '15') && strlen($digits) === 10) {
-                return '54911' . substr($digits, 2);
-            }
-            if (str_starts_with($digits, '1115') && strlen($digits) === 12) {
-                return '54911' . substr($digits, 4);
-            }
-            if (str_starts_with($digits, '11') && strlen($digits) === 10) {
-                return '549' . $digits;
-            }
-            if (!str_starts_with($digits, '549') && strlen($digits) === 10 && preg_match('/^(?:2|3)\d{9}$/', $digits)) {
-                return '549' . $digits;
-            }
-            return substr($digits, 0, 16);
-        };
-
-        $phone = $normalizePhone($rawPhone);
+        @require_once dirname(__DIR__) . '/admin/api/pacientes_helpers.php';
+        // Fuente de verdad: clean_phone_number (AR → 549…; extranjeros con CC se preservan).
+        $phone = function_exists('clean_phone_number')
+            ? clean_phone_number($rawPhone)
+            : (preg_replace('/[^0-9]/', '', $rawPhone) ?? '');
 
         if (strlen($phone) >= 6 && !preg_match('/^(\d)\1+$/', $phone)) {
             $fullName = mb_substr(sanitize_patient_name($paciente), 0, 120, 'UTF-8');
             $parts = preg_split('/\s+/u', $fullName, 2, PREG_SPLIT_NO_EMPTY) ?: [];
             $nom = mb_substr($parts[0] ?? $fullName, 0, 60, 'UTF-8');
             $ape = mb_substr($parts[1] ?? '', 0, 60, 'UTF-8');
-            @require_once dirname(__DIR__) . '/admin/api/pacientes_helpers.php';
             $pila = function_exists('extract_first_name') ? extract_first_name($fullName) : $nom;
             $dniVal = !empty($data['dni']) && trim((string) $data['dni']) !== 'No provisto' ? mb_substr(trim((string) $data['dni']), 0, 20, 'UTF-8') : null;
             $motivoVal = !empty($data['motivo']) ? mb_substr(trim((string) $data['motivo']), 0, 255, 'UTF-8') : (!empty($servicio) ? mb_substr($servicio, 0, 255, 'UTF-8') : null);

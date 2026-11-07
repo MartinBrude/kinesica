@@ -17,43 +17,14 @@ require_once __DIR__ . '/lib_mail.php';
 require_once __DIR__ . '/pacientes_helpers.php';
 
 /**
- * Normaliza teléfono a dígitos E.164-ish.
- * AR → 549…; ES y otros internacionales se preservan (no forzar 549).
+ * Normaliza teléfono vía fuente de verdad compartida (no argentiniza extranjeros).
  */
 function recordatorios_normalize_phone_input(string $raw): string
 {
-    $digits = recordatorios_clean_wa_id($raw);
-    if ($digits === '') {
-        return '';
-    }
-    if (str_starts_with($digits, '00')) {
-        $digits = substr($digits, 2);
-    }
-    // España (+34) y locales 6/7/8/9…
-    if (str_starts_with($digits, '34') && strlen($digits) === 11) {
-        return $digits;
-    }
-    if (strlen($digits) === 9 && preg_match('/^[6789]/', $digits)) {
-        return '34' . $digits;
-    }
-    // Otros internacionales conocidos (no AR)
-    if (
-        (str_starts_with($digits, '598') && strlen($digits) >= 11)
-        || (str_starts_with($digits, '56') && strlen($digits) >= 11)
-        || (str_starts_with($digits, '1') && strlen($digits) === 11)
-    ) {
-        return $digits;
-    }
     if (function_exists('clean_phone_number')) {
         return clean_phone_number($raw);
     }
-    if (strlen($digits) === 10 && str_starts_with($digits, '11')) {
-        return '549' . $digits;
-    }
-    if (strlen($digits) === 11 && str_starts_with($digits, '54') && !str_starts_with($digits, '549')) {
-        return '549' . substr($digits, 2);
-    }
-    return $digits;
+    return recordatorios_clean_wa_id($raw);
 }
 
 /** Caso de prueba manual: Martín @ +34 658 44 49 35 */
@@ -577,9 +548,25 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
 
     $isCall = stripos($summary, 'llamada') !== false;
     $tipoCita = $isCall ? 'llamada de orientación de 10 minutos' : 'sesión en el consultorio';
-    $indicaciones = $isCall
-        ? '📞 Norberto se comunicará con vos puntualmente a este número de WhatsApp.'
-        : '📍 Te esperamos en Charcas 3889, 5º, B (Palermo).\n⚠️ Te recordamos puntualidad estricta para evitar esperas y no concurrir con acompañantes (salvo menores o asistencia directa).';
+
+    // Mismas indicaciones que n8n/admin (clara_texts.reminder_notes).
+    $indicaciones = '';
+    try {
+        require_once __DIR__ . '/kinesica_settings_storage.php';
+        $settings = kinesica_settings_load();
+        $texts = is_array($settings['clara_texts'] ?? null) ? $settings['clara_texts'] : $settings;
+        $notes = is_array($texts) ? ($texts['reminder_notes'] ?? '') : '';
+        if (is_string($notes) && trim($notes) !== '') {
+            $indicaciones = trim($notes);
+        }
+    } catch (Throwable $e) {}
+    if ($indicaciones === '') {
+        $indicaciones = $isCall
+            ? '📞 Norberto se comunicará con vos puntualmente a este número de WhatsApp.'
+            : "📍 Te esperamos en Charcas 3889, 5º, B (Palermo).\n⚠️ Te recordamos puntualidad estricta para evitar esperas y no concurrir con acompañantes (salvo menores o asistencia directa).";
+    }
+    // Por si llega desde settings/DB con "\n" escapado como texto.
+    $indicaciones = str_replace(['\\r\\n', '\\n', '\\r'], ["\n", "\n", "\n"], $indicaciones);
 
     $firstName = $patientName;
     $clean = preg_replace('/^(?:dr[a]?\.|lic\.|prof\.)\s*/i', '', $patientName);
@@ -589,6 +576,15 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
     }
 
     $isTestCase = recordatorios_is_test_case($item);
+    // Pruebas manuales: WhatsApp es el canal; no enmascarar fallos con email.
+    if ($isTestCase && $channel === 'auto') {
+        $channel = 'whatsapp';
+    }
+
+    $formattedTime = $apptTime !== '' ? $apptTime : 'horario convenido';
+    if ($apptTime !== '' && !preg_match('/\bhs\b/i', $apptTime)) {
+        $formattedTime = $apptTime . ' hs';
+    }
 
     // Regla estricta: No debe intentar enviarse recordatorio más de una vez por día a nadie
     if (in_array($item['status'], ['sent', 'sent_email'], true)) {
@@ -712,7 +708,7 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
     $waRes = send_whatsapp_reminder_template($phone, [
         'patient_name' => $firstName,
         'tipo_cita' => $tipoCita,
-        'formatted_time' => $apptTime !== '' ? $apptTime : 'horario convenido',
+        'formatted_time' => $formattedTime,
         'indicaciones' => $indicaciones,
         'event_id' => (string) ($item['calendar_event_id'] ?? ''),
     ]);
@@ -738,15 +734,19 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
         ];
     }
 
-    if ($channel === 'auto' && $email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $errMsg = (string) ($waRes['error'] ?? 'No se pudo entregar el mensaje por WhatsApp');
+    $errTo = (string) ($waRes['to'] ?? $phone);
+
+    // Fallback email solo en canal auto (nunca en pruebas ni si eligieron Solo WhatsApp).
+    if ($channel === 'auto' && !$isTestCase && $email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $subject = 'Recordatorio de turno — Kinésica';
-        $when = trim($apptDate . ' ' . $apptTime);
+        $when = trim($apptDate . ' ' . $formattedTime);
         $html = '<div style="font-family:sans-serif;max-width:560px;margin:auto;padding:20px;border:1px solid #e5e7eb;border-radius:8px;">'
             . '<h2 style="color:#0b2545;">Recordatorio de turno — Kinésica</h2>'
             . '<p>¡Hola <strong>' . htmlspecialchars($firstName) . '</strong>! Te escribimos para recordarte tu turno:</p>'
             . '<ul>'
             . '<li><strong>Tipo:</strong> ' . htmlspecialchars($tipoCita) . '</li>'
-            . '<li><strong>Horario:</strong> ' . htmlspecialchars($when !== '' ? $when : $apptTime) . '</li>'
+            . '<li><strong>Horario:</strong> ' . htmlspecialchars($when !== '' ? $when : $formattedTime) . '</li>'
             . ($isCall ? '<li><strong>Modalidad:</strong> Llamada por WhatsApp</li>' : '<li><strong>Ubicación:</strong> Charcas 3889, 5º, B (Palermo)</li>')
             . '</ul>'
             . '<p>' . nl2br(htmlspecialchars($indicaciones)) . '</p>'
@@ -758,8 +758,8 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
             recordatorios_update_outcome($id, [
                 'status' => 'sent_email',
                 'wa_id' => $phone,
-                'error_code' => '',
-                'error_message' => $email . ' (Fallback manual por ' . $user . ')',
+                'error_code' => 'wa_failed_email_ok',
+                'error_message' => substr($email . ' | WA: ' . $errMsg, 0, 500),
                 'run_at' => gmdate('Y-m-d H:i:s'),
                 'received_at' => gmdate('Y-m-d H:i:s'),
                 'event_key' => $newKey,
@@ -768,14 +768,14 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
             return [
                 'ok' => true,
                 'status' => 'success',
-                'message' => 'WhatsApp no entregó, pero se envió exitosamente por correo a ' . $email,
+                'message' => 'WhatsApp falló (' . $errMsg . ') hacia ' . $errTo . '. Se envió por correo a ' . $email,
                 'channel' => 'email',
+                'whatsapp_error' => $errMsg,
                 'item' => recordatorios_format_item($updated ?: $item, $email),
             ];
         }
     }
 
-    $errMsg = (string) ($waRes['error'] ?? 'No se pudo entregar el mensaje por WhatsApp');
     recordatorios_update_outcome($id, [
         'wa_id' => $phone,
         'error_code' => 'manual_failed',
@@ -783,7 +783,9 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
     ]);
     return [
         'ok' => false,
-        'error' => 'No se pudo enviar el recordatorio: ' . $errMsg,
+        'error' => 'WhatsApp no entregó a ' . $errTo . ': ' . $errMsg,
+        'whatsapp_error' => $errMsg,
+        'to' => $errTo,
     ];
 }
 

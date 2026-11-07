@@ -29,6 +29,53 @@ function is_tk3_or_blocked_name(string $text): bool
     return false;
 }
 
+/**
+ * True si $digits ya trae un código de país distinto de AR (+54).
+ * Evita “argentinizar” (+34, +1, +598, etc.) anteponiendo 549.
+ */
+function phone_is_non_ar_international(string $digits): bool
+{
+    if ($digits === '' || str_starts_with($digits, '54')) {
+        return false;
+    }
+    // Prefijos más largos primero. [cc, minLen, maxLen]
+    static $rules = [
+        ['598', 11, 13], // UY
+        ['595', 11, 13], // PY
+        ['593', 11, 13], // EC
+        ['591', 11, 13], // BO
+        ['351', 12, 13], // PT (12: no chocar con área AR 351… de 10 dígitos)
+        ['55', 12, 13],  // BR
+        ['56', 11, 13],  // CL
+        ['57', 12, 13],  // CO
+        ['52', 12, 13],  // MX
+        ['51', 11, 13],  // PE
+        ['58', 11, 13],  // VE
+        ['34', 11, 12],  // ES
+        ['39', 11, 13],  // IT
+        ['33', 11, 13],  // FR
+        ['49', 11, 13],  // DE
+        ['44', 11, 13],  // UK
+        ['61', 11, 13],  // AU
+        ['64', 11, 13],  // NZ
+        ['81', 11, 13],  // JP
+        ['86', 12, 14],  // CN
+        ['1', 11, 11],   // US/CA (NANP)
+    ];
+    $len = strlen($digits);
+    foreach ($rules as [$cc, $min, $max]) {
+        if (str_starts_with($digits, $cc) && $len >= $min && $len <= $max) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * Normaliza teléfono a dígitos E.164-ish.
+ * - AR (local o +54): unifica a 549…
+ * - Otros países con código conocido: se preservan (nunca se antepone 549).
+ */
 function clean_phone_number(string $raw): string
 {
     $t = trim($raw);
@@ -44,23 +91,43 @@ function clean_phone_number(string $raw): string
     }
 
     $digits = preg_replace('/\D+/', '', $withoutPrefix) ?? '';
-    if ($digits === '') return '';
+    if ($digits === '') {
+        return '';
+    }
 
     if (str_starts_with($digits, '00')) {
         $digits = substr($digits, 2);
     }
+
+    // AR ya internacional
     if (str_starts_with($digits, '549')) {
         return $digits;
     }
     if (str_starts_with($digits, '54')) {
         $rest = substr($digits, 2);
-        if (str_starts_with($rest, '0')) $rest = substr($rest, 1);
-        if (str_starts_with($rest, '15')) $rest = '11' . substr($rest, 2);
+        if (str_starts_with($rest, '0')) {
+            $rest = substr($rest, 1);
+        }
+        if (str_starts_with($rest, '15')) {
+            $rest = '11' . substr($rest, 2);
+        }
         if (preg_match('/^(11|2\d{2,3}|3\d{2,3})15(\d{6,8})$/', $rest, $m)) {
             $rest = $m[1] . $m[2];
         }
         return '549' . $rest;
     }
+
+    // Extranjero con código de país: no tocar
+    if (phone_is_non_ar_international($digits)) {
+        return $digits;
+    }
+
+    // España local (9 dígitos móvil/fijo)
+    if (strlen($digits) === 9 && preg_match('/^[6789]/', $digits)) {
+        return '34' . $digits;
+    }
+
+    // Heurísticas locales AR (sin código de país)
     if (str_starts_with($digits, '0')) {
         $digits = substr($digits, 1);
     }
@@ -73,12 +140,13 @@ function clean_phone_number(string $raw): string
     if (strlen($digits) === 8) {
         $digits = '11' . $digits;
     }
-    if (strlen($digits) === 10 && str_starts_with($digits, '11')) {
+    // Nacional AR de 10 dígitos (CABA 11… o interior 2xx/3xx…)
+    if (strlen($digits) === 10 && preg_match('/^(?:11|[2-9]\d)\d{8}$/', $digits)) {
         return '549' . $digits;
     }
-    if (strlen($digits) >= 10 && strlen($digits) <= 11) {
-        return '549' . $digits;
-    }
+
+    // Cualquier otra cosa (p. ej. 11 dígitos extranjeros no listados): devolver tal cual.
+    // Nunca anteponer 549 a ciegos.
     return $digits;
 }
 

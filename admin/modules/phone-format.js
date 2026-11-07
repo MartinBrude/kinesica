@@ -18,8 +18,43 @@ export function cleanPhoneDigits(raw) {
 }
 
 /**
- * Normaliza un teléfono argentino/local a dígitos E.164-ish (549…).
- * Alineado con clean_phone_number() del backend.
+ * True si ya trae código de país distinto de AR. Alineado con phone_is_non_ar_international().
+ * @param {string} digits
+ * @returns {boolean}
+ */
+export function isNonArInternationalPhone(digits) {
+  const d = String(digits || "");
+  if (!d || d.startsWith("54")) return false;
+  const rules = [
+    ["598", 11, 13],
+    ["595", 11, 13],
+    ["593", 11, 13],
+    ["591", 11, 13],
+    ["351", 12, 13],
+    ["55", 12, 13],
+    ["56", 11, 13],
+    ["57", 12, 13],
+    ["52", 12, 13],
+    ["51", 11, 13],
+    ["58", 11, 13],
+    ["34", 11, 12],
+    ["39", 11, 13],
+    ["33", 11, 13],
+    ["49", 11, 13],
+    ["44", 11, 13],
+    ["61", 11, 13],
+    ["64", 11, 13],
+    ["81", 11, 13],
+    ["86", 12, 14],
+    ["1", 11, 11],
+  ];
+  const len = d.length;
+  return rules.some(([cc, min, max]) => d.startsWith(cc) && len >= min && len <= max);
+}
+
+/**
+ * Normaliza a dígitos E.164-ish. Alineado con clean_phone_number() del backend.
+ * AR → 549…; extranjeros con CC se preservan (nunca se antepone 549).
  * @param {string|number} raw
  * @returns {string}
  */
@@ -31,6 +66,7 @@ export function normalizePhoneForWhatsApp(raw) {
   let digits = cleanPhoneDigits(withoutPrefix);
   if (!digits) return "";
   if (digits.startsWith("00")) digits = digits.slice(2);
+
   if (digits.startsWith("549")) return digits;
   if (digits.startsWith("54")) {
     let rest = digits.slice(2);
@@ -40,21 +76,16 @@ export function normalizePhoneForWhatsApp(raw) {
     if (m) rest = m[1] + m[2];
     return "549" + rest;
   }
-  // España (+34): no forzar prefijo AR
-  if (digits.startsWith("34") && digits.length === 11) return digits;
+
+  if (isNonArInternationalPhone(digits)) return digits;
   if (digits.length === 9 && /^[6789]/.test(digits)) return "34" + digits;
-  // Otros internacionales habituales
-  if (digits.startsWith("598") && digits.length >= 11) return digits;
-  if (digits.startsWith("56") && digits.length >= 11) return digits;
-  if (digits.startsWith("1") && digits.length === 11) return digits;
 
   if (digits.startsWith("0")) digits = digits.slice(1);
   const m15 = digits.match(/^(11|2\d{2,3}|3\d{2,3})15(\d{6,8})$/);
   if (m15) digits = m15[1] + m15[2];
   if (digits.startsWith("15")) digits = "11" + digits.slice(2);
   if (digits.length === 8) digits = "11" + digits;
-  if (digits.length === 10 && digits.startsWith("11")) return "549" + digits;
-  if (digits.length >= 10 && digits.length <= 11) return "549" + digits;
+  if (digits.length === 10 && /^(?:11|[2-9]\d)\d{8}$/.test(digits)) return "549" + digits;
   return digits;
 }
 

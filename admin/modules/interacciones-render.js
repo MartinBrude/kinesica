@@ -5,7 +5,7 @@
 
 import { escapeHtml } from "./dom.js?v=78";
 import { buildWhatsAppUrl } from "./interacciones-message.js";
-import { isMartinBrudePhone } from "./phone-search.js?v=2";
+import { isMartinBrudePhone } from "./phone-search.js?v=3";
 import { formatDisplayPhone } from "./phone-format.js";
 import { capitalizePersonName } from "./pacientes-format.js";
 import { parseBoolean } from "../ficha-rules.mjs?v=89";

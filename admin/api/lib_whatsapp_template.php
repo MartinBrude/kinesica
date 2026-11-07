@@ -109,18 +109,24 @@ function send_whatsapp_reminder_template(string $to, array $data): array
     $indicaciones = trim((string) ($data['indicaciones'] ?? '📍 Te esperamos en Charcas 3889, 5º, B (Palermo).'));
     $eventId = trim((string) ($data['event_id'] ?? ''));
 
-    // Meta Cloud API rechaza saltos de línea (\r, \n), tabs y más de 4 espacios seguidos en parámetros
+    // Misma sanitización que n8n (Parse Patients & Phones → sanitizeTemplateParam).
     $cleanParam = static function (string $text): string {
-        $singleLine = str_replace(["\r\n", "\r", "\n"], ' | ', $text);
-        return preg_replace('/\s+/', ' ', trim($singleLine)) ?? $text;
+        $out = preg_replace('/\s*(?:\r\n|\r|\n)+\s*/', ' | ', $text) ?? $text;
+        $out = preg_replace('/\t+/', ' ', $out) ?? $out;
+        $out = preg_replace('/ {2,}/', ' ', $out) ?? $out;
+        $out = preg_replace('/^(?:\s*\|\s*)+|(?:\s*\|\s*)+$/', '', $out) ?? $out;
+        return trim($out);
     };
     $patient = $cleanParam($patient);
     $tipo = $cleanParam($tipo);
     $time = $cleanParam($time);
     $indicaciones = $cleanParam($indicaciones);
 
-    $confirmPayload = 'confirmar_turno' . ($eventId !== '' ? (':' . $eventId) : '');
-    $cancelPayload = 'cancelar_turno' . ($eventId !== '' ? (':' . $eventId) : '');
+    // Payload de botón: alfanumérico seguro (Meta ≤128; evita fallos con ids raros).
+    $safeEventId = preg_replace('/[^A-Za-z0-9_.@-]+/', '_', $eventId) ?? '';
+    $safeEventId = substr($safeEventId, 0, 100);
+    $confirmPayload = 'confirmar_turno' . ($safeEventId !== '' ? (':' . $safeEventId) : '');
+    $cancelPayload = 'cancelar_turno' . ($safeEventId !== '' ? (':' . $safeEventId) : '');
 
     $graphBody = [
         'messaging_product' => 'whatsapp',
@@ -174,16 +180,30 @@ function send_whatsapp_reminder_template(string $to, array $data): array
     curl_close($ch);
 
     if ($curlError) {
-        return ['ok' => false, 'http_code' => $httpCode, 'error' => 'Error de red Meta: ' . $curlError];
+        return ['ok' => false, 'http_code' => $httpCode, 'error' => 'Error de red Meta: ' . $curlError, 'to' => $to];
     }
     if ($httpCode >= 200 && $httpCode < 300) {
-        return ['ok' => true, 'http_code' => $httpCode, 'response' => is_string($response) ? $response : ''];
+        return ['ok' => true, 'http_code' => $httpCode, 'response' => is_string($response) ? $response : '', 'to' => $to];
+    }
+    $metaMsg = '';
+    if (is_string($response) && $response !== '') {
+        $decoded = json_decode($response, true);
+        if (is_array($decoded)) {
+            $metaMsg = (string) ($decoded['error']['message'] ?? $decoded['error']['error_user_msg'] ?? '');
+            $metaCode = $decoded['error']['code'] ?? null;
+            if ($metaCode !== null && $metaMsg !== '') {
+                $metaMsg = '#' . $metaCode . ' ' . $metaMsg;
+            }
+        }
     }
     $snippet = is_string($response) ? substr($response, 0, 300) : '';
     return [
         'ok' => false,
         'http_code' => $httpCode,
-        'error' => 'Meta HTTP ' . $httpCode . ($snippet !== '' ? (': ' . $snippet) : ''),
+        'error' => $metaMsg !== ''
+            ? $metaMsg
+            : ('Meta HTTP ' . $httpCode . ($snippet !== '' ? (': ' . $snippet) : '')),
         'response' => is_string($response) ? $response : '',
+        'to' => $to,
     ];
 }
