@@ -82,7 +82,7 @@ export async function submitFichaForm({
   if (uploadTask) {
     try {
       await uploadTask;
-    } catch {}
+    } catch { /* ignore */ }
   }
 
   const submitBtn = form.querySelector('button[type="submit"]');

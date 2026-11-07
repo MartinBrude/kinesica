@@ -104,7 +104,7 @@ export function syncUrlWithViewState(state, isInitialBoot = false, isHandlingPop
     const currentPath = window.location.pathname;
     const method = isInitialBoot || isHandlingPopState || currentPath === targetPath ? "replaceState" : "pushState";
     window.history[method](state, "", targetPath);
-  } catch {}
+  } catch { /* ignore */ }
 }
 
 export function initRouterStorageInterceptor() {
@@ -115,7 +115,7 @@ export function initRouterStorageInterceptor() {
     if (key === "kinesica_admin_view") {
       try {
         syncUrlWithViewState(JSON.parse(value));
-      } catch {}
+      } catch { /* ignore */ }
     }
   };
 }

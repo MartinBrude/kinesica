@@ -337,7 +337,7 @@
         scroller.classList.add("is-dragging");
         try {
           scroller.setPointerCapture(event.pointerId);
-        } catch (err) {
+        } catch {
           /* ignore */
         }
       }

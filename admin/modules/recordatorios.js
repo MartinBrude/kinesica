@@ -71,7 +71,7 @@ export function showRecordatoriosView() {
   if (!view) return;
   try {
     sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "recordatorios" }));
-  } catch {}
+  } catch { /* ignore */ }
   renderRecordatoriosRules(document.getElementById("recordatorios-rules"));
 
   const isFresh = hasLoadedOnce && (Date.now() - lastLoadedAt < CACHE_TTL_MS);

@@ -9,7 +9,6 @@ import {
   formatWhatsAppMarkdown,
   withMenuFooter,
   pickSimText,
-  resolveOptionCText,
   resolveProfessionalSubmenu,
   notifyProfessionalFromSimulator,
   resolveMainMenuResponse,

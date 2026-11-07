@@ -8,7 +8,6 @@ import { api } from "./api.js?v=78";
 import { escapeHtml, dialogAlert, switchActiveView } from "./dom.js?v=78";
 import { getSessionUser } from "./auth.js?v=83";
 
-const viewHonorarios = document.querySelector("#view-honorarios");
 const inputAtm = document.querySelector("#input-fee-atm");
 const inputGeneral = document.querySelector("#input-fee-general");
 const inputPayment = document.querySelector("#input-fee-payment-methods");
@@ -29,7 +28,7 @@ export function showHonorariosView() {
   switchActiveView("view-consultorio");
   try {
     sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "consultorio" }));
-  } catch {}
+  } catch { /* ignore */ }
 
   loadHonorarios();
 }
@@ -140,7 +139,7 @@ export function initHonorariosModule() {
     }
 
     try {
-      const res = await api("settings.php", {
+      await api("settings.php", {
         method: "POST",
         body: JSON.stringify({
           fees: {

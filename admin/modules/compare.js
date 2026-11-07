@@ -9,7 +9,6 @@ import {
   patientKey,
   normalizeDni,
 } from "../ficha-rules.mjs?v=90";
-import { formatDate } from "./api.js?v=78";
 import { escapeHtml, switchActiveView } from "./dom.js?v=78";
 import { buildComparePrintSheet, printCompare } from "./compare-print.js";
 import { renderCompareTab as renderTabContent, setupCompareOptions, updateCompareBanner } from "./compare-tabs.js";
@@ -71,7 +70,7 @@ export function showCompare(pKey, preferredXId, preferredYId, fromView = null) {
         yId: preferredYId || null,
       })
     );
-  } catch {}
+  } catch { /* ignore */ }
   populateCompareSessions(resolvedKey, preferredXId, preferredYId);
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -151,7 +150,7 @@ export function renderCompareContent() {
         })
       );
     }
-  } catch {}
+  } catch { /* ignore */ }
 
   renderCompareTab(activeCompareTab, res);
 }
@@ -181,7 +180,7 @@ export function initCompare({ getAllFichas, getSessionUser, onBackToLibrary, onB
           "kinesica_admin_view",
           JSON.stringify({ view: comparePreviousView || "library" })
         );
-      } catch {}
+      } catch { /* ignore */ }
       if (comparePreviousView === "form") {
         if (typeof onBackToForm === "function") onBackToForm();
       } else {

@@ -55,11 +55,7 @@
           open.classList.remove("in");
         }
       });
-      group.querySelectorAll('[data-toggle="collapse"]').forEach(function (item) {
-        if (item !== trigger) {
-          syncTrigger(item);
-        }
-      });
+      syncAccordion(group);
     }
 
     panel.classList.toggle("in");

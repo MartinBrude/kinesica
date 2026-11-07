@@ -165,9 +165,6 @@ ol {
   margin: 0;
 }
 
-ul li,
-ol li {}
-
 a {
   color: #031c42;
   text-decoration: none;
@@ -202,8 +199,6 @@ a:active:not(.btn) {
   opacity: 0.75;
   transition: opacity 0.1s ease;
 }
-
-strong {}
 
 .listnone {
   list-style: none;
@@ -258,9 +253,6 @@ blockquote {
 /*-----------------------------------
     2. Form css 
 -----------------------------------*/
-label {}
-
-.required {}
 
 /*-----------------------------------
     3. Buttons 
@@ -321,9 +313,6 @@ label {}
   /* Darker accent */
   color: #fff;
 }
-
-.btn-primary.focus,
-.btn-primary:focus {}
 
 .btn-white {
   color: var(--primary-color);
@@ -459,8 +448,6 @@ label {}
 .bg-white {
   background-color: #fff;
 }
-
-.section-title {}
 
 /* Reusable section header pattern (home) */
 .section-intro .section-title h2 {
@@ -611,7 +598,6 @@ label {}
 /*--------------------------------
 4.5 Features Block 
 ----------------------------------*/
-.feature {}
 
 /*----------------- video ---------------*/
 
@@ -687,7 +673,6 @@ body:has(main .page-header):not(.page-home) .site-cta-strip .btn-white {
 /*--------------------------------
 4.9 Icon 
 ----------------------------------*/
-.icon {}
 
 /* default icon size of font*/
 
@@ -917,9 +902,6 @@ html:not(.js) .lang-picker__option[aria-current="true"] {
   display: inline-block;
   line-height: 1.2;
 }
-
-
-.time-block {}
 
 /*--------------------------
     5.2 Navigations Regular
@@ -1421,8 +1403,6 @@ main:focus {
   cursor: pointer;
 }
 
-#navigation.small-screen .submenu-button.submenu-opened {}
-
 #navigation.small-screen ul ul .submenu-button {
   height: 34px;
   width: 34px;
@@ -1718,10 +1698,6 @@ main:focus {
   letter-spacing: -1px;
 }
 
-.breadcrumb {}
-
-.breadcrumb>.active {}
-
 .page-breadcrumb {
   background-color: transparent;
   box-shadow: inset 0 1px 0 rgba(0, 95, 153, 0.06);
@@ -1836,8 +1812,6 @@ main:focus {
   margin-bottom: 20px;
 }
 
-.footer-widget ul {}
-
 .footer-widget li {
   margin: 0;
   padding: 0.35em 0;
@@ -1873,8 +1847,6 @@ main:focus {
   opacity: 1;
 }
 
-.footer-social {}
-
 .footer-social .widget-title {
   white-space: nowrap;
 }
@@ -1908,10 +1880,6 @@ main:focus {
     width: fit-content;
   }
 }
-
-.footer-social ul {}
-
-.footer-social ul li {}
 
 .footer-social ul li a {
   white-space: nowrap;
@@ -2037,8 +2005,6 @@ main:focus {
 --------------------------*/
 
 /* service section */
-
-.service-block {}
 
 .service-img {
   margin-bottom: 30px;
@@ -2836,7 +2802,6 @@ address {
 /*------------------------
  10. Blog pages
 --------------------------*/
-.content {}
 
 /*-- use for thumbnail --*/
 
@@ -2875,8 +2840,6 @@ address {
 .widget-title {
   margin-bottom: 20px;
 }
-
-.widget ul {}
 
 .widget ul li {
   margin-bottom: 16px;
@@ -3023,11 +2986,7 @@ address {
   letter-spacing: 1px;
 }
 
-.team-designation {}
-
 /*----- Comment Post -----*/
-
-.comment {}
 
 /*---- thread comments --------*/
 

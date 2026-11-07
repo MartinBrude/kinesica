@@ -43,7 +43,7 @@ const selectHeaderOpens = getEl("#select-header-schedule-opens");
 const selectHeaderCloses = getEl("#select-header-schedule-closes");
 const headerPreviewEl = getEl("#header-schedule-preview");
 
-let draftHeaderSchedule = { ...DEFAULT_HEADER_SCHEDULE };
+const draftHeaderSchedule = { ...DEFAULT_HEADER_SCHEDULE };
 let draftHours = cloneHours(DEFAULT_PRACTITIONER_HOURS);
 let isDirty = false;
 
@@ -60,14 +60,14 @@ export function applyHoursToRuntime(hoursObj) {
     const pub = JSON.parse(localStorage.getItem("kinesica_public_settings") || "{}") || {};
     pub.practitioner_hours = hoursObj;
     localStorage.setItem("kinesica_public_settings", JSON.stringify(pub));
-  } catch (_) {}
+  } catch { /* ignore */ }
 }
 
 export function showHorariosView() {
   switchActiveView("view-consultorio");
   try {
     sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "consultorio" }));
-  } catch (_) {}
+  } catch { /* ignore */ }
   loadHorariosFromServer();
 }
 

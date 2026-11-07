@@ -49,7 +49,7 @@ export function initLibraryToolbar({
       setState({ patientSortMode: sortPatientsSelect.value });
       try {
         localStorage.setItem("kinesica_patient_sort", sortPatientsSelect.value);
-      } catch {}
+      } catch { /* ignore */ }
       setLibraryPage(0);
       renderLibrary();
     });

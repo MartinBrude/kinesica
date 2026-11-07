@@ -40,12 +40,12 @@ let focusedPatient = null;
 let onlyMine = false;
 let activeFilterProf = "todos";
 let mineDefaultApplied = false;
-let expandedPatients = new Set();
+const expandedPatients = new Set();
 let patientSortMode = "name";
 try {
   const s = localStorage.getItem("kinesica_patient_sort");
   if (s === "recent" || s === "name") patientSortMode = s;
-} catch {}
+} catch { /* ignore */ }
 
 let activeSessionUserGetter = null;
 let activeRowCallbacks = {};
@@ -75,11 +75,11 @@ export function showLibrary() {
   switchActiveView("view-library");
   try {
     sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "library" }));
-  } catch {}
+  } catch { /* ignore */ }
   renderLibrary();
 }
 
-export function visibleFichas(sessionUser = null) {
+export function visibleFichas(_sessionUser = null) {
   const q = searchInput ? searchInput.value : "";
   return loadAll()
     .filter((item) => {

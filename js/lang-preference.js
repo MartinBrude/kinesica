@@ -37,7 +37,7 @@
   function saveLang(lang) {
     try {
       localStorage.setItem(STORAGE_KEY, lang);
-    } catch (e) {
+    } catch {
       /* ignore */
     }
   }
@@ -45,7 +45,7 @@
   function getLang() {
     try {
       return localStorage.getItem(STORAGE_KEY);
-    } catch (e) {
+    } catch {
       return null;
     }
   }
@@ -62,7 +62,7 @@
   function clearExplicitSession() {
     try {
       sessionStorage.removeItem(SESSION_EXPLICIT_KEY);
-    } catch (e) {
+    } catch {
       /* ignore */
     }
   }
@@ -70,7 +70,7 @@
   function markExplicitLang(lang) {
     try {
       sessionStorage.setItem(SESSION_EXPLICIT_KEY, lang);
-    } catch (e) {
+    } catch {
       /* ignore */
     }
   }

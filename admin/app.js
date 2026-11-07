@@ -92,7 +92,6 @@ export {
 
 let refreshSeq = 0;
 let localWrites = 0;
-let isInitialBoot = true;
 
 initRouterStorageInterceptor();
 
@@ -129,7 +128,7 @@ async function refresh() {
   let saved = null;
   try {
     saved = JSON.parse(sessionStorage.getItem("kinesica_admin_view") || "null");
-  } catch {}
+  } catch { /* ignore */ }
   if (urlRoute) {
     saved = urlRoute.view === "compare" && saved?.view === "compare" ? saved : urlRoute;
   }
@@ -149,12 +148,10 @@ async function refresh() {
       const ficha = items.find((f) => f.id === saved.id);
       if (ficha) fillForm(ficha, items);
     }
-    isInitialBoot = false;
     return;
   }
   if (compareView && !compareView.hidden) {
     renderCompareContent();
-    isInitialBoot = false;
     return;
   }
 
@@ -163,14 +160,12 @@ async function refresh() {
     if (ficha) {
       fillForm(ficha, items);
       showForm(0);
-      isInitialBoot = false;
       return;
     }
   }
 
   if (saved?.view) switchTab(saved.view, saved.section);
   else switchTab("inicio");
-  isInitialBoot = false;
 }
 
 setAuthRequiredHandler((data) => {
@@ -192,7 +187,7 @@ initAuth({
       sessionStorage.removeItem("kinesica_admin_view");
       window.history.replaceState(null, "", "/admin/");
       document.title = "Kinésica";
-    } catch {}
+    } catch { /* ignore */ }
   },
 });
 
@@ -223,7 +218,7 @@ if (resetToken && resetFormEl) {
 } else if (magicToken) {
   try {
     history.replaceState(null, "", location.pathname);
-  } catch {}
+  } catch { /* ignore */ }
   api("login-code.php", {
     method: "POST",
     body: JSON.stringify({ action: "magic", token: magicToken }),

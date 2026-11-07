@@ -153,7 +153,7 @@ function extractPhoneFromKv(text) {
   const chunks = raw.split(/\s*(?:\||\r\n|\r|\n)\s*/);
   const phoneKeys = new Set(["telefono", "whatsapp", "wa", "tel", "celular", "movil", "phone"]);
   for (const chunk0 of chunks) {
-    let chunk = String(chunk0 || "").trim().replace(/^[^\wáéíóúÁÉÍÓÚñÑüÜ]+/u, "");
+    const chunk = String(chunk0 || "").trim().replace(/^[^\wáéíóúÁÉÍÓÚñÑüÜ]+/u, "");
     const m = chunk.match(/^([^:]{1,40})\s*:\s*(.+)$/);
     if (!m) continue;
     const key = normalizeCalendarKvKey(m[1]);

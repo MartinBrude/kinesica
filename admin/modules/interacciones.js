@@ -54,7 +54,7 @@ export function showInteraccionesView() {
 
   try {
     sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "interacciones" }));
-  } catch {}
+  } catch { /* ignore */ }
 
   activeStatusFilter = "pending";
   loadInteracciones(true);
@@ -327,7 +327,7 @@ function renderInteractions(items) {
         pendingMutations = Math.max(0, pendingMutations - 1);
       }
     },
-    onToggleAnswered: async ({ convId, convKey, isChecked, chk, cardEl, pillEl }) => {
+    onToggleAnswered: async ({ convId, convKey: _convKey, isChecked, chk, cardEl, pillEl }) => {
       if (getSessionUser()?.role === "colaborador") {
         if (chk) chk.checked = !isChecked;
         dialogAlert("Los usuarios con rol Colaborador tienen permisos de solo lectura.");

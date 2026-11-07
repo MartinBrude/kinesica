@@ -203,7 +203,7 @@ export function initServiciosUI({ onReload } = {}) {
             modal.openCreateGastoModal(payload);
           });
         });
-      } catch (_) {}
+      } catch { /* ignore */ }
     });
   }
 }

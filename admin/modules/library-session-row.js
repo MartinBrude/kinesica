@@ -8,7 +8,7 @@ import { formatDate } from "./api.js?v=78";
 import { getSessionUser } from "./auth.js?v=83";
 import { capitalizePersonName } from "../ficha-rules.mjs?v=87";
 
-export function sessionRow(item, patient, callbacks = {}, sessionIndex = 1, totalSessions = 1) {
+export function sessionRow(item, patient, callbacks = {}, sessionIndex = 1, _totalSessions = 1) {
   const row = document.createElement("div");
   row.className = "session-row";
 

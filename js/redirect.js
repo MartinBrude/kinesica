@@ -16,7 +16,7 @@
     var explicit = null;
     try {
       explicit = sessionStorage.getItem("kinesica_lang_explicit");
-    } catch (e) {
+    } catch {
       return;
     }
 

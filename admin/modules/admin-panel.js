@@ -5,7 +5,7 @@
  */
 
 import { getSessionUser } from "./auth.js?v=83";
-import { dialogAlert, switchActiveView } from "./dom.js?v=78";
+import { switchActiveView } from "./dom.js?v=78";
 import {
   initProfesionalesUI,
   loadProfesionalesData,
@@ -82,7 +82,7 @@ export function showAdminView(section = "usuarios") {
     // Si no es administrador, no debe acceder ni ver modal de error: redirigir silenciosamente al inicio
     try {
       import("./app-tabs.js").then((m) => m.switchTab("inicio"));
-    } catch (_) {}
+    } catch { /* ignore */ }
     return;
   }
 
@@ -98,7 +98,7 @@ export function showAdminView(section = "usuarios") {
   if (view) {
     try {
       sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "admin", section: validSection }));
-    } catch {}
+    } catch { /* ignore */ }
     setAdminActiveSection(validSection);
     loadAdminData();
   }

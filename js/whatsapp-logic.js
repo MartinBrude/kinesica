@@ -43,19 +43,6 @@ function initWhatsAppMobileScroll() {
   updateScrollState();
 }
 
-function isDesktopBrowser() {
-  if (typeof navigator === "undefined") return false;
-  var ua = navigator.userAgent || "";
-  var isMobileUA =
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
-  var isTouchMac = Boolean(
-    navigator.maxTouchPoints &&
-      navigator.maxTouchPoints > 2 &&
-      /Macintosh/.test(ua)
-  );
-  return !isMobileUA && !isTouchMac;
-}
-
 function initDesktopWhatsAppClickHandler() {
   // Enlaces estándar con https://wa.me/ y target="_blank" para soporte universal
   // (tanto WhatsApp Desktop nativo como WhatsApp Web, sin bloqueos de Chrome)
@@ -166,7 +153,7 @@ function syncPublicSettings() {
   try {
     var cached = JSON.parse(localStorage.getItem("kinesica_public_settings") || "null");
     if (cached) applySettings(cached);
-  } catch (_) {}
+  } catch { /* ignore */ }
 
   if (typeof fetch === "function") {
     fetch("/admin/api/settings.php", { cache: "no-cache" })
@@ -177,11 +164,11 @@ function syncPublicSettings() {
         if (data && typeof data === "object") {
           try {
             localStorage.setItem("kinesica_public_settings", JSON.stringify(data));
-          } catch (_) {}
+          } catch { /* ignore */ }
           applySettings(data);
         }
       })
-      .catch(function () {});
+      .catch(function () { /* ignore */ });
   }
 }
 

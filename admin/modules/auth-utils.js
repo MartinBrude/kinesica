@@ -48,7 +48,7 @@ export function clearAuthStorage() {
     localStorage.removeItem("kinesica_user_role");
     sessionStorage.removeItem("kinesica_admin_view");
     sessionStorage.removeItem("kinesica_cta_seen");
-  } catch (_) {}
+  } catch { /* ignore */ }
 }
 
 export function saveAuthStorage(user) {
@@ -60,5 +60,5 @@ export function saveAuthStorage(user) {
     if (user && user.role) {
       localStorage.setItem("kinesica_user_role", user.role);
     }
-  } catch (_) {}
+  } catch { /* ignore */ }
 }

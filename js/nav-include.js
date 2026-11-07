@@ -36,7 +36,7 @@
         target.origin === window.location.origin &&
         normalizePath(target.pathname) === normalizePath(window.location.pathname)
       );
-    } catch (e) {
+    } catch {
       return false;
     }
   }

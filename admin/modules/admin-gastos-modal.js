@@ -85,7 +85,7 @@ export async function fetchRatesForDate(fecha, notify = false) {
       if (notify) dialogAlert(`Cotización del ${cleanDate || "día"} aplicada: 1 EUR = US$ ${fetched.eurUsd} | $ ${fetched.eurArs.toLocaleString("es-AR")} ARS.`);
       return;
     }
-  } catch (_) {}
+  } catch { /* ignore */ }
   if (cleanDate && historicalRatesByDate[cleanDate]) modalCurrentRates = { ...historicalRatesByDate[cleanDate] };
   updateModalTcStatus(cleanDate, false);
   recalcModalCurrencies();

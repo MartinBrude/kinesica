@@ -5,7 +5,7 @@
 
 import { api } from "./api.js?v=78";
 import { getSessionUser } from "./auth.js?v=83";
-import { escapeHtml, dialogAlert, switchActiveView } from "./dom.js?v=78";
+import { dialogAlert, switchActiveView } from "./dom.js?v=78";
 
 const viewDashboard = document.querySelector("#view-dashboard");
 const greetingEl = document.querySelector("#dash-greeting");
@@ -35,7 +35,7 @@ export function showDashboardView() {
   if (view) {
     try {
       sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "inicio" }));
-    } catch {}
+    } catch { /* ignore */ }
 
     updateDashboardState();
   }
@@ -87,12 +87,12 @@ export async function updateDashboardState() {
       try {
         localStorage.setItem("kinesica_clara_active", isClaraOn ? "1" : "0");
         localStorage.setItem("kinesica_booking_active", isBookingOn ? "1" : "0");
-      } catch (_) {}
+      } catch { /* ignore */ }
       updateDashboardClara(isClaraOn);
       updateDashboardBooking(isBookingOn);
       return;
     }
-  } catch (_) {}
+  } catch { /* ignore */ }
 
   const claraStorage = localStorage.getItem("kinesica_clara_active") === "1";
   const bookingStorage = localStorage.getItem("kinesica_booking_active") === "1";
@@ -151,7 +151,7 @@ export function initDashboardModule(callbacks = {}) {
       updateDashboardClara(nextState);
       // Sincronizar también el botón del topbar si existe
       callbacks.onClaraToggled?.(nextState);
-    } catch (err) {
+    } catch {
       dialogAlert("No se pudo cambiar el estado de Clara.");
     } finally {
       claraToggleBtn.disabled = false;
@@ -174,7 +174,7 @@ export function initDashboardModule(callbacks = {}) {
       localStorage.setItem("kinesica_booking_active", nextState ? "1" : "0");
       updateDashboardBooking(nextState);
       callbacks.onBookingToggled?.(nextState);
-    } catch (err) {
+    } catch {
       dialogAlert("No se pudo cambiar el estado de la turnera web.");
     } finally {
       bookingToggleBtn.disabled = false;

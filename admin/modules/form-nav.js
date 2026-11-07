@@ -3,7 +3,7 @@
  */
 
 import { REQUIRED_FIELDS, validateStep, missingFieldKeys, missingFields } from "../ficha-rules.mjs?v=89";
-import { switchActiveView, dialogAlert } from "./dom.js?v=78";
+import { switchActiveView } from "./dom.js?v=78";
 
 const form = document.querySelector("#ficha");
 const btnPrev = document.querySelector("#btn-prev");
@@ -48,11 +48,11 @@ export function showForm(targetStep = 0, context = {}) {
   switchActiveView("view-form");
   try {
     window.scrollTo({ top: 0, behavior: "instant" });
-  } catch {}
+  } catch { /* ignore */ }
   try {
     const cid = typeof context.getCurrentId === "function" ? context.getCurrentId() : null;
     sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "form", id: cid }));
-  } catch {}
+  } catch { /* ignore */ }
   const initialStep = (typeof targetStep === "number" && Number.isInteger(targetStep) && targetStep >= 0 && targetStep <= 4)
     ? targetStep
     : 0;

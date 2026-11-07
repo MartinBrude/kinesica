@@ -63,7 +63,7 @@ function getTimingMetaHtml(item) {
         } else if (dayOfWeek >= 2 && dayOfWeek <= 5) {
           dispatchSchedule = "Día previo 10:00 hs";
         }
-      } catch {}
+      } catch { /* ignore */ }
     }
     const detectedStr = timeOnly ? ` · Detectado: ${escapeHtml(timeOnly)} hs` : "";
     return `<span>Envío automático: <strong>${escapeHtml(dispatchSchedule)}</strong>${detectedStr}</span>`;

@@ -165,7 +165,7 @@
       return new Intl.RelativeTimeFormat(relativeTimeLocale(lang), {
         numeric: "always",
       }).format(value, unit);
-    } catch (err) {
+    } catch {
       return "";
     }
   }

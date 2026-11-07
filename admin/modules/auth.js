@@ -19,7 +19,6 @@ import { setupRecoveryFlow, setupEnrollFlow } from "./auth-recovery.js";
 export { setGateMessage };
 
 let sessionUser = null;
-let authed = false;
 
 const qs = (sel) => (typeof document !== "undefined" ? document.querySelector(sel) : null);
 
@@ -71,7 +70,7 @@ export function getSessionUser() {
       if (logged && (role || name)) {
         return { name: name || "", username: name || "", role: role || (isMartin ? "admin" : "professional") };
       }
-    } catch (_) {}
+    } catch { /* ignore */ }
   }
   return sessionUser;
 }
@@ -81,7 +80,6 @@ export function setSessionUser(user) {
     user.role = "admin";
   }
   sessionUser = user;
-  authed = Boolean(user);
   const userLabel = qs("#session-user-name");
   if (user) {
     saveAuthStorage(user);
@@ -111,7 +109,6 @@ export function setSessionUser(user) {
 }
 
 export function showGate(data = {}) {
-  authed = false;
   clearAuthStorage();
   if (typeof document !== "undefined") {
     document.documentElement.classList.remove("is-authenticated");

@@ -132,7 +132,7 @@ export function showPacientesView() {
   if (view) {
     try {
       sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "pacientes" }));
-    } catch {}
+    } catch { /* ignore */ }
     loadPacientes();
   }
 }
@@ -617,7 +617,7 @@ export function initPacientesModule() {
           try {
             const data = await res.json();
             if (data?.error) errMsg = data.error;
-          } catch (_) {}
+          } catch { /* ignore */ }
           await dialogAlert(errMsg);
           return;
         }

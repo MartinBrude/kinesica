@@ -8,8 +8,8 @@ import { patientKey, validateField, getSessionIndex } from "../ficha-rules.mjs?v
 import { dialogConfirm, dialogAlert } from "./dom.js?v=78";
 import { setupInputRestrictions } from "./form-restrictions.js";
 import { syncFotoPreview, getCurrentFotos, getUploadInFlight, initFormPhotos } from "./form-photos.js";
-import { singles, todayISO, evaMeta, syncEva, syncAge, syncFollowups, setupSingleButtons } from "./form-eva.js";
-import { showStep, showForm as showFormNav, updateStepValidation as updateStepValidationNav, highlightMissingFields, highlightErrorFields, advanceNextStep } from "./form-nav.js";
+import { singles, syncEva, syncAge, syncFollowups, setupSingleButtons } from "./form-eva.js";
+import { showStep, showForm as showFormNav, updateStepValidation as updateStepValidationNav, advanceNextStep } from "./form-nav.js";
 import { setDniPower, setPatientLocked, populatePatientPicker, setupPatientHandlers, getIdentityKey, isIdentityEdited } from "./form-patient.js";
 import { submitFichaForm } from "./form-submit.js";
 import { getBlankFicha, readFormData, getFormSerializedState } from "./form-reader.js";

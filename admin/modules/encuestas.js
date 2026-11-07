@@ -10,7 +10,6 @@ import { escapeHtml, dialogAlert, dialogConfirm, switchActiveView } from "./dom.
 import { setListControlsEnabled } from "./list-controls.js?v=1";
 
 let cachedEncuestas = [];
-let cachedTotales = null;
 let currentFilter = "todas"; // 'todas' | 'comentarios' | 'positivas' | 'mejorar'
 
 const TRATAMIENTO_LABELS = {
@@ -32,7 +31,7 @@ export function showEncuestasView() {
   if (view) {
     try {
       sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "encuestas" }));
-    } catch (_) {}
+    } catch { /* ignore */ }
     loadEncuestasData();
     window.scrollTo({ top: 0, behavior: "instant" });
   }
@@ -225,7 +224,6 @@ export async function loadEncuestasData() {
     const data = await api("encuestas.php");
     if (data && Array.isArray(data.encuestas)) {
       cachedEncuestas = data.encuestas;
-      cachedTotales = data.totales || null;
     }
   } catch (_) {
     // Modo offline o sin red

@@ -12,7 +12,7 @@ export function showConsultorioView() {
   if (view) {
     try {
       sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "consultorio" }));
-    } catch {}
+    } catch { /* ignore */ }
     loadHorariosFromServer();
     loadHonorarios();
   }
@@ -28,7 +28,7 @@ export function showClaraView(onClaraShow) {
   if (view) {
     try {
       sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "clara" }));
-    } catch {}
+    } catch { /* ignore */ }
     if (typeof onClaraShow === "function") onClaraShow();
   }
 }

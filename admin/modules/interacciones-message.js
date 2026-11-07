@@ -19,7 +19,7 @@ export function resolveSenderName(userOrName) {
   if (!raw && typeof localStorage !== "undefined") {
     try {
       raw = localStorage.getItem("kinesica_user_name") || "";
-    } catch (_) {}
+    } catch { /* ignore */ }
   }
 
   const str = String(raw || "").trim();
