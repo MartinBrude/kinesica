@@ -673,7 +673,7 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
             . ($isCall ? '<li><strong>Modalidad:</strong> Llamada por WhatsApp</li>' : '<li><strong>Ubicación:</strong> Charcas 3889, 5º, B (Palermo)</li>')
             . '</ul>'
             . '<p>' . nl2br(htmlspecialchars($indicaciones)) . '</p>'
-            . '<p style="margin-top:20px;color:#6b7280;font-size:13px;">Si necesitás reprogramar o cancelar, por favor respondé a este correo o escribinos por WhatsApp.</p>'
+            . '<p style="margin-top:20px;color:#6b7280;font-size:13px;">Si necesitás reprogramar o cancelar, por favor hacelo por WhatsApp.</p>'
             . '</div>';
         $text = "Hola {$firstName},\nRecordatorio de tu turno: {$tipoCita} - {$when}.\n{$indicaciones}\nKinésica";
 
@@ -750,7 +750,7 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
             . ($isCall ? '<li><strong>Modalidad:</strong> Llamada por WhatsApp</li>' : '<li><strong>Ubicación:</strong> Charcas 3889, 5º, B (Palermo)</li>')
             . '</ul>'
             . '<p>' . nl2br(htmlspecialchars($indicaciones)) . '</p>'
-            . '<p style="margin-top:20px;color:#6b7280;font-size:13px;">Si necesitás reprogramar o cancelar, por favor respondé a este correo o escribinos por WhatsApp.</p>'
+            . '<p style="margin-top:20px;color:#6b7280;font-size:13px;">Si necesitás reprogramar o cancelar, por favor hacelo por WhatsApp.</p>'
             . '</div>';
         $text = "Hola {$firstName},\nRecordatorio de tu turno: {$tipoCita} - {$when}.\n{$indicaciones}\nKinésica";
         if (send_html_mail($email, $subject, $html, $text)) {
