@@ -7,7 +7,7 @@
  * 4. Honorarios y Medios de Pago
  */
 
-import { renderOptCText, REMINDER_TEMPLATE_TEXT } from "./menu-texts.js?v=2";
+import { renderOptCText, REMINDER_TEMPLATE_TEXT } from "./menu-texts.js?v=3";
 import { api } from "./api.js?v=78";
 import { dialogAlert } from "./dom.js?v=78";
 import { getSessionUser } from "./auth.js?v=83";

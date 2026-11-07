@@ -6,7 +6,7 @@
 import {
   DEFAULT_OPT_C_TEXT,
   DEFAULT_OPT_C_TEXT_EN,
-} from "./menu-texts.js?v=2";
+} from "./menu-texts.js?v=3";
 
 export const DEFAULT_CLARA_TEXTS = {
   menu_welcome: `¡Hola! Te damos la bienvenida a *Kinésica* 🩺

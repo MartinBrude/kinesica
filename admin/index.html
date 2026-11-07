@@ -10,8 +10,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=130">
-  <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1794036911">
+  <link rel="stylesheet" href="/admin/styles.css?v=131">
+  <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1794039606">
   <script>
     (function () {
       try {
@@ -1107,7 +1107,7 @@
               <textarea id="cfg-clara-reminder-text" rows="7" readonly aria-readonly="true" aria-describedby="cfg-clara-reminder-text-note" tabindex="-1" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:none; background:var(--bg); color:var(--muted); cursor:default;"></textarea>
               <small id="cfg-clara-reminder-text-note" style="color:var(--muted); font-size:12px; margin-top:6px; display:block;">
                 Este texto lo fija la plantilla aprobada por WhatsApp (Meta) y no se puede editar desde aquí. Lo que sí podés cambiar son las indicaciones de abajo.
-                <br><code>{nombre}</code> = nombre de pila del paciente · <code>{horario}</code> = hora del turno · <code>{indicaciones}</code> = las indicaciones de abajo.
+                <br><code>{nombre}</code> = nombre de pila · <code>{horario}</code> = hora · <code>{indicaciones}</code> = indicaciones (Meta las aplana a una sola línea: no admite saltos ni <code>|</code> dentro del parámetro).
               </small>
             </div>
 
@@ -1862,7 +1862,7 @@
           </div>
         </div>
         <div class="hero-actions" style="margin: 0; display: flex; gap: 8px; flex-wrap: wrap;">
-          <button type="button" class="btn light" id="btn-test-recordatorio" title="Crea un pending configurable para probar el envío manual por WhatsApp" style="display: inline-flex; align-items: center; gap: 6px;">
+          <button type="button" class="btn light" id="btn-test-recordatorio" title="Crear un pending configurable para probar el envío manual por WhatsApp" style="display: inline-flex; align-items: center; gap: 6px;">
             ＋ Caso de prueba
           </button>
           <button type="button" class="btn light" id="btn-refresh-recordatorios" style="display: inline-flex; align-items: center; gap: 6px;">
@@ -2671,8 +2671,8 @@
     <div class="admin-top-progress-bar"></div>
   </div>
   <div id="print-root"></div>
-  <script src="/partials/google-reviews-data.min.js?v=1794036911" defer></script>
-  <script src="/booking/booking-bundle.min.js?v=1794036911" defer></script>
-  <script type="module" src="/admin/app.js?v=185"></script>
+  <script src="/partials/google-reviews-data.min.js?v=1794039606" defer></script>
+  <script src="/booking/booking-bundle.min.js?v=1794039606" defer></script>
+  <script type="module" src="/admin/app.js?v=187"></script>
 </body>
 </html>

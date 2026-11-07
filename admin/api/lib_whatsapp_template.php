@@ -109,17 +109,21 @@ function send_whatsapp_reminder_template(string $to, array $data): array
     $indicaciones = trim((string) ($data['indicaciones'] ?? '📍 Te esperamos en Charcas 3889, 5º, B (Palermo).'));
     $eventId = trim((string) ($data['event_id'] ?? ''));
 
-    // Meta rechaza \n/\r/\t en parámetros de plantilla. Usamos U+2028 (line separator)
-    // para conservar saltos visuales en WhatsApp sin caer en el viejo " | ".
+    // Meta rechaza \n/\r/\t y >4 espacios en params. "|" y U+2028 se ven mal en WhatsApp (�).
+    // Aplanar a una sola línea: los saltos del mensaje vienen del texto FIJO de la plantilla Meta.
     $cleanParam = static function (string $text): string {
-        $out = str_replace(['\\r\\n', '\\n', '\\r'], ["\n", "\n", "\n"], $text);
-        $out = preg_replace('/\s*(?:\r\n|\r|\n)+\s*/u', "\u{2028}", $out) ?? $out;
-        $out = preg_replace('/\t+/u', ' ', $out) ?? $out;
-        $out = preg_replace('/ {2,}/u', ' ', $out) ?? $out;
-        $out = preg_replace('/^(?:\s*[|\x{2028}]\s*)+|(?:\s*[|\x{2028}]\s*)+$/u', '', $out) ?? $out;
-        // Por si el admin guardó el texto ya aplanado con " | ".
-        $out = preg_replace('/\s*\|\s*/u', "\u{2028}", $out) ?? $out;
-        return trim($out);
+        $out = str_replace(['\\r\\n', '\\n', '\\r', "\u{2028}", "\u{2029}"], "\n", $text);
+        $out = str_replace(["\r\n", "\r"], "\n", $out);
+        $out = preg_replace('/\s*\|\s*/u', "\n", $out) ?? $out;
+        $parts = preg_split('/\n+/u', $out) ?: [];
+        $lines = [];
+        foreach ($parts as $part) {
+            $line = trim(preg_replace('/[ \t]+/u', ' ', (string) $part) ?? '');
+            if ($line !== '') {
+                $lines[] = $line;
+            }
+        }
+        return trim(implode(' ', $lines));
     };
     $patient = $cleanParam($patient);
     $tipo = $cleanParam($tipo);

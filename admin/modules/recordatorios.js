@@ -11,7 +11,7 @@ import {
   renderRecordatoriosList,
   renderRecordatoriosPager,
   buildRecordatorioPages,
-} from "./recordatorios-render.js?v=10";
+} from "./recordatorios-render.js?v=11";
 import {
   filterRecordatoriosList,
   renderRecordatoriosStats,
@@ -601,12 +601,23 @@ function storeTestContact(name, phone) {
   }
 }
 
+function resolveTestContactDefaults(user) {
+  const username = String(user?.username || "").toLowerCase().trim();
+  const display = String(user?.name || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+  if (TEST_CONTACT_DEFAULTS[username]) return TEST_CONTACT_DEFAULTS[username];
+  if (display.includes("norberto")) return TEST_CONTACT_DEFAULTS.norberto;
+  if (display.includes("martin")) return TEST_CONTACT_DEFAULTS.martin;
+  return null;
+}
+
 function defaultTestContact() {
   const stored = readStoredTestContact();
   if (stored?.name && stored?.phone) return stored;
   const user = getSessionUser();
-  const username = String(user?.username || "").toLowerCase();
-  const known = TEST_CONTACT_DEFAULTS[username];
+  const known = resolveTestContactDefaults(user);
   if (known) {
     return {
       name: stored?.name || known.name,
@@ -619,32 +630,63 @@ function defaultTestContact() {
   };
 }
 
+function markTestFieldError(input, message) {
+  if (!input) return;
+  input.setAttribute("aria-invalid", "true");
+  input.style.borderColor = "#b42318";
+  input.style.boxShadow = "0 0 0 2px rgba(180, 35, 24, 0.15)";
+  input.focus();
+  const field = input.closest(".recordatorio-modal-field");
+  let err = field?.querySelector(".recordatorio-modal-field-error");
+  if (field && !err) {
+    err = document.createElement("p");
+    err.className = "recordatorio-modal-field-error";
+    err.style.cssText = "margin:0;font-size:12px;color:#b42318;";
+    field.appendChild(err);
+  }
+  if (err) err.textContent = message;
+}
+
+function clearTestFieldError(input) {
+  if (!input) return;
+  input.removeAttribute("aria-invalid");
+  input.style.borderColor = "";
+  input.style.boxShadow = "";
+  input.closest(".recordatorio-modal-field")?.querySelector(".recordatorio-modal-field-error")?.remove();
+}
+
 function openTestCaseModal() {
-  if (document.querySelector(".recordatorio-modal-backdrop")) return;
+  document.querySelectorAll(".recordatorio-modal-backdrop[data-test-case-modal]").forEach((el) => el.remove());
 
   const defaults = defaultTestContact();
   const backdrop = document.createElement("div");
   backdrop.className = "recordatorio-modal-backdrop";
+  backdrop.dataset.testCaseModal = "1";
   backdrop.setAttribute("role", "dialog");
   backdrop.setAttribute("aria-modal", "true");
+  backdrop.setAttribute("aria-labelledby", "test-case-modal-title");
+  // Estilos inline: el modal tiene que verse aunque el CSS del admin esté cacheado.
+  backdrop.style.cssText =
+    "position:fixed;inset:0;z-index:10050;display:flex;align-items:center;justify-content:center;" +
+    "padding:16px;background:rgba(11,37,69,.55);";
   backdrop.innerHTML = `
-    <div class="recordatorio-modal-card">
-      <div class="recordatorio-modal-header">
-        <h3>＋ Caso de prueba</h3>
+    <div class="recordatorio-modal-card" style="background:#fff;border:1px solid #d7dee7;border-radius:12px;max-width:500px;width:100%;box-shadow:0 16px 36px rgba(11,37,69,.2);padding:24px;display:flex;flex-direction:column;gap:16px;">
+      <div class="recordatorio-modal-header" style="display:flex;justify-content:space-between;align-items:center;">
+        <h3 id="test-case-modal-title" style="margin:0;font-size:17px;">＋ Caso de prueba</h3>
         <button type="button" class="btn ghost btn-close-modal" aria-label="Cerrar">✕</button>
       </div>
-      <div class="recordatorio-modal-body">
-        <p class="recordatorio-modal-hint">Crea un recordatorio pending para probar el envío manual por WhatsApp. No se guarda en el directorio de pacientes.</p>
-        <div class="recordatorio-modal-field">
-          <label for="test-case-name">Nombre:</label>
-          <input type="text" id="test-case-name" value="${escapeHtml(defaults.name)}" placeholder="Nombre del destinatario" autocomplete="name" />
+      <div class="recordatorio-modal-body" style="display:flex;flex-direction:column;gap:12px;font-size:13px;">
+        <p class="recordatorio-modal-hint" style="margin:0;font-size:12px;line-height:1.45;color:#5b6b7c;">Completá nombre y WhatsApp para crear un pending de prueba. No se guarda en el directorio de pacientes.</p>
+        <div class="recordatorio-modal-field" style="display:flex;flex-direction:column;gap:4px;">
+          <label for="test-case-name" style="font-weight:600;font-size:12px;">Nombre</label>
+          <input type="text" id="test-case-name" value="${escapeHtml(defaults.name)}" placeholder="Nombre del destinatario" autocomplete="name" required style="padding:9px 12px;border:1px solid #d7dee7;border-radius:8px;font-size:13px;font-family:inherit;" />
         </div>
-        <div class="recordatorio-modal-field">
-          <label for="test-case-phone">WhatsApp (con código de país):</label>
-          <input type="tel" id="test-case-phone" value="${escapeHtml(defaults.phone)}" placeholder="54911… o 346…" autocomplete="tel" />
+        <div class="recordatorio-modal-field" style="display:flex;flex-direction:column;gap:4px;">
+          <label for="test-case-phone" style="font-weight:600;font-size:12px;">WhatsApp (con código de país)</label>
+          <input type="tel" id="test-case-phone" value="${escapeHtml(defaults.phone)}" placeholder="54911… o 346…" autocomplete="tel" required style="padding:9px 12px;border:1px solid #d7dee7;border-radius:8px;font-size:13px;font-family:inherit;" />
         </div>
       </div>
-      <div class="recordatorio-modal-actions">
+      <div class="recordatorio-modal-actions" style="display:flex;justify-content:flex-end;flex-wrap:wrap;gap:10px;margin-top:8px;">
         <button type="button" class="btn light btn-close-modal">Cancelar</button>
         <button type="button" class="btn green" id="btn-submit-test-case">Crear caso</button>
       </div>
@@ -655,6 +697,8 @@ function openTestCaseModal() {
   const nameInput = backdrop.querySelector("#test-case-name");
   const phoneInput = backdrop.querySelector("#test-case-phone");
   (defaults.name ? phoneInput : nameInput)?.focus();
+  nameInput?.addEventListener("input", () => clearTestFieldError(nameInput));
+  phoneInput?.addEventListener("input", () => clearTestFieldError(phoneInput));
 
   const close = () => {
     backdrop.remove();
@@ -680,14 +724,14 @@ function openTestCaseModal() {
     if (normalized && phoneInput && phoneInput.value.trim() !== normalized) {
       phoneInput.value = normalized;
     }
+    clearTestFieldError(nameInput);
+    clearTestFieldError(phoneInput);
     if (!name) {
-      dialogAlert("Ingresá el nombre del destinatario.", { type: "danger" });
-      nameInput?.focus();
+      markTestFieldError(nameInput, "Ingresá el nombre del destinatario.");
       return;
     }
     if (!phone || phone.length < 8) {
-      dialogAlert("Ingresá un WhatsApp válido (con código de país).", { type: "danger" });
-      phoneInput?.focus();
+      markTestFieldError(phoneInput, "Ingresá un WhatsApp válido (con código de país).");
       return;
     }
 
@@ -731,9 +775,13 @@ export function initRecordatoriosModule() {
     document.getElementById("btn-test-recordatorio-martin");
   if (testBtn) {
     const user = getSessionUser();
-    const canTest = user?.role === "admin" || user?.username === "martin";
+    const canTest = user?.role === "admin" || user?.username === "martin" || user?.username === "norberto";
     testBtn.hidden = !canTest;
-    testBtn.addEventListener("click", () => {
+    testBtn.id = "btn-test-recordatorio";
+    testBtn.textContent = "＋ Caso de prueba";
+    testBtn.title = "Crear un pending configurable para probar el envío manual por WhatsApp";
+    testBtn.addEventListener("click", (e) => {
+      e.preventDefault();
       if (isRefreshing) return;
       openTestCaseModal();
     });

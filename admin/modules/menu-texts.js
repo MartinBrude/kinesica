@@ -38,9 +38,10 @@ export function renderOptCTextEn(template, fees = {}) {
     .replace(/\{medios_pago\}/g, pay);
 }
 
-// Recordatorio de 24 h: lo envía n8n ("Kinesica - Recordatorios 24h" → "Send WhatsApp Reminder") con la plantilla
-// de Meta recordatorio_turno_kinesica. Variables de la plantilla: {{1}} nombre de pila, {{2}} "sesión en el
-// consultorio" (fijo), {{3}} hora, {{4}} indicaciones (editables en el admin). El texto no se edita desde aquí.
+// Recordatorio de 24 h: plantilla Meta recordatorio_turno_kinesica.
+// {{1}} nombre · {{2}} tipo de cita · {{3}} hora · {{4}} indicaciones.
+// Meta NO permite saltos de línea dentro de {{4}}; los únicos saltos del mensaje son los del
+// texto fijo de la plantilla (antes/después de {{4}}). En el envío aplanamos | / U+2028 / \n.
 export const REMINDER_TEMPLATE_NAME = "recordatorio_turno_kinesica";
 export const REMINDER_TIPO_CITA = "sesión en el consultorio";
 export const REMINDER_TEMPLATE_TEXT = `¡Hola {nombre}! 🌿 Te escribo desde Kinésica para recordarte tu ${REMINDER_TIPO_CITA} programada para mañana a las {horario}.
@@ -49,10 +50,21 @@ export const REMINDER_TEMPLATE_TEXT = `¡Hola {nombre}! 🌿 Te escribo desde Ki
 
 Por favor confirmá tu asistencia seleccionando una de las opciones a continuación 🙌:`;
 
-/** Vista previa fiel a lo que se envía: sólo cambian nombre, hora e indicaciones. */
+/** Aplana indicaciones como lo hace el envío a Meta (sin | ni caracteres basura). */
+export function flattenReminderIndicaciones(indicaciones) {
+  return String(indicaciones || "")
+    .replace(/\u2028|\u2029/g, "\n")
+    .replace(/\s*\|\s*/g, "\n")
+    .split(/\n+/)
+    .map((line) => line.replace(/[ \t]+/g, " ").trim())
+    .filter(Boolean)
+    .join(" ");
+}
+
+/** Vista previa fiel a WhatsApp: indicaciones en una sola línea (límite de Meta). */
 export function renderReminderPreview(indicaciones, { nombre = "Lucas", horario = "16:00 hs" } = {}) {
   return REMINDER_TEMPLATE_TEXT
     .replace("{nombre}", nombre)
     .replace("{horario}", horario)
-    .replace("{indicaciones}", String(indicaciones || "").trim());
+    .replace("{indicaciones}", flattenReminderIndicaciones(indicaciones) || "—");
 }
