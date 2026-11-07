@@ -73,23 +73,26 @@ export function getLangOptionLetter() {
 function buildWelcomeMessage(lang) {
   let welcome;
   const langLetter = getLangOptionLetter();
+  welcome = (lang === "en")
+    ? pickSimText(ctx.inputs.menuWelcomeEn, "menu_welcome_en", ctx)
+    : pickSimText(ctx.inputs.menuWelcome, "menu_welcome", ctx);
+  const customs = (ctx.getCustomOptions && ctx.getCustomOptions()) || [];
+  if (customs.length > 0) {
+    const extraLines = customs
+      .filter((o) => o.letter && o.label)
+      .map((o) => `*${String(o.letter).toUpperCase()}.* ${o.label}`)
+      .join("\n");
+    const firstLtr = String(customs[0].letter || "").toUpperCase();
+    if (extraLines && firstLtr && !welcome.toUpperCase().includes(`*${firstLtr}.*`)) {
+      welcome = welcome.includes("\n\n_(") ? welcome.replace("\n\n_(", `\n${extraLines}\n\n_(`) : `${welcome}\n${extraLines}`;
+    }
+  }
   if (lang === "en") {
-    welcome = pickSimText(ctx.inputs.menuWelcomeEn, "menu_welcome_en", ctx);
     const langLineEn = `*${langLetter}.* 🇪🇸 Español`;
     if (!welcome.toUpperCase().includes(`*${langLetter}.*`) && !/español|espanol|spanish/i.test(welcome)) {
       welcome = welcome.includes("\n\n_(") ? welcome.replace("\n\n_(", `\n${langLineEn}\n\n_(`) : `${welcome}\n${langLineEn}`;
     }
   } else {
-    welcome = pickSimText(ctx.inputs.menuWelcome, "menu_welcome", ctx);
-    if (ctx.getCustomOptions() && ctx.getCustomOptions().length > 0) {
-      const extraLines = ctx.getCustomOptions()
-        .filter((o) => o.letter && o.label)
-        .map((o) => `*${o.letter.toUpperCase()}.* ${o.label}`)
-        .join("\n");
-      if (extraLines && !welcome.toUpperCase().includes(`*${ctx.getCustomOptions()[0].letter.toUpperCase()}.*`)) {
-        welcome = welcome.includes("\n\n_(") ? welcome.replace("\n\n_(", `\n${extraLines}\n\n_(`) : `${welcome}\n${extraLines}`;
-      }
-    }
     const langLineEs = `*${langLetter}.* 🌐 English`;
     if (!welcome.toUpperCase().includes(`*${langLetter}.*`) && !/english/i.test(welcome)) {
       welcome = welcome.includes("\n\n_(") ? welcome.replace("\n\n_(", `\n${langLineEs}\n\n_(`) : `${welcome}\n${langLineEs}`;
@@ -106,12 +109,36 @@ export function resetChatDemo(lang = chatLang) {
   appendChatMessage(buildWelcomeMessage(chatLang), "bot");
 }
 
+/** Letras del menú principal en el orden en que se muestran (*A.* … *G.* …). */
+function mainMenuLettersInOrder(menuText) {
+  const found = [];
+  const re = /\*([A-Za-z])\.\*/g;
+  let m;
+  while ((m = re.exec(String(menuText || "")))) {
+    const l = m[1].toLowerCase();
+    if (!found.includes(l)) found.push(l);
+  }
+  return found.length ? found : ["a", "b", "c", "d", "e", "f"];
+}
+
+/** En menú principal, 1→1.ª letra, 2→2.ª, etc. Con submenú activo no mapea. */
+function mapMainMenuDigitToLetter(norm, submenu, menuText) {
+  if (submenu) return norm;
+  const dig = String(norm || "").match(/^([1-9])\.?$/);
+  if (!dig) return norm;
+  const letters = mainMenuLettersInOrder(menuText);
+  const idx = parseInt(dig[1], 10) - 1;
+  return letters[idx] || norm;
+}
+
 function handleChatUserInput(inputRaw) {
   const input = (inputRaw || "").trim();
   if (!input) return;
 
   appendChatMessage(input, "user");
-  const norm = input.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+  let norm = input.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+  // Mapear dígitos con el menú ya armado (A–E + customs + idioma en orden visual).
+  norm = mapMainMenuDigitToLetter(norm, chatSubmenu, buildWelcomeMessage(chatLang));
 
   if (norm === "hello" || norm === "hi" || norm === "hey" || norm === "good morning" || norm === "good afternoon") {
     chatSubmenu = null;
