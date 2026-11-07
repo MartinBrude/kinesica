@@ -208,6 +208,13 @@
   margin-top: 18px;
 }
 
+.kb-section-hint {
+  margin: -4px 0 14px;
+  color: var(--kin-text-muted, #64748b);
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+
 .kb-step1-footer {
   margin-top: 20px;
   display: flex;

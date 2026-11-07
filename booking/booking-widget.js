@@ -37,7 +37,9 @@
       step1: "Inicio", step2: "Día y Horario", step3: "Tus Datos", step4: "Confirmación",
       qPatient: "¿Ya te has atendido con nosotros?",
       qWho: "¿Quién te atiende?",
+      existingHint: "Podés reservar online o escribirle directo por WhatsApp.",
       qTechnique: "¿Buscás alguna técnica en particular?",
+      techniqueHint: "No hace falta que sepas cuál. Si no estás seguro/a, elegí «No sé» y te mostramos horarios según la agenda.",
       qPrefer: "¿Preferís un profesional hombre o mujer?",
       proMale: "Hombre",
       proFemale: "Mujer",
@@ -138,7 +140,9 @@
       step1: "Start", step2: "Day & time", step3: "Your details", step4: "Confirmation",
       qPatient: "Have you been treated with us before?",
       qWho: "Who is your practitioner?",
+      existingHint: "You can book online or message them directly on WhatsApp.",
       qTechnique: "Are you looking for a particular technique?",
+      techniqueHint: "You don't need to know which one. If you're unsure, choose “I'm not sure” and we'll show times by schedule.",
       qPrefer: "Would you prefer a male or female practitioner?",
       proMale: "Male",
       proFemale: "Female",
@@ -239,7 +243,9 @@
       step1: "Début", step2: "Jour et horaire", step3: "Vos données", step4: "Confirmation",
       qPatient: "Avez-vous déjà été suivi chez nous ?",
       qWho: "Qui vous reçoit ?",
+      existingHint: "Vous pouvez réserver en ligne ou leur écrire directement sur WhatsApp.",
       qTechnique: "Cherchez-vous une technique en particulier ?",
+      techniqueHint: "Pas besoin de savoir laquelle. Si vous hésitez, choisissez « Je ne sais pas » : nous proposons les créneaux selon l'agenda.",
       qPrefer: "Préférez-vous un praticien ou une praticienne ?",
       proMale: "Homme",
       proFemale: "Femme",
@@ -340,7 +346,9 @@
       step1: "Início", step2: "Dia e horário", step3: "Seus dados", step4: "Confirmação",
       qPatient: "Você já se atendeu conosco?",
       qWho: "Quem te atende?",
+      existingHint: "Você pode agendar online ou escrever direto no WhatsApp.",
       qTechnique: "Procura alguma técnica em particular?",
+      techniqueHint: "Não precisa saber qual. Se não tiver certeza, escolha « Não sei » e mostramos horários conforme a agenda.",
       qPrefer: "Prefere um profissional homem ou mulher?",
       proMale: "Homem",
       proFemale: "Mulher",
@@ -725,11 +733,13 @@
 
               <div id="kb-existing-box" class="kb-step1-followup" hidden>
                 <div class="kb-section-title" style="font-size: 17px;">${this.t("qWho")}</div>
+                <p class="kb-section-hint" id="kb-existing-hint" ${this.options.adminMode ? "hidden" : ""}>${this.t("existingHint")}</p>
                 <div class="kb-choice-grid" id="kb-existing-practitioner-grid"></div>
               </div>
 
               <div id="kb-new-box" class="kb-step1-followup" hidden>
                 <div class="kb-section-title" style="font-size: 17px;">${this.t("qTechnique")}</div>
+                <p class="kb-section-hint" id="kb-technique-hint" ${this.options.adminMode ? "hidden" : ""}>${this.t("techniqueHint")}</p>
                 <div class="kb-choice-grid" id="kb-technique-grid"></div>
                 <div id="kb-practitioner-box" class="kb-step1-followup" hidden>
                   <div class="kb-section-title" style="font-size: 17px;">${this.t("qPrefer")}</div>
