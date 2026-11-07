@@ -91,11 +91,12 @@ function recordatorios_create_manual_test_case(array $auth, array $input = []): 
                 $existing['patient_name'] = $name;
                 $existing['event_summary'] = '[PRUEBA] ' . $name;
             }
+            $existingEmail = recordatorios_resolve_contact_email($wa, $name);
             return [
                 'ok' => true,
                 'created' => false,
                 'message' => 'Ya tenés un caso de prueba pendiente para ese número. Usá «Enviar ahora».',
-                'item' => recordatorios_format_item($existing),
+                'item' => recordatorios_format_item($existing, $existingEmail !== '' ? $existingEmail : null),
             ];
         }
 
@@ -139,11 +140,12 @@ function recordatorios_create_manual_test_case(array $auth, array $input = []): 
             return ['ok' => false, 'error' => 'Se insertó el caso pero no se pudo releer'];
         }
 
+        $createdEmail = recordatorios_resolve_contact_email($wa, $name);
         return [
             'ok' => true,
             'created' => true,
             'message' => 'Caso de prueba listo: ' . $name . ' · ' . $wa . '. Usá «Enviar ahora».',
-            'item' => recordatorios_format_item($created),
+            'item' => recordatorios_format_item($created, $createdEmail !== '' ? $createdEmail : null),
         ];
     } catch (Throwable $e) {
         error_log('recordatorios create_test_case: ' . $e->getMessage());

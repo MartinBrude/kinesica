@@ -362,6 +362,7 @@ function openRecordatorioContactModal(item, { mode = "contact", onSuccess } = {}
   backdrop.setAttribute("role", "dialog");
   backdrop.setAttribute("aria-modal", "true");
 
+  const resolvedEmail = resolveRecordatorioEmail(item);
   const name = escapeHtml(item.patient_name || item.event_summary || "Paciente");
   const appt = escapeHtml(
     [item.appointment_date, item.appointment_time].filter(Boolean).join(" · ") || "Sin fecha/hora"
@@ -409,7 +410,7 @@ function openRecordatorioContactModal(item, { mode = "contact", onSuccess } = {}
         </div>
         <div class="recordatorio-modal-field">
           <label for="dispatch-email">Correo electrónico:</label>
-          <input type="email" id="dispatch-email" value="${escapeHtml(item.email || "")}" placeholder="paciente@ejemplo.com" autocomplete="off" />
+          <input type="email" id="dispatch-email" value="${escapeHtml(resolvedEmail)}" placeholder="paciente@ejemplo.com" autocomplete="off" />
         </div>
         ${
           isDispatch
@@ -619,9 +620,43 @@ function openRecordatorioDispatchModal(item, onSuccess) {
 const TEST_CONTACT_STORAGE_KEY = "kinesica_recordatorio_test_contact";
 
 const TEST_CONTACT_DEFAULTS = {
-  martin: { name: "Martín Brude", phone: "34658444935" },
-  norberto: { name: "Norberto Brude", phone: "5491161564311" },
+  martin: { name: "Martín Brude", phone: "34658444935", email: "martin.brude@gmail.com" },
+  norberto: { name: "Norberto Brude", phone: "5491161564311", email: "norberto1712@gmail.com" },
+  maria: { name: "María Gulin", phone: "5491128531224", email: "manosmagicas7116@gmail.com" },
 };
+
+function phoneEndsMatch(a, b) {
+  const da = String(a || "").replace(/\D+/g, "");
+  const db = String(b || "").replace(/\D+/g, "");
+  if (da.length < 8 || db.length < 8) return false;
+  return da.slice(-10) === db.slice(-10) || da.endsWith(db.slice(-9)) || db.endsWith(da.slice(-9));
+}
+
+function normalizePersonKey(value) {
+  return String(value || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/** Resuelve email cuando el item viene sin él (p. ej. caso de prueba / staff no está en pacientes). */
+function resolveRecordatorioEmail(item) {
+  const existing = String(item?.email || "").trim().toLowerCase();
+  if (existing && existing.includes("@")) return existing;
+
+  const phone = String(item?.wa_id || "").trim();
+  const nameKey = normalizePersonKey(item?.patient_name || "");
+  for (const known of Object.values(TEST_CONTACT_DEFAULTS)) {
+    if (phoneEndsMatch(phone, known.phone)) return known.email;
+    const knownKey = normalizePersonKey(known.name);
+    if (nameKey && (nameKey === knownKey || nameKey.startsWith(`${knownKey} `) || knownKey.startsWith(`${nameKey} `))) {
+      return known.email;
+    }
+  }
+  return "";
+}
 
 function readStoredTestContact() {
   try {
@@ -632,15 +667,16 @@ function readStoredTestContact() {
     return {
       name: String(parsed.name || "").trim(),
       phone: String(parsed.phone || "").trim(),
+      email: String(parsed.email || "").trim(),
     };
   } catch {
     return null;
   }
 }
 
-function storeTestContact(name, phone) {
+function storeTestContact(name, phone, email = "") {
   try {
-    localStorage.setItem(TEST_CONTACT_STORAGE_KEY, JSON.stringify({ name, phone }));
+    localStorage.setItem(TEST_CONTACT_STORAGE_KEY, JSON.stringify({ name, phone, email: String(email || "").trim() }));
   } catch {
     /* ignore */
   }
@@ -667,11 +703,13 @@ function defaultTestContact() {
     return {
       name: stored?.name || known.name,
       phone: stored?.phone || known.phone,
+      email: stored?.email || known.email || "",
     };
   }
   return {
     name: stored?.name || String(user?.name || "").trim() || "",
     phone: stored?.phone || "",
+    email: stored?.email || "",
   };
 }
 
@@ -768,10 +806,17 @@ function openTestCaseModal() {
         }),
       });
       if (resp && (resp.ok || resp.status === "success")) {
-        storeTestContact(name, phone);
+        const knownEmail =
+          String(resp.item?.email || "").trim() ||
+          resolveRecordatorioEmail({ wa_id: phone, patient_name: name, email: "" });
+        storeTestContact(name, phone, knownEmail);
         close();
-        if (resp.item) applyRecordatorioItemUpdate(resp.item);
-        else await loadRecordatorios(false);
+        if (resp.item) {
+          applyRecordatorioItemUpdate({
+            ...resp.item,
+            email: String(resp.item.email || "").trim() || knownEmail,
+          });
+        } else await loadRecordatorios(false);
         toast(resp.message || "Caso de prueba listo. Usá «Enviar ahora».", { type: "success" });
         return;
       }

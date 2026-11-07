@@ -17,7 +17,7 @@ import { initAdminModule } from "./admin-panel.js?v=17";
 import { initConfiguracionModule } from "./configuracion.js?v=30";
 import { initDashboardModule, updateDashboardClara, updateDashboardBooking } from "./dashboard.js?v=13";
 import { initInteraccionesModule } from "./interacciones.js?v=15";
-import { initRecordatoriosModule } from "./recordatorios.js?v=23";
+import { initRecordatoriosModule } from "./recordatorios.js?v=24";
 import { initEncuestasModule } from "./encuestas.js?v=2";
 import { initAdminBooking } from "./admin-booking.js?v=3";
 

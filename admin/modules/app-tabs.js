@@ -11,7 +11,7 @@ import { showDashboardView, hideDashboardView, updateDashboardClara, updateDashb
 import { showConsultorioView, hideConsultorioView, showClaraView, hideClaraView } from "./configuracion.js?v=30";
 import { showAdminView, hideAdminView } from "./admin-panel.js?v=17";
 import { showInteraccionesView, hideInteraccionesView } from "./interacciones.js?v=15";
-import { showRecordatoriosView, hideRecordatoriosView } from "./recordatorios.js?v=23";
+import { showRecordatoriosView, hideRecordatoriosView } from "./recordatorios.js?v=24";
 import { showEncuestasView, hideEncuestasView } from "./encuestas.js?v=2";
 import { applyHoursToRuntime } from "./horarios.js?v=4";
 

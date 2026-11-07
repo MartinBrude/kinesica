@@ -243,6 +243,82 @@ function recordatorios_extract_contact_email(string $errorMessage): string
 }
 
 /**
+ * Completa el mapa de emails con la agenda del staff (`users`: profesionales del admin).
+ * Útil para casos de prueba (Martín/Norberto/María) cuyo mail no está en `pacientes`.
+ *
+ * @param array{by_phone: array<string,string>, by_name: array<string,string>} $out
+ * @return array{by_phone: array<string,string>, by_name: array<string,string>}
+ */
+function recordatorios_merge_staff_emails(array $out): array
+{
+    try {
+        $pdo = function_exists('db') ? db() : null;
+        if (!$pdo instanceof PDO) {
+            return $out;
+        }
+        $colEmail = $pdo->query("SHOW COLUMNS FROM users LIKE 'email'")->fetch();
+        if (!$colEmail) {
+            return $out;
+        }
+        $hasTel = (bool) $pdo->query("SHOW COLUMNS FROM users LIKE 'telefono'")->fetch();
+        $sql = $hasTel
+            ? 'SELECT email, telefono, display_name, first_name, last_name FROM users WHERE email IS NOT NULL AND email != "" LIMIT 200'
+            : 'SELECT email, display_name, first_name, last_name FROM users WHERE email IS NOT NULL AND email != "" LIMIT 200';
+        $stmt = $pdo->query($sql);
+        if (!$stmt) {
+            return $out;
+        }
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $email = strtolower(trim((string) ($row['email'] ?? '')));
+            if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                continue;
+            }
+            if ($hasTel) {
+                $end = substr(preg_replace('/\D+/', '', (string) ($row['telefono'] ?? '')) ?? '', -10);
+                if (strlen($end) >= 8 && !isset($out['by_phone'][$end])) {
+                    $out['by_phone'][$end] = $email;
+                }
+            }
+            $full = trim((string) ($row['display_name'] ?? ''));
+            $composed = trim((string) ($row['first_name'] ?? '') . ' ' . (string) ($row['last_name'] ?? ''));
+            foreach ([$full, $composed] as $name) {
+                $key = mb_strtolower(trim($name));
+                if ($key !== '' && mb_strlen($key) >= 3 && !isset($out['by_name'][$key])) {
+                    $out['by_name'][$key] = $email;
+                }
+            }
+            // Alias frecuentes de prueba (Martín Brude ↔ Martín).
+            if ($composed !== '' && mb_stripos($composed, 'brude') !== false) {
+                $first = mb_strtolower(trim((string) ($row['first_name'] ?? '')));
+                if ($first !== '' && !isset($out['by_name'][$first])) {
+                    $out['by_name'][$first] = $email;
+                }
+            }
+        }
+    } catch (Throwable $e) {
+        // Staff opcional: no bloquear.
+    }
+    return $out;
+}
+
+/**
+ * Resuelve email de staff/directorio para un wa_id + nombre (p. ej. al crear caso de prueba).
+ */
+function recordatorios_resolve_contact_email(string $waId, string $patientName = ''): string
+{
+    $map = recordatorios_merge_staff_emails(['by_phone' => [], 'by_name' => []]);
+    $phoneEnd = substr(recordatorios_clean_wa_id($waId), -10);
+    if (strlen($phoneEnd) >= 8 && isset($map['by_phone'][$phoneEnd])) {
+        return (string) $map['by_phone'][$phoneEnd];
+    }
+    $nameKey = mb_strtolower(trim($patientName));
+    if ($nameKey !== '' && isset($map['by_name'][$nameKey])) {
+        return (string) $map['by_name'][$nameKey];
+    }
+    return '';
+}
+
+/**
  * Busca emails del directorio para enriquecer la vista (por teléfono o nombre).
  *
  * @param list<array<string,mixed>> $rows
@@ -265,7 +341,7 @@ function recordatorios_lookup_directory_contacts(PDO $pdo, array $rows): array
             }
         }
         if (!$phones && !$names) {
-            return $out;
+            return recordatorios_merge_staff_emails($out);
         }
 
         if ($phones) {
@@ -312,7 +388,7 @@ function recordatorios_lookup_directory_contacts(PDO $pdo, array $rows): array
     } catch (Throwable $e) {
         // Directorio opcional: no bloquear la vista.
     }
-    return $out;
+    return recordatorios_merge_staff_emails($out);
 }
 
 /**
