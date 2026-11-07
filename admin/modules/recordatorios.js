@@ -11,7 +11,7 @@ import {
   renderRecordatoriosList,
   renderRecordatoriosPager,
   buildRecordatorioPages,
-} from "./recordatorios-render.js?v=11";
+} from "./recordatorios-render.js?v=12";
 import {
   filterRecordatoriosList,
   renderRecordatoriosStats,

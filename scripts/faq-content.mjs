@@ -1,6 +1,6 @@
 /**
  * Home FAQ copy: accordion HTML + FAQPage JSON-LD (ES / EN / FR / PT).
- * Schema answers stay concise; accordion FAQ 4 and 6 keep richer HTML.
+ * Schema answers stay concise; accordion FAQ 4 and 7 keep richer HTML.
  */
 import { escHtml } from "./html-utils.mjs";
 import { pathologyForStem } from "./pathology-content.mjs";
@@ -180,7 +180,8 @@ function examplesHtml(lang) {
                     </ul>
                     </div>`;
   }).join("\n                    ");
-  return `<p class="faq-examples-lead">${escHtml(FAQS[5].a[lang])}
+  const examplesFaq = FAQS.find((item) => item.html === examplesHtml);
+  return `<p class="faq-examples-lead">${escHtml(examplesFaq.a[lang])}
                     ${escHtml(EXAMPLE_LEAD[lang])}</p>
                     ${groups}`;
 }
@@ -242,6 +243,20 @@ export const FAQS = [
       pt: "Suas dúvidas e exames complementares, se tiver; roupa confortável. Menores devem vir acompanhados de um adulto.",
     },
     html: clothingHtml,
+  },
+  {
+    q: {
+      es: "¿Es importante llegar a horario?",
+      en: "Is it important to arrive on time?",
+      fr: "Est-il important d'arriver à l'heure ?",
+      pt: "É importante chegar no horário?",
+    },
+    a: {
+      es: "Pedimos puntualidad estricta. Como no contamos con secretaria, llegar a horario evita esperas en la entrada y permite que te atiendan sin demoras.",
+      en: "We ask for strict punctuality. As we do not have a receptionist, arriving on time avoids waiting at the entrance and lets us see you without delay.",
+      fr: "Nous demandons une ponctualité stricte. Sans secrétaire à l'accueil, arriver à l'heure évite d'attendre à l'entrée et permet de vous recevoir sans retard.",
+      pt: "Pedimos pontualidade rigorosa. Como não temos secretária, chegar no horário evita esperas na entrada e permite o atendimento sem atrasos.",
+    },
   },
   {
     q: {

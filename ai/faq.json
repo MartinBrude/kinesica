@@ -19,6 +19,10 @@
         "a": "Tus inquietudes y estudios complementarios si los tuvieses; ropa cómoda. Si sos menor, vení acompañado/a por un mayor."
       },
       {
+        "q": "¿Es importante llegar a horario?",
+        "a": "Pedimos puntualidad estricta. Como no contamos con secretaria, llegar a horario evita esperas en la entrada y permite que te atiendan sin demoras."
+      },
+      {
         "q": "¿Atienden a través de Prepagas u Obras Sociales?",
         "a": "Podés solicitar reintegros a tu obra social o prepaga."
       },
@@ -43,6 +47,10 @@
       {
         "q": "What should I bring to the first session?",
         "a": "Your questions and any complementary studies; comfortable clothing. Minors should come with an adult."
+      },
+      {
+        "q": "Is it important to arrive on time?",
+        "a": "We ask for strict punctuality. As we do not have a receptionist, arriving on time avoids waiting at the entrance and lets us see you without delay."
       },
       {
         "q": "Do you accept prepaid health plans or insurance?",
@@ -71,6 +79,10 @@
         "a": "Vos questions et examens complémentaires si vous en avez ; tenue confortable. Les mineurs doivent être accompagnés d'un adulte."
       },
       {
+        "q": "Est-il important d'arriver à l'heure ?",
+        "a": "Nous demandons une ponctualité stricte. Sans secrétaire à l'accueil, arriver à l'heure évite d'attendre à l'entrée et permet de vous recevoir sans retard."
+      },
+      {
         "q": "Acceptez-vous les mutuelles ou assurances ?",
         "a": "Vous pouvez demander un remboursement auprès de votre assurance ou mutuelle."
       },
@@ -95,6 +107,10 @@
       {
         "q": "O que devo levar na primeira sessão?",
         "a": "Suas dúvidas e exames complementares, se tiver; roupa confortável. Menores devem vir acompanhados de um adulto."
+      },
+      {
+        "q": "É importante chegar no horário?",
+        "a": "Pedimos pontualidade rigorosa. Como não temos secretária, chegar no horário evita esperas na entrada e permite o atendimento sem atrasos."
       },
       {
         "q": "Vocês aceitam planos de saúde ou reembolso?",

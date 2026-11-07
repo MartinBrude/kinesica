@@ -48,7 +48,8 @@ export function buildRecordatorioPages(items, { radius = RECORDATORIOS_DAY_RADIU
   const today = todayISOArgentina();
   const min = addDaysISO(today, -Math.abs(radius));
   const max = addDaysISO(today, Math.abs(radius));
-  const nearDays = dated.filter((d) => d >= min && d <= max).sort((a, b) => a.localeCompare(b));
+  // Más reciente primero (hoy antes que ayer; sábado antes que viernes).
+  const nearDays = dated.filter((d) => d >= min && d <= max).sort((a, b) => b.localeCompare(a));
   const otherDays = dated.filter((d) => d < min || d > max);
 
   const pages = [];
