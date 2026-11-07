@@ -666,12 +666,14 @@
 }
 
 #dash-card-agendar {
-  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background-color 0.18s ease;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
 }
 
 #dash-card-agendar:hover {
-  background: #e2ecf3;
-  border-color: #9bbcd4;
+  transform: translateY(-2px);
+  border-color: var(--primary);
+  box-shadow: 0 10px 24px -2px rgba(0, 60, 95, 0.13), 0 3px 8px -1px rgba(0, 40, 70, 0.06);
+  background: var(--white);
 }
 
 details.admin-collapsible-card {
@@ -682,15 +684,23 @@ details.admin-collapsible-card {
   width: 100%;
   box-shadow: var(--shadow);
   overflow: hidden;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
 details.admin-collapsible-card:hover {
-  border-color: #9bbcd4;
+  transform: translateY(-2px);
+  border-color: var(--primary);
+  box-shadow: 0 10px 24px -2px rgba(0, 60, 95, 0.13), 0 3px 8px -1px rgba(0, 40, 70, 0.06);
 }
 
 details.admin-collapsible-card[open] {
   box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+}
+
+details.admin-collapsible-card[open]:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary);
+  box-shadow: 0 12px 28px -2px rgba(0, 60, 95, 0.15), 0 4px 10px -1px rgba(0, 40, 70, 0.08);
 }
 
 summary.admin-collapsible-summary {
@@ -701,7 +711,7 @@ summary.admin-collapsible-summary {
   padding: 18px 24px;
   cursor: pointer;
   user-select: none;
-  background: var(--card);
+  background: var(--white);
   border-bottom: 1px solid transparent;
   transition: background-color 0.15s ease, border-color 0.15s ease;
   list-style: none;
@@ -713,23 +723,30 @@ summary.admin-collapsible-summary::-webkit-details-marker {
 
 summary.admin-collapsible-summary:hover,
 details.admin-collapsible-card[open] > summary.admin-collapsible-summary:hover {
-  background: #e2ecf3;
+  background: var(--white);
 }
 
-summary.admin-collapsible-summary:hover .admin-collapsible-chevron,
-details.admin-collapsible-card[open] > summary.admin-collapsible-summary:hover .admin-collapsible-chevron {
-  color: var(--navy);
+details.admin-collapsible-card:hover .admin-collapsible-title {
+  color: var(--primary);
 }
 
-summary.admin-collapsible-summary:hover .admin-collapsible-icon,
-details.admin-collapsible-card[open] > summary.admin-collapsible-summary:hover .admin-collapsible-icon {
-  background: #ffffff;
-  box-shadow: 0 1px 4px rgba(0, 40, 70, 0.08);
+details.admin-collapsible-card:hover .admin-collapsible-chevron {
+  color: var(--primary);
+  transform: scale(1.15);
+}
+
+details.admin-collapsible-card[open]:hover .admin-collapsible-chevron {
+  color: var(--primary);
+  transform: rotate(180deg) scale(1.15);
+}
+
+details.admin-collapsible-card:hover .admin-collapsible-icon {
+  background: rgba(0, 95, 153, 0.08);
 }
 
 details.admin-collapsible-card[open] > summary.admin-collapsible-summary {
   border-bottom-color: var(--line);
-  background: #fbfcfd;
+  background: var(--white);
 }
 
 .admin-collapsible-header-left {

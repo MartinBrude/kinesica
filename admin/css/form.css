@@ -725,7 +725,7 @@ input[name="edad"].input-calc {
 }
 
 .mediciones-accordion:hover {
-  border-color: #cbd5e1;
+  border-color: var(--primary);
 }
 
 .mediciones-accordion[open] {
@@ -751,7 +751,7 @@ input[name="edad"].input-calc {
 
 .mediciones-summary:hover,
 .mediciones-accordion[open] > .mediciones-summary:hover {
-  background: #e2ecf3;
+  background: #f1f5f9;
 }
 
 .mediciones-accordion[open] > .mediciones-summary {
