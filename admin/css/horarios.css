@@ -665,6 +665,15 @@
   cursor: not-allowed;
 }
 
+#dash-card-agendar {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background-color 0.18s ease;
+}
+
+#dash-card-agendar:hover {
+  background: #e2ecf3;
+  border-color: #9bbcd4;
+}
+
 details.admin-collapsible-card {
   background: var(--white);
   border: 1px solid var(--line);
