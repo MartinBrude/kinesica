@@ -17,21 +17,145 @@ require_once __DIR__ . '/lib_mail.php';
 require_once __DIR__ . '/pacientes_helpers.php';
 
 /**
- * Normaliza teléfono argentino a E.164-ish (549…).
+ * Normaliza teléfono a dígitos E.164-ish.
+ * AR → 549…; ES y otros internacionales se preservan (no forzar 549).
  */
 function recordatorios_normalize_phone_input(string $raw): string
 {
+    $digits = recordatorios_clean_wa_id($raw);
+    if ($digits === '') {
+        return '';
+    }
+    if (str_starts_with($digits, '00')) {
+        $digits = substr($digits, 2);
+    }
+    // España (+34) y locales 6/7/8/9…
+    if (str_starts_with($digits, '34') && strlen($digits) === 11) {
+        return $digits;
+    }
+    if (strlen($digits) === 9 && preg_match('/^[6789]/', $digits)) {
+        return '34' . $digits;
+    }
+    // Otros internacionales conocidos (no AR)
+    if (
+        (str_starts_with($digits, '598') && strlen($digits) >= 11)
+        || (str_starts_with($digits, '56') && strlen($digits) >= 11)
+        || (str_starts_with($digits, '1') && strlen($digits) === 11)
+    ) {
+        return $digits;
+    }
     if (function_exists('clean_phone_number')) {
         return clean_phone_number($raw);
     }
-    $phone = recordatorios_clean_wa_id($raw);
-    if (strlen($phone) === 10 && str_starts_with($phone, '11')) {
-        return '549' . $phone;
+    if (strlen($digits) === 10 && str_starts_with($digits, '11')) {
+        return '549' . $digits;
     }
-    if (strlen($phone) === 11 && str_starts_with($phone, '54') && !str_starts_with($phone, '549')) {
-        return '549' . substr($phone, 2);
+    if (strlen($digits) === 11 && str_starts_with($digits, '54') && !str_starts_with($digits, '549')) {
+        return '549' . substr($digits, 2);
     }
-    return $phone;
+    return $digits;
+}
+
+/** Caso de prueba manual: Martín @ +34 658 44 49 35 */
+const RECORDATORIOS_TEST_WA = '34658444935';
+const RECORDATORIOS_TEST_NAME = 'Martín Brude';
+
+function recordatorios_is_test_case(array $item): bool
+{
+    $cal = (string) ($item['calendar_event_id'] ?? '');
+    return str_starts_with($cal, 'test:');
+}
+
+/**
+ * Crea (o reutiliza) un recordatorio pending para probar el envío manual a Martín.
+ *
+ * @return array{ok:bool,item?:array,created?:bool,error?:string}
+ */
+function recordatorios_create_manual_test_case(array $auth): array
+{
+    $user = (string) ($auth['username'] ?? '');
+    $role = (string) ($auth['role'] ?? '');
+    if ($role !== 'admin' && $user !== 'martin') {
+        return ['ok' => false, 'error' => 'Solo admin puede crear el caso de prueba'];
+    }
+
+    try {
+        $pdo = recordatorios_pdo();
+        recordatorios_ensure_schema($pdo);
+
+        // Reutilizar un pending de prueba aún no enviado (evita acumular filas).
+        $stmt = $pdo->prepare(
+            'SELECT * FROM recordatorio_eventos
+             WHERE calendar_event_id LIKE :pfx
+               AND status = \'pending\'
+               AND wa_id = :wa
+             ORDER BY id DESC
+             LIMIT 1'
+        );
+        $stmt->execute([
+            'pfx' => 'test:martin:%',
+            'wa' => RECORDATORIOS_TEST_WA,
+        ]);
+        $existing = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($existing) {
+            return [
+                'ok' => true,
+                'created' => false,
+                'message' => 'Ya tenés un caso de prueba pendiente. Usá «Enviar ahora».',
+                'item' => recordatorios_format_item($existing),
+            ];
+        }
+
+        $tz = recordatorios_tz();
+        $nowLocal = new DateTimeImmutable('now', $tz);
+        $apptDate = $nowLocal->modify('+1 day')->format('Y-m-d');
+        $apptTime = '11:00';
+        $stamp = $nowLocal->format('Ymd-His');
+        $calId = 'test:martin:' . $stamp;
+        $eventKey = 'test:martin:' . bin2hex(random_bytes(8));
+        $runAt = time();
+
+        $ev = [
+            'event_key' => $eventKey,
+            'exec_id' => 'manual-test',
+            'run_at' => $runAt,
+            'appointment_date' => $apptDate,
+            'appointment_time' => $apptTime,
+            'calendar_event_id' => $calId,
+            'patient_name' => RECORDATORIOS_TEST_NAME,
+            'wa_id' => RECORDATORIOS_TEST_WA,
+            'status' => 'pending',
+            'skip_reason' => '',
+            'error_code' => '',
+            'error_message' => 'Caso de prueba manual',
+            'event_summary' => '[PRUEBA] ' . RECORDATORIOS_TEST_NAME,
+        ];
+        $outcome = recordatorios_insert_item($pdo, $ev);
+        if ($outcome === 'duplicate') {
+            return ['ok' => false, 'error' => 'No se pudo crear el caso de prueba (clave duplicada). Reintentá.'];
+        }
+
+        $created = recordatorios_find_item_by_id((int) $pdo->lastInsertId());
+        if (!$created) {
+            // Fallback por event_key
+            $q = $pdo->prepare('SELECT * FROM recordatorio_eventos WHERE event_key = :k LIMIT 1');
+            $q->execute(['k' => $eventKey]);
+            $created = $q->fetch(PDO::FETCH_ASSOC) ?: null;
+        }
+        if (!$created) {
+            return ['ok' => false, 'error' => 'Se insertó el caso pero no se pudo releer'];
+        }
+
+        return [
+            'ok' => true,
+            'created' => true,
+            'message' => 'Caso de prueba listo: Martín · +34 658 44 49 35. Usá «Enviar ahora».',
+            'item' => recordatorios_format_item($created),
+        ];
+    } catch (Throwable $e) {
+        error_log('recordatorios create_test_case: ' . $e->getMessage());
+        return ['ok' => false, 'error' => 'Error al crear el caso de prueba'];
+    }
 }
 
 /**
@@ -433,8 +557,9 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
     }
 
     // Persistir contacto cargado en el modal para próximas corridas / directorio.
+    // Los casos de prueba (test:…) no escriben en el directorio de pacientes.
     $saveContact = !isset($input['save_contact']) || !empty($input['save_contact']);
-    if ($saveContact && ($phone !== '' || $email !== '')) {
+    if ($saveContact && !recordatorios_is_test_case($item) && ($phone !== '' || $email !== '')) {
         $patientName = trim((string) ($item['patient_name'] ?: $item['event_summary'] ?: ''));
         recordatorios_persist_directory_contact($patientName, $phone, $email);
     }
@@ -463,66 +588,77 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
         $firstName = $parts[0];
     }
 
+    $isTestCase = recordatorios_is_test_case($item);
+
     // Regla estricta: No debe intentar enviarse recordatorio más de una vez por día a nadie
     if (in_array($item['status'], ['sent', 'sent_email'], true)) {
         return ['ok' => false, 'error' => 'Este recordatorio ya fue enviado exitosamente hoy.'];
     }
 
     // Regla: No tiene sentido enviar recordatorio si el turno ya pasó
-    if (function_exists('recordatorios_is_appointment_past') && recordatorios_is_appointment_past($apptDate, $apptTime)) {
+    // (los casos de prueba usan turno de mañana; se permiten reintentos).
+    if (
+        !$isTestCase
+        && function_exists('recordatorios_is_appointment_past')
+        && recordatorios_is_appointment_past($apptDate, $apptTime)
+    ) {
         return ['ok' => false, 'error' => 'El horario del turno ya pasó. No se puede enviar un recordatorio.'];
     }
 
-    try {
-        $pdo = recordatorios_pdo();
-        $cleanPhoneEnd = $phone !== '' ? substr(recordatorios_clean_wa_id($phone), -10) : '';
-        $pName = trim((string) ($item['patient_name'] ?? ''));
-        // La regla de un envío diario usa el día local de la clínica (Buenos Aires),
-        // aunque received_at se persista en UTC.
-        $localTz = recordatorios_tz();
-        $localDayStart = new DateTimeImmutable('now', $localTz)
-            ->setTime(0, 0, 0)
-            ->setTimezone(new DateTimeZone('UTC'));
-        $localDayEnd = $localDayStart->modify('+1 day');
+    // Deduplicación diaria: no aplica a casos de prueba (test:…) para poder reintentar a mano.
+    if (!$isTestCase) {
+        try {
+            $pdo = recordatorios_pdo();
+            $cleanPhoneEnd = $phone !== '' ? substr(recordatorios_clean_wa_id($phone), -10) : '';
+            $pName = trim((string) ($item['patient_name'] ?? ''));
+            // La regla de un envío diario usa el día local de la clínica (Buenos Aires),
+            // aunque received_at se persista en UTC.
+            $localTz = recordatorios_tz();
+            $localDayStart = new DateTimeImmutable('now', $localTz)
+                ->setTime(0, 0, 0)
+                ->setTimezone(new DateTimeZone('UTC'));
+            $localDayEnd = $localDayStart->modify('+1 day');
 
-        $conds = [];
-        $chkParams = [
-            'id' => $id,
-            'day_start' => $localDayStart->format('Y-m-d H:i:s'),
-            'day_end' => $localDayEnd->format('Y-m-d H:i:s'),
-        ];
-        if ($cleanPhoneEnd !== '') {
-            $conds[] = 'RIGHT(wa_id, 10) = :phone_end';
-            $chkParams['phone_end'] = $cleanPhoneEnd;
-        }
-        if ($email !== '') {
-            $conds[] = 'LOWER(error_message) LIKE :email_match';
-            $chkParams['email_match'] = '%' . $email . '%';
-        }
-        if ($pName !== '' && $pName !== 'Estimado/a paciente') {
-            $conds[] = 'LOWER(patient_name) = LOWER(:pname)';
-            $chkParams['pname'] = $pName;
-        }
-
-        if (!empty($conds)) {
-            $chkSql = 'SELECT id, status, appointment_time, received_at FROM recordatorio_eventos
-                WHERE id != :id
-                  AND status IN ("sent", "sent_email")
-                  AND received_at >= :day_start
-                  AND received_at < :day_end
-                  AND (' . implode(' OR ', $conds) . ')
-                LIMIT 1';
-            $stmt = $pdo->prepare($chkSql);
-            $stmt->execute($chkParams);
-            $alreadySent = $stmt->fetch(PDO::FETCH_ASSOC);
-            if ($alreadySent) {
-                return [
-                    'ok' => false,
-                    'error' => 'Ya se envió un recordatorio hoy a este paciente (' . ($alreadySent['status'] === 'sent' ? 'WhatsApp' : 'Email') . '). Máximo 1 envío por día.',
-                ];
+            $conds = [];
+            $chkParams = [
+                'id' => $id,
+                'day_start' => $localDayStart->format('Y-m-d H:i:s'),
+                'day_end' => $localDayEnd->format('Y-m-d H:i:s'),
+            ];
+            if ($cleanPhoneEnd !== '') {
+                $conds[] = 'RIGHT(wa_id, 10) = :phone_end';
+                $chkParams['phone_end'] = $cleanPhoneEnd;
             }
-        }
-    } catch (Throwable $e) {}
+            if ($email !== '') {
+                $conds[] = 'LOWER(error_message) LIKE :email_match';
+                $chkParams['email_match'] = '%' . $email . '%';
+            }
+            if ($pName !== '' && $pName !== 'Estimado/a paciente') {
+                $conds[] = 'LOWER(patient_name) = LOWER(:pname)';
+                $chkParams['pname'] = $pName;
+            }
+
+            if (!empty($conds)) {
+                $chkSql = 'SELECT id, status, appointment_time, received_at FROM recordatorio_eventos
+                    WHERE id != :id
+                      AND status IN ("sent", "sent_email")
+                      AND received_at >= :day_start
+                      AND received_at < :day_end
+                      AND calendar_event_id NOT LIKE \'test:%\'
+                      AND (' . implode(' OR ', $conds) . ')
+                    LIMIT 1';
+                $stmt = $pdo->prepare($chkSql);
+                $stmt->execute($chkParams);
+                $alreadySent = $stmt->fetch(PDO::FETCH_ASSOC);
+                if ($alreadySent) {
+                    return [
+                        'ok' => false,
+                        'error' => 'Ya se envió un recordatorio hoy a este paciente (' . ($alreadySent['status'] === 'sent' ? 'WhatsApp' : 'Email') . '). Máximo 1 envío por día.',
+                    ];
+                }
+            }
+        } catch (Throwable $e) {}
+    }
 
     // 1. Enviar por Email si el canal elegido es 'email' o si 'auto' sin teléfono pero con email
     if ($channel === 'email' || ($channel === 'auto' && $phone === '' && $email !== '')) {
@@ -665,6 +801,14 @@ if ($action === 'save_contact' || $action === 'update_contact') {
         json_out(200, $res);
     }
     json_out(400, $res);
+}
+
+if ($action === 'create_test_case' || $action === 'seed_test') {
+    $res = recordatorios_create_manual_test_case($auth);
+    if (!empty($res['ok'])) {
+        json_out(200, $res);
+    }
+    json_out(isset($res['error']) && str_contains((string) $res['error'], 'Solo admin') ? 403 : 400, $res);
 }
 
 if ($action === 'dispatch' || $action === 'retry' || $action === 'send_manual') {

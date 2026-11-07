@@ -40,6 +40,14 @@ export function normalizePhoneForWhatsApp(raw) {
     if (m) rest = m[1] + m[2];
     return "549" + rest;
   }
+  // España (+34): no forzar prefijo AR
+  if (digits.startsWith("34") && digits.length === 11) return digits;
+  if (digits.length === 9 && /^[6789]/.test(digits)) return "34" + digits;
+  // Otros internacionales habituales
+  if (digits.startsWith("598") && digits.length >= 11) return digits;
+  if (digits.startsWith("56") && digits.length >= 11) return digits;
+  if (digits.startsWith("1") && digits.length === 11) return digits;
+
   if (digits.startsWith("0")) digits = digits.slice(1);
   const m15 = digits.match(/^(11|2\d{2,3}|3\d{2,3})15(\d{6,8})$/);
   if (m15) digits = m15[1] + m15[2];

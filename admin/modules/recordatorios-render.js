@@ -1,10 +1,83 @@
 /**
  * Render de filas, encabezados de día y pager de Recordatorios.
+ * Paginación: ventana ayer–hoy–mañana; el resto, un día por página.
  */
 
 import { escapeHtml } from "./dom.js?v=78";
 import { formatDisplayPhone, extractPhoneCandidate } from "./phone-format.js";
 import { capitalizePersonName } from "./pacientes-format.js";
+
+/** Radio de la ventana principal: 1 día atrás y 1 adelante respecto de hoy (AR). */
+export const RECORDATORIOS_DAY_RADIUS = 1;
+
+export function todayISOArgentina() {
+  return new Date().toLocaleDateString("en-CA", {
+    timeZone: "America/Argentina/Buenos_Aires",
+  });
+}
+
+export function addDaysISO(iso, delta) {
+  const [y, m, d] = String(iso || "").split("-").map(Number);
+  if (!y || !m || !d) return "";
+  const dt = new Date(Date.UTC(y, m - 1, d));
+  dt.setUTCDate(dt.getUTCDate() + delta);
+  return dt.toISOString().slice(0, 10);
+}
+
+function itemDay(item) {
+  return String(item?.run_day || item?.appointment_date || "sin-fecha").trim() || "sin-fecha";
+}
+
+/**
+ * Página 0: días en [hoy−1, hoy+1]. Páginas siguientes: un día cada una.
+ */
+export function buildRecordatorioPages(items, { radius = RECORDATORIOS_DAY_RADIUS } = {}) {
+  const list = Array.isArray(items) ? items : [];
+  const byDay = new Map();
+  for (const item of list) {
+    const day = itemDay(item);
+    if (!byDay.has(day)) byDay.set(day, []);
+    byDay.get(day).push(item);
+  }
+
+  const dated = [...byDay.keys()]
+    .filter((d) => d !== "sin-fecha" && /^\d{4}-\d{2}-\d{2}$/.test(d))
+    .sort((a, b) => b.localeCompare(a));
+  const sinFecha = byDay.get("sin-fecha") || [];
+
+  const today = todayISOArgentina();
+  const min = addDaysISO(today, -Math.abs(radius));
+  const max = addDaysISO(today, Math.abs(radius));
+  const nearDays = dated.filter((d) => d >= min && d <= max).sort((a, b) => a.localeCompare(b));
+  const otherDays = dated.filter((d) => d < min || d > max);
+
+  const pages = [];
+  if (nearDays.length) {
+    pages.push({
+      key: "near",
+      label: "Ayer · Hoy · Mañana",
+      days: nearDays,
+      items: nearDays.flatMap((d) => byDay.get(d) || []),
+    });
+  }
+  for (const d of otherDays) {
+    pages.push({
+      key: d,
+      label: formatRunDayHeader(d),
+      days: [d],
+      items: byDay.get(d) || [],
+    });
+  }
+  if (sinFecha.length) {
+    pages.push({
+      key: "sin-fecha",
+      label: "Sin fecha",
+      days: ["sin-fecha"],
+      items: sinFecha,
+    });
+  }
+  return pages;
+}
 
 export function formatRunDayHeader(isoDay) {
   if (!isoDay || isoDay === "sin-fecha") return "Sin fecha";
@@ -301,10 +374,10 @@ export function renderRecordatoriosList(container, items, state = {}) {
   container.innerHTML = parts.join("");
 }
 
-export function renderRecordatoriosPager(pagerEl, { currentPage, pageSize, total, onPageChange }) {
+export function renderRecordatoriosPager(pagerEl, { currentPage, totalPages, pageLabel, onPageChange }) {
   if (!pagerEl) return;
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
-  if (total <= pageSize) {
+  const pages = Math.max(1, Number(totalPages) || 1);
+  if (pages <= 1) {
     pagerEl.hidden = true;
     pagerEl.innerHTML = "";
     return;
@@ -320,14 +393,15 @@ export function renderRecordatoriosPager(pagerEl, { currentPage, pageSize, total
     if (currentPage > 0) onPageChange(currentPage - 1);
   });
   const span = document.createElement("span");
-  span.textContent = `Página ${currentPage + 1} de ${totalPages}`;
+  const label = pageLabel ? ` · ${pageLabel}` : "";
+  span.textContent = `Página ${currentPage + 1} de ${pages}${label}`;
   const next = document.createElement("button");
   next.type = "button";
   next.className = "btn ghost";
   next.textContent = "Siguiente →";
-  next.disabled = currentPage >= totalPages - 1;
+  next.disabled = currentPage >= pages - 1;
   next.addEventListener("click", () => {
-    if (currentPage < totalPages - 1) onPageChange(currentPage + 1);
+    if (currentPage < pages - 1) onPageChange(currentPage + 1);
   });
   pagerEl.append(prev, span, next);
 }

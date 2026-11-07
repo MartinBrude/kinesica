@@ -5,15 +5,17 @@
 import { api } from "./api.js?v=78";
 import { switchActiveView, escapeHtml } from "./dom.js?v=78";
 import { dialogAlert } from "./dom-dialogs.js?v=77";
-import { normalizePhoneForWhatsApp } from "./phone-format.js?v=3";
+import { normalizePhoneForWhatsApp } from "./phone-format.js?v=4";
+import { getSessionUser } from "./auth.js?v=83";
 import {
   renderRecordatoriosList,
   renderRecordatoriosPager,
-} from "./recordatorios-render.js?v=9";
+  buildRecordatorioPages,
+} from "./recordatorios-render.js?v=10";
 import {
   filterRecordatoriosList,
   renderRecordatoriosStats,
-} from "./recordatorios-filter.js?v=7";
+} from "./recordatorios-filter.js?v=8";
 import { renderRecordatoriosRules } from "./recordatorios-rules.js?v=7";
 import { setListControlsEnabled } from "./list-controls.js?v=1";
 
@@ -21,7 +23,6 @@ let cachedItems = [];
 let cachedCounts = {};
 let filteredItems = [];
 let currentPage = 0;
-let pageSize = 20;
 let activeStatusFilter = "all";
 let autoRefreshTimer = null;
 let isRefreshing = false;
@@ -148,9 +149,11 @@ function applyFiltersAndRender() {
 
   filteredItems = filterRecordatoriosList(cachedItems, search, activeStatusFilter);
   const total = filteredItems.length;
-  const maxPage = Math.max(0, Math.ceil(total / pageSize) - 1);
+  const pages = buildRecordatorioPages(filteredItems);
+  const maxPage = Math.max(0, pages.length - 1);
   if (currentPage > maxPage) currentPage = maxPage;
-  const slice = filteredItems.slice(currentPage * pageSize, currentPage * pageSize + pageSize);
+  const page = pages[currentPage] || { items: [], label: "" };
+  const slice = page.items || [];
 
   renderRecordatoriosList(container, slice, {
     isLoading: false,
@@ -163,8 +166,8 @@ function applyFiltersAndRender() {
 
   renderRecordatoriosPager(document.getElementById("recordatorios-pager"), {
     currentPage,
-    pageSize,
-    total,
+    totalPages: Math.max(1, pages.length),
+    pageLabel: page.label || "",
     onPageChange: (p) => {
       currentPage = p;
       applyFiltersAndRender();
@@ -394,7 +397,7 @@ function openRecordatorioContactModal(item, { mode = "contact", onSuccess } = {}
           </select>
         </div>
         <label class="recordatorio-modal-check">
-          <input type="checkbox" id="dispatch-save-contact" checked />
+          <input type="checkbox" id="dispatch-save-contact" ${String(item.calendar_event_id || "").startsWith("test:") ? "" : "checked"} />
           Guardar también en el directorio de pacientes
         </label>`
             : `<p class="recordatorio-modal-hint">Se guarda en el directorio de pacientes y en este recordatorio. No envía el mensaje todavía.</p>`
@@ -568,19 +571,54 @@ function openRecordatorioDispatchModal(item, onSuccess) {
   openRecordatorioContactModal(item, { mode: "dispatch", onSuccess });
 }
 
+async function createMartinTestCase() {
+  const btn = document.getElementById("btn-test-recordatorio-martin");
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "Creando…";
+  }
+  try {
+    const resp = await api("recordatorios.php", {
+      method: "POST",
+      body: JSON.stringify({ action: "create_test_case" }),
+    });
+    if (resp && (resp.ok || resp.status === "success")) {
+      if (resp.item) applyRecordatorioItemUpdate(resp.item);
+      else await loadRecordatorios(false);
+      dialogAlert(resp.message || "Caso de prueba listo. Usá «Enviar ahora».", { type: "success" });
+      return;
+    }
+    dialogAlert(resp?.error || "No se pudo crear el caso de prueba.", { type: "danger" });
+  } catch (err) {
+    dialogAlert(
+      (err && (err.payload?.error || err.message)) || "Error al crear el caso de prueba.",
+      { type: "danger" }
+    );
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = "＋ Caso de prueba (Martín)";
+    }
+  }
+}
+
 export function initRecordatoriosModule() {
   renderRecordatoriosRules(document.getElementById("recordatorios-rules"));
+  const testBtn = document.getElementById("btn-test-recordatorio-martin");
+  if (testBtn) {
+    const user = getSessionUser();
+    const canTest = user?.role === "admin" || user?.username === "martin";
+    testBtn.hidden = !canTest;
+    testBtn.addEventListener("click", () => {
+      if (isRefreshing) return;
+      createMartinTestCase();
+    });
+  }
   document.getElementById("btn-refresh-recordatorios")?.addEventListener("click", () => {
     loadRecordatorios(true);
   });
   document.getElementById("recordatorios-search")?.addEventListener("input", () => {
     if (isRefreshing) return;
-    currentPage = 0;
-    applyFiltersAndRender();
-  });
-  document.getElementById("recordatorios-page-size")?.addEventListener("change", (e) => {
-    if (isRefreshing) return;
-    pageSize = Math.max(10, parseInt(e.target.value, 10) || 20);
     currentPage = 0;
     applyFiltersAndRender();
   });
