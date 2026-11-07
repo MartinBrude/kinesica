@@ -534,6 +534,440 @@ En Kinésica evaluamos la articulación, los masticatorios y el cuello para devo
 📍 Charcas 3889, Palermo
 📲 Turnos WhatsApp: +54 9 11 6156-4311
 #ATMBloqueada #Trismo #Mandibula #KinesiologiaPalermo #Kinésica`
+  },
+
+  // Fila 8: Patologías del sitio (cobertura de artículos, sin ATM)
+  {
+    id: "31_cefalea",
+    title: "¿Dolor de cabeza que no afloja?",
+    cat: "CEFALEA",
+    group: "columna",
+    body: "El dolor de cabeza puede venir del cuello, la mandíbula o la postura. Evaluamos la causa mecánica y tratamos con terapia manual.",
+    feedUrl: "campanas/feed/catalogo_feed_31_cefalea.png",
+    storyUrl: "campanas/story/catalogo_story_31_cefalea.png",
+    copy: `¿Dolor de cabeza que no afloja? 🤕
+
+Puede nacer en cervicales, mandíbula o tensión postural. En Kinésica evaluamos la causa mecánica y tratamos con terapia manual 1 a 1.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Cefalea #Cervicalgia #ATM #KinesiologiaPalermo #Kinésica`
+  },
+  {
+    id: "32_dorsalgia",
+    title: "¿Dolor entre los omóplatos?",
+    cat: "DORSALGIA",
+    group: "columna",
+    body: "La dorsalgia suele venir de rigidez torácica y posturas sostenidas. Recuperamos movilidad dorsal con terapia manual.",
+    feedUrl: "campanas/feed/catalogo_feed_32_dorsalgia.png",
+    storyUrl: "campanas/story/catalogo_story_32_dorsalgia.png",
+    copy: `¿Dolor entre los omóplatos? 😣
+
+La dorsalgia suele venir de rigidez torácica y horas frente a la pantalla. Recuperamos movilidad dorsal con terapia manual.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Dorsalgia #EspaldaAlta #TerapiaManual #Kinésica`
+  },
+  {
+    id: "33_ciatalgia",
+    title: "¿Dolor que baja por la pierna?",
+    cat: "CIATALGIA",
+    group: "columna",
+    body: "Quemazón u hormigueo desde la lumbar al glúteo y pierna. Evaluamos columna y nervio ciático sin forzar.",
+    feedUrl: "campanas/feed/catalogo_feed_33_ciatalgia.png",
+    storyUrl: "campanas/story/catalogo_story_33_ciatalgia.png",
+    copy: `¿Dolor, quemazón u hormigueo que baja por la pierna? ⚡
+
+Eso es ciatalgia: evaluamos lumbar, pelvis y nervio ciático con neurodinamia y terapia manual, sin forzar.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Ciatalgia #NervioCiatico #Neurodinamia #Kinésica`
+  },
+  {
+    id: "34_cervicobraquialgia",
+    title: "¿Dolor de cuello que baja al brazo?",
+    cat: "CERVICOBRAQUIALGIA",
+    group: "columna",
+    body: "Cuando el dolor nace en el cuello e irradia al brazo hay tejidos neurales y postura involucrados. Tratamos la causa.",
+    feedUrl: "campanas/feed/catalogo_feed_34_cervicobraquialgia.png",
+    storyUrl: "campanas/story/catalogo_story_34_cervicobraquialgia.png",
+    copy: `¿Dolor de cuello que baja al brazo? 🦾
+
+La cervicobraquialgia mezcla articulación, nervio y postura. En Kinésica tratamos la causa mecánica de raíz.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Cervicobraquialgia #Cervicalgia #Neurodinamia #Kinésica`
+  },
+  {
+    id: "35_pubalgia",
+    title: "¿Dolor en la ingle al entrenar?",
+    cat: "PUBALGIA",
+    group: "articulaciones",
+    body: "La pubalgia aparece por sobrecarga de cadera y pelvis. Evaluamos la cadena y tratamos sin forzar el pubis.",
+    feedUrl: "campanas/feed/catalogo_feed_35_pubalgia.png",
+    storyUrl: "campanas/story/catalogo_story_35_pubalgia.png",
+    copy: `¿Dolor en la ingle al entrenar o correr? 🏃‍♂️
+
+La pubalgia pide evaluar cadera, pelvis y cadena abdominal-aductora. Tratamos sin forzar el pubis.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Pubalgia #Deporte #Cadera #Kinésica`
+  },
+  {
+    id: "36_talalgia",
+    title: "¿Dolor de talón al dar el primer paso?",
+    cat: "TALALGIA",
+    group: "articulaciones",
+    body: "El dolor de talón afecta cada paso. Evaluamos apoyo del pie y cadena posterior para aliviar la carga.",
+    feedUrl: "campanas/feed/catalogo_feed_36_talalgia.png",
+    storyUrl: "campanas/story/catalogo_story_36_talalgia.png",
+    copy: `¿Dolor de talón al dar el primer paso? 🦶
+
+Evaluamos apoyo del pie y cadena posterior para bajar la carga y recuperar la marcha.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Talalgia #Pie #FascitisPlantar #Kinésica`
+  },
+  {
+    id: "37_dolor_sacroiliaco",
+    title: "¿Dolor en la pelvis o cerca del sacro?",
+    cat: "DOLOR SACROILÍACO",
+    group: "columna",
+    body: "El dolor sacroilíaco suele venir de cómo se cargan pelvis, cadera y lumbar. Liberamos la articulación con terapia manual.",
+    feedUrl: "campanas/feed/catalogo_feed_37_dolor_sacroiliaco.png",
+    storyUrl: "campanas/story/catalogo_story_37_dolor_sacroiliaco.png",
+    copy: `¿Dolor cerca del sacro o en la pelvis? 🦴
+
+La articulación sacroilíaca responde a desequilibrios de cadera y lumbar. La liberamos con terapia manual 1 a 1.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Sacroiliaca #Pelvis #Lumbalgia #Kinésica`
+  },
+  {
+    id: "38_protrusion_discal",
+    title: "¿Protrusión discal? No es una condena",
+    cat: "PROTRUSIÓN DISCAL",
+    group: "columna",
+    body: "Con evaluación y progresión mejoramos función y confianza al moverte, sin resignarte al dolor.",
+    feedUrl: "campanas/feed/catalogo_feed_38_protrusion_discal.png",
+    storyUrl: "campanas/story/catalogo_story_38_protrusion_discal.png",
+    copy: `¿Protrusión discal? No es una condena. 🛡️
+
+Con evaluación y progresión mejoramos función y confianza al moverte, sin resignarte al dolor.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#ProtrusionDiscal #Columna #RPG #Kinésica`
+  },
+  {
+    id: "39_hipercifosis",
+    title: "¿Te ves cada vez más encorvado?",
+    cat: "HIPERCIFOSIS",
+    group: "columna",
+    body: "La hipercifosis rigidiza el dorso y carga cuello y hombros. Recuperamos movilidad torácica con RPG y terapia manual.",
+    feedUrl: "campanas/feed/catalogo_feed_39_hipercifosis.png",
+    storyUrl: "campanas/story/catalogo_story_39_hipercifosis.png",
+    copy: `¿Te ves cada vez más encorvado? 🧍
+
+La hipercifosis rigidiza el dorso y sobrecarga cuello y hombros. Recuperamos movilidad torácica con RPG.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Hipercifosis #Postura #RPG #Kinésica`
+  },
+  {
+    id: "40_hiperlordosis",
+    title: "¿Curva lumbar aumentada y dolor?",
+    cat: "HIPERLORDOSIS",
+    group: "columna",
+    body: "La hiperlordosis no es mala por sí misma, pero sin control sobrecarga la zona baja. Reequilibramos pelvis y cadena.",
+    feedUrl: "campanas/feed/catalogo_feed_40_hiperlordosis.png",
+    storyUrl: "campanas/story/catalogo_story_40_hiperlordosis.png",
+    copy: `¿Curva lumbar aumentada y dolor? 🔁
+
+No es “malo” por sí solo: falta control y movilidad. Reequilibramos pelvis y cadena posterior.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Hiperlordosis #Lumbar #Postura #Kinésica`
+  },
+  {
+    id: "41_dorso_plano",
+    title: "¿Espalda rígida y sin curva?",
+    cat: "DORSO PLANO",
+    group: "columna",
+    body: "El dorso plano limita la movilidad torácica. Mejoramos flexibilidad y control para reducir sobrecargas.",
+    feedUrl: "campanas/feed/catalogo_feed_41_dorso_plano.png",
+    storyUrl: "campanas/story/catalogo_story_41_dorso_plano.png",
+    copy: `¿Espalda rígida y sin curva? 🧊
+
+El dorso plano limita la movilidad torácica. Mejoramos flexibilidad y control para bajar sobrecargas.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#DorsoPlano #Columna #RPG #Kinésica`
+  },
+  {
+    id: "42_genu_valgo",
+    title: "¿Rodillas que se van hacia adentro?",
+    cat: "GENU VALGO",
+    group: "articulaciones",
+    body: "Más que corregir una forma, trabajamos control de cadera y pie para que la rodilla tolere la carga.",
+    feedUrl: "campanas/feed/catalogo_feed_42_genu_valgo.png",
+    storyUrl: "campanas/story/catalogo_story_42_genu_valgo.png",
+    copy: `¿Rodillas que se van hacia adentro? 🦵
+
+Trabajamos control de cadera y pie para que la rodilla tolere mejor la carga al caminar o entrenar.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#GenuValgo #Rodilla #Biomecanica #Kinésica`
+  },
+  {
+    id: "43_genu_varo",
+    title: "¿Rodillas que se abren hacia afuera?",
+    cat: "GENU VARO",
+    group: "articulaciones",
+    body: "Trabajamos movilidad, fuerza y mecánica para que la rodilla tolere mejor caminar y entrenar.",
+    feedUrl: "campanas/feed/catalogo_feed_43_genu_varo.png",
+    storyUrl: "campanas/story/catalogo_story_43_genu_varo.png",
+    copy: `¿Rodillas que se abren hacia afuera? 🦵
+
+Mejoramos movilidad, fuerza y mecánica para tolerar mejor la marcha y el entrenamiento.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#GenuVaro #Rodilla #Kinesiologia #Kinésica`
+  },
+  {
+    id: "44_pies_planos",
+    title: "¿Pies planos y sobrecarga al caminar?",
+    cat: "PIES PLANOS",
+    group: "articulaciones",
+    body: "El arco bajo no siempre es un problema: evaluamos cómo tolera la carga y si genera síntomas en rodilla o espalda.",
+    feedUrl: "campanas/feed/catalogo_feed_44_pies_planos.png",
+    storyUrl: "campanas/story/catalogo_story_44_pies_planos.png",
+    copy: `¿Pies planos y sobrecarga al caminar? 👣
+
+El arco bajo no siempre es el problema: miramos la carga y si repercute en rodilla o espalda.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#PiesPlanos #Biomecanica #Posturologia #Kinésica`
+  },
+  {
+    id: "45_escoliosis",
+    title: "¿Escoliosis con dolor o rigidez?",
+    cat: "ESCOLIOSIS",
+    group: "columna",
+    body: "Buscamos movilidad, fuerza y manejo del dolor con reeducación postural personalizada, no milagros estéticos.",
+    feedUrl: "campanas/feed/catalogo_feed_45_escoliosis.png",
+    storyUrl: "campanas/story/catalogo_story_45_escoliosis.png",
+    copy: `¿Escoliosis con dolor o rigidez? 🌀
+
+Trabajamos movilidad, fuerza y manejo del dolor con RPG personalizada. Sin promesas estéticas milagrosas.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Escoliosis #RPG #Columna #Kinésica`
+  },
+  {
+    id: "46_epicondilitis_lateral",
+    title: "¿Codo de tenista sin jugar al tenis?",
+    cat: "EPICONDILITIS LATERAL",
+    group: "articulaciones",
+    body: "También aparece por teclado y sobreuso del antebrazo. Liberamos tendón y cadena del brazo con terapia manual.",
+    feedUrl: "campanas/feed/catalogo_feed_46_epicondilitis_lateral.png",
+    storyUrl: "campanas/story/catalogo_story_46_epicondilitis_lateral.png",
+    copy: `¿Codo de tenista… sin jugar al tenis? 💻
+
+Teclado, mouse y sobreuso del antebrazo también lo disparan. Liberamos tendón y cadena del brazo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Epicondilitis #CodoDeTenista #TerapiaManual #Kinésica`
+  },
+  {
+    id: "47_epicondilitis_medial",
+    title: "¿Dolor en la cara interna del codo?",
+    cat: "EPICONDILITIS MEDIAL",
+    group: "articulaciones",
+    body: "La epicondilitis medial aparece por agarre y sobreuso. Tratamos el tendón y la mecánica del antebrazo.",
+    feedUrl: "campanas/feed/catalogo_feed_47_epicondilitis_medial.png",
+    storyUrl: "campanas/story/catalogo_story_47_epicondilitis_medial.png",
+    copy: `¿Dolor en la cara interna del codo? 🏌️
+
+Es la epicondilitis medial (codo de golfista): tratamos tendón y mecánica del antebrazo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#EpicondilitisMedial #Codo #Kinésica`
+  },
+  {
+    id: "48_impingement",
+    title: "¿Pinchazo al elevar el brazo?",
+    cat: "IMPINGEMENT",
+    group: "articulaciones",
+    body: "Mejoramos la mecánica de hombro y escápula para que el tendón deje de pinzarse.",
+    feedUrl: "campanas/feed/catalogo_feed_48_impingement.png",
+    storyUrl: "campanas/story/catalogo_story_48_impingement.png",
+    copy: `¿Pinchazo al elevar el brazo? 💥
+
+El impingement subacromial mejora cuando sincronizamos hombro y escápula. Abrimos espacio sin forzar.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Impingement #Hombro #ManguitoRotador #Kinésica`
+  },
+  {
+    id: "49_radiculopatia",
+    title: "¿Hormigueo o dolor que se irradia?",
+    cat: "RADICULOPATÍA",
+    group: "columna",
+    body: "La radiculopatía pide evaluación precisa. Dosificamos neurodinamia y terapia manual sin agravar.",
+    feedUrl: "campanas/feed/catalogo_feed_49_radiculopatia.png",
+    storyUrl: "campanas/story/catalogo_story_49_radiculopatia.png",
+    copy: `¿Hormigueo o dolor que se irradia? ⚡️
+
+La radiculopatía pide precisión: neurodinamia y terapia manual dosificadas, sin agravar.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Radiculopatia #Neurodinamia #Columna #Kinésica`
+  },
+  {
+    id: "50_meniscopatia",
+    title: "¿Rodilla que duele o se traba?",
+    cat: "MENISCOPATÍA",
+    group: "articulaciones",
+    body: "Recuperamos movilidad y tolerancia a la carga de la rodilla sin apurar cirugías.",
+    feedUrl: "campanas/feed/catalogo_feed_50_meniscopatia.png",
+    storyUrl: "campanas/story/catalogo_story_50_meniscopatia.png",
+    copy: `¿Rodilla que duele o se traba? 🦵
+
+En meniscopatía recuperamos movilidad y tolerancia a la carga, sin apurar cirugías.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Meniscopatia #Rodilla #Gonalgia #Kinésica`
+  },
+  {
+    id: "51_fascitis_plantar",
+    title: "¿Dolor en la planta al levantarte?",
+    cat: "FASCITIS PLANTAR",
+    group: "articulaciones",
+    body: "Con carga progresiva y terapia manual el pie recupera tolerancia y función.",
+    feedUrl: "campanas/feed/catalogo_feed_51_fascitis_plantar.png",
+    storyUrl: "campanas/story/catalogo_story_51_fascitis_plantar.png",
+    copy: `¿Dolor en la planta al levantarte? 🌅
+
+La fascitis plantar mejora con carga progresiva y terapia manual sobre pie y cadena posterior.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#FascitisPlantar #Talon #Pie #Kinésica`
+  },
+  {
+    id: "52_cervicalgia",
+    title: "¿Cuello cargado todo el día?",
+    cat: "CERVICALGIA",
+    group: "columna",
+    body: "El dolor cervical mejora con movilidad, postura y terapia manual sobre la causa mecánica.",
+    feedUrl: "campanas/feed/catalogo_feed_52_cervicalgia.png",
+    storyUrl: "campanas/story/catalogo_story_52_cervicalgia.png",
+    copy: `¿Cuello cargado todo el día? 😣
+
+La cervicalgia mejora con movilidad, postura y terapia manual sobre la causa mecánica.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Cervicalgia #Cuello #Osteopatia #Kinésica`
+  },
+  {
+    id: "53_hombro_congelado",
+    title: "¿Hombro rígido que no gira?",
+    cat: "HOMBRO CONGELADO",
+    group: "articulaciones",
+    body: "La capsulitis adhesiva pide un plan gradual: restauramos movimiento sin forzar la cápsula.",
+    feedUrl: "campanas/feed/catalogo_feed_53_hombro_congelado.png",
+    storyUrl: "campanas/story/catalogo_story_53_hombro_congelado.png",
+    copy: `¿Hombro rígido que no gira? 🧊
+
+La capsulitis adhesiva pide paciencia y técnica: restauramos movimiento sin forzar la cápsula.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#HombroCongelado #Capsulitis #Hombro #Kinésica`
+  },
+  {
+    id: "54_contracturas",
+    title: "¿Contractura o secuela de desgarro?",
+    cat: "CONTRACTURAS Y DESGARROS",
+    group: "articulaciones",
+    body: "Recuperamos tejido y carga progresiva para volver a moverte sin miedo a recaer.",
+    feedUrl: "campanas/feed/catalogo_feed_54_contracturas.png",
+    storyUrl: "campanas/story/catalogo_story_54_contracturas.png",
+    copy: `¿Contractura o secuela de desgarro? 💪
+
+Trabajamos tejido y carga progresiva para volver a moverte sin miedo a recaer.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Contractura #Desgarro #Rehabilitacion #Kinésica`
+  },
+  {
+    id: "55_tunel_carpiano",
+    title: "¿Hormigueo en la mano al dormir?",
+    cat: "TÚNEL CARPIANO",
+    group: "articulaciones",
+    body: "Abordamos muñeca, nervio y cadena del brazo con terapia manual y neurodinamia.",
+    feedUrl: "campanas/feed/catalogo_feed_55_tunel_carpiano.png",
+    storyUrl: "campanas/story/catalogo_story_55_tunel_carpiano.png",
+    copy: `¿Hormigueo en la mano al dormir? 🖐️
+
+El túnel carpiano mejora abordando muñeca, nervio y cadena del brazo con neurodinamia.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#TunelCarpiano #Muneca #Neurodinamia #Kinésica`
+  },
+  {
+    id: "56_coxalgia",
+    title: "¿Dolor de cadera al caminar?",
+    cat: "COXALGIA",
+    group: "articulaciones",
+    body: "Puede nacer en la articulación o por compensación de pelvis y lumbar. Evaluamos el conjunto.",
+    feedUrl: "campanas/feed/catalogo_feed_56_coxalgia.png",
+    storyUrl: "campanas/story/catalogo_story_56_coxalgia.png",
+    copy: `¿Dolor de cadera al caminar? 🚶
+
+Puede nacer en la articulación o por compensación de pelvis y lumbar. Evaluamos el conjunto.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Coxalgia #Cadera #Osteopatia #Kinésica`
+  },
+  {
+    id: "57_rectificacion",
+    title: "¿Perdiste la curva de la columna?",
+    cat: "RECTIFICACIÓN",
+    group: "columna",
+    body: "La rectificación cervical o lumbar rigidiza y duele. Recuperamos movilidad con reeducación postural.",
+    feedUrl: "campanas/feed/catalogo_feed_57_rectificacion.png",
+    storyUrl: "campanas/story/catalogo_story_57_rectificacion.png",
+    copy: `¿Perdiste la curva de la columna? 📏
+
+La rectificación cervical o lumbar rigidiza y duele. Recuperamos movilidad con RPG.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Rectificacion #Cervical #Lumbar #RPG #Kinésica`
   }
 ];
 
