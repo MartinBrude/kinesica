@@ -39,7 +39,7 @@
       qWho: "¿Quién te atiende?",
       existingHint: "Podés reservar online o escribirle directo por WhatsApp.",
       qTechnique: "¿Buscás alguna técnica en particular?",
-      techniqueHint: "No hace falta que sepas cuál. Si no estás seguro/a, elegí «No sé» y te mostramos horarios según la agenda.",
+      noSeDesc: "Si no sabés cuál, elegí esta: te mostramos horarios según la agenda.",
       qPrefer: "¿Preferís un profesional hombre o mujer?",
       proMale: "Hombre",
       proFemale: "Mujer",
@@ -142,7 +142,7 @@
       qWho: "Who is your practitioner?",
       existingHint: "You can book online or message them directly on WhatsApp.",
       qTechnique: "Are you looking for a particular technique?",
-      techniqueHint: "You don't need to know which one. If you're unsure, choose “I'm not sure” and we'll show times by schedule.",
+      noSeDesc: "If you're unsure, choose this: we'll show times by schedule.",
       qPrefer: "Would you prefer a male or female practitioner?",
       proMale: "Male",
       proFemale: "Female",
@@ -245,7 +245,7 @@
       qWho: "Qui vous reçoit ?",
       existingHint: "Vous pouvez réserver en ligne ou leur écrire directement sur WhatsApp.",
       qTechnique: "Cherchez-vous une technique en particulier ?",
-      techniqueHint: "Pas besoin de savoir laquelle. Si vous hésitez, choisissez « Je ne sais pas » : nous proposons les créneaux selon l'agenda.",
+      noSeDesc: "Si vous hésitez, choisissez celle-ci : nous proposons les créneaux selon l'agenda.",
       qPrefer: "Préférez-vous un praticien ou une praticienne ?",
       proMale: "Homme",
       proFemale: "Femme",
@@ -348,7 +348,7 @@
       qWho: "Quem te atende?",
       existingHint: "Você pode agendar online ou escrever direto no WhatsApp.",
       qTechnique: "Procura alguma técnica em particular?",
-      techniqueHint: "Não precisa saber qual. Se não tiver certeza, escolha « Não sei » e mostramos horários conforme a agenda.",
+      noSeDesc: "Se não souber qual, escolha esta: mostramos horários conforme a agenda.",
       qPrefer: "Prefere um profissional homem ou mulher?",
       proMale: "Homem",
       proFemale: "Mulher",
@@ -739,7 +739,6 @@
 
               <div id="kb-new-box" class="kb-step1-followup" hidden>
                 <div class="kb-section-title" style="font-size: 17px;">${this.t("qTechnique")}</div>
-                <p class="kb-section-hint" id="kb-technique-hint" ${this.options.adminMode ? "hidden" : ""}>${this.t("techniqueHint")}</p>
                 <div class="kb-choice-grid" id="kb-technique-grid"></div>
                 <div id="kb-practitioner-box" class="kb-step1-followup" hidden>
                   <div class="kb-section-title" style="font-size: 17px;">${this.t("qPrefer")}</div>
@@ -1286,22 +1285,34 @@
 
     buildTechniqueCard(technique) {
       const card = document.createElement("div");
-      card.className = "kb-choice-card";
+      const isNoSe = technique.id === "no-se";
+      card.className = "kb-choice-card" + (isNoSe ? " kb-choice-card--nose" : "");
       if (this.state.techniqueId === technique.id) {
         card.classList.add("selected");
       }
       card.dataset.technique = technique.id;
       const fee = this.getFeeForTechnique(technique.id);
       const feeFormatted = this.formatFee(fee);
-      card.innerHTML = this.options.adminMode
-        ? `<h3>${this.techniqueLabel(technique)}</h3>`
-        : `
+      if (this.options.adminMode) {
+        card.innerHTML = `<h3>${this.techniqueLabel(technique)}</h3>`;
+      } else if (isNoSe) {
+        card.innerHTML = `
+          <h3>${this.techniqueLabel(technique)}</h3>
+          <p class="kb-choice-desc">${this.t("noSeDesc")}</p>
+          <div class="kb-choice-fee">
+            <span class="kb-fee-label">${this.t("sessionFee")}:</span>
+            <strong class="kb-fee-amount">${feeFormatted}</strong>
+          </div>
+        `;
+      } else {
+        card.innerHTML = `
           <h3>${this.techniqueLabel(technique)}</h3>
           <div class="kb-choice-fee">
             <span class="kb-fee-label">${this.t("sessionFee")}:</span>
             <strong class="kb-fee-amount">${feeFormatted}</strong>
           </div>
         `;
+      }
       card.addEventListener("click", () => this.selectTechnique(technique.id));
       return card;
     }

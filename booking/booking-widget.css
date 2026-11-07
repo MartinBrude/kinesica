@@ -215,6 +215,22 @@
   line-height: 1.45;
 }
 
+#kb-technique-grid .kb-choice-card--nose {
+  grid-column: 1 / -1;
+}
+
+.kb-choice-card--nose .kb-choice-desc {
+  margin: 6px 0 0;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--kin-text-muted, #64748b);
+  font-weight: 400;
+}
+
+.kb-choice-card--nose.selected .kb-choice-desc {
+  color: var(--kin-text-heading, #1e293b);
+}
+
 .kb-step1-footer {
   margin-top: 20px;
   display: flex;
