@@ -73,12 +73,11 @@ Primera vez (una sola):
 
 ```bash
 npm install
-npm run gas:setup
-# Pegá el Script ID en booking/gas/.clasp.json
-#   (script.google.com → proyecto de la turnera → ⚙ Configuración → ID del secuencia de comandos)
-npm run gas:login
-npm run gas:deploy
+npm run gas:login    # una vez (cuenta con acceso al proyecto)
+npm run gas:deploy   # push + actualiza la web app
 ```
+
+Proyecto: [Apps Script turnera](https://script.google.com/home/projects/1oDT31aCTKOB35n1kS-iKzVHUn0ILDz8ZlRPwLEyvnnMsOTyZ5AYVebIm/edit) (`booking/gas/.clasp.json`).
 
 Cada cambio después:
 

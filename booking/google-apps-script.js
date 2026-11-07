@@ -4,10 +4,8 @@
  * Este script se puede desplegar como una Aplicación Web en Google Apps Script
  * (con permisos para Google Calendar y Google Sheets).
  *
- * Deploy (clasp, sin copiar/pegar):
- *   npm run gas:setup   → pegar scriptId en booking/gas/.clasp.json
- *   npm run gas:login   → una vez
- *   npm run gas:deploy  → push + actualiza la misma web app (/exec)
+ * Proyecto: https://script.google.com/home/projects/1oDT31aCTKOB35n1kS-iKzVHUn0ILDz8ZlRPwLEyvnnMsOTyZ5AYVebIm/edit
+ * Deploy (clasp): npm run gas:login (una vez) → npm run gas:deploy
  * Ver booking/README.md §4.
  *
  * Propiedades del script (consola GAS): CALENDAR_NAME, SPREADSHEET_ID,

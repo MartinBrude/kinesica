@@ -90,7 +90,7 @@ function ensureClaspConfig() {
       [
         "Falta el scriptId del proyecto Apps Script de la turnera.",
         "",
-        "1. Abrí el proyecto en script.google.com",
+        "1. Abrí https://script.google.com/home/projects/1oDT31aCTKOB35n1kS-iKzVHUn0ILDz8ZlRPwLEyvnnMsOTyZ5AYVebIm/edit",
         "2. Configuración del proyecto (engranaje) → copiá «ID del secuencia de comandos»",
         "3. Pegalo en booking/gas/.clasp.json → scriptId",
         "   (o exportá GAS_BOOKING_SCRIPT_ID=...)",

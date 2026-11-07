@@ -109,12 +109,16 @@ function send_whatsapp_reminder_template(string $to, array $data): array
     $indicaciones = trim((string) ($data['indicaciones'] ?? '📍 Te esperamos en Charcas 3889, 5º, B (Palermo).'));
     $eventId = trim((string) ($data['event_id'] ?? ''));
 
-    // Misma sanitización que n8n (Parse Patients & Phones → sanitizeTemplateParam).
+    // Meta rechaza \n/\r/\t en parámetros de plantilla. Usamos U+2028 (line separator)
+    // para conservar saltos visuales en WhatsApp sin caer en el viejo " | ".
     $cleanParam = static function (string $text): string {
-        $out = preg_replace('/\s*(?:\r\n|\r|\n)+\s*/', ' | ', $text) ?? $text;
-        $out = preg_replace('/\t+/', ' ', $out) ?? $out;
-        $out = preg_replace('/ {2,}/', ' ', $out) ?? $out;
-        $out = preg_replace('/^(?:\s*\|\s*)+|(?:\s*\|\s*)+$/', '', $out) ?? $out;
+        $out = str_replace(['\\r\\n', '\\n', '\\r'], ["\n", "\n", "\n"], $text);
+        $out = preg_replace('/\s*(?:\r\n|\r|\n)+\s*/u', "\u{2028}", $out) ?? $out;
+        $out = preg_replace('/\t+/u', ' ', $out) ?? $out;
+        $out = preg_replace('/ {2,}/u', ' ', $out) ?? $out;
+        $out = preg_replace('/^(?:\s*[|\x{2028}]\s*)+|(?:\s*[|\x{2028}]\s*)+$/u', '', $out) ?? $out;
+        // Por si el admin guardó el texto ya aplanado con " | ".
+        $out = preg_replace('/\s*\|\s*/u', "\u{2028}", $out) ?? $out;
         return trim($out);
     };
     $patient = $cleanParam($patient);
