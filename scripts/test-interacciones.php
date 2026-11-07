@@ -7,7 +7,7 @@ declare(strict_types=1);
  */
 
 $root = dirname(__DIR__);
-foreach (['state', 'view', 'migrate', 'n8n', 'n8n_io', 'spool', 'store'] as $lib) {
+foreach (['state', 'view', 'migrate', 'n8n', 'n8n_io', 'spool', 'store', 'sla'] as $lib) {
     require_once $root . "/admin/api/lib_interacciones_$lib.php";
 }
 
@@ -567,9 +567,79 @@ eq($msgAtt2['available'] ?? false, true, 'available=true luego de guardar el bin
 eq($msgAtt2['url'] ?? '', '/admin/api/interacciones_media.php?media_id=meta_doc_987654', 'URL de visualización');
 eq($msgAtt2['download_url'] ?? '', '/admin/api/interacciones_media.php?media_id=meta_doc_987654&download=1', 'URL de descarga');
 
+// ---------------------------------------------------------------- SLA >3h → Norberto (1× por mensaje)
+section('SLA sin respuesta (>3 h)');
+$pdo = fresh('sla');
+$arTz = new DateTimeZone('America/Argentina/Buenos_Aires');
+$now = (new DateTimeImmutable('today 12:00:00', $arTz))->getTimestamp(); // dentro de 10–20 AR
+$night = (new DateTimeImmutable('today 22:00:00', $arTz))->getTimestamp();
+$oldTs = $now - (INTERACCIONES_SLA_SECONDS + 120);
+$freshTs = $now - 600; // 10 min: aún no vence
+eq(interacciones_sla_in_notify_window($now), true, '12:00 AR está en ventana de envío');
+eq(interacciones_sla_in_notify_window($night), false, '22:00 AR está fuera de ventana');
+eq(interacciones_sla_in_notify_window((new DateTimeImmutable('today 20:00:00', $arTz))->getTimestamp()), false, '20:00 AR ya no envía');
+eq(interacciones_sla_in_notify_window((new DateTimeImmutable('today 10:00:00', $arTz))->getTimestamp()), true, '10:00 AR sí envía');
+// Marcar bootstrap hecho para probar el envío real (en prod la 1ª corrida solo silencia backlog).
+interacciones_sla_write_state(['bootstrapped' => true, 'bootstrapped_at' => gmdate('c'), 'last_run' => null]);
+interacciones_store_events([
+    ev('5491100000091', 'patient', 'Necesito que me contacten por un dolor de rodilla', $oldTs, 'sla-old-1'),
+    ev('5491100000091', 'clara', 'Ya le avisamos al profesional', $oldTs + 5, 'sla-old-1r'),
+    ev('5491100000092', 'patient', 'Consulta reciente', $freshTs, 'sla-fresh-1'),
+], $pdo);
+
+$sent = [];
+$sender = static function (array $payload) use (&$sent): array {
+    $sent[] = $payload;
+    return ['ok' => true, 'via' => 'test'];
+};
+$sla1 = interacciones_sla_check($pdo, true, $sender, $now);
+eq($sla1['due'] >= 1, true, 'detecta al menos un mensaje vencido');
+eq($sla1['notified'], 1, 'notifica exactamente un hilo vencido');
+eq(count($sent), 1, 'un solo envío WhatsApp');
+ok(str_contains((string) ($sent[0]['body'] ?? ''), 'SIN RESPUESTA'), 'cuerpo de alerta SLA');
+ok(str_contains((string) ($sent[0]['tpl_motivo'] ?? ''), 'SLA'), 'motivo de plantilla SLA');
+
+$sent = [];
+$sla2 = interacciones_sla_check($pdo, true, $sender, $now);
+eq($sla2['notified'], 0, 'segunda pasada no reenvía');
+eq($sla2['skipped'] >= 1, true, 'omite el mensaje ya notificado');
+eq(count($sent), 0, 'cero envíos en la segunda pasada');
+
+$row = $pdo->query("SELECT sla_notified_event_key FROM interaccion_estado WHERE conversation_key LIKE '5491100000091_%'")->fetch(PDO::FETCH_ASSOC);
+ok(is_array($row) && str_contains((string) ($row['sla_notified_event_key'] ?? ''), 'sla-old-1'), 'persiste event_key notificado');
+
+// Fuera de 10–20 AR: no envía ni reclama (el aviso espera a las 10).
+$pdo = fresh('sla-night');
+interacciones_sla_write_state(['bootstrapped' => true, 'bootstrapped_at' => gmdate('c'), 'last_run' => null]);
+$nightOld = $night - (INTERACCIONES_SLA_SECONDS + 120);
+interacciones_store_events([
+    ev('5491100000094', 'patient', 'Pendiente de noche', $nightOld, 'sla-night-1'),
+], $pdo);
+$sent = [];
+$slaNight = interacciones_sla_check($pdo, true, $sender, $night);
+eq(!empty($slaNight['outside_hours']), true, 'marca outside_hours de noche');
+eq($slaNight['notified'], 0, 'de noche no notifica');
+eq(count($sent), 0, 'de noche: cero WhatsApp');
+$nightRow = $pdo->query("SELECT sla_notified_event_key FROM interaccion_estado WHERE conversation_key LIKE '5491100000094_%'")->fetch(PDO::FETCH_ASSOC);
+ok($nightRow === false || empty($nightRow['sla_notified_event_key']), 'de noche no reclama el mensaje');
+
+// Bootstrap: la primera corrida no dispara WhatsApp sobre backlog histórico.
+$pdo = fresh('sla-boot');
+interacciones_sla_write_state([]); // sin bootstrapped
+interacciones_store_events([
+    ev('5491100000093', 'patient', 'Backlog viejo pendiente', $oldTs, 'sla-boot-1'),
+], $pdo);
+$sent = [];
+$slaBoot = interacciones_sla_check($pdo, true, $sender, $now);
+eq($slaBoot['notified'], 0, 'bootstrap no notifica backlog');
+eq($slaBoot['skipped'] >= 1, true, 'bootstrap marca vencidos como omitidos');
+eq(count($sent), 0, 'bootstrap: cero WhatsApp');
+$bootState = interacciones_sla_read_state();
+eq(!empty($bootState['bootstrapped']), true, 'queda bootstrapped=true');
+
 echo "\n";
 if ($fails > 0) {
     echo "❌ $fails comprobaciones fallaron ($passed OK)\n";
     exit(1);
 }
-echo "✅ interacciones (almacén durable, spool, concurrencia, migración, backup, reconciliador): $passed comprobaciones OK\n";
+echo "✅ interacciones (almacén durable, spool, concurrencia, migración, backup, reconciliador, SLA): $passed comprobaciones OK\n";

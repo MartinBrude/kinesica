@@ -157,6 +157,21 @@ function interacciones_ensure_schema(?PDO $pdo = null): void
             'VARCHAR(32) NULL',
             'TEXT NULL'
         );
+        // SLA: una sola alerta a Norberto por mensaje pendiente > 3 h.
+        kinesica_migrations_add_column_if_missing(
+            $pdo,
+            'interaccion_estado',
+            'sla_notified_at',
+            'DATETIME NULL',
+            'TEXT NULL'
+        );
+        kinesica_migrations_add_column_if_missing(
+            $pdo,
+            'interaccion_estado',
+            'sla_notified_event_key',
+            'VARCHAR(100) NULL',
+            'TEXT NULL'
+        );
     } catch (Throwable $e) {
     }
     $done[$pdo] = true;

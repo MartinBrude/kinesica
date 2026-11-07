@@ -20,6 +20,7 @@ require __DIR__ . '/lib.php';
 require_once __DIR__ . '/lib_interacciones_view.php';
 require_once __DIR__ . '/lib_interacciones_state.php';
 require_once __DIR__ . '/lib_interacciones_n8n.php';
+require_once __DIR__ . '/lib_interacciones_sla.php';
 
 function interacciones_request_secret(): string
 {
@@ -129,7 +130,7 @@ function interacciones_handle_sync_all(array $input): void
 
 function interacciones_run_housekeeping(bool $force): array
 {
-    $out = ['spool' => null, 'reconcile' => null];
+    $out = ['spool' => null, 'reconcile' => null, 'sla' => null];
     try {
         interacciones_migrate_legacy();
         $out['spool'] = interacciones_spool_drain(null, 2);
@@ -137,6 +138,8 @@ function interacciones_run_housekeeping(bool $force): array
         if (interacciones_reconcile_due($force ? 10 : 60)) {
             $out['reconcile'] = interacciones_reconcile(null, 6);
         }
+        // SLA >3h sin respuesta → alerta a Norberto (throttle; cron dedicado refuerza).
+        $out['sla'] = interacciones_sla_check(null, $force);
     } catch (Throwable $e) {
         error_log('interacciones housekeeping: ' . $e->getMessage());
     }

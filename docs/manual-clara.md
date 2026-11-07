@@ -434,6 +434,7 @@ Si por algún motivo el servicio de Meta WhatsApp se interrumpe, se cae o falla 
 El consultorio dispone de un registro completo de auditoría en la pestaña **Interacciones** ([`/admin/interacciones`](https://www.kinesica.com.ar/admin/interacciones)):
 * **Sincronización en vivo:** Cada mensaje recibido por WhatsApp, respuesta determinista de Clara, audio transcripto o derivación se sincroniza de forma inmediata con la base de datos de producción.
 * **Control de respuestas (`answered`):** El sistema preserva el estado de atención para que el equipo sepa qué consultas fueron resueltas por Clara y cuáles requirieron intervención o derivación manual.
+* **SLA sin respuesta (> 3 h):** Si un mensaje queda pendiente (sin marcar como respondido) más de **3 horas**, el sistema avisa por WhatsApp a **Norberto**. Hay como máximo **una notificación por mensaje** (no se reenvía aunque siga pendiente). Las alertas se envían solo entre las **10:00 y las 20:00 (hora Argentina)**; fuera de ese horario el aviso espera a las 10:00.
 * **Búsqueda e historial:** Permite filtrar rápidamente por paciente, número de teléfono o fecha con paginación completa.
 
 ---
