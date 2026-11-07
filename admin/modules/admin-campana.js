@@ -161,7 +161,7 @@ export async function loadCampanaData() {
   loading = true;
   if (tbody) {
     tbody.innerHTML =
-      '<tr><td colspan="4" style="text-align:center; color:var(--muted); padding:28px 16px;"><span class="loading-spinner" aria-hidden="true"></span> Cargando turnos del calendario…</td></tr>';
+      '<tr><td colspan="4" class="admin-table-loading"><span class="loading-spinner" aria-hidden="true"></span><span>Cargando turnos del calendario…</span></td></tr>';
   }
 
   try {

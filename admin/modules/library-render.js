@@ -108,10 +108,10 @@ export function renderLibraryList({
   }
 
   if (!libraryLoaded) {
-    const status = document.createElement("p");
-    status.className = "library-loading";
+    const status = document.createElement("div");
+    status.className = "admin-view-loading";
     status.setAttribute("role", "status");
-    status.textContent = "Cargando fichas…";
+    status.innerHTML = `<span class="loading-spinner" aria-hidden="true"></span><span>Cargando historias clínicas…</span>`;
     fragment.append(status);
   } else if (!groups.length) {
     const p = document.createElement("p");

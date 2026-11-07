@@ -228,7 +228,7 @@
     </div>
 
     <article class="manual-card" id="manual-content">
-      <p style="color:var(--muted);">Cargando documentación…</p>
+      <div class="admin-view-loading"><span class="loading-spinner" aria-hidden="true"></span><span>Cargando documentación…</span></div>
     </article>
   </main>
 
@@ -325,7 +325,7 @@
 
       async function loadDoc(docKey, preserveHash) {
         setActiveTab(docKey);
-        contentEl.innerHTML = '<p style="color:var(--muted);">Cargando documento…</p>';
+        contentEl.innerHTML = '<div class="admin-view-loading"><span class="loading-spinner" aria-hidden="true"></span><span>Cargando documento…</span></div>';
         try {
           const res = await fetch("/admin/api/manual-doc.php?doc=" + encodeURIComponent(docKey) + "&_t=" + Date.now(), {
             headers: { "X-Kinesica": "1" },

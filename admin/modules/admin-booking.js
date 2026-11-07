@@ -89,7 +89,7 @@ function buildPicker() {
         </div>
         <button type="button" class="admin-patient-new" data-role="new">+ Paciente de primera vez</button>
       </div>
-      <div class="admin-patient-picker-hint" data-role="hint">Cargando directorio…</div>
+      <div class="admin-patient-picker-hint" data-role="hint"><span class="loading-spinner-sm" aria-hidden="true"></span> Cargando directorio…</div>
     </div>
     <div class="admin-patient-selected" data-role="selected" hidden>
       <div>

@@ -494,6 +494,10 @@ export function renderProfesionales(profesionales, onReload) {
 export async function loadProfesionalesData(onReload) {
   try {
     reloadCallback = onReload;
+    const tbody = document.getElementById("admin-prof-tbody");
+    if (tbody && (!cachedProfesionales || !cachedProfesionales.length)) {
+      tbody.innerHTML = `<tr><td colspan="4" class="admin-table-loading"><span class="loading-spinner" aria-hidden="true"></span><span>Cargando equipo profesional…</span></td></tr>`;
+    }
     const data = await api("profesionales.php");
     const list = Array.isArray(data?.profesionales)
       ? data.profesionales

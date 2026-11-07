@@ -346,7 +346,7 @@ export async function loadPacientes() {
   if (!listEl) return;
   const toolbar = document.querySelector(".pacientes-toolbar");
   setListControlsEnabled(toolbar, false, { extra: [searchInput, profFilter] });
-  listEl.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px; color: var(--muted);"><span class="loading-spinner" aria-hidden="true"></span>Cargando directorio de pacientes…</td></tr>`;
+  listEl.innerHTML = `<tr><td colspan="6" class="admin-table-loading"><span class="loading-spinner" aria-hidden="true"></span><span>Cargando directorio de pacientes…</span></td></tr>`;
   try {
     const res = await api("pacientes.php");
     const raw = Array.isArray(res?.items) ? res.items : (Array.isArray(res) ? res : []);
@@ -358,7 +358,7 @@ export async function loadPacientes() {
     // Dedupe en memoria alcanza para la UI. No disparar POST deduplicate en cada
     // carga: competía con el alta y podía timeout/ocultar pacientes recién creados.
   } catch (err) {
-    listEl.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px; color: #dc2626;">Error al cargar pacientes: ${escapeHtml(err.message)}</td></tr>`;
+    listEl.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 24px; color: #dc2626;">Error al cargar pacientes: ${escapeHtml(err.message)}</td></tr>`;
   } finally {
     setListControlsEnabled(toolbar, true, { extra: [searchInput, profFilter] });
   }

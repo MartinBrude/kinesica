@@ -266,7 +266,7 @@ export async function loadRecordatorios(force = false) {
   if (!hasLoadedOnce || !cachedItems.length) {
     container.innerHTML = `
       <div class="recordatorios-empty is-loading">
-        <span class="recordatorios-spinner" aria-hidden="true"></span>
+        <span class="loading-spinner" aria-hidden="true"></span>
         <p>Cargando recordatorios...</p>
       </div>`;
   }

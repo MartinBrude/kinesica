@@ -215,6 +215,10 @@ let encuestasLoading = false;
 export async function loadEncuestasData() {
   if (encuestasLoading) return;
   encuestasLoading = true;
+  const tbody = document.getElementById("encuestas-tbody");
+  if (tbody && (!cachedEncuestas || !cachedEncuestas.length)) {
+    tbody.innerHTML = `<tr><td colspan="6" class="admin-table-loading"><span class="loading-spinner" aria-hidden="true"></span><span>Cargando respuestas de encuestas…</span></td></tr>`;
+  }
   const filterRoot = document.querySelector("#view-encuestas .admin-errores-filters");
   setListControlsEnabled(filterRoot, false);
   try {

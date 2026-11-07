@@ -524,27 +524,24 @@
 
 .recordatorios-spinner {
   display: inline-block;
-  width: 24px;
-  height: 24px;
-  border: 3px solid rgba(11, 37, 69, 0.12);
+  width: 22px;
+  height: 22px;
+  border: 2.5px solid rgba(0, 95, 153, 0.18);
   border-top-color: var(--primary);
   border-radius: 50%;
-  animation: recordatorios-spin 0.8s linear infinite;
+  animation: admin-spin 0.75s linear infinite;
 }
 
 .recordatorios-spinner-sm {
   display: inline-block;
-  width: 12px;
-  height: 12px;
-  border: 2px solid rgba(11, 37, 69, 0.2);
-  border-top-color: var(--primary);
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(0, 95, 153, 0.25);
+  border-top-color: currentColor;
   border-radius: 50%;
-  animation: recordatorios-spin 0.8s linear infinite;
+  animation: admin-spin 0.75s linear infinite;
   vertical-align: middle;
-}
-
-@keyframes recordatorios-spin {
-  to { transform: rotate(360deg); }
+  margin-right: 6px;
 }
 
 .recordatorios-reloading-badge {

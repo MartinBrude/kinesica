@@ -594,7 +594,7 @@ html:not(.is-authenticated) .clara-btn {
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
 }
 
-/* SPINNER E INDICADOR DE CARGA GLOBAL */
+/* SPINNER E INDICADORES DE CARGA UNIFICADOS */
 @keyframes admin-spin {
   to {
     transform: rotate(360deg);
@@ -619,36 +619,107 @@ html:not(.is-authenticated) .clara-btn {
   content: "";
 }
 
+.loading-spinner-sm {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(0, 95, 153, 0.2);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: admin-spin 0.75s linear infinite;
+  vertical-align: middle;
+  margin-right: 6px;
+  flex-shrink: 0;
+}
+
+/* Indicador de carga centrado en tablas (un solo indicador cohesivo) */
+.table-loading-cell,
+.admin-table-loading {
+  text-align: center !important;
+  padding: 36px 16px !important;
+  color: var(--muted) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  background: transparent !important;
+}
+
+.table-loading-cell .loading-spinner,
+.admin-table-loading .loading-spinner {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  border-width: 2.5px;
+}
+
+/* Contenedor de carga centrado para vistas/secciones completas */
+.admin-view-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 44px 16px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  width: 100%;
+}
+
+.admin-view-loading .loading-spinner {
+  width: 20px;
+  height: 20px;
+  border-width: 2.5px;
+  margin-right: 0;
+}
+
+/* BARRA SUPERIOR DE PROGRESO DE RED (reemplaza la cápsula flotante que parecía bug) */
+.admin-top-progress,
 .admin-global-loader {
   position: fixed;
-  top: 96px;
-  right: 24px;
-  z-index: 95;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 9px 16px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.96);
-  border: 1px solid var(--line);
-  box-shadow: 0 6px 20px rgba(3, 28, 66, 0.14);
-  color: var(--primary);
-  font-size: 13.5px;
-  font-weight: 600;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 10000;
   pointer-events: none;
-  backdrop-filter: blur(6px);
+  background: rgba(0, 95, 153, 0.10);
+  overflow: hidden;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+  display: block;
 }
 
-.admin-global-loader .loading-spinner {
-  margin-right: 0;
-  width: 16px;
-  height: 16px;
+.admin-top-progress[hidden],
+.admin-global-loader[hidden] {
+  display: none !important;
 }
 
-@media (max-width: 800px) {
-  .admin-global-loader {
-    top: auto;
-    bottom: 20px;
-    right: 16px;
+.admin-top-progress-bar,
+.admin-global-loader::after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 35%;
+  background: linear-gradient(90deg, transparent, var(--primary) 40%, #0099e6 70%, transparent);
+  animation: admin-top-progress-move 1.1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes admin-top-progress-move {
+  0% {
+    left: -35%;
   }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Ocultar texto o elementos hijos de la cápsula obsoleta */
+.admin-global-loader > span {
+  display: none !important;
 }

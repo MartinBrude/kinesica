@@ -195,6 +195,10 @@ export async function handleDeleteError(item, onReload) {
 export async function loadErroresData(onReload) {
   if (erroresLoading) return;
   erroresLoading = true;
+  const tbody = document.getElementById("admin-errores-tbody");
+  if (tbody && (!cachedErrores || !cachedErrores.length)) {
+    tbody.innerHTML = `<tr><td colspan="7" class="admin-table-loading"><span class="loading-spinner" aria-hidden="true"></span><span>Cargando registro de incidencias…</span></td></tr>`;
+  }
   const filterRoot = document.querySelector("#view-admin .admin-errores-filters")
     || document.querySelector(".admin-errores-filters");
   setListControlsEnabled(filterRoot, false, { extra: Array.from(filterBtns) });

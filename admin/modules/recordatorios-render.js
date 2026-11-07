@@ -239,7 +239,7 @@ export function renderRecordatoriosList(container, items, state = {}) {
     if (state.isLoading || (!state.hasLoadedOnce && state.isRefreshing)) {
       container.innerHTML = `
         <div class="recordatorios-empty is-loading">
-          <span class="recordatorios-spinner" aria-hidden="true"></span>
+          <span class="loading-spinner" aria-hidden="true"></span>
           <p>Cargando recordatorios...</p>
         </div>`;
       return;

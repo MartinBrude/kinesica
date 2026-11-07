@@ -140,6 +140,10 @@ export async function handleDeleteGasto(gasto, onReload) {
 }
 
 export async function loadGastosData(onReload) {
+  const tbody = document.getElementById("admin-gastos-tbody");
+  if (tbody && (!cachedGastos || !cachedGastos.length)) {
+    tbody.innerHTML = `<tr><td colspan="6" class="admin-table-loading"><span class="loading-spinner" aria-hidden="true"></span><span>Cargando registro de gastos…</span></td></tr>`;
+  }
   try {
     const data = await api("gastos.php");
     if (data && Array.isArray(data.gastos)) cachedGastos = data.gastos;

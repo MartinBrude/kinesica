@@ -107,11 +107,11 @@ export async function loadInteracciones(force = false) {
   if (refreshBtn && force) {
     refreshBtn.disabled = true;
     refreshBtn.style.opacity = "0.75";
-    refreshBtn.innerHTML = `↻ Actualizando...`;
+    refreshBtn.innerHTML = `<span class="loading-spinner-sm" aria-hidden="true"></span> Actualizando...`;
   }
 
   if (container.children.length === 0) {
-    container.innerHTML = `<div style="text-align:center;padding:40px;color:var(--muted);"><span class="loading-spinner"></span> Cargando conversaciones recientes...</div>`;
+    container.innerHTML = `<div class="admin-view-loading" role="status"><span class="loading-spinner" aria-hidden="true"></span><span>Cargando conversaciones recientes...</span></div>`;
   }
 
   try {

@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=129">
+  <link rel="stylesheet" href="/admin/styles.css?v=130">
   <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1793989456">
   <script>
     (function () {
@@ -470,7 +470,7 @@
         </div>
       </div>
       <div id="library-list" class="library-list">
-        <p class="library-loading" role="status">Cargando fichas…</p>
+        <div class="admin-view-loading" role="status"><span class="loading-spinner" aria-hidden="true"></span><span>Cargando historias clínicas…</span></div>
       </div>
       <nav id="library-pager" class="library-pager" hidden></nav>
     </section>
@@ -524,7 +524,7 @@
           </thead>
           <tbody id="pacientes-list-tbody">
             <tr>
-              <td colspan="6" style="text-align:center; padding: 24px; color: var(--muted);"><span class="loading-spinner" aria-hidden="true"></span>Cargando directorio de pacientes…</td>
+              <td colspan="6" class="admin-table-loading"><span class="loading-spinner" aria-hidden="true"></span><span>Cargando directorio de pacientes…</span></td>
             </tr>
           </tbody>
         </table>
@@ -1267,7 +1267,9 @@
                   </tr>
                 </thead>
                 <tbody id="admin-prof-tbody">
-                  <!-- Renderizado dinámico -->
+                  <tr>
+                    <td colspan="4" class="admin-table-loading"><span class="loading-spinner" aria-hidden="true"></span><span>Cargando equipo profesional…</span></td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -1322,7 +1324,9 @@
                   </tr>
                 </thead>
                 <tbody id="admin-gastos-tbody">
-                  <!-- Renderizado dinámico -->
+                  <tr>
+                    <td colspan="6" class="admin-table-loading"><span class="loading-spinner" aria-hidden="true"></span><span>Cargando registro de gastos…</span></td>
+                  </tr>
                 </tbody>
                 <tfoot>
                   <tr class="gastos-total-row">
@@ -1378,7 +1382,9 @@
                   </tr>
                 </thead>
                 <tbody id="admin-errores-tbody">
-                  <!-- Renderizado dinámico -->
+                  <tr>
+                    <td colspan="7" class="admin-table-loading"><span class="loading-spinner" aria-hidden="true"></span><span>Cargando registro de incidencias…</span></td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -1506,7 +1512,7 @@
           </div>
           <div class="admin-card-body">
             <div id="admin-servicios-content">
-              <div style="padding: 32px 16px; text-align: center; color: var(--muted);"><span class="loading-spinner" aria-hidden="true"></span>Cargando métricas de servicios...</div>
+              <div class="admin-view-loading"><span class="loading-spinner" aria-hidden="true"></span><span>Cargando métricas de servicios...</span></div>
             </div>
           </div>
         </article>
@@ -1957,7 +1963,11 @@
               <th style="text-align: right;">Acciones</th>
             </tr>
           </thead>
-          <tbody id="encuestas-tbody"></tbody>
+          <tbody id="encuestas-tbody">
+            <tr>
+              <td colspan="6" class="admin-table-loading"><span class="loading-spinner" aria-hidden="true"></span><span>Cargando respuestas de encuestas…</span></td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </section>
@@ -2671,13 +2681,12 @@
       </div>
     </div>
   </div>
-  <div id="admin-global-loader" class="admin-global-loader" role="status" aria-live="polite" hidden>
-    <span class="loading-spinner" aria-hidden="true"></span>
-    <span>Cargando…</span>
+  <div id="admin-global-loader" class="admin-top-progress" role="progressbar" aria-label="Cargando datos" hidden>
+    <div class="admin-top-progress-bar"></div>
   </div>
   <div id="print-root"></div>
   <script src="/partials/google-reviews-data.min.js?v=1793989456" defer></script>
   <script src="/booking/booking-bundle.min.js?v=1793989456" defer></script>
-  <script type="module" src="/admin/app.js?v=176"></script>
+  <script type="module" src="/admin/app.js?v=177"></script>
 </body>
 </html>
