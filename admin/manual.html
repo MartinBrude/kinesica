@@ -225,6 +225,9 @@
       <button type="button" class="manual-tab-btn" data-doc="backups">
         💾 Copias de Seguridad y Recuperación
       </button>
+      <button type="button" class="manual-tab-btn" data-doc="campanas">
+        📢 Campañas y Creativos
+      </button>
     </div>
 
     <article class="manual-card" id="manual-content">
@@ -314,6 +317,7 @@
           .replace(/\]\((?:\.\/|\/docs\/)?guia-pruebas\.md\)/g, '](#doc-pruebas)')
           .replace(/\]\((?:\.\/|\/docs\/)?cuenta-whatsapp-clara\.md\)/g, '](#doc-whatsapp)')
           .replace(/\]\((?:\.\/|\/docs\/)?backups-y-recuperacion\.md\)/g, '](#doc-backups)')
+          .replace(/\]\((?:\.\/|\/docs\/)?campanas-y-creativos\.md\)/g, '](#doc-campanas)')
           .replace(/\]\((?:\.\/|\/docs\/)?pacientes_primera_sesion\.xlsx\)/g, '](/admin/api/manual-doc.php?asset=pacientes_primera_sesion.xlsx)');
       }
 
@@ -365,7 +369,7 @@
         const link = ev.target && ev.target.closest ? ev.target.closest("a[href]") : null;
         if (!link) return;
         const href = link.getAttribute("href") || "";
-        const docMatch = href.match(/^#doc-(clara|agendar|cuentas|pruebas|whatsapp|backups)$/);
+        const docMatch = href.match(/^#doc-(clara|agendar|cuentas|pruebas|whatsapp|backups|campanas)$/);
         if (docMatch) {
           ev.preventDefault();
           history.replaceState(null, "", window.location.pathname);
@@ -410,7 +414,7 @@
           }
           document.documentElement.classList.add("is-admin-verified");
           let initialDoc = "clara";
-          const hashMatch = window.location.hash.match(/^#doc-(clara|agendar|cuentas|pruebas|whatsapp|backups)$/);
+          const hashMatch = window.location.hash.match(/^#doc-(clara|agendar|cuentas|pruebas|whatsapp|backups|campanas)$/);
           if (hashMatch) {
             initialDoc = hashMatch[1];
           }

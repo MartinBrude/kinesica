@@ -35,7 +35,7 @@ Antes de iniciar una nueva simulación o cuando quieras probar desde un teléfon
 | **TC-02** | **Consulta por Especialidad (ATM/Bruxismo)** | *"Hola, me derivó mi dentista por dolor de mandíbula y bruxismo. ¿Tratan esto?"* | Confirma que ATM y bruxismo es una de las especialidades centrales y ofrece coordinar un turno presencial de 1 hora. |
 | **TC-03** | **Agendar Turno Presencial (1 hora)** | *"Quisiera agendar un turno presencial en el consultorio para este martes a las 11:00 hs. Soy [Tu Nombre]."* | Crea el evento de 1 hora en el calendario (11:00 a 12:00 hs) y confirma de forma ejecutiva y amable. |
 | **TC-04** | **Agendar Turno Presencial (Detalle de Dirección)** | *"Quisiera agendar un turno presencial en el consultorio para este jueves a las 15:00 hs. Soy [Tu Nombre]."* | Crea el evento de 1 hora (60 minutos) en el calendario (15:00 a 16:00 hs), confirma el horario, **informa la dirección (`Charcas 3889, 5º, B`) por primera vez** y añade obligatoriamente: *"Si tenés estudios no olvides traerlos."* (Cero mención de menores ni adultos acompañantes). |
-| **TC-05** | **Consulta de Mis Turnos (`A` -> `2`)** | *"Hola"*, luego *"A"* y luego *"2"* (o *"mis turnos"*). | Consulta Google Calendar (`consultorio`) por el número de WhatsApp del paciente (o pide DNI/Pasaporte si agendó con otro número) y lista sus turnos futuros numerados. |
+| **TC-05** | **Consulta de Mis Turnos (`A` -> `1`)** | *"Hola"*, luego *"A"* y luego *"1"* (o *"2"*, o *"mis turnos"*). | Envía el enlace a `/agendar` y al responder *1* consulta Google Calendar (`consultorio`) por el número de WhatsApp del paciente (o pide DNI/Pasaporte si agendó con otro número) y lista sus turnos futuros numerados. |
 | **TC-06** | **Cancelar Turno** | *"Hola Clara, al final no voy a poder ir. Por favor cancelame el turno."* (o `C1` tras listar turnos). | Busca el turno del paciente en Google Calendar, lo elimina liberando el hueco, confirma la baja al paciente y avisa al profesional a cargo. |
 | **TC-07** | **Prueba de Límites (Fines de semana o Feriados)** | *"¿Tienen turnos disponibles para este sábado a la tarde o el domingo?"* | Rechaza amablemente indicando que el consultorio atiende exclusivamente de lunes a viernes hábiles y ofrece el día hábil más próximo. |
 | **TC-08** | **Prueba en Inglés (Detección Automática)** | *"Hi Clara! I have severe neck pain and need an appointment. Do you speak English?"* | Detecta el inglés y responde fluidamente en inglés con el mismo rol de secretaría médica. |
@@ -126,9 +126,9 @@ Antes de iniciar una nueva simulación o cuando quieras probar desde un teléfon
 | **TC-93** | **Cero Confirmación Condicional (No se Reserva en Duda)** | *(Tras recibir el recordatorio)*: *"Hola Clara, llego unos 15 minutos tarde pero voy"* o *"Te confirmo mañana bien temprano según el dolor"*. | Clara **NO** marca el turno como confirmado. Responde amablemente explicando que para mantener reservado el turno se requiere confirmación certera, o liberar el horario para no comprometer la única camilla del consultorio. |
 | **TC-94** | **Agendamiento de a un Turno a la Vez (Múltiples Pacientes / Parejas)** | *"Hola Clara, queremos ir mi pareja y yo este jueves, ¿nos podés agendar a los dos?"* | Clara aclara amablemente que en el consultorio se agenda **de a un turno a la vez** (recordando que hay 1 sola camilla física). Solicita primero los datos del primer paciente para concretar el primer turno, y luego procede con el segundo. |
 | **TC-95** | **Consultas por Masajes (Espalda, Bruxismo o Combinación)** | *"Hola Clara, quería consultar si hacen masajes para dolor de espalda y cuánto sale."* o *"¿Tienen masajes de bruxismo?"* | **Clara entiende que se habla de sesiones y responde hablando de sesiones:** Clara no rechaza al paciente ni dice que no hace masajes, ni ofrece masajes como servicio; responde hablando siempre de **sesiones** (individuales de 1 hora de kinesiología y terapias manuales, o de ATM/bruxismo). Si consultan honorarios, informa los valores oficiales ($75.000 para dolor de espalda / sesiones habituales, o $65.000 para ATM/bruxismo) y ofrece coordinar un turno presencial de 1 hora. |
-| **TC-96** | **Menú por letras (Modo sin IA — por defecto)** | *"Hola"*, después *A*, *B*, *C*, *D*, *E* o *MENU*. | *Hola* o *MENU* muestra el menú A–E (y opciones adicionales F, G... configuradas en `/admin/clara`). *A* abre agendar (*1*) o ver/cancelar turnos (*2*). *B* da la dirección y enlace de Google Maps (`opt_b_text`), sin grilla de horarios. *C* da honorarios y cobertura (`opt_c_text`). *D* da la indumentaria (`opt_d_text`). *E* pregunta si quiere hablar con Norberto (*1*), María (*2*) o cualquiera (*3*), sin avisar todavía. Un *1* suelto sin haber elegido *A* o *E* vuelve al menú. |
-| **TC-97** | **Cancelar desde la lista (`C1`)** | Tras ver los turnos (`A` -> `2`), escribir *"C1"*. | *C1* cancela el turno de ese número en la lista vigente (30 minutos), confirma día y hora al paciente y avisa al profesional a cargo. Si la lista venció, no cancela y pide volver a listar los turnos. |
-| **TC-98** | **Búsqueda flexible de turnos por DNI / Pasaporte en Menú** | Tras *A* -> *2* (sin turnos encontrados por teléfono), responder con DNI (con o sin puntos/espacios) o pasaporte con letras (ej. *"DNI 38.452.123"* o *"PASAPORTE A1234567"*). | Clara busca en los eventos del consultorio por documento normalizado, lista los turnos vigentes asociados y permite cancelarlos con *C1* autorizando la baja aunque el WhatsApp difiera. |
+| **TC-96** | **Menú interactivo y dígitos (Modo sin IA — por defecto)** | *"Hola"*, o escribir dígitos *1*, *2*, *3*, *4*, *5*... en el menú. | En el menú principal, los dígitos del *1* al *9* mapean automáticamente a las letras en orden visual (*1* = A Turnos, *2* = B Ubicación, *3* = C Honorarios, *4* = D Vestimenta, *5* = E Profesional...). Al presionar *A* (o *1*), envía de inmediato el enlace a `https://kinesica.com.ar/agendar` y abre la opción *1* (o *2* por compatibilidad) para consultar o cancelar turnos. |
+| **TC-97** | **Cancelar desde la lista (`C1`)** | Tras ver los turnos (`A` -> `1`), escribir *"C1"*. | *C1* cancela el turno de ese número en la lista vigente (30 minutos), confirma día y hora al paciente y avisa al profesional a cargo. Si la lista venció, no cancela y pide volver a listar los turnos. |
+| **TC-98** | **Búsqueda flexible de turnos por DNI / Pasaporte en Menú** | Tras *A* -> *1* (sin turnos encontrados por teléfono), responder con DNI (con o sin puntos/espacios) o pasaporte con letras (ej. *"DNI 38.452.123"* o *"PASAPORTE A1234567"*). | Clara busca en los eventos del consultorio por documento normalizado, lista los turnos vigentes asociados y permite cancelarlos con *C1* autorizando la baja aunque el WhatsApp difiera. |
 
 ---
 
@@ -281,16 +281,16 @@ Cuando un tester o vos encuentren algo que no les gustó, que falló o que quier
 
 ---
 
-## 🤖 5. Suite de Pruebas Automatizadas (365 Tests Offline)
+## 🤖 5. Suite de Pruebas Automatizadas (402 Tests Offline)
 
 El proyecto cuenta con un arnés completo de pruebas unitarias, de integración y de topología estática que se ejecutan sin consumir tokens ni requerir llamadas a APIs externas:
 
 ### ⚙️ Ejecución de la Suite Completa:
 ```bash
-python3 tests/run_all_tests.py
+python3 tests/run_all_tests.py --unit
 ```
-* **Tiempo de ejecución:** ~23 segundos.
-* **Cobertura total:** 365 tests unitarios (100% pasando).
+* **Tiempo de ejecución:** ~31 segundos.
+* **Cobertura total:** 402 tests unitarios (100% pasando).
 
 Para ejecutar además los escenarios conversacionales en vivo contra la API de Gemini (modo completo con evaluación de lenguaje natural):
 ```bash

@@ -38,7 +38,7 @@ Después elegí la técnica y, si corresponde, el profesional. Para pacientes ha
 
 ### Paciente de primera vez
 
-Si no aparece en la búsqueda, usá **+ Paciente de primera vez**. En ese caso sí completá los datos disponibles del paciente, especialmente nombre y teléfono; mail y documento pueden quedar vacíos si todavía no los tenés.
+Si no aparece en la búsqueda, usá **+ Paciente de primera vez**. En ese caso completá los datos disponibles del paciente: **el nombre y el WhatsApp son los únicos indispensables**. El documento (DNI o Pasaporte) y el correo electrónico son **completamente opcionales** (pueden quedar vacíos sin trabar el agendamiento).
 
 ### Elegir y confirmar el horario
 
@@ -52,7 +52,7 @@ Si no aparece en la búsqueda, usá **+ Paciente de primera vez**. En ese caso s
   <em>Figura 3: selección del horario disponible para el paciente.</em>
 </p>
 
-El turno queda registrado en el calendario **consultorio**. Si el paciente tiene mail cargado, el sistema intenta enviarle la confirmación; si no tiene, la reserva igualmente se registra desde Admin.
+El turno queda registrado en el calendario **consultorio**. Si el paciente tiene mail cargado, el sistema le envía la confirmación oficial; si no tiene mail, la reserva se genera y confirma con la misma validez.
 
 > **Importante:** antes de confirmar, verificá que el paciente seleccionado sea el correcto y que la técnica/profesional coincidan con lo solicitado.
 
@@ -60,7 +60,18 @@ El turno queda registrado en el calendario **consultorio**. Si el paciente tiene
 
 ## 2. Función Agendar (sitio web)
 
-Entrá a **Agendar**, indicá si el paciente ya se atendió (Sí / No) y seguí los pasos: día, horario y datos.
+En `kinesica.com.ar/agendar`, el flujo está diseñado para reservar en 60 segundos sin fricciones:
+
+1. **¿Primera vez o Habitual?**  
+   - **Primera vez:** avanza a la selección de técnica y horarios disponibles.  
+   - **Ya me atendí (Habitual):** el paciente puede elegir si desea **auto-agendar directamente online** su día y hora, o contactar a su kinesiólogo habitual por WhatsApp con un solo clic.
+2. **Selección de técnica:** Se muestran las técnicas más frecuentes destacadas (Kinesiología & Fisiatría, RPG, Osteopatía, ATM / Bruxismo) y un botón **"Ver más técnicas"** para patologías posturales específicas o consultar con la opción *"No sé cuál técnica necesito"*.
+3. **Día y horario:** Visualizador en tiempo real de slots libres de 1 hora de lunes a viernes (respetando la regla de 1 sola camilla física).
+4. **Datos de contacto:**  
+   - **Nombre completo** y **WhatsApp:** campos obligatorios para el contacto y los recordatorios automáticos de 24h previas.  
+   - **DNI:** opcional (sin asterisco obligatorio).  
+   - **Email:** opcional. Si el paciente no lo indica, la reserva se completa y confirma exitosamente de todos modos.
+5. **Respaldo de alta disponibilidad:** Si Google Calendar presentara alguna demora o intermitencia externa, el motor de reservas conmuta en milisegundos y de forma transparente a la base de datos local de respaldo, garantizando que ninguna reserva se pierda.
 
 <p align="center">
   <img src="assets/mockup_agendar_web.png" alt="Pantalla Agendar del sitio Kinésica" width="640">
@@ -94,7 +105,7 @@ Ana Pérez
 
 ### Descripción (lo imprescindible)
 
-Usá etiquetas claras. **Lo que no puede faltar:**
+Usá etiquetas claras:
 
 ```text
 WhatsApp: 11 5555-6666
@@ -107,6 +118,8 @@ También sirve con emoji o en una sola línea separada por `|`:
 📱 WhatsApp: 5491155556666 | 🪪 DNI: 30111222
 ```
 
+- **WhatsApp es indispensable:** es el dato necesario para los recordatorios automáticos de 24h previas y el contacto con el paciente.
+- **DNI es opcional pero muy recomendable:** si contás con el documento, agregarlo permite vincular automáticamente el turno con la historia clínica y el directorio.
 - Profesional y especialidad en la descripción **no son requisitos**.
 - No pongas el DNI en el campo de teléfono.
 - No dejes solo el DNI sin WhatsApp si el paciente es nuevo o no está en el directorio.
@@ -136,8 +149,8 @@ También sirve con emoji o en una sola línea separada por `|`:
 |----|----|
 | Calendario **consultorio** | Calendario personal |
 | Título con **nombre** del paciente | Título vago: “Turno”, “Consulta”, “RPG” |
-| `WhatsApp:` con el celular | Solo el DNI, o DNI en el campo de teléfono |
-| `DNI:` con el documento | Mezclar documento y celular sin etiquetas |
+| `WhatsApp:` con el celular (obligatorio para recordatorios) | Solo el DNI, o DNI en el campo de teléfono |
+| `DNI:` con el documento (opcional pero recomendado) | Mezclar documento y celular sin etiquetas |
 | Turnos de **1 hora** | 15 / 30 / 45 minutos o solapes |
 | Bloqueos: `No dar`, `Bloqueo`, `Feriado` | Dejar un bloqueo con nombre de persona |
 
@@ -163,7 +176,9 @@ Descripción: WhatsApp: 11… | DNI: …
 
 ## 6. Campaña
 
-El listado de turnos de campaña en el admin lee estos eventos de Calendar. Si WhatsApp y DNI están bien etiquetados, el paciente se reconoce solo. El tilde “¿Viene de la campaña?” se marca o corrige en el panel admin.
+El listado de turnos de campaña en el panel de control (`/admin/campana`) lee estos eventos de Google Calendar. Si el WhatsApp está presente, el paciente se reconoce automáticamente. El tilde “¿Viene de la campaña?” se puede marcar, desmarcar o validar en cualquier momento.
+
+Para más detalles sobre la galería de anuncios y métricas, consultá el [Manual de Campañas y Creativos](campanas-y-creativos.md).
 
 ---
 
@@ -172,5 +187,5 @@ El listado de turnos de campaña en el admin lee estos eventos de Calendar. Si W
 1. ¿Está en el calendario **consultorio**?
 2. ¿El título tiene el **nombre** del paciente?
 3. ¿Hay `WhatsApp:` con el celular?
-4. ¿Hay `DNI:` con el documento?
+4. ¿Hay `DNI:` (opcional pero recomendado si se tiene)?
 5. ¿Duración 1 hora, sin solapar otra camilla?

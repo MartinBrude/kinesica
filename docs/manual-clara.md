@@ -110,22 +110,25 @@ flowchart TD
   msg["Mensaje de WhatsApp"] --> opcion{"Qué escribió"}
 
   opcion -->|"saludo, texto suelto o MENU"| menu["Menú A–E (+ F, G...)"]
+  opcion -->|"dígitos 1 a 9 en menú"| digitos["Mapeo a letras según orden: 1=A, 2=B, 3=C..."]
   opcion --> turnos["A · Turnos"]
   opcion --> lugar["B · Ubicación"]
   opcion --> precios["C · Honorarios"]
   opcion --> ropa["D · Vestimenta"]
   opcion --> quien["E · Profesional"]
 
+  digitos --> menu
+
   subgraph admin ["Textos configurables en /admin/clara y /admin/consultorio"]
     menu
-    enlace["A y después 1: enlace a kinesica.com.ar/agendar"]
+    turnosDirecto["A: Enlace directo a kinesica.com.ar/agendar + opción 1"]
     lugarTxt["Dirección y enlace de Google Maps (sin grilla de horarios)"]
     preciosTxt["Honorarios vigentes ($ ATM / $ General), medios de pago y cobertura"]
     ropaTxt["Cómo venir vestido a la sesión"]
   end
 
   subgraph calendario ["Google Calendar ('consultorio')"]
-    lista["A y después 2: lista los turnos de ese WhatsApp (o pide DNI/Pasaporte)"]
+    lista["A y después 1 (o mis turnos): lista los turnos (o pide DNI/Pasaporte)"]
     anula["C1, C2...: anula el turno elegido en la lista vigente y confirma día y hora"]
   end
 
@@ -135,7 +138,7 @@ flowchart TD
     equipo["E y después 3, o consulta general: Norberto o María (50/50)"]
   end
 
-  turnos --> enlace
+  turnos --> turnosDirecto
   turnos --> lista
   lista --> anula
   lugar --> lugarTxt
@@ -147,22 +150,22 @@ flowchart TD
   quien --> equipo
 ```
 
-Escribir *E* solo no avisa a ningún profesional. Un *1* o un *2* sin haber entrado antes en Turnos (*A*) o en Profesional (*E*) vuelve a mostrar el menú principal.
+Escribir *E* solo no avisa a ningún profesional. En el menú principal, los números del *1* al *9* mapean directamente a las letras en el orden visual en que aparecen (*1* = A, *2* = B, *3* = C, *4* = D, *5* = E, *6* = F inglés, *7* = G opciones personalizadas...). De esta forma, si el paciente responde con un número, el sistema interpreta la opción correcta sin fricción.
 
 | Qué escribe el paciente | Qué hace Clara |
 |---|---|
-| Cualquier saludo, consulta suelta o `MENU` | Muestra el menú de bienvenida (*A* a *E*, más las opciones personalizadas *F*, *G*... configuradas en `/admin/clara`). Escribir `MENU` desde cualquier submenú siempre regresa al menú principal. |
-| *A* | Abre el submenú de Turnos: pregunta si quiere agendar un nuevo turno (*1*) o consultar/cancelar sus turnos (*2*). |
-| *1* después de *A* | Envía el texto configurado (`opt_a_text`) con el enlace directo a la turnera online: `https://kinesica.com.ar/agendar`. |
-| *2* después de *A* (o escribir *"mis turnos"*) | Lista los turnos futuros de ese WhatsApp en Google Calendar (`consultorio`), numerados, y cierra el submenú anterior. Si no encuentra turnos con ese teléfono, ofrece buscarlos ingresando el **DNI o Pasaporte**. |
-| DNI o Pasaporte tras *A* → *2* | Busca turnos agendados con ese documento (tolerando puntos, guiones, espacios y letras extranjeras), los lista numerados y habilita su cancelación con *C1*, *C2*, etc. |
-| *C1* (o *C2*, *C3*...) | Cancela en Google Calendar el turno correspondiente de la lista vigente (válida por 30 minutos), confirma día y hora al paciente y avisa por WhatsApp al profesional a cargo. Si la lista venció, pide volver a consultar los turnos (*A* → *2*). |
-| *B* | Envía el texto de ubicación y enlace de Google Maps configurado en `/admin/clara` (`opt_b_text`), tal cual, sin adjuntar la grilla de horarios de los profesionales. |
-| *C* | Envía el texto de honorarios y cobertura configurado en `/admin/clara` (`opt_c_text`), reemplazando automáticamente `{honorario_atm}`, `{honorario_general}` y `{medios_pago}` con los valores vigentes de la pestaña **Consultorio** (`/admin/consultorio`). |
-| *D* | Envía las pautas de vestimenta para la sesión configuradas en `/admin/clara` (`opt_d_text`). |
-| *E* y después *1*, *2*, *3* o un texto | Al elegir *E* muestra el submenú de contacto con un profesional (sin disparar alerta todavía). Al responder *1* avisa a Norberto, con *2* avisa a María, y con *3* (o escribiendo directamente su consulta tras *E*) avisa al profesional correspondiente según especialidad o al azar 50/50. |
+| Cualquier saludo, consulta suelta o `MENU` | Muestra el menú de bienvenida (*A* a *E*, más idioma y opciones personalizadas *F*, *G*... configuradas en `/admin/clara`). Escribir `MENU` desde cualquier submenú siempre regresa al menú principal. |
+| Dígitos *1* a *9* en el menú principal | Mapea automáticamente a la letra en orden visual: *1* = A (Turnos), *2* = B (Ubicación), *3* = C (Honorarios), *4* = D (Vestimenta), *5* = E (Profesional), etc. |
+| *A* (o *1* en menú principal) | Envía de inmediato el enlace directo a la turnera online: `https://kinesica.com.ar/agendar` y abre la opción de consultar turnos: `*1.* 📋 Consultar o cancelar mis turnos`. |
+| *1* después de *A* (o *2* por compatibilidad, o escribir *"mis turnos"*) | Lista los turnos futuros de ese WhatsApp en Google Calendar (`consultorio`), numerados, y cierra el submenú anterior. Si no encuentra turnos con ese teléfono, ofrece buscarlos ingresando el **DNI o Pasaporte**. |
+| *agendar* tras *A* | Reenvía el texto configurado con el enlace directo a la turnera online: `https://kinesica.com.ar/agendar`. |
+| DNI o Pasaporte tras *A* → *1* | Busca turnos agendados con ese documento (tolerando puntos, guiones, espacios y letras extranjeras), los lista numerados y habilita su cancelación con *C1*, *C2*, etc. |
+| *C1* (o *C2*, *C3*...) | Cancela en Google Calendar el turno correspondiente de la lista vigente (válida por 30 minutos), confirma día y hora al paciente y avisa por WhatsApp al profesional a cargo. Si la lista venció, pide volver a consultar los turnos (*A* → *1*). |
+| *B* (o *2* en menú principal) | Envía el texto de ubicación y enlace de Google Maps configurado en `/admin/clara` (`opt_b_text`), tal cual, sin adjuntar la grilla de horarios de los profesionales. |
+| *C* (o *3* en menú principal) | Envía el texto de honorarios y cobertura configurado en `/admin/clara` (`opt_c_text`), reemplazando automáticamente `{honorario_atm}`, `{honorario_general}` y `{medios_pago}` con los valores vigentes de la pestaña **Consultorio** (`/admin/consultorio`). |
+| *D* (o *4* en menú principal) | Envía las pautas de vestimenta para la sesión configuradas en `/admin/clara` (`opt_d_text`). |
+| *E* (o *5* en menú principal) y después *1*, *2*, *3* o un texto | Al elegir *E* muestra el submenú de contacto con un profesional (sin disparar alerta todavía). Al responder *1* avisa a Norberto, con *2* avisa a María, y con *3* (o escribiendo directamente su consulta tras *E*) avisa al profesional correspondiente según especialidad o al azar 50/50. |
 | *F*, *G*, ... (opciones adicionales) | Responde el texto informativo configurado en el panel **`/admin/clara`** (pestaña **Clara & Mensajes**). Cierra cualquier submenú previo y vuelve a dejar disponible el menú principal. |
-| *1* o *2* sin haber elegido *A* o *E* | Vuelve a mostrar el menú principal. No agenda ni avisa a ningún profesional. |
 
 * **Expiración de submenú:** El submenú activo (*A* o *E*) caduca automáticamente a los **15 minutos** (la lista de turnos para cancelar con `C1` dura **30 minutos**), o antes si la persona elige otra letra o escribe `MENU`.
 * **Filtro anti-repetición de 20 segundos:** Si un usuario envía exactamente la misma consulta determinista dos veces seguidas en menos de 20 segundos, el sistema ignora el duplicado para no enviar dos respuestas idénticas.
@@ -301,8 +304,8 @@ El flujo técnico detrás de escena se basa en cinco pilares automatizados:
 ### 🔄 3.1.1. Coherencia Total: Turnera Web (/agendar) vs. WhatsApp con Clara
 
 En Kinésica existen dos vías automatizadas para que un paciente gestione su turno sin intervención manual:
-1. **La Turnera Web Oficial (`kinesica.com.ar/agendar`):** Enviada por Clara en el Menú (`A` → `1`) y disponible desde los botones **"Agendar turno"** del sitio web.
-2. **El Chatbot de WhatsApp (Clara):** Permite consultar y cancelar turnos por teléfono o DNI (`A` → `2` y `C1`) en Modo Menú, o coordinar citas conversacionalmente las 24 horas en Modo IA.
+1. **La Turnera Web Oficial (`kinesica.com.ar/agendar`):** Enviada por Clara al elegir la opción `A` (o `1` en el menú principal) y disponible desde los botones **"Agendar turno"** del sitio web. Permite auto-agenda ágil tanto a pacientes habituales como de primera vez (donde el DNI y el Email son opcionales para evitar fricciones).
+2. **El Chatbot de WhatsApp (Clara):** Permite consultar y cancelar turnos por teléfono o DNI (`A` → `1` y `C1`, con compatibilidad para `2`) en Modo Menú, o coordinar citas conversacionalmente las 24 horas en Modo IA.
 
 **Ambos canales operan de manera 100% coordinada y coherente:**
 
@@ -434,6 +437,7 @@ Si por algún motivo el servicio de Meta WhatsApp se interrumpe, se cae o falla 
 El consultorio dispone de un registro completo de auditoría en la pestaña **Interacciones** ([`/admin/interacciones`](https://www.kinesica.com.ar/admin/interacciones)):
 * **Sincronización en vivo:** Cada mensaje recibido por WhatsApp, respuesta determinista de Clara, audio transcripto o derivación se sincroniza de forma inmediata con la base de datos de producción.
 * **Control de respuestas (`answered`):** El sistema preserva el estado de atención para que el equipo sepa qué consultas fueron resueltas por Clara y cuáles requirieron intervención o derivación manual.
+* **Archivos multimedia y notas de voz:** Los estudios médicos, fotos de órdenes, comprobantes y audios de voz enviados por los pacientes se capturan y pueden visualizarse o reproducirse directamente desde la interfaz de `/admin/interacciones`.
 * **SLA sin respuesta (> 3 h):** Si un mensaje queda pendiente (sin marcar como respondido) más de **3 horas**, el sistema avisa por WhatsApp a **Norberto**. Hay como máximo **una notificación por mensaje** (no se reenvía aunque siga pendiente). Las alertas se envían solo entre las **10:00 y las 20:00 (hora Argentina)**; fuera de ese horario el aviso espera a las 10:00.
 * **Búsqueda e historial:** Permite filtrar rápidamente por paciente, número de teléfono o fecha con paginación completa.
 
@@ -599,9 +603,9 @@ El panel `/admin/` cuenta con una distribución ergonómica optimizada:
 * **Dashboard Principal (`/admin/`):** Presenta el saludo del día, estado en vivo de Clara (Activa / Pausada con botón toggle) y accesos directos destacados:
   - **`📖 Manual de Usuario ↗`:** Abre este visualizador interactivo centralizado (`/admin/manual.html`).
   - **`📊 Profesionales para contactar ↗`:** Abre directamente la hoja de cálculo oficial en Google Drive.
-* **Operación Médica y Diaria:** Pestañas directas para *Historias Clínicas*, *Pacientes*, *Recordatorios* e *Interacciones*.
-* **Configuración del Consultorio y Bot:** Pestañas para *Consultorio* (horarios y honorarios) y *Clara & Mensajes* (textos del menú determinista).
-* **Menú Desplegable "Administración":** Menú superior que aísla de forma segura los módulos avanzados: *Usuarios y Cuentas (2FA)*, *Gastos Operativos*, *Base de Datos y Backups* y *Reportar Error*.
+* **Operación Médica y Diaria:** Pestañas directas para *Clínica* (Historias Clínicas y Directorio de Pacientes), *Consultorio* (turnera, horarios y honorarios), *WhatsApp* (Bandeja de Interacciones y Recordatorios) y *Encuestas* (satisfacción anónima).
+* **Configuración del Consultorio y Bot:** Pestañas para *Consultorio* (horarios y honorarios) y *Clara* (textos del menú determinista y simulador).
+* **Menú Desplegable "Administración":** Menú superior que aísla de forma segura los módulos avanzados: *Usuarios (2FA)*, *Gastos Operativos*, *Reporte de errores*, *Copias de seguridad*, *Consumos y Servicios*, *Turnos de campaña* y *Creativos Instagram* ([Manual de Campañas](campanas-y-creativos.md)).
 
 ---
 
@@ -616,15 +620,18 @@ Guardá esta tablita a mano para gestionar a Clara desde el celular de **Norbert
 | **Cerrar por vacaciones o receso** | En **Google Calendar (`consultorio`)** creando un evento de **día completo** `🏖️ [VACACIONES CONSULTORIO - CERRADO]`. |
 | **Anular o cancelar el turno de un paciente** | En **Google Calendar (`consultorio`)** eliminando el evento o anteponiendo `[CANCELADO]`. Clara no cancela turnos de pacientes por chat para los profesionales. |
 | **Monitorear y gestionar recordatorios** | En el Panel Admin → pestaña **Recordatorios** (`/admin/recordatorios`). Permite ver turnos en "A enviar", cargar teléfonos/emails con `＋ Cargar contacto` y despachar con `⚡ Enviar ahora` o `⚡ Disparar manualmente`. |
-| **Auditar conversaciones de WhatsApp** | En el Panel Admin → pestaña **Interacciones** (`/admin/interacciones`). Revisa mensajes de Clara, derivaciones a profesionales (`wa.me`), estado `answered` e historial por paciente. |
+| **Auditar conversaciones de WhatsApp** | En el Panel Admin → pestaña **Interacciones** (`/admin/interacciones`). Revisa mensajes de Clara, derivaciones a profesionales (`wa.me`), estado `answered`, adjuntos (fotos/audios) e historial por paciente. |
 | **Pedir reseña de Google a un paciente** | En el Panel Admin → pestaña **Pacientes** (`/admin/pacientes`), tocando el botón de WhatsApp `⭐ Pedir review` en la fila del paciente. |
-| **Cargar ficha clínica de ATM** | En el Panel Admin → pestaña **Historias Clínicas** (`/admin/fichas`), con selector de motivo (Bruxismo, ATM, dolor) y exportación a PDF A4. |
+| **Cargar ficha clínica de ATM** | En el Panel Admin → pestaña **Historias Clínicas** (`/admin/fichas`), con selector de motivo (Bruxismo, ATM, dolor), DNI opcional, buscador ágil y exportación a PDF A4. |
 | **Cambiar horarios de atención u honorarios ($)** | En el Panel Admin → pestaña **Consultorio** (`/admin/consultorio`). Rango de atención configurable hasta las 19:30 hs. |
 | **Editar los textos del menú de Clara (A–E, F...)** | En el Panel Admin → pestaña **Clara & Mensajes** (`/admin/clara`). |
+| **Descargar creativos de Instagram y copys** | En el Panel Admin → Menú superior **Administración → Creativos Instagram** (`/admin/creativos`). Formatos Feed (4:5) y Story (9:16) con copys listos para publicar ([Manual de Campañas](campanas-y-creativos.md)). |
+| **Monitorear turnos de campañas publicitarias** | En el Panel Admin → Menú superior **Administración → Turnos de campaña** (`/admin/campana`). Conciliación con Calendar y exportación a CSV ([Manual de Campañas](campanas-y-creativos.md)). |
+| **Ver encuestas de satisfacción de pacientes** | En el Panel Admin → pestaña **Encuestas** (`/admin/encuestas`). |
 | **Pausar todo el bot (Pausa general)** | Tocando **"Pausar bot"** en `/admin/` o escribiéndole a Clara: `"pausar bot"`, `"lo atiendo yo"` o `"silencio"` (se reanuda solo a las 8 hs si nadie lo reactiva antes). |
 | **Reanudar toda la atención de Clara** | Tocando **"Activar bot"** en `/admin/` o escribiéndole a Clara: `"reanudar bot"`, `"activar bot"` o `"reanudar todo"`. |
 | **Pausa individual por paciente** | *Desactivada por diseño* para que Clara nunca deje a un paciente sin respuesta. |
-| **Cambiar a Modo Menú por letras (sin IA)** | Escribirle a Clara: `"modo menu"` o `"modo sin ia"` *(modo activo por defecto)*. |
+| **Cambiar a Modo Menú por letras (sin IA)** | Escribirle a Clara: `"modo menu"` o `"modo sin ia"` *(modo activo por defecto; números 1 a 9 mapean a letras)*. |
 | **Cambiar a Modo Agente IA conversacional** | Escribirle a Clara: `"modo ia"` o `"modo con ia"`. |
 | **Descargar backup de base de datos** | En el Panel Admin → Menú superior **Administración → Base de Datos y Backups**. |
 | **Reportar un error técnico con video/foto** | En el Panel Admin → Menú superior **Administración → Reportar Error**. |

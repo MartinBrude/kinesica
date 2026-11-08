@@ -96,6 +96,7 @@ if ($docKey !== '') {
         'pruebas' => 'guia-pruebas.md',
         'whatsapp' => 'cuenta-whatsapp-clara.md',
         'backups' => 'backups-y-recuperacion.md',
+        'campanas' => 'campanas-y-creativos.md',
     ];
 
     if (!isset($allowedDocs[$docKey])) {
