@@ -48,7 +48,7 @@ const ADMIN_HOURS_CACHE_KEY = "admin_practitioner_hours_v1";
 const ADMIN_HOURS_CACHE_SECONDS = 120;
 // Última copia buena de los horarios del admin (persistente): se usa si settings.php no responde.
 const ADMIN_HOURS_LAST_GOOD_PROP = "ADMIN_HOURS_LAST_GOOD";
-const GAS_CODE_VERSION = "v23-dni-not-phone";
+const GAS_CODE_VERSION = "v24-email-optional";
 const BOOKING_IDEMPOTENCY_PREFIX = "booking_result_v1_";
 
 function isValidHoursObject(h) {
@@ -1023,7 +1023,8 @@ function handleBookAppointment(payload) {
     return createJsonResponse({ status: "error", message: "Teléfono válido es requerido" }, 400);
   }
 
-  if (!isValidBookingEmail(email)) {
+  // Email opcional (p. ej. turnera de admin). Si viene, debe ser válido.
+  if (email && !isValidBookingEmail(email)) {
     return createJsonResponse({ status: "error", message: "Correo electrónico válido es requerido" }, 400);
   }
 
@@ -1123,7 +1124,7 @@ function handleBookAppointment(payload) {
   }
 
   descParts.push(
-    "📧 Email: " + email,
+    "📧 Email: " + (email || "No provisto"),
     "🪪 DNI: " + dni,
     "🌿 Origen: Reserva Web Oficial Kinésica",
     "📋 Especialidad: " + especialidad
