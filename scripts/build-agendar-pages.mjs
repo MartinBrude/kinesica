@@ -4,7 +4,7 @@
  * Run: node scripts/build-agendar-pages.mjs
  */
 import { AGENDAR } from "./agendar-content.mjs";
-import { SITE, absoluteUrl, HTML_LANG, sitePath } from "./i18n-urls.mjs";
+import { SITE, absoluteUrl, HTML_LANG } from "./i18n-urls.mjs";
 import { headerShellMarkup } from "./header-shell.mjs";
 import { escAttr, escHtml } from "./html-utils.mjs";
 import {
@@ -26,7 +26,6 @@ import {
   headLangDeferScripts,
   headSeoBlock,
   headStandardStylesheets,
-  pageBreadcrumbSection,
 } from "./page-shell.mjs";
 
 const ROOT = repoRoot(import.meta.url);
@@ -51,7 +50,6 @@ function buildHtml(lang) {
   const copy = AGENDAR[lang];
   const prefix = assetPrefixForLang(lang);
   const canonical = absoluteUrl(lang, "agendar");
-  const homeHref = sitePath(lang, "index");
   const homeLabel = HOME_LABELS[lang];
   const highlightsHtml = renderHighlights(copy.highlights);
 
@@ -90,11 +88,6 @@ ${jsonLdScript(
 <body class="page-agendar">
 ${bodyShellTop(prefix)}${headerShellMarkup(lang, prefix)}
   <main id="main" tabindex="-1">
-${pageBreadcrumbSection({
-  homeHref,
-  homeLabel,
-  activeLabel: copy.breadcrumb,
-})}
     <section class="content booking-page">
       <div class="container">
         <div class="booking-page-layout">
