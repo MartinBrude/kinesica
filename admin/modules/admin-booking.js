@@ -258,54 +258,83 @@ async function persistFirstVisit(payload) {
   patientsLoaded = false;
 }
 
+function showBookingOpenError(message) {
+  console.error("[admin-booking]", message);
+  try {
+    window.alert(message);
+  } catch (_) {
+    /* ignore */
+  }
+}
+
 function openAdminBooking() {
-  if (!isAdmin()) return;
+  if (!isAdmin()) {
+    showBookingOpenError("Tu sesión no tiene permiso para abrir la turnera. Volvé a iniciar sesión.");
+    return;
+  }
   modal = document.getElementById("admin-booking-modal");
-  if (!modal) return;
+  if (!modal) {
+    showBookingOpenError("No se encontró el modal de la turnera. Recargá la página.");
+    return;
+  }
 
   const Widget = window.KinesicaBookingWidget;
   const mount = document.getElementById("admin-booking-widget-mount");
-  if (!Widget || !mount) return;
+  if (!Widget || !mount) {
+    showBookingOpenError("La turnera todavía no cargó. Recargá la página (Cmd+Shift+R) e intentá de nuevo.");
+    return;
+  }
 
-  if (!widget) {
-    widget = new Widget(mount, {
-      apiUrl: window.__KINESICA_CONFIG__?.bookingApiUrl || window.KINESICA_SITE?.bookingApiUrl || PUBLIC_BOOKING_API_URL,
-      forceMock: false,
-      isModal: true,
-      adminMode: true,
-      onClose: closeAdminBooking,
-      onBookingSuccess: async (payload, result) => {
-        if (!widget.state.adminPatient) await persistFirstVisit(payload);
-        // REL: espejo turnos sombra tras book exitoso (no bloquea UI si falla).
-        try {
-          const eventId = result?.eventId || result?.event_id || "";
-          if (eventId) {
-            const patient = widget.state.adminPatient;
-            await api("turnos.php", {
-              method: "POST",
-              body: {
-                action: "register",
-                eventId,
-                date: payload?.date || "",
-                time: payload?.time || "",
-                nombre: payload?.nombre || "",
-                telefono: payload?.telefono || "",
-                dni: payload?.dni || "",
-                practitionerId: payload?.practitionerId || "",
-                paciente_id: patient?.id || null,
-                summary: result?.summary || payload?.nombre || "",
-                source: "booking",
-              },
-            });
+  try {
+    if (!widget) {
+      widget = new Widget(mount, {
+        apiUrl: window.__KINESICA_CONFIG__?.bookingApiUrl || window.KINESICA_SITE?.bookingApiUrl || PUBLIC_BOOKING_API_URL,
+        forceMock: false,
+        isModal: true,
+        adminMode: true,
+        onClose: closeAdminBooking,
+        onBookingSuccess: async (payload, result) => {
+          if (!widget.state.adminPatient) await persistFirstVisit(payload);
+          // REL: espejo turnos sombra tras book exitoso (no bloquea UI si falla).
+          try {
+            const eventId = result?.eventId || result?.event_id || "";
+            if (eventId) {
+              const patient = widget.state.adminPatient;
+              await api("turnos.php", {
+                method: "POST",
+                body: {
+                  action: "register",
+                  eventId,
+                  date: payload?.date || "",
+                  time: payload?.time || "",
+                  nombre: payload?.nombre || "",
+                  telefono: payload?.telefono || "",
+                  dni: payload?.dni || "",
+                  practitionerId: payload?.practitionerId || "",
+                  paciente_id: patient?.id || null,
+                  summary: result?.summary || payload?.nombre || "",
+                  source: "booking",
+                },
+              });
+            }
+          } catch (err) {
+            console.warn("No se pudo registrar el turno sombra:", err);
           }
-        } catch (err) {
-          console.warn("No se pudo registrar el turno sombra:", err);
-        }
-      },
-    });
-    picker = buildPicker();
-    const step1 = mount.querySelector("#kb-step-1");
-    if (step1) step1.prepend(picker);
+        },
+      });
+    }
+    if (!picker || !mount.contains(picker)) {
+      picker = buildPicker();
+      const step1 = mount.querySelector("#kb-step-1");
+      if (step1) step1.prepend(picker);
+      else mount.prepend(picker);
+    }
+  } catch (err) {
+    widget = null;
+    picker = null;
+    console.error("No se pudo inicializar la turnera profesional:", err);
+    showBookingOpenError("No se pudo abrir la turnera. Recargá la página e intentá de nuevo.");
+    return;
   }
 
   modal.classList.add("is-open");

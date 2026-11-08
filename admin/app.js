@@ -65,7 +65,7 @@ import {
 
 import {
   initAppControllers,
-} from "./modules/app-init.js?v=22";
+} from "./modules/app-init.js?v=23";
 
 export {
   api,

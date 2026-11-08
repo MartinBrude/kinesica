@@ -19,7 +19,7 @@ import { initDashboardModule, updateDashboardClara, updateDashboardBooking } fro
 import { initInteraccionesModule } from "./interacciones.js?v=15";
 import { initRecordatoriosModule } from "./recordatorios.js?v=24";
 import { initEncuestasModule } from "./encuestas.js?v=2";
-import { initAdminBooking } from "./admin-booking.js?v=3";
+import { initAdminBooking } from "./admin-booking.js?v=4";
 
 export function initAppControllers({
   loadAll,
