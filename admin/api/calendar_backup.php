@@ -348,8 +348,9 @@ try {
             echo json_encode(['status' => 'error', 'message' => 'Teléfono válido es requerido.']);
             exit;
         }
-        // Email opcional (p. ej. turnera de admin). Si viene, debe ser válido.
-        if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        // Email opcional solo en la turnera de admin. En la reserva pública es obligatorio.
+        $adminBooking = filter_var($params['adminMode'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        if (($email === '' && !$adminBooking) || ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL))) {
             http_response_code(400);
             echo json_encode(['status' => 'error', 'message' => 'Correo electrónico válido es requerido.']);
             exit;

@@ -310,7 +310,7 @@ test("guarda la última copia buena y la usa si luego falla settings.php", () =>
 test("ping informa admin_hours (sólo lectura)", () => {
   let ping = JSON.parse(load({ adminHours: ADMIN }).ctx.doGet({ parameter: { action: "ping" } }).text);
   assert.equal(ping.status, "online");
-  assert.equal(ping.code_version, "v23-dni-not-phone");
+  assert.equal(ping.code_version, "v25-email-optional");
   assert.deepEqual([ping.admin_hours.loaded, ping.admin_hours.http_code, ping.admin_hours.source], [true, 200, "admin"]);
   assert.ok(ping.admin_hours.fetched_at);
   ping = JSON.parse(load({ byUrl: { www: { status: 403, body: "x" }, apex: { throws: "DNS error" } } }).ctx.doGet({ parameter: { action: "ping" } }).text);
