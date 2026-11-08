@@ -1224,14 +1224,21 @@
       // fuente de verdad: no hay que completar email, documento ni teléfono
       // para poder agendar. Los datos disponibles viajan en el payload y los
       // que no existan quedan vacíos, sin bloquear la reserva.
+      // El DNI nunca es obligatorio en la turnera de admin (primera visita o no).
       Object.keys(values).forEach((selector) => {
         const group = q(selector)?.closest(".kb-form-group");
         if (!group) return;
         group.hidden = Boolean(patient);
         const input = q(selector);
-        if (input) {
-          input.required = !patient;
-          input.setAttribute("aria-required", patient ? "false" : "true");
+        if (!input) return;
+        const isDni = selector === "#kb-input-dni";
+        const needsRequired = !patient && !isDni;
+        input.required = needsRequired;
+        input.setAttribute("aria-required", needsRequired ? "true" : "false");
+        if (isDni && !patient) {
+          const label = q("#kb-label-dni");
+          if (label) label.textContent = `${this.t("dni")} (opcional)`;
+          input.placeholder = "Opcional";
         }
       });
       const dataBox = q("#kb-admin-data");
