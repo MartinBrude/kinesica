@@ -128,6 +128,49 @@ it('maneja fallos y transiciona a failed tras 3 intentos (IG_MAX_ATTEMPTS)', fun
     if ($e3['last_error'] !== 'Error 3 fatal') throw new Exception('No preservó el último mensaje de error');
 });
 
+it('re-encolado: resetea published_on y media IDs al volver a la cola', function() {
+    // p1 ya fue publicada en test anterior
+    $before = ig_queue_find('p1');
+    if ($before['status'] !== 'published') throw new Exception('p1 debía estar publicada');
+
+    // Ahora se re-encola (como cuando Norberto le da Me gusta de nuevo)
+    ig_queue_add(['id' => 'p1', 'title' => 'Pieza 1 Recargada', 'caption' => 'Nuevo copy', 'feed_path' => 'campanas/feed/a.png', 'story_path' => 'campanas/story/a.png'], 'norberto');
+    $after = ig_queue_find('p1');
+    if ($after['status'] !== 'queued') throw new Exception('No pasó a status queued tras re-encolar');
+    if ($after['published_on'] !== null) throw new Exception('published_on no fue reseteado a null');
+    if ($after['feed_media_id'] !== null || $after['story_media_id'] !== null) throw new Exception('media IDs no fueron reseteados');
+    if ($after['caption'] !== 'Nuevo copy') throw new Exception('No actualizó el caption al re-encolar');
+});
+
+it('ig_published_on_date detecta publicaciones del día e ignora fechas distintas', function() {
+    if (!ig_published_on_date('2026-11-08')) throw new Exception('Debía detectar publicación en 2026-11-08');
+    if (ig_published_on_date('2026-11-09')) throw new Exception('No debía detectar publicación en 2026-11-09');
+});
+
+it('ig_queue_remove elimina elementos de la cola pero no elimina piezas ya publicadas', function() {
+    // p2 está publicada
+    ig_queue_remove('p2');
+    $p2 = ig_queue_find('p2');
+    if ($p2 === null) throw new Exception('Eliminó una pieza ya publicada (violación de histórico)');
+
+    // p1 está en cola
+    ig_queue_remove('p1');
+    $p1 = ig_queue_find('p1');
+    if ($p1 !== null) throw new Exception('No eliminó la pieza que estaba en cola');
+});
+
+it('seguridad: consultas preparadas contra inyección SQL', function() {
+    // Intento de inyección en id
+    $sqli = "test' OR '1'='1";
+    $find = ig_queue_find($sqli);
+    if ($find !== null) throw new Exception('Inyección en ig_queue_find');
+
+    // Intento en ig_mark_attempt_failed con caracteres de escape
+    ig_mark_attempt_failed('p2', "Error con comillas ' \" ; -- DROP TABLE");
+    $p2 = ig_queue_find('p2');
+    if (!str_contains($p2['last_error'], 'DROP TABLE')) throw new Exception('No sanitizó correctamente');
+});
+
 it('guarda y recupera tokens de forma segura', function() {
     $t1 = ig_token_get();
     if ($t1['token'] !== 'mock_initial_seed_token') throw new Exception('No tomó el token semilla');

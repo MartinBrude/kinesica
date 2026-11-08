@@ -102,14 +102,16 @@ function ig_queue_add(array $item, string $user): bool
              ON CONFLICT(creativo_id) DO UPDATE SET title = excluded.title, caption = excluded.caption,
                feed_path = excluded.feed_path, story_path = excluded.story_path, status = \'queued\',
                sort_order = excluded.sort_order, queued_by = excluded.queued_by,
-               queued_at = CURRENT_TIMESTAMP, attempts = 0, last_error = NULL'
+               queued_at = CURRENT_TIMESTAMP, attempts = 0, last_error = NULL,
+               published_on = NULL, feed_media_id = NULL, story_media_id = NULL'
         )->execute(['id' => $id, 't' => $title, 'c' => $caption, 'f' => $feed, 's' => $story, 'ord' => $sortOrder, 'u' => $user]);
     } else {
         db()->prepare('INSERT INTO instagram_cola (creativo_id, title, caption, feed_path, story_path, status, sort_order, queued_by)
              VALUES (:id, :t, :c, :f, :s, \'queued\', :ord, :u)
              ON DUPLICATE KEY UPDATE title = VALUES(title), caption = VALUES(caption), feed_path = VALUES(feed_path),
                story_path = VALUES(story_path), status = \'queued\', sort_order = :ord2, queued_by = VALUES(queued_by),
-               queued_at = CURRENT_TIMESTAMP, attempts = 0, last_error = NULL'
+               queued_at = CURRENT_TIMESTAMP, attempts = 0, last_error = NULL,
+               published_on = NULL, feed_media_id = NULL, story_media_id = NULL'
         )->execute(['id' => $id, 't' => $title, 'c' => $caption, 'f' => $feed, 's' => $story, 'ord' => $sortOrder, 'ord2' => $sortOrder, 'u' => $user]);
     }
     return true;

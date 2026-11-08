@@ -64,15 +64,56 @@ console.log("  ✓ Estructura de navegación y elementos UI verificados correcta
 
 // 4. Auditoría de JS: Lógica de badges y detalles de canal
 console.log("\n4. Auditando lógica de badges de publicación...");
-import { getPublicationDetails } from "../admin/modules/admin-creativos-cola.js";
+import {
+  getPublicationDetails,
+  _setListForTesting,
+  stateOf,
+  orderOf,
+  colaHeartHtml,
+  colaBadgeHtml,
+  colaButtonHtml,
+} from "../admin/modules/admin-creativos-cola.js";
 
 // Mock de state simulado
-const mockItemBoth = { status: "published", published_on: "2026-11-08", feed_media_id: "F1", story_media_id: "S1", last_error: null };
-const mockItemFeed = { status: "published", published_on: "2026-11-08", feed_media_id: "F1", story_media_id: null, last_error: null };
-const mockItemStory = { status: "published", published_on: "2026-11-08", feed_media_id: null, story_media_id: "S1", last_error: null };
+const mockList = [
+  { creativo_id: "both_pub", status: "published", published_on: "2026-11-08", feed_media_id: "F1", story_media_id: "S1", last_error: null },
+  { creativo_id: "feed_pub", status: "published", published_on: "2026-11-08", feed_media_id: "F1", story_media_id: null, last_error: null },
+  { creativo_id: "story_pub", status: "published", published_on: "2026-11-08", feed_media_id: null, story_media_id: "S1", last_error: null },
+  { creativo_id: "queued_1", status: "queued", sort_order: 1, title: "Pieza 1" },
+  { creativo_id: "queued_2", status: "queued", sort_order: 2, title: "Pieza 2" },
+];
 
-assert.equal(typeof getPublicationDetails, "function", "getPublicationDetails debe ser una función exportada");
-console.log("  ✓ Exportaciones y contratos de admin-creativos-cola.js conformes.");
+_setListForTesting(mockList);
+
+// Caso Both
+const detBoth = getPublicationDetails("both_pub");
+assert.equal(detBoth.channelText, "Feed + Story");
+assert.equal(detBoth.badgeClass, "is-both");
+assert.match(colaBadgeHtml({ id: "both_pub" }), /Feed \+ Story/);
+assert.match(colaHeartHtml({ id: "both_pub" }), /is-published/);
+
+// Caso Feed only
+const detFeed = getPublicationDetails("feed_pub");
+assert.equal(detFeed.channelText, "Solo Post");
+assert.equal(detFeed.badgeClass, "is-feed");
+assert.match(colaBadgeHtml({ id: "feed_pub" }), /Solo Post/);
+
+// Caso Story only
+const detStory = getPublicationDetails("story_pub");
+assert.equal(detStory.channelText, "Solo Story");
+assert.equal(detStory.badgeClass, "is-story");
+assert.match(colaBadgeHtml({ id: "story_pub" }), /Solo Story/);
+
+// Cola activa: orden, estados y botones
+assert.equal(stateOf("queued_1"), "queued");
+assert.equal(orderOf("queued_1"), 1);
+assert.equal(orderOf("queued_2"), 2);
+assert.match(colaHeartHtml({ id: "queued_1" }), /❤️ #1/);
+assert.match(colaHeartHtml({ id: "non_existent" }), /🤍/);
+assert.match(colaButtonHtml({ id: "queued_1" }), /❤️ Programada \(#1\)/);
+assert.match(colaButtonHtml({ id: "non_existent" }), /🤍 Me gusta \(programar\)/);
+
+console.log("  ✓ Exportaciones, contratos y casos (Both, Feed, Story, Queue) conformes al 100%.");
 
 // 5. Verificación de robustez en Cron
 console.log("\n5. Auditando seguridad y CLI en cron_instagram.php...");

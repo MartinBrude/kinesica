@@ -24,7 +24,7 @@ function setList(items) {
   colaItems = Array.isArray(items) ? items : [];
   colaMap = new Map(colaItems.map((r) => [r.creativo_id, r]));
   notify();
-  refreshColaButtons();
+  if (typeof document !== "undefined") refreshColaButtons();
 }
 
 export function getColaList() { return colaItems; }
@@ -183,4 +183,8 @@ export async function publishNow(id, channel, itemResolver) {
     if (!err.auth) window.alert(err.message || "No se pudo publicar en Instagram");
     throw err;
   }
+}
+
+export function _setListForTesting(items) {
+  setList(items);
 }
