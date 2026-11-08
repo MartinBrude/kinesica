@@ -91,11 +91,7 @@ ${bodyShellTop(prefix)}${headerShellMarkup(lang, prefix)}
     <section class="content booking-page">
       <div class="container">
         <div class="booking-page-layout">
-          <div class="booking-page-intro">
-            <p class="booking-page-eyebrow">${escHtml(copy.eyebrow)}</p>
-            <h1>${escHtml(copy.h1)}</h1>
-            <p class="booking-page-lead">${escHtml(copy.lead)}</p>
-          </div>
+          <h1 class="sr-only">${escHtml(copy.h1)}</h1>
 
           <div id="kinesica-booking-widget" class="booking-page-widget-mount"></div>
 
