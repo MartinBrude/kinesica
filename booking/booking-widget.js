@@ -2135,6 +2135,7 @@
         email: email,
         telefono: telefono,
         dni: dni,
+        adminMode: Boolean(this.options.adminMode),
         motivo: especialidad,
         especialidad: especialidad,
         esParaTercero: isOther,

@@ -689,7 +689,8 @@
       }
     }
 
-    if (!req.dni || req.dni.trim().length < 5) {
+    // En la turnera de admin el DNI es opcional; en la reserva pública sigue siendo obligatorio.
+    if (!req.adminMode && (!req.dni || req.dni.trim().length < 5)) {
       errors.push("Para turnos presenciales se requiere el número de DNI o documento.");
     }
 
