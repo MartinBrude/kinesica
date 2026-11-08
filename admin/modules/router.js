@@ -151,7 +151,7 @@ export function initPopstateRouter({ loadAll, fillForm, showForm, showCompare, s
       else if (route.view === "recordatorios" || route.view === "reminders") switchTab("recordatorios");
       else if (route.view === "encuestas" || route.view === "encuesta") switchTab("encuestas");
       else if (route.view === "admin" || route.view === "administracion") {
-        if (getSessionUser()?.role === "admin") switchTab("admin", route.section);
+        if (route.section === "creativos" || getSessionUser()?.role === "admin") switchTab("admin", route.section);
         else switchTab("inicio");
       }
       else switchTab("inicio");

@@ -81,15 +81,16 @@
         <!-- GRUPO 2: CONSULTORIO (Turnos, Horarios y Honorarios) -->
         <button type="button" class="btn ghost" id="nav-btn-consultorio">Consultorio</button>
 
-        <!-- GRUPO 3: WHATSAPP (Bandeja de Interacciones y Registro de Recordatorios) -->
+        <!-- GRUPO 3: META (Bandeja de Interacciones, Recordatorios y Creativos Instagram) -->
         <div class="nav-dropdown" id="nav-group-whatsapp">
           <button type="button" class="btn ghost nav-dropdown-trigger" id="nav-btn-whatsapp" aria-expanded="false" aria-haspopup="true">
-            <span>WhatsApp</span>
+            <span>Meta</span>
             <svg class="nav-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
           </button>
           <div class="nav-dropdown-menu" id="nav-menu-whatsapp" role="menu">
             <button type="button" class="nav-dropdown-item" id="nav-btn-interacciones" role="menuitem">Bandeja de Interacciones</button>
             <button type="button" class="nav-dropdown-item" id="nav-btn-recordatorios" role="menuitem">Registro de Recordatorios</button>
+            <button type="button" class="nav-dropdown-item" id="nav-btn-admin-creativos" role="menuitem">Creativos Instagram</button>
           </div>
         </div>
 
@@ -112,7 +113,6 @@
             <button type="button" class="nav-dropdown-item" id="nav-btn-admin-backups" role="menuitem">Copias de seguridad</button>
             <button type="button" class="nav-dropdown-item" id="nav-btn-admin-servicios" role="menuitem">Consumos y Servicios</button>
             <button type="button" class="nav-dropdown-item" id="nav-btn-admin-campana" role="menuitem">Turnos de campaña</button>
-            <button type="button" class="nav-dropdown-item" id="nav-btn-admin-creativos" role="menuitem">Creativos Instagram</button>
           </div>
         </div>
       </nav>
@@ -2757,7 +2757,7 @@
                 else if (sec === "backups") ht.textContent = "Administración · Copias de Seguridad";
                 else if (sec === "servicios") ht.textContent = "Administración · Consumos y Servicios";
                 else if (sec === "campana") ht.textContent = "Administración · Turnos de campaña";
-                else if (sec === "creativos") ht.textContent = "Administración · Creativos de Campaña Instagram";
+                else if (sec === "creativos") ht.textContent = "Meta · Creativos Instagram";
                 else ht.textContent = "Administración · Usuarios";
               }
             } else {
@@ -2790,6 +2790,6 @@
   <div id="print-root"></div>
   <script src="/partials/google-reviews-data.min.js?v=1794159076" defer></script>
   <script src="/booking/booking-bundle.min.js?v=1794159076" defer></script>
-  <script type="module" src="/admin/app.js?v=197"></script>
+  <script type="module" src="/admin/app.js?v=198"></script>
 </body>
 </html>

@@ -9,7 +9,7 @@ import { showLibrary } from "./library.js?v=94";
 import { showPacientesView, hidePacientesView } from "./pacientes.js?v=12";
 import { showDashboardView, hideDashboardView, updateDashboardClara, updateDashboardBooking } from "./dashboard.js?v=13";
 import { showConsultorioView, hideConsultorioView, showClaraView, hideClaraView } from "./configuracion.js?v=33";
-import { showAdminView, hideAdminView } from "./admin-panel.js?v=86";
+import { showAdminView, hideAdminView } from "./admin-panel.js?v=87";
 import { showInteraccionesView, hideInteraccionesView } from "./interacciones.js?v=15";
 import { showRecordatoriosView, hideRecordatoriosView } from "./recordatorios.js?v=24";
 import { showEncuestasView, hideEncuestasView } from "./encuestas.js?v=2";
@@ -103,6 +103,10 @@ export function switchTab(tab, subtab) {
     btnWhatsapp?.classList.add("is-active");
     btnRecordatorios?.classList.add("is-active");
     showRecordatoriosView();
+  } else if (tab === "creativos" || tab === "galeria" || tab === "campana-ig" || tab === "campanas-ig" || tab === "instagram" || (tab === "admin" && subtab === "creativos")) {
+    btnWhatsapp?.classList.add("is-active");
+    btnAdminCreativos?.classList.add("is-active");
+    showAdminView("creativos");
   } else if (tab === "encuestas" || tab === "encuesta") {
     btnEncuestas?.classList.add("is-active");
     showEncuestasView();
@@ -121,12 +125,7 @@ export function switchTab(tab, subtab) {
     tab === "cuotas" ||
     tab === "campana" ||
     tab === "campaña" ||
-    tab === "turnos-campana" ||
-    tab === "creativos" ||
-    tab === "galeria" ||
-    tab === "campana-ig" ||
-    tab === "campanas-ig" ||
-    tab === "instagram"
+    tab === "turnos-campana"
   ) {
     const user = getSessionUser();
     if (!user || user.role !== "admin") {
@@ -142,7 +141,6 @@ export function switchTab(tab, subtab) {
       else if (tab === "backups" || tab === "copias" || tab === "copias-seguridad") section = "backups";
       else if (tab === "servicios" || tab === "consumos" || tab === "cuotas") section = "servicios";
       else if (tab === "campana" || tab === "campaña" || tab === "turnos-campana") section = "campana";
-      else if (tab === "creativos" || tab === "galeria" || tab === "campana-ig" || tab === "campanas-ig" || tab === "instagram") section = "creativos";
       else section = "usuarios";
     }
     if (section === "gastos") {
@@ -155,8 +153,6 @@ export function switchTab(tab, subtab) {
       btnAdminServicios?.classList.add("is-active");
     } else if (section === "campana" || section === "campaña" || section === "turnos-campana") {
       btnAdminCampana?.classList.add("is-active");
-    } else if (section === "creativos" || section === "galeria" || section === "campana-ig" || section === "campanas-ig" || section === "instagram") {
-      btnAdminCreativos?.classList.add("is-active");
     } else {
       btnAdminUsuarios?.classList.add("is-active");
     }
@@ -262,7 +258,7 @@ function bindAdminNavOnce(adminNav) {
   document.getElementById("nav-btn-admin-backups")?.addEventListener("click", () => switchTab("admin", "backups"));
   document.getElementById("nav-btn-admin-servicios")?.addEventListener("click", () => switchTab("admin", "servicios"));
   document.getElementById("nav-btn-admin-campana")?.addEventListener("click", () => switchTab("admin", "campana"));
-  document.getElementById("nav-btn-admin-creativos")?.addEventListener("click", () => switchTab("admin", "creativos"));
+  document.getElementById("nav-btn-admin-creativos")?.addEventListener("click", () => switchTab("creativos"));
   document.getElementById("brand-logo")?.addEventListener("click", (e) => {
     e.preventDefault();
     switchTab("inicio");

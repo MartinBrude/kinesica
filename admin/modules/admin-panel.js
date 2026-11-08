@@ -74,7 +74,7 @@ export function setAdminActiveSection(section = "usuarios") {
       backups: "Administración · Copias de Seguridad",
       servicios: "Administración · Consumos y Servicios",
       campana: "Administración · Turnos de campaña",
-      creativos: "Administración · Creativos de Campaña Instagram",
+      creativos: "Meta · Creativos Instagram",
     };
     heroTitle.textContent = titles[target] || "Administración del Sistema";
   }
@@ -85,21 +85,21 @@ export function setAdminActiveSection(section = "usuarios") {
 export const scrollToAdminSection = setAdminActiveSection;
 
 export function showAdminView(section = "usuarios") {
-  const user = getSessionUser();
-  if (!user || user.role !== "admin") {
-    // Si no es administrador, no debe acceder ni ver modal de error: redirigir silenciosamente al inicio
-    try {
-      import("./app-tabs.js").then((m) => m.switchTab("inicio"));
-    } catch { /* ignore */ }
-    return;
-  }
-
   const normSection = String(section || "").toLowerCase();
   const mappedSection = (normSection === "campaña" || normSection === "turnos-campana")
     ? "campana"
     : (normSection === "galeria" || normSection === "campana-ig" || normSection === "instagram")
     ? "creativos"
     : normSection;
+
+  const user = getSessionUser();
+  if (!user || (user.role !== "admin" && mappedSection !== "creativos")) {
+    // Si no es administrador y no es creativos, redirigir silenciosamente al inicio
+    try {
+      import("./app-tabs.js").then((m) => m.switchTab("inicio"));
+    } catch { /* ignore */ }
+    return;
+  }
   const validSection = ["usuarios", "gastos", "errores", "backups", "servicios", "campana", "creativos"].includes(mappedSection)
     ? mappedSection
     : "usuarios";
