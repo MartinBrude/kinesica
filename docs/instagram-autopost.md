@@ -41,7 +41,7 @@ Al publicarse una pieza (sea por el cron o manualmente), el sistema registra el 
 2. **Idempotencia**: Si el cron corre cada hora, `ig_published_on_date()` asegura que solo se publique una pieza por día hábil programado.
 3. **Auto-renovación Perpetua de Token**:
    - Meta no entrega tokens infinitos (máximo 60 días).
-   - En [`admin/api/lib_instagram.php`](file:///Users/martinbrude/Documents/kinesica/admin/api/lib_instagram.php), la rutina `ig_token_refresh_if_needed()` consulta automáticamente la API de Meta (`GET /refresh_access_token`) cuando al token le quedan menos de 20 días de vigencia.
+   - En [`admin/api/lib_instagram.php`](../admin/api/lib_instagram.php), la rutina `ig_token_refresh_if_needed()` consulta automáticamente la API de Meta (`GET /refresh_access_token`) cuando al token le quedan menos de 20 días de vigencia.
    - El token se auto-renueva solo de forma perpetua mientras el servidor esté activo.
 
 ---
@@ -52,12 +52,12 @@ Cada módulo del backend y frontend respeta rigurosamente el límite estricto de
 
 | Archivo | Responsabilidad | Líneas |
 |---|---|---|
-| [`admin/api/lib_instagram_store.php`](file:///Users/martinbrude/Documents/kinesica/admin/api/lib_instagram_store.php) | Persistencia (SQLite/MySQL), anti path-traversal, reordenamiento atómico, conversión PNG→JPG (cache en `campanas/ig/`) | **222** |
-| [`admin/api/lib_instagram.php`](file:///Users/martinbrude/Documents/kinesica/admin/api/lib_instagram.php) | Cliente HTTP Meta Graph API v21.0, creación de containers, polling, publicación y auto-refresh | **132** |
-| [`admin/api/instagram_cola.php`](file:///Users/martinbrude/Documents/kinesica/admin/api/instagram_cola.php) | Endpoint REST autenticado (`GET` lista, `POST` add, remove, reorder, publish_now) | **56** |
-| [`admin/api/cron_instagram.php`](file:///Users/martinbrude/Documents/kinesica/admin/api/cron_instagram.php) | Worker CLI, bloqueo de peticiones HTTP (404), horario de Argentina | **60** |
-| [`admin/modules/admin-creativos-cola.js`](file:///Users/martinbrude/Documents/kinesica/admin/modules/admin-creativos-cola.js) | Store reactivo del cliente, botones ❤️, badges de canal y sincronización con API | **191** |
-| [`admin/modules/admin-creativos-lista.js`](file:///Users/martinbrude/Documents/kinesica/admin/modules/admin-creativos-lista.js) | Renderizado de cola, Drag & Drop nativo, slots estimados y sección de historial | **220** |
+| [`admin/api/lib_instagram_store.php`](../admin/api/lib_instagram_store.php) | Persistencia (SQLite/MySQL), anti path-traversal, reordenamiento atómico, conversión PNG→JPG (cache en `campanas/ig/`) | **222** |
+| [`admin/api/lib_instagram.php`](../admin/api/lib_instagram.php) | Cliente HTTP Meta Graph API v21.0, creación de containers, polling, publicación y auto-refresh | **132** |
+| [`admin/api/instagram_cola.php`](../admin/api/instagram_cola.php) | Endpoint REST autenticado (`GET` lista, `POST` add, remove, reorder, publish_now) | **56** |
+| [`admin/api/cron_instagram.php`](../admin/api/cron_instagram.php) | Worker CLI, bloqueo de peticiones HTTP (404), horario de Argentina | **60** |
+| [`admin/modules/admin-creativos-cola.js`](../admin/modules/admin-creativos-cola.js) | Store reactivo del cliente, botones ❤️, badges de canal y sincronización con API | **191** |
+| [`admin/modules/admin-creativos-lista.js`](../admin/modules/admin-creativos-lista.js) | Renderizado de cola, Drag & Drop nativo, slots estimados y sección de historial | **220** |
 
 ---
 

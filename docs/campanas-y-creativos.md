@@ -52,7 +52,7 @@ Directamente desde la interfaz de Creativos, Norberto y los administradores gest
    - `✅ Feed + Story`, `✅ Solo Post` o `✅ Solo Story`.
    - Historial de publicaciones con fecha y botón **🔄 Re-encolar**.
 
-*(Para detalles técnicos de la API de Meta, base de datos y configuración del cron, consultar [docs/instagram-autopost.md](file:///Users/martinbrude/Documents/kinesica/docs/instagram-autopost.md)).*
+*(Para detalles técnicos de la API de Meta, base de datos y configuración del cron, consultar [docs/instagram-autopost.md](instagram-autopost.md)).*
 
 ---
 

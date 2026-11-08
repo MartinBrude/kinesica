@@ -199,6 +199,9 @@ function interacciones_parse_ts($value, int $fallback): int
  */
 function interacciones_clean_wa_id(string $raw): string
 {
+    if (str_starts_with($raw, 'ig_')) {
+        return 'ig_' . (preg_replace('/[^A-Za-z0-9_.]/', '', substr($raw, 3)) ?? '');
+    }
     if (!function_exists('clean_phone_number')) {
         $helpers = __DIR__ . '/pacientes_helpers.php';
         if (is_file($helpers)) {

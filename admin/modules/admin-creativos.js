@@ -1646,6 +1646,455 @@ Sesiones 1 a 1 de terapia manual en Palermo.
 📍 Charcas 3889, Palermo
 📲 WhatsApp: +54 9 11 6156-4311
 #Rectificacion #Columna #Kinésica`
+  },
+  // Tanda sensibilización adultos/jóvenes (95–122)
+  {
+    id: "95_escoliosis_espejo",
+    title: "¿Notás un hombro más alto en el espejo?",
+    cat: "ESCOLIOSIS",
+    group: "columna",
+    body: "La asimetría no es un detalle estético. Evaluamos la curva y cómo tu cuerpo la compensa antes de que duela.",
+    feedUrl: "campanas/feed/catalogo_feed_95_escoliosis_espejo.png",
+    storyUrl: "campanas/story/catalogo_story_95_escoliosis_espejo.png",
+    copy: `¿Notás un hombro más alto en el espejo? 🪞
+
+No es un detalle estético: puede ser cómo tu columna se organiza. En Kinésica evaluamos la curva y las compensaciones con RPG personalizada.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Escoliosis #Postura #RPG #KinesiologiaPalermo #Kinésica`
+  },
+  {
+    id: "96_escoliosis_foto",
+    title: "En las fotos siempre salís ladeado",
+    cat: "ESCOLIOSIS",
+    group: "columna",
+    body: "No es el ángulo de la cámara. Puede ser cómo tu columna se organiza. Conviene mirarlo a tiempo.",
+    feedUrl: "campanas/feed/catalogo_feed_96_escoliosis_foto.png",
+    storyUrl: "campanas/story/catalogo_story_96_escoliosis_foto.png",
+    copy: `En las fotos siempre salís ladeado 📸
+
+No siempre es el ángulo. A veces es la columna. Una evaluación a tiempo evita que la compensación se fije.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Escoliosis #Jovenes #Postura #Kinésica`
+  },
+  {
+    id: "97_mochila_hombro",
+    title: "La mochila de un solo hombro no es inocente",
+    cat: "POSTURA & CARGA",
+    group: "filosofia",
+    body: "Cargar siempre del mismo lado enseña a tu columna a compensar. Lo corregimos antes de que se fije.",
+    feedUrl: "campanas/feed/catalogo_feed_97_mochila_hombro.png",
+    storyUrl: "campanas/story/catalogo_story_97_mochila_hombro.png",
+    copy: `La mochila de un solo hombro no es inocente 🎒
+
+Cargar siempre del mismo lado enseña a tu columna a compensar. En Kinésica corregimos hábitos y reeducamos la postura antes de que duela.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Postura #Estudiantes #EscoliosisFuncional #Kinésica`
+  },
+  {
+    id: "98_escoliosis_crecimiento",
+    title: "Te dijeron que era del crecimiento",
+    cat: "ESCOLIOSIS",
+    group: "columna",
+    body: "Y nunca se controló. La escoliosis en adultos jóvenes se puede acompañar con RPG: movilidad, fuerza y menos compensación.",
+    feedUrl: "campanas/feed/catalogo_feed_98_escoliosis_crecimiento.png",
+    storyUrl: "campanas/story/catalogo_story_98_escoliosis_crecimiento.png",
+    copy: `Te dijeron que era “del crecimiento”… y nunca se controló 🩺
+
+La escoliosis en adultos jóvenes se puede acompañar con RPG: más movilidad, más fuerza y menos compensación. Sin milagros estéticos.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Escoliosis #RPG #AdultosJovenes #Kinésica`
+  },
+  {
+    id: "99_ciatica_sentado",
+    title: "¿Te duele la pierna al sentarte mucho?",
+    cat: "CIÁTICA",
+    group: "columna",
+    body: "Ese tirón que baja no es “estar cansado”. Evaluamos lumbar y nervio ciático sin forzar el síntoma.",
+    feedUrl: "campanas/feed/catalogo_feed_99_ciatica_sentado.png",
+    storyUrl: "campanas/story/catalogo_story_99_ciatica_sentado.png",
+    copy: `¿Te duele la pierna al sentarte mucho? 🪑⚡
+
+Ese tirón que baja no es “cansancio”. Evaluamos lumbar y nervio ciático con abordaje suave, sin forzar el síntoma.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Ciatica #Ciatalgia #DolorLumbar #Kinésica`
+  },
+  {
+    id: "100_ciatica_baja",
+    title: "Si el dolor baja hasta el pie, escuchalo",
+    cat: "CIATALGIA",
+    group: "columna",
+    body: "No es un tirón muscular cualquiera. Tratamos la causa mecánica: columna, pelvis y movilidad neural.",
+    feedUrl: "campanas/feed/catalogo_feed_100_ciatica_baja.png",
+    storyUrl: "campanas/story/catalogo_story_100_ciatica_baja.png",
+    copy: `Si el dolor baja hasta el pie, escuchalo 🦵
+
+No es un tirón cualquiera. En Kinésica tratamos la causa mecánica: columna, pelvis y movilidad neural.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Ciatica #NervioCiatico #TerapiaManual #Kinésica`
+  },
+  {
+    id: "101_ciatica_manejar",
+    title: "Después de manejar, la pierna no responde",
+    cat: "CIÁTICA",
+    group: "columna",
+    body: "Estar sentado en auto comprime lumbar y ciático. Recuperamos movilidad antes de que se cronifique.",
+    feedUrl: "campanas/feed/catalogo_feed_101_ciatica_manejar.png",
+    storyUrl: "campanas/story/catalogo_story_101_ciatica_manejar.png",
+    copy: `Después de manejar, la pierna no responde 🚗
+
+Horas de auto comprimen lumbar y ciático. Recuperamos movilidad antes de que se cronifique.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Ciatica #Conductores #DolorLumbar #Kinésica`
+  },
+  {
+    id: "102_ciatica_tos",
+    title: "¿Te duele la pierna al toser?",
+    cat: "SEÑAL DE ALERTA",
+    group: "columna",
+    body: "Ese disparo no es casual. Puede hablar de irritación neural o lumbar. Mejor evaluarlo que ignorarlo.",
+    feedUrl: "campanas/feed/catalogo_feed_102_ciatica_tos.png",
+    storyUrl: "campanas/story/catalogo_story_102_ciatica_tos.png",
+    copy: `¿Te duele la pierna al toser o estornudar? 🚨
+
+Ese disparo no es casual. Puede hablar de irritación neural o lumbar. Mejor evaluarlo que ignorarlo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Ciatica #SenalDeAlerta #Columna #Kinésica`
+  },
+  {
+    id: "103_contractura_masaje",
+    title: "Si el masaje dura dos días, no alcanza",
+    cat: "CONTRACTURAS",
+    group: "articulaciones",
+    body: "La contractura fuerte vuelve porque la causa mecánica sigue ahí. Buscamos por qué se carga, no solo aflojar el músculo.",
+    feedUrl: "campanas/feed/catalogo_feed_103_contractura_masaje.png",
+    storyUrl: "campanas/story/catalogo_story_103_contractura_masaje.png",
+    copy: `Si el masaje dura dos días, no alcanza 💆
+
+La contractura fuerte vuelve porque la causa mecánica sigue ahí. En Kinésica buscamos por qué se carga, no solo aflojar el músculo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Contracturas #TerapiaManual #DolorMuscular #Kinésica`
+  },
+  {
+    id: "104_trapecio_piedra",
+    title: "Trapecio de piedra no es solo estrés",
+    cat: "CONTRACTURA",
+    group: "articulaciones",
+    body: "El cuerpo se defiende con tensión. Liberamos cervicales y postura para que deje de endurecerse cada tarde.",
+    feedUrl: "campanas/feed/catalogo_feed_104_trapecio_piedra.png",
+    storyUrl: "campanas/story/catalogo_story_104_trapecio_piedra.png",
+    copy: `Trapecio de piedra no es “solo estrés” 🪨
+
+El cuerpo se defiende con tensión. Liberamos cervicales y postura para que deje de endurecerse cada tarde.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Contractura #Cuello #HomeOffice #Kinésica`
+  },
+  {
+    id: "105_crack_cuello",
+    title: "Hacés crack todo el día y vuelve peor",
+    cat: "ALERTA",
+    group: "filosofia",
+    body: "El ruido no es liberación real. Trabajamos la hipomovilidad que te empuja a forzar la cervical.",
+    feedUrl: "campanas/feed/catalogo_feed_105_crack_cuello.png",
+    storyUrl: "campanas/story/catalogo_story_105_crack_cuello.png",
+    copy: `¿Hacés crack todo el día y vuelve peor? ⚠️
+
+El ruido no es liberación real. Trabajamos la hipomovilidad que te empuja a forzar la cervical.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Cervicalgia #Contractura #Osteopatia #Kinésica`
+  },
+  {
+    id: "106_gym_contractura",
+    title: "Entrenas con el cuello trabado. Pará.",
+    cat: "ENTRENO & DOLOR",
+    group: "articulaciones",
+    body: "Empujar fuerza sobre una contractura fija el problema. Primero movilidad, después rendimiento.",
+    feedUrl: "campanas/feed/catalogo_feed_106_gym_contractura.png",
+    storyUrl: "campanas/story/catalogo_story_106_gym_contractura.png",
+    copy: `Entrenas con el cuello trabado. Pará. 🏋️
+
+Empujar fuerza sobre una contractura fija el problema. Primero movilidad, después rendimiento.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Gym #Contractura #Rendimiento #Kinésica`
+  },
+  {
+    id: "107_postura_gamer",
+    title: "Seis horas de pantalla, cero de columna",
+    cat: "POSTURA GAMER",
+    group: "filosofia",
+    body: "Tu cuello no es un soporte de monitor. Realineamos cervicales antes de que el dolor se vuelva fijo.",
+    feedUrl: "campanas/feed/catalogo_feed_107_postura_gamer.png",
+    storyUrl: "campanas/story/catalogo_story_107_postura_gamer.png",
+    copy: `Seis horas de pantalla, cero de columna 🎮
+
+Tu cuello no es un soporte de monitor. Realineamos cervicales antes de que el dolor se vuelva fijo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Gamers #TechNeck #Postura #Kinésica`
+  },
+  {
+    id: "108_notebook_cifosis",
+    title: "El notebook te está encorvando",
+    cat: "MALA POSTURA",
+    group: "filosofia",
+    body: "Pantalla baja, cabeza adelante, dorsales trabados. Corregimos la cadena postural, no solo te decimos “sentate derecho”.",
+    feedUrl: "campanas/feed/catalogo_feed_108_notebook_cifosis.png",
+    storyUrl: "campanas/story/catalogo_story_108_notebook_cifosis.png",
+    copy: `El notebook te está encorvando 💻
+
+Pantalla baja, cabeza adelante, dorsales trabados. Corregimos la cadena postural: no alcanza con “sentate derecho”.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Hipercifosis #Postura #Notebook #Kinésica`
+  },
+  {
+    id: "109_postura_selfie",
+    title: "Sacarte bien en fotos no arregla tu espalda",
+    cat: "POSTURA",
+    group: "filosofia",
+    body: "Forzar la pose no educa la columna. Trabajamos hipercifosis y compensaciones con RPG real, sin milagros.",
+    feedUrl: "campanas/feed/catalogo_feed_109_postura_selfie.png",
+    storyUrl: "campanas/story/catalogo_story_109_postura_selfie.png",
+    copy: `Sacarte bien en fotos no arregla tu espalda 🤳
+
+Forzar la pose no educa la columna. Trabajamos hipercifosis y compensaciones con RPG real.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Postura #RPG #Jovenes #Kinésica`
+  },
+  {
+    id: "110_faja_postural",
+    title: "La faja no educa: sostiene",
+    cat: "FAJA POSTURAL",
+    group: "filosofia",
+    body: "Cuando la sacás, el cuerpo vuelve a caer. Enseñamos control y movilidad para que no dependas del arnés.",
+    feedUrl: "campanas/feed/catalogo_feed_110_faja_postural.png",
+    storyUrl: "campanas/story/catalogo_story_110_faja_postural.png",
+    copy: `La faja postural no educa: sostiene 🩹
+
+Cuando la sacás, el cuerpo vuelve a caer. Enseñamos control y movilidad para que no dependas del arnés.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#FajaPostural #Reeducacion #Postura #Kinésica`
+  },
+  {
+    id: "111_estudiar_cama",
+    title: "Estudiar en la cama te cobra el cuello",
+    cat: "ESTUDIO",
+    group: "filosofia",
+    body: "La cama no es un escritorio. Liberamos cervicales y dorsales antes del parcial eterno.",
+    feedUrl: "campanas/feed/catalogo_feed_111_estudiar_cama.png",
+    storyUrl: "campanas/story/catalogo_story_111_estudiar_cama.png",
+    copy: `Estudiar en la cama te cobra el cuello 📚😴
+
+La cama no es un escritorio. Liberamos cervicales y dorsales antes de que el parcial te deje trabado.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Estudiantes #Cervicalgia #Postura #Kinésica`
+  },
+  {
+    id: "112_sillon_rigido",
+    title: "El sillón cómodo que te deja rígido",
+    cat: "POSTURA",
+    group: "filosofia",
+    body: "Relajarte no debería costarte movilidad. Recuperamos extensión y control postural sin culparte.",
+    feedUrl: "campanas/feed/catalogo_feed_112_sillon_rigido.png",
+    storyUrl: "campanas/story/catalogo_story_112_sillon_rigido.png",
+    copy: `El sillón “cómodo” que te deja rígido 🛋️
+
+Relajarte no debería costarte movilidad. Recuperamos extensión y control postural.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Postura #Dorsalgia #Bienestar #Kinésica`
+  },
+  {
+    id: "113_joven_mito",
+    title: "Sos joven para tener esto. Mentira.",
+    cat: "MITO",
+    group: "filosofia",
+    body: "La edad no protege la biomecánica. Evaluamos escoliosis, ciática y contracturas también a los 20 y 30.",
+    feedUrl: "campanas/feed/catalogo_feed_113_joven_mito.png",
+    storyUrl: "campanas/story/catalogo_story_113_joven_mito.png",
+    copy: `“Sos joven para tener esto”. Mentira. 🛑
+
+La edad no protege la biomecánica. Evaluamos escoliosis, ciática y contracturas también a los 20 y 30.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Jovenes #Dolor #MitosSalud #Kinésica`
+  },
+  {
+    id: "114_normalizar_dolor",
+    title: "Normalizar el dolor a los 25 no es madurez",
+    cat: "SENSIBILIZAR",
+    group: "filosofia",
+    body: "Aguantar no es fuerte. Tratar la causa mecánica sí. Hablarlo a tiempo cambia el pronóstico.",
+    feedUrl: "campanas/feed/catalogo_feed_114_normalizar_dolor.png",
+    storyUrl: "campanas/story/catalogo_story_114_normalizar_dolor.png",
+    copy: `Normalizar el dolor a los 25 no es madurez 💬
+
+Aguantar no es fuerte. Tratar la causa mecánica sí. Hablarlo a tiempo cambia el pronóstico.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Sensibilizar #DolorCronico #SaludJoven #Kinésica`
+  },
+  {
+    id: "115_standup_malo",
+    title: "Escritorio alto no es postura sana",
+    cat: "ERGONOMÍA",
+    group: "filosofia",
+    body: "Pararte mal también carga. Evaluamos cómo te organizás de pie y sentado.",
+    feedUrl: "campanas/feed/catalogo_feed_115_standup_malo.png",
+    storyUrl: "campanas/story/catalogo_story_115_standup_malo.png",
+    copy: `Escritorio alto ≠ postura sana 🖥️
+
+Pararte mal también carga cuello y lumbar. Evaluamos cómo te organizás de pie y sentado.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Ergonomia #StandingDesk #Postura #Kinésica`
+  },
+  {
+    id: "116_viaje_ciatica",
+    title: "Después del viaje, la ciática despertó",
+    cat: "CIÁTICA",
+    group: "columna",
+    body: "Horas sentado en avión o micro no son gratis. Recuperamos lumbar y nervio sin alarmismo.",
+    feedUrl: "campanas/feed/catalogo_feed_116_viaje_ciatica.png",
+    storyUrl: "campanas/story/catalogo_story_116_viaje_ciatica.png",
+    copy: `Después del viaje, la ciática despertó ✈️
+
+Horas sentado en avión o micro no son gratis. Recuperamos lumbar y nervio sin alarmismo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Ciatica #Viajes #DolorLumbar #Kinésica`
+  },
+  {
+    id: "117_estirar_vuelve",
+    title: "Estirás, afloja, y a la noche vuelve",
+    cat: "CONTRACTURAS",
+    group: "filosofia",
+    body: "El estiramiento no alcanza si hay bloqueo mecánico. Tratamos la causa para romper el ciclo.",
+    feedUrl: "campanas/feed/catalogo_feed_117_estirar_vuelve.png",
+    storyUrl: "campanas/story/catalogo_story_117_estirar_vuelve.png",
+    copy: `Estirás, afloja… y a la noche vuelve 🔁
+
+El estiramiento no alcanza si hay bloqueo mecánico. Tratamos la causa para romper el ciclo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Contractura #Estiramiento #CausaRaiz #Kinésica`
+  },
+  {
+    id: "118_escoliosis_yoga",
+    title: "La escoliosis no se arregla sola con yoga",
+    cat: "ESCOLIOSIS",
+    group: "columna",
+    body: "El yoga ayuda; el RPG personalizado organiza la curva y las compensaciones. Sin milagros estéticos.",
+    feedUrl: "campanas/feed/catalogo_feed_118_escoliosis_yoga.png",
+    storyUrl: "campanas/story/catalogo_story_118_escoliosis_yoga.png",
+    copy: `La escoliosis no se “arregla” sola con yoga 🧘
+
+El yoga ayuda; el RPG personalizado organiza la curva y las compensaciones. Sin milagros estéticos.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Escoliosis #RPG #Yoga #Kinésica`
+  },
+  {
+    id: "119_dormir_torcido",
+    title: "Dormís de costado y amanecés torcido",
+    cat: "DESCANSO",
+    group: "filosofia",
+    body: "La noche no debería dejarte bloqueado. Revisamos pelvis, lumbar y hábitos de descanso.",
+    feedUrl: "campanas/feed/catalogo_feed_119_dormir_torcido.png",
+    storyUrl: "campanas/story/catalogo_story_119_dormir_torcido.png",
+    copy: `Dormís de costado y amanecés torcido 😴
+
+La noche no debería dejarte bloqueado. Revisamos pelvis, lumbar y hábitos de descanso.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Descanso #Lumbalgia #Postura #Kinésica`
+  },
+  {
+    id: "120_bolso_lado",
+    title: "El bolso siempre del mismo lado te desvía",
+    cat: "CARGA ASIMÉTRICA",
+    group: "filosofia",
+    body: "Una carga fija enseña escoliosis funcional. Alternamos hábitos y reeducamos la postura.",
+    feedUrl: "campanas/feed/catalogo_feed_120_bolso_lado.png",
+    storyUrl: "campanas/story/catalogo_story_120_bolso_lado.png",
+    copy: `El bolso siempre del mismo lado te desvía 👜
+
+Una carga fija enseña escoliosis funcional. Alternamos hábitos y reeducamos la postura.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Postura #CargaAsimetrica #Escoliosis #Kinésica`
+  },
+  {
+    id: "121_agacharse_zapatos",
+    title: "Te bloqueás al agacharte a atarte los zapatos",
+    cat: "MOVIMIENTO",
+    group: "columna",
+    body: "Si un gesto simple dispara ciática o lumbar, hay algo mecánico que atender.",
+    feedUrl: "campanas/feed/catalogo_feed_121_agacharse_zapatos.png",
+    storyUrl: "campanas/story/catalogo_story_121_agacharse_zapatos.png",
+    copy: `¿Te bloqueás al agacharte a atarte los zapatos? 👟
+
+Si un gesto simple dispara ciática o lumbar, hay algo mecánico que atender.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Ciatica #Lumbalgia #Movimiento #Kinésica`
+  },
+  {
+    id: "122_aviso_temprano",
+    title: "El cuerpo avisa antes de que duela fuerte",
+    cat: "PREVENCIÓN",
+    group: "filosofia",
+    body: "Rigidez, hormigueo o un hombro más alto ya son señales. Escucharlo a tiempo evita cronificar.",
+    feedUrl: "campanas/feed/catalogo_feed_122_aviso_temprano.png",
+    storyUrl: "campanas/story/catalogo_story_122_aviso_temprano.png",
+    copy: `El cuerpo avisa antes de que duela fuerte 🔔
+
+Rigidez, hormigueo o un hombro más alto ya son señales. Escucharlo a tiempo evita cronificar.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 6156-4311
+#Prevencion #Sensibilizar #SaludPostural #Kinésica`
   }
 ];
 

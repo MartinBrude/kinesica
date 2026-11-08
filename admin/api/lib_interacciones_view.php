@@ -17,6 +17,9 @@ const INTERACCIONES_MAX_EVENTS = 5000;
 
 function interacciones_phone_format(string $digits): string
 {
+    if (str_starts_with($digits, 'ig_')) {
+        return '@' . ltrim(substr($digits, 3), '@');
+    }
     $d = interacciones_clean_wa_id($digits);
     if ($d === '') {
         return 'Desconocido';
@@ -466,7 +469,7 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
         $hasPacienteCol = kinesica_migrations_column_exists($pdo, 'interaccion_eventos', 'paciente_id');
     } catch (Throwable) {
     }
-    $sql = 'SELECT id, event_key, wa_id, direction, body, ts_utc, patient_name, media_id, media_type, media_mime, media_filename'
+    $sql = 'SELECT id, event_key, wa_id, direction, body, ts_utc, patient_name, source, media_id, media_type, media_mime, media_filename'
         . ($hasPacienteCol ? ', paciente_id' : '')
         . ' FROM interaccion_eventos';
     $params = [];
@@ -509,6 +512,8 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
             $wa = (string) $row['wa_id'];
         }
         $key = $wa . '_' . $local->format('Y-m-d');
+        $isIg = (string) ($row['source'] ?? '') === 'instagram' || str_starts_with($wa, 'ig_');
+        $convs[$key]['channel'] = $isIg ? 'instagram' : ($convs[$key]['channel'] ?? 'whatsapp');
         $convs[$key]['wa_id'] = $wa;
         $convs[$key]['date'] = $local->format('Y-m-d');
         $eventName = (string) $row['patient_name'];
@@ -636,8 +641,14 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
         // Confirmación del recordatorio o ruido de prueba: no quedan pendientes.
         $answered = !empty($st['answered']) || $isTurnConfirm || $isDiagNoise;
         $counts[$archived ? 'archived' : ($answered ? 'answered' : 'unanswered')]++;
+        $isIgConv = ($c['channel'] ?? 'whatsapp') === 'instagram' || str_starts_with((string) $c['wa_id'], 'ig_');
+        if ($isIgConv && ($cat === 'consulta_general' || empty($st['category_label']))) {
+            $cat = 'instagram_dm';
+            $catLabel = '📸 Instagram Direct';
+        }
         $item = [
             'id' => $key,
+            'channel' => $isIgConv ? 'instagram' : 'whatsapp',
             'wa_id' => $c['wa_id'],
             'phone_formatted' => interacciones_phone_format((string) $c['wa_id']),
             'patient_name' => $name,

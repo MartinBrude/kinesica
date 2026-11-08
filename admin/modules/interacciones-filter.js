@@ -53,7 +53,11 @@ export function filterInteractionsList(items, term, activeStatusFilter) {
     const msgMatch = Array.isArray(item.messages) && item.messages.some((m) =>
       normalize(m?.text).includes(cleanTerm)
     );
-    return nameMatch || martinMatch || phoneMatch || summaryMatch || msgMatch;
+    const channelMatch =
+      (cleanTerm === "instagram" || cleanTerm === "ig" || cleanTerm === "meta") &&
+      (item.channel === "instagram" || String(item.wa_id || "").startsWith("ig_"));
+
+    return nameMatch || martinMatch || phoneMatch || summaryMatch || msgMatch || channelMatch;
   });
 }
 
