@@ -1696,6 +1696,17 @@ export function initCreativosUI() {
   const gridEl = document.getElementById("admin-creativos-grid");
   if (gridEl) {
     gridEl.addEventListener("click", (e) => {
+      // Ignorar clicks en el corazón o botones de cola para no abrir la vista previa modal
+      const heartOrCola = e.target.closest(".btn-creativo-heart, .btn-creativo-cola, .creativo-badge-cola");
+      if (heartOrCola) {
+        if (heartOrCola.dataset.colaId) {
+          e.stopPropagation();
+          e.preventDefault();
+          toggleCola(heartOrCola.dataset.colaId, resolver);
+        }
+        return;
+      }
+
       const copyBtn = e.target.closest(".btn-creativo-copy");
       if (copyBtn) {
         const id = copyBtn.dataset.id;
