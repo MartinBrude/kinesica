@@ -27,8 +27,6 @@ import {
   headSeoBlock,
   headStandardStylesheets,
   pageBreadcrumbSection,
-  pageCaptionMarkup,
-  pageHeaderSection,
 } from "./page-shell.mjs";
 
 const ROOT = repoRoot(import.meta.url);
@@ -89,10 +87,9 @@ ${jsonLdScript(
   )}
 </head>
 
-<body>
+<body class="page-agendar">
 ${bodyShellTop(prefix)}${headerShellMarkup(lang, prefix)}
   <main id="main" tabindex="-1">
-${pageHeaderSection(pageCaptionMarkup(copy.breadcrumb, { variant: "word" }))}
 ${pageBreadcrumbSection({
   homeHref,
   homeLabel,

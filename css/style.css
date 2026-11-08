@@ -4423,6 +4423,21 @@ Terms of Service Page
 /*-----------------------------------
 21. Booking Page (Agendar)
 -------------------------------------*/
+/* Focus on the booking widget: no Articles / Methods nav on this page. */
+.page-agendar .navigation {
+  display: none;
+}
+
+.page-agendar {
+  background-color: var(--canvas-mist);
+  background-image:
+    radial-gradient(ellipse 70% 42% at 8% 18%, rgba(30, 201, 176, 0.1), transparent 58%),
+    radial-gradient(ellipse 55% 38% at 94% 52%, rgba(0, 95, 153, 0.06), transparent 62%),
+    linear-gradient(180deg, #f3f7f9 0%, #f7fafb 42%, var(--canvas-mist) 100%);
+  background-repeat: no-repeat;
+  background-size: 100% max(100%, 100vh);
+}
+
 .booking-page {
   padding-top: 44px;
   padding-bottom: 72px;
