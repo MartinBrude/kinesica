@@ -182,22 +182,26 @@
     if (!v.nombre || cleanName(v.nombre).length < 2) {
       errors.push({ field: "nombre", message: t("errPatientName") });
     }
-    if (!Validation.isValidEmail(v.email)) {
-      errors.push({ field: "email", message: t("emailInvalid") });
-    } else {
-      const emailLower = String(v.email || "").trim().toLowerCase();
-      const confirmedEmails = v && v.confirmedEmails;
-      const isEmailConfirmed = Boolean(
-        confirmedEmails && (typeof confirmedEmails.has === "function" ? confirmedEmails.has(emailLower) : Array.isArray(confirmedEmails) && confirmedEmails.indexOf(emailLower) !== -1)
-      );
-      const suggested = Validation.suggestEmailDomain(emailLower);
-      if (suggested && !isEmailConfirmed) {
-        errors.push({
-          field: "email",
-          message: t("emailConfirm"),
-          isSoftEmailConfirm: true,
-          emailValue: emailLower,
-        });
+    const emailRaw = String(v.email || "").trim();
+    // En admin el correo es opcional; si viene vacío no se valida.
+    if (!(v.emailOptional && !emailRaw)) {
+      if (!Validation.isValidEmail(emailRaw)) {
+        errors.push({ field: "email", message: t("emailInvalid") });
+      } else {
+        const emailLower = emailRaw.toLowerCase();
+        const confirmedEmails = v && v.confirmedEmails;
+        const isEmailConfirmed = Boolean(
+          confirmedEmails && (typeof confirmedEmails.has === "function" ? confirmedEmails.has(emailLower) : Array.isArray(confirmedEmails) && confirmedEmails.indexOf(emailLower) !== -1)
+        );
+        const suggested = Validation.suggestEmailDomain(emailLower);
+        if (suggested && !isEmailConfirmed) {
+          errors.push({
+            field: "email",
+            message: t("emailConfirm"),
+            isSoftEmailConfirm: true,
+            emailValue: emailLower,
+          });
+        }
       }
     }
     // Si el teléfono del paciente sale del de quien agenda, el error ya está marcado en ese campo.

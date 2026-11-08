@@ -70,6 +70,17 @@ test("DNI no es obligatorio (sin cambios)", () => {
   assert.equal(BookingWidget.validateContactForm({ ...ok }, t).some((e) => e.field === "dni"), false);
 });
 
+test("en admin el email vacío es opcional; si viene mal formado sigue fallando", () => {
+  assert.deepEqual(
+    BookingWidget.validateContactForm({ ...ok, email: "", emailOptional: true }, t).map((e) => e.field),
+    []
+  );
+  assert.deepEqual(
+    BookingWidget.validateContactForm({ ...ok, email: "mal", emailOptional: true }, t).map((e) => e.field),
+    ["email"]
+  );
+});
+
 test("showFieldErrors marca campo, aria y role=alert, y enfoca el primero", () => {
   const { w, els } = makeWidget();
   w.showFieldErrors([{ field: "nombre", message: "falta nombre" }, { field: "email", message: "mail malo" }]);

@@ -685,6 +685,7 @@
         contactoTelefono: "",
         nombre: q("#kb-input-nombre").value.trim(),
         email: q("#kb-input-email") ? q("#kb-input-email").value.trim() : "",
+        emailOptional: true,
         telefono: q("#kb-input-telefono").value.trim(),
         usesContactPhone: false,
         confirmedPhones: this._confirmedPhones,
@@ -1224,20 +1225,21 @@
       // fuente de verdad: no hay que completar email, documento ni teléfono
       // para poder agendar. Los datos disponibles viajan en el payload y los
       // que no existan quedan vacíos, sin bloquear la reserva.
-      // El DNI nunca es obligatorio (admin ni público).
+      // DNI y email nunca son obligatorios en la turnera de admin.
       Object.keys(values).forEach((selector) => {
         const group = q(selector)?.closest(".kb-form-group");
         if (!group) return;
         group.hidden = Boolean(patient);
         const input = q(selector);
         if (!input) return;
-        const isDni = selector === "#kb-input-dni";
-        const needsRequired = !patient && !isDni;
+        const isOptional = selector === "#kb-input-dni" || selector === "#kb-input-email";
+        const needsRequired = !patient && !isOptional;
         input.required = needsRequired;
         input.setAttribute("aria-required", needsRequired ? "true" : "false");
-        if (isDni) {
-          input.required = false;
-          input.setAttribute("aria-required", "false");
+        if (selector === "#kb-input-email" && !patient) {
+          const label = group.querySelector("label");
+          if (label) label.textContent = "Correo electrónico (opcional)";
+          input.placeholder = "Opcional";
         }
       });
       const dataBox = q("#kb-admin-data");
@@ -2094,6 +2096,7 @@
         contactoTelefono,
         nombre,
         email,
+        emailOptional: Boolean(this.options.adminMode),
         telefono,
         usesContactPhone,
         confirmedPhones: this._confirmedPhones,
