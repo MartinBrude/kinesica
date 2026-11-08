@@ -161,9 +161,10 @@ assert.equal(missingFields(sample).length, 0);
 assert.match(html, /<form id="ficha"[^>]*novalidate/);
 assert.doesNotMatch(html, /data-single="profesional"/);
 assert.doesNotMatch(html, /data-value="martin"/);
-for (const name of ["nombre", "dni", "fechaSesion", "nacimiento", "edad", "antecedentes"]) {
+for (const name of ["nombre", "fechaSesion", "nacimiento", "edad", "antecedentes"]) {
   assert.match(html, new RegExp(`name="${name}"[^>]*required|name="${name}" required`));
 }
+assert.doesNotMatch(html, /name="dni"[^>]*required/);
 assert.doesNotMatch(html, /name="lugarNac"[^>]*required/);
 assert.equal(validateField("lugarNac", ""), null);
 assert.equal(validateField("lugarNac", "Córdoba"), null);
@@ -273,6 +274,7 @@ assert.ok(validateField("nombre", "Ana\nMaría"), "Nombre con saltos de línea d
 assert.ok(validateField("nombre", "Ana María 👍"), "Nombre con emojis debe ser inválido");
 assert.equal(validateField("nombre", "Ana María"), null, "Nombre válido debe ser aceptado");
 assert.equal(sanitizePersonName("Ana,  María 👍\r\n"), "Ana María", "sanitizePersonName debe eliminar comas, emojis y saltos de línea");
+assert.equal(validateField("dni", ""), null, "DNI vacío debe ser opcional");
 assert.equal(validateField("dni", "34abc109"), null, "DNI/Pasaporte con letras debe ser válido");
 assert.equal(validateField("dni", "AB 123456"), null, "Pasaporte con letras debe ser válido");
 assert.ok(validateField("dni", "1"), "DNI/Pasaporte muy corto debe ser inválido");

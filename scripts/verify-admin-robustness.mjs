@@ -15,6 +15,7 @@ import {
   compareFichas,
   daysBetween,
   emptyFicha,
+  REQUIRED_FIELDS,
   missingFieldKeys,
   formatSessionBadgeText,
   getSessionIndex,
@@ -131,11 +132,13 @@ await test("dniNameConflict rechaza el documento de otra persona y permite corre
   );
 });
 
-await test("sin documento, el DNI deja de ser obligatorio", () => {
-  const data = { ...emptyFicha(), sinDocumento: true, nombre: "Ana", fechaSesion: "2026-10-11", nacimiento: "1990-01-01", edad: "36", motivo: "No Traumático", antecedentes: "Dolor." };
+await test("el DNI nunca es obligatorio", () => {
+  const data = { ...emptyFicha(), nombre: "Ana", fechaSesion: "2026-10-11", nacimiento: "1990-01-01", edad: "36", motivo: "No Traumático", antecedentes: "Dolor." };
   assert.ok(!missingFieldKeys(data).includes("dni"));
+  assert.ok(!REQUIRED_FIELDS.some(([key]) => key === "dni"));
   assert.equal(validateField("dni", "", data), null);
-  assert.equal(validateField("dni", "", emptyFicha()), "Falta completar el DNI / Pasaporte");
+  assert.equal(validateField("dni", "", emptyFicha()), null);
+  assert.equal(validateField("dni", "12", emptyFicha()), "El DNI / Pasaporte debe tener al menos 3 caracteres");
 });
 
 await test("normalizeDni y patientKey son estables ante formato", () => {

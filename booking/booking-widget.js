@@ -73,8 +73,8 @@
       phoneConfirm: "¿El número es correcto? Si es de otro país o ya lo revisaste, volvé a tocar Confirmar.",
       phone: "Teléfono / WhatsApp *",
       phonePh: "Ej: +54 9 11 0000-0000",
-      dni: "DNI / Documento",
-      dniPh: "Ej: 00.000.000",
+      dni: "DNI / Documento (opcional)",
+      dniPh: "Opcional",
       confirm: "Confirmar Reserva 🌿",
       saving: "Registrando...",
       success: "¡Turno Presencial Confirmado!",
@@ -176,8 +176,8 @@
       phoneConfirm: "Is this phone number correct? If it's from another country or you already checked it, tap Confirm again.",
       phone: "Phone / WhatsApp *",
       phonePh: "e.g. +54 9 11 0000-0000",
-      dni: "ID document",
-      dniPh: "e.g. 00.000.000",
+      dni: "ID document (optional)",
+      dniPh: "Optional",
       confirm: "Confirm booking 🌿",
       saving: "Saving...",
       success: "In-person appointment confirmed",
@@ -279,8 +279,8 @@
       phoneConfirm: "Ce numéro est-il correct ? S'il est d'un autre pays ou déjà vérifié, appuyez à nouveau sur Confirmer.",
       phone: "Téléphone / WhatsApp *",
       phonePh: "Ex. : +54 9 11 0000-0000",
-      dni: "Pièce d'identité",
-      dniPh: "Ex. : 00.000.000",
+      dni: "Pièce d'identité (facultatif)",
+      dniPh: "Facultatif",
       confirm: "Confirmer la réservation 🌿",
       saving: "Enregistrement...",
       success: "Rendez-vous en cabinet confirmé",
@@ -382,8 +382,8 @@
       phoneConfirm: "O número está correto? Se for de outro país ou você já conferiu, toque em Confirmar novamente.",
       phone: "Telefone / WhatsApp *",
       phonePh: "Ex.: +54 9 11 0000-0000",
-      dni: "Documento",
-      dniPh: "Ex.: 00.000.000",
+      dni: "Documento (opcional)",
+      dniPh: "Opcional",
       confirm: "Confirmar reserva 🌿",
       saving: "Registrando...",
       success: "Consulta presencial confirmada",
@@ -1224,7 +1224,7 @@
       // fuente de verdad: no hay que completar email, documento ni teléfono
       // para poder agendar. Los datos disponibles viajan en el payload y los
       // que no existan quedan vacíos, sin bloquear la reserva.
-      // El DNI nunca es obligatorio en la turnera de admin (primera visita o no).
+      // El DNI nunca es obligatorio (admin ni público).
       Object.keys(values).forEach((selector) => {
         const group = q(selector)?.closest(".kb-form-group");
         if (!group) return;
@@ -1235,10 +1235,9 @@
         const needsRequired = !patient && !isDni;
         input.required = needsRequired;
         input.setAttribute("aria-required", needsRequired ? "true" : "false");
-        if (isDni && !patient) {
-          const label = q("#kb-label-dni");
-          if (label) label.textContent = `${this.t("dni")} (opcional)`;
-          input.placeholder = "Opcional";
+        if (isDni) {
+          input.required = false;
+          input.setAttribute("aria-required", "false");
         }
       });
       const dataBox = q("#kb-admin-data");

@@ -37,8 +37,7 @@ export function validateField(key, value, allData = {}) {
       return null;
     }
     case "dni": {
-      if (allData?.sinDocumento) return null;
-      if (!str) return "Falta completar el DNI / Pasaporte";
+      if (!str || allData?.sinDocumento) return null;
       const alphanum = str.replace(/[^a-zA-Z0-9]/g, "");
       if (alphanum.length < 3) return "El DNI / Pasaporte debe tener al menos 3 caracteres";
       return null;

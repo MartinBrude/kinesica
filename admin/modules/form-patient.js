@@ -55,8 +55,8 @@ export function setDniPower(on, { clear = false } = {}) {
     btn.classList.toggle("is-on", on);
     btn.setAttribute("aria-pressed", on ? "true" : "false");
     btn.title = on
-      ? "Documento obligatorio. Tocá para no pedirlo."
-      : "Sin documento. Tocá para volver a pedirlo.";
+      ? "Documento opcional. Tocá para no pedirlo."
+      : "Sin documento. Tocá para volver a cargarlo.";
   }
   if (!input) return;
   if (!on) {
@@ -68,7 +68,7 @@ export function setDniPower(on, { clear = false } = {}) {
     return;
   }
   input.disabled = false;
-  input.required = true;
+  input.required = false;
   input.readOnly = Boolean(locked);
 }
 

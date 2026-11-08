@@ -74,7 +74,6 @@ export function todayISO() {
 
 export const REQUIRED_FIELDS = [
   ["nombre", "el nombre completo"],
-  ["dni", "el DNI / Pasaporte"],
   ["fechaSesion", "la fecha de la sesión"],
   ["nacimiento", "la fecha de nacimiento"],
   ["edad", "la edad"],
@@ -104,19 +103,13 @@ export const CLINICIAN_DETAILS = {
 
 export function missingFieldKeys(data) {
   return REQUIRED_FIELDS
-    .filter(([key]) => {
-      if (key === "dni" && data?.sinDocumento) return false;
-      return !String(data?.[key] ?? "").trim();
-    })
+    .filter(([key]) => !String(data?.[key] ?? "").trim())
     .map(([key]) => key);
 }
 
 export function missingFields(data) {
   return REQUIRED_FIELDS
-    .filter(([key]) => {
-      if (key === "dni" && data?.sinDocumento) return false;
-      return !String(data?.[key] ?? "").trim();
-    })
+    .filter(([key]) => !String(data?.[key] ?? "").trim())
     .map(([, label]) => label);
 }
 
