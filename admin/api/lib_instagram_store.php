@@ -128,7 +128,7 @@ function ig_queue_list(): array
 {
     ensure_instagram_tables();
     $rows = db()->query(
-        'SELECT creativo_id, title, status, sort_order, queued_by, queued_at, published_on, attempts, last_error
+        'SELECT creativo_id, title, status, sort_order, queued_by, queued_at, published_on, feed_media_id, story_media_id, attempts, last_error
          FROM instagram_cola ORDER BY (status = \'queued\') DESC, sort_order ASC, queued_at ASC'
     )->fetchAll(PDO::FETCH_ASSOC);
     return $rows ?: [];
@@ -186,4 +186,13 @@ function ig_token_save(string $token, ?string $expiresAt): void
         'INSERT INTO instagram_token (id, token, expires_at) VALUES (1, :t, :e)
          ON DUPLICATE KEY UPDATE token = VALUES(token), expires_at = VALUES(expires_at), updated_at = CURRENT_TIMESTAMP'
     )->execute(['t' => $token, 'e' => $expiresAt]);
+}
+
+function ig_queue_find(string $id): ?array
+{
+    ensure_instagram_tables();
+    $stmt = db()->prepare('SELECT * FROM instagram_cola WHERE creativo_id = :id LIMIT 1');
+    $stmt->execute(['id' => $id]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $row ?: null;
 }

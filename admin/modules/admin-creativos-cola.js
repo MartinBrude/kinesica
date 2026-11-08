@@ -1,7 +1,7 @@
 /**
- * Kinésica Admin — Estado de la cola de publicación en Instagram.
+ * Kinésica Admin — Estado de la cola y publicaciones en Instagram.
  * Gestiona la sincronización con el servidor (instagram_cola.php),
- * estado de cada pieza ("liked"/encolada) y llamadas a reordenar.
+ * estado ("liked", encolada, publicada como Feed / Story / Ambas) y publicación directa.
  */
 
 import { api } from "./api.js?v=78";
@@ -27,20 +27,36 @@ function setList(items) {
   refreshColaButtons();
 }
 
-export function getColaList() {
-  return colaItems;
-}
+export function getColaList() { return colaItems; }
+export function getQueuedItems() { return colaItems.filter((r) => r.status === "queued"); }
+export function getPublishedItems() { return colaItems.filter((r) => r.status === "published"); }
+export function stateOf(id) { return colaMap.get(id)?.status || "none"; }
+export function itemOf(id) { return colaMap.get(id) || null; }
 
-export function getQueuedItems() {
-  return colaItems.filter((r) => r.status === "queued");
-}
-
-export function getPublishedItems() {
-  return colaItems.filter((r) => r.status === "published");
-}
-
-export function stateOf(id) {
-  return colaMap.get(id)?.status || "none";
+export function getPublicationDetails(id) {
+  const row = colaMap.get(id);
+  if (!row || row.status !== "published") return null;
+  const feed = Boolean(row.feed_media_id);
+  const story = Boolean(row.story_media_id);
+  let channelText = "Feed + Story";
+  let badgeClass = "is-both";
+  if (feed && !story) {
+    channelText = "Solo Post";
+    badgeClass = "is-feed";
+  } else if (!feed && story) {
+    channelText = "Solo Story";
+    badgeClass = "is-story";
+  }
+  return {
+    date: row.published_on || "",
+    feed,
+    story,
+    feedId: row.feed_media_id,
+    storyId: row.story_media_id,
+    channelText,
+    badgeClass,
+    error: row.last_error,
+  };
 }
 
 export function orderOf(id) {
@@ -52,28 +68,36 @@ export function orderOf(id) {
 export function colaHeartHtml(item) {
   const s = stateOf(item.id);
   const ord = orderOf(item.id);
+  const pub = getPublicationDetails(item.id);
+  if (pub) {
+    return `<button type="button" class="btn-creativo-heart is-published" data-cola-id="${item.id}" title="Publicada el ${pub.date} (${pub.channelText}). Click para re-encolar" aria-label="Publicada">✅</button>`;
+  }
   const isLiked = s === "queued";
   const label = isLiked ? `❤️ #${ord}` : "🤍";
   const title = isLiked ? `En lista (#${ord}) · Click para quitar` : "Me gusta · Sumar a lista para publicar";
   return `<button type="button" class="btn-creativo-heart ${isLiked ? "is-liked" : ""}" data-cola-id="${item.id}" title="${title}" aria-label="${title}">${label}</button>`;
 }
 
+export function colaBadgeHtml(item) {
+  const pub = getPublicationDetails(item.id);
+  if (!pub) return "";
+  return `<span class="creativo-card-pub-badge ${pub.badgeClass}">✅ ${pub.channelText}</span>`;
+}
+
 export function colaButtonHtml(item) {
   const s = stateOf(item.id);
   const ord = orderOf(item.id);
-  let text = "🤍 Me gusta (programar)";
-  let title = "Sumar a la lista de publicaciones automáticas";
-  if (s === "queued") {
-    text = `❤️ Programada (#${ord})`;
-    title = `Publicación #${ord} en la cola. Click para quitar`;
-  } else if (s === "published") {
-    text = "📸 Publicada · volver a encolar";
-    title = "Ya se publicó en Instagram. Click para encolarla de nuevo";
-  } else if (s === "failed") {
-    text = "⚠️ Falló · reintentar";
-    title = "No se pudo publicar. Click para reintentar";
+  const pub = getPublicationDetails(item.id);
+  if (pub) {
+    return `<button type="button" class="btn btn-sm btn-creativo-cola is-published" data-cola-id="${item.id}" title="Publicada el ${pub.date} (${pub.channelText}). Click para programar de nuevo">✅ ${pub.channelText} · Re-encolar</button>`;
   }
-  return `<button type="button" class="btn btn-sm btn-creativo-cola is-${s}" data-cola-id="${item.id}" title="${title}">${text}</button>`;
+  if (s === "queued") {
+    return `<button type="button" class="btn btn-sm btn-creativo-cola is-queued" data-cola-id="${item.id}" title="Publicación #${ord} en la cola. Click para quitar">❤️ Programada (#${ord})</button>`;
+  }
+  if (s === "failed") {
+    return `<button type="button" class="btn btn-sm btn-creativo-cola is-failed" data-cola-id="${item.id}" title="No se pudo publicar. Click para reintentar">⚠️ Falló · reintentar</button>`;
+  }
+  return `<button type="button" class="btn btn-sm btn-creativo-cola is-none" data-cola-id="${item.id}" title="Sumar a la lista de publicaciones automáticas">🤍 Me gusta (programar)</button>`;
 }
 
 export function refreshColaButtons() {
@@ -81,25 +105,30 @@ export function refreshColaButtons() {
     const id = el.dataset.colaId;
     const s = stateOf(id);
     const ord = orderOf(id);
+    const pub = getPublicationDetails(id);
     if (el.classList.contains("btn-creativo-heart")) {
-      const isLiked = s === "queued";
-      el.classList.toggle("is-liked", isLiked);
-      el.textContent = isLiked ? `❤️ #${ord}` : "🤍";
-      el.title = isLiked ? `En lista (#${ord}) · Click para quitar` : "Me gusta · Sumar a lista para publicar";
-    } else {
+      if (pub) {
+        el.className = "btn-creativo-heart is-published";
+        el.textContent = "✅";
+        el.title = `Publicada el ${pub.date} (${pub.channelText}). Click para re-encolar`;
+      } else {
+        const isLiked = s === "queued";
+        el.className = `btn-creativo-heart ${isLiked ? "is-liked" : ""}`;
+        el.textContent = isLiked ? `❤️ #${ord}` : "🤍";
+        el.title = isLiked ? `En lista (#${ord}) · Click para quitar` : "Me gusta · Sumar a lista para publicar";
+      }
+    } else if (el.classList.contains("btn-creativo-cola")) {
       el.className = `btn btn-sm btn-creativo-cola is-${s}`;
-      if (s === "queued") {
+      if (pub) {
+        el.textContent = `✅ ${pub.channelText} · Re-encolar`;
+        el.title = `Publicada el ${pub.date} (${pub.channelText}). Click para programar de nuevo`;
+      } else if (s === "queued") {
         el.textContent = `❤️ Programada (#${ord})`;
         el.title = `Publicación #${ord} en la cola. Click para quitar`;
-      } else if (s === "published") {
-        el.textContent = "📸 Publicada · volver a encolar";
-        el.title = "Ya se publicó en Instagram. Click para encolarla de nuevo";
       } else if (s === "failed") {
         el.textContent = "⚠️ Falló · reintentar";
-        el.title = "No se pudo publicar. Click para reintentar";
       } else {
         el.textContent = "🤍 Me gusta (programar)";
-        el.title = "Sumar a la lista de publicaciones automáticas";
       }
     }
   });
@@ -124,14 +153,7 @@ export async function toggleCola(id, itemResolver) {
   const adding = stateOf(id) !== "queued";
   try {
     const body = adding
-      ? {
-          action: "add",
-          id: item.id,
-          title: item.title,
-          caption: item.copy || item.body,
-          feed_path: item.feedUrl,
-          story_path: item.storyUrl,
-        }
+      ? { action: "add", id: item.id, title: item.title, caption: item.copy || item.body, feed_path: item.feedUrl, story_path: item.storyUrl }
       : { action: "remove", id: item.id };
     const data = await api("instagram_cola.php", { method: "POST", body });
     setList(data.items);
@@ -142,12 +164,23 @@ export async function toggleCola(id, itemResolver) {
 
 export async function reorderCola(orderedIds) {
   try {
-    const data = await api("instagram_cola.php", {
-      method: "POST",
-      body: { action: "reorder", ids: orderedIds },
-    });
+    const data = await api("instagram_cola.php", { method: "POST", body: { action: "reorder", ids: orderedIds } });
     setList(data.items);
   } catch (err) {
     if (!err.auth) window.alert(err.message || "No se pudo reordenar la cola");
+  }
+}
+
+export async function publishNow(id, channel, itemResolver) {
+  const item = itemResolver(id);
+  if (!item) return;
+  try {
+    const body = { action: "publish_now", id: item.id, channel, title: item.title, caption: item.copy || item.body, feed_path: item.feedUrl, story_path: item.storyUrl };
+    const data = await api("instagram_cola.php", { method: "POST", body });
+    setList(data.items);
+    return data.result;
+  } catch (err) {
+    if (!err.auth) window.alert(err.message || "No se pudo publicar en Instagram");
+    throw err;
   }
 }

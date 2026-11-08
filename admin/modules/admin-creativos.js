@@ -8,7 +8,9 @@
 import { escapeHtml } from "./dom.js?v=79";
 import {
   colaButtonHtml,
+  colaBadgeHtml,
   colaHeartHtml,
+  getPublicationDetails,
   refreshColaButtons,
   loadCola,
   toggleCola,
@@ -1793,6 +1795,7 @@ function renderCreativosGrid() {
               <span class="btn light btn-sm">🔍 Ver en grande</span>
             </div>
             <span class="creativo-format-badge">${activeFormat === "story" ? "Story 9:16" : "Feed 4:5"}</span>
+            ${colaBadgeHtml(item)}
             ${colaHeartHtml(item)}
           </div>
 
@@ -1863,7 +1866,22 @@ function openLightboxModal(item) {
   }
 
   const slot = document.getElementById("creativo-modal-cola-slot");
-  if (slot) slot.innerHTML = colaButtonHtml(item);
+  if (slot) {
+    const pub = getPublicationDetails(item.id);
+    if (pub) {
+      slot.innerHTML = `
+        <div class="creativo-modal-pub-banner is-published">
+          <div class="pub-banner-title">✅ Publicada en Instagram</div>
+          <div class="pub-banner-sub">Fecha: <strong>${pub.date}</strong> · Canales: <strong>${pub.channelText}</strong></div>
+          ${pub.error ? `<div class="pub-banner-err">⚠️ ${escapeHtml(pub.error)}</div>` : ""}
+          <div class="pub-banner-actions">
+            ${colaButtonHtml(item)}
+          </div>
+        </div>`;
+    } else {
+      slot.innerHTML = colaButtonHtml(item);
+    }
+  }
   modal.hidden = false;
   document.body.style.overflow = "hidden";
 }

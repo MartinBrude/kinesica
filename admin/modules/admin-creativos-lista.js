@@ -1,26 +1,26 @@
 /**
  * Kinésica Admin — Vista de "Lista para publicar en Instagram".
- * Permite a Norberto y Martín ver las piezas seleccionadas con ❤️,
- * estimar las fechas de salida (L/M/V 10:00) y reordenarlas con ⬆️ / ⬇️.
+ * Muestra las piezas encoladas con slot estimado, reordenamiento (⬆️/⬇️),
+ * publicación inmediata manual (⚡) y el historial detallado de qué se publicó
+ * (Feed, Story o ambos) con fecha e identificadores.
  */
 
 import { escapeHtml } from "./dom.js?v=79";
 import {
   getQueuedItems,
   getPublishedItems,
+  getPublicationDetails,
   reorderCola,
   toggleCola,
+  publishNow,
   subscribeCola,
 } from "./admin-creativos-cola.js";
 
 let resolveItem = () => null;
 
-/**
- * Genera las próximas N fechas programadas (Lunes, Miércoles, Viernes 10:00 hs).
- */
 function getNextSlots(count) {
   const slots = [];
-  const days = [1, 3, 5]; // 1: Lun, 3: Mié, 5: Vie
+  const days = [1, 3, 5];
   const names = ["Dom", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
   const months = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
   const d = new Date();
@@ -46,7 +46,7 @@ export function renderQueueView() {
     container.innerHTML = `
       <div class="creativos-empty creativos-queue-empty">
         <p>🤍 <strong>No hay publicaciones en la lista todavía.</strong></p>
-        <p>Hacé click en la pestaña <strong>🎨 Catálogo de piezas</strong> y tocá el corazón <strong>❤️ Me gusta</strong> en las publicaciones que quieras subir.</p>
+        <p>Hacé click en <strong>🎨 Catálogo de piezas</strong> y tocá <strong>❤️ Me gusta</strong> en las que quieras programar.</p>
       </div>`;
     return;
   }
@@ -55,15 +55,15 @@ export function renderQueueView() {
     <div class="creativos-queue-header">
       <p class="creativos-queue-info">
         📅 <strong>Automatización activa:</strong> Publica 3 veces por semana (<strong>Lunes, Miércoles y Viernes a las 10:00 hs</strong>).
-        Podés cambiar el orden con <strong>⬆️ Subir</strong> y <strong>⬇️ Bajar</strong> para elegir cuál sale primero.
+        El orden define qué pieza sale primero. Podés usar <strong>⬆️ Subir</strong>, <strong>⬇️ Bajar</strong> o <strong>⚡ Publicar ya</strong> para subir una pieza inmediatamente.
       </p>
     </div>
     <div class="creativos-queue-list">`;
 
   if (!queued.length) {
     html += `
-      <div class="creativos-empty">
-        <p>No tenés publicaciones pendientes en cola. Dale ❤️ a nuevas piezas en el catálogo.</p>
+      <div class="creativos-empty" style="margin-bottom: 20px;">
+        <p>No tenés publicaciones pendientes en cola. Dale ❤️ a nuevas piezas en el catálogo para sumarlas.</p>
       </div>`;
   } else {
     queued.forEach((q, idx) => {
@@ -84,13 +84,14 @@ export function renderQueueView() {
           <div class="creativos-queue-details">
             <div class="creativos-queue-slot-date">⏰ Salida programada: <strong>${escapeHtml(slotText)}</strong></div>
             <h4 class="creativos-queue-title">${escapeHtml(q.title || full.title || q.creativo_id)}</h4>
-            <p class="creativos-queue-snippet">${escapeHtml((q.caption || full.copy || "").slice(0, 160))}...</p>
+            <p class="creativos-queue-snippet">${escapeHtml((q.caption || full.copy || "").slice(0, 140))}...</p>
             ${q.last_error ? `<p class="creativos-queue-error">⚠️ ${escapeHtml(q.last_error)}</p>` : ""}
           </div>
           <div class="creativos-queue-actions">
             <button type="button" class="btn light btn-sm btn-queue-up" data-id="${escapeHtml(q.creativo_id)}" ${isFirst ? "disabled" : ""} title="Mover antes en la cola">⬆️ Subir</button>
             <button type="button" class="btn light btn-sm btn-queue-down" data-id="${escapeHtml(q.creativo_id)}" ${isLast ? "disabled" : ""} title="Mover después en la cola">⬇️ Bajar</button>
-            <button type="button" class="btn light btn-sm btn-queue-remove" data-id="${escapeHtml(q.creativo_id)}" title="Quitar de la lista de publicaciones">💔 Quitar</button>
+            <button type="button" class="btn light btn-sm btn-queue-publish-now" data-id="${escapeHtml(q.creativo_id)}" title="Publicar inmediatamente en Instagram (Feed + Story)">⚡ Publicar ya</button>
+            <button type="button" class="btn light btn-sm btn-queue-remove" data-id="${escapeHtml(q.creativo_id)}" title="Quitar de la lista">💔 Quitar</button>
           </div>
         </article>`;
     });
@@ -100,15 +101,37 @@ export function renderQueueView() {
 
   if (published.length) {
     html += `
-      <details class="creativos-published-section">
-        <summary>📜 Ver historial de ${published.length} publicaciones ya realizadas en Instagram</summary>
-        <div class="creativos-published-list">
-          ${published.map((p) => `
-            <div class="creativos-published-item">
-              <span>✅ <strong>${escapeHtml(p.published_on || "")}</strong> — ${escapeHtml(p.title || p.creativo_id)}</span>
-            </div>`).join("")}
-        </div>
-      </details>`;
+      <div class="creativos-published-section">
+        <h3 class="creativos-published-heading">📸 Historial de publicaciones realizadas en Instagram (${published.length})</h3>
+        <div class="creativos-published-list">`;
+    published.forEach((p) => {
+      const full = resolveItem(p.creativo_id) || {};
+      const img = full.feedUrl ? `${full.feedUrl}?v=${Date.now()}` : "";
+      const pub = getPublicationDetails(p.creativo_id) || {};
+      const channels = [];
+      if (pub.feed) channels.push(`<span class="pub-chan-badge is-feed">📱 Post Feed</span>`);
+      if (pub.story) channels.push(`<span class="pub-chan-badge is-story">📲 Historia</span>`);
+      if (!pub.feed && !pub.story) channels.push(`<span class="pub-chan-badge">📸 Instagram</span>`);
+
+      html += `
+        <article class="creativos-published-card">
+          <div class="creativos-queue-thumb">
+            ${img ? `<img src="${img}" alt="${escapeHtml(p.title)}" loading="lazy">` : ""}
+          </div>
+          <div class="creativos-queue-details">
+            <div class="creativos-published-meta">
+              <span class="pub-date">🗓️ Publicada el <strong>${escapeHtml(pub.date || p.published_on || "")}</strong></span>
+              <div class="pub-channels">${channels.join(" ")}</div>
+            </div>
+            <h4 class="creativos-queue-title">${escapeHtml(p.title || full.title || p.creativo_id)}</h4>
+            ${pub.error ? `<p class="creativos-queue-error">⚠️ ${escapeHtml(pub.error)}</p>` : ""}
+          </div>
+          <div class="creativos-queue-actions">
+            <button type="button" class="btn light btn-sm btn-queue-readd" data-id="${escapeHtml(p.creativo_id)}" title="Volver a programar esta pieza en la cola">🔄 Re-encolar</button>
+          </div>
+        </article>`;
+    });
+    html += `</div></div>`;
   }
 
   container.innerHTML = html;
@@ -126,6 +149,24 @@ function handleReorderClick(id, direction) {
   copy.splice(targetIdx, 0, moved);
 
   reorderCola(copy.map((r) => r.creativo_id));
+}
+
+async function handlePublishNowClick(id, btn) {
+  const item = resolveItem(id);
+  if (!item) return;
+  const ok = window.confirm(`¿Publicar "${item.title}" ahora mismo en Instagram (Feed + Story)?`);
+  if (!ok) return;
+  btn.disabled = true;
+  btn.textContent = "⏳ Publicando...";
+  try {
+    await publishNow(id, "both", resolveItem);
+    window.alert("¡Publicación enviada con éxito a Instagram!");
+  } catch (e) {
+    // publishNow ya alerta
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "⚡ Publicar ya";
+  }
 }
 
 export function initListaUI(resolver) {
@@ -161,6 +202,10 @@ export function initListaUI(resolver) {
     if (downBtn) return handleReorderClick(downBtn.dataset.id, "down");
     const rmBtn = e.target.closest(".btn-queue-remove");
     if (rmBtn) return toggleCola(rmBtn.dataset.id, resolveItem);
+    const readdBtn = e.target.closest(".btn-queue-readd");
+    if (readdBtn) return toggleCola(readdBtn.dataset.id, resolveItem);
+    const pubNowBtn = e.target.closest(".btn-queue-publish-now");
+    if (pubNowBtn) return handlePublishNowClick(pubNowBtn.dataset.id, pubNowBtn);
   });
 
   subscribeCola(() => {

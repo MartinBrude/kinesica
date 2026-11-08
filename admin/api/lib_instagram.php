@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 /**
  * Kinésica — Cliente mínimo de la API de Instagram (Instagram Login, graph.instagram.com).
- * Publica un post de feed y una story a partir de URLs públicas de imagen.
+ * Publica un post de feed y/o una story a partir de URLs públicas de imagen.
  */
 
 require_once __DIR__ . '/lib_instagram_store.php';
@@ -60,6 +60,58 @@ function ig_publish_image(string $userId, string $token, string $imageUrl, strin
     $container = (string) ig_call('POST', $userId . '/media', $params, $token)['id'];
     ig_wait_ready($container, $token);
     return (string) ig_call('POST', $userId . '/media_publish', ['creation_id' => $container], $token)['id'];
+}
+
+/**
+ * Publica una pieza en Instagram (Feed, Story o ambos) y actualiza su registro en instagram_cola.
+ */
+function ig_publish_piece(array $item, bool $publishFeed = true, bool $publishStory = true): array
+{
+    $c = cfg();
+    $userId = (string) ($c['instagram_user_id'] ?? '');
+    if ($userId === '') throw new RuntimeException('Falta instagram_user_id en config.php');
+    ig_token_refresh_if_needed();
+    $token = ig_token_get()['token'];
+    if ($token === '') throw new RuntimeException('Falta instagram_token en config.php');
+
+    $feedId = null;
+    $storyId = null;
+    $feedError = null;
+    $storyError = null;
+
+    if ($publishFeed && !empty($item['feed_path'])) {
+        try {
+            $feedId = ig_publish_image($userId, $token, ig_asset_url($item['feed_path']), $item['caption'] ?? '', 'feed');
+        } catch (Throwable $e) {
+            $feedError = 'Feed: ' . $e->getMessage();
+        }
+    }
+
+    if ($publishStory && !empty($item['story_path'])) {
+        try {
+            $storyId = ig_publish_image($userId, $token, ig_asset_url($item['story_path']), '', 'story');
+        } catch (Throwable $e) {
+            $storyError = 'Story: ' . $e->getMessage();
+        }
+    }
+
+    if (!$feedId && !$storyId) {
+        $err = trim(($feedError ? $feedError . '; ' : '') . ($storyError ?: ''));
+        ig_mark_attempt_failed($item['creativo_id'], $err ?: 'Fallo al publicar');
+        throw new RuntimeException($err ?: 'No se pudo publicar en Instagram');
+    }
+
+    $now = new DateTimeImmutable('now', new DateTimeZone('America/Argentina/Buenos_Aires'));
+    $today = $now->format('Y-m-d');
+    $combinedError = trim(($feedError ? $feedError . '; ' : '') . ($storyError ?: ''));
+    ig_mark_published($item['creativo_id'], $today, $feedId, $storyId, $combinedError ?: null);
+
+    return [
+        'feed_media_id' => $feedId,
+        'story_media_id' => $storyId,
+        'published_on' => $today,
+        'last_error' => $combinedError ?: null,
+    ];
 }
 
 /** Renueva el token si vence en menos de 20 días (o no se conoce el vencimiento). */
