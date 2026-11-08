@@ -1773,3 +1773,198 @@
 
 
 
+
+/* Cola de publicación automática en Instagram */
+.creativos-view-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #eef2f6;
+  padding-bottom: 12px;
+}
+.creativos-tab-btn {
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+.creativos-tab-btn.is-active {
+  background: #234255 !important;
+  color: #fff !important;
+  border-color: #234255 !important;
+}
+.btn-creativo-cola { background: #fff; border: 1px solid #c8d3dc; }
+.btn-creativo-cola.is-queued { background: #e6f6ec; border-color: #2e9d5b; color: #1d6e3f; }
+.btn-creativo-cola.is-published { background: #eef1f5; color: #5b6772; }
+.btn-creativo-cola.is-failed { background: #fdecec; border-color: #d64545; color: #a12828; }
+.creativo-modal-cola { margin-bottom: 12px; }
+.creativo-modal-cola .btn-creativo-cola { width: 100%; padding: 12px; font-size: 1rem; }
+
+.btn-creativo-heart {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 4;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+.btn-creativo-heart:hover {
+  transform: scale(1.08);
+  background: #ffffff;
+}
+.btn-creativo-heart.is-liked {
+  background: #ffebee;
+  border-color: #ef9a9a;
+  color: #c62828;
+}
+
+.creativos-queue-header {
+  background: #f0f7fa;
+  border: 1px solid #bce1ee;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+.creativos-queue-info {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #1a4457;
+  line-height: 1.45;
+}
+.creativos-queue-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.creativos-queue-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.15s ease;
+}
+.creativos-queue-item:hover {
+  border-color: #cbd5e1;
+}
+.creativos-queue-pos {
+  flex-shrink: 0;
+}
+.creativos-pos-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 38px;
+  height: 38px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #234255;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+.creativos-queue-thumb {
+  width: 55px;
+  height: 68px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #f1f5f9;
+}
+.creativos-queue-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.creativos-queue-details {
+  flex: 1;
+  min-width: 0;
+}
+.creativos-queue-slot-date {
+  font-size: 0.8rem;
+  color: #1d6e3f;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.creativos-queue-title {
+  margin: 0 0 3px 0;
+  font-size: 0.95rem;
+  color: #1e293b;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.creativos-queue-snippet {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.creativos-queue-error {
+  margin: 4px 0 0 0;
+  font-size: 0.8rem;
+  color: #dc2626;
+  font-weight: 600;
+}
+.creativos-queue-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.creativos-queue-empty {
+  text-align: center;
+  padding: 48px 16px;
+  background: #f8fafc;
+  border: 2px dashed #cbd5e1;
+  border-radius: 8px;
+  color: #475569;
+}
+.creativos-published-section {
+  margin-top: 24px;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+.creativos-published-section summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #334155;
+  font-size: 0.9rem;
+}
+.creativos-published-list {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.creativos-published-item {
+  font-size: 0.85rem;
+  color: #475569;
+  padding: 4px 0;
+  border-bottom: 1px solid #edf2f7;
+}
+
+@media (max-width: 768px) {
+  .creativos-queue-item {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .creativos-queue-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

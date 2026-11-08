@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=133">
+  <link rel="stylesheet" href="/admin/styles.css?v=134">
   <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1794159076">
   <script>
     (function () {
@@ -1523,36 +1523,53 @@
             </div>
           </div>
           <div class="admin-card-body">
-            <!-- Barra de controles: Formato, Filtros y Búsqueda -->
-            <div class="creativos-toolbar">
-              <div class="creativos-format-toggle" role="group" aria-label="Formato de imagen">
-                <button type="button" class="btn light btn-sm is-active" id="btn-creativos-format-feed" title="Ver formato Feed vertical 4:5 (1080x1350)">
-                  <span>📱 Feed (4:5)</span>
-                </button>
-                <button type="button" class="btn light btn-sm" id="btn-creativos-format-story" title="Ver formato Story vertical 9:16 (1080x1920)">
-                  <span>📲 Historias (9:16)</span>
-                </button>
+            <!-- Selector de vistas: Catálogo de piezas vs Lista para publicar -->
+            <div class="creativos-view-tabs" role="tablist">
+              <button type="button" class="btn light btn-sm creativos-tab-btn is-active" id="btn-creativos-tab-catalog" role="tab">
+                🎨 Catálogo de piezas
+              </button>
+              <button type="button" class="btn light btn-sm creativos-tab-btn" id="btn-creativos-tab-queue" role="tab">
+                ❤️ Lista para publicar (<span id="creativos-queue-badge">0</span>)
+              </button>
+            </div>
+
+            <!-- Panel 1: Catálogo de piezas -->
+            <div id="creativos-tab-panel-catalog">
+              <!-- Barra de controles: Formato, Filtros y Búsqueda -->
+              <div class="creativos-toolbar">
+                <div class="creativos-format-toggle" role="group" aria-label="Formato de imagen">
+                  <button type="button" class="btn light btn-sm is-active" id="btn-creativos-format-feed" title="Ver formato Feed vertical 4:5 (1080x1350)">
+                    <span>📱 Feed (4:5)</span>
+                  </button>
+                  <button type="button" class="btn light btn-sm" id="btn-creativos-format-story" title="Ver formato Story vertical 9:16 (1080x1920)">
+                    <span>📲 Historias (9:16)</span>
+                  </button>
+                </div>
+
+                <div class="creativos-filters" role="group" aria-label="Filtrar por categoría">
+                  <button type="button" class="btn light btn-sm creativos-filter-pill is-active" data-filter="todos">Todas</button>
+                  <button type="button" class="btn light btn-sm creativos-filter-pill" data-filter="columna">Columna &amp; ATM</button>
+                  <button type="button" class="btn light btn-sm creativos-filter-pill" data-filter="articulaciones">Articulaciones</button>
+                  <button type="button" class="btn light btn-sm creativos-filter-pill" data-filter="filosofia">Filosofía &amp; Marca</button>
+                </div>
+
+                <div class="creativos-search-box">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  <input type="search" id="admin-creativos-search" placeholder="Buscar por patología o palabra clave..." autocomplete="off">
+                </div>
               </div>
 
-              <div class="creativos-filters" role="group" aria-label="Filtrar por categoría">
-                <button type="button" class="btn light btn-sm creativos-filter-pill is-active" data-filter="todos">Todas</button>
-                <button type="button" class="btn light btn-sm creativos-filter-pill" data-filter="columna">Columna &amp; ATM</button>
-                <button type="button" class="btn light btn-sm creativos-filter-pill" data-filter="articulaciones">Articulaciones</button>
-                <button type="button" class="btn light btn-sm creativos-filter-pill" data-filter="filosofia">Filosofía &amp; Marca</button>
-              </div>
-
-              <div class="creativos-search-box">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                <input type="search" id="admin-creativos-search" placeholder="Buscar por patología o palabra clave..." autocomplete="off">
+              <!-- Grilla de creativos -->
+              <div class="creativos-grid" id="admin-creativos-grid">
+                <div class="admin-view-loading">
+                  <span class="loading-spinner" aria-hidden="true"></span>
+                  <span>Cargando creativos de campaña...</span>
+                </div>
               </div>
             </div>
 
-            <!-- Grilla de creativos -->
-            <div class="creativos-grid" id="admin-creativos-grid">
-              <div class="admin-view-loading">
-                <span class="loading-spinner" aria-hidden="true"></span>
-                <span>Cargando creativos de campaña...</span>
-              </div>
+            <!-- Panel 2: Lista para publicar reordenable -->
+            <div id="creativos-tab-panel-queue" class="creativos-queue-view" hidden>
             </div>
           </div>
         </article>
@@ -1869,6 +1886,7 @@
                 </div>
                 <pre id="creativo-modal-copy" class="creativo-copy-content"></pre>
               </div>
+              <div class="creativo-modal-cola" id="creativo-modal-cola-slot"></div>
               <div class="creativo-modal-actions">
                 <span class="creativo-dl-label">Descargar archivo en alta resolución (PNG):</span>
                 <div class="creativo-modal-dl-buttons">
@@ -2772,6 +2790,6 @@
   <div id="print-root"></div>
   <script src="/partials/google-reviews-data.min.js?v=1794159076" defer></script>
   <script src="/booking/booking-bundle.min.js?v=1794159076" defer></script>
-  <script type="module" src="/admin/app.js?v=196"></script>
+  <script type="module" src="/admin/app.js?v=197"></script>
 </body>
 </html>

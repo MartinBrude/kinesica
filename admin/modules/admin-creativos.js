@@ -6,6 +6,14 @@
  */
 
 import { escapeHtml } from "./dom.js?v=79";
+import {
+  colaButtonHtml,
+  colaHeartHtml,
+  refreshColaButtons,
+  loadCola,
+  toggleCola,
+} from "./admin-creativos-cola.js";
+import { initListaUI } from "./admin-creativos-lista.js";
 
 const ASSET_V = Date.now();
 
@@ -1713,6 +1721,19 @@ export function initCreativosUI() {
     });
   }
 
+  const resolver = (id) => CREATIVOS_DATA.find((it) => it.id === id) || null;
+  initListaUI(resolver);
+  loadCola();
+
+  container.addEventListener("click", (e) => {
+    const btn = e.target.closest(".btn-creativo-cola, .btn-creativo-heart");
+    if (btn && btn.dataset.colaId) {
+      e.stopPropagation();
+      e.preventDefault();
+      toggleCola(btn.dataset.colaId, resolver);
+    }
+  });
+
   // Lightbox close
   const modalClose = document.getElementById("creativo-modal-close");
   const modalBackdrop = document.getElementById("creativo-modal-backdrop");
@@ -1772,6 +1793,7 @@ function renderCreativosGrid() {
               <span class="btn light btn-sm">🔍 Ver en grande</span>
             </div>
             <span class="creativo-format-badge">${activeFormat === "story" ? "Story 9:16" : "Feed 4:5"}</span>
+            ${colaHeartHtml(item)}
           </div>
 
           <div class="creativo-info">
@@ -1789,12 +1811,14 @@ function renderCreativosGrid() {
               <button type="button" class="btn light btn-sm btn-creativo-copy" data-id="${item.id}" title="Copiar texto para publicar">
                 📋 Copiar texto
               </button>
+              ${colaButtonHtml(item)}
             </div>
           </div>
         </article>
       `;
     })
     .join("");
+  refreshColaButtons();
 }
 
 function openLightboxModal(item) {
@@ -1838,6 +1862,8 @@ function openLightboxModal(item) {
     };
   }
 
+  const slot = document.getElementById("creativo-modal-cola-slot");
+  if (slot) slot.innerHTML = colaButtonHtml(item);
   modal.hidden = false;
   document.body.style.overflow = "hidden";
 }
