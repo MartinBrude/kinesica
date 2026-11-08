@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 /**
  * Kinésica — Cola de publicación automática en Instagram (persistencia).
- * Tablas: instagram_cola (piezas "subibles" con orden custom) e instagram_token (token renovable).
- * Estados: queued → published | failed.
+ * Tablas: instagram_cola (orden custom) e instagram_token (token renovable).
+ * Soporta MariaDB/MySQL (producción) y SQLite (suite de pruebas).
  */
 
 require_once __DIR__ . '/lib_db.php';
@@ -12,57 +12,55 @@ require_once __DIR__ . '/lib_db.php';
 const IG_ASSET_BASE = 'https://www.kinesica.com.ar/admin/';
 const IG_MAX_ATTEMPTS = 3;
 
+function ig_is_sqlite(): bool
+{
+    return db()->getAttribute(PDO::ATTR_DRIVER_NAME) === 'sqlite';
+}
+
 function ensure_instagram_tables(): void
 {
     static $ready = false;
     if ($ready) return;
     $pdo = db();
-    $pdo->exec(
-        'CREATE TABLE IF NOT EXISTS instagram_cola (
-            creativo_id VARCHAR(80) PRIMARY KEY,
-            title VARCHAR(200) NOT NULL,
-            caption TEXT NOT NULL,
-            feed_path VARCHAR(200) NOT NULL,
-            story_path VARCHAR(200) NOT NULL,
-            status VARCHAR(12) NOT NULL DEFAULT \'queued\',
-            sort_order INT NOT NULL DEFAULT 0,
-            queued_by VARCHAR(64) NOT NULL DEFAULT \'\',
-            queued_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            published_on DATE NULL,
-            feed_media_id VARCHAR(64) NULL,
-            story_media_id VARCHAR(64) NULL,
-            attempts SMALLINT UNSIGNED NOT NULL DEFAULT 0,
-            last_error TEXT NULL,
+    if (ig_is_sqlite()) {
+        $pdo->exec('CREATE TABLE IF NOT EXISTS instagram_cola (
+            creativo_id VARCHAR(80) PRIMARY KEY, title VARCHAR(200) NOT NULL, caption TEXT NOT NULL,
+            feed_path VARCHAR(200) NOT NULL, story_path VARCHAR(200) NOT NULL,
+            status VARCHAR(12) NOT NULL DEFAULT \'queued\', sort_order INT NOT NULL DEFAULT 0,
+            queued_by VARCHAR(64) NOT NULL DEFAULT \'\', queued_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            published_on DATE NULL, feed_media_id VARCHAR(64) NULL, story_media_id VARCHAR(64) NULL,
+            attempts SMALLINT NOT NULL DEFAULT 0, last_error TEXT NULL)');
+        $pdo->exec('CREATE TABLE IF NOT EXISTS instagram_token (
+            id TINYINT PRIMARY KEY, token TEXT NOT NULL, expires_at DATETIME NULL,
+            updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP)');
+    } else {
+        $pdo->exec('CREATE TABLE IF NOT EXISTS instagram_cola (
+            creativo_id VARCHAR(80) PRIMARY KEY, title VARCHAR(200) NOT NULL, caption TEXT NOT NULL,
+            feed_path VARCHAR(200) NOT NULL, story_path VARCHAR(200) NOT NULL,
+            status VARCHAR(12) NOT NULL DEFAULT \'queued\', sort_order INT NOT NULL DEFAULT 0,
+            queued_by VARCHAR(64) NOT NULL DEFAULT \'\', queued_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            published_on DATE NULL, feed_media_id VARCHAR(64) NULL, story_media_id VARCHAR(64) NULL,
+            attempts SMALLINT UNSIGNED NOT NULL DEFAULT 0, last_error TEXT NULL,
             INDEX idx_ig_cola_order (status, sort_order, queued_at)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4'
-    );
-    try {
-        $cols = $pdo->query('SHOW COLUMNS FROM instagram_cola LIKE \'sort_order\'')->fetchAll();
-        if (empty($cols)) {
-            $pdo->exec('ALTER TABLE instagram_cola ADD COLUMN sort_order INT NOT NULL DEFAULT 0 AFTER status');
-        }
-    } catch (Throwable $e) {}
-    $pdo->exec(
-        'CREATE TABLE IF NOT EXISTS instagram_token (
-            id TINYINT PRIMARY KEY,
-            token TEXT NOT NULL,
-            expires_at DATETIME NULL,
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4');
+        try {
+            $cols = $pdo->query('SHOW COLUMNS FROM instagram_cola LIKE \'sort_order\'')->fetchAll();
+            if (empty($cols)) $pdo->exec('ALTER TABLE instagram_cola ADD COLUMN sort_order INT NOT NULL DEFAULT 0 AFTER status');
+        } catch (Throwable $e) {}
+        $pdo->exec('CREATE TABLE IF NOT EXISTS instagram_token (
+            id TINYINT PRIMARY KEY, token TEXT NOT NULL, expires_at DATETIME NULL,
             updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4'
-    );
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4');
+    }
     $ready = true;
 }
 
-/** Solo rutas internas de campaña: campanas/(feed|story)/nombre.png */
+/** Rutas internas estrictas sin dot-traversal: campanas/(feed|story)/nombre.png */
 function ig_valid_asset(string $path, string $kind): bool
 {
-    return (bool) preg_match('#^campanas/' . $kind . '/[A-Za-z0-9_.-]+\.(png|jpe?g)$#', $path);
+    return (bool) preg_match('#^campanas/' . $kind . '/[A-Za-z0-9_-]+\.(png|jpe?g)$#', $path);
 }
 
-/**
- * Instagram solo acepta JPEG: convierte el PNG de campaña (GD) a campanas/ig/<kind>/<nombre>.jpg,
- * una sola vez (cache en disco), y devuelve la URL pública del JPG.
- */
 function ig_asset_url(string $path): string
 {
     $src = dirname(__DIR__) . '/' . $path;
@@ -98,13 +96,22 @@ function ig_queue_add(array $item, string $user): bool
     $maxOrder = (int) db()->query("SELECT COALESCE(MAX(sort_order), 0) FROM instagram_cola WHERE status = 'queued'")->fetchColumn();
     $sortOrder = $maxOrder + 1;
 
-    db()->prepare(
-        'INSERT INTO instagram_cola (creativo_id, title, caption, feed_path, story_path, status, sort_order, queued_by)
-         VALUES (:id, :t, :c, :f, :s, \'queued\', :ord, :u)
-         ON DUPLICATE KEY UPDATE title = VALUES(title), caption = VALUES(caption), feed_path = VALUES(feed_path),
-           story_path = VALUES(story_path), status = \'queued\', sort_order = :ord2, queued_by = VALUES(queued_by),
-           queued_at = CURRENT_TIMESTAMP, attempts = 0, last_error = NULL'
-    )->execute(['id' => $id, 't' => $title, 'c' => $caption, 'f' => $feed, 's' => $story, 'ord' => $sortOrder, 'ord2' => $sortOrder, 'u' => $user]);
+    if (ig_is_sqlite()) {
+        db()->prepare('INSERT INTO instagram_cola (creativo_id, title, caption, feed_path, story_path, status, sort_order, queued_by)
+             VALUES (:id, :t, :c, :f, :s, \'queued\', :ord, :u)
+             ON CONFLICT(creativo_id) DO UPDATE SET title = excluded.title, caption = excluded.caption,
+               feed_path = excluded.feed_path, story_path = excluded.story_path, status = \'queued\',
+               sort_order = excluded.sort_order, queued_by = excluded.queued_by,
+               queued_at = CURRENT_TIMESTAMP, attempts = 0, last_error = NULL'
+        )->execute(['id' => $id, 't' => $title, 'c' => $caption, 'f' => $feed, 's' => $story, 'ord' => $sortOrder, 'u' => $user]);
+    } else {
+        db()->prepare('INSERT INTO instagram_cola (creativo_id, title, caption, feed_path, story_path, status, sort_order, queued_by)
+             VALUES (:id, :t, :c, :f, :s, \'queued\', :ord, :u)
+             ON DUPLICATE KEY UPDATE title = VALUES(title), caption = VALUES(caption), feed_path = VALUES(feed_path),
+               story_path = VALUES(story_path), status = \'queued\', sort_order = :ord2, queued_by = VALUES(queued_by),
+               queued_at = CURRENT_TIMESTAMP, attempts = 0, last_error = NULL'
+        )->execute(['id' => $id, 't' => $title, 'c' => $caption, 'f' => $feed, 's' => $story, 'ord' => $sortOrder, 'ord2' => $sortOrder, 'u' => $user]);
+    }
     return true;
 }
 
@@ -118,9 +125,18 @@ function ig_queue_remove(string $id): void
 function ig_queue_reorder(array $orderedIds): void
 {
     ensure_instagram_tables();
-    $stmt = db()->prepare('UPDATE instagram_cola SET sort_order = :ord WHERE creativo_id = :id AND status = \'queued\'');
-    foreach ($orderedIds as $idx => $id) {
-        $stmt->execute(['ord' => $idx + 1, 'id' => (string) $id]);
+    $pdo = db();
+    $inTx = $pdo->inTransaction();
+    if (!$inTx) $pdo->beginTransaction();
+    try {
+        $stmt = $pdo->prepare('UPDATE instagram_cola SET sort_order = :ord WHERE creativo_id = :id AND status = \'queued\'');
+        foreach ($orderedIds as $idx => $id) {
+            $stmt->execute(['ord' => $idx + 1, 'id' => (string) $id]);
+        }
+        if (!$inTx) $pdo->commit();
+    } catch (Throwable $e) {
+        if (!$inTx) $pdo->rollBack();
+        throw $e;
     }
 }
 
@@ -138,9 +154,9 @@ function ig_queue_next(): ?array
 {
     ensure_instagram_tables();
     $stmt = db()->prepare(
-        'SELECT * FROM instagram_cola WHERE status = \'queued\' AND attempts < :max ORDER BY sort_order ASC, queued_at ASC LIMIT 1'
+        'SELECT * FROM instagram_cola WHERE status = \'queued\' AND attempts < ' . (int) IG_MAX_ATTEMPTS . ' ORDER BY sort_order ASC, queued_at ASC LIMIT 1'
     );
-    $stmt->execute(['max' => IG_MAX_ATTEMPTS]);
+    $stmt->execute();
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     return $row ?: null;
 }
@@ -157,11 +173,11 @@ function ig_mark_attempt_failed(string $id, string $error): void
 {
     db()->prepare(
         'UPDATE instagram_cola SET attempts = attempts + 1, last_error = :e,
-         status = CASE WHEN attempts + 1 >= :max THEN \'failed\' ELSE status END WHERE creativo_id = :id'
-    )->execute(['e' => mb_substr($error, 0, 1000), 'max' => IG_MAX_ATTEMPTS, 'id' => $id]);
+         status = CASE WHEN attempts + 1 >= ' . (int) IG_MAX_ATTEMPTS . ' THEN \'failed\' ELSE status END WHERE creativo_id = :id'
+    )->execute(['e' => mb_substr($error, 0, 1000), 'id' => $id]);
 }
 
-function ig_mark_published(string $id, string $date, string $feedId, ?string $storyId, ?string $storyError): void
+function ig_mark_published(string $id, string $date, ?string $feedId, ?string $storyId, ?string $storyError): void
 {
     db()->prepare(
         'UPDATE instagram_cola SET status = \'published\', published_on = :d, feed_media_id = :f,
@@ -182,10 +198,15 @@ function ig_token_get(): array
 
 function ig_token_save(string $token, ?string $expiresAt): void
 {
-    db()->prepare(
-        'INSERT INTO instagram_token (id, token, expires_at) VALUES (1, :t, :e)
-         ON DUPLICATE KEY UPDATE token = VALUES(token), expires_at = VALUES(expires_at), updated_at = CURRENT_TIMESTAMP'
-    )->execute(['t' => $token, 'e' => $expiresAt]);
+    if (ig_is_sqlite()) {
+        db()->prepare('INSERT INTO instagram_token (id, token, expires_at) VALUES (1, :t, :e)
+             ON CONFLICT(id) DO UPDATE SET token = excluded.token, expires_at = excluded.expires_at, updated_at = CURRENT_TIMESTAMP'
+        )->execute(['t' => $token, 'e' => $expiresAt]);
+    } else {
+        db()->prepare('INSERT INTO instagram_token (id, token, expires_at) VALUES (1, :t, :e)
+             ON DUPLICATE KEY UPDATE token = VALUES(token), expires_at = VALUES(expires_at), updated_at = CURRENT_TIMESTAMP'
+        )->execute(['t' => $token, 'e' => $expiresAt]);
+    }
 }
 
 function ig_queue_find(string $id): ?array

@@ -67,7 +67,14 @@ function db(): PDO
     if ($pdo instanceof PDO) {
         return $pdo;
     }
-    $c = cfg()['db'];
+    $c = cfg()['db'] ?? [];
+    if (!empty($c['dsn'])) {
+        $pdo = new PDO((string) $c['dsn'], (string) ($c['user'] ?? ''), (string) ($c['pass'] ?? ''), [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        ]);
+        return $pdo;
+    }
     $pdo = new PDO(
         sprintf('mysql:host=%s;port=%d;dbname=%s;charset=utf8mb4', $c['host'], $c['port'], $c['name']),
         $c['user'],
