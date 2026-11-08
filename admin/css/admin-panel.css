@@ -1851,10 +1851,41 @@
   border-radius: 8px;
   padding: 12px 16px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  transition: border-color 0.15s ease;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
 }
 .creativos-queue-item:hover {
   border-color: #cbd5e1;
+}
+.creativos-queue-item.is-dragging {
+  opacity: 0.35;
+  border: 2px dashed #0284c7;
+  background: #f0f9ff;
+  cursor: grabbing;
+}
+.creativos-queue-item.is-drag-over {
+  border-color: #0284c7;
+  transform: translateY(3px);
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.2);
+}
+.creativos-drag-handle {
+  cursor: grab;
+  font-size: 1.25rem;
+  color: #94a3b8;
+  padding: 4px 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: color 0.15s ease;
+}
+.creativos-drag-handle:hover,
+.creativos-queue-item:hover .creativos-drag-handle {
+  color: #234255;
+}
+.creativos-drag-handle:active {
+  cursor: grabbing;
 }
 .creativos-queue-pos {
   flex-shrink: 0;

@@ -15,7 +15,7 @@ import {
   loadCola,
   toggleCola,
 } from "./admin-creativos-cola.js";
-import { initListaUI } from "./admin-creativos-lista.js";
+import { initListaUI } from "./admin-creativos-lista.js?v=2";
 
 const ASSET_V = Date.now();
 

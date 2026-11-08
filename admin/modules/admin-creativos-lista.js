@@ -1,8 +1,7 @@
 /**
  * Kinésica Admin — Vista de "Lista para publicar en Instagram".
- * Muestra las piezas encoladas con slot estimado, reordenamiento (⬆️/⬇️),
- * publicación inmediata manual (⚡) y el historial detallado de qué se publicó
- * (Feed, Story o ambos) con fecha e identificadores.
+ * Muestra las piezas encoladas con slot estimado, reordenamiento (Drag & Drop y ⬆️/⬇️),
+ * publicación inmediata manual (⚡) y el historial detallado de publicaciones.
  */
 
 import { escapeHtml } from "./dom.js?v=79";
@@ -16,20 +15,13 @@ import {
   subscribeCola,
 } from "./admin-creativos-cola.js";
 
-let resolveItem = () => null;
+let resolveItem = () => null, draggedId = null;
 
 function getNextSlots(count) {
-  const slots = [];
-  const days = [1, 3, 5];
-  const names = ["Dom", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
-  const months = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
-  const d = new Date();
+  const slots = [], days = [1, 3, 5], names = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"], months = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"], d = new Date();
   while (slots.length < count) {
     d.setDate(d.getDate() + 1);
-    const day = d.getDay();
-    if (days.includes(day)) {
-      slots.push(`${names[day]} ${d.getDate()} de ${months[d.getMonth()]} · 10:00 hs`);
-    }
+    if (days.includes(d.getDay())) slots.push(`${names[d.getDay()]} ${d.getDate()} de ${months[d.getMonth()]} · 10:00 hs`);
   }
   return slots;
 }
@@ -38,9 +30,7 @@ export function renderQueueView() {
   const container = document.getElementById("creativos-tab-panel-queue");
   if (!container) return;
 
-  const queued = getQueuedItems();
-  const published = getPublishedItems();
-  const slots = getNextSlots(queued.length);
+  const queued = getQueuedItems(), published = getPublishedItems(), slots = getNextSlots(queued.length);
 
   if (!queued.length && !published.length) {
     container.innerHTML = `
@@ -55,32 +45,22 @@ export function renderQueueView() {
     <div class="creativos-queue-header">
       <p class="creativos-queue-info">
         📅 <strong>Automatización activa:</strong> Publica 3 veces por semana (<strong>Lunes, Miércoles y Viernes a las 10:00 hs</strong>).
-        El orden define qué pieza sale primero. Podés usar <strong>⬆️ Subir</strong>, <strong>⬇️ Bajar</strong> o <strong>⚡ Publicar ya</strong> para subir una pieza inmediatamente.
+        Arrastrá las tarjetas (<strong>drag & drop</strong>) o usá <strong>⬆️ / ⬇️</strong> para cambiar el orden. Podés usar <strong>⚡ Publicar ya</strong> para subir una pieza al instante.
       </p>
     </div>
     <div class="creativos-queue-list">`;
 
   if (!queued.length) {
-    html += `
-      <div class="creativos-empty" style="margin-bottom: 20px;">
-        <p>No tenés publicaciones pendientes en cola. Dale ❤️ a nuevas piezas en el catálogo para sumarlas.</p>
-      </div>`;
+    html += `<div class="creativos-empty" style="margin-bottom: 20px;"><p>No tenés publicaciones pendientes en cola. Dale ❤️ a nuevas piezas en el catálogo para sumarlas.</p></div>`;
   } else {
     queued.forEach((q, idx) => {
-      const full = resolveItem(q.creativo_id) || {};
-      const img = full.feedUrl ? `${full.feedUrl}?v=${Date.now()}` : "";
-      const isFirst = idx === 0;
-      const isLast = idx === queued.length - 1;
-      const slotText = slots[idx] || `Posición #${idx + 1}`;
-
+      const full = resolveItem(q.creativo_id) || {}, img = full.feedUrl ? `${full.feedUrl}?v=${Date.now()}` : "";
+      const isFirst = idx === 0, isLast = idx === queued.length - 1, slotText = slots[idx] || `Posición #${idx + 1}`;
       html += `
-        <article class="creativos-queue-item" data-id="${escapeHtml(q.creativo_id)}">
-          <div class="creativos-queue-pos">
-            <span class="creativos-pos-badge">#${idx + 1}</span>
-          </div>
-          <div class="creativos-queue-thumb">
-            ${img ? `<img src="${img}" alt="${escapeHtml(q.title)}" loading="lazy">` : ""}
-          </div>
+        <article class="creativos-queue-item" data-id="${escapeHtml(q.creativo_id)}" draggable="true">
+          <div class="creativos-drag-handle" title="Arrastrar para reordenar (Drag & drop)">⋮⋮</div>
+          <div class="creativos-queue-pos"><span class="creativos-pos-badge">#${idx + 1}</span></div>
+          <div class="creativos-queue-thumb">${img ? `<img src="${img}" alt="${escapeHtml(q.title)}" loading="lazy">` : ""}</div>
           <div class="creativos-queue-details">
             <div class="creativos-queue-slot-date">⏰ Salida programada: <strong>${escapeHtml(slotText)}</strong></div>
             <h4 class="creativos-queue-title">${escapeHtml(q.title || full.title || q.creativo_id)}</h4>
@@ -88,15 +68,14 @@ export function renderQueueView() {
             ${q.last_error ? `<p class="creativos-queue-error">⚠️ ${escapeHtml(q.last_error)}</p>` : ""}
           </div>
           <div class="creativos-queue-actions">
-            <button type="button" class="btn light btn-sm btn-queue-up" data-id="${escapeHtml(q.creativo_id)}" ${isFirst ? "disabled" : ""} title="Mover antes en la cola">⬆️ Subir</button>
-            <button type="button" class="btn light btn-sm btn-queue-down" data-id="${escapeHtml(q.creativo_id)}" ${isLast ? "disabled" : ""} title="Mover después en la cola">⬇️ Bajar</button>
-            <button type="button" class="btn light btn-sm btn-queue-publish-now" data-id="${escapeHtml(q.creativo_id)}" title="Publicar inmediatamente en Instagram (Feed + Story)">⚡ Publicar ya</button>
-            <button type="button" class="btn light btn-sm btn-queue-remove" data-id="${escapeHtml(q.creativo_id)}" title="Quitar de la lista">💔 Quitar</button>
+            <button type="button" class="btn light btn-sm btn-queue-up" data-id="${escapeHtml(q.creativo_id)}" ${isFirst ? "disabled" : ""} title="Subir prioridad">⬆️</button>
+            <button type="button" class="btn light btn-sm btn-queue-down" data-id="${escapeHtml(q.creativo_id)}" ${isLast ? "disabled" : ""} title="Bajar prioridad">⬇️</button>
+            <button type="button" class="btn light btn-sm btn-queue-publish-now" data-id="${escapeHtml(q.creativo_id)}" title="Publicar inmediatamente en Instagram">⚡ Publicar ya</button>
+            <button type="button" class="btn light btn-sm btn-queue-remove" data-id="${escapeHtml(q.creativo_id)}" title="Quitar de la lista">💔</button>
           </div>
         </article>`;
     });
   }
-
   html += `</div>`;
 
   if (published.length) {
@@ -105,19 +84,14 @@ export function renderQueueView() {
         <h3 class="creativos-published-heading">📸 Historial de publicaciones realizadas en Instagram (${published.length})</h3>
         <div class="creativos-published-list">`;
     published.forEach((p) => {
-      const full = resolveItem(p.creativo_id) || {};
-      const img = full.feedUrl ? `${full.feedUrl}?v=${Date.now()}` : "";
-      const pub = getPublicationDetails(p.creativo_id) || {};
-      const channels = [];
+      const full = resolveItem(p.creativo_id) || {}, img = full.feedUrl ? `${full.feedUrl}?v=${Date.now()}` : "";
+      const pub = getPublicationDetails(p.creativo_id) || {}, channels = [];
       if (pub.feed) channels.push(`<span class="pub-chan-badge is-feed">📱 Post Feed</span>`);
       if (pub.story) channels.push(`<span class="pub-chan-badge is-story">📲 Historia</span>`);
       if (!pub.feed && !pub.story) channels.push(`<span class="pub-chan-badge">📸 Instagram</span>`);
-
       html += `
         <article class="creativos-published-card">
-          <div class="creativos-queue-thumb">
-            ${img ? `<img src="${img}" alt="${escapeHtml(p.title)}" loading="lazy">` : ""}
-          </div>
+          <div class="creativos-queue-thumb">${img ? `<img src="${img}" alt="${escapeHtml(p.title)}" loading="lazy">` : ""}</div>
           <div class="creativos-queue-details">
             <div class="creativos-published-meta">
               <span class="pub-date">🗓️ Publicada el <strong>${escapeHtml(pub.date || p.published_on || "")}</strong></span>
@@ -127,35 +101,34 @@ export function renderQueueView() {
             ${pub.error ? `<p class="creativos-queue-error">⚠️ ${escapeHtml(pub.error)}</p>` : ""}
           </div>
           <div class="creativos-queue-actions">
-            <button type="button" class="btn light btn-sm btn-queue-readd" data-id="${escapeHtml(p.creativo_id)}" title="Volver a programar esta pieza en la cola">🔄 Re-encolar</button>
+            <button type="button" class="btn light btn-sm btn-queue-readd" data-id="${escapeHtml(p.creativo_id)}" title="Volver a programar">🔄 Re-encolar</button>
           </div>
         </article>`;
     });
     html += `</div></div>`;
   }
-
   container.innerHTML = html;
 }
 
-function handleReorderClick(id, direction) {
+function moveQueueItem(fromId, target) {
   const queued = getQueuedItems();
-  const idx = queued.findIndex((r) => r.creativo_id === id);
-  if (idx < 0) return;
-  const targetIdx = direction === "up" ? idx - 1 : idx + 1;
-  if (targetIdx < 0 || targetIdx >= queued.length) return;
-
+  const fromIdx = queued.findIndex((r) => r.creativo_id === fromId);
+  const toIdx = typeof target === "number" ? target : queued.findIndex((r) => r.creativo_id === target);
+  if (fromIdx < 0 || toIdx < 0 || fromIdx === toIdx || toIdx >= queued.length) return;
   const copy = [...queued];
-  const [moved] = copy.splice(idx, 1);
-  copy.splice(targetIdx, 0, moved);
-
+  const [moved] = copy.splice(fromIdx, 1);
+  copy.splice(toIdx, 0, moved);
   reorderCola(copy.map((r) => r.creativo_id));
+}
+
+function handleReorderClick(id, direction) {
+  const queued = getQueuedItems(), idx = queued.findIndex((r) => r.creativo_id === id);
+  if (idx >= 0) moveQueueItem(id, direction === "up" ? idx - 1 : idx + 1);
 }
 
 async function handlePublishNowClick(id, btn) {
   const item = resolveItem(id);
-  if (!item) return;
-  const ok = window.confirm(`¿Publicar "${item.title}" ahora mismo en Instagram (Feed + Story)?`);
-  if (!ok) return;
+  if (!item || !window.confirm(`¿Publicar "${item.title}" ahora mismo en Instagram (Feed + Story)?`)) return;
   btn.disabled = true;
   btn.textContent = "⏳ Publicando...";
   try {
@@ -167,6 +140,39 @@ async function handlePublishNowClick(id, btn) {
     btn.disabled = false;
     btn.textContent = "⚡ Publicar ya";
   }
+}
+
+function setupDragAndDrop(container) {
+  container.addEventListener("dragstart", (e) => {
+    const item = e.target.closest(".creativos-queue-item");
+    if (!item) return;
+    draggedId = item.dataset.id;
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", draggedId);
+    item.classList.add("is-dragging");
+  });
+  container.addEventListener("dragover", (e) => {
+    const item = e.target.closest(".creativos-queue-item");
+    if (!item || !draggedId) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    item.classList.add("is-drag-over");
+  });
+  container.addEventListener("dragleave", (e) => {
+    e.target.closest(".creativos-queue-item")?.classList.remove("is-drag-over");
+  });
+  container.addEventListener("dragend", () => {
+    draggedId = null;
+    container.querySelectorAll(".creativos-queue-item").forEach((el) => el.classList.remove("is-dragging", "is-drag-over"));
+  });
+  container.addEventListener("drop", (e) => {
+    const item = e.target.closest(".creativos-queue-item");
+    e.preventDefault();
+    if (!item || !draggedId || item.dataset.id === draggedId) return;
+    const src = draggedId;
+    draggedId = null;
+    moveQueueItem(src, item.dataset.id);
+  });
 }
 
 export function initListaUI(resolver) {
@@ -196,21 +202,18 @@ export function initListaUI(resolver) {
   }
 
   container.addEventListener("click", (e) => {
-    const upBtn = e.target.closest(".btn-queue-up");
-    if (upBtn) return handleReorderClick(upBtn.dataset.id, "up");
-    const downBtn = e.target.closest(".btn-queue-down");
-    if (downBtn) return handleReorderClick(downBtn.dataset.id, "down");
-    const rmBtn = e.target.closest(".btn-queue-remove");
-    if (rmBtn) return toggleCola(rmBtn.dataset.id, resolveItem);
-    const readdBtn = e.target.closest(".btn-queue-readd");
-    if (readdBtn) return toggleCola(readdBtn.dataset.id, resolveItem);
-    const pubNowBtn = e.target.closest(".btn-queue-publish-now");
-    if (pubNowBtn) return handlePublishNowClick(pubNowBtn.dataset.id, pubNowBtn);
+    const up = e.target.closest(".btn-queue-up"), down = e.target.closest(".btn-queue-down");
+    if (up) return handleReorderClick(up.dataset.id, "up");
+    if (down) return handleReorderClick(down.dataset.id, "down");
+    const rm = e.target.closest(".btn-queue-remove"), readd = e.target.closest(".btn-queue-readd");
+    if (rm || readd) return toggleCola((rm || readd).dataset.id, resolveItem);
+    const pub = e.target.closest(".btn-queue-publish-now");
+    if (pub) return handlePublishNowClick(pub.dataset.id, pub);
   });
 
+  setupDragAndDrop(container);
+
   subscribeCola(() => {
-    if (panelQueue && !panelQueue.hidden) {
-      renderQueueView();
-    }
+    if (panelQueue && !panelQueue.hidden) renderQueueView();
   });
 }
