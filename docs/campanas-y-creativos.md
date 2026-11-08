@@ -1,21 +1,19 @@
 # 📢 Manual de Campañas Publicitarias y Galería de Creativos Instagram
 
-Guía operativa para gestionar la captación de pacientes a través de campañas digitales, descargar piezas gráficas institucionales con sus copys redactados y realizar el seguimiento de conversiones en el consultorio.
+Guía operativa para gestionar la captación de pacientes a través de campañas digitales, descargar piezas gráficas institucionales con sus copys redactados, programar publicaciones automáticas en Instagram y realizar el seguimiento de conversiones en el consultorio.
 
 ---
 
 ## 🧭 Módulos Disponibles en el Panel de Administración
 
-Dentro del menú superior **Administración** (exclusivo para rol de administrador), disponés de dos herramientas clave:
-
-1. **Creativos Instagram (`/admin/creativos`):** Catálogo interactivo de piezas gráficas en formatos Feed y Story con copys clínicos listos para publicar en Instagram, Facebook o estados de WhatsApp.
-2. **Turnos de campaña (`/admin/campana`):** Panel de supervisión de citas originadas por campañas publicitarias, conciliación con Google Calendar y exportación de datos a CSV.
+1. **Creativos Instagram (`/admin/creativos`):** Ubicado en el menú superior **Meta**, accesible tanto para administradores como para Norberto. Incluye el catálogo de 93 piezas gráficas, el sistema de Me gusta (`❤️`) para armar la lista de publicación, Drag & Drop para reordenar y la publicación automática en Instagram (@kinesicabrude).
+2. **Turnos de campaña (`/admin/campana`):** Ubicado en el menú superior **Administración**, permite la supervisión de citas originadas por campañas publicitarias, conciliación con Google Calendar y exportación de datos a CSV.
 
 ---
 
 ## 🎨 1. Galería de Creativos Instagram (`/admin/creativos`)
 
-La galería reúne **39 piezas publicitarias y educativas** de alta calidad fotográfica y renders médicos 3D estilo Pomelli, diseñadas con la identidad visual institucional de Kinésica (Charcas 3889, Palermo, CABA).
+La galería reúne **93 piezas publicitarias y educativas** de alta calidad fotográfica y renders médicos 3D estilo Pomelli, diseñadas con la identidad visual institucional de Kinésica (Charcas 3889, Palermo, CABA).
 
 ### 📐 Formatos Disponibles con un Clic
 
@@ -26,36 +24,39 @@ Cada pieza fue renderizada y optimizada en dos formatos estándar de redes socia
 
 Podés alternar entre ambos formatos con el selector superior **Formato: Feed (4:5) / Story (9:16)**; todas las miniaturas y descargas se adaptan instantáneamente.
 
-### 🏷️ Categorías y Filtros
+### 🏷️ Categorías y Búsqueda
 
 Las piezas están organizadas en 4 grupos temáticos según la necesidad clínica del paciente:
+* **Todos**: Catálogo completo (93 piezas).
+* **Filosofía y Marca**: Educación sobre causa raíz vs. síntoma, atención 1 a 1 de 60 minutos, dolor crónico.
+* **Columna y Postura**: Cervicalgia, lumbalgia, ciatalgia, hernia de disco, dorsalgia, rectificación cervical, escoliosis.
+* **Articulaciones y Extremidades**: ATM y bruxismo, manguito rotador, rodilla, fascitis plantar, túnel carpiano.
 
-| Filtro | Qué temas abarca | Ejemplos de piezas |
-| :--- | :--- | :--- |
-| **Todos** | Catálogo completo (39 piezas) | Toda la biblioteca disponible. |
-| **Filosofía y Marca** | Educación al paciente sobre el enfoque integral de Kinésica: causa raíz vs. síntoma, individualidad de 1 hora, no normalizar el dolor crónico. | *¿Te acostumbraste a vivir con dolor?*, *El síntoma es solo una señal*, *Buscamos la causa raíz*, *La postura es un síntoma*, *¿Por qué una hora completa?*. |
-| **Columna y Postura** | Dolor vertebral, contracturas, discopatías y alteraciones de la estática corporal. | *Cervicalgia*, *Lumbalgia*, *Ciatalgia*, *Hernia de disco*, *Dorsalgia*, *Rectificación cervical*, *Hipercifosis*, *Escoliosis*. |
-| **Articulaciones y Extremidades** | Lesiones articulares, sobrecargas musculares y patologías de miembros superiores e inferiores. | *Hombro y Manguito rotador*, *ATM y Bruxismo*, *Gonalgia y Meniscopatías*, *Fascitis plantar*, *Túnel carpiano*, *Epicondilitis*. |
-
-Además, contás con un **buscador en tiempo real** donde podés escribir cualquier patología o síntoma (ej: *"cuello"*, *"mandíbula"*, *"ciático"*, *"embarazo"*) para encontrar la pieza adecuada en segundos.
-
-### 📋 Copys Profesionales y Descarga Directa
-
-Al hacer clic en cualquier tarjeta del catálogo, se abre el visor en detalle con:
-
-1. **Previsualización a escala real** de la pieza en el formato activo (Feed o Story).
-2. **Botón `⬇️ Descargar imagen`:** Guarda el archivo PNG en alta definición directamente en tu computadora o celular para publicarlo sin pérdida de calidad.
-3. **Texto de publicación (Caption / Copy):** Redacción profesional validada que incluye:
-   - Gancho inicial con empatía clínica y llamado de atención.
-   - Explicación biomecánica sencilla de la causa raíz.
-   - Propuesta de valor: sesiones individuales 1 a 1 de 60 minutos con el Lic. Norberto Silvio Brude.
-   - Datos de contacto y llamado a la acción: dirección en Palermo (`Charcas 3889`), enlace a la turnera online y WhatsApp directo.
-   - Hashtags médicos y de localización (`#KinesiologiaPalermo`, `#RPG`, `#Osteopatia`, `#ATM`, etc.).
-4. **Botón `📋 Copiar texto`:** Copia todo el copy al portapapeles con un solo toque, listo para pegar en Instagram o WhatsApp Web.
+El **buscador en tiempo real** permite filtrar instantáneamente por cualquier síntoma o patología.
 
 ---
 
-## 📊 2. Turnos de Campaña (`/admin/campana`)
+## 🚀 2. Sistema de Publicación Automática en Instagram
+
+Directamente desde la interfaz de Creativos, Norberto y los administradores gestionan qué sale publicado sin depender de herramientas externas:
+
+1. **Selección con ❤️ Me gusta**:
+   - Cada tarjeta tiene un botón de corazón `🤍 / ❤️`.
+   - Al hacer click, el corazón pasa a `❤️ #N` y la pieza se suma a la **Lista para publicar** sin interrumpir la navegación (no abre popups innecesarios).
+2. **Pestaña "❤️ Lista para publicar"**:
+   - **Drag & Drop**: Reordená la prioridad arrastrando las tarjetas con el mouse.
+   - **Botones ⬆️ / ⬇️**: Para subir o bajar una posición en un clic.
+   - **Cálculo de slots estimados**: Muestra las fechas proyectadas de publicación (Lunes, Miércoles y Viernes a las 10:00 hs de Argentina).
+   - **⚡ Publicar ya**: Publica de inmediato en Instagram tanto el Feed como la Story sin esperar al cron.
+3. **Reporte de canales publicados**:
+   - `✅ Feed + Story`, `✅ Solo Post` o `✅ Solo Story`.
+   - Historial de publicaciones con fecha y botón **🔄 Re-encolar**.
+
+*(Para detalles técnicos de la API de Meta, base de datos y configuración del cron, consultar [docs/instagram-autopost.md](file:///Users/martinbrude/Documents/kinesica/docs/instagram-autopost.md)).*
+
+---
+
+## 📊 3. Turnos de Campaña (`/admin/campana`)
 
 Este módulo permite medir el retorno de la inversión publicitaria y la trazabilidad de los pacientes que agendaron a partir de pautas digitales o enlaces promocionales.
 
@@ -72,7 +73,7 @@ Este módulo permite medir el retorno de la inversión publicitaria y la trazabi
 
 ---
 
-## 💡 3. Recomendaciones para Pauta y Publicaciones
+## 💡 4. Recomendaciones para Pauta y Publicaciones
 
 1. **Enlace a la turnera en la biografía:**  
    En el perfil de Instagram `@kinesicabrude`, el enlace principal debe apuntar directamente a:  
@@ -80,6 +81,6 @@ Este módulo permite medir el retorno de la inversión publicitaria y la trazabi
 2. **WhatsApp directo con mensaje predeterminado:**  
    Para campañas cuyo objetivo sea mensaje a WhatsApp, utilizá el enlace con mensaje inicial:  
    `https://wa.me/5491161564311?text=Hola,%20vi%20la%20publicación%20en%20Instagram%20y%20quisiera%20consultar%20por%20un%20turno`
-3. **Frecuencia sugerida de publicación:**  
-   - **Stories (9:16):** 3 a 5 veces por semana, alternando testimonios, piezas de patologías frecuentes (cervicalgia, bruxismo, lumbalgia) y recordatorios de turnos disponibles.
-   - **Feed (4:5):** 2 a 3 publicaciones semanales con contenido educativo profundo sobre la causa biomecánica del dolor.
+3. **Frecuencia automatizada de publicación:**  
+   - Con la cola activa, el cron publica 3 veces por semana (Lunes, Miércoles y Viernes a las 10:00 hs).
+   - Norberto puede mantener entre 5 y 10 piezas seleccionadas con ❤️ en la lista para tener cobertura automática para las próximas semanas.
