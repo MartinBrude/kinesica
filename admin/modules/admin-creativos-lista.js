@@ -23,7 +23,7 @@ import {
   handleServiceToggleClick,
   serviceToggleHtml,
   channelLabel,
-} from "./admin-creativos-caption.js?v=5";
+} from "./admin-creativos-caption.js?v=6";
 
 let resolveItem = () => null, draggedId = null;
 

@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=139">
+  <link rel="stylesheet" href="/admin/styles.css?v=140">
   <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1794159076">
   <script>
     (function () {
@@ -1880,11 +1880,24 @@
               <div class="creativo-copy-box">
                 <div class="creativo-copy-header">
                   <span class="creativo-copy-label">Texto sugerido para Instagram / WhatsApp</span>
-                  <button type="button" class="btn light btn-sm" id="creativo-modal-btn-copy" title="Copiar texto al portapapeles">
-                    📋 Copiar texto
-                  </button>
+                  <div class="creativo-copy-header-actions">
+                    <button type="button" class="btn light btn-sm" id="creativo-modal-btn-edit" title="Editar texto de publicación" hidden>
+                      ✏️ Editar texto
+                    </button>
+                    <button type="button" class="btn light btn-sm" id="creativo-modal-btn-copy" title="Copiar texto al portapapeles">
+                      📋 Copiar texto
+                    </button>
+                  </div>
                 </div>
                 <pre id="creativo-modal-copy" class="creativo-copy-content"></pre>
+                <div id="creativo-modal-caption-editor" class="creativos-caption-editor creativo-modal-caption-editor" hidden>
+                  <label class="creativos-caption-label" for="creativo-modal-caption-textarea">Texto que se publica en Instagram / WhatsApp</label>
+                  <textarea id="creativo-modal-caption-textarea" class="creativos-caption-textarea" rows="12" maxlength="2200"></textarea>
+                  <div class="creativos-caption-actions">
+                    <button type="button" class="btn btn-sm" id="creativo-modal-btn-save-caption">💾 Guardar</button>
+                    <button type="button" class="btn light btn-sm" id="creativo-modal-btn-cancel-caption">Cancelar</button>
+                  </div>
+                </div>
               </div>
               <div class="creativo-modal-cola" id="creativo-modal-cola-slot"></div>
               <div class="creativo-modal-actions">
@@ -2790,6 +2803,6 @@
   <div id="print-root"></div>
   <script src="/partials/google-reviews-data.min.js?v=1794159076" defer></script>
   <script src="/booking/booking-bundle.min.js?v=1794159076" defer></script>
-  <script type="module" src="/admin/app.js?v=202"></script>
+  <script type="module" src="/admin/app.js?v=203"></script>
 </body>
 </html>

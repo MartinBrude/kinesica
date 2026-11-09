@@ -1695,6 +1695,13 @@
   flex-wrap: wrap;
 }
 
+.creativo-copy-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .creativo-copy-label {
   font-size: 12.5px;
   font-weight: 700;
@@ -1715,6 +1722,15 @@
   padding: 14px;
   border-radius: 8px;
   border: 1px solid var(--line);
+}
+
+.creativo-modal-caption-editor {
+  margin-top: 0;
+}
+
+.creativo-modal-caption-editor .creativos-caption-textarea {
+  min-height: 220px;
+  max-height: 360px;
 }
 
 .creativo-modal-actions {
@@ -1976,9 +1992,6 @@
   border-radius: 8px;
   flex: 1 1 100%;
   width: 100%;
-}
-.creativo-actions .creativos-caption-editor {
-  order: 10;
 }
 .creativos-caption-label {
   display: block;

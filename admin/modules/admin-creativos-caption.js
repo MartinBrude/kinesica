@@ -68,16 +68,6 @@ export function captionSnippetHtml(q, seedItem) {
     ${edit}`;
 }
 
-/** Botón + editor inline en cada tarjeta del catálogo. */
-export function catalogCaptionEditHtml(item) {
-  if (!canEditCaptions() || !item?.id) return "";
-  const text = (resolveCaption(item.id, item) || "").trim();
-  const id = escapeHtml(item.id);
-  return `
-    <button type="button" class="btn light btn-sm btn-queue-edit-caption" data-id="${id}" title="Editar texto de publicación">✏️ Editar texto</button>
-    ${captionEditorHtml(item.id, text, "catalog-caption")}`;
-}
-
 export function toggleCaptionEditor(id, open) {
   const box = document.querySelector(`[data-caption-for="${CSS.escape(id)}"]`);
   if (!box) return;

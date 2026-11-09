@@ -11,6 +11,8 @@ import {
   loadCola,
   toggleCola,
   resolveCaption,
+  CAPTION_MAX,
+  saveCaption,
 } from "./admin-creativos-cola.js?v=8";
 import {
   colaButtonHtml,
@@ -19,8 +21,8 @@ import {
   refreshColaButtons,
   ensureColaUiPaint,
 } from "./admin-creativos-cola-ui.js?v=2";
-import { initListaUI } from "./admin-creativos-lista.js?v=8";
-import { catalogCaptionEditHtml } from "./admin-creativos-caption.js?v=5";
+import { initListaUI } from "./admin-creativos-lista.js?v=9";
+import { canEditCaptions } from "./admin-creativos-caption.js?v=6";
 
 const ASSET_V = Date.now();
 
@@ -2157,8 +2159,8 @@ export function initCreativosUI() {
   const gridEl = document.getElementById("admin-creativos-grid");
   if (gridEl) {
     gridEl.addEventListener("click", (e) => {
-      // Edición de caption / cola: lo maneja initListaUI sobre el card contenedor.
-      if (e.target.closest(".creativos-caption-editor, .btn-queue-edit-caption, .btn-queue-save-caption, .btn-queue-cancel-caption, .btn-creativo-heart, .btn-creativo-cola, .creativo-badge-cola")) {
+      // Cola / corazones: lo maneja initListaUI o el listener del card.
+      if (e.target.closest(".btn-creativo-heart, .btn-creativo-cola, .creativo-badge-cola")) {
         return;
       }
 
@@ -2203,14 +2205,25 @@ export function initCreativosUI() {
     }
   });
 
-  // Lightbox close
+  // Lightbox close + edición de caption en vista detalle
+  initModalCaptionControls();
   const modalClose = document.getElementById("creativo-modal-close");
   const modalBackdrop = document.getElementById("creativo-modal-backdrop");
   if (modalClose) modalClose.addEventListener("click", closeLightboxModal);
   if (modalBackdrop) modalBackdrop.addEventListener("click", closeLightboxModal);
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeLightboxModal();
+    if (e.key !== "Escape") return;
+    const modal = document.getElementById("creativo-lightbox-modal");
+    if (!modal || modal.hidden) return;
+    const editor = document.getElementById("creativo-modal-caption-editor");
+    if (editor && !editor.hidden) {
+      const els = getModalCaptionEls();
+      if (els.textarea && els.copy) els.textarea.value = els.copy.textContent || "";
+      setModalCaptionEditMode(false);
+      return;
+    }
+    closeLightboxModal();
   });
 }
 
@@ -2281,7 +2294,6 @@ function renderCreativosGrid() {
               <button type="button" class="btn light btn-sm btn-creativo-copy" data-id="${item.id}" title="Copiar texto para publicar">
                 📋 Copiar texto
               </button>
-              ${catalogCaptionEditHtml(item)}
             </div>
           </div>
         </article>
@@ -2289,6 +2301,34 @@ function renderCreativosGrid() {
     })
     .join("");
   refreshColaButtons();
+}
+
+function getModalCaptionEls() {
+  return {
+    copy: document.getElementById("creativo-modal-copy"),
+    editor: document.getElementById("creativo-modal-caption-editor"),
+    textarea: document.getElementById("creativo-modal-caption-textarea"),
+    btnEdit: document.getElementById("creativo-modal-btn-edit"),
+    btnCopy: document.getElementById("creativo-modal-btn-copy"),
+    btnSave: document.getElementById("creativo-modal-btn-save-caption"),
+    btnCancel: document.getElementById("creativo-modal-btn-cancel-caption"),
+  };
+}
+
+function setModalCaptionEditMode(editing) {
+  const els = getModalCaptionEls();
+  if (els.copy) els.copy.hidden = editing;
+  if (els.editor) els.editor.hidden = !editing;
+  if (els.btnEdit) els.btnEdit.hidden = editing || !canEditCaptions();
+  if (els.btnCopy) els.btnCopy.hidden = editing;
+}
+
+function getModalCaptionText() {
+  const els = getModalCaptionEls();
+  if (els.editor && !els.editor.hidden && els.textarea) {
+    return String(els.textarea.value || "");
+  }
+  return String(els.copy?.textContent || "");
 }
 
 function openLightboxModal(item) {
@@ -2299,19 +2339,22 @@ function openLightboxModal(item) {
   const modalImg = document.getElementById("creativo-modal-img");
   const modalTitle = document.getElementById("creativo-modal-title");
   const modalCat = document.getElementById("creativo-modal-cat");
-  const modalCopy = document.getElementById("creativo-modal-copy");
   const modalBtnFeed = document.getElementById("creativo-modal-dl-feed");
   const modalBtnStory = document.getElementById("creativo-modal-dl-story");
-  const modalBtnCopy = document.getElementById("creativo-modal-btn-copy");
+  const els = getModalCaptionEls();
 
   const currentImg = activeFormat === "story" ? item.storyUrl : item.feedUrl;
-
   const caption = resolveCaption(item.id, item) || item.copy || item.body || "";
 
   if (modalImg) modalImg.src = `${currentImg}?v=${ASSET_V}`;
   if (modalTitle) modalTitle.textContent = item.title;
   if (modalCat) modalCat.textContent = item.cat;
-  if (modalCopy) modalCopy.textContent = caption;
+  if (els.copy) els.copy.textContent = caption;
+  if (els.textarea) {
+    els.textarea.value = caption;
+    els.textarea.maxLength = CAPTION_MAX;
+  }
+  setModalCaptionEditMode(false);
 
   if (modalBtnFeed) {
     modalBtnFeed.href = `${item.feedUrl}?v=${ASSET_V}`;
@@ -2320,18 +2363,6 @@ function openLightboxModal(item) {
   if (modalBtnStory) {
     modalBtnStory.href = `${item.storyUrl}?v=${ASSET_V}`;
     modalBtnStory.download = `kinesica_story_${item.id}.png`;
-  }
-
-  if (modalBtnCopy) {
-    modalBtnCopy.onclick = () => {
-      navigator.clipboard.writeText(caption).then(() => {
-        const orig = modalBtnCopy.textContent;
-        modalBtnCopy.textContent = "✓ ¡Texto copiado!";
-        setTimeout(() => {
-          modalBtnCopy.textContent = orig;
-        }, 2200);
-      });
-    };
   }
 
   const slot = document.getElementById("creativo-modal-cola-slot");
@@ -2358,5 +2389,63 @@ function openLightboxModal(item) {
 function closeLightboxModal() {
   const modal = document.getElementById("creativo-lightbox-modal");
   if (modal) modal.hidden = true;
+  setModalCaptionEditMode(false);
+  selectedItem = null;
   document.body.style.overflow = "";
+}
+
+function initModalCaptionControls() {
+  const modal = document.getElementById("creativo-lightbox-modal");
+  if (!modal || modal.dataset.captionControlsBound === "1") return;
+  modal.dataset.captionControlsBound = "1";
+
+  modal.addEventListener("click", async (e) => {
+    const els = getModalCaptionEls();
+    if (e.target.closest("#creativo-modal-btn-edit")) {
+      if (!canEditCaptions() || !selectedItem) return;
+      if (els.textarea) els.textarea.value = getModalCaptionText();
+      setModalCaptionEditMode(true);
+      els.textarea?.focus();
+      return;
+    }
+    if (e.target.closest("#creativo-modal-btn-cancel-caption")) {
+      if (els.textarea && els.copy) els.textarea.value = els.copy.textContent || "";
+      setModalCaptionEditMode(false);
+      return;
+    }
+    if (e.target.closest("#creativo-modal-btn-save-caption")) {
+      if (!canEditCaptions() || !selectedItem || !els.textarea) return;
+      const caption = String(els.textarea.value || "").trim();
+      if (!caption || caption.length > CAPTION_MAX) {
+        window.alert(`El texto debe tener entre 1 y ${CAPTION_MAX} caracteres (límite de Instagram).`);
+        return;
+      }
+      const btn = els.btnSave;
+      if (btn) btn.disabled = true;
+      try {
+        await saveCaption(selectedItem.id, caption);
+        if (els.copy) els.copy.textContent = caption;
+        setModalCaptionEditMode(false);
+        window.alert("Texto guardado. Vale para la cola y para la próxima vez que encoles esta pieza.");
+      } catch (err) {
+        if (!err.auth) window.alert(err.message || "No se pudo guardar el texto");
+      } finally {
+        if (btn) btn.disabled = false;
+      }
+      return;
+    }
+    if (e.target.closest("#creativo-modal-btn-copy")) {
+      const text = getModalCaptionText();
+      if (!text) return;
+      navigator.clipboard.writeText(text).then(() => {
+        const copyBtn = els.btnCopy;
+        if (!copyBtn) return;
+        const orig = copyBtn.textContent;
+        copyBtn.textContent = "✓ ¡Texto copiado!";
+        setTimeout(() => {
+          copyBtn.textContent = orig;
+        }, 2200);
+      });
+    }
+  });
 }
