@@ -123,6 +123,8 @@
       sessionHourShort: "1 hora",
       paymentMethodsNote: "Se abona en efectivo o transferencia bancaria",
       fee: "Valor a abonar",
+      feeAtm: "ATM",
+      feeOther: "Otras técnicas",
       techniques: {
         osteopatia: "Osteopatía",
         acupuntura: "Acupuntura",
@@ -229,6 +231,8 @@
       sessionHourShort: "1 hour",
       paymentMethodsNote: "Paid in cash or bank transfer",
       fee: "Amount to pay",
+      feeAtm: "TMJ / ATM",
+      feeOther: "Other techniques",
       techniques: {
         osteopatia: "Osteopathy",
         acupuntura: "Acupuncture",
@@ -335,6 +339,8 @@
       sessionHourShort: "1 heure",
       paymentMethodsNote: "Règlement en espèces ou virement bancaire",
       fee: "Montant à régler",
+      feeAtm: "ATM",
+      feeOther: "Autres techniques",
       techniques: {
         osteopatia: "Ostéopathie",
         acupuntura: "Acupuncture",
@@ -441,6 +447,8 @@
       sessionHourShort: "1 hora",
       paymentMethodsNote: "Pago em dinheiro ou transferência bancária",
       fee: "Valor a pagar",
+      feeAtm: "ATM",
+      feeOther: "Outras técnicas",
       techniques: {
         osteopatia: "Osteopatia",
         acupuntura: "Acupuntura",
@@ -518,6 +526,34 @@
       return (this.fees && this.fees.general) || 75000;
     }
 
+    /** HTML del valor a mostrar en tarjetas / confirmación. "No sé" informa ambos honorarios. */
+    feeDisplayHtml(techniqueId, { compact = false } = {}) {
+      const atm = this.formatFee((this.fees && this.fees.atm) || 65000);
+      const general = this.formatFee((this.fees && this.fees.general) || 75000);
+      if (techniqueId === "no-se") {
+        if (compact) {
+          return `${this.t("feeAtm")}: ${atm} · ${this.t("feeOther")}: ${general}`;
+        }
+        return `
+          <div class="kb-choice-fee kb-choice-fee--split">
+            <div class="kb-fee-row">
+              <span class="kb-fee-label">${this.t("feeAtm")}:</span>
+              <strong class="kb-fee-amount" data-fee="atm">${atm}</strong>
+            </div>
+            <div class="kb-fee-row">
+              <span class="kb-fee-label">${this.t("feeOther")}:</span>
+              <strong class="kb-fee-amount" data-fee="general">${general}</strong>
+            </div>
+          </div>`;
+      }
+      if (compact) return this.formatFee(this.getFeeForTechnique(techniqueId));
+      return `
+        <div class="kb-choice-fee">
+          <span class="kb-fee-label">${this.t("sessionFee")}:</span>
+          <strong class="kb-fee-amount">${this.formatFee(this.getFeeForTechnique(techniqueId))}</strong>
+        </div>`;
+    }
+
     updateFees(fees) {
       if (!fees || typeof fees !== "object") return;
       this.fees = Object.assign({}, this.fees, fees);
@@ -532,10 +568,16 @@
       } else {
         this.container.querySelectorAll("#kb-technique-grid .kb-choice-card, #kb-technique-more-grid .kb-choice-card").forEach((card) => {
           const id = card.dataset.technique;
-          const amountEl = card.querySelector(".kb-fee-amount");
-          if (id && amountEl) {
-            amountEl.textContent = this.formatFee(this.getFeeForTechnique(id));
+          if (!id) return;
+          if (id === "no-se") {
+            const atmEl = card.querySelector('.kb-fee-amount[data-fee="atm"]');
+            const genEl = card.querySelector('.kb-fee-amount[data-fee="general"]');
+            if (atmEl) atmEl.textContent = this.formatFee((this.fees && this.fees.atm) || 65000);
+            if (genEl) genEl.textContent = this.formatFee((this.fees && this.fees.general) || 75000);
+            return;
           }
+          const amountEl = card.querySelector(".kb-fee-amount");
+          if (amountEl) amountEl.textContent = this.formatFee(this.getFeeForTechnique(id));
         });
       }
       if (this.state.techniqueId) {
@@ -881,8 +923,8 @@
                   </label>
                 </div>
                 <div class="kb-form-group">
-                  <label for="kb-input-dni" id="kb-label-dni">${this.t("dni")}</label>
-                  <input type="text" id="kb-input-dni" placeholder="${this.t("dniPh")}" maxlength="20">
+                  <label for="kb-input-dni" id="kb-label-dni">${this.options.adminMode ? this.t("dniOptionalLabel") : this.t("dni")}</label>
+                  <input type="text" id="kb-input-dni" placeholder="${this.options.adminMode ? this.t("dniOptionalPh") : this.t("dniPh")}" maxlength="20"${this.options.adminMode ? "" : " required"}>
                   <div class="kb-field-error" id="kb-err-dni" role="alert" aria-live="assertive" hidden></div>
                 </div>
               </div>
@@ -1314,17 +1356,9 @@
         card.classList.add("selected");
       }
       card.dataset.technique = technique.id;
-      const fee = this.getFeeForTechnique(technique.id);
-      const feeFormatted = this.formatFee(fee);
       card.innerHTML = this.options.adminMode
         ? `<h3>${this.techniqueLabel(technique)}</h3>`
-        : `
-          <h3>${this.techniqueLabel(technique)}</h3>
-          <div class="kb-choice-fee">
-            <span class="kb-fee-label">${this.t("sessionFee")}:</span>
-            <strong class="kb-fee-amount">${feeFormatted}</strong>
-          </div>
-        `;
+        : `<h3>${this.techniqueLabel(technique)}</h3>${this.feeDisplayHtml(technique.id)}`;
       card.addEventListener("click", () => this.selectTechnique(technique.id));
       return card;
     }
@@ -1673,6 +1707,9 @@
           ind.classList.add("completed");
         }
       });
+
+      // Auto-agenda: DNI obligatorio. Admin: opcional.
+      if (stepNumber === 3) this.updateDniRequirement();
 
       // Título y subtítulo paso 2
       const step2Title = this.container.querySelector("#kb-step-2 .kb-section-title");
@@ -2265,7 +2302,7 @@
         <div><strong>${this.t("practitioner")}:</strong> ${professional}</div>
         <div><strong>${this.t("patient")}:</strong> ${payload.nombre}</div>
         <div><strong>${this.t("when")}:</strong> ${this.formatConfirmationWhen(payload.date, payload.time)}</div>
-        ${!isExisting && !this.options.adminMode ? `<div><strong>${this.t("fee")}:</strong> ${this.formatFee(this.getFeeForTechnique(payload.techniqueId))} <span style="font-size: 12px; color: var(--kin-text-muted);">(${this.t("paymentMethodsNote")})</span></div>` : ""}
+        ${!isExisting && !this.options.adminMode ? `<div><strong>${this.t("fee")}:</strong> ${this.feeDisplayHtml(payload.techniqueId, { compact: true })} <span style="font-size: 12px; color: var(--kin-text-muted);">(${this.t("paymentMethodsNote")})</span></div>` : ""}
         ${payload.email ? `<div><strong>${this.t("email")}:</strong> ${payload.email}</div>` : ""}
         <div style="margin-top: 6px; font-size: 12px; color: var(--kin-text-muted);">
           ${this.t("eventId")} <code>${result.eventId || "OK"}</code>

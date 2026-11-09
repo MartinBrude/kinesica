@@ -80,6 +80,22 @@ test("DNI obligatorio en reserva pública; opcional en admin", () => {
   assert.equal(BookingWidget.isValidDni("No provisto"), false);
 });
 
+test("No sé informa honorarios ATM y Otras técnicas", () => {
+  const w = Object.create(BookingWidget.prototype);
+  w.lang = "es";
+  w.fees = { atm: 65000, general: 75000 };
+  w.t = (k) => ({ feeAtm: "ATM", feeOther: "Otras técnicas", sessionFee: "Valor sesión" }[k] || k);
+  const html = BookingWidget.prototype.feeDisplayHtml.call(w, "no-se");
+  assert.match(html, /ATM/);
+  assert.match(html, /Otras técnicas/);
+  assert.match(html, /65\.000/);
+  assert.match(html, /75\.000/);
+  const compact = BookingWidget.prototype.feeDisplayHtml.call(w, "no-se", { compact: true });
+  assert.match(compact, /ATM: \$65\.000 · Otras técnicas: \$75\.000/);
+  const single = BookingWidget.prototype.feeDisplayHtml.call(w, "atm", { compact: true });
+  assert.equal(single, "$65.000");
+});
+
 test("en admin el email vacío es opcional; si viene mal formado sigue fallando", () => {
   assert.deepEqual(
     BookingWidget.validateContactForm({ ...ok, email: "", emailOptional: true, dniOptional: true }, t).map((e) => e.field),
