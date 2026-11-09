@@ -182,6 +182,28 @@ it('guarda y recupera tokens de forma segura', function() {
     }
 });
 
+it('ig_caption_save persiste override y actualiza caption en cola', function() {
+    require_once __DIR__ . '/../admin/api/lib_instagram_copy.php';
+    ig_queue_add([
+        'id' => 'p_copy', 'title' => 'Copy Test', 'caption' => 'Texto original',
+        'feed_path' => 'campanas/feed/c.png', 'story_path' => 'campanas/story/c.png',
+    ], 'martin');
+    if (!ig_caption_save('p_copy', 'Texto editado por admin', 'norberto')) {
+        throw new Exception('ig_caption_save falló');
+    }
+    $map = ig_copy_map();
+    if (($map['p_copy'] ?? '') !== 'Texto editado por admin') {
+        throw new Exception('Override de catálogo no persistió');
+    }
+    $row = ig_queue_find('p_copy');
+    if (($row['caption'] ?? '') !== 'Texto editado por admin') {
+        throw new Exception('Caption de cola no se sincronizó');
+    }
+    if (ig_caption_save('p_copy', '   ', 'martin')) {
+        throw new Exception('Debía rechazar caption vacío');
+    }
+});
+
 // Limpieza
 @unlink($tmpDb);
 @unlink($cfgFile);

@@ -14,8 +14,9 @@ import {
   refreshColaButtons,
   loadCola,
   toggleCola,
-} from "./admin-creativos-cola.js?v=2";
-import { initListaUI } from "./admin-creativos-lista.js?v=2";
+  resolveCaption,
+} from "./admin-creativos-cola.js?v=3";
+import { initListaUI } from "./admin-creativos-lista.js?v=3";
 
 const ASSET_V = Date.now();
 
@@ -2160,8 +2161,9 @@ export function initCreativosUI() {
       if (copyBtn) {
         const id = copyBtn.dataset.id;
         const item = CREATIVOS_DATA.find((it) => it.id === id);
-        if (item && item.copy) {
-          navigator.clipboard.writeText(item.copy).then(() => {
+        const text = item ? resolveCaption(id, item) : "";
+        if (text) {
+          navigator.clipboard.writeText(text).then(() => {
             const originalText = copyBtn.textContent;
             copyBtn.textContent = "✓ ¡Copiado!";
             copyBtn.classList.add("btn-copied");
@@ -2183,7 +2185,12 @@ export function initCreativosUI() {
     });
   }
 
-  const resolver = (id) => CREATIVOS_DATA.find((it) => it.id === id) || null;
+  const resolver = (id) => {
+    const base = CREATIVOS_DATA.find((it) => it.id === id);
+    if (!base) return null;
+    const copy = resolveCaption(id, base);
+    return copy === base.copy ? base : { ...base, copy };
+  };
   initListaUI(resolver);
   loadCola();
 

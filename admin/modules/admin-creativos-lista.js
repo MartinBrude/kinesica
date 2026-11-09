@@ -13,7 +13,12 @@ import {
   toggleCola,
   publishNow,
   subscribeCola,
-} from "./admin-creativos-cola.js?v=2";
+} from "./admin-creativos-cola.js?v=3";
+import {
+  captionSnippetHtml,
+  toggleCaptionEditor,
+  handleSaveCaptionClick,
+} from "./admin-creativos-caption.js?v=1";
 
 let resolveItem = () => null, draggedId = null;
 
@@ -64,7 +69,7 @@ export function renderQueueView() {
           <div class="creativos-queue-details">
             <div class="creativos-queue-slot-date">⏰ Salida programada: <strong>${escapeHtml(slotText)}</strong></div>
             <h4 class="creativos-queue-title">${escapeHtml(q.title || full.title || q.creativo_id)}</h4>
-            <p class="creativos-queue-snippet">${escapeHtml((q.caption || full.copy || "").slice(0, 140))}...</p>
+            ${captionSnippetHtml(q, full)}
             ${q.last_error ? `<p class="creativos-queue-error">⚠️ ${escapeHtml(q.last_error)}</p>` : ""}
           </div>
           <div class="creativos-queue-actions">
@@ -144,6 +149,10 @@ async function handlePublishNowClick(id, btn) {
 
 function setupDragAndDrop(container) {
   container.addEventListener("dragstart", (e) => {
+    if (e.target.closest(".creativos-caption-editor, textarea, .btn-queue-edit-caption")) {
+      e.preventDefault();
+      return;
+    }
     const item = e.target.closest(".creativos-queue-item");
     if (!item) return;
     draggedId = item.dataset.id;
@@ -202,9 +211,16 @@ export function initListaUI(resolver) {
   }
 
   container.addEventListener("click", (e) => {
+    if (e.target.closest(".creativos-caption-textarea")) return;
     const up = e.target.closest(".btn-queue-up"), down = e.target.closest(".btn-queue-down");
     if (up) return handleReorderClick(up.dataset.id, "up");
     if (down) return handleReorderClick(down.dataset.id, "down");
+    const editCap = e.target.closest(".btn-queue-edit-caption");
+    if (editCap) return toggleCaptionEditor(editCap.dataset.id, true);
+    const cancelCap = e.target.closest(".btn-queue-cancel-caption");
+    if (cancelCap) return toggleCaptionEditor(cancelCap.dataset.id, false);
+    const saveCap = e.target.closest(".btn-queue-save-caption");
+    if (saveCap) return handleSaveCaptionClick(saveCap.dataset.id, saveCap);
     const rm = e.target.closest(".btn-queue-remove"), readd = e.target.closest(".btn-queue-readd");
     if (rm || readd) return toggleCola((rm || readd).dataset.id, resolveItem);
     const pub = e.target.closest(".btn-queue-publish-now");

@@ -4,6 +4,7 @@ declare(strict_types=1);
 /**
  * Kinésica — Cola de publicación automática en Instagram (persistencia).
  * Tablas: instagram_cola (orden custom) e instagram_token (token renovable).
+ * Overrides de caption: lib_instagram_copy.php.
  * Soporta MariaDB/MySQL (producción) y SQLite (suite de pruebas).
  */
 
@@ -146,7 +147,7 @@ function ig_queue_list(): array
 {
     ensure_instagram_tables();
     $rows = db()->query(
-        'SELECT creativo_id, title, status, sort_order, queued_by, queued_at, published_on, feed_media_id, story_media_id, attempts, last_error
+        'SELECT creativo_id, title, caption, status, sort_order, queued_by, queued_at, published_on, feed_media_id, story_media_id, attempts, last_error
          FROM instagram_cola ORDER BY (status = \'queued\') DESC, sort_order ASC, queued_at ASC'
     )->fetchAll(PDO::FETCH_ASSOC);
     return $rows ?: [];

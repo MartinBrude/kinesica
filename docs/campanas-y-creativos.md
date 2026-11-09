@@ -48,11 +48,13 @@ Directamente desde la interfaz de Creativos, Norberto y los administradores gest
    - **Botones ⬆️ / ⬇️**: Para subir o bajar una posición en un clic.
    - **Cálculo de slots estimados**: Muestra las fechas proyectadas de publicación (Lunes, Miércoles y Viernes a las 10:00 hs de Argentina).
    - **⚡ Publicar ya**: Publica de inmediato en Instagram tanto el Feed como la Story sin esperar al cron.
+   - **✏️ Editar texto**: Antes de publicar, cualquier admin/Norberto puede cambiar el caption de la pieza en cola. Queda guardado para todos y para la próxima vez que la encolen.
+   - **Idempotencia diaria**: si ya publicaste a mano (o el cron ya publicó) **hoy** (fecha Argentina), el cron **no** vuelve a publicar otra pieza ese día. Así no hay doble salida el mismo lunes/miércoles/viernes.
 3. **Reporte de canales publicados**:
    - `✅ Feed + Story`, `✅ Solo Post` o `✅ Solo Story`.
    - Historial de publicaciones con fecha y botón **🔄 Re-encolar**.
 
-*(Para detalles técnicos de la API de Meta, base de datos y configuración del cron, consultar [docs/instagram-autopost.md](instagram-autopost.md)).*
+*(Credenciales System User, `private/admin-config.php`, `instagram_api_base` y cron: [docs/instagram-autopost.md](instagram-autopost.md)).*
 
 ---
 
@@ -83,4 +85,5 @@ Este módulo permite medir el retorno de la inversión publicitaria y la trazabi
    `https://wa.me/5491161564311?text=Hola,%20vi%20la%20publicación%20en%20Instagram%20y%20quisiera%20consultar%20por%20un%20turno`
 3. **Frecuencia automatizada de publicación:**  
    - Con la cola activa, el cron publica 3 veces por semana (Lunes, Miércoles y Viernes a las 10:00 hs).
+   - Si ese día ya hubo un **Publicar ya**, el cron salta el día (una sola pieza por fecha).
    - Norberto puede mantener entre 5 y 10 piezas seleccionadas con ❤️ en la lista para tener cobertura automática para las próximas semanas.

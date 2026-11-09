@@ -8,6 +8,7 @@ import { api } from "./api.js?v=79";
 
 let colaItems = [];
 let colaMap = new Map();
+let captionOverrides = new Map();
 let subscribers = [];
 
 export function subscribeCola(fn) {
@@ -20,11 +21,37 @@ function notify() {
   });
 }
 
+function setCopies(copies) {
+  captionOverrides = new Map();
+  if (copies && typeof copies === "object") {
+    Object.entries(copies).forEach(([id, caption]) => {
+      if (id && typeof caption === "string" && caption.trim()) captionOverrides.set(id, caption);
+    });
+  }
+}
+
+function applyPayload(data) {
+  if (data && data.copies) setCopies(data.copies);
+  setList(data?.items);
+}
+
 function setList(items) {
   colaItems = Array.isArray(items) ? items : [];
   colaMap = new Map(colaItems.map((r) => [r.creativo_id, r]));
   notify();
   if (typeof document !== "undefined") refreshColaButtons();
+}
+
+/** Caption efectivo: override DB → cola → seed del catálogo. */
+export function resolveCaption(id, seedItem) {
+  if (captionOverrides.has(id)) return captionOverrides.get(id);
+  const row = colaMap.get(id);
+  if (row?.caption) return row.caption;
+  return seedItem?.copy || seedItem?.body || "";
+}
+
+export function getCaptionOverride(id) {
+  return captionOverrides.get(id) || null;
 }
 
 export function getColaList() { return colaItems; }
@@ -141,7 +168,7 @@ export function refreshColaButtons() {
 export async function loadCola() {
   try {
     const data = await api("instagram_cola.php");
-    setList(data.items);
+    applyPayload(data);
   } catch (err) {
     if (!err.auth) console.warn("No se pudo cargar la cola de Instagram", err);
   }
@@ -153,10 +180,10 @@ export async function toggleCola(id, itemResolver) {
   const adding = stateOf(id) !== "queued";
   try {
     const body = adding
-      ? { action: "add", id: item.id, title: item.title, caption: item.copy || item.body, feed_path: item.feedUrl, story_path: item.storyUrl }
+      ? { action: "add", id: item.id, title: item.title, caption: resolveCaption(item.id, item), feed_path: item.feedUrl, story_path: item.storyUrl }
       : { action: "remove", id: item.id };
     const data = await api("instagram_cola.php", { method: "POST", body });
-    setList(data.items);
+    applyPayload(data);
   } catch (err) {
     if (!err.auth) window.alert(err.message || "No se pudo actualizar la cola de Instagram");
   }
@@ -165,20 +192,37 @@ export async function toggleCola(id, itemResolver) {
 export async function reorderCola(orderedIds) {
   try {
     const data = await api("instagram_cola.php", { method: "POST", body: { action: "reorder", ids: orderedIds } });
-    setList(data.items);
+    applyPayload(data);
   } catch (err) {
     if (!err.auth) window.alert(err.message || "No se pudo reordenar la cola");
   }
+}
+
+export async function saveCaption(id, caption) {
+  const data = await api("instagram_cola.php", {
+    method: "POST",
+    body: { action: "update_caption", id, caption },
+  });
+  applyPayload(data);
+  return data;
 }
 
 export async function publishNow(id, channel, itemResolver) {
   const item = itemResolver(id);
   if (!item) return;
   try {
-    const body = { action: "publish_now", id: item.id, channel, title: item.title, caption: item.copy || item.body, feed_path: item.feedUrl, story_path: item.storyUrl };
+    const body = {
+      action: "publish_now",
+      id: item.id,
+      channel,
+      title: item.title,
+      caption: resolveCaption(item.id, item),
+      feed_path: item.feedUrl,
+      story_path: item.storyUrl,
+    };
     // Meta procesa contenedores feed+story; el default de api() (30s) corta antes.
     const data = await api("instagram_cola.php", { method: "POST", body, timeoutMs: 180000 });
-    setList(data.items);
+    applyPayload(data);
     return data.result;
   } catch (err) {
     if (!err.auth) window.alert(err.message || "No se pudo publicar en Instagram");
