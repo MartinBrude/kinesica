@@ -1023,10 +1023,19 @@ function handleBookAppointment(payload) {
     return createJsonResponse({ status: "error", message: "Teléfono válido es requerido" }, 400);
   }
 
-  // Email opcional solo en la turnera de admin. En la reserva pública es obligatorio.
+  // Email y DNI opcionales solo en la turnera de admin. En la reserva pública son obligatorios.
   const isAdminBooking = payload.adminMode === true || payload.adminMode === "true";
   if ((!email && !isAdminBooking) || (email && !isValidBookingEmail(email))) {
     return createJsonResponse({ status: "error", message: "Correo electrónico válido es requerido" }, 400);
+  }
+  if (!isAdminBooking) {
+    const dniCheck = String(payload.dni || "").trim();
+    const dniDigits = dniCheck.replace(/[^0-9]/g, "");
+    const dniAlnum = dniCheck.replace(/[^0-9A-Za-z]/g, "");
+    const dniOk = dniDigits.length >= 5 || dniAlnum.length >= 5;
+    if (!dniOk || /^no\s*provisto$/i.test(dniCheck)) {
+      return createJsonResponse({ status: "error", message: "DNI o documento es requerido" }, 400);
+    }
   }
 
   const duration = SESSION_DURATION_MINUTES;

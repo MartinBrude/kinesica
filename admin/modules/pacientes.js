@@ -293,10 +293,13 @@ export function deduplicatePatientsInMemory(items = []) {
       survivor.telefono = realPhoneRecord.telefono;
     }
 
-    // DNI
-    if (!survivor.dni) {
+    // DNI: no perder documento válido al fusionar (p.ej. survivor con "No provisto").
+    const survivorDni = cleanPatientDni(survivor.dni);
+    if (survivorDni) {
+      survivor.dni = survivorDni;
+    } else {
       const withDni = cluster.find((p) => cleanPatientDni(p.dni));
-      if (withDni) survivor.dni = cleanPatientDni(withDni.dni);
+      survivor.dni = withDni ? cleanPatientDni(withDni.dni) : "";
     }
 
     // Email

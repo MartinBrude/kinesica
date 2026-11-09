@@ -18,7 +18,7 @@ const src = fs.readFileSync(path.join(root, "booking/booking-widget.js"), "utf8"
 let n = 0;
 const test = (name, fn) => { fn(); n += 1; };
 const t = (k) => `T:${k}`;
-const ok = { isOther: false, contactoNombre: "", contactoTelefono: "", nombre: "Ana Pérez", email: "ana@x.com", telefono: "11 2222 3333", usesContactPhone: false };
+const ok = { isOther: false, contactoNombre: "", contactoTelefono: "", nombre: "Ana Pérez", email: "ana@x.com", telefono: "11 2222 3333", dni: "30123456", usesContactPhone: false };
 
 // --- Fake DOM mínimo ---
 function makeEl(id, tag = "input") {
@@ -66,17 +66,27 @@ test("teléfono heredado de quien agenda: el error queda solo en ese campo", () 
   assert.deepEqual(errs.map((e) => e.field), ["contacto-telefono"]);
 });
 
-test("DNI no es obligatorio (sin cambios)", () => {
+test("DNI obligatorio en reserva pública; opcional en admin", () => {
   assert.equal(BookingWidget.validateContactForm({ ...ok }, t).some((e) => e.field === "dni"), false);
+  assert.equal(
+    BookingWidget.validateContactForm({ ...ok, dni: "" }, t).some((e) => e.field === "dni"),
+    true
+  );
+  assert.equal(
+    BookingWidget.validateContactForm({ ...ok, dni: "", dniOptional: true }, t).some((e) => e.field === "dni"),
+    false
+  );
+  assert.equal(BookingWidget.isValidDni("30123456"), true);
+  assert.equal(BookingWidget.isValidDni("No provisto"), false);
 });
 
 test("en admin el email vacío es opcional; si viene mal formado sigue fallando", () => {
   assert.deepEqual(
-    BookingWidget.validateContactForm({ ...ok, email: "", emailOptional: true }, t).map((e) => e.field),
+    BookingWidget.validateContactForm({ ...ok, email: "", emailOptional: true, dniOptional: true }, t).map((e) => e.field),
     []
   );
   assert.deepEqual(
-    BookingWidget.validateContactForm({ ...ok, email: "mal", emailOptional: true }, t).map((e) => e.field),
+    BookingWidget.validateContactForm({ ...ok, email: "mal", emailOptional: true, dniOptional: true }, t).map((e) => e.field),
     ["email"]
   );
 });

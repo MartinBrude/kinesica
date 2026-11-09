@@ -70,11 +70,14 @@
       errContactPhone: "Por favor ingresá tu teléfono o WhatsApp de contacto.",
       errPatientName: "Por favor ingresá el nombre y apellido del paciente.",
       errPhone: "Por favor ingresá un teléfono o celular de contacto válido.",
+      errDni: "Por favor ingresá el DNI o documento del paciente.",
       phoneConfirm: "¿El número es correcto? Si es de otro país o ya lo revisaste, volvé a tocar Confirmar.",
       phone: "Teléfono / WhatsApp *",
       phonePh: "Ej: +54 9 11 0000-0000",
-      dni: "DNI / Documento (opcional)",
-      dniPh: "Opcional",
+      dni: "DNI / Documento *",
+      dniPh: "Ej: 30123456",
+      dniOptionalLabel: "DNI / Documento (opcional)",
+      dniOptionalPh: "Opcional",
       confirm: "Confirmar Reserva 🌿",
       saving: "Registrando...",
       success: "¡Turno Presencial Confirmado!",
@@ -173,11 +176,14 @@
       errContactPhone: "Please enter your phone or WhatsApp number.",
       errPatientName: "Please enter the patient's full name.",
       errPhone: "Please enter a valid phone or mobile number.",
+      errDni: "Please enter the patient's ID document number.",
       phoneConfirm: "Is this phone number correct? If it's from another country or you already checked it, tap Confirm again.",
       phone: "Phone / WhatsApp *",
       phonePh: "e.g. +54 9 11 0000-0000",
-      dni: "ID document (optional)",
-      dniPh: "Optional",
+      dni: "ID document *",
+      dniPh: "e.g. 30123456",
+      dniOptionalLabel: "ID document (optional)",
+      dniOptionalPh: "Optional",
       confirm: "Confirm booking 🌿",
       saving: "Saving...",
       success: "In-person appointment confirmed",
@@ -276,11 +282,14 @@
       errContactPhone: "Veuillez saisir votre téléphone ou WhatsApp.",
       errPatientName: "Veuillez saisir le nom et prénom du patient.",
       errPhone: "Veuillez saisir un numéro de téléphone ou de portable valide.",
+      errDni: "Veuillez saisir le numéro de pièce d'identité du patient.",
       phoneConfirm: "Ce numéro est-il correct ? S'il est d'un autre pays ou déjà vérifié, appuyez à nouveau sur Confirmer.",
       phone: "Téléphone / WhatsApp *",
       phonePh: "Ex. : +54 9 11 0000-0000",
-      dni: "Pièce d'identité (facultatif)",
-      dniPh: "Facultatif",
+      dni: "Pièce d'identité *",
+      dniPh: "Ex. : 30123456",
+      dniOptionalLabel: "Pièce d'identité (facultatif)",
+      dniOptionalPh: "Facultatif",
       confirm: "Confirmer la réservation 🌿",
       saving: "Enregistrement...",
       success: "Rendez-vous en cabinet confirmé",
@@ -379,11 +388,14 @@
       errContactPhone: "Por favor, informe seu telefone ou WhatsApp.",
       errPatientName: "Por favor, informe o nome e sobrenome do paciente.",
       errPhone: "Por favor, informe um telefone ou celular válido.",
+      errDni: "Por favor, informe o documento do paciente.",
       phoneConfirm: "O número está correto? Se for de outro país ou você já conferiu, toque em Confirmar novamente.",
       phone: "Telefone / WhatsApp *",
       phonePh: "Ex.: +54 9 11 0000-0000",
-      dni: "Documento (opcional)",
-      dniPh: "Opcional",
+      dni: "Documento *",
+      dniPh: "Ex.: 30123456",
+      dniOptionalLabel: "Documento (opcional)",
+      dniOptionalPh: "Opcional",
       confirm: "Confirmar reserva 🌿",
       saving: "Registrando...",
       success: "Consulta presencial confirmada",
@@ -597,6 +609,7 @@
     init() {
       this.renderSkeleton();
       if (this.options.adminMode) this.setupAdminLayout();
+      this.updateDniRequirement();
       this.bindEvents();
       if (this.client && typeof this.client.prewarm === "function") {
         this.client.prewarm();
@@ -686,6 +699,8 @@
         nombre: q("#kb-input-nombre").value.trim(),
         email: q("#kb-input-email") ? q("#kb-input-email").value.trim() : "",
         emailOptional: true,
+        dni: q("#kb-input-dni") ? q("#kb-input-dni").value.trim() : "",
+        dniOptional: true,
         telefono: q("#kb-input-telefono").value.trim(),
         usesContactPhone: false,
         confirmedPhones: this._confirmedPhones,
@@ -1631,7 +1646,14 @@
 
     updateDniRequirement() {
       const label = this.container.querySelector("#kb-label-dni");
-      if (label) label.innerHTML = this.t("dni");
+      const input = this.container.querySelector("#kb-input-dni");
+      const optional = Boolean(this.options.adminMode);
+      if (label) label.textContent = optional ? this.t("dniOptionalLabel") : this.t("dni");
+      if (input) {
+        input.placeholder = optional ? this.t("dniOptionalPh") : this.t("dniPh");
+        if (optional) input.removeAttribute("required");
+        else input.setAttribute("required", "required");
+      }
     }
 
     setStep(stepNumber) {
@@ -2097,6 +2119,8 @@
         nombre,
         email,
         emailOptional: Boolean(this.options.adminMode),
+        dni,
+        dniOptional: Boolean(this.options.adminMode),
         telefono,
         usesContactPhone,
         confirmedPhones: this._confirmedPhones,
@@ -2389,6 +2413,7 @@
   BookingWidget.isValidEmail = Val.isValidEmail;
   BookingWidget.suggestEmailDomain = Val.suggestEmailDomain;
   BookingWidget.inspectPhone = Val.inspectPhone;
+  BookingWidget.isValidDni = Val.isValidDni;
   BookingWidget.validateContactForm = Val.validateContactForm;
 
   return BookingWidget;

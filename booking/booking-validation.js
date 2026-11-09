@@ -148,9 +148,22 @@
   };
 
   /**
+   * DNI / pasaporte usable: al menos 5 dígitos, o 5+ alfanuméricos (pasaporte).
+   */
+  Validation.isValidDni = function (raw) {
+    const s = String(raw || "").trim();
+    if (!s || /^no\s*provisto$/i.test(s)) return false;
+    const digits = s.replace(/\D/g, "");
+    if (digits.length >= 5 && digits.length <= 12) return true;
+    const alnum = s.replace(/[^0-9A-Za-z]/g, "");
+    return alnum.length >= 5 && alnum.length <= 20;
+  };
+
+  /**
    * Validación pura del formulario de datos (sin DOM). Devuelve TODOS los errores, en el orden visual.
    * Si un teléfono tiene dígitos pero formato no estándar, repregunta una vez (isSoftPhoneConfirm)
    * y en el segundo intento (confirmedPhones) lo deja pasar.
+   * dniOptional=true (turnera admin): no exige documento. Reserva pública: DNI obligatorio.
    */
   Validation.validateContactForm = function (v, t) {
     const errors = [];
@@ -207,6 +220,10 @@
     // Si el teléfono del paciente sale del de quien agenda, el error ya está marcado en ese campo.
     if (!v.usesContactPhone) {
       checkPhoneField(v.telefono, "telefono", "errPhone");
+    }
+    // Reserva pública: DNI obligatorio. Turnera admin: opcional (dniOptional).
+    if (!v.dniOptional && !Validation.isValidDni(v.dni)) {
+      errors.push({ field: "dni", message: t("errDni") });
     }
     return errors;
   };

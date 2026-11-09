@@ -324,9 +324,30 @@ test("reserva (book) usa los horarios del admin: 12:00 rechazado si María cierr
   const hours = { maria: { 5: [{ start: "09:00", end: "12:30" }] }, norberto: {} };
   const { ctx } = load({ adminHours: hours });
   const res = JSON.parse(ctx.handleBookAppointment({ fecha: fri, date: fri, hora: "12:00", time: "12:00", nombre: "Test Uno", name: "Test Uno",
-    telefono: "1122223333", email: "t@example.com", practitionerId: "maria" }).text);
+    telefono: "1122223333", email: "t@example.com", dni: "30123456", practitionerId: "maria" }).text);
   assert.equal(res.status, "error");
   assert.match(res.message, /fuera del horario/);
+});
+
+test("reserva pública exige DNI; admin puede omitirlo", () => {
+  const fri = (() => { const d = new Date(Date.now() + 7 * 86400000); while (d.getUTCDay() !== 5) d.setUTCDate(d.getUTCDate() + 1); return d.toISOString().slice(0, 10); })();
+  const hours = { maria: { 5: [{ start: "09:00", end: "12:30" }] }, norberto: {} };
+  const { ctx } = load({ adminHours: hours });
+  const missing = JSON.parse(ctx.handleBookAppointment({
+    fecha: fri, date: fri, hora: "10:00", time: "10:00", nombre: "Test Dos",
+    telefono: "1122223333", email: "t@example.com", practitionerId: "maria",
+  }).text);
+  assert.equal(missing.status, "error");
+  assert.match(missing.message, /DNI|documento/i);
+  // Admin sin DNI: no debe cortar por documento (acá falla por horario fuera de franja).
+  const adminNoDni = JSON.parse(ctx.handleBookAppointment({
+    fecha: fri, date: fri, hora: "12:00", time: "12:00", nombre: "Test Tres",
+    telefono: "1122223333", email: "t@example.com", practitionerId: "maria",
+    adminMode: true,
+  }).text);
+  assert.equal(adminNoDni.status, "error");
+  assert.match(adminNoDni.message, /fuera del horario/);
+  assert.equal(/DNI|documento/i.test(String(adminNoDni.message || "")), false);
 });
 
 console.log(`apps script horarios admin: ok (${n} pruebas)`);

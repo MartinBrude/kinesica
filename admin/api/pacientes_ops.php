@@ -281,15 +281,24 @@ function kinesica_pacientes_update(PDO $pdo, array $data): void
         json_out(422, ['status' => 'error', 'message' => 'El nombre no corresponde a un paciente válido']);
     }
 
-    $check = $pdo->prepare('SELECT id, nombre_completo FROM pacientes WHERE telefono = :tel AND id != :id');
+    $check = $pdo->prepare('SELECT id, nombre_completo, dni FROM pacientes WHERE telefono = :tel AND id != :id');
     $check->execute(['tel' => $phone, 'id' => $id]);
     $existing = $check->fetch();
     if ($existing) {
         json_out(409, ['status' => 'error', 'message' => 'Ese teléfono ya está asignado al paciente ' . $existing['nombre_completo']]);
     }
 
+    $current = $pdo->prepare('SELECT dni FROM pacientes WHERE id = :id LIMIT 1');
+    $current->execute(['id' => $id]);
+    $currentRow = $current->fetch(PDO::FETCH_ASSOC) ?: [];
+
     $nombrePila = extract_first_name($nombreCompleto);
-    $dni = !empty($data['dni']) ? mb_substr(trim((string) $data['dni']), 0, 20, 'UTF-8') : null;
+    // No perder DNI existente al actualizar contacto sin documento (merge / formulario incompleto).
+    $incomingDni = !empty($data['dni']) && strcasecmp(trim((string) $data['dni']), 'No provisto') !== 0
+        ? mb_substr(trim((string) $data['dni']), 0, 20, 'UTF-8')
+        : '';
+    $existingDni = clean_patient_dni($currentRow['dni'] ?? null);
+    $dni = $incomingDni !== '' ? $incomingDni : ($existingDni !== '' ? mb_substr($existingDni, 0, 20, 'UTF-8') : null);
     $email = !empty($data['email']) ? trim((string) $data['email']) : null;
     if (!is_valid_email_strict($email)) {
         json_out(422, ['status' => 'error', 'message' => 'El formato del correo electrónico no es válido']);

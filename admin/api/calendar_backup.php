@@ -348,12 +348,23 @@ try {
             echo json_encode(['status' => 'error', 'message' => 'Teléfono válido es requerido.']);
             exit;
         }
-        // Email opcional solo en la turnera de admin. En la reserva pública es obligatorio.
+        // Email y DNI opcionales solo en la turnera de admin. En la reserva pública son obligatorios.
         $adminBooking = filter_var($params['adminMode'] ?? false, FILTER_VALIDATE_BOOLEAN);
         if (($email === '' && !$adminBooking) || ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL))) {
             http_response_code(400);
             echo json_encode(['status' => 'error', 'message' => 'Correo electrónico válido es requerido.']);
             exit;
+        }
+        if (!$adminBooking) {
+            $dniCheck = trim((string) ($params['dni'] ?? ''));
+            $dniDigits = preg_replace('/\D+/', '', $dniCheck) ?? '';
+            $dniAlnum = preg_replace('/[^0-9A-Za-z]/', '', $dniCheck) ?? '';
+            $dniOk = strlen($dniDigits) >= 5 || strlen($dniAlnum) >= 5;
+            if (!$dniOk || preg_match('/^no\s*provisto$/i', $dniCheck)) {
+                http_response_code(400);
+                echo json_encode(['status' => 'error', 'message' => 'DNI o documento es requerido.']);
+                exit;
+            }
         }
 
         $slotStartMs = kinesica_backup_parse_arg_ms($dateStr, $timeStr);
