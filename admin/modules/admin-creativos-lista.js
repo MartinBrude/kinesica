@@ -13,7 +13,7 @@ import {
   toggleCola,
   publishNow,
   subscribeCola,
-} from "./admin-creativos-cola.js";
+} from "./admin-creativos-cola.js?v=2";
 
 let resolveItem = () => null, draggedId = null;
 

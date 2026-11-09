@@ -12,7 +12,7 @@ import {
   api,
   setAuthRequiredHandler,
   formatDate,
-} from "./modules/api.js?v=78";
+} from "./modules/api.js?v=79";
 
 import {
   escapeHtml,
@@ -61,11 +61,11 @@ import {
   switchTab,
   mountAdminChannels,
   unmountAdminChannels,
-} from "./modules/app-tabs.js?v=29";
+} from "./modules/app-tabs.js?v=30";
 
 import {
   initAppControllers,
-} from "./modules/app-init.js?v=24";
+} from "./modules/app-init.js?v=25";
 
 export {
   api,

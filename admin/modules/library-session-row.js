@@ -4,7 +4,7 @@
  */
 
 import { escapeHtml, dialogConfirm } from "./dom.js?v=79";
-import { formatDate } from "./api.js?v=78";
+import { formatDate } from "./api.js?v=79";
 import { getSessionUser } from "./auth.js?v=83";
 import { capitalizePersonName } from "../ficha-rules.mjs?v=87";
 

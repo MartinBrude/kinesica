@@ -43,6 +43,7 @@ try {
         }
         $item = ig_queue_find($id);
         if (!$item) json_out(404, ['error' => 'Pieza no encontrada']);
+        @set_time_limit(180);
         require_once __DIR__ . '/lib_instagram.php';
         $res = ig_publish_piece($item, $channel !== 'story', $channel !== 'feed');
         json_out(200, ['ok' => true, 'result' => $res, 'items' => ig_queue_list()]);

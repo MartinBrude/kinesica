@@ -8,7 +8,7 @@
  */
 
 import { renderOptCText, REMINDER_TEMPLATE_TEXT } from "./menu-texts.js?v=3";
-import { api } from "./api.js?v=78";
+import { api } from "./api.js?v=79";
 import { dialogAlert, toast } from "./dom.js?v=79";
 import { getSessionUser } from "./auth.js?v=83";
 import { resetChatDemo, initChatSimulator, setChatContext } from "./chat-simulator.js?v=15";

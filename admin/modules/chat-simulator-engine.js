@@ -4,7 +4,7 @@
  */
 
 import { escapeHtml } from "./dom.js?v=79";
-import { api } from "./api.js?v=78";
+import { api } from "./api.js?v=79";
 import { renderOptCText, renderOptCTextEn } from "./menu-texts.js?v=3";
 import { isIncompleteClaraTextStub } from "./config-defaults.js?v=5";
 

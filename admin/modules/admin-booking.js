@@ -5,7 +5,7 @@
  * El selector de paciente (con búsqueda por texto) es el eje del paso 1.
  */
 
-import { api } from "./api.js?v=78";
+import { api } from "./api.js?v=79";
 import { getSessionUser } from "./auth.js?v=83";
 
 let modal = null;

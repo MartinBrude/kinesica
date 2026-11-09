@@ -2,7 +2,7 @@
  * Kinésica Admin - Gestión de Reporte y Seguimiento de Errores
  */
 
-import { api, formatDate } from "./api.js?v=78";
+import { api, formatDate } from "./api.js?v=79";
 import { escapeHtml, dialogAlert, dialogConfirm, toast } from "./dom.js?v=79";
 import {
   openErrorModal,

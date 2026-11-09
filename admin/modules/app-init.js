@@ -4,7 +4,7 @@
  */
 
 import { ageOn, patientKey, PATIENT_FIELDS, todayISO } from "../ficha-rules.mjs?v=91";
-import { api } from "./api.js?v=78";
+import { api } from "./api.js?v=79";
 import { dialogAlert } from "./dom.js?v=79";
 import { printItems } from "./print.js?v=82";
 import { initForm } from "./form.js?v=88";
@@ -13,7 +13,7 @@ import { initCompare } from "./compare.js?v=79";
 import { initPacientesModule } from "./pacientes.js?v=12";
 import { initHorariosModule } from "./horarios.js?v=4";
 import { initHonorariosModule } from "./honorarios.js?v=3";
-import { initAdminModule } from "./admin-panel.js?v=88";
+import { initAdminModule } from "./admin-panel.js?v=89";
 import { initConfiguracionModule } from "./configuracion.js?v=33";
 import { initDashboardModule, updateDashboardClara, updateDashboardBooking } from "./dashboard.js?v=13";
 import { initInteraccionesModule } from "./interacciones.js?v=15";

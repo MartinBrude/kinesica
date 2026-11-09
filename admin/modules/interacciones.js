@@ -5,7 +5,7 @@
  * abrir WhatsApp y responderles en un solo click.
  */
 
-import { api } from "./api.js?v=78";
+import { api } from "./api.js?v=79";
 import { getSessionUser } from "./auth.js?v=83";
 import { escapeHtml, switchActiveView, dialogConfirm, toast } from "./dom.js?v=79";
 import {

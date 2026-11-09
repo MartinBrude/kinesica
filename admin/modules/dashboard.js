@@ -3,7 +3,7 @@
  * Orquesta la vista principal de inicio con accesos rápidos a Fichas, Pacientes, Clara y Agenda.
  */
 
-import { api } from "./api.js?v=78";
+import { api } from "./api.js?v=79";
 import { getSessionUser } from "./auth.js?v=83";
 import { dialogAlert, toast, switchActiveView } from "./dom.js?v=79";
 

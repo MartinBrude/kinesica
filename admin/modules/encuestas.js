@@ -4,7 +4,7 @@
  * y listado de respuestas recibidas desde /encuesta.html.
  */
 
-import { api, formatDate } from "./api.js?v=78";
+import { api, formatDate } from "./api.js?v=79";
 import { getSessionUser } from "./auth.js?v=83";
 import { escapeHtml, dialogAlert, dialogConfirm, switchActiveView } from "./dom.js?v=79";
 import { setListControlsEnabled } from "./list-controls.js?v=1";

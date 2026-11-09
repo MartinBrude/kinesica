@@ -3,13 +3,13 @@
  * Controla la activación de secciones del menú superior y los canales de administración.
  */
 
-import { api } from "./api.js?v=78";
+import { api } from "./api.js?v=79";
 import { getSessionUser } from "./auth.js?v=83";
 import { showLibrary } from "./library.js?v=94";
 import { showPacientesView, hidePacientesView } from "./pacientes.js?v=12";
 import { showDashboardView, hideDashboardView, updateDashboardClara, updateDashboardBooking } from "./dashboard.js?v=13";
 import { showConsultorioView, hideConsultorioView, showClaraView, hideClaraView } from "./configuracion.js?v=33";
-import { showAdminView, hideAdminView } from "./admin-panel.js?v=88";
+import { showAdminView, hideAdminView } from "./admin-panel.js?v=89";
 import { showInteraccionesView, hideInteraccionesView } from "./interacciones.js?v=15";
 import { showRecordatoriosView, hideRecordatoriosView } from "./recordatorios.js?v=24";
 import { showEncuestasView, hideEncuestasView } from "./encuestas.js?v=2";

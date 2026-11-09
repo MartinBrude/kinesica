@@ -3,7 +3,7 @@
  * Controla activación/pausa de canales y sincronización en tiempo real.
  */
 
-import { api } from "./api.js?v=78";
+import { api } from "./api.js?v=79";
 import { renderReminderPreview } from "./menu-texts.js?v=3";
 import { getSessionUser } from "./auth.js?v=83";
 

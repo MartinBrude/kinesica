@@ -4,7 +4,7 @@
  * estado ("liked", encolada, publicada como Feed / Story / Ambas) y publicación directa.
  */
 
-import { api } from "./api.js?v=78";
+import { api } from "./api.js?v=79";
 
 let colaItems = [];
 let colaMap = new Map();
@@ -176,7 +176,8 @@ export async function publishNow(id, channel, itemResolver) {
   if (!item) return;
   try {
     const body = { action: "publish_now", id: item.id, channel, title: item.title, caption: item.copy || item.body, feed_path: item.feedUrl, story_path: item.storyUrl };
-    const data = await api("instagram_cola.php", { method: "POST", body });
+    // Meta procesa contenedores feed+story; el default de api() (30s) corta antes.
+    const data = await api("instagram_cola.php", { method: "POST", body, timeoutMs: 180000 });
     setList(data.items);
     return data.result;
   } catch (err) {

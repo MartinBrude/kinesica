@@ -3,7 +3,7 @@
  * Listado desde Google Calendar, flag por paciente y export CSV.
  */
 
-import { api } from "./api.js?v=78";
+import { api } from "./api.js?v=79";
 import { escapeHtml, dialogAlert } from "./dom.js?v=79";
 
 let cachedItems = [];

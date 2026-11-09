@@ -53,7 +53,8 @@ export function setAuthRequiredHandler(handler) {
  * @throws {Error} Error estructurado con propiedad .auth en caso de 401 o .network si no hay conexión
  */
 export async function api(path, options = {}) {
-  const fetchOptions = { ...options };
+  const { timeoutMs = 30000, ...rest } = options;
+  const fetchOptions = { ...rest };
   const headers = {
     "X-Kinesica": "1",
     ...(fetchOptions.headers || {}),
@@ -74,7 +75,7 @@ export async function api(path, options = {}) {
   }
 
   const timeout = new AbortController();
-  const timer = setTimeout(() => timeout.abort(), 30000);
+  const timer = setTimeout(() => timeout.abort(), Number(timeoutMs) || 30000);
   if (fetchOptions.signal) {
     if (fetchOptions.signal.aborted) timeout.abort();
     else fetchOptions.signal.addEventListener("abort", () => timeout.abort(), { once: true });

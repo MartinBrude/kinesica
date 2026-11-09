@@ -3,7 +3,7 @@
  * Genera el marcado interactivo para la vista resumen ("Lo que cambió") y paneles por sección (0..4 o all).
  */
 
-import { formatDate } from "./api.js?v=78";
+import { formatDate } from "./api.js?v=79";
 import { escapeHtml } from "./dom.js?v=79";
 import { patientKey } from "../ficha-rules.mjs?v=90";
 

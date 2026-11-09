@@ -3,7 +3,7 @@
  */
 
 import { patientKey, getUniquePatients, capitalizePersonName } from "../ficha-rules.mjs?v=89";
-import { api } from "./api.js?v=78";
+import { api } from "./api.js?v=79";
 
 const form = typeof document !== "undefined" ? document.querySelector("#ficha") : null;
 
