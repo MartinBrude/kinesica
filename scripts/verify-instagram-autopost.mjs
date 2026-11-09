@@ -28,6 +28,7 @@ console.log("\n2. Auditando regla de arquitectura: archivos < 250 líneas...");
 const filesToCheck = [
   "admin/api/lib_instagram_store.php",
   "admin/api/lib_instagram_copy.php",
+  "admin/api/lib_instagram_guard.php",
   "admin/api/lib_instagram.php",
   "admin/api/instagram_cola.php",
   "admin/api/cron_instagram.php",

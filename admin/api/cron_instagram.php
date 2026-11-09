@@ -19,6 +19,7 @@ if (PHP_SAPI !== 'cli') {
 require_once __DIR__ . '/lib.php';
 require_once __DIR__ . '/lib_instagram.php';
 require_once __DIR__ . '/lib_instagram_copy.php';
+require_once __DIR__ . '/lib_instagram_guard.php';
 
 $dry = in_array('--dry-run', $argv, true);
 $force = in_array('--force', $argv, true);
@@ -26,6 +27,11 @@ $c = cfg();
 $days = array_map('intval', (array) ($c['instagram_days'] ?? [1, 3, 5]));
 $hour = (int) ($c['instagram_hour'] ?? 10);
 $withStory = ($c['instagram_story_too'] ?? true) !== false;
+
+if (!ig_service_enabled()) {
+    echo "Servicio de publicaciones Instagram desactivado\n";
+    exit(0);
+}
 
 $now = new DateTimeImmutable('now', new DateTimeZone('America/Argentina/Buenos_Aires'));
 $today = $now->format('Y-m-d');
@@ -39,18 +45,34 @@ if (!$force) {
     }
 }
 
-$item = ig_queue_next();
-if ($item === null) {
+$next = ig_queue_next();
+if ($next === null) {
     echo "Cola vacía: nada que publicar\n";
     exit(0);
 }
 
-$channel = ig_normalize_channel((string) ($item['channels'] ?? 'both'));
+$channel = ig_normalize_channel((string) ($next['channels'] ?? 'both'));
 if (!$withStory && $channel === 'both') {
     $channel = 'feed';
 }
-echo "Publicando {$item['creativo_id']} [{$channel}]" . ($dry ? " (dry-run)\n" : "\n");
+echo "Publicando {$next['creativo_id']} [{$channel}]" . ($dry ? " (dry-run)\n" : "\n");
 if ($dry) exit(0);
+
+$item = ig_queue_claim((string) $next['creativo_id']);
+if ($item === null) {
+    echo "Pieza ya reservada por otra publicación en curso\n";
+    exit(0);
+}
+if (!$force && !ig_guard_acquire(ig_day_slot($today), (string) $next['creativo_id'])) {
+    ig_queue_release_claim((string) $next['creativo_id']);
+    echo "Día ya reservado: no se publica otra pieza\n";
+    exit(0);
+}
+if ($force) {
+    // --force sigue sin duplicar el mismo canal (guards de piece:*); solo omite el cupo diario.
+    ig_guard_acquire(ig_day_slot($today), (string) $next['creativo_id']);
+}
+$item['channels'] = $channel;
 
 try {
     $res = ig_publish_piece($item, $channel !== 'story', $channel !== 'feed');
@@ -59,6 +81,7 @@ try {
         echo "Aviso: {$res['last_error']}\n";
     }
 } catch (Throwable $e) {
+    ig_queue_release_claim((string) $next['creativo_id']);
     fwrite(STDERR, 'Error al publicar: ' . $e->getMessage() . "\n");
     exit(1);
 }

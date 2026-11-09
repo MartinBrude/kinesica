@@ -1,26 +1,18 @@
-/**
- * Kinésica Admin — Estado de la cola y publicaciones en Instagram.
- * Gestiona la sincronización con el servidor (instagram_cola.php),
- * estado ("liked", encolada, publicada como Feed / Story / Ambas) y publicación directa.
- */
-
+/** Estado de cola Instagram + copies + flag de servicio (instagram_cola.php). */
 import { api } from "./api.js?v=79";
 
 let colaItems = [];
 let colaMap = new Map();
 let captionOverrides = new Map();
+let serviceEnabled = true;
 let subscribers = [];
 
 export function subscribeCola(fn) {
   if (typeof fn === "function") subscribers.push(fn);
 }
-
 function notify() {
-  subscribers.forEach((fn) => {
-    try { fn(colaItems); } catch (e) { console.error(e); }
-  });
+  subscribers.forEach((fn) => { try { fn(colaItems); } catch (e) { console.error(e); } });
 }
-
 function setCopies(copies) {
   captionOverrides = new Map();
   if (copies && typeof copies === "object") {
@@ -29,11 +21,12 @@ function setCopies(copies) {
     });
   }
 }
-
 function applyPayload(data) {
-  if (data && data.copies) setCopies(data.copies);
+  if (data?.copies) setCopies(data.copies);
+  if (typeof data?.enabled === "boolean") serviceEnabled = data.enabled;
   setList(data?.items);
 }
+export function isServiceEnabled() { return serviceEnabled !== false; }
 
 function setList(items) {
   colaItems = Array.isArray(items) ? items : [];
@@ -212,9 +205,16 @@ export function queuedChannel(id) {
   return ch === "feed" || ch === "story" || ch === "both" ? ch : "both";
 }
 
+let publishInFlight = false;
+
 export async function publishNow(id, channel, itemResolver) {
   const item = itemResolver(id);
   if (!item) return;
+  if (publishInFlight) {
+    window.alert("Ya hay una publicación en curso. Esperá a que termine.");
+    throw new Error("publicación en curso");
+  }
+  publishInFlight = true;
   try {
     const body = {
       action: "publish_now", id: item.id, channel: channel || queuedChannel(id),
@@ -225,15 +225,19 @@ export async function publishNow(id, channel, itemResolver) {
     applyPayload(data);
     return data.result;
   } catch (err) {
-    if (!err.auth) window.alert(err.message || "No se pudo publicar en Instagram");
+    if (!err.auth && err.message !== "publicación en curso") {
+      window.alert(err.message || "No se pudo publicar en Instagram");
+    }
     throw err;
+  } finally {
+    publishInFlight = false;
   }
 }
 
 export async function saveChannels(id, channel) {
   applyPayload(await api("instagram_cola.php", { method: "POST", body: { action: "update_channels", id, channel } }));
 }
-
-export function _setListForTesting(items) {
-  setList(items);
+export async function setServiceEnabled(enabled) {
+  applyPayload(await api("instagram_cola.php", { method: "POST", body: { action: "set_enabled", enabled: !!enabled } }));
 }
+export function _setListForTesting(items) { setList(items); }

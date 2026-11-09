@@ -128,18 +128,14 @@ it('maneja fallos y transiciona a failed tras 3 intentos (IG_MAX_ATTEMPTS)', fun
     if ($e3['last_error'] !== 'Error 3 fatal') throw new Exception('No preservó el último mensaje de error');
 });
 
-it('re-encolado: resetea published_on y media IDs al volver a la cola', function() {
-    // p1 ya fue publicada en test anterior
+it('re-encolado de pieza publicada está bloqueado (anti-duplicado)', function() {
     $before = ig_queue_find('p1');
     if ($before['status'] !== 'published') throw new Exception('p1 debía estar publicada');
-
-    // Ahora se re-encola (como cuando Norberto le da Me gusta de nuevo)
-    ig_queue_add(['id' => 'p1', 'title' => 'Pieza 1 Recargada', 'caption' => 'Nuevo copy', 'feed_path' => 'campanas/feed/a.png', 'story_path' => 'campanas/story/a.png'], 'norberto');
+    $ok = ig_queue_add(['id' => 'p1', 'title' => 'Pieza 1 Recargada', 'caption' => 'Nuevo copy', 'feed_path' => 'campanas/feed/a.png', 'story_path' => 'campanas/story/a.png'], 'norberto');
+    if ($ok) throw new Exception('Re-encolar publicada debía fallar');
     $after = ig_queue_find('p1');
-    if ($after['status'] !== 'queued') throw new Exception('No pasó a status queued tras re-encolar');
-    if ($after['published_on'] !== null) throw new Exception('published_on no fue reseteado a null');
-    if ($after['feed_media_id'] !== null || $after['story_media_id'] !== null) throw new Exception('media IDs no fueron reseteados');
-    if ($after['caption'] !== 'Nuevo copy') throw new Exception('No actualizó el caption al re-encolar');
+    if ($after['status'] !== 'published') throw new Exception('Debía seguir published');
+    if ($after['story_media_id'] !== 'story_media_123') throw new Exception('No debía borrar media_id');
 });
 
 it('ig_published_on_date detecta publicaciones del día e ignora fechas distintas', function() {
@@ -148,15 +144,13 @@ it('ig_published_on_date detecta publicaciones del día e ignora fechas distinta
 });
 
 it('ig_queue_remove elimina elementos de la cola pero no elimina piezas ya publicadas', function() {
-    // p2 está publicada
     ig_queue_remove('p2');
     $p2 = ig_queue_find('p2');
     if ($p2 === null) throw new Exception('Eliminó una pieza ya publicada (violación de histórico)');
 
-    // p1 está en cola
-    ig_queue_remove('p1');
-    $p1 = ig_queue_find('p1');
-    if ($p1 !== null) throw new Exception('No eliminó la pieza que estaba en cola');
+    ig_queue_add(['id' => 'p_rm', 'title' => 'Removable', 'caption' => 'Texto', 'feed_path' => 'campanas/feed/r.png', 'story_path' => 'campanas/story/r.png'], 'test');
+    ig_queue_remove('p_rm');
+    if (ig_queue_find('p_rm') !== null) throw new Exception('No eliminó la pieza que estaba en cola');
 });
 
 it('seguridad: consultas preparadas contra inyección SQL', function() {
@@ -217,6 +211,62 @@ it('channels por pieza: default both y update_channels', function() {
     $row2 = ig_queue_find('p_ch');
     if (($row2['channels'] ?? '') !== 'story') throw new Exception('No actualizó a story');
     if (ig_normalize_channel('nope') !== 'both') throw new Exception('normalize debía caer a both');
+});
+
+it('servicio Instagram activo por defecto y se puede pausar', function() {
+    require_once __DIR__ . '/../admin/api/lib_instagram_copy.php';
+    if (!ig_service_enabled()) throw new Exception('Default debía ser activo');
+    ig_service_set_enabled(false, 'martin');
+    if (ig_service_enabled()) throw new Exception('Debía quedar pausado');
+    ig_service_set_enabled(true, 'norberto');
+    if (!ig_service_enabled()) throw new Exception('Debía reactivarse');
+});
+
+it('ig_queue_claim evita doble reserva de la misma pieza', function() {
+    require_once __DIR__ . '/../admin/api/lib_instagram_copy.php';
+    ig_queue_add([
+        'id' => 'p_lock', 'title' => 'Lock', 'caption' => 'Texto',
+        'feed_path' => 'campanas/feed/l.png', 'story_path' => 'campanas/story/l.png',
+    ], 'martin');
+    $a = ig_queue_claim('p_lock');
+    $b = ig_queue_claim('p_lock');
+    if ($a === null || ($a['status'] ?? '') !== 'publishing') throw new Exception('Primer claim falló');
+    if ($b !== null) throw new Exception('Segundo claim debía fallar');
+    ig_queue_release_claim('p_lock');
+    $again = ig_queue_find('p_lock');
+    if (($again['status'] ?? '') !== 'queued') throw new Exception('Release no volvió a queued');
+});
+
+it('guards permanentes: día y canal no se pueden adquirir dos veces', function() {
+    require_once __DIR__ . '/../admin/api/lib_instagram_guard.php';
+    if (!ig_guard_acquire(ig_day_slot('2099-01-01'), 'p1')) throw new Exception('day acquire 1');
+    if (ig_guard_acquire(ig_day_slot('2099-01-01'), 'p2')) throw new Exception('day acquire 2 debía fallar');
+    if (!ig_guard_acquire(ig_channel_slot('p_g', 'story'), 'p_g')) throw new Exception('story acquire 1');
+    if (ig_guard_acquire(ig_channel_slot('p_g', 'story'), 'p_g')) throw new Exception('story acquire 2 debía fallar');
+    if (!ig_guard_held(ig_channel_slot('p_g', 'story'))) throw new Exception('guard_held');
+});
+
+it('release_claim no reencola si ya hay media_id (progreso)', function() {
+    require_once __DIR__ . '/../admin/api/lib_instagram_copy.php';
+    ig_queue_add([
+        'id' => 'p_part', 'title' => 'Partial', 'caption' => 'Texto',
+        'feed_path' => 'campanas/feed/p.png', 'story_path' => 'campanas/story/p.png',
+    ], 'martin');
+    ig_queue_claim('p_part');
+    ig_save_partial_media('p_part', null, 'STORY_MEDIA_99');
+    ig_queue_release_claim('p_part');
+    $row = ig_queue_find('p_part');
+    if (($row['status'] ?? '') !== 'published') throw new Exception('Debía finalizar published, no reencolar');
+    if (($row['story_media_id'] ?? '') !== 'STORY_MEDIA_99') throw new Exception('Debía conservar story_media_id');
+});
+
+it('no se puede re-encolar una pieza already published', function() {
+    require_once __DIR__ . '/../admin/api/lib_instagram_store.php';
+    $ok = ig_queue_add([
+        'id' => 'p_part', 'title' => 'Partial', 'caption' => 'Otra',
+        'feed_path' => 'campanas/feed/p.png', 'story_path' => 'campanas/story/p.png',
+    ], 'martin');
+    if ($ok) throw new Exception('Re-encolar publicada debía fallar');
 });
 
 // Limpieza

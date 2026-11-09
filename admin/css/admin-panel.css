@@ -1825,17 +1825,39 @@
 }
 
 .creativos-queue-header {
-  background: #f0f7fa;
-  border: 1px solid #bce1ee;
-  border-radius: 8px;
-  padding: 12px 16px;
   margin-bottom: 16px;
+}
+.creativos-service-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #bce1ee;
+  background: #f0f7fa;
+}
+.creativos-service-bar.is-off {
+  border-color: #fcd34d;
+  background: #fffbeb;
 }
 .creativos-queue-info {
   margin: 0;
   font-size: 0.9rem;
   color: #1a4457;
   line-height: 1.45;
+  flex: 1 1 220px;
+}
+.btn-creativos-service-toggle.is-on {
+  background: #fff;
+  border: 1px solid #93c5fd;
+  color: #1e40af;
+}
+.btn-creativos-service-toggle.is-off {
+  background: #166534;
+  border-color: #166534;
+  color: #fff;
 }
 .creativos-queue-list {
   display: flex;

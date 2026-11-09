@@ -4,13 +4,14 @@ declare(strict_types=1);
 /**
  * Kinésica Admin — Cola de publicación en Instagram.
  * GET  → lista de piezas en cola/publicadas con orden personalizado y estado de canales.
- * POST {action: add|remove|reorder|publish_now|update_caption|update_channels, id, title, caption, feed_path, story_path, ids, channel}
- * Cualquier usuario autenticado (Norberto/Martín) puede gestionar la cola y canales (feed/story/both).
+ * POST {action: add|remove|reorder|publish_now|update_caption|update_channels|set_enabled, ...}
+ * Cualquier usuario autenticado (Norberto/Martín) puede gestionar cola, canales y activar/pausar el servicio.
  */
 
 require __DIR__ . '/lib.php';
 require_once __DIR__ . '/lib_instagram_store.php';
 require_once __DIR__ . '/lib_instagram_copy.php';
+require_once __DIR__ . '/lib_instagram_guard.php';
 
 require_header();
 $auth = require_auth();
@@ -18,7 +19,12 @@ $user = (string) ($auth['username'] ?? $auth['user'] ?? '');
 
 function ig_cola_payload(array $extra = []): array
 {
-    return $extra + ['ok' => true, 'items' => ig_queue_list(), 'copies' => ig_copy_map()];
+    return $extra + [
+        'ok' => true,
+        'items' => ig_queue_list(),
+        'copies' => ig_copy_map(),
+        'enabled' => ig_service_enabled(),
+    ];
 }
 
 try {
@@ -51,6 +57,8 @@ try {
         if (!ig_queue_set_channels($id, $channel)) {
             json_out(422, ['error' => 'Canal inválido']);
         }
+    } elseif ($action === 'set_enabled') {
+        ig_service_set_enabled(!empty($body['enabled']), $user);
     } elseif ($action === 'publish_now') {
         $id = (string) ($body['id'] ?? '');
         if (!ig_queue_find($id)) {
@@ -58,17 +66,34 @@ try {
                 json_out(422, ['error' => 'Datos de la pieza inválidos']);
             }
         }
-        $item = ig_queue_find($id);
-        if (!$item) json_out(404, ['error' => 'Pieza no encontrada']);
-        $channel = ig_normalize_channel((string) ($body['channel'] ?? $item['channels'] ?? 'both'));
-        if ($channel !== ig_normalize_channel((string) ($item['channels'] ?? 'both'))) {
-            ig_queue_set_channels($id, $channel);
-            $item['channels'] = $channel;
+        $existing = ig_queue_find($id);
+        if (!$existing) json_out(404, ['error' => 'Pieza no encontrada']);
+        if (($existing['status'] ?? '') === 'published') {
+            json_out(409, ['error' => 'Esta pieza ya fue publicada']);
         }
+        $channel = ig_normalize_channel((string) ($body['channel'] ?? $existing['channels'] ?? 'both'));
+        if ($channel !== ig_normalize_channel((string) ($existing['channels'] ?? 'both'))) {
+            ig_queue_set_channels($id, $channel);
+        }
+        $item = ig_queue_claim($id);
+        if (!$item) {
+            json_out(409, ['error' => 'Ya hay una publicación en curso para esta pieza']);
+        }
+        $today = (new DateTimeImmutable('now', new DateTimeZone('America/Argentina/Buenos_Aires')))->format('Y-m-d');
+        if (!ig_guard_acquire(ig_day_slot($today), $id)) {
+            ig_queue_release_claim($id);
+            json_out(409, ['error' => 'Ya hay (o hubo) una publicación reservada para hoy']);
+        }
+        $item['channels'] = $channel;
         @set_time_limit(180);
         require_once __DIR__ . '/lib_instagram.php';
-        $res = ig_publish_piece($item, $channel !== 'story', $channel !== 'feed');
-        json_out(200, ig_cola_payload(['result' => $res]));
+        try {
+            $res = ig_publish_piece($item, $channel !== 'story', $channel !== 'feed');
+            json_out(200, ig_cola_payload(['result' => $res]));
+        } catch (Throwable $e) {
+            ig_queue_release_claim($id);
+            throw $e;
+        }
     } else {
         json_out(422, ['error' => 'Acción inválida']);
     }

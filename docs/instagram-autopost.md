@@ -26,6 +26,7 @@ Este módulo permite a **Norberto y Martín** gestionar de forma visual y 100% a
 - **⚡ Publicar ya**: Publicación inmediata de Feed + Story. Cuenta para el cupo del día: el cron **no** publicará otra pieza esa misma fecha Argentina.
 - **✏️ Editar texto**: Cualquier usuario con acceso a Creativos (Martin, Norberto, etc.) puede editar el caption de una pieza en cola. Se guarda en DB (`instagram_creativo_copy`) y aplica a la publicación y a futuros encolados de esa pieza. El botón **Copiar texto** del catálogo también usa el override si existe.
 - **Canal (Feed / Story / Ambas)**: En la cola, un selector por pieza define qué se publica (cron y **⚡ Publicar ya**). Por defecto: Feed + Story.
+- **Activar / Pausar**: Botón en la lista para encender o apagar el servicio automático. **Por defecto está activo.** Si está pausado, el cron no publica (sí se puede seguir editando la cola y usar Publicar ya).
 - **💔 Quitar**: Remueve la pieza de la cola y la devuelve al catálogo como disponible.
 
 ### 📸 Reporte y Marcado de Publicación
@@ -44,7 +45,13 @@ Al publicarse una pieza (sea por el cron o manualmente), el sistema registra el 
    - Tanto el cron como **⚡ Publicar ya** marcan `published_on` con la fecha de Argentina al publicar.
    - Antes de publicar, el cron llama a `ig_published_on_date($today)`: si **ya hubo una publicación ese día** (manual o automática), **sale sin publicar**.
    - Por lo tanto: si publicaste a mano un miércoles a las 9:30, el cron de las 10:00 **no** publica otra pieza ese día.
-   - El flag `--force` en CLI **omite** día/hora e idempotencia diaria: **no** usarlo en el Cron Job de Hostinger de producción (solo pruebas puntuales).
+   - **Anti-duplicado (estricto)**:
+     1. Reserva de pieza `queued → publishing` (segundo intento → 409).
+     2. Lock permanente de **día** (`instagram_publish_guard` slot `day:YYYY-MM-DD`): una sola publicación por día AR.
+     3. Lock permanente por **canal** (`piece:ID:feed` / `piece:ID:story`): jamás se crea un segundo container/publish para ese canal.
+     4. Se persiste `*_container_id` antes del `media_publish` y `*_media_id` apenas sale; un reintento reusa el container, no crea otro.
+     5. Si hubo progreso (media/container/guard), **no se reencola** la pieza.
+   - El flag `--force` en CLI omite día/hora del calendario, pero **sigue** respetando los locks de canal (no duplica Feed/Story). **No** usarlo en el Cron Job de producción.
 3. **Tokens**:
    - En producción usamos un **System User token** de Meta Business (portfolio **Kinesica**) con la app **Kinesica** (`934161262967210`) y el IG `@kinesicabrude` (`17841431309622146`).
    - Ese token habla con **`graph.facebook.com`**, no con `graph.instagram.com`. En config: `'instagram_api_base' => 'https://graph.facebook.com/v21.0'`.
@@ -60,6 +67,7 @@ Cada módulo del backend y frontend respeta rigurosamente el límite estricto de
 |---|---|---|
 | [`admin/api/lib_instagram_store.php`](../admin/api/lib_instagram_store.php) | Persistencia cola/token, anti path-traversal, reorder, PNG→JPG | **≤250** |
 | [`admin/api/lib_instagram_copy.php`](../admin/api/lib_instagram_copy.php) | Overrides de caption por creativo (`instagram_creativo_copy`) + sync a cola | **≤250** |
+| [`admin/api/lib_instagram_guard.php`](../admin/api/lib_instagram_guard.php) | Locks permanentes día/canal + container IDs (anti-duplicado) | **≤250** |
 | [`admin/api/lib_instagram.php`](../admin/api/lib_instagram.php) | Cliente Graph API (`instagram_api_base`), containers, publish | **≤250** |
 | [`admin/api/instagram_cola.php`](../admin/api/instagram_cola.php) | REST: add/remove/reorder/publish_now/**update_caption** | **≤250** |
 | [`admin/api/cron_instagram.php`](../admin/api/cron_instagram.php) | Worker CLI, horario AR, idempotencia diaria | **≤250** |

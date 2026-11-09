@@ -4,7 +4,13 @@
  */
 
 import { escapeHtml } from "./dom.js?v=79";
-import { resolveCaption, saveCaption, saveChannels } from "./admin-creativos-cola.js?v=4";
+import {
+  resolveCaption,
+  saveCaption,
+  saveChannels,
+  isServiceEnabled,
+  setServiceEnabled,
+} from "./admin-creativos-cola.js?v=6";
 
 const CHANNEL_LABELS = { both: "Feed + Story", feed: "Solo Feed", story: "Solo Story" };
 
@@ -78,5 +84,36 @@ export async function handleChannelChange(select) {
     if (!err.auth) window.alert(err.message || "No se pudo guardar el canal");
   } finally {
     select.disabled = false;
+  }
+}
+
+export function serviceToggleHtml() {
+  const on = isServiceEnabled();
+  return `
+    <div class="creativos-service-bar ${on ? "is-on" : "is-off"}">
+      <p class="creativos-queue-info">
+        ${on
+    ? "📅 <strong>Automatización activa:</strong> Publica Lun/Mié/Vie a las 10:00 hs (Argentina). Arrastrá para reordenar · ⚡ Publicar ya · selector de canal."
+    : "⏸️ <strong>Automatización pausada:</strong> el cron no publica. Podés seguir armando la cola; reactivá cuando quieras."}
+      </p>
+      <button type="button" class="btn btn-sm btn-creativos-service-toggle ${on ? "is-on" : "is-off"}" data-enabled="${on ? "0" : "1"}">
+        ${on ? "⏸️ Pausar publicaciones" : "▶️ Activar publicaciones"}
+      </button>
+    </div>`;
+}
+
+export async function handleServiceToggleClick(btn) {
+  const next = btn.dataset.enabled === "1";
+  const msg = next
+    ? "¿Activar el servicio de publicaciones automáticas en Instagram?"
+    : "¿Pausar el servicio? El cron dejará de publicar hasta que lo reactives.";
+  if (!window.confirm(msg)) return;
+  btn.disabled = true;
+  try {
+    await setServiceEnabled(next);
+  } catch (err) {
+    if (!err.auth) window.alert(err.message || "No se pudo cambiar el estado del servicio");
+  } finally {
+    btn.disabled = false;
   }
 }

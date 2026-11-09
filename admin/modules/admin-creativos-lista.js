@@ -14,14 +14,16 @@ import {
   publishNow,
   subscribeCola,
   queuedChannel,
-} from "./admin-creativos-cola.js?v=4";
+} from "./admin-creativos-cola.js?v=6";
 import {
   captionSnippetHtml,
   toggleCaptionEditor,
   handleSaveCaptionClick,
   handleChannelChange,
+  handleServiceToggleClick,
+  serviceToggleHtml,
   channelLabel,
-} from "./admin-creativos-caption.js?v=2";
+} from "./admin-creativos-caption.js?v=3";
 
 let resolveItem = () => null, draggedId = null;
 
@@ -40,23 +42,17 @@ export function renderQueueView() {
 
   const queued = getQueuedItems(), published = getPublishedItems(), slots = getNextSlots(queued.length);
 
+  let html = `<div class="creativos-queue-header">${serviceToggleHtml()}</div><div class="creativos-queue-list">`;
+
   if (!queued.length && !published.length) {
-    container.innerHTML = `
+    html += `
       <div class="creativos-empty creativos-queue-empty">
         <p>🤍 <strong>No hay publicaciones en la lista todavía.</strong></p>
         <p>Andá al <strong>Catálogo</strong> y tocá el <strong>❤️</strong> para sumar piezas.</p>
-      </div>`;
+      </div></div>`;
+    container.innerHTML = html;
     return;
   }
-
-  let html = `
-    <div class="creativos-queue-header">
-      <p class="creativos-queue-info">
-        📅 <strong>Automatización activa:</strong> Publica 3 veces por semana (<strong>Lunes, Miércoles y Viernes a las 10:00 hs</strong>).
-        Arrastrá las tarjetas (<strong>drag & drop</strong>) o usá <strong>⬆️ / ⬇️</strong> para cambiar el orden. Podés usar <strong>⚡ Publicar ya</strong> para subir una pieza al instante.
-      </p>
-    </div>
-    <div class="creativos-queue-list">`;
 
   if (!queued.length) {
     html += `<div class="creativos-empty" style="margin-bottom: 20px;"><p>No tenés publicaciones pendientes en cola. Dale ❤️ a nuevas piezas en el catálogo para sumarlas.</p></div>`;
@@ -138,15 +134,15 @@ async function handlePublishNowClick(id, btn) {
   const item = resolveItem(id);
   const channel = queuedChannel(id);
   const where = channelLabel(channel);
-  if (!item || !window.confirm(`¿Publicar "${item.title}" ahora en Instagram (${where})?`)) return;
+  if (!item || btn.disabled) return;
+  if (!window.confirm(`¿Publicar "${item.title}" ahora en Instagram (${where})?\n\nSolo se publica una vez: no pulses de nuevo.`)) return;
   btn.disabled = true;
   btn.textContent = "⏳ Publicando...";
   try {
     await publishNow(id, channel, resolveItem);
+    btn.textContent = "✅ Publicado";
     window.alert("¡Publicación enviada con éxito a Instagram!");
   } catch (e) {
-    // publishNow ya alerta
-  } finally {
     btn.disabled = false;
     btn.textContent = "⚡ Publicar ya";
   }
@@ -222,6 +218,8 @@ export function initListaUI(resolver) {
 
   container.addEventListener("click", (e) => {
     if (e.target.closest(".creativos-caption-textarea, .creativos-channel-select")) return;
+    const svc = e.target.closest(".btn-creativos-service-toggle");
+    if (svc) return handleServiceToggleClick(svc);
     const up = e.target.closest(".btn-queue-up"), down = e.target.closest(".btn-queue-down");
     if (up) return handleReorderClick(up.dataset.id, "up");
     if (down) return handleReorderClick(down.dataset.id, "down");

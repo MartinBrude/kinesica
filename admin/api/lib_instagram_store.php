@@ -1,13 +1,7 @@
 <?php
 declare(strict_types=1);
 
-/**
- * Kinésica — Cola de publicación automática en Instagram (persistencia).
- * Tablas: instagram_cola (orden custom) e instagram_token (token renovable).
- * Overrides de caption: lib_instagram_copy.php.
- * Soporta MariaDB/MySQL (producción) y SQLite (suite de pruebas).
- */
-
+/** Cola Instagram (MariaDB/SQLite). Caption overrides: lib_instagram_copy.php. */
 require_once __DIR__ . '/lib_db.php';
 
 const IG_ASSET_BASE = 'https://www.kinesica.com.ar/admin/';
@@ -113,6 +107,9 @@ function ig_queue_add(array $item, string $user): bool
         || !ig_valid_asset($feed, 'feed') || !ig_valid_asset($story, 'story')) {
         return false;
     }
+    $ex = ig_queue_find($id);
+    if ($ex && in_array((string) ($ex['status'] ?? ''), ['published', 'publishing'], true)) return false;
+    if ($ex && (!empty($ex['feed_media_id']) || !empty($ex['story_media_id']))) return false;
     $title = mb_substr((string) ($item['title'] ?? $id), 0, 200);
     $channels = ig_normalize_channel((string) ($item['channel'] ?? $item['channels'] ?? 'both'));
     $maxOrder = (int) db()->query("SELECT COALESCE(MAX(sort_order), 0) FROM instagram_cola WHERE status = 'queued'")->fetchColumn();
@@ -142,7 +139,7 @@ function ig_queue_add(array $item, string $user): bool
 function ig_queue_remove(string $id): void
 {
     ensure_instagram_tables();
-    db()->prepare('DELETE FROM instagram_cola WHERE creativo_id = :id AND status <> \'published\'')
+    db()->prepare('DELETE FROM instagram_cola WHERE creativo_id = :id AND status NOT IN (\'published\',\'publishing\')')
         ->execute(['id' => $id]);
 }
 
@@ -188,16 +185,22 @@ function ig_queue_next(): ?array
 function ig_published_on_date(string $date): bool
 {
     ensure_instagram_tables();
-    $stmt = db()->prepare('SELECT COUNT(*) FROM instagram_cola WHERE published_on = :d');
+    $stmt = db()->prepare(
+        'SELECT COUNT(*) FROM instagram_cola WHERE published_on = :d OR status = \'publishing\''
+    );
     $stmt->execute(['d' => $date]);
     return (int) $stmt->fetchColumn() > 0;
 }
 
 function ig_mark_attempt_failed(string $id, string $error): void
 {
+    // Desde publishing nunca vuelve a queued (evita reintentos que republican).
     db()->prepare(
         'UPDATE instagram_cola SET attempts = attempts + 1, last_error = :e,
-         status = CASE WHEN attempts + 1 >= ' . (int) IG_MAX_ATTEMPTS . ' THEN \'failed\' ELSE status END WHERE creativo_id = :id'
+         status = CASE
+           WHEN status = \'publishing\' THEN \'failed\'
+           WHEN attempts + 1 >= ' . (int) IG_MAX_ATTEMPTS . ' THEN \'failed\'
+           ELSE \'queued\' END WHERE creativo_id = :id'
     )->execute(['e' => mb_substr($error, 0, 1000), 'id' => $id]);
 }
 
