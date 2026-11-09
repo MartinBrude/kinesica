@@ -10,7 +10,8 @@ import {
   saveChannels,
   isServiceEnabled,
   setServiceEnabled,
-} from "./admin-creativos-cola.js?v=6";
+  CAPTION_MAX,
+} from "./admin-creativos-cola.js?v=7";
 
 const CHANNEL_LABELS = { both: "Feed + Story", feed: "Solo Feed", story: "Solo Story" };
 
@@ -61,8 +62,8 @@ export async function handleSaveCaptionClick(id, btn) {
   const ta = box?.querySelector("textarea");
   if (!ta) return;
   const caption = String(ta.value || "").trim();
-  if (!caption) {
-    window.alert("El texto no puede estar vacío.");
+  if (!caption || caption.length > CAPTION_MAX) {
+    window.alert(`El texto debe tener entre 1 y ${CAPTION_MAX} caracteres (límite de Instagram).`);
     return;
   }
   btn.disabled = true;

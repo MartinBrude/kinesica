@@ -7,16 +7,19 @@
 
 import { escapeHtml } from "./dom.js?v=79";
 import {
-  colaButtonHtml,
-  colaBadgeHtml,
-  colaHeartHtml,
   getPublicationDetails,
-  refreshColaButtons,
   loadCola,
   toggleCola,
   resolveCaption,
-} from "./admin-creativos-cola.js?v=6";
-import { initListaUI } from "./admin-creativos-lista.js?v=6";
+} from "./admin-creativos-cola.js?v=7";
+import {
+  colaButtonHtml,
+  colaBadgeHtml,
+  colaHeartHtml,
+  refreshColaButtons,
+  ensureColaUiPaint,
+} from "./admin-creativos-cola-ui.js?v=1";
+import { initListaUI } from "./admin-creativos-lista.js?v=7";
 
 const ASSET_V = Date.now();
 
@@ -2191,6 +2194,7 @@ export function initCreativosUI() {
     const copy = resolveCaption(id, base);
     return copy === base.copy ? base : { ...base, copy };
   };
+  ensureColaUiPaint();
   initListaUI(resolver);
   loadCola();
 

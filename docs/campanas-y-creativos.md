@@ -47,14 +47,15 @@ Directamente desde la interfaz de Creativos, Norberto y los administradores gest
    - **Drag & Drop**: Reordená la prioridad arrastrando las tarjetas con el mouse.
    - **Botones ⬆️ / ⬇️**: Para subir o bajar una posición en un clic.
    - **Cálculo de slots estimados**: Muestra las fechas proyectadas de publicación (Lunes, Miércoles y Viernes a las 10:00 hs de Argentina).
-   - **⚡ Publicar ya**: Publica de inmediato en Instagram tanto el Feed como la Story sin esperar al cron.
-   - **✏️ Editar texto**: Antes de publicar, cualquier admin/Norberto puede cambiar el caption de la pieza en cola. Queda guardado para todos y para la próxima vez que la encolen.
+   - **⚡ Publicar ya**: Publica de inmediato según el canal elegido (timeout 180s). Cuenta para el cupo del día.
+   - **✏️ Editar texto**: Antes de publicar, cualquier admin/Norberto puede cambiar el caption (máx. 2200 caracteres). Queda guardado para todos y para la próxima vez que la encolen.
    - **Canal**: por pieza elegís **Feed + Story**, **Solo Feed** o **Solo Story** (vale para el cron y para Publicar ya).
    - **Activar / Pausar**: botón para apagar o encender el cron automático (por defecto **activo**). Pausado = el cron no publica; la cola y Publicar ya siguen disponibles.
-   - **Idempotencia diaria**: si ya publicaste a mano (o el cron ya publicó) **hoy** (fecha Argentina), el cron **no** vuelve a publicar otra pieza ese día. Así no hay doble salida el mismo lunes/miércoles/viernes.
+   - **Idempotencia diaria + anti-duplicado**: una sola pieza por día AR; locks permanentes por canal; piezas publicadas o fallidas con canal reservado **no** se reencolan.
 3. **Reporte de canales publicados**:
    - `✅ Feed + Story`, `✅ Solo Post` o `✅ Solo Story`.
-   - Historial de publicaciones con fecha y botón **🔄 Re-encolar**.
+   - `⏳ Publicando…` / `⚠️ Falló (bloqueada)` cuando corresponde.
+   - Historial de publicaciones con fecha (solo lectura; sin re-encolar).
 
 *(Credenciales System User, `private/admin-config.php`, `instagram_api_base` y cron: [docs/instagram-autopost.md](instagram-autopost.md)).*
 

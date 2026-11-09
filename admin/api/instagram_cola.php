@@ -29,7 +29,7 @@ function ig_cola_payload(array $extra = []): array
 
 try {
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        json_out(200, ig_cola_payload(['ok' => true]));
+        json_out(200, ig_cola_payload());
     }
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         json_out(405, ['error' => 'Método no permitido']);
@@ -37,6 +37,17 @@ try {
     $body = read_json();
     $action = (string) ($body['action'] ?? '');
     if ($action === 'add') {
+        $id = (string) ($body['id'] ?? '');
+        $ex = ig_queue_find($id);
+        if ($ex && ($ex['status'] ?? '') === 'published') {
+            json_out(409, ['error' => 'Esta pieza ya fue publicada; no se puede re-encolar']);
+        }
+        if ($ex && ($ex['status'] ?? '') === 'publishing') {
+            json_out(409, ['error' => 'Hay una publicación en curso para esta pieza']);
+        }
+        if ($id !== '' && ig_has_publish_progress($id)) {
+            json_out(409, ['error' => 'Esta pieza ya tiene un intento de publicación reservado; no se reencola']);
+        }
         if (!ig_queue_add($body, $user)) {
             json_out(422, ['error' => 'Datos de la pieza inválidos']);
         }
@@ -49,19 +60,22 @@ try {
         $id = (string) ($body['id'] ?? '');
         $caption = (string) ($body['caption'] ?? '');
         if (!ig_caption_save($id, $caption, $user)) {
-            json_out(422, ['error' => 'Caption inválido']);
+            json_out(422, ['error' => 'Caption inválido (vacío o > ' . IG_CAPTION_MAX . ' caracteres)']);
         }
     } elseif ($action === 'update_channels') {
         $id = (string) ($body['id'] ?? '');
         $channel = (string) ($body['channel'] ?? $body['channels'] ?? 'both');
         if (!ig_queue_set_channels($id, $channel)) {
-            json_out(422, ['error' => 'Canal inválido']);
+            json_out(422, ['error' => 'Canal inválido o pieza no está en cola']);
         }
     } elseif ($action === 'set_enabled') {
         ig_service_set_enabled(!empty($body['enabled']), $user);
     } elseif ($action === 'publish_now') {
         $id = (string) ($body['id'] ?? '');
         if (!ig_queue_find($id)) {
+            if ($id !== '' && ig_has_publish_progress($id)) {
+                json_out(409, ['error' => 'Esta pieza ya tiene un intento de publicación reservado']);
+            }
             if (!ig_queue_add($body, $user)) {
                 json_out(422, ['error' => 'Datos de la pieza inválidos']);
             }
@@ -78,11 +92,6 @@ try {
         $item = ig_queue_claim($id);
         if (!$item) {
             json_out(409, ['error' => 'Ya hay una publicación en curso para esta pieza']);
-        }
-        $today = (new DateTimeImmutable('now', new DateTimeZone('America/Argentina/Buenos_Aires')))->format('Y-m-d');
-        if (!ig_guard_acquire(ig_day_slot($today), $id)) {
-            ig_queue_release_claim($id);
-            json_out(409, ['error' => 'Ya hay (o hubo) una publicación reservada para hoy']);
         }
         $item['channels'] = $channel;
         @set_time_limit(180);

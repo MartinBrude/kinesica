@@ -14,7 +14,7 @@ import {
   publishNow,
   subscribeCola,
   queuedChannel,
-} from "./admin-creativos-cola.js?v=6";
+} from "./admin-creativos-cola.js?v=7";
 import {
   captionSnippetHtml,
   toggleCaptionEditor,
@@ -23,7 +23,7 @@ import {
   handleServiceToggleClick,
   serviceToggleHtml,
   channelLabel,
-} from "./admin-creativos-caption.js?v=3";
+} from "./admin-creativos-caption.js?v=4";
 
 let resolveItem = () => null, draggedId = null;
 
@@ -59,23 +59,25 @@ export function renderQueueView() {
   } else {
     queued.forEach((q, idx) => {
       const full = resolveItem(q.creativo_id) || {}, img = full.feedUrl ? `${full.feedUrl}?v=${Date.now()}` : "";
-      const isFirst = idx === 0, isLast = idx === queued.length - 1, slotText = slots[idx] || `Posición #${idx + 1}`;
+      const busy = q.status === "publishing";
+      const isFirst = idx === 0, isLast = idx === queued.length - 1;
+      const slotText = busy ? "Publicando ahora…" : (slots[idx] || `Posición #${idx + 1}`);
       html += `
-        <article class="creativos-queue-item" data-id="${escapeHtml(q.creativo_id)}" draggable="true">
+        <article class="creativos-queue-item${busy ? " is-publishing" : ""}" data-id="${escapeHtml(q.creativo_id)}" draggable="${busy ? "false" : "true"}">
           <div class="creativos-drag-handle" title="Arrastrar para reordenar (Drag & drop)">⋮⋮</div>
           <div class="creativos-queue-pos"><span class="creativos-pos-badge">#${idx + 1}</span></div>
           <div class="creativos-queue-thumb">${img ? `<img src="${img}" alt="${escapeHtml(q.title)}" loading="lazy">` : ""}</div>
           <div class="creativos-queue-details">
-            <div class="creativos-queue-slot-date">⏰ Salida programada: <strong>${escapeHtml(slotText)}</strong></div>
+            <div class="creativos-queue-slot-date">⏰ ${busy ? "⏳" : "Salida programada:"} <strong>${escapeHtml(slotText)}</strong></div>
             <h4 class="creativos-queue-title">${escapeHtml(q.title || full.title || q.creativo_id)}</h4>
-            ${captionSnippetHtml(q, full)}
+            ${busy ? "" : captionSnippetHtml(q, full)}
             ${q.last_error ? `<p class="creativos-queue-error">⚠️ ${escapeHtml(q.last_error)}</p>` : ""}
           </div>
           <div class="creativos-queue-actions">
-            <button type="button" class="btn light btn-sm btn-queue-up" data-id="${escapeHtml(q.creativo_id)}" ${isFirst ? "disabled" : ""} title="Subir prioridad">⬆️</button>
-            <button type="button" class="btn light btn-sm btn-queue-down" data-id="${escapeHtml(q.creativo_id)}" ${isLast ? "disabled" : ""} title="Bajar prioridad">⬇️</button>
-            <button type="button" class="btn light btn-sm btn-queue-publish-now" data-id="${escapeHtml(q.creativo_id)}" title="Publicar inmediatamente en Instagram">⚡ Publicar ya</button>
-            <button type="button" class="btn light btn-sm btn-queue-remove" data-id="${escapeHtml(q.creativo_id)}" title="Quitar de la lista">💔</button>
+            <button type="button" class="btn light btn-sm btn-queue-up" data-id="${escapeHtml(q.creativo_id)}" ${isFirst || busy ? "disabled" : ""} title="Subir prioridad">⬆️</button>
+            <button type="button" class="btn light btn-sm btn-queue-down" data-id="${escapeHtml(q.creativo_id)}" ${isLast || busy ? "disabled" : ""} title="Bajar prioridad">⬇️</button>
+            <button type="button" class="btn light btn-sm btn-queue-publish-now" data-id="${escapeHtml(q.creativo_id)}" ${busy ? "disabled" : ""} title="Publicar inmediatamente en Instagram">${busy ? "⏳ Publicando…" : "⚡ Publicar ya"}</button>
+            <button type="button" class="btn light btn-sm btn-queue-remove" data-id="${escapeHtml(q.creativo_id)}" ${busy ? "disabled" : ""} title="Quitar de la lista">💔</button>
           </div>
         </article>`;
     });
@@ -105,7 +107,7 @@ export function renderQueueView() {
             ${pub.error ? `<p class="creativos-queue-error">⚠️ ${escapeHtml(pub.error)}</p>` : ""}
           </div>
           <div class="creativos-queue-actions">
-            <button type="button" class="btn light btn-sm btn-queue-readd" data-id="${escapeHtml(p.creativo_id)}" title="Volver a programar">🔄 Re-encolar</button>
+            <span class="creativos-published-note" title="No se reencola: evita duplicados en Instagram">🔒 Histórico</span>
           </div>
         </article>`;
     });
@@ -229,8 +231,8 @@ export function initListaUI(resolver) {
     if (cancelCap) return toggleCaptionEditor(cancelCap.dataset.id, false);
     const saveCap = e.target.closest(".btn-queue-save-caption");
     if (saveCap) return handleSaveCaptionClick(saveCap.dataset.id, saveCap);
-    const rm = e.target.closest(".btn-queue-remove"), readd = e.target.closest(".btn-queue-readd");
-    if (rm || readd) return toggleCola((rm || readd).dataset.id, resolveItem);
+    const rm = e.target.closest(".btn-queue-remove");
+    if (rm) return toggleCola(rm.dataset.id, resolveItem);
     const pub = e.target.closest(".btn-queue-publish-now");
     if (pub) return handlePublishNowClick(pub.dataset.id, pub);
   });

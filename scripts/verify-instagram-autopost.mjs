@@ -33,6 +33,7 @@ const filesToCheck = [
   "admin/api/instagram_cola.php",
   "admin/api/cron_instagram.php",
   "admin/modules/admin-creativos-cola.js",
+  "admin/modules/admin-creativos-cola-ui.js",
   "admin/modules/admin-creativos-lista.js",
   "admin/modules/admin-creativos-caption.js",
 ];
@@ -72,10 +73,12 @@ import {
   _setListForTesting,
   stateOf,
   orderOf,
+} from "../admin/modules/admin-creativos-cola.js?v=7";
+import {
   colaHeartHtml,
   colaBadgeHtml,
   colaButtonHtml,
-} from "../admin/modules/admin-creativos-cola.js";
+} from "../admin/modules/admin-creativos-cola-ui.js?v=1";
 
 // Mock de state simulado
 const mockList = [
@@ -116,7 +119,17 @@ assert.match(colaHeartHtml({ id: "non_existent" }), /🤍/);
 assert.match(colaButtonHtml({ id: "queued_1" }), /❤️ Programada \(#1\)/);
 assert.match(colaButtonHtml({ id: "non_existent" }), /🤍 Me gusta \(programar\)/);
 
-console.log("  ✓ Exportaciones, contratos y casos (Both, Feed, Story, Queue) conformes al 100%.");
+_setListForTesting([
+  ...mockList,
+  { creativo_id: "pub_busy", status: "publishing", sort_order: 3, title: "Busy" },
+  { creativo_id: "pub_fail", status: "failed", sort_order: 0, title: "Fail", last_error: "x" },
+]);
+assert.equal(stateOf("pub_busy"), "publishing");
+assert.match(colaButtonHtml({ id: "pub_busy" }), /Publicando/);
+assert.match(colaButtonHtml({ id: "pub_fail" }), /bloqueada/);
+assert.match(colaHeartHtml({ id: "pub_fail" }), /is-failed/);
+
+console.log("  ✓ Exportaciones, contratos y casos (Both, Feed, Story, Queue, Publishing, Failed) conformes.");
 
 // 5. Verificación de robustez en Cron
 console.log("\n5. Auditando seguridad y CLI en cron_instagram.php...");

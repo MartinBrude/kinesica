@@ -27,10 +27,12 @@ return [
 
     // Instagram (publicación automática desde la cola de Creativos). Ver docs/instagram-autopost.md
     'instagram_user_id' => '',
-    'instagram_token' => '', // semilla inicial; luego el cron lo renueva y guarda en DB
+    'instagram_token' => '', // System User token (graph.facebook.com); no ig_refresh
+    // 'instagram_api_base' => 'https://graph.facebook.com/v21.0',
     // 'instagram_days' => [1, 3, 5], // lun/mié/vie (1=lunes … 7=domingo), horario Argentina
     // 'instagram_hour' => 10,
     // 'instagram_story_too' => true,
+    // image_url de Meta usa admin_url (abajo) + campanas/ig/...
 
     'mail_from' => 'no-reply@kinesica.com.ar',
     'admin_url' => 'https://www.kinesica.com.ar/admin/',

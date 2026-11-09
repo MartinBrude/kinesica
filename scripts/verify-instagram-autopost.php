@@ -223,7 +223,7 @@ it('servicio Instagram activo por defecto y se puede pausar', function() {
 });
 
 it('ig_queue_claim evita doble reserva de la misma pieza', function() {
-    require_once __DIR__ . '/../admin/api/lib_instagram_copy.php';
+    require_once __DIR__ . '/../admin/api/lib_instagram_guard.php';
     ig_queue_add([
         'id' => 'p_lock', 'title' => 'Lock', 'caption' => 'Texto',
         'feed_path' => 'campanas/feed/l.png', 'story_path' => 'campanas/story/l.png',
@@ -247,7 +247,7 @@ it('guards permanentes: día y canal no se pueden adquirir dos veces', function(
 });
 
 it('release_claim no reencola si ya hay media_id (progreso)', function() {
-    require_once __DIR__ . '/../admin/api/lib_instagram_copy.php';
+    require_once __DIR__ . '/../admin/api/lib_instagram_guard.php';
     ig_queue_add([
         'id' => 'p_part', 'title' => 'Partial', 'caption' => 'Texto',
         'feed_path' => 'campanas/feed/p.png', 'story_path' => 'campanas/story/p.png',
@@ -267,6 +267,36 @@ it('no se puede re-encolar una pieza already published', function() {
         'feed_path' => 'campanas/feed/p.png', 'story_path' => 'campanas/story/p.png',
     ], 'martin');
     if ($ok) throw new Exception('Re-encolar publicada debía fallar');
+});
+
+it('release_claim con guard sin media marca failed (no deja publishing eterno)', function() {
+    require_once __DIR__ . '/../admin/api/lib_instagram_guard.php';
+    ig_queue_add([
+        'id' => 'p_stuck', 'title' => 'Stuck', 'caption' => 'Texto',
+        'feed_path' => 'campanas/feed/s.png', 'story_path' => 'campanas/story/s.png',
+    ], 'martin');
+    ig_queue_claim('p_stuck');
+    if (!ig_guard_acquire(ig_channel_slot('p_stuck', 'feed'), 'p_stuck')) {
+        throw new Exception('No adquirió guard feed');
+    }
+    ig_queue_release_claim('p_stuck');
+    $row = ig_queue_find('p_stuck');
+    if (($row['status'] ?? '') !== 'failed') throw new Exception('Debía quedar failed, no publishing');
+});
+
+it('ig_queue_set_channels solo actualiza piezas queued', function() {
+    require_once __DIR__ . '/../admin/api/lib_instagram_copy.php';
+    if (ig_queue_set_channels('p_part', 'feed')) {
+        throw new Exception('No debía actualizar pieza published');
+    }
+});
+
+it('ig_today y caption max son tipos coherentes', function() {
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', ig_today())) throw new Exception('ig_today formato');
+    if (IG_CAPTION_MAX !== 2200) throw new Exception('IG_CAPTION_MAX');
+    if (ig_caption_save('p_copy', str_repeat('x', IG_CAPTION_MAX + 1), 't')) {
+        throw new Exception('Debía rechazar caption > 2200');
+    }
 });
 
 // Limpieza

@@ -70,7 +70,8 @@ function ig_publish_container(string $userId, string $token, string $containerId
 function ig_publish_channel(array $item, string $channel, string $userId, string $token): ?string
 {
     $id = (string) ($item['creativo_id'] ?? '');
-    if ($id === '') throw new RuntimeException('Falta creativo_id');
+    if ($id === '' || !ig_valid_id($id)) throw new RuntimeException('Falta creativo_id');
+    if ($channel !== 'feed' && $channel !== 'story') throw new RuntimeException('Canal inválido');
     $fresh = ig_queue_find($id) ?: $item;
     $mediaKey = $channel === 'story' ? 'story_media_id' : 'feed_media_id';
     $containerKey = $channel === 'story' ? 'story_container_id' : 'feed_container_id';
@@ -99,7 +100,10 @@ function ig_publish_channel(array $item, string $channel, string $userId, string
     return $mediaId;
 }
 
-function ig_publish_piece(array $item, bool $publishFeed = true, bool $publishStory = true): array
+/**
+ * @param bool $requireDaySlot false solo con cron --force (sigue respetando guards de canal)
+ */
+function ig_publish_piece(array $item, bool $publishFeed = true, bool $publishStory = true, bool $requireDaySlot = true): array
 {
     $c = cfg();
     $userId = (string) ($c['instagram_user_id'] ?? '');
@@ -108,7 +112,20 @@ function ig_publish_piece(array $item, bool $publishFeed = true, bool $publishSt
     $token = ig_token_get()['token'];
     if ($token === '') throw new RuntimeException('Falta instagram_token en config.php');
 
+    $id = (string) ($item['creativo_id'] ?? '');
+    if (!ig_valid_id($id)) throw new RuntimeException('Falta creativo_id');
+
+    // Cupo diario solo tras validar credenciales (no quemar el día por config rota).
     ig_ensure_guard_table();
+    $today = ig_today();
+    if ($requireDaySlot) {
+        if (!ig_guard_acquire(ig_day_slot($today), $id)) {
+            throw new RuntimeException('Ya hay (o hubo) una publicación reservada para hoy');
+        }
+    } else {
+        ig_guard_acquire(ig_day_slot($today), $id);
+    }
+
     $feedError = null;
     $storyError = null;
     $feedId = null;
@@ -125,13 +142,12 @@ function ig_publish_piece(array $item, bool $publishFeed = true, bool $publishSt
 
     if (!$feedId && !$storyId) {
         $err = trim(($feedError ? $feedError . '; ' : '') . ($storyError ?: ''));
-        ig_mark_attempt_failed($item['creativo_id'], $err ?: 'Fallo al publicar');
+        ig_mark_attempt_failed($id, $err ?: 'Fallo al publicar');
         throw new RuntimeException($err ?: 'No se pudo publicar en Instagram');
     }
 
-    $today = (new DateTimeImmutable('now', new DateTimeZone('America/Argentina/Buenos_Aires')))->format('Y-m-d');
     $combinedError = trim(($feedError ? $feedError . '; ' : '') . ($storyError ?: ''));
-    ig_mark_published($item['creativo_id'], $today, $feedId, $storyId, $combinedError ?: null);
+    ig_mark_published($id, $today, $feedId, $storyId, $combinedError ?: null);
 
     return [
         'feed_media_id' => $feedId,

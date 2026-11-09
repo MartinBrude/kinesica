@@ -33,7 +33,7 @@ if (!ig_service_enabled()) {
     exit(0);
 }
 
-$now = new DateTimeImmutable('now', new DateTimeZone('America/Argentina/Buenos_Aires'));
+$now = new DateTimeImmutable('now', new DateTimeZone(IG_TZ));
 $today = $now->format('Y-m-d');
 
 if (!$force) {
@@ -63,19 +63,11 @@ if ($item === null) {
     echo "Pieza ya reservada por otra publicación en curso\n";
     exit(0);
 }
-if (!$force && !ig_guard_acquire(ig_day_slot($today), (string) $next['creativo_id'])) {
-    ig_queue_release_claim((string) $next['creativo_id']);
-    echo "Día ya reservado: no se publica otra pieza\n";
-    exit(0);
-}
-if ($force) {
-    // --force sigue sin duplicar el mismo canal (guards de piece:*); solo omite el cupo diario.
-    ig_guard_acquire(ig_day_slot($today), (string) $next['creativo_id']);
-}
 $item['channels'] = $channel;
 
 try {
-    $res = ig_publish_piece($item, $channel !== 'story', $channel !== 'feed');
+    // --force omite cupo diario; guards de canal piece:* siguen activos.
+    $res = ig_publish_piece($item, $channel !== 'story', $channel !== 'feed', !$force);
     echo "Publicado con éxito. feed=" . ($res['feed_media_id'] ?? 'no') . " story=" . ($res['story_media_id'] ?? 'no') . "\n";
     if (!empty($res['last_error'])) {
         echo "Aviso: {$res['last_error']}\n";
