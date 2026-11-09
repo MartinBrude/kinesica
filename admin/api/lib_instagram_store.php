@@ -48,15 +48,22 @@ function ensure_instagram_tables(): void
             updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP)');
         try {
             $names = array_column($pdo->query('PRAGMA table_info(instagram_cola)')->fetchAll(PDO::FETCH_ASSOC) ?: [], 'name');
-            if ($names && !in_array('channels', $names, true)) {
-                $pdo->exec("ALTER TABLE instagram_cola ADD COLUMN channels VARCHAR(12) NOT NULL DEFAULT 'both'");
+            foreach (['channels' => "VARCHAR(12) NOT NULL DEFAULT 'both'", 'publishing_at' => 'DATETIME NULL'] as $col => $ddl) {
+                if ($names && !in_array($col, $names, true)) {
+                    $pdo->exec("ALTER TABLE instagram_cola ADD COLUMN {$col} {$ddl}");
+                    $names[] = $col;
+                }
             }
         } catch (Throwable $e) {}
     } else {
         $pdo->exec("CREATE TABLE IF NOT EXISTS instagram_cola (
             $cola, INDEX idx_ig_cola_order (status, sort_order, queued_at)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
-        foreach (['sort_order' => 'INT NOT NULL DEFAULT 0 AFTER status', 'channels' => "VARCHAR(12) NOT NULL DEFAULT 'both' AFTER sort_order"] as $col => $ddl) {
+        foreach ([
+            'sort_order' => 'INT NOT NULL DEFAULT 0 AFTER status',
+            'channels' => "VARCHAR(12) NOT NULL DEFAULT 'both' AFTER sort_order",
+            'publishing_at' => 'DATETIME NULL',
+        ] as $col => $ddl) {
             try {
                 if (empty($pdo->query("SHOW COLUMNS FROM instagram_cola LIKE " . $pdo->quote($col))->fetchAll())) {
                     $pdo->exec("ALTER TABLE instagram_cola ADD COLUMN {$col} {$ddl}");
@@ -187,16 +194,6 @@ function ig_queue_next(): ?array
     $stmt->execute();
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     return $row ?: null;
-}
-
-function ig_published_on_date(string $date): bool
-{
-    ensure_instagram_tables();
-    $stmt = db()->prepare(
-        'SELECT COUNT(*) FROM instagram_cola WHERE published_on = :d OR status = \'publishing\''
-    );
-    $stmt->execute(['d' => $date]);
-    return (int) $stmt->fetchColumn() > 0;
 }
 
 function ig_mark_attempt_failed(string $id, string $error): void

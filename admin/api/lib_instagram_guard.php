@@ -104,17 +104,59 @@ function ig_save_partial_media(string $id, ?string $feedId, ?string $storyId): v
     )->execute(['f' => $feedId, 's' => $storyId, 'id' => $id]);
 }
 
+/** Edad máxima de un claim `publishing` antes de marcarlo fallido ( > timeout cliente 300s ). */
+const IG_PUBLISHING_STALE_SEC = 420;
+
 /** Reserva atómica queued→publishing (anti doble publicación). */
 function ig_queue_claim(string $id): ?array
 {
     ensure_instagram_tables();
     if (!ig_valid_id($id)) return null;
     $stmt = db()->prepare(
-        'UPDATE instagram_cola SET status = \'publishing\' WHERE creativo_id = :id AND status = \'queued\''
+        'UPDATE instagram_cola SET status = \'publishing\', publishing_at = CURRENT_TIMESTAMP
+         WHERE creativo_id = :id AND status = \'queued\''
     );
     $stmt->execute(['id' => $id]);
     if ($stmt->rowCount() < 1) return null;
     return ig_queue_find($id);
+}
+
+/**
+ * Desbloquea filas `publishing` huérfanas (timeout/OOM/kill) para que el cron no quede trabado.
+ * @return int cantidad liberada
+ */
+function ig_release_stale_publishing(int $maxAgeSec = IG_PUBLISHING_STALE_SEC): int
+{
+    ensure_instagram_tables();
+    $cutoff = (new DateTimeImmutable('now', new DateTimeZone('UTC')))
+        ->modify('-' . max(60, $maxAgeSec) . ' seconds')
+        ->format('Y-m-d H:i:s');
+    $stmt = db()->prepare(
+        'SELECT creativo_id FROM instagram_cola WHERE status = \'publishing\'
+         AND (publishing_at IS NULL OR publishing_at < :c)'
+    );
+    $stmt->execute(['c' => $cutoff]);
+    $ids = $stmt->fetchAll(PDO::FETCH_COLUMN) ?: [];
+    $n = 0;
+    foreach ($ids as $id) {
+        $id = (string) $id;
+        if ($id === '') continue;
+        ig_queue_release_claim($id);
+        $n++;
+    }
+    return $n;
+}
+
+/** True si ya hay publicación del día o un claim `publishing` vivo (post-sweeper). */
+function ig_published_on_date(string $date): bool
+{
+    ig_release_stale_publishing();
+    ensure_instagram_tables();
+    $stmt = db()->prepare(
+        'SELECT COUNT(*) FROM instagram_cola WHERE published_on = :d OR status = \'publishing\''
+    );
+    $stmt->execute(['d' => $date]);
+    return (int) $stmt->fetchColumn() > 0;
 }
 
 /**

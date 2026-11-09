@@ -94,7 +94,9 @@ try {
             json_out(409, ['error' => 'Ya hay una publicación en curso para esta pieza']);
         }
         $item['channels'] = $channel;
-        @set_time_limit(180);
+        // Feed+Story: hasta ~2×120s de wait Meta + HTTP; margen sobre el timeout cliente 300s.
+        @set_time_limit(300);
+        ig_release_stale_publishing();
         require_once __DIR__ . '/lib_instagram.php';
         try {
             $res = ig_publish_piece($item, $channel !== 'story', $channel !== 'feed');

@@ -13,7 +13,7 @@ import {
   resolveCaption,
   CAPTION_MAX,
   saveCaption,
-} from "./admin-creativos-cola.js?v=8";
+} from "./admin-creativos-cola.js?v=9";
 import {
   colaButtonHtml,
   colaBadgeHtml,

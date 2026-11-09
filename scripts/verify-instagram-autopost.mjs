@@ -73,7 +73,7 @@ import {
   _setListForTesting,
   stateOf,
   orderOf,
-} from "../admin/modules/admin-creativos-cola.js?v=8";
+} from "../admin/modules/admin-creativos-cola.js?v=9";
 import {
   colaHeartHtml,
   colaBadgeHtml,

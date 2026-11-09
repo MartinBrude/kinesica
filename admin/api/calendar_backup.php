@@ -42,6 +42,29 @@ $params = array_merge($_GET, $_POST, is_array($jsonBody) ? $jsonBody : []);
 $action = trim((string) ($params['action'] ?? 'get_slots'));
 
 /**
+ * Sesión admin ya autenticada (turnera /admin). No confiar solo en adminMode del JSON.
+ */
+function kinesica_backup_has_admin_session(): bool
+{
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        if (session_status() === PHP_SESSION_NONE) {
+            @session_start();
+        }
+    }
+    if (empty($_SESSION['user']) || empty($_SESSION['full'])) {
+        return false;
+    }
+    if (function_exists('is_admin')) {
+        return is_admin([
+            'username' => (string) ($_SESSION['user'] ?? ''),
+            'role' => (string) ($_SESSION['role'] ?? 'professional'),
+        ]);
+    }
+    return (string) ($_SESSION['role'] ?? '') === 'admin'
+        || (string) ($_SESSION['user'] ?? '') === 'martin';
+}
+
+/**
  * Verifica token para acciones privilegiadas de sincronización directa (push_snapshot / mark_synced).
  */
 function kinesica_backup_is_authorized_sync(array $params): bool
@@ -348,23 +371,28 @@ try {
             echo json_encode(['status' => 'error', 'message' => 'Teléfono válido es requerido.']);
             exit;
         }
-        // Email y DNI opcionales solo en la turnera de admin. En la reserva pública son obligatorios.
-        $adminBooking = filter_var($params['adminMode'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        // adminMode del cliente NO alcanza: hace falta sesión admin (proxy/turnera) o secret de sync.
+        require_once __DIR__ . '/lib_booking_dni.php';
+        $wantsAdmin = filter_var($params['adminMode'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $adminBooking = $wantsAdmin && (
+            kinesica_backup_is_authorized_sync($params) || kinesica_backup_has_admin_session()
+        );
         if (($email === '' && !$adminBooking) || ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL))) {
             http_response_code(400);
             echo json_encode(['status' => 'error', 'message' => 'Correo electrónico válido es requerido.']);
             exit;
         }
+        $dniCheck = trim((string) ($params['dni'] ?? ''));
         if (!$adminBooking) {
-            $dniCheck = trim((string) ($params['dni'] ?? ''));
-            $dniDigits = preg_replace('/\D+/', '', $dniCheck) ?? '';
-            $dniAlnum = preg_replace('/[^0-9A-Za-z]/', '', $dniCheck) ?? '';
-            $dniOk = strlen($dniDigits) >= 5 || strlen($dniAlnum) >= 5;
-            if (!$dniOk || preg_match('/^no\s*provisto$/i', $dniCheck)) {
+            if (!kinesica_is_valid_booking_dni($dniCheck)) {
                 http_response_code(400);
                 echo json_encode(['status' => 'error', 'message' => 'DNI o documento es requerido.']);
                 exit;
             }
+        } elseif ($dniCheck !== '' && !kinesica_is_valid_booking_dni($dniCheck)) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'DNI o documento inválido.']);
+            exit;
         }
 
         $slotStartMs = kinesica_backup_parse_arg_ms($dateStr, $timeStr);

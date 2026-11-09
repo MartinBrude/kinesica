@@ -13,7 +13,7 @@ import {
   setServiceEnabled,
   CAPTION_MAX,
   normalizeIgCaptionPhone,
-} from "./admin-creativos-cola.js?v=8";
+} from "./admin-creativos-cola.js?v=9";
 
 const CHANNEL_LABELS = { both: "Feed + Story", feed: "Solo Feed", story: "Solo Story" };
 

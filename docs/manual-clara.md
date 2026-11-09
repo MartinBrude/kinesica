@@ -304,7 +304,7 @@ El flujo técnico detrás de escena se basa en cinco pilares automatizados:
 ### 🔄 3.1.1. Coherencia Total: Turnera Web (/agendar) vs. WhatsApp con Clara
 
 En Kinésica existen dos vías automatizadas para que un paciente gestione su turno sin intervención manual:
-1. **La Turnera Web Oficial (`kinesica.com.ar/agendar`):** Enviada por Clara al elegir la opción `A` (o `1` en el menú principal) y disponible desde los botones **"Agendar turno"** del sitio web. Permite auto-agenda ágil tanto a pacientes habituales como de primera vez (donde el DNI y el Email son opcionales para evitar fricciones).
+1. **La Turnera Web Oficial (`kinesica.com.ar/agendar`):** Enviada por Clara al elegir la opción `A` (o `1` en el menú principal) y disponible desde los botones **"Agendar turno"** del sitio web. Permite auto-agenda ágil tanto a pacientes habituales como de primera vez. En la reserva **pública**, DNI/documento y email son **obligatorios**; en la **turnera admin** (`/admin`) siguen siendo opcionales (vía proxy autenticado).
 2. **El Chatbot de WhatsApp (Clara):** Permite consultar y cancelar turnos por teléfono o DNI (`A` → `1` y `C1`, con compatibilidad para `2`) en Modo Menú, o coordinar citas conversacionalmente las 24 horas en Modo IA.
 
 **Ambos canales operan de manera 100% coordinada y coherente:**

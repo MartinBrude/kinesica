@@ -139,6 +139,7 @@ it('re-encolado de pieza publicada está bloqueado (anti-duplicado)', function()
 });
 
 it('ig_published_on_date detecta publicaciones del día e ignora fechas distintas', function() {
+    require_once __DIR__ . '/../admin/api/lib_instagram_guard.php';
     if (!ig_published_on_date('2026-11-08')) throw new Exception('Debía detectar publicación en 2026-11-08');
     if (ig_published_on_date('2026-11-09')) throw new Exception('No debía detectar publicación en 2026-11-09');
 });
@@ -282,6 +283,22 @@ it('release_claim con guard sin media marca failed (no deja publishing eterno)',
     ig_queue_release_claim('p_stuck');
     $row = ig_queue_find('p_stuck');
     if (($row['status'] ?? '') !== 'failed') throw new Exception('Debía quedar failed, no publishing');
+});
+
+it('ig_release_stale_publishing libera claims huérfanos (publishing_at NULL o viejo)', function() {
+    require_once __DIR__ . '/../admin/api/lib_instagram_guard.php';
+    ig_queue_add([
+        'id' => 'p_stale', 'title' => 'Stale', 'caption' => 'Texto',
+        'feed_path' => 'campanas/feed/z.png', 'story_path' => 'campanas/story/z.png',
+    ], 'martin');
+    ig_queue_claim('p_stale');
+    // Simula proceso muerto antes de persistir publishing_at (filas legacy).
+    db()->prepare('UPDATE instagram_cola SET publishing_at = NULL WHERE creativo_id = :id')
+        ->execute(['id' => 'p_stale']);
+    $n = ig_release_stale_publishing(60);
+    if ($n < 1) throw new Exception('Debía liberar al menos 1 stale');
+    $row = ig_queue_find('p_stale');
+    if (($row['status'] ?? '') === 'publishing') throw new Exception('Seguía publishing tras sweeper');
 });
 
 it('ig_queue_set_channels solo actualiza piezas queued', function() {

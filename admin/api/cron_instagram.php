@@ -36,6 +36,11 @@ if (!ig_service_enabled()) {
 $now = new DateTimeImmutable('now', new DateTimeZone(IG_TZ));
 $today = $now->format('Y-m-d');
 
+$stale = ig_release_stale_publishing();
+if ($stale > 0) {
+    echo "Liberadas {$stale} publicación(es) colgada(s)\n";
+}
+
 if (!$force) {
     if (!in_array((int) $now->format('N'), $days, true) || (int) $now->format('G') < $hour) {
         exit(0);

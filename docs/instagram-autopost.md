@@ -23,7 +23,8 @@ Este módulo permite a **Norberto y Martín** gestionar de forma visual y 100% a
   - Posición #1: Próximo Lunes, Miércoles o Viernes a las 10:00 hs (hora de Argentina).
   - Posición #2: Siguiente fecha hábil de publicación a las 10:00 hs.
   - Posición #3: Siguiente fecha...
-- **⚡ Publicar ya**: Publicación inmediata según el **canal** elegido (Feed, Story o ambas). Cuenta para el cupo del día: el cron **no** publicará otra pieza esa misma fecha Argentina. Timeout de cliente **180s** (Meta tarda en procesar containers).
+- **⚡ Publicar ya**: Publicación inmediata según el **canal** elegido (Feed, Story o ambas). Cuenta para el cupo del día: el cron **no** publicará otra pieza esa misma fecha Argentina. Timeout de cliente/servidor **300s** (Feed+Story puede acercarse a 2×120s de wait Meta).
+- **Recovery `publishing` stuck**: si el proceso muere a mitad (timeout/OOM), `ig_release_stale_publishing()` (cron y Publicar ya) marca failed/reencola según progreso tras **420s** sin avance (`publishing_at`).
 - **✏️ Editar texto**: Cualquier usuario con acceso a Creativos (Martin, Norberto, etc.) puede editar el caption de cada pieza desde el catálogo o la cola (máx. **2200** caracteres, límite de Instagram). Se guarda en DB (`instagram_creativo_copy`) y aplica a la publicación y a futuros encolados. El botón **Copiar texto** del catálogo también usa el override si existe. Los captions usan el WhatsApp de Clara (`+54 9 11 3178-1733`).
 - **Canal (Feed / Story / Ambas)**: En la cola, un selector por pieza define qué se publica (cron y **⚡ Publicar ya**). Por defecto: Feed + Story.
 - **Activar / Pausar**: Botón en la lista para encender o apagar el servicio automático. **Por defecto está activo.** Si está pausado, el cron no publica (sí se puede seguir editando la cola y usar Publicar ya).

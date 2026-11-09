@@ -10,16 +10,19 @@
 
 (function (root, factory) {
   if (typeof define === "function" && define.amd) {
-    define([], factory);
+    define(["./dni-rules"], factory);
   } else if (typeof module === "object" && module.exports) {
-    module.exports = factory();
+    module.exports = factory(require("./dni-rules.js"));
   } else {
-    root.KinesicaBookingValidation = factory();
+    root.KinesicaBookingValidation = factory(root.KinesicaBookingDniRules);
   }
-})(typeof self !== "undefined" ? self : this, function () {
+})(typeof self !== "undefined" ? self : this, function (dniRules) {
   "use strict";
 
   const Validation = {};
+  const dni = dniRules && typeof dniRules.isValidBookingDni === "function"
+    ? dniRules
+    : null;
 
 /** Campos del formulario "Completa tus datos" con mensaje de error propio. */
   Validation.FORM_FIELDS = ["contacto-nombre", "contacto-telefono", "nombre", "email", "telefono", "dni"];
@@ -147,16 +150,16 @@
     };
   };
 
-  /**
-   * DNI / pasaporte usable: al menos 5 dígitos, o 5+ alfanuméricos (pasaporte).
-   */
+  /** DNI / pasaporte: fuente única en booking/dni-rules.js */
   Validation.isValidDni = function (raw) {
+    if (dni) return dni.isValidBookingDni(raw);
+    // Fallback idéntico a dni-rules.js (bundle sin dependencia resuelta).
     const s = String(raw || "").trim();
     if (!s || /^no\s*provisto$/i.test(s)) return false;
-    const digits = s.replace(/\D/g, "");
-    if (digits.length >= 5 && digits.length <= 12) return true;
     const alnum = s.replace(/[^0-9A-Za-z]/g, "");
-    return alnum.length >= 5 && alnum.length <= 20;
+    if (!alnum) return false;
+    if (/[A-Za-z]/.test(alnum)) return alnum.length >= 5 && alnum.length <= 20;
+    return alnum.length >= 5 && alnum.length <= 12;
   };
 
   /**

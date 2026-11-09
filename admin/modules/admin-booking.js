@@ -289,6 +289,7 @@ function openAdminBooking() {
     if (!widget) {
       widget = new Widget(mount, {
         apiUrl: window.__KINESICA_CONFIG__?.bookingApiUrl || window.KINESICA_SITE?.bookingApiUrl || PUBLIC_BOOKING_API_URL,
+        adminBookProxyUrl: "api/booking_admin_book.php",
         forceMock: false,
         isModal: true,
         adminMode: true,

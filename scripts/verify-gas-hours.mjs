@@ -310,7 +310,7 @@ test("guarda la última copia buena y la usa si luego falla settings.php", () =>
 test("ping informa admin_hours (sólo lectura)", () => {
   let ping = JSON.parse(load({ adminHours: ADMIN }).ctx.doGet({ parameter: { action: "ping" } }).text);
   assert.equal(ping.status, "online");
-  assert.equal(ping.code_version, "v25-email-optional");
+  assert.equal(ping.code_version, "v26-admin-secret-dni");
   assert.deepEqual([ping.admin_hours.loaded, ping.admin_hours.http_code, ping.admin_hours.source], [true, 200, "admin"]);
   assert.ok(ping.admin_hours.fetched_at);
   ping = JSON.parse(load({ byUrl: { www: { status: 403, body: "x" }, apex: { throws: "DNS error" } } }).ctx.doGet({ parameter: { action: "ping" } }).text);
@@ -329,21 +329,31 @@ test("reserva (book) usa los horarios del admin: 12:00 rechazado si María cierr
   assert.match(res.message, /fuera del horario/);
 });
 
-test("reserva pública exige DNI; admin puede omitirlo", () => {
+test("reserva pública exige DNI; adminMode sin secret no bypass; con secret sí", () => {
   const fri = (() => { const d = new Date(Date.now() + 7 * 86400000); while (d.getUTCDay() !== 5) d.setUTCDate(d.getUTCDate() + 1); return d.toISOString().slice(0, 10); })();
   const hours = { maria: { 5: [{ start: "09:00", end: "12:30" }] }, norberto: {} };
-  const { ctx } = load({ adminHours: hours });
+  const secret = "test-gas-secret-dni";
+  const { ctx } = load({ adminHours: hours, props: { GAS_API_SECRET: secret } });
   const missing = JSON.parse(ctx.handleBookAppointment({
     fecha: fri, date: fri, hora: "10:00", time: "10:00", nombre: "Test Dos",
     telefono: "1122223333", email: "t@example.com", practitionerId: "maria",
   }).text);
   assert.equal(missing.status, "error");
   assert.match(missing.message, /DNI|documento/i);
-  // Admin sin DNI: no debe cortar por documento (acá falla por horario fuera de franja).
+  // Flag adminMode solo (sin secret): sigue exigiendo DNI.
+  const forged = JSON.parse(ctx.handleBookAppointment({
+    fecha: fri, date: fri, hora: "10:00", time: "10:00", nombre: "Test Forge",
+    telefono: "1122223333", email: "t@example.com", practitionerId: "maria",
+    adminMode: true,
+  }).text);
+  assert.equal(forged.status, "error");
+  assert.match(forged.message, /DNI|documento/i);
+  // Admin autenticado (secret): puede omitir DNI; acá falla por horario fuera de franja.
   const adminNoDni = JSON.parse(ctx.handleBookAppointment({
     fecha: fri, date: fri, hora: "12:00", time: "12:00", nombre: "Test Tres",
     telefono: "1122223333", email: "t@example.com", practitionerId: "maria",
     adminMode: true,
+    secret,
   }).text);
   assert.equal(adminNoDni.status, "error");
   assert.match(adminNoDni.message, /fuera del horario/);

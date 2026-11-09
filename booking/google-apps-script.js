@@ -48,7 +48,7 @@ const ADMIN_HOURS_CACHE_KEY = "admin_practitioner_hours_v1";
 const ADMIN_HOURS_CACHE_SECONDS = 120;
 // Última copia buena de los horarios del admin (persistente): se usa si settings.php no responde.
 const ADMIN_HOURS_LAST_GOOD_PROP = "ADMIN_HOURS_LAST_GOOD";
-const GAS_CODE_VERSION = "v25-email-optional";
+const GAS_CODE_VERSION = "v26-admin-secret-dni";
 const BOOKING_IDEMPOTENCY_PREFIX = "booking_result_v1_";
 
 function isValidHoursObject(h) {
@@ -956,6 +956,19 @@ function handleGetDirectory() {
 /**
  * Endpoint POST: Agenda el turno o llamada en Google Calendar.
  */
+/**
+ * DNI/pasaporte — espejo de booking/dni-rules.js (digit 5–12 / alnum 5–20).
+ * Verificar: node scripts/verify-booking-dni-rules.mjs
+ */
+function isValidBookingDni(raw) {
+  const s = String(raw || "").trim();
+  if (!s || /^no\s*provisto$/i.test(s)) return false;
+  const alnum = s.replace(/[^0-9A-Za-z]/g, "");
+  if (!alnum) return false;
+  if (/[A-Za-z]/.test(alnum)) return alnum.length >= 5 && alnum.length <= 20;
+  return alnum.length >= 5 && alnum.length <= 12;
+}
+
 function isValidBookingEmail(raw) {
   const s = String(raw || "").trim();
   if (!s || s.length > 120 || /\s/.test(s)) return false;
@@ -1023,19 +1036,18 @@ function handleBookAppointment(payload) {
     return createJsonResponse({ status: "error", message: "Teléfono válido es requerido" }, 400);
   }
 
-  // Email y DNI opcionales solo en la turnera de admin. En la reserva pública son obligatorios.
-  const isAdminBooking = payload.adminMode === true || payload.adminMode === "true";
+  // adminMode solo con secret (proxy admin/api/booking_admin_book.php). Flag del cliente solo → ignorado.
+  const wantsAdmin = payload.adminMode === true || payload.adminMode === "true";
+  const isAdminBooking = wantsAdmin && isAuthorizedSecret(payload);
   if ((!email && !isAdminBooking) || (email && !isValidBookingEmail(email))) {
     return createJsonResponse({ status: "error", message: "Correo electrónico válido es requerido" }, 400);
   }
   if (!isAdminBooking) {
-    const dniCheck = String(payload.dni || "").trim();
-    const dniDigits = dniCheck.replace(/[^0-9]/g, "");
-    const dniAlnum = dniCheck.replace(/[^0-9A-Za-z]/g, "");
-    const dniOk = dniDigits.length >= 5 || dniAlnum.length >= 5;
-    if (!dniOk || /^no\s*provisto$/i.test(dniCheck)) {
+    if (!isValidBookingDni(payload.dni)) {
       return createJsonResponse({ status: "error", message: "DNI o documento es requerido" }, 400);
     }
+  } else if (String(payload.dni || "").trim() && !isValidBookingDni(payload.dni)) {
+    return createJsonResponse({ status: "error", message: "DNI o documento inválido" }, 400);
   }
 
   const duration = SESSION_DURATION_MINUTES;

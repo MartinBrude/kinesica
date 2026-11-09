@@ -157,7 +157,7 @@ export async function publishNow(id, channel, itemResolver) {
   publishInFlight = true;
   try {
     const data = await api("instagram_cola.php", {
-      method: "POST", timeoutMs: 180000,
+      method: "POST", timeoutMs: 300000,
       body: {
         action: "publish_now", id: item.id, channel: channel || queuedChannel(id),
         title: item.title, caption: resolveCaption(item.id, item),

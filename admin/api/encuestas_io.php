@@ -227,7 +227,9 @@ function kinesica_encuestas_append(array $encuesta): void
         if ($newId !== '') {
             $lista = array_values(array_filter(
                 $lista,
-                static fn (array $e): bool => (string) ($e['id'] ?? '') !== $newId
+                static function ($e) use ($newId): bool {
+                    return is_array($e) && (string) ($e['id'] ?? '') !== $newId;
+                }
             ));
         }
         array_unshift($lista, $encuesta);

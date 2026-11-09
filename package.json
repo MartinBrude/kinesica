@@ -3,7 +3,7 @@
   "private": true,
   "description": "Static site tooling (CSS purge audit, scripts)",
   "scripts": {
-    "booking:test": "node scripts/verify-booking.mjs && node scripts/verify-gas-hours.mjs && node scripts/verify-booking-form-errors.mjs && node scripts/verify-calendar-backup.mjs",
+    "booking:test": "node scripts/verify-booking.mjs && node scripts/verify-gas-hours.mjs && node scripts/verify-booking-form-errors.mjs && node scripts/verify-calendar-backup.mjs && node scripts/verify-booking-dni-rules.mjs",
     "gas:setup": "node scripts/deploy-gas-booking.mjs setup",
     "gas:login": "node scripts/deploy-gas-booking.mjs login",
     "gas:push": "node scripts/deploy-gas-booking.mjs push",

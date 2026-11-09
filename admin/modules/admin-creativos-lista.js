@@ -14,7 +14,7 @@ import {
   publishNow,
   subscribeCola,
   queuedChannel,
-} from "./admin-creativos-cola.js?v=8";
+} from "./admin-creativos-cola.js?v=9";
 import {
   captionSnippetHtml,
   toggleCaptionEditor,

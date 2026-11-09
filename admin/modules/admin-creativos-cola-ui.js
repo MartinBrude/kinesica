@@ -5,7 +5,7 @@ import {
   getPublicationDetails,
   getQueuedItems,
   subscribeCola,
-} from "./admin-creativos-cola.js?v=8";
+} from "./admin-creativos-cola.js?v=9";
 
 export function colaHeartHtml(item) {
   const s = stateOf(item.id);

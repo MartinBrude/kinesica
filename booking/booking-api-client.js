@@ -134,6 +134,11 @@
         this.options.backupApiUrl !== undefined
           ? this.options.backupApiUrl
           : "/admin/api/calendar_backup.php";
+      // Turnera admin: book con sesión + secret server-side (no confiar adminMode en GAS público).
+      this.adminBookProxyUrl =
+        this.options.adminBookProxyUrl !== undefined
+          ? this.options.adminBookProxyUrl
+          : null;
       this.isMock = !this.apiUrl || this.options.forceMock === true;
       this._slotsCache = {};
       this._inFlightSlots = {};
@@ -224,6 +229,46 @@
       }
     }
 
+    async bookViaAdminProxy(payload) {
+      const proxyUrl = this.adminBookProxyUrl;
+      if (!proxyUrl || typeof fetch !== "function") return null;
+      const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+      const timeoutId = controller ? setTimeout(() => controller.abort(), 55000) : null;
+      try {
+        const res = await fetch(proxyUrl, {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Kinesica": "1",
+          },
+          body: JSON.stringify(Object.assign({}, payload, { action: "book", adminMode: true })),
+          signal: controller ? controller.signal : undefined,
+        });
+        if (timeoutId) clearTimeout(timeoutId);
+        const json = await res.json();
+        if (json && json.status === "conflict") {
+          const conflictErr = new Error(
+            json.message || "El horario seleccionado acaba de ser reservado por otro paciente."
+          );
+          conflictErr.isConflict = true;
+          throw conflictErr;
+        }
+        if (!res.ok || !json || json.status !== "success") {
+          const msg = (json && (json.message || json.error)) || `Error admin book (${res.status})`;
+          const err = new Error(msg);
+          if (/requerid|inv[aá]lid|fuera del horario|anticipaci/i.test(msg)) {
+            err.isValidation = true;
+          }
+          throw err;
+        }
+        return json;
+      } catch (err) {
+        if (timeoutId) clearTimeout(timeoutId);
+        throw err;
+      }
+    }
+
     async bookViaBackup(payload) {
       const backupUrl = this.getBackupApiUrl();
       if (!backupUrl || typeof fetch !== "function") return null;
@@ -233,6 +278,7 @@
         const res = await fetch(`${backupUrl}?action=book`, {
           method: "POST",
           mode: "cors",
+          credentials: "same-origin",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(Object.assign({}, payload, { action: "book" })),
           signal: controller ? controller.signal : undefined,
@@ -597,6 +643,27 @@
       const validation = engine.validateBookingRequest(data);
       if (!validation.isValid) {
         throw new Error(validation.errors.join("\n"));
+      }
+
+      // Admin: secret solo en servidor (booking_admin_book.php). No enviar adminMode a GAS público.
+      if (data && data.adminMode && this.adminBookProxyUrl) {
+        if (!data.bookingRequestId) data.bookingRequestId = createBookingRequestId();
+        try {
+          const adminResult = await this.bookViaAdminProxy(data);
+          if (adminResult) {
+            this.clearCache();
+            return adminResult;
+          }
+        } catch (adminErr) {
+          if (adminErr && (adminErr.isConflict || adminErr.isValidation)) throw adminErr;
+          // Fallback al espejo local con sesión admin (calendar_backup valida sesión).
+          const backupResult = await this.bookViaBackup(data);
+          if (backupResult) {
+            this.clearCache();
+            return backupResult;
+          }
+          throw adminErr || new Error("Error al registrar la cita (admin)");
+        }
       }
 
       if (this.isMock) {
