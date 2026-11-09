@@ -825,6 +825,15 @@
   color: #fff !important;
 }
 
+.admin-gastos-filter-btn .gastos-sort-indicator {
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.admin-gastos-filter-btn.is-active .gastos-sort-indicator {
+  color: #fff;
+}
+
 .gastos-th-sort {
   appearance: none;
   background: transparent;

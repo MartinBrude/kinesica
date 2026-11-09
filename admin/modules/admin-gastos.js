@@ -36,8 +36,7 @@ const gastosTfootEur = document.querySelector("#admin-gastos-tfoot-eur");
 const gastosTfootUsd = document.querySelector("#admin-gastos-tfoot-usd");
 const gastosTfootArs = document.querySelector("#admin-gastos-tfoot-ars");
 const btnNuevoGasto = document.querySelector("#admin-btn-nuevo-gasto");
-const btnSortDesc = document.querySelector("#admin-gastos-sort-desc");
-const btnSortAsc = document.querySelector("#admin-gastos-sort-asc");
+const btnSortFecha = document.querySelector("#admin-gastos-sort-fecha");
 const btnGroupToggle = document.querySelector("#admin-gastos-group-toggle");
 const btnThFecha = document.querySelector("#admin-gastos-th-fecha");
 
@@ -62,19 +61,23 @@ function saveViewPrefs() {
 }
 
 function syncViewControls() {
-  btnSortDesc?.classList.toggle("is-active", sortFecha === "desc");
-  btnSortAsc?.classList.toggle("is-active", sortFecha === "asc");
-  btnSortDesc?.setAttribute("aria-pressed", sortFecha === "desc" ? "true" : "false");
-  btnSortAsc?.setAttribute("aria-pressed", sortFecha === "asc" ? "true" : "false");
+  const arrow = sortFecha === "asc" ? "↑" : "↓";
+  const sortTitle = sortFecha === "asc"
+    ? "Orden: fecha ascendente (más antigua primero). Clic para invertir."
+    : "Orden: fecha descendente (más reciente primero). Clic para invertir.";
+
+  for (const btn of [btnSortFecha, btnThFecha]) {
+    if (!btn) continue;
+    const indicator = btn.querySelector(".gastos-sort-indicator");
+    if (indicator) indicator.textContent = arrow;
+    btn.classList.add("is-active");
+    btn.setAttribute("aria-pressed", "true");
+    btn.setAttribute("title", sortTitle);
+  }
+
   btnGroupToggle?.classList.toggle("is-active", groupByTipo);
   btnGroupToggle?.setAttribute("aria-pressed", groupByTipo ? "true" : "false");
   btnGroupToggle && (btnGroupToggle.textContent = groupByTipo ? "Agrupado por tipo" : "Agrupar por tipo");
-
-  const indicator = btnThFecha?.querySelector(".gastos-sort-indicator");
-  if (indicator) indicator.textContent = sortFecha === "asc" ? "↑" : "↓";
-  btnThFecha?.classList.add("is-active");
-  btnThFecha?.setAttribute("aria-pressed", "true");
-  btnThFecha?.setAttribute("title", sortFecha === "asc" ? "Orden: fecha ascendente (más antigua primero)" : "Orden: fecha descendente (más reciente primero)");
 }
 
 function conceptoKey(gasto) {
@@ -239,9 +242,8 @@ export function renderGastos(gastos, onReload) {
   gastosTableBody.replaceChildren(...rows);
 }
 
-function setSortFecha(next) {
-  if (next !== "asc" && next !== "desc") return;
-  sortFecha = next;
+function toggleSortFecha() {
+  sortFecha = sortFecha === "desc" ? "asc" : "desc";
   saveViewPrefs();
   renderGastos(cachedGastos, reloadHandler);
 }
@@ -322,8 +324,7 @@ export function initGastosUI({ onReload }) {
     onSaveSubmit: (e) => handleSaveGasto(e, onReload),
   });
 
-  btnSortDesc?.addEventListener("click", () => setSortFecha("desc"));
-  btnSortAsc?.addEventListener("click", () => setSortFecha("asc"));
+  btnSortFecha?.addEventListener("click", toggleSortFecha);
   btnGroupToggle?.addEventListener("click", toggleGroupByTipo);
-  btnThFecha?.addEventListener("click", () => setSortFecha(sortFecha === "desc" ? "asc" : "desc"));
+  btnThFecha?.addEventListener("click", toggleSortFecha);
 }

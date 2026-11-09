@@ -17,7 +17,7 @@ import {
   loadGastosData,
   closeGastoModal,
   isGastoModalOpen,
-} from "./admin-gastos.js?v=83";
+} from "./admin-gastos.js?v=84";
 import {
   initErroresUI,
   loadErroresData,
