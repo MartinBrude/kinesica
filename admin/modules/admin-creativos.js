@@ -15,8 +15,8 @@ import {
   loadCola,
   toggleCola,
   resolveCaption,
-} from "./admin-creativos-cola.js?v=3";
-import { initListaUI } from "./admin-creativos-lista.js?v=3";
+} from "./admin-creativos-cola.js?v=4";
+import { initListaUI } from "./admin-creativos-lista.js?v=4";
 
 const ASSET_V = Date.now();
 
@@ -2281,7 +2281,6 @@ function renderCreativosGrid() {
               <button type="button" class="btn light btn-sm btn-creativo-copy" data-id="${item.id}" title="Copiar texto para publicar">
                 📋 Copiar texto
               </button>
-              ${colaButtonHtml(item)}
             </div>
           </div>
         </article>

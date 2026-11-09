@@ -4,12 +4,34 @@
  */
 
 import { escapeHtml } from "./dom.js?v=79";
-import { resolveCaption, saveCaption } from "./admin-creativos-cola.js?v=3";
+import { resolveCaption, saveCaption, saveChannels } from "./admin-creativos-cola.js?v=4";
+
+const CHANNEL_LABELS = { both: "Feed + Story", feed: "Solo Feed", story: "Solo Story" };
+
+export function channelSelectHtml(q) {
+  const ch = ["feed", "story", "both"].includes(q.channels) ? q.channels : "both";
+  const id = escapeHtml(q.creativo_id);
+  const opts = Object.entries(CHANNEL_LABELS)
+    .map(([value, label]) => `<option value="${value}"${value === ch ? " selected" : ""}>${label}</option>`)
+    .join("");
+  return `
+    <label class="creativos-channel-label">Canal
+      <select class="creativos-channel-select" data-id="${id}" title="Qué publicar el día de salida / Publicar ya">
+        ${opts}
+      </select>
+    </label>`;
+}
+
+export function channelLabel(channels) {
+  const ch = ["feed", "story", "both"].includes(channels) ? channels : "both";
+  return CHANNEL_LABELS[ch];
+}
 
 export function captionSnippetHtml(q, seedItem) {
   const text = (q.caption || resolveCaption(q.creativo_id, seedItem) || "").trim();
   const preview = text.length > 140 ? `${text.slice(0, 140)}…` : text;
   return `
+    ${channelSelectHtml(q)}
     <p class="creativos-queue-snippet">${escapeHtml(preview)}</p>
     <button type="button" class="btn light btn-sm btn-queue-edit-caption" data-id="${escapeHtml(q.creativo_id)}" title="Editar texto de publicación">✏️ Editar texto</button>
     <div class="creativos-caption-editor" data-caption-for="${escapeHtml(q.creativo_id)}" hidden>
@@ -45,5 +67,16 @@ export async function handleSaveCaptionClick(id, btn) {
     if (!err.auth) window.alert(err.message || "No se pudo guardar el texto");
   } finally {
     btn.disabled = false;
+  }
+}
+
+export async function handleChannelChange(select) {
+  select.disabled = true;
+  try {
+    await saveChannels(select.dataset.id, select.value);
+  } catch (err) {
+    if (!err.auth) window.alert(err.message || "No se pudo guardar el canal");
+  } finally {
+    select.disabled = false;
   }
 }

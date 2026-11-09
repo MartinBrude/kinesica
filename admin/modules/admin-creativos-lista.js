@@ -13,12 +13,15 @@ import {
   toggleCola,
   publishNow,
   subscribeCola,
-} from "./admin-creativos-cola.js?v=3";
+  queuedChannel,
+} from "./admin-creativos-cola.js?v=4";
 import {
   captionSnippetHtml,
   toggleCaptionEditor,
   handleSaveCaptionClick,
-} from "./admin-creativos-caption.js?v=1";
+  handleChannelChange,
+  channelLabel,
+} from "./admin-creativos-caption.js?v=2";
 
 let resolveItem = () => null, draggedId = null;
 
@@ -41,7 +44,7 @@ export function renderQueueView() {
     container.innerHTML = `
       <div class="creativos-empty creativos-queue-empty">
         <p>🤍 <strong>No hay publicaciones en la lista todavía.</strong></p>
-        <p>Hacé click en <strong>🎨 Catálogo de piezas</strong> y tocá <strong>❤️ Me gusta</strong> en las que quieras programar.</p>
+        <p>Andá al <strong>Catálogo</strong> y tocá el <strong>❤️</strong> para sumar piezas.</p>
       </div>`;
     return;
   }
@@ -133,11 +136,13 @@ function handleReorderClick(id, direction) {
 
 async function handlePublishNowClick(id, btn) {
   const item = resolveItem(id);
-  if (!item || !window.confirm(`¿Publicar "${item.title}" ahora mismo en Instagram (Feed + Story)?`)) return;
+  const channel = queuedChannel(id);
+  const where = channelLabel(channel);
+  if (!item || !window.confirm(`¿Publicar "${item.title}" ahora en Instagram (${where})?`)) return;
   btn.disabled = true;
   btn.textContent = "⏳ Publicando...";
   try {
-    await publishNow(id, "both", resolveItem);
+    await publishNow(id, channel, resolveItem);
     window.alert("¡Publicación enviada con éxito a Instagram!");
   } catch (e) {
     // publishNow ya alerta
@@ -210,8 +215,13 @@ export function initListaUI(resolver) {
     btnQueue.addEventListener("click", () => switchTab("queue"));
   }
 
+  container.addEventListener("change", (e) => {
+    const sel = e.target.closest(".creativos-channel-select");
+    if (sel) handleChannelChange(sel);
+  });
+
   container.addEventListener("click", (e) => {
-    if (e.target.closest(".creativos-caption-textarea")) return;
+    if (e.target.closest(".creativos-caption-textarea, .creativos-channel-select")) return;
     const up = e.target.closest(".btn-queue-up"), down = e.target.closest(".btn-queue-down");
     if (up) return handleReorderClick(up.dataset.id, "up");
     if (down) return handleReorderClick(down.dataset.id, "down");

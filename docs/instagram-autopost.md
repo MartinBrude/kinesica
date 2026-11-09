@@ -11,8 +11,8 @@ Este módulo permite a **Norberto y Martín** gestionar de forma visual y 100% a
 - Es accesible tanto para administradores como para el usuario de Norberto (no requiere ser superadministrador).
 
 ### 🤍 Dar ❤️ Me gusta (Catálogo de 93 piezas)
-- Cada una de las 93 piezas gráficas tiene un botón de corazón flotante `🤍` en la esquina superior derecha y un botón `🤍 Me gusta (programar)` en el pie de la tarjeta.
-- **Interacción fluida**: Al hacer click en el corazón o en el botón, la tarjeta conmuta su estado inmediatamente en el lugar (`❤️ #N` o `🤍`) **sin abrir la previsualización modal**, para que la selección sea ágil y cómoda.
+- Cada pieza tiene un único botón de corazón flotante `🤍` / `❤️ #N` en la esquina superior derecha de la miniatura (también disponible en el modal “Ver en grande”).
+- **Interacción fluida**: Al hacer click en el corazón, la tarjeta conmuta su estado inmediatamente (`❤️ #N` o `🤍`) **sin abrir la previsualización modal**.
 - La previsualización ampliada ("Ver en grande") se abre únicamente al hacer click en la miniatura de la imagen o en el botón **🔍 Ver en grande**.
 
 ### 📋 Pestaña "❤️ Lista para publicar"
@@ -25,6 +25,7 @@ Este módulo permite a **Norberto y Martín** gestionar de forma visual y 100% a
   - Posición #3: Siguiente fecha...
 - **⚡ Publicar ya**: Publicación inmediata de Feed + Story. Cuenta para el cupo del día: el cron **no** publicará otra pieza esa misma fecha Argentina.
 - **✏️ Editar texto**: Cualquier usuario con acceso a Creativos (Martin, Norberto, etc.) puede editar el caption de una pieza en cola. Se guarda en DB (`instagram_creativo_copy`) y aplica a la publicación y a futuros encolados de esa pieza. El botón **Copiar texto** del catálogo también usa el override si existe.
+- **Canal (Feed / Story / Ambas)**: En la cola, un selector por pieza define qué se publica (cron y **⚡ Publicar ya**). Por defecto: Feed + Story.
 - **💔 Quitar**: Remueve la pieza de la cola y la devuelve al catálogo como disponible.
 
 ### 📸 Reporte y Marcado de Publicación

@@ -207,20 +207,20 @@ export async function saveCaption(id, caption) {
   return data;
 }
 
+export function queuedChannel(id) {
+  const ch = itemOf(id)?.channels;
+  return ch === "feed" || ch === "story" || ch === "both" ? ch : "both";
+}
+
 export async function publishNow(id, channel, itemResolver) {
   const item = itemResolver(id);
   if (!item) return;
   try {
     const body = {
-      action: "publish_now",
-      id: item.id,
-      channel,
-      title: item.title,
-      caption: resolveCaption(item.id, item),
-      feed_path: item.feedUrl,
-      story_path: item.storyUrl,
+      action: "publish_now", id: item.id, channel: channel || queuedChannel(id),
+      title: item.title, caption: resolveCaption(item.id, item),
+      feed_path: item.feedUrl, story_path: item.storyUrl,
     };
-    // Meta procesa contenedores feed+story; el default de api() (30s) corta antes.
     const data = await api("instagram_cola.php", { method: "POST", body, timeoutMs: 180000 });
     applyPayload(data);
     return data.result;
@@ -228,6 +228,10 @@ export async function publishNow(id, channel, itemResolver) {
     if (!err.auth) window.alert(err.message || "No se pudo publicar en Instagram");
     throw err;
   }
+}
+
+export async function saveChannels(id, channel) {
+  applyPayload(await api("instagram_cola.php", { method: "POST", body: { action: "update_channels", id, channel } }));
 }
 
 export function _setListForTesting(items) {

@@ -36,6 +36,16 @@ function ig_copy_map(): array
     return $map;
 }
 
+function ig_queue_set_channels(string $id, string $channel): bool
+{
+    ensure_instagram_tables();
+    if (!preg_match('/^[A-Za-z0-9_-]{1,80}$/', $id)) return false;
+    db()->prepare(
+        'UPDATE instagram_cola SET channels = :c WHERE creativo_id = :id AND status = \'queued\''
+    )->execute(['c' => ig_normalize_channel($channel), 'id' => $id]);
+    return true;
+}
+
 function ig_caption_save(string $id, string $caption, string $user): bool
 {
     ig_ensure_copy_table();

@@ -18,6 +18,7 @@ if (PHP_SAPI !== 'cli') {
 
 require_once __DIR__ . '/lib.php';
 require_once __DIR__ . '/lib_instagram.php';
+require_once __DIR__ . '/lib_instagram_copy.php';
 
 $dry = in_array('--dry-run', $argv, true);
 $force = in_array('--force', $argv, true);
@@ -44,11 +45,15 @@ if ($item === null) {
     exit(0);
 }
 
-echo "Publicando {$item['creativo_id']}" . ($dry ? " (dry-run)\n" : "\n");
+$channel = ig_normalize_channel((string) ($item['channels'] ?? 'both'));
+if (!$withStory && $channel === 'both') {
+    $channel = 'feed';
+}
+echo "Publicando {$item['creativo_id']} [{$channel}]" . ($dry ? " (dry-run)\n" : "\n");
 if ($dry) exit(0);
 
 try {
-    $res = ig_publish_piece($item, true, $withStory);
+    $res = ig_publish_piece($item, $channel !== 'story', $channel !== 'feed');
     echo "Publicado con éxito. feed=" . ($res['feed_media_id'] ?? 'no') . " story=" . ($res['story_media_id'] ?? 'no') . "\n";
     if (!empty($res['last_error'])) {
         echo "Aviso: {$res['last_error']}\n";

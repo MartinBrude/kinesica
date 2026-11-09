@@ -4,8 +4,8 @@ declare(strict_types=1);
 /**
  * Kinésica Admin — Cola de publicación en Instagram.
  * GET  → lista de piezas en cola/publicadas con orden personalizado y estado de canales.
- * POST {action: add|remove|reorder|publish_now|update_caption, id, title, caption, feed_path, story_path, ids, channel}
- * Cualquier usuario autenticado (Norberto/Martín) puede agregar, quitar, reordenar, editar copy o publicar.
+ * POST {action: add|remove|reorder|publish_now|update_caption|update_channels, id, title, caption, feed_path, story_path, ids, channel}
+ * Cualquier usuario autenticado (Norberto/Martín) puede gestionar la cola y canales (feed/story/both).
  */
 
 require __DIR__ . '/lib.php';
@@ -45,9 +45,14 @@ try {
         if (!ig_caption_save($id, $caption, $user)) {
             json_out(422, ['error' => 'Caption inválido']);
         }
+    } elseif ($action === 'update_channels') {
+        $id = (string) ($body['id'] ?? '');
+        $channel = (string) ($body['channel'] ?? $body['channels'] ?? 'both');
+        if (!ig_queue_set_channels($id, $channel)) {
+            json_out(422, ['error' => 'Canal inválido']);
+        }
     } elseif ($action === 'publish_now') {
         $id = (string) ($body['id'] ?? '');
-        $channel = (string) ($body['channel'] ?? 'both');
         if (!ig_queue_find($id)) {
             if (!ig_queue_add($body, $user)) {
                 json_out(422, ['error' => 'Datos de la pieza inválidos']);
@@ -55,6 +60,11 @@ try {
         }
         $item = ig_queue_find($id);
         if (!$item) json_out(404, ['error' => 'Pieza no encontrada']);
+        $channel = ig_normalize_channel((string) ($body['channel'] ?? $item['channels'] ?? 'both'));
+        if ($channel !== ig_normalize_channel((string) ($item['channels'] ?? 'both'))) {
+            ig_queue_set_channels($id, $channel);
+            $item['channels'] = $channel;
+        }
         @set_time_limit(180);
         require_once __DIR__ . '/lib_instagram.php';
         $res = ig_publish_piece($item, $channel !== 'story', $channel !== 'feed');

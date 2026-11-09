@@ -204,6 +204,21 @@ it('ig_caption_save persiste override y actualiza caption en cola', function() {
     }
 });
 
+it('channels por pieza: default both y update_channels', function() {
+    require_once __DIR__ . '/../admin/api/lib_instagram_copy.php';
+    ig_queue_add([
+        'id' => 'p_ch', 'title' => 'Canal', 'caption' => 'Texto',
+        'feed_path' => 'campanas/feed/d.png', 'story_path' => 'campanas/story/d.png',
+        'channel' => 'feed',
+    ], 'martin');
+    $row = ig_queue_find('p_ch');
+    if (($row['channels'] ?? '') !== 'feed') throw new Exception('No guardó channel=feed al encolar');
+    if (!ig_queue_set_channels('p_ch', 'story')) throw new Exception('set_channels falló');
+    $row2 = ig_queue_find('p_ch');
+    if (($row2['channels'] ?? '') !== 'story') throw new Exception('No actualizó a story');
+    if (ig_normalize_channel('nope') !== 'both') throw new Exception('normalize debía caer a both');
+});
+
 // Limpieza
 @unlink($tmpDb);
 @unlink($cfgFile);

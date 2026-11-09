@@ -40,15 +40,16 @@ El **buscador en tiempo real** permite filtrar instantáneamente por cualquier s
 
 Directamente desde la interfaz de Creativos, Norberto y los administradores gestionan qué sale publicado sin depender de herramientas externas:
 
-1. **Selección con ❤️ Me gusta**:
-   - Cada tarjeta tiene un botón de corazón `🤍 / ❤️`.
-   - Al hacer click, el corazón pasa a `❤️ #N` y la pieza se suma a la **Lista para publicar** sin interrumpir la navegación (no abre popups innecesarios).
+1. **Selección con ❤️**:
+   - Un solo control por pieza: el corazón `🤍 / ❤️` sobre la miniatura (y en el modal).
+   - Al hacer click, pasa a `❤️ #N` y la pieza se suma a la **Lista para publicar** sin abrir popups.
 2. **Pestaña "❤️ Lista para publicar"**:
    - **Drag & Drop**: Reordená la prioridad arrastrando las tarjetas con el mouse.
    - **Botones ⬆️ / ⬇️**: Para subir o bajar una posición en un clic.
    - **Cálculo de slots estimados**: Muestra las fechas proyectadas de publicación (Lunes, Miércoles y Viernes a las 10:00 hs de Argentina).
    - **⚡ Publicar ya**: Publica de inmediato en Instagram tanto el Feed como la Story sin esperar al cron.
    - **✏️ Editar texto**: Antes de publicar, cualquier admin/Norberto puede cambiar el caption de la pieza en cola. Queda guardado para todos y para la próxima vez que la encolen.
+   - **Canal**: por pieza elegís **Feed + Story**, **Solo Feed** o **Solo Story** (vale para el cron y para Publicar ya).
    - **Idempotencia diaria**: si ya publicaste a mano (o el cron ya publicó) **hoy** (fecha Argentina), el cron **no** vuelve a publicar otra pieza ese día. Así no hay doble salida el mismo lunes/miércoles/viernes.
 3. **Reporte de canales publicados**:
    - `✅ Feed + Story`, `✅ Solo Post` o `✅ Solo Story`.

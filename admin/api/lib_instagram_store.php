@@ -28,6 +28,7 @@ function ensure_instagram_tables(): void
             creativo_id VARCHAR(80) PRIMARY KEY, title VARCHAR(200) NOT NULL, caption TEXT NOT NULL,
             feed_path VARCHAR(200) NOT NULL, story_path VARCHAR(200) NOT NULL,
             status VARCHAR(12) NOT NULL DEFAULT \'queued\', sort_order INT NOT NULL DEFAULT 0,
+            channels VARCHAR(12) NOT NULL DEFAULT \'both\',
             queued_by VARCHAR(64) NOT NULL DEFAULT \'\', queued_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
             published_on DATE NULL, feed_media_id VARCHAR(64) NULL, story_media_id VARCHAR(64) NULL,
             attempts SMALLINT NOT NULL DEFAULT 0, last_error TEXT NULL)');
@@ -39,6 +40,7 @@ function ensure_instagram_tables(): void
             creativo_id VARCHAR(80) PRIMARY KEY, title VARCHAR(200) NOT NULL, caption TEXT NOT NULL,
             feed_path VARCHAR(200) NOT NULL, story_path VARCHAR(200) NOT NULL,
             status VARCHAR(12) NOT NULL DEFAULT \'queued\', sort_order INT NOT NULL DEFAULT 0,
+            channels VARCHAR(12) NOT NULL DEFAULT \'both\',
             queued_by VARCHAR(64) NOT NULL DEFAULT \'\', queued_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
             published_on DATE NULL, feed_media_id VARCHAR(64) NULL, story_media_id VARCHAR(64) NULL,
             attempts SMALLINT UNSIGNED NOT NULL DEFAULT 0, last_error TEXT NULL,
@@ -48,12 +50,30 @@ function ensure_instagram_tables(): void
             $cols = $pdo->query('SHOW COLUMNS FROM instagram_cola LIKE \'sort_order\'')->fetchAll();
             if (empty($cols)) $pdo->exec('ALTER TABLE instagram_cola ADD COLUMN sort_order INT NOT NULL DEFAULT 0 AFTER status');
         } catch (Throwable $e) {}
+        try {
+            $cols = $pdo->query('SHOW COLUMNS FROM instagram_cola LIKE \'channels\'')->fetchAll();
+            if (empty($cols)) $pdo->exec('ALTER TABLE instagram_cola ADD COLUMN channels VARCHAR(12) NOT NULL DEFAULT \'both\' AFTER sort_order');
+        } catch (Throwable $e) {}
         $pdo->exec('CREATE TABLE IF NOT EXISTS instagram_token (
             id TINYINT PRIMARY KEY, token TEXT NOT NULL, expires_at DATETIME NULL,
             updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4');
     }
+    if (ig_is_sqlite()) {
+        try {
+            $names = array_column($pdo->query('PRAGMA table_info(instagram_cola)')->fetchAll(PDO::FETCH_ASSOC) ?: [], 'name');
+            if ($names && !in_array('channels', $names, true)) {
+                $pdo->exec('ALTER TABLE instagram_cola ADD COLUMN channels VARCHAR(12) NOT NULL DEFAULT \'both\'');
+            }
+        } catch (Throwable $e) {}
+    }
     $ready = true;
+}
+
+function ig_normalize_channel(string $channel): string
+{
+    $ch = strtolower(trim($channel));
+    return in_array($ch, ['feed', 'story', 'both'], true) ? $ch : 'both';
 }
 
 /** Rutas internas estrictas sin dot-traversal: campanas/(feed|story)/nombre.png */
@@ -94,26 +114,27 @@ function ig_queue_add(array $item, string $user): bool
         return false;
     }
     $title = mb_substr((string) ($item['title'] ?? $id), 0, 200);
+    $channels = ig_normalize_channel((string) ($item['channel'] ?? $item['channels'] ?? 'both'));
     $maxOrder = (int) db()->query("SELECT COALESCE(MAX(sort_order), 0) FROM instagram_cola WHERE status = 'queued'")->fetchColumn();
     $sortOrder = $maxOrder + 1;
 
     if (ig_is_sqlite()) {
-        db()->prepare('INSERT INTO instagram_cola (creativo_id, title, caption, feed_path, story_path, status, sort_order, queued_by)
-             VALUES (:id, :t, :c, :f, :s, \'queued\', :ord, :u)
+        db()->prepare('INSERT INTO instagram_cola (creativo_id, title, caption, feed_path, story_path, status, sort_order, channels, queued_by)
+             VALUES (:id, :t, :c, :f, :s, \'queued\', :ord, :ch, :u)
              ON CONFLICT(creativo_id) DO UPDATE SET title = excluded.title, caption = excluded.caption,
                feed_path = excluded.feed_path, story_path = excluded.story_path, status = \'queued\',
-               sort_order = excluded.sort_order, queued_by = excluded.queued_by,
+               sort_order = excluded.sort_order, channels = excluded.channels, queued_by = excluded.queued_by,
                queued_at = CURRENT_TIMESTAMP, attempts = 0, last_error = NULL,
                published_on = NULL, feed_media_id = NULL, story_media_id = NULL'
-        )->execute(['id' => $id, 't' => $title, 'c' => $caption, 'f' => $feed, 's' => $story, 'ord' => $sortOrder, 'u' => $user]);
+        )->execute(['id' => $id, 't' => $title, 'c' => $caption, 'f' => $feed, 's' => $story, 'ord' => $sortOrder, 'ch' => $channels, 'u' => $user]);
     } else {
-        db()->prepare('INSERT INTO instagram_cola (creativo_id, title, caption, feed_path, story_path, status, sort_order, queued_by)
-             VALUES (:id, :t, :c, :f, :s, \'queued\', :ord, :u)
+        db()->prepare('INSERT INTO instagram_cola (creativo_id, title, caption, feed_path, story_path, status, sort_order, channels, queued_by)
+             VALUES (:id, :t, :c, :f, :s, \'queued\', :ord, :ch, :u)
              ON DUPLICATE KEY UPDATE title = VALUES(title), caption = VALUES(caption), feed_path = VALUES(feed_path),
-               story_path = VALUES(story_path), status = \'queued\', sort_order = :ord2, queued_by = VALUES(queued_by),
-               queued_at = CURRENT_TIMESTAMP, attempts = 0, last_error = NULL,
+               story_path = VALUES(story_path), status = \'queued\', sort_order = :ord2, channels = VALUES(channels),
+               queued_by = VALUES(queued_by), queued_at = CURRENT_TIMESTAMP, attempts = 0, last_error = NULL,
                published_on = NULL, feed_media_id = NULL, story_media_id = NULL'
-        )->execute(['id' => $id, 't' => $title, 'c' => $caption, 'f' => $feed, 's' => $story, 'ord' => $sortOrder, 'ord2' => $sortOrder, 'u' => $user]);
+        )->execute(['id' => $id, 't' => $title, 'c' => $caption, 'f' => $feed, 's' => $story, 'ord' => $sortOrder, 'ch' => $channels, 'ord2' => $sortOrder, 'u' => $user]);
     }
     return true;
 }
@@ -147,7 +168,7 @@ function ig_queue_list(): array
 {
     ensure_instagram_tables();
     $rows = db()->query(
-        'SELECT creativo_id, title, caption, status, sort_order, queued_by, queued_at, published_on, feed_media_id, story_media_id, attempts, last_error
+        'SELECT creativo_id, title, caption, status, sort_order, channels, queued_by, queued_at, published_on, feed_media_id, story_media_id, attempts, last_error
          FROM instagram_cola ORDER BY (status = \'queued\') DESC, sort_order ASC, queued_at ASC'
     )->fetchAll(PDO::FETCH_ASSOC);
     return $rows ?: [];
