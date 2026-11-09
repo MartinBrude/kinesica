@@ -265,15 +265,10 @@ export async function handleSaveGasto(e, onReload) {
   setGastoSaveButtonDisabled(true);
   try {
     if (currentEditingGasto) {
-      await api("gastos.php", { method: "POST", body: JSON.stringify({ action: "update", id: currentEditingGasto.id, ...payloadFields }) }).catch(() => {
-        const idx = cachedGastos.findIndex((g) => g.id === currentEditingGasto.id);
-        if (idx !== -1) cachedGastos[idx] = { ...cachedGastos[idx], ...payloadFields };
-      });
+      await api("gastos.php", { method: "POST", body: JSON.stringify({ action: "update", id: currentEditingGasto.id, ...payloadFields }) });
       toast("Gasto actualizado con sus equivalencias del día.", { type: "success" });
     } else {
-      await api("gastos.php", { method: "POST", body: JSON.stringify({ action: "create", ...payloadFields }) }).catch(() => {
-        cachedGastos.unshift({ id: "gasto_" + Date.now(), ...payloadFields });
-      });
+      await api("gastos.php", { method: "POST", body: JSON.stringify({ action: "create", ...payloadFields }) });
       toast("Gasto registrado con sus equivalencias del día.", { type: "success" });
     }
     closeGastoModal();
@@ -289,9 +284,7 @@ export async function handleDeleteGasto(gasto, onReload) {
   const ok = await dialogConfirm(`¿Estás seguro de eliminar el gasto "${escapeHtml(gasto.concepto)}"?`);
   if (!ok) return;
   try {
-    await api("gastos.php", { method: "POST", body: JSON.stringify({ action: "delete", id: gasto.id }) }).catch(() => {
-      cachedGastos = cachedGastos.filter((g) => g.id !== gasto.id);
-    });
+    await api("gastos.php", { method: "POST", body: JSON.stringify({ action: "delete", id: gasto.id }) });
     toast("Gasto eliminado.", { type: "success" });
     if (typeof onReload === "function") await onReload();
   } catch (err) {

@@ -964,7 +964,7 @@ await test("encuestas.php + vista SPA + wiring de navegación", () => {
   assert.match(indexHtml, /id="encuestas-tbody"/, "tabla de respuestas");
   const sendContact = fs.readFileSync(path.join(root, "api/send-contact.php"), "utf8");
   assert.match(sendContact, /'encuesta'/, "send-contact acepta type encuesta");
-  assert.match(sendContact, /kinesica_encuestas_save/, "send-contact persiste encuesta en admin");
+  assert.match(sendContact, /kinesica_encuestas_append/, "send-contact persiste encuesta vía append durable");
 });
 
 await test("todos los imports y exports en admin resuelven correctamente", () => {

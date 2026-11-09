@@ -203,6 +203,8 @@ function ig_published_on_date(string $date): bool
 
 /**
  * Solo reencola si no hubo progreso. Con media → published; con guard/container sin media → failed.
+ * Channel guards permanecen (anti-duplicado de esa pieza); el day guard se libera si no hay media
+ * para no quemar el cupo del día cuando Meta no llegó a publicar.
  */
 function ig_queue_release_claim(string $id): void
 {
@@ -221,6 +223,10 @@ function ig_queue_release_claim(string $id): void
         }
         if (($row['status'] ?? '') === 'publishing') {
             ig_mark_attempt_failed($id, 'Publicación interrumpida; canal ya reservado');
+        }
+        // Canal/container sin media: pieza bloqueada, pero el cupo del día puede reusarse.
+        if (empty($row['published_on'])) {
+            ig_guard_release_day_for($id);
         }
         return;
     }

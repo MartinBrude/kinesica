@@ -9,7 +9,7 @@ declare(strict_types=1);
  * - GET/POST action=get_slots         -> Devuelve horarios libres desde el respaldo local
  * - GET/POST action=get_slots_range   -> Devuelve mapa de días con horarios libres desde el respaldo local
  * - POST     action=book              -> Agenda en modo respaldo, bloquea el hueco y alerta SOLO a Norberto para auditar
- * - POST     action=sync_client_slots -> Piggyback pasivo: guarda horarios recién leídos de Google Calendar en vivo
+ * - POST     action=sync_client_slots -> Piggyback pasivo (Origin del sitio, secret o sesión admin)
  * - POST     action=push_snapshot     -> Recibe desde Google Apps Script / n8n los bloques ocupados (busy_intervals)
  *                                        y devuelve reservas pendientes de conciliar en Google Calendar
  */
@@ -94,6 +94,41 @@ function kinesica_backup_is_authorized_sync(array $params): bool
         }
     }
     return false;
+}
+
+/**
+ * Piggyback del widget público: exige Origin/Referer del sitio (sin secret en el cliente).
+ *
+ * @param list<string> $allowedOrigins
+ */
+function kinesica_backup_is_trusted_browser_origin(array $allowedOrigins): bool
+{
+    $origin = trim((string) ($_SERVER['HTTP_ORIGIN'] ?? ''));
+    if ($origin !== '' && in_array($origin, $allowedOrigins, true)) {
+        return true;
+    }
+    $referer = trim((string) ($_SERVER['HTTP_REFERER'] ?? ''));
+    if ($referer === '') {
+        return false;
+    }
+    foreach ($allowedOrigins as $allowed) {
+        if ($referer === $allowed || str_starts_with($referer, $allowed . '/')) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/** sync_client_slots: secret/sesión admin, o browser del sitio. */
+function kinesica_backup_can_sync_client_slots(array $params, array $allowedOrigins): bool
+{
+    if (kinesica_backup_is_authorized_sync($params)) {
+        return true;
+    }
+    if (kinesica_backup_has_admin_session()) {
+        return true;
+    }
+    return kinesica_backup_is_trusted_browser_origin($allowedOrigins);
 }
 
 try {
@@ -181,6 +216,12 @@ try {
     // 2. PIGGYBACK PASIVO DESDE EL NAVEGADOR (Cuando Google respondió OK)
     // -------------------------------------------------------------------------
     if ($action === 'sync_client_slots') {
+        if (!kinesica_backup_can_sync_client_slots($params, $allowedOrigins)) {
+            http_response_code(401);
+            echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
+            exit;
+        }
+
         $incomingDays = [];
         if (isset($params['days']) && is_array($params['days'])) {
             $incomingDays = $params['days'];

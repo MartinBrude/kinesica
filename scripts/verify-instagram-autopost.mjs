@@ -140,6 +140,13 @@ assert.match(cronPhp, /--clear-day-slot/, "El cron debe exponer recovery de day 
 const guardPhp = fs.readFileSync(path.join(root, "admin/api/lib_instagram_guard.php"), "utf8");
 assert.match(guardPhp, /function ig_utc_now_sql/, "publishing_at debe escribirse en UTC");
 assert.match(guardPhp, /ig_guard_release_day_for/, "release sin progreso debe poder soltar day guard");
-console.log("  ✓ Cron protegido contra HTTP; UTC + clear-day-slot de recovery documentados en código.");
+assert.match(
+  guardPhp,
+  /empty\(\$row\['published_on'\]\)[\s\S]*?ig_guard_release_day_for\(\$id\)/,
+  "release con channel guard sin media debe liberar day guard"
+);
+const colaPhp = fs.readFileSync(path.join(root, "admin/api/instagram_cola.php"), "utf8");
+assert.match(colaPhp, /is_colaborador\(\$auth\)/, "POST de cola debe bloquear colaboradores");
+console.log("  ✓ Cron protegido contra HTTP; UTC + clear-day-slot de recovery; RBAC colaborador.");
 
 console.log("\n✅ ¡Todos los tests y auditorías pasaron con éxito!\n");

@@ -270,19 +270,29 @@ it('no se puede re-encolar una pieza already published', function() {
     if ($ok) throw new Exception('Re-encolar publicada debía fallar');
 });
 
-it('release_claim con guard sin media marca failed (no deja publishing eterno)', function() {
+it('release_claim con guard sin media marca failed y libera day guard', function() {
     require_once __DIR__ . '/../admin/api/lib_instagram_guard.php';
     ig_queue_add([
         'id' => 'p_stuck', 'title' => 'Stuck', 'caption' => 'Texto',
         'feed_path' => 'campanas/feed/s.png', 'story_path' => 'campanas/story/s.png',
     ], 'martin');
     ig_queue_claim('p_stuck');
+    $day = ig_today();
+    if (!ig_guard_acquire(ig_day_slot($day), 'p_stuck')) {
+        throw new Exception('No adquirió day guard');
+    }
     if (!ig_guard_acquire(ig_channel_slot('p_stuck', 'feed'), 'p_stuck')) {
         throw new Exception('No adquirió guard feed');
     }
     ig_queue_release_claim('p_stuck');
     $row = ig_queue_find('p_stuck');
     if (($row['status'] ?? '') !== 'failed') throw new Exception('Debía quedar failed, no publishing');
+    if (ig_guard_held(ig_day_slot($day))) {
+        throw new Exception('Debía liberar day guard con canal reservado sin media');
+    }
+    if (!ig_guard_held(ig_channel_slot('p_stuck', 'feed'))) {
+        throw new Exception('Channel guard debe permanecer (anti-duplicado)');
+    }
 });
 
 it('ig_release_stale_publishing libera claims huérfanos (publishing_at NULL o viejo)', function() {

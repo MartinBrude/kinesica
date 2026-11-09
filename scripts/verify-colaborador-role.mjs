@@ -55,6 +55,10 @@ assert.match(settingsPhp, /is_colaborador\(\$user\)/);
 const interaccionesPhp = fs.readFileSync("admin/api/interacciones.php", "utf8");
 assert.match(interaccionesPhp, /is_colaborador\(\$auth/);
 
+// 7b. Cola Instagram: colaboradores solo lectura (POST bloqueado)
+const igColaPhp = fs.readFileSync("admin/api/instagram_cola.php", "utf8");
+assert.match(igColaPhp, /is_colaborador\(\$auth\)/);
+
 // 8. Verificar admin-profesionales.js
 const adminProfJs = fs.readFileSync("admin/modules/admin-profesionales.js", "utf8");
 assert.match(adminProfJs, /data\?\.profesionales/);

@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Kinésica Admin — Cola de publicación en Instagram.
  * GET  → lista de piezas en cola/publicadas con orden personalizado y estado de canales.
  * POST {action: add|remove|reorder|publish_now|update_caption|update_channels|set_enabled, ...}
- * Cualquier usuario autenticado (Norberto/Martín) puede gestionar cola, canales y activar/pausar el servicio.
+ * Mutaciones: admin y profesionales (p. ej. Norberto). Colaboradores: solo lectura.
  */
 
 require __DIR__ . '/lib.php';
@@ -33,6 +33,9 @@ try {
     }
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         json_out(405, ['error' => 'Método no permitido']);
+    }
+    if (is_colaborador($auth)) {
+        json_out(403, ['error' => 'Los colaboradores no pueden gestionar la cola de Instagram.']);
     }
     $body = read_json();
     $action = (string) ($body['action'] ?? '');

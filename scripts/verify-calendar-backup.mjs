@@ -31,14 +31,18 @@ const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "kinesica-cal-bkp-"));
 const backupFile = path.join(tmpDir, "calendar_backup.json");
 const TEST_SECRET = "test_backup_secret_1234567890";
 
-function runPhpAction(method, queryObj, bodyObj = null, extraEnv = {}) {
+function runPhpAction(method, queryObj, bodyObj = null, extraEnv = {}, serverVars = {}) {
   const runnerPath = path.join(tmpDir, "run_endpoint.php");
   const getJson = JSON.stringify(queryObj || {});
   const bodyRaw = bodyObj ? JSON.stringify(bodyObj) : "";
+  const serverAssigns = Object.entries(serverVars)
+    .map(([k, v]) => `$_SERVER[${JSON.stringify(k)}] = ${JSON.stringify(v)};`)
+    .join("\n    ");
   const phpCode = `<?php
     $_SERVER['REQUEST_METHOD'] = ${JSON.stringify(method)};
     $_GET = json_decode(${JSON.stringify(getJson)}, true) ?: [];
     $_POST = ${bodyObj ? `json_decode(${JSON.stringify(bodyRaw)}, true) ?: []` : "[]"};
+    ${serverAssigns}
     require ${JSON.stringify(path.join(root, "admin/api/calendar_backup.php"))};
   `;
   fs.writeFileSync(runnerPath, phpCode, "utf8");
@@ -343,6 +347,37 @@ await test("5. Carrusel de María repone automáticamente días disponibles cuan
   for (const c of cards) {
     assert.ok(!fullDates.has(c.dataset.date), `El día lleno ${c.dataset.date} no debe quedar en el carrusel`);
   }
+});
+
+await test("6. sync_client_slots exige Origin del sitio, secret o sesión (no write anónimo)", async () => {
+  const payload = {
+    action: "sync_client_slots",
+    days: {
+      [targetWed]: [{ time: "09:00", startIso: "", endIso: "" }],
+    },
+  };
+  const denied = runPhpAction("POST", { action: "sync_client_slots" }, payload);
+  assert.equal(denied.status, "error");
+  assert.match(String(denied.message || ""), /Unauthorized/i);
+
+  const withOrigin = runPhpAction(
+    "POST",
+    { action: "sync_client_slots" },
+    payload,
+    {},
+    { HTTP_ORIGIN: SITE.replace(/\/$/, "") || "https://www.kinesica.com.ar" }
+  );
+  assert.equal(withOrigin.status, "success");
+  assert.equal(withOrigin.synced_days, 1);
+
+  const withSecret = runPhpAction("POST", { action: "sync_client_slots" }, {
+    ...payload,
+    secret: TEST_SECRET,
+    days: {
+      [targetWed]: [{ time: "11:00", startIso: "", endIso: "" }],
+    },
+  });
+  assert.equal(withSecret.status, "success");
 });
 
 fs.rmSync(tmpDir, { recursive: true, force: true });
