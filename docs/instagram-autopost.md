@@ -24,7 +24,8 @@ Este módulo permite a **Norberto y Martín** gestionar de forma visual y 100% a
   - Posición #2: Siguiente fecha hábil de publicación a las 10:00 hs.
   - Posición #3: Siguiente fecha...
 - **⚡ Publicar ya**: Publicación inmediata según el **canal** elegido (Feed, Story o ambas). Cuenta para el cupo del día: el cron **no** publicará otra pieza esa misma fecha Argentina. Timeout de cliente/servidor **300s** (Feed+Story puede acercarse a 2×120s de wait Meta).
-- **Recovery `publishing` stuck**: si el proceso muere a mitad (timeout/OOM), `ig_release_stale_publishing()` (cron y Publicar ya) marca failed/reencola según progreso tras **420s** sin avance (`publishing_at`).
+- **Recovery `publishing` stuck**: si el proceso muere a mitad (timeout/OOM), `ig_release_stale_publishing()` (cron y Publicar ya) marca failed/reencola según progreso tras **420s** sin avance. `publishing_at` se escribe y compara en **UTC** (no depende del TZ de MariaDB).
+- **Cupo del día sin publish**: si el crash fue **antes** de tocar Meta (sin container/media/guard de canal), el release **devuelve** el day guard de esa pieza. Si el day slot quedó quemado con progreso parcial, ver § Runbook abajo.
 - **✏️ Editar texto**: Cualquier usuario con acceso a Creativos (Martin, Norberto, etc.) puede editar el caption de cada pieza desde el catálogo o la cola (máx. **2200** caracteres, límite de Instagram). Se guarda en DB (`instagram_creativo_copy`) y aplica a la publicación y a futuros encolados. El botón **Copiar texto** del catálogo también usa el override si existe. Los captions usan el WhatsApp de Clara (`+54 9 11 3178-1733`).
 - **Canal (Feed / Story / Ambas)**: En la cola, un selector por pieza define qué se publica (cron y **⚡ Publicar ya**). Por defecto: Feed + Story.
 - **Activar / Pausar**: Botón en la lista para encender o apagar el servicio automático. **Por defecto está activo.** Si está pausado, el cron no publica (sí se puede seguir editando la cola y usar Publicar ya).
@@ -138,6 +139,29 @@ Claves:
 - **Prueba real de Meta:** **⚡ Publicar ya** desde Creativos (o `cron_instagram.php --force` solo en una prueba controlada). Una cola vacía / dry-run sin pieza **no** valida el token.
 - Tras un **Publicar ya** exitoso el mismo día, el cron horario **no** debe publicar otra pieza (idempotencia diaria).
 - Deploy: Hostinger **no** tiene auto-pull Git en este sitio; cambios de PHP/JS hay que subirlos (File Manager / FTP) además del push a `main`.
+
+### Runbook: day slot quemado sin publicación
+
+**Síntoma:** la cola tiene piezas `queued`, no hay `published_on` hoy, pero el cron / Publicar ya responde *«Ya hay (o hubo) una publicación reservada para hoy»*.
+
+**Causa:** se adquirió el lock permanente `day:YYYY-MM-DD` en `instagram_publish_guard` y el proceso murió. Si **hubo** progreso Meta (container/canal), el sweeper marca `failed` y **no** suelta el día (anti-duplicado). Si **no** hubo progreso, el sweeper reencola y suelta el day guard solo.
+
+**Diagnóstico (MariaDB / SQLite):**
+```sql
+SELECT * FROM instagram_publish_guard WHERE slot = CONCAT('day:', CURDATE()); -- o day:YYYY-MM-DD
+SELECT creativo_id, status, published_on, feed_media_id, story_media_id, feed_container_id, story_container_id
+FROM instagram_cola WHERE status IN ('publishing','failed','queued') ORDER BY queued_at DESC LIMIT 10;
+```
+
+**Recuperación segura (sin publish ese día):**
+```bash
+# En el servidor (ruta real del cron). Fecha opcional = hoy AR.
+/usr/bin/php .../admin/api/cron_instagram.php --clear-day-slot
+/usr/bin/php .../admin/api/cron_instagram.php --clear-day-slot=2026-11-10
+```
+Solo borra el day guard si **no** existe ninguna fila con `published_on` esa fecha. Si ya hubo publish, el comando se niega (usar `--force` en una prueba controlada solo si Meta confirma que no salió nada).
+
+**Si hay `*_container_id` / guard de canal sin `*_media_id`:** no liberar el día a mano; dejar la pieza en `failed` y publicar **otra** pieza otro día, o `--force` tras verificar en Meta Business Suite que no quedó un post huérfano.
 
 ---
 

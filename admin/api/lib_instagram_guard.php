@@ -107,16 +107,58 @@ function ig_save_partial_media(string $id, ?string $feedId, ?string $storyId): v
 /** Edad máxima de un claim `publishing` antes de marcarlo fallido ( > timeout cliente 300s ). */
 const IG_PUBLISHING_STALE_SEC = 420;
 
+/** Timestamp UTC `Y-m-d H:i:s` (publishing_at siempre se escribe/compara en UTC). */
+function ig_utc_now_sql(): string
+{
+    return (new DateTimeImmutable('now', new DateTimeZone('UTC')))->format('Y-m-d H:i:s');
+}
+
+/**
+ * Libera el cupo del día si lo tiene esta pieza.
+ * @param bool $requireNoPublishThatDay true en CLI ops: no borrar si ya hubo publish ese día.
+ */
+function ig_guard_release_day_for(
+    string $creativoId,
+    ?string $date = null,
+    bool $requireNoPublishThatDay = false
+): bool {
+    ig_ensure_guard_table();
+    $date = $date ?: ig_today();
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date) || !ig_valid_id($creativoId)) {
+        return false;
+    }
+    if ($requireNoPublishThatDay) {
+        $anyPub = db()->prepare('SELECT COUNT(*) FROM instagram_cola WHERE published_on = :d');
+        $anyPub->execute(['d' => $date]);
+        if ((int) $anyPub->fetchColumn() > 0) {
+            return false;
+        }
+    } else {
+        $mine = db()->prepare(
+            'SELECT COUNT(*) FROM instagram_cola WHERE published_on = :d AND creativo_id = :id'
+        );
+        $mine->execute(['d' => $date, 'id' => $creativoId]);
+        if ((int) $mine->fetchColumn() > 0) {
+            return false;
+        }
+    }
+    $stmt = db()->prepare(
+        'DELETE FROM instagram_publish_guard WHERE slot = :s AND creativo_id = :c'
+    );
+    $stmt->execute(['s' => ig_day_slot($date), 'c' => $creativoId]);
+    return $stmt->rowCount() > 0;
+}
+
 /** Reserva atómica queued→publishing (anti doble publicación). */
 function ig_queue_claim(string $id): ?array
 {
     ensure_instagram_tables();
     if (!ig_valid_id($id)) return null;
     $stmt = db()->prepare(
-        'UPDATE instagram_cola SET status = \'publishing\', publishing_at = CURRENT_TIMESTAMP
+        'UPDATE instagram_cola SET status = \'publishing\', publishing_at = :at
          WHERE creativo_id = :id AND status = \'queued\''
     );
-    $stmt->execute(['id' => $id]);
+    $stmt->execute(['id' => $id, 'at' => ig_utc_now_sql()]);
     if ($stmt->rowCount() < 1) return null;
     return ig_queue_find($id);
 }
@@ -185,4 +227,6 @@ function ig_queue_release_claim(string $id): void
     db()->prepare(
         'UPDATE instagram_cola SET status = \'queued\' WHERE creativo_id = :id AND status = \'publishing\''
     )->execute(['id' => $id]);
+    // Sin progreso Meta: no quemar el cupo del día (day guard de esta pieza).
+    ig_guard_release_day_for($id);
 }

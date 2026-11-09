@@ -301,6 +301,30 @@ it('ig_release_stale_publishing libera claims huérfanos (publishing_at NULL o v
     if (($row['status'] ?? '') === 'publishing') throw new Exception('Seguía publishing tras sweeper');
 });
 
+it('claim escribe publishing_at en UTC y release sin progreso suelta day guard', function() {
+    require_once __DIR__ . '/../admin/api/lib_instagram_guard.php';
+    ig_queue_add([
+        'id' => 'p_dayrec', 'title' => 'DayRec', 'caption' => 'Texto',
+        'feed_path' => 'campanas/feed/dr.png', 'story_path' => 'campanas/story/dr.png',
+    ], 'martin');
+    $claimed = ig_queue_claim('p_dayrec');
+    $at = (string) ($claimed['publishing_at'] ?? '');
+    if ($at === '' || !preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $at)) {
+        throw new Exception('publishing_at UTC mal formado');
+    }
+    $skew = abs(strtotime($at . ' UTC') - time());
+    if ($skew > 120) throw new Exception('publishing_at no parece UTC cercano a now');
+    $day = ig_today();
+    if (!ig_guard_acquire(ig_day_slot($day), 'p_dayrec')) throw new Exception('No adquirió day');
+    ig_queue_release_claim('p_dayrec');
+    $row = ig_queue_find('p_dayrec');
+    if (($row['status'] ?? '') !== 'queued') throw new Exception('Debía reencolar sin progreso');
+    if (ig_guard_held(ig_day_slot($day))) throw new Exception('Debía liberar day guard sin progreso Meta');
+    if (ig_guard_release_day_for('p_dayrec', $day)) {
+        throw new Exception('Segundo clear-day no debía borrar nada');
+    }
+});
+
 it('ig_queue_set_channels solo actualiza piezas queued', function() {
     require_once __DIR__ . '/../admin/api/lib_instagram_copy.php';
     if (ig_queue_set_channels('p_part', 'feed')) {

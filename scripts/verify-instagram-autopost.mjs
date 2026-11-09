@@ -136,6 +136,10 @@ console.log("\n5. Auditando seguridad y CLI en cron_instagram.php...");
 const cronPhp = fs.readFileSync(path.join(root, "admin/api/cron_instagram.php"), "utf8");
 assert.match(cronPhp, /if\s*\(PHP_SAPI\s*!==\s*'cli'\)/, "El cron debe abortar con 404 si es invocado por HTTP");
 assert.match(cronPhp, /America\/Argentina\/Buenos_Aires/, "El cron debe forzar explícitamente zona horaria de Argentina");
-console.log("  ✓ Cron protegido contra invocaciones HTTP directas y configurado en horario argentino.");
+assert.match(cronPhp, /--clear-day-slot/, "El cron debe exponer recovery de day guard");
+const guardPhp = fs.readFileSync(path.join(root, "admin/api/lib_instagram_guard.php"), "utf8");
+assert.match(guardPhp, /function ig_utc_now_sql/, "publishing_at debe escribirse en UTC");
+assert.match(guardPhp, /ig_guard_release_day_for/, "release sin progreso debe poder soltar day guard");
+console.log("  ✓ Cron protegido contra HTTP; UTC + clear-day-slot de recovery documentados en código.");
 
 console.log("\n✅ ¡Todos los tests y auditorías pasaron con éxito!\n");

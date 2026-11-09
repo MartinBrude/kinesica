@@ -8,7 +8,8 @@ declare(strict_types=1);
  * Hostinger Cron (cada hora; el script decide si corresponde publicar):
  *   0 * * * *  /usr/bin/php /home/u.../public_html/admin/api/cron_instagram.php
  *
- * Flags CLI: --dry-run (no publica), --force (ignora día/hora/límite diario).
+ * Flags CLI: --dry-run (no publica), --force (ignora día/hora/límite diario),
+ *   --clear-day-slot[=YYYY-MM-DD] (libera day guard si no hubo publish ese día).
  */
 
 if (PHP_SAPI !== 'cli') {
@@ -23,18 +24,52 @@ require_once __DIR__ . '/lib_instagram_guard.php';
 
 $dry = in_array('--dry-run', $argv, true);
 $force = in_array('--force', $argv, true);
+$clearDayArg = null;
+foreach ($argv as $arg) {
+    if ($arg === '--clear-day-slot') {
+        $clearDayArg = '';
+        break;
+    }
+    if (str_starts_with($arg, '--clear-day-slot=')) {
+        $clearDayArg = substr($arg, strlen('--clear-day-slot='));
+        break;
+    }
+}
 $c = cfg();
 $days = array_map('intval', (array) ($c['instagram_days'] ?? [1, 3, 5]));
 $hour = (int) ($c['instagram_hour'] ?? 10);
 $withStory = ($c['instagram_story_too'] ?? true) !== false;
 
-if (!ig_service_enabled()) {
+if (!ig_service_enabled() && $clearDayArg === null) {
     echo "Servicio de publicaciones Instagram desactivado\n";
     exit(0);
 }
 
 $now = new DateTimeImmutable('now', new DateTimeZone(IG_TZ));
 $today = $now->format('Y-m-d');
+
+if ($clearDayArg !== null) {
+    $date = $clearDayArg !== '' ? $clearDayArg : $today;
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+        fwrite(STDERR, "Fecha inválida para --clear-day-slot (usar YYYY-MM-DD)\n");
+        exit(1);
+    }
+    ig_ensure_guard_table();
+    $slot = ig_day_slot($date);
+    $row = db()->prepare('SELECT creativo_id FROM instagram_publish_guard WHERE slot = :s LIMIT 1');
+    $row->execute(['s' => $slot]);
+    $holder = (string) ($row->fetchColumn() ?: '');
+    if ($holder === '') {
+        echo "No hay day guard para {$date}\n";
+        exit(0);
+    }
+    if (ig_guard_release_day_for($holder, $date, true)) {
+        echo "Liberado day guard {$slot} (creativo {$holder})\n";
+        exit(0);
+    }
+    fwrite(STDERR, "No se liberó {$slot}: hay published_on ese día o el holder no coincide\n");
+    exit(1);
+}
 
 $stale = ig_release_stale_publishing();
 if ($stale > 0) {
