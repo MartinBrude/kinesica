@@ -138,7 +138,7 @@ Claves:
 ### Paso 6: Verificación
 - **Prueba real de Meta:** **⚡ Publicar ya** desde Creativos (o `cron_instagram.php --force` solo en una prueba controlada). Una cola vacía / dry-run sin pieza **no** valida el token.
 - Tras un **Publicar ya** exitoso el mismo día, el cron horario **no** debe publicar otra pieza (idempotencia diaria).
-- Deploy: Hostinger **no** tiene auto-pull Git en este sitio; cambios de PHP/JS hay que subirlos (File Manager / FTP) además del push a `main`.
+- Deploy: push a `main` despliega el sitio en Hostinger (Git auto-deploy). GAS de booking se publica aparte con `npm run gas:deploy`.
 
 ### Runbook: day slot quemado sin publicación
 
