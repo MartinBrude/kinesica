@@ -119,6 +119,9 @@ function ig_token_refresh_if_needed(): void
 {
     $row = ig_token_get();
     if ($row['token'] === '') return;
+    // System User / graph.facebook.com: no usa ig_refresh_token.
+    $base = (string) (cfg()['instagram_api_base'] ?? IG_API);
+    if (str_contains($base, 'graph.facebook.com')) return;
     $exp = $row['expires_at'] ? strtotime($row['expires_at'] . ' UTC') : 0;
     if ($exp > time() + 20 * 86400) return;
     try {
@@ -126,6 +129,6 @@ function ig_token_refresh_if_needed(): void
             ['grant_type' => 'ig_refresh_token', 'access_token' => $row['token']]);
         ig_token_save((string) $r['access_token'], gmdate('Y-m-d H:i:s', time() + (int) ($r['expires_in'] ?? 5184000)));
     } catch (Throwable $e) {
-        fwrite(STDERR, 'No se pudo renovar el token de Instagram: ' . $e->getMessage() . "\n");
+        error_log('No se pudo renovar el token de Instagram: ' . $e->getMessage());
     }
 }
