@@ -88,15 +88,19 @@ function db(): PDO
     return $pdo;
 }
 
-set_exception_handler(static function (Throwable $error): void {
-    error_log('kinesica admin: ' . $error->getMessage());
-    if (!headers_sent()) {
-        http_response_code(500);
-        header('Content-Type: application/json; charset=utf-8');
-        header('Cache-Control: no-store');
-    }
-    echo json_encode(['error' => 'Error interno. Intentá de nuevo.'], JSON_UNESCAPED_UNICODE);
-});
+// Formularios públicos (p.ej. encuestas vía send-contact) cargan lib_db solo para PDO.
+// No registrar el handler admin ahí: reescribiría errores del endpoint público.
+if (!defined('KINESICA_SKIP_ADMIN_EXCEPTION_HANDLER') || !KINESICA_SKIP_ADMIN_EXCEPTION_HANDLER) {
+    set_exception_handler(static function (Throwable $error): void {
+        error_log('kinesica admin: ' . $error->getMessage());
+        if (!headers_sent()) {
+            http_response_code(500);
+            header('Content-Type: application/json; charset=utf-8');
+            header('Cache-Control: no-store');
+        }
+        echo json_encode(['error' => 'Error interno. Intentá de nuevo.'], JSON_UNESCAPED_UNICODE);
+    });
+}
 
 function start_session(): void
 {

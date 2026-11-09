@@ -392,6 +392,8 @@ $htmlBody = '<!DOCTYPE html>
 </html>';
 
 // --- Envío: Resend (si hay API key) y fallback mail() ---
+// Encuesta: el mail de aviso se envía aunque falle la persistencia (el panel puede
+// recuperarse después; el correo es el respaldo operativo).
 $apiKey = trim((string) (
     getenv('RESEND_API_KEY')
     ?: ($_SERVER['RESEND_API_KEY'] ?? $_ENV['RESEND_API_KEY'] ?? $localCfg['resend_api_key'] ?? '')

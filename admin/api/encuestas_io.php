@@ -4,12 +4,16 @@ declare(strict_types=1);
 /**
  * Persistencia de encuestas (etapa 7).
  *
- * - MariaDB `encuestas` (mig 008): primario si tiene filas.
- * - JSON (`data/encuestas.json` o seed): espejo + fallback pre-migrate.
- * - append/save: dual-write best-effort (JSON primero; DB no bloquea al público).
+ * - MariaDB `encuestas` (mig 008): fuente durable (sobrevive deploys que pisan data/*).
+ * - JSON (`data/encuestas.json` o seed): espejo + fallback.
+ * - append público: DB primero + espejo JSON; no borra otras filas de DB.
+ * - save admin: JSON + espejo completo (incluye deletes).
  *
- * Formulario público sigue anónimo (paciente_id casi siempre NULL).
- * Docs: docs/codigo-datos-relacionales.md
+ * Causa histórica de “mail sí / panel no”:
+ * 1) El append público cargaba lib.php → side-effects; el espejo DB fallaba en silencio.
+ * 2) Solo quedaba JSON en data/, y un hosting_deploy sin ese archivo lo borraba.
+ *
+ * Docs: docs/codigo-datos-relacionales.md · docs/etapa7-whatsapp-encuestas.md
  */
 
 function kinesica_encuestas_runtime_file(): string
@@ -40,39 +44,82 @@ function kinesica_encuestas_load_json_only(): array
     return is_array($data) ? $data : [];
 }
 
+/**
+ * PDO sin cargar lib.php (evita auth/whatsapp/handler admin en el form público).
+ */
 function kinesica_encuestas_pdo(): ?PDO
 {
     try {
         if (function_exists('db')) {
             return db();
         }
-        require_once __DIR__ . '/lib.php';
+        if (!defined('KINESICA_SKIP_ADMIN_EXCEPTION_HANDLER')) {
+            define('KINESICA_SKIP_ADMIN_EXCEPTION_HANDLER', true);
+        }
+        require_once __DIR__ . '/lib_db.php';
         return db();
-    } catch (Throwable) {
+    } catch (Throwable $e) {
+        error_log('kinesica encuestas pdo: ' . $e->getMessage());
         return null;
     }
 }
 
+/**
+ * Une DB + JSON por id (gana el más reciente por created_at).
+ *
+ * @param list<array<string,mixed>> $a
+ * @param list<array<string,mixed>> $b
+ * @return list<array<string,mixed>>
+ */
+function kinesica_encuestas_merge_by_id(array $a, array $b): array
+{
+    $map = [];
+    foreach (array_merge($a, $b) as $item) {
+        if (!is_array($item)) {
+            continue;
+        }
+        $id = (string) ($item['id'] ?? '');
+        if ($id === '') {
+            continue;
+        }
+        if (!isset($map[$id])) {
+            $map[$id] = $item;
+            continue;
+        }
+        $prev = (string) ($map[$id]['created_at'] ?? '');
+        $next = (string) ($item['created_at'] ?? '');
+        if ($next > $prev) {
+            $map[$id] = $item;
+        }
+    }
+    $out = array_values($map);
+    usort($out, static function (array $x, array $y): int {
+        return strcmp((string) ($y['created_at'] ?? ''), (string) ($x['created_at'] ?? ''));
+    });
+    return $out;
+}
+
 function kinesica_encuestas_load(): array
 {
+    $fromJson = kinesica_encuestas_load_json_only();
     $pdo = kinesica_encuestas_pdo();
     if ($pdo instanceof PDO) {
         try {
             require_once __DIR__ . '/lib_relational_encuestas.php';
             if (kinesica_rel_encuestas_ready($pdo)) {
                 $fromDb = kinesica_rel_encuestas_load_db($pdo);
-                if ($fromDb !== []) {
-                    return $fromDb;
+                if ($fromDb !== [] || $fromJson !== []) {
+                    return kinesica_encuestas_merge_by_id($fromDb, $fromJson);
                 }
             }
         } catch (Throwable $e) {
             error_log('kinesica encuestas load db: ' . $e->getMessage());
         }
     }
-    return kinesica_encuestas_load_json_only();
+    return $fromJson;
 }
 
-function kinesica_encuestas_save(array $encuestas): void
+function kinesica_encuestas_save_json(array $encuestas): void
 {
     $runtime = kinesica_encuestas_runtime_file();
     $dir = dirname($runtime);
@@ -94,10 +141,16 @@ function kinesica_encuestas_save(array $encuestas): void
         flock($lock, LOCK_UN);
         fclose($lock);
     }
+}
 
-    // REL: espejo MariaDB (best-effort).
+/**
+ * Espejo completo → DB (incluye deletes). Solo para save admin.
+ */
+function kinesica_encuestas_mirror_db_full(array $encuestas): void
+{
     $pdo = kinesica_encuestas_pdo();
     if (!$pdo instanceof PDO) {
+        error_log('kinesica encuestas save db mirror: PDO no disponible');
         return;
     }
     try {
@@ -117,7 +170,6 @@ function kinesica_encuestas_save(array $encuestas): void
             $ids[$id] = true;
             kinesica_rel_encuesta_upsert($pdo, $item);
         }
-        // Borrar de DB lo que ya no está en la lista JSON (delete vía save filtrado).
         $existing = $pdo->query('SELECT id FROM encuestas')->fetchAll(PDO::FETCH_COLUMN) ?: [];
         foreach ($existing as $eid) {
             $eid = (string) $eid;
@@ -130,14 +182,65 @@ function kinesica_encuestas_save(array $encuestas): void
     }
 }
 
+/** Upsert de una sola encuesta en DB. No borra otras filas. */
+function kinesica_encuestas_mirror_db_one(array $encuesta): bool
+{
+    $pdo = kinesica_encuestas_pdo();
+    if (!$pdo instanceof PDO) {
+        error_log('kinesica encuestas append db: PDO no disponible');
+        return false;
+    }
+    try {
+        require_once __DIR__ . '/lib_relational_encuestas.php';
+        if (!kinesica_rel_encuestas_ready($pdo)) {
+            error_log('kinesica encuestas append db: tabla no lista');
+            return false;
+        }
+        return kinesica_rel_encuesta_upsert($pdo, $encuesta);
+    } catch (Throwable $e) {
+        error_log('kinesica encuestas append db: ' . $e->getMessage());
+        return false;
+    }
+}
+
+function kinesica_encuestas_save(array $encuestas): void
+{
+    kinesica_encuestas_save_json($encuestas);
+    kinesica_encuestas_mirror_db_full($encuestas);
+}
+
 /**
- * Append atómico de una encuesta (JSON + DB).
+ * Append público: DB primero (durable), JSON espejo.
+ * Éxito si al menos uno de los dos persiste.
  *
  * @param array<string,mixed> $encuesta
  */
 function kinesica_encuestas_append(array $encuesta): void
 {
-    $lista = kinesica_encuestas_load_json_only();
-    array_unshift($lista, $encuesta);
-    kinesica_encuestas_save($lista);
+    $dbOk = kinesica_encuestas_mirror_db_one($encuesta);
+
+    $jsonOk = false;
+    try {
+        // Si DB OK, merge para no pisar filas solo-DB al reescribir JSON.
+        $lista = $dbOk ? kinesica_encuestas_load() : kinesica_encuestas_load_json_only();
+        $newId = (string) ($encuesta['id'] ?? '');
+        if ($newId !== '') {
+            $lista = array_values(array_filter(
+                $lista,
+                static fn (array $e): bool => (string) ($e['id'] ?? '') !== $newId
+            ));
+        }
+        array_unshift($lista, $encuesta);
+        kinesica_encuestas_save_json($lista);
+        $jsonOk = true;
+    } catch (Throwable $e) {
+        error_log('kinesica encuestas append json: ' . $e->getMessage());
+    }
+
+    if (!$dbOk && !$jsonOk) {
+        throw new RuntimeException('No se pudo persistir la encuesta (DB y JSON fallaron).');
+    }
+    if (!$dbOk) {
+        error_log('kinesica encuestas append: persistido solo en JSON (revisar PDO/DB en form público)');
+    }
 }
