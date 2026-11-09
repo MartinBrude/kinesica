@@ -11,15 +11,16 @@ import {
   loadCola,
   toggleCola,
   resolveCaption,
-} from "./admin-creativos-cola.js?v=7";
+} from "./admin-creativos-cola.js?v=8";
 import {
   colaButtonHtml,
   colaBadgeHtml,
   colaHeartHtml,
   refreshColaButtons,
   ensureColaUiPaint,
-} from "./admin-creativos-cola-ui.js?v=1";
-import { initListaUI } from "./admin-creativos-lista.js?v=7";
+} from "./admin-creativos-cola-ui.js?v=2";
+import { initListaUI } from "./admin-creativos-lista.js?v=8";
+import { catalogCaptionEditHtml } from "./admin-creativos-caption.js?v=5";
 
 const ASSET_V = Date.now();
 
@@ -45,7 +46,7 @@ Normalizar el dolor es el error más común. Tomar analgésicos solo apaga la al
 En Kinésica evaluamos tu biomecánica global para encontrar el bloqueo real que genera la sobrecarga. Sesiones individuales 1 a 1 de 60 minutos con el Lic. Norberto Silvio Brude.
 
 📍 Charcas 3889, Palermo, CABA.
-📲 Turnos y consultas directas por WhatsApp: +54 9 11 6156-4311 o desde el link en bio @kinesicabrude
+📲 Turnos y consultas directas por WhatsApp: +54 9 11 3178-1733 o desde el link en bio @kinesicabrude
 
 #KinesiologiaPalermo #DolorCronico #TerapiaManual #RPG #Kinésica`
   },
@@ -64,7 +65,7 @@ Cuando tomás un antiinflamatorio para calmar el dolor lumbar o cervical, el blo
 En Kinésica no tratamos partes aisladas: evaluamos tus cadenas musculares de pies a cabeza para resolver la causa de raíz.
 
 📍 Palermo, Charcas 3889
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Kinesiologia #Osteopatia #SaludPostural #CadenasFisiologicas #Kinésica`
   },
   {
@@ -81,7 +82,7 @@ El cuerpo humano es una unidad interconectada por cadenas miofasciales. Mediante
 
 👉 Sesiones 1 a 1 de 50-60 minutos sin máquinas automáticas.
 📍 Charcas 3889, Palermo
-📲 Turnos por WhatsApp: +54 9 11 6156-4311
+📲 Turnos por WhatsApp: +54 9 11 3178-1733
 #RPG #OsteopatiaPalermo #Postura #Kinesiologia #Biomecanica`
   },
   {
@@ -97,7 +98,7 @@ El cuerpo humano es una unidad interconectada por cadenas miofasciales. Mediante
 Pasar horas frente a la computadora no debería terminar en dolor de cuello ni pesadez lumbar. En Kinésica diseñamos un tratamiento manual a medida para que recuperes tu bienestar diario.
 
 📍 Charcas 3889, Palermo
-📲 Agendá tu evaluación por WhatsApp: +54 9 11 6156-4311
+📲 Agendá tu evaluación por WhatsApp: +54 9 11 3178-1733
 #Bienestar #Ergonomia #KinesiologiaPalermo #Kinésica #SinDolor`
   },
 
@@ -115,7 +116,7 @@ Pasar horas frente a la computadora no debería terminar en dolor de cuello ni p
 La columna responde a tensiones profundas: diafragma, pelvis, cervicales e incluso la mordida. Con RPG y terapia manual liberamos las fijaciones vertebrales para restaurar las curvas fisiológicas naturales de tu espalda.
 
 📍 Consultorio en Charcas 3889, Palermo
-📲 Coordiná tu consulta por WhatsApp: +54 9 11 6156-4311
+📲 Coordiná tu consulta por WhatsApp: +54 9 11 3178-1733
 #ColumnaVertebral #RPG #RectificacionCervical #Escoliosis #Kinésica`
   },
   {
@@ -133,7 +134,7 @@ El bruxismo no solo desgasta el esmalte: sobrecarga los músculos masticatorios 
 En Kinésica aplicamos terapia manual intra y extraoral suave para descomprimir la mandíbula y aliviar las cefaleas tensionales.
 
 📍 Charcas 3889, Palermo
-📲 Turnos por WhatsApp: +54 9 11 6156-4311
+📲 Turnos por WhatsApp: +54 9 11 3178-1733
 #ATM #Bruxismo #CefaleaTensional #DolorMandibular #Kinesiologia`
   },
   {
@@ -149,7 +150,7 @@ En Kinésica aplicamos terapia manual intra y extraoral suave para descomprimir 
 Una contractura cervical puede ser la compensación de una rigidez dorsal o de una pisada desalineada. En Kinésica evaluamos el mapa completo de tus cadenas miofasciales para resolver la molestia de forma duradera.
 
 📍 Consultorio en Palermo (Charcas 3889)
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #CadenasMiofasciales #Biomecanica #Osteopatia #KinesiologiaPalermo #Kinésica`
   },
   {
@@ -167,7 +168,7 @@ Los nervios periféricos necesitan deslizarse libremente entre músculos y ligam
 Mediante Neurodinamia Clínica movilizamos los troncos nerviosos con suavidad para recuperar su viscoelasticidad.
 
 📍 Charcas 3889, Palermo
-📲 Turnos por WhatsApp: +54 9 11 6156-4311
+📲 Turnos por WhatsApp: +54 9 11 3178-1733
 #Neurodinamia #Ciatalgia #NervioCiatico #TunelCarpiano #Kinésica`
   },
 
@@ -187,7 +188,7 @@ Los órganos internos están suspendidos por fascias y ligamentos que se anclan 
 Con manipulaciones viscerales osteopáticas suaves liberamos esa tracción profunda.
 
 📍 Charcas 3889, Palermo
-📲 Turnos por WhatsApp: +54 9 11 6156-4311
+📲 Turnos por WhatsApp: +54 9 11 3178-1733
 #OsteopatiaVisceral #Lumbalgia #TerapiaManual #KinesiologiaPalermo #Kinésica`
   },
   {
@@ -205,7 +206,7 @@ La lumbalgia suele originarse en un bloqueo de la pelvis (articulación sacroil�
 En Kinésica abordamos la causa mecánica 1 a 1 para que vuelvas a moverte sin miedo a quedarte duro.
 
 📍 Charcas 3889, Palermo
-📲 Escribinos por WhatsApp: +54 9 11 6156-4311
+📲 Escribinos por WhatsApp: +54 9 11 3178-1733
 #Lumbalgia #DolorLumbar #Osteopatia #ColumnaSana #Kinésica`
   },
   {
@@ -222,7 +223,7 @@ En más del 80% de los casos, el tratamiento conservador con RPG y terapia manua
 
 👉 Evaluá tu caso con el Lic. Norberto Silvio Brude.
 📍 Charcas 3889, Palermo
-📲 Turnos WhatsApp: +54 9 11 6156-4311
+📲 Turnos WhatsApp: +54 9 11 3178-1733
 #HerniaDeDisco #RPG #Columna #Ciática #KinesiologiaPalermo`
   },
   {
@@ -238,7 +239,7 @@ En más del 80% de los casos, el tratamiento conservador con RPG y terapia manua
 Si te despertás con mandíbula cansada, ruidos al masticar o dolor de cabeza, el tratamiento de la ATM libera los puntos gatillo de los maseteros y alinea el cuello para aliviar la tensión de raíz.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp directo: +54 9 11 6156-4311
+📲 WhatsApp directo: +54 9 11 3178-1733
 #Bruxismo #ATM #TerapiaManual #Cefalea #Kinésica`
   },
 
@@ -256,7 +257,7 @@ Si te despertás con mandíbula cansada, ruidos al masticar o dolor de cabeza, e
 La tortícolis es un espasmo defensivo provocado por un bloqueo en las carillas articulares cervicales o un estrés mecánico postural. Con movilizaciones suaves y terapia manual descomprimimos la zona para que recuperes el movimiento sin dolor forzado.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Torticolis #Cervicalgia #DolorDeCuello #Osteopatia #Kinésica`
   },
   {
@@ -272,7 +273,7 @@ La tortícolis es un espasmo defensivo provocado por un bloqueo en las carillas 
 Si sentís pinchazos al bajar escaleras, molestias meniscales o rigidez al levantarte, evaluamos el eje biomecánico de tu pierna para descomprimir la articulación y devolverte la estabilidad.
 
 📍 Charcas 3889, Palermo
-📲 Turnos por WhatsApp: +54 9 11 6156-4311
+📲 Turnos por WhatsApp: +54 9 11 3178-1733
 #Gonalgia #Meniscos #DolorDeRodilla #KinesiologiaDeportiva #Kinésica`
   },
   {
@@ -288,7 +289,7 @@ Si sentís pinchazos al bajar escaleras, molestias meniscales o rigidez al levan
 El síndrome de fricción subacromial y la tendinopatía del manguito rotador se producen cuando la escápula y la columna dorsal pierden sincronía. Con terapia manual reabrimos el espacio articular para que el tendón deje de pinzarse.
 
 📍 Charcas 3889, Palermo
-📲 Turnos por WhatsApp: +54 9 11 6156-4311
+📲 Turnos por WhatsApp: +54 9 11 3178-1733
 #ManguitoRotador #HombroDoloroso #TerapiaManual #Kinesiologia #Kinésica`
   },
   {
@@ -304,7 +305,7 @@ El síndrome de fricción subacromial y la tendinopatía del manguito rotador se
 El desgaste articular duele cuando los músculos y fascias de alrededor se contracturan y aumentan la presión sobre el cartílago. La terapia manual flexibiliza la cápsula y mejora la nutrición articular para que te muevas con libertad.
 
 📍 Charcas 3889, Palermo
-📲 Turnos WhatsApp: +54 9 11 6156-4311
+📲 Turnos WhatsApp: +54 9 11 3178-1733
 #Artrosis #SaludArticular #TerapiaManual #KinesiologiaPalermo #Kinésica`
   },
 
@@ -326,7 +327,7 @@ El desgaste articular duele cuando los músculos y fascias de alrededor se contr
 Sesiones personalizadas de 50 a 60 minutos, puntuales y sin esperas.
 
 📍 Charcas 3889, Palermo, CABA
-📲 Agendá tu turno por WhatsApp al +54 9 11 6156-4311
+📲 Agendá tu turno por WhatsApp al +54 9 11 3178-1733
 #KinesiologiaPalermo #TurnosKinesiologia #NorbertoBrude #Kinésica`
   },
 
@@ -346,7 +347,7 @@ No es “estar sentado”: es la compensación. Hombros adelante, cuello en pant
 En Kinésica evaluamos tu biomecánica global y tratamos la causa mecánica con terapia manual 1 a 1.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #HomeOffice #DolorLumbar #Ergonomia #KinesiologiaPalermo #Kinésica`
   },
   {
@@ -364,7 +365,7 @@ Esa postura suma kilos de carga sobre las cervicales. Resultado: tirantez, cefal
 En Kinésica liberamos la tensión cervical y reequilibramos la postura para que el hábito no se vuelva lesión crónica.
 
 📍 Charcas 3889, Palermo
-📲 Turnos por WhatsApp: +54 9 11 6156-4311
+📲 Turnos por WhatsApp: +54 9 11 3178-1733
 #TechNeck #Cervicalgia #DolorDeCuello #Osteopatia #Kinésica`
   },
   {
@@ -382,7 +383,7 @@ Si amanecés rígido, con mandíbula trabada o la espalda “trabada”, no es s
 En Kinésica evaluamos de pies a cabeza y tratamos la causa con terapia manual personalizada.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Bruxismo #DolorDeEspalda #ATM #KinesiologiaPalermo #Kinésica`
   },
   {
@@ -400,7 +401,7 @@ El masaje relaja. Está buenísimo. Pero si la contractura vuelve igual, el cuer
 En Kinésica no perseguimos el síntoma: evaluamos cadenas musculares, postura y movilidad para que el alivio se sostenga.
 
 📍 Charcas 3889, Palermo
-📲 Turnos WhatsApp: +54 9 11 6156-4311
+📲 Turnos WhatsApp: +54 9 11 3178-1733
 #TerapiaManual #CausaRaiz #RPG #Osteopatia #Kinésica`
   },
   {
@@ -418,7 +419,7 @@ Evitar el movimiento por miedo al dolor parece protección… pero refuerza la r
 En Kinésica descomprimimos lo que duele y reconstruimos confianza con terapia manual + reeducación postural 1 a 1.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #MiedoAlMovimiento #ReeducacionPostural #RPG #Kinesiologia #Kinésica`
   },
   {
@@ -436,7 +437,7 @@ En Kinésica descomprimimos lo que duele y reconstruimos confianza con terapia m
 En Kinésica evaluamos pisada, pelvis y columna para que vuelvas a entrenar sin forzar el síntoma.
 
 📍 Charcas 3889, Palermo
-📲 Turnos por WhatsApp: +54 9 11 6156-4311
+📲 Turnos por WhatsApp: +54 9 11 3178-1733
 #Running #DolorDeRodilla #KinesiologiaDeportiva #Biomecanica #Kinésica`
   },
 
@@ -456,7 +457,7 @@ Ese ruido, el trabado o el “salto” articular no son un detalle: marcan sobre
 En Kinésica descomprimimos la articulación y liberamos maseteros y pterigoideos con terapia manual suave (intra y extraoral).
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #ATM #ClickMandibular #TerapiaManual #KinesiologiaPalermo #Kinésica`
   },
   {
@@ -474,7 +475,7 @@ Si la cefalea aparece en sienes, frente o detrás de los ojos y además apretás
 En Kinésica tratamos la causa: liberamos masticatorios, alineamos cuello y descomprimimos la articulación.
 
 📍 Charcas 3889, Palermo
-📲 Turnos WhatsApp: +54 9 11 6156-4311
+📲 Turnos WhatsApp: +54 9 11 3178-1733
 #CefaleaTensional #ATM #Bruxismo #Osteopatia #Kinésica`
   },
   {
@@ -492,7 +493,7 @@ Mails, tráfico, pantallas: el bruxismo diurno es silencioso. La mandíbula se c
 En Kinésica liberamos la cadena cervical-mandibular y reeducamos el tono para cortar el circuito de tensión.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #BruxismoDiurno #ATM #Estres #Cervicalgia #Kinésica`
   },
   {
@@ -510,7 +511,7 @@ Es un gran aliado para el esmalte. El problema es que la contractura de masetero
 En Kinésica complementamos el enfoque odontológico con terapia manual para desactivar la causa mecánica del bruxismo.
 
 📍 Charcas 3889, Palermo
-📲 Turnos por WhatsApp: +54 9 11 6156-4311
+📲 Turnos por WhatsApp: +54 9 11 3178-1733
 #PlacaDeDescanso #ATM #Bruxismo #TerapiaManual #Kinésica`
   },
   {
@@ -528,7 +529,7 @@ La ATM está a milímetros del oído. Una mandíbula bloqueada o un bruxismo int
 En Kinésica evaluamos ATM + cuello juntos para descomprimir esa zona tan sensible.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #ATM #Tinnitus #Oido #TerapiaManual #Kinésica`
   },
   {
@@ -546,7 +547,7 @@ La apertura limitada o el bloqueo de la ATM no se resuelve forzando. Hay que res
 En Kinésica evaluamos la articulación, los masticatorios y el cuello para devolver movilidad sin dolor.
 
 📍 Charcas 3889, Palermo
-📲 Turnos WhatsApp: +54 9 11 6156-4311
+📲 Turnos WhatsApp: +54 9 11 3178-1733
 #ATMBloqueada #Trismo #Mandibula #KinesiologiaPalermo #Kinésica`
   },
 
@@ -564,7 +565,7 @@ En Kinésica evaluamos la articulación, los masticatorios y el cuello para devo
 Puede nacer en cervicales, mandíbula o tensión postural. En Kinésica evaluamos la causa mecánica y tratamos con terapia manual 1 a 1.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Cefalea #Cervicalgia #ATM #KinesiologiaPalermo #Kinésica`
   },
   {
@@ -580,7 +581,7 @@ Puede nacer en cervicales, mandíbula o tensión postural. En Kinésica evaluamo
 La dorsalgia suele venir de rigidez torácica y horas frente a la pantalla. Recuperamos movilidad dorsal con terapia manual.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Dorsalgia #EspaldaAlta #TerapiaManual #Kinésica`
   },
   {
@@ -596,7 +597,7 @@ La dorsalgia suele venir de rigidez torácica y horas frente a la pantalla. Recu
 Eso es ciatalgia: evaluamos lumbar, pelvis y nervio ciático con neurodinamia y terapia manual, sin forzar.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Ciatalgia #NervioCiatico #Neurodinamia #Kinésica`
   },
   {
@@ -612,7 +613,7 @@ Eso es ciatalgia: evaluamos lumbar, pelvis y nervio ciático con neurodinamia y 
 La cervicobraquialgia mezcla articulación, nervio y postura. En Kinésica tratamos la causa mecánica de raíz.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Cervicobraquialgia #Cervicalgia #Neurodinamia #Kinésica`
   },
   {
@@ -628,7 +629,7 @@ La cervicobraquialgia mezcla articulación, nervio y postura. En Kinésica trata
 La pubalgia pide evaluar cadera, pelvis y cadena abdominal-aductora. Tratamos sin forzar el pubis.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Pubalgia #Deporte #Cadera #Kinésica`
   },
   {
@@ -644,7 +645,7 @@ La pubalgia pide evaluar cadera, pelvis y cadena abdominal-aductora. Tratamos si
 Evaluamos apoyo del pie y cadena posterior para bajar la carga y recuperar la marcha.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Talalgia #Pie #FascitisPlantar #Kinésica`
   },
   {
@@ -660,7 +661,7 @@ Evaluamos apoyo del pie y cadena posterior para bajar la carga y recuperar la ma
 La articulación sacroilíaca responde a desequilibrios de cadera y lumbar. La liberamos con terapia manual 1 a 1.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Sacroiliaca #Pelvis #Lumbalgia #Kinésica`
   },
   {
@@ -676,7 +677,7 @@ La articulación sacroilíaca responde a desequilibrios de cadera y lumbar. La l
 Con evaluación y progresión mejoramos función y confianza al moverte, sin resignarte al dolor.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #ProtrusionDiscal #Columna #RPG #Kinésica`
   },
   {
@@ -692,7 +693,7 @@ Con evaluación y progresión mejoramos función y confianza al moverte, sin res
 La hipercifosis rigidiza el dorso y sobrecarga cuello y hombros. Recuperamos movilidad torácica con RPG.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Hipercifosis #Postura #RPG #Kinésica`
   },
   {
@@ -708,7 +709,7 @@ La hipercifosis rigidiza el dorso y sobrecarga cuello y hombros. Recuperamos mov
 No es “malo” por sí solo: falta control y movilidad. Reequilibramos pelvis y cadena posterior.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Hiperlordosis #Lumbar #Postura #Kinésica`
   },
   {
@@ -724,7 +725,7 @@ No es “malo” por sí solo: falta control y movilidad. Reequilibramos pelvis 
 El dorso plano limita la movilidad torácica. Mejoramos flexibilidad y control para bajar sobrecargas.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #DorsoPlano #Columna #RPG #Kinésica`
   },
   {
@@ -740,7 +741,7 @@ El dorso plano limita la movilidad torácica. Mejoramos flexibilidad y control p
 Trabajamos control de cadera y pie para que la rodilla tolere mejor la carga al caminar o entrenar.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #GenuValgo #Rodilla #Biomecanica #Kinésica`
   },
   {
@@ -756,7 +757,7 @@ Trabajamos control de cadera y pie para que la rodilla tolere mejor la carga al 
 Mejoramos movilidad, fuerza y mecánica para tolerar mejor la marcha y el entrenamiento.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #GenuVaro #Rodilla #Kinesiologia #Kinésica`
   },
   {
@@ -772,7 +773,7 @@ Mejoramos movilidad, fuerza y mecánica para tolerar mejor la marcha y el entren
 El arco bajo no siempre es el problema: miramos la carga y si repercute en rodilla o espalda.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #PiesPlanos #Biomecanica #Posturologia #Kinésica`
   },
   {
@@ -788,7 +789,7 @@ El arco bajo no siempre es el problema: miramos la carga y si repercute en rodil
 Trabajamos movilidad, fuerza y manejo del dolor con RPG personalizada. Sin promesas estéticas milagrosas.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Escoliosis #RPG #Columna #Kinésica`
   },
   {
@@ -804,7 +805,7 @@ Trabajamos movilidad, fuerza y manejo del dolor con RPG personalizada. Sin prome
 Teclado, mouse y sobreuso del antebrazo también lo disparan. Liberamos tendón y cadena del brazo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Epicondilitis #CodoDeTenista #TerapiaManual #Kinésica`
   },
   {
@@ -820,7 +821,7 @@ Teclado, mouse y sobreuso del antebrazo también lo disparan. Liberamos tendón 
 Es la epicondilitis medial (codo de golfista): tratamos tendón y mecánica del antebrazo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #EpicondilitisMedial #Codo #Kinésica`
   },
   {
@@ -836,7 +837,7 @@ Es la epicondilitis medial (codo de golfista): tratamos tendón y mecánica del 
 El impingement subacromial mejora cuando sincronizamos hombro y escápula. Abrimos espacio sin forzar.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Impingement #Hombro #ManguitoRotador #Kinésica`
   },
   {
@@ -852,7 +853,7 @@ El impingement subacromial mejora cuando sincronizamos hombro y escápula. Abrim
 La radiculopatía pide precisión: neurodinamia y terapia manual dosificadas, sin agravar.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Radiculopatia #Neurodinamia #Columna #Kinésica`
   },
   {
@@ -868,7 +869,7 @@ La radiculopatía pide precisión: neurodinamia y terapia manual dosificadas, si
 En meniscopatía recuperamos movilidad y tolerancia a la carga, sin apurar cirugías.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Meniscopatia #Rodilla #Gonalgia #Kinésica`
   },
   {
@@ -884,7 +885,7 @@ En meniscopatía recuperamos movilidad y tolerancia a la carga, sin apurar cirug
 La fascitis plantar mejora con carga progresiva y terapia manual sobre pie y cadena posterior.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #FascitisPlantar #Talon #Pie #Kinésica`
   },
   {
@@ -900,7 +901,7 @@ La fascitis plantar mejora con carga progresiva y terapia manual sobre pie y cad
 La cervicalgia mejora con movilidad, postura y terapia manual sobre la causa mecánica.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Cervicalgia #Cuello #Osteopatia #Kinésica`
   },
   {
@@ -916,7 +917,7 @@ La cervicalgia mejora con movilidad, postura y terapia manual sobre la causa mec
 La capsulitis adhesiva pide paciencia y técnica: restauramos movimiento sin forzar la cápsula.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #HombroCongelado #Capsulitis #Hombro #Kinésica`
   },
   {
@@ -932,7 +933,7 @@ La capsulitis adhesiva pide paciencia y técnica: restauramos movimiento sin for
 Trabajamos tejido y carga progresiva para volver a moverte sin miedo a recaer.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Contractura #Desgarro #Rehabilitacion #Kinésica`
   },
   {
@@ -948,7 +949,7 @@ Trabajamos tejido y carga progresiva para volver a moverte sin miedo a recaer.
 El túnel carpiano mejora abordando muñeca, nervio y cadena del brazo con neurodinamia.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #TunelCarpiano #Muneca #Neurodinamia #Kinésica`
   },
   {
@@ -964,7 +965,7 @@ El túnel carpiano mejora abordando muñeca, nervio y cadena del brazo con neuro
 Puede nacer en la articulación o por compensación de pelvis y lumbar. Evaluamos el conjunto.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Coxalgia #Cadera #Osteopatia #Kinésica`
   },
   {
@@ -980,7 +981,7 @@ Puede nacer en la articulación o por compensación de pelvis y lumbar. Evaluamo
 La rectificación cervical o lumbar rigidiza y duele. Recuperamos movilidad con RPG.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Rectificacion #Cervical #Lumbar #RPG #Kinésica`
   },
 
@@ -1000,7 +1001,7 @@ En Kinésica tratamos cefalea: cuello, mandíbula y postura.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Cefalea #Cervicalgia #ATM #Kinésica`
   },
   {
@@ -1018,7 +1019,7 @@ En Kinésica tratamos dorsalgia: rigidez torácica y posturas sostenidas.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Dorsalgia #EspaldaAlta #Kinésica`
   },
   {
@@ -1036,7 +1037,7 @@ En Kinésica tratamos lumbalgia: pelvis, cadera y columna.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Lumbalgia #DolorLumbar #Osteopatia #Kinésica`
   },
   {
@@ -1054,7 +1055,7 @@ En Kinésica tratamos ciatalgia: lumbar y nervio ciático.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Ciatalgia #Neurodinamia #Kinésica`
   },
   {
@@ -1072,7 +1073,7 @@ En Kinésica tratamos cervicobraquialgia: nervio, articulación y postura.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Cervicobraquialgia #Cuello #Kinésica`
   },
   {
@@ -1090,7 +1091,7 @@ En Kinésica tratamos pubalgia: cadera, pelvis y cadena aductora.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Pubalgia #Deporte #Kinésica`
   },
   {
@@ -1108,7 +1109,7 @@ En Kinésica tratamos gonalgia: el eje de cadera, rodilla y pie.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Gonalgia #Rodilla #Kinésica`
   },
   {
@@ -1126,7 +1127,7 @@ En Kinésica tratamos talalgia: apoyo del pie y cadena posterior.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Talalgia #Pie #Kinésica`
   },
   {
@@ -1144,7 +1145,7 @@ En Kinésica tratamos dolor sacroilíaco: pelvis, cadera y lumbar.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Sacroiliaca #Pelvis #Kinésica`
   },
   {
@@ -1162,7 +1163,7 @@ En Kinésica tratamos hernia de disco: RPG y terapia manual.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #HerniaDeDisco #RPG #Kinésica`
   },
   {
@@ -1180,7 +1181,7 @@ En Kinésica tratamos protrusión discal: evaluación y progresión funcional.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #ProtrusionDiscal #Columna #Kinésica`
   },
   {
@@ -1198,7 +1199,7 @@ En Kinésica tratamos hipercifosis: movilidad torácica con RPG.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Hipercifosis #Postura #Kinésica`
   },
   {
@@ -1216,7 +1217,7 @@ En Kinésica tratamos hiperlordosis: pelvis y cadena posterior.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Hiperlordosis #Lumbar #Kinésica`
   },
   {
@@ -1234,7 +1235,7 @@ En Kinésica tratamos dorso plano: movilidad torácica y control.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #DorsoPlano #Columna #Kinésica`
   },
   {
@@ -1252,7 +1253,7 @@ En Kinésica tratamos genu valgo: control de cadera y pie.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #GenuValgo #Rodilla #Kinésica`
   },
   {
@@ -1270,7 +1271,7 @@ En Kinésica tratamos genu varo: movilidad, fuerza y mecánica.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #GenuVaro #Rodilla #Kinésica`
   },
   {
@@ -1288,7 +1289,7 @@ En Kinésica tratamos pies planos: carga del arco y compensaciones.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #PiesPlanos #Biomecanica #Kinésica`
   },
   {
@@ -1306,7 +1307,7 @@ En Kinésica tratamos escoliosis: RPG personalizada.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Escoliosis #RPG #Kinésica`
   },
   {
@@ -1324,7 +1325,7 @@ En Kinésica tratamos epicondilitis lateral: tendón y cadena del antebrazo.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Epicondilitis #CodoDeTenista #Kinésica`
   },
   {
@@ -1342,7 +1343,7 @@ En Kinésica tratamos epicondilitis medial: tendón y mecánica del antebrazo.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #EpicondilitisMedial #Codo #Kinésica`
   },
   {
@@ -1360,7 +1361,7 @@ En Kinésica tratamos impingement subacromial: mecánica de hombro y escápula.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Impingement #Hombro #Kinésica`
   },
   {
@@ -1378,7 +1379,7 @@ En Kinésica tratamos manguito rotador: espacio articular y fuerza.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #ManguitoRotador #Hombro #Kinésica`
   },
   {
@@ -1396,7 +1397,7 @@ En Kinésica tratamos radiculopatía: neurodinamia dosificada.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Radiculopatia #Neurodinamia #Kinésica`
   },
   {
@@ -1414,7 +1415,7 @@ En Kinésica tratamos meniscopatía: movilidad y tolerancia a la carga.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Meniscopatia #Rodilla #Kinésica`
   },
   {
@@ -1432,7 +1433,7 @@ En Kinésica tratamos fascitis plantar: carga progresiva y terapia manual.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #FascitisPlantar #Pie #Kinésica`
   },
   {
@@ -1450,7 +1451,7 @@ En Kinésica tratamos cervicalgia: movilidad y postura.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Cervicalgia #Cuello #Kinésica`
   },
   {
@@ -1468,7 +1469,7 @@ En Kinésica tratamos bruxismo: maseteros, cuello y postura.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Bruxismo #ATM #Kinésica`
   },
   {
@@ -1486,7 +1487,7 @@ En Kinésica tratamos desplazamiento del disco de la atm: deslizamiento articula
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #ATM #DiscoArticular #Kinésica`
   },
   {
@@ -1504,7 +1505,7 @@ En Kinésica tratamos artrosis de la atm: articulación y masticatorios.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #ArtrosisATM #Mandibula #Kinésica`
   },
   {
@@ -1522,7 +1523,7 @@ En Kinésica tratamos tortícolis: carillas cervicales y músculos.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Torticolis #Cervicalgia #Kinésica`
   },
   {
@@ -1540,7 +1541,7 @@ En Kinésica tratamos artrosis y artritis: cápsula y tejidos periarticulares.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Artrosis #Artritis #Kinésica`
   },
   {
@@ -1558,7 +1559,7 @@ En Kinésica tratamos hombro congelado: movimiento gradual de la cápsula.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #HombroCongelado #Capsulitis #Kinésica`
   },
   {
@@ -1576,7 +1577,7 @@ En Kinésica tratamos contracturas y desgarros: tejido y carga progresiva.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Contractura #Desgarro #Kinésica`
   },
   {
@@ -1594,7 +1595,7 @@ En Kinésica tratamos túnel carpiano: muñeca, nervio y cadena del brazo.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #TunelCarpiano #Neurodinamia #Kinésica`
   },
   {
@@ -1612,7 +1613,7 @@ En Kinésica tratamos coxalgia: cadera, pelvis y lumbar.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Coxalgia #Cadera #Kinésica`
   },
   {
@@ -1630,7 +1631,7 @@ En Kinésica tratamos oclusión dental: ATM y cadena cervical.
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #OclusionDental #ATM #Kinésica`
   },
   {
@@ -1648,7 +1649,7 @@ En Kinésica tratamos rectificación cervical y lumbar: curvas fisiológicas y R
 Sesiones 1 a 1 de terapia manual en Palermo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Rectificacion #Columna #Kinésica`
   },
   // Tanda sensibilización adultos/jóvenes (95–122)
@@ -1665,7 +1666,7 @@ Sesiones 1 a 1 de terapia manual en Palermo.
 No es un detalle estético: puede ser cómo tu columna se organiza. En Kinésica evaluamos la curva y las compensaciones con RPG personalizada.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Escoliosis #Postura #RPG #KinesiologiaPalermo #Kinésica`
   },
   {
@@ -1681,7 +1682,7 @@ No es un detalle estético: puede ser cómo tu columna se organiza. En Kinésica
 No siempre es el ángulo. A veces es la columna. Una evaluación a tiempo evita que la compensación se fije.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Escoliosis #Jovenes #Postura #Kinésica`
   },
   {
@@ -1697,7 +1698,7 @@ No siempre es el ángulo. A veces es la columna. Una evaluación a tiempo evita 
 Cargar siempre del mismo lado enseña a tu columna a compensar. En Kinésica corregimos hábitos y reeducamos la postura antes de que duela.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Postura #Estudiantes #EscoliosisFuncional #Kinésica`
   },
   {
@@ -1713,7 +1714,7 @@ Cargar siempre del mismo lado enseña a tu columna a compensar. En Kinésica cor
 La escoliosis en adultos jóvenes se puede acompañar con RPG: más movilidad, más fuerza y menos compensación. Sin milagros estéticos.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Escoliosis #RPG #AdultosJovenes #Kinésica`
   },
   {
@@ -1729,7 +1730,7 @@ La escoliosis en adultos jóvenes se puede acompañar con RPG: más movilidad, m
 Ese tirón que baja no es “cansancio”. Evaluamos lumbar y nervio ciático con abordaje suave, sin forzar el síntoma.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Ciatica #Ciatalgia #DolorLumbar #Kinésica`
   },
   {
@@ -1745,7 +1746,7 @@ Ese tirón que baja no es “cansancio”. Evaluamos lumbar y nervio ciático co
 No es un tirón cualquiera. En Kinésica tratamos la causa mecánica: columna, pelvis y movilidad neural.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Ciatica #NervioCiatico #TerapiaManual #Kinésica`
   },
   {
@@ -1761,7 +1762,7 @@ No es un tirón cualquiera. En Kinésica tratamos la causa mecánica: columna, p
 Horas de auto comprimen lumbar y ciático. Recuperamos movilidad antes de que se cronifique.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Ciatica #Conductores #DolorLumbar #Kinésica`
   },
   {
@@ -1777,7 +1778,7 @@ Horas de auto comprimen lumbar y ciático. Recuperamos movilidad antes de que se
 Ese disparo no es casual. Puede hablar de irritación neural o lumbar. Mejor evaluarlo que ignorarlo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Ciatica #SenalDeAlerta #Columna #Kinésica`
   },
   {
@@ -1793,7 +1794,7 @@ Ese disparo no es casual. Puede hablar de irritación neural o lumbar. Mejor eva
 La contractura fuerte vuelve porque la causa mecánica sigue ahí. En Kinésica buscamos por qué se carga, no solo aflojar el músculo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Contracturas #TerapiaManual #DolorMuscular #Kinésica`
   },
   {
@@ -1809,7 +1810,7 @@ La contractura fuerte vuelve porque la causa mecánica sigue ahí. En Kinésica 
 El cuerpo se defiende con tensión. Liberamos cervicales y postura para que deje de endurecerse cada tarde.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Contractura #Cuello #HomeOffice #Kinésica`
   },
   {
@@ -1825,7 +1826,7 @@ El cuerpo se defiende con tensión. Liberamos cervicales y postura para que deje
 El ruido no es liberación real. Trabajamos la hipomovilidad que te empuja a forzar la cervical.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Cervicalgia #Contractura #Osteopatia #Kinésica`
   },
   {
@@ -1841,7 +1842,7 @@ El ruido no es liberación real. Trabajamos la hipomovilidad que te empuja a for
 Empujar fuerza sobre una contractura fija el problema. Primero movilidad, después rendimiento.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Gym #Contractura #Rendimiento #Kinésica`
   },
   {
@@ -1857,7 +1858,7 @@ Empujar fuerza sobre una contractura fija el problema. Primero movilidad, despu�
 Tu cuello no es un soporte de monitor. Realineamos cervicales antes de que el dolor se vuelva fijo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Gamers #TechNeck #Postura #Kinésica`
   },
   {
@@ -1873,7 +1874,7 @@ Tu cuello no es un soporte de monitor. Realineamos cervicales antes de que el do
 Pantalla baja, cabeza adelante, dorsales trabados. Corregimos la cadena postural: no alcanza con “sentate derecho”.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Hipercifosis #Postura #Notebook #Kinésica`
   },
   {
@@ -1889,7 +1890,7 @@ Pantalla baja, cabeza adelante, dorsales trabados. Corregimos la cadena postural
 Forzar la pose no educa la columna. Trabajamos hipercifosis y compensaciones con RPG real.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Postura #RPG #Jovenes #Kinésica`
   },
   {
@@ -1905,7 +1906,7 @@ Forzar la pose no educa la columna. Trabajamos hipercifosis y compensaciones con
 Cuando la sacás, el cuerpo vuelve a caer. Enseñamos control y movilidad para que no dependas del arnés.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #FajaPostural #Reeducacion #Postura #Kinésica`
   },
   {
@@ -1921,7 +1922,7 @@ Cuando la sacás, el cuerpo vuelve a caer. Enseñamos control y movilidad para q
 La cama no es un escritorio. Liberamos cervicales y dorsales antes de que el parcial te deje trabado.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Estudiantes #Cervicalgia #Postura #Kinésica`
   },
   {
@@ -1937,7 +1938,7 @@ La cama no es un escritorio. Liberamos cervicales y dorsales antes de que el par
 Relajarte no debería costarte movilidad. Recuperamos extensión y control postural.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Postura #Dorsalgia #Bienestar #Kinésica`
   },
   {
@@ -1953,7 +1954,7 @@ Relajarte no debería costarte movilidad. Recuperamos extensión y control postu
 La edad no protege la biomecánica. Evaluamos escoliosis, ciática y contracturas también a los 20 y 30.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Jovenes #Dolor #MitosSalud #Kinésica`
   },
   {
@@ -1969,7 +1970,7 @@ La edad no protege la biomecánica. Evaluamos escoliosis, ciática y contractura
 Aguantar no es fuerte. Tratar la causa mecánica sí. Hablarlo a tiempo cambia el pronóstico.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Sensibilizar #DolorCronico #SaludJoven #Kinésica`
   },
   {
@@ -1985,7 +1986,7 @@ Aguantar no es fuerte. Tratar la causa mecánica sí. Hablarlo a tiempo cambia e
 Pararte mal también carga cuello y lumbar. Evaluamos cómo te organizás de pie y sentado.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Ergonomia #StandingDesk #Postura #Kinésica`
   },
   {
@@ -2001,7 +2002,7 @@ Pararte mal también carga cuello y lumbar. Evaluamos cómo te organizás de pie
 Horas sentado en avión o micro no son gratis. Recuperamos lumbar y nervio sin alarmismo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Ciatica #Viajes #DolorLumbar #Kinésica`
   },
   {
@@ -2017,7 +2018,7 @@ Horas sentado en avión o micro no son gratis. Recuperamos lumbar y nervio sin a
 El estiramiento no alcanza si hay bloqueo mecánico. Tratamos la causa para romper el ciclo.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Contractura #Estiramiento #CausaRaiz #Kinésica`
   },
   {
@@ -2033,7 +2034,7 @@ El estiramiento no alcanza si hay bloqueo mecánico. Tratamos la causa para romp
 El yoga ayuda; el RPG personalizado organiza la curva y las compensaciones. Sin milagros estéticos.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Escoliosis #RPG #Yoga #Kinésica`
   },
   {
@@ -2049,7 +2050,7 @@ El yoga ayuda; el RPG personalizado organiza la curva y las compensaciones. Sin 
 La noche no debería dejarte bloqueado. Revisamos pelvis, lumbar y hábitos de descanso.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Descanso #Lumbalgia #Postura #Kinésica`
   },
   {
@@ -2065,7 +2066,7 @@ La noche no debería dejarte bloqueado. Revisamos pelvis, lumbar y hábitos de d
 Una carga fija enseña escoliosis funcional. Alternamos hábitos y reeducamos la postura.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Postura #CargaAsimetrica #Escoliosis #Kinésica`
   },
   {
@@ -2081,7 +2082,7 @@ Una carga fija enseña escoliosis funcional. Alternamos hábitos y reeducamos la
 Si un gesto simple dispara ciática o lumbar, hay algo mecánico que atender.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Ciatica #Lumbalgia #Movimiento #Kinésica`
   },
   {
@@ -2097,7 +2098,7 @@ Si un gesto simple dispara ciática o lumbar, hay algo mecánico que atender.
 Rigidez, hormigueo o un hombro más alto ya son señales. Escucharlo a tiempo evita cronificar.
 
 📍 Charcas 3889, Palermo
-📲 WhatsApp: +54 9 11 6156-4311
+📲 WhatsApp: +54 9 11 3178-1733
 #Prevencion #Sensibilizar #SaludPostural #Kinésica`
   }
 ];
@@ -2145,18 +2146,19 @@ export function initCreativosUI() {
     });
   }
 
-  // Delegated clicks for actions (copy, lightbox, download)
+  const resolver = (id) => {
+    const base = CREATIVOS_DATA.find((it) => it.id === id);
+    if (!base) return null;
+    const copy = resolveCaption(id, base);
+    return copy === base.copy ? base : { ...base, copy };
+  };
+
+  // Delegated clicks for actions (copy, lightbox, download, edit caption)
   const gridEl = document.getElementById("admin-creativos-grid");
   if (gridEl) {
     gridEl.addEventListener("click", (e) => {
-      // Ignorar clicks en el corazón o botones de cola para no abrir la vista previa modal
-      const heartOrCola = e.target.closest(".btn-creativo-heart, .btn-creativo-cola, .creativo-badge-cola");
-      if (heartOrCola) {
-        if (heartOrCola.dataset.colaId) {
-          e.stopPropagation();
-          e.preventDefault();
-          toggleCola(heartOrCola.dataset.colaId, resolver);
-        }
+      // Edición de caption / cola: lo maneja initListaUI sobre el card contenedor.
+      if (e.target.closest(".creativos-caption-editor, .btn-queue-edit-caption, .btn-queue-save-caption, .btn-queue-cancel-caption, .btn-creativo-heart, .btn-creativo-cola, .creativo-badge-cola")) {
         return;
       }
 
@@ -2188,12 +2190,6 @@ export function initCreativosUI() {
     });
   }
 
-  const resolver = (id) => {
-    const base = CREATIVOS_DATA.find((it) => it.id === id);
-    if (!base) return null;
-    const copy = resolveCaption(id, base);
-    return copy === base.copy ? base : { ...base, copy };
-  };
   ensureColaUiPaint();
   initListaUI(resolver);
   loadCola();
@@ -2285,6 +2281,7 @@ function renderCreativosGrid() {
               <button type="button" class="btn light btn-sm btn-creativo-copy" data-id="${item.id}" title="Copiar texto para publicar">
                 📋 Copiar texto
               </button>
+              ${catalogCaptionEditHtml(item)}
             </div>
           </div>
         </article>
@@ -2309,10 +2306,12 @@ function openLightboxModal(item) {
 
   const currentImg = activeFormat === "story" ? item.storyUrl : item.feedUrl;
 
+  const caption = resolveCaption(item.id, item) || item.copy || item.body || "";
+
   if (modalImg) modalImg.src = `${currentImg}?v=${ASSET_V}`;
   if (modalTitle) modalTitle.textContent = item.title;
   if (modalCat) modalCat.textContent = item.cat;
-  if (modalCopy) modalCopy.textContent = item.copy || item.body;
+  if (modalCopy) modalCopy.textContent = caption;
 
   if (modalBtnFeed) {
     modalBtnFeed.href = `${item.feedUrl}?v=${ASSET_V}`;
@@ -2325,7 +2324,7 @@ function openLightboxModal(item) {
 
   if (modalBtnCopy) {
     modalBtnCopy.onclick = () => {
-      navigator.clipboard.writeText(item.copy || item.body).then(() => {
+      navigator.clipboard.writeText(caption).then(() => {
         const orig = modalBtnCopy.textContent;
         modalBtnCopy.textContent = "✓ ¡Texto copiado!";
         setTimeout(() => {

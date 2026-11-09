@@ -48,7 +48,7 @@ Directamente desde la interfaz de Creativos, Norberto y los administradores gest
    - **Botones ⬆️ / ⬇️**: Para subir o bajar una posición en un clic.
    - **Cálculo de slots estimados**: Muestra las fechas proyectadas de publicación (Lunes, Miércoles y Viernes a las 10:00 hs de Argentina).
    - **⚡ Publicar ya**: Publica de inmediato según el canal elegido (timeout 180s). Cuenta para el cupo del día.
-   - **✏️ Editar texto**: Antes de publicar, cualquier admin/Norberto puede cambiar el caption (máx. 2200 caracteres). Queda guardado para todos y para la próxima vez que la encolen.
+   - **✏️ Editar texto**: Desde el catálogo o la lista, cualquier usuario logueado puede cambiar el caption de cada pieza (máx. 2200 caracteres). Queda guardado para todos y para la próxima vez que la encolen. Los textos usan el WhatsApp de Clara (`+54 9 11 3178-1733`).
    - **Canal**: por pieza elegís **Feed + Story**, **Solo Feed** o **Solo Story** (vale para el cron y para Publicar ya).
    - **Activar / Pausar**: botón para apagar o encender el cron automático (por defecto **activo**). Pausado = el cron no publica; la cola y Publicar ya siguen disponibles.
    - **Idempotencia diaria + anti-duplicado**: una sola pieza por día AR; locks permanentes por canal; piezas publicadas o fallidas con canal reservado **no** se reencolan.
@@ -85,7 +85,7 @@ Este módulo permite medir el retorno de la inversión publicitaria y la trazabi
    `https://www.kinesica.com.ar/agendar`
 2. **WhatsApp directo con mensaje predeterminado:**  
    Para campañas cuyo objetivo sea mensaje a WhatsApp, utilizá el enlace con mensaje inicial:  
-   `https://wa.me/5491161564311?text=Hola,%20vi%20la%20publicación%20en%20Instagram%20y%20quisiera%20consultar%20por%20un%20turno`
+   `https://wa.me/5491131781733?text=Hola,%20vi%20la%20publicación%20en%20Instagram%20y%20quisiera%20consultar%20por%20un%20turno`
 3. **Frecuencia automatizada de publicación:**  
    - Con la cola activa, el cron publica 3 veces por semana (Lunes, Miércoles y Viernes a las 10:00 hs).
    - Si ese día ya hubo un **Publicar ya**, el cron salta el día (una sola pieza por fecha).

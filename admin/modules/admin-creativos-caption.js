@@ -1,9 +1,10 @@
 /**
- * Kinésica Admin — Edición de caption (copy Instagram) en la cola de Creativos.
+ * Kinésica Admin — Edición de caption (copy Instagram) en cola y catálogo.
  * Persistido vía update_caption (override de catálogo + cola queued).
  */
 
 import { escapeHtml } from "./dom.js?v=79";
+import { getSessionUser } from "./auth.js?v=83";
 import {
   resolveCaption,
   saveCaption,
@@ -11,9 +12,15 @@ import {
   isServiceEnabled,
   setServiceEnabled,
   CAPTION_MAX,
-} from "./admin-creativos-cola.js?v=7";
+  normalizeIgCaptionPhone,
+} from "./admin-creativos-cola.js?v=8";
 
 const CHANNEL_LABELS = { both: "Feed + Story", feed: "Solo Feed", story: "Solo Story" };
+
+/** Usuario logueado en el admin (creativos ya está gated): editar captions pieza a pieza. */
+export function canEditCaptions() {
+  return Boolean(getSessionUser());
+}
 
 export function channelSelectHtml(q) {
   const ch = ["feed", "story", "both"].includes(q.channels) ? q.channels : "both";
@@ -34,21 +41,41 @@ export function channelLabel(channels) {
   return CHANNEL_LABELS[ch];
 }
 
+function captionEditorHtml(id, text, idPrefix = "caption") {
+  const safeId = escapeHtml(id);
+  const fieldId = `${idPrefix}-${safeId}`;
+  return `
+    <div class="creativos-caption-editor" data-caption-for="${safeId}" hidden>
+      <label class="creativos-caption-label" for="${fieldId}">Texto que se publica en Instagram (Feed)</label>
+      <textarea id="${fieldId}" class="creativos-caption-textarea" rows="8" maxlength="${CAPTION_MAX}">${escapeHtml(text)}</textarea>
+      <div class="creativos-caption-actions">
+        <button type="button" class="btn btn-sm btn-queue-save-caption" data-id="${safeId}">💾 Guardar</button>
+        <button type="button" class="btn light btn-sm btn-queue-cancel-caption" data-id="${safeId}">Cancelar</button>
+      </div>
+    </div>`;
+}
+
 export function captionSnippetHtml(q, seedItem) {
-  const text = (q.caption || resolveCaption(q.creativo_id, seedItem) || "").trim();
+  const text = normalizeIgCaptionPhone(resolveCaption(q.creativo_id, seedItem) || "").trim();
   const preview = text.length > 140 ? `${text.slice(0, 140)}…` : text;
+  const edit = canEditCaptions()
+    ? `<button type="button" class="btn light btn-sm btn-queue-edit-caption" data-id="${escapeHtml(q.creativo_id)}" title="Editar texto de publicación">✏️ Editar texto</button>
+       ${captionEditorHtml(q.creativo_id, text)}`
+    : "";
   return `
     ${channelSelectHtml(q)}
     <p class="creativos-queue-snippet">${escapeHtml(preview)}</p>
-    <button type="button" class="btn light btn-sm btn-queue-edit-caption" data-id="${escapeHtml(q.creativo_id)}" title="Editar texto de publicación">✏️ Editar texto</button>
-    <div class="creativos-caption-editor" data-caption-for="${escapeHtml(q.creativo_id)}" hidden>
-      <label class="creativos-caption-label" for="caption-${escapeHtml(q.creativo_id)}">Texto que se publica en Instagram (Feed)</label>
-      <textarea id="caption-${escapeHtml(q.creativo_id)}" class="creativos-caption-textarea" rows="8">${escapeHtml(text)}</textarea>
-      <div class="creativos-caption-actions">
-        <button type="button" class="btn btn-sm btn-queue-save-caption" data-id="${escapeHtml(q.creativo_id)}">💾 Guardar</button>
-        <button type="button" class="btn light btn-sm btn-queue-cancel-caption" data-id="${escapeHtml(q.creativo_id)}">Cancelar</button>
-      </div>
-    </div>`;
+    ${edit}`;
+}
+
+/** Botón + editor inline en cada tarjeta del catálogo. */
+export function catalogCaptionEditHtml(item) {
+  if (!canEditCaptions() || !item?.id) return "";
+  const text = (resolveCaption(item.id, item) || "").trim();
+  const id = escapeHtml(item.id);
+  return `
+    <button type="button" class="btn light btn-sm btn-queue-edit-caption" data-id="${id}" title="Editar texto de publicación">✏️ Editar texto</button>
+    ${captionEditorHtml(item.id, text, "catalog-caption")}`;
 }
 
 export function toggleCaptionEditor(id, open) {
@@ -58,6 +85,10 @@ export function toggleCaptionEditor(id, open) {
 }
 
 export async function handleSaveCaptionClick(id, btn) {
+  if (!canEditCaptions()) {
+    window.alert("Tenés que iniciar sesión para editar estos textos.");
+    return;
+  }
   const box = document.querySelector(`[data-caption-for="${CSS.escape(id)}"]`);
   const ta = box?.querySelector("textarea");
   if (!ta) return;
@@ -69,6 +100,7 @@ export async function handleSaveCaptionClick(id, btn) {
   btn.disabled = true;
   try {
     await saveCaption(id, caption);
+    toggleCaptionEditor(id, false);
     window.alert("Texto guardado. Vale para la cola y para la próxima vez que encoles esta pieza.");
   } catch (err) {
     if (!err.auth) window.alert(err.message || "No se pudo guardar el texto");

@@ -14,7 +14,7 @@ import {
   publishNow,
   subscribeCola,
   queuedChannel,
-} from "./admin-creativos-cola.js?v=7";
+} from "./admin-creativos-cola.js?v=8";
 import {
   captionSnippetHtml,
   toggleCaptionEditor,
@@ -23,7 +23,7 @@ import {
   handleServiceToggleClick,
   serviceToggleHtml,
   channelLabel,
-} from "./admin-creativos-caption.js?v=4";
+} from "./admin-creativos-caption.js?v=5";
 
 let resolveItem = () => null, draggedId = null;
 

@@ -73,12 +73,12 @@ import {
   _setListForTesting,
   stateOf,
   orderOf,
-} from "../admin/modules/admin-creativos-cola.js?v=7";
+} from "../admin/modules/admin-creativos-cola.js?v=8";
 import {
   colaHeartHtml,
   colaBadgeHtml,
   colaButtonHtml,
-} from "../admin/modules/admin-creativos-cola-ui.js?v=1";
+} from "../admin/modules/admin-creativos-cola-ui.js?v=2";
 
 // Mock de state simulado
 const mockList = [

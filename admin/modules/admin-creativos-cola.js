@@ -34,12 +34,28 @@ function setList(items) {
   notify();
 }
 
+/** WhatsApp de Clara (bot) — reemplaza el de Norberto en captions IG. */
+const NORBERTO_WA_DISPLAY = "+54 9 11 6156-4311";
+const CLARA_WA_DISPLAY = "+54 9 11 3178-1733";
+const NORBERTO_WA_DIGITS = "5491161564311";
+const CLARA_WA_DIGITS = "5491131781733";
+
+export function normalizeIgCaptionPhone(text) {
+  return String(text || "")
+    .split(NORBERTO_WA_DISPLAY).join(CLARA_WA_DISPLAY)
+    .split(NORBERTO_WA_DIGITS).join(CLARA_WA_DIGITS);
+}
+
 /** Caption efectivo: override DB → cola → seed del catálogo. */
 export function resolveCaption(id, seedItem) {
-  if (captionOverrides.has(id)) return captionOverrides.get(id);
-  const row = colaMap.get(id);
-  if (row?.caption) return row.caption;
-  return seedItem?.copy || seedItem?.body || "";
+  let text = "";
+  if (captionOverrides.has(id)) text = captionOverrides.get(id);
+  else {
+    const row = colaMap.get(id);
+    if (row?.caption) text = row.caption;
+    else text = seedItem?.copy || seedItem?.body || "";
+  }
+  return normalizeIgCaptionPhone(text);
 }
 
 export function getCaptionOverride(id) {
@@ -115,7 +131,7 @@ export async function reorderCola(orderedIds) {
 }
 
 export async function saveCaption(id, caption) {
-  const text = String(caption || "").trim();
+  const text = normalizeIgCaptionPhone(String(caption || "").trim());
   if (!text || text.length > CAPTION_MAX) {
     throw Object.assign(new Error(`El texto debe tener entre 1 y ${CAPTION_MAX} caracteres`), { auth: false });
   }

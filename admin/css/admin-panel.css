@@ -1974,6 +1974,11 @@
   background: #f8fafc;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
+  flex: 1 1 100%;
+  width: 100%;
+}
+.creativo-actions .creativos-caption-editor {
+  order: 10;
 }
 .creativos-caption-label {
   display: block;
