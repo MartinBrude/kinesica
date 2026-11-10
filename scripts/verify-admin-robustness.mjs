@@ -953,8 +953,9 @@ await test("Clara dropdown + secciones deep-link + mail preview", () => {
   assert.match(routerJs, /clara\/\$\{sec\}|\/admin\/clara\//, "router deep-link /admin/clara/{sec}");
   assert.match(routerJs, /syncUrlWithViewState\(route/, "popstate sincroniza con route parseada");
   const viewsJs = fs.readFileSync(path.join(adminDir, "modules/config-views.js"), "utf8");
-  assert.match(viewsJs, /focusClaraSection/, "config-views focusClaraSection");
+  assert.match(viewsJs, /setClaraActiveSection/, "config-views setClaraActiveSection");
   assert.match(viewsJs, /normalizeClaraSection/, "config-views normalizeClaraSection");
+  assert.match(viewsJs, /card\.hidden = !match/, "Clara oculta secciones no activas como Administración");
   const previewPhp = fs.readFileSync(path.join(adminDir, "api/send-confirmation-preview.php"), "utf8");
   assert.match(previewPhp, /require_auth/, "preview autenticado");
   assert.match(previewPhp, /user_email/, "preview destino forzado");

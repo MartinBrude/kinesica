@@ -25,6 +25,14 @@ export function hideConsultorioView() {
 
 const CLARA_SECTIONS = new Set(["estado", "mensajes", "plantilla", "politicas", "simulador"]);
 
+const CLARA_SECTION_TITLES = {
+  estado: "Clara · Estado de servicios",
+  mensajes: "Clara · Mensajes y menú",
+  plantilla: "Clara · Plantilla de recordatorio",
+  politicas: "Clara · Políticas del mail",
+  simulador: "Clara · Simulador",
+};
+
 export function normalizeClaraSection(section) {
   const raw = String(section || "").toLowerCase().trim();
   if (raw === "mails" || raw === "politica" || raw === "políticas") return "politicas";
@@ -35,37 +43,42 @@ export function normalizeClaraSection(section) {
   return CLARA_SECTIONS.has(raw) ? raw : "";
 }
 
-export function focusClaraSection(section) {
-  const id = normalizeClaraSection(section);
-  if (!id) return;
-  const el = document.getElementById(`clara-section-${id}`);
-  if (!el) return;
+/** Como Administración: muestra solo la sección elegida y oculta el resto. */
+export function setClaraActiveSection(section = "mensajes") {
+  const id = normalizeClaraSection(section) || "mensajes";
   document.querySelectorAll("#view-clara details.admin-collapsible-card[data-clara-section]").forEach((card) => {
-    if (card !== el) card.open = false;
+    const match = card.getAttribute("data-clara-section") === id;
+    card.hidden = !match;
+    if (match) {
+      card.open = true;
+    }
   });
-  el.open = true;
-  requestAnimationFrame(() => {
-    try {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-    } catch { /* ignore */ }
-  });
+  const heroTitle = document.querySelector("#view-clara .hero-title");
+  if (heroTitle) {
+    heroTitle.textContent = CLARA_SECTION_TITLES[id] || "Clara";
+  }
+  try {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  } catch { /* ignore */ }
+}
+
+/** @deprecated Prefer setClaraActiveSection — se mantiene por compatibilidad. */
+export function focusClaraSection(section) {
+  setClaraActiveSection(section);
 }
 
 export function showClaraView(onClaraShow, section = "") {
   const view = switchActiveView("view-clara");
   if (view) {
-    const normalized = normalizeClaraSection(section);
+    const normalized = normalizeClaraSection(section) || "mensajes";
     try {
       sessionStorage.setItem(
         "kinesica_admin_view",
-        JSON.stringify(normalized ? { view: "clara", section: normalized } : { view: "clara" })
+        JSON.stringify({ view: "clara", section: normalized })
       );
     } catch { /* ignore */ }
+    setClaraActiveSection(normalized);
     if (typeof onClaraShow === "function") onClaraShow();
-    if (normalized) {
-      // Esperar un tick por si la vista se acaba de mostrar / cargar.
-      setTimeout(() => focusClaraSection(normalized), 40);
-    }
   }
 }
 

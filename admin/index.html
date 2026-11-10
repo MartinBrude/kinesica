@@ -2801,9 +2801,20 @@
             var claraSec = (saved.section || "").toLowerCase();
             var claraAllowed = { estado: 1, mensajes: 1, plantilla: 1, politicas: 1, simulador: 1 };
             if (!claraAllowed[claraSec]) claraSec = "mensajes";
+            var claraTitles = {
+              estado: "Clara · Estado de servicios",
+              mensajes: "Clara · Mensajes y menú",
+              plantilla: "Clara · Plantilla de recordatorio",
+              politicas: "Clara · Políticas del mail",
+              simulador: "Clara · Simulador"
+            };
+            var claraHero = cla ? cla.querySelector(".hero-title") : null;
+            if (claraHero) claraHero.textContent = claraTitles[claraSec] || "Clara";
             var cards = cla ? cla.querySelectorAll("details.admin-collapsible-card[data-clara-section]") : [];
             for (var ci = 0; ci < cards.length; ci++) {
-              cards[ci].open = cards[ci].getAttribute("data-clara-section") === claraSec;
+              var matchSec = cards[ci].getAttribute("data-clara-section") === claraSec;
+              cards[ci].hidden = !matchSec;
+              if (matchSec) cards[ci].open = true;
             }
           } else if (saved.view === "interacciones" || saved.view === "chats") {
             var inter = document.getElementById("view-interacciones");
@@ -2879,6 +2890,6 @@
   <div id="print-root"></div>
   <script src="/partials/google-reviews-data.min.js?v=1794315438" defer></script>
   <script src="/booking/booking-bundle.min.js?v=1794315438" defer></script>
-  <script type="module" src="/admin/app.js?v=210"></script>
+  <script type="module" src="/admin/app.js?v=211"></script>
 </body>
 </html>

@@ -31,7 +31,7 @@ import {
   showConfiguracionView,
   hideConfiguracionView,
   switchConfigSubtab as switchConfigSubView,
-} from "./config-views.js?v=2";
+} from "./config-views.js?v=3";
 
 export { DEFAULT_CLARA_TEXTS };
 export { showConsultorioView, hideConsultorioView, hideClaraView, showConfiguracionView, hideConfiguracionView };
