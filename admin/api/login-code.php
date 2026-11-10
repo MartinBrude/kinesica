@@ -45,7 +45,7 @@ if ($action === 'magic') {
     $_SESSION['user'] = $user['username'];
     $_SESSION['name'] = $user['display_name'];
     $_SESSION['role'] = (string) ($user['role'] ?? user_role($user['username']));
-    $_SESSION['full'] = true;
+    mark_full_session();
 
     json_out(200, [
         'ok' => true,
@@ -102,7 +102,7 @@ if ($action === 'verify') {
     $_SESSION['user'] = $user['username'];
     $_SESSION['name'] = $user['display_name'];
     $_SESSION['role'] = (string) ($user['role'] ?? user_role($user['username']));
-    $_SESSION['full'] = true;
+    mark_full_session();
 
     json_out(200, [
         'ok' => true,

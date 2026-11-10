@@ -58,7 +58,7 @@ if (!totp_valid($user['totp_secret'], $code) && !login_code_verify($username, $c
 
 login_clear_failures($username);
 login_record_success($username);
-$_SESSION['full'] = true;
+mark_full_session();
 json_out(200, [
     'ok' => true,
     'name' => $user['display_name'],

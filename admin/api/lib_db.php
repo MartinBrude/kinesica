@@ -102,22 +102,132 @@ if (!defined('KINESICA_SKIP_ADMIN_EXCEPTION_HANDLER') || !KINESICA_SKIP_ADMIN_EX
     });
 }
 
+/** Sesión estándar (profesionales / colaboradores): 8 horas. */
+function session_lifetime_default(): int
+{
+    return 8 * 3600;
+}
+
+/** Sesión de administradores (role === admin): 30 días absolutos desde el login. */
+function session_lifetime_admin(): int
+{
+    return 30 * 24 * 3600;
+}
+
+function session_lifetime_for_role(string $role): int
+{
+    return $role === 'admin' ? session_lifetime_admin() : session_lifetime_default();
+}
+
+/**
+ * @return array{expires:int,path:string,secure:bool,httponly:bool,samesite:string}
+ */
+function session_cookie_params_for(int $lifetimeSeconds): array
+{
+    return [
+        'expires' => time() + max(0, $lifetimeSeconds),
+        'path' => '/admin/',
+        'secure' => true,
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ];
+}
+
+function clear_session_cookie(): void
+{
+    if (headers_sent()) {
+        return;
+    }
+    setcookie(session_name(), '', [
+        'expires' => time() - 42000,
+        'path' => '/admin/',
+        'secure' => true,
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
+}
+
+function refresh_session_cookie(int $lifetimeSeconds): void
+{
+    if (session_status() !== PHP_SESSION_ACTIVE || headers_sent()) {
+        return;
+    }
+    setcookie(session_name(), session_id(), session_cookie_params_for($lifetimeSeconds));
+}
+
+function session_role_from_session(): string
+{
+    $username = (string) ($_SESSION['user'] ?? '');
+    if ($username === 'martin') {
+        return 'admin';
+    }
+    return (string) ($_SESSION['role'] ?? 'professional');
+}
+
+/**
+ * Caducidad absoluta desde auth_at.
+ * Admin: 30 días. Resto: 8 horas.
+ */
+function enforce_session_lifetime(): void
+{
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        return;
+    }
+    if (empty($_SESSION['user']) || empty($_SESSION['full'])) {
+        return;
+    }
+
+    $role = session_role_from_session();
+    if ($role === 'admin') {
+        $_SESSION['role'] = 'admin';
+    }
+    $lifetime = session_lifetime_for_role($role);
+    $authAt = (int) ($_SESSION['auth_at'] ?? 0);
+    if ($authAt <= 0) {
+        $_SESSION['auth_at'] = time();
+        $authAt = (int) $_SESSION['auth_at'];
+    }
+
+    $age = time() - $authAt;
+    if ($age > $lifetime) {
+        $_SESSION = [];
+        clear_session_cookie();
+        return;
+    }
+
+    refresh_session_cookie(max(60, $lifetime - $age));
+}
+
+/** Marca login completo y fija auth_at + cookie según el rol. */
+function mark_full_session(): void
+{
+    $_SESSION['full'] = true;
+    $_SESSION['auth_at'] = time();
+    $role = session_role_from_session();
+    if ($role === 'admin') {
+        $_SESSION['role'] = 'admin';
+    }
+    refresh_session_cookie(session_lifetime_for_role($role));
+}
+
 function start_session(): void
 {
     if (session_status() === PHP_SESSION_ACTIVE) {
+        enforce_session_lifetime();
         return;
     }
-    $lifetime = 8 * 3600;
-    ini_set('session.gc_maxlifetime', (string) $lifetime);
+    // GC debe cubrir la sesión admin más larga (30 días).
+    ini_set('session.gc_maxlifetime', (string) session_lifetime_admin());
     session_name('kinesica_atm');
     session_set_cookie_params([
-        'lifetime' => $lifetime,
+        'lifetime' => session_lifetime_default(),
         'path' => '/admin/',
         'secure' => true,
         'httponly' => true,
         'samesite' => 'Lax',
     ]);
     session_start();
+    enforce_session_lifetime();
 }
 
 function json_out(int $status, array $body): void

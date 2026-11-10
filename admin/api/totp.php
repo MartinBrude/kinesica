@@ -45,5 +45,5 @@ login_record_success($username);
 db()->prepare('UPDATE users SET totp_confirmed = 1 WHERE username = :username')
     ->execute(['username' => $user['username']]);
 $_SESSION['role'] = (string) ($user['role'] ?? user_role($user['username']));
-$_SESSION['full'] = true;
+mark_full_session();
 json_out(200, ['ok' => true, 'name' => $user['display_name'], 'role' => $_SESSION['role']]);
