@@ -25,7 +25,6 @@ function prefillMailPreviewForm() {
   const hora = qs("#cfg-mail-preview-hora");
   const servicio = qs("#cfg-mail-preview-servicio");
   const profesional = qs("#cfg-mail-preview-profesional");
-  const menor = qs("#cfg-mail-preview-menor");
 
   const user = getSessionUser();
   if (paciente && !paciente.value.trim()) {
@@ -35,7 +34,28 @@ function prefillMailPreviewForm() {
   if (hora && !hora.value) hora.value = "16:00";
   if (servicio && !servicio.value.trim()) servicio.value = "Terapias Manuales";
   if (profesional && !profesional.value) profesional.value = "Lic. Norberto Brude";
-  if (menor) menor.checked = false;
+}
+
+export function applyMailPreviewReadOnly(isReadOnly) {
+  const locked = Boolean(isReadOnly);
+  [
+    "#cfg-mail-preview-paciente",
+    "#cfg-mail-preview-fecha",
+    "#cfg-mail-preview-hora",
+    "#cfg-mail-preview-servicio",
+  ].forEach((sel) => {
+    const el = qs(sel);
+    if (el) el.readOnly = locked;
+  });
+  const profesional = qs("#cfg-mail-preview-profesional");
+  if (profesional) profesional.disabled = locked;
+  const menor = qs("#cfg-mail-preview-menor");
+  if (menor) menor.disabled = locked;
+  const btn = qs("#btn-send-confirmation-preview");
+  if (btn) {
+    btn.disabled = locked;
+    btn.hidden = locked;
+  }
 }
 
 function setPreviewStatus(el, message, ok) {
@@ -101,7 +121,9 @@ export function initMailPreview() {
       setPreviewStatus(statusEl, message, false);
       toast(message, { type: "danger" });
     } finally {
-      btn.disabled = false;
+      const isColab = getSessionUser()?.role === "colaborador";
+      btn.disabled = isColab;
+      btn.hidden = isColab;
       btn.textContent = original;
     }
   });

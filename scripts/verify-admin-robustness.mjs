@@ -938,6 +938,33 @@ await test("recordatorios.php ingest + vista SPA + reconcile", () => {
   assert.match(indexHtml, /id="recordatorios-sync"/, "indicador sync");
 });
 
+await test("Clara dropdown + secciones deep-link + mail preview", () => {
+  const indexHtml = fs.readFileSync(path.join(adminDir, "index.html"), "utf8");
+  assert.match(indexHtml, /id="nav-group-clara"/, "nav-group-clara dropdown");
+  assert.match(indexHtml, /id="nav-btn-clara-politicas"/, "nav Políticas del mail");
+  assert.match(indexHtml, /id="clara-section-politicas"/, "sección políticas en view-clara");
+  assert.match(indexHtml, /id="btn-send-confirmation-preview"/, "botón mail de prueba");
+  assert.match(indexHtml, /claraAllowed|data-clara-section/, "boot abre sección Clara de la URL");
+  const tabsJs = fs.readFileSync(path.join(adminDir, "modules/app-tabs.js"), "utf8");
+  assert.match(tabsJs, /nav-btn-clara-politicas/, "app-tabs escucha politicas");
+  assert.match(tabsJs, /nav-group-clara/, "app-tabs setupDropdown Clara");
+  assert.match(tabsJs, /showClaraView\(section\)/, "app-tabs pasa section a showClaraView");
+  const routerJs = fs.readFileSync(path.join(adminDir, "modules/router.js"), "utf8");
+  assert.match(routerJs, /clara\/\$\{sec\}|\/admin\/clara\//, "router deep-link /admin/clara/{sec}");
+  assert.match(routerJs, /syncUrlWithViewState\(route/, "popstate sincroniza con route parseada");
+  const viewsJs = fs.readFileSync(path.join(adminDir, "modules/config-views.js"), "utf8");
+  assert.match(viewsJs, /focusClaraSection/, "config-views focusClaraSection");
+  assert.match(viewsJs, /normalizeClaraSection/, "config-views normalizeClaraSection");
+  const previewPhp = fs.readFileSync(path.join(adminDir, "api/send-confirmation-preview.php"), "utf8");
+  assert.match(previewPhp, /require_auth/, "preview autenticado");
+  assert.match(previewPhp, /user_email/, "preview destino forzado");
+  assert.ok(fs.existsSync(path.join(adminDir, "modules/mail-preview.js")), "mail-preview.js");
+  const mailJs = fs.readFileSync(path.join(adminDir, "modules/mail-preview.js"), "utf8");
+  assert.match(mailJs, /applyMailPreviewReadOnly/, "mail-preview readonly colaborador");
+  const appJs = fs.readFileSync(path.join(adminDir, "app.js"), "utf8");
+  assert.match(appJs, /router\.js\?v=/, "app.js cache-bustea router.js");
+});
+
 await test("encuestas.php + vista SPA + wiring de navegación", () => {
   const encPhp = fs.readFileSync(path.join(adminDir, "api/encuestas.php"), "utf8");
   assert.match(encPhp, /encuestas_io\.php/, "encuestas.php debe incluir encuestas_io.php");

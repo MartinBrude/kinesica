@@ -64,6 +64,8 @@ check(str_contains($builtCancel['subject'], 'Anulación') && str_contains($built
 $previewPhp = file_get_contents(__DIR__ . '/../admin/api/send-confirmation-preview.php');
 check(str_contains($previewPhp, 'require_auth()') && str_contains($previewPhp, 'user_email'), 'preview endpoint autenticado');
 check(str_contains($previewPhp, 'kinesica_build_confirmation_mail') && !str_contains($previewPhp, 'INSERT INTO pacientes'), 'preview sin upsert paciente');
+check(str_contains($previewPhp, 'return null') && str_contains($previewPhp, '503'), 'preview rate-limit fail-closed');
+check(str_contains($previewPhp, 'HH:MM'), 'preview valida formato de hora');
 $adminHtml = file_get_contents(__DIR__ . '/../admin/index.html');
 check(str_contains($adminHtml, 'id="btn-send-confirmation-preview"'), 'botón mail de prueba en admin/clara');
 check(str_contains($adminHtml, 'id="cfg-mail-preview-paciente"'), 'formulario mail de prueba en admin/clara');

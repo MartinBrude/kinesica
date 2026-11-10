@@ -2798,6 +2798,13 @@
           } else if (saved.view === "clara" || saved.view === "configuracion") {
             var cla = document.getElementById("view-clara");
             if (cla) cla.hidden = false;
+            var claraSec = (saved.section || "").toLowerCase();
+            var claraAllowed = { estado: 1, mensajes: 1, plantilla: 1, politicas: 1, simulador: 1 };
+            if (!claraAllowed[claraSec]) claraSec = "mensajes";
+            var cards = cla ? cla.querySelectorAll("details.admin-collapsible-card[data-clara-section]") : [];
+            for (var ci = 0; ci < cards.length; ci++) {
+              cards[ci].open = cards[ci].getAttribute("data-clara-section") === claraSec;
+            }
           } else if (saved.view === "interacciones" || saved.view === "chats") {
             var inter = document.getElementById("view-interacciones");
             if (inter) inter.hidden = false;
@@ -2872,6 +2879,6 @@
   <div id="print-root"></div>
   <script src="/partials/google-reviews-data.min.js?v=1794315438" defer></script>
   <script src="/booking/booking-bundle.min.js?v=1794315438" defer></script>
-  <script type="module" src="/admin/app.js?v=209"></script>
+  <script type="module" src="/admin/app.js?v=210"></script>
 </body>
 </html>

@@ -144,8 +144,8 @@ export function initPopstateRouter({ loadAll, fillForm, showForm, showCompare, s
   if (typeof window === "undefined") return;
   window.addEventListener("popstate", (event) => {
     if (!getSessionUser()) return;
+    const route = (event.state && event.state.view ? event.state : parseAdminRouteFromLocation()) || { view: "inicio" };
     try {
-      const route = (event.state && event.state.view ? event.state : parseAdminRouteFromLocation()) || { view: "inicio" };
       if (route.view === "form" && route.id) {
         const items = loadAll();
         const ficha = items.find((f) => f.id === route.id);
@@ -172,7 +172,8 @@ export function initPopstateRouter({ loadAll, fillForm, showForm, showCompare, s
       }
       else switchTab("inicio");
     } finally {
-      syncUrlWithViewState(event.state, false, true);
+      // Sincronizar con la route efectiva (no solo event.state, que puede estar vacío).
+      syncUrlWithViewState(route, false, true);
     }
   });
 }

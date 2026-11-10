@@ -22,7 +22,7 @@ import {
   bindToggleElements,
 } from "./config-toggles.js";
 import { saveTextsAndPolicies } from "./config-save.js";
-import { initMailPreview, refreshMailPreviewPrefill } from "./mail-preview.js?v=1";
+import { initMailPreview, refreshMailPreviewPrefill, applyMailPreviewReadOnly } from "./mail-preview.js?v=2";
 import {
   showConsultorioView,
   hideConsultorioView,
@@ -147,6 +147,10 @@ function applyColaboradorReadOnly() {
   document.querySelectorAll("#view-clara input, #view-clara textarea").forEach((el) => {
     el.readOnly = true;
   });
+  document.querySelectorAll("#view-clara select, #view-clara input[type='checkbox']").forEach((el) => {
+    el.disabled = true;
+  });
+  applyMailPreviewReadOnly(true);
   if (tog.cfgClaraToggleBtn) tog.cfgClaraToggleBtn.disabled = true;
   if (tog.cfgBookingToggleBtn) tog.cfgBookingToggleBtn.disabled = true;
   if (textsStatusBanner) {

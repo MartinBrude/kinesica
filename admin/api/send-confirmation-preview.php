@@ -23,20 +23,30 @@ if ($to === '' || !filter_var($to, FILTER_VALIDATE_EMAIL)) {
     json_out(400, ['error' => 'Tu usuario no tiene un correo configurado. Cargalo en Usuarios del admin.']);
 }
 
-function kinesica_preview_rate_ok(string $key, int $max, int $windowSec): bool
+/**
+ * Rate limit del mail de prueba. Fail-closed: si no se puede persistir el contador, deniega.
+ * @return bool|null true = ok, false = límite, null = error de storage
+ */
+function kinesica_preview_rate_ok(string $key, int $max, int $windowSec): ?bool
 {
     try {
         $dir = rtrim(sys_get_temp_dir(), '/') . '/kinesica_conf_preview_rl';
-        if (!is_dir($dir)) {
-            @mkdir($dir, 0700, true);
+        if (!is_dir($dir) && !@mkdir($dir, 0700, true) && !is_dir($dir)) {
+            error_log('[send-confirmation-preview] rate-limit: no se pudo crear ' . $dir);
+            return null;
         }
         $file = $dir . '/' . hash('sha256', $key) . '.json';
         $now = time();
         $fh = @fopen($file, 'c+');
         if (!$fh) {
-            return true;
+            error_log('[send-confirmation-preview] rate-limit: no se pudo abrir ' . $file);
+            return null;
         }
-        flock($fh, LOCK_EX);
+        if (!flock($fh, LOCK_EX)) {
+            fclose($fh);
+            error_log('[send-confirmation-preview] rate-limit: flock falló');
+            return null;
+        }
         $raw = stream_get_contents($fh);
         $hits = json_decode($raw ?: '[]', true);
         if (!is_array($hits)) {
@@ -49,16 +59,26 @@ function kinesica_preview_rate_ok(string $key, int $max, int $windowSec): bool
         }
         ftruncate($fh, 0);
         rewind($fh);
-        fwrite($fh, json_encode($hits));
+        if (fwrite($fh, json_encode($hits)) === false) {
+            flock($fh, LOCK_UN);
+            fclose($fh);
+            error_log('[send-confirmation-preview] rate-limit: fwrite falló');
+            return null;
+        }
         flock($fh, LOCK_UN);
         fclose($fh);
         return $ok;
     } catch (Throwable $e) {
-        return true;
+        error_log('[send-confirmation-preview] rate-limit: ' . $e->getMessage());
+        return null;
     }
 }
 
-if (!kinesica_preview_rate_ok('user:' . strtolower($username), 5, 3600)) {
+$rateOk = kinesica_preview_rate_ok('user:' . strtolower($username), 5, 3600);
+if ($rateOk === null) {
+    json_out(503, ['error' => 'No se pudo verificar el límite de envíos. Probá de nuevo en unos minutos.']);
+}
+if ($rateOk === false) {
     json_out(429, ['error' => 'Demasiados mails de prueba. Probá de nuevo más tarde.']);
 }
 
@@ -76,8 +96,15 @@ if ($paciente === '') {
 if ($fecha === '' || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
     json_out(400, ['error' => 'Ingresá una fecha válida (AAAA-MM-DD).']);
 }
-if ($hora === '') {
-    json_out(400, ['error' => 'Ingresá el horario.']);
+if ($hora === '' || !preg_match('/^\d{1,2}:\d{2}(?:\s*hs)?$/i', $hora)) {
+    json_out(400, ['error' => 'Ingresá un horario válido (HH:MM).']);
+}
+// Normalizar a HH:MM (sin "hs") para el builder.
+if (preg_match('/^(\d{1,2}):(\d{2})/', $hora, $hm)) {
+    $hora = sprintf('%02d:%02d', (int) $hm[1], (int) $hm[2]);
+    if ((int) $hm[1] > 23 || (int) $hm[2] > 59) {
+        json_out(400, ['error' => 'Ingresá un horario válido (HH:MM).']);
+    }
 }
 if ($profesional === '') {
     json_out(400, ['error' => 'Ingresá el profesional.']);
