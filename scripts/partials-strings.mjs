@@ -26,7 +26,7 @@ export const PARTIAL_STRINGS = {
     articles: { label: "Artículos", title: "Artículos" },
     methodsMenu: { label: "Métodos y Técnicas", title: "Métodos y Técnicas" },
     booking: { label: "Agendar", title: "Agendar turno o consulta online" },
-    contact: { label: "Contacto", title: "Contactar por WhatsApp" },
+    contact: { label: "WhatsApp", title: "Reservar turno por WhatsApp" },
     footerComment:
       "Spanish footer — root-absolute links (/rpg.html). file:// adjusted in footer-include.js.",
     methodsTitle: "Métodos y Técnicas",
@@ -36,12 +36,11 @@ export const PARTIAL_STRINGS = {
     copyright: "© Kinésica — Todos los derechos reservados",
     privacyPolicy: "Política de privacidad",
     termsOfService: "Condiciones del servicio",
-    ctaTitle: "Contáctanos y reserva un turno",
+    ctaTitle: "Reservá tu turno",
     ctaText: "",
-    ctaButton: "Contacto",
     whatsappComment:
       "Spanish WhatsApp float button. Loaded with <script src>; works from file://",
-    whatsappAria: "Contactar por WhatsApp",
+    whatsappAria: "Reservar turno por WhatsApp",
   },
   en: {
     headerComment:
@@ -54,7 +53,7 @@ export const PARTIAL_STRINGS = {
     articles: { label: "Articles", title: "Articles" },
     methodsMenu: { label: "Methods & Techniques", title: "Methods & Techniques" },
     booking: { label: "Book", title: "Book an appointment online" },
-    contact: { label: "Contact", title: "Contact via WhatsApp" },
+    contact: { label: "WhatsApp", title: "Book via WhatsApp" },
     footerComment:
       "English footer — /en/… links. file:// adjusted in footer-include.js.",
     methodsTitle: "Methods & Techniques",
@@ -64,12 +63,11 @@ export const PARTIAL_STRINGS = {
     copyright: "© Kinésica — All rights reserved",
     privacyPolicy: "Privacy Policy",
     termsOfService: "Terms of Service",
-    ctaTitle: "Contact us and book an appointment",
+    ctaTitle: "Book your appointment",
     ctaText: "",
-    ctaButton: "Contact",
     whatsappComment:
       "English WhatsApp float button. Loaded with <script src>; works from file://",
-    whatsappAria: "Contact via WhatsApp",
+    whatsappAria: "Book via WhatsApp",
   },
   fr: {
     headerComment:
@@ -82,7 +80,7 @@ export const PARTIAL_STRINGS = {
     articles: { label: "Articles", title: "Articles" },
     methodsMenu: { label: "Méthodes et techniques", title: "Méthodes et techniques" },
     booking: { label: "Prendre RDV", title: "Prendre rendez-vous en ligne" },
-    contact: { label: "Contact", title: "Contacter via WhatsApp" },
+    contact: { label: "WhatsApp", title: "Réserver via WhatsApp" },
     footerComment:
       "French footer — /fr/… links. file:// adjusted in footer-include.js.",
     methodsTitle: "Méthodes et techniques",
@@ -92,12 +90,11 @@ export const PARTIAL_STRINGS = {
     copyright: "© Kinésica — Tous droits réservés",
     privacyPolicy: "Politique de confidentialité",
     termsOfService: "Conditions de service",
-    ctaTitle: "Contactez-nous et prenez rendez-vous",
+    ctaTitle: "Prenez rendez-vous",
     ctaText: "",
-    ctaButton: "Contact",
     whatsappComment:
       "French WhatsApp float button. Loaded with <script src>; works from file://",
-    whatsappAria: "Contacter via WhatsApp",
+    whatsappAria: "Réserver via WhatsApp",
   },
   pt: {
     headerComment: "Portuguese site header",
@@ -109,7 +106,7 @@ export const PARTIAL_STRINGS = {
     articles: { label: "Artigos", title: "Artigos" },
     methodsMenu: { label: "Métodos e técnicas", title: "Métodos e técnicas" },
     booking: { label: "Agendar", title: "Agendar consulta online" },
-    contact: { label: "Contato", title: "Contato pelo WhatsApp" },
+    contact: { label: "WhatsApp", title: "Agendar pelo WhatsApp" },
     footerComment: "Portuguese footer — /pt/… links.",
     methodsTitle: "Métodos e técnicas",
     socialTitle: "Redes sociais",
@@ -118,11 +115,10 @@ export const PARTIAL_STRINGS = {
     copyright: "© Kinésica — Todos os direitos reservados",
     privacyPolicy: "Política de privacidade",
     termsOfService: "Condições do serviço",
-    ctaTitle: "Fale conosco e agende",
+    ctaTitle: "Agende sua consulta",
     ctaText: "",
-    ctaButton: "Contato",
     whatsappComment: "Portuguese WhatsApp float button.",
-    whatsappAria: "Contato pelo WhatsApp",
+    whatsappAria: "Agendar pelo WhatsApp",
   },
 };
 

@@ -108,10 +108,10 @@ function buildNav(lang, s) {
 ${techniqueItems}
     </ul>
   </li>
-  <li class="nav-mobile-cta">
+  <li class="nav-cta nav-cta--booking">
     <a href="agendar.html" title="${escAttr(s.booking.title)}">${escHtml(s.booking.label)}</a>
   </li>
-  <li class="nav-mobile-cta">
+  <li class="nav-cta nav-cta--whatsapp">
     <a href="${waHref}" class="dynamic-whatsapp-url" target="_blank" rel="noopener noreferrer" title="${escAttr(s.contact.title)}">${escHtml(s.contact.label)}</a>
   </li>
 </ul>`,
@@ -213,8 +213,7 @@ function buildCtaStrip(lang, s) {
             <h2 class="cta-title">${s.ctaTitle}</h2>${textHtml}
           </div>
           <div class="col-lg-4 col-sm-4 col-md-4 col-xs-12">
-            <a href="${waMeUrl(CONTACT.whatsappDigits)}" target="_blank" class="btn btn-white btn-lg dynamic-whatsapp-url"
-              rel="noopener noreferrer">${s.ctaButton}</a>
+            <a href="agendar.html" class="btn btn-white btn-lg" title="${escAttr(s.booking.title)}">${escHtml(s.booking.label)}</a>
           </div>
         </div>
       </div>

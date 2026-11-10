@@ -41,11 +41,11 @@ export const SHOW_HERO_BOOKING_BUTTON = true;
  * @param {string} [bookingHref="#agendar"]
  */
 export function renderHeroActions(lang, bookingHref = "#agendar") {
-  const contactText = {
-    es: "Contacto",
-    en: "Contact",
-    fr: "Contact",
-    pt: "Contato",
+  const whatsappText = {
+    es: "WhatsApp",
+    en: "WhatsApp",
+    fr: "WhatsApp",
+    pt: "WhatsApp",
   }[lang];
 
   const bookingText = {
@@ -59,7 +59,7 @@ export function renderHeroActions(lang, bookingHref = "#agendar") {
     "            <div class=\"hero-actions\">",
     `              <a href="${bookingHref}" class="btn btn-primary mr10 js-booking-open js-hero-booking-btn" id="hero-btn-booking" data-booking-open hidden style="display:none;">${bookingText}</a>`,
     `              <a href="${HOME_WHATSAPP_HREF}" target="_blank" class="btn btn-default dynamic-whatsapp-url"`,
-    `                rel="noopener noreferrer">${contactText}</a>`,
+    `                rel="noopener noreferrer">${whatsappText}</a>`,
     "            </div>",
   ];
 }

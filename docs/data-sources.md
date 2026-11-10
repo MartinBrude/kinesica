@@ -80,7 +80,7 @@ Sin los secrets FTP, el Action igual commitea en GitHub y deja un notice: el sit
 | Qué cambiar | Dónde editar |
 |-------------|--------------|
 | Horario (header, schema, llms) | Solo `scripts/site-contact.mjs` → `OPENING_HOURS.opens` / `.closes` |
-| Texto CTA strip («Contáctanos y reserva…») | `scripts/partials-strings.mjs` → `ctaTitle`, `ctaText`, `ctaButton` |
+| Texto CTA strip («Reservá tu turno») | `scripts/partials-strings.mjs` → `ctaTitle`, `ctaText` (botón = `booking`) |
 | Teléfono / email / dirección | Solo `site-contact.mjs` |
 
 ## Qué regenerar según el cambio
