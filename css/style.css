@@ -2431,10 +2431,11 @@ main:focus {
     overflow-x: auto;
     overscroll-behavior-x: contain;
     scroll-snap-type: x mandatory;
-    scroll-padding-inline: 0;
+    scroll-padding-inline: 0.75rem 5rem;
     -webkit-overflow-scrolling: touch;
     gap: 0.85rem;
-    padding: 0 0 0.65rem;
+    /* Espacio al final para que la última card no quede bajo el FAB WhatsApp */
+    padding: 0 5rem 0.65rem 0;
     scrollbar-width: thin;
     scrollbar-color: rgba(0, 95, 153, 0.35) transparent;
   }
@@ -3195,6 +3196,12 @@ address {
     max-width: 100%;
     min-height: 0;
     height: 100%;
+  }
+
+  /* Chips de técnicas / condiciones relacionadas */
+  .pathology-technique-links a {
+    min-height: 44px;
+    padding: 10px 16px;
   }
 }
 
@@ -4110,6 +4117,15 @@ html {
 #navigation > ul > li {
   float: none !important;
   flex: 0 0 auto;
+}
+
+/* Agendar/Contacto: solo drawer mobile (desktop conserva Artículos + Métodos) */
+#navigation > ul > li.nav-mobile-cta {
+  display: none;
+}
+
+#navigation.small-screen > ul > li.nav-mobile-cta {
+  display: list-item;
 }
 
 #navigation a,

@@ -26,6 +26,7 @@ export const PARTIAL_STRINGS = {
     articles: { label: "Artículos", title: "Artículos" },
     methodsMenu: { label: "Métodos y Técnicas", title: "Métodos y Técnicas" },
     booking: { label: "Agendar", title: "Agendar turno o consulta online" },
+    contact: { label: "Contacto", title: "Contactar por WhatsApp" },
     footerComment:
       "Spanish footer — root-absolute links (/rpg.html). file:// adjusted in footer-include.js.",
     methodsTitle: "Métodos y Técnicas",
@@ -52,7 +53,8 @@ export const PARTIAL_STRINGS = {
     navComment: "English header nav — relative links from en/ directory.",
     articles: { label: "Articles", title: "Articles" },
     methodsMenu: { label: "Methods & Techniques", title: "Methods & Techniques" },
-    booking: { label: "Agendar", title: "Agendar turno o consulta online" },
+    booking: { label: "Book", title: "Book an appointment online" },
+    contact: { label: "Contact", title: "Contact via WhatsApp" },
     footerComment:
       "English footer — /en/… links. file:// adjusted in footer-include.js.",
     methodsTitle: "Methods & Techniques",
@@ -79,7 +81,8 @@ export const PARTIAL_STRINGS = {
     navComment: "French header nav — relative links from fr/ directory.",
     articles: { label: "Articles", title: "Articles" },
     methodsMenu: { label: "Méthodes et techniques", title: "Méthodes et techniques" },
-    booking: { label: "Agendar", title: "Agendar turno o consulta online" },
+    booking: { label: "Prendre RDV", title: "Prendre rendez-vous en ligne" },
+    contact: { label: "Contact", title: "Contacter via WhatsApp" },
     footerComment:
       "French footer — /fr/… links. file:// adjusted in footer-include.js.",
     methodsTitle: "Méthodes et techniques",
@@ -105,7 +108,8 @@ export const PARTIAL_STRINGS = {
     navComment: "Portuguese header nav — relative links from pt/ directory.",
     articles: { label: "Artigos", title: "Artigos" },
     methodsMenu: { label: "Métodos e técnicas", title: "Métodos e técnicas" },
-    booking: { label: "Agendar", title: "Agendar turno o consulta online" },
+    booking: { label: "Agendar", title: "Agendar consulta online" },
+    contact: { label: "Contato", title: "Contato pelo WhatsApp" },
     footerComment: "Portuguese footer — /pt/… links.",
     methodsTitle: "Métodos e técnicas",
     socialTitle: "Redes sociais",

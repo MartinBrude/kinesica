@@ -92,12 +92,14 @@ function buildNav(lang, s) {
     return `      <li><a href="${stem}.html" title="${escAttr(label)}">${escHtml(label)}</a></li>`;
   }).join("\n");
 
+  const waHref = waMeUrl(CONTACT.whatsappDigits);
+
   return writePartial(
     "nav",
     lang,
     s.navComment,
     `<ul>
-        <li>
+          <li>
     <a href="articulos.html" title="${escAttr(s.articles.title)}">${escHtml(s.articles.label)}</a>
   </li>
   <li class="has-sub">
@@ -105,6 +107,12 @@ function buildNav(lang, s) {
     <ul>
 ${techniqueItems}
     </ul>
+  </li>
+  <li class="nav-mobile-cta">
+    <a href="agendar.html" title="${escAttr(s.booking.title)}">${escHtml(s.booking.label)}</a>
+  </li>
+  <li class="nav-mobile-cta">
+    <a href="${waHref}" class="dynamic-whatsapp-url" target="_blank" rel="noopener noreferrer" title="${escAttr(s.contact.title)}">${escHtml(s.contact.label)}</a>
   </li>
 </ul>`,
   );
