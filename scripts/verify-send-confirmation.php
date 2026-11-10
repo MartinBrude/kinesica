@@ -38,6 +38,36 @@ check(kinesica_text_to_html('*<b>x</b>* & _"y"_') === '<strong>&lt;b&gt;x&lt;/b&
 check(kinesica_text_to_html("* *Uno:* a\n- _Dos_") === "• <strong>Uno:</strong> a<br>\n• <em>Dos</em>", 'viñetas + saltos');
 check(!preg_match('/[*]|(?<![\p{L}\p{N}])_|_(?![\p{L}\p{N}])/u', strip_tags(kinesica_text_to_html("*a* _b_ ** __ *c _d"))), 'sin * ni _ visibles');
 
+// --- builder compartido (confirmación / anulación) ---
+check(kinesica_format_fecha_legible('2026-10-26') === 'Lunes 26 de Octubre de 2026', 'fecha legible');
+check(kinesica_format_hora_legible('16:00') === '16:00 hs', 'hora con hs');
+$built = kinesica_build_confirmation_mail([
+    'paciente' => 'Ana Test',
+    'fecha' => '2026-10-26',
+    'hora' => '10:00',
+    'profesional' => 'Lic. María Gulin',
+    'servicio' => 'Acupuntura',
+    'settings' => ['clara_texts' => ['cancellation_policy' => 'Cancelá con *24 hs*.', 'confirmation_notes' => 'Notas admin']],
+]);
+check(str_contains($built['subject'], 'Confirmación de turno') && str_contains($built['html'], 'Turno confirmado'), 'builder confirmación');
+check(str_contains($built['html'], 'Notas admin') && str_contains($built['html'], '<strong>24 hs</strong>'), 'builder usa textos del admin');
+$builtCancel = kinesica_build_confirmation_mail([
+    'paciente' => 'Ana Test',
+    'fecha' => '2026-10-26',
+    'hora' => '10:00',
+    'profesional' => 'Lic. María Gulin',
+    'esCancelacion' => true,
+    'settings' => [],
+]);
+check(str_contains($builtCancel['subject'], 'Anulación') && str_contains($builtCancel['html'], 'Turno anulado'), 'builder anulación');
+
+$previewPhp = file_get_contents(__DIR__ . '/../admin/api/send-confirmation-preview.php');
+check(str_contains($previewPhp, 'require_auth()') && str_contains($previewPhp, 'user_email'), 'preview endpoint autenticado');
+check(str_contains($previewPhp, 'kinesica_build_confirmation_mail') && !str_contains($previewPhp, 'INSERT INTO pacientes'), 'preview sin upsert paciente');
+$adminHtml = file_get_contents(__DIR__ . '/../admin/index.html');
+check(str_contains($adminHtml, 'id="btn-send-confirmation-preview"'), 'botón mail de prueba en admin/clara');
+check(str_contains($adminHtml, 'id="cfg-mail-preview-paciente"'), 'formulario mail de prueba en admin/clara');
+
 // --- endpoint real, mail capturado ---
 function render_mail(array $post, ?array $settings): array
 {

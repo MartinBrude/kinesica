@@ -22,6 +22,7 @@ import {
   bindToggleElements,
 } from "./config-toggles.js";
 import { saveTextsAndPolicies } from "./config-save.js";
+import { initMailPreview, refreshMailPreviewPrefill } from "./mail-preview.js?v=1";
 import {
   showConsultorioView,
   hideConsultorioView,
@@ -39,6 +40,8 @@ export { appendChatMessage, resetChatDemo, initChatSimulator } from "./chat-simu
 export function showClaraView() {
   showClaraSubView(() => {
     loadConfigData();
+    initMailPreview();
+    refreshMailPreviewPrefill();
     const chatMessagesEl = document.querySelector("#chat-demo-messages");
     if (chatMessagesEl && chatMessagesEl.children.length === 0) resetChatDemo();
   });
@@ -241,6 +244,11 @@ async function loadConfigData() {
   }
 }
 
+function isMailPreviewField(el) {
+  const id = el?.id || "";
+  return id === "btn-send-confirmation-preview" || id.startsWith("cfg-mail-preview-");
+}
+
 function bindClaraDirtyListeners() {
   const view = document.getElementById("view-clara");
   if (!view || view.dataset.dirtyBound === "1") return;
@@ -248,11 +256,13 @@ function bindClaraDirtyListeners() {
   view.addEventListener("input", (event) => {
     const target = event.target;
     if (!(target instanceof HTMLElement)) return;
+    if (isMailPreviewField(target)) return;
     if (target.matches("textarea, input, select")) markClaraDirty();
   });
   view.addEventListener("change", (event) => {
     const target = event.target;
     if (!(target instanceof HTMLElement)) return;
+    if (isMailPreviewField(target)) return;
     if (target.matches("textarea, input, select")) markClaraDirty();
   });
 }
@@ -326,6 +336,7 @@ export function initConfiguracionModule(callbacks = {}) {
   });
 
   initChatSimulator();
+  initMailPreview();
 
   let welcomeTimer = null;
   claraInputs.menuWelcome?.addEventListener("input", () => {

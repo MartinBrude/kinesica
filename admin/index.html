@@ -1167,6 +1167,52 @@
               </label>
               <textarea id="cfg-confirmation-notes" rows="3" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; line-height:1.45; resize:vertical;"></textarea>
             </div>
+
+            <div style="background:var(--bg); border:1px solid var(--line); border-radius:var(--radius); padding:18px 20px;">
+              <div style="margin-bottom:14px;">
+                <div style="font-weight:700; font-size:14px; color:var(--navy); margin-bottom:4px;">Mail de prueba de confirmación</div>
+                <p style="margin:0; font-size:13px; color:var(--muted); line-height:1.45;">
+                  Completá los datos de un turno de ejemplo y enviate la plantilla real a tu correo de admin.
+                  Usa las políticas guardadas (guardá cambios antes si las editaste).
+                </p>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px 14px;">
+                <div>
+                  <label for="cfg-mail-preview-paciente" style="display:block; font-weight:600; font-size:13px; color:var(--navy); margin-bottom:4px;">Paciente</label>
+                  <input type="text" id="cfg-mail-preview-paciente" maxlength="120" placeholder="Nombre y apellido" style="width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit;">
+                </div>
+                <div>
+                  <label for="cfg-mail-preview-fecha" style="display:block; font-weight:600; font-size:13px; color:var(--navy); margin-bottom:4px;">Fecha</label>
+                  <input type="date" id="cfg-mail-preview-fecha" style="width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit;">
+                </div>
+                <div>
+                  <label for="cfg-mail-preview-hora" style="display:block; font-weight:600; font-size:13px; color:var(--navy); margin-bottom:4px;">Horario</label>
+                  <input type="time" id="cfg-mail-preview-hora" style="width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit;">
+                </div>
+                <div>
+                  <label for="cfg-mail-preview-profesional" style="display:block; font-weight:600; font-size:13px; color:var(--navy); margin-bottom:4px;">Profesional</label>
+                  <select id="cfg-mail-preview-profesional" style="width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit; background:#fff;">
+                    <option value="Lic. Norberto Brude">Lic. Norberto Brude</option>
+                    <option value="Lic. María Gulin">Lic. María Gulin</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="cfg-mail-preview-servicio" style="display:block; font-weight:600; font-size:13px; color:var(--navy); margin-bottom:4px;">Servicio</label>
+                  <input type="text" id="cfg-mail-preview-servicio" maxlength="120" value="Terapias Manuales" style="width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; font-family:inherit;">
+                </div>
+                <div style="display:flex; align-items:flex-end;">
+                  <label style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--navy); font-weight:600; cursor:pointer; padding-bottom:10px;">
+                    <input type="checkbox" id="cfg-mail-preview-menor">
+                    Paciente menor de edad
+                  </label>
+                </div>
+              </div>
+              <div style="display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin-top:16px;">
+                <button type="button" class="btn green" id="btn-send-confirmation-preview">Enviarme un mail de prueba</button>
+                <small id="cfg-mail-preview-dest-note" style="color:var(--muted); font-size:12px;">Se envía a tu correo de admin.</small>
+              </div>
+              <p id="cfg-mail-preview-status" class="horarios-alert-box" role="status" hidden style="margin:14px 0 0;"></p>
+            </div>
           </div>
         </div>
       </details>
@@ -2814,6 +2860,6 @@
   <div id="print-root"></div>
   <script src="/partials/google-reviews-data.min.js?v=1794315438" defer></script>
   <script src="/booking/booking-bundle.min.js?v=1794315438" defer></script>
-  <script type="module" src="/admin/app.js?v=206"></script>
+  <script type="module" src="/admin/app.js?v=207"></script>
 </body>
 </html>
