@@ -108,9 +108,6 @@ function buildNav(lang, s) {
 ${techniqueItems}
     </ul>
   </li>
-  <li class="nav-cta nav-cta--booking js-booking-cta" hidden>
-    <a href="agendar.html" title="${escAttr(s.booking.title)}">${escHtml(s.booking.label)}</a>
-  </li>
   <li class="nav-cta nav-cta--whatsapp">
     <a href="${waHref}" class="dynamic-whatsapp-url" target="_blank" rel="noopener noreferrer" title="${escAttr(s.contact.title)}">${escHtml(s.contact.label)}</a>
   </li>

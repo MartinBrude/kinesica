@@ -18,9 +18,6 @@ window.__KINESICA_NAV_SNIPPET_PT = `
       <li><a href="posturologia-clinica.html" title="Posturologia clínica">Posturologia clínica</a></li>
     </ul>
   </li>
-  <li class="nav-cta nav-cta--booking js-booking-cta" hidden>
-    <a href="agendar.html" title="Agendar consulta online">Agendar</a>
-  </li>
   <li class="nav-cta nav-cta--whatsapp">
     <a href="https://wa.me/5491161564311" class="dynamic-whatsapp-url" target="_blank" rel="noopener noreferrer" title="Agendar pelo WhatsApp">WhatsApp</a>
   </li>

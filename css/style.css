@@ -4119,40 +4119,13 @@ html {
   flex: 0 0 auto;
 }
 
-/* Agendar: visible en desktop + drawer cuando booking_active. WhatsApp nav: solo drawer. */
-#navigation > ul > li.nav-cta--booking:not([hidden]) {
-  display: list-item;
-}
-
-#navigation > ul > li.nav-cta--booking[hidden] {
-  display: none !important;
-}
-
+/* WhatsApp en nav: solo drawer mobile (desktop usa el FAB). */
 #navigation > ul > li.nav-cta--whatsapp {
   display: none;
 }
 
 #navigation.small-screen > ul > li.nav-cta--whatsapp {
   display: list-item;
-}
-
-/* CTA Agendar destacado en desktop */
-#navigation:not(.small-screen) > ul > li.nav-cta--booking:not([hidden]) > a {
-  margin-left: 8px;
-  padding: 10px 18px !important;
-  color: #fff !important;
-  background: var(--primary-color) !important;
-  border-radius: var(--radius-md);
-}
-
-#navigation:not(.small-screen) > ul > li.nav-cta--booking:not([hidden]) > a::after {
-  content: none;
-}
-
-#navigation:not(.small-screen) > ul > li.nav-cta--booking:not([hidden]) > a:hover,
-#navigation:not(.small-screen) > ul > li.nav-cta--booking:not([hidden]) > a:focus-visible {
-  color: #fff !important;
-  background: var(--secondary-color) !important;
 }
 
 .site-cta-strip-actions {
