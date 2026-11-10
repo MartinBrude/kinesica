@@ -1184,6 +1184,20 @@
   max-height: calc(92dvh - 145px);
 }
 
+/* Desktop: velo claro + centro óptico alto (evita navy-sobre-navy del hero). */
+@media (min-width: 992px) {
+  .kinesica-booking-modal-overlay {
+    background: rgba(226, 232, 240, 0.78);
+    padding: 6vh 24px 32px;
+  }
+
+  .kinesica-booking-modal-dialog {
+    box-shadow:
+      0 28px 64px rgba(15, 23, 42, 0.16),
+      0 8px 24px rgba(15, 23, 42, 0.08);
+  }
+}
+
 @media (max-width: 768px) {
   /*
    * No usar height: 100vh: en iOS/Chrome/Brave mobile vh es el viewport
