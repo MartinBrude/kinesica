@@ -1,12 +1,9 @@
 /**
  * Kinésica Admin - Módulo de Pacientes, Teléfonos y Lista de Espera
+ *
+ * Nota: el layout de `.admin-nav` vive en base.css (desktop + mobile).
+ * Acá solo estilos visuales de botones del nav, sin display/align que pisen el menú mobile.
  */
-
-.admin-nav {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-}
 
 .admin-nav .btn {
   border-radius: 8px;

@@ -197,6 +197,14 @@ a {
   line-height: 1.2;
 }
 
+/* Nav principal: layout desktop (mobile override más abajo) */
+.admin-nav {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 .btn,
 .file-btn {
   border: 0;
@@ -410,24 +418,35 @@ main {
 }
 
 @media (max-width: 800px) {
+  html.is-nav-open,
+  html.is-nav-open body {
+    overflow: hidden;
+  }
   .topbar {
-    min-height: auto;
-    padding: 10px 14px 8px;
-    gap: 10px;
+    min-height: 56px;
+    padding: 8px 12px;
+    gap: 8px;
     flex-wrap: nowrap;
     justify-content: space-between;
+    align-items: center;
   }
   .top-title {
     display: none;
   }
+  .brand {
+    flex-shrink: 1;
+    min-width: 0;
+  }
   .brand img {
-    width: 130px;
-    height: 34px;
+    width: 118px;
+    height: 32px;
   }
   .btn-nav-toggle {
     display: inline-flex;
     order: 2;
     margin-left: auto;
+    width: 42px;
+    height: 42px;
   }
   html:not(.is-authenticated) .btn-nav-toggle,
   #btn-nav-toggle[hidden] {
@@ -435,21 +454,28 @@ main {
   }
   .top-actions {
     margin-left: 0;
-    gap: 8px;
+    gap: 4px;
     order: 3;
+    flex-shrink: 0;
+    flex-wrap: nowrap;
+    align-items: center;
   }
-  .admin-nav {
+  /* Panel mobile: solo visible con .is-nav-open (no pisar con otros CSS) */
+  .admin-nav,
+  #admin-nav {
     display: none;
     position: fixed;
-    top: 58px;
-    left: 12px;
-    right: 12px;
+    top: 56px;
+    left: 10px;
+    right: 10px;
     z-index: 40;
     width: auto;
-    max-height: min(70vh, calc(100vh - 80px));
-    overflow: auto;
+    max-height: min(78vh, calc(100dvh - 72px));
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     margin: 0;
-    padding: 10px;
+    padding: 8px;
     border: 1px solid var(--line);
     border-radius: 14px;
     background: #fff;
@@ -457,10 +483,11 @@ main {
     flex-direction: column;
     align-items: stretch;
     flex-wrap: nowrap;
-    gap: 4px;
+    gap: 2px;
     white-space: normal;
   }
-  html.is-nav-open .admin-nav {
+  html.is-nav-open .admin-nav,
+  html.is-nav-open #admin-nav {
     display: flex;
   }
   html.is-nav-open .admin-nav-backdrop {
@@ -479,17 +506,33 @@ main {
   .nav-dropdown {
     display: flex;
     flex-direction: column;
+    align-items: stretch;
     width: 100%;
+    position: relative;
   }
-  .nav-dropdown-menu {
+  .nav-dropdown-trigger {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .nav-dropdown-menu,
+  #nav-group-admin .nav-dropdown-menu {
     position: static;
+    left: auto;
+    right: auto;
+    top: auto;
     min-width: 0;
     max-width: none;
     width: 100%;
     box-shadow: none;
     border: 0;
-    padding: 0 0 0 8px;
+    border-radius: 0;
+    background: transparent;
+    padding: 0 0 4px 10px;
     margin: 0;
+    gap: 1px;
+  }
+  .nav-dropdown-menu::before {
+    display: none;
   }
   .nav-dropdown:not(.is-open) .nav-dropdown-menu {
     display: none;
@@ -502,28 +545,43 @@ main {
   .admin-nav .nav-dropdown-item {
     width: 100%;
     justify-content: flex-start;
-    padding: 10px 12px;
-    font-size: 14px;
+    text-align: left;
+    padding: 11px 12px;
+    font-size: 15px;
     border-radius: 10px;
+    border-bottom: 0;
+    white-space: normal;
+  }
+  .admin-nav .btn.is-active {
+    border-radius: 10px;
+    border-bottom: 0;
+  }
+  .admin-nav .nav-dropdown-item {
+    font-size: 14px;
+    padding: 9px 12px;
+    color: var(--muted);
   }
   .session-box {
     align-items: flex-end;
-    gap: 2px;
+    gap: 0;
+    max-width: 96px;
   }
   .session-user-label {
-    font-size: 11px;
-    max-width: 110px;
+    font-size: 10px;
+    max-width: 96px;
+    line-height: 1.15;
   }
   .session-name {
-    font-size: 12px;
-    max-width: 130px;
+    font-size: 11px;
+    max-width: 96px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
   .session-box .btn.ghost {
-    padding: 4px 8px;
-    font-size: 12px;
+    padding: 2px 6px;
+    font-size: 11px;
+    min-height: 28px;
   }
   .clara-btn {
     height: 34px;
