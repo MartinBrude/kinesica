@@ -8,7 +8,7 @@ window.__KINESICA_CTA_STRIP_SNIPPET_ES = `
           </div>
           <div class="col-lg-4 col-sm-4 col-md-4 col-xs-12 site-cta-strip-actions">
             <a href="agendar.html" class="btn btn-white btn-lg js-booking-cta" title="Agendar turno o consulta online" hidden>Agendar</a>
-            <a href="https://wa.me/5491161564311" target="_blank" class="btn btn-white btn-lg dynamic-whatsapp-url js-booking-fallback-cta" rel="noopener noreferrer" title="Reservar turno por WhatsApp">WhatsApp</a>
+            <a href="https://wa.me/5491161564311" target="_blank" class="btn btn-white btn-lg js-booking-fallback-cta js-norberto-whatsapp" rel="noopener noreferrer" title="Reservar turno por WhatsApp con el Lic. Norberto Brude">WhatsApp Norberto</a>
           </div>
         </div>
       </div>

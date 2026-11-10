@@ -235,6 +235,10 @@ function kinesicaApplyWhatsAppContact() {
     contactData.whatsapp
   );
 
+  // Booking fallbacks must reach Norberto, never Clara (she sends users back to the site).
+  var norbertoDigits = cfg.whatsappDigits || "5491161564311";
+  setupWhatsAppLinks(".js-norberto-whatsapp, .js-booking-fallback-cta", norbertoDigits);
+
   function setupLinks(selector, urlBase, phone) {
     var sanitized = String(phone).replace(/\D/g, "");
     document.querySelectorAll(selector).forEach(function (el) {

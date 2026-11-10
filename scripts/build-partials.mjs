@@ -211,7 +211,7 @@ function buildCtaStrip(lang, s) {
           </div>
           <div class="col-lg-4 col-sm-4 col-md-4 col-xs-12 site-cta-strip-actions">
             <a href="agendar.html" class="btn btn-white btn-lg js-booking-cta" title="${escAttr(s.booking.title)}" hidden>${escHtml(s.booking.label)}</a>
-            <a href="${waMeUrl(CONTACT.whatsappDigits)}" target="_blank" class="btn btn-white btn-lg dynamic-whatsapp-url js-booking-fallback-cta" rel="noopener noreferrer" title="${escAttr(s.contact.title)}">${escHtml(s.contact.label)}</a>
+            <a href="${waMeUrl(CONTACT.whatsappDigits)}" target="_blank" class="btn btn-white btn-lg js-booking-fallback-cta js-norberto-whatsapp" rel="noopener noreferrer" title="${escAttr(s.bookingFallback.title)}">${escHtml(s.bookingFallback.label)}</a>
           </div>
         </div>
       </div>

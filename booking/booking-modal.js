@@ -23,23 +23,23 @@
   const OFFLINE_COPY = {
     es: {
       title: "La reserva online no está disponible ahora",
-      text: "Escribinos por WhatsApp y te ayudamos a sacar turno.",
-      btn: "Reservar por WhatsApp",
+      text: "Escribile por WhatsApp al Lic. Norberto Brude y te ayuda a sacar turno.",
+      btn: "WhatsApp a Norberto",
     },
     en: {
       title: "Online booking is unavailable right now",
-      text: "Message us on WhatsApp and we will help you book an appointment.",
-      btn: "Book on WhatsApp",
+      text: "Message Lic. Norberto Brude on WhatsApp and he will help you book.",
+      btn: "WhatsApp Norberto",
     },
     fr: {
       title: "La réservation en ligne n'est pas disponible pour le moment",
-      text: "Écrivez-nous sur WhatsApp et nous vous aiderons à prendre rendez-vous.",
-      btn: "Réserver sur WhatsApp",
+      text: "Écrivez au Lic. Norberto Brude sur WhatsApp pour prendre rendez-vous.",
+      btn: "WhatsApp Norberto",
     },
     pt: {
       title: "O agendamento online não está disponível agora",
-      text: "Fale conosco no WhatsApp e te ajudamos a marcar o horário.",
-      btn: "Agendar no WhatsApp",
+      text: "Fale no WhatsApp com o Lic. Norberto Brude para agendar.",
+      btn: "WhatsApp Norberto",
     },
   };
 
@@ -71,18 +71,16 @@
     return null;
   }
 
-  function getWhatsAppHref() {
+  /** Always Norberto — never Clara (activeWhatsappDigits). Clara redirects back to the site. */
+  function getNorbertoWhatsAppHref() {
     const site = (typeof window !== "undefined" && window.KINESICA_SITE) || {};
     const cfg = site.contact || {};
-    const digits = String(cfg.activeWhatsappDigits || cfg.whatsappDigits || "5491161564311").replace(
-      /\D/g,
-      ""
-    );
+    const digits = String(cfg.whatsappDigits || "5491161564311").replace(/\D/g, "");
     return "https://wa.me/" + digits;
   }
 
   function openWhatsAppFallback() {
-    const href = getWhatsAppHref();
+    const href = getNorbertoWhatsAppHref();
     try {
       window.open(href, "_blank", "noopener,noreferrer");
     } catch (_) {
@@ -97,7 +95,7 @@
       <div class="kb-booking-offline" role="status">
         <h2 class="kb-booking-offline-title">${copy.title}</h2>
         <p class="kb-booking-offline-text">${copy.text}</p>
-        <a class="kb-btn kb-btn-whatsapp kb-btn-whatsapp-primary dynamic-whatsapp-url" href="${getWhatsAppHref()}" target="_blank" rel="noopener noreferrer">${copy.btn}</a>
+        <a class="kb-btn kb-btn-whatsapp kb-btn-whatsapp-primary js-norberto-whatsapp" href="${getNorbertoWhatsAppHref()}" target="_blank" rel="noopener noreferrer">${copy.btn}</a>
       </div>
     `;
     inlineWidgetInstance = null;

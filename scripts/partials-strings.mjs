@@ -26,6 +26,10 @@ export const PARTIAL_STRINGS = {
     articles: { label: "Artículos", title: "Artículos" },
     methodsMenu: { label: "Métodos y Técnicas", title: "Métodos y Técnicas" },
     booking: { label: "Agendar", title: "Agendar turno o consulta online" },
+    bookingFallback: {
+      label: "WhatsApp Norberto",
+      title: "Reservar turno por WhatsApp con el Lic. Norberto Brude",
+    },
     contact: { label: "WhatsApp", title: "Reservar turno por WhatsApp" },
     footerComment:
       "Spanish footer — root-absolute links (/rpg.html). file:// adjusted in footer-include.js.",
@@ -53,6 +57,10 @@ export const PARTIAL_STRINGS = {
     articles: { label: "Articles", title: "Articles" },
     methodsMenu: { label: "Methods & Techniques", title: "Methods & Techniques" },
     booking: { label: "Book", title: "Book an appointment online" },
+    bookingFallback: {
+      label: "WhatsApp Norberto",
+      title: "Book via WhatsApp with Lic. Norberto Brude",
+    },
     contact: { label: "WhatsApp", title: "Book via WhatsApp" },
     footerComment:
       "English footer — /en/… links. file:// adjusted in footer-include.js.",
@@ -80,6 +88,10 @@ export const PARTIAL_STRINGS = {
     articles: { label: "Articles", title: "Articles" },
     methodsMenu: { label: "Méthodes et techniques", title: "Méthodes et techniques" },
     booking: { label: "Prendre RDV", title: "Prendre rendez-vous en ligne" },
+    bookingFallback: {
+      label: "WhatsApp Norberto",
+      title: "Réserver via WhatsApp avec le Lic. Norberto Brude",
+    },
     contact: { label: "WhatsApp", title: "Réserver via WhatsApp" },
     footerComment:
       "French footer — /fr/… links. file:// adjusted in footer-include.js.",
@@ -106,6 +118,10 @@ export const PARTIAL_STRINGS = {
     articles: { label: "Artigos", title: "Artigos" },
     methodsMenu: { label: "Métodos e técnicas", title: "Métodos e técnicas" },
     booking: { label: "Agendar", title: "Agendar consulta online" },
+    bookingFallback: {
+      label: "WhatsApp Norberto",
+      title: "Agendar pelo WhatsApp com o Lic. Norberto Brude",
+    },
     contact: { label: "WhatsApp", title: "Agendar pelo WhatsApp" },
     footerComment: "Portuguese footer — /pt/… links.",
     methodsTitle: "Métodos e técnicas",

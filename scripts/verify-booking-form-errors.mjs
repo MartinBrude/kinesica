@@ -270,10 +270,10 @@ function makeSlotsWidget(clientMock) {
   };
   w.copy = {
     slotError: "No pudimos cargar los horarios ahora.",
-    slotFallbackText: "Reservá por WhatsApp y te confirmamos el turno con el Lic. Norberto Brude.",
-    slotFallbackBtn: "Reservar por WhatsApp",
-    slotFallbackTextMaria: "Reservá por WhatsApp y te confirmamos el turno con la Lic. María Gulin.",
-    slotFallbackBtnMaria: "Reservar por WhatsApp",
+    slotFallbackText: "Escribile por WhatsApp al Lic. Norberto Brude y te confirma el turno.",
+    slotFallbackBtn: "WhatsApp a Norberto",
+    slotFallbackTextMaria: "Escribile por WhatsApp al Lic. Norberto Brude y te confirma el turno.",
+    slotFallbackBtnMaria: "WhatsApp a Norberto",
     retry: "↺ Reintentar",
   };
   w.client = clientMock;
@@ -305,7 +305,7 @@ await (async () => {
   assert.equal(wReq.state.selectedTime, null);
   assert.match(elsReq["kb-slots-error-text"].textContent, /horarios/i);
   assert.match(elsReq["kb-slots-error-fallback"].textContent, /Lic\. Norberto Brude/);
-  assert.match(elsReq["kb-btn-fallback-whatsapp"].textContent, /WhatsApp/i);
+  assert.match(elsReq["kb-btn-fallback-whatsapp"].textContent, /Norberto/i);
   assert.equal(elsReq["kb-btn-retry-slots"].textContent, "↺ Reintentar");
   assert.equal(typeof elsReq["kb-btn-fallback-whatsapp"].onclick, "function");
   assert.equal(typeof elsReq["kb-btn-retry-slots"].onclick, "function");
@@ -337,7 +337,8 @@ await (async () => {
   assert.equal(openedProc, "norberto");
   n += 1;
 
-  // Caso 3: Disciplinas exclusivas de María (Acupuntura y Posturología) derivan al WhatsApp de María
+  // Caso 3: Aunque la disciplina sea de María, el fallback por falla de agenda va a Norberto
+  // (evitar el loop Clara → web rota).
   for (const mariaTech of ["acupuntura", "posturologia"]) {
     const { w: wMaria, els: elsMaria } = makeSlotsWidget({
       hasCachedSlots: () => false,
@@ -353,11 +354,11 @@ await (async () => {
     };
     await wMaria.loadSlotsForDate("2026-10-07", true);
     assert.equal(elsMaria["kb-slots-error"].style.display, "flex");
-    assert.match(elsMaria["kb-slots-error-fallback"].textContent, /Lic\. María Gulin/);
-    assert.match(elsMaria["kb-btn-fallback-whatsapp"].textContent, /WhatsApp/i);
+    assert.match(elsMaria["kb-slots-error-fallback"].textContent, /Lic\. Norberto Brude/);
+    assert.match(elsMaria["kb-btn-fallback-whatsapp"].textContent, /Norberto/i);
     elsMaria["kb-btn-fallback-whatsapp"].onclick();
-    assert.equal(openedMaria, "maria");
-    assert.match(wMaria.practitionerWhatsappUrl("maria"), /^https:\/\/wa\.me\/5491128531224$/);
+    assert.equal(openedMaria, "norberto");
+    assert.equal(wMaria.practitionerWhatsappUrl("norberto"), waMeUrl());
     n += 1;
   }
 

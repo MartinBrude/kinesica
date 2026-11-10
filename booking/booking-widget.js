@@ -104,10 +104,10 @@
       slotTitle: "Elegí el horario de la sesión",
       slotTitleWith: "Elegí el horario de la sesión con",
       slotError: "No pudimos cargar los horarios ahora.",
-      slotFallbackText: "Reservá por WhatsApp y te confirmamos el turno con el Lic. Norberto Brude.",
-      slotFallbackBtn: "Reservar por WhatsApp",
-      slotFallbackTextMaria: "Reservá por WhatsApp y te confirmamos el turno con la Lic. María Gulin.",
-      slotFallbackBtnMaria: "Reservar por WhatsApp",
+      slotFallbackText: "Escribile por WhatsApp al Lic. Norberto Brude y te confirma el turno.",
+      slotFallbackBtn: "WhatsApp a Norberto",
+      slotFallbackTextMaria: "Escribile por WhatsApp al Lic. Norberto Brude y te confirma el turno.",
+      slotFallbackBtnMaria: "WhatsApp a Norberto",
       summaryKind: "🩺 Turno presencial de 1 hora",
       technique: "Técnica",
       practitioner: "Profesional",
@@ -212,10 +212,10 @@
       slotTitle: "Choose a session time",
       slotTitleWith: "Choose a session time with",
       slotError: "We could not load available times right now.",
-      slotFallbackText: "Book via WhatsApp and we will confirm your appointment with Lic. Norberto Brude.",
-      slotFallbackBtn: "Book on WhatsApp",
-      slotFallbackTextMaria: "Book via WhatsApp and we will confirm your appointment with Lic. María Gulin.",
-      slotFallbackBtnMaria: "Book on WhatsApp",
+      slotFallbackText: "Message Lic. Norberto Brude on WhatsApp and he will confirm your appointment.",
+      slotFallbackBtn: "WhatsApp Norberto",
+      slotFallbackTextMaria: "Message Lic. Norberto Brude on WhatsApp and he will confirm your appointment.",
+      slotFallbackBtnMaria: "WhatsApp Norberto",
       summaryKind: "🩺 One-hour in-person session",
       technique: "Technique",
       practitioner: "Practitioner",
@@ -320,10 +320,10 @@
       slotTitle: "Choisissez l'horaire de la séance",
       slotTitleWith: "Choisissez l'horaire de la séance avec",
       slotError: "Impossible de charger les horaires pour le moment.",
-      slotFallbackText: "Réservez via WhatsApp et nous confirmerons le rendez-vous avec le Lic. Norberto Brude.",
-      slotFallbackBtn: "Réserver sur WhatsApp",
-      slotFallbackTextMaria: "Réservez via WhatsApp et nous confirmerons le rendez-vous avec la Lic. María Gulin.",
-      slotFallbackBtnMaria: "Réserver sur WhatsApp",
+      slotFallbackText: "Écrivez au Lic. Norberto Brude sur WhatsApp pour confirmer le rendez-vous.",
+      slotFallbackBtn: "WhatsApp Norberto",
+      slotFallbackTextMaria: "Écrivez au Lic. Norberto Brude sur WhatsApp pour confirmer le rendez-vous.",
+      slotFallbackBtnMaria: "WhatsApp Norberto",
       summaryKind: "🩺 Séance en cabinet d'une heure",
       technique: "Technique",
       practitioner: "Praticien",
@@ -428,10 +428,10 @@
       slotTitle: "Escolha o horário da sessão",
       slotTitleWith: "Escolha o horário da sessão com",
       slotError: "Não foi possível carregar os horários agora.",
-      slotFallbackText: "Agende pelo WhatsApp e confirmamos seu horário com o Lic. Norberto Brude.",
-      slotFallbackBtn: "Agendar no WhatsApp",
-      slotFallbackTextMaria: "Agende pelo WhatsApp e confirmamos seu horário com a Lic. María Gulin.",
-      slotFallbackBtnMaria: "Agendar no WhatsApp",
+      slotFallbackText: "Fale no WhatsApp com o Lic. Norberto Brude para confirmar o horário.",
+      slotFallbackBtn: "WhatsApp Norberto",
+      slotFallbackTextMaria: "Fale no WhatsApp com o Lic. Norberto Brude para confirmar o horário.",
+      slotFallbackBtnMaria: "WhatsApp Norberto",
       summaryKind: "🩺 Sessão presencial de 1 hora",
       technique: "Técnica",
       practitioner: "Profissional",
@@ -1933,19 +1933,15 @@
       if (errorText) {
         errorText.textContent = this.t("slotError");
       }
-      const fallbackPrac = this.fallbackPractitionerId();
-      const isMaria = fallbackPrac === "maria";
+      // Always Norberto on slot failures — never Clara (active WhatsApp), who redirects to the site.
+      const fallbackPrac = "norberto";
       const fallbackText = this.container.querySelector("#kb-slots-error-fallback");
       if (fallbackText) {
-        fallbackText.textContent = this.t(
-          isMaria ? "slotFallbackTextMaria" : "slotFallbackText"
-        );
+        fallbackText.textContent = this.t("slotFallbackText");
       }
       const waBtn = this.container.querySelector("#kb-btn-fallback-whatsapp");
       if (waBtn) {
-        waBtn.textContent = this.t(
-          isMaria ? "slotFallbackBtnMaria" : "slotFallbackBtn"
-        );
+        waBtn.textContent = this.t("slotFallbackBtn");
         waBtn.onclick = () => this.openPractitionerWhatsApp(fallbackPrac);
       }
       const retryBtn = this.container.querySelector("#kb-btn-retry-slots");
@@ -2372,18 +2368,16 @@
       if (!banner) return;
       banner.textContent = msg;
       if (opts && opts.offerWhatsAppFallback && typeof document !== "undefined") {
-        const fallbackPrac = this.fallbackPractitionerId();
-        const isMaria = fallbackPrac === "maria";
         const wrap = document.createElement("div");
         wrap.style.marginTop = "10px";
         const p = document.createElement("p");
         p.style.margin = "0 0 8px 0";
-        p.textContent = this.t(isMaria ? "slotFallbackTextMaria" : "slotFallbackText");
+        p.textContent = this.t("slotFallbackText");
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "kb-btn kb-btn-whatsapp";
-        btn.textContent = this.t(isMaria ? "slotFallbackBtnMaria" : "slotFallbackBtn");
-        btn.onclick = () => this.openPractitionerWhatsApp(fallbackPrac);
+        btn.textContent = this.t("slotFallbackBtn");
+        btn.onclick = () => this.openPractitionerWhatsApp("norberto");
         wrap.appendChild(p);
         wrap.appendChild(btn);
         banner.appendChild(wrap);
