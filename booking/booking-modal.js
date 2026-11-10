@@ -357,8 +357,10 @@
         }
       }
 
-      // Enfocar el modal o el primer elemento interactivo
-      const closeBtn = modalEl.querySelector('[data-action="close-modal"]');
+      // Enfocar la X del widget (no el backdrop: también tiene data-action=close-modal).
+      const closeBtn =
+        modalEl.querySelector(".kb-close-btn") ||
+        modalEl.querySelector('.kinesica-booking-container [data-action="close-modal"]');
       if (closeBtn && typeof closeBtn.focus === "function") {
         closeBtn.focus();
       }
