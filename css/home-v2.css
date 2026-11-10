@@ -1078,6 +1078,38 @@ body.page-home-v2 .team-meta:has(a) .team-designation:focus-within {
     --home-gap: 1.35rem;
   }
 
+  /* Currículum: target táctil legible (desktop conserva 0.72rem) */
+  body.page-home-v2 .team-designation {
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    padding: 0;
+    min-height: 44px;
+  }
+
+  body.page-home-v2 .team-designation a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 10px 14px;
+    font-size: 14px;
+    line-height: 1.2;
+  }
+
+  body.page-home-v2 .panel-title a {
+    min-height: 48px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    box-sizing: border-box;
+  }
+
+  /* Evitar mapa a 448px por min-height + aspect-ratio */
+  body.page-home-v2 .map-embed-frame {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 0;
+  }
+
   body.page-home-v2 .hero-section::before {
     width: 88vw;
     height: 70%;

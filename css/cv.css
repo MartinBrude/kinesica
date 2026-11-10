@@ -190,6 +190,30 @@
   }
 }
 
+@media (max-width: 767px) {
+  .cv-hero .cv-contact {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding-inline: 4px;
+  }
+
+  .cv-hero .cv-contact a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 6px 0;
+    word-break: break-word;
+  }
+
+  .cv-panel ul a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 6px 0;
+  }
+}
+
 @media print {
   .header-top,
   .header,
