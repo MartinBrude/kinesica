@@ -60,6 +60,17 @@ $builtCancel = kinesica_build_confirmation_mail([
     'settings' => [],
 ]);
 check(str_contains($builtCancel['subject'], 'Anulación') && str_contains($builtCancel['html'], 'Turno anulado'), 'builder anulación');
+$builtMenor = kinesica_build_confirmation_mail([
+    'paciente' => 'Lucía',
+    'fecha' => '2026-10-26',
+    'hora' => '10:00',
+    'profesional' => 'Lic. Norberto Brude',
+    'esMenor' => true,
+    'settings' => [],
+]);
+check(str_contains($builtMenor['html'], 'El menor debe ingresar acompañado por un adulto responsable.'), 'menor: acompañantes');
+check(str_contains($builtMenor['html'], 'llegar puntual a la hora de tu turno'), 'menor: misma puntualidad');
+check(!str_contains($builtMenor['html'], '5 a 10 minutos antes'), 'menor: sin llegada anticipada');
 
 $previewPhp = file_get_contents(__DIR__ . '/../admin/api/send-confirmation-preview.php');
 check(str_contains($previewPhp, 'require_auth()') && str_contains($previewPhp, 'user_email'), 'preview endpoint autenticado');

@@ -153,9 +153,9 @@ function kinesica_guidelines_html(string $confirmationNotes, string $indicacionP
 {
     if (trim($confirmationNotes) !== '') {
         $html = '<div class="guidelines-notes" style="color:#475569;font-size:14px;line-height:1.55;">' . kinesica_text_to_html($confirmationNotes) . '</div>';
+        // Menor: solo refuerza acompañantes (misma puntualidad que el resto).
         if ($esMenor) {
             $html .= '<ul class="guidelines-list" style="margin-top:10px;">'
-                . '<li><strong>Puntualidad:</strong> ' . $indicacionPuntualidad . '</li>'
                 . '<li><strong>Acompañantes:</strong> ' . $indicacionAcompaniante . '</li>'
                 . '</ul>';
         }
@@ -248,9 +248,8 @@ function kinesica_build_confirmation_mail(array $params): array
     $customCancellationPolicy = (string) $mailTexts['cancellation_policy'];
     $servicioTexto = $servicio !== '' ? ' (' . $servicio . ')' : '';
 
-    $indicacionPuntualidad = $esMenor
-        ? 'Al tratarse de un paciente menor de edad, recomendamos presentarse 5 a 10 minutos antes junto a un adulto responsable.'
-        : 'Por las características del espacio y para respetar las sesiones en curso, <strong>te pedimos llegar puntual a la hora de tu turno, ni antes ni después</strong>.';
+    // Misma puntualidad para adultos y menores (sin pedir llegar antes).
+    $indicacionPuntualidad = 'Por las características del espacio y para respetar las sesiones en curso, <strong>te pedimos llegar puntual a la hora de tu turno, ni antes ni después</strong>.';
 
     $indicacionAcompaniante = $esMenor
         ? 'El menor debe ingresar acompañado por un adulto responsable.'

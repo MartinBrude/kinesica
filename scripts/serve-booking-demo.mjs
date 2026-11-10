@@ -105,9 +105,8 @@ const server = http.createServer((req, res) => {
         const body = JSON.parse(Buffer.concat(chunks).toString("utf-8"));
         const apiKey = process.env.RESEND_API_KEY || "";
 
-        const indicacionPuntualidad = body.esMenor
-          ? "Al tratarse de un paciente menor de edad, recomendamos presentarse 5 a 10 minutos antes junto a un adulto responsable."
-          : "Por las características del espacio y para respetar las sesiones en curso, <strong>te pedimos llegar puntual a la hora de tu turno, ni antes ni después</strong>.";
+        const indicacionPuntualidad =
+          "Por las características del espacio y para respetar las sesiones en curso, <strong>te pedimos llegar puntual a la hora de tu turno, ni antes ni después</strong>.";
 
         const indicacionAcompaniante = body.esMenor
           ? "El menor debe ingresar acompañado por un adulto responsable."
