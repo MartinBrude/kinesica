@@ -31,20 +31,20 @@ import {
   showConfiguracionView,
   hideConfiguracionView,
   switchConfigSubtab as switchConfigSubView,
-} from "./config-views.js";
+} from "./config-views.js?v=2";
 
 export { DEFAULT_CLARA_TEXTS };
 export { showConsultorioView, hideConsultorioView, hideClaraView, showConfiguracionView, hideConfiguracionView };
 export { appendChatMessage, resetChatDemo, initChatSimulator } from "./chat-simulator.js?v=15";
 
-export function showClaraView() {
+export function showClaraView(section = "") {
   showClaraSubView(() => {
     loadConfigData();
     initMailPreview();
     refreshMailPreviewPrefill();
     const chatMessagesEl = document.querySelector("#chat-demo-messages");
     if (chatMessagesEl && chatMessagesEl.children.length === 0) resetChatDemo();
-  });
+  }, section);
 }
 
 export function switchConfigSubtab(subtabId) {

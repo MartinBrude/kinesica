@@ -19,7 +19,10 @@ export function parseAdminRouteFromLocation() {
   if (head === "fichas" || head === "historias" || head === "library") return { view: "library" };
   if (head === "pacientes") return { view: "pacientes" };
   if (head === "consultorio" || head === "horarios" || head === "honorarios") return { view: "consultorio" };
-  if (head === "clara" || head === "configuracion") return { view: "clara" };
+  if (head === "clara" || head === "configuracion") {
+    const section = (parts[1] || "").toLowerCase();
+    return section ? { view: "clara", section } : { view: "clara" };
+  }
   if (head === "interacciones" || head === "chats" || head === "mensajes" || head === "whatsapp") return { view: "interacciones" };
   if (head === "recordatorios" || head === "reminders") return { view: "recordatorios" };
   if (head === "encuestas" || head === "encuesta") return { view: "encuestas" };
@@ -63,8 +66,21 @@ export function syncUrlWithViewState(state, isInitialBoot = false, isHandlingPop
     targetPath = "/admin/consultorio";
     docTitle = "Kinésica — Consultorio";
   } else if (v === "clara" || v === "configuracion") {
-    targetPath = "/admin/clara";
-    docTitle = "Kinésica — Clara";
+    const sec = String(state.section || "").toLowerCase();
+    if (sec === "estado" || sec === "mensajes" || sec === "plantilla" || sec === "politicas" || sec === "simulador") {
+      targetPath = `/admin/clara/${sec}`;
+      const titles = {
+        estado: "Estado de servicios",
+        mensajes: "Mensajes y menú",
+        plantilla: "Plantilla de recordatorio",
+        politicas: "Políticas del mail",
+        simulador: "Simulador",
+      };
+      docTitle = `Kinésica — Clara · ${titles[sec]}`;
+    } else {
+      targetPath = "/admin/clara";
+      docTitle = "Kinésica — Clara";
+    }
   } else if (v === "interacciones" || v === "chats" || v === "whatsapp") {
     targetPath = "/admin/interacciones";
     docTitle = "Kinésica — Bandeja de Interacciones";
@@ -146,7 +162,7 @@ export function initPopstateRouter({ loadAll, fillForm, showForm, showCompare, s
       if (route.view === "library" || route.view === "fichas") switchTab("fichas");
       else if (route.view === "pacientes") switchTab("pacientes");
       else if (route.view === "consultorio" || route.view === "horarios" || route.view === "honorarios") switchTab("consultorio");
-      else if (route.view === "clara" || route.view === "configuracion") switchTab("clara");
+      else if (route.view === "clara" || route.view === "configuracion") switchTab("clara", route.section || "");
       else if (route.view === "interacciones" || route.view === "chats") switchTab("interacciones");
       else if (route.view === "recordatorios" || route.view === "reminders") switchTab("recordatorios");
       else if (route.view === "encuestas" || route.view === "encuesta") switchTab("encuestas");

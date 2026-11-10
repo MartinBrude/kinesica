@@ -8,7 +8,7 @@ import { getSessionUser } from "./auth.js?v=83";
 import { showLibrary } from "./library.js?v=94";
 import { showPacientesView, hidePacientesView } from "./pacientes.js?v=12";
 import { showDashboardView, hideDashboardView, updateDashboardClara, updateDashboardBooking } from "./dashboard.js?v=13";
-import { showConsultorioView, hideConsultorioView, showClaraView, hideClaraView } from "./configuracion.js?v=34";
+import { showConsultorioView, hideConsultorioView, showClaraView, hideClaraView } from "./configuracion.js?v=35";
 import { showAdminView, hideAdminView } from "./admin-panel.js?v=92";
 import { showInteraccionesView, hideInteraccionesView } from "./interacciones.js?v=15";
 import { showRecordatoriosView, hideRecordatoriosView } from "./recordatorios.js?v=24";
@@ -61,6 +61,11 @@ export function switchTab(tab, subtab) {
   const btnRecordatorios = document.querySelector("#nav-btn-recordatorios");
   const btnEncuestas = document.querySelector("#nav-btn-encuestas");
   const btnClara = document.querySelector("#nav-btn-clara");
+  const btnClaraEstado = document.querySelector("#nav-btn-clara-estado");
+  const btnClaraMensajes = document.querySelector("#nav-btn-clara-mensajes");
+  const btnClaraPlantilla = document.querySelector("#nav-btn-clara-plantilla");
+  const btnClaraPoliticas = document.querySelector("#nav-btn-clara-politicas");
+  const btnClaraSimulador = document.querySelector("#nav-btn-clara-simulador");
   const btnAdmin = document.querySelector("#nav-btn-admin");
   const btnAdminUsuarios = document.querySelector("#nav-btn-admin-usuarios");
   const btnAdminGastos = document.querySelector("#nav-btn-admin-gastos");
@@ -94,7 +99,13 @@ export function switchTab(tab, subtab) {
     showConsultorioView();
   } else if (tab === "clara" || tab === "configuracion") {
     btnClara?.classList.add("is-active");
-    showClaraView();
+    const section = subtab || "mensajes";
+    if (section === "estado") btnClaraEstado?.classList.add("is-active");
+    else if (section === "plantilla") btnClaraPlantilla?.classList.add("is-active");
+    else if (section === "politicas") btnClaraPoliticas?.classList.add("is-active");
+    else if (section === "simulador") btnClaraSimulador?.classList.add("is-active");
+    else btnClaraMensajes?.classList.add("is-active");
+    showClaraView(section);
   } else if (tab === "interacciones" || tab === "chats" || tab === "whatsapp") {
     btnWhatsapp?.classList.add("is-active");
     btnInteracciones?.classList.add("is-active");
@@ -222,9 +233,10 @@ function bindAdminNavOnce(adminNav) {
 
   setupDropdown(document.getElementById("nav-group-clinica"), document.getElementById("nav-btn-clinica"));
   setupDropdown(document.getElementById("nav-group-whatsapp"), document.getElementById("nav-btn-whatsapp"));
+  setupDropdown(document.getElementById("nav-group-clara"), document.getElementById("nav-btn-clara"));
   setupDropdown(document.getElementById("nav-group-admin"), document.getElementById("nav-btn-admin"));
 
-  ["#nav-btn-consultorio", "#nav-btn-clara", "#nav-btn-encuestas", "#brand-logo"].forEach((id) => {
+  ["#nav-btn-consultorio", "#nav-btn-encuestas", "#brand-logo"].forEach((id) => {
     document.querySelector(id)?.addEventListener("mouseenter", closeAllDropdowns);
   });
 
@@ -248,7 +260,11 @@ function bindAdminNavOnce(adminNav) {
   document.getElementById("nav-btn-fichas")?.addEventListener("click", () => switchTab("fichas"));
   document.getElementById("nav-btn-pacientes")?.addEventListener("click", () => switchTab("pacientes"));
   document.getElementById("nav-btn-consultorio")?.addEventListener("click", () => switchTab("consultorio"));
-  document.getElementById("nav-btn-clara")?.addEventListener("click", () => switchTab("clara"));
+  document.getElementById("nav-btn-clara-estado")?.addEventListener("click", () => switchTab("clara", "estado"));
+  document.getElementById("nav-btn-clara-mensajes")?.addEventListener("click", () => switchTab("clara", "mensajes"));
+  document.getElementById("nav-btn-clara-plantilla")?.addEventListener("click", () => switchTab("clara", "plantilla"));
+  document.getElementById("nav-btn-clara-politicas")?.addEventListener("click", () => switchTab("clara", "politicas"));
+  document.getElementById("nav-btn-clara-simulador")?.addEventListener("click", () => switchTab("clara", "simulador"));
   document.getElementById("nav-btn-interacciones")?.addEventListener("click", () => switchTab("interacciones"));
   document.getElementById("nav-btn-recordatorios")?.addEventListener("click", () => switchTab("recordatorios"));
   document.getElementById("nav-btn-encuestas")?.addEventListener("click", () => switchTab("encuestas"));

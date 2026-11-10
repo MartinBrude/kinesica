@@ -94,8 +94,20 @@
           </div>
         </div>
 
-        <!-- GRUPO 4: CLARA (Configuración: Bot, Respuestas, Plantilla, Políticas, Simulador) -->
-        <button type="button" class="btn ghost" id="nav-btn-clara">Clara</button>
+        <!-- GRUPO 4: CLARA (Estado, Mensajes, Plantilla, Políticas, Simulador) -->
+        <div class="nav-dropdown" id="nav-group-clara">
+          <button type="button" class="btn ghost nav-dropdown-trigger" id="nav-btn-clara" aria-expanded="false" aria-haspopup="true">
+            <span>Clara</span>
+            <svg class="nav-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          <div class="nav-dropdown-menu" id="nav-menu-clara" role="menu">
+            <button type="button" class="nav-dropdown-item" id="nav-btn-clara-estado" role="menuitem">Estado de servicios</button>
+            <button type="button" class="nav-dropdown-item" id="nav-btn-clara-mensajes" role="menuitem">Mensajes y menú</button>
+            <button type="button" class="nav-dropdown-item" id="nav-btn-clara-plantilla" role="menuitem">Plantilla de recordatorio</button>
+            <button type="button" class="nav-dropdown-item" id="nav-btn-clara-politicas" role="menuitem">Políticas del mail</button>
+            <button type="button" class="nav-dropdown-item" id="nav-btn-clara-simulador" role="menuitem">Simulador</button>
+          </div>
+        </div>
 
         <!-- ENCUESTAS DE SATISFACCIÓN ANÓNIMAS -->
         <button type="button" class="btn ghost" id="nav-btn-encuestas">Encuestas</button>
@@ -742,7 +754,7 @@
       </div>
 
       <!-- SECCIÓN COLAPSABLE 1: CLARA (ESTADO DE SERVICIOS) -->
-      <details class="admin-collapsible-card">
+      <details class="admin-collapsible-card" id="clara-section-estado" data-clara-section="estado">
         <summary class="admin-collapsible-summary">
           <div class="admin-collapsible-header-left">
             <span class="admin-collapsible-icon" aria-hidden="true">🤖</span>
@@ -786,7 +798,7 @@
       </details>
 
       <!-- SECCIÓN COLAPSABLE 2: MENSAJES Y MENÚ DE WHATSAPP -->
-      <details class="admin-collapsible-card" open>
+      <details class="admin-collapsible-card" id="clara-section-mensajes" data-clara-section="mensajes" open>
         <summary class="admin-collapsible-summary">
           <div class="admin-collapsible-header-left">
             <span class="admin-collapsible-icon" aria-hidden="true">💬</span>
@@ -1085,7 +1097,7 @@
       </details>
 
       <!-- SECCIÓN COLAPSABLE 3: PLANTILLA Y TEXTOS DE RECORDATORIO -->
-      <details class="admin-collapsible-card">
+      <details class="admin-collapsible-card" id="clara-section-plantilla" data-clara-section="plantilla">
         <summary class="admin-collapsible-summary">
           <div class="admin-collapsible-header-left">
             <span class="admin-collapsible-icon" aria-hidden="true">📲</span>
@@ -1136,13 +1148,13 @@
       </details>
 
       <!-- SECCIÓN COLAPSABLE 4: POLÍTICA DE CANCELACIÓN Y ACCESO -->
-      <details class="admin-collapsible-card">
+      <details class="admin-collapsible-card" id="clara-section-politicas" data-clara-section="politicas">
         <summary class="admin-collapsible-summary">
           <div class="admin-collapsible-header-left">
             <span class="admin-collapsible-icon" aria-hidden="true">📋</span>
             <div class="admin-collapsible-titles">
-              <h2 class="admin-collapsible-title">Política de Cancelación y Acceso al Consultorio</h2>
-              <p class="admin-collapsible-desc">Pautas de 24 hs de anticipación y puntualidad aplicadas a mails de confirmación y WhatsApp.</p>
+              <h2 class="admin-collapsible-title">Políticas del mail y acceso al consultorio</h2>
+              <p class="admin-collapsible-desc">Cancelación 24 hs, puntualidad y mail de prueba de confirmación.</p>
             </div>
           </div>
           <div class="admin-collapsible-header-right">
@@ -1218,7 +1230,7 @@
       </details>
 
       <!-- SECCIÓN COLAPSABLE 5: DEMO (SIMULADOR INTERACTIVO) -->
-      <details class="admin-collapsible-card">
+      <details class="admin-collapsible-card" id="clara-section-simulador" data-clara-section="simulador">
         <summary class="admin-collapsible-summary">
           <div class="admin-collapsible-header-left">
             <span class="admin-collapsible-icon" aria-hidden="true">📱</span>
@@ -2753,7 +2765,7 @@
             else if (head === "fichas" || head === "historias" || head === "library") saved = { view: "library" };
             else if (head === "pacientes") saved = { view: "pacientes" };
             else if (head === "consultorio" || head === "horarios" || head === "honorarios") saved = { view: "consultorio" };
-            else if (head === "clara" || head === "configuracion") saved = { view: "clara" };
+            else if (head === "clara" || head === "configuracion") saved = { view: "clara", section: (parts[1] || "").toLowerCase() };
             else if (head === "interacciones" || head === "chats" || head === "mensajes" || head === "whatsapp") saved = { view: "interacciones" };
             else if (head === "recordatorios" || head === "reminders") saved = { view: "recordatorios" };
             else if (head === "encuestas") saved = { view: "encuestas" };
@@ -2860,6 +2872,6 @@
   <div id="print-root"></div>
   <script src="/partials/google-reviews-data.min.js?v=1794315438" defer></script>
   <script src="/booking/booking-bundle.min.js?v=1794315438" defer></script>
-  <script type="module" src="/admin/app.js?v=207"></script>
+  <script type="module" src="/admin/app.js?v=209"></script>
 </body>
 </html>
