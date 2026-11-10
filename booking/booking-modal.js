@@ -18,6 +18,40 @@
   let widgetInstance = null;
   let inlineWidgetInstance = null;
   let previousActiveElement = null;
+  let bookingAvailable = null;
+
+  const OFFLINE_COPY = {
+    es: {
+      title: "La reserva online no está disponible ahora",
+      text: "Escribinos por WhatsApp y te ayudamos a sacar turno.",
+      btn: "Reservar por WhatsApp",
+    },
+    en: {
+      title: "Online booking is unavailable right now",
+      text: "Message us on WhatsApp and we will help you book an appointment.",
+      btn: "Book on WhatsApp",
+    },
+    fr: {
+      title: "La réservation en ligne n'est pas disponible pour le moment",
+      text: "Écrivez-nous sur WhatsApp et nous vous aiderons à prendre rendez-vous.",
+      btn: "Réserver sur WhatsApp",
+    },
+    pt: {
+      title: "O agendamento online não está disponível agora",
+      text: "Fale conosco no WhatsApp e te ajudamos a marcar o horário.",
+      btn: "Agendar no WhatsApp",
+    },
+  };
+
+  function resolveLang() {
+    const lang = String(
+      (typeof document !== "undefined" && document.documentElement.lang) || "es"
+    ).toLowerCase();
+    if (lang.indexOf("en") === 0) return "en";
+    if (lang.indexOf("fr") === 0) return "fr";
+    if (lang.indexOf("pt") === 0) return "pt";
+    return "es";
+  }
 
   function getApiUrl() {
     return (
@@ -25,6 +59,51 @@
       (typeof window !== "undefined" && window.KINESICA_SITE && window.KINESICA_SITE.bookingApiUrl) ||
       "https://script.google.com/macros/s/AKfycbziFcZejUUlY8cdOTCyENzACIu27soawUul0Ti1lKjpIDg9CuqEB31wwDI6WpZjTmAEpQ/exec"
     );
+  }
+
+  function readCachedBookingActive() {
+    try {
+      const cached = JSON.parse(localStorage.getItem("kinesica_public_settings") || "null");
+      if (cached && typeof cached.booking_active !== "undefined") {
+        return Boolean(cached.booking_active);
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  function getWhatsAppHref() {
+    const site = (typeof window !== "undefined" && window.KINESICA_SITE) || {};
+    const cfg = site.contact || {};
+    const digits = String(cfg.activeWhatsappDigits || cfg.whatsappDigits || "5491161564311").replace(
+      /\D/g,
+      ""
+    );
+    return "https://wa.me/" + digits;
+  }
+
+  function openWhatsAppFallback() {
+    const href = getWhatsAppHref();
+    try {
+      window.open(href, "_blank", "noopener,noreferrer");
+    } catch (_) {
+      window.location.href = href;
+    }
+  }
+
+  function renderOfflineFallback(mount) {
+    if (!mount) return;
+    const copy = OFFLINE_COPY[resolveLang()] || OFFLINE_COPY.es;
+    mount.innerHTML = `
+      <div class="kb-booking-offline" role="status">
+        <h2 class="kb-booking-offline-title">${copy.title}</h2>
+        <p class="kb-booking-offline-text">${copy.text}</p>
+        <a class="kb-btn kb-btn-whatsapp kb-btn-whatsapp-primary dynamic-whatsapp-url" href="${getWhatsAppHref()}" target="_blank" rel="noopener noreferrer">${copy.btn}</a>
+      </div>
+    `;
+    inlineWidgetInstance = null;
+    if (typeof window.kinesicaApplyWhatsAppContact === "function") {
+      window.kinesicaApplyWhatsAppContact();
+    }
   }
 
   function createModalDOM() {
@@ -68,6 +147,11 @@
 
   const KinesicaBookingModal = {
     init() {
+      const cachedActive = readCachedBookingActive();
+      if (cachedActive !== null) {
+        bookingAvailable = cachedActive;
+      }
+
       const onReady = () => {
         KinesicaBookingModal.mountInlineWidget();
         if (
@@ -75,6 +159,10 @@
           window.location.hash === "#habitual" ||
           window.location.search.indexOf("agendar=true") !== -1
         ) {
+          if (bookingAvailable === false) {
+            openWhatsAppFallback();
+            return;
+          }
           if (inlineWidgetInstance) {
             if (window.location.hash === "#habitual" && typeof inlineWidgetInstance.selectExistingPatient === "function") {
               inlineWidgetInstance.selectExistingPatient(true);
@@ -94,6 +182,10 @@
       // Hashchange listener para botón atrás de Android / navegador
       window.addEventListener("hashchange", function () {
         if (window.location.hash === "#agendar" || window.location.hash === "#habitual") {
+          if (bookingAvailable === false) {
+            openWhatsAppFallback();
+            return;
+          }
           if (inlineWidgetInstance) {
             if (window.location.hash === "#habitual" && typeof inlineWidgetInstance.selectExistingPatient === "function") {
               inlineWidgetInstance.selectExistingPatient(true);
@@ -124,6 +216,10 @@
         );
         if (trigger) {
           e.preventDefault();
+          if (bookingAvailable === false) {
+            openWhatsAppFallback();
+            return;
+          }
           KinesicaBookingModal.open();
         }
       });
@@ -148,15 +244,38 @@
       });
     },
 
+    applyBookingAvailability(active) {
+      bookingAvailable = Boolean(active);
+      const mount = typeof document !== "undefined" ? document.getElementById("kinesica-booking-widget") : null;
+      if (!mount) return;
+      if (!bookingAvailable) {
+        if (KinesicaBookingModal.isOpen()) {
+          KinesicaBookingModal.close({ skipHashPush: true });
+        }
+        renderOfflineFallback(mount);
+        return;
+      }
+      if (!inlineWidgetInstance || mount.querySelector(".kb-booking-offline")) {
+        mount.innerHTML = "";
+        inlineWidgetInstance = null;
+        KinesicaBookingModal.mountInlineWidget();
+      }
+    },
+
     mountInlineWidget() {
       if (typeof document === "undefined") return null;
       const mount = document.getElementById("kinesica-booking-widget");
       if (!mount) return null;
+      if (bookingAvailable === false) {
+        renderOfflineFallback(mount);
+        return null;
+      }
       if (inlineWidgetInstance && inlineWidgetInstance.container === mount) {
         return inlineWidgetInstance;
       }
       const Widget = WidgetClass || (typeof window !== "undefined" && window.KinesicaBookingWidget);
       if (!Widget) return null;
+      mount.innerHTML = "";
       inlineWidgetInstance = new Widget(mount, {
         apiUrl: getApiUrl(),
         forceMock: false,
@@ -306,6 +425,10 @@
 
     open(options) {
       options = options || {};
+      if (bookingAvailable === false) {
+        openWhatsAppFallback();
+        return;
+      }
       this.syncPractitionerHours();
       this.prewarm();
 

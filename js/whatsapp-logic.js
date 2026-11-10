@@ -51,6 +51,47 @@ function initDesktopWhatsAppClickHandler() {
 var CLARA_WHATSAPP_DIGITS = "5491131781733";
 var CLARA_PHONE_DISPLAY = "+54 (11) 3178-1733";
 
+function applyBookingCtaVisibility(bookingActive) {
+  var active = Boolean(bookingActive);
+  document.documentElement.classList.toggle("booking-active", active);
+  document.documentElement.classList.toggle("booking-inactive", !active);
+
+  document.querySelectorAll(".js-booking-cta").forEach(function (el) {
+    el.hidden = !active;
+    if (active) {
+      el.style.removeProperty("display");
+    } else {
+      el.style.display = "none";
+    }
+  });
+
+  document.querySelectorAll(".js-booking-fallback-cta").forEach(function (el) {
+    el.hidden = active;
+    if (active) {
+      el.style.display = "none";
+    } else {
+      el.style.removeProperty("display");
+    }
+  });
+
+  var heroBookingBtn = document.getElementById("hero-btn-booking");
+  if (heroBookingBtn) {
+    heroBookingBtn.hidden = !active;
+    if (active) {
+      heroBookingBtn.style.display = "";
+    } else {
+      heroBookingBtn.style.display = "none";
+    }
+  }
+
+  if (
+    window.KinesicaBookingModal &&
+    typeof window.KinesicaBookingModal.applyBookingAvailability === "function"
+  ) {
+    window.KinesicaBookingModal.applyBookingAvailability(active);
+  }
+}
+
 function syncPublicSettings() {
   function applySettings(settings) {
     if (!settings) return;
@@ -72,16 +113,7 @@ function syncPublicSettings() {
       kinesicaApplyWhatsAppContact();
     }
 
-    var heroBookingBtn = document.getElementById("hero-btn-booking");
-    if (heroBookingBtn) {
-      if (bookingActive) {
-        heroBookingBtn.hidden = false;
-        heroBookingBtn.style.display = "";
-      } else {
-        heroBookingBtn.hidden = true;
-        heroBookingBtn.style.display = "none";
-      }
-    }
+    applyBookingCtaVisibility(bookingActive);
 
     if (
       settings.practitioner_hours &&

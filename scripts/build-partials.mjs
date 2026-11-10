@@ -108,7 +108,7 @@ function buildNav(lang, s) {
 ${techniqueItems}
     </ul>
   </li>
-  <li class="nav-cta nav-cta--booking">
+  <li class="nav-cta nav-cta--booking js-booking-cta" hidden>
     <a href="agendar.html" title="${escAttr(s.booking.title)}">${escHtml(s.booking.label)}</a>
   </li>
   <li class="nav-cta nav-cta--whatsapp">
@@ -212,8 +212,9 @@ function buildCtaStrip(lang, s) {
           <div class="col-lg-8 col-sm-8 col-md-8 col-xs-12">
             <h2 class="cta-title">${s.ctaTitle}</h2>${textHtml}
           </div>
-          <div class="col-lg-4 col-sm-4 col-md-4 col-xs-12">
-            <a href="agendar.html" class="btn btn-white btn-lg" title="${escAttr(s.booking.title)}">${escHtml(s.booking.label)}</a>
+          <div class="col-lg-4 col-sm-4 col-md-4 col-xs-12 site-cta-strip-actions">
+            <a href="agendar.html" class="btn btn-white btn-lg js-booking-cta" title="${escAttr(s.booking.title)}" hidden>${escHtml(s.booking.label)}</a>
+            <a href="${waMeUrl(CONTACT.whatsappDigits)}" target="_blank" class="btn btn-white btn-lg dynamic-whatsapp-url js-booking-fallback-cta" rel="noopener noreferrer" title="${escAttr(s.contact.title)}">${escHtml(s.contact.label)}</a>
           </div>
         </div>
       </div>

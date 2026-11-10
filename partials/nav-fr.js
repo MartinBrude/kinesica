@@ -18,7 +18,7 @@ window.__KINESICA_NAV_SNIPPET_FR = `
       <li><a href="posturologia-clinica.html" title="Posturologie clinique">Posturologie clinique</a></li>
     </ul>
   </li>
-  <li class="nav-cta nav-cta--booking">
+  <li class="nav-cta nav-cta--booking js-booking-cta" hidden>
     <a href="agendar.html" title="Prendre rendez-vous en ligne">Prendre RDV</a>
   </li>
   <li class="nav-cta nav-cta--whatsapp">

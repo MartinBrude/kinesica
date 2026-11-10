@@ -269,11 +269,11 @@ function makeSlotsWidget(clientMock) {
     appointmentType: "session",
   };
   w.copy = {
-    slotError: "No pudimos cargar o procesar los horarios disponibles en este momento.",
-    slotFallbackText: "Podés contactar directamente al Lic. Norberto Brude para agendar tu turno:",
-    slotFallbackBtn: "Contactar al Lic. Norberto Brude por WhatsApp →",
-    slotFallbackTextMaria: "Podés contactar directamente a la Lic. María Gulin para agendar tu turno:",
-    slotFallbackBtnMaria: "Contactar a la Lic. María Gulin por WhatsApp →",
+    slotError: "No pudimos cargar los horarios ahora.",
+    slotFallbackText: "Reservá por WhatsApp y te confirmamos el turno con el Lic. Norberto Brude.",
+    slotFallbackBtn: "Reservar por WhatsApp",
+    slotFallbackTextMaria: "Reservá por WhatsApp y te confirmamos el turno con la Lic. María Gulin.",
+    slotFallbackBtnMaria: "Reservar por WhatsApp",
     retry: "↺ Reintentar",
   };
   w.client = clientMock;
@@ -303,9 +303,9 @@ await (async () => {
   assert.equal(elsReq["kb-slots-error"].style.display, "flex");
   assert.equal(elsReq["kb-btn-next-2"].disabled, true);
   assert.equal(wReq.state.selectedTime, null);
-  assert.match(elsReq["kb-slots-error-text"].textContent, /horarios disponibles/i);
+  assert.match(elsReq["kb-slots-error-text"].textContent, /horarios/i);
   assert.match(elsReq["kb-slots-error-fallback"].textContent, /Lic\. Norberto Brude/);
-  assert.match(elsReq["kb-btn-fallback-whatsapp"].textContent, /Lic\. Norberto Brude/);
+  assert.match(elsReq["kb-btn-fallback-whatsapp"].textContent, /WhatsApp/i);
   assert.equal(elsReq["kb-btn-retry-slots"].textContent, "↺ Reintentar");
   assert.equal(typeof elsReq["kb-btn-fallback-whatsapp"].onclick, "function");
   assert.equal(typeof elsReq["kb-btn-retry-slots"].onclick, "function");
@@ -354,7 +354,7 @@ await (async () => {
     await wMaria.loadSlotsForDate("2026-10-07", true);
     assert.equal(elsMaria["kb-slots-error"].style.display, "flex");
     assert.match(elsMaria["kb-slots-error-fallback"].textContent, /Lic\. María Gulin/);
-    assert.match(elsMaria["kb-btn-fallback-whatsapp"].textContent, /Lic\. María Gulin/);
+    assert.match(elsMaria["kb-btn-fallback-whatsapp"].textContent, /WhatsApp/i);
     elsMaria["kb-btn-fallback-whatsapp"].onclick();
     assert.equal(openedMaria, "maria");
     assert.match(wMaria.practitionerWhatsappUrl("maria"), /^https:\/\/wa\.me\/5491128531224$/);
