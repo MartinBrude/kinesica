@@ -455,7 +455,7 @@
 
 /* Simulador de Chat con Clara (WhatsApp Style) */
 .chat-demo-container {
-  max-width: 480px;
+  max-width: 680px;
   margin: 0 auto 30px;
   background: #efeae2;
   border-radius: 16px;
@@ -465,6 +465,7 @@
   display: flex;
   flex-direction: column;
   height: 620px;
+  width: 100%;
 }
 
 .chat-demo-header {
@@ -525,7 +526,7 @@
 }
 
 .chat-msg {
-  max-width: 85%;
+  max-width: 92%;
   padding: 8px 12px;
   border-radius: 8px;
   font-size: 13.5px;
