@@ -2236,6 +2236,92 @@ Nosotros armamos el plan en la sesión.
 📍 Charcas 3889, Palermo
 
 #PrimeraVisita #Kinesiologia #Kinésica`
+  },
+  // Educación clínica: miembro fantasma, compensación, tipos de dolor
+  {
+    id: "129_miembro_fantasma",
+    title: "El miembro ya no está. El dolor sí.",
+    cat: "MIEMBRO FANTASMA",
+    group: "articulaciones",
+    body: "El cerebro sigue mapeando lo que faltó. No es imaginación: es dolor neuropático real.",
+    feedUrl: "campanas/feed/catalogo_feed_129_miembro_fantasma.png",
+    storyUrl: "campanas/story/catalogo_story_129_miembro_fantasma.png",
+    copy: `El miembro ya no está. El dolor sí. 🧠
+
+El dolor de miembro fantasma no es “psicológico” ni inventado: el sistema nervioso sigue representando una parte del cuerpo que ya no está.
+
+Puede sentirse como quemazón, calambre, presión o dolor eléctrico. Y merece abordaje serio: evaluación, desensibilización, trabajo motor y acompañamiento.
+
+En Kinésica escuchamos el síntoma sin minimizarlo.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 3178-1733
+
+#MiembroFantasma #DolorNeuropatico #Kinesiologia #Kinésica`
+  },
+  {
+    id: "130_fantasma_es_real",
+    title: "Si duele, es real. Aunque no se vea.",
+    cat: "MIEMBRO FANTASMA",
+    group: "articulaciones",
+    body: "Hay caminos: terapia especular, reeducación sensitiva y un plan 1 a 1 sin recetas mágicas.",
+    feedUrl: "campanas/feed/catalogo_feed_130_fantasma_es_real.png",
+    storyUrl: "campanas/story/catalogo_story_130_fantasma_es_real.png",
+    copy: `Si duele, es real. Aunque no se vea. 💙
+
+El miembro fantasma puede mejorar con abordajes que “actualizan” el mapa cerebral: terapia especular, reeducación sensitiva, exposición gradual y trabajo funcional.
+
+No hay fórmula única. Hay evaluación individual y constancia.
+
+Si vos o alguien cercano convive con esto, escribinos. Sesiones 1 a 1 de 60 minutos.
+
+📍 Charcas 3889, Palermo
+📲 +54 9 11 3178-1733
+
+#MiembroFantasma #Rehabilitacion #Neuroplasticidad #Kinésica`
+  },
+  {
+    id: "131_compensacion",
+    title: "Cuando una zona falla, otra paga el precio",
+    cat: "COMPENSACIÓN",
+    group: "filosofia",
+    body: "El cuerpo no se rinde: se reorganiza. Esa “solución” termina en sobrecarga y dolor lejos del origen.",
+    feedUrl: "campanas/feed/catalogo_feed_131_compensacion.png",
+    storyUrl: "campanas/story/catalogo_story_131_compensacion.png",
+    copy: `Cuando una zona falla, otra paga el precio ⚖️
+
+El cuerpo no se rinde: se reorganiza. Si la cadera no moviliza, la lumbar compensa. Si el pie no apoya bien, la rodilla y el cuello terminan pagando.
+
+Esa compensación puede “funcionar” meses… hasta que aparece el dolor lejos del origen.
+
+En Kinésica evaluamos cadenas de pies a cabeza para no tratar solo el síntoma.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 3178-1733
+
+#Compensacion #CadenasMiofasciales #Postura #Kinésica`
+  },
+  {
+    id: "132_tipos_de_dolor",
+    title: "No todo dolor se trata igual",
+    cat: "TIPOS DE DOLOR",
+    group: "filosofia",
+    body: "Mecánico, inflamatorio, neuropático o referido: el tipo orienta el abordaje. Por eso preguntamos cómo duele.",
+    feedUrl: "campanas/feed/catalogo_feed_132_tipos_de_dolor.png",
+    storyUrl: "campanas/story/catalogo_story_132_tipos_de_dolor.png",
+    copy: `No todo dolor se trata igual 🧭
+
+• Mecánico: cambia con postura y movimiento
+• Inflamatorio: más constante, a veces con calor/hinchazón
+• Neuropático: electricidad, quemazón, hormigueo
+• Referido: duele en un lugar, nace en otro
+
+Entender el tipo orienta el tratamiento. Por eso en la evaluación preguntamos cómo duele, cuándo y qué lo modifica.
+
+📍 Charcas 3889, Palermo
+📲 +54 9 11 3178-1733
+
+#TiposDeDolor #EvaluacionKinésica #DolorCronico #Kinésica`
   }
 ];
 

@@ -65,7 +65,10 @@ function ig_detect_corner_badge($im, int $w, int $h): ?array
             $qy[] = $ny;
         }
     }
-    if ($n < 800 || $maxX < 80 || $maxY < 40) return null;
+    // Badge real = placa ancha y baja. Paredes claras dan flood alto y angosto → ignorar.
+    if ($n < 2000 || $maxX < 160 || $maxY < 50) return null;
+    if ($maxY > (int) round($h * 0.20)) return null;
+    if ($maxX / max(1, $maxY) < 1.35) return null;
     return [$maxX, $maxY];
 }
 
