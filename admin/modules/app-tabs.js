@@ -8,7 +8,7 @@ import { getSessionUser } from "./auth.js?v=83";
 import { showLibrary } from "./library.js?v=94";
 import { showPacientesView, hidePacientesView } from "./pacientes.js?v=12";
 import { showDashboardView, hideDashboardView, updateDashboardClara, updateDashboardBooking } from "./dashboard.js?v=13";
-import { showConsultorioView, hideConsultorioView, showClaraView, hideClaraView } from "./configuracion.js?v=38";
+import { showConsultorioView, hideConsultorioView, showClaraView, hideClaraView } from "./configuracion.js?v=39";
 import { showAdminView, hideAdminView } from "./admin-panel.js?v=92";
 import { showInteraccionesView, hideInteraccionesView } from "./interacciones.js?v=16";
 import { showRecordatoriosView, hideRecordatoriosView } from "./recordatorios.js?v=24";
@@ -56,6 +56,9 @@ export function switchTab(tab, subtab) {
   const btnFichas = document.querySelector("#nav-btn-fichas");
   const btnPacientes = document.querySelector("#nav-btn-pacientes");
   const btnConsultorio = document.querySelector("#nav-btn-consultorio");
+  const btnConsultorioAgendar = document.querySelector("#nav-btn-consultorio-agendar");
+  const btnConsultorioHorarios = document.querySelector("#nav-btn-consultorio-horarios");
+  const btnConsultorioHonorarios = document.querySelector("#nav-btn-consultorio-honorarios");
   const btnWhatsapp = document.querySelector("#nav-btn-whatsapp");
   const btnInteracciones = document.querySelector("#nav-btn-interacciones");
   const btnRecordatorios = document.querySelector("#nav-btn-recordatorios");
@@ -94,9 +97,19 @@ export function switchTab(tab, subtab) {
     btnClinica?.classList.add("is-active");
     btnPacientes?.classList.add("is-active");
     showPacientesView();
-  } else if (tab === "consultorio" || tab === "horarios" || tab === "honorarios") {
+  } else if (tab === "consultorio" || tab === "agendar" || tab === "horarios" || tab === "honorarios") {
     btnConsultorio?.classList.add("is-active");
-    showConsultorioView();
+    let section = subtab || null;
+    if (!section) {
+      if (tab === "agendar") section = "agendar";
+      else if (tab === "horarios") section = "horarios";
+      else if (tab === "honorarios") section = "honorarios";
+      else section = "agendar";
+    }
+    if (section === "horarios") btnConsultorioHorarios?.classList.add("is-active");
+    else if (section === "honorarios") btnConsultorioHonorarios?.classList.add("is-active");
+    else btnConsultorioAgendar?.classList.add("is-active");
+    showConsultorioView(section);
   } else if (tab === "clara" || tab === "configuracion") {
     btnClara?.classList.add("is-active");
     const section = subtab || "mensajes";
@@ -232,11 +245,12 @@ function bindAdminNavOnce(adminNav) {
   };
 
   setupDropdown(document.getElementById("nav-group-clinica"), document.getElementById("nav-btn-clinica"));
+  setupDropdown(document.getElementById("nav-group-consultorio"), document.getElementById("nav-btn-consultorio"));
   setupDropdown(document.getElementById("nav-group-whatsapp"), document.getElementById("nav-btn-whatsapp"));
   setupDropdown(document.getElementById("nav-group-clara"), document.getElementById("nav-btn-clara"));
   setupDropdown(document.getElementById("nav-group-admin"), document.getElementById("nav-btn-admin"));
 
-  ["#nav-btn-consultorio", "#nav-btn-encuestas", "#brand-logo"].forEach((id) => {
+  ["#nav-btn-encuestas", "#brand-logo"].forEach((id) => {
     document.querySelector(id)?.addEventListener("mouseenter", closeAllDropdowns);
   });
 
@@ -259,7 +273,9 @@ function bindAdminNavOnce(adminNav) {
 
   document.getElementById("nav-btn-fichas")?.addEventListener("click", () => switchTab("fichas"));
   document.getElementById("nav-btn-pacientes")?.addEventListener("click", () => switchTab("pacientes"));
-  document.getElementById("nav-btn-consultorio")?.addEventListener("click", () => switchTab("consultorio"));
+  document.getElementById("nav-btn-consultorio-agendar")?.addEventListener("click", () => switchTab("consultorio", "agendar"));
+  document.getElementById("nav-btn-consultorio-horarios")?.addEventListener("click", () => switchTab("consultorio", "horarios"));
+  document.getElementById("nav-btn-consultorio-honorarios")?.addEventListener("click", () => switchTab("consultorio", "honorarios"));
   document.getElementById("nav-btn-clara-estado")?.addEventListener("click", () => switchTab("clara", "estado"));
   document.getElementById("nav-btn-clara-mensajes")?.addEventListener("click", () => switchTab("clara", "mensajes"));
   document.getElementById("nav-btn-clara-plantilla")?.addEventListener("click", () => switchTab("clara", "plantilla"));

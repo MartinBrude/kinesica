@@ -55,17 +55,17 @@ import {
   parseAdminRouteFromLocation,
   initRouterStorageInterceptor,
   initPopstateRouter,
-} from "./modules/router.js?v=3";
+} from "./modules/router.js?v=4";
 
 import {
   switchTab,
   mountAdminChannels,
   unmountAdminChannels,
-} from "./modules/app-tabs.js?v=38";
+} from "./modules/app-tabs.js?v=39";
 
 import {
   initAppControllers,
-} from "./modules/app-init.js?v=33";
+} from "./modules/app-init.js?v=34";
 
 export {
   api,

@@ -44,7 +44,7 @@ function markHonorariosDirty() {
 export function showHonorariosView() {
   switchActiveView("view-consultorio");
   try {
-    sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "consultorio" }));
+    sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "consultorio", section: "honorarios" }));
   } catch { /* ignore */ }
 
   loadHonorarios();

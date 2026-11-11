@@ -18,7 +18,13 @@ export function parseAdminRouteFromLocation() {
   if (head === "inicio") return { view: "inicio" };
   if (head === "fichas" || head === "historias" || head === "library") return { view: "library" };
   if (head === "pacientes") return { view: "pacientes" };
-  if (head === "consultorio" || head === "horarios" || head === "honorarios") return { view: "consultorio" };
+  if (head === "consultorio") {
+    const section = (parts[1] || "").toLowerCase();
+    return section ? { view: "consultorio", section } : { view: "consultorio" };
+  }
+  if (head === "agendar" || head === "turnos") return { view: "consultorio", section: "agendar" };
+  if (head === "horarios") return { view: "consultorio", section: "horarios" };
+  if (head === "honorarios") return { view: "consultorio", section: "honorarios" };
   if (head === "clara" || head === "configuracion") {
     const section = (parts[1] || "").toLowerCase();
     return section ? { view: "clara", section } : { view: "clara" };
@@ -62,9 +68,20 @@ export function syncUrlWithViewState(state, isInitialBoot = false, isHandlingPop
   } else if (v === "pacientes") {
     targetPath = "/admin/pacientes";
     docTitle = "Kinésica — Pacientes";
-  } else if (v === "consultorio" || v === "horarios" || v === "honorarios") {
-    targetPath = "/admin/consultorio";
-    docTitle = "Kinésica — Consultorio";
+  } else if (v === "consultorio" || v === "agendar" || v === "horarios" || v === "honorarios") {
+    const sec = String(state.section || (v === "consultorio" ? "" : v) || "").toLowerCase();
+    if (sec === "agendar" || sec === "horarios" || sec === "honorarios") {
+      targetPath = `/admin/consultorio/${sec}`;
+      const titles = {
+        agendar: "Agendar Turnos",
+        horarios: "Horarios de Atención",
+        honorarios: "Honorarios y Formas de Pago",
+      };
+      docTitle = `Kinésica — Consultorio · ${titles[sec]}`;
+    } else {
+      targetPath = "/admin/consultorio";
+      docTitle = "Kinésica — Consultorio";
+    }
   } else if (v === "clara" || v === "configuracion") {
     const sec = String(state.section || "").toLowerCase();
     if (sec === "estado" || sec === "mensajes" || sec === "plantilla" || sec === "politicas" || sec === "simulador") {
@@ -161,7 +178,9 @@ export function initPopstateRouter({ loadAll, fillForm, showForm, showCompare, s
       }
       if (route.view === "library" || route.view === "fichas") switchTab("fichas");
       else if (route.view === "pacientes") switchTab("pacientes");
-      else if (route.view === "consultorio" || route.view === "horarios" || route.view === "honorarios") switchTab("consultorio");
+      else if (route.view === "consultorio" || route.view === "agendar" || route.view === "horarios" || route.view === "honorarios") {
+        switchTab("consultorio", route.section || (route.view === "consultorio" ? "" : route.view));
+      }
       else if (route.view === "clara" || route.view === "configuracion") switchTab("clara", route.section || "");
       else if (route.view === "interacciones" || route.view === "chats") switchTab("interacciones");
       else if (route.view === "recordatorios" || route.view === "reminders") switchTab("recordatorios");

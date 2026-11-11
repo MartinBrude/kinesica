@@ -7,12 +7,52 @@ import { switchActiveView } from "./dom.js?v=79";
 import { loadHorariosFromServer } from "./horarios.js?v=4";
 import { loadHonorarios } from "./honorarios.js?v=3";
 
-export function showConsultorioView() {
+const CONSULTORIO_SECTIONS = new Set(["agendar", "horarios", "honorarios"]);
+
+const CONSULTORIO_SECTION_TITLES = {
+  agendar: "Consultorio · Agendar Turnos",
+  horarios: "Consultorio · Horarios de Atención",
+  honorarios: "Consultorio · Honorarios y Formas de Pago",
+};
+
+export function normalizeConsultorioSection(section) {
+  const raw = String(section || "").toLowerCase().trim();
+  if (raw === "turnos" || raw === "agenda" || raw === "booking" || raw === "turnera") return "agendar";
+  if (raw === "horario" || raw === "hours" || raw === "schedules") return "horarios";
+  if (raw === "honorario" || raw === "fees" || raw === "aranceles" || raw === "precios") return "honorarios";
+  return CONSULTORIO_SECTIONS.has(raw) ? raw : "";
+}
+
+/** Como Clara / Administración: muestra solo la sección elegida y oculta el resto. */
+export function setConsultorioActiveSection(section = "agendar") {
+  const id = normalizeConsultorioSection(section) || "agendar";
+  document.querySelectorAll("#view-consultorio [data-consultorio-section]").forEach((card) => {
+    const match = card.getAttribute("data-consultorio-section") === id;
+    card.hidden = !match;
+    if (match && card.tagName === "DETAILS") {
+      card.open = true;
+    }
+  });
+  const heroTitle = document.querySelector("#view-consultorio .hero-title");
+  if (heroTitle) {
+    heroTitle.textContent = CONSULTORIO_SECTION_TITLES[id] || "Consultorio";
+  }
+  try {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  } catch { /* ignore */ }
+}
+
+export function showConsultorioView(section = "") {
   const view = switchActiveView("view-consultorio");
   if (view) {
+    const normalized = normalizeConsultorioSection(section) || "agendar";
     try {
-      sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "consultorio" }));
+      sessionStorage.setItem(
+        "kinesica_admin_view",
+        JSON.stringify({ view: "consultorio", section: normalized })
+      );
     } catch { /* ignore */ }
+    setConsultorioActiveSection(normalized);
     loadHorariosFromServer();
     loadHonorarios();
   }
@@ -88,8 +128,11 @@ export function hideClaraView() {
 }
 
 export function showConfiguracionView(subtab = "clara", onClaraShow) {
-  if (subtab === "horarios" || subtab === "honorarios") showConsultorioView();
-  else showClaraView(onClaraShow);
+  if (subtab === "agendar" || subtab === "horarios" || subtab === "honorarios") {
+    showConsultorioView(subtab);
+  } else {
+    showClaraView(onClaraShow);
+  }
 }
 
 export function hideConfiguracionView() {
@@ -98,6 +141,9 @@ export function hideConfiguracionView() {
 }
 
 export function switchConfigSubtab(subtabId, onClaraShow) {
-  if (subtabId === "horarios" || subtabId === "honorarios") showConsultorioView();
-  else showClaraView(onClaraShow);
+  if (subtabId === "agendar" || subtabId === "horarios" || subtabId === "honorarios") {
+    showConsultorioView(subtabId);
+  } else {
+    showClaraView(onClaraShow);
+  }
 }

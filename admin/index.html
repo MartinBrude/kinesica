@@ -78,8 +78,18 @@
           </div>
         </div>
 
-        <!-- GRUPO 2: CONSULTORIO (Turnos, Horarios y Honorarios) -->
-        <button type="button" class="btn ghost" id="nav-btn-consultorio">Consultorio</button>
+        <!-- GRUPO 2: CONSULTORIO (Agendar, Horarios y Honorarios) -->
+        <div class="nav-dropdown" id="nav-group-consultorio">
+          <button type="button" class="btn ghost nav-dropdown-trigger" id="nav-btn-consultorio" aria-expanded="false" aria-haspopup="true">
+            <span>Consultorio</span>
+            <svg class="nav-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          <div class="nav-dropdown-menu" id="nav-menu-consultorio" role="menu">
+            <button type="button" class="nav-dropdown-item" id="nav-btn-consultorio-agendar" role="menuitem">Agendar Turnos</button>
+            <button type="button" class="nav-dropdown-item" id="nav-btn-consultorio-horarios" role="menuitem">Horarios de Atención</button>
+            <button type="button" class="nav-dropdown-item" id="nav-btn-consultorio-honorarios" role="menuitem">Honorarios y Formas de Pago</button>
+          </div>
+        </div>
 
         <!-- GRUPO 3: META (Bandeja de Interacciones, Recordatorios y Creativos Instagram) -->
         <div class="nav-dropdown" id="nav-group-whatsapp">
@@ -548,35 +558,53 @@
 
     
 
-    <!-- 4. OPERATIVA DEL CONSULTORIO: HORARIOS Y HONORARIOS -->
+    <!-- 4. OPERATIVA DEL CONSULTORIO: AGENDAR, HORARIOS Y HONORARIOS -->
     <section id="view-consultorio" class="view" hidden>
       <div class="hero-card" style="margin-bottom: 24px;">
         <div class="hero-copy">
           <span class="doc-icon" aria-hidden="true"></span>
-          <h1 class="hero-title">Consultorio: Horarios y Honorarios</h1>
+          <h1 class="hero-title">Consultorio</h1>
         </div>
       </div>
 
-      <!-- ACCESO DIRECTO: AGENDAR TURNOS (TURNERA) -->
-      <article class="dash-card" id="dash-card-agendar" role="button" tabindex="0" data-admin-booking-open aria-label="Abrir Turnera profesional para Agendar Turnos" style="margin-bottom: 24px;">
-        <div class="dash-card-header">
-          <div class="dash-icon-box amber" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-          </div>
-          <div class="dash-card-meta">
-            <div class="dash-card-title">
-              <span>Agendar Turnos</span>
-              <span class="dash-card-arrow" aria-hidden="true">→</span>
+      <!-- SECCIÓN 1: AGENDAR TURNOS (TURNERA) -->
+      <details class="admin-collapsible-card" id="consultorio-section-agendar" data-consultorio-section="agendar" open>
+        <summary class="admin-collapsible-summary">
+          <div class="admin-collapsible-header-left">
+            <span class="admin-collapsible-icon" aria-hidden="true">📅</span>
+            <div class="admin-collapsible-titles">
+              <h2 class="admin-collapsible-title">Agendar Turnos</h2>
+              <p class="admin-collapsible-desc">Coordinación de citas presenciales en tiempo real con Google Calendar y turnera oficial sin colisiones.</p>
             </div>
-            <p class="dash-card-desc">
-              Coordinación de citas presenciales en tiempo real con Google Calendar y turnera oficial de Kinésica sin colisiones.
-            </p>
           </div>
+          <div class="admin-collapsible-header-right">
+            <svg class="admin-collapsible-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+        </summary>
+        <div class="admin-collapsible-body">
+          <article class="dash-card" id="dash-card-agendar" role="button" tabindex="0" data-admin-booking-open aria-label="Abrir Turnera profesional para Agendar Turnos" style="margin: 0;">
+            <div class="dash-card-header">
+              <div class="dash-icon-box amber" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+              </div>
+              <div class="dash-card-meta">
+                <div class="dash-card-title">
+                  <span>Abrir turnera profesional</span>
+                  <span class="dash-card-arrow" aria-hidden="true">→</span>
+                </div>
+                <p class="dash-card-desc">
+                  Abrí la turnera oficial de Kinésica para coordinar citas en tiempo real con Google Calendar.
+                </p>
+              </div>
+            </div>
+          </article>
         </div>
-      </article>
+      </details>
 
-      <!-- SECCIÓN COLAPSABLE 1: HORARIOS DE ATENCIÓN (CAMILLA ÚNICA) -->
-      <details class="admin-collapsible-card">
+      <!-- SECCIÓN 2: HORARIOS DE ATENCIÓN (CAMILLA ÚNICA) -->
+      <details class="admin-collapsible-card" id="consultorio-section-horarios" data-consultorio-section="horarios">
         <summary class="admin-collapsible-summary">
           <div class="admin-collapsible-header-left">
             <span class="admin-collapsible-icon" aria-hidden="true">🕒</span>
@@ -664,8 +692,8 @@
         </div>
       </details>
 
-      <!-- SECCIÓN COLAPSABLE 2: HONORARIOS Y FORMAS DE PAGO -->
-      <details class="admin-collapsible-card">
+      <!-- SECCIÓN 3: HONORARIOS Y FORMAS DE PAGO -->
+      <details class="admin-collapsible-card" id="consultorio-section-honorarios" data-consultorio-section="honorarios">
         <summary class="admin-collapsible-summary">
           <div class="admin-collapsible-header-left">
             <span class="admin-collapsible-icon" aria-hidden="true">💳</span>
@@ -2765,7 +2793,10 @@
             if (head === "inicio") saved = { view: "inicio" };
             else if (head === "fichas" || head === "historias" || head === "library") saved = { view: "library" };
             else if (head === "pacientes") saved = { view: "pacientes" };
-            else if (head === "consultorio" || head === "horarios" || head === "honorarios") saved = { view: "consultorio" };
+            else if (head === "consultorio") saved = { view: "consultorio", section: (parts[1] || "").toLowerCase() };
+            else if (head === "agendar" || head === "turnos") saved = { view: "consultorio", section: "agendar" };
+            else if (head === "horarios") saved = { view: "consultorio", section: "horarios" };
+            else if (head === "honorarios") saved = { view: "consultorio", section: "honorarios" };
             else if (head === "clara" || head === "configuracion") saved = { view: "clara", section: (parts[1] || "").toLowerCase() };
             else if (head === "interacciones" || head === "chats" || head === "mensajes" || head === "whatsapp") saved = { view: "interacciones" };
             else if (head === "recordatorios" || head === "reminders") saved = { view: "recordatorios" };
@@ -2793,9 +2824,25 @@
           } else if (saved.view === "pacientes") {
             var pac = document.getElementById("view-pacientes");
             if (pac) pac.hidden = false;
-          } else if (saved.view === "consultorio" || saved.view === "horarios" || saved.view === "honorarios") {
+          } else if (saved.view === "consultorio" || saved.view === "horarios" || saved.view === "honorarios" || saved.view === "agendar") {
             var con = document.getElementById("view-consultorio");
             if (con) con.hidden = false;
+            var conSec = (saved.section || saved.view || "").toLowerCase();
+            var conAllowed = { agendar: 1, horarios: 1, honorarios: 1 };
+            if (!conAllowed[conSec]) conSec = "agendar";
+            var conTitles = {
+              agendar: "Consultorio · Agendar Turnos",
+              horarios: "Consultorio · Horarios de Atención",
+              honorarios: "Consultorio · Honorarios y Formas de Pago"
+            };
+            var conHero = con ? con.querySelector(".hero-title") : null;
+            if (conHero) conHero.textContent = conTitles[conSec] || "Consultorio";
+            var conCards = con ? con.querySelectorAll("[data-consultorio-section]") : [];
+            for (var cci = 0; cci < conCards.length; cci++) {
+              var matchCon = conCards[cci].getAttribute("data-consultorio-section") === conSec;
+              conCards[cci].hidden = !matchCon;
+              if (matchCon && conCards[cci].tagName === "DETAILS") conCards[cci].open = true;
+            }
           } else if (saved.view === "clara" || saved.view === "configuracion") {
             var cla = document.getElementById("view-clara");
             if (cla) cla.hidden = false;
@@ -2891,6 +2938,6 @@
   <div id="print-root"></div>
   <script src="/partials/google-reviews-data.min.js?v=1794315438" defer></script>
   <script src="/booking/booking-bundle.min.js?v=1794315438" defer></script>
-  <script type="module" src="/admin/app.js?v=212"></script>
+  <script type="module" src="/admin/app.js?v=213"></script>
 </body>
 </html>

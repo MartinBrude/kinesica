@@ -66,7 +66,7 @@ export function applyHoursToRuntime(hoursObj) {
 export function showHorariosView() {
   switchActiveView("view-consultorio");
   try {
-    sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "consultorio" }));
+    sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "consultorio", section: "horarios" }));
   } catch { /* ignore */ }
   loadHorariosFromServer();
 }
