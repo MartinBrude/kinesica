@@ -84,7 +84,7 @@ export async function savePublishSchedule(days, hour) {
     body: { action: "update_schedule", days: clean, hour: Math.max(0, Math.min(23, Number(hour) || 0)) },
   });
   if (data?.schedule) applyScheduleFromPayload(data.schedule);
-  const { applyColaPayload } = await import("./admin-creativos-cola.js?v=11");
+  const { applyColaPayload } = await import("./admin-creativos-cola.js?v=12");
   applyColaPayload(data);
 }
 

@@ -12,7 +12,7 @@ import {
   IMG_CAT_MAX,
   IMG_TITLE_MAX,
   IMG_BODY_MAX,
-} from "./admin-creativos-cola.js?v=11";
+} from "./admin-creativos-cola.js?v=12";
 
 let resolveSeed = () => null;
 let onSavedCb = null;

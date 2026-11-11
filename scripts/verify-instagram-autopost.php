@@ -236,6 +236,23 @@ it('schedule days+hour se persiste y normaliza', function () {
     ig_schedule_set([1, 3, 5], 10, 'martin');
 });
 
+it('hide/unhide creativo y saca de cola queued', function () {
+    require_once __DIR__ . '/../admin/api/lib_instagram_hidden.php';
+    require_once __DIR__ . '/../admin/api/lib_instagram_store.php';
+    ig_queue_add([
+        'id' => 'p_hide', 'title' => 'Hide me', 'caption' => 'Texto de prueba',
+        'feed_path' => 'campanas/feed/h.png', 'story_path' => 'campanas/story/h.png',
+    ], 'martin');
+    if (!ig_queue_find('p_hide')) throw new Exception('Debía estar en cola');
+    $hide = ig_creativo_hide('p_hide', 'martin');
+    if (empty($hide['ok'])) throw new Exception('hide falló');
+    if (ig_queue_find('p_hide')) throw new Exception('Debía salir de cola queued');
+    if (!ig_creativo_is_hidden('p_hide')) throw new Exception('Debía quedar hidden');
+    if (!in_array('p_hide', ig_hidden_ids(), true)) throw new Exception('hidden_ids incompleto');
+    if (!ig_creativo_unhide('p_hide')) throw new Exception('unhide falló');
+    if (ig_creativo_is_hidden('p_hide')) throw new Exception('Debía restaurarse');
+});
+
 it('ig_queue_claim evita doble reserva de la misma pieza', function() {
     require_once __DIR__ . '/../admin/api/lib_instagram_guard.php';
     ig_queue_add([

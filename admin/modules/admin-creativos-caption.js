@@ -13,7 +13,7 @@ import {
   setServiceEnabled,
   CAPTION_MAX,
   normalizeIgCaptionPhone,
-} from "./admin-creativos-cola.js?v=11";
+} from "./admin-creativos-cola.js?v=12";
 import { imageTextEditButtonHtml } from "./admin-creativos-image-text.js?v=2";
 import { formatScheduleLabel, scheduleFormHtml } from "./admin-creativos-schedule.js?v=1";
 

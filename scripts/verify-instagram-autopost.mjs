@@ -41,6 +41,7 @@ const filesToCheck = [
   "admin/modules/admin-creativos-caption.js",
   "admin/modules/admin-creativos-image-text.js",
   "admin/modules/admin-creativos-schedule.js",
+  "admin/api/lib_instagram_hidden.php",
 ];
 
 for (const rel of filesToCheck) {
@@ -88,7 +89,7 @@ import {
   _setListForTesting,
   stateOf,
   orderOf,
-} from "../admin/modules/admin-creativos-cola.js?v=11";
+} from "../admin/modules/admin-creativos-cola.js?v=12";
 import {
   colaHeartHtml,
   colaBadgeHtml,

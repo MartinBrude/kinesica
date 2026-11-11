@@ -16,7 +16,11 @@ import {
   saveCaption,
   assetVersion,
   subscribeCola,
-} from "./admin-creativos-cola.js?v=11";
+  hideCreativo,
+  unhideCreativo,
+  isCreativoHidden,
+  getHiddenIds,
+} from "./admin-creativos-cola.js?v=12";
 import {
   colaButtonHtml,
   colaBadgeHtml,
@@ -33,7 +37,7 @@ import {
 } from "./admin-creativos-image-text.js?v=2";
 
 let activeFormat = "feed"; // 'feed' | 'story'
-let activeFilter = "todos"; // 'todos' | 'columna' | 'articulaciones' | 'filosofia'
+let activeFilter = "todos"; // 'todos' | 'columna' | 'articulaciones' | 'filosofia' | 'papelera'
 let searchQuery = "";
 let selectedItem = null;
 
@@ -2525,9 +2529,36 @@ export function initCreativosUI() {
   // Delegated clicks for actions (copy, lightbox, download, edit caption)
   const gridEl = document.getElementById("admin-creativos-grid");
   if (gridEl) {
-    gridEl.addEventListener("click", (e) => {
+    gridEl.addEventListener("click", async (e) => {
       // Cola / corazones: lo maneja initListaUI o el listener del card.
       if (e.target.closest(".btn-creativo-heart, .btn-creativo-cola, .creativo-badge-cola")) {
+        return;
+      }
+
+      const trashBtn = e.target.closest(".btn-creativo-trash");
+      if (trashBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const id = trashBtn.dataset.trashId;
+        if (!id) return;
+        const restore = trashBtn.classList.contains("is-restore");
+        const item = CREATIVOS_DATA.find((it) => it.id === id);
+        const label = item?.title || id;
+        const ok = window.confirm(
+          restore
+            ? `¿Restaurar "${label}" al catálogo?`
+            : `¿Eliminar "${label}" del catálogo?\n\nVa a la papelera (se puede restaurar). Si estaba en la cola, se saca.`
+        );
+        if (!ok) return;
+        trashBtn.disabled = true;
+        try {
+          if (restore) await unhideCreativo(id);
+          else await hideCreativo(id);
+        } catch (err) {
+          if (!err.auth) window.alert(err.message || "No se pudo actualizar la papelera");
+        } finally {
+          trashBtn.disabled = false;
+        }
         return;
       }
 
@@ -2550,6 +2581,7 @@ export function initCreativosUI() {
         return;
       }
 
+      if (e.target.closest(".btn-creativo-trash")) return;
       const zoomTrigger = e.target.closest(".creativo-thumb-box");
       if (zoomTrigger) {
         const id = zoomTrigger.dataset.id;
@@ -2611,8 +2643,15 @@ function renderCreativosGrid() {
   const countLabel = document.getElementById("admin-creativos-count-label");
   if (!grid) return;
 
+  const inTrash = activeFilter === "papelera";
   const filtered = CREATIVOS_DATA.filter((item) => {
-    if (activeFilter !== "todos" && item.group !== activeFilter) {
+    const hidden = isCreativoHidden(item.id);
+    if (inTrash) {
+      if (!hidden) return false;
+    } else if (hidden) {
+      return false;
+    }
+    if (!inTrash && activeFilter !== "todos" && item.group !== activeFilter) {
       return false;
     }
     if (searchQuery) {
@@ -2623,14 +2662,19 @@ function renderCreativosGrid() {
     return true;
   });
 
+  const visibleTotal = inTrash
+    ? getHiddenIds().length
+    : CREATIVOS_DATA.length - getHiddenIds().length;
   if (countLabel) {
-    countLabel.textContent = `${filtered.length} de ${CREATIVOS_DATA.length} piezas`;
+    countLabel.textContent = inTrash
+      ? `${filtered.length} en papelera`
+      : `${filtered.length} de ${visibleTotal} piezas`;
   }
 
   if (!filtered.length) {
     grid.innerHTML = `
       <div class="creativos-empty">
-        <p>No se encontraron piezas que coincidan con la búsqueda.</p>
+        <p>${inTrash ? "La papelera está vacía." : "No se encontraron piezas que coincidan con la búsqueda."}</p>
       </div>
     `;
     return;
@@ -2642,9 +2686,12 @@ function renderCreativosGrid() {
       const rawImg = activeFormat === "story" ? item.storyUrl : item.feedUrl;
       const imgUrl = `${rawImg}?v=${assetVersion}`;
       const aspectClass = activeFormat === "story" ? "aspect-story" : "aspect-feed";
+      const trashBtn = inTrash
+        ? `<button type="button" class="btn-creativo-trash is-restore" data-trash-id="${item.id}" title="Restaurar al catálogo" aria-label="Restaurar">♻️</button>`
+        : `<button type="button" class="btn-creativo-trash" data-trash-id="${item.id}" title="Eliminar del catálogo" aria-label="Eliminar">🗑️</button>`;
 
       return `
-        <article class="creativo-card" data-id="${item.id}">
+        <article class="creativo-card${inTrash ? " is-trashed" : ""}" data-id="${item.id}">
           <div class="creativo-thumb-box ${aspectClass}" data-id="${item.id}" title="Click para ver en grande">
             <img src="${imgUrl}" alt="${escapeHtml(texts.title)}" loading="lazy">
             <div class="creativo-thumb-overlay">
@@ -2652,7 +2699,8 @@ function renderCreativosGrid() {
             </div>
             <span class="creativo-format-badge">${activeFormat === "story" ? "Story 9:16" : "Feed 4:5"}</span>
             ${colaBadgeHtml(item)}
-            ${colaHeartHtml(item)}
+            ${inTrash ? "" : colaHeartHtml(item)}
+            ${trashBtn}
           </div>
 
           <div class="creativo-info">
@@ -2670,7 +2718,7 @@ function renderCreativosGrid() {
               <button type="button" class="btn light btn-sm btn-creativo-copy" data-id="${item.id}" title="Copiar caption">
                 📋 Copiar caption
               </button>
-              ${imageTextEditButtonHtml(item.id)}
+              ${inTrash ? "" : imageTextEditButtonHtml(item.id)}
             </div>
           </div>
         </article>

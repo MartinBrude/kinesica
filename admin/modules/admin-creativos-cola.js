@@ -7,6 +7,8 @@ let colaMap = new Map();
 let captionOverrides = new Map();
 let imageTextOverrides = new Map();
 let serviceEnabled = true;
+/** @type {Set<string>} */
+let hiddenIds = new Set();
 let subscribers = [];
 export let assetVersion = Date.now();
 export function bumpAssetVersion() { assetVersion = Date.now(); }
@@ -40,10 +42,13 @@ function applyPayload(data) {
   if (data?.image_texts) setImageTexts(data.image_texts);
   if (typeof data?.enabled === "boolean") serviceEnabled = data.enabled;
   if (data?.schedule) applyScheduleFromPayload(data.schedule);
+  if (Array.isArray(data?.hidden)) hiddenIds = new Set(data.hidden.map(String));
   setList(data?.items);
 }
 export function isServiceEnabled() { return serviceEnabled !== false; }
 export function getPublishSchedule() { return _getSched(); }
+export function isCreativoHidden(id) { return hiddenIds.has(String(id)); }
+export function getHiddenIds() { return [...hiddenIds]; }
 
 function setList(items) {
   colaItems = Array.isArray(items) ? items : [];
@@ -208,6 +213,12 @@ export async function saveChannels(id, channel) {
 }
 export async function setServiceEnabled(enabled) {
   applyPayload(await api("instagram_cola.php", { method: "POST", body: { action: "set_enabled", enabled: !!enabled } }));
+}
+export async function hideCreativo(id) {
+  applyPayload(await api("instagram_cola.php", { method: "POST", body: { action: "hide_creativo", id } }));
+}
+export async function unhideCreativo(id) {
+  applyPayload(await api("instagram_cola.php", { method: "POST", body: { action: "unhide_creativo", id } }));
 }
 /** Aplica payload completo tras guardar frecuencia (schedule.js lo llama). */
 export function applyColaPayload(data) { applyPayload(data); }

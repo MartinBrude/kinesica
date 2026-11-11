@@ -29,6 +29,7 @@ Este módulo permite a **Norberto y Martín** gestionar de forma visual y 100% a
 - **Canal (Feed / Story / Ambas)**: En la cola, un selector por pieza define qué se publica (cron y **⚡ Publicar ya**). Por defecto: Feed + Story.
 - **Activar / Pausar**: Botón en la lista para encender o apagar el servicio automático. **Por defecto está activo.** Si está pausado, el cron no publica (sí se puede seguir editando la cola y usar Publicar ya).
 - **💔 Quitar**: Remueve la pieza de la cola (solo si está `queued`) y la devuelve al catálogo como disponible.
+- **🗑️ Eliminar / Papelera**: Soft-delete en el catálogo (`instagram_creativo_hidden`). Si estaba `queued`, sale de la cola. No borra PNG del repo. En el filtro **🗑 Papelera** se puede restaurar (♻️). Bloqueado si está `publishing`.
 
 ### 📸 Reporte y Marcado de Publicación
 Al publicarse una pieza (sea por el cron o manualmente), el sistema registra el resultado exacto:

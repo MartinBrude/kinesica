@@ -2017,6 +2017,32 @@
 .creativo-modal-cola { margin-bottom: 12px; }
 .creativo-modal-cola .btn-creativo-cola { width: 100%; padding: 12px; font-size: 1rem; }
 
+.btn-creativo-trash {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  z-index: 4;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 999px;
+  padding: 4px 9px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+  line-height: 1.2;
+}
+.btn-creativo-trash:hover {
+  transform: scale(1.08);
+  background: #fee2e2;
+  border-color: #fca5a5;
+}
+.btn-creativo-trash.is-restore:hover {
+  background: #ecfdf5;
+  border-color: #86efac;
+}
+.creativo-card.is-trashed {
+  opacity: 0.92;
+}
 .btn-creativo-heart {
   position: absolute;
   top: 8px;

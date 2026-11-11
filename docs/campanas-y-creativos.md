@@ -65,6 +65,7 @@ Directamente desde la interfaz de Creativos, Norberto y los administradores gest
    - **Botones ⬆️ / ⬇️**: Para subir o bajar una posición en un clic.
    - **Cálculo de slots estimados**: Fechas proyectadas según la frecuencia configurada en admin (default Lun/Mié/Vie 10:00 AR).
    - **Frecuencia**: días + hora en la barra de la cola; persiste en DB y alimenta el cron (1 pieza/día).
+   - **🗑️ Papelera**: tachito en cada pieza para sacarla del catálogo (soft-delete). Se restaura desde el filtro Papelera.
    - **⚡ Publicar ya**: Publica de inmediato según el canal elegido (timeout 180s). Cuenta para el cupo del día.
    - **✏️ Editar caption**: Cambia el texto de la publicación (máx. 2200 caracteres). No regenera la imagen. Usa el WhatsApp de Clara (`+54 9 11 3178-1733`).
    - **🖼️ Editar imagen**: Cambia pill / título / cuerpo on-image y regenera Feed + Story automáticamente.

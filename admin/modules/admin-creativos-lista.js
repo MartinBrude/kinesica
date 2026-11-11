@@ -10,7 +10,7 @@ import {
   subscribeCola,
   queuedChannel,
   assetVersion,
-} from "./admin-creativos-cola.js?v=11";
+} from "./admin-creativos-cola.js?v=12";
 import {
   captionSnippetHtml,
   toggleCaptionEditor,
