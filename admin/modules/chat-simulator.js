@@ -39,7 +39,9 @@ let botRepliedOnce = false;
 
 function replyAsBot(text, { viaNaturalLanguage = false, letter = null } = {}) {
   let out = text;
-  if (!botRepliedOnce && viaNaturalLanguage && ["a", "b", "c", "d"].includes(letter)) {
+  // Tras "Hola"/menú también: el primer NL A–D antepone Buenos días/tardes
+  // (state.used evita repetirlo; el menú no marca used).
+  if (viaNaturalLanguage && ["a", "b", "c", "d"].includes(letter)) {
     out = withTraditionalFirstContactGreeting(text, chatLang, traditionalGreetingState);
   }
   botRepliedOnce = true;
