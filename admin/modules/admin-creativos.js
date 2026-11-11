@@ -24,14 +24,13 @@ import {
   refreshColaButtons,
   ensureColaUiPaint,
 } from "./admin-creativos-cola-ui.js?v=3";
-import { initListaUI } from "./admin-creativos-lista.js?v=10";
-import { canEditCaptions } from "./admin-creativos-caption.js?v=7";
+import { initListaUI } from "./admin-creativos-lista.js?v=11";
+import { canEditCaptions } from "./admin-creativos-caption.js?v=8";
 import {
   imageTextEditButtonHtml,
-  imageTextEditorHtml,
   bindImageTextUi,
   canEditImageText,
-} from "./admin-creativos-image-text.js?v=1";
+} from "./admin-creativos-image-text.js?v=2";
 
 let activeFormat = "feed"; // 'feed' | 'story'
 let activeFilter = "todos"; // 'todos' | 'columna' | 'articulaciones' | 'filosofia'
@@ -2202,9 +2201,12 @@ export function initCreativosUI() {
 
   ensureColaUiPaint();
   initListaUI(resolver);
-  bindImageTextUi(container, () => {
-    renderCreativosGrid();
-    if (selectedItem) openLightboxModal(resolver(selectedItem.id) || selectedItem);
+  bindImageTextUi(container, {
+    resolveItem: resolver,
+    onDone: () => {
+      renderCreativosGrid();
+      if (selectedItem) openLightboxModal(resolver(selectedItem.id) || selectedItem);
+    },
   });
   subscribeCola(() => renderCreativosGrid());
   loadCola();
@@ -2309,7 +2311,6 @@ function renderCreativosGrid() {
                 📋 Copiar caption
               </button>
               ${imageTextEditButtonHtml(item.id)}
-              ${imageTextEditorHtml(item.id, item)}
             </div>
           </div>
         </article>
@@ -2375,9 +2376,7 @@ function openLightboxModal(item) {
 
   const imgSlot = document.getElementById("creativo-modal-imgtext-slot");
   if (imgSlot) {
-    imgSlot.innerHTML = canEditImageText()
-      ? `${imageTextEditButtonHtml(item.id)}${imageTextEditorHtml(item.id, item)}`
-      : "";
+    imgSlot.innerHTML = canEditImageText() ? imageTextEditButtonHtml(item.id) : "";
   }
 
   if (modalBtnFeed) {

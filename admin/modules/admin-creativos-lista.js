@@ -19,8 +19,7 @@ import {
   handleServiceToggleClick,
   serviceToggleHtml,
   channelLabel,
-} from "./admin-creativos-caption.js?v=7";
-import { bindImageTextUi } from "./admin-creativos-image-text.js?v=1";
+} from "./admin-creativos-caption.js?v=8";
 
 let resolveItem = () => null, draggedId = null;
 
@@ -149,7 +148,7 @@ async function handlePublishNowClick(id, btn) {
 
 function setupDragAndDrop(container) {
   container.addEventListener("dragstart", (e) => {
-    if (e.target.closest(".creativos-caption-editor, .creativos-imgtext-editor, textarea, input, .btn-queue-edit-caption, .btn-queue-edit-imgtext")) {
+    if (e.target.closest(".creativos-caption-editor, textarea, input, .btn-queue-edit-caption, .btn-queue-edit-imgtext")) {
       e.preventDefault();
       return;
     }
@@ -235,9 +234,6 @@ export function initListaUI(resolver) {
   });
 
   setupDragAndDrop(container);
-  bindImageTextUi(container, () => {
-    if (panelQueue && !panelQueue.hidden) renderQueueView();
-  });
 
   subscribeCola(() => {
     if (panelQueue && !panelQueue.hidden) renderQueueView();

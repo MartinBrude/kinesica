@@ -1840,21 +1840,19 @@
   max-height: 360px;
 }
 
-.creativos-imgtext-editor {
-  margin-top: 10px;
-  padding: 12px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #f8fafb;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
 .creativos-imgtext-hint {
-  margin: 0;
+  margin: 8px 0 0;
   font-size: 12px;
   color: var(--muted);
+}
+
+.creativos-imgtext-kicker {
+  margin: 0 0 2px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .creativos-imgtext-input {
@@ -1863,6 +1861,7 @@
   border: 1px solid var(--line);
   border-radius: 6px;
   font: inherit;
+  margin-bottom: 10px;
 }
 
 .creativos-char-count {
@@ -1878,6 +1877,63 @@
 
 .creativo-actions {
   flex-wrap: wrap;
+}
+
+.creativo-imgtext-modal-card {
+  width: min(920px, calc(100vw - 24px));
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+}
+
+.creativo-imgtext-modal-body {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 20px;
+  padding: 0 20px 20px;
+}
+
+.creativo-imgtext-preview-wrap {
+  min-width: 0;
+}
+
+.creativo-imgtext-preview-img {
+  display: block;
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: #0b2436;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+.creativo-imgtext-form {
+  min-width: 0;
+}
+
+#creativo-imgtext-modal.is-saving .creativo-imgtext-preview-img {
+  animation: creativo-regen-pulse 0.9s ease-in-out infinite;
+}
+
+.creativo-thumb-box.is-regen-flash,
+.creativos-queue-thumb.is-regen-flash {
+  animation: creativo-regen-flash 0.85s ease-out;
+}
+
+@keyframes creativo-regen-pulse {
+  0%, 100% { opacity: 1; filter: brightness(1); }
+  50% { opacity: 0.72; filter: brightness(1.08); }
+}
+
+@keyframes creativo-regen-flash {
+  0% { box-shadow: 0 0 0 0 rgba(46, 160, 140, 0.55); transform: scale(1); }
+  40% { box-shadow: 0 0 0 6px rgba(46, 160, 140, 0); transform: scale(1.02); }
+  100% { box-shadow: 0 0 0 0 rgba(46, 160, 140, 0); transform: scale(1); }
+}
+
+@media (max-width: 760px) {
+  .creativo-imgtext-modal-body {
+    grid-template-columns: 1fr;
+  }
 }
 
 .creativo-modal-actions {

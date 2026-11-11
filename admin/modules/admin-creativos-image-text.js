@@ -1,49 +1,25 @@
 /**
- * Edición de textos on-image (cat/title/body) + regeneración PNG.
+ * Edición on-image en modal (cat/title/body) + regeneración PNG.
+ * Éxito: toast + flash en miniatura (sin alert).
  */
 
-import { escapeHtml } from "./dom.js?v=79";
+import { escapeHtml, toast } from "./dom.js?v=79";
 import { getSessionUser } from "./auth.js?v=83";
 import {
   resolveImageText,
   saveImageText,
+  assetVersion,
   IMG_CAT_MAX,
   IMG_TITLE_MAX,
   IMG_BODY_MAX,
 } from "./admin-creativos-cola.js?v=10";
 
+let resolveSeed = () => null;
+let onSavedCb = null;
+let editingId = null;
+
 export function canEditImageText() {
   return Boolean(getSessionUser());
-}
-
-function fieldHtml(id, name, label, value, max) {
-  const fid = `imgtext-${name}-${id}`;
-  return `
-    <label class="creativos-caption-label" for="${fid}">${label}
-      <span class="creativos-char-count" data-count-for="${fid}">0/${max}</span>
-    </label>
-    <input type="text" id="${fid}" class="creativos-imgtext-input" data-field="${name}"
-      maxlength="${max}" value="${escapeHtml(value)}">`;
-}
-
-export function imageTextEditorHtml(id, seedItem, idPrefix = "imgtext") {
-  const safeId = escapeHtml(id);
-  const t = resolveImageText(id, seedItem);
-  return `
-    <div class="creativos-imgtext-editor" data-imgtext-for="${safeId}" hidden>
-      <p class="creativos-imgtext-hint">Textos de la imagen (no es el caption). Al guardar se regeneran Feed y Story.</p>
-      ${fieldHtml(safeId, "cat", "Categoría (pill)", t.cat, IMG_CAT_MAX)}
-      ${fieldHtml(safeId, "title", "Título (headline)", t.title, IMG_TITLE_MAX)}
-      <label class="creativos-caption-label" for="${idPrefix}-body-${safeId}">Cuerpo
-        <span class="creativos-char-count" data-count-for="${idPrefix}-body-${safeId}">0/${IMG_BODY_MAX}</span>
-      </label>
-      <textarea id="${idPrefix}-body-${safeId}" class="creativos-caption-textarea creativos-imgtext-body"
-        data-field="body" rows="3" maxlength="${IMG_BODY_MAX}">${escapeHtml(t.body)}</textarea>
-      <div class="creativos-caption-actions">
-        <button type="button" class="btn btn-sm btn-queue-save-imgtext" data-id="${safeId}">💾 Guardar y regenerar</button>
-        <button type="button" class="btn light btn-sm btn-queue-cancel-imgtext" data-id="${safeId}">Cancelar</button>
-      </div>
-    </div>`;
 }
 
 export function imageTextEditButtonHtml(id) {
@@ -51,14 +27,24 @@ export function imageTextEditButtonHtml(id) {
   return `<button type="button" class="btn light btn-sm btn-queue-edit-imgtext" data-id="${escapeHtml(id)}" title="Editar textos de la imagen">🖼️ Editar imagen</button>`;
 }
 
-export function toggleImageTextEditor(id, open) {
-  const box = document.querySelector(`[data-imgtext-for="${CSS.escape(id)}"]`);
-  if (!box) return;
-  box.hidden = !open;
-  if (open) refreshCharCounts(box);
+function modalEls() {
+  return {
+    root: document.getElementById("creativo-imgtext-modal"),
+    backdrop: document.getElementById("creativo-imgtext-backdrop"),
+    close: document.getElementById("creativo-imgtext-close"),
+    cancel: document.getElementById("creativo-imgtext-cancel"),
+    save: document.getElementById("creativo-imgtext-save"),
+    cat: document.getElementById("creativo-imgtext-cat"),
+    title: document.getElementById("creativo-imgtext-title"),
+    body: document.getElementById("creativo-imgtext-body"),
+    preview: document.getElementById("creativo-imgtext-preview"),
+    heading: document.getElementById("creativo-imgtext-heading"),
+  };
 }
 
-function refreshCharCounts(root) {
+function refreshCharCounts() {
+  const { root } = modalEls();
+  if (!root) return;
   root.querySelectorAll("[data-field]").forEach((el) => {
     const max = Number(el.getAttribute("maxlength") || 0);
     const span = root.querySelector(`[data-count-for="${CSS.escape(el.id)}"]`);
@@ -66,70 +52,115 @@ function refreshCharCounts(root) {
   });
 }
 
-export function readImageTextFields(id) {
-  const box = document.querySelector(`[data-imgtext-for="${CSS.escape(id)}"]`);
-  if (!box) return null;
-  const get = (name) => box.querySelector(`[data-field="${name}"]`);
-  return {
-    cat: String(get("cat")?.value || "").trim(),
-    title: String(get("title")?.value || "").trim(),
-    body: String(get("body")?.value || "").trim(),
-  };
+function flashPieceThumbs(id) {
+  document.querySelectorAll(
+    `.creativo-card[data-id="${CSS.escape(id)}"] .creativo-thumb-box, .creativos-queue-item[data-id="${CSS.escape(id)}"] .creativos-queue-thumb`
+  ).forEach((el) => {
+    el.classList.remove("is-regen-flash");
+    // reflow para reiniciar animación
+    void el.offsetWidth;
+    el.classList.add("is-regen-flash");
+    window.setTimeout(() => el.classList.remove("is-regen-flash"), 900);
+  });
 }
 
-export async function handleSaveImageTextClick(id, btn, onDone) {
+export function closeImageTextModal() {
+  const { root } = modalEls();
+  if (root) root.hidden = true;
+  editingId = null;
+  if (!document.getElementById("creativo-lightbox-modal")?.hidden) return;
+  document.body.style.overflow = "";
+}
+
+export function openImageTextModal(id, seedItem) {
   if (!canEditImageText()) {
-    window.alert("Tenés que iniciar sesión para editar estos textos.");
+    toast("Tenés que iniciar sesión para editar estos textos.", { type: "info" });
     return;
   }
-  const fields = readImageTextFields(id);
-  if (!fields) return;
+  const els = modalEls();
+  if (!els.root) return;
+  const seed = seedItem || resolveSeed(id) || {};
+  const t = resolveImageText(id, seed);
+  editingId = id;
+  if (els.heading) els.heading.textContent = t.title || id;
+  if (els.cat) els.cat.value = t.cat;
+  if (els.title) els.title.value = t.title;
+  if (els.body) els.body.value = t.body;
+  if (els.preview && seed.feedUrl) {
+    els.preview.src = `${seed.feedUrl}?v=${assetVersion}`;
+    els.preview.alt = t.title || "Vista previa";
+  }
+  refreshCharCounts();
+  els.root.hidden = false;
+  document.body.style.overflow = "hidden";
+  els.cat?.focus();
+}
+
+async function saveFromModal(btn) {
+  if (!editingId) return;
+  const els = modalEls();
+  const fields = {
+    cat: String(els.cat?.value || "").trim(),
+    title: String(els.title?.value || "").trim(),
+    body: String(els.body?.value || "").trim(),
+  };
   btn.disabled = true;
   const prev = btn.textContent;
-  btn.textContent = "⏳ Regenerando…";
+  btn.textContent = "Regenerando…";
+  els.root?.classList.add("is-saving");
   try {
-    const data = await saveImageText(id, fields);
-    toggleImageTextEditor(id, false);
+    const data = await saveImageText(editingId, fields);
+    const seed = resolveSeed(editingId) || {};
+    if (els.preview && seed.feedUrl) {
+      els.preview.src = `${seed.feedUrl}?v=${assetVersion}`;
+    }
     const warn = Array.isArray(data?.warnings) && data.warnings.length
-      ? ` (aviso: ${data.warnings.join(", ")})`
+      ? ` · ${data.warnings.join(", ")}`
       : "";
-    window.alert(`Imagen regenerada (Feed + Story).${warn}`);
-    if (typeof onDone === "function") onDone(id, fields, data);
+    toast(`Imagen regenerada${warn}`, { type: "success", duration: 2600 });
+    flashPieceThumbs(editingId);
+    const id = editingId;
+    closeImageTextModal();
+    if (typeof onSavedCb === "function") onSavedCb(id, fields, data);
   } catch (err) {
-    if (!err.auth) window.alert(err.message || "No se pudo guardar / regenerar");
+    if (!err.auth) toast(err.message || "No se pudo guardar / regenerar", { type: "danger" });
   } finally {
     btn.disabled = false;
     btn.textContent = prev;
+    els.root?.classList.remove("is-saving");
   }
 }
 
-/** Wire clicks + char counters en el contenedor de creativos. */
-export function bindImageTextUi(container, onDone) {
+/** @param {HTMLElement} container @param {{resolveItem?: Function, onDone?: Function}} [opts] */
+export function bindImageTextUi(container, opts = {}) {
+  if (typeof opts === "function") opts = { onDone: opts };
+  if (opts.resolveItem) resolveSeed = opts.resolveItem;
+  if (opts.onDone) onSavedCb = opts.onDone;
   if (!container || container.dataset.imgtextBound === "1") return;
   container.dataset.imgtextBound = "1";
-  container.addEventListener("input", (e) => {
-    const el = e.target.closest("[data-field]");
-    if (!el) return;
-    const box = el.closest(".creativos-imgtext-editor");
-    if (box) refreshCharCounts(box);
+
+  const els = modalEls();
+  els.root?.addEventListener("input", (e) => {
+    if (e.target.closest("[data-field]")) refreshCharCounts();
   });
+  els.close?.addEventListener("click", closeImageTextModal);
+  els.backdrop?.addEventListener("click", closeImageTextModal);
+  els.cancel?.addEventListener("click", closeImageTextModal);
+  els.save?.addEventListener("click", () => saveFromModal(els.save));
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    if (els.root && !els.root.hidden) {
+      e.stopPropagation();
+      closeImageTextModal();
+    }
+  });
+
   container.addEventListener("click", (e) => {
     const edit = e.target.closest(".btn-queue-edit-imgtext");
-    if (edit) {
-      e.preventDefault();
-      toggleImageTextEditor(edit.dataset.id, true);
-      return;
-    }
-    const cancel = e.target.closest(".btn-queue-cancel-imgtext");
-    if (cancel) {
-      e.preventDefault();
-      toggleImageTextEditor(cancel.dataset.id, false);
-      return;
-    }
-    const save = e.target.closest(".btn-queue-save-imgtext");
-    if (save) {
-      e.preventDefault();
-      handleSaveImageTextClick(save.dataset.id, save, onDone);
-    }
+    if (!edit) return;
+    e.preventDefault();
+    e.stopPropagation();
+    openImageTextModal(edit.dataset.id, resolveSeed(edit.dataset.id));
   });
 }

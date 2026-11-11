@@ -14,7 +14,7 @@ import {
   CAPTION_MAX,
   normalizeIgCaptionPhone,
 } from "./admin-creativos-cola.js?v=10";
-import { imageTextEditButtonHtml, imageTextEditorHtml } from "./admin-creativos-image-text.js?v=1";
+import { imageTextEditButtonHtml } from "./admin-creativos-image-text.js?v=2";
 
 const CHANNEL_LABELS = { both: "Feed + Story", feed: "Solo Feed", story: "Solo Story" };
 
@@ -62,8 +62,7 @@ export function captionSnippetHtml(q, seedItem) {
   const edit = canEditCaptions()
     ? `<button type="button" class="btn light btn-sm btn-queue-edit-caption" data-id="${escapeHtml(q.creativo_id)}" title="Editar texto de publicación">✏️ Editar caption</button>
        ${imageTextEditButtonHtml(q.creativo_id)}
-       ${captionEditorHtml(q.creativo_id, text)}
-       ${imageTextEditorHtml(q.creativo_id, seedItem)}`
+       ${captionEditorHtml(q.creativo_id, text)}`
     : "";
   return `
     ${channelSelectHtml(q)}

@@ -2014,6 +2014,44 @@
           </div>
         </div>
       </div>
+
+      <!-- MODAL: editar textos on-image (cat / title / body) -->
+      <div id="creativo-imgtext-modal" class="prof-modal-backdrop" hidden>
+        <div id="creativo-imgtext-backdrop" class="modal-backdrop-overlay"></div>
+        <div class="prof-modal-card creativo-imgtext-modal-card" role="dialog" aria-modal="true" aria-labelledby="creativo-imgtext-heading">
+          <div class="prof-modal-header">
+            <div>
+              <p class="creativos-imgtext-kicker">Textos de la imagen</p>
+              <h3 id="creativo-imgtext-heading" class="creativo-modal-heading">Pieza</h3>
+            </div>
+            <button type="button" class="prof-modal-close" id="creativo-imgtext-close" aria-label="Cerrar">&times;</button>
+          </div>
+          <div class="creativo-imgtext-modal-body">
+            <div class="creativo-imgtext-preview-wrap">
+              <img id="creativo-imgtext-preview" src="" alt="Vista previa Feed" class="creativo-imgtext-preview-img">
+              <p class="creativos-imgtext-hint">Al guardar se regeneran Feed y Story. El caption de la publicación no cambia.</p>
+            </div>
+            <div class="creativo-imgtext-form">
+              <label class="creativos-caption-label" for="creativo-imgtext-cat">Categoría (pill)
+                <span class="creativos-char-count" data-count-for="creativo-imgtext-cat">0/32</span>
+              </label>
+              <input type="text" id="creativo-imgtext-cat" class="creativos-imgtext-input" data-field="cat" maxlength="32">
+              <label class="creativos-caption-label" for="creativo-imgtext-title">Título (headline)
+                <span class="creativos-char-count" data-count-for="creativo-imgtext-title">0/72</span>
+              </label>
+              <input type="text" id="creativo-imgtext-title" class="creativos-imgtext-input" data-field="title" maxlength="72">
+              <label class="creativos-caption-label" for="creativo-imgtext-body">Cuerpo
+                <span class="creativos-char-count" data-count-for="creativo-imgtext-body">0/180</span>
+              </label>
+              <textarea id="creativo-imgtext-body" class="creativos-caption-textarea creativos-imgtext-body" data-field="body" rows="4" maxlength="180"></textarea>
+              <div class="creativos-caption-actions">
+                <button type="button" class="btn" id="creativo-imgtext-save">Guardar y regenerar</button>
+                <button type="button" class="btn light" id="creativo-imgtext-cancel">Cancelar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- 7. BANDEJA DE INTERACCIONES WHATSAPP -->

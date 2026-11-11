@@ -68,6 +68,8 @@ assert.match(html, /id="btn-creativos-tab-queue"/, "Debe tener selector de tab d
 assert.match(html, /id="creativos-tab-panel-queue"/, "Debe existir el panel de Lista para publicar");
 assert.match(html, /id="creativo-modal-cola-slot"/, "Debe existir el slot para el estado en el modal");
 assert.match(html, /id="creativo-modal-imgtext-slot"/, "Debe existir el slot de textos on-image en el modal");
+assert.match(html, /id="creativo-imgtext-modal"/, "Debe existir el modal de edición on-image");
+assert.match(html, /id="creativo-imgtext-save"/, "Modal on-image debe tener botón guardar");
 assert.ok(fs.existsSync(path.join(root, "admin/fonts/Inter-Regular.ttf")), "Fuente Inter-Regular.ttf");
 assert.ok(fs.existsSync(path.join(root, "admin/fonts/Inter-Bold.ttf")), "Fuente Inter-Bold.ttf");
 assert.equal(
