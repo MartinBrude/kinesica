@@ -1,21 +1,21 @@
 /** AUTO-GENERATED — no editar. Fuente: npm run reviews:fetch */
 window.KINESICA_GOOGLE_REVIEWS = {
   "placeId": "ChIJZ2mPW9K1vJUR3J5kGRi5gws",
-  "fetchedAt": "2026-11-04T19:27:25.210Z",
+  "fetchedAt": "2026-11-11T19:19:06.410Z",
   "displayName": "Kinesica",
   "googleMapsUri": "https://maps.google.com/?cid=829710269522681564&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA",
   "rating": 5,
   "userRatingCount": 36,
   "reviews": [
     {
-      "author": "Luis Cortese",
-      "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocKHw33qtZKyrTdsc0rvFIOwrB6-lzDLrjp7hEo2iCqJZIe30A=s128-c0x00000000-cc-rp-mo-ba3",
-      "authorProfile": "https://www.google.com/maps/contrib/102362965674413224091/reviews",
+      "author": "Mario Schonfeld",
+      "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJvo1RJ2skq3nr_pJRwvQZNdUrw77voXh3yGLaVweufqb-vbg=s128-c0x00000000-cc-rp-mo",
+      "authorProfile": "https://www.google.com/maps/contrib/116485618727629391879/reviews",
       "rating": 5,
-      "text": "Muy contento con la atención recibida.\nMuy profesional y me pasó tips claves.\nMuchas gracias 🫂",
+      "text": "Norberto Brude me atiende hace mucho tiempo. Confío en el plenamente. Además es un profesional que atiende a un paciente por sesión dedicándose completamente y con seriedad absoluta",
       "language": "es",
-      "relativeTime": "Hace 2 semanas",
-      "publishTime": "2026-10-20T13:37:59.681175507Z"
+      "relativeTime": "Hace una semana",
+      "publishTime": "2026-11-03T00:13:29.224441962Z"
     },
     {
       "author": "Manu Covic",
@@ -24,7 +24,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
       "rating": 5,
       "text": "Norberto me ayudó mucho y saco dolores dorsales y de rodilla que venia padeciendo. El trato muy amigable y profesional. Lo recomiendo completamente!",
       "language": "es",
-      "relativeTime": "Hace 2 semanas",
+      "relativeTime": "Hace 3 semanas",
       "publishTime": "2026-10-17T15:27:44.938806512Z"
     },
     {
@@ -59,14 +59,14 @@ window.KINESICA_GOOGLE_REVIEWS = {
   "byLang": {
     "es": [
       {
-        "author": "Luis Cortese",
-        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocKHw33qtZKyrTdsc0rvFIOwrB6-lzDLrjp7hEo2iCqJZIe30A=s128-c0x00000000-cc-rp-mo-ba3",
-        "authorProfile": "https://www.google.com/maps/contrib/102362965674413224091/reviews",
+        "author": "Mario Schonfeld",
+        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJvo1RJ2skq3nr_pJRwvQZNdUrw77voXh3yGLaVweufqb-vbg=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/116485618727629391879/reviews",
         "rating": 5,
-        "text": "Muy contento con la atención recibida.\nMuy profesional y me pasó tips claves.\nMuchas gracias 🫂",
+        "text": "Norberto Brude me atiende hace mucho tiempo. Confío en el plenamente. Además es un profesional que atiende a un paciente por sesión dedicándose completamente y con seriedad absoluta",
         "language": "es",
-        "relativeTime": "Hace 2 semanas",
-        "publishTime": "2026-10-20T13:37:59.681175507Z"
+        "relativeTime": "Hace una semana",
+        "publishTime": "2026-11-03T00:13:29.224441962Z"
       },
       {
         "author": "Manu Covic",
@@ -75,7 +75,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Norberto me ayudó mucho y saco dolores dorsales y de rodilla que venia padeciendo. El trato muy amigable y profesional. Lo recomiendo completamente!",
         "language": "es",
-        "relativeTime": "Hace 2 semanas",
+        "relativeTime": "Hace 3 semanas",
         "publishTime": "2026-10-17T15:27:44.938806512Z"
       },
       {
@@ -109,13 +109,23 @@ window.KINESICA_GOOGLE_REVIEWS = {
     ],
     "en": [
       {
+        "author": "Mario Schonfeld",
+        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJvo1RJ2skq3nr_pJRwvQZNdUrw77voXh3yGLaVweufqb-vbg=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/116485618727629391879/reviews",
+        "rating": 5,
+        "text": "Norberto Brude has been my doctor for a long time. I trust him completely. He's also a professional who sees one patient per session, dedicating himself fully and with absolute seriousness.",
+        "language": "en",
+        "relativeTime": "a week ago",
+        "publishTime": "2026-11-03T00:13:29.224441962Z"
+      },
+      {
         "author": "Manu Covic",
         "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjXT_z1Jocd8RtQKJjZNPHtT6nWADbK9htmMD0ZnLXcr5WYoZBU=s128-c0x00000000-cc-rp-mo-ba4",
         "authorProfile": "https://www.google.com/maps/contrib/101062939083218654733/reviews",
         "rating": 5,
         "text": "Norberto helped me a lot and relieved the back and knee pain I'd been suffering from. He was very friendly and professional. I highly recommend him!",
         "language": "en",
-        "relativeTime": "2 weeks ago",
+        "relativeTime": "3 weeks ago",
         "publishTime": "2026-10-17T15:27:44.938806512Z"
       },
       {
@@ -145,28 +155,18 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "publishTime": "2026-07-24T02:05:02.000Z",
         "text": "Incredibly surprised, in a good way: I had epicondylitis pain for 3 years, and after just 2 sessions with kinesiologist Norberto Brude I have no pain, I was able to go back to training, I used to wake up with a numb hand and it hasn't happened again! Truly an outstanding professional, and above all he brought calm when I needed it most.",
         "language": "en"
-      },
-      {
-        "author": "Claudia Rothschild",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjV7zjR9a6k2KK0-ciZ60piNXJdtemgzlxd8EAGV2FdBnpfcV7wcWA=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/118351524349714047042/reviews",
-        "rating": 5,
-        "text": "Norberto Brude is excellent. I've had several problems with my spine, knees, and neck that have caused me constant pain for years. I tried several other professionals, but only with his treatment have I felt considerable relief. I highly recommend him!",
-        "language": "en",
-        "relativeTime": "3 months ago",
-        "publishTime": "2026-07-21T22:41:19.944949311Z"
       }
     ],
     "fr": [
       {
-        "author": "Luis Cortese",
-        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocKHw33qtZKyrTdsc0rvFIOwrB6-lzDLrjp7hEo2iCqJZIe30A=s128-c0x00000000-cc-rp-mo-ba3",
-        "authorProfile": "https://www.google.com/maps/contrib/102362965674413224091/reviews",
+        "author": "Mario Schonfeld",
+        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJvo1RJ2skq3nr_pJRwvQZNdUrw77voXh3yGLaVweufqb-vbg=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/116485618727629391879/reviews",
         "rating": 5,
-        "text": "Très satisfaite du service reçu.\n\nTrès professionnel et de précieux conseils.\n\nMerci beaucoup 🫂",
+        "text": "Norberto Brude est mon médecin depuis longtemps. J'ai une confiance totale en lui. C'est un professionnel qui ne reçoit qu'un seul patient par séance, se consacrant pleinement et avec un sérieux absolu.",
         "language": "fr",
-        "relativeTime": "il y a 2 semaines",
-        "publishTime": "2026-10-20T13:37:59.681175507Z"
+        "relativeTime": "il y a une semaine",
+        "publishTime": "2026-11-03T00:13:29.224441962Z"
       },
       {
         "author": "Manu Covic",
@@ -175,7 +175,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Norberto m'a beaucoup aidé et a soulagé mes douleurs au dos et au genou. Il était très sympathique et professionnel. Je le recommande vivement !",
         "language": "fr",
-        "relativeTime": "il y a 2 semaines",
+        "relativeTime": "il y a 3 semaines",
         "publishTime": "2026-10-17T15:27:44.938806512Z"
       },
       {
@@ -209,14 +209,14 @@ window.KINESICA_GOOGLE_REVIEWS = {
     ],
     "pt": [
       {
-        "author": "Luis Cortese",
-        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocKHw33qtZKyrTdsc0rvFIOwrB6-lzDLrjp7hEo2iCqJZIe30A=s128-c0x00000000-cc-rp-mo-ba3",
-        "authorProfile": "https://www.google.com/maps/contrib/102362965674413224091/reviews",
+        "author": "Mario Schonfeld",
+        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJvo1RJ2skq3nr_pJRwvQZNdUrw77voXh3yGLaVweufqb-vbg=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/116485618727629391879/reviews",
         "rating": 5,
-        "text": "Fiquei muito feliz com o serviço que recebi.\n\nMuito profissional e me deu dicas muito importantes.\n\nMuito obrigada! 🫂",
+        "text": "Norberto Brude é meu médico há muito tempo. Confio nele plenamente. Ele também é um profissional que atende um paciente por consulta, dedicando-se integralmente e com absoluta seriedade.",
         "language": "pt",
-        "relativeTime": "há 2 semanas",
-        "publishTime": "2026-10-20T13:37:59.681175507Z"
+        "relativeTime": "há uma semana",
+        "publishTime": "2026-11-03T00:13:29.224441962Z"
       },
       {
         "author": "Manu Covic",
@@ -225,7 +225,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Norberto me ajudou muito e aliviou as dores nas costas e nos joelhos que eu vinha sentindo. Ele foi muito simpático e profissional. Recomendo-o fortemente!",
         "language": "pt",
-        "relativeTime": "há 2 semanas",
+        "relativeTime": "há 3 semanas",
         "publishTime": "2026-10-17T15:27:44.938806512Z"
       },
       {
