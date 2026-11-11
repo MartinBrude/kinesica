@@ -2322,6 +2322,27 @@ Entender el tipo orienta el tratamiento. Por eso en la evaluación preguntamos c
 📲 +54 9 11 3178-1733
 
 #TiposDeDolor #EvaluacionKinésica #DolorCronico #Kinésica`
+  },
+  {
+    id: "133_tendinitis",
+    title: "No es solo “inflamación del tendón”",
+    cat: "TENDINITIS",
+    group: "articulaciones",
+    body: "Suele ser sobrecarga + mala mecánica. Calmamos el dolor y corregimos por qué el tendón se irrita.",
+    feedUrl: "campanas/feed/catalogo_feed_133_tendinitis.png",
+    storyUrl: "campanas/story/catalogo_story_133_tendinitis.png",
+    copy: `Tendinitis: no es solo “inflamación del tendón” 🦾
+
+Doler al agarrar, al levantar el brazo o al apoyar el pie no siempre se resuelve con hielo y reposo eterno.
+
+Muchas veces hay sobrecarga + mala mecánica: el tendón trabaja de más porque otra zona no aporta.
+
+En Kinésica calmamos el síntoma y miramos la cadena (hombro, codo, muñeca, rodilla o Aquiles) para que no vuelva igual.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 3178-1733
+
+#Tendinitis #Tendinopatia #TerapiaManual #Kinésica`
   }
 ];
 

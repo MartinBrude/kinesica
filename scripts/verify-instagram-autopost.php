@@ -399,14 +399,14 @@ it('render regenera feed/story, bust cache y no toca original/', function () {
     copy("{$root}/original/story/catalogo_story_{$id}.png", $liveS);
 });
 
-it('inventario original/feed|story = 131', function () {
+it('inventario original/feed|story = 132', function () {
     $root = dirname(__DIR__) . '/admin/campanas';
     $nf = count(glob($root . '/original/feed/*.png') ?: []);
     $ns = count(glob($root . '/original/story/*.png') ?: []);
     $lf = count(glob($root . '/feed/*.png') ?: []);
     $ls = count(glob($root . '/story/*.png') ?: []);
-    if ($nf !== 131 || $ns !== 131) throw new Exception("original feed={$nf} story={$ns}");
-    if ($lf !== 131 || $ls !== 131) throw new Exception("live feed={$lf} story={$ls}");
+    if ($nf !== 132 || $ns !== 132) throw new Exception("original feed={$nf} story={$ns}");
+    if ($lf !== 132 || $ls !== 132) throw new Exception("live feed={$lf} story={$ls}");
 });
 
 // Limpieza
