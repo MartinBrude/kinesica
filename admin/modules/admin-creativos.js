@@ -2343,6 +2343,26 @@ En Kinésica calmamos el síntoma y miramos la cadena (hombro, codo, muñeca, ro
 📲 WhatsApp: +54 9 11 3178-1733
 
 #Tendinitis #Tendinopatia #TerapiaManual #Kinésica`
+  },
+  {
+    id: "134_deseamos_fiestas",
+    title: "¡Les deseamos Felices Fiestas!",
+    cat: "FELICES FIESTAS",
+    group: "filosofia",
+    body: "Gracias por confiar en nosotros. Que el cierre de año los encuentre con más calma y menos dolor.",
+    feedUrl: "campanas/feed/catalogo_feed_134_deseamos_fiestas.png",
+    storyUrl: "campanas/story/catalogo_story_134_deseamos_fiestas.png",
+    copy: `¡Les deseamos Felices Fiestas! ✨
+
+Desde Kinésica queremos agradecerles la confianza de este año.
+
+Que estas fiestas los encuentren con más calma, más movimiento y menos dolor.
+Estamos para acompañarlos cuando lo necesiten.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 3178-1733
+
+#FelicesFiestas #KinesiologiaPalermo #Kinésica`
   }
 ];
 
