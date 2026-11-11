@@ -2764,6 +2764,7 @@ function openLightboxModal(item) {
   const modalImg = document.getElementById("creativo-modal-img");
   const modalTitle = document.getElementById("creativo-modal-title");
   const modalCat = document.getElementById("creativo-modal-cat");
+  const modalId = document.getElementById("creativo-modal-id");
   const modalBtnFeed = document.getElementById("creativo-modal-dl-feed");
   const modalBtnStory = document.getElementById("creativo-modal-dl-story");
   const els = getModalCaptionEls();
@@ -2775,6 +2776,10 @@ function openLightboxModal(item) {
   if (modalImg) modalImg.src = `${currentImg}?v=${assetVersion}`;
   if (modalTitle) modalTitle.textContent = texts.title;
   if (modalCat) modalCat.textContent = texts.cat;
+  if (modalId) {
+    modalId.textContent = item.id || "—";
+    modalId.title = item.id ? `ID: ${item.id}` : "Sin ID";
+  }
   if (els.copy) els.copy.textContent = caption;
   if (els.textarea) {
     els.textarea.value = caption;
