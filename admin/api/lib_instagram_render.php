@@ -100,17 +100,35 @@ function ig_load_scaled(string $path, int $w, int $h)
     return $dst;
 }
 
-/** Gradiente navy desde $fadeY (transparente) hasta $solidY (opaco) + sólido al pie. */
-function ig_paint_gradient($im, int $w, int $h, int $fadeY, int $solidY): void
+function ig_paint_gradient($im, int $w, int $h, float $fadeStart, float $solidStart): void
 {
-    $fadeY = max(0, min($h - 1, $fadeY));
-    $solidY = max($fadeY + 1, min($h, $solidY));
+    $fadeY = (int) round($h * $fadeStart);
+    $solidY = (int) round($h * $solidStart);
     for ($y = $fadeY; $y < $solidY; $y++) {
         $t = ($y - $fadeY) / max(1, $solidY - $fadeY - 1);
         $alpha = (int) max(0, min(127, round(127 * (1 - $t))));
         imageline($im, 0, $y, $w - 1, $y, imagecolorallocatealpha($im, 6, 32, 52, $alpha));
     }
     imagefilledrectangle($im, 0, $solidY, $w - 1, $h - 1, imagecolorallocate($im, 6, 32, 52));
+}
+
+/**
+ * Detecta placas que ya son pieza terminada (banda navy + copy).
+ * Re-pintar encima duplica logo/texto — hay que usar foto limpia en original/.
+ */
+function ig_original_looks_finished($im, int $w, int $h): bool
+{
+    $hits = 0;
+    foreach ([0.88, 0.92, 0.96] as $fy) {
+        $y = min($h - 1, (int) round($h * $fy));
+        $c = imagecolorat($im, (int) ($w / 2), $y);
+        $r = ($c >> 16) & 255;
+        $g = ($c >> 8) & 255;
+        $b = $c & 255;
+        // Navy del compositor (~6,32,52) o azul muy oscuro de diseños AI.
+        if ($r < 45 && $g < 70 && $b < 100 && $b >= $r) $hits++;
+    }
+    return $hits >= 2;
 }
 
 /** @return array{path:string,warnings:list<string>} */
@@ -122,6 +140,14 @@ function ig_render_format(string $id, string $kind, string $cat, string $title, 
     $src = ig_original_path($id, $kind);
     if (!is_file($src)) throw new RuntimeException('Falta original ' . $kind . ' para ' . $id);
     $im = ig_load_scaled($src, $w, $h);
+    if (ig_original_looks_finished($im, $w, $h)) {
+        throw new RuntimeException(
+            "El original {$kind} de {$id} ya parece una pieza terminada (banda/texto). "
+            . 'Reemplazá original/ con una foto limpia (sin logo ni copy) y volvé a renderizar.'
+        );
+    }
+    ig_paint_gradient($im, $w, $h, $isStory ? 0.48 : 0.44, $isStory ? 0.58 : 0.54);
+    ig_paint_logo($im, $w);
 
     $warn = [];
     $fontR = ig_font_path('regular');
@@ -133,63 +159,36 @@ function ig_render_format(string $id, string $kind, string $cat, string $title, 
     $teal = imagecolorallocate($im, 46, 160, 140);
     $urlC = imagecolorallocate($im, 130, 210, 195);
 
-    // Textos medidos primero → banda azul solo del alto necesario (anclada al pie).
+    $y = (int) round($h * ($isStory ? 0.60 : 0.56));
     $pill = ig_nfc(mb_strtoupper(trim($cat), 'UTF-8'));
-    $pillSize = 16.0;
-    $ph = 40;
-    $tFit = ig_fit_text($title, $fontB, $isStory ? 48 : 42, 26, $maxW, $isStory ? 4 : 3);
-    $bFit = ig_fit_text($body, $fontR, $isStory ? 26 : 24, 17, $maxW, $isStory ? 5 : 4);
-    if ($tFit['truncated']) $warn[] = 'title_truncated';
-    if ($bFit['truncated']) $warn[] = 'body_truncated';
-
-    $titleH = (int) round(count($tFit['lines']) * $tFit['size'] * 1.22);
-    $bodyH = (int) round(count($bFit['lines']) * $bFit['size'] * 1.28);
-    $gapPill = 12;
-    $gapTitle = 10;
-    $contentH = $ph + $gapPill + $titleH + $gapTitle + $bodyH;
-
-    $lineY = $h - 70;
-    $contentBottom = $lineY - 22;
-    $y0 = $contentBottom - $contentH;
-    $minTop = (int) round($h * ($isStory ? 0.55 : 0.58)); // foto protagonista; azul compacto
-    if ($y0 < $minTop) {
-        // Texto largo: subir un poco el techo y achicar tipografía otra vez.
-        $tFit = ig_fit_text($title, $fontB, $isStory ? 40 : 36, 24, $maxW, $isStory ? 3 : 3);
-        $bFit = ig_fit_text($body, $fontR, $isStory ? 22 : 20, 16, $maxW, $isStory ? 4 : 3);
-        $titleH = (int) round(count($tFit['lines']) * $tFit['size'] * 1.18);
-        $bodyH = (int) round(count($bFit['lines']) * $bFit['size'] * 1.24);
-        $contentH = $ph + $gapPill + $titleH + $gapTitle + $bodyH;
-        $y0 = max((int) round($h * 0.48), $contentBottom - $contentH);
-    }
-
-    $fadeH = (int) round($h * 0.055);
-    $solidY = max(0, $y0 - 10);
-    $fadeY = max(0, $solidY - $fadeH);
-    ig_paint_gradient($im, $w, $h, $fadeY, $solidY);
-    ig_paint_logo($im, $w);
-
-    $y = $y0;
+    $pillSize = 17.0;
     $pBox = imagettfbbox($pillSize, 0, $fontS, $pill);
-    $pw = abs(($pBox[2] ?? 0) - ($pBox[0] ?? 0)) + 36;
-    ig_filled_round_rect($im, $margin, $y, $margin + $pw, $y + $ph, 20, $teal);
-    imagettftext($im, $pillSize, 0, $margin + 18, $y + 27, $white, $fontS, $pill);
-    $y += $ph + $gapPill;
+    $pw = abs(($pBox[2] ?? 0) - ($pBox[0] ?? 0)) + 40;
+    $ph = 48;
+    ig_filled_round_rect($im, $margin, $y, $margin + $pw, $y + $ph, 24, $teal);
+    imagettftext($im, $pillSize, 0, $margin + 20, $y + 32, $white, $fontS, $pill);
+    $y += $ph + 18;
 
+    $tFit = ig_fit_text($title, $fontB, $isStory ? 54 : 48, 28, $maxW, $isStory ? 4 : 3);
+    if ($tFit['truncated']) $warn[] = 'title_truncated';
     foreach ($tFit['lines'] as $line) {
         imagettftext($im, $tFit['size'], 0, $margin, $y + (int) $tFit['size'], $white, $fontB, ig_nfc($line));
         $y += (int) round($tFit['size'] * 1.22);
     }
-    $y += $gapTitle;
+    $y += 14;
 
+    $bFit = ig_fit_text($body, $fontR, $isStory ? 28 : 26, 18, $maxW, $isStory ? 5 : 4);
+    if ($bFit['truncated']) $warn[] = 'body_truncated';
     foreach ($bFit['lines'] as $line) {
         imagettftext($im, $bFit['size'], 0, $margin, $y + (int) $bFit['size'], $white, $fontR, ig_nfc($line));
         $y += (int) round($bFit['size'] * 1.28);
     }
 
+    $lineY = $h - 78;
     imageline($im, $margin, $lineY, $w - $margin, $lineY, imagecolorallocatealpha($im, 255, 255, 255, 80));
-    $uBox = imagettfbbox(18, 0, $fontS, IG_URL_FOOTER);
+    $uBox = imagettfbbox(20, 0, $fontS, IG_URL_FOOTER);
     $uw = abs(($uBox[2] ?? 0) - ($uBox[0] ?? 0));
-    imagettftext($im, 18, 0, (int) (($w - $uw) / 2), $h - 38, $urlC, $fontS, IG_URL_FOOTER);
+    imagettftext($im, 20, 0, (int) (($w - $uw) / 2), $h - 42, $urlC, $fontS, IG_URL_FOOTER);
 
     [$feedRel, $storyRel] = ig_live_paths($id);
     $rel = $isStory ? $storyRel : $feedRel;

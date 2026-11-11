@@ -406,27 +406,45 @@ it('image_text: normalize, override, reject limits y publishing', function () {
 it('render regenera feed/story, bust cache y no toca original/', function () {
     require_once __DIR__ . '/../admin/api/lib_instagram_render.php';
     $root = dirname(__DIR__) . '/admin/campanas';
-    $id = '01_acostumbraste_dolor';
+    // Usar pieza con placa limpia (sin banda/texto). Originales "terminados" ya no se re-pintan.
+    $id = '134_deseamos_fiestas';
     $origF = "{$root}/original/feed/catalogo_feed_{$id}.png";
     $liveF = "{$root}/feed/catalogo_feed_{$id}.png";
     $liveS = "{$root}/story/catalogo_story_{$id}.png";
-    if (!is_file($origF)) throw new Exception('Falta original feed 01');
+    if (!is_file($origF)) throw new Exception('Falta original feed 134');
     $hashBefore = hash_file('sha256', $origF);
+    $bakF = $liveF . '.baktest';
+    $bakS = $liveS . '.baktest';
+    copy($liveF, $bakF);
+    copy($liveS, $bakS);
     $cacheJpg = "{$root}/ig/feed/catalogo_feed_{$id}.jpg";
     @mkdir(dirname($cacheJpg), 0755, true);
     file_put_contents($cacheJpg, 'fake');
-    $res = ig_render_piece($id, 'EVALUACION', 'Titulo test renderer', 'Cuerpo corto para test de regeneracion automatica.');
-    if (($res['feed'] ?? '') === '' || ($res['story'] ?? '') === '') throw new Exception('paths vacíos');
-    if (!is_file($liveF) || !is_file($liveS)) throw new Exception('PNG live no escritos');
-    $fi = getimagesize($liveF);
-    $si = getimagesize($liveS);
-    if (!$fi || $fi[0] !== 1080 || $fi[1] !== 1350) throw new Exception('feed size');
-    if (!$si || $si[0] !== 1080 || $si[1] !== 1920) throw new Exception('story size');
-    if (is_file($cacheJpg)) throw new Exception('cache JPG debía borrarse');
-    if (hash_file('sha256', $origF) !== $hashBefore) throw new Exception('original/ fue modificado');
-    // Restaurar live desde original (suite no deja piezas de prueba publicadas).
-    copy($origF, $liveF);
-    copy("{$root}/original/story/catalogo_story_{$id}.png", $liveS);
+    try {
+        $res = ig_render_piece($id, 'EVALUACION', 'Titulo test renderer', 'Cuerpo corto para test de regeneracion automatica.');
+        if (($res['feed'] ?? '') === '' || ($res['story'] ?? '') === '') throw new Exception('paths vacíos');
+        if (!is_file($liveF) || !is_file($liveS)) throw new Exception('PNG live no escritos');
+        $fi = getimagesize($liveF);
+        $si = getimagesize($liveS);
+        if (!$fi || $fi[0] !== 1080 || $fi[1] !== 1350) throw new Exception('feed size');
+        if (!$si || $si[0] !== 1080 || $si[1] !== 1920) throw new Exception('story size');
+        if (is_file($cacheJpg)) throw new Exception('cache JPG debía borrarse');
+        if (hash_file('sha256', $origF) !== $hashBefore) throw new Exception('original/ fue modificado');
+    } finally {
+        rename($bakF, $liveF);
+        rename($bakS, $liveS);
+    }
+});
+
+it('render rechaza original que ya es pieza terminada', function () {
+    require_once __DIR__ . '/../admin/api/lib_instagram_render.php';
+    $threw = false;
+    try {
+        ig_render_piece('02_sintoma_senal', 'CAT', 'Titulo', 'Cuerpo de prueba suficiente.');
+    } catch (Throwable $e) {
+        $threw = str_contains($e->getMessage(), 'pieza terminada');
+    }
+    if (!$threw) throw new Exception('Debía rechazar original terminado (02)');
 });
 
 it('inventario original/feed|story = 138', function () {
