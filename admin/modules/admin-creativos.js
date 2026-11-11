@@ -2386,6 +2386,26 @@ Si necesitás retomar o agendar a la vuelta:
 
 Gracias por anticiparte 🙏
 #Vacaciones #Aviso #Turnos #Kinésica`
+  },
+  {
+    id: "136_torticolis_manana",
+    title: "Te despertaste y el cuello no gira",
+    cat: "TORTÍCOLIS",
+    group: "columna",
+    body: "No fuerzas el movimiento. Evaluamos bloqueo cervical y cadenas para recuperar el giro sin agravar el espasmo.",
+    feedUrl: "campanas/feed/catalogo_feed_136_torticolis_manana.png",
+    storyUrl: "campanas/story/catalogo_story_136_torticolis_manana.png",
+    copy: `Te despertaste y el cuello no gira 😣
+
+La tortícolis suele ser un espasmo defensivo: el cuerpo “traba” para proteger una zona irritada.
+
+Forzar el giro o “hacerse crujir” puede empeorarlo.
+En Kinésica evaluamos cervicales y cadenas (hombros, dorsal, ATM) para liberar el bloqueo con terapia manual suave.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 3178-1733
+
+#Torticolis #DolorDeCuello #Cervicalgia #Kinésica`
   }
 ];
 

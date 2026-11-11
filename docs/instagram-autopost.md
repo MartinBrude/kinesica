@@ -10,7 +10,7 @@ Este módulo permite a **Norberto y Martín** gestionar de forma visual y 100% a
 - Se encuentra en el menú superior **Meta** (ícono de WhatsApp / Meta) bajo la opción **🎨 Creativos Instagram**.
 - Es accesible tanto para administradores como para el usuario de Norberto (no requiere ser superadministrador).
 
-### 🤍 Dar ❤️ Me gusta (Catálogo de 134 piezas)
+### 🤍 Dar ❤️ Me gusta (Catálogo de 135 piezas)
 - Cada pieza tiene un único botón de corazón flotante `🤍` / `❤️ #N` en la esquina superior derecha de la miniatura (también disponible en el modal “Ver en grande”).
 - **Interacción fluida**: Al hacer click en el corazón, la tarjeta conmuta su estado inmediatamente (`❤️ #N` o `🤍`) **sin abrir la previsualización modal**.
 - La previsualización ampliada ("Ver en grande") se abre únicamente al hacer click en la miniatura de la imagen o en el botón **🔍 Ver en grande**.
