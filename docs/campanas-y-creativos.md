@@ -6,14 +6,14 @@ Guía operativa para gestionar la captación de pacientes a través de campañas
 
 ## 🧭 Módulos Disponibles en el Panel de Administración
 
-1. **Creativos Instagram (`/admin/creativos`):** Ubicado en el menú superior **Meta**, accesible tanto para administradores como para Norberto. Incluye el catálogo de **133** piezas gráficas, el sistema de Me gusta (`❤️`) para armar la lista de publicación, Drag & Drop para reordenar y la publicación automática en Instagram (@kinesicabrude).
+1. **Creativos Instagram (`/admin/creativos`):** Ubicado en el menú superior **Meta**, accesible tanto para administradores como para Norberto. Incluye el catálogo de **134** piezas gráficas, el sistema de Me gusta (`❤️`) para armar la lista de publicación, Drag & Drop para reordenar y la publicación automática en Instagram (@kinesicabrude).
 2. **Turnos de campaña (`/admin/campana`):** Ubicado en el menú superior **Administración**, permite la supervisión de citas originadas por campañas publicitarias, conciliación con Google Calendar y exportación de datos a CSV.
 
 ---
 
 ## 🎨 1. Galería de Creativos Instagram (`/admin/creativos`)
 
-La galería reúne **133 piezas publicitarias y educativas** de alta calidad fotográfica y renders médicos 3D estilo Pomelli, diseñadas con la identidad visual institucional de Kinésica (Charcas 3889, Palermo, CABA). Incluye piezas de temporada (Felices Fiestas), avisos informativos y educación clínica (miembro fantasma, compensación, tipos de dolor).
+La galería reúne **134 piezas publicitarias y educativas** de alta calidad fotográfica y renders médicos 3D estilo Pomelli, diseñadas con la identidad visual institucional de Kinésica (Charcas 3889, Palermo, CABA). Incluye piezas de temporada (Felices Fiestas), avisos informativos y educación clínica (miembro fantasma, compensación, tipos de dolor).
 
 ### 📐 Formatos Disponibles con un Clic
 
@@ -27,7 +27,7 @@ Podés alternar entre ambos formatos con el selector superior **Formato: Feed (4
 ### 🏷️ Categorías y Búsqueda
 
 Las piezas están organizadas en 4 grupos temáticos según la necesidad clínica del paciente:
-* **Todos**: Catálogo completo (133 piezas).
+* **Todos**: Catálogo completo (134 piezas).
 * **Filosofía y Marca**: Educación sobre causa raíz vs. síntoma, compensación, tipos de dolor, atención 1 a 1 de 60 minutos.
 * **Columna y Postura**: Cervicalgia, lumbalgia, ciatalgia, hernia de disco, dorsalgia, rectificación cervical, escoliosis.
 * **Articulaciones y Extremidades**: ATM y bruxismo, manguito rotador, rodilla, fascitis plantar, túnel carpiano, tendinitis, miembro fantasma.

@@ -2363,6 +2363,29 @@ Estamos para acompañarlos cuando lo necesiten.
 📲 WhatsApp: +54 9 11 3178-1733
 
 #FelicesFiestas #KinesiologiaPalermo #Kinésica`
+  },
+  {
+    id: "135_periodo_vacaciones",
+    title: "Período de vacaciones",
+    cat: "AVISO",
+    group: "filosofia",
+    body: "No hay atención presencial en estas fechas. Escribinos por WhatsApp para retomar turnos a la vuelta.",
+    feedUrl: "campanas/feed/catalogo_feed_135_periodo_vacaciones.png",
+    storyUrl: "campanas/story/catalogo_story_135_periodo_vacaciones.png",
+    copy: `📅 Aviso — Período de vacaciones
+
+Durante el período de vacaciones no habrá atención presencial.
+
+Si necesitás retomar o agendar a la vuelta:
+1️⃣ Escribinos por WhatsApp
+2️⃣ Contanos qué preferís
+3️⃣ Te confirmamos disponibilidad
+
+📲 +54 9 11 3178-1733
+📍 Charcas 3889, Palermo
+
+Gracias por anticiparte 🙏
+#Vacaciones #Aviso #Turnos #Kinésica`
   }
 ];
 
