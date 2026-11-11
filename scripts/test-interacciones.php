@@ -213,6 +213,22 @@ eq(interacciones_set_state($pdo, 'no-existe', 'archive', 'T'), false, 'id inexis
 eq(interacciones_set_state($pdo, '5499999999999_2026-10-29', 'archive', 'T'), false, 'conversación inexistente => false');
 eq(count_events($pdo), 9, 'cambiar estado no toca eventos');
 
+section('Estado Instagram Direct (ig_*)');
+$igWa = 'ig_900111222333444';
+$igTs = $base + 5000;
+$igEv = ev($igWa, 'patient', 'SMOKE IG archive', $igTs);
+$igEv['source'] = 'instagram';
+$igEv['event_key'] = 'ig:smoke-archive-1';
+interacciones_store_events([$igEv], $pdo);
+$viewIg = interacciones_load_view($pdo);
+$igItems = array_values(array_filter($viewIg['items'], static fn($i) => ($i['wa_id'] ?? '') === $igWa));
+eq(count($igItems) >= 1, true, 'conversación IG visible en vista');
+$igId = (string) ($igItems[0]['id'] ?? '');
+eq(str_starts_with($igId, 'ig_'), true, 'id de conversación IG con prefijo ig_');
+eq(interacciones_set_state($pdo, $igId, 'archive', 'Tester'), true, 'archivar conversación IG');
+eq(interacciones_set_state($pdo, $igId, 'toggle_answered', 'Tester', true), true, 'marcar respondida conversación IG');
+eq(interacciones_set_state($pdo, 'ig_999999999999999_2026-10-29', 'archive', 'T'), false, 'IG inexistente => false');
+
 // ---------------------------------------------------------------- migración
 section('Migración desde JSON legado');
 $pdo = fresh('mig');

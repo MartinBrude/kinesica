@@ -12,7 +12,8 @@ function interacciones_set_state(PDO $pdo, string $id, string $action, string $b
     $stmt->execute(['id1' => $id, 'id2' => $id]);
     $key = $stmt->fetchColumn();
     if ($key === false) {
-        if (!preg_match('/^(\d{6,32})_(\d{4}-\d{2}-\d{2})$/', $id, $m)) {
+        // WhatsApp: {phone}_{YYYY-MM-DD}. Instagram Direct: ig_{igid}_{YYYY-MM-DD}.
+        if (!preg_match('/^((?:ig_)?\d{6,32})_(\d{4}-\d{2}-\d{2})$/', $id, $m)) {
             return false;
         }
         $tz = interacciones_tz();

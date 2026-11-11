@@ -58,6 +58,7 @@ if (!is_array($payload) || ($payload['object'] ?? '') !== 'instagram') {
 $myIgId = (string) ($c['instagram_user_id'] ?? '');
 $pdo = db();
 interacciones_ensure_schema($pdo);
+$insertResults = [];
 
 foreach ($payload['entry'] ?? [] as $entry) {
     foreach ($entry['messaging'] ?? [] as $msg) {
@@ -98,11 +99,31 @@ foreach ($payload['entry'] ?? [] as $entry) {
         ];
 
         try {
-            interacciones_insert_event($pdo, $ev);
+            $insertResults[] = [
+                'mid' => $mid,
+                'result' => interacciones_insert_event($pdo, $ev),
+            ];
         } catch (Throwable $e) {
             error_log('Error ingestando mensaje de Instagram: ' . $e->getMessage());
+            $insertResults[] = [
+                'mid' => $mid,
+                'result' => 'error',
+                'error' => $e->getMessage(),
+            ];
         }
     }
+}
+
+// Debug opcional: header X-Kinesica-Debug = webhook_secret → JSON con resultado de inserts
+$debugSecret = (string) ($_SERVER['HTTP_X_KINESICA_DEBUG'] ?? '');
+$expectedDebug = (string) ($c['webhook_secret'] ?? '');
+if ($expectedDebug !== '' && $debugSecret !== '' && hash_equals($expectedDebug, $debugSecret)) {
+    header('Content-Type: application/json; charset=UTF-8');
+    echo json_encode([
+        'ok' => true,
+        'inserts' => $insertResults,
+    ], JSON_UNESCAPED_UNICODE);
+    exit(0);
 }
 
 echo 'EVENT_RECEIVED';

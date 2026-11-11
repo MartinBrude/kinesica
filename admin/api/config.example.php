@@ -34,6 +34,11 @@ return [
     // 'instagram_story_too' => true,
     // image_url de Meta usa admin_url (abajo) + campanas/ig/...
 
+    // Instagram DMs → /admin/interacciones (webhook_meta.php). No tocar instagram_token.
+    // Callback: https://www.kinesica.com.ar/admin/api/webhook_meta.php
+    // 'meta_webhook_verify_token' => '', // Verify Token en Meta Webhooks (Instagram / messages)
+    // 'meta_app_secret' => '', // App Secret (firma X-Hub-Signature-256); vacío = no valida firma
+
     'mail_from' => 'no-reply@kinesica.com.ar',
     'admin_url' => 'https://www.kinesica.com.ar/admin/',
     // Token permanente Meta WhatsApp Cloud API (mismo que n8n / Apps Script).
