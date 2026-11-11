@@ -13,7 +13,8 @@ import {
   setServiceEnabled,
   CAPTION_MAX,
   normalizeIgCaptionPhone,
-} from "./admin-creativos-cola.js?v=9";
+} from "./admin-creativos-cola.js?v=10";
+import { imageTextEditButtonHtml, imageTextEditorHtml } from "./admin-creativos-image-text.js?v=1";
 
 const CHANNEL_LABELS = { both: "Feed + Story", feed: "Solo Feed", story: "Solo Story" };
 
@@ -59,8 +60,10 @@ export function captionSnippetHtml(q, seedItem) {
   const text = normalizeIgCaptionPhone(resolveCaption(q.creativo_id, seedItem) || "").trim();
   const preview = text.length > 140 ? `${text.slice(0, 140)}…` : text;
   const edit = canEditCaptions()
-    ? `<button type="button" class="btn light btn-sm btn-queue-edit-caption" data-id="${escapeHtml(q.creativo_id)}" title="Editar texto de publicación">✏️ Editar texto</button>
-       ${captionEditorHtml(q.creativo_id, text)}`
+    ? `<button type="button" class="btn light btn-sm btn-queue-edit-caption" data-id="${escapeHtml(q.creativo_id)}" title="Editar texto de publicación">✏️ Editar caption</button>
+       ${imageTextEditButtonHtml(q.creativo_id)}
+       ${captionEditorHtml(q.creativo_id, text)}
+       ${imageTextEditorHtml(q.creativo_id, seedItem)}`
     : "";
   return `
     ${channelSelectHtml(q)}

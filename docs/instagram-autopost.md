@@ -10,7 +10,7 @@ Este módulo permite a **Norberto y Martín** gestionar de forma visual y 100% a
 - Se encuentra en el menú superior **Meta** (ícono de WhatsApp / Meta) bajo la opción **🎨 Creativos Instagram**.
 - Es accesible tanto para administradores como para el usuario de Norberto (no requiere ser superadministrador).
 
-### 🤍 Dar ❤️ Me gusta (Catálogo de 93 piezas)
+### 🤍 Dar ❤️ Me gusta (Catálogo de 121 piezas)
 - Cada pieza tiene un único botón de corazón flotante `🤍` / `❤️ #N` en la esquina superior derecha de la miniatura (también disponible en el modal “Ver en grande”).
 - **Interacción fluida**: Al hacer click en el corazón, la tarjeta conmuta su estado inmediatamente (`❤️ #N` o `🤍`) **sin abrir la previsualización modal**.
 - La previsualización ampliada ("Ver en grande") se abre únicamente al hacer click en la miniatura de la imagen o en el botón **🔍 Ver en grande**.
@@ -26,7 +26,8 @@ Este módulo permite a **Norberto y Martín** gestionar de forma visual y 100% a
 - **⚡ Publicar ya**: Publicación inmediata según el **canal** elegido (Feed, Story o ambas). Cuenta para el cupo del día: el cron **no** publicará otra pieza esa misma fecha Argentina. Timeout de cliente/servidor **300s** (Feed+Story puede acercarse a 2×120s de wait Meta).
 - **Recovery `publishing` stuck**: si el proceso muere a mitad (timeout/OOM), `ig_release_stale_publishing()` (cron y Publicar ya) marca failed/reencola según progreso tras **420s** sin avance. `publishing_at` se escribe y compara en **UTC** (no depende del TZ de MariaDB).
 - **Cupo del día sin publish**: si el crash dejó **sin** `feed_media_id`/`story_media_id` (aunque haya channel guard o container), el release **devuelve** el day guard para no quemar el cupo; el channel guard permanece (no se reencola esa pieza). Si el day slot quedó quemado con media parcial ya marcada `published`, ver § Runbook abajo.
-- **✏️ Editar texto**: Cualquier usuario con acceso a Creativos (Martin, Norberto, etc.) puede editar el caption de cada pieza desde el catálogo o la cola (máx. **2200** caracteres, límite de Instagram). Se guarda en DB (`instagram_creativo_copy`) y aplica a la publicación y a futuros encolados. El botón **Copiar texto** del catálogo también usa el override si existe. Los captions usan el WhatsApp de Clara (`+54 9 11 3178-1733`).
+- **✏️ Editar caption**: Cualquier usuario con acceso a Creativos puede editar el caption (máx. **2200**). DB `instagram_creativo_copy`. No toca el PNG. WhatsApp de Clara (`+54 9 11 3178-1733`).
+- **🖼️ Editar imagen**: Edita `cat` / `title` / `body` (límites 32 / 72 / 180), persiste en `instagram_creativo_image_text`, regenera PNG feed+story desde `campanas/original/` con plantilla GD única, y hace bust del JPG en `campanas/ig/`. Rechazado si status=`publishing` (409).
 - **Canal (Feed / Story / Ambas)**: En la cola, un selector por pieza define qué se publica (cron y **⚡ Publicar ya**). Por defecto: Feed + Story.
 - **Activar / Pausar**: Botón en la lista para encender o apagar el servicio automático. **Por defecto está activo.** Si está pausado, el cron no publica (sí se puede seguir editando la cola y usar Publicar ya).
 - **💔 Quitar**: Remueve la pieza de la cola (solo si está `queued`) y la devuelve al catálogo como disponible.
@@ -72,14 +73,17 @@ Cada módulo del backend y frontend respeta rigurosamente el límite estricto de
 |---|---|---|
 | [`admin/api/lib_instagram_store.php`](../admin/api/lib_instagram_store.php) | Persistencia cola/token, `ig_today` / `ig_valid_id` / `IG_CAPTION_MAX`, PNG→JPG, `admin_url` | **≤250** |
 | [`admin/api/lib_instagram_copy.php`](../admin/api/lib_instagram_copy.php) | Caption overrides, settings on/off, `update_channels` | **≤250** |
+| [`admin/api/lib_instagram_image_text.php`](../admin/api/lib_instagram_image_text.php) | Overrides on-image + `ig_image_text_save` + guard publishing | **≤250** |
+| [`admin/api/lib_instagram_render.php`](../admin/api/lib_instagram_render.php) | Plantilla GD feed/story, shrink-to-fit, bust cache JPG | **≤250** |
 | [`admin/api/lib_instagram_guard.php`](../admin/api/lib_instagram_guard.php) | Locks día/canal, claim/release, containers/partial media | **≤250** |
 | [`admin/api/lib_instagram.php`](../admin/api/lib_instagram.php) | Cliente Graph API, publish por canal, day-guard post-credenciales | **≤250** |
-| [`admin/api/instagram_cola.php`](../admin/api/instagram_cola.php) | REST: add/remove/reorder/publish_now/update_caption/channels/enabled | **≤250** |
+| [`admin/api/instagram_cola.php`](../admin/api/instagram_cola.php) | REST: cola + `update_caption` + `update_image_text` + channels/enabled | **≤250** |
 | [`admin/api/cron_instagram.php`](../admin/api/cron_instagram.php) | Worker CLI, horario AR, servicio pausable, `--force` | **≤250** |
-| [`admin/modules/admin-creativos-cola.js`](../admin/modules/admin-creativos-cola.js) | Store cliente, copies, API cola/publish | **≤250** |
+| [`admin/modules/admin-creativos-cola.js`](../admin/modules/admin-creativos-cola.js) | Store cliente, copies, image_texts, API cola/publish | **≤250** |
 | [`admin/modules/admin-creativos-cola-ui.js`](../admin/modules/admin-creativos-cola-ui.js) | HTML/pintura de ❤️, badges y botones (published/publishing/failed) | **≤250** |
 | [`admin/modules/admin-creativos-lista.js`](../admin/modules/admin-creativos-lista.js) | Cola UI, drag & drop, historial | **≤250** |
-| [`admin/modules/admin-creativos-caption.js`](../admin/modules/admin-creativos-caption.js) | Editor de texto + selector de canal + toggle servicio | **≤250** |
+| [`admin/modules/admin-creativos-caption.js`](../admin/modules/admin-creativos-caption.js) | Editor de caption + selector de canal + toggle servicio | **≤250** |
+| [`admin/modules/admin-creativos-image-text.js`](../admin/modules/admin-creativos-image-text.js) | Editor on-image + regeneración | **≤250** |
 
 ---
 

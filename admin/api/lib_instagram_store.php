@@ -1,14 +1,13 @@
 <?php
 declare(strict_types=1);
 
-/** Cola Instagram (MariaDB/SQLite). Caption overrides: lib_instagram_copy.php. */
+/** Cola Instagram (MariaDB/SQLite). Caption: lib_instagram_copy.php. */
 require_once __DIR__ . '/lib_db.php';
 
 const IG_MAX_ATTEMPTS = 3;
 const IG_CAPTION_MAX = 2200;
 const IG_TZ = 'America/Argentina/Buenos_Aires';
 
-/** Base pública de /admin/ (trailing slash) para image_url de Meta. */
 function ig_asset_base(): string
 {
     return rtrim((string) (cfg()['admin_url'] ?? 'https://www.kinesica.com.ar/admin/'), '/') . '/';
@@ -84,7 +83,7 @@ function ig_normalize_channel(string $channel): string
     return in_array($ch, ['feed', 'story', 'both'], true) ? $ch : 'both';
 }
 
-/** Rutas internas estrictas sin dot-traversal: campanas/(feed|story)/nombre.png */
+/** campanas/(feed|story)/nombre.png */
 function ig_valid_asset(string $path, string $kind): bool
 {
     return (bool) preg_match('#^campanas/' . $kind . '/[A-Za-z0-9_-]+\.(png|jpe?g)$#', $path);

@@ -11,20 +11,27 @@ import {
   loadCola,
   toggleCola,
   resolveCaption,
+  resolveImageText,
   CAPTION_MAX,
   saveCaption,
-} from "./admin-creativos-cola.js?v=9";
+  assetVersion,
+  subscribeCola,
+} from "./admin-creativos-cola.js?v=10";
 import {
   colaButtonHtml,
   colaBadgeHtml,
   colaHeartHtml,
   refreshColaButtons,
   ensureColaUiPaint,
-} from "./admin-creativos-cola-ui.js?v=2";
-import { initListaUI } from "./admin-creativos-lista.js?v=9";
-import { canEditCaptions } from "./admin-creativos-caption.js?v=6";
-
-const ASSET_V = Date.now();
+} from "./admin-creativos-cola-ui.js?v=3";
+import { initListaUI } from "./admin-creativos-lista.js?v=10";
+import { canEditCaptions } from "./admin-creativos-caption.js?v=7";
+import {
+  imageTextEditButtonHtml,
+  imageTextEditorHtml,
+  bindImageTextUi,
+  canEditImageText,
+} from "./admin-creativos-image-text.js?v=1";
 
 let activeFormat = "feed"; // 'feed' | 'story'
 let activeFilter = "todos"; // 'todos' | 'columna' | 'articulaciones' | 'filosofia'
@@ -2152,7 +2159,8 @@ export function initCreativosUI() {
     const base = CREATIVOS_DATA.find((it) => it.id === id);
     if (!base) return null;
     const copy = resolveCaption(id, base);
-    return copy === base.copy ? base : { ...base, copy };
+    const img = resolveImageText(id, base);
+    return { ...base, copy, cat: img.cat, title: img.title, body: img.body };
   };
 
   // Delegated clicks for actions (copy, lightbox, download, edit caption)
@@ -2194,6 +2202,11 @@ export function initCreativosUI() {
 
   ensureColaUiPaint();
   initListaUI(resolver);
+  bindImageTextUi(container, () => {
+    renderCreativosGrid();
+    if (selectedItem) openLightboxModal(resolver(selectedItem.id) || selectedItem);
+  });
+  subscribeCola(() => renderCreativosGrid());
   loadCola();
 
   container.addEventListener("click", (e) => {
@@ -2263,14 +2276,15 @@ function renderCreativosGrid() {
 
   grid.innerHTML = filtered
     .map((item) => {
+      const texts = resolveImageText(item.id, item);
       const rawImg = activeFormat === "story" ? item.storyUrl : item.feedUrl;
-      const imgUrl = `${rawImg}?v=${ASSET_V}`;
+      const imgUrl = `${rawImg}?v=${assetVersion}`;
       const aspectClass = activeFormat === "story" ? "aspect-story" : "aspect-feed";
 
       return `
         <article class="creativo-card" data-id="${item.id}">
           <div class="creativo-thumb-box ${aspectClass}" data-id="${item.id}" title="Click para ver en grande">
-            <img src="${imgUrl}" alt="${escapeHtml(item.title)}" loading="lazy">
+            <img src="${imgUrl}" alt="${escapeHtml(texts.title)}" loading="lazy">
             <div class="creativo-thumb-overlay">
               <span class="btn light btn-sm">🔍 Ver en grande</span>
             </div>
@@ -2280,20 +2294,22 @@ function renderCreativosGrid() {
           </div>
 
           <div class="creativo-info">
-            <span class="creativo-pill">${escapeHtml(item.cat)}</span>
-            <h3 class="creativo-title">${escapeHtml(item.title)}</h3>
-            <p class="creativo-desc">${escapeHtml(item.body)}</p>
+            <span class="creativo-pill">${escapeHtml(texts.cat)}</span>
+            <h3 class="creativo-title">${escapeHtml(texts.title)}</h3>
+            <p class="creativo-desc">${escapeHtml(texts.body)}</p>
 
             <div class="creativo-actions">
-              <a href="${item.feedUrl}?v=${ASSET_V}" download="kinesica_feed_${item.id}.png" class="btn light btn-sm" title="Descargar imagen en formato Feed 4:5">
+              <a href="${item.feedUrl}?v=${assetVersion}" download="kinesica_feed_${item.id}.png" class="btn light btn-sm" title="Descargar imagen en formato Feed 4:5">
                 📥 Feed (4:5)
               </a>
-              <a href="${item.storyUrl}?v=${ASSET_V}" download="kinesica_story_${item.id}.png" class="btn light btn-sm" title="Descargar imagen en formato Story 9:16">
+              <a href="${item.storyUrl}?v=${assetVersion}" download="kinesica_story_${item.id}.png" class="btn light btn-sm" title="Descargar imagen en formato Story 9:16">
                 📥 Story (9:16)
               </a>
-              <button type="button" class="btn light btn-sm btn-creativo-copy" data-id="${item.id}" title="Copiar texto para publicar">
-                📋 Copiar texto
+              <button type="button" class="btn light btn-sm btn-creativo-copy" data-id="${item.id}" title="Copiar caption">
+                📋 Copiar caption
               </button>
+              ${imageTextEditButtonHtml(item.id)}
+              ${imageTextEditorHtml(item.id, item)}
             </div>
           </div>
         </article>
@@ -2345,10 +2361,11 @@ function openLightboxModal(item) {
 
   const currentImg = activeFormat === "story" ? item.storyUrl : item.feedUrl;
   const caption = resolveCaption(item.id, item) || item.copy || item.body || "";
+  const texts = resolveImageText(item.id, item);
 
-  if (modalImg) modalImg.src = `${currentImg}?v=${ASSET_V}`;
-  if (modalTitle) modalTitle.textContent = item.title;
-  if (modalCat) modalCat.textContent = item.cat;
+  if (modalImg) modalImg.src = `${currentImg}?v=${assetVersion}`;
+  if (modalTitle) modalTitle.textContent = texts.title;
+  if (modalCat) modalCat.textContent = texts.cat;
   if (els.copy) els.copy.textContent = caption;
   if (els.textarea) {
     els.textarea.value = caption;
@@ -2356,12 +2373,19 @@ function openLightboxModal(item) {
   }
   setModalCaptionEditMode(false);
 
+  const imgSlot = document.getElementById("creativo-modal-imgtext-slot");
+  if (imgSlot) {
+    imgSlot.innerHTML = canEditImageText()
+      ? `${imageTextEditButtonHtml(item.id)}${imageTextEditorHtml(item.id, item)}`
+      : "";
+  }
+
   if (modalBtnFeed) {
-    modalBtnFeed.href = `${item.feedUrl}?v=${ASSET_V}`;
+    modalBtnFeed.href = `${item.feedUrl}?v=${assetVersion}`;
     modalBtnFeed.download = `kinesica_feed_${item.id}.png`;
   }
   if (modalBtnStory) {
-    modalBtnStory.href = `${item.storyUrl}?v=${ASSET_V}`;
+    modalBtnStory.href = `${item.storyUrl}?v=${assetVersion}`;
     modalBtnStory.download = `kinesica_story_${item.id}.png`;
   }
 

@@ -1,11 +1,15 @@
-/** Estado de cola Instagram + copies + flag de servicio (instagram_cola.php). */
+/** Estado de cola Instagram + copies + image_texts + flag de servicio. */
 import { api } from "./api.js?v=79";
 
 let colaItems = [];
 let colaMap = new Map();
 let captionOverrides = new Map();
+let imageTextOverrides = new Map();
 let serviceEnabled = true;
 let subscribers = [];
+/** Cache-bust de miniaturas PNG tras regenerar. */
+export let assetVersion = Date.now();
+export function bumpAssetVersion() { assetVersion = Date.now(); }
 
 export function subscribeCola(fn) {
   if (typeof fn === "function") subscribers.push(fn);
@@ -21,8 +25,20 @@ function setCopies(copies) {
     });
   }
 }
+function setImageTexts(map) {
+  imageTextOverrides = new Map();
+  if (!map || typeof map !== "object") return;
+  Object.entries(map).forEach(([id, row]) => {
+    if (!id || !row || typeof row !== "object") return;
+    const cat = String(row.cat || "").trim();
+    const title = String(row.title || "").trim();
+    const body = String(row.body || "").trim();
+    if (cat && title && body) imageTextOverrides.set(id, { cat, title, body });
+  });
+}
 function applyPayload(data) {
   if (data?.copies) setCopies(data.copies);
+  if (data?.image_texts) setImageTexts(data.image_texts);
   if (typeof data?.enabled === "boolean") serviceEnabled = data.enabled;
   setList(data?.items);
 }
@@ -60,6 +76,41 @@ export function resolveCaption(id, seedItem) {
 
 export function getCaptionOverride(id) {
   return captionOverrides.get(id) || null;
+}
+
+/** Textos on-image efectivos: override DB → seed del catálogo. */
+export function resolveImageText(id, seedItem) {
+  if (imageTextOverrides.has(id)) return imageTextOverrides.get(id);
+  return {
+    cat: seedItem?.cat || "",
+    title: seedItem?.title || "",
+    body: seedItem?.body || "",
+  };
+}
+
+export const IMG_CAT_MAX = 32;
+export const IMG_TITLE_MAX = 72;
+export const IMG_BODY_MAX = 180;
+
+export async function saveImageText(id, { cat, title, body }) {
+  const payload = {
+    action: "update_image_text",
+    id,
+    cat: String(cat || "").trim(),
+    title: String(title || "").trim(),
+    body: String(body || "").trim(),
+  };
+  if (!payload.cat || !payload.title || !payload.body
+    || payload.cat.length > IMG_CAT_MAX || payload.title.length > IMG_TITLE_MAX
+    || payload.body.length > IMG_BODY_MAX) {
+    throw Object.assign(new Error(
+      `Textos inválidos (cat≤${IMG_CAT_MAX}, title≤${IMG_TITLE_MAX}, body≤${IMG_BODY_MAX})`
+    ), { auth: false });
+  }
+  const data = await api("instagram_cola.php", { method: "POST", body: payload, timeoutMs: 120000 });
+  bumpAssetVersion();
+  applyPayload(data);
+  return data;
 }
 
 export function getColaList() { return colaItems; }

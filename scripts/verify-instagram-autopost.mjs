@@ -30,12 +30,15 @@ const filesToCheck = [
   "admin/api/lib_instagram_copy.php",
   "admin/api/lib_instagram_guard.php",
   "admin/api/lib_instagram.php",
+  "admin/api/lib_instagram_image_text.php",
+  "admin/api/lib_instagram_render.php",
   "admin/api/instagram_cola.php",
   "admin/api/cron_instagram.php",
   "admin/modules/admin-creativos-cola.js",
   "admin/modules/admin-creativos-cola-ui.js",
   "admin/modules/admin-creativos-lista.js",
   "admin/modules/admin-creativos-caption.js",
+  "admin/modules/admin-creativos-image-text.js",
 ];
 
 for (const rel of filesToCheck) {
@@ -64,6 +67,14 @@ assert.match(html, /id="btn-creativos-tab-catalog"/, "Debe tener selector de tab
 assert.match(html, /id="btn-creativos-tab-queue"/, "Debe tener selector de tab de Lista para publicar");
 assert.match(html, /id="creativos-tab-panel-queue"/, "Debe existir el panel de Lista para publicar");
 assert.match(html, /id="creativo-modal-cola-slot"/, "Debe existir el slot para el estado en el modal");
+assert.match(html, /id="creativo-modal-imgtext-slot"/, "Debe existir el slot de textos on-image en el modal");
+assert.ok(fs.existsSync(path.join(root, "admin/fonts/Inter-Regular.ttf")), "Fuente Inter-Regular.ttf");
+assert.ok(fs.existsSync(path.join(root, "admin/fonts/Inter-Bold.ttf")), "Fuente Inter-Bold.ttf");
+assert.equal(
+  fs.readdirSync(path.join(root, "admin/campanas/original/feed")).filter((f) => f.endsWith(".png")).length,
+  121,
+  "original/feed debe tener 121 PNG"
+);
 console.log("  ✓ Estructura de navegación y elementos UI verificados correctamente.");
 
 // 4. Auditoría de JS: Lógica de badges y detalles de canal
@@ -73,12 +84,12 @@ import {
   _setListForTesting,
   stateOf,
   orderOf,
-} from "../admin/modules/admin-creativos-cola.js?v=9";
+} from "../admin/modules/admin-creativos-cola.js?v=10";
 import {
   colaHeartHtml,
   colaBadgeHtml,
   colaButtonHtml,
-} from "../admin/modules/admin-creativos-cola-ui.js?v=2";
+} from "../admin/modules/admin-creativos-cola-ui.js?v=3";
 
 // Mock de state simulado
 const mockList = [

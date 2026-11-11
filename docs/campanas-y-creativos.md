@@ -6,14 +6,14 @@ Guía operativa para gestionar la captación de pacientes a través de campañas
 
 ## 🧭 Módulos Disponibles en el Panel de Administración
 
-1. **Creativos Instagram (`/admin/creativos`):** Ubicado en el menú superior **Meta**, accesible tanto para administradores como para Norberto. Incluye el catálogo de 93 piezas gráficas, el sistema de Me gusta (`❤️`) para armar la lista de publicación, Drag & Drop para reordenar y la publicación automática en Instagram (@kinesicabrude).
+1. **Creativos Instagram (`/admin/creativos`):** Ubicado en el menú superior **Meta**, accesible tanto para administradores como para Norberto. Incluye el catálogo de **121** piezas gráficas, el sistema de Me gusta (`❤️`) para armar la lista de publicación, Drag & Drop para reordenar y la publicación automática en Instagram (@kinesicabrude).
 2. **Turnos de campaña (`/admin/campana`):** Ubicado en el menú superior **Administración**, permite la supervisión de citas originadas por campañas publicitarias, conciliación con Google Calendar y exportación de datos a CSV.
 
 ---
 
 ## 🎨 1. Galería de Creativos Instagram (`/admin/creativos`)
 
-La galería reúne **93 piezas publicitarias y educativas** de alta calidad fotográfica y renders médicos 3D estilo Pomelli, diseñadas con la identidad visual institucional de Kinésica (Charcas 3889, Palermo, CABA).
+La galería reúne **121 piezas publicitarias y educativas** de alta calidad fotográfica y renders médicos 3D estilo Pomelli, diseñadas con la identidad visual institucional de Kinésica (Charcas 3889, Palermo, CABA).
 
 ### 📐 Formatos Disponibles con un Clic
 
@@ -27,12 +27,29 @@ Podés alternar entre ambos formatos con el selector superior **Formato: Feed (4
 ### 🏷️ Categorías y Búsqueda
 
 Las piezas están organizadas en 4 grupos temáticos según la necesidad clínica del paciente:
-* **Todos**: Catálogo completo (93 piezas).
+* **Todos**: Catálogo completo (121 piezas).
 * **Filosofía y Marca**: Educación sobre causa raíz vs. síntoma, atención 1 a 1 de 60 minutos, dolor crónico.
 * **Columna y Postura**: Cervicalgia, lumbalgia, ciatalgia, hernia de disco, dorsalgia, rectificación cervical, escoliosis.
 * **Articulaciones y Extremidades**: ATM y bruxismo, manguito rotador, rodilla, fascitis plantar, túnel carpiano.
 
 El **buscador en tiempo real** permite filtrar instantáneamente por cualquier síntoma o patología.
+
+### Textos de imagen vs caption
+
+Hay **dos editores independientes** (misma pieza):
+
+| Campo | Qué es | Dónde se guarda | Efecto |
+|-------|--------|-----------------|--------|
+| **Caption** (`✏️ Editar caption`) | Texto de la publicación en Instagram / WhatsApp | DB `instagram_creativo_copy` | No toca el PNG |
+| **Textos de imagen** (`🖼️ Editar imagen`) | Pill (`cat`), headline (`title`), cuerpo (`body`) dibujados sobre la foto | DB `instagram_creativo_image_text` | Regenera Feed + Story con plantilla única |
+
+Límites on-image: cat ≤ 32, title ≤ 72, body ≤ 180. El renderer achica la tipografía; si no entra, trunca con `…`.
+
+**Fondos originales:** las placas fotográficas viven en `admin/campanas/original/{feed,story}/` (copia intacta). Las rutas públicas `campanas/feed|story/` son el resultado compuesto. **No borrar `original/`** hasta validar el pipeline en producción.
+
+Backup idempotente: `npm run creativos:backup`. Regeneración CLI de una pieza: `npm run creativos:render -- --id=01_acostumbraste_dolor`.
+
+Si la pieza está en estado `publishing`, la API rechaza el cambio de textos de imagen (409). En `queued`, regenera PNG, invalida el JPG de `campanas/ig/` y actualiza el `title` de la fila en cola (el caption no se toca).
 
 ---
 
@@ -48,7 +65,8 @@ Directamente desde la interfaz de Creativos, Norberto y los administradores gest
    - **Botones ⬆️ / ⬇️**: Para subir o bajar una posición en un clic.
    - **Cálculo de slots estimados**: Muestra las fechas proyectadas de publicación (Lunes, Miércoles y Viernes a las 10:00 hs de Argentina).
    - **⚡ Publicar ya**: Publica de inmediato según el canal elegido (timeout 180s). Cuenta para el cupo del día.
-   - **✏️ Editar texto**: Desde el catálogo o la lista, cualquier usuario logueado puede cambiar el caption de cada pieza (máx. 2200 caracteres). Queda guardado para todos y para la próxima vez que la encolen. Los textos usan el WhatsApp de Clara (`+54 9 11 3178-1733`).
+   - **✏️ Editar caption**: Cambia el texto de la publicación (máx. 2200 caracteres). No regenera la imagen. Usa el WhatsApp de Clara (`+54 9 11 3178-1733`).
+   - **🖼️ Editar imagen**: Cambia pill / título / cuerpo on-image y regenera Feed + Story automáticamente.
    - **Canal**: por pieza elegís **Feed + Story**, **Solo Feed** o **Solo Story** (vale para el cron y para Publicar ya).
    - **Activar / Pausar**: botón para apagar o encender el cron automático (por defecto **activo**). Pausado = el cron no publica; la cola y Publicar ya siguen disponibles.
    - **Idempotencia diaria + anti-duplicado**: una sola pieza por día AR; locks permanentes por canal; piezas publicadas o fallidas con canal reservado **no** se reencolan.

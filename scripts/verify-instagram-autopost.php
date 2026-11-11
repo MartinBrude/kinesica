@@ -350,6 +350,65 @@ it('ig_today y caption max son tipos coherentes', function() {
     }
 });
 
+it('image_text: normalize, override, reject limits y publishing', function () {
+    require_once __DIR__ . '/../admin/api/lib_instagram_image_text.php';
+    ig_ensure_image_text_table();
+    if (ig_image_text_normalize('', 't', 'b') !== null) throw new Exception('vacío');
+    if (ig_image_text_normalize(str_repeat('c', IG_IMG_CAT_MAX + 1), 't', 'b') !== null) {
+        throw new Exception('cat over limit');
+    }
+    $ok = ig_image_text_normalize('CAT', 'Titulo', 'Cuerpo de prueba');
+    if (!$ok || $ok['cat'] !== 'CAT') throw new Exception('normalize ok');
+
+    ig_queue_add([
+        'id' => '01_acostumbraste_dolor', 'title' => 'Old', 'caption' => 'Cap',
+        'feed_path' => 'campanas/feed/catalogo_feed_01_acostumbraste_dolor.png',
+        'story_path' => 'campanas/story/catalogo_story_01_acostumbraste_dolor.png',
+    ], 'martin');
+    db()->prepare("UPDATE instagram_cola SET status='publishing' WHERE creativo_id='01_acostumbraste_dolor'")->execute();
+    $blocked = ig_image_text_save('01_acostumbraste_dolor', 'CAT', 'Nuevo titulo', 'Nuevo cuerpo ok', 'martin');
+    if (!empty($blocked['ok']) || (int) ($blocked['http'] ?? 0) !== 409) {
+        throw new Exception('Debía 409 en publishing');
+    }
+    db()->prepare("UPDATE instagram_cola SET status='queued' WHERE creativo_id='01_acostumbraste_dolor'")->execute();
+});
+
+it('render regenera feed/story, bust cache y no toca original/', function () {
+    require_once __DIR__ . '/../admin/api/lib_instagram_render.php';
+    $root = dirname(__DIR__) . '/admin/campanas';
+    $id = '01_acostumbraste_dolor';
+    $origF = "{$root}/original/feed/catalogo_feed_{$id}.png";
+    $liveF = "{$root}/feed/catalogo_feed_{$id}.png";
+    $liveS = "{$root}/story/catalogo_story_{$id}.png";
+    if (!is_file($origF)) throw new Exception('Falta original feed 01');
+    $hashBefore = hash_file('sha256', $origF);
+    $cacheJpg = "{$root}/ig/feed/catalogo_feed_{$id}.jpg";
+    @mkdir(dirname($cacheJpg), 0755, true);
+    file_put_contents($cacheJpg, 'fake');
+    $res = ig_render_piece($id, 'EVALUACION', 'Titulo test renderer', 'Cuerpo corto para test de regeneracion automatica.');
+    if (($res['feed'] ?? '') === '' || ($res['story'] ?? '') === '') throw new Exception('paths vacíos');
+    if (!is_file($liveF) || !is_file($liveS)) throw new Exception('PNG live no escritos');
+    $fi = getimagesize($liveF);
+    $si = getimagesize($liveS);
+    if (!$fi || $fi[0] !== 1080 || $fi[1] !== 1350) throw new Exception('feed size');
+    if (!$si || $si[0] !== 1080 || $si[1] !== 1920) throw new Exception('story size');
+    if (is_file($cacheJpg)) throw new Exception('cache JPG debía borrarse');
+    if (hash_file('sha256', $origF) !== $hashBefore) throw new Exception('original/ fue modificado');
+    // Restaurar live desde original (suite no deja piezas de prueba publicadas).
+    copy($origF, $liveF);
+    copy("{$root}/original/story/catalogo_story_{$id}.png", $liveS);
+});
+
+it('inventario original/feed|story = 121', function () {
+    $root = dirname(__DIR__) . '/admin/campanas';
+    $nf = count(glob($root . '/original/feed/*.png') ?: []);
+    $ns = count(glob($root . '/original/story/*.png') ?: []);
+    $lf = count(glob($root . '/feed/*.png') ?: []);
+    $ls = count(glob($root . '/story/*.png') ?: []);
+    if ($nf !== 121 || $ns !== 121) throw new Exception("original feed={$nf} story={$ns}");
+    if ($lf !== 121 || $ls !== 121) throw new Exception("live feed={$lf} story={$ls}");
+});
+
 // Limpieza
 @unlink($tmpDb);
 @unlink($cfgFile);

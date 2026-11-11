@@ -1840,6 +1840,46 @@
   max-height: 360px;
 }
 
+.creativos-imgtext-editor {
+  margin-top: 10px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f8fafb;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.creativos-imgtext-hint {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.creativos-imgtext-input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font: inherit;
+}
+
+.creativos-char-count {
+  float: right;
+  font-weight: 500;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.creativo-modal-imgtext-slot {
+  margin-top: 12px;
+}
+
+.creativo-actions {
+  flex-wrap: wrap;
+}
+
 .creativo-modal-actions {
   display: flex;
   flex-direction: column;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 /**
  * Kinésica Admin — Cola de publicación en Instagram.
  * GET  → lista de piezas en cola/publicadas con orden personalizado y estado de canales.
- * POST {action: add|remove|reorder|publish_now|update_caption|update_channels|set_enabled, ...}
+ * POST {action: add|remove|reorder|publish_now|update_caption|update_image_text|update_channels|set_enabled, ...}
  * Mutaciones: admin y profesionales (p. ej. Norberto). Colaboradores: solo lectura.
  */
 
@@ -12,6 +12,7 @@ require __DIR__ . '/lib.php';
 require_once __DIR__ . '/lib_instagram_store.php';
 require_once __DIR__ . '/lib_instagram_copy.php';
 require_once __DIR__ . '/lib_instagram_guard.php';
+require_once __DIR__ . '/lib_instagram_image_text.php';
 
 require_header();
 $auth = require_auth();
@@ -23,6 +24,7 @@ function ig_cola_payload(array $extra = []): array
         'ok' => true,
         'items' => ig_queue_list(),
         'copies' => ig_copy_map(),
+        'image_texts' => ig_image_text_map(),
         'enabled' => ig_service_enabled(),
     ];
 }
@@ -65,6 +67,21 @@ try {
         if (!ig_caption_save($id, $caption, $user)) {
             json_out(422, ['error' => 'Caption inválido (vacío o > ' . IG_CAPTION_MAX . ' caracteres)']);
         }
+    } elseif ($action === 'update_image_text') {
+        $res = ig_image_text_save(
+            (string) ($body['id'] ?? ''),
+            (string) ($body['cat'] ?? ''),
+            (string) ($body['title'] ?? ''),
+            (string) ($body['body'] ?? ''),
+            $user
+        );
+        if (empty($res['ok'])) {
+            json_out((int) ($res['http'] ?? 422), ['error' => (string) ($res['error'] ?? 'Textos de imagen inválidos')]);
+        }
+        json_out(200, ig_cola_payload([
+            'render' => $res['render'] ?? null,
+            'warnings' => $res['warnings'] ?? [],
+        ]));
     } elseif ($action === 'update_channels') {
         $id = (string) ($body['id'] ?? '');
         $channel = (string) ($body['channel'] ?? $body['channels'] ?? 'both');

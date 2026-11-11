@@ -1,9 +1,4 @@
-/**
- * Kinésica Admin — Vista de "Lista para publicar en Instagram".
- * Muestra las piezas encoladas con slot estimado, reordenamiento (Drag & Drop y ⬆️/⬇️),
- * publicación inmediata manual (⚡) y el historial detallado de publicaciones.
- */
-
+/** Lista para publicar: slots, DnD, Publicar ya, caption / textos imagen. */
 import { escapeHtml } from "./dom.js?v=79";
 import {
   getQueuedItems,
@@ -14,7 +9,8 @@ import {
   publishNow,
   subscribeCola,
   queuedChannel,
-} from "./admin-creativos-cola.js?v=9";
+  assetVersion,
+} from "./admin-creativos-cola.js?v=10";
 import {
   captionSnippetHtml,
   toggleCaptionEditor,
@@ -23,7 +19,8 @@ import {
   handleServiceToggleClick,
   serviceToggleHtml,
   channelLabel,
-} from "./admin-creativos-caption.js?v=6";
+} from "./admin-creativos-caption.js?v=7";
+import { bindImageTextUi } from "./admin-creativos-image-text.js?v=1";
 
 let resolveItem = () => null, draggedId = null;
 
@@ -58,7 +55,7 @@ export function renderQueueView() {
     html += `<div class="creativos-empty" style="margin-bottom: 20px;"><p>No tenés publicaciones pendientes en cola. Dale ❤️ a nuevas piezas en el catálogo para sumarlas.</p></div>`;
   } else {
     queued.forEach((q, idx) => {
-      const full = resolveItem(q.creativo_id) || {}, img = full.feedUrl ? `${full.feedUrl}?v=${Date.now()}` : "";
+      const full = resolveItem(q.creativo_id) || {}, img = full.feedUrl ? `${full.feedUrl}?v=${assetVersion}` : "";
       const busy = q.status === "publishing";
       const isFirst = idx === 0, isLast = idx === queued.length - 1;
       const slotText = busy ? "Publicando ahora…" : (slots[idx] || `Posición #${idx + 1}`);
@@ -152,7 +149,7 @@ async function handlePublishNowClick(id, btn) {
 
 function setupDragAndDrop(container) {
   container.addEventListener("dragstart", (e) => {
-    if (e.target.closest(".creativos-caption-editor, textarea, .btn-queue-edit-caption")) {
+    if (e.target.closest(".creativos-caption-editor, .creativos-imgtext-editor, textarea, input, .btn-queue-edit-caption, .btn-queue-edit-imgtext")) {
       e.preventDefault();
       return;
     }
@@ -238,6 +235,9 @@ export function initListaUI(resolver) {
   });
 
   setupDragAndDrop(container);
+  bindImageTextUi(container, () => {
+    if (panelQueue && !panelQueue.hidden) renderQueueView();
+  });
 
   subscribeCola(() => {
     if (panelQueue && !panelQueue.hidden) renderQueueView();
