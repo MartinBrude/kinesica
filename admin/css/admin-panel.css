@@ -1900,6 +1900,10 @@
   flex-wrap: wrap;
 }
 
+#creativo-imgtext-modal.prof-modal-backdrop {
+  z-index: 1100; /* por encima del lightbox de creativos */
+}
+
 .creativo-imgtext-modal-card {
   width: min(920px, calc(100vw - 24px));
   max-height: calc(100vh - 32px);

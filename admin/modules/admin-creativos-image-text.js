@@ -72,6 +72,10 @@ export function closeImageTextModal() {
   document.body.style.overflow = "";
 }
 
+function originalFeedPreviewUrl(id) {
+  return `campanas/original/feed/catalogo_feed_${id}.png`;
+}
+
 export function openImageTextModal(id, seedItem) {
   if (!canEditImageText()) {
     toast("Tenés que iniciar sesión para editar estos textos.", { type: "info" });
@@ -79,6 +83,10 @@ export function openImageTextModal(id, seedItem) {
   }
   const els = modalEls();
   if (!els.root) return;
+  // Evitar doble capa: lightbox debajo del editor de imagen.
+  const lightbox = document.getElementById("creativo-lightbox-modal");
+  if (lightbox && !lightbox.hidden) lightbox.hidden = true;
+
   const seed = seedItem || resolveSeed(id) || {};
   const t = resolveImageText(id, seed);
   editingId = id;
@@ -86,9 +94,10 @@ export function openImageTextModal(id, seedItem) {
   if (els.cat) els.cat.value = t.cat;
   if (els.title) els.title.value = t.title;
   if (els.body) els.body.value = t.body;
-  if (els.preview && seed.feedUrl) {
-    els.preview.src = `${seed.feedUrl}?v=${assetVersion}`;
-    els.preview.alt = t.title || "Vista previa";
+  // Placa limpia (sin logo/banda/copy). La pieza live se regenera al guardar.
+  if (els.preview) {
+    els.preview.src = `${originalFeedPreviewUrl(id)}?v=${assetVersion}`;
+    els.preview.alt = "Placa base sin textos";
   }
   refreshCharCounts();
   els.root.hidden = false;
@@ -112,6 +121,7 @@ async function saveFromModal(btn) {
     const data = await saveImageText(editingId, fields);
     const seed = resolveSeed(editingId) || {};
     if (els.preview && seed.feedUrl) {
+      // Tras regenerar, mostrar la pieza live (con capas nuevas).
       els.preview.src = `${seed.feedUrl}?v=${assetVersion}`;
     }
     const warn = Array.isArray(data?.warnings) && data.warnings.length

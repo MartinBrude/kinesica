@@ -34,7 +34,7 @@ import {
   imageTextEditButtonHtml,
   bindImageTextUi,
   canEditImageText,
-} from "./admin-creativos-image-text.js?v=2";
+} from "./admin-creativos-image-text.js?v=3";
 
 let activeFormat = "feed"; // 'feed' | 'story'
 let activeFilter = "todos"; // 'todos' | 'columna' | 'articulaciones' | 'filosofia' | 'papelera'
