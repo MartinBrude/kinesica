@@ -11,7 +11,7 @@ import { renderOptCText, REMINDER_TEMPLATE_TEXT } from "./menu-texts.js?v=3";
 import { api } from "./api.js?v=79";
 import { dialogAlert, toast } from "./dom.js?v=79";
 import { getSessionUser } from "./auth.js?v=83";
-import { resetChatDemo, initChatSimulator, setChatContext } from "./chat-simulator.js?v=16";
+import { resetChatDemo, initChatSimulator, setChatContext } from "./chat-simulator.js?v=17";
 import { DEFAULT_CLARA_TEXTS, bindConfigInputs, populateClaraInputs } from "./config-defaults.js?v=5";
 import { getNextAvailableLetter, renderCustomOptionsList } from "./config-options.js";
 import {
@@ -35,7 +35,7 @@ import {
 
 export { DEFAULT_CLARA_TEXTS };
 export { showConsultorioView, hideConsultorioView, hideClaraView, showConfiguracionView, hideConfiguracionView };
-export { appendChatMessage, resetChatDemo, initChatSimulator } from "./chat-simulator.js?v=16";
+export { appendChatMessage, resetChatDemo, initChatSimulator } from "./chat-simulator.js?v=17";
 
 export function showClaraView(section = "") {
   showClaraSubView(() => {

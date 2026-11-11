@@ -132,15 +132,18 @@ export function resolveMainMenuResponse(norm, chatLang, ctx, opts = {}) {
       : pickSimText(ctx.inputs.submenuTurnos, "submenu_turnos_text", ctx);
     return { handled: true, text, nextSubmenu: "turnos", letter: "a", viaNaturalLanguage: false };
   }
+  const agendarInvite = (chatLang === "en")
+    ? "📅 *Would you like to book?* You can check available days and times and reserve your session here:\n👉 *https://kinesica.com.ar/agendar*"
+    : "📅 *¿Querés agendar?* Podés ver los días y horarios disponibles y reservar tu sesión acá:\n👉 *https://kinesica.com.ar/agendar*";
+
   if (!exactOnly && NL_BOOKING.test(raw) && !/\b(?:cancelar|anular|consultar|cancel|reschedule|check)\b/i.test(raw)) {
     // Alineado al bot: NL de agendar → texto de opción A (turnera), no el submenú.
+    // Precio + agendar: honorarios primero; invite en followup (2ª burbuja).
     if (NL_FEES.test(raw)) {
-      const bookingSnippet = (chatLang === "en")
-        ? "\n\n📅 *Online Booking:* You can check availability and book your session here:\n👉 *https://kinesica.com.ar/agendar*"
-        : "\n\n📅 *Para agendar tu sesión:* podés ver los días y horarios disponibles y reservar directamente acá:\n👉 *https://kinesica.com.ar/agendar*";
       return {
         handled: true,
-        text: resolveOptionCText(chatLang, ctx) + bookingSnippet,
+        text: resolveOptionCText(chatLang, ctx),
+        followup: agendarInvite,
         nextSubmenu: null,
         letter: "c",
         viaNaturalLanguage: true,
@@ -166,10 +169,24 @@ export function resolveMainMenuResponse(norm, chatLang, ctx, opts = {}) {
   }
 
   if (isExactC) {
-    return { handled: true, text: resolveOptionCText(chatLang, ctx), nextSubmenu: null, letter: "c", viaNaturalLanguage: false };
+    return {
+      handled: true,
+      text: resolveOptionCText(chatLang, ctx),
+      followup: agendarInvite,
+      nextSubmenu: null,
+      letter: "c",
+      viaNaturalLanguage: false,
+    };
   }
   if (!exactOnly && NL_FEES.test(raw)) {
-    return { handled: true, text: resolveOptionCText(chatLang, ctx), nextSubmenu: null, letter: "c", viaNaturalLanguage: true };
+    return {
+      handled: true,
+      text: resolveOptionCText(chatLang, ctx),
+      followup: agendarInvite,
+      nextSubmenu: null,
+      letter: "c",
+      viaNaturalLanguage: true,
+    };
   }
 
   if (isExactD) {

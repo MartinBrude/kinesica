@@ -13,7 +13,7 @@ import {
   resolveProfessionalSubmenu,
   notifyProfessionalFromSimulator,
   resolveMainMenuResponse,
-} from "./chat-simulator-engine.js?v=5";
+} from "./chat-simulator-engine.js?v=6";
 
 let ctx = {
   defaults: {},
@@ -207,7 +207,12 @@ function handleChatUserInput(inputRaw) {
     if (mainResp.handled) {
       chatSubmenu = mainResp.nextSubmenu;
       // Letra exacta del menú: sin saludo tradicional (igual que el bot).
-      setTimeout(() => replyAsBot(mainResp.text), 450);
+      setTimeout(() => {
+        replyAsBot(mainResp.text);
+        if (mainResp.followup) {
+          setTimeout(() => appendChatMessage(mainResp.followup, "bot"), 900);
+        }
+      }, 450);
       return;
     }
   }
@@ -263,10 +268,15 @@ function handleChatUserInput(inputRaw) {
   const mainResp = resolveMainMenuResponse(norm, chatLang, ctx);
   if (mainResp.handled) {
     chatSubmenu = mainResp.nextSubmenu;
-    setTimeout(() => replyAsBot(mainResp.text, {
-      viaNaturalLanguage: mainResp.viaNaturalLanguage,
-      letter: mainResp.letter,
-    }), 450);
+    setTimeout(() => {
+      replyAsBot(mainResp.text, {
+        viaNaturalLanguage: mainResp.viaNaturalLanguage,
+        letter: mainResp.letter,
+      });
+      if (mainResp.followup) {
+        setTimeout(() => appendChatMessage(mainResp.followup, "bot"), 900);
+      }
+    }, 450);
     return;
   }
 
