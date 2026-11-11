@@ -2406,6 +2406,68 @@ En Kinésica evaluamos cervicales y cadenas (hombros, dorsal, ATM) para liberar 
 📲 WhatsApp: +54 9 11 3178-1733
 
 #Torticolis #DolorDeCuello #Cervicalgia #Kinésica`
+  },
+  {
+    id: "137_cefalea_tensional",
+    title: "Cuando la cabeza aprieta y no afloja",
+    cat: "CEFALEA TENSIONAL",
+    group: "columna",
+    body: "Muchas veces nace en cuello, mandíbula o postura. Tratamos la causa mecánica, no solo el síntoma.",
+    feedUrl: "campanas/feed/catalogo_feed_137_cefalea_tensional.png",
+    storyUrl: "campanas/story/catalogo_story_137_cefalea_tensional.png",
+    copy: `Cuando la cabeza aprieta y no afloja 😣
+
+La cefalea tensional suele venir de cuello rígido, bruxismo o horas de pantalla.
+
+El analgésico calma un rato; la causa mecánica sigue.
+En Kinésica evaluamos cervicales, ATM y postura para bajar la carga que dispara el dolor.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 3178-1733
+
+#CefaleaTensional #Cervicalgia #ATM #Kinésica`
+  },
+  {
+    id: "138_mareos",
+    title: "Mareos que aparecen al mover la cabeza",
+    cat: "MAREOS",
+    group: "columna",
+    body: "Pueden relacionarse con cervicales o sistema vestibular. Evaluamos con calma antes de forzar el cuello.",
+    feedUrl: "campanas/feed/catalogo_feed_138_mareos.png",
+    storyUrl: "campanas/story/catalogo_story_138_mareos.png",
+    copy: `Mareos que aparecen al mover la cabeza 🌀
+
+No siempre es “presión” ni “ansiedad”.
+A veces el cuello o el sistema del equilibrio estánan señales confusas.
+
+En Kinésica evaluamos con cuidado: historia, cervicales y estabilidad. Sin maniobras agresivas a ciegas.
+
+Si los mareos son intensos, con vómitos o déficit neurológico, consultá urgencias primero.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 3178-1733
+
+#Mareos #Vertigo #Cervicalgia #Kinésica`
+  },
+  {
+    id: "139_esguince_tobillo",
+    title: "Después del esguince, el tobillo sigue inestable",
+    cat: "ESGUINCE DE TOBILLO",
+    group: "articulaciones",
+    body: "Hielo y reposo no alcanzan. Recuperamos movilidad, propiocepción y carga para que no se repita.",
+    feedUrl: "campanas/feed/catalogo_feed_139_esguince_tobillo.png",
+    storyUrl: "campanas/story/catalogo_story_139_esguince_tobillo.png",
+    copy: `Después del esguince, el tobillo sigue inestable 🦶
+
+El moretón baja… pero la inseguridad al apoyar suele quedar.
+Sin reeducación, el próximo torcedura aparece más fácil.
+
+En Kinésica trabajamos inflamación, movilidad y propiocepción: que el tobillo vuelva a confiar.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 3178-1733
+
+#Esguince #Tobillo #Rehabilitacion #Kinésica`
   }
 ];
 
