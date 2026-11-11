@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 /** Compositor feed/story: placa + gradiente + logo + textos. */
 require_once __DIR__ . '/lib_instagram_store.php';
+require_once __DIR__ . '/lib_instagram_logo.php';
 
 function ig_bust_asset_cache(string $path): bool
 {
@@ -23,17 +24,6 @@ function ig_font_path(string $weight = 'regular'): string
     $path = dirname(__DIR__) . '/fonts/' . ($map[$weight] ?? $map['regular']);
     if (!is_file($path)) throw new RuntimeException('Falta fuente');
     return $path;
-}
-
-function ig_logo_path(): string
-{
-    foreach ([
-        dirname(__DIR__, 2) . '/marca/KINESICA-logo-color-horizontal.png',
-        dirname(__DIR__) . '/logo.png',
-    ] as $p) {
-        if (is_file($p)) return $p;
-    }
-    throw new RuntimeException('No se encontró logo Kinésica');
 }
 
 function ig_nfc(string $text): string
@@ -120,53 +110,6 @@ function ig_paint_gradient($im, int $w, int $h, float $fadeStart, float $solidSt
         imageline($im, 0, $y, $w - 1, $y, imagecolorallocatealpha($im, 6, 32, 52, $alpha));
     }
     imagefilledrectangle($im, 0, $solidY, $w - 1, $h - 1, imagecolorallocate($im, 6, 32, 52));
-}
-
-function ig_filled_round_rect($im, int $x1, int $y1, int $x2, int $y2, int $r, int $col): void
-{
-    $r = max(1, min($r, intdiv($x2 - $x1, 2), intdiv($y2 - $y1, 2)));
-    imagefilledrectangle($im, $x1 + $r, $y1, $x2 - $r, $y2, $col);
-    imagefilledrectangle($im, $x1, $y1 + $r, $x2, $y2 - $r, $col);
-    imagefilledellipse($im, $x1 + $r, $y1 + $r, $r * 2, $r * 2, $col);
-    imagefilledellipse($im, $x2 - $r, $y1 + $r, $r * 2, $r * 2, $col);
-    imagefilledellipse($im, $x1 + $r, $y2 - $r, $r * 2, $r * 2, $col);
-    imagefilledellipse($im, $x2 - $r, $y2 - $r, $r * 2, $r * 2, $col);
-}
-
-function ig_erase_old_logo($im, int $w, int $h): void
-{
-    $cw = (int) round($w * 0.58);
-    $ch = (int) round($h * 0.28);
-    $tmp = imagecreatetruecolor($cw, $ch);
-    imagecopyresampled($tmp, $im, 0, 0, (int) round($w * 0.70), 0, $cw, $ch, max(8, (int) round($w * 0.22)), $ch);
-    imagecopy($im, $tmp, 0, 0, 0, 0, $cw, $ch);
-}
-
-function ig_paint_logo($im, int $w): void
-{
-    ig_erase_old_logo($im, imagesx($im), imagesy($im));
-    $s = $w / 1080;
-    $pad = (int) round(28 * $s);
-    $bw = (int) round(300 * $s);
-    $bh = (int) round(92 * $s);
-    $radius = (int) round(18 * $s);
-    ig_filled_round_rect($im, $pad, $pad, $pad + $bw, $pad + $bh, $radius, imagecolorallocate($im, 255, 255, 255));
-
-    $logo = @imagecreatefrompng(ig_logo_path());
-    if ($logo === false) return;
-    imagealphablending($logo, true);
-    imagesavealpha($logo, true);
-    $innerX = (int) round(16 * $s);
-    $innerY = (int) round(18 * $s);
-    $tw = $bw - $innerX * 2;
-    $th = (int) round($tw * imagesy($logo) / max(1, imagesx($logo)));
-    if ($th > $bh - $innerY * 2) {
-        $th = $bh - $innerY * 2;
-        $tw = (int) round($th * imagesx($logo) / max(1, imagesy($logo)));
-    }
-    $dx = $pad + (int) round(($bw - $tw) / 2);
-    $dy = $pad + (int) round(($bh - $th) / 2);
-    imagecopyresampled($im, $logo, $dx, $dy, 0, 0, $tw, $th, imagesx($logo), imagesy($logo));
 }
 
 /** @return array{path:string,warnings:list<string>} */

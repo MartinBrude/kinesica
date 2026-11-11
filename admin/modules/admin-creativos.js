@@ -2108,6 +2108,134 @@ Rigidez, hormigueo o un hombro más alto ya son señales. Escucharlo a tiempo ev
 📍 Charcas 3889, Palermo
 📲 WhatsApp: +54 9 11 3178-1733
 #Prevencion #Sensibilizar #SaludPostural #Kinésica`
+  },
+  // Temporada: Felices Fiestas + avisos informativos
+  {
+    id: "123_felices_fiestas",
+    title: "Que este cierre de año te encuentre mejor",
+    cat: "FELICES FIESTAS",
+    group: "filosofia",
+    body: "Gracias por confiar en Kinésica. Te deseamos descanso real y un cuerpo que acompañe.",
+    feedUrl: "campanas/feed/catalogo_feed_123_felices_fiestas.png",
+    storyUrl: "campanas/story/catalogo_story_123_felices_fiestas.png",
+    copy: `✨ Felices Fiestas
+
+Que este cierre de año te encuentre mejor: con menos dolor, más movilidad y tiempo real para vos.
+
+Gracias por confiar en Kinésica durante el año.
+Te deseamos descanso genuino y un cuerpo que acompañe lo que querés hacer.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 3178-1733
+
+#FelicesFiestas #KinesiologiaPalermo #Kinésica`
+  },
+  {
+    id: "124_fin_de_ano",
+    title: "Empezá el año sin arrastrar el dolor",
+    cat: "CIERRE DE AÑO",
+    group: "filosofia",
+    body: "Enero es buen momento para evaluar postura y cadenas, no solo para promesas.",
+    feedUrl: "campanas/feed/catalogo_feed_124_fin_de_ano.png",
+    storyUrl: "campanas/story/catalogo_story_124_fin_de_ano.png",
+    copy: `Empezá el año sin arrastrar el dolor 🌿
+
+Las promesas de enero duran más cuando el cuerpo acompaña.
+
+Si venís postergando esa molestia de espalda, cuello o mandíbula, este es un buen momento para evaluarla con calma: postura, cadenas y causa mecánica.
+
+📍 Charcas 3889, Palermo
+📲 Turnos: +54 9 11 3178-1733
+
+#AnioNuevo #Postura #TerapiaManual #Kinésica`
+  },
+  {
+    id: "125_descanso_activo",
+    title: "Descansar no es dejar de moverte",
+    cat: "BIENESTAR",
+    group: "filosofia",
+    body: "En las fiestas, un poco de movilidad suave evita que el cuerpo se “oxide”.",
+    feedUrl: "campanas/feed/catalogo_feed_125_descanso_activo.png",
+    storyUrl: "campanas/story/catalogo_story_125_descanso_activo.png",
+    copy: `Descansar ≠ quedarte quieto del todo 🧘‍♀️
+
+En las fiestas el ritmo cambia: más comida, más auto, más sillón.
+Un poco de movilidad suave (caminar, estirar sin forzar) ayuda a que la espalda y el cuello no se “oxiden”.
+
+Si algo ya duele, mejor evaluarlo que esperar a enero.
+
+📲 WhatsApp: +54 9 11 3178-1733
+📍 Palermo
+
+#Bienestar #Movilidad #Fiestas #Kinésica`
+  },
+  {
+    id: "126_horario_fiestas",
+    title: "Horario de atención en fiestas",
+    cat: "AVISO",
+    group: "filosofia",
+    body: "Escribinos por WhatsApp para confirmar turnos y disponibilidad de la semana.",
+    feedUrl: "campanas/feed/catalogo_feed_126_horario_fiestas.png",
+    storyUrl: "campanas/story/catalogo_story_126_horario_fiestas.png",
+    copy: `📅 Horario en fiestas — Kinésica
+
+Durante las fiestas la agenda puede variar.
+
+Para confirmar:
+1️⃣ Escribinos por WhatsApp
+2️⃣ Contanos el día que preferís
+3️⃣ Te confirmamos disponibilidad
+
+📲 +54 9 11 3178-1733
+📍 Charcas 3889, Palermo
+
+Gracias por anticiparte 🙏
+#Aviso #Turnos #Kinésica`
+  },
+  {
+    id: "127_como_sacar_turno",
+    title: "Sacá turno en 1 mensaje",
+    cat: "TURNOS",
+    group: "filosofia",
+    body: "WhatsApp → contanos qué te duele → te proponemos día y horario.",
+    feedUrl: "campanas/feed/catalogo_feed_127_como_sacar_turno.png",
+    storyUrl: "campanas/story/catalogo_story_127_como_sacar_turno.png",
+    copy: `Sacá turno en 1 mensaje 💬
+
+Así de simple:
+
+1. Escribinos por WhatsApp
+2. Contanos qué te duele (y desde cuándo)
+3. Te proponemos día y horario
+
+Sesiones 1 a 1 de 60 minutos.
+📍 Charcas 3889, Palermo
+📲 +54 9 11 3178-1733
+
+#Turnos #Kinesiologia #Palermo #Kinésica`
+  },
+  {
+    id: "128_que_traer",
+    title: "¿Qué traer a la primera sesión?",
+    cat: "PRIMERA VISITA",
+    group: "filosofia",
+    body: "Ropa cómoda, estudios si tenés, y 60 minutos para evaluar de pies a cabeza.",
+    feedUrl: "campanas/feed/catalogo_feed_128_que_traer.png",
+    storyUrl: "campanas/story/catalogo_story_128_que_traer.png",
+    copy: `Primera visita — ¿qué traer? ✅
+
+• Ropa cómoda (para moverte con facilidad)
+• Estudios / imágenes si ya tenés
+• Lista breve de molestias y desde cuándo
+• 60 minutos: evaluamos de pies a cabeza
+
+No hace falta llegar “preparado/a” de más.
+Nosotros armamos el plan en la sesión.
+
+📲 +54 9 11 3178-1733
+📍 Charcas 3889, Palermo
+
+#PrimeraVisita #Kinesiologia #Kinésica`
   }
 ];
 

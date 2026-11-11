@@ -32,6 +32,7 @@ const filesToCheck = [
   "admin/api/lib_instagram.php",
   "admin/api/lib_instagram_image_text.php",
   "admin/api/lib_instagram_render.php",
+  "admin/api/lib_instagram_logo.php",
   "admin/api/instagram_cola.php",
   "admin/api/cron_instagram.php",
   "admin/modules/admin-creativos-cola.js",
@@ -74,8 +75,8 @@ assert.ok(fs.existsSync(path.join(root, "admin/fonts/Inter-Regular.ttf")), "Fuen
 assert.ok(fs.existsSync(path.join(root, "admin/fonts/Inter-Bold.ttf")), "Fuente Inter-Bold.ttf");
 assert.equal(
   fs.readdirSync(path.join(root, "admin/campanas/original/feed")).filter((f) => f.endsWith(".png")).length,
-  121,
-  "original/feed debe tener 121 PNG"
+  127,
+  "original/feed debe tener 127 PNG"
 );
 console.log("  ✓ Estructura de navegación y elementos UI verificados correctamente.");
 
