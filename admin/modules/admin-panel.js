@@ -35,7 +35,8 @@ import {
 import {
   initCreativosUI,
   loadCreativosData,
-} from "./admin-creativos.js?v=107";
+} from "./admin-creativos.js?v=108";
+import { applyCreativosEditFromRoute } from "./admin-creativos-image-text.js?v=4";
 
 const viewAdmin = document.querySelector("#view-admin");
 
@@ -84,7 +85,8 @@ export function setAdminActiveSection(section = "usuarios") {
 
 export const scrollToAdminSection = setAdminActiveSection;
 
-export function showAdminView(section = "usuarios") {
+/** @param {string} section @param {{editId?: string}|null} [routeState] */
+export function showAdminView(section = "usuarios", routeState = null) {
   const normSection = String(section || "").toLowerCase();
   const mappedSection = (normSection === "campaña" || normSection === "turnos-campana")
     ? "campana"
@@ -107,10 +109,19 @@ export function showAdminView(section = "usuarios") {
   const view = switchActiveView("view-admin");
   if (view) {
     try {
-      sessionStorage.setItem("kinesica_admin_view", JSON.stringify({ view: "admin", section: validSection }));
+      const payload = { view: "admin", section: validSection };
+      const editId = validSection === "creativos" ? String(routeState?.editId || "").trim() : "";
+      if (editId) payload.editId = editId;
+      sessionStorage.setItem("kinesica_admin_view", JSON.stringify(payload));
     } catch { /* ignore */ }
     setAdminActiveSection(validSection);
     loadAdminData();
+    if (validSection === "creativos") {
+      const editId = String(routeState?.editId || "").trim();
+      queueMicrotask(() => applyCreativosEditFromRoute(
+        editId ? { section: "creativos", editId } : { section: "creativos" }
+      ));
+    }
   }
 }
 

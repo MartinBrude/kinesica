@@ -39,7 +39,15 @@ export function parseAdminRouteFromLocation() {
   if (head === "backups" || head === "copias" || head === "copias-seguridad") return { view: "admin", section: "backups" };
   if (head === "servicios" || head === "consumos" || head === "cuotas") return { view: "admin", section: "servicios" };
   if (head === "campana" || head === "campaña" || head === "turnos-campana") return { view: "admin", section: "campana" };
-  if (head === "creativos" || head === "galeria" || head === "campana-ig" || head === "campanas-ig" || head === "instagram") return { view: "admin", section: "creativos" };
+  if (head === "creativos" || head === "galeria" || head === "campana-ig" || head === "campanas-ig" || head === "instagram") {
+    const sub = (parts[1] || "").toLowerCase();
+    const editId = (sub === "editar" || sub === "edit") && parts[2]
+      ? decodeURIComponent(parts[2])
+      : "";
+    return editId
+      ? { view: "admin", section: "creativos", editId }
+      : { view: "admin", section: "creativos" };
+  }
   if (head === "ficha") return { view: "form", id: parts[1] ? decodeURIComponent(parts[1]) : "" };
   if (head === "comparar") return { view: "compare" };
   return null;
@@ -125,8 +133,13 @@ export function syncUrlWithViewState(state, isInitialBoot = false, isHandlingPop
       targetPath = "/admin/campana";
       docTitle = "Kinésica — Turnos de campaña";
     } else if (sec === "creativos" || sec === "galeria" || sec === "campana-ig" || sec === "campanas-ig" || sec === "instagram") {
-      targetPath = "/admin/creativos";
-      docTitle = "Kinésica — Creativos Instagram";
+      const editId = String(state.editId || "").trim();
+      targetPath = editId
+        ? `/admin/creativos/editar/${encodeURIComponent(editId)}`
+        : "/admin/creativos";
+      docTitle = editId
+        ? `Kinésica — Editar creativo · ${editId}`
+        : "Kinésica — Creativos Instagram";
     } else if (sec === "usuarios") {
       targetPath = "/admin/usuarios";
       docTitle = "Kinésica — Usuarios";
@@ -186,8 +199,13 @@ export function initPopstateRouter({ loadAll, fillForm, showForm, showCompare, s
       else if (route.view === "recordatorios" || route.view === "reminders") switchTab("recordatorios");
       else if (route.view === "encuestas" || route.view === "encuesta") switchTab("encuestas");
       else if (route.view === "admin" || route.view === "administracion") {
-        if (route.section === "creativos" || getSessionUser()?.role === "admin") switchTab("admin", route.section);
-        else switchTab("inicio");
+        if (route.section === "creativos" || getSessionUser()?.role === "admin") {
+          switchTab(
+            route.section === "creativos" ? "creativos" : "admin",
+            route.section,
+            route
+          );
+        } else switchTab("inicio");
       }
       else switchTab("inicio");
     } finally {

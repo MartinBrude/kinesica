@@ -9,7 +9,7 @@ import { showLibrary } from "./library.js?v=94";
 import { showPacientesView, hidePacientesView } from "./pacientes.js?v=12";
 import { showDashboardView, hideDashboardView, updateDashboardClara, updateDashboardBooking } from "./dashboard.js?v=13";
 import { showConsultorioView, hideConsultorioView, showClaraView, hideClaraView } from "./configuracion.js?v=39";
-import { showAdminView, hideAdminView } from "./admin-panel.js?v=92";
+import { showAdminView, hideAdminView } from "./admin-panel.js?v=93";
 import { showInteraccionesView, hideInteraccionesView } from "./interacciones.js?v=16";
 import { showRecordatoriosView, hideRecordatoriosView } from "./recordatorios.js?v=24";
 import { showEncuestasView, hideEncuestasView } from "./encuestas.js?v=2";
@@ -51,7 +51,8 @@ export function toggleMobileNav() {
   else openMobileNav();
 }
 
-export function switchTab(tab, subtab) {
+/** @param {string} tab @param {string} [subtab] @param {{editId?: string}|null} [routeState] */
+export function switchTab(tab, subtab, routeState = null) {
   const btnClinica = document.querySelector("#nav-btn-clinica");
   const btnFichas = document.querySelector("#nav-btn-fichas");
   const btnPacientes = document.querySelector("#nav-btn-pacientes");
@@ -130,7 +131,7 @@ export function switchTab(tab, subtab) {
   } else if (tab === "creativos" || tab === "galeria" || tab === "campana-ig" || tab === "campanas-ig" || tab === "instagram" || (tab === "admin" && subtab === "creativos")) {
     btnWhatsapp?.classList.add("is-active");
     btnAdminCreativos?.classList.add("is-active");
-    showAdminView("creativos");
+    showAdminView("creativos", routeState);
   } else if (tab === "encuestas" || tab === "encuesta") {
     btnEncuestas?.classList.add("is-active");
     showEncuestasView();

@@ -1,6 +1,6 @@
 /**
  * Edición on-image en modal (cat/title/body) + regeneración PNG.
- * Éxito: toast + flash en miniatura (sin alert).
+ * URL: /admin/creativos/editar/{id}
  */
 
 import { escapeHtml, toast } from "./dom.js?v=79";
@@ -17,6 +17,19 @@ import {
 let resolveSeed = () => null;
 let onSavedCb = null;
 let editingId = null;
+
+function isValidCreativoId(id) {
+  return /^[A-Za-z0-9_-]{1,80}$/.test(String(id || ""));
+}
+
+/** Persiste sección + editId → router sincroniza la URL. */
+function writeCreativosViewState(editId) {
+  const state = { view: "admin", section: "creativos" };
+  if (editId) state.editId = String(editId);
+  try {
+    sessionStorage.setItem("kinesica_admin_view", JSON.stringify(state));
+  } catch { /* ignore */ }
+}
 
 export function canEditImageText() {
   return Boolean(getSessionUser());
@@ -64,10 +77,12 @@ function flashPieceThumbs(id) {
   });
 }
 
-export function closeImageTextModal() {
+export function closeImageTextModal(opts = {}) {
   const { root } = modalEls();
   if (root) root.hidden = true;
+  const hadId = editingId;
   editingId = null;
+  if (!opts.skipUrl && hadId) writeCreativosViewState(null);
   if (!document.getElementById("creativo-lightbox-modal")?.hidden) return;
   document.body.style.overflow = "";
 }
@@ -76,9 +91,14 @@ function originalFeedPreviewUrl(id) {
   return `campanas/original/feed/catalogo_feed_${id}.png`;
 }
 
-export function openImageTextModal(id, seedItem) {
+export function openImageTextModal(id, seedItem, opts = {}) {
   if (!canEditImageText()) {
     toast("Tenés que iniciar sesión para editar estos textos.", { type: "info" });
+    return;
+  }
+  if (!isValidCreativoId(id)) {
+    toast("ID de pieza inválido.", { type: "danger" });
+    writeCreativosViewState(null);
     return;
   }
   const els = modalEls();
@@ -88,8 +108,14 @@ export function openImageTextModal(id, seedItem) {
   if (lightbox && !lightbox.hidden) lightbox.hidden = true;
 
   const seed = seedItem || resolveSeed(id) || {};
+  if (!seed.id && !seed.feedUrl && !resolveSeed(id)) {
+    toast(`No encontré la pieza ${id}.`, { type: "danger" });
+    writeCreativosViewState(null);
+    return;
+  }
   const t = resolveImageText(id, seed);
   editingId = id;
+  if (!opts.skipUrl) writeCreativosViewState(id);
   if (els.heading) els.heading.textContent = t.title || id;
   if (els.cat) els.cat.value = t.cat;
   if (els.title) els.title.value = t.title;
@@ -103,6 +129,20 @@ export function openImageTextModal(id, seedItem) {
   els.root.hidden = false;
   document.body.style.overflow = "hidden";
   els.cat?.focus();
+}
+
+/** Abre/cierra el editor según la ruta actual (boot + atrás/adelante). */
+export function applyCreativosEditFromRoute(route) {
+  const id = route?.editId ? String(route.editId) : "";
+  const els = modalEls();
+  if (id) {
+    if (editingId === id && els.root && !els.root.hidden) return;
+    openImageTextModal(id, resolveSeed(id), { skipUrl: true });
+    return;
+  }
+  if (editingId || (els.root && !els.root.hidden)) {
+    closeImageTextModal({ skipUrl: true });
+  }
 }
 
 async function saveFromModal(btn) {

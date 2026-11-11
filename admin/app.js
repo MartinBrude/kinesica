@@ -55,13 +55,13 @@ import {
   parseAdminRouteFromLocation,
   initRouterStorageInterceptor,
   initPopstateRouter,
-} from "./modules/router.js?v=4";
+} from "./modules/router.js?v=5";
 
 import {
   switchTab,
   mountAdminChannels,
   unmountAdminChannels,
-} from "./modules/app-tabs.js?v=39";
+} from "./modules/app-tabs.js?v=40";
 
 import {
   initAppControllers,
@@ -135,7 +135,7 @@ async function refresh() {
 
   if ((!formView || formView.hidden) && (!compareView || compareView.hidden)) {
     if (saved?.view === "compare" && saved.pKey) showCompare(saved.pKey, saved.xId, saved.yId);
-    else if (saved?.view) switchTab(saved.view, saved.section);
+    else if (saved?.view) switchTab(saved.view, saved.section, saved);
     else switchTab("inicio");
   }
 
@@ -164,7 +164,7 @@ async function refresh() {
     }
   }
 
-  if (saved?.view) switchTab(saved.view, saved.section);
+  if (saved?.view) switchTab(saved.view, saved.section, saved);
   else switchTab("inicio");
 }
 
