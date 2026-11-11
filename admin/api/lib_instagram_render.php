@@ -125,13 +125,19 @@ function ig_original_looks_finished($im, int $w, int $h): bool
         $r = ($c >> 16) & 255;
         $g = ($c >> 8) & 255;
         $b = $c & 255;
-        // Navy del compositor (~6,32,52) o azul muy oscuro de diseños AI.
-        if ($r < 45 && $g < 70 && $b < 100 && $b >= $r) $hits++;
+        // Navy del compositor (~6,32,52), no pisos/sombras grises de foto.
+        if ($r < 30 && $g >= 18 && $g <= 55 && $b >= 38 && $b <= 95 && ($b - $r) >= 20) {
+            $hits++;
+        }
     }
     return $hits >= 2;
 }
 
-/** @return array{path:string,warnings:list<string>} */
+/**
+ * Layout tipo 122: foto protagonista, copy anclado abajo con aire,
+ * banda navy solo del alto necesario (sin hueco vacío bajo el texto).
+ * @return array{path:string,warnings:list<string>}
+ */
 function ig_render_format(string $id, string $kind, string $cat, string $title, string $body): array
 {
     $isStory = $kind === 'story';
@@ -146,8 +152,6 @@ function ig_render_format(string $id, string $kind, string $cat, string $title, 
             . 'Reemplazá original/ con una foto limpia (sin logo ni copy) y volvé a renderizar.'
         );
     }
-    ig_paint_gradient($im, $w, $h, $isStory ? 0.48 : 0.44, $isStory ? 0.58 : 0.54);
-    ig_paint_logo($im, $w);
 
     $warn = [];
     $fontR = ig_font_path('regular');
@@ -159,32 +163,58 @@ function ig_render_format(string $id, string $kind, string $cat, string $title, 
     $teal = imagecolorallocate($im, 46, 160, 140);
     $urlC = imagecolorallocate($im, 130, 210, 195);
 
-    $y = (int) round($h * ($isStory ? 0.60 : 0.56));
     $pill = ig_nfc(mb_strtoupper(trim($cat), 'UTF-8'));
-    $pillSize = 17.0;
-    $pBox = imagettfbbox($pillSize, 0, $fontS, $pill);
-    $pw = abs(($pBox[2] ?? 0) - ($pBox[0] ?? 0)) + 40;
-    $ph = 48;
-    ig_filled_round_rect($im, $margin, $y, $margin + $pw, $y + $ph, 24, $teal);
-    imagettftext($im, $pillSize, 0, $margin + 20, $y + 32, $white, $fontS, $pill);
-    $y += $ph + 18;
-
-    $tFit = ig_fit_text($title, $fontB, $isStory ? 54 : 48, 28, $maxW, $isStory ? 4 : 3);
+    $pillSize = 16.0;
+    $ph = 44;
+    $gapPill = 20;
+    $gapTitle = 18;
+    $tFit = ig_fit_text($title, $fontB, $isStory ? 46 : 40, 26, $maxW, $isStory ? 3 : 3);
+    $bFit = ig_fit_text($body, $fontR, $isStory ? 24 : 22, 17, $maxW, $isStory ? 4 : 3);
     if ($tFit['truncated']) $warn[] = 'title_truncated';
-    foreach ($tFit['lines'] as $line) {
-        imagettftext($im, $tFit['size'], 0, $margin, $y + (int) $tFit['size'], $white, $fontB, ig_nfc($line));
-        $y += (int) round($tFit['size'] * 1.22);
-    }
-    $y += 14;
-
-    $bFit = ig_fit_text($body, $fontR, $isStory ? 28 : 26, 18, $maxW, $isStory ? 5 : 4);
     if ($bFit['truncated']) $warn[] = 'body_truncated';
-    foreach ($bFit['lines'] as $line) {
-        imagettftext($im, $bFit['size'], 0, $margin, $y + (int) $bFit['size'], $white, $fontR, ig_nfc($line));
-        $y += (int) round($bFit['size'] * 1.28);
-    }
+
+    $titleH = (int) round(count($tFit['lines']) * $tFit['size'] * 1.30);
+    $bodyH = (int) round(count($bFit['lines']) * $bFit['size'] * 1.36);
+    $contentH = $ph + $gapPill + $titleH + $gapTitle + $bodyH;
 
     $lineY = $h - 78;
+    $contentBottom = $lineY - 28;
+    $y0 = $contentBottom - $contentH;
+    // Foto ~55%+ (ref. 122); si el copy no entra, subir un poco el techo.
+    $minTop = (int) round($h * ($isStory ? 0.58 : 0.54));
+    if ($y0 < $minTop) {
+        $tFit = ig_fit_text($title, $fontB, $isStory ? 40 : 36, 24, $maxW, 3);
+        $bFit = ig_fit_text($body, $fontR, $isStory ? 22 : 20, 16, $maxW, $isStory ? 4 : 3);
+        $titleH = (int) round(count($tFit['lines']) * $tFit['size'] * 1.28);
+        $bodyH = (int) round(count($bFit['lines']) * $bFit['size'] * 1.34);
+        $contentH = $ph + $gapPill + $titleH + $gapTitle + $bodyH;
+        $y0 = max((int) round($h * 0.50), $contentBottom - $contentH);
+    }
+
+    $fadeH = (int) round($h * 0.07);
+    $solidY = max(0, $y0 - 14);
+    $fadeY = max(0, $solidY - $fadeH);
+    ig_paint_gradient($im, $w, $h, $fadeY / max(1, $h), $solidY / max(1, $h));
+    ig_paint_logo($im, $w);
+
+    $y = $y0;
+    $pBox = imagettfbbox($pillSize, 0, $fontS, $pill);
+    $pw = abs(($pBox[2] ?? 0) - ($pBox[0] ?? 0)) + 40;
+    ig_filled_round_rect($im, $margin, $y, $margin + $pw, $y + $ph, 22, $teal);
+    imagettftext($im, $pillSize, 0, $margin + 20, $y + 30, $white, $fontS, $pill);
+    $y += $ph + $gapPill;
+
+    foreach ($tFit['lines'] as $line) {
+        imagettftext($im, $tFit['size'], 0, $margin, $y + (int) $tFit['size'], $white, $fontB, ig_nfc($line));
+        $y += (int) round($tFit['size'] * 1.30);
+    }
+    $y += $gapTitle;
+
+    foreach ($bFit['lines'] as $line) {
+        imagettftext($im, $bFit['size'], 0, $margin, $y + (int) $bFit['size'], $white, $fontR, ig_nfc($line));
+        $y += (int) round($bFit['size'] * 1.36);
+    }
+
     imageline($im, $margin, $lineY, $w - $margin, $lineY, imagecolorallocatealpha($im, 255, 255, 255, 80));
     $uBox = imagettfbbox(20, 0, $fontS, IG_URL_FOOTER);
     $uw = abs(($uBox[2] ?? 0) - ($uBox[0] ?? 0));

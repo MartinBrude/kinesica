@@ -2,8 +2,8 @@
 declare(strict_types=1);
 
 /**
- * Logo Kinésica: detecta badge AI (flood desde esquina), lo reemplaza con foto
- * y pinta UNA cápsula blanca + un solo logo (tamaño fijo de marca).
+ * Logo Kinésica: pill blanco con margen (estilo catálogo 100/122),
+ * no cápsula pegada a la esquina. Si hay badge AI en esquina, lo tapa antes.
  */
 
 function ig_logo_path(): string
@@ -65,14 +65,12 @@ function ig_detect_corner_badge($im, int $w, int $h): ?array
             $qy[] = $ny;
         }
     }
-    // Badge real = placa ancha y baja. Paredes claras dan flood alto y angosto → ignorar.
     if ($n < 2000 || $maxX < 160 || $maxY < 50) return null;
     if ($maxY > (int) round($h * 0.20)) return null;
     if ($maxX / max(1, $maxY) < 1.35) return null;
     return [$maxX, $maxY];
 }
 
-/** Sustituye el badge por muestreo de la columna de foto a su derecha. */
 function ig_cover_old_badge($im, int $w, int $h): void
 {
     $bbox = ig_detect_corner_badge($im, $w, $h);
@@ -84,7 +82,6 @@ function ig_cover_old_badge($im, int $w, int $h): void
     $srcX = min($w - 1, $bw + (int) round(10 * $s));
     $feather = max(6, (int) round(12 * $s));
 
-    // Cache de color por fila (columna fuente).
     for ($y = 0; $y <= $bh; $y++) {
         $src = imagecolorat($im, $srcX, min($h - 1, $y));
         $sr = ($src >> 16) & 255;
@@ -97,7 +94,6 @@ function ig_cover_old_badge($im, int $w, int $h): void
                 imagesetpixel($im, $x, $y, $fill);
                 continue;
             }
-            // Borde: mezcla con foto real fuera del badge (derecha / abajo).
             $ox = min($w - 1, $bw + 1 + ($feather - $dist));
             $oy = min($h - 1, $y);
             if ($bh - $y < $bw - $x) {
@@ -114,40 +110,32 @@ function ig_cover_old_badge($im, int $w, int $h): void
     }
 }
 
+/** Pill blanco con margen — como 122_aviso_temprano / 100_ciatica_baja. */
 function ig_paint_logo($im, int $w): void
 {
     ig_cover_old_badge($im, $w, imagesy($im));
 
     $s = $w / 1080;
-    $pw = (int) round(340 * $s);
-    $ph = (int) round(108 * $s);
-    $radius = (int) round(26 * $s);
+    $pad = (int) round(28 * $s);
+    $bw = (int) round(300 * $s);
+    $bh = (int) round(92 * $s);
+    $radius = (int) round(18 * $s);
     $bg = imagecolorallocate($im, 255, 255, 255);
-    imagefilledrectangle($im, 0, 0, $pw - $radius, $ph, $bg);
-    imagefilledrectangle($im, 0, 0, $pw, $ph - $radius, $bg);
-    imagefilledellipse($im, $pw - $radius, $ph - $radius, $radius * 2, $radius * 2, $bg);
+    ig_filled_round_rect($im, $pad, $pad, $pad + $bw, $pad + $bh, $radius, $bg);
 
     $logo = @imagecreatefrompng(ig_logo_path());
     if ($logo === false) return;
     imagesavealpha($logo, true);
-    $tw = (int) round(280 * $s);
+    $innerX = (int) round(16 * $s);
+    $innerY = (int) round(18 * $s);
+    $tw = $bw - $innerX * 2;
     $th = (int) round($tw * imagesy($logo) / max(1, imagesx($logo)));
-    $maxH = $ph - (int) round(32 * $s);
-    if ($th > $maxH) {
-        $th = $maxH;
+    if ($th > $bh - $innerY * 2) {
+        $th = $bh - $innerY * 2;
         $tw = (int) round($th * imagesx($logo) / max(1, imagesy($logo)));
     }
+    $dx = $pad + (int) round(($bw - $tw) / 2);
+    $dy = $pad + (int) round(($bh - $th) / 2);
     imagealphablending($im, true);
-    imagecopyresampled(
-        $im,
-        $logo,
-        (int) round(22 * $s),
-        (int) round(($ph - $th) / 2),
-        0,
-        0,
-        $tw,
-        $th,
-        imagesx($logo),
-        imagesy($logo)
-    );
+    imagecopyresampled($im, $logo, $dx, $dy, 0, 0, $tw, $th, imagesx($logo), imagesy($logo));
 }

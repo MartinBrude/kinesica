@@ -67,6 +67,7 @@ Directamente desde la interfaz de Creativos, Norberto y los administradores gest
    - **Frecuencia**: días + hora en la barra de la cola; persiste en DB y alimenta el cron (1 pieza/día).
    - **🗑️ Papelera**: tachito en cada pieza para sacarla del catálogo (soft-delete). Se restaura desde el filtro Papelera.
    - **original/** debe ser **foto limpia** (sin logo ni copy). Si el original ya es la pieza terminada, el render se niega (evita logo/texto duplicados).
+   - **Compositor**: logo = pill blanco **con margen** (estilo 122), no cápsula pegada a la esquina. Copy anclado abajo con aire; banda navy solo del alto necesario.
    - **⚡ Publicar ya**: Publica de inmediato según el canal elegido (timeout 180s). Cuenta para el cupo del día.
    - **✏️ Editar caption**: Cambia el texto de la publicación (máx. 2200 caracteres). No regenera la imagen. Usa el WhatsApp de Clara (`+54 9 11 3178-1733`).
    - **🖼️ Editar imagen**: Cambia pill / título / cuerpo on-image y regenera Feed + Story automáticamente.
