@@ -13,8 +13,9 @@ import {
   setServiceEnabled,
   CAPTION_MAX,
   normalizeIgCaptionPhone,
-} from "./admin-creativos-cola.js?v=10";
+} from "./admin-creativos-cola.js?v=11";
 import { imageTextEditButtonHtml } from "./admin-creativos-image-text.js?v=2";
+import { formatScheduleLabel, scheduleFormHtml } from "./admin-creativos-schedule.js?v=1";
 
 const CHANNEL_LABELS = { both: "Feed + Story", feed: "Solo Feed", story: "Solo Story" };
 
@@ -114,16 +115,20 @@ export async function handleChannelChange(select) {
 
 export function serviceToggleHtml() {
   const on = isServiceEnabled();
+  const when = escapeHtml(formatScheduleLabel());
   return `
     <div class="creativos-service-bar ${on ? "is-on" : "is-off"}">
-      <p class="creativos-queue-info">
-        ${on
-    ? "📅 <strong>Automatización activa:</strong> Publica Lun/Mié/Vie a las 10:00 hs (Argentina). Arrastrá para reordenar · ⚡ Publicar ya · selector de canal."
-    : "⏸️ <strong>Automatización pausada:</strong> el cron no publica. Podés seguir armando la cola; reactivá cuando quieras."}
-      </p>
-      <button type="button" class="btn btn-sm btn-creativos-service-toggle ${on ? "is-on" : "is-off"}" data-enabled="${on ? "0" : "1"}">
-        ${on ? "⏸️ Pausar publicaciones" : "▶️ Activar publicaciones"}
-      </button>
+      <div class="creativos-service-main">
+        <p class="creativos-queue-info">
+          ${on
+    ? `📅 <strong>Automatización activa:</strong> publica ${when}. 1 pieza por día · arrastrá para reordenar · ⚡ Publicar ya.`
+    : "⏸️ <strong>Automatización pausada:</strong> el cron no publica. Podés seguir armando la cola y configurar la frecuencia."}
+        </p>
+        <button type="button" class="btn btn-sm btn-creativos-service-toggle ${on ? "is-on" : "is-off"}" data-enabled="${on ? "0" : "1"}">
+          ${on ? "⏸️ Pausar publicaciones" : "▶️ Activar publicaciones"}
+        </button>
+      </div>
+      ${scheduleFormHtml()}
     </div>`;
 }
 

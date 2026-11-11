@@ -16,7 +16,7 @@ import {
   saveCaption,
   assetVersion,
   subscribeCola,
-} from "./admin-creativos-cola.js?v=10";
+} from "./admin-creativos-cola.js?v=11";
 import {
   colaButtonHtml,
   colaBadgeHtml,
@@ -24,8 +24,8 @@ import {
   refreshColaButtons,
   ensureColaUiPaint,
 } from "./admin-creativos-cola-ui.js?v=3";
-import { initListaUI } from "./admin-creativos-lista.js?v=11";
-import { canEditCaptions } from "./admin-creativos-caption.js?v=8";
+import { initListaUI } from "./admin-creativos-lista.js?v=12";
+import { canEditCaptions } from "./admin-creativos-caption.js?v=9";
 import {
   imageTextEditButtonHtml,
   bindImageTextUi,

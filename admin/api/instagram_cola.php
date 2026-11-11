@@ -4,7 +4,7 @@ declare(strict_types=1);
 /**
  * Kinésica Admin — Cola de publicación en Instagram.
  * GET  → lista de piezas en cola/publicadas con orden personalizado y estado de canales.
- * POST {action: add|remove|reorder|publish_now|update_caption|update_image_text|update_channels|set_enabled, ...}
+ * POST {action: add|remove|reorder|publish_now|update_caption|update_image_text|update_channels|set_enabled|update_schedule, ...}
  * Mutaciones: admin y profesionales (p. ej. Norberto). Colaboradores: solo lectura.
  */
 
@@ -26,6 +26,7 @@ function ig_cola_payload(array $extra = []): array
         'copies' => ig_copy_map(),
         'image_texts' => ig_image_text_map(),
         'enabled' => ig_service_enabled(),
+        'schedule' => ig_schedule_get(),
     ];
 }
 
@@ -90,6 +91,13 @@ try {
         }
     } elseif ($action === 'set_enabled') {
         ig_service_set_enabled(!empty($body['enabled']), $user);
+    } elseif ($action === 'update_schedule') {
+        $days = is_array($body['days'] ?? null) ? $body['days'] : [];
+        $hour = (int) ($body['hour'] ?? ig_schedule_get()['hour']);
+        if ($days === []) {
+            json_out(422, ['error' => 'Elegí al menos un día de publicación']);
+        }
+        ig_schedule_set($days, $hour, $user);
     } elseif ($action === 'publish_now') {
         $id = (string) ($body['id'] ?? '');
         if (!ig_queue_find($id)) {

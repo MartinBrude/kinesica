@@ -19,10 +19,8 @@ Este módulo permite a **Norberto y Martín** gestionar de forma visual y 100% a
 - Muestra las publicaciones seleccionadas en el orden de salida programado.
 - **Reordenar con Drag & Drop**: Podés arrastrar y soltar las tarjetas directamente con el mouse (usando el tirador `⋮⋮` o la tarjeta entera). El nuevo orden se persiste automáticamente en la base de datos de manera atómica.
 - **Botones ⬆️ Subir / ⬇️ Bajar**: Alternativa accesible con un solo click para pantallas táctiles o móviles.
-- **Cálculo de slots estimados**: Muestra la fecha y hora proyectada para cada pieza según la frecuencia de salida:
-  - Posición #1: Próximo Lunes, Miércoles o Viernes a las 10:00 hs (hora de Argentina).
-  - Posición #2: Siguiente fecha hábil de publicación a las 10:00 hs.
-  - Posición #3: Siguiente fecha...
+- **Cálculo de slots estimados**: Muestra la fecha y hora proyectada para cada pieza según la **frecuencia configurada** en la barra de la cola (días + hora Argentina). Por defecto: Lun/Mié/Vie 10:00.
+- **Frecuencia (admin)**: En **Lista para publicar**, elegís días (Lun–Dom) y hora; **💾 Guardar frecuencia** persiste en `instagram_settings`. El cron y los slots estimados usan ese valor. Sigue valiendo **1 pieza por día**.
 - **⚡ Publicar ya**: Publicación inmediata según el **canal** elegido (Feed, Story o ambas). Cuenta para el cupo del día: el cron **no** publicará otra pieza esa misma fecha Argentina. Timeout de cliente/servidor **300s** (Feed+Story puede acercarse a 2×120s de wait Meta).
 - **Recovery `publishing` stuck**: si el proceso muere a mitad (timeout/OOM), `ig_release_stale_publishing()` (cron y Publicar ya) marca failed/reencola según progreso tras **420s** sin avance. `publishing_at` se escribe y compara en **UTC** (no depende del TZ de MariaDB).
 - **Cupo del día sin publish**: si el crash dejó **sin** `feed_media_id`/`story_media_id` (aunque haya channel guard o container), el release **devuelve** el day guard para no quemar el cupo; el channel guard permanece (no se reencola esa pieza). Si el day slot quedó quemado con media parcial ya marcada `published`, ver § Runbook abajo.
@@ -45,7 +43,7 @@ Al publicarse una pieza (sea por el cron o manualmente), el sistema registra el 
 
 ## 2. Publicación Desatendida, Idempotencia y Tokens
 
-1. **Horario Oficial**: El cron se ejecuta cada hora y publica solo **Lunes, Miércoles y Viernes a partir de las 10:00 hs de Argentina** (`America/Argentina/Buenos_Aires`).
+1. **Horario Oficial**: El cron se ejecuta cada hora. Publica solo en los **días y a partir de la hora** guardados en admin (`instagram_settings.publish_days` / `publish_hour`, TZ `America/Argentina/Buenos_Aires`). Default si no hay fila: Lun/Mié/Vie desde las 10:00 (también sobreescribible vía `config.php` `instagram_days` / `instagram_hour` hasta el primer guardado en admin).
 2. **Una sola pieza por día (cron o manual)**:
    - Tanto el cron como **⚡ Publicar ya** marcan `published_on` con la fecha de Argentina al publicar.
    - Antes de publicar, el cron llama a `ig_published_on_date($today)`: si **ya hubo una publicación ese día** (manual o automática), **sale sin publicar**.

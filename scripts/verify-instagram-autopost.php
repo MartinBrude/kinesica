@@ -223,6 +223,19 @@ it('servicio Instagram activo por defecto y se puede pausar', function() {
     if (!ig_service_enabled()) throw new Exception('Debía reactivarse');
 });
 
+it('schedule days+hour se persiste y normaliza', function () {
+    require_once __DIR__ . '/../admin/api/lib_instagram_copy.php';
+    $def = ig_schedule_get();
+    if (($def['days'] ?? []) !== [1, 3, 5]) throw new Exception('Default days debía ser 1,3,5');
+    if ((int) ($def['hour'] ?? -1) !== 10) throw new Exception('Default hour debía ser 10');
+    $saved = ig_schedule_set([5, 1, 1, 9, 2], 19, 'martin');
+    if ($saved['days'] !== [1, 2, 5]) throw new Exception('Debía normalizar a 1,2,5');
+    if ($saved['hour'] !== 19) throw new Exception('Hour 19 no persistió en retorno');
+    $got = ig_schedule_get();
+    if ($got['days'] !== [1, 2, 5] || $got['hour'] !== 19) throw new Exception('GET no leyó schedule guardado');
+    ig_schedule_set([1, 3, 5], 10, 'martin');
+});
+
 it('ig_queue_claim evita doble reserva de la misma pieza', function() {
     require_once __DIR__ . '/../admin/api/lib_instagram_guard.php';
     ig_queue_add([

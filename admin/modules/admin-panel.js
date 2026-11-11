@@ -35,7 +35,7 @@ import {
 import {
   initCreativosUI,
   loadCreativosData,
-} from "./admin-creativos.js?v=103";
+} from "./admin-creativos.js?v=104";
 
 const viewAdmin = document.querySelector("#view-admin");
 

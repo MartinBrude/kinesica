@@ -63,7 +63,8 @@ Directamente desde la interfaz de Creativos, Norberto y los administradores gest
 2. **Pestaña "❤️ Lista para publicar"**:
    - **Drag & Drop**: Reordená la prioridad arrastrando las tarjetas con el mouse.
    - **Botones ⬆️ / ⬇️**: Para subir o bajar una posición en un clic.
-   - **Cálculo de slots estimados**: Muestra las fechas proyectadas de publicación (Lunes, Miércoles y Viernes a las 10:00 hs de Argentina).
+   - **Cálculo de slots estimados**: Fechas proyectadas según la frecuencia configurada en admin (default Lun/Mié/Vie 10:00 AR).
+   - **Frecuencia**: días + hora en la barra de la cola; persiste en DB y alimenta el cron (1 pieza/día).
    - **⚡ Publicar ya**: Publica de inmediato según el canal elegido (timeout 180s). Cuenta para el cupo del día.
    - **✏️ Editar caption**: Cambia el texto de la publicación (máx. 2200 caracteres). No regenera la imagen. Usa el WhatsApp de Clara (`+54 9 11 3178-1733`).
    - **🖼️ Editar imagen**: Cambia pill / título / cuerpo on-image y regenera Feed + Story automáticamente.
@@ -105,6 +106,6 @@ Este módulo permite medir el retorno de la inversión publicitaria y la trazabi
    Para campañas cuyo objetivo sea mensaje a WhatsApp, utilizá el enlace con mensaje inicial:  
    `https://wa.me/5491131781733?text=Hola,%20vi%20la%20publicación%20en%20Instagram%20y%20quisiera%20consultar%20por%20un%20turno`
 3. **Frecuencia automatizada de publicación:**  
-   - Con la cola activa, el cron publica 3 veces por semana (Lunes, Miércoles y Viernes a las 10:00 hs).
+   - Con la cola activa, el cron publica en los días/hora configurados desde admin (default Lun/Mié/Vie desde 10:00 AR).
    - Si ese día ya hubo un **Publicar ya**, el cron salta el día (una sola pieza por fecha).
    - Norberto puede mantener entre 5 y 10 piezas seleccionadas con ❤️ en la lista para tener cobertura automática para las próximas semanas.

@@ -36,8 +36,9 @@ foreach ($argv as $arg) {
     }
 }
 $c = cfg();
-$days = array_map('intval', (array) ($c['instagram_days'] ?? [1, 3, 5]));
-$hour = (int) ($c['instagram_hour'] ?? 10);
+$sched = ig_schedule_get();
+$days = $sched['days'];
+$hour = $sched['hour'];
 $withStory = ($c['instagram_story_too'] ?? true) !== false;
 
 if (!ig_service_enabled() && $clearDayArg === null) {

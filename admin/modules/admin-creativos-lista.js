@@ -10,7 +10,7 @@ import {
   subscribeCola,
   queuedChannel,
   assetVersion,
-} from "./admin-creativos-cola.js?v=10";
+} from "./admin-creativos-cola.js?v=11";
 import {
   captionSnippetHtml,
   toggleCaptionEditor,
@@ -19,24 +19,16 @@ import {
   handleServiceToggleClick,
   serviceToggleHtml,
   channelLabel,
-} from "./admin-creativos-caption.js?v=8";
+} from "./admin-creativos-caption.js?v=9";
+import { getNextPublishSlots, handleScheduleSaveClick } from "./admin-creativos-schedule.js?v=1";
 
 let resolveItem = () => null, draggedId = null;
-
-function getNextSlots(count) {
-  const slots = [], days = [1, 3, 5], names = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"], months = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"], d = new Date();
-  while (slots.length < count) {
-    d.setDate(d.getDate() + 1);
-    if (days.includes(d.getDay())) slots.push(`${names[d.getDay()]} ${d.getDate()} de ${months[d.getMonth()]} · 10:00 hs`);
-  }
-  return slots;
-}
 
 export function renderQueueView() {
   const container = document.getElementById("creativos-tab-panel-queue");
   if (!container) return;
 
-  const queued = getQueuedItems(), published = getPublishedItems(), slots = getNextSlots(queued.length);
+  const queued = getQueuedItems(), published = getPublishedItems(), slots = getNextPublishSlots(queued.length);
 
   let html = `<div class="creativos-queue-header">${serviceToggleHtml()}</div><div class="creativos-queue-list">`;
 
@@ -212,12 +204,16 @@ export function initListaUI(resolver) {
   container.addEventListener("change", (e) => {
     const sel = e.target.closest(".creativos-channel-select");
     if (sel) handleChannelChange(sel);
+    const day = e.target.closest('input[name="ig-day"]');
+    if (day) day.closest(".creativos-day-chip")?.classList.toggle("is-on", day.checked);
   });
 
   container.addEventListener("click", (e) => {
     if (e.target.closest(".creativos-caption-textarea, .creativos-channel-select")) return;
     const svc = e.target.closest(".btn-creativos-service-toggle");
     if (svc) return handleServiceToggleClick(svc);
+    const schedSave = e.target.closest(".btn-creativos-schedule-save");
+    if (schedSave) return handleScheduleSaveClick(schedSave);
     const up = e.target.closest(".btn-queue-up"), down = e.target.closest(".btn-queue-down");
     if (up) return handleReorderClick(up.dataset.id, "up");
     if (down) return handleReorderClick(down.dataset.id, "down");

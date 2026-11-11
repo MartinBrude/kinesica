@@ -1,5 +1,6 @@
 /** Estado de cola Instagram + copies + image_texts + flag de servicio. */
 import { api } from "./api.js?v=79";
+import { applyScheduleFromPayload, getPublishSchedule as _getSched } from "./admin-creativos-schedule.js?v=1";
 
 let colaItems = [];
 let colaMap = new Map();
@@ -7,10 +8,8 @@ let captionOverrides = new Map();
 let imageTextOverrides = new Map();
 let serviceEnabled = true;
 let subscribers = [];
-/** Cache-bust de miniaturas PNG tras regenerar. */
 export let assetVersion = Date.now();
 export function bumpAssetVersion() { assetVersion = Date.now(); }
-
 export function subscribeCola(fn) {
   if (typeof fn === "function") subscribers.push(fn);
 }
@@ -40,9 +39,11 @@ function applyPayload(data) {
   if (data?.copies) setCopies(data.copies);
   if (data?.image_texts) setImageTexts(data.image_texts);
   if (typeof data?.enabled === "boolean") serviceEnabled = data.enabled;
+  if (data?.schedule) applyScheduleFromPayload(data.schedule);
   setList(data?.items);
 }
 export function isServiceEnabled() { return serviceEnabled !== false; }
+export function getPublishSchedule() { return _getSched(); }
 
 function setList(items) {
   colaItems = Array.isArray(items) ? items : [];
@@ -50,42 +51,25 @@ function setList(items) {
   notify();
 }
 
-/** WhatsApp de Clara (bot) — reemplaza el de Norberto en captions IG. */
-const NORBERTO_WA_DISPLAY = "+54 9 11 6156-4311";
-const CLARA_WA_DISPLAY = "+54 9 11 3178-1733";
-const NORBERTO_WA_DIGITS = "5491161564311";
-const CLARA_WA_DIGITS = "5491131781733";
-
 export function normalizeIgCaptionPhone(text) {
   return String(text || "")
-    .split(NORBERTO_WA_DISPLAY).join(CLARA_WA_DISPLAY)
-    .split(NORBERTO_WA_DIGITS).join(CLARA_WA_DIGITS);
+    .split("+54 9 11 6156-4311").join("+54 9 11 3178-1733")
+    .split("5491161564311").join("5491131781733");
 }
 
-/** Caption efectivo: override DB → cola → seed del catálogo. */
 export function resolveCaption(id, seedItem) {
-  let text = "";
-  if (captionOverrides.has(id)) text = captionOverrides.get(id);
-  else {
+  let text = captionOverrides.has(id) ? captionOverrides.get(id) : "";
+  if (!text) {
     const row = colaMap.get(id);
-    if (row?.caption) text = row.caption;
-    else text = seedItem?.copy || seedItem?.body || "";
+    text = row?.caption || seedItem?.copy || seedItem?.body || "";
   }
   return normalizeIgCaptionPhone(text);
 }
+export function getCaptionOverride(id) { return captionOverrides.get(id) || null; }
 
-export function getCaptionOverride(id) {
-  return captionOverrides.get(id) || null;
-}
-
-/** Textos on-image efectivos: override DB → seed del catálogo. */
 export function resolveImageText(id, seedItem) {
   if (imageTextOverrides.has(id)) return imageTextOverrides.get(id);
-  return {
-    cat: seedItem?.cat || "",
-    title: seedItem?.title || "",
-    body: seedItem?.body || "",
-  };
+  return { cat: seedItem?.cat || "", title: seedItem?.title || "", body: seedItem?.body || "" };
 }
 
 export const IMG_CAT_MAX = 32;
@@ -94,11 +78,8 @@ export const IMG_BODY_MAX = 180;
 
 export async function saveImageText(id, { cat, title, body }) {
   const payload = {
-    action: "update_image_text",
-    id,
-    cat: String(cat || "").trim(),
-    title: String(title || "").trim(),
-    body: String(body || "").trim(),
+    action: "update_image_text", id,
+    cat: String(cat || "").trim(), title: String(title || "").trim(), body: String(body || "").trim(),
   };
   if (!payload.cat || !payload.title || !payload.body
     || payload.cat.length > IMG_CAT_MAX || payload.title.length > IMG_TITLE_MAX
@@ -125,10 +106,8 @@ export const CAPTION_MAX = 2200;
 export function getPublicationDetails(id) {
   const row = colaMap.get(id);
   if (!row || row.status !== "published") return null;
-  const feed = Boolean(row.feed_media_id);
-  const story = Boolean(row.story_media_id);
-  let channelText = "Feed + Story";
-  let badgeClass = "is-both";
+  const feed = Boolean(row.feed_media_id), story = Boolean(row.story_media_id);
+  let channelText = "Feed + Story", badgeClass = "is-both";
   if (feed && !story) { channelText = "Solo Post"; badgeClass = "is-feed"; }
   else if (!feed && story) { channelText = "Solo Story"; badgeClass = "is-story"; }
   return {
@@ -144,11 +123,8 @@ export function orderOf(id) {
 }
 
 export async function loadCola() {
-  try {
-    applyPayload(await api("instagram_cola.php"));
-  } catch (err) {
-    if (!err.auth) console.warn("No se pudo cargar la cola de Instagram", err);
-  }
+  try { applyPayload(await api("instagram_cola.php")); }
+  catch (err) { if (!err.auth) console.warn("No se pudo cargar la cola de Instagram", err); }
 }
 
 export async function toggleCola(id, itemResolver) {
@@ -233,4 +209,6 @@ export async function saveChannels(id, channel) {
 export async function setServiceEnabled(enabled) {
   applyPayload(await api("instagram_cola.php", { method: "POST", body: { action: "set_enabled", enabled: !!enabled } }));
 }
+/** Aplica payload completo tras guardar frecuencia (schedule.js lo llama). */
+export function applyColaPayload(data) { applyPayload(data); }
 export function _setListForTesting(items) { setList(items); }
