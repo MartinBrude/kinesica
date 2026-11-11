@@ -902,7 +902,7 @@ await test("interacciones.php utiliza almacenamiento durable y cumple contrato f
   const interaccionesPhp = fs.readFileSync(path.join(adminDir, "api/interacciones.php"), "utf8");
   assert.match(interaccionesPhp, /lib_interacciones_view\.php/, "interacciones.php debe incluir lib_interacciones_view.php");
   assert.match(interaccionesPhp, /'ok'\s*=>\s*true/, "interacciones.php GET debe retornar ok => true");
-  assert.match(interaccionesPhp, /'items'\s*=>\s*\$items/, "interacciones.php GET debe retornar items => $items");
+  assert.match(interaccionesPhp, /\$payload\['items'\]\s*=\s*\$items/, "interacciones.php GET debe asignar items al payload");
   assert.match(interaccionesPhp, /INTERACCIONES_DEFAULT_DAYS/, "GET usa ventana por días");
   assert.match(interaccionesPhp, /\$_GET\['days'\]/, "acepta ?days=");
   const viewPhp = fs.readFileSync(path.join(adminDir, "api/lib_interacciones_view.php"), "utf8");

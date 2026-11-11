@@ -27,7 +27,11 @@ const steps = [
 for (const [cmd, args] of steps) {
   const label = path.basename(args[0], ".mjs");
   console.log(`\n— ${label} —`);
-  const r = spawnSync(cmd, args, { cwd: ROOT, stdio: "inherit" });
+  // Admin .js sin "type":"module" dispara MODULE_TYPELESS_PACKAGE_JSON al importarse desde .mjs.
+  const nodeArgs = cmd === "node"
+    ? ["--disable-warning=MODULE_TYPELESS_PACKAGE_JSON", ...args]
+    : args;
+  const r = spawnSync(cmd, nodeArgs, { cwd: ROOT, stdio: "inherit" });
   if (r.status !== 0) {
     process.exit(r.status ?? 1);
   }

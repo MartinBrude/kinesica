@@ -13,7 +13,7 @@ Guía operativa para gestionar la captación de pacientes a través de campañas
 
 ## 🎨 1. Galería de Creativos Instagram (`/admin/creativos`)
 
-La galería reúne **138 piezas publicitarias y educativas** de alta calidad fotográfica y renders médicos 3D estilo Pomelli, diseñadas con la identidad visual institucional de Kinésica (Charcas 3889, Palermo, CABA). Incluye piezas de temporada (Felices Fiestas), avisos informativos y educación clínica (miembro fantasma, compensación, tipos de dolor).
+La galería reúne **138 piezas publicitarias y educativas** de alta calidad fotográfica y renders médicos 3D estilo Pomelli, diseñadas con la identidad visual institucional de Kinésica (Charcas 3889, Palermo, CABA). Incluye temporada (Felices Fiestas, vacaciones), avisos de turnos y educación clínica (hernias, cefalea, mareos, capsulitis, túnel carpiano, fascitis, esguince, escoliosis, tendinitis, miembro fantasma, etc.).
 
 ### 📐 Formatos Disponibles con un Clic
 

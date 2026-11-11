@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 
 import { buildInteractionCardHtml } from "../admin/modules/interacciones-render.js";
 import { filterInteractionsList } from "../admin/modules/interacciones-filter.js";
+import { CONTACT } from "./site-contact.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -44,7 +45,7 @@ console.log("  ✓ Renderizado de tarjeta de Instagram DM validado.");
 const mixedList = [
   { id: "1", channel: "whatsapp", wa_id: "5491155602178", patient_name: "Juan", summary: "Turno", messages: [] },
   { id: "2", channel: "instagram", wa_id: "ig_sofia", patient_name: "Sofia", summary: "Consulta", messages: [] },
-  { id: "3", channel: "whatsapp", wa_id: "5491161564311", patient_name: "Pedro", summary: "RPG", messages: [] },
+  { id: "3", channel: "whatsapp", wa_id: CONTACT.whatsappDigits, patient_name: "Pedro", summary: "RPG", messages: [] },
 ];
 
 const igFiltered = filterInteractionsList(mixedList, "instagram", "all");

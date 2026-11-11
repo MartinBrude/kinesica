@@ -365,7 +365,7 @@ await test("6. sync_client_slots exige Origin del sitio, secret o sesión (no wr
     { action: "sync_client_slots" },
     payload,
     {},
-    { HTTP_ORIGIN: SITE.replace(/\/$/, "") || "https://www.kinesica.com.ar" }
+    { HTTP_ORIGIN: SITE.replace(/\/$/, "") }
   );
   assert.equal(withOrigin.status, "success");
   assert.equal(withOrigin.synced_days, 1);
