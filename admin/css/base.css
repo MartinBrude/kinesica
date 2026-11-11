@@ -357,6 +357,7 @@ main {
 .nav-dropdown-item {
   display: flex;
   align-items: center;
+  gap: 8px;
   padding: 8px 12px;
   border-radius: 6px;
   border: none;
@@ -369,6 +370,52 @@ main {
   transition: background-color 0.15s ease, color 0.15s ease;
   width: 100%;
   white-space: nowrap;
+}
+
+/* Badge de pendientes (bandeja Meta): pequeño y llamativo, estilo “sin leer”. */
+.nav-notif-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: #e11d48;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0;
+  box-shadow: 0 0 0 2px #fff;
+  flex-shrink: 0;
+  animation: nav-notif-pop 0.28s ease-out;
+}
+
+.nav-notif-badge[hidden] {
+  display: none !important;
+}
+
+.nav-dropdown-trigger .nav-notif-badge {
+  margin: 0 -1px;
+}
+
+.nav-notif-badge--menu {
+  margin-left: auto;
+  min-width: 18px;
+  height: 18px;
+  font-size: 10.5px;
+}
+
+@keyframes nav-notif-pop {
+  from {
+    transform: scale(0.6);
+    opacity: 0.4;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .nav-dropdown-item:hover {

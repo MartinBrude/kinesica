@@ -18,10 +18,13 @@ import { filterInteractionsList, renderStatsHeader } from "./interacciones-filte
 import { isMartinBrudePhone } from "./phone-search.js?v=3";
 import { renderInteraccionesHealth } from "./interacciones-health.js?v=2";
 import { setListControlsEnabled } from "./list-controls.js?v=1";
+import { parseBoolean } from "../ficha-rules.mjs?v=89";
 
 export const AUTO_REFRESH_INTERVAL_MS = 30 * 60 * 1000;
 export const AUTO_REFRESH_START_HOUR = 9;
 export const AUTO_REFRESH_END_HOUR = 19;
+/** Poll del badge Meta / Bandeja (fuera de la vista). */
+export const BADGE_POLL_INTERVAL_MS = 2 * 60 * 1000;
 
 let cachedInteractions = [];
 let filteredInteractions = [];
@@ -31,12 +34,97 @@ let pageSize = 20;
 let daysWindow = 7;
 let activeStatusFilter = "pending"; // "all" | "pending" | "answered" | "archived"
 let autoRefreshTimer = null;
+let badgePollTimer = null;
 let isRefreshing = false;
+let isBadgeRefreshing = false;
 let lastLoadedAt = 0;
 /** Escrituras en vuelo: el auto-refresh no debe pisar updates optimistas. */
 let pendingMutations = 0;
 /** IDs de hilos de chat abiertos; se conservan al re-renderizar (auto-refresh). */
 const expandedThreadIds = new Set();
+
+function countPendingFromList(list) {
+  const active = (Array.isArray(list) ? list : []).filter((i) => i && parseBoolean(i.archived) !== true);
+  return active.filter((i) => parseBoolean(i?.answered) !== true).length;
+}
+
+/** Pinta el badge rojo en Meta y en Bandeja de Interacciones. */
+export function setInteraccionesPendingBadge(count) {
+  const n = Math.max(0, Number(count) || 0);
+  const label = n > 99 ? "99+" : String(n);
+  const show = n > 0;
+  const aria = show
+    ? `${n === 1 ? "1 pendiente" : `${n} pendientes`} de respuesta en la bandeja`
+    : "";
+
+  for (const id of ["nav-badge-meta", "nav-badge-interacciones"]) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    el.textContent = label;
+    el.hidden = !show;
+    el.setAttribute("aria-hidden", show ? "false" : "true");
+    if (show) {
+      el.setAttribute("aria-label", aria);
+      el.title = aria;
+    } else {
+      el.removeAttribute("aria-label");
+      el.removeAttribute("title");
+    }
+  }
+
+  const metaBtn = document.getElementById("nav-btn-whatsapp");
+  if (metaBtn) {
+    if (show) metaBtn.setAttribute("aria-label", `Meta, ${aria}`);
+    else metaBtn.removeAttribute("aria-label");
+  }
+}
+
+function syncBadgeFromCache() {
+  setInteraccionesPendingBadge(countPendingFromList(cachedInteractions));
+}
+
+/** Actualiza el badge con un GET liviano (counts_only). */
+export async function refreshInteraccionesPendingBadge() {
+  if (isBadgeRefreshing) return;
+  // Si la bandeja está abierta y cargando, el load principal ya actualiza el badge.
+  const view = document.getElementById("view-interacciones");
+  if (view && !view.hidden && (isRefreshing || pendingMutations > 0)) return;
+
+  isBadgeRefreshing = true;
+  try {
+    const days = daysWindow || 7;
+    const resp = await api(
+      `interacciones.php?days=${encodeURIComponent(String(days))}&counts_only=1&_t=${Date.now()}`,
+      { cache: "no-store" }
+    );
+    if (!resp || resp.ok !== true) return;
+    const count =
+      typeof resp.unanswered_count === "number"
+        ? resp.unanswered_count
+        : countPendingFromList(resp.items);
+    setInteraccionesPendingBadge(count);
+  } catch {
+    /* silencioso: el badge no debe romper el admin */
+  } finally {
+    isBadgeRefreshing = false;
+  }
+}
+
+function startBadgePoll() {
+  stopBadgePoll();
+  refreshInteraccionesPendingBadge();
+  badgePollTimer = setInterval(() => {
+    if (document.visibilityState !== "visible") return;
+    refreshInteraccionesPendingBadge();
+  }, BADGE_POLL_INTERVAL_MS);
+}
+
+function stopBadgePoll() {
+  if (badgePollTimer) {
+    clearInterval(badgePollTimer);
+    badgePollTimer = null;
+  }
+}
 
 export function isWithinAutoRefreshHours(date = new Date()) {
   const d = date instanceof Date ? date : new Date(date);
@@ -153,6 +241,11 @@ export async function loadInteracciones(force = false) {
       }
       return item;
     });
+    if (typeof resp.unanswered_count === "number") {
+      setInteraccionesPendingBadge(resp.unanswered_count);
+    } else {
+      syncBadgeFromCache();
+    }
     // No resetear página ni cerrar conversaciones abiertas en sync/auto-refresh.
     applyFilters(false);
     renderInteraccionesHealth(document.getElementById("interacciones-stats"), resp.health, resp.sync, {
@@ -201,6 +294,7 @@ function applyFilters(resetPage = true) {
 function updateStatsHeader() {
   const statsEl = document.getElementById("interacciones-stats");
   renderStatsHeader(statsEl, { cachedInteractions, activeStatusFilter });
+  syncBadgeFromCache();
 }
 
 function renderCurrentView() {
@@ -399,6 +493,11 @@ export function initInteraccionesModule() {
   const pageSizeSelect = document.getElementById("interacciones-page-size");
   const daysSelect = document.getElementById("interacciones-days");
   const statsEl = document.getElementById("interacciones-stats");
+
+  startBadgePoll();
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") refreshInteraccionesPendingBadge();
+  });
 
   if (daysSelect) {
     daysWindow = Number(daysSelect.value) || 7;

@@ -169,17 +169,19 @@ require_header();
 $auth = require_auth();
 
 if ($method === 'GET') {
-    $house = interacciones_run_housekeeping(!empty($_GET['sync']));
+    $countsOnly = !empty($_GET['counts_only']);
+    // Poll del badge: solo conteos, sin housekeeping (evita trabajo cada 2 min).
+    $house = $countsOnly ? ['reconcile' => null] : interacciones_run_housekeeping(!empty($_GET['sync']));
     $days = isset($_GET['days']) ? (int) $_GET['days'] : INTERACCIONES_DEFAULT_DAYS;
     try {
         $view = interacciones_load_view(null, $days);
-        $health = interacciones_health();
+        $health = $countsOnly ? null : interacciones_health();
     } catch (Throwable $e) {
         error_log('interacciones GET: ' . $e->getMessage());
         json_out(503, ['error' => 'Base de datos no disponible. Los mensajes entrantes se siguen guardando y aparecerán al recuperarse.', 'spool_pending' => interacciones_spool_pending_count()]);
     }
     $items = $view['items'];
-    json_out(200, [
+    $payload = [
         'ok' => true,
         'status' => 'success',
         'total' => count($items),
@@ -189,12 +191,15 @@ if ($method === 'GET') {
         'answered_count' => $view['answered_count'],
         'unanswered_count' => $view['unanswered_count'],
         'archived_count' => $view['archived_count'],
-        'items' => $items,
-        'interactions' => $items,
-        'grouped' => $view['grouped'],
         'health' => $health,
         'sync' => $house['reconcile'],
-    ]);
+    ];
+    if (!$countsOnly) {
+        $payload['items'] = $items;
+        $payload['interactions'] = $items;
+        $payload['grouped'] = $view['grouped'];
+    }
+    json_out(200, $payload);
 }
 
 if ($method !== 'POST') {

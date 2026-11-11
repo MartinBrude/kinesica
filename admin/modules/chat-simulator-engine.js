@@ -42,6 +42,30 @@ export function withMenuFooter(text, lang = "es") {
   return `${body}\n\n${footer}`;
 }
 
+/** Saludo tradicional Kinésica (hora local del navegador, alineado al bot AR). */
+export function kinesicaTraditionalGreeting(lang = "es", date = new Date()) {
+  const hour = date.getHours();
+  const isMorning = hour < 13;
+  if (lang === "en") return isMorning ? "Good morning!" : "Good afternoon!";
+  return isMorning ? "¡Buenos días!" : "¡Buenas tardes!";
+}
+
+/**
+ * Anteponer saludo solo en primer contacto NL → texto puro de letra A–D.
+ * `state` debe tener `{ used: boolean }` (se marca al anteponer o si el cuerpo ya saluda).
+ */
+export function withTraditionalFirstContactGreeting(text, lang = "es", state = null) {
+  const body = String(text || "");
+  if (!body) return body;
+  if (state?.used) return body;
+  if (/^(?:¡?\s*buenos\s+d[ií]as|¡?\s*buenas\s+tardes|¡?\s*hola|hello|hi\b|good\s+(?:morning|afternoon)|¡?\s*perfecto|great!)/i.test(body.trim())) {
+    if (state) state.used = true;
+    return body;
+  }
+  if (state) state.used = true;
+  return `${kinesicaTraditionalGreeting(lang)}\n\n${body}`;
+}
+
 export function resolveOptionCText(chatLang, ctx) {
   const atmVal = parseInt(document.querySelector("#input-fee-atm")?.value, 10) || 65000;
   const genVal = parseInt(document.querySelector("#input-fee-general")?.value, 10) || 75000;
@@ -82,35 +106,98 @@ export function resolveProfessionalSubmenu(norm, chatLang, ctx) {
   return { proMsg, alertTarget, optionLabel };
 }
 
-export function resolveMainMenuResponse(norm, chatLang, ctx) {
-  if (norm === "a" || norm.startsWith("opcion a") || norm.startsWith("option a") || norm.includes("turno") || norm.includes("agendar") || norm.includes("appointment") || norm.includes("book")) {
+const NL_FEES = /\b(?:honorarios?|precios?|arancel(?:es)?|costos?|tarifas?|valor(?:es)?|cuanto\s+(?:sale|cuesta|vale)|fees?|prices?|costs?|rates?|how\s+much|obras?\s+social|prepagas?|osde|reintegros?)\b/i;
+const NL_LOCATION = /\b(?:donde\s+(?:queda|estan|atienden)|direccion|ubicacion|como\s+llego|donde\s+es|horarios?|where\s+(?:are\s+you|is)|address|location|office\s+hours|opening\s+hours)\b/i;
+const NL_ATTIRE = /\b(?:ropa|vestimenta|indumentaria|attire|clothes|clothing|what\s+(?:should\s+i\s+|to\s+)?wear|dress\s+code)\b/i;
+const NL_BOOKING = /\b(?:agendar|agendame|sacar\s+turno|pedir\s+turno|reservar\s+turno|quiero\s+(?:un\s+)?turno|necesito\s+(?:un\s+)?turno|quisiera\s+(?:un\s+)?turno|turnera|book|appointment|schedule)\b/i;
+const NL_PROFESSIONAL = /\b(?:profesional|hablar\s+con|practitioner|talk\s+to|speak\s+with)\b/i;
+
+/**
+ * Resuelve A–E. Con exactLetterOnly solo letras; si no, también NL.
+ * viaNaturalLanguage + letter "a"|"b"|"c"|"d" → el caller puede anteponer saludo tradicional.
+ */
+export function resolveMainMenuResponse(norm, chatLang, ctx, opts = {}) {
+  const exactOnly = opts.exactLetterOnly === true;
+  const raw = String(norm || "");
+
+  const isExactA = raw === "a" || raw.startsWith("opcion a") || raw.startsWith("option a");
+  const isExactB = raw === "b" || raw.startsWith("opcion b") || raw.startsWith("option b");
+  const isExactC = raw === "c" || raw.startsWith("opcion c") || raw.startsWith("option c");
+  const isExactD = raw === "d" || raw.startsWith("opcion d") || raw.startsWith("option d");
+  const isExactE = raw === "e" || raw.startsWith("opcion e") || raw.startsWith("option e");
+
+  if (isExactA) {
     const text = (chatLang === "en")
       ? pickSimText(ctx.inputs.submenuTurnosEn, "submenu_turnos_text_en", ctx)
       : pickSimText(ctx.inputs.submenuTurnos, "submenu_turnos_text", ctx);
-    return { handled: true, text, nextSubmenu: "turnos" };
+    return { handled: true, text, nextSubmenu: "turnos", letter: "a", viaNaturalLanguage: false };
   }
-  if (norm === "b" || norm.startsWith("opcion b") || norm.startsWith("option b") || norm.includes("donde queda") || norm.includes("ubicacion") || norm.includes("location")) {
+  if (!exactOnly && NL_BOOKING.test(raw) && !/\b(?:cancelar|anular|consultar|cancel|reschedule|check)\b/i.test(raw)) {
+    // Alineado al bot: NL de agendar → texto de opción A (turnera), no el submenú.
+    if (NL_FEES.test(raw)) {
+      const bookingSnippet = (chatLang === "en")
+        ? "\n\n📅 *Online Booking:* You can check availability and book your session here:\n👉 *https://kinesica.com.ar/agendar*"
+        : "\n\n📅 *Para agendar tu sesión:* podés ver los días y horarios disponibles y reservar directamente acá:\n👉 *https://kinesica.com.ar/agendar*";
+      return {
+        handled: true,
+        text: resolveOptionCText(chatLang, ctx) + bookingSnippet,
+        nextSubmenu: null,
+        letter: "c",
+        viaNaturalLanguage: true,
+      };
+    }
+    const text = (chatLang === "en")
+      ? pickSimText(ctx.inputs.optAEn, "opt_a_text_en", ctx)
+      : pickSimText(ctx.inputs.optA, "opt_a_text", ctx);
+    return { handled: true, text, nextSubmenu: null, letter: "a", viaNaturalLanguage: true };
+  }
+
+  if (isExactB) {
     const text = (chatLang === "en")
       ? pickSimText(ctx.inputs.optBEn, "opt_b_text_en", ctx)
       : pickSimText(ctx.inputs.optB, "opt_b_text", ctx);
-    return { handled: true, text, nextSubmenu: null };
+    return { handled: true, text, nextSubmenu: null, letter: "b", viaNaturalLanguage: false };
   }
-  if (norm === "c" || norm.startsWith("opcion c") || norm.startsWith("option c") || norm.includes("honorarios") || norm.includes("precio") || norm.includes("fees")) {
-    return { handled: true, text: resolveOptionCText(chatLang, ctx), nextSubmenu: null };
+  if (!exactOnly && NL_LOCATION.test(raw) && !/\bturnos?|appointments?\b/i.test(raw)) {
+    const text = (chatLang === "en")
+      ? pickSimText(ctx.inputs.optBEn, "opt_b_text_en", ctx)
+      : pickSimText(ctx.inputs.optB, "opt_b_text", ctx);
+    return { handled: true, text, nextSubmenu: null, letter: "b", viaNaturalLanguage: true };
   }
-  if (norm === "d" || norm.startsWith("opcion d") || norm.startsWith("option d") || norm.includes("ropa") || norm.includes("vestimenta") || norm.includes("attire")) {
+
+  if (isExactC) {
+    return { handled: true, text: resolveOptionCText(chatLang, ctx), nextSubmenu: null, letter: "c", viaNaturalLanguage: false };
+  }
+  if (!exactOnly && NL_FEES.test(raw)) {
+    return { handled: true, text: resolveOptionCText(chatLang, ctx), nextSubmenu: null, letter: "c", viaNaturalLanguage: true };
+  }
+
+  if (isExactD) {
     const optD = (chatLang === "en")
       ? pickSimText(ctx.inputs.optDEn, "opt_d_text_en", ctx)
       : pickSimText(ctx.inputs.optD, "opt_d_text", ctx);
-    return { handled: true, text: withMenuFooter(optD, chatLang), nextSubmenu: null };
+    return { handled: true, text: withMenuFooter(optD, chatLang), nextSubmenu: null, letter: "d", viaNaturalLanguage: false };
   }
-  if (norm === "e" || norm.startsWith("opcion e") || norm.startsWith("option e") || norm.includes("profesional") || norm.includes("hablar") || norm.includes("practitioner")) {
+  if (!exactOnly && NL_ATTIRE.test(raw)) {
+    const optD = (chatLang === "en")
+      ? pickSimText(ctx.inputs.optDEn, "opt_d_text_en", ctx)
+      : pickSimText(ctx.inputs.optD, "opt_d_text", ctx);
+    return { handled: true, text: withMenuFooter(optD, chatLang), nextSubmenu: null, letter: "d", viaNaturalLanguage: true };
+  }
+
+  if (isExactE || (!exactOnly && NL_PROFESSIONAL.test(raw))) {
     const text = (chatLang === "en")
       ? pickSimText(ctx.inputs.optEEn, "opt_e_text_en", ctx)
       : pickSimText(ctx.inputs.optE, "opt_e_text", ctx);
-    return { handled: true, text, nextSubmenu: "profesional" };
+    return {
+      handled: true,
+      text,
+      nextSubmenu: "profesional",
+      letter: "e",
+      viaNaturalLanguage: !isExactE,
+    };
   }
-  return { handled: false, text: "", nextSubmenu: null };
+  return { handled: false, text: "", nextSubmenu: null, letter: null, viaNaturalLanguage: false };
 }
 
 export async function notifyProfessionalFromSimulator(target, optionLabel, patientMessage, onFail) {

@@ -8,11 +8,12 @@ import {
   getNowTimeStr,
   formatWhatsAppMarkdown,
   withMenuFooter,
+  withTraditionalFirstContactGreeting,
   pickSimText,
   resolveProfessionalSubmenu,
   notifyProfessionalFromSimulator,
   resolveMainMenuResponse,
-} from "./chat-simulator-engine.js?v=4";
+} from "./chat-simulator-engine.js?v=5";
 
 let ctx = {
   defaults: {},
@@ -32,6 +33,18 @@ const chatQuickBtns = document.querySelectorAll(".chat-quick-btn");
 
 let chatSubmenu = null;
 let chatLang = "es";
+/** Alineado al bot: saludo tradicional solo si aún no hubo respuesta bot (primer contacto). */
+const traditionalGreetingState = { used: false };
+let botRepliedOnce = false;
+
+function replyAsBot(text, { viaNaturalLanguage = false, letter = null } = {}) {
+  let out = text;
+  if (!botRepliedOnce && viaNaturalLanguage && ["a", "b", "c", "d"].includes(letter)) {
+    out = withTraditionalFirstContactGreeting(text, chatLang, traditionalGreetingState);
+  }
+  botRepliedOnce = true;
+  appendChatMessage(out, "bot");
+}
 
 export function appendChatMessage(text, sender = "bot") {
   if (!chatMessagesEl) return;
@@ -106,7 +119,10 @@ export function resetChatDemo(lang = chatLang) {
   chatMessagesEl.replaceChildren();
   chatSubmenu = null;
   chatLang = lang;
-  appendChatMessage(buildWelcomeMessage(chatLang), "bot");
+  // Chat vacío = primer contacto (como WhatsApp real). Menú con Hola/MENU;
+  // saludo tradicional solo si el primer mensaje NL dispara texto de A–D.
+  traditionalGreetingState.used = false;
+  botRepliedOnce = false;
 }
 
 /** Letras del menú principal en el orden en que se muestran (*A.* … *G.* …). */
@@ -143,18 +159,18 @@ function handleChatUserInput(inputRaw) {
   if (norm === "hello" || norm === "hi" || norm === "hey" || norm === "good morning" || norm === "good afternoon") {
     chatSubmenu = null;
     chatLang = "en";
-    setTimeout(() => appendChatMessage(buildWelcomeMessage("en"), "bot"), 400);
+    setTimeout(() => replyAsBot(buildWelcomeMessage("en")), 400);
     return;
   }
   if (norm === "hola" || norm === "buenas" || norm === "buen dia" || norm === "buenas tardes") {
     chatSubmenu = null;
     chatLang = "es";
-    setTimeout(() => appendChatMessage(buildWelcomeMessage("es"), "bot"), 400);
+    setTimeout(() => replyAsBot(buildWelcomeMessage("es")), 400);
     return;
   }
   if (norm === "menu" || norm === "reiniciar" || norm === "start") {
     chatSubmenu = null;
-    setTimeout(() => appendChatMessage(buildWelcomeMessage(chatLang), "bot"), 400);
+    setTimeout(() => replyAsBot(buildWelcomeMessage(chatLang)), 400);
     return;
   }
 
@@ -165,7 +181,7 @@ function handleChatUserInput(inputRaw) {
   if (matchedCustom) {
     chatSubmenu = null;
     const resp = matchedCustom.response || "Información no disponible.";
-    setTimeout(() => appendChatMessage(withMenuFooter(resp, chatLang), "bot"), 450);
+    setTimeout(() => replyAsBot(withMenuFooter(resp, chatLang)), 450);
     return;
   }
 
@@ -175,22 +191,23 @@ function handleChatUserInput(inputRaw) {
   if (norm === "english" || norm === "ingles" || norm.includes("in english") || (isOptionLang && chatLang === "es")) {
     chatSubmenu = null;
     chatLang = "en";
-    setTimeout(() => appendChatMessage(buildWelcomeMessage("en"), "bot"), 400);
+    setTimeout(() => replyAsBot(buildWelcomeMessage("en")), 400);
     return;
   }
   if (norm === "espanol" || norm === "spanish" || norm.includes("in spanish") || (isOptionLang && chatLang === "en")) {
     chatSubmenu = null;
     chatLang = "es";
-    setTimeout(() => appendChatMessage(buildWelcomeMessage("es"), "bot"), 400);
+    setTimeout(() => replyAsBot(buildWelcomeMessage("es")), 400);
     return;
   }
 
   const isExactMainOption = /^(?:(?:opcion|option)\s+[a-e]|[a-e]\.?)$/i.test(norm);
   if (isExactMainOption) {
-    const mainResp = resolveMainMenuResponse(norm.replace(/\.$/, ""), chatLang, ctx);
+    const mainResp = resolveMainMenuResponse(norm.replace(/\.$/, ""), chatLang, ctx, { exactLetterOnly: true });
     if (mainResp.handled) {
       chatSubmenu = mainResp.nextSubmenu;
-      setTimeout(() => appendChatMessage(mainResp.text, "bot"), 450);
+      // Letra exacta del menú: sin saludo tradicional (igual que el bot).
+      setTimeout(() => replyAsBot(mainResp.text), 450);
       return;
     }
   }
@@ -206,7 +223,7 @@ function handleChatUserInput(inputRaw) {
       const optA2 = (chatLang === "en")
         ? pickSimText(ctx.inputs.optA2En, "opt_a2_text_en", ctx)
         : pickSimText(ctx.inputs.optA2, "opt_a2_text", ctx);
-      setTimeout(() => appendChatMessage(optA2, "bot"), 600);
+      setTimeout(() => replyAsBot(optA2), 600);
       return;
     }
     if (norm === "agendar" || norm === "book" || norm === "schedule") {
@@ -214,7 +231,7 @@ function handleChatUserInput(inputRaw) {
       const optA = (chatLang === "en")
         ? pickSimText(ctx.inputs.optAEn, "opt_a_text_en", ctx)
         : pickSimText(ctx.inputs.optA, "opt_a_text", ctx);
-      setTimeout(() => appendChatMessage(optA, "bot"), 500);
+      setTimeout(() => replyAsBot(optA), 500);
       return;
     }
   }
@@ -227,7 +244,7 @@ function handleChatUserInput(inputRaw) {
       const notFoundMsg = (chatLang === "en")
         ? `We didn't find any scheduled appointments associated with document *${cleanDoc || input}*.\n\n_(Type *MENU* to return to the menu)_`
         : `No encontramos turnos agendados asociados al documento *${cleanDoc || input}*.\n\n_(Escribí *MENU* para volver al inicio)_`;
-      appendChatMessage(notFoundMsg, "bot");
+      replyAsBot(notFoundMsg);
     }, 600);
     return;
   }
@@ -237,7 +254,7 @@ function handleChatUserInput(inputRaw) {
     chatSubmenu = null;
     const patientMessage = input;
     setTimeout(() => {
-      appendChatMessage(proMsg, "bot");
+      replyAsBot(proMsg);
       notifyProfessionalFromSimulator(alertTarget, optionLabel, patientMessage, (errNotice) => appendChatMessage(errNotice, "bot"));
     }, 500);
     return;
@@ -246,7 +263,10 @@ function handleChatUserInput(inputRaw) {
   const mainResp = resolveMainMenuResponse(norm, chatLang, ctx);
   if (mainResp.handled) {
     chatSubmenu = mainResp.nextSubmenu;
-    setTimeout(() => appendChatMessage(mainResp.text, "bot"), 450);
+    setTimeout(() => replyAsBot(mainResp.text, {
+      viaNaturalLanguage: mainResp.viaNaturalLanguage,
+      letter: mainResp.letter,
+    }), 450);
     return;
   }
 
@@ -255,7 +275,7 @@ function handleChatUserInput(inputRaw) {
   if (startsWithGreeting || norm.length <= 2) {
     if (/^(?:hello|hi|hey|good\s+(?:morning|afternoon|evening))\b/i.test(norm)) chatLang = "en";
     else if (/^(?:hola|buenas|buen\s+d[ií]a)\b/i.test(norm)) chatLang = "es";
-    setTimeout(() => appendChatMessage(buildWelcomeMessage(chatLang), "bot"), 500);
+    setTimeout(() => replyAsBot(buildWelcomeMessage(chatLang)), 500);
     return;
   }
   const intro = (chatLang === "en")
@@ -265,7 +285,7 @@ function handleChatUserInput(inputRaw) {
     ? pickSimText(ctx.inputs.optEEn, "opt_e_text_en", ctx)
     : pickSimText(ctx.inputs.optE, "opt_e_text", ctx);
   chatSubmenu = "profesional";
-  setTimeout(() => appendChatMessage(intro + optE, "bot"), 500);
+  setTimeout(() => replyAsBot(intro + optE), 500);
 }
 
 export function initChatSimulator() {
