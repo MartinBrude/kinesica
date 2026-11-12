@@ -37,7 +37,7 @@ export function canEditImageText() {
 
 export function imageTextEditButtonHtml(id) {
   if (!canEditImageText()) return "";
-  return `<button type="button" class="btn light btn-sm btn-queue-edit-imgtext" data-id="${escapeHtml(id)}" title="Editar textos de la imagen">🖼️ Editar imagen</button>`;
+  return `<button type="button" class="btn light btn-sm btn-queue-edit-imgtext" data-id="${escapeHtml(id)}" title="Editar textos de la imagen (pill, título y cuerpo)">Editar imagen</button>`;
 }
 
 function modalEls() {

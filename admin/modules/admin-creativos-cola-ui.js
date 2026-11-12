@@ -35,18 +35,18 @@ export function colaButtonHtml(item) {
   const ord = orderOf(item.id);
   const pub = getPublicationDetails(item.id);
   if (pub) {
-    return `<button type="button" class="btn btn-sm btn-creativo-cola is-published" data-cola-id="${item.id}" disabled title="Publicada el ${pub.date} (${pub.channelText})">✅ ${pub.channelText}</button>`;
+    return `<button type="button" class="btn btn-sm btn-creativo-cola is-published" data-cola-id="${item.id}" disabled title="Publicada el ${pub.date} (${pub.channelText})">Publicada · ${pub.channelText}</button>`;
   }
   if (s === "publishing") {
-    return `<button type="button" class="btn btn-sm btn-creativo-cola is-publishing" data-cola-id="${item.id}" disabled>⏳ Publicando…</button>`;
+    return `<button type="button" class="btn btn-sm btn-creativo-cola is-publishing" data-cola-id="${item.id}" disabled>Publicando…</button>`;
   }
   if (s === "queued") {
-    return `<button type="button" class="btn btn-sm btn-creativo-cola is-queued" data-cola-id="${item.id}" title="Publicación #${ord} en la cola. Click para quitar">❤️ Programada (#${ord})</button>`;
+    return `<button type="button" class="btn btn-sm btn-creativo-cola is-queued" data-cola-id="${item.id}" title="Publicación #${ord} en la cola. Click para quitar">En cola (#${ord}) · Quitar</button>`;
   }
   if (s === "failed") {
-    return `<button type="button" class="btn btn-sm btn-creativo-cola is-failed" data-cola-id="${item.id}" disabled title="Falló; el canal quedó reservado">⚠️ Falló (bloqueada)</button>`;
+    return `<button type="button" class="btn btn-sm btn-creativo-cola is-failed" data-cola-id="${item.id}" disabled title="Falló; el canal quedó reservado">Falló (bloqueada)</button>`;
   }
-  return `<button type="button" class="btn btn-sm btn-creativo-cola is-none" data-cola-id="${item.id}" title="Sumar a la lista de publicaciones automáticas">🤍 Me gusta (programar)</button>`;
+  return `<button type="button" class="btn btn-sm btn-creativo-cola is-none" data-cola-id="${item.id}" title="Sumar a la lista de publicaciones automáticas">Sumar a la cola</button>`;
 }
 
 function paintEl(el) {
@@ -78,21 +78,21 @@ function paintEl(el) {
   if (!el.classList.contains("btn-creativo-cola")) return;
   el.className = `btn btn-sm btn-creativo-cola is-${s === "none" ? "none" : s}`;
   if (pub) {
-    el.textContent = `✅ ${pub.channelText}`;
+    el.textContent = `Publicada · ${pub.channelText}`;
     el.title = `Publicada el ${pub.date} (${pub.channelText})`;
     el.disabled = true;
   } else if (s === "publishing") {
-    el.textContent = "⏳ Publicando…";
+    el.textContent = "Publicando…";
     el.disabled = true;
   } else if (s === "queued") {
-    el.textContent = `❤️ Programada (#${ord})`;
+    el.textContent = `En cola (#${ord}) · Quitar`;
     el.title = `Publicación #${ord} en la cola. Click para quitar`;
     el.disabled = false;
   } else if (s === "failed") {
-    el.textContent = "⚠️ Falló (bloqueada)";
+    el.textContent = "Falló (bloqueada)";
     el.disabled = true;
   } else {
-    el.textContent = "🤍 Me gusta (programar)";
+    el.textContent = "Sumar a la cola";
     el.disabled = false;
   }
 }

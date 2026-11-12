@@ -14,7 +14,7 @@ import {
   CAPTION_MAX,
   normalizeIgCaptionPhone,
 } from "./admin-creativos-cola.js?v=12";
-import { imageTextEditButtonHtml } from "./admin-creativos-image-text.js?v=4";
+import { imageTextEditButtonHtml } from "./admin-creativos-image-text.js?v=5";
 import { formatScheduleLabel, scheduleFormHtml } from "./admin-creativos-schedule.js?v=1";
 
 const CHANNEL_LABELS = { both: "Feed + Story", feed: "Solo Feed", story: "Solo Story" };

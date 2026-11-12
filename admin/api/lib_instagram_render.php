@@ -166,18 +166,24 @@ function ig_render_format(string $id, string $kind, string $cat, string $title, 
     $pill = ig_nfc(mb_strtoupper(trim($cat), 'UTF-8'));
     $pillSize = 16.0;
     $ph = 44;
-    // Aire vertical (ref. 122): gaps + leading amplios, no texto pegado.
-    $gapPill = 34;
-    $gapTitle = 32;
-    $titleLead = 1.58;
+    // Aire vertical (ref. 03/122): gaps + leading amplios, no texto pegado.
+    $gapPill = 44;
+    $gapTitle = 40;
+    $titleLead = 1.78;
     $bodyLead = 1.62;
+    $blockH = static function (array $fit, float $lead): int {
+        $n = count($fit['lines']);
+        if ($n <= 0) return 0;
+        $size = (float) $fit['size'];
+        return (int) round(($n - 1) * $size * $lead + $size);
+    };
     $tFit = ig_fit_text($title, $fontB, $isStory ? 46 : 40, 26, $maxW, $isStory ? 3 : 3);
     $bFit = ig_fit_text($body, $fontR, $isStory ? 24 : 22, 17, $maxW, $isStory ? 4 : 3);
     if ($tFit['truncated']) $warn[] = 'title_truncated';
     if ($bFit['truncated']) $warn[] = 'body_truncated';
 
-    $titleH = (int) round(count($tFit['lines']) * $tFit['size'] * $titleLead);
-    $bodyH = (int) round(count($bFit['lines']) * $bFit['size'] * $bodyLead);
+    $titleH = $blockH($tFit, $titleLead);
+    $bodyH = $blockH($bFit, $bodyLead);
     $contentH = $ph + $gapPill + $titleH + $gapTitle + $bodyH;
 
     $lineY = $h - 78;
@@ -188,8 +194,8 @@ function ig_render_format(string $id, string $kind, string $cat, string $title, 
     if ($y0 < $minTop) {
         $tFit = ig_fit_text($title, $fontB, $isStory ? 40 : 36, 24, $maxW, 3);
         $bFit = ig_fit_text($body, $fontR, $isStory ? 22 : 20, 16, $maxW, $isStory ? 4 : 3);
-        $titleH = (int) round(count($tFit['lines']) * $tFit['size'] * $titleLead);
-        $bodyH = (int) round(count($bFit['lines']) * $bFit['size'] * $bodyLead);
+        $titleH = $blockH($tFit, $titleLead);
+        $bodyH = $blockH($bFit, $bodyLead);
         $contentH = $ph + $gapPill + $titleH + $gapTitle + $bodyH;
         $y0 = max((int) round($h * 0.50), $contentBottom - $contentH);
     }

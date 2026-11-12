@@ -27,14 +27,14 @@ import {
   colaHeartHtml,
   refreshColaButtons,
   ensureColaUiPaint,
-} from "./admin-creativos-cola-ui.js?v=3";
+} from "./admin-creativos-cola-ui.js?v=4";
 import { initListaUI } from "./admin-creativos-lista.js?v=12";
 import { canEditCaptions } from "./admin-creativos-caption.js?v=10";
 import {
   imageTextEditButtonHtml,
   bindImageTextUi,
   canEditImageText,
-} from "./admin-creativos-image-text.js?v=4";
+} from "./admin-creativos-image-text.js?v=5";
 
 let activeFormat = "feed"; // 'feed' | 'story'
 let activeFilter = "todos"; // 'todos' | 'columna' | 'articulaciones' | 'filosofia' | 'papelera'
@@ -2116,7 +2116,7 @@ Rigidez, hormigueo o un hombro más alto ya son señales. Escucharlo a tiempo ev
   // Temporada: Felices Fiestas + avisos informativos
   {
     id: "123_felices_fiestas",
-    title: "Que este cierre de año te encuentre mejor",
+    title: "Que este año te encuentre mejor",
     cat: "FELICES FIESTAS",
     group: "filosofia",
     body: "Gracias por confiar en Kinésica. Te deseamos descanso real y un cuerpo que acompañe.",
@@ -2124,7 +2124,7 @@ Rigidez, hormigueo o un hombro más alto ya son señales. Escucharlo a tiempo ev
     storyUrl: "campanas/story/catalogo_story_123_felices_fiestas.png",
     copy: `✨ Felices Fiestas
 
-Que este cierre de año te encuentre mejor: con menos dolor, más movilidad y tiempo real para vos.
+Que este año te encuentre mejor: con menos dolor, más movilidad y tiempo real para vos.
 
 Gracias por confiar en Kinésica durante el año.
 Te deseamos descanso genuino y un cuerpo que acompañe lo que querés hacer.
@@ -2286,13 +2286,13 @@ Si vos o alguien cercano convive con esto, escribinos. Sesiones 1 a 1 de 60 minu
   },
   {
     id: "131_compensacion",
-    title: "Cuando una zona falla, otra paga el precio",
+    title: "Cuando una zona falla, otra paga",
     cat: "COMPENSACIÓN",
     group: "filosofia",
     body: "El cuerpo no se rinde: se reorganiza. Esa “solución” termina en sobrecarga y dolor lejos del origen.",
     feedUrl: "campanas/feed/catalogo_feed_131_compensacion.png",
     storyUrl: "campanas/story/catalogo_story_131_compensacion.png",
-    copy: `Cuando una zona falla, otra paga el precio ⚖️
+    copy: `Cuando una zona falla, otra paga ⚖️
 
 El cuerpo no se rinde: se reorganiza. Si la cadera no moviliza, la lumbar compensa. Si el pie no apoya bien, la rodilla y el cuello terminan pagando.
 
@@ -2433,13 +2433,13 @@ En Kinésica evaluamos cervicales, ATM y postura para bajar la carga que dispara
   },
   {
     id: "138_mareos",
-    title: "Mareos que aparecen al mover la cabeza",
+    title: "Mareos al mover la cabeza",
     cat: "MAREOS",
     group: "columna",
     body: "Pueden relacionarse con cervicales o sistema vestibular. Evaluamos con calma antes de forzar el cuello.",
     feedUrl: "campanas/feed/catalogo_feed_138_mareos.png",
     storyUrl: "campanas/story/catalogo_story_138_mareos.png",
-    copy: `Mareos que aparecen al mover la cabeza 🌀
+    copy: `Mareos al mover la cabeza 🌀
 
 No siempre es “presión” ni “ansiedad”.
 A veces el cuello o el sistema del equilibrio estánan señales confusas.
@@ -2455,13 +2455,13 @@ Si los mareos son intensos, con vómitos o déficit neurológico, consultá urge
   },
   {
     id: "139_esguince_tobillo",
-    title: "Después del esguince, el tobillo sigue inestable",
+    title: "Tobillo inestable tras el esguince",
     cat: "ESGUINCE DE TOBILLO",
     group: "articulaciones",
     body: "Hielo y reposo no alcanzan. Recuperamos movilidad, propiocepción y carga para que no se repita.",
     feedUrl: "campanas/feed/catalogo_feed_139_esguince_tobillo.png",
     storyUrl: "campanas/story/catalogo_story_139_esguince_tobillo.png",
-    copy: `Después del esguince, el tobillo sigue inestable 🦶
+    copy: `Tobillo inestable tras el esguince 🦶
 
 El moretón baja… pero la inseguridad al apoyar suele quedar.
 Sin reeducación, el próximo torcedura aparece más fácil.

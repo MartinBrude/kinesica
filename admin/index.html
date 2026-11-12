@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=151">
+  <link rel="stylesheet" href="/admin/styles.css?v=152">
   <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1794315438">
   <script>
     (function () {
@@ -1979,16 +1979,20 @@
               <img id="creativo-modal-img" src="" alt="Vista previa del creativo" class="creativo-modal-preview-img">
             </div>
             <div class="creativo-modal-sidebar">
-              <div class="creativo-copy-box">
+              <section class="creativo-modal-section creativo-copy-box" aria-labelledby="creativo-copy-kicker">
                 <div class="creativo-copy-header">
-                  <span class="creativo-copy-label">Texto sugerido para Instagram / WhatsApp</span>
+                  <div class="creativo-modal-section-head">
+                    <p id="creativo-copy-kicker" class="creativo-modal-kicker">Publicación</p>
+                    <span class="creativo-copy-label">Caption para Instagram / WhatsApp</span>
+                  </div>
                   <div class="creativo-copy-header-actions">
-                    <button type="button" class="btn light btn-sm" id="creativo-modal-btn-edit" title="Editar texto de publicación" hidden>
-                      ✏️ Editar texto
-                    </button>
                     <button type="button" class="btn light btn-sm" id="creativo-modal-btn-copy" title="Copiar texto al portapapeles">
-                      📋 Copiar texto
+                      Copiar
                     </button>
+                    <button type="button" class="btn light btn-sm" id="creativo-modal-btn-edit" title="Editar caption de publicación" hidden>
+                      Editar caption
+                    </button>
+                    <span id="creativo-modal-imgtext-slot" class="creativo-modal-imgtext-slot"></span>
                   </div>
                 </div>
                 <pre id="creativo-modal-copy" class="creativo-copy-content"></pre>
@@ -1996,24 +2000,32 @@
                   <label class="creativos-caption-label" for="creativo-modal-caption-textarea">Texto que se publica en Instagram / WhatsApp</label>
                   <textarea id="creativo-modal-caption-textarea" class="creativos-caption-textarea" rows="12" maxlength="2200"></textarea>
                   <div class="creativos-caption-actions">
-                    <button type="button" class="btn btn-sm" id="creativo-modal-btn-save-caption">💾 Guardar</button>
+                    <button type="button" class="btn btn-sm" id="creativo-modal-btn-save-caption">Guardar</button>
                     <button type="button" class="btn light btn-sm" id="creativo-modal-btn-cancel-caption">Cancelar</button>
                   </div>
                 </div>
-                <div id="creativo-modal-imgtext-slot" class="creativo-modal-imgtext-slot"></div>
-              </div>
-              <div class="creativo-modal-cola" id="creativo-modal-cola-slot"></div>
-              <div class="creativo-modal-actions">
-                <span class="creativo-dl-label">Descargar archivo en alta resolución (PNG):</span>
+              </section>
+              <section class="creativo-modal-section creativo-modal-cola" aria-labelledby="creativo-cola-kicker">
+                <div class="creativo-modal-section-head">
+                  <p id="creativo-cola-kicker" class="creativo-modal-kicker">Cola Instagram</p>
+                  <span class="creativo-copy-label">Programar publicación automática</span>
+                </div>
+                <div id="creativo-modal-cola-slot" class="creativo-modal-cola-slot"></div>
+              </section>
+              <section class="creativo-modal-section creativo-modal-actions" aria-labelledby="creativo-dl-kicker">
+                <div class="creativo-modal-section-head">
+                  <p id="creativo-dl-kicker" class="creativo-modal-kicker">Descargas</p>
+                  <span class="creativo-dl-label">PNG alta resolución</span>
+                </div>
                 <div class="creativo-modal-dl-buttons">
-                  <a id="creativo-modal-dl-feed" href="" download="" class="btn light">
-                    📥 Descargar Feed (1080×1350)
+                  <a id="creativo-modal-dl-feed" href="" download="" class="btn light" title="1080×1350">
+                    Feed
                   </a>
-                  <a id="creativo-modal-dl-story" href="" download="" class="btn light">
-                    📥 Descargar Story (1080×1920)
+                  <a id="creativo-modal-dl-story" href="" download="" class="btn light" title="1080×1920">
+                    Story
                   </a>
                 </div>
-              </div>
+              </section>
             </div>
           </div>
         </div>
@@ -2981,6 +2993,6 @@
   <div id="print-root"></div>
   <script src="/partials/google-reviews-data.min.js?v=1794315438" defer></script>
   <script src="/booking/booking-bundle.min.js?v=1794315438" defer></script>
-  <script type="module" src="/admin/app.js?v=213"></script>
+  <script type="module" src="/admin/app.js?v=214"></script>
 </body>
 </html>
