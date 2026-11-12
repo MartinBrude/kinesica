@@ -35,7 +35,7 @@ import {
 import {
   initCreativosUI,
   loadCreativosData,
-} from "./admin-creativos.js?v=108";
+} from "./admin-creativos.js?v=109";
 import { applyCreativosEditFromRoute } from "./admin-creativos-image-text.js?v=4";
 
 const viewAdmin = document.querySelector("#view-admin");

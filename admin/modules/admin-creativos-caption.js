@@ -3,7 +3,7 @@
  * Persistido vía update_caption (override de catálogo + cola queued).
  */
 
-import { escapeHtml } from "./dom.js?v=79";
+import { escapeHtml, dialogConfirm, toast } from "./dom.js?v=80";
 import { getSessionUser } from "./auth.js?v=83";
 import {
   resolveCaption,
@@ -134,15 +134,27 @@ export function serviceToggleHtml() {
 
 export async function handleServiceToggleClick(btn) {
   const next = btn.dataset.enabled === "1";
-  const msg = next
-    ? "¿Activar el servicio de publicaciones automáticas en Instagram?"
-    : "¿Pausar el servicio? El cron dejará de publicar hasta que lo reactives.";
-  if (!window.confirm(msg)) return;
+  const when = formatScheduleLabel();
+  const ok = await dialogConfirm(
+    next
+      ? `Se publicará automáticamente según la frecuencia configurada (${when}).\n\n1 pieza por día desde la cola.`
+      : "El cron dejará de publicar hasta que lo reactives.\n\nPodés seguir armando la cola y la frecuencia.",
+    {
+      title: next ? "Activar publicaciones automáticas" : "Pausar publicaciones automáticas",
+      okText: next ? "Activar" : "Pausar",
+      cancelText: "Cancelar",
+      danger: !next,
+    }
+  );
+  if (!ok) return;
   btn.disabled = true;
   try {
     await setServiceEnabled(next);
+    toast(next ? "Publicaciones automáticas activadas." : "Publicaciones automáticas pausadas.", {
+      type: "success",
+    });
   } catch (err) {
-    if (!err.auth) window.alert(err.message || "No se pudo cambiar el estado del servicio");
+    if (!err.auth) toast(err.message || "No se pudo cambiar el estado del servicio", { type: "danger" });
   } finally {
     btn.disabled = false;
   }

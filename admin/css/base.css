@@ -718,7 +718,7 @@ main {
 .app-dialog {
   position: fixed;
   inset: 0;
-  z-index: 80;
+  z-index: 1200; /* por encima de modales de creativos (1000/1100) */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -753,6 +753,14 @@ main {
 .app-dialog-card.is-danger .app-dialog-text {
   color: #991b1b;
   font-weight: 500;
+}
+
+.app-dialog-title {
+  margin: 0 0 10px;
+  color: var(--navy);
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.3;
 }
 
 .app-dialog-text {

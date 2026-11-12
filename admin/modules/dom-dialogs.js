@@ -29,7 +29,7 @@ export function dialogAlert(message, options = {}) {
 /**
  * Confirmación modal del admin. Reemplaza window.confirm.
  * @param {string} message
- * @param {{danger?: boolean, okText?: string, cancelText?: string}} [options]
+ * @param {{danger?: boolean, okText?: string, cancelText?: string, title?: string}} [options]
  * @returns {Promise<boolean>}
  */
 export function dialogConfirm(message, options = {}) {
@@ -40,6 +40,7 @@ export function dialogConfirm(message, options = {}) {
       danger: Boolean(options.danger),
       okText: options.okText,
       cancelText: options.cancelText,
+      title: options.title,
     })
   );
 }
@@ -105,7 +106,7 @@ export function toast(message, options = {}) {
   });
 }
 
-export function openDialog({ message, confirm, danger, okText, cancelText, alertType }) {
+export function openDialog({ message, confirm, danger, okText, cancelText, alertType, title }) {
   return new Promise((resolve) => {
     const root = document.createElement("div");
     root.className = "app-dialog";
@@ -122,6 +123,16 @@ export function openDialog({ message, confirm, danger, okText, cancelText, alert
     card.className = cardClasses;
     card.setAttribute("role", confirm ? "dialog" : "alertdialog");
     card.setAttribute("aria-modal", "true");
+
+    const titleText = String(title || "").trim();
+    if (titleText) {
+      const heading = document.createElement("h3");
+      heading.className = "app-dialog-title";
+      heading.id = "app-dialog-title";
+      heading.textContent = titleText;
+      card.setAttribute("aria-labelledby", "app-dialog-title");
+      card.append(heading);
+    }
 
     const text = document.createElement("p");
     text.className = "app-dialog-text";
