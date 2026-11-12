@@ -358,6 +358,7 @@ function kinesica_rel_backfill_run(PDO $pdo, bool $apply, ?array $onlyTables = n
     require_once __DIR__ . '/lib_relational_encuestas.php';
     require_once __DIR__ . '/lib_relational_config.php';
     require_once __DIR__ . '/lib_relational_gastos.php';
+    require_once __DIR__ . '/lib_relational_errores.php';
     $all = [
         'fichas' => 'kinesica_rel_backfill_fichas',
         'lista_espera' => 'kinesica_rel_backfill_lista_espera',
@@ -376,6 +377,7 @@ function kinesica_rel_backfill_run(PDO $pdo, bool $apply, ?array $onlyTables = n
         'profesionales_contactos' => 'kinesica_rel_backfill_profesionales_contactos',
         'configuraciones' => 'kinesica_rel_backfill_configuraciones',
         'gastos' => 'kinesica_rel_backfill_gastos',
+        'errores' => 'kinesica_rel_backfill_errores',
     ];
     $tables = [];
     foreach ($all as $name => $fn) {

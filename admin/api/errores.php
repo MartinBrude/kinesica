@@ -97,9 +97,10 @@ if ($action === 'create') {
         'resolved_by' => null,
     ];
 
+    $actor = (string) ($auth['username'] ?? 'admin');
     $errores = kinesica_errores_load();
     array_unshift($errores, $nuevo);
-    kinesica_errores_save($errores);
+    kinesica_errores_save($errores, $actor);
 
     json_out(200, [
         'status' => 'success',
@@ -135,7 +136,8 @@ if ($action === 'toggle_status') {
         json_out(404, ['error' => 'Reporte de error no encontrado.']);
     }
 
-    kinesica_errores_save($errores);
+    $actor = (string) ($auth['username'] ?? 'admin');
+    kinesica_errores_save($errores, $actor);
     json_out(200, [
         'status' => 'success',
         'message' => 'Estado actualizado.',
@@ -156,7 +158,8 @@ if ($action === 'delete') {
         json_out(404, ['error' => 'Reporte no encontrado.']);
     }
 
-    kinesica_errores_save($filtrados);
+    $actor = (string) ($auth['username'] ?? 'admin');
+    kinesica_errores_save($filtrados, $actor);
     json_out(200, [
         'status' => 'success',
         'message' => 'Reporte eliminado.',

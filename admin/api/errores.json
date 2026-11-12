@@ -1,1 +1,30 @@
-[]
+[
+  {
+    "id": "err_54b32553a7b0",
+    "seccion": "Clara (IA / Asistente Virtual)",
+    "info": "respuesta incorrecta",
+    "comportamiento_actual": "31/10 a las 21.39 hs Un paciente le indica a clara que hizo un bloqueo de columna y no le dio resultado y clara contesta que los unicos que pueden bloquear la agenda son norberto y maria",
+    "comportamiento_esperado": "no se que respuesta corresponderia",
+    "foto": "",
+    "video": "",
+    "estado": "resuelto",
+    "created_at": "2026-11-04T00:23:13Z",
+    "created_by": "norberto",
+    "resolved_at": "2026-11-04T09:36:17Z",
+    "resolved_by": "martin"
+  },
+  {
+    "id": "err_8b91a27e4110",
+    "seccion": "Recordatorios automáticos de turnos",
+    "info": "No permite cargar WhatsApp de contacto",
+    "comportamiento_actual": "Al cargar número local como 1158236122 (caso Ariel Canizo) la validación fallaba al no normalizar a formato internacional 549... y en reporte de errores saltaba \"No se pudo completar\" por falta de await en handleSaveError",
+    "comportamiento_esperado": "Normalizar teléfonos locales argentinos automáticamente y permitir guardar el reporte y el contacto correctamente",
+    "foto": "",
+    "video": "",
+    "estado": "resuelto",
+    "created_at": "2026-11-06T11:48:00Z",
+    "created_by": "martin",
+    "resolved_at": "2026-11-06T12:02:00Z",
+    "resolved_by": "martin"
+  }
+]
