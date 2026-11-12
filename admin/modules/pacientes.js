@@ -7,7 +7,7 @@ import { api } from "./api.js?v=79";
 import { escapeHtml, debounce, dialogAlert, dialogConfirm, switchActiveView } from "./dom.js?v=79";
 import { phoneMatches } from "./phone-search.js?v=3";
 import { formatDisplayPhone, capitalizePersonName } from "./pacientes-format.js";
-import { openFullPacienteModal } from "./pacientes-modal.js?v=2";
+import { openFullPacienteModal } from "./pacientes-modal.js?v=3";
 import { getSessionUser } from "./auth.js?v=83";
 import { invalidateDirectoryCache } from "./form-patient.js";
 import { setListControlsEnabled } from "./list-controls.js?v=1";
@@ -180,6 +180,111 @@ export function isPlaceholderPhone(phone) {
   const p = String(phone || "").trim();
   if (!p) return true;
   return p.startsWith("sin-tel-") || p.startsWith("sin-tel") || p.startsWith("sin-telefono") || p.startsWith("ficha-");
+}
+
+let isBadgeRefreshing = false;
+let badgePollTimer = null;
+export const PACIENTES_BADGE_POLL_INTERVAL_MS = 2 * 60 * 1000;
+
+/**
+ * Determina si a un paciente / contacto le falta un número de teléfono válido.
+ * @param {object} p
+ * @returns {boolean}
+ */
+export function patientMissingPhone(p) {
+  if (!p) return false;
+  const rawTel = String(p.telefono || "").trim();
+  const isPlaceholderTel = isPlaceholderPhone(rawTel);
+  const cleanDigits = isPlaceholderTel ? "" : rawTel.replace(/\D/g, "");
+  return !cleanDigits || cleanDigits.length < 5;
+}
+
+/**
+ * Cuenta cuántos pacientes en la lista no tienen teléfono cargado o tienen placeholder.
+ * @param {Array} list
+ * @returns {number}
+ */
+export function countMissingPhoneFromList(list) {
+  if (!Array.isArray(list)) return 0;
+  return list.filter((p) => patientMissingPhone(p)).length;
+}
+
+/**
+ * Pinta el badge rojo en Clínica y en Directorio de Pacientes si a algún contacto le falta el teléfono.
+ * @param {number} count
+ */
+export function setPacientesMissingPhoneBadge(count) {
+  const n = Math.max(0, Number(count) || 0);
+  const label = n > 99 ? "99+" : String(n);
+  const show = n > 0;
+  const aria = show
+    ? `${n === 1 ? "1 contacto" : `${n} contactos`} sin teléfono en el directorio`
+    : "";
+
+  for (const id of ["nav-badge-clinica", "nav-badge-pacientes"]) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    el.textContent = label;
+    el.hidden = !show;
+    el.setAttribute("aria-hidden", show ? "false" : "true");
+    if (show) {
+      el.setAttribute("aria-label", aria);
+      el.title = aria;
+    } else {
+      el.removeAttribute("aria-label");
+      el.removeAttribute("title");
+    }
+  }
+
+  const clinicaBtn = document.getElementById("nav-btn-clinica");
+  if (clinicaBtn) {
+    if (show) clinicaBtn.setAttribute("aria-label", `Clínica, ${aria}`);
+    else clinicaBtn.removeAttribute("aria-label");
+  }
+}
+
+export function syncPacientesBadgeFromCache() {
+  setPacientesMissingPhoneBadge(countMissingPhoneFromList(pacientesCache));
+}
+
+/**
+ * Actualiza el badge de contactos sin teléfono consultando el backend.
+ */
+export async function refreshPacientesMissingPhoneBadge() {
+  if (isBadgeRefreshing) return;
+  const view = document.getElementById("view-pacientes");
+  if (view && !view.hidden && pacientesCache.length > 0) {
+    syncPacientesBadgeFromCache();
+    return;
+  }
+
+  isBadgeRefreshing = true;
+  try {
+    const resp = await api(`pacientes.php?counts_only=1&_t=${Date.now()}`, { cache: "no-store" });
+    if (!resp || (resp.status !== "success" && resp.ok !== true)) return;
+    const count = typeof resp.missing_phone_count === "number" ? resp.missing_phone_count : 0;
+    setPacientesMissingPhoneBadge(count);
+  } catch {
+    /* silencioso: el badge no debe romper el admin */
+  } finally {
+    isBadgeRefreshing = false;
+  }
+}
+
+export function startPacientesBadgePoll() {
+  stopPacientesBadgePoll();
+  refreshPacientesMissingPhoneBadge();
+  badgePollTimer = setInterval(() => {
+    if (document.visibilityState !== "visible") return;
+    refreshPacientesMissingPhoneBadge();
+  }, PACIENTES_BADGE_POLL_INTERVAL_MS);
+}
+
+export function stopPacientesBadgePoll() {
+  if (badgePollTimer) {
+    clearInterval(badgePollTimer);
+    badgePollTimer = null;
+  }
 }
 
 /**
@@ -358,6 +463,39 @@ export async function loadPacientes() {
     invalidateDirectoryCache();
     renderPacientesTable();
 
+    try {
+      if (typeof window !== "undefined" && searchInput) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const hashSearch = window.location.hash.includes("?") ? new URLSearchParams(window.location.hash.split("?")[1]) : null;
+        const initialQuery = (urlParams.get("buscar") || urlParams.get("q") || hashSearch?.get("buscar") || hashSearch?.get("q") || "").trim();
+        if (initialQuery) {
+          if (searchInput.value !== initialQuery) {
+            searchInput.value = initialQuery;
+            renderPacientesTable();
+          }
+
+          if (!window._kinesicaPatientModalAutoOpened) {
+            window._kinesicaPatientModalAutoOpened = true;
+            const normQ = canonicalPatientNameKey(initialQuery);
+            const found = pacientesCache.find((p) => {
+              const full = p.nombre_completo || [p.nombre, p.apellido].filter(Boolean).join(" ");
+              const normP = canonicalPatientNameKey(full);
+              return normP.includes(normQ) || normQ.includes(normP);
+            });
+
+            if (found) {
+              openFullPacienteModal(found, loadPacientes);
+            } else {
+              const parts = initialQuery.split(/\s+/);
+              const nombre = parts[0] || "";
+              const apellido = parts.slice(1).join(" ") || "";
+              openFullPacienteModal({ nombre, apellido, nombre_completo: initialQuery }, loadPacientes);
+            }
+          }
+        }
+      }
+    } catch { /* ignore */ }
+
     // Dedupe en memoria alcanza para la UI. No disparar POST deduplicate en cada
     // carga: competía con el alta y podía timeout/ocultar pacientes recién creados.
   } catch (err) {
@@ -416,7 +554,15 @@ function filterPacientes() {
     const contactMatch = (p.contacto_nombre || "").toLowerCase().includes(query) ||
                          (p.contacto_telefono || "").includes(query) || phoneMatches(p.contacto_telefono, query) ||
                          (p.contacto_notas || "").toLowerCase().includes(query);
-    return nameMatch || phoneMatch || emailMatch || dniMatch || motivoMatch || contactMatch;
+    const isSinTel = patientMissingPhone(p);
+    const sinTelMatch = isSinTel && (
+      query.includes("sin tel") ||
+      query.includes("falta tel") ||
+      query.includes("sin telefono") ||
+      query.includes("sin teléfono") ||
+      query === "sin"
+    );
+    return nameMatch || phoneMatch || emailMatch || dniMatch || motivoMatch || contactMatch || sinTelMatch;
   });
 
   list.sort((a, b) => {
@@ -431,6 +577,7 @@ function filterPacientes() {
 }
 
 export function renderPacientesTable() {
+  syncPacientesBadgeFromCache();
   if (!listEl) return;
   const filtered = filterPacientes();
 
@@ -515,7 +662,7 @@ export function renderPacientesTable() {
 
     tr.innerHTML = `
       <td><strong style="color: var(--navy);">${escapeHtml(displayName)}</strong>${contactBadge}</td>
-      <td><div class="phone-cell">${cleanDigits ? `<a class="phone-link" href="${waLink}" target="_blank" rel="noopener" title="Abrir chat de WhatsApp (${escapeHtml(displayTel)})">WhatsApp</a>` : '<span style="color:var(--muted)">Sin teléfono</span>'}</div></td>
+      <td><div class="phone-cell">${cleanDigits ? `<a class="phone-link" href="${waLink}" target="_blank" rel="noopener" title="Abrir chat de WhatsApp (${escapeHtml(displayTel)})">WhatsApp</a>` : '<span class="badge-sin-tel" style="display:inline-flex; align-items:center; gap:4px; font-size:11px; padding:2px 7px; border-radius:5px; background:#fef2f2; color:#b91c1c; font-weight:600; border:1px solid #fecaca;"><span aria-hidden="true">⚠️</span> Sin teléfono</span>'}</div></td>
       <td>${p.email ? `<a class="email-link" href="mailto:${escapeHtml(p.email)}" title="Enviar correo a ${escapeHtml(p.email)}">Email</a>` : '<span style="color:var(--muted)">—</span>'}</td>
       <td><span class="badge-prof ${escapeHtml(p.profesional_habitual || "indistinto")}">${escapeHtml(p.profesional_habitual || "indistinto")}</span></td>
       <td><small>${p.motivo_consulta ? escapeHtml(p.motivo_consulta) : "—"}</small></td>
@@ -595,6 +742,13 @@ export function renderPacientesTable() {
 }
 
 export function initPacientesModule() {
+  startPacientesBadgePoll();
+  if (typeof document !== "undefined") {
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") refreshPacientesMissingPhoneBadge();
+    });
+  }
+
   if (searchInput) {
     searchInput.addEventListener("input", debounce(() => renderPacientesTable(), 150));
   }

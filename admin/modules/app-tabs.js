@@ -6,7 +6,7 @@
 import { api } from "./api.js?v=79";
 import { getSessionUser } from "./auth.js?v=83";
 import { showLibrary } from "./library.js?v=94";
-import { showPacientesView, hidePacientesView } from "./pacientes.js?v=12";
+import { showPacientesView, hidePacientesView, setPacientesMissingPhoneBadge, stopPacientesBadgePoll } from "./pacientes.js?v=14";
 import { showDashboardView, hideDashboardView, updateDashboardClara, updateDashboardBooking } from "./dashboard.js?v=13";
 import { showConsultorioView, hideConsultorioView, showClaraView, hideClaraView } from "./configuracion.js?v=39";
 import { showAdminView, hideAdminView } from "./admin-panel.js?v=94";
@@ -226,6 +226,8 @@ export function unmountAdminChannels() {
   const dock = document.getElementById("admin-mobile-dock");
   if (dock) dock.hidden = true;
   setAdminOnlyVisibility(false);
+  setPacientesMissingPhoneBadge(0);
+  stopPacientesBadgePoll();
 }
 
 function bindAdminNavOnce(adminNav) {

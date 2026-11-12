@@ -70,6 +70,29 @@ try {
     if ($method === 'GET') {
         $action = $_GET['action'] ?? '';
 
+        if (!empty($_GET['counts_only']) || $action === 'counts' || $action === 'missing_phone_count' || $action === 'badge') {
+            require_once __DIR__ . '/lib_relational_integrity.php';
+            $alive = kinesica_rel_pacientes_not_deleted_sql($pdo);
+            $stmt = $pdo->query("SELECT id, telefono FROM pacientes WHERE {$alive} AND LOWER(nombre_completo) NOT LIKE '%tk3%' AND LOWER(nombre_completo) NOT LIKE '%tk 3%' AND LOWER(nombre_completo) NOT LIKE '%no dar%'");
+            $missing = 0;
+            $total = 0;
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $total++;
+                $rawTel = (string) ($row['telefono'] ?? '');
+                $t = clean_phone_number($rawTel);
+                $isPlaceholder = is_placeholder_phone($rawTel);
+                if ($isPlaceholder || strlen($t) < 5) {
+                    $missing++;
+                }
+            }
+            json_out(200, [
+                'status' => 'success',
+                'ok' => true,
+                'total' => $total,
+                'missing_phone_count' => $missing,
+            ]);
+        }
+
         if ($action === 'directory' || $action === 'get_directory') {
             // REL: excluir soft-deleted (etapa 9).
             require_once __DIR__ . '/lib_relational_integrity.php';
@@ -179,7 +202,11 @@ try {
             $to = trim((string) ($data['to'] ?? 'norberto1712@gmail.com'));
             $subject = trim((string) ($data['subject'] ?? 'Aviso Kinésica'));
             $html = (string) ($data['html'] ?? $data['body'] ?? '');
-            $text = (string) ($data['text'] ?? strip_tags($html));
+            $text = trim((string) ($data['text'] ?? $data['body'] ?? ''));
+            if ($text === '' && $html !== '') {
+                $cleanedHtml = preg_replace('/<style\b[^>]*>(.*?)<\/style>/is', '', $html);
+                $text = trim(strip_tags((string) $cleanedHtml));
+            }
             $sent = send_html_mail($to, $subject, $html, $text);
             json_out(200, ['status' => $sent ? 'success' : 'error', 'message' => $sent ? 'Correo enviado' : 'Error al enviar correo']);
         }

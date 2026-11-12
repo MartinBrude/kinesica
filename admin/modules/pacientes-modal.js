@@ -144,6 +144,9 @@ export function openFullPacienteModal(paciente = null, onReload = null) {
     backdrop.querySelectorAll("input, textarea, select").forEach((el) => {
       el.disabled = true;
     });
+  } else if (nombreVal) {
+    const telInput = backdrop.querySelector("#modal-p-tel");
+    if (telInput) setTimeout(() => telInput.focus(), 60);
   }
 
   const form = backdrop.querySelector("#form-full-paciente");

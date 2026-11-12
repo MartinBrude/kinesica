@@ -71,11 +71,12 @@
         <div class="nav-dropdown" id="nav-group-clinica">
           <button type="button" class="btn ghost nav-dropdown-trigger" id="nav-btn-clinica" aria-expanded="false" aria-haspopup="true">
             <span>Clínica</span>
+            <span class="nav-notif-badge" id="nav-badge-clinica" hidden aria-hidden="true">0</span>
             <svg class="nav-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
           </button>
           <div class="nav-dropdown-menu" id="nav-menu-clinica" role="menu">
             <button type="button" class="nav-dropdown-item" id="nav-btn-fichas" role="menuitem">Historias Clínicas</button>
-            <button type="button" class="nav-dropdown-item" id="nav-btn-pacientes" role="menuitem">Directorio de Pacientes</button>
+            <button type="button" class="nav-dropdown-item" id="nav-btn-pacientes" role="menuitem">Directorio de Pacientes<span class="nav-notif-badge nav-notif-badge--menu" id="nav-badge-pacientes" hidden aria-hidden="true">0</span></button>
           </div>
         </div>
 
@@ -3015,6 +3016,6 @@
   <div id="print-root"></div>
   <script src="/partials/google-reviews-data.min.js?v=1794315438" defer></script>
   <script src="/booking/booking-bundle.min.js?v=1794315438" defer></script>
-  <script type="module" src="/admin/app.js?v=216"></script>
+  <script type="module" src="/admin/app.js?v=217"></script>
 </body>
 </html>
