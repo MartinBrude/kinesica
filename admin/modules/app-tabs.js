@@ -133,6 +133,7 @@ export function switchTab(tab, subtab, routeState = null) {
     btnAdminCreativos?.classList.add("is-active");
     showAdminView("creativos", routeState);
   } else if (tab === "encuestas" || tab === "encuesta") {
+    btnClara?.classList.add("is-active");
     btnEncuestas?.classList.add("is-active");
     showEncuestasView();
   } else if (
@@ -251,9 +252,7 @@ function bindAdminNavOnce(adminNav) {
   setupDropdown(document.getElementById("nav-group-clara"), document.getElementById("nav-btn-clara"));
   setupDropdown(document.getElementById("nav-group-admin"), document.getElementById("nav-btn-admin"));
 
-  ["#nav-btn-encuestas", "#brand-logo"].forEach((id) => {
-    document.querySelector(id)?.addEventListener("mouseenter", closeAllDropdowns);
-  });
+  document.querySelector("#brand-logo")?.addEventListener("mouseenter", closeAllDropdowns);
 
   document.addEventListener("click", (e) => {
     if (!e.target.closest(".nav-dropdown")) closeAllDropdowns();

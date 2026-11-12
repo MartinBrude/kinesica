@@ -942,6 +942,7 @@ await test("Clara dropdown + secciones deep-link + mail preview", () => {
   const indexHtml = fs.readFileSync(path.join(adminDir, "index.html"), "utf8");
   assert.match(indexHtml, /id="nav-group-clara"/, "nav-group-clara dropdown");
   assert.match(indexHtml, /id="nav-btn-clara-politicas"/, "nav Políticas del mail");
+  assert.match(indexHtml, /id="nav-menu-clara"[\s\S]*?id="nav-btn-encuestas"/, "Encuestas es ítem del menú Clara");
   assert.match(indexHtml, /id="clara-section-politicas"/, "sección políticas en view-clara");
   assert.match(indexHtml, /id="btn-send-confirmation-preview"/, "botón mail de prueba");
   assert.match(indexHtml, /claraAllowed|data-clara-section/, "boot abre sección Clara de la URL");
@@ -949,6 +950,7 @@ await test("Clara dropdown + secciones deep-link + mail preview", () => {
   assert.match(tabsJs, /nav-btn-clara-politicas/, "app-tabs escucha politicas");
   assert.match(tabsJs, /nav-group-clara/, "app-tabs setupDropdown Clara");
   assert.match(tabsJs, /showClaraView\(section\)/, "app-tabs pasa section a showClaraView");
+  assert.match(tabsJs, /tab === "encuestas"[\s\S]*?btnClara\?\.classList\.add\("is-active"\)/, "Encuestas marca Clara activa");
   const routerJs = fs.readFileSync(path.join(adminDir, "modules/router.js"), "utf8");
   assert.match(routerJs, /clara\/\$\{sec\}|\/admin\/clara\//, "router deep-link /admin/clara/{sec}");
   assert.match(routerJs, /syncUrlWithViewState\(route/, "popstate sincroniza con route parseada");
@@ -987,7 +989,7 @@ await test("encuestas.php + vista SPA + wiring de navegación", () => {
   assert.match(dashJs, /dash-card-encuestas/, "dashboard cablea card de encuestas");
   const indexHtml = fs.readFileSync(path.join(adminDir, "index.html"), "utf8");
   assert.match(indexHtml, /id="view-encuestas"/, "shell view-encuestas");
-  assert.match(indexHtml, /id="nav-btn-encuestas"/, "nav Encuestas");
+  assert.match(indexHtml, /id="nav-menu-clara"[\s\S]*?id="nav-btn-encuestas"/, "nav Encuestas dentro del menú Clara");
   assert.match(indexHtml, /id="dash-card-encuestas"/, "card dashboard Encuestas");
   assert.match(indexHtml, /id="encuestas-tbody"/, "tabla de respuestas");
   const sendContact = fs.readFileSync(path.join(root, "api/send-contact.php"), "utf8");
