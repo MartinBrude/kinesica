@@ -13,8 +13,8 @@ require_once __DIR__ . '/lib_booking_dni.php';
 
 require_header();
 $auth = require_auth();
-if (!is_admin($auth)) {
-    json_out(403, ['error' => 'Solo administradores pueden agendar en modo admin.']);
+if (!can_use_admin_booking($auth)) {
+    json_out(403, ['error' => 'Solo administradores o profesionales pueden agendar en modo admin.']);
 }
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {

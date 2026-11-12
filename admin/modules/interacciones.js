@@ -57,7 +57,7 @@ export function setInteraccionesPendingBadge(count) {
     ? `${n === 1 ? "1 pendiente" : `${n} pendientes`} de respuesta en la bandeja`
     : "";
 
-  for (const id of ["nav-badge-meta", "nav-badge-interacciones"]) {
+  for (const id of ["nav-badge-meta", "nav-badge-interacciones", "dock-badge-interacciones"]) {
     const el = document.getElementById(id);
     if (!el) continue;
     el.textContent = label;

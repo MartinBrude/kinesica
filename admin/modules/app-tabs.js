@@ -10,7 +10,7 @@ import { showPacientesView, hidePacientesView } from "./pacientes.js?v=12";
 import { showDashboardView, hideDashboardView, updateDashboardClara, updateDashboardBooking } from "./dashboard.js?v=13";
 import { showConsultorioView, hideConsultorioView, showClaraView, hideClaraView } from "./configuracion.js?v=39";
 import { showAdminView, hideAdminView } from "./admin-panel.js?v=94";
-import { showInteraccionesView, hideInteraccionesView } from "./interacciones.js?v=16";
+import { showInteraccionesView, hideInteraccionesView } from "./interacciones.js?v=17";
 import { showRecordatoriosView, hideRecordatoriosView } from "./recordatorios.js?v=24";
 import { showEncuestasView, hideEncuestasView } from "./encuestas.js?v=2";
 import { applyHoursToRuntime } from "./horarios.js?v=4";
@@ -80,6 +80,7 @@ export function switchTab(tab, subtab, routeState = null) {
   const btnAdminCreativos = document.querySelector("#nav-btn-admin-creativos");
 
   document.querySelectorAll(".admin-nav .btn, .admin-nav .nav-dropdown-item").forEach((b) => b.classList.remove("is-active"));
+  document.querySelectorAll(".admin-mobile-dock-btn").forEach((b) => b.classList.remove("is-active"));
   closeAllDropdowns();
   closeMobileNav();
 
@@ -93,6 +94,7 @@ export function switchTab(tab, subtab, routeState = null) {
   hideAdminView();
 
   if (tab === "inicio") {
+    document.getElementById("dock-btn-inicio")?.classList.add("is-active");
     showDashboardView();
   } else if (tab === "pacientes") {
     btnClinica?.classList.add("is-active");
@@ -109,7 +111,10 @@ export function switchTab(tab, subtab, routeState = null) {
     }
     if (section === "horarios") btnConsultorioHorarios?.classList.add("is-active");
     else if (section === "honorarios") btnConsultorioHonorarios?.classList.add("is-active");
-    else btnConsultorioAgendar?.classList.add("is-active");
+    else {
+      btnConsultorioAgendar?.classList.add("is-active");
+      document.getElementById("dock-btn-agendar")?.classList.add("is-active");
+    }
     showConsultorioView(section);
   } else if (tab === "clara" || tab === "configuracion") {
     btnClara?.classList.add("is-active");
@@ -123,10 +128,12 @@ export function switchTab(tab, subtab, routeState = null) {
   } else if (tab === "interacciones" || tab === "chats" || tab === "whatsapp") {
     btnWhatsapp?.classList.add("is-active");
     btnInteracciones?.classList.add("is-active");
+    document.getElementById("dock-btn-interacciones")?.classList.add("is-active");
     showInteraccionesView();
   } else if (tab === "recordatorios" || tab === "reminders") {
     btnWhatsapp?.classList.add("is-active");
     btnRecordatorios?.classList.add("is-active");
+    document.getElementById("dock-btn-recordatorios")?.classList.add("is-active");
     showRecordatoriosView();
   } else if (tab === "creativos" || tab === "galeria" || tab === "campana-ig" || tab === "campanas-ig" || tab === "instagram" || (tab === "admin" && subtab === "creativos")) {
     btnWhatsapp?.classList.add("is-active");
@@ -208,6 +215,8 @@ export function unmountAdminChannels() {
   if (nav) nav.hidden = true;
   const navToggle = document.getElementById("btn-nav-toggle");
   if (navToggle) navToggle.hidden = true;
+  const dock = document.getElementById("admin-mobile-dock");
+  if (dock) dock.hidden = true;
   setAdminOnlyVisibility(false);
 }
 
@@ -295,6 +304,15 @@ function bindAdminNavOnce(adminNav) {
     e.preventDefault();
     switchTab("inicio");
   });
+
+  document.getElementById("dock-btn-inicio")?.addEventListener("click", () => switchTab("inicio"));
+  document.getElementById("dock-btn-agendar")?.addEventListener("click", () => switchTab("consultorio", "agendar"));
+  document.getElementById("dock-btn-interacciones")?.addEventListener("click", () => switchTab("interacciones"));
+  document.getElementById("dock-btn-recordatorios")?.addEventListener("click", () => switchTab("recordatorios"));
+  document.getElementById("dock-btn-menu")?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggleMobileNav();
+  });
 }
 
 export function mountAdminChannels() {
@@ -313,6 +331,8 @@ export function mountAdminChannels() {
   if (adminNav) adminNav.hidden = false;
   const navToggle = document.getElementById("btn-nav-toggle");
   if (navToggle) navToggle.hidden = false;
+  const dock = document.getElementById("admin-mobile-dock");
+  if (dock) dock.hidden = false;
   setAdminOnlyVisibility(isAdmin);
   bindAdminNavOnce(adminNav);
 

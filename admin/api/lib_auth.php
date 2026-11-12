@@ -95,6 +95,21 @@ function is_colaborador(?array $auth = null): bool
     return false;
 }
 
+/** Admin o profesional (misma regla que admin-booking.js). */
+function can_use_admin_booking(?array $auth = null): bool
+{
+    if (is_admin($auth)) {
+        return true;
+    }
+    if ($auth !== null && isset($auth['role'])) {
+        return $auth['role'] === 'professional';
+    }
+    if (session_status() === PHP_SESSION_ACTIVE && !empty($_SESSION['role'])) {
+        return $_SESSION['role'] === 'professional';
+    }
+    return false;
+}
+
 function base32_decode(string $value): string
 {
     $alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';

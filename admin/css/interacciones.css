@@ -722,3 +722,99 @@ button.interacciones-stat-pill {
   transform: translateY(-1px);
   color: #ffffff;
 }
+
+@media (max-width: 640px) {
+  .interacciones-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin: 12px 0 16px;
+    padding: 12px;
+  }
+
+  .interacciones-search-box {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .interacciones-toolbar-controls {
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .interacciones-stats {
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .interacciones-last-updated {
+    white-space: normal;
+  }
+
+  .interacciones-pager {
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 16px auto;
+  }
+
+  .interaccion-card {
+    padding: 14px 14px 16px;
+  }
+
+  .interaccion-header {
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .interaccion-user-info {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .interaccion-name {
+    font-size: 15px;
+    word-break: break-word;
+  }
+
+  .interaccion-actions {
+    width: 100%;
+    justify-content: stretch;
+    gap: 8px;
+  }
+
+  .interaccion-answered-label {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .btn-whatsapp-direct,
+  .btn-instagram-direct {
+    flex: 1;
+    justify-content: center;
+    min-height: 40px;
+  }
+
+  .chat-bubble {
+    max-width: 92%;
+    font-size: 13px;
+  }
+
+  .interaccion-chat-thread {
+    padding: 12px;
+  }
+
+  .chat-attachment-img-link,
+  .chat-attachment-video-player {
+    max-width: 100%;
+  }
+
+  .chat-attachment-audio-player {
+    width: 100%;
+  }
+
+  .chat-attachment-doc-name {
+    max-width: 100%;
+  }
+}

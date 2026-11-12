@@ -9,7 +9,7 @@
  * - print.css: Formato de impresión A4, firmas digitales y reportes PDF
  */
 
-@import "./css/base.css?v=98";
+@import "./css/base.css?v=99";
 @import "./css/gate.css";
 @import "./css/library.css?v=90";
 @import "./css/form.css?v=87";
@@ -19,8 +19,8 @@
 @import "./css/dashboard.css?v=4";
 @import "./css/horarios.css?v=12";
 @import "./css/admin-panel.css?v=27";
-@import "./css/interacciones.css?v=4";
-@import "./css/recordatorios.css?v=7";
+@import "./css/interacciones.css?v=5";
+@import "./css/recordatorios.css?v=8";
 
 
 /* Turnera profesional: selector autenticado de paciente + widget oficial. */
@@ -88,16 +88,41 @@
 }
 
 @media (max-width: 700px) {
+  .admin-booking-dialog {
+    max-width: none;
+    width: 100%;
+    max-height: 100dvh;
+    border-radius: 0;
+  }
+
   .admin-booking-patient-bar {
-    grid-template-columns: 1fr auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 10px 12px;
+    padding: 14px;
   }
 
   .admin-booking-patient-bar > div {
-    grid-column: 1 / -1;
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
   .admin-booking-patient-bar label {
-    grid-column: 1;
+    flex: 1 1 100%;
+  }
+
+  .admin-booking-patient-bar select {
+    width: 100%;
+  }
+
+  .admin-booking-patient-bar [data-action="admin-booking-close"] {
+    flex: 0 0 auto;
+    margin-left: auto;
+  }
+
+  .admin-booking-dialog .kinesica-booking-modal-body {
+    max-height: calc(100dvh - 120px);
   }
 }
 
