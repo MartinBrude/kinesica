@@ -2472,6 +2472,105 @@ En Kinésica trabajamos inflamación, movilidad y propiocepción: que el tobillo
 📲 WhatsApp: +54 9 11 3178-1733
 
 #Esguince #Tobillo #Rehabilitacion #Kinésica`
+  },
+  {
+    id: "140_elongar_prevenir",
+    title: "Elongar a tiempo evita dolencias",
+    cat: "PREVENCIÓN",
+    group: "filosofia",
+    body: "Mantener longitud y movilidad reduce compensaciones. Te guiamos con elongación inteligente, no forzada.",
+    feedUrl: "campanas/feed/catalogo_feed_140_elongar_prevenir.png",
+    storyUrl: "campanas/story/catalogo_story_140_elongar_prevenir.png",
+    copy: `Elongar a tiempo evita dolencias 🧘
+
+No se trata de forzarte hasta el límite.
+Se trata de mantener longitud y movilidad para que el cuerpo no compense en silencio.
+
+En Kinésica te guiamos con elongación inteligente y terapia manual: prevenir hoy para no cronificar mañana.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 3178-1733
+
+#Elongacion #Prevencion #Movilidad #Kinésica`
+  },
+  {
+    id: "141_evitar_cirugias",
+    title: "Cuando se puede, evitamos la cirugía",
+    cat: "TERAPIA CONSERVADORA",
+    group: "filosofia",
+    body: "Muchas lesiones mejoran con terapia manual y reeducación. Primero la causa mecánica; la cirugía es el último recurso.",
+    feedUrl: "campanas/feed/catalogo_feed_141_evitar_cirugias.png",
+    storyUrl: "campanas/story/catalogo_story_141_evitar_cirugias.png",
+    copy: `Cuando se puede, evitamos la cirugía 🩺
+
+No siempre el quirófano es el primer paso.
+Muchas lesiones mejoran si tratamos la causa mecánica a tiempo: movilidad, carga y compensación.
+
+En Kinésica priorizamos terapia manual y reeducación 1 a 1. La cirugía queda como último recurso cuando realmente hace falta.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 3178-1733
+
+#TerapiaConservadora #SinCirugia #Kinesiologia #Kinésica`
+  },
+  {
+    id: "142_40_anos_atencion",
+    title: "Más de 40 años atendiendo",
+    cat: "EXPERIENCIA",
+    group: "filosofia",
+    body: "Décadas escuchando cuerpos y corrigiendo causas. Experiencia clínica al servicio de tu recuperación 1 a 1.",
+    feedUrl: "campanas/feed/catalogo_feed_142_40_anos_atencion.png",
+    storyUrl: "campanas/story/catalogo_story_142_40_anos_atencion.png",
+    copy: `Más de 40 años atendiendo 🙌
+
+No es solo un número: son décadas escuchando cuerpos, detectando compensaciones y corrigiendo causas.
+
+En Kinésica esa experiencia se traduce en sesiones 1 a 1 de 60 minutos, con mirada global y manos que saben qué buscar.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 3178-1733
+
+#ExperienciaClinica #KinesiologiaPalermo #Kinésica`
+  },
+  {
+    id: "143_dolor_al_mover",
+    title: "¿Te duele al hacer un movimiento?",
+    cat: "SEÑAL DEL CUERPO",
+    group: "filosofia",
+    body: "Ese pinchazo es información. No lo ignores: evaluamos qué se bloquea y lo tratamos antes de que se vuelva crónico.",
+    feedUrl: "campanas/feed/catalogo_feed_143_dolor_al_mover.png",
+    storyUrl: "campanas/story/catalogo_story_143_dolor_al_mover.png",
+    copy: `¿Te duele al hacer un movimiento? ⚠️
+
+Ese pinchazo al girar, al agacharte o al levantar el brazo no es “casualidad”.
+Es tu cuerpo avisando que algo se bloquea o se sobrecarga.
+
+En Kinésica evaluamos el movimiento que duele y tratamos la causa antes de que se vuelva crónica.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 3178-1733
+
+#DolorAlMover #SenalDelCuerpo #TerapiaManual #Kinésica`
+  },
+  {
+    id: "144_postura_no_esperar",
+    title: "No te dejes estar con la postura",
+    cat: "POSTURA",
+    group: "filosofia",
+    body: "La mala postura no se “acostumbra”: se acumula. Corregimos desequilibrios antes de que duelan todos los días.",
+    feedUrl: "campanas/feed/catalogo_feed_144_postura_no_esperar.png",
+    storyUrl: "campanas/story/catalogo_story_144_postura_no_esperar.png",
+    copy: `No te dejes estar con la postura 🪑
+
+“Ya me acostumbré” suele significar que el cuerpo está compensando.
+Hombros redondos, cuello adelante y espalda rígida se acumulan… hasta que duelen todos los días.
+
+En Kinésica corregimos el desequilibrio con RPG, osteopatía y reeducación postural 1 a 1.
+
+📍 Charcas 3889, Palermo
+📲 WhatsApp: +54 9 11 3178-1733
+
+#Postura #RPG #SaludPostural #Kinésica`
   }
 ];
 
