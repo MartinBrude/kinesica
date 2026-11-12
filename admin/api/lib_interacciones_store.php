@@ -282,7 +282,8 @@ function interacciones_normalize_event(array $in, string $defaultSource = 'push'
 /**
  * Inserta un evento. Idempotente y sin pérdida:
  *  - misma clave y mismo texto => duplicado (se ignora)
- *  - misma clave y texto distinto => se guarda como variante (nunca se descarta)
+ *  - misma clave y texto contenido/subconjunto => duplicado (evita fantasma live+reconcile)
+ *  - misma clave y texto distinto no relacionado => se guarda como variante
  * Lanza PDOException solo ante fallos reales de BD.
  *
  * @return string 'stored'|'duplicate'
@@ -366,6 +367,21 @@ function interacciones_insert_event(PDO $pdo, array $ev): string
             ]);
         }
         return 'duplicate';
+    }
+    // Misma clave con texto relacionado (p. ej. live push concatenó followup y
+    // reconcile reimporta solo final_message): no crear variante fantasma.
+    $existingBody = is_string($existing) ? trim($existing) : '';
+    $incomingBody = trim((string) ($ev['body'] ?? ''));
+    if ($existingBody !== '' && $incomingBody !== '') {
+        $existingHasIncoming = str_contains($existingBody, $incomingBody);
+        $incomingHasExisting = str_contains($incomingBody, $existingBody);
+        if ($existingHasIncoming || $incomingHasExisting) {
+            if ($incomingHasExisting && mb_strlen($incomingBody, 'UTF-8') > mb_strlen($existingBody, 'UTF-8')) {
+                $updBody = $pdo->prepare('UPDATE interaccion_eventos SET body = :body WHERE event_key = :k');
+                $updBody->execute(['body' => $incomingBody, 'k' => $ev['event_key']]);
+            }
+            return 'duplicate';
+        }
     }
     $params['k'] = substr($ev['event_key'], 0, 90) . '~' . substr(sha1($ev['body']), 0, 8);
     try {

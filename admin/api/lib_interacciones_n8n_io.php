@@ -71,12 +71,27 @@ function interacciones_events_from_execution(array $tree, string $execId, ?strin
     if ($patient !== null) {
         $events[] = $patient;
     }
-    $reply = trim((string) ($run['Format Validated Message'][0]['data']['main'][0][0]['json']['final_message'] ?? ''));
+    $fvmJson = is_array($fvm) ? $fvm : [];
+    $reply = trim((string) ($fvmJson['final_message'] ?? ''));
+    $replyTs = max($ts, interacciones_parse_ts($stoppedAt, $ts));
     if ($reply !== '') {
-        $replyTs = max($ts, interacciones_parse_ts($stoppedAt, $ts));
         $clara = interacciones_normalize_event($base + ['direction' => 'clara', 'body' => $reply, 'ts' => $replyTs], 'n8n-pull');
         if ($clara !== null) {
             $events[] = $clara;
+        }
+    }
+    $followup = trim((string) ($fvmJson['faq_followup'] ?? ''));
+    if ($followup !== '') {
+        $safeMsgId = substr(preg_replace('/[^A-Za-z0-9=_\-.]/', '', $msgId) ?? '', 0, 80);
+        $followKey = $safeMsgId !== '' ? ('wa:' . $safeMsgId . ':f') : '';
+        $claraFollow = interacciones_normalize_event($base + [
+            'direction' => 'clara',
+            'body' => $followup,
+            'ts' => $replyTs + 1,
+            'event_key' => $followKey,
+        ], 'n8n-pull');
+        if ($claraFollow !== null) {
+            $events[] = $claraFollow;
         }
     }
     return $events;

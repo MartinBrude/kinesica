@@ -133,8 +133,8 @@ export function resolveMainMenuResponse(norm, chatLang, ctx, opts = {}) {
     return { handled: true, text, nextSubmenu: "turnos", letter: "a", viaNaturalLanguage: false };
   }
   const agendarInvite = (chatLang === "en")
-    ? "📅 *Would you like to book?* You can check available days and times and reserve your session here:\n👉 *https://kinesica.com.ar/agendar*"
-    : "📅 *¿Querés agendar?* Podés ver los días y horarios disponibles y reservar tu sesión acá:\n👉 *https://kinesica.com.ar/agendar*";
+    ? "📅 *Would you like to book?* You can check available days and times and reserve your session here:\n👉 *https://kinesica.com.ar/agendar*\n\n_(Type *MENU* for more options)_"
+    : "📅 *¿Querés agendar?* Podés ver los días y horarios disponibles y reservar tu sesión acá:\n👉 *https://kinesica.com.ar/agendar*\n\n_(Escribí *MENU* para más opciones)_";
 
   if (!exactOnly && NL_BOOKING.test(raw) && !/\b(?:cancelar|anular|consultar|cancel|reschedule|check)\b/i.test(raw)) {
     // Alineado al bot: NL de agendar → texto de opción A (turnera), no el submenú.
