@@ -444,6 +444,10 @@ main {
   display: block;
 }
 
+.btn-nav-toggle .nav-toggle-close {
+  display: none;
+}
+
 .admin-nav-backdrop {
   display: none;
 }
@@ -549,6 +553,17 @@ main {
   }
   html.is-nav-open .btn-nav-toggle .nav-toggle-close {
     display: block;
+  }
+
+  /* Mobile: sin Administración, encuestas, manual ni Excel de contactos */
+  #nav-group-admin,
+  #nav-btn-admin,
+  #nav-btn-encuestas,
+  #dash-card-admin,
+  #dash-card-encuestas,
+  #dash-btn-manual,
+  #dash-btn-sheets {
+    display: none !important;
   }
   .nav-dropdown {
     display: flex;
