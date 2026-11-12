@@ -6,14 +6,14 @@ Guía operativa para gestionar la captación de pacientes a través de campañas
 
 ## 🧭 Módulos Disponibles en el Panel de Administración
 
-1. **Creativos Instagram (`/admin/creativos`):** Ubicado en el menú superior **Meta**, accesible tanto para administradores como para Norberto. Incluye el catálogo de **151** piezas gráficas, el sistema de Me gusta (`❤️`) para armar la lista de publicación, Drag & Drop para reordenar y la publicación automática en Instagram (@kinesicabrude).
+1. **Creativos Instagram (`/admin/creativos`):** Ubicado en el menú superior **Meta**, accesible tanto para administradores como para Norberto. Incluye el catálogo de **152** piezas gráficas, el sistema de Me gusta (`❤️`) para armar la lista de publicación, Drag & Drop para reordenar y la publicación automática en Instagram (@kinesicabrude).
 2. **Turnos de campaña (`/admin/campana`):** Ubicado en el menú superior **Administración**, permite la supervisión de citas originadas por campañas publicitarias, conciliación con Google Calendar y exportación de datos a CSV.
 
 ---
 
 ## 🎨 1. Galería de Creativos Instagram (`/admin/creativos`)
 
-La galería reúne **151 piezas publicitarias y educativas** de alta calidad fotográfica y renders médicos 3D estilo Pomelli, diseñadas con la identidad visual institucional de Kinésica (Charcas 3889, Palermo, CABA). Incluye temporada (Felices Fiestas, vacaciones), avisos de turnos y educación clínica (hernias, cefalea, ATM/bruxismo, mareos, capsulitis, túnel carpiano, fascitis, esguince, escoliosis, tendinitis, miembro fantasma, etc.).
+La galería reúne **152 piezas publicitarias y educativas** de alta calidad fotográfica y renders médicos 3D estilo Pomelli, diseñadas con la identidad visual institucional de Kinésica (Charcas 3889, Palermo, CABA). Incluye temporada (Felices Fiestas, vacaciones), avisos de turnos y educación clínica (hernias, cefalea, ATM/bruxismo, mareos, capsulitis, túnel carpiano, fascitis, esguince, escoliosis, tendinitis, miembro fantasma, etc.).
 
 ### 📐 Formatos Disponibles con un Clic
 
@@ -27,7 +27,7 @@ Podés alternar entre ambos formatos con el selector superior **Formato: Feed (4
 ### 🏷️ Categorías y Búsqueda
 
 Las piezas están organizadas con filtros del catálogo (más la **🗑 Papelera** para piezas ocultas que se pueden restaurar):
-* **Todas**: Catálogo completo (151 piezas visibles).
+* **Todas**: Catálogo completo (152 piezas visibles).
 * **Filosofía & Marca**: Educación sobre causa raíz vs. síntoma, compensación, tipos de dolor, atención 1 a 1 de 60 minutos.
 * **Columna & ATM**: Cervicalgia, lumbalgia, ciatalgia, hernia de disco, dorsalgia, rectificación cervical, escoliosis, ATM y bruxismo.
 * **Articulaciones**: Manguito rotador, rodilla, fascitis plantar, túnel carpiano, tendinitis, miembro fantasma, etc.
