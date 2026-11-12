@@ -23,7 +23,7 @@ Antes de iniciar una nueva simulación o cuando quieras probar desde un teléfon
    - Tu siguiente mensaje será el verdadero primer mensaje de la prueba desde 0.
 3. **Alternar entre Modo Menú (sin IA, activo por defecto) y Modo IA conversacional:**
    - Desde los teléfonos de administrador (Norberto `11 6156-4311` o María `11 2853-1224`), podés enviar `"modo menu"` (para probar el flujo por letras `A`–`E` sin IA) o `"modo ia"` (para probar los casos conversacionales con IA `TC-01` a `TC-95`).
-   - También podés probar el flujo del menú en tiempo real sin usar el celular desde el **Simulador Interactivo de WhatsApp** en **`/admin/clara`** (pestaña **Clara & Mensajes**).
+   - También podés probar el flujo del menú en tiempo real sin usar el celular desde **Clara → Simulador** en **`/admin/clara`**.
 
 ---
 

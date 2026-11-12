@@ -26,11 +26,11 @@ Podés alternar entre ambos formatos con el selector superior **Formato: Feed (4
 
 ### 🏷️ Categorías y Búsqueda
 
-Las piezas están organizadas en 4 grupos temáticos según la necesidad clínica del paciente:
-* **Todos**: Catálogo completo (138 piezas).
-* **Filosofía y Marca**: Educación sobre causa raíz vs. síntoma, compensación, tipos de dolor, atención 1 a 1 de 60 minutos.
-* **Columna y Postura**: Cervicalgia, lumbalgia, ciatalgia, hernia de disco, dorsalgia, rectificación cervical, escoliosis.
-* **Articulaciones y Extremidades**: ATM y bruxismo, manguito rotador, rodilla, fascitis plantar, túnel carpiano, tendinitis, miembro fantasma.
+Las piezas están organizadas con filtros del catálogo (más la **🗑 Papelera** para piezas ocultas que se pueden restaurar):
+* **Todas**: Catálogo completo (138 piezas visibles).
+* **Filosofía & Marca**: Educación sobre causa raíz vs. síntoma, compensación, tipos de dolor, atención 1 a 1 de 60 minutos.
+* **Columna & ATM**: Cervicalgia, lumbalgia, ciatalgia, hernia de disco, dorsalgia, rectificación cervical, escoliosis, ATM y bruxismo.
+* **Articulaciones**: Manguito rotador, rodilla, fascitis plantar, túnel carpiano, tendinitis, miembro fantasma, etc.
 
 El **buscador en tiempo real** permite filtrar instantáneamente por cualquier síntoma o patología.
 

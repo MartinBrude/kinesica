@@ -8,6 +8,7 @@
 > 🧪 **Guía Oficial de Pruebas y Comandos:** [Ver Guía de Pruebas](guia-pruebas.md)  
 > 📱 **Cuenta de WhatsApp de Clara:** [Ver Configuración de WhatsApp](cuenta-whatsapp-clara.md)  
 > 💾 **Copias de Seguridad y Recuperación (Backups):** [Ver Manual de Backups](backups-y-recuperacion.md)  
+> 📢 **Campañas y Creativos Instagram:** [Ver Manual de Campañas](campanas-y-creativos.md)  
 > *(Este manual está restringido exclusivamente a usuarios administradores del panel `/admin/`).*
 
 ---
@@ -17,19 +18,22 @@
 | Si necesitás... | Andá a... |
 |---|---|
 | Ver / bloquear / cancelar turnos manualmente | **Google Calendar (`consultorio`)** → [Sección 3](#3-guia-maestra-de-google-calendar-como-funciona-por-detras-que-deben-hacer-y-que-no) y [Sección 9](#9-machete-rapido-de-comandos-para-los-profesionales) |
-| Cambiar horarios de atención u honorarios ($ ATM / $ General) | **Panel Admin → Consultorio (`/admin/consultorio`)** → [Sección 2.2](#22-horarios-honorarios-y-reglas-de-atencion-del-consultorio) |
-| Editar textos del menú de Clara (`A`–`E`, `F`...) o probar en el simulador | **Panel Admin → Clara & Mensajes (`/admin/clara`)** → [Sección 2.1](#21-menu-interactivo-por-letras-a-e-modo-sin-ia-activo-por-defecto) |
-| Pausar o reactivar a Clara (o alternar entre Modo Menú y Modo IA) | **Panel Admin (`/admin/`)** o WhatsApp de Norberto/María → [Sección 5](#5-el-modo-administrador-como-le-hablan-los-profesionales-a-clara) |
+| Agendar un turno desde el panel | **Panel Admin → Consultorio → Agendar Turnos (`/admin/consultorio`)** → [Cómo agendar](como-agendar.md) |
+| Cambiar horarios de atención u honorarios ($ ATM / $ General) | **Panel Admin → Consultorio → Horarios / Honorarios (`/admin/consultorio`)** → [Sección 2.2](#22-horarios-honorarios-y-reglas-de-atencion-del-consultorio) |
+| Editar textos del menú de Clara (`A`–`E`, `F`...) o probar en el simulador | **Panel Admin → Clara → Mensajes y menú / Simulador (`/admin/clara`)** → [Sección 2.1](#21-menu-interactivo-por-letras-a-e-modo-sin-ia-activo-por-defecto) |
+| Pausar o reactivar a Clara (o la turnera web) | **Panel Admin → Clara → Estado de servicios** o WhatsApp de Norberto/María → [Sección 5](#5-el-modo-administrador-como-le-hablan-los-profesionales-a-clara) |
 | Saber qué avisos les llegan a Norberto y María | [Sección 4](#4-que-notificaciones-le-llegan-a-norberto-y-a-maria-a-su-celular) |
-| Ver y gestionar pacientes, datos de contacto o pedir reviews de Google | **Panel Admin → Pacientes (`/admin/pacientes`)** → [Sección 7](#7-directorio-de-pacientes-fichas-clinicas-y-resenas-de-google) |
-| Cargar historias clínicas de ATM y evaluación craneomandibular | **Panel Admin → Fichas Clínicas (`/admin/fichas`)** → [Sección 7.4](#74-historias-clinicas-de-atm-y-evaluacion-craneomandibular-adminfichas) |
-| Supervisar recordatorios de turnos, cargar contactos o enviar manual | **Panel Admin → Recordatorios (`/admin/recordatorios`)** → [Sección 3.3](#33-recordatorio-automatico-de-turnos-en-whatsapp) |
-| Auditar mensajes de WhatsApp e historial de conversaciones | **Panel Admin → Interacciones (`/admin/interacciones`)** → [Sección 4.2](#42-auditoria-de-interacciones-en-tiempo-real-admininteracciones) |
+| Ver y gestionar pacientes, datos de contacto o pedir reviews de Google | **Panel Admin → Clínica → Directorio de Pacientes (`/admin/pacientes`)** → [Sección 7](#7-directorio-de-pacientes-fichas-clinicas-y-reseñas-de-google) |
+| Cargar historias clínicas de ATM y evaluación craneomandibular | **Panel Admin → Clínica → Historias Clínicas (`/admin/fichas`)** → [Sección 7.4](#74-historias-clinicas-de-atm-y-evaluacion-craneomandibular-adminfichas) |
+| Supervisar recordatorios de turnos, cargar contactos o enviar manual | **Panel Admin → Meta → Registro de Recordatorios (`/admin/recordatorios`)** → [Sección 3.3](#33-recordatorio-automatico-de-turnos-en-whatsapp) |
+| Auditar WhatsApp, DMs de Instagram e historial | **Panel Admin → Meta → Bandeja de Interacciones (`/admin/interacciones`)** → [Sección 4.2](#42-auditoria-de-interacciones-en-tiempo-real-admininteracciones) |
+| Descargar o programar creativos de Instagram | **Panel Admin → Meta → Creativos Instagram (`/admin/creativos`)** → [Manual de Campañas](campanas-y-creativos.md) |
+| Ver encuestas de satisfacción | **Panel Admin → Clara → Encuestas (`/admin/encuestas`)** → [Sección 8.4](#84-barra-de-navegacion-y-accesos-rapidos-del-dashboard) |
 | Ver quién espera un hueco liberado | Pestaña `Lista de Espera` en Google Sheets → [Sección 6](#6-lista-de-espera-inteligente-en-google-sheets) |
 | Probar a Clara desde el simulador o el celular | [Sección 8](#8-como-probar-a-clara-y-supervisar-el-sistema) y [Guía de Pruebas](guia-pruebas.md) |
-| Descargar backups de la base de datos o ver copias de seguridad | **Panel Admin → Menú Administración → Base de Datos y Backups** → [Manual de Backups](backups-y-recuperacion.md) |
-| Reportar un error técnico o enviar sugerencias con fotos/videos | **Panel Admin → Menú Administración → Reportar Error** → [Sección 8.3](#83-reporte-y-seguimiento-de-errores-tecnicos) |
-| Gestionar usuarios, roles (Admin/Profesional) o gastos | **Panel Admin → Menú Administración** → [Guía de Acceso](configuracion-cuentas-profesionales.md) |
+| Descargar backups de la base de datos o ver copias de seguridad | **Panel Admin → Administración → Copias de seguridad** → [Manual de Backups](backups-y-recuperacion.md) |
+| Reportar un error técnico o enviar sugerencias con fotos/videos | **Panel Admin → Administración → Reporte de errores** → [Sección 8.3](#83-reporte-y-seguimiento-de-errores-tecnicos) |
+| Gestionar usuarios, roles (Admin/Profesional) o gastos | **Panel Admin → Administración** → [Guía de Acceso](configuracion-cuentas-profesionales.md) |
 
 ---
 
@@ -103,7 +107,7 @@ Clara cuenta con dos modos de operación que comparten la misma agenda (`consult
 
 ### 🔤 2.1. Menú interactivo por letras A–E (Modo sin IA — Activo por defecto)
 
-En el **Modo Menú** (`modo menu`, activo por defecto en producción), Clara responde de forma instantánea y 100% determinista según la letra o el número exacto elegido por el paciente. Todos los textos del menú (`menu_welcome`, opciones `A` a `E`, submenús y opciones adicionales `F`, `G`...) se pueden editar en tiempo real desde el panel **`/admin/clara`** (**Clara & Mensajes**), que además cuenta con un **Simulador Interactivo de WhatsApp** para probar los cambios al instante.
+En el **Modo Menú** (`modo menu`, activo por defecto en producción), Clara responde de forma instantánea y 100% determinista según la letra o el número exacto elegido por el paciente. Todos los textos del menú (`menu_welcome`, opciones `A` a `E`, submenús y opciones adicionales `F`, `G`...) se pueden editar en tiempo real desde **Clara → Mensajes y menú** (`/admin/clara`), y probarse al instante en **Clara → Simulador**.
 
 ```mermaid
 flowchart TD
@@ -162,10 +166,10 @@ Escribir *E* solo no avisa a ningún profesional. En el menú principal, los nú
 | DNI o Pasaporte tras *A* → *1* | Busca turnos agendados con ese documento (tolerando puntos, guiones, espacios y letras extranjeras), los lista numerados y habilita su cancelación con *C1*, *C2*, etc. |
 | *C1* (o *C2*, *C3*...) | Cancela en Google Calendar el turno correspondiente de la lista vigente (válida por 30 minutos), confirma día y hora al paciente y avisa por WhatsApp al profesional a cargo. Si la lista venció, pide volver a consultar los turnos (*A* → *1*). |
 | *B* (o *2* en menú principal) | Envía el texto de ubicación y enlace de Google Maps configurado en `/admin/clara` (`opt_b_text`), tal cual, sin adjuntar la grilla de horarios de los profesionales. |
-| *C* (o *3* en menú principal) | Envía el texto de honorarios y cobertura configurado en `/admin/clara` (`opt_c_text`), reemplazando automáticamente `{honorario_atm}`, `{honorario_general}` y `{medios_pago}` con los valores vigentes de la pestaña **Consultorio** (`/admin/consultorio`). |
+| *C* (o *3* en menú principal) | Envía el texto de honorarios y cobertura configurado en `/admin/clara` (`opt_c_text`), reemplazando automáticamente `{honorario_atm}`, `{honorario_general}` y `{medios_pago}` con los valores vigentes de **Consultorio → Honorarios** (`/admin/consultorio`). |
 | *D* (o *4* en menú principal) | Envía las pautas de vestimenta para la sesión configuradas en `/admin/clara` (`opt_d_text`). |
 | *E* (o *5* en menú principal) y después *1*, *2*, *3* o un texto | Al elegir *E* muestra el submenú de contacto con un profesional (sin disparar alerta todavía). Al responder *1* avisa a Norberto, con *2* avisa a María, y con *3* (o escribiendo directamente su consulta tras *E*) avisa al profesional correspondiente según especialidad o al azar 50/50. |
-| *F*, *G*, ... (opciones adicionales) | Responde el texto informativo configurado en el panel **`/admin/clara`** (pestaña **Clara & Mensajes**). Cierra cualquier submenú previo y vuelve a dejar disponible el menú principal. |
+| *F*, *G*, ... (opciones adicionales) | Responde el texto informativo configurado en **Clara → Mensajes y menú** (`/admin/clara`). Cierra cualquier submenú previo y vuelve a dejar disponible el menú principal. |
 
 * **Expiración de submenú:** El submenú activo (*A* o *E*) caduca automáticamente a los **15 minutos** (la lista de turnos para cancelar con `C1` dura **30 minutos**), o antes si la persona elige otra letra o escribe `MENU`.
 * **Filtro anti-repetición de 20 segundos:** Si un usuario envía exactamente la misma consulta determinista dos veces seguidas en menos de 20 segundos, el sistema ignora el duplicado para no enviar dos respuestas idénticas.
@@ -191,12 +195,12 @@ Para brindar una experiencia cálida y sin fricciones, Clara incluye respuestas 
 
 Tanto el menú de Clara como la turnera web (`/agendar`) y el Modo IA respetan en tiempo real los valores y reglas operativas del consultorio:
 
-* **Honorarios dinámicos (configurables en `/admin/consultorio`, actualmente $65.000 ATM / $75.000 resto):** Clara toma en tiempo real los valores y medios de pago configurados en la pestaña **Consultorio** del panel de administración:
+* **Honorarios dinámicos** (configurables en Consultorio → Honorarios y Formas de Pago; actualmente $65.000 ATM / $75.000 resto): Clara toma en tiempo real los valores y medios de pago vigentes:
   - **$65.000** para ATM (articulación temporomandibular, bruxismo o dolor de mandíbula).
   - **$75.000** para el resto de las consultas y tratamientos (sesiones habituales de 60 minutos).
 * **Obras sociales y prepagas:** Se atiende de forma particular en sesiones individuales de 1 hora completa, entregando factura oficial para tramitar el reintegro correspondiente.
 * **Dirección exacta, Google Maps y Transporte Público:** `Charcas 3889, Piso 5º, Dpto B, Palermo, CABA`, enlace de Google Maps ([https://maps.app.goo.gl/urpkh4HYe7dSdjPS9](https://maps.app.goo.gl/urpkh4HYe7dSdjPS9)) y referencias de transporte (a 2 cuadras de Av. Santa Fe, Estación Scalabrini Ortiz del Subte D y Jardín Botánico).
-* **Franjas Oficiales de Turnos por Profesional (configurables en `/admin/consultorio`):** Los turnos presenciales se otorgan **exclusivamente dentro de los horarios oficiales de cada profesional de lunes a viernes hábiles de 08:00 a 19:30 hs** (administrables en vivo desde la pestaña **Consultorio** del panel `/admin/`, con validación automática de **1 sola camilla física**):
+* **Franjas oficiales de turnos por profesional** (configurables en Consultorio → Horarios de Atención): Los turnos presenciales se otorgan **exclusivamente dentro de los horarios oficiales de cada profesional de lunes a viernes hábiles de 08:00 a 19:30 hs** (administrables en vivo desde `/admin/consultorio`, con validación automática de **1 sola camilla física**):
   - **Lic. María Gulin (configuración actual):**
     - **Lunes:** 09:00 a 17:00 hs (turnos de 09:00 a 16:00 hs inclusive; el último turno finaliza a las 17:00 hs).
     - **Martes:** 09:00 a 16:00 hs (turnos de 09:00 a 15:00 hs inclusive; el último turno finaliza a las 16:00 hs).
@@ -369,7 +373,7 @@ Cuando un turno se agenda correctamente en Google Calendar y Clara está activa 
 
 #### 📊 3.3.1. Supervisión, Carga de Contactos y Despacho (`/admin/recordatorios`)
 
-El consultorio cuenta con un panel especializado de supervisión en **[https://www.kinesica.com.ar/admin/recordatorios](https://www.kinesica.com.ar/admin/recordatorios)** que permite auditar en vivo el estado de todos los recordatorios:
+El consultorio cuenta con un panel especializado en **Meta → Registro de Recordatorios** ([`/admin/recordatorios`](https://www.kinesica.com.ar/admin/recordatorios)) que permite auditar en vivo el estado de todos los recordatorios:
 
 1. **Previsión "A enviar" y Detección Temprana de Contactos Faltantes:**  
    Muestra todos los turnos agendados para la próxima jornada de atención (mañana, o lunes si es fin de semana). Si a algún paciente le falta el teléfono registrado en el evento o en el directorio:
@@ -434,12 +438,13 @@ Si por algún motivo el servicio de Meta WhatsApp se interrumpe, se cae o falla 
 * **Canal de envío y seguridad:** Despacho nativo vía Google Apps Script (`MailApp`) autenticado con token secreto (`secret`) y destinatario fijo en servidor (`norberto1712@gmail.com`).
 
 ### 📱 4.2. Auditoría de Interacciones en Tiempo Real (`/admin/interacciones`)
-El consultorio dispone de un registro completo de auditoría en la pestaña **Interacciones** ([`/admin/interacciones`](https://www.kinesica.com.ar/admin/interacciones)):
-* **Sincronización en vivo:** Cada mensaje recibido por WhatsApp, respuesta determinista de Clara, audio transcripto o derivación se sincroniza de forma inmediata con la base de datos de producción.
+El consultorio dispone de un registro completo de auditoría en **Meta → Bandeja de Interacciones** ([`/admin/interacciones`](https://www.kinesica.com.ar/admin/interacciones)):
+* **WhatsApp + Instagram Direct:** La misma bandeja concentra chats de WhatsApp de Clara y mensajes Direct de Instagram (Meta). Los hilos de Instagram se marcan con badge propio y abren el inbox de Instagram Direct; podés filtrar escribiendo `instagram`, `ig` o `meta` en el buscador.
+* **Sincronización en vivo:** Cada mensaje recibido, respuesta determinista de Clara, audio transcripto o derivación se sincroniza de forma inmediata con la base de datos de producción.
 * **Control de respuestas (`answered`):** El sistema preserva el estado de atención para que el equipo sepa qué consultas fueron resueltas por Clara y cuáles requirieron intervención o derivación manual.
-* **Archivos multimedia y notas de voz:** Los estudios médicos, fotos de órdenes, comprobantes y audios de voz enviados por los pacientes se capturan y pueden visualizarse o reproducirse directamente desde la interfaz de `/admin/interacciones`.
+* **Archivos multimedia y notas de voz:** Los estudios médicos, fotos de órdenes, comprobantes y audios de voz enviados por los pacientes se capturan y pueden visualizarse o reproducirse directamente desde la interfaz.
 * **SLA sin respuesta (> 3 h):** Si un mensaje queda pendiente (sin marcar como respondido) más de **3 horas**, el sistema avisa por WhatsApp a **Norberto**. Hay como máximo **una notificación por mensaje** (no se reenvía aunque siga pendiente). Las alertas se envían solo entre las **10:00 y las 20:00 (hora Argentina)**; fuera de ese horario el aviso espera a las 10:00.
-* **Búsqueda e historial:** Permite filtrar rápidamente por paciente, número de teléfono o fecha con paginación completa.
+* **Búsqueda e historial:** Permite filtrar rápidamente por paciente, número de teléfono, canal (WhatsApp / Instagram) o fecha con paginación completa.
 
 ---
 
@@ -468,7 +473,8 @@ Norberto y María marcan ese horario ellos mismos en Google Calendar (`🚫 [BLO
 Silencia a Clara para **todos** los pacientes en simultáneo (útil ante emergencias, mantenimiento o situaciones generales). Se puede activar o desactivar por cualquiera de estas dos vías:
 
 * **Opción A — Desde el Panel de Administración (`/admin/`):**
-  - En la pestaña **Inicio** (`/admin/`) o en **Clara & Mensajes** (`/admin/clara`), hacer clic en el botón **"Pausar bot"** (o **"Activar bot"** para reanudarla). El cambio impacta en tiempo real tanto en las respuestas de WhatsApp como en el envío de recordatorios.
+  - En el **Dashboard** (`/admin/`) o en **Clara → Estado de servicios**, hacer clic en **"Pausar bot"** (o **"Activar bot"** para reanudarla). El cambio impacta en tiempo real tanto en las respuestas de WhatsApp como en el envío de recordatorios.
+  - En la misma sección podés **pausar o reactivar la turnera web** (`/agendar`) de forma independiente, sin silenciar a Clara en WhatsApp.
 * **Opción B — Desde el WhatsApp de Norberto o María:**
   - **Para pausar todo el bot:** Escribirle a Clara `"pausar bot"`, `"silencio"` o `"lo atiendo yo"` (sin especificar paciente). Clara responde *"Entendido [Norberto/María], pausado el bot en general. Te dejo las conversaciones a vos 🙌"* y entra en silencio para todos los pacientes.
   - **Para reanudar todo el bot:** Escribirle `"reanudar bot"`, `"activar bot"`, `"retomar bot"` o `"reanudar todo"`. Clara responde *"¡Listo [Norberto/María]! Vuelvo a estar activa y atenta a las consultas 🌿"*.
@@ -571,8 +577,9 @@ El módulo clínico de **Historias Clínicas** ([`kinesica.com.ar/admin/fichas`]
 ## 🧪 8. ¿Cómo probar a Clara y Supervisar el Sistema?
 
 ### A. Desde el Simulador Interactivo del Panel Admin
-1. Ingresá a **[https://www.kinesica.com.ar/admin/clara](https://www.kinesica.com.ar/admin/clara)** (pestaña **Clara & Mensajes**).
-2. A la derecha vas a ver el **Simulador de WhatsApp en vivo**, donde podés tocar los botones rápidos (`Hola`, `A`, `B`, `C`, `D`, `E`, `1`, `2`, `MENU`) o escribir cualquier mensaje para probar cómo responde Clara con los textos y honorarios vigentes sin consumir mensajes en tu teléfono.
+1. Ingresá a **Clara → Simulador** ([`/admin/clara`](https://www.kinesica.com.ar/admin/clara)).
+2. Vas a ver el **Simulador de WhatsApp en vivo**, donde podés tocar los botones rápidos (`Hola`, `A`, `B`, `C`, `D`, `E`, `1`, `2`, `MENU`) o escribir cualquier mensaje para probar cómo responde Clara con los textos y honorarios vigentes sin consumir mensajes en tu teléfono.
+3. Los textos del menú se editan en **Clara → Mensajes y menú**; la plantilla de recordatorio en **Clara → Plantilla de recordatorio**; y las políticas del mail de confirmación (cancelación 24 hs, puntualidad/acceso y mail de prueba) en **Clara → Políticas del mail**.
 
 ### B. Desde tu celular en WhatsApp (`/restart`)
 1. Abrí el chat de WhatsApp con el número de Clara (`11 3178-1733`).
@@ -586,26 +593,28 @@ El módulo clínico de **Historias Clínicas** ([`kinesica.com.ar/admin/fichas`]
 
 El sistema cuenta con una arquitectura de resguardo automatizado de base de datos (`pacientes_kinesica.db`) y archivos de configuración:
 * **Copias en Caliente (Hot SQLite Backups):** Permite generar copias de seguridad consistentes sin necesidad de interrumpir el servicio ni suspender la atención de turnos.
-* **Descarga Inmediata desde la Web:** Los administradores pueden ingresar al desplegable superior **Administración → Base de Datos y Backups** y descargar un volcado completo de la base de datos con un solo clic.
+* **Descarga Inmediata desde la Web:** Los administradores pueden ingresar al desplegable superior **Administración → Copias de seguridad** y descargar un volcado completo de la base de datos con un solo clic.
 * **Política de Retención de 8 Semanas:** El servidor rota y mantiene automáticamente las copias semanales de las últimas 8 semanas, depurando copias más antiguas para optimizar almacenamiento.
 * 📖 Para conocer el procedimiento de restauración ante contingencias, consultá el [**Manual de Copias de Seguridad y Recuperación ante Desastres**](backups-y-recuperacion.md).
 
 ### 🐛 8.3. Reporte y Seguimiento de Errores Técnicos
 
 Para facilitar la comunicación ágil entre el equipo clínico y el soporte técnico de desarrollo:
-* **Formulario Dedicado:** Ubicado en la barra superior en **Administración → Reportar Error**.
+* **Formulario Dedicado:** Ubicado en la barra superior en **Administración → Reporte de errores**.
 * **Subida de Evidencias:** Permite describir el comportamiento observado y adjuntar directamente archivos de captura de pantalla y **videos grabados desde la computadora o el teléfono móvil**.
 * **Seguimiento Centralizado:** Cada reporte genera un identificador que el equipo técnico audita y resuelve de inmediato.
 
 ### 🧭 8.4. Barra de Navegación y Accesos Rápidos del Dashboard
 
-El panel `/admin/` cuenta con una distribución ergonómica optimizada:
+El panel `/admin/` organiza la operación en **menús desplegables** en la barra superior:
 * **Dashboard Principal (`/admin/`):** Presenta el saludo del día, estado en vivo de Clara (Activa / Pausada con botón toggle) y accesos directos destacados:
   - **`📖 Manual de Usuario ↗`:** Abre este visualizador interactivo centralizado (`/admin/manual.html`).
   - **`📊 Profesionales para contactar ↗`:** Abre directamente la hoja de cálculo oficial en Google Drive.
-* **Operación Médica y Diaria:** Pestañas directas para *Clínica* (Historias Clínicas y Directorio de Pacientes), *Consultorio* (turnera, horarios y honorarios), *WhatsApp* (Bandeja de Interacciones y Recordatorios) y *Encuestas* (satisfacción anónima).
-* **Configuración del Consultorio y Bot:** Pestañas para *Consultorio* (horarios y honorarios) y *Clara* (textos del menú determinista y simulador).
-* **Menú Desplegable "Administración":** Menú superior que aísla de forma segura los módulos avanzados: *Usuarios (2FA)*, *Gastos Operativos*, *Reporte de errores*, *Copias de seguridad*, *Consumos y Servicios*, *Turnos de campaña* y *Creativos Instagram* ([Manual de Campañas](campanas-y-creativos.md)).
+* **Clínica:** *Historias Clínicas* (`/admin/fichas`) y *Directorio de Pacientes* (`/admin/pacientes`).
+* **Consultorio:** *Agendar Turnos*, *Horarios de Atención* y *Honorarios y Formas de Pago* (secciones internas de `/admin/consultorio`).
+* **Meta:** *Bandeja de Interacciones* (WhatsApp + Instagram Direct), *Registro de Recordatorios* y *Creativos Instagram* ([Manual de Campañas](campanas-y-creativos.md)).
+* **Clara:** *Estado de servicios* (pausar bot / turnera), *Mensajes y menú*, *Plantilla de recordatorio*, *Políticas del mail*, *Simulador* y *Encuestas* de satisfacción (`/admin/encuestas`).
+* **Administración** *(solo rol Admin):* *Usuarios (2FA)*, *Gastos*, *Reporte de errores*, *Copias de seguridad*, *Consumos y Servicios* y *Turnos de campaña*.
 
 ---
 
@@ -619,25 +628,27 @@ Guardá esta tablita a mano para gestionar a Clara desde el celular de **Norbert
 | **Cerrar un hueco específico (bloqueo)** | En **Google Calendar (`consultorio`)** creando un evento `🚫 [BLOQUEADO]`, **`No dar` / `No dar turno`** o **`Tk3`**. Clara no crea bloqueos por chat. |
 | **Cerrar por vacaciones o receso** | En **Google Calendar (`consultorio`)** creando un evento de **día completo** `🏖️ [VACACIONES CONSULTORIO - CERRADO]`. |
 | **Anular o cancelar el turno de un paciente** | En **Google Calendar (`consultorio`)** eliminando el evento o anteponiendo `[CANCELADO]`. Clara no cancela turnos de pacientes por chat para los profesionales. |
-| **Monitorear y gestionar recordatorios** | En el Panel Admin → pestaña **Recordatorios** (`/admin/recordatorios`). Permite ver turnos en "A enviar", cargar teléfonos/emails con `＋ Cargar contacto` y despachar con `⚡ Enviar ahora` o `⚡ Disparar manualmente`. |
-| **Auditar conversaciones de WhatsApp** | En el Panel Admin → pestaña **Interacciones** (`/admin/interacciones`). Revisa mensajes de Clara, derivaciones a profesionales (`wa.me`), estado `answered`, adjuntos (fotos/audios) e historial por paciente. |
-| **Pedir reseña de Google a un paciente** | En el Panel Admin → pestaña **Pacientes** (`/admin/pacientes`), tocando el botón de WhatsApp `⭐ Pedir review` en la fila del paciente. |
-| **Cargar ficha clínica de ATM** | En el Panel Admin → pestaña **Historias Clínicas** (`/admin/fichas`), con selector de motivo (Bruxismo, ATM, dolor), DNI opcional, buscador ágil y exportación a PDF A4. |
-| **Cambiar horarios de atención u honorarios ($)** | En el Panel Admin → pestaña **Consultorio** (`/admin/consultorio`). Rango de atención configurable hasta las 19:30 hs. |
-| **Editar los textos del menú de Clara (A–E, F...)** | En el Panel Admin → pestaña **Clara & Mensajes** (`/admin/clara`). |
-| **Descargar creativos de Instagram y copys** | En el Panel Admin → Menú superior **Administración → Creativos Instagram** (`/admin/creativos`). Formatos Feed (4:5) y Story (9:16) con copys listos para publicar ([Manual de Campañas](campanas-y-creativos.md)). |
-| **Monitorear turnos de campañas publicitarias** | En el Panel Admin → Menú superior **Administración → Turnos de campaña** (`/admin/campana`). Conciliación con Calendar y exportación a CSV ([Manual de Campañas](campanas-y-creativos.md)). |
-| **Ver encuestas de satisfacción de pacientes** | En el Panel Admin → pestaña **Encuestas** (`/admin/encuestas`). |
-| **Pausar todo el bot (Pausa general)** | Tocando **"Pausar bot"** en `/admin/` o escribiéndole a Clara: `"pausar bot"`, `"lo atiendo yo"` o `"silencio"` (se reanuda solo a las 8 hs si nadie lo reactiva antes). |
-| **Reanudar toda la atención de Clara** | Tocando **"Activar bot"** en `/admin/` o escribiéndole a Clara: `"reanudar bot"`, `"activar bot"` o `"reanudar todo"`. |
+| **Monitorear y gestionar recordatorios** | En **Meta → Registro de Recordatorios** (`/admin/recordatorios`). Permite ver turnos en "A enviar", cargar teléfonos/emails con `＋ Cargar contacto` y despachar con `⚡ Enviar ahora` o `⚡ Disparar manualmente`. |
+| **Auditar WhatsApp e Instagram Direct** | En **Meta → Bandeja de Interacciones** (`/admin/interacciones`). Revisa mensajes de Clara, DMs de Instagram, derivaciones (`wa.me`), estado `answered`, adjuntos e historial. Filtrá con `instagram` / `ig` / `meta`. |
+| **Pedir reseña de Google a un paciente** | En **Clínica → Directorio de Pacientes** (`/admin/pacientes`), tocando el botón de WhatsApp `⭐ Pedir review` en la fila del paciente. |
+| **Cargar ficha clínica de ATM** | En **Clínica → Historias Clínicas** (`/admin/fichas`), con selector de motivo (Bruxismo, ATM, dolor), DNI opcional, buscador ágil y exportación a PDF A4. |
+| **Cambiar horarios de atención u honorarios ($)** | En **Consultorio → Horarios de Atención** o **Honorarios y Formas de Pago** (`/admin/consultorio`). Rango configurable hasta las 19:30 hs. |
+| **Editar los textos del menú de Clara (A–E, F...)** | En **Clara → Mensajes y menú** (`/admin/clara`). Probá el resultado en **Clara → Simulador**. |
+| **Editar plantilla / políticas del mail** | En **Clara → Plantilla de recordatorio** o **Clara → Políticas del mail** (incluye mail de prueba de confirmación). |
+| **Descargar o publicar creativos de Instagram** | En **Meta → Creativos Instagram** (`/admin/creativos`). Feed (4:5), Story (9:16), cola con ❤️, captions y publicación automática ([Manual de Campañas](campanas-y-creativos.md)). |
+| **Monitorear turnos de campañas publicitarias** | En **Administración → Turnos de campaña** (`/admin/campana`). Conciliación con Calendar y exportación a CSV ([Manual de Campañas](campanas-y-creativos.md)). |
+| **Ver encuestas de satisfacción de pacientes** | En **Clara → Encuestas** (`/admin/encuestas`). |
+| **Pausar todo el bot (Pausa general)** | Tocando **"Pausar bot"** en `/admin/` o en **Clara → Estado de servicios**, o escribiéndole a Clara: `"pausar bot"`, `"lo atiendo yo"` o `"silencio"` (se reanuda solo a las 8 hs si nadie lo reactiva antes). |
+| **Pausar solo la turnera web** | En **Clara → Estado de servicios**, botón **"Pausar turnera"** (no silencia el chat de WhatsApp). |
+| **Reanudar toda la atención de Clara** | Tocando **"Activar bot"** en `/admin/` o en **Clara → Estado de servicios**, o escribiéndole a Clara: `"reanudar bot"`, `"activar bot"` o `"reanudar todo"`. |
 | **Pausa individual por paciente** | *Desactivada por diseño* para que Clara nunca deje a un paciente sin respuesta. |
 | **Cambiar a Modo Menú por letras (sin IA)** | Escribirle a Clara: `"modo menu"` o `"modo sin ia"` *(modo activo por defecto; números 1 a 9 mapean a letras)*. |
 | **Cambiar a Modo Agente IA conversacional** | Escribirle a Clara: `"modo ia"` o `"modo con ia"`. |
-| **Descargar backup de base de datos** | En el Panel Admin → Menú superior **Administración → Base de Datos y Backups**. |
-| **Reportar un error técnico con video/foto** | En el Panel Admin → Menú superior **Administración → Reportar Error**. |
+| **Descargar backup de base de datos** | En **Administración → Copias de seguridad**. |
+| **Reportar un error técnico con video/foto** | En **Administración → Reporte de errores**. |
 | **Reiniciar tu propio chat de prueba desde cero** | Escribirle a Clara: `/restart` (o `/reset` / `/olvidar`) desde un celular admin o de prueba. |
 | **Olvidar / reiniciar la ficha de otro teléfono o paciente** | Escribirle a Clara desde Admin: `"olvidar 11 6123-4567"` o `"olvidar a Lucas"` (también `/restart 11...` o `borrar ficha Lucas`). |
 
 ---
 
-*Cualquier sugerencia, ajuste de palabras o cambio en las reglas de atención que se quiera hacer, se puede ajustar en vivo desde `/admin/clara` y `/admin/consultorio`.*
+*Cualquier sugerencia, ajuste de palabras o cambio en las reglas de atención que se quiera hacer, se puede ajustar en vivo desde **Clara → Mensajes y menú** (`/admin/clara`) y **Consultorio** (`/admin/consultorio`).*

@@ -12,7 +12,7 @@ Podés agendar de tres formas:
 
 ## 1. Agendar desde Admin
 
-Entrá a `/admin`, abrí la tarjeta **Agendar turnos** y elegí **Abrir turnera profesional**. El flujo tiene dos pasos: seleccionar el paciente y elegir un horario.
+Entrá a `/admin` → **Consultorio → Agendar Turnos** y elegí **Abrir turnera profesional**. El flujo tiene dos pasos: seleccionar el paciente y elegir un horario.
 
 ### Paciente ya registrado
 
