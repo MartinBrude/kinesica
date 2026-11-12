@@ -166,33 +166,36 @@ function ig_render_format(string $id, string $kind, string $cat, string $title, 
     $pill = ig_nfc(mb_strtoupper(trim($cat), 'UTF-8'));
     $pillSize = 16.0;
     $ph = 44;
-    $gapPill = 20;
-    $gapTitle = 18;
+    // Aire vertical (ref. 122): gaps + leading amplios, no texto pegado.
+    $gapPill = 34;
+    $gapTitle = 32;
+    $titleLead = 1.58;
+    $bodyLead = 1.62;
     $tFit = ig_fit_text($title, $fontB, $isStory ? 46 : 40, 26, $maxW, $isStory ? 3 : 3);
     $bFit = ig_fit_text($body, $fontR, $isStory ? 24 : 22, 17, $maxW, $isStory ? 4 : 3);
     if ($tFit['truncated']) $warn[] = 'title_truncated';
     if ($bFit['truncated']) $warn[] = 'body_truncated';
 
-    $titleH = (int) round(count($tFit['lines']) * $tFit['size'] * 1.30);
-    $bodyH = (int) round(count($bFit['lines']) * $bFit['size'] * 1.36);
+    $titleH = (int) round(count($tFit['lines']) * $tFit['size'] * $titleLead);
+    $bodyH = (int) round(count($bFit['lines']) * $bFit['size'] * $bodyLead);
     $contentH = $ph + $gapPill + $titleH + $gapTitle + $bodyH;
 
     $lineY = $h - 78;
-    $contentBottom = $lineY - 28;
+    $contentBottom = $lineY - 36;
     $y0 = $contentBottom - $contentH;
     // Foto ~55%+ (ref. 122); si el copy no entra, subir un poco el techo.
     $minTop = (int) round($h * ($isStory ? 0.58 : 0.54));
     if ($y0 < $minTop) {
         $tFit = ig_fit_text($title, $fontB, $isStory ? 40 : 36, 24, $maxW, 3);
         $bFit = ig_fit_text($body, $fontR, $isStory ? 22 : 20, 16, $maxW, $isStory ? 4 : 3);
-        $titleH = (int) round(count($tFit['lines']) * $tFit['size'] * 1.28);
-        $bodyH = (int) round(count($bFit['lines']) * $bFit['size'] * 1.34);
+        $titleH = (int) round(count($tFit['lines']) * $tFit['size'] * $titleLead);
+        $bodyH = (int) round(count($bFit['lines']) * $bFit['size'] * $bodyLead);
         $contentH = $ph + $gapPill + $titleH + $gapTitle + $bodyH;
         $y0 = max((int) round($h * 0.50), $contentBottom - $contentH);
     }
 
     $fadeH = (int) round($h * 0.07);
-    $solidY = max(0, $y0 - 14);
+    $solidY = max(0, $y0 - 18);
     $fadeY = max(0, $solidY - $fadeH);
     ig_paint_gradient($im, $w, $h, $fadeY / max(1, $h), $solidY / max(1, $h));
     ig_paint_logo($im, $w);
@@ -206,13 +209,13 @@ function ig_render_format(string $id, string $kind, string $cat, string $title, 
 
     foreach ($tFit['lines'] as $line) {
         imagettftext($im, $tFit['size'], 0, $margin, $y + (int) $tFit['size'], $white, $fontB, ig_nfc($line));
-        $y += (int) round($tFit['size'] * 1.30);
+        $y += (int) round($tFit['size'] * $titleLead);
     }
     $y += $gapTitle;
 
     foreach ($bFit['lines'] as $line) {
         imagettftext($im, $bFit['size'], 0, $margin, $y + (int) $bFit['size'], $white, $fontR, ig_nfc($line));
-        $y += (int) round($bFit['size'] * 1.36);
+        $y += (int) round($bFit['size'] * $bodyLead);
     }
 
     imageline($im, $margin, $lineY, $w - $margin, $lineY, imagecolorallocatealpha($im, 255, 255, 255, 80));
