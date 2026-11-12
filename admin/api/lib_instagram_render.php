@@ -184,10 +184,12 @@ function ig_render_format(string $id, string $kind, string $cat, string $title, 
 
     $titleH = $blockH($tFit, $titleLead);
     $bodyH = $blockH($bFit, $bodyLead);
+    // Slot cuerpo = aire mínimo ($gapTitle) + body; el cuerpo se centra en ese slot.
     $contentH = $ph + $gapPill + $titleH + $gapTitle + $bodyH;
 
     $lineY = $h - 78;
-    $contentBottom = $lineY - 36;
+    // Slot del cuerpo hasta casi la línea: el body se centra entre título y divisor.
+    $contentBottom = $lineY - 8;
     $y0 = $contentBottom - $contentH;
     // Foto ~55%+ (ref. 122); si el copy no entra, subir un poco el techo.
     $minTop = (int) round($h * ($isStory ? 0.58 : 0.54));
@@ -213,15 +215,34 @@ function ig_render_format(string $id, string $kind, string $cat, string $title, 
     imagettftext($im, $pillSize, 0, $margin + 20, $y + 30, $white, $fontS, $pill);
     $y += $ph + $gapPill;
 
-    foreach ($tFit['lines'] as $line) {
+    $titleLines = $tFit['lines'];
+    $titleLast = count($titleLines) - 1;
+    foreach ($titleLines as $i => $line) {
         imagettftext($im, $tFit['size'], 0, $margin, $y + (int) $tFit['size'], $white, $fontB, ig_nfc($line));
-        $y += (int) round($tFit['size'] * $titleLead);
+        // Sin leading colgante tras la última línea: el aire al cuerpo lo define el slot centrado.
+        $y += ($i < $titleLast)
+            ? (int) round($tFit['size'] * $titleLead)
+            : (int) round($tFit['size']);
     }
-    $y += $gapTitle;
 
-    foreach ($bFit['lines'] as $line) {
+    $slotTop = $y;
+    $slotBottom = $contentBottom;
+    $bodyY = (int) round($slotTop + ($slotBottom - $slotTop - $bodyH) / 2);
+    $minBodyTop = $slotTop + 16;
+    $maxBodyTop = $slotBottom - $bodyH;
+    if ($maxBodyTop < $minBodyTop) {
+        $y = $minBodyTop;
+    } else {
+        $y = max($minBodyTop, min($bodyY, $maxBodyTop));
+    }
+
+    $bodyLines = $bFit['lines'];
+    $bodyLast = count($bodyLines) - 1;
+    foreach ($bodyLines as $i => $line) {
         imagettftext($im, $bFit['size'], 0, $margin, $y + (int) $bFit['size'], $white, $fontR, ig_nfc($line));
-        $y += (int) round($bFit['size'] * $bodyLead);
+        $y += ($i < $bodyLast)
+            ? (int) round($bFit['size'] * $bodyLead)
+            : (int) round($bFit['size']);
     }
 
     imageline($im, $margin, $lineY, $w - $margin, $lineY, imagecolorallocatealpha($im, 255, 255, 255, 80));
