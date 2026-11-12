@@ -77,8 +77,8 @@ assert.ok(fs.existsSync(path.join(root, "admin/fonts/Inter-Regular.ttf")), "Fuen
 assert.ok(fs.existsSync(path.join(root, "admin/fonts/Inter-Bold.ttf")), "Fuente Inter-Bold.ttf");
 assert.equal(
   fs.readdirSync(path.join(root, "admin/campanas/original/feed")).filter((f) => f.endsWith(".png")).length,
-  138,
-  "original/feed debe tener 138 PNG"
+  151,
+  "original/feed debe tener 151 PNG"
 );
 console.log("  ✓ Estructura de navegación y elementos UI verificados correctamente.");
 

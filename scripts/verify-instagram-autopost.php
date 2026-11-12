@@ -447,14 +447,14 @@ it('render rechaza original que ya es pieza terminada', function () {
     if (!$threw) throw new Exception('Debía rechazar original terminado (02)');
 });
 
-it('inventario original/feed|story = 138', function () {
+it('inventario original/feed|story = 151', function () {
     $root = dirname(__DIR__) . '/admin/campanas';
     $nf = count(glob($root . '/original/feed/*.png') ?: []);
     $ns = count(glob($root . '/original/story/*.png') ?: []);
     $lf = count(glob($root . '/feed/*.png') ?: []);
     $ls = count(glob($root . '/story/*.png') ?: []);
-    if ($nf !== 138 || $ns !== 138) throw new Exception("original feed={$nf} story={$ns}");
-    if ($lf !== 138 || $ls !== 138) throw new Exception("live feed={$lf} story={$ls}");
+    if ($nf !== 151 || $ns !== 151) throw new Exception("original feed={$nf} story={$ns}");
+    if ($lf !== 151 || $ls !== 151) throw new Exception("live feed={$lf} story={$ls}");
 });
 
 // Limpieza
