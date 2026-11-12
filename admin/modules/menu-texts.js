@@ -38,13 +38,14 @@ export function renderOptCTextEn(template, fees = {}) {
     .replace(/\{medios_pago\}/g, pay);
 }
 
-// Recordatorio de 24 h: plantilla Meta recordatorio_turno_kinesica.
-// {{1}} nombre · {{2}} tipo de cita · {{3}} hora · {{4}} indicaciones.
-// Meta NO permite saltos de línea dentro de {{4}}; los únicos saltos del mensaje son los del
-// texto fijo de la plantilla (antes/después de {{4}}). En el envío aplanamos | / U+2028 / \n.
+// Recordatorio: plantilla Meta recordatorio_turno_kinesica.
+// Objetivo (when_phrase): {{1}} nombre · {{2}} tipo · {{3}} "hoy|mañana a las HH:MM hs" · {{4}} indicaciones.
+// Legacy (hasta reaprobar Meta): el texto fijo dice "mañana a las {{3}}" y {{3}} es solo la hora.
+// Meta NO permite saltos de línea dentro de {{4}}. En el envío aplanamos | / U+2028 / \n.
 export const REMINDER_TEMPLATE_NAME = "recordatorio_turno_kinesica";
 export const REMINDER_TIPO_CITA = "sesión en el consultorio";
-export const REMINDER_TEMPLATE_TEXT = `¡Hola {nombre}! 🌿 Te escribo desde Kinésica para recordarte tu ${REMINDER_TIPO_CITA} programada para mañana a las {horario}.
+/** Preview alineado a plantilla Meta when_phrase ({{3}} = frase completa). */
+export const REMINDER_TEMPLATE_TEXT = `¡Hola {nombre}! 🌿 Te escribo desde Kinésica para recordarte tu ${REMINDER_TIPO_CITA} programada para {cuando}.
 
 {indicaciones}
 
@@ -62,9 +63,10 @@ export function flattenReminderIndicaciones(indicaciones) {
 }
 
 /** Vista previa fiel a WhatsApp: indicaciones en una sola línea (límite de Meta). */
-export function renderReminderPreview(indicaciones, { nombre = "Lucas", horario = "16:00 hs" } = {}) {
+export function renderReminderPreview(indicaciones, { nombre = "Lucas", horario = "16:00 hs", cuando = "" } = {}) {
+  const when = String(cuando || "").trim() || `mañana a las ${horario}`;
   return REMINDER_TEMPLATE_TEXT
     .replace("{nombre}", nombre)
-    .replace("{horario}", horario)
+    .replace("{cuando}", when)
     .replace("{indicaciones}", flattenReminderIndicaciones(indicaciones) || "—");
 }

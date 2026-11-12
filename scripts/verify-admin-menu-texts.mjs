@@ -98,6 +98,7 @@ test("recordatorio: texto de la plantilla de Meta sólo lectura, igual a lo que 
     assert.match(code, /const tipo = 'sesión en el consultorio';/);
     const tpl = code.match(/messageBody = `(¡Hola \$\{patientFirstName\}[^`]*)`/)[1]
       .replace("${patientFirstName}", "{nombre}").replace("${tipo}", "sesión en el consultorio")
+      .replace("${cuando}", "{cuando}")
       .replace("${formattedTime}", "{horario}").replace("${indicaciones}", "{indicaciones}").replace(/\\n/g, "\n");
     assert.equal(tpl, REMINDER_TEMPLATE_TEXT);
     const send = wf.nodes.find((x) => x.name === "Send WhatsApp Reminder").parameters.jsonBody;

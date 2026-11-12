@@ -25,6 +25,11 @@ return [
     // 'n8n_workflow_id' => '', // Interacciones (chat Clara)
     // 'n8n_recordatorios_workflow_id' => 'pDJHgYUv2jBLhKCQ', // Recordatorios 24h (solo corridas post-deploy)
 
+    // Recordatorios same-day (cron_recordatorios_sameday.php). Ver docs/recordatorios-sameday.md
+    // legacy = plantilla Meta con "mañana a las {{3}}" (catch-up solo email).
+    // when_phrase = plantilla "programada para {{3}}" con {{3}}="hoy|mañana a las HH:MM hs" (WA same-day OK).
+    'reminder_template_when_mode' => 'when_phrase',
+
     // Instagram (publicación automática desde la cola de Creativos). Ver docs/instagram-autopost.md
     'instagram_user_id' => '',
     'instagram_token' => '', // System User token (graph.facebook.com); no ig_refresh

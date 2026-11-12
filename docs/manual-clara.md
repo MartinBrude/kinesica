@@ -357,7 +357,7 @@ Google Calendar (calendario **`consultorio`**) es la **única fuente de verdad**
 
 ### 📲 3.3. Recordatorio automático de turnos en WhatsApp
 
-Cuando un turno se agenda correctamente en Google Calendar y Clara está activa en el backoffice, el bot de recordatorios se activa a las 10:00 hs (o domingos a las 18:00 hs para turnos de lunes) y despacha automáticamente una plantilla interactiva oficial de WhatsApp:
+Cuando un turno se agenda correctamente en Google Calendar y Clara está activa en el backoffice, el bot de recordatorios se activa a las 10:00 hs (o domingos a las 18:00 hs para turnos de lunes) y despacha automáticamente una plantilla interactiva oficial de WhatsApp. Además, **lunes a viernes a las 08:00 hs** corre un catch-up del mismo día para turnos de hoy que todavía no recibieron recordatorio (detalle: [recordatorios-sameday.md](recordatorios-sameday.md)):
 
 <p align="center">
   <img src="assets/mockup_whatsapp_recordatorio_24h.jpg" alt="Captura del Recordatorio de turnos en WhatsApp" width="380">

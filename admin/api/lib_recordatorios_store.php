@@ -13,8 +13,35 @@ const RECORDATORIOS_MAX_BATCH = 200;
 const RECORDATORIOS_STATUSES = ['pending', 'sent', 'sent_email', 'failed', 'missing_phone', 'skipped', 'run_skipped'];
 const RECORDATORIOS_SKIP_REASONS = [
     'clara_inactive', 'cancelled', 'blocked', 'waitlist', 'non_appointment',
-    'duplicate', 'not_tomorrow', 'other',
+    'duplicate', 'not_tomorrow', 'already_sent', 'too_soon', 'past_appointment',
+    'same_day_catchup', 'other',
 ];
+
+/**
+ * True si este calendar_event_id ya tuvo un envío exitoso (WA o email).
+ * Usado por catch-up same-day para garantizar 1 solo recordatorio por turno.
+ */
+function recordatorios_was_sent_for_event(string $calendarEventId, ?PDO $pdo = null): bool
+{
+    $cal = trim($calendarEventId);
+    if ($cal === '' || $cal === '_run' || str_starts_with($cal, 'test:')) {
+        return false;
+    }
+    try {
+        $pdo = recordatorios_pdo($pdo);
+        recordatorios_ensure_schema($pdo);
+        $stmt = $pdo->prepare(
+            'SELECT 1 FROM recordatorio_eventos
+             WHERE calendar_event_id = :cal
+               AND status IN (\'sent\', \'sent_email\')
+             LIMIT 1'
+        );
+        $stmt->execute(['cal' => substr($cal, 0, 128)]);
+        return (bool) $stmt->fetchColumn();
+    } catch (Throwable) {
+        return false;
+    }
+}
 
 function recordatorios_dir(): string
 {
