@@ -16,6 +16,21 @@ export { formatDisplayPhone };
 
 export const GOOGLE_REVIEW_INVITE_URL = "https://search.google.com/local/writereview?placeid=ChIJZ2mPW9K1vJUR3J5kGRi5gws";
 
+let pendingSearchFromUrl = "";
+if (typeof window !== "undefined" && window.location) {
+  try {
+    const p = new URLSearchParams(window.location.search);
+    pendingSearchFromUrl = (p.get("buscar") || p.get("q") || "").trim();
+    if (!pendingSearchFromUrl && window.location.hash.includes("?")) {
+      const hp = new URLSearchParams(window.location.hash.split("?")[1]);
+      pendingSearchFromUrl = (hp.get("buscar") || hp.get("q") || "").trim();
+    }
+    if (pendingSearchFromUrl && typeof sessionStorage !== "undefined") {
+      sessionStorage.setItem("kinesica_pending_paciente_search", pendingSearchFromUrl);
+    }
+  } catch { /* ignore */ }
+}
+
 /**
  * Extrae y formatea el nombre de pila del paciente garantizando que esté cargado.
  * @param {object} p
@@ -464,33 +479,41 @@ export async function loadPacientes() {
     renderPacientesTable();
 
     try {
-      if (typeof window !== "undefined" && searchInput) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const hashSearch = window.location.hash.includes("?") ? new URLSearchParams(window.location.hash.split("?")[1]) : null;
-        const initialQuery = (urlParams.get("buscar") || urlParams.get("q") || hashSearch?.get("buscar") || hashSearch?.get("q") || "").trim();
-        if (initialQuery) {
-          if (searchInput.value !== initialQuery) {
-            searchInput.value = initialQuery;
-            renderPacientesTable();
-          }
+      const storedQuery = (typeof sessionStorage !== "undefined" && sessionStorage.getItem("kinesica_pending_paciente_search")) || "";
+      const currentUrlQuery = (typeof window !== "undefined" && window.location)
+        ? (new URLSearchParams(window.location.search).get("buscar") || new URLSearchParams(window.location.search).get("q") || "")
+        : "";
+      const initialQuery = (currentUrlQuery || storedQuery || pendingSearchFromUrl || "").trim();
 
-          if (!window._kinesicaPatientModalAutoOpened) {
-            window._kinesicaPatientModalAutoOpened = true;
-            const normQ = canonicalPatientNameKey(initialQuery);
-            const found = pacientesCache.find((p) => {
-              const full = p.nombre_completo || [p.nombre, p.apellido].filter(Boolean).join(" ");
-              const normP = canonicalPatientNameKey(full);
-              return normP.includes(normQ) || normQ.includes(normP);
-            });
+      if (initialQuery) {
+        if (typeof sessionStorage !== "undefined") {
+          sessionStorage.removeItem("kinesica_pending_paciente_search");
+        }
+        pendingSearchFromUrl = "";
 
-            if (found) {
-              openFullPacienteModal(found, loadPacientes);
-            } else {
-              const parts = initialQuery.split(/\s+/);
-              const nombre = parts[0] || "";
-              const apellido = parts.slice(1).join(" ") || "";
-              openFullPacienteModal({ nombre, apellido, nombre_completo: initialQuery }, loadPacientes);
-            }
+        if (searchInput) {
+          searchInput.value = initialQuery;
+          renderPacientesTable();
+        }
+
+        if (!window._kinesicaPatientModalAutoOpened) {
+          window._kinesicaPatientModalAutoOpened = true;
+          const normQ = initialQuery.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/,/g, " ").trim();
+          const qTokens = normQ.split(/\s+/).filter(Boolean);
+
+          const found = pacientesCache.find((p) => {
+            const raw = `${p.nombre_completo || ""} ${p.apellido || ""} ${p.nombre || ""}`;
+            const normP = raw.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/,/g, " ");
+            return qTokens.length > 0 && qTokens.every((t) => normP.includes(t));
+          });
+
+          if (found) {
+            openFullPacienteModal(found, loadPacientes);
+          } else {
+            const parts = initialQuery.replace(/,/g, " ").trim().split(/\s+/);
+            const nombre = parts[0] || "";
+            const apellido = parts.slice(1).join(" ") || "";
+            openFullPacienteModal({ nombre, apellido, nombre_completo: initialQuery }, loadPacientes);
           }
         }
       }
@@ -541,10 +564,19 @@ export function formatPatientName(p) {
 
 function filterPacientes() {
   const query = (searchInput?.value || "").toLowerCase().trim();
+  const normQuery = query.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/,/g, " ").trim();
+  const qTokens = normQuery.split(/\s+/).filter(Boolean);
+
   const list = pacientesCache.filter((p) => {
     if (activeFilterProf !== "todos" && p.profesional_habitual !== activeFilterProf) return false;
     if (!query) return true;
-    const nameMatch = (p.nombre_completo || "").toLowerCase().includes(query) ||
+
+    const rawPatientNames = `${p.nombre_completo || ""} ${p.apellido || ""} ${p.nombre || ""}`;
+    const normPatient = rawPatientNames.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/,/g, " ");
+    const tokenMatch = qTokens.length > 0 && qTokens.every((tok) => normPatient.includes(tok));
+
+    const nameMatch = tokenMatch ||
+                      (p.nombre_completo || "").toLowerCase().includes(query) ||
                       (p.nombre || "").toLowerCase().includes(query) ||
                       (p.apellido || "").toLowerCase().includes(query);
     const phoneMatch = (p.telefono || "").includes(query) || phoneMatches(p.telefono, query);

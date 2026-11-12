@@ -15,7 +15,7 @@ import { patientHasReview } from "./pacientes.js";
 import { sanitizePersonName, capitalizePersonName, hasDisallowedNameChars } from "../ficha-rules.mjs?v=91";
 
 export function openFullPacienteModal(paciente = null, onReload = null) {
-  const isEdit = Boolean(paciente);
+  const isEdit = Boolean(paciente && paciente.id);
   const isColaborador = getSessionUser()?.role === "colaborador";
   const backdrop = document.createElement("div");
   backdrop.className = "paciente-modal-backdrop";

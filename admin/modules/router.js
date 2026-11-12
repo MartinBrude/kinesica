@@ -74,7 +74,8 @@ export function syncUrlWithViewState(state, isInitialBoot = false, isHandlingPop
     targetPath = "/admin/comparar";
     docTitle = "Kinésica — Comparar Sesiones";
   } else if (v === "pacientes") {
-    targetPath = "/admin/pacientes";
+    const curSearch = (typeof window !== "undefined" && window.location) ? window.location.search : "";
+    targetPath = `/admin/pacientes${curSearch}`;
     docTitle = "Kinésica — Pacientes";
   } else if (v === "consultorio" || v === "agendar" || v === "horarios" || v === "honorarios") {
     const sec = String(state.section || (v === "consultorio" ? "" : v) || "").toLowerCase();
