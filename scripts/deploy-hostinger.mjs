@@ -5,6 +5,8 @@
  * El deploy completo REEMPLAZA public_html. Los archivos gitignored
  * (config.php, mail.php, whatsapp.php, data/*) solo sobreviven si existen
  * en la máquina local al empaquetar.
+ * Los uploads clínicos se almacenan en private/uploads (fuera de public_html),
+ * quedando protegidos permanentemente de cualquier sobreescritura de deploy.
  *
  * Uso:
  *   HOSTINGER_API_TOKEN=… node scripts/deploy-hostinger.mjs

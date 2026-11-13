@@ -109,19 +109,20 @@ function kinesica_audit_fichas(PDO $pdo, bool $fullPii): array
         $dateKey = $fecha !== '' ? substr($fecha, 0, 10) : 'sin-fecha';
         $byPatientDate[$matchId . '|' . $dateKey][] = $id;
 
-        $foto = trim((string) ($payload['fotoUrl'] ?? $payload['foto'] ?? ''));
-        if ($foto !== '' && !preg_match('#^https?://#i', $foto)) {
-            $path = $foto;
-            if (str_starts_with($path, '/')) {
-                $path = dirname(__DIR__, 2) . $path;
-            } elseif (!str_starts_with($path, '/')) {
-                $candidate = $uploadsRoot . '/' . ltrim($path, '/');
-                if (!is_file($path) && is_file($candidate)) {
-                    $path = $candidate;
-                }
+        $photos = function_exists('kinesica_extract_ficha_photos') ? kinesica_extract_ficha_photos($payload) : [];
+        if (empty($photos)) {
+            $foto = trim((string) ($payload['fotoUrl'] ?? $payload['foto'] ?? ''));
+            if ($foto !== '' && !preg_match('#^https?://#i', $foto)) {
+                $matched = preg_match('/file=([a-f0-9]{32,64}\.(jpe?g|png|webp))$/i', $foto, $m);
+                $photos = [$matched ? $m[1] : basename($foto)];
             }
-            if (!is_file($path) && !is_file($uploadsRoot . '/' . basename($foto))) {
-                $missingFoto[] = ['ficha_id' => $id, 'foto' => basename($foto)];
+        }
+        foreach ($photos as $fName) {
+            $found = function_exists('kinesica_find_upload_file')
+                ? (kinesica_find_upload_file($fName) !== null)
+                : is_file($uploadsRoot . '/' . $fName);
+            if (!$found) {
+                $missingFoto[] = ['ficha_id' => $id, 'foto' => $fName];
             }
         }
     }

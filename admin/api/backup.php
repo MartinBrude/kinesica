@@ -65,6 +65,25 @@ if (PHP_SAPI === 'cli') {
     }
     chmod($path, 0600);
 
+    // Respaldo automático de fotos/adjuntos en el directorio de backups persistentes
+    $backupUploads = $dir . '/uploads';
+    if (!is_dir($backupUploads)) {
+        @mkdir($backupUploads, 0700, true);
+    }
+    $primaryUploads = kinesica_uploads_dir();
+    if (is_dir($primaryUploads) && is_dir($backupUploads) && realpath($primaryUploads) !== realpath($backupUploads)) {
+        $uList = scandir($primaryUploads) ?: [];
+        foreach ($uList as $uf) {
+            if ($uf !== '.' && $uf !== '..' && !str_starts_with($uf, '.')) {
+                $src = $primaryUploads . '/' . $uf;
+                $dst = $backupUploads . '/' . $uf;
+                if (is_file($src) && !is_file($dst)) {
+                    @copy($src, $dst);
+                }
+            }
+        }
+    }
+
     // Retención: conservar las últimas 8 copias semanales (2 meses de resguardo histórico)
     $files = glob($dir . '/kinesica-*.sql') ?: [];
     rsort($files);

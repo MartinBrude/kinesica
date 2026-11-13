@@ -225,8 +225,7 @@ declare(strict_types=1);
         $prevFiles = kinesica_extract_ficha_photos($prevItem);
         $currentFiles = kinesica_extract_ficha_photos($data);
         foreach (array_diff($prevFiles, $currentFiles) as $fName) {
-            $oldFile = __DIR__ . '/../uploads/' . $fName;
-            if (is_file($oldFile)) @unlink($oldFile);
+            kinesica_delete_upload_file($fName);
         }
     }
 

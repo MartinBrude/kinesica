@@ -14,16 +14,8 @@ if ($method === 'GET') {
         json_out(400, ['error' => 'Nombre de archivo no válido']);
     }
 
-    $uploadsDir = realpath(__DIR__ . '/../uploads');
-    $filePath = __DIR__ . '/../uploads/' . $file;
-    $realFilePath = realpath($filePath);
-
-    if (
-        $uploadsDir === false ||
-        $realFilePath === false ||
-        !str_starts_with($realFilePath, $uploadsDir . DIRECTORY_SEPARATOR) ||
-        !is_file($realFilePath)
-    ) {
+    $realFilePath = kinesica_find_upload_file($file);
+    if ($realFilePath === null) {
         json_out(404, ['error' => 'Video no encontrado']);
     }
 
@@ -60,22 +52,23 @@ if ($method === 'POST') {
         json_out(400, ['error' => 'Error al subir el video (código: ' . (int) $uploaded['error'] . ')']);
     }
 
-    // Límite de tamaño: 100 MB
-    $maxBytes = 100 * 1024 * 1024;
+    // Límite de tamaño: 25 MB
+    $maxBytes = 25 * 1024 * 1024;
     $actualSize = (int) ($uploaded['size'] ?? 0);
     $realSize = filesize($uploaded['tmp_name']);
     if ($actualSize > $maxBytes || $realSize > $maxBytes) {
-        json_out(413, ['error' => 'El video no debe superar los 100 MB']);
+        json_out(413, ['error' => 'El video no debe superar los 25 MB']);
     }
 
     $originalName = (string) ($uploaded['name'] ?? '');
-    $ext = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+    $clientExt = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
     $allowedExts = ['mp4', 'webm', 'mov', 'm4v'];
-
-    if (!in_array($ext, $allowedExts, true)) {
-        json_out(422, ['error' => 'Formato no admitido. Se admiten archivos MP4, WebM, MOV o M4V.']);
+    if (!in_array($clientExt, $allowedExts, true)) {
+        json_out(422, ['error' => 'Formato no admitido. Se admiten solo archivos MP4, WebM, MOV o M4V.']);
     }
+    $ext = $clientExt;
 
+    // Validación de MIME mediante finfo si está disponible
     if (function_exists('finfo_open')) {
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         if ($finfo) {
@@ -88,12 +81,7 @@ if ($method === 'POST') {
         }
     }
 
-    $targetDir = __DIR__ . '/../uploads';
-    if (!is_dir($targetDir)) {
-        mkdir($targetDir, 0755, true);
-        file_put_contents($targetDir . '/.htaccess', "Require all denied\n");
-    }
-
+    $targetDir = kinesica_uploads_dir();
     $filename = bin2hex(random_bytes(16)) . '.' . $ext;
     $destination = $targetDir . '/' . $filename;
 
@@ -118,10 +106,7 @@ if ($method === 'DELETE') {
         json_out(400, ['error' => 'Nombre de archivo no válido']);
     }
 
-    $target = __DIR__ . '/../uploads/' . $file;
-    if (is_file($target)) {
-        @unlink($target);
-    }
+    kinesica_delete_upload_file($file);
     json_out(200, ['ok' => true]);
 }
 

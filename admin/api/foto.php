@@ -14,16 +14,8 @@ if ($method === 'GET') {
         json_out(400, ['error' => 'Nombre de archivo no válido']);
     }
 
-    $uploadsDir = realpath(__DIR__ . '/../uploads');
-    $filePath = __DIR__ . '/../uploads/' . $file;
-    $realFilePath = realpath($filePath);
-
-    if (
-        $uploadsDir === false ||
-        $realFilePath === false ||
-        !str_starts_with($realFilePath, $uploadsDir . DIRECTORY_SEPARATOR) ||
-        !is_file($realFilePath)
-    ) {
+    $realFilePath = kinesica_find_upload_file($file);
+    if ($realFilePath === null) {
         json_out(404, ['error' => 'Foto no encontrada']);
     }
 
@@ -82,12 +74,7 @@ if ($method === 'POST') {
         json_out(422, ['error' => 'Formato no admitido. Se admiten solo archivos JPG, PNG o WebP.']);
     }
 
-    $targetDir = __DIR__ . '/../uploads';
-    if (!is_dir($targetDir)) {
-        mkdir($targetDir, 0755, true);
-        file_put_contents($targetDir . '/.htaccess', "Require all denied\n");
-    }
-
+    $targetDir = kinesica_uploads_dir();
     $filename = bin2hex(random_bytes(16)) . '.' . $ext;
     $destination = $targetDir . '/' . $filename;
 
@@ -112,10 +99,7 @@ if ($method === 'DELETE') {
         json_out(400, ['error' => 'Nombre de archivo no válido']);
     }
 
-    $target = __DIR__ . '/../uploads/' . $file;
-    if (is_file($target)) {
-        @unlink($target);
-    }
+    kinesica_delete_upload_file($file);
     json_out(200, ['ok' => true]);
 }
 

@@ -132,17 +132,20 @@ try {
 }
 
 // Almacenamiento uploads en disco
-$uploadsDir = __DIR__ . '/uploads';
 $uploadsCount = 0;
 $uploadsBytes = 0;
-if (is_dir($uploadsDir)) {
-    $files = scandir($uploadsDir) ?: [];
-    foreach ($files as $f) {
-        if ($f !== '.' && $f !== '..' && !str_starts_with($f, '.')) {
-            $path = $uploadsDir . '/' . $f;
-            if (is_file($path)) {
-                $uploadsCount++;
-                $uploadsBytes += (int) filesize($path);
+$seenFiles = [];
+foreach (kinesica_uploads_candidate_dirs() as $uDir) {
+    if (is_dir($uDir)) {
+        $files = scandir($uDir) ?: [];
+        foreach ($files as $f) {
+            if ($f !== '.' && $f !== '..' && !str_starts_with($f, '.') && empty($seenFiles[$f])) {
+                $path = $uDir . '/' . $f;
+                if (is_file($path)) {
+                    $seenFiles[$f] = true;
+                    $uploadsCount++;
+                    $uploadsBytes += (int) filesize($path);
+                }
             }
         }
     }

@@ -11,6 +11,7 @@ require_once __DIR__ . '/lib_attempts.php';
 require_once __DIR__ . '/lib_codes.php';
 require_once __DIR__ . '/lib_mail.php';
 require_once __DIR__ . '/lib_whatsapp.php';
+require_once __DIR__ . '/lib_uploads.php';
 
 function kinesica_strict_boolean(mixed $value): ?bool
 {

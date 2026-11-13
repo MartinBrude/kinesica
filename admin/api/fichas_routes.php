@@ -32,8 +32,7 @@ if ($method === 'DELETE') {
         $prevData = json_decode((string) ($row['payload'] ?? ''), true);
         if (is_array($prevData)) {
             foreach (kinesica_extract_ficha_photos($prevData) as $fName) {
-                $fileTarget = __DIR__ . '/../uploads/' . $fName;
-                if (is_file($fileTarget)) @unlink($fileTarget);
+                kinesica_delete_upload_file($fName);
             }
         }
     }
