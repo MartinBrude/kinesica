@@ -79,6 +79,8 @@ function kinesica_find_upload_file(string $filename): ?string
         return null;
     }
 
+    $primary = kinesica_uploads_dir();
+
     foreach (kinesica_uploads_candidate_dirs() as $dir) {
         $realDir = realpath($dir);
         if ($realDir === false) {
@@ -91,6 +93,11 @@ function kinesica_find_upload_file(string $filename): ?string
             str_starts_with($realFilePath, $realDir . DIRECTORY_SEPARATOR) &&
             is_file($realFilePath)
         ) {
+            // Auto-proteger en almacenamiento persistente fuera de public_html si aún no está allí
+            $targetPrimaryFile = $primary . DIRECTORY_SEPARATOR . $filename;
+            if ($realFilePath !== $targetPrimaryFile && is_dir($primary) && is_writable($primary) && !is_file($targetPrimaryFile)) {
+                @copy($realFilePath, $targetPrimaryFile);
+            }
             return $realFilePath;
         }
     }
