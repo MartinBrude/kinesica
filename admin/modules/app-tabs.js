@@ -78,3 +78,8 @@ export function mountAdminChannels() {
     })
     .catch(() => {});
 }
+
+if (typeof document !== "undefined") {
+  const earlyNav = document.getElementById("admin-nav");
+  if (earlyNav) bindAdminNavOnce(earlyNav);
+}

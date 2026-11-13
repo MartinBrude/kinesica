@@ -99,10 +99,6 @@ export function switchTab(tab, subtab, routeState = null) {
     btnAdminCreativos?.classList.add("is-active");
     showAdminView("creativos", routeState);
   } else if (tab === "encuestas" || tab === "encuesta") {
-    if (typeof window !== "undefined" && window.matchMedia("(max-width: 800px)").matches) {
-      switchTab("inicio");
-      return;
-    }
     btnClara?.classList.add("is-active");
     btnEncuestas?.classList.add("is-active");
     showEncuestasView();
@@ -123,10 +119,6 @@ export function switchTab(tab, subtab, routeState = null) {
     tab === "campaña" ||
     tab === "turnos-campana"
   ) {
-    if (typeof window !== "undefined" && window.matchMedia("(max-width: 800px)").matches) {
-      switchTab("inicio");
-      return;
-    }
     const user = getSessionUser();
     if (!user || user.role !== "admin") {
       switchTab("inicio");

@@ -12,6 +12,8 @@
   --muted: #4b5563;
   --line: #c5d8e6;
   --sky: #f2f7fa;
+  --bg: #f8fafc;
+  --text-success: #16a34a;
   --pill: #e8f2f6;
   --white: #fff;
   --radius: 12px;
@@ -345,11 +347,18 @@ main {
   display: flex;
 }
 
+.nav-dropdown.is-closed .nav-dropdown-menu {
+  display: none !important;
+}
+
 @media (hover: hover) and (min-width: 801px) {
-  .nav-dropdown:hover .nav-dropdown-menu {
+  .nav-dropdown.is-closed .nav-dropdown-menu {
+    display: none !important;
+  }
+  .nav-dropdown:hover:not(.is-closed) .nav-dropdown-menu {
     display: flex;
   }
-  .nav-dropdown:hover .nav-dropdown-trigger .nav-chevron {
+  .nav-dropdown:hover:not(.is-closed) .nav-dropdown-trigger .nav-chevron {
     transform: rotate(180deg);
   }
 }
@@ -366,6 +375,7 @@ main {
   font-size: 13.5px;
   font-weight: 500;
   text-align: left;
+  text-decoration: none;
   cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease;
   width: 100%;
@@ -555,12 +565,7 @@ main {
     display: block;
   }
 
-  /* Mobile: sin Administración, encuestas, manual ni Excel de contactos */
-  #nav-group-admin,
-  #nav-btn-admin,
-  #nav-btn-encuestas,
-  #dash-card-admin,
-  #dash-card-encuestas,
+  /* Mobile: accesos directos de escritorio */
   #dash-btn-manual,
   #dash-btn-sheets {
     display: none !important;

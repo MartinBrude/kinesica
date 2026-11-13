@@ -9,6 +9,7 @@ export function bindAdminNavOnce(adminNav) {
   const setupDropdown = (groupEl, triggerBtn) => {
     if (!groupEl || !triggerBtn) return;
     groupEl.addEventListener("mouseenter", () => {
+      groupEl.classList.remove("is-closed");
       if (window.matchMedia("(max-width: 800px)").matches) return;
       document.querySelectorAll(".nav-dropdown").forEach((el) => {
         if (el !== groupEl) {
@@ -21,6 +22,7 @@ export function bindAdminNavOnce(adminNav) {
     });
 
     groupEl.addEventListener("mouseleave", () => {
+      groupEl.classList.remove("is-closed");
       if (window.matchMedia("(max-width: 800px)").matches) return;
       groupEl.classList.remove("is-open");
       triggerBtn.setAttribute("aria-expanded", "false");
@@ -28,11 +30,35 @@ export function bindAdminNavOnce(adminNav) {
 
     triggerBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      const isOpen = groupEl.classList.contains("is-open");
-      closeAllDropdowns();
-      if (!isOpen) {
-        groupEl.classList.add("is-open");
-        triggerBtn.setAttribute("aria-expanded", "true");
+      const isMobile = window.matchMedia("(max-width: 800px)").matches;
+      if (isMobile) {
+        const isOpen = groupEl.classList.contains("is-open");
+        closeAllDropdowns();
+        if (!isOpen) {
+          groupEl.classList.remove("is-closed");
+          groupEl.classList.add("is-open");
+          triggerBtn.setAttribute("aria-expanded", "true");
+        }
+      } else {
+        const defaultActions = {
+          "nav-group-clinica": () => switchTab("fichas"),
+          "nav-group-consultorio": () => switchTab("consultorio", "agendar"),
+          "nav-group-whatsapp": () => switchTab("interacciones"),
+          "nav-group-clara": () => switchTab("clara", "mensajes"),
+          "nav-group-admin": () => switchTab("admin", "usuarios"),
+        };
+        const action = defaultActions[groupEl.id];
+        closeAllDropdowns();
+        if (action) {
+          action();
+        } else {
+          const isOpen = groupEl.classList.contains("is-open");
+          if (!isOpen) {
+            groupEl.classList.remove("is-closed");
+            groupEl.classList.add("is-open");
+            triggerBtn.setAttribute("aria-expanded", "true");
+          }
+        }
       }
     });
   };
@@ -62,33 +88,52 @@ export function bindAdminNavOnce(adminNav) {
   });
   document.getElementById("admin-nav-backdrop")?.addEventListener("click", () => closeMobileNav());
 
-  document.getElementById("nav-btn-fichas")?.addEventListener("click", () => switchTab("fichas"));
-  document.getElementById("nav-btn-pacientes")?.addEventListener("click", () => switchTab("pacientes"));
-  document.getElementById("nav-btn-consultorio-agendar")?.addEventListener("click", () => switchTab("consultorio", "agendar"));
-  document.getElementById("nav-btn-consultorio-horarios")?.addEventListener("click", () => switchTab("consultorio", "horarios"));
-  document.getElementById("nav-btn-consultorio-honorarios")?.addEventListener("click", () => switchTab("consultorio", "horarios"));
-  document.getElementById("nav-btn-clara-estado")?.addEventListener("click", () => switchTab("clara", "estado"));
-  document.getElementById("nav-btn-clara-mensajes")?.addEventListener("click", () => switchTab("clara", "mensajes"));
-  document.getElementById("nav-btn-clara-plantilla")?.addEventListener("click", () => switchTab("clara", "plantilla"));
-  document.getElementById("nav-btn-clara-politicas")?.addEventListener("click", () => switchTab("clara", "politicas"));
-  document.getElementById("nav-btn-clara-simulador")?.addEventListener("click", () => switchTab("clara", "simulador"));
-  document.getElementById("nav-btn-interacciones")?.addEventListener("click", () => switchTab("interacciones"));
-  document.getElementById("nav-btn-recordatorios")?.addEventListener("click", () => switchTab("recordatorios"));
-  document.getElementById("nav-btn-encuestas")?.addEventListener("click", () => switchTab("encuestas"));
-  document.getElementById("nav-btn-admin-usuarios")?.addEventListener("click", () => switchTab("admin", "usuarios"));
-  document.getElementById("nav-btn-admin-gastos")?.addEventListener("click", () => switchTab("admin", "gastos"));
-  document.getElementById("nav-btn-admin-errores")?.addEventListener("click", () => switchTab("admin", "errores"));
-  document.getElementById("nav-btn-admin-backups")?.addEventListener("click", () => switchTab("admin", "backups"));
-  document.getElementById("nav-btn-admin-servicios")?.addEventListener("click", () => switchTab("admin", "servicios"));
-  document.getElementById("nav-btn-admin-campana")?.addEventListener("click", () => switchTab("admin", "campana"));
-  document.getElementById("nav-btn-admin-creativos")?.addEventListener("click", () => switchTab("creativos"));
+  const bindNavLink = (id, tab, subtab, extraAction) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener("click", (e) => {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+      e.preventDefault();
+      closeAllDropdowns();
+      if (extraAction) extraAction();
+      switchTab(tab, subtab);
+    });
+  };
+
+  bindNavLink("nav-btn-fichas", "fichas");
+  bindNavLink("nav-btn-pacientes", "pacientes");
+  bindNavLink("nav-btn-consultorio-agendar", "consultorio", "agendar", () => {
+    document.querySelector("[data-admin-booking-open]")?.click();
+  });
+  bindNavLink("nav-btn-consultorio-horarios", "consultorio", "horarios");
+  bindNavLink("nav-btn-consultorio-honorarios", "consultorio", "honorarios");
+  bindNavLink("nav-btn-clara-estado", "clara", "estado");
+  bindNavLink("nav-btn-clara-mensajes", "clara", "mensajes");
+  bindNavLink("nav-btn-clara-plantilla", "clara", "plantilla");
+  bindNavLink("nav-btn-clara-politicas", "clara", "politicas");
+  bindNavLink("nav-btn-clara-simulador", "clara", "simulador");
+  bindNavLink("nav-btn-interacciones", "interacciones");
+  bindNavLink("nav-btn-recordatorios", "recordatorios");
+  bindNavLink("nav-btn-encuestas", "encuestas");
+  bindNavLink("nav-btn-admin-usuarios", "admin", "usuarios");
+  bindNavLink("nav-btn-admin-gastos", "admin", "gastos");
+  bindNavLink("nav-btn-admin-errores", "admin", "errores");
+  bindNavLink("nav-btn-admin-backups", "admin", "backups");
+  bindNavLink("nav-btn-admin-servicios", "admin", "servicios");
+  bindNavLink("nav-btn-admin-campana", "admin", "campana");
+  bindNavLink("nav-btn-admin-creativos", "creativos");
+
   document.getElementById("brand-logo")?.addEventListener("click", (e) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
     e.preventDefault();
     switchTab("inicio");
   });
 
   document.getElementById("dock-btn-inicio")?.addEventListener("click", () => switchTab("inicio"));
-  document.getElementById("dock-btn-agendar")?.addEventListener("click", () => switchTab("consultorio", "agendar"));
+  document.getElementById("dock-btn-agendar")?.addEventListener("click", () => {
+    switchTab("consultorio", "agendar");
+    document.querySelector("[data-admin-booking-open]")?.click();
+  });
   document.getElementById("dock-btn-interacciones")?.addEventListener("click", () => switchTab("interacciones"));
   document.getElementById("dock-btn-recordatorios")?.addEventListener("click", () => switchTab("recordatorios"));
   document.getElementById("dock-btn-menu")?.addEventListener("click", (e) => {
