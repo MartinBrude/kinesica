@@ -27,8 +27,8 @@ import {
   setCurrentId,
   setFormBaseline,
   setActiveSessionUserGetter,
-} from "./form-runtime.js?v=1";
-import { fillForm, handleSideChange } from "./form-fill.js?v=1";
+} from "./form-runtime.js?v=2";
+import { fillForm, handleSideChange } from "./form-fill.js?v=2";
 
 export { compressImage } from "./form-image.js";
 export { setupInputRestrictions } from "./form-restrictions.js";
@@ -38,7 +38,7 @@ export { showStep, highlightMissingFields, highlightErrorFields } from "./form-n
 export { setPatientLocked, populatePatientPicker } from "./form-patient.js";
 
 export function getCurrentId() { return currentId; }
-export { setCurrentId } from "./form-runtime.js?v=1";
+export { setCurrentId } from "./form-runtime.js?v=2";
 export function updateStepValidation() { updateStepValidationNav(readForm()); }
 export function showForm(targetStep = 0) {
   showFormNav(targetStep, { getCurrentId, onFormShown: () => { setFormBaseline(getFormSerializedState(readForm())); } });
@@ -46,7 +46,7 @@ export function showForm(targetStep = 0) {
 export function blank() { return getBlankFicha(); }
 export function readForm() { return readFormData({ form, currentId, singles, getCurrentFotos }); }
 export function formState() { return getFormSerializedState(readForm()); }
-export { fillForm } from "./form-fill.js?v=1";
+export { fillForm } from "./form-fill.js?v=2";
 
 export function initForm({ onSave, onBack, onCompare, onPrint, getSessionUser }) {
   if (!form) return;

@@ -104,7 +104,8 @@ eq(clean_phone_number('351912345678'), '351912345678', 'PT 351… (12) no se con
 ok(!str_starts_with(clean_phone_number('34658444935'), '549'), 'ES nunca empieza con 549');
 
 section('XSS / escape contrato frontend');
-$render = file_get_contents($root . '/admin/modules/recordatorios-render.js') ?: '';
+$renderFiles = glob($root . '/admin/modules/recordatorios-render*.js') ?: [];
+$render = implode("\n", array_map(fn($f) => file_get_contents($f) ?: '', $renderFiles));
 ok(str_contains($render, 'escapeHtml(item.patient_name'), 'nombre escapado en card');
 ok(str_contains($render, 'escapeHtml(item.email)'), 'email escapado en card');
 ok(str_contains($render, 'data-action="save-contact"'), 'botón cargar contacto');
@@ -114,12 +115,14 @@ ok(preg_match('/canManualSend\s*=\s*\n?\s*!alreadySent[\s\S]*?\(hasPhone\s*\|\|\
 ok(!str_contains($render, 'Abrir envío manual (podés cargar'), 'sin envío si falta contacto');
 ok(str_contains($render, 'alreadySent'), 'no reenvía si ya enviado');
 
-$js = file_get_contents($root . '/admin/modules/recordatorios.js') ?: '';
+$jsFiles = glob($root . '/admin/modules/recordatorios*.js') ?: [];
+$js = implode("\n", array_map(fn($f) => file_get_contents($f) ?: '', $jsFiles));
 ok(str_contains($js, 'action: "save_contact"'), 'SPA llama save_contact');
 ok(str_contains($js, 'save_contact: saveContact'), 'dispatch respeta checkbox guardar');
 ok(str_contains($js, 'mode: "contact"'), 'modal modo contact');
 
-$php = file_get_contents($root . '/admin/api/recordatorios.php') ?: '';
+$phpFiles = glob($root . '/admin/api/recordatorios*.php') ?: [];
+$php = implode("\n", array_map(fn($f) => file_get_contents($f) ?: '', $phpFiles));
 ok(str_contains($php, "action === 'save_contact'"), 'API save_contact');
 ok(str_contains($php, 'is_colaborador($auth)'), 'colaborador bloqueado en POST');
 ok(str_contains($php, 'recordatorios_bot_authenticated'), 'bot auth para ingest');
@@ -130,7 +133,8 @@ ok(str_contains($php, 'htmlspecialchars($firstName)'), 'mail HTML escapa nombre'
 ok(str_contains($php, 'Primero el recordatorio'), 'save_contact prioriza recordatorio sobre directorio');
 ok(!str_contains($php, 'deduplicate_pacientes_table($pdo)'), 'carga de contacto no corre dedupe O(n)');
 
-$store = file_get_contents($root . '/admin/api/lib_recordatorios_store.php') ?: '';
+$storeFiles = glob($root . '/admin/api/lib_recordatorios_store*.php') ?: [];
+$store = implode("\n", array_map(fn($f) => file_get_contents($f) ?: '', $storeFiles));
 ok(str_contains($store, 'Contacto manual ya resuelve'), 'ingest no pisa WhatsApp cargado a mano');
 ok(str_contains($store, 'wa_id IS NULL OR wa_id = ""'), 'delete pending preserva filas con WhatsApp');
 

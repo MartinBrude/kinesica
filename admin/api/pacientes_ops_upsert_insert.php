@@ -79,5 +79,3 @@ function kinesica_pacientes_upsert_insert(
         'email' => $email,
     ]);
 }
-
-}

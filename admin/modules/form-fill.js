@@ -19,7 +19,7 @@ import {
   currentAllFichas,
   setCurrentId,
   setCurrentAllFichas,
-} from "./form-runtime.js?v=1";
+} from "./form-runtime.js?v=2";
 
 function readForm() {
   return readFormData({ form, currentId, singles, getCurrentFotos });

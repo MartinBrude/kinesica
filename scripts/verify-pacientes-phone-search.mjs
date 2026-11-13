@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { phoneMatches, phoneQueryVariants } from "../admin/modules/phone-search.js";
 
 const stored = "5491161164311";
@@ -11,7 +11,10 @@ assert.ok(phoneMatches("59899123456", "+598 99 123 456"), "debe encontrar númer
 for (const q of ["6116 4312", "12", "Lucas", ""]) assert.ok(!phoneMatches(stored, q), `no debe encontrar ${q}`);
 assert.deepEqual(phoneQueryVariants("ab"), []);
 assert.ok(!phoneMatches("", "1234"));
-const pac = readFileSync("admin/modules/pacientes.js", "utf8");
+const pac = readdirSync("admin/modules")
+  .filter((f) => f === "pacientes.js" || (f.startsWith("pacientes-") && f.endsWith(".js")))
+  .map((f) => readFileSync(`admin/modules/${f}`, "utf8"))
+  .join("\n");
 assert.match(pac, /phoneMatches\(p\.telefono, query\)/);
 assert.match(pac, /phoneMatches\(p\.contacto_telefono, query\)/);
 assert.match(pac, /formatPatientName/);
@@ -36,7 +39,10 @@ assert.equal(capitalizePersonName("d'alessandro"), "D'Alessandro");
 assert.equal(sanitizePersonName("  FLORENCIA, GONZALEZ 👍\r\n"), "Florencia Gonzalez");
 
 // Verificar permisos de eliminación en pacientes.php
-const pacPhp = readFileSync("admin/api/pacientes.php", "utf8");
+const pacPhp = readdirSync("admin/api")
+  .filter((f) => f === "pacientes.php" || (f.startsWith("pacientes_") && f.endsWith(".php")))
+  .map((f) => readFileSync(`admin/api/${f}`, "utf8"))
+  .join("\n");
 assert.match(pacPhp, /norberto/);
 assert.match(pacPhp, /maria/);
 

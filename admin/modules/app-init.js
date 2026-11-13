@@ -7,7 +7,7 @@ import { ageOn, patientKey, PATIENT_FIELDS, todayISO } from "../ficha-rules.mjs?
 import { api } from "./api.js?v=79";
 import { dialogAlert } from "./dom.js?v=79";
 import { printItems } from "./print.js?v=82";
-import { initForm } from "./form.js?v=88";
+import { initForm } from "./form.js?v=89";
 import { initLibrary } from "./library.js?v=94";
 import { initCompare } from "./compare.js?v=79";
 import { initPacientesModule } from "./pacientes.js?v=16";

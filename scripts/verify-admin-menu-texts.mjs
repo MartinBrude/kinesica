@@ -44,7 +44,11 @@ test("index.html tiene el campo cfg-opt-c", () => {
 });
 
 test("configuracion.js carga, guarda y previsualiza opt_c_text", () => {
-  const js = read("admin/modules/configuracion.js");
+  const js = fs
+    .readdirSync(path.join(root, "admin", "modules"))
+    .filter((f) => f.startsWith("configuracion") && f.endsWith(".js"))
+    .map((f) => read(`admin/modules/${f}`))
+    .join("\n");
   assert.match(js, /querySelector\("#cfg-opt-c"\)/);
   assert.match(js, /opt_c_text: inputOptC\?\.value\?\.trim\(\)/);
   assert.match(js, /renderOptCText\(optC/);
@@ -52,7 +56,12 @@ test("configuracion.js carga, guarda y previsualiza opt_c_text", () => {
 
 test("settings.php acepta opt_c_text y horarios.php tiene default", () => {
   assert.match(read("admin/api/settings.php"), /'opt_c_text'/);
-  assert.match(read("admin/api/horarios.php"), /'opt_c_text' =>/);
+  const horariosPhp = fs
+    .readdirSync(path.join(root, "admin", "api"))
+    .filter((f) => f === "horarios.php" || (f.startsWith("horarios_") && f.endsWith(".php")))
+    .map((f) => read(`admin/api/${f}`))
+    .join("\n");
+  assert.match(horariosPhp, /'opt_c_text' =>/);
 });
 
 const wfPath = path.join(root, "..", "kinesica-bot", "workflow_live.json");
@@ -80,7 +89,12 @@ test("el admin no tiene 'Restaurar por defecto' (botones, handlers ni acción re
     assert.ok(!/btn-reset-(horarios|honorarios|clara-texts)|btnResetTexts/.test(src), `${rel} conserva un botón/handler de restaurar`);
   }
   assert.ok(!/action:\s*"reset"/.test(read("admin/modules/horarios.js")), "horarios.js todavía envía action reset");
-  assert.match(read("admin/api/horarios.php"), /=== 'reset'\) \{\n\s*json_out\(400/, "horarios.php debe rechazar action reset");
+  const horariosPhp = fs
+    .readdirSync(path.join(root, "admin", "api"))
+    .filter((f) => f === "horarios.php" || (f.startsWith("horarios_") && f.endsWith(".php")))
+    .map((f) => read(`admin/api/${f}`))
+    .join("\n");
+  assert.match(horariosPhp, /=== 'reset'\) \{\n\s*json_out\(400/, "horarios.php debe rechazar action reset");
 });
 
 test("recordatorio: texto de la plantilla de Meta sólo lectura, igual a lo que envía n8n", () => {
@@ -109,7 +123,7 @@ test("recordatorio: texto de la plantilla de Meta sólo lectura, igual a lo que 
 });
 
 test("guardar textos no envía reminder_text y los módulos se importan con una sola versión", () => {
-  const js = read("admin/modules/configuracion.js");
+  const js = read("admin/modules/configuracion-clara-data.js");
   const form = js.slice(js.indexOf("function readFormTexts()"), js.indexOf("function rememberLoadedTexts("));
   assert.ok(form.includes("reminder_notes"));
   assert.ok(!form.includes("reminder_text"), "readFormTexts no debe incluir reminder_text");

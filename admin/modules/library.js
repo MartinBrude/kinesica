@@ -6,7 +6,7 @@
 
 import { matchFichaSearch, nextSession, missingFields } from "../ficha-rules.mjs?v=90";
 import { dialogAlert, switchActiveView } from "./dom.js?v=79";
-import { todayISO } from "./form.js?v=88";
+import { todayISO } from "./form.js?v=89";
 import { sessionRow, patientGroupRow, fichaRow, setRowsContext } from "./library-rows.js?v=3";
 import { downloadJSON, planImport, executeBatchImport } from "./library-io.js";
 import { pageWindow as calcPageWindow } from "./library-pager.js";

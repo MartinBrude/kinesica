@@ -231,5 +231,4 @@ declare(strict_types=1);
     }
 
     json_out(200, $data);
-}
 
