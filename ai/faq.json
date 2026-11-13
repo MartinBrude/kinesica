@@ -27,6 +27,10 @@
         "a": "Podés solicitar reintegros a tu obra social o prepaga."
       },
       {
+        "q": "¿Cuáles son los honorarios?",
+        "a": "En el proceso de agendar se informan los valores de las diferentes técnicas."
+      },
+      {
         "q": "¿A quiénes sirven estos tratamientos?",
         "a": "A personas con dolores, alteraciones de la sensibilidad, mareos, cambios posturales, lesiones traumáticas o deportivas, entre otros."
       }
@@ -55,6 +59,10 @@
       {
         "q": "Do you accept prepaid health plans or insurance?",
         "a": "You can request reimbursements from your health insurance provider."
+      },
+      {
+        "q": "What are the fees?",
+        "a": "During the booking process, the fees for the different techniques are provided."
       },
       {
         "q": "Who can benefit from these treatments?",
@@ -87,6 +95,10 @@
         "a": "Vous pouvez demander un remboursement auprès de votre assurance ou mutuelle."
       },
       {
+        "q": "Quels sont les honoraires ?",
+        "a": "Lors de la prise de rendez-vous, les tarifs des différentes techniques sont indiqués."
+      },
+      {
         "q": "Qui peut bénéficier de ces traitements ?",
         "a": "Les personnes souffrant de douleur, troubles de sensibilité, vertiges, troubles posturaux, blessures traumatiques ou sportives, entre autres."
       }
@@ -115,6 +127,10 @@
       {
         "q": "Vocês aceitam planos de saúde ou reembolso?",
         "a": "Você pode solicitar reembolso junto ao seu plano ou seguro de saúde."
+      },
+      {
+        "q": "Quais são os honorários?",
+        "a": "No processo de agendamento são informados os valores das diferentes técnicas."
       },
       {
         "q": "Quem pode se beneficiar desses tratamentos?",

@@ -1,6 +1,6 @@
 /**
  * Home FAQ copy: accordion HTML + FAQPage JSON-LD (ES / EN / FR / PT).
- * Schema answers stay concise; accordion FAQ 4 and 7 keep richer HTML.
+ * Schema answers stay concise; accordion FAQ 4 and 8 keep richer HTML.
  */
 import { escHtml } from "./html-utils.mjs";
 import { pathologyForStem } from "./pathology-content.mjs";
@@ -270,6 +270,20 @@ export const FAQS = [
       en: "You can request reimbursements from your health insurance provider.",
       fr: "Vous pouvez demander un remboursement auprès de votre assurance ou mutuelle.",
       pt: "Você pode solicitar reembolso junto ao seu plano ou seguro de saúde.",
+    },
+  },
+  {
+    q: {
+      es: "¿Cuáles son los honorarios?",
+      en: "What are the fees?",
+      fr: "Quels sont les honoraires ?",
+      pt: "Quais são os honorários?",
+    },
+    a: {
+      es: "En el proceso de agendar se informan los valores de las diferentes técnicas.",
+      en: "During the booking process, the fees for the different techniques are provided.",
+      fr: "Lors de la prise de rendez-vous, les tarifs des différentes techniques sont indiqués.",
+      pt: "No processo de agendamento são informados os valores das diferentes técnicas.",
     },
   },
   {
