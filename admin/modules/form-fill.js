@@ -17,6 +17,8 @@ import {
   currentId,
   activeSessionUserGetter,
   currentAllFichas,
+  setCurrentId,
+  setCurrentAllFichas,
 } from "./form-runtime.js?v=1";
 
 function readForm() {
@@ -29,7 +31,7 @@ function updateStepValidation() {
 
 export function fillForm(data, allFichas = []) {
   if (!form) return;
-  currentId = data.id;
+  setCurrentId(data.id);
   form.reset();
   Object.keys(singles).forEach((k) => delete singles[k]);
 
@@ -127,7 +129,7 @@ export function fillForm(data, allFichas = []) {
   if (compareFormBtn) compareFormBtn.hidden = pSessions.length < 2;
   if (btnPdfHistory) btnPdfHistory.hidden = pSessions.length < 2;
 
-  currentAllFichas = allFichas;
+  setCurrentAllFichas(allFichas);
   const pKey = (data.dni || data.nombre) ? patientKey(data) : "";
   populatePatientPicker(allFichas, pKey);
   if (pKey && pSessions.length > 0) {

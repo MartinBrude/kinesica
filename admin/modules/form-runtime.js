@@ -15,3 +15,8 @@ export let currentId = null;
 export let formBaseline = "";
 export let activeSessionUserGetter = null;
 export let currentAllFichas = [];
+
+export function setCurrentId(id) { currentId = id; }
+export function setFormBaseline(val) { formBaseline = val; }
+export function setActiveSessionUserGetter(fn) { activeSessionUserGetter = fn; }
+export function setCurrentAllFichas(list) { currentAllFichas = list; }
