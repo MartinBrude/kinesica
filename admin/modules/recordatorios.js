@@ -3,8 +3,7 @@
  */
 
 import { api } from "./api.js?v=79";
-import { switchActiveView, escapeHtml, toast } from "./dom.js?v=79";
-import { dialogAlert } from "./dom-dialogs.js?v=78";
+import { switchActiveView, escapeHtml, toast, dialogAlert } from "./dom.js?v=79";
 import { normalizePhoneForWhatsApp } from "./phone-format.js?v=5";
 import { getSessionUser } from "./auth.js?v=83";
 import {

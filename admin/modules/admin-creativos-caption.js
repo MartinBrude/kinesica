@@ -3,7 +3,7 @@
  * Persistido vía update_caption (override de catálogo + cola queued).
  */
 
-import { escapeHtml, dialogConfirm, toast } from "./dom.js?v=80";
+import { escapeHtml, dialogConfirm, toast } from "./dom.js?v=79";
 import { getSessionUser } from "./auth.js?v=83";
 import {
   resolveCaption,
