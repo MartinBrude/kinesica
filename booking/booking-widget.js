@@ -1506,6 +1506,7 @@
     reset() {
       this._carouselSeq = (this._carouselSeq || 0) + 1;
       this._slotReqSeq = (this._slotReqSeq || 0) + 1;
+      this._bookingAnalyticsSent = false;
       this.state = {
         step: 1,
         tipo: "session",
@@ -2225,6 +2226,7 @@
         // Se envía solo en la confirmación de turno
         this.sendConfirmationEmail(payload);
 
+        this.trackBookingConversion(payload, result);
         this.renderConfirmation(payload, result);
         this.setStep(4);
       } catch (err) {
@@ -2235,6 +2237,71 @@
         btnSubmit.disabled = false;
         btnSubmit.textContent = this.options.adminMode ? "Confirmar turno" : this.t("confirm");
       }
+    }
+
+    /**
+     * GA4 + dataLayer conversion for a confirmed booking (or consulta enviada).
+     * Once per reservation; skipped in adminMode. No PII.
+     */
+    bookingAnalyticsParams(payload) {
+      const appointmentType = String(
+        (payload && payload.appointmentType) || this.state.appointmentType || "session"
+      ).toLowerCase();
+      const bookingType = appointmentType === "call" ? "consulta" : "presencial";
+
+      let service = "";
+      const techniqueId = payload && payload.techniqueId;
+      if (techniqueId && techniqueId !== "no-se" && techniqueId !== "paciente") {
+        const technique = engine.getTechnique(techniqueId);
+        if (technique && !technique.bySchedule && !technique.internal) {
+          service = technique.id || "";
+        }
+      }
+      if (!service && payload && payload.especialidad && payload.especialidad !== "No especifica") {
+        service = String(payload.especialidad).slice(0, 80);
+      }
+
+      const params = {
+        booking_type: bookingType,
+        value: 1,
+        currency: "ARS",
+      };
+      if (service) params.service = service;
+      return params;
+    }
+
+    /**
+     * True when the success path is "consulta enviada" (no confirmed calendar slot).
+     * Current public flow only confirms presencial sessions; kept for a future/legacy call path.
+     */
+    isConsultaEnviadaResult(payload, result) {
+      const appointmentType = String(
+        (payload && payload.appointmentType) || (result && result.appointmentType) || ""
+      ).toLowerCase();
+      if (appointmentType === "call") return true;
+      const status = String((result && result.status) || "").toLowerCase();
+      return status === "consulta_enviada" || status === "inquiry_sent";
+    }
+
+    trackBookingConversion(payload, result) {
+      if (this.options.adminMode) return;
+      if (this._bookingAnalyticsSent) return;
+      this._bookingAnalyticsSent = true;
+
+      const params = this.bookingAnalyticsParams(payload);
+      const isConsulta = this.isConsultaEnviadaResult(payload, result);
+      const eventName = isConsulta
+        ? "kinesica_consulta_enviada"
+        : "kinesica_agenda_confirmada";
+
+      if (typeof window.kinesicaPushEvent === "function") {
+        window.kinesicaPushEvent(eventName, params);
+        return;
+      }
+
+      // Fallback if ui-core/gtm-events has not loaded: dataLayer only (no duplicate gtag bootstrap).
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push(Object.assign({ event: eventName }, params));
     }
 
     async sendConfirmationEmail(payload) {

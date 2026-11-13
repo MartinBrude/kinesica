@@ -1,11 +1,13 @@
 /**
  * Conversion events → dataLayer (GTM Preview) + GA4 via gtag.
  *
- * Events: whatsapp_click, phone_click, maps_click.
+ * Events: whatsapp_click, phone_click, maps_click, agenda_confirmada, consulta_enviada.
  * Also pushes kinesica_* to dataLayer for optional GTM Custom Event tags.
  *
  * GTM: pause the legacy Link Click → "clic whatsapp" (wa.me) tag to avoid
  * counting WhatsApp twice (legacy name + whatsapp_click).
+ *
+ * Booking widgets call window.kinesicaPushEvent (same helpers; no duplicate gtag load).
  *
  * IDs: scripts/site-analytics.mjs → js/site-config.js (KINESICA_SITE).
  */
@@ -17,6 +19,8 @@
     kinesica_whatsapp_click: "whatsapp_click",
     kinesica_phone_click: "phone_click",
     kinesica_maps_click: "maps_click",
+    kinesica_agenda_confirmada: "agenda_confirmada",
+    kinesica_consulta_enviada: "consulta_enviada",
   };
 
   function ga4Id() {
@@ -163,4 +167,7 @@
     },
     true
   );
+
+  // Public API for booking / other modules (reuses ensureGtagFn + dataLayer).
+  window.kinesicaPushEvent = pushEvent;
 })();
