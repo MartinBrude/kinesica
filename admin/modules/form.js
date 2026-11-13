@@ -1,18 +1,31 @@
 /**
- * Kinésica Admin - Formulario Clínico de ATM (Ficha)
- * Administra la captura clínica en 5 pasos, cálculo de edad, escala de dolor EVA,
- * validación suave y soporte para características opcionales.
+ * Kinésica Admin - Formulario Clínico de ATM (Ficha).
  */
 
 import { patientKey, validateField, getSessionIndex } from "../ficha-rules.mjs?v=90";
 import { dialogConfirm } from "./dom.js?v=79";
 import { setupInputRestrictions } from "./form-restrictions.js";
 import { syncFotoPreview, getCurrentFotos, getUploadInFlight, initFormPhotos } from "./form-photos.js";
-import { singles, syncEva, syncAge, syncFollowups, setupSingleButtons } from "./form-eva.js";
+import { syncEva, syncAge, syncFollowups, setupSingleButtons } from "./form-eva.js";
 import { showStep, showForm as showFormNav, updateStepValidation as updateStepValidationNav, advanceNextStep } from "./form-nav.js";
 import { setDniPower, setPatientLocked, populatePatientPicker, setupPatientHandlers, getIdentityKey, isIdentityEdited } from "./form-patient.js";
 import { submitFichaForm } from "./form-submit.js";
 import { getBlankFicha, readFormData, getFormSerializedState } from "./form-reader.js";
+import {
+  form,
+  evaInput,
+  compareFormBtn,
+  btnPdfHistory,
+  btnBack,
+  btnPrev,
+  btnNext,
+  singles,
+  currentId,
+  formBaseline,
+  activeSessionUserGetter,
+  currentAllFichas,
+} from "./form-runtime.js?v=1";
+import { fillForm, handleSideChange } from "./form-fill.js?v=1";
 
 export { compressImage } from "./form-image.js";
 export { setupInputRestrictions } from "./form-restrictions.js";
@@ -21,168 +34,16 @@ export { todayISO, evaMeta, syncEva, syncAge, syncFollowups } from "./form-eva.j
 export { showStep, highlightMissingFields, highlightErrorFields } from "./form-nav.js";
 export { setPatientLocked, populatePatientPicker } from "./form-patient.js";
 
-const form = document.querySelector("#ficha");
-const evaInput = form ? form.elements.eva : null;
-const compareFormBtn = document.querySelector("#btn-compare-form");
-const btnPdfHistory = document.querySelector("#btn-pdf-history");
-const btnBack = document.querySelector("#btn-back");
-const btnPrev = document.querySelector("#btn-prev");
-const btnNext = document.querySelector("#btn-next");
-
-let currentId = null;
-let formBaseline = "";
-let activeSessionUserGetter = null;
-let currentAllFichas = [];
-
 export function getCurrentId() { return currentId; }
 export function setCurrentId(id) { currentId = id; }
 export function updateStepValidation() { updateStepValidationNav(readForm()); }
-
 export function showForm(targetStep = 0) {
-  showFormNav(targetStep, { getCurrentId, onFormShown: () => { formBaseline = formState(); } });
+  showFormNav(targetStep, { getCurrentId, onFormShown: () => { formBaseline = getFormSerializedState(readForm()); } });
 }
-
 export function blank() { return getBlankFicha(); }
 export function readForm() { return readFormData({ form, currentId, singles, getCurrentFotos }); }
 export function formState() { return getFormSerializedState(readForm()); }
-
-export function fillForm(data, allFichas = []) {
-  if (!form) return;
-  currentId = data.id;
-  form.reset();
-  Object.keys(singles).forEach((k) => delete singles[k]);
-
-  for (const [key, value] of Object.entries(data)) {
-    if (key === "id" || key === "savedAt" || key === "cdi") continue;
-    const el = form.elements[key];
-    if (!el) {
-      // version / paciente_id / profesional_id: round-trip sin input visible
-      if (key === "version" || key === "paciente_id" || key === "profesional_id") {
-        if (value != null && value !== "") singles[key] = value;
-        continue;
-      }
-      if (form.querySelector(`[data-single="${key}"]`)) singles[key] = value || "";
-      continue;
-    }
-    if (el instanceof RadioNodeList || el instanceof HTMLCollection) {
-      for (const node of el) {
-        if (node.type === "checkbox") node.checked = Boolean(value);
-        else node.value = value ?? "";
-      }
-      continue;
-    }
-    if (el.type === "checkbox") el.checked = Boolean(value);
-    else el.value = value ?? "";
-  }
-
-  for (const el of form.querySelectorAll('input[name="cdi"]')) {
-    el.checked = (data.cdi || []).includes(el.value);
-  }
-
-  document.querySelectorAll("[data-single]").forEach((group) => {
-    const key = group.dataset.single;
-    group.querySelectorAll("button").forEach((btn) => {
-      btn.classList.toggle("on", btn.dataset.value === (data[key] || ""));
-    });
-    if (data[key]) singles[key] = data[key];
-  });
-
-  syncFollowups();
-  syncEva();
-  updateStepValidation();
-
-  const preAccordion = form.querySelector(".mediciones-accordion");
-  if (preAccordion) preAccordion.open = true;
-
-  const postAccordion = document.querySelector("#details-mediciones-post");
-  if (postAccordion) {
-    postAccordion.open = Boolean(
-      data.aperturaLibrePost || data.aperturaDolorPost || data.desviacionPost ||
-      data.desvIzqPost || data.desvDerPost || data.desvCorregidaPost ||
-      data.deflexionPost || data.protrusionPost || data.latIzqPost || data.latDerPost
-    );
-  }
-
-  const sessionUser = typeof activeSessionUserGetter === "function" ? activeSessionUserGetter() : null;
-  const isAdmin = sessionUser?.role === "admin" || sessionUser?.username === "martin";
-  const isColaborador = sessionUser?.role === "colaborador";
-  const profField = document.querySelector("#field-profesional");
-  if (profField) profField.hidden = !isAdmin;
-  if (form.elements.profesional) {
-    form.elements.profesional.value = data.profesional || (sessionUser?.username === "maria" ? "maria" : "norberto");
-  }
-
-  const btnSave = form.querySelector('button[type="submit"]');
-  if (btnSave) btnSave.hidden = isColaborador;
-
-  let colabBanner = document.querySelector("#form-colaborador-banner");
-  if (isColaborador) {
-    if (!colabBanner) {
-      colabBanner = document.createElement("div");
-      colabBanner.id = "form-colaborador-banner";
-      colabBanner.className = "horarios-alert-box";
-      colabBanner.style.margin = "16px 0";
-      colabBanner.style.background = "#fef3c7";
-      colabBanner.style.color = "#92400e";
-      colabBanner.style.borderColor = "#fde68a";
-      colabBanner.textContent = "👁️ Modo de visualización (Colaborador): Historia clínica en modo solo lectura. Podés imprimirla y compararla, pero no modificarla.";
-      form.prepend(colabBanner);
-    } else {
-      colabBanner.hidden = false;
-    }
-    form.querySelectorAll("input, textarea, select").forEach((el) => {
-      el.disabled = true;
-    });
-  } else if (colabBanner) {
-    colabBanner.hidden = true;
-    form.querySelectorAll("input, textarea, select").forEach((el) => {
-      el.disabled = false;
-    });
-  }
-
-  const pSessions = (data.dni || data.nombre)
-    ? allFichas.filter((f) => patientKey(f) === patientKey(data))
-    : [];
-  if (compareFormBtn) compareFormBtn.hidden = pSessions.length < 2;
-  if (btnPdfHistory) btnPdfHistory.hidden = pSessions.length < 2;
-
-  currentAllFichas = allFichas;
-  const pKey = (data.dni || data.nombre) ? patientKey(data) : "";
-  populatePatientPicker(allFichas, pKey);
-  if (pKey && pSessions.length > 0) {
-    const isEdit = allFichas.some((f) => f.id === data.id);
-    const sessionIdx = getSessionIndex(data, allFichas);
-    setPatientLocked(true, data, isEdit ? sessionIdx : pSessions.length, isEdit);
-  } else {
-    setPatientLocked(false);
-  }
-  setDniPower(!data?.sinDocumento);
-  const initialFotos = Array.isArray(data?.fotosUrls) && data.fotosUrls.length > 0
-    ? data.fotosUrls
-    : (data?.fotoUrl ? [data.fotoUrl] : []);
-  syncFotoPreview(initialFotos);
-  showStep(0);
-}
-
-function handleSideChange(e) {
-  const sideMap = {
-    ruidosIzq: "ruidos", ruidosDer: "ruidos",
-    condilarIzq: "dolorCondilar", condilarDer: "dolorCondilar",
-    desvIzq: "desviacion", desvDer: "desviacion",
-    desvIzqPost: "desviacionPost", desvDerPost: "desviacionPost",
-  };
-  const key = sideMap[e.target?.name];
-  if (key) {
-    const data = readForm();
-    if (!validateField(key, data[key], data)) {
-      const followName = key.startsWith("desv") ? (key.endsWith("Post") ? "desviacionPost" : "desviacion") : key;
-      const fg = form.querySelector(`[data-follow="${followName}"] .follow-group`);
-      if (fg) fg.classList.remove("input-error");
-      e.target.classList.remove("input-error");
-    }
-  }
-  updateStepValidation();
-}
+export { fillForm } from "./form-fill.js?v=1";
 
 export function initForm({ onSave, onBack, onCompare, onPrint, getSessionUser }) {
   if (!form) return;

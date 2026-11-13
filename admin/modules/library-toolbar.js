@@ -107,7 +107,7 @@ export function initLibraryToolbar({
   if (btnSeed) {
     btnSeed.addEventListener("click", async () => {
       const { sessionUser } = getState();
-      if (sessionUser && sessionUser.role !== "admin" && sessionUser.username !== "martin") return;
+      if (sessionUser && sessionUser.role !== "admin") return;
       if (!(await dialogConfirm("¿Agregar 20 fichas de prueba?"))) return;
       btnSeed.disabled = true;
       try {

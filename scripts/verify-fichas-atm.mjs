@@ -32,7 +32,12 @@ import {
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const html = fs.readFileSync(path.join(root, "admin/index.html"), "utf8");
-const php = fs.readFileSync(path.join(root, "admin/api/fichas.php"), "utf8");
+const php = [
+  "fichas.php",
+  "fichas_routes.php",
+  "fichas_post.php",
+  "fichas_ops.php",
+].map((f) => fs.readFileSync(path.join(root, "admin/api", f), "utf8")).join("\n");
 function loadAdminJs(entryPath) {
   const content = fs.readFileSync(entryPath, "utf8");
   const modulesDir = path.join(path.dirname(entryPath), "modules");
@@ -92,9 +97,11 @@ assert.equal(assignProfesional("norberto", ""), "norberto");
 assert.equal(assignProfesional("martin", ""), "norberto");
 assert.equal(assignProfesional("otro", ""), "norberto");
 assert.equal(assignProfesional("martin", "maria"), "maria", "Editar no cambia el profesional por defecto");
-assert.equal(assignProfesional("martin", "", "maria"), "maria", "El admin puede crear ficha asignada a María");
-assert.equal(assignProfesional("martin", "", "norberto"), "norberto", "El admin puede crear ficha asignada a Norberto");
-assert.equal(assignProfesional("martin", "norberto", "maria"), "maria", "El admin puede reasignar profesional");
+assert.equal(assignProfesional("martin", "", "maria", { role: "admin" }), "maria", "Admin (rol) puede crear ficha asignada a María");
+assert.equal(assignProfesional("norberto", "", "norberto", { role: "admin" }), "norberto", "Admin Norberto puede asignarse a sí mismo");
+assert.equal(assignProfesional("norberto", "", "maria", { role: "admin" }), "maria", "Admin Norberto puede crear ficha asignada a María");
+assert.equal(assignProfesional("martin", "norberto", "maria", { role: "admin" }), "maria", "Admin puede reasignar profesional");
+assert.equal(assignProfesional("martin", "", "maria"), "norberto", "Sin rol admin no se reasigna por nombre");
 assert.equal(assignProfesional("maria", "", "norberto"), "maria", "Un profesional no-admin no puede reasignar");
 assert.match(html, /id="field-profesional"/);
 assert.match(html, /name="profesional"/);
@@ -131,7 +138,7 @@ assert.match(html, /id="btn-seed" hidden/);
 assert.doesNotMatch(html, /id="btn-example"/);
 assert.doesNotMatch(html, /id="btn-clear"/);
 assert.doesNotMatch(html, /id="btn-export-one"/);
-assert.match(app, /sessionUser.username !== "martin"/);
+assert.match(app, /sessionUser\.role !== "admin"/);
 assert.match(app, /textContent = "\+ Nueva sesión"/);
 assert.match(html, /id="btn-new">Nueva sesión</);
 assert.match(html, />Guardar sesión</);

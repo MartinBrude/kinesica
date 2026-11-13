@@ -1,0 +1,197 @@
+import { escapeHtml } from "./dom.js?v=79";
+import { formatDisplayPhone, extractPhoneCandidate } from "./phone-format.js?v=6";
+import { capitalizePersonName } from "./pacientes-format.js";
+import { isAppointmentPast } from "./recordatorios-render-pages.js?v=1";
+
+function statusClass(status) {
+  if (status === "pending") return "is-pending";
+  if (status === "sent" || status === "sent_email") return "is-sent";
+  if (status === "failed") return "is-failed";
+  if (status === "missing_phone") return "is-phone";
+  if (status === "run_skipped" || status === "skipped") return "is-skipped";
+  return "";
+}
+
+function getTimingMetaHtml(item) {
+  const localTime = item.run_at_local || item.run_at || "";
+  const timeOnly = localTime ? localTime.split(" ")[1] || localTime : "";
+
+  if (item.status === "pending") {
+    let dispatchSchedule = "Hoy 18:00 hs";
+    if (item.appointment_date) {
+      try {
+        const [y, m, d] = item.appointment_date.split("-").map(Number);
+        const dt = new Date(y, m - 1, d);
+        const dayOfWeek = dt.getDay(); // 0: Dom, 1: Lun, 2: Mar, 3: Mie, 4: Jue, 5: Vie, 6: Sab
+        if (dayOfWeek === 1) {
+          dispatchSchedule = "Domingo 18:00 hs";
+        } else if (dayOfWeek >= 2 && dayOfWeek <= 5) {
+          dispatchSchedule = "Día previo 10:00 hs";
+        }
+      } catch { /* ignore */ }
+    }
+    const detectedStr = timeOnly ? ` · Detectado: ${escapeHtml(timeOnly)} hs` : "";
+    return `<span>Envío automático: <strong>${escapeHtml(dispatchSchedule)}</strong>${detectedStr}</span>`;
+  }
+
+  if (item.status === "sent" || item.status === "sent_email") {
+    return `<span>Enviado: ${escapeHtml(localTime)}</span>`;
+  }
+
+  if (item.status === "failed" || item.status === "missing_phone") {
+    return `<span>Falló en ejecución: ${escapeHtml(localTime)}</span>`;
+  }
+
+  return `<span>Ejecución: ${escapeHtml(localTime)}</span>`;
+}
+
+export function buildRecordatorioCardHtml(item) {
+  const name = escapeHtml(item.patient_name ? capitalizePersonName(item.patient_name) : (item.event_summary || "—"));
+  const statusLabel = escapeHtml(item.status_label || item.status || "");
+  const appt =
+    [item.appointment_date, item.appointment_time].filter(Boolean).join(" · ") || "—";
+  const viaEmail = item.status === "sent_email";
+  const hasEmail = !!(item.email && String(item.email).includes("@"));
+
+  // Resolver wa_id con fallback desde descripción/summary (clave:valor telefono/whatsapp/…)
+  let effectiveWaId = item.wa_id || "";
+  if (!effectiveWaId) {
+    const candidate =
+      extractPhoneCandidate(item.event_description || "") ||
+      extractPhoneCandidate(item.event_summary || "") ||
+      extractPhoneCandidate(item.patient_name || "");
+    if (candidate) {
+      effectiveWaId = candidate;
+    }
+  }
+
+  const isMissingPhone =
+    !effectiveWaId && !viaEmail && item.status !== "run_skipped";
+  const needsContact =
+    !effectiveWaId &&
+    ["pending", "missing_phone", "failed", "skipped"].includes(String(item.status || ""));
+
+  const contactBits = [];
+  if (effectiveWaId) {
+    const rawDigits = String(effectiveWaId).replace(/\D/g, "");
+    const waUrl = rawDigits ? `https://wa.me/${rawDigits}` : "";
+    const phoneFormatted = escapeHtml(formatDisplayPhone(effectiveWaId));
+    if (waUrl) {
+      contactBits.push(`<a href="${waUrl}" target="_blank" rel="noopener noreferrer" class="recordatorio-contact-link recordatorio-wa-link" title="Abrir chat en WhatsApp">💬 ${phoneFormatted}</a>`);
+    } else {
+      contactBits.push(`<span>${phoneFormatted}</span>`);
+    }
+  }
+  const effectiveEmail = (hasEmail ? item.email : (viaEmail && item.error_message ? item.error_message : "")).trim();
+  if (effectiveEmail && effectiveEmail.includes("@")) {
+    const mailtoUrl = `mailto:${encodeURIComponent(effectiveEmail)}`;
+    const emailEscaped = escapeHtml(item.email);
+    contactBits.push(`<a href="${mailtoUrl}" class="recordatorio-contact-link recordatorio-email-link" title="Enviar correo">✉️ ${emailEscaped}</a>`);
+  }
+  const contact = contactBits.length
+    ? contactBits.join(" · ")
+    : `<span class="recordatorio-contact-warning">⚠️ Sin contacto registrado</span>`;
+
+  const warningPill = isMissingPhone && (item.status === "pending" || item.status === "missing_phone")
+    ? `<span class="recordatorio-warning-pill" title="No figura teléfono en el turno ni en el directorio">⚠️ Falta teléfono</span>`
+    : "";
+
+  const reason = item.skip_reason_label
+    ? `<span class="recordatorio-reason">${escapeHtml(item.skip_reason_label)}</span>`
+    : "";
+  const showRawError =
+    (item.status === "failed" || item.status === "missing_phone") &&
+    (item.error_code || item.error_message) &&
+    !String(item.error_message || "").startsWith("contact_email:");
+  const err = showRawError
+    ? `<p class="recordatorio-error">${escapeHtml(
+        [item.error_code, item.error_message].filter(Boolean).join(" — ")
+      )}</p>`
+    : isMissingPhone && (item.status === "pending" || item.status === "missing_phone")
+      ? `<p class="recordatorio-warning-text">⚠️ No se encontró número de WhatsApp para este paciente. Usá <em>＋ Cargar contacto</em> para cargar teléfono y/o email.</p>`
+      : "";
+
+  // Ocultar resumen si solo repite el nombre del paciente, etiquetas de turno y/o su teléfono
+  const displaySummary = (() => {
+    const rawSummary = String(item.event_summary || "").trim();
+    if (!rawSummary) return "";
+    const pName = String(item.patient_name || "").trim();
+    if (rawSummary === pName) return "";
+
+    // Eliminar etiquetas entre corchetes ([NORBERTO], [TURNO]), emojis iniciales
+    let clean = rawSummary.replace(/\[[^\]]*\]/g, "").replace(/^[^\wáéíóúÁÉÍÓÚñÑüÜ]+/g, "").trim();
+
+    // Eliminar dígitos del teléfono si está presente
+    if (effectiveWaId) {
+      const rawDigits = String(effectiveWaId).replace(/\D/g, "");
+      if (rawDigits.length >= 8) {
+        clean = clean.replace(new RegExp(rawDigits.slice(-8), "g"), "");
+      }
+    }
+    // Dejar solo texto
+    const textOnly = clean.replace(/[0-9\+\-\(\)\s]+/g, " ").trim();
+    if (!textOnly || textOnly.toLowerCase() === pName.toLowerCase()) {
+      return "";
+    }
+    return rawSummary;
+  })();
+
+  const summary = displaySummary
+    ? `<p class="recordatorio-summary">${escapeHtml(displaySummary)}</p>`
+    : "";
+
+  const isPast = isAppointmentPast(item.appointment_date, item.appointment_time);
+  const alreadySent = item.status === "sent" || item.status === "sent_email";
+  const hasPhone = !!effectiveWaId;
+  // Enviar manual solo si hay WhatsApp o email, aún no se envió y el turno NO expiró / ya pasó.
+  // Sin contacto: solo «Cargar contacto» (el envío no tiene sentido).
+  const canManualSend =
+    !alreadySent &&
+    !isPast &&
+    item.status !== "run_skipped" &&
+    (hasPhone || hasEmail);
+
+  const actions = [];
+  if (needsContact) {
+    actions.push(`
+        <button type="button" class="btn light btn-load-contact" data-action="save-contact" data-id="${escapeHtml(item.id)}" title="Cargar teléfono y/o email en el directorio">
+          ＋ Cargar contacto
+        </button>`);
+  }
+  if (canManualSend) {
+    const isRetry = item.status === "failed" || item.status === "missing_phone";
+    const sendLabel = isRetry ? "⚡ Disparar manualmente" : "⚡ Enviar ahora";
+    const sendClass = isRetry ? "is-failed" : "is-pending";
+    actions.push(`
+        <button type="button" class="btn light btn-trigger-recordatorio ${sendClass}" data-action="dispatch-manual" data-id="${escapeHtml(item.id)}" title="Enviar recordatorio ahora por WhatsApp o email">
+          ${sendLabel}
+        </button>`);
+  }
+  const actionBtn = actions.length
+    ? `<div class="recordatorio-card-actions">${actions.join("")}</div>`
+    : "";
+
+  const phoneCardClass =
+    isMissingPhone && (item.status === "pending" || item.status === "missing_phone")
+      ? "is-missing-contact"
+      : "";
+
+  return `<article class="recordatorio-card ${statusClass(item.status)} ${phoneCardClass}" data-id="${escapeHtml(item.id)}">
+    <div class="recordatorio-card-main">
+      <div class="recordatorio-card-title">
+        <strong>${name}</strong>
+        <span class="recordatorio-status-pill ${statusClass(item.status)}">${statusLabel}</span>
+        ${warningPill}
+        ${reason}
+      </div>
+      ${summary}
+      <div class="recordatorio-meta">
+        <span>Turno: ${escapeHtml(appt)}</span>
+        <span>${contact}</span>
+        ${getTimingMetaHtml(item)}
+      </div>
+      ${err}
+    </div>
+    ${actionBtn}
+  </article>`;
+}

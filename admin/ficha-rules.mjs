@@ -113,8 +113,8 @@ export function missingFields(data) {
     .map(([, label]) => label);
 }
 
-export function assignProfesional(username, previous, requested) {
-  return assignProfHelper(username, previous, requested, CLINICIANS);
+export function assignProfesional(username, previous, requested, options = {}) {
+  return assignProfHelper(username, previous, requested, CLINICIANS, options);
 }
 
 export function nextSession(item, fechaSesion) {

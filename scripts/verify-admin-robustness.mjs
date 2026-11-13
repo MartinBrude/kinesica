@@ -498,8 +498,10 @@ await test("soporte de adjuntar foto clínica en panel 5 (tab 6)", () => {
   const uploadsHtaccess = fs.readFileSync(path.join(adminDir, "uploads/.htaccess"), "utf8");
   assert.match(uploadsHtaccess, /Require all denied/, "admin/uploads/.htaccess debe bloquear acceso HTTP directo");
 
-  // Verificación en fichas.php
-  const fichasPhp = fs.readFileSync(path.join(adminDir, "api/fichas.php"), "utf8");
+  // Verificación en fichas.php (+ siblings post-split ≤250)
+  const fichasPhp = ["fichas.php", "fichas_routes.php", "fichas_post.php"]
+    .map((f) => fs.readFileSync(path.join(adminDir, "api", f), "utf8"))
+    .join("\n");
   assert.match(fichasPhp, /'fotoUrl'/, "fichas.php debe reconocer fotoUrl");
   assert.ok(fichasPhp.includes("foto.php") || fichasPhp.includes("api/foto"), "fichas.php debe validar la URL de la foto");
 });
@@ -508,7 +510,10 @@ await test("módulo de Horarios de Atención está integrado en HTML, JS y API",
   assert.ok(html.includes('id="nav-btn-horarios"') || html.includes('id="nav-btn-configuracion"') || html.includes('id="nav-btn-consultorio"'), "Debe existir botón Consultorio/Horarios en la barra de navegación");
   assert.ok(html.includes('id="horarios-timeline-rows"'), "Debe existir la grilla visual semanal");
 
-  const horariosPhp = fs.readFileSync(path.join(adminDir, "api/horarios.php"), "utf8");
+  const horariosPhp = fs.readdirSync(path.join(adminDir, "api"))
+    .filter((f) => f === "horarios.php" || (f.startsWith("horarios_") && f.endsWith(".php")))
+    .map((f) => fs.readFileSync(path.join(adminDir, "api", f), "utf8"))
+    .join("\n");
   assert.match(horariosPhp, /require_auth\(\)/, "POST en horarios.php debe exigir sesión autenticada");
   assert.match(horariosPhp, /Superposición de camilla/, "horarios.php debe validar colisión de 1 camilla");
   assert.match(horariosPhp, /clara_schedule_summary/, "horarios.php debe generar el resumen para Clara");
@@ -611,7 +616,10 @@ await test("Configuración de horarios del encabezado de la web en admin y backe
   assert.match(horariosJs, /formatHeaderScheduleText/, "horarios.js debe exportar o contener formatHeaderScheduleText");
   assert.match(horariosJs, /header_schedule/, "horarios.js debe sincronizar header_schedule con el backend");
 
-  const horariosPhp = fs.readFileSync(path.join(adminDir, "api/horarios.php"), "utf8");
+  const horariosPhp = fs.readdirSync(path.join(adminDir, "api"))
+    .filter((f) => f === "horarios.php" || (f.startsWith("horarios_") && f.endsWith(".php")))
+    .map((f) => fs.readFileSync(path.join(adminDir, "api", f), "utf8"))
+    .join("\n");
   assert.match(horariosPhp, /'header_schedule'/, "horarios.php debe soportar header_schedule");
 
   const settingsPhp = fs.readFileSync(path.join(adminDir, "api/settings.php"), "utf8");
@@ -686,11 +694,24 @@ await test("compareFichas: evolución clínica con features opcionales y tendenc
 });
 
 await test("Profesionales y roles: protección del superadmin y validaciones en backend", () => {
-  const profPhp = fs.readFileSync(path.join(adminDir, "api/profesionales.php"), "utf8");
+  const profPhp = [
+    fs.readFileSync(path.join(adminDir, "api/profesionales.php"), "utf8"),
+    fs.readFileSync(path.join(adminDir, "api/profesionales_post.php"), "utf8"),
+  ].join("\n");
   assert.match(
     profPhp,
-    /\$username === 'martin'\) \{\s*json_out\(400, \['error' => 'No es posible desactivar la cuenta del administrador principal\.'\]\);/,
-    "profesionales.php debe prohibir suspender a martin"
+    /último administrador activo/,
+    "profesionales.php debe proteger al último admin activo (sin hardcode de username)"
+  );
+  assert.match(
+    profPhp,
+    /count_active_admins/,
+    "profesionales.php debe contar admins activos antes de democión/baja"
+  );
+  assert.doesNotMatch(
+    profPhp,
+    /\$username === 'martin'/,
+    "profesionales.php no debe elevar ni proteger por nombre martin"
   );
   assert.match(
     profPhp,
@@ -893,22 +914,35 @@ await test("switchActiveView maneja entornos sin DOM o vistas inexistentes de fo
 await test("kinesica_extract_ficha_photos extrae y deduplica fotos válidas en uploads", () => {
   const libPhp = fs.readFileSync(path.join(adminDir, "api/lib.php"), "utf8");
   assert.match(libPhp, /function kinesica_extract_ficha_photos/, "lib.php debe definir la función kinesica_extract_ficha_photos");
-  const fichasPhp = fs.readFileSync(path.join(adminDir, "api/fichas.php"), "utf8");
+  const fichasPhp = ["fichas.php", "fichas_routes.php", "fichas_post.php"]
+    .map((f) => fs.readFileSync(path.join(adminDir, "api", f), "utf8"))
+    .join("\n");
   assert.match(fichasPhp, /kinesica_extract_ficha_photos\(\$prevItem\)/, "fichas.php debe usar kinesica_extract_ficha_photos en POST");
   assert.match(fichasPhp, /kinesica_extract_ficha_photos\(\$prevData\)/, "fichas.php debe usar kinesica_extract_ficha_photos en DELETE");
 });
 
 await test("interacciones.php utiliza almacenamiento durable y cumple contrato frontend", () => {
-  const interaccionesPhp = fs.readFileSync(path.join(adminDir, "api/interacciones.php"), "utf8");
+  const interaccionesPhp = fs.readdirSync(path.join(adminDir, "api"))
+    .filter((f) => f === "interacciones.php" || f.startsWith("interacciones_"))
+    .map((f) => fs.readFileSync(path.join(adminDir, "api", f), "utf8"))
+    .join("\n");
   assert.match(interaccionesPhp, /lib_interacciones_view\.php/, "interacciones.php debe incluir lib_interacciones_view.php");
   assert.match(interaccionesPhp, /'ok'\s*=>\s*true/, "interacciones.php GET debe retornar ok => true");
   assert.match(interaccionesPhp, /\$payload\['items'\]\s*=\s*\$items/, "interacciones.php GET debe asignar items al payload");
   assert.match(interaccionesPhp, /INTERACCIONES_DEFAULT_DAYS/, "GET usa ventana por días");
   assert.match(interaccionesPhp, /\$_GET\['days'\]/, "acepta ?days=");
-  const viewPhp = fs.readFileSync(path.join(adminDir, "api/lib_interacciones_view.php"), "utf8");
+  const viewPhp = [
+    fs.readFileSync(path.join(adminDir, "api/lib_interacciones_view.php"), "utf8"),
+    ...fs.readdirSync(path.join(adminDir, "api"))
+      .filter((f) => f.startsWith("lib_interacciones_view_") && f.endsWith(".php"))
+      .map((f) => fs.readFileSync(path.join(adminDir, "api", f), "utf8")),
+  ].join("\n");
   assert.match(viewPhp, /INTERACCIONES_DEFAULT_DAYS\s*=\s*7/, "default 7 días");
   assert.match(viewPhp, /INTERACCIONES_MAX_EVENTS/, "tope de eventos por request");
-  const interJs = fs.readFileSync(path.join(adminDir, "modules/interacciones.js"), "utf8");
+  const interJs = fs.readdirSync(path.join(adminDir, "modules"))
+    .filter((f) => f.startsWith("interacciones") && f.endsWith(".js"))
+    .map((f) => fs.readFileSync(path.join(adminDir, "modules", f), "utf8"))
+    .join("\n");
   assert.match(interJs, /days=\$\{/, "frontend pide days= al cargar");
   assert.match(interJs, /activeStatusFilter\s*=\s*["']pending["']/, "filtro de interacciones por defecto es pendientes");
   assert.match(interJs, /AUTO_REFRESH_INTERVAL_MS\s*=\s*30\s*\*\s*60\s*\*\s*1000/, "auto-refresh de interacciones cada 30 minutos");
@@ -920,7 +954,10 @@ await test("interacciones.php utiliza almacenamiento durable y cumple contrato f
 });
 
 await test("recordatorios.php ingest + vista SPA + reconcile", () => {
-  const remPhp = fs.readFileSync(path.join(adminDir, "api/recordatorios.php"), "utf8");
+  const remPhp = [
+    fs.readFileSync(path.join(adminDir, "api/recordatorios.php"), "utf8"),
+    fs.readFileSync(path.join(adminDir, "api/recordatorios_routes.php"), "utf8"),
+  ].join("\n");
   assert.match(remPhp, /lib_recordatorios_view\.php/, "recordatorios.php debe incluir lib_recordatorios_view.php");
   assert.match(remPhp, /lib_recordatorios_n8n\.php/, "recordatorios.php debe incluir lib_recordatorios_n8n.php");
   assert.match(remPhp, /action === 'ingest'/, "recordatorios.php debe soportar ingest");
@@ -946,7 +983,10 @@ await test("Clara dropdown + secciones deep-link + mail preview", () => {
   assert.match(indexHtml, /id="clara-section-politicas"/, "sección políticas en view-clara");
   assert.match(indexHtml, /id="btn-send-confirmation-preview"/, "botón mail de prueba");
   assert.match(indexHtml, /claraAllowed|data-clara-section/, "boot abre sección Clara de la URL");
-  const tabsJs = fs.readFileSync(path.join(adminDir, "modules/app-tabs.js"), "utf8");
+  const tabsJs = fs.readdirSync(path.join(adminDir, "modules"))
+    .filter((f) => f.startsWith("app-tabs") && f.endsWith(".js"))
+    .map((f) => fs.readFileSync(path.join(adminDir, "modules", f), "utf8"))
+    .join("\n");
   assert.match(tabsJs, /nav-btn-clara-politicas/, "app-tabs escucha politicas");
   assert.match(tabsJs, /nav-group-clara/, "app-tabs setupDropdown Clara");
   assert.match(tabsJs, /showClaraView\(section\)/, "app-tabs pasa section a showClaraView");
@@ -975,10 +1015,16 @@ await test("encuestas.php + vista SPA + wiring de navegación", () => {
   assert.match(encPhp, /action === 'delete'/, "encuestas.php debe soportar delete");
   assert.ok(fs.existsSync(path.join(adminDir, "api/encuestas_io.php")), "encuestas_io.php");
   assert.ok(fs.existsSync(path.join(adminDir, "modules/encuestas.js")), "modulo encuestas.js");
-  const encJs = fs.readFileSync(path.join(adminDir, "modules/encuestas.js"), "utf8");
+  const encJs = fs.readdirSync(path.join(adminDir, "modules"))
+    .filter((f) => f.startsWith("encuestas") && f.endsWith(".js"))
+    .map((f) => fs.readFileSync(path.join(adminDir, "modules", f), "utf8"))
+    .join("\n");
   assert.match(encJs, /export function showEncuestasView/, "showEncuestasView exportado");
   assert.match(encJs, /export function initEncuestasModule/, "initEncuestasModule exportado");
-  const tabsJs = fs.readFileSync(path.join(adminDir, "modules/app-tabs.js"), "utf8");
+  const tabsJs = fs.readdirSync(path.join(adminDir, "modules"))
+    .filter((f) => f.startsWith("app-tabs") && f.endsWith(".js"))
+    .map((f) => fs.readFileSync(path.join(adminDir, "modules", f), "utf8"))
+    .join("\n");
   assert.match(tabsJs, /showEncuestasView/, "app-tabs cablea showEncuestasView");
   assert.match(tabsJs, /nav-btn-encuestas/, "app-tabs escucha nav-btn-encuestas");
   const routerJs = fs.readFileSync(path.join(adminDir, "modules/router.js"), "utf8");

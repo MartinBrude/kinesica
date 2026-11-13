@@ -32,9 +32,15 @@ const filesToCheck = [
   "admin/api/lib_instagram.php",
   "admin/api/lib_instagram_image_text.php",
   "admin/api/lib_instagram_render.php",
+  "admin/api/lib_instagram_render_format.php",
   "admin/api/lib_instagram_logo.php",
   "admin/api/instagram_cola.php",
   "admin/api/cron_instagram.php",
+  "admin/modules/admin-creativos.js",
+  "admin/modules/admin-creativos-data.js",
+  "admin/modules/admin-creativos-state.js",
+  "admin/modules/admin-creativos-grid.js",
+  "admin/modules/admin-creativos-modal.js",
   "admin/modules/admin-creativos-cola.js",
   "admin/modules/admin-creativos-cola-ui.js",
   "admin/modules/admin-creativos-lista.js",
@@ -132,8 +138,8 @@ assert.equal(orderOf("queued_1"), 1);
 assert.equal(orderOf("queued_2"), 2);
 assert.match(colaHeartHtml({ id: "queued_1" }), /❤️ #1/);
 assert.match(colaHeartHtml({ id: "non_existent" }), /🤍/);
-assert.match(colaButtonHtml({ id: "queued_1" }), /❤️ Programada \(#1\)/);
-assert.match(colaButtonHtml({ id: "non_existent" }), /🤍 Me gusta \(programar\)/);
+assert.match(colaButtonHtml({ id: "queued_1" }), /En cola \(#1\) · Quitar/);
+assert.match(colaButtonHtml({ id: "non_existent" }), /Sumar a la cola/);
 
 _setListForTesting([
   ...mockList,

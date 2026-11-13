@@ -1,14 +1,31 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import path from "node:path";
 
 console.log("Verificando implementación de nuevo rol Colaborador y corrección de lista de usuarios...");
 
-// 1. Verificar lib_auth.php
-const libAuth = fs.readFileSync("admin/api/lib_auth.php", "utf8");
+function readApi(...files) {
+  return files.map((f) => fs.readFileSync(path.join("admin/api", f), "utf8")).join("\n");
+}
+
+function readModulesMatching(prefix) {
+  return fs
+    .readdirSync("admin/modules")
+    .filter((f) => f.startsWith(prefix) && f.endsWith(".js"))
+    .map((f) => fs.readFileSync(path.join("admin/modules", f), "utf8"))
+    .join("\n");
+}
+
+// 1. Verificar lib_auth (facade + siblings)
+const libAuth = readApi("lib_auth.php", "lib_auth_require_auth.php", "lib_auth_seed_default_users.php");
 assert.match(libAuth, /function is_colaborador/);
 assert.match(libAuth, /'facundo'\s*=>\s*\[[^\]]*'name'\s*=>\s*'Facundo Vivardo'[^\]]*'role'\s*=>\s*'colaborador'/);
 assert.match(libAuth, /facu86@gmail\.com/);
-assert.match(libAuth, /\$username\s*===\s*'facundo'/);
+assert.doesNotMatch(
+  libAuth,
+  /if \(\$username === 'facundo'\) return 'colaborador'/,
+  "user_role no debe elevar colaborador por nombre"
+);
 assert.match(libAuth, /ALTER TABLE users MODIFY COLUMN role VARCHAR/);
 
 // 1b. Verificar que ensure_users_role_column NO ejecute seeds ni pise datos en cada petición
@@ -20,8 +37,8 @@ assert.match(libAuth, /\.users_schema_migrated/, "ensure_users_role_column debe 
 const libPhp = fs.readFileSync("admin/api/lib.php", "utf8");
 assert.ok(!libPhp.includes("ensure_users_role_column"), "lib.php no debe invocar ensure_users_role_column en resolve_username");
 
-// 2. Verificar profesionales.php
-const profPhp = fs.readFileSync("admin/api/profesionales.php", "utf8");
+// 2. Verificar profesionales.php (+ post)
+const profPhp = readApi("profesionales.php", "profesionales_post.php");
 assert.match(profPhp, /'users'\s*=>\s*\$users/);
 assert.match(profPhp, /'profesionales'\s*=>\s*\$users/);
 assert.match(profPhp, /\$u\['name'\]\s*=/);
@@ -39,28 +56,34 @@ const settingsPhpRaw = fs.readFileSync("admin/api/settings.php", "utf8");
 assert.match(settingsPhpRaw, /KINESICA_SETTINGS_INCLUDED/);
 assert.match(libAuth, /SHOW COLUMNS FROM users LIKE 'login_count'/);
 
-// 4. Verificar fichas.php
-const fichasPhp = fs.readFileSync("admin/api/fichas.php", "utf8");
+// 4. Verificar fichas.php (+ siblings)
+const fichasPhp = readApi("fichas.php", "fichas_routes.php", "fichas_post.php");
 assert.match(fichasPhp, /is_colaborador\(\$auth\)/);
 
-// 5. Verificar pacientes.php
-const pacientesPhp = fs.readFileSync("admin/api/pacientes.php", "utf8");
+// 5. Verificar pacientes.php (+ siblings si existen)
+const pacientesFiles = ["pacientes.php", "pacientes_authenticate.php", "pacientes_routes_get.php", "pacientes_routes_post.php", "pacientes_routes_put_delete.php"]
+  .filter((f) => fs.existsSync(path.join("admin/api", f)));
+const pacientesPhp = readApi(...pacientesFiles);
 assert.match(pacientesPhp, /is_colaborador\(\$auth\)/);
 
 // 6. Verificar settings.php
 const settingsPhp = fs.readFileSync("admin/api/settings.php", "utf8");
 assert.match(settingsPhp, /is_colaborador\(\$user\)/);
 
-// 7. Verificar interacciones.php
-const interaccionesPhp = fs.readFileSync("admin/api/interacciones.php", "utf8");
+// 7. Verificar interacciones.php (+ siblings)
+const interaccionesPhp = fs
+  .readdirSync("admin/api")
+  .filter((f) => f === "interacciones.php" || f.startsWith("interacciones_"))
+  .map((f) => fs.readFileSync(path.join("admin/api", f), "utf8"))
+  .join("\n");
 assert.match(interaccionesPhp, /is_colaborador\(\$auth/);
 
 // 7b. Cola Instagram: colaboradores solo lectura (POST bloqueado)
 const igColaPhp = fs.readFileSync("admin/api/instagram_cola.php", "utf8");
 assert.match(igColaPhp, /is_colaborador\(\$auth\)/);
 
-// 8. Verificar admin-profesionales.js
-const adminProfJs = fs.readFileSync("admin/modules/admin-profesionales.js", "utf8");
+// 8. Verificar admin-profesionales (facade + siblings)
+const adminProfJs = readModulesMatching("admin-profesionales");
 assert.match(adminProfJs, /data\?\.profesionales/);
 assert.match(adminProfJs, /data\?\.users/);
 assert.match(adminProfJs, /prof\.role === "colaborador"/);
@@ -76,7 +99,7 @@ const adminCss = fs.readFileSync("admin/css/admin-panel.css", "utf8");
 assert.match(adminCss, /\.prof-role-badge\.colaborador/);
 
 // 11. Verificar router.js y app-tabs.js
-const appTabsJs = fs.readFileSync("admin/modules/app-tabs.js", "utf8");
+const appTabsJs = readModulesMatching("app-tabs");
 assert.match(appTabsJs, /user\.role !== "admin"/);
 
-console.log("✅ Todas las verificaciones del rol Colaborador y lista de usuarios pasaron correctamente.");
+console.log("OK: rol colaborador + facades post-split");

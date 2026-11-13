@@ -191,8 +191,17 @@ export function shouldOmitInvariableFields(sessionIndex = 1, totalSessions = 1) 
   return totalSessions > 1 && sessionIndex > 1;
 }
 
-export function assignProfesional(username, previous, requested, clinicians = {}) {
-  if (username === "martin" && requested && clinicians[requested]) {
+/**
+ * Asigna profesional a una ficha.
+ * @param {string} username
+ * @param {string} previous
+ * @param {string} [requested]
+ * @param {Record<string, unknown>} [clinicians]
+ * @param {{ role?: string, isAdmin?: boolean }} [options] — admin por rol DB, no por nombre
+ */
+export function assignProfesional(username, previous, requested, clinicians = {}, options = {}) {
+  const isAdmin = options.isAdmin === true || options.role === "admin";
+  if (isAdmin && requested && clinicians[requested]) {
     return requested;
   }
   if (previous) return String(previous);

@@ -1,180 +1,48 @@
 /**
  * Kinésica Admin - Gestión de Autenticación y Pantalla de Acceso (Gate)
- * Administra el flujo de login, segundo factor (TOTP 2FA), recuperación de contraseña,
- * reseteo seguro y cierre de sesión.
  */
 
 import { api } from "./api.js?v=79";
-import { switchActiveView } from "./dom.js?v=79";
 import {
   setGateMessage,
   bindPasswordToggle,
   setupNumericCodeInputs,
   clearAuthStorage,
-  saveAuthStorage,
 } from "./auth-utils.js";
 import { setupEmailCodeFlow } from "./auth-email-code.js";
 import { setupRecoveryFlow, setupEnrollFlow } from "./auth-recovery.js";
+import { getSessionUser, setSessionUser } from "./auth-session.js";
+import { showGate, hideGate } from "./auth-gate.js";
+import {
+  loginForm,
+  enrollForm,
+  forgotForm,
+  resetForm,
+  emailCodeForm,
+  logoutBtn,
+  loginErrorEl,
+  loginCodeSentNote,
+  btnLoginSendEmailCode,
+  enrollErrorEl,
+  forgotErrorEl,
+  resetErrorEl,
+  emailCodeRequestError,
+  emailCodeVerifyError,
+  emailCodeSentNote,
+  btnForgot,
+  btnForgotBack,
+  btnEmailCode,
+  btnEmailCodeBack,
+  btnSendEmailCode,
+  btnVerifyEmailCode,
+  btnResendEmailCode,
+  emailCodeStepRequest,
+  emailCodeStepVerify,
+} from "./auth-elements.js";
 
 export { setGateMessage };
-
-let sessionUser = null;
-
-const qs = (sel) => (typeof document !== "undefined" ? document.querySelector(sel) : null);
-
-const viewGate = qs("#view-gate");
-const loginForm = qs("#login-form");
-const enrollForm = qs("#enroll-form");
-const forgotForm = qs("#forgot-form");
-const resetForm = qs("#reset-form");
-const emailCodeForm = qs("#email-code-form");
-const logoutBtn = qs("#btn-logout");
-
-const enrollAccountEl = qs("#enroll-account");
-const enrollSecretEl = qs("#enroll-secret");
-
-const loginErrorEl = qs("#login-error");
-const loginCodeSentNote = qs("#login-code-sent-note");
-const btnLoginSendEmailCode = qs("#btn-login-send-email-code");
-const enrollErrorEl = qs("#enroll-error");
-const forgotErrorEl = qs("#forgot-error");
-const resetErrorEl = qs("#reset-error");
-const emailCodeRequestError = qs("#email-code-request-error");
-const emailCodeVerifyError = qs("#email-code-verify-error");
-const emailCodeSentNote = qs("#email-code-sent-note");
-
-const btnForgot = qs("#btn-forgot");
-const btnForgotBack = qs("#btn-forgot-back");
-const btnEmailCode = qs("#btn-email-code");
-const btnEmailCodeBack = qs("#btn-email-code-back");
-const btnSendEmailCode = qs("#btn-send-email-code");
-const btnVerifyEmailCode = qs("#btn-verify-email-code");
-const btnResendEmailCode = qs("#btn-resend-email-code");
-const emailCodeStepRequest = qs("#email-code-step-request");
-const emailCodeStepVerify = qs("#email-code-step-verify");
-
-export function getSessionUser() {
-  if (sessionUser) {
-    if (sessionUser.username === "martin" || sessionUser.name === "Martín Brude" || sessionUser.name === "Martín") {
-      sessionUser.role = "admin";
-    }
-    return sessionUser;
-  }
-  if (typeof window !== "undefined" && window.localStorage) {
-    try {
-      const logged = localStorage.getItem("kinesica_logged_in") === "1";
-      let role = localStorage.getItem("kinesica_user_role");
-      const name = localStorage.getItem("kinesica_user_name");
-      const isMartin = name === "martin" || name === "Martín Brude" || name === "Martín";
-      if (isMartin) role = "admin";
-      if (logged && (role || name)) {
-        return { name: name || "", username: name || "", role: role || (isMartin ? "admin" : "professional") };
-      }
-    } catch { /* ignore */ }
-  }
-  return sessionUser;
-}
-
-export function setSessionUser(user) {
-  if (user && (user.username === "martin" || user.name === "Martín Brude" || user.name === "Martín")) {
-    user.role = "admin";
-  }
-  sessionUser = user;
-  const userLabel = qs("#session-user-name");
-  if (user) {
-    saveAuthStorage(user);
-    if (userLabel) {
-      userLabel.textContent = user.name || user.username || "";
-      userLabel.hidden = false;
-    }
-    if (typeof document !== "undefined") {
-      document.documentElement.classList.add("is-authenticated");
-      if (user.role === "admin") {
-        document.documentElement.classList.add("is-admin-role");
-      } else {
-        document.documentElement.classList.remove("is-admin-role");
-      }
-    }
-  } else {
-    clearAuthStorage();
-    if (userLabel) {
-      userLabel.textContent = "";
-      userLabel.hidden = true;
-    }
-    if (typeof document !== "undefined") {
-      document.documentElement.classList.remove("is-authenticated");
-      document.documentElement.classList.remove("is-admin-role");
-    }
-  }
-}
-
-export function showGate(data = {}) {
-  clearAuthStorage();
-  if (typeof document !== "undefined") {
-    document.documentElement.classList.remove("is-authenticated");
-    document.documentElement.classList.remove("is-admin-role");
-  }
-
-  switchActiveView("view-gate");
-  if (logoutBtn) logoutBtn.hidden = true;
-  document.querySelectorAll(".clara-btn").forEach((el) => el.remove());
-
-  const enroll = Boolean(data && data.enroll);
-  const forgot = Boolean(data && data.forgot);
-  const reset = Boolean(data && data.reset);
-  const emailCode = Boolean(data && data.emailCode);
-
-  if (loginForm) loginForm.hidden = enroll || forgot || reset || emailCode;
-  if (enrollForm) enrollForm.hidden = !enroll;
-  if (forgotForm) forgotForm.hidden = !forgot;
-  if (resetForm) resetForm.hidden = !reset;
-  if (emailCodeForm) emailCodeForm.hidden = !emailCode;
-
-  if (emailCode) {
-    if (emailCodeStepRequest) emailCodeStepRequest.hidden = false;
-    if (emailCodeStepVerify) emailCodeStepVerify.hidden = true;
-    if (emailCodeRequestError) emailCodeRequestError.hidden = true;
-    if (emailCodeVerifyError) emailCodeVerifyError.hidden = true;
-    const userInput = emailCodeForm ? emailCodeForm.elements.username : null;
-    if (userInput) {
-      if (!userInput.value) userInput.focus();
-      else userInput.select();
-    }
-  }
-
-  if (loginCodeSentNote && !data.keepNote) loginCodeSentNote.hidden = true;
-
-  if (enroll) {
-    if (enrollAccountEl) enrollAccountEl.textContent = data.account || "Kinésica";
-    const secret = data.secret || "";
-    if (enrollSecretEl) enrollSecretEl.textContent = secret.replace(/(.{4})/g, "$1 ").trim();
-    const enrollPassInput = enrollForm ? enrollForm.elements.enroll_password : null;
-    if (enrollPassInput) {
-      enrollPassInput.value = "";
-      enrollPassInput.focus();
-    } else {
-      const enrollInput = enrollForm ? enrollForm.elements.code : null;
-      if (enrollInput) enrollInput.focus();
-    }
-  }
-
-  if (reset) {
-    const passInput = resetForm ? resetForm.elements.password : null;
-    if (passInput) passInput.focus();
-  }
-
-  if (!enroll && !forgot && !reset && loginForm) {
-    const userField = loginForm.elements.username;
-    if (userField && !userField.value) userField.focus();
-  }
-}
-
-export function hideGate() {
-  document.documentElement.classList.add("is-authenticated");
-  saveAuthStorage(sessionUser);
-  if (viewGate) viewGate.hidden = true;
-  if (logoutBtn) logoutBtn.hidden = false;
-}
+export { getSessionUser, setSessionUser };
+export { showGate, hideGate };
 
 export function initAuth({ onSuccess, onLogout }) {
   bindPasswordToggle("#btn-toggle-password", () => loginForm?.elements?.password);

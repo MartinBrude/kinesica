@@ -8,11 +8,18 @@ Este documento describe la arquitectura técnica, la descomposición modular, lo
 
 > [!IMPORTANT]
 > **Límite Estricto de 250 Líneas de Código:**
-> Ningún archivo de código (`.js`, `.mjs`, `.php`) dentro del directorio `admin/` supera las **250 líneas**.  
-> Esta restricción arquitectónica garantiza:
+> Ningún archivo de código (`.js`, `.mjs`, `.php`) dentro del directorio `admin/` debe superar las **250 líneas**.  
+> Si un módulo crece, **partir** en siblings (`*_ops.php`, `*-render.js`, `admin-creativos-data-NN.js`, etc.) y dejar una fachada delgada que reexporta/`require_once`.  
+> Esta restricción garantiza:
 > - **Alta cohesión y principio de responsabilidad única (SRP)**: Cada módulo resuelve exactamente una tarea bien acotada.
 > - **Máxima legibilidad y mantenibilidad**: Los componentes son rápidos de auditar, testear y refactorizar.
 > - **Prevención de sobrecarga de contexto**: Los modelos de lenguaje y desarrolladores pueden cargar y razonar sobre módulos individuales sin consumir ventanas de contexto masivas.
+>
+> Comprobación rápida:
+> ```bash
+> find admin -type f \( -name "*.js" -o -name "*.mjs" -o -name "*.php" \) -exec wc -l {} + | awk '$1 > 250 && $2 != "total"'
+> ```
+> (Debe retornar 0 resultados.)
 
 ---
 

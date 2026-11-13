@@ -20,7 +20,7 @@
         }
         var role = localStorage.getItem("kinesica_user_role");
         var name = localStorage.getItem("kinesica_user_name");
-        var isAdmin = role === "admin" || name === "martin" || name === "Martín Brude" || name === "Martín";
+        var isAdmin = role === "admin";
         if (isAdmin) {
           document.documentElement.classList.add("is-admin-role");
         } else {
@@ -2826,7 +2826,7 @@
           }
           var role = localStorage.getItem("kinesica_user_role");
           var name = localStorage.getItem("kinesica_user_name");
-          var isAdmin = role === "admin" || name === "martin" || name === "Martín Brude" || name === "Martín";
+          var isAdmin = role === "admin";
           var adminNav = document.getElementById("admin-nav");
           if (adminNav) adminNav.hidden = false;
           var navToggle = document.getElementById("btn-nav-toggle");
