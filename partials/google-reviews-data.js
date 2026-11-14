@@ -1,7 +1,7 @@
 /** AUTO-GENERATED — no editar. Fuente: npm run reviews:fetch */
 window.KINESICA_GOOGLE_REVIEWS = {
   "placeId": "ChIJZ2mPW9K1vJUR3J5kGRi5gws",
-  "fetchedAt": "2026-11-13T19:18:56.456Z",
+  "fetchedAt": "2026-11-14T01:20:53.347Z",
   "displayName": "Kinesica",
   "googleMapsUri": "https://maps.google.com/?cid=829710269522681564&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA",
   "rating": 5,
@@ -159,6 +159,16 @@ window.KINESICA_GOOGLE_REVIEWS = {
     ],
     "fr": [
       {
+        "author": "Laurence Hamon",
+        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocKl_d7ICqQMOauSKBwMImTq5Wu3WONxcY5h2vpYCMW3nCqRgA=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/103467292555735082210/reviews",
+        "rating": 5,
+        "text": "Super !\nEfficace, très compétente, attentive, des résultats sans brusquerie.. dommage qu’elle ne soit pas en France près de chez moi!",
+        "language": "fr",
+        "relativeTime": "il y a moins d'une semaine",
+        "publishTime": "2026-11-13T14:17:37.188096687Z"
+      },
+      {
         "author": "Mario Schonfeld",
         "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJvo1RJ2skq3nr_pJRwvQZNdUrw77voXh3yGLaVweufqb-vbg=s128-c0x00000000-cc-rp-mo",
         "authorProfile": "https://www.google.com/maps/contrib/116485618727629391879/reviews",
@@ -195,15 +205,6 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "publishTime": "2026-07-29T22:10:00.000Z",
         "text": "Je viens le consulter depuis des années, et l'accompagnement de Norberto est excellent. Il sait écouter pour déterminer sur quels points concentrer le travail, et il maîtrise diverses techniques qu'il utilise selon les besoins du patient. Je suis toujours sortie de la séance mieux qu'à l'arrivée. Je le recommande vivement !!!!!",
-        "language": "fr"
-      },
-      {
-        "author": "Gabriel Rotman",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjU1sZgbUvf5_hu4GC95IP3lszyj_ugBsPntmjHporpoV7pMUC2sNg=s128-c0x00000000-cc-rp-mo-ba12",
-        "authorProfile": "https://www.google.com/maps/contrib/111063243092495440410/reviews",
-        "rating": 5,
-        "publishTime": "2026-07-24T02:05:02.000Z",
-        "text": "Agréablement surpris, au-delà de toute attente : je souffrais d'une épicondylite depuis 3 ans, et en à peine 2 séances avec le kinésithérapeute Norberto Brude je n'ai plus de douleur, j'ai pu reprendre l'entraînement, je me réveillais avec la main endormie et cela ne s'est plus reproduit ! Un professionnel hors pair, et surtout il a su m'apporter du calme quand j'en avais le plus besoin.",
         "language": "fr"
       }
     ],
