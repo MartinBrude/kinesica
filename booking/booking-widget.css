@@ -777,6 +777,25 @@
   border-top: 1px solid #e5e7eb;
 }
 
+.kb-privacy-notice {
+  margin: 12px 0 0;
+  padding: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--kin-text-muted, #6b7280);
+  text-align: center;
+}
+
+.kb-privacy-notice a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.kb-privacy-notice a:hover {
+  color: var(--kin-primary, #005f99);
+}
+
 .kb-btn {
   padding: 12px 24px;
   font-size: 14.5px;

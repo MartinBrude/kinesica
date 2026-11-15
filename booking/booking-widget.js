@@ -79,6 +79,10 @@
       dniOptionalLabel: "DNI / Documento (opcional)",
       dniOptionalPh: "Opcional",
       confirm: "Confirmar Reserva 🌿",
+      privacyNoticeBefore: "Al reservar tu turno, aceptás nuestra ",
+      privacyPolicyLabel: "Política de Privacidad",
+      privacyNoticeAfter: " y el uso de tus datos para gestionar tu cita.",
+      privacyUrl: "/privacidad.html",
       saving: "Registrando...",
       success: "¡Turno Presencial Confirmado!",
       saved: "Tu cita ya quedó registrada oficialmente en Google Calendar.",
@@ -187,6 +191,10 @@
       dniOptionalLabel: "ID document (optional)",
       dniOptionalPh: "Optional",
       confirm: "Confirm booking 🌿",
+      privacyNoticeBefore: "By booking your appointment, you accept our ",
+      privacyPolicyLabel: "Privacy Policy",
+      privacyNoticeAfter: " and the use of your data to manage your visit.",
+      privacyUrl: "/en/privacidad.html",
       saving: "Saving...",
       success: "In-person appointment confirmed",
       saved: "Your appointment is now on the clinic calendar.",
@@ -295,6 +303,10 @@
       dniOptionalLabel: "Pièce d'identité (facultatif)",
       dniOptionalPh: "Facultatif",
       confirm: "Confirmer la réservation 🌿",
+      privacyNoticeBefore: "En réservant votre rendez-vous, vous acceptez notre ",
+      privacyPolicyLabel: "Politique de confidentialité",
+      privacyNoticeAfter: " et l'utilisation de vos données pour gérer votre consultation.",
+      privacyUrl: "/fr/privacidad.html",
       saving: "Enregistrement...",
       success: "Rendez-vous en cabinet confirmé",
       saved: "Votre rendez-vous est enregistré dans l'agenda du cabinet.",
@@ -403,6 +415,10 @@
       dniOptionalLabel: "Documento (opcional)",
       dniOptionalPh: "Opcional",
       confirm: "Confirmar reserva 🌿",
+      privacyNoticeBefore: "Ao reservar seu horário, você aceita nossa ",
+      privacyPolicyLabel: "Política de Privacidade",
+      privacyNoticeAfter: " e o uso dos seus dados para gerenciar sua consulta.",
+      privacyUrl: "/pt/privacidad.html",
       saving: "Registrando...",
       success: "Consulta presencial confirmada",
       saved: "Sua consulta já ficou registrada na agenda do consultório.",
@@ -936,6 +952,9 @@
                   ${this.t("confirm")}
                 </button>
               </div>
+              <p class="kb-privacy-notice">
+                ${this.t("privacyNoticeBefore")}<a href="${this.t("privacyUrl")}" target="_blank" rel="noopener noreferrer">${this.t("privacyPolicyLabel")}</a>${this.t("privacyNoticeAfter")}
+              </p>
             </div>
 
             <!-- PASO 4: CONFIRMACIÓN -->

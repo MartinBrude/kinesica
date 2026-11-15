@@ -16,7 +16,7 @@ export const PRIVACY = {
     breadcrumb: "Política de privacidad",
     h1: "Política de Privacidad y Protección de Datos",
     subtitle: "Compromiso con la privacidad, el secreto médico y la transparencia",
-    lastUpdated: "Última actualización: Septiembre 2026",
+    lastUpdated: "Última actualización: Noviembre 2026",
     lead:
       "En Kinésica valoramos la confianza de nuestros pacientes y visitantes. Esta política explica de forma clara cómo recopilamos, utilizamos y resguardamos la información personal, así como el procedimiento inmediato y gratuito para que cualquier persona pueda solicitar la eliminación definitiva de cualquier dato personal referido a ella.",
     sections: [
@@ -24,19 +24,19 @@ export const PRIVACY = {
         id: "responsable",
         title: "1. Responsable del tratamiento de datos",
         paragraphs: [
-          `El responsable del tratamiento de los datos personales recopilados a través de este sitio web es **Kinésica**, centro de kinesiología y osteopatía, a cargo del profesional **${FOUNDER.name}** (Kinesiólogo, Fisioterapeuta y Osteópata).`,
+          `El responsable del tratamiento de los datos personales recopilados a través de este sitio web es **Kinésica**, centro de kinesiología y osteopatía ubicado en **${CONTACT.address.addressNeighborhood}, ${CONTACT.address.addressRegion}**, a cargo del profesional **${FOUNDER.name}** (Kinesiólogo, Fisioterapeuta y Osteópata).`,
           `Domicilio del consultorio: **${CONTACT.address.streetAddress}**, ${CONTACT.address.addressNeighborhood}, ${CONTACT.address.addressLocality}, ${CONTACT.address.addressCountry}.`,
-          `Para consultas sobre privacidad o ejercicio de derechos, puedes escribir a **${CONTACT.email}** o utilizar el formulario de solicitud dispuesto a continuación.`,
+          `Para consultas sobre privacidad o para ejercer tus derechos de acceso, rectificación o supresión, podés escribir a **${CONTACT.email}** o utilizar el formulario de solicitud dispuesto a continuación.`,
         ],
       },
       {
         id: "datos-recopilados",
         title: "2. Información que recopilamos y finalidades",
         paragraphs: [
-          "Recopilamos únicamente la información necesaria para brindar una atención profesional de calidad y responder a consultas sobre nuestros tratamientos kinesiológicos y osteopáticos:",
+          "Recopilamos únicamente la información necesaria para brindar una atención profesional de calidad y responder a consultas sobre nuestros tratamientos kinesiológicos y osteopáticos. Las finalidades principales del tratamiento son la **gestión de reserva de turnos**, el **envío de recordatorios** de la cita y la prestación y seguimiento de la atención asistencial:",
         ],
         bullets: [
-          "**Datos de contacto y coordinación:** Nombre, apellido, número de teléfono/WhatsApp y correo electrónico facilitados voluntariamente al solicitar un turno o realizar una consulta previa a la sesión.",
+          "**Datos de contacto y coordinación de turnos:** Nombre, apellido, número de teléfono/WhatsApp y correo electrónico facilitados voluntariamente al reservar un turno o realizar una consulta previa a la sesión. Se utilizan para gestionar la reserva y enviar recordatorios de la cita.",
           "**Historial de comunicaciones:** Mensajes intercambiados por WhatsApp o correo electrónico para resolver dudas sobre síntomas, disponibilidad horaria o indicaciones terapéuticas.",
           "**Documentación clínica y asistencial:** Motivo de consulta, antecedentes de salud relevantes, estudios médicos aportados por el paciente y registro de evolución de las sesiones terapéuticas, resguardados bajo estricto secreto profesional.",
         ],
@@ -98,10 +98,18 @@ export const PRIVACY = {
         ],
       },
       {
-        id: "autoridad",
-        title: "8. Autoridad de control",
+        id: "cookies",
+        title: "8. Cookies y medición (Google Tags)",
         paragraphs: [
-          `En la República Argentina, el órgano de control de la Ley Nº 25.326 es la **Agencia de Acceso a la Información Pública (AAIP)**. Los titulares de datos tienen la atribución de ejercer el derecho de acceso en forma gratuita a intervalos no inferiores a seis meses, salvo que se acredite un interés legítimo al efecto (artículo 14, inciso 3 de la Ley Nº 25.326).`,
+          "Este sitio utiliza etiquetas de Google (Google Tag Manager, Google Analytics y, en su caso, Google Ads) para obtener estadísticas de uso de forma disociada o agregada y para medir conversiones vinculadas a la reserva de turnos y a las acciones realizadas en el sitio.",
+          "Estas herramientas pueden almacenar cookies o identificadores similares en tu navegador. Podés bloquearlas o eliminarlas desde la configuración de tu navegador; al hacerlo, algunas funciones de medición pueden dejar de estar disponibles, sin afectar la posibilidad de reservar un turno.",
+        ],
+      },
+      {
+        id: "autoridad",
+        title: "9. Autoridad de control",
+        paragraphs: [
+          "El titular de los datos personales tiene la facultad de ejercer el derecho de acceso a los mismos en forma gratuita a intervalos no inferiores a seis meses, salvo que se acredite un interés legítimo al efecto conforme lo establecido en el artículo 14, inciso 3 de la Ley Nº 25.326. La AGENCIA DE ACCESO A LA INFORMACIÓN PÚBLICA, Órgano de Control de la Ley Nº 25.326, tiene la atribución de atender las denuncias y reclamos que se interpongan con relación al incumplimiento de las normas sobre protección de datos personales.",
         ],
       },
     ],
@@ -142,7 +150,7 @@ export const PRIVACY = {
     breadcrumb: "Privacy Policy",
     h1: "Privacy Policy & Personal Data Protection",
     subtitle: "Commitment to privacy, medical confidentiality, and transparency",
-    lastUpdated: "Last updated: September 2026",
+    lastUpdated: "Last updated: November 2026",
     lead:
       "At Kinésica, we hold our patients' and visitors' trust in high regard. This policy clearly explains how we collect, use, and protect personal information, as well as the immediate, free-of-charge procedure for any individual to request the complete deletion of any personal data relating to them.",
     sections: [
@@ -150,19 +158,19 @@ export const PRIVACY = {
         id: "responsable",
         title: "1. Data Controller",
         paragraphs: [
-          `The data controller for personal data collected through this website is **Kinésica**, a physical therapy and osteopathy clinic directed by **${FOUNDER.name}** (Licensed Physical Therapist and Osteopath).`,
+          `The data controller for personal data collected through this website is **Kinésica**, a physical therapy and osteopathy clinic in **${CONTACT.address.addressNeighborhood}, ${CONTACT.address.addressRegion}**, directed by **${FOUNDER.name}** (Licensed Physical Therapist and Osteopath).`,
           `Clinic address: **${CONTACT.address.streetAddress}**, ${CONTACT.address.addressNeighborhood}, ${CONTACT.address.addressLocality}, ${CONTACT.address.addressCountry}.`,
-          `For privacy-related inquiries or requests, you may contact us by email at **${CONTACT.email}** or use the request form below.`,
+          `For privacy inquiries or to exercise your rights of access, rectification, or erasure, you may contact us by email at **${CONTACT.email}** or use the request form below.`,
         ],
       },
       {
         id: "datos-recopilados",
         title: "2. Information We Collect and Purposes",
         paragraphs: [
-          "We collect only the information strictly necessary to deliver quality professional care and respond to inquiries regarding our physiotherapy and osteopathic treatments:",
+          "We collect only the information strictly necessary to deliver quality professional care and respond to inquiries regarding our physiotherapy and osteopathic treatments. The main purposes of processing are **appointment booking management**, sending **appointment reminders**, and providing and following up on clinical care:",
         ],
         bullets: [
-          "**Contact and appointment coordination details:** Full name, phone/WhatsApp number, and email address provided voluntarily when scheduling a session or asking questions beforehand.",
+          "**Contact and appointment coordination details:** Full name, phone/WhatsApp number, and email address provided voluntarily when booking a session or asking questions beforehand. Used to manage the booking and send appointment reminders.",
           "**Communication history:** Messages sent via WhatsApp or email to clarify symptoms, schedule availability, or therapeutic guidance.",
           "**Clinical and healthcare documentation:** Reason for consultation, relevant health history, medical reports or imaging provided by the patient, and progress notes from therapeutic sessions, protected under professional medical confidentiality.",
         ],
@@ -224,10 +232,18 @@ export const PRIVACY = {
         ],
       },
       {
-        id: "autoridad",
-        title: "8. Supervisory Authority",
+        id: "cookies",
+        title: "8. Cookies and Measurement (Google Tags)",
         paragraphs: [
-          `In Argentina, the enforcement agency for Law No. 25,326 is the **Agencia de Acceso a la Información Pública (AAIP)**. Data subjects have the right to exercise their right of access free of charge at intervals of no less than six months, unless a legitimate interest is substantiated (Article 14, Paragraph 3 of Law No. 25,326).`,
+          "This website uses Google tags (Google Tag Manager, Google Analytics and, where applicable, Google Ads) to collect dissociated or aggregated usage statistics and to measure conversions related to appointment bookings and other actions on the site.",
+          "These tools may store cookies or similar identifiers in your browser. You can block or delete them in your browser settings; doing so may disable some measurement features without affecting your ability to book an appointment.",
+        ],
+      },
+      {
+        id: "autoridad",
+        title: "9. Supervisory Authority",
+        paragraphs: [
+          "El titular de los datos personales tiene la facultad de ejercer el derecho de acceso a los mismos en forma gratuita a intervalos no inferiores a seis meses, salvo que se acredite un interés legítimo al efecto conforme lo establecido en el artículo 14, inciso 3 de la Ley Nº 25.326. La AGENCIA DE ACCESO A LA INFORMACIÓN PÚBLICA, Órgano de Control de la Ley Nº 25.326, tiene la atribución de atender las denuncias y reclamos que se interpongan con relación al incumplimiento de las normas sobre protección de datos personales.",
         ],
       },
     ],
@@ -268,7 +284,7 @@ export const PRIVACY = {
     breadcrumb: "Confidentialité",
     h1: "Politique de confidentialité et protection des données",
     subtitle: "Engagement envers la vie privée, le secret médical et la transparence",
-    lastUpdated: "Dernière mise à jour : Septembre 2026",
+    lastUpdated: "Dernière mise à jour : Novembre 2026",
     lead:
       "Chez Kinésica, nous accordons une importance primordiale à la confiance de nos patients et visiteurs. Cette politique explique de manière claire comment nous collectons, utilisons et protégeons vos informations personnelles, ainsi que la procédure gratuite et immédiate permettant à toute personne de demander la suppression définitive de toute information la concernant.",
     sections: [
@@ -276,19 +292,19 @@ export const PRIVACY = {
         id: "responsable",
         title: "1. Responsable du traitement",
         paragraphs: [
-          `Le responsable du traitement des données collectées sur ce site est **Kinésica**, cabinet de kinésithérapie et d'ostéopathie dirigé par **${FOUNDER.name}** (Kinésithérapeute et Ostéopathe).`,
+          `Le responsable du traitement des données collectées sur ce site est **Kinésica**, cabinet de kinésithérapie et d'ostéopathie situé à **${CONTACT.address.addressNeighborhood}, ${CONTACT.address.addressRegion}**, dirigé par **${FOUNDER.name}** (Kinésithérapeute et Ostéopathe).`,
           `Adresse du cabinet : **${CONTACT.address.streetAddress}**, ${CONTACT.address.addressNeighborhood}, ${CONTACT.address.addressLocality}, ${CONTACT.address.addressCountry}.`,
-          `Pour toute question relative à la vie privée ou à l'exercice de vos droits, vous pouvez nous écrire à **${CONTACT.email}** ou utiliser le formulaire de demande ci-dessous.`,
+          `Pour toute question relative à la vie privée ou pour exercer vos droits d'accès, de rectification ou de suppression, vous pouvez nous écrire à **${CONTACT.email}** ou utiliser le formulaire de demande ci-dessous.`,
         ],
       },
       {
         id: "datos-recopilados",
         title: "2. Données collectées et finalités",
         paragraphs: [
-          "Nous ne collectons que les données strictement nécessaires au bon déroulement des soins et aux échanges préalables aux consultations :",
+          "Nous ne collectons que les données strictement nécessaires au bon déroulement des soins et aux échanges préalables aux consultations. Les finalités principales du traitement sont la **gestion des réservations de rendez-vous**, l'**envoi de rappels** de consultation et la prestation et le suivi des soins :",
         ],
         bullets: [
-          "**Coordonnées et prise de rendez-vous :** Nom, prénom, numéro de téléphone/WhatsApp et adresse e-mail transmis volontairement pour convenir d'un rendez-vous ou poser une question.",
+          "**Coordonnées et prise de rendez-vous :** Nom, prénom, numéro de téléphone/WhatsApp et adresse e-mail transmis volontairement pour réserver un rendez-vous ou poser une question. Ils servent à gérer la réservation et à envoyer des rappels de consultation.",
           "**Historique des échanges :** Messages transmis par WhatsApp ou e-mail pour clarifier des symptômes, convenir d'horaires ou obtenir des conseils thérapeutiques.",
           "**Dossier clinique et suivi des soins :** Motif de consultation, antécédents médicaux pertinents, examens complémentaires apportés par le patient et notes d'évolution des séances thérapeutiques, protégés par le secret professionnel.",
         ],
@@ -350,10 +366,18 @@ export const PRIVACY = {
         ],
       },
       {
-        id: "autoridad",
-        title: "8. Autorité de contrôle",
+        id: "cookies",
+        title: "8. Cookies et mesure (Google Tags)",
         paragraphs: [
-          `En Argentine, l'autorité de contrôle de la Loi Nº 25.326 est l'**Agencia de Acceso a la Información Pública (AAIP)**. Les titulaires de données ont le droit d'exercer gratuitement leur droit d'accès à des intervalles d'au moins six mois, sauf intérêt légitime démontré (article 14, paragraphe 3 de la Loi Nº 25.326).`,
+          "Ce site utilise des balises Google (Google Tag Manager, Google Analytics et, le cas échéant, Google Ads) pour obtenir des statistiques d'usage dissociées ou agrégées et pour mesurer les conversions liées à la réservation de rendez-vous et aux actions réalisées sur le site.",
+          "Ces outils peuvent déposer des cookies ou des identifiants similaires dans votre navigateur. Vous pouvez les bloquer ou les supprimer dans les paramètres de votre navigateur ; cela peut désactiver certaines fonctions de mesure sans empêcher la réservation d'un rendez-vous.",
+        ],
+      },
+      {
+        id: "autoridad",
+        title: "9. Autorité de contrôle",
+        paragraphs: [
+          "El titular de los datos personales tiene la facultad de ejercer el derecho de acceso a los mismos en forma gratuita a intervalos no inferiores a seis meses, salvo que se acredite un interés legítimo al efecto conforme lo establecido en el artículo 14, inciso 3 de la Ley Nº 25.326. La AGENCIA DE ACCESO A LA INFORMACIÓN PÚBLICA, Órgano de Control de la Ley Nº 25.326, tiene la atribución de atender las denuncias y reclamos que se interpongan con relación al incumplimiento de las normas sobre protección de datos personales.",
         ],
       },
     ],
@@ -394,7 +418,7 @@ export const PRIVACY = {
     breadcrumb: "Privacidade",
     h1: "Política de Privacidade e Proteção de Dados",
     subtitle: "Compromisso com privacidade, sigilo profissional e transparência",
-    lastUpdated: "Última atualização: Setembro de 2026",
+    lastUpdated: "Última atualização: Novembro de 2026",
     lead:
       "Na Kinésica valorizamos a confiança de nossos pacientes e visitantes. Esta política explica de forma clara como tratamos e protegemos as informações pessoais, bem como o procedimento gratuito e imediato para que qualquer pessoa solicite a eliminação definitiva de qualquer dado pessoal referente a si.",
     sections: [
@@ -402,19 +426,19 @@ export const PRIVACY = {
         id: "responsable",
         title: "1. Controlador dos dados",
         paragraphs: [
-          `O responsável pelo tratamento dos dados pessoais coletados por este site é a **Kinésica**, consultório de fisioterapia e osteopatia, sob responsabilidade do profissional **${FOUNDER.name}** (Fisioterapeuta e Osteopata).`,
+          `O responsável pelo tratamento dos dados pessoais coletados por este site é a **Kinésica**, consultório de fisioterapia e osteopatia em **${CONTACT.address.addressNeighborhood}, ${CONTACT.address.addressRegion}**, sob responsabilidade do profissional **${FOUNDER.name}** (Fisioterapeuta e Osteopata).`,
           `Endereço do consultório: **${CONTACT.address.streetAddress}**, ${CONTACT.address.addressNeighborhood}, ${CONTACT.address.addressLocality}, ${CONTACT.address.addressCountry}.`,
-          `Para dúvidas sobre privacidade ou exercício de direitos, entre em contato pelo e-mail **${CONTACT.email}** ou utilize o formulário de solicitação abaixo.`,
+          `Para dúvidas sobre privacidade ou para exercer seus direitos de acesso, retificação ou exclusão, entre em contato pelo e-mail **${CONTACT.email}** ou utilize o formulário de solicitação abaixo.`,
         ],
       },
       {
         id: "datos-recopilados",
         title: "2. Dados coletados e finalidades",
         paragraphs: [
-          "Coletamos apenas as informações indispensáveis para a assistência fisioterapêutica e o esclarecimento de dúvidas prévias:",
+          "Coletamos apenas as informações indispensáveis para a assistência fisioterapêutica e o esclarecimento de dúvidas prévias. As finalidades principais do tratamento são a **gestão de reserva de horários**, o **envio de lembretes** da consulta e a prestação e o acompanhamento do atendimento assistencial:",
         ],
         bullets: [
-          "**Dados de contato e agendamento:** Nome completo, telefone/WhatsApp e endereço eletrônico fornecidos voluntariamente para agendamento de consultas ou esclarecimento de dúvidas.",
+          "**Dados de contato e agendamento:** Nome completo, telefone/WhatsApp e endereço eletrônico fornecidos voluntariamente para reservar um horário ou esclarecer dúvidas. São usados para gerenciar a reserva e enviar lembretes da consulta.",
           "**Histórico de mensagens:** Troca de mensagens por WhatsApp ou correio eletrônico sobre sintomas, disponibilidade e recomendações terapêuticas.",
           "**Documentação clínica e assistencial:** Motivo da consulta, histórico de saúde relevante, exames complementares trazidos pelo paciente e registro de evolução das sessões terapêuticas, protegidos por rigoroso sigilo profissional.",
         ],
@@ -476,10 +500,18 @@ export const PRIVACY = {
         ],
       },
       {
-        id: "autoridad",
-        title: "8. Autoridade de controle",
+        id: "cookies",
+        title: "8. Cookies e medição (Google Tags)",
         paragraphs: [
-          `Na Argentina, a autoridade fiscalizadora da Lei Nº 25.326 é a **Agencia de Acceso a la Información Pública (AAIP)**. Os titulares têm o direito de exercer gratuitamente o acesso aos dados em intervalos não inferiores a seis meses, salvo interesse legítimo demonstrado (artigo 14, inciso 3 da Lei Nº 25.326).`,
+          "Este site utiliza tags do Google (Google Tag Manager, Google Analytics e, quando aplicável, Google Ads) para obter estatísticas de uso de forma dissociada ou agregada e para medir conversões vinculadas à reserva de horários e às ações realizadas no site.",
+          "Essas ferramentas podem armazenar cookies ou identificadores semelhantes no seu navegador. Você pode bloqueá-las ou excluí-las nas configurações do navegador; ao fazê-lo, algumas funções de medição podem deixar de estar disponíveis, sem afetar a possibilidade de reservar um horário.",
+        ],
+      },
+      {
+        id: "autoridad",
+        title: "9. Autoridade de controle",
+        paragraphs: [
+          "El titular de los datos personales tiene la facultad de ejercer el derecho de acceso a los mismos en forma gratuita a intervalos no inferiores a seis meses, salvo que se acredite un interés legítimo al efecto conforme lo establecido en el artículo 14, inciso 3 de la Ley Nº 25.326. La AGENCIA DE ACCESO A LA INFORMACIÓN PÚBLICA, Órgano de Control de la Ley Nº 25.326, tiene la atribución de atender las denuncias y reclamos que se interpongan con relación al incumplimiento de las normas sobre protección de datos personales.",
         ],
       },
     ],
