@@ -787,13 +787,14 @@
 }
 
 .kb-privacy-notice a {
-  color: inherit;
+  color: var(--kin-primary, #005f99);
+  font-weight: 500;
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
 .kb-privacy-notice a:hover {
-  color: var(--kin-primary, #005f99);
+  color: var(--kin-primary-hover, #004d7c);
 }
 
 .kb-btn {
