@@ -123,6 +123,9 @@
       at: "a las",
       hs: "hs",
       eventId: "Identificador de cita:",
+      manageCode: "Código de gestión:",
+      manageHint: "Con tu apellido, email y este código podés consultar o anular el turno en",
+      manageLink: "mi-turno",
       sessionFee: "Valor sesión",
       sessionHourShort: "1 hora",
       paymentMethodsNote: "Se abona en efectivo o transferencia bancaria",
@@ -235,6 +238,9 @@
       at: "at",
       hs: "",
       eventId: "Booking reference:",
+      manageCode: "Management code:",
+      manageHint: "With your last name, email and this code you can view or cancel at",
+      manageLink: "my appointment",
       sessionFee: "Session fee",
       sessionHourShort: "1 hour",
       paymentMethodsNote: "Paid in cash or bank transfer",
@@ -347,6 +353,9 @@
       at: "à",
       hs: "",
       eventId: "Référence :",
+      manageCode: "Code de gestion :",
+      manageHint: "Avec votre nom, e-mail et ce code vous pouvez consulter ou annuler sur",
+      manageLink: "mon rendez-vous",
       sessionFee: "Tarif séance",
       sessionHourShort: "1 heure",
       paymentMethodsNote: "Règlement en espèces ou virement bancaire",
@@ -459,6 +468,9 @@
       at: "às",
       hs: "h",
       eventId: "Identificador:",
+      manageCode: "Código de gestão:",
+      manageHint: "Com seu sobrenome, e-mail e este código você pode consultar ou cancelar em",
+      manageLink: "meu horário",
       sessionFee: "Valor sessão",
       sessionHourShort: "1 hora",
       paymentMethodsNote: "Pago em dinheiro ou transferência bancária",
@@ -2242,8 +2254,12 @@
           }
         }
 
-        // Se envía solo en la confirmación de turno
-        this.sendConfirmationEmail(payload);
+        // Se envía solo en la confirmación de turno (incluye código de gestión)
+        const mailMeta = await this.sendConfirmationEmail(payload, result);
+        if (mailMeta && mailMeta.manageCode) {
+          result.manageCode = mailMeta.manageCode;
+          result.manageUrl = mailMeta.manageUrl || "/mi-turno.html";
+        }
 
         this.trackBookingConversion(payload, result);
         this.renderConfirmation(payload, result);
@@ -2323,8 +2339,8 @@
       window.dataLayer.push(Object.assign({ event: eventName }, params));
     }
 
-    async sendConfirmationEmail(payload) {
-      if (!payload || !payload.email) return;
+    async sendConfirmationEmail(payload, bookResult) {
+      if (!payload || !payload.email) return null;
       try {
         const professionalName = this.practitionerFullName(payload.practitionerId) || "Lic. Norberto Brude";
         const technique = engine.getTechnique(payload.techniqueId);
@@ -2333,7 +2349,7 @@
           serviceName = "Terapias Manuales";
         }
 
-        await fetch("/api/send-confirmation.php", {
+        const res = await fetch("/api/send-confirmation.php", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -2353,10 +2369,16 @@
             contactoNombre: payload.contactoNombre || "",
             contactoTelefono: payload.contactoTelefono || "",
             contactoNotas: payload.contactoNotas || "",
+            eventId: (bookResult && bookResult.eventId) || "",
+            practitionerId: payload.practitionerId || "",
           }),
         });
+        if (!res.ok) return null;
+        const data = await res.json().catch(() => null);
+        return data && data.success ? data : null;
       } catch (err) {
         console.warn("No se pudo enviar el correo de confirmación:", err);
+        return null;
       }
     }
 
@@ -2386,6 +2408,13 @@
         <div><strong>${this.t("when")}:</strong> ${this.formatConfirmationWhen(payload.date, payload.time)}</div>
         ${!isExisting && !this.options.adminMode ? `<div><strong>${this.t("fee")}:</strong> ${this.feeDisplayHtml(payload.techniqueId, { compact: true })} <span style="font-size: 12px; color: var(--kin-text-muted);">(${this.t("paymentMethodsNote")})</span></div>` : ""}
         ${payload.email ? `<div><strong>${this.t("email")}:</strong> ${payload.email}</div>` : ""}
+        ${result.manageCode ? `<div style="margin-top: 10px; padding: 10px 12px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px;">
+          <div><strong>${this.t("manageCode")}</strong> <code style="font-size: 16px; letter-spacing: 0.08em; font-weight: 700; color: #0f766e;">${result.manageCode}</code></div>
+          <div style="margin-top: 6px; font-size: 12px; color: var(--kin-text-muted);">
+            ${this.t("manageHint")}
+            <a href="${result.manageUrl || "/mi-turno.html"}" style="color: var(--kin-blue, #005f99); font-weight: 600;">${this.t("manageLink")}</a>.
+          </div>
+        </div>` : ""}
         <div style="margin-top: 6px; font-size: 12px; color: var(--kin-text-muted);">
           ${this.t("eventId")} <code>${result.eventId || "OK"}</code>
         </div>

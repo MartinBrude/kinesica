@@ -24,3 +24,4 @@ require_once __DIR__ . '/lib_relational_turnos_turnos_ready.php';
 require_once __DIR__ . '/lib_relational_turnos_upsert_turno_from_campana_row.php';
 require_once __DIR__ . '/lib_relational_turnos_backfill_recordatorios_turno_id.php';
 require_once __DIR__ . '/lib_relational_turnos_cancel_turno.php';
+require_once __DIR__ . '/lib_relational_turnos_manage.php';

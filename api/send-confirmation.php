@@ -231,6 +231,23 @@ if ($rawPhone !== '') {
 $runtimeSettings = kinesica_read_settings(kinesica_admin_settings_file(__DIR__));
 $practitionerIdRaw = trim((string) ($data['practitionerId'] ?? $data['practitioner_id'] ?? ''));
 
+// Código de gestión web (apellido + email + código) al confirmar reserva.
+$manageCode = '';
+$manageUrl = 'https://www.kinesica.com.ar/mi-turno.html';
+$eventId = trim((string) ($data['eventId'] ?? $data['event_id'] ?? $data['calendar_event_id'] ?? ''));
+if (!$esCancelacion && $eventId !== '') {
+    try {
+        require_once __DIR__ . '/../admin/api/lib.php';
+        require_once __DIR__ . '/../admin/api/lib_relational_turnos.php';
+        $attach = kinesica_rel_attach_manage_code(db(), $eventId, $email, $paciente);
+        if (!empty($attach['ok']) && !empty($attach['code'])) {
+            $manageCode = (string) $attach['code'];
+        }
+    } catch (Throwable $e) {
+        error_log('kinesica send-confirmation manage code: ' . $e->getMessage());
+    }
+}
+
 $builtMail = kinesica_build_confirmation_mail([
     'paciente' => $paciente,
     'fecha' => $fechaRaw,
@@ -240,6 +257,8 @@ $builtMail = kinesica_build_confirmation_mail([
     'direccion' => $direccion,
     'esMenor' => $esMenor,
     'esCancelacion' => $esCancelacion,
+    'manageCode' => $manageCode,
+    'manageUrl' => $manageUrl,
     'settings' => $runtimeSettings,
 ]);
 $subject = $builtMail['subject'];
@@ -297,7 +316,12 @@ if ($apiKey !== '') {
 
     if (!$curlError && $httpCode >= 200 && $httpCode < 300) {
         $resData = json_decode((string) $response, true);
-        echo json_encode(['success' => true, 'provider' => 'resend', 'data' => $resData]);
+        $out = ['success' => true, 'provider' => 'resend', 'data' => $resData];
+        if ($manageCode !== '') {
+            $out['manageCode'] = $manageCode;
+            $out['manageUrl'] = $manageUrl;
+        }
+        echo json_encode($out);
         exit;
     }
 
@@ -324,11 +348,16 @@ if (!$sentViaMail) {
 }
 
 if ($sentViaMail) {
-    echo json_encode([
+    $out = [
         'success' => true,
         'provider' => 'mail',
-        'from' => $mailFrom
-    ]);
+        'from' => $mailFrom,
+    ];
+    if ($manageCode !== '') {
+        $out['manageCode'] = $manageCode;
+        $out['manageUrl'] = $manageUrl;
+    }
+    echo json_encode($out);
     exit;
 }
 

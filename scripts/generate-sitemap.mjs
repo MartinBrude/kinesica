@@ -49,7 +49,7 @@ function xhtmlLinks(stem) {
 }
 
 /** Stems that must not appear in the public sitemap (error/noindex pages). */
-const SITEMAP_EXCLUDE = new Set(["404"]);
+const SITEMAP_EXCLUDE = new Set(["404", "mi-turno"]);
 
 const entries = [];
 for (const stem of STEMS) {

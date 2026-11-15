@@ -220,4 +220,17 @@ $skipped = (int) $pdo->query(
 )->fetchColumn();
 assert_true($skipped === 1, 'pending → skipped/cancelled');
 
+// Gestión web: apellido + email + código
+try {
+    $mig16 = require $root . '/admin/api/migrations/016_turnos_manage_code.php';
+    ($mig16['up'])($pdo);
+} catch (Throwable) {
+}
+$attach = kinesica_rel_attach_manage_code($pdo, 'manage-evt-1', 'juan@ejemplo.com', 'Juan Pérez', 'AB3K7MP');
+assert_true(!empty($attach['ok']) && ($attach['code'] ?? '') === 'AB3K7MP', 'attach manage code');
+$lookup = kinesica_rel_lookup_turno_by_manage($pdo, 'juan@ejemplo.com', 'Pérez', 'AB3K7MP');
+assert_true(!empty($lookup['ok']), 'lookup manage code');
+$lookupBad = kinesica_rel_lookup_turno_by_manage($pdo, 'juan@ejemplo.com', 'García', 'AB3K7MP');
+assert_true(empty($lookupBad['ok']), 'lookup wrong apellido');
+
 echo "verify-relational-turnos: OK\n";

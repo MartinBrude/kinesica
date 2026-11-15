@@ -211,6 +211,8 @@ function kinesica_format_hora_legible(string $horaRaw): string
  *   direccion?: string,
  *   esMenor?: bool,
  *   esCancelacion?: bool,
+ *   manageCode?: string,
+ *   manageUrl?: string,
  *   mailTexts?: array{cancellation_policy?: string, confirmation_notes?: string},
  *   settings?: array
  * } $params
@@ -229,6 +231,8 @@ function kinesica_build_confirmation_mail(array $params): array
     $direccion = trim((string) ($params['direccion'] ?? 'Charcas 3889, Piso 5º B, Palermo (entre Scalabrini Ortiz y Aráoz)'));
     $esMenor = !empty($params['esMenor']);
     $esCancelacion = !empty($params['esCancelacion']);
+    $manageCode = strtoupper(trim((string) ($params['manageCode'] ?? '')));
+    $manageUrl = trim((string) ($params['manageUrl'] ?? 'https://www.kinesica.com.ar/mi-turno.html'));
 
     if (isset($params['mailTexts']) && is_array($params['mailTexts'])) {
         $mailTexts = $params['mailTexts'];
@@ -351,7 +355,16 @@ function kinesica_build_confirmation_mail(array $params): array
         <div class="detail-item"><strong>Atención:</strong> ' . htmlspecialchars($profesional . $servicioTexto) . '</div>
         <div class="detail-item"><strong>Dirección:</strong> ' . htmlspecialchars($direccion) . '</div>
       </div>
-
+' . ($manageCode !== '' ? '
+      <div class="card-details" style="border-left-color:#0f766e;">
+        <div class="detail-item"><strong>Código de gestión:</strong> <span style="font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:0.08em;font-size:18px;font-weight:700;color:#0f766e;">' . htmlspecialchars($manageCode) . '</span></div>
+        <p style="margin:10px 0 0 0;font-size:13px;color:#64748b;line-height:1.5;">
+          Con tu <strong>apellido</strong>, este <strong>email</strong> y el código podés consultar o anular el turno en
+          <a href="' . htmlspecialchars($manageUrl) . '" style="color:#005f99;font-weight:600;">' . htmlspecialchars($manageUrl) . '</a>
+          (aviso con 24&nbsp;hs de anticipación).
+        </p>
+      </div>
+' : '') . '
       <div class="card-guidelines">
         <div class="guidelines-title">Información importante para tu sesión</div>
         ' . kinesica_guidelines_html((string) $mailTexts['confirmation_notes'], $indicacionPuntualidad, $indicacionAcompaniante, $esMenor) . '
