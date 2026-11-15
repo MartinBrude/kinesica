@@ -223,6 +223,10 @@ flowchart LR
 - **Interacciones WhatsApp**:
   - `interacciones.php`: Endpoint de ingesta (bot) y lectura/estado (sesión); secreto de bot no permite leer.
   - `lib_interacciones_store.php` / `_spool.php` / `_view.php` / `_state.php` / `_n8n.php`: almacén durable idempotente, spool en disco, vista por día, flags y reconciliador n8n.
+  - Confirmaciones de recordatorio («Confirmo, asistiré»): clasificadas como respondidas; nombre vía `calendar_event_id` → recordatorio → directorio (`lib_interacciones_view_resolve_name.php`).
+- **Recordatorios WhatsApp 24h**:
+  - `recordatorios.php`: `ingest` / `check_sent` / `reconcile` (bot) + listado (sesión). `check_sent` evita reenvíos cuando n8n `staticData` no registró un éxito.
+  - Catch-up mismo día: `cron_recordatorios_sameday.php` (ver `docs/recordatorios-sameday.md`).
 
 ---
 

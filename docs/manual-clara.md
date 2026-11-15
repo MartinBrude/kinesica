@@ -296,6 +296,7 @@ El flujo técnico detrás de escena se basa en cinco pilares automatizados:
    Al ejecutarse:
    - **Filtra cancelaciones y bloqueos:** Ignora eventos con status cancelado o que contengan en título o descripción palabras como `[CANCELADO]`, `[ANULADO]`, `[SUSPENDIDO]`, `[BAJA]`, `[BLOQUEADO]`, `feriado`, `vacaciones`, la convención **`no dar` / `no dar turno`**, o el código de bloqueo **`Tk3`** (el sistema identifica de inmediato que son bloqueos de camilla, no busca teléfonos en el directorio, los clasifica como omitidos y no despacha ningún mensaje).
    - **Deduplicación Estricta (Máximo 1 por día por persona):** Si un paciente tiene dos eventos o sesiones el mismo día, el sistema le despacha **únicamente 1 recordatorio diario**, deduplicando exclusivamente sobre recordatorios confirmados y efectivamente enviados.
+   - **Anti-reenvío durable (`check_sent`):** Antes de enviar, n8n pregunta a `/admin/api/recordatorios.php` qué `calendar_event_id` ya tienen outcome `sent`/`sent_email`. Así un segundo pase no vuelve a escribir al paciente aunque la memoria `staticData` de n8n haya perdido un éxito. Detalle técnico: [recordatorios-sameday.md](recordatorios-sameday.md).
    - **Bloqueo Preventivo de Pasados:** No se procesan ni envían recordatorios de citas con horarios ya transcurridos.
    - **Extrae el nombre de pila:** Clara limpia etiquetas y apellidos para saludar con empatía y cercanía (*"¡Hola Lucas! 🌿"* en vez del frío *"Hola Lucas Méndez"*).
    - **Resuelve el número de WhatsApp:** Primero busca el teléfono en la **descripción** o título del evento (`📱 WhatsApp: 54911...`). Si no figura en el evento, recurre al **Directorio Dinámico de Pacientes** de Kinésica. Si no tiene WhatsApp pero cuenta con correo electrónico, activa la contingencia por Email. Si no tiene ninguno de los dos, el turno aparece en `/admin/recordatorios` con alerta de contacto faltante para que el equipo pueda completarlo a tiempo.
@@ -366,6 +367,9 @@ Cuando un turno se agenda correctamente en Google Calendar y Clara está activa 
 </p>
 
 #### 🔘 Botones del recordatorio interactivo: Confirmar y Cancelar
+
+Al tocar **`[✅ Confirmo]`** / «Confirmo, asistiré», el panel **Interacciones** clasifica el hilo como confirmación de turno (no queda en Pendientes) y asocia el nombre del paciente usando el `calendar_event_id` del botón, el registro de recordatorios o el directorio — sin inventar el nombre del perfil de WhatsApp.
+
 1. **`[✅ Confirmo]`**:  
    El paciente confirma su presencia con un solo toque. El sistema actualiza Google Calendar al instante cambiando el título a **`🩺 [CONFIRMADO] Nombre Paciente`**, permitiendo que Norberto y María vean de un vistazo en la agenda quiénes ya confirmaron para el día.
 2. **`[❌ Cancelar]`**:  

@@ -29,24 +29,48 @@ function recordatorios_was_sent_for_event(string $calendarEventId, ?PDO $pdo = n
 }
 
 /**
+ * Consulta batch (una query) para que n8n Parse Patients filtre ya enviados.
+ *
  * @param list<mixed> $calendarEventIds
  * @return array<string,bool> map calendar_event_id => already sent
  */
 function recordatorios_check_sent_map(array $calendarEventIds, ?PDO $pdo = null): array
 {
     $out = [];
-    $pdo = recordatorios_pdo($pdo);
-    $n = 0;
+    $ids = [];
     foreach ($calendarEventIds as $raw) {
-        if ($n >= 100) {
+        if (count($ids) >= 100) {
             break;
         }
         $cal = trim((string) $raw);
         if ($cal === '' || $cal === '_run') {
             continue;
         }
-        $out[$cal] = recordatorios_was_sent_for_event($cal, $pdo);
-        $n++;
+        $cal = substr($cal, 0, 128);
+        if (isset($out[$cal])) {
+            continue;
+        }
+        $out[$cal] = false;
+        $ids[] = $cal;
+    }
+    if ($ids === []) {
+        return $out;
+    }
+    try {
+        $pdo = recordatorios_pdo($pdo);
+        recordatorios_ensure_schema($pdo);
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $stmt = $pdo->prepare(
+            "SELECT DISTINCT calendar_event_id FROM recordatorio_eventos
+             WHERE calendar_event_id IN ($placeholders)
+               AND status IN ('sent', 'sent_email')"
+        );
+        $stmt->execute($ids);
+        while (($row = $stmt->fetchColumn()) !== false) {
+            $out[(string) $row] = true;
+        }
+    } catch (Throwable) {
+        // Fallar cerrado: todos false → el bot puede reintentar; staticData sigue como red de seguridad.
     }
     return $out;
 }

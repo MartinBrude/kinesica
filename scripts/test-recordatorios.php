@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 /**
  * Pruebas del almacén de recordatorios (normalize, idempotencia, vista, reconcile).
- * Con KT_DB_* + KT_TMP: persistencia + reconciliador. Sin DB: normalización + parse de árbol.
+ * Con KT_DB_* + KT_TMP: persistencia + reconciliador + check_sent_map.
+ * Sin DB: normalización, parse de árbol y contratos estáticos (incl. check_sent).
  */
 
 $root = dirname(__DIR__);
@@ -147,6 +148,16 @@ $syncSrc = file_get_contents($root . '/admin/api/lib_recordatorios_store_recorda
 ok(str_contains($syncSrc, 'sin-tel-cal-'), 'placeholder sin-tel-cal para nombre sin teléfono');
 $viewSrc = file_get_contents($root . '/admin/api/lib_recordatorios_view_recordatorios_load_view.php') ?: '';
 ok(str_contains($viewSrc, "pend.status = 'pending'"), 'vista borra pending si ya hay sent');
+
+section('Contrato check_sent (bot anti-reenvío)');
+$routesSrc = file_get_contents($root . '/admin/api/recordatorios_routes.php') ?: '';
+ok(str_contains($routesSrc, "'check_sent'"), 'ruta acepta action check_sent');
+ok(str_contains($routesSrc, 'recordatorios_check_sent_map'), 'ruta responde con check_sent_map');
+$wasSentSrc = file_get_contents($root . '/admin/api/lib_recordatorios_store_recordatorios_was_sent_for_event.php') ?: '';
+ok(str_contains($wasSentSrc, 'function recordatorios_check_sent_map'), 'existe check_sent_map');
+ok(str_contains($wasSentSrc, 'IN ($placeholders)'), 'check_sent_map usa IN batch');
+eq(recordatorios_check_sent_map([]), [], 'check_sent_map vacío => []');
+eq(recordatorios_check_sent_map(['', '_run']), [], 'ignora ids vacíos y _run');
 
 $host = getenv('KT_DB_HOST');
 if (!$host || !getenv('KT_TMP')) {
@@ -421,6 +432,38 @@ $pendingAfterSent = array_filter(
     static fn($i) => ($i['calendar_event_id'] ?? '') === 'cal-sent-1' && ($i['status'] ?? '') === 'pending'
 );
 eq(count($pendingAfterSent), 0, 'vista no muestra pending si hay sent');
+
+section('check_sent_map refleja sent/sent_email');
+$pdo = rem_fresh('check-sent');
+$sentA = recordatorios_normalize_item([
+    'status' => 'sent',
+    'calendar_event_id' => 'cal-check-a',
+    'patient_name' => 'Check A',
+    'wa_id' => '5491100000011',
+    'appointment_date' => date('Y-m-d', strtotime('+1 day')),
+], 'cs-a', time());
+$sentB = recordatorios_normalize_item([
+    'status' => 'sent_email',
+    'calendar_event_id' => 'cal-check-b',
+    'patient_name' => 'Check B',
+    'wa_id' => '',
+    'appointment_date' => date('Y-m-d', strtotime('+1 day')),
+], 'cs-b', time());
+$pendC = recordatorios_normalize_item([
+    'status' => 'pending',
+    'calendar_event_id' => 'cal-check-c',
+    'patient_name' => 'Check C',
+    'wa_id' => '5491100000013',
+    'appointment_date' => date('Y-m-d', strtotime('+1 day')),
+], 'cs-c', time());
+recordatorios_store_items([$sentA, $sentB, $pendC], $pdo);
+$map = recordatorios_check_sent_map(['cal-check-a', 'cal-check-b', 'cal-check-c', 'cal-check-missing'], $pdo);
+eq($map['cal-check-a'] ?? null, true, 'sent => true');
+eq($map['cal-check-b'] ?? null, true, 'sent_email => true');
+eq($map['cal-check-c'] ?? null, false, 'pending => false');
+eq($map['cal-check-missing'] ?? null, false, 'ausente => false');
+ok(recordatorios_was_sent_for_event('cal-check-a', $pdo), 'was_sent alineado con mapa');
+ok(!recordatorios_was_sent_for_event('cal-check-c', $pdo), 'pending no cuenta como sent');
 
 echo $fails === 0 ? "OK recordatorios ($passed assertions)\n" : "FAIL recordatorios ($fails)\n";
 exit($fails === 0 ? 0 : 1);

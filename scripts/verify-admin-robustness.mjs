@@ -961,6 +961,8 @@ await test("recordatorios.php ingest + vista SPA + reconcile", () => {
   assert.match(remPhp, /lib_recordatorios_view\.php/, "recordatorios.php debe incluir lib_recordatorios_view.php");
   assert.match(remPhp, /lib_recordatorios_n8n\.php/, "recordatorios.php debe incluir lib_recordatorios_n8n.php");
   assert.match(remPhp, /action === 'ingest'/, "recordatorios.php debe soportar ingest");
+  assert.match(remPhp, /'check_sent'/, "recordatorios.php debe soportar check_sent (anti-reenvío n8n)");
+  assert.match(remPhp, /recordatorios_check_sent_map/, "ruta check_sent usa el mapa batch");
   assert.match(remPhp, /'reconcile'/, "recordatorios.php debe soportar reconcile");
   assert.match(remPhp, /'items'\s*=>\s*\$view\['items'\]/, "recordatorios.php GET debe retornar items");
   assert.ok(fs.existsSync(path.join(adminDir, "api/lib_recordatorios_n8n.php")), "lib_recordatorios_n8n.php");

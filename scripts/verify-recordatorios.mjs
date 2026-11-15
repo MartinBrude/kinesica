@@ -39,11 +39,39 @@ if (
   !php.includes("lib_recordatorios_view.php") ||
   !php.includes("lib_recordatorios_n8n.php") ||
   !php.includes("'reconcile'") ||
+  !php.includes("'check_sent'") ||
+  !php.includes("recordatorios_check_sent_map") ||
   !php.includes("save_contact") ||
   !php.includes("recordatorios_persist_directory_contact")
 ) {
-  console.error("✗ recordatorios.php no cumple contrato ingest/vista/reconcile/save_contact");
+  console.error("✗ recordatorios.php no cumple contrato ingest/check_sent/vista/reconcile/save_contact");
   process.exit(1);
+}
+
+mustExist("admin/api/lib_recordatorios_store_recordatorios_was_sent_for_event.php");
+const wasSent = fs.readFileSync(
+  path.join(admin, "api/lib_recordatorios_store_recordatorios_was_sent_for_event.php"),
+  "utf8"
+);
+if (
+  !wasSent.includes("function recordatorios_check_sent_map") ||
+  !wasSent.includes("status IN ('sent', 'sent_email')") ||
+  !wasSent.includes("IN ($placeholders)")
+) {
+  console.error("✗ check_sent_map debe consultar sent/sent_email en batch (IN ?)");
+  process.exit(1);
+}
+
+// Sanity: el workflow n8n hermano debe llamar check_sent antes de reenviar.
+const wfPath = path.join(root, "..", "kinesica-bot", "workflow_recordatorios.json");
+if (fs.existsSync(wfPath)) {
+  const wf = JSON.parse(fs.readFileSync(wfPath, "utf8"));
+  const parseNode = (wf.nodes || []).find((n) => n.name === "Parse Patients & Phones");
+  const code = String(parseNode?.parameters?.jsCode || "");
+  if (!code.includes("check_sent") || !code.includes("fetchAlreadySentEventIds") || !code.includes("already_sent")) {
+    console.error("✗ kinesica-bot Parse Patients debe usar check_sent / already_sent");
+    process.exit(1);
+  }
 }
 
 const n8n = fs

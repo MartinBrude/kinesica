@@ -3,10 +3,11 @@ declare(strict_types=1);
 
 /**
  * API de Recordatorios WhatsApp 24h.
- *  POST action=ingest     outcomes desde n8n (secreto del bot); idempotente
- *  POST action=reconcile  fuerza reconciliación con n8n (bot o sesión no-colaborador)
- *  GET                    listado (sesión); colaborador puede leer; housekeeping reconcile
- * El secreto del bot SOLO sirve para ingestar/reconciliar: nunca para leer el historial.
+ *  POST action=ingest      outcomes desde n8n (secreto del bot); idempotente
+ *  POST action=check_sent  mapa calendar_event_id => ya enviado (bot; evita reenvíos si staticData falló)
+ *  POST action=reconcile   fuerza reconciliación con n8n (bot o sesión no-colaborador)
+ *  GET                     listado (sesión); colaborador puede leer; housekeeping reconcile
+ * El secreto del bot SOLO sirve para ingest/check_sent/reconcile: nunca para leer el historial.
  */
 
 require __DIR__ . '/lib.php';

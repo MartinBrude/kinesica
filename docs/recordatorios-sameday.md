@@ -42,6 +42,28 @@ Default de código: `reminder_template_when_mode=when_phrase` (override a `legac
 
 ## Dedupe
 
+Fuentes de verdad (en orden práctico):
+
+1. **Admin DB** (`recordatorio_eventos` con `sent` / `sent_email`) — fuente durable.
+2. **n8n `staticData.attemptedRecipientsByDate`** — caché de la corrida; puede fallar si un envío OK no llegó a `Build Sent`.
+3. **Catch-up PHP** — vuelve a mirar la DB antes de enviar el mismo día.
+
+### `POST action=check_sent` (bot → admin)
+
+Antes de armar los envíos, el nodo **Parse Patients & Phones** (`kinesica-bot/workflow_recordatorios.json`) llama:
+
+```http
+POST /admin/api/recordatorios.php
+X-Kinesica-Bot-Secret: …
+{ "action": "check_sent", "calendar_event_ids": ["…", "…"] }
+```
+
+Respuesta: `{ "ok": true, "sent": { "<calendar_event_id>": true|false } }` (máx. 100 ids, una query batch).
+
+Si `sent[id] === true` → el ítem se omite con `skip_reason: already_sent` (no reenvía aunque `staticData` no lo tenga). La previsión (webhook) **no** consulta `check_sent`.
+
+Sanity checks: `npm run admin:test` → `verify-recordatorios.mjs` + `scripts/test-recordatorios.php`; en el bot, `tests/test_reminders_fix.py::TestAdminCheckSent`.
+
 - Éxito previo para el mismo `calendar_event_id` (`sent` / `sent_email`) → skip `already_sent`.
 - Margen &lt; 60 min al inicio → skip `too_soon`.
 - Turno ya pasado → skip `past_appointment`.

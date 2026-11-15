@@ -2,7 +2,9 @@
 declare(strict_types=1);
 
 /**
- * Pruebas REALES (PHP + MariaDB/MySQL) del almacén durable de interacciones.
+ * Pruebas del almacén durable de interacciones.
+ * Sin KT_DB_HOST/KT_TMP: normalización + clasificación de confirmaciones.
+ * Con DB: idempotencia, vista, resolve por calendar_event_id, etc.
  * Ejecutar con: node scripts/verify-interacciones-store.mjs
  */
 
@@ -83,6 +85,42 @@ $iso = interacciones_normalize_event(['wa_id' => '5491100000001', 'direction' =>
 eq($iso['ts'], 1793268000, 'ts ISO-8601');
 $long = interacciones_normalize_event(['wa_id' => '5491100000001', 'direction' => 'patient', 'body' => str_repeat('á', 20000)]);
 eq(mb_strlen($long['body'], 'UTF-8'), INTERACCIONES_MAX_BODY, 'cuerpo gigante se acota sin romper UTF-8');
+
+// ---------------------------------------------------------------- clasificación (sin DB)
+section('Clasificación confirmación de turno (sin DB)');
+ok(interacciones_is_turn_confirmation('Confirmo'), 'Confirmo');
+ok(interacciones_is_turn_confirmation('✅ Confirmo'), 'emoji + Confirmo');
+ok(interacciones_is_turn_confirmation('Confirmo 👍'), 'Confirmo + thumb');
+ok(interacciones_is_turn_confirmation('Confirmo, asistiré'), 'título botón Confirmo, asistiré');
+ok(interacciones_is_turn_confirmation('Confirmo que asistiré'), 'Confirmo que asistiré');
+ok(interacciones_is_turn_confirmation('confirmar_turno:evt123'), 'payload confirmar_turno');
+ok(!interacciones_is_turn_confirmation('Hola, confirmo que voy y además quiero mover el turno'), 'texto largo no es solo confirmación');
+ok(
+    interacciones_thread_is_turn_confirmation([
+        ['from' => 'patient', 'text' => 'Hola'],
+        ['from' => 'clara', 'text' => 'Menú'],
+        ['from' => 'patient', 'text' => 'Confirmo, asistiré'],
+    ]),
+    'último mensaje Confirmo, asistiré = hilo confirmación'
+);
+ok(
+    !interacciones_thread_is_turn_confirmation([
+        ['from' => 'patient', 'text' => 'Confirmo'],
+        ['from' => 'clara', 'text' => 'Gracias'],
+        ['from' => 'patient', 'text' => '¿Puedo cambiar el horario?'],
+    ]),
+    'confirmación vieja + pregunta nueva ≠ hilo confirmación'
+);
+eq(interacciones_extract_calendar_event_id('confirmar_turno:cal-abc'), 'cal-abc', 'extrae event_id del payload');
+eq(interacciones_extract_calendar_event_id('hola', 'cal-hint-1'), 'cal-hint-1', 'hint explícito gana');
+eq(interacciones_sanitize_calendar_event_id('bad id!!'), '', 'sanitiza ids inválidos');
+
+$host = getenv('KT_DB_HOST');
+if (!$host || !getenv('KT_TMP')) {
+    echo "• Persistencia/idempotencia omitidas (sin KT_DB_HOST / KT_TMP)\n";
+    echo $fails === 0 ? "OK interacciones ($passed assertions)\n" : "FAIL interacciones ($fails)\n";
+    exit($fails === 0 ? 0 : 1);
+}
 
 // ---------------------------------------------------------------- idempotencia
 section('Inserción idempotente y sin pérdida');
@@ -479,13 +517,6 @@ eq($dView['items'][0]['category'], 'prueba_admin', 'categoría prueba técnica')
 eq($dView['unanswered_count'], 0, 'no ensucia pendientes');
 
 section('Vista: confirmación de turno ya figura respondida');
-ok(interacciones_is_turn_confirmation('Confirmo'), 'Confirmo');
-ok(interacciones_is_turn_confirmation('✅ Confirmo'), 'emoji + Confirmo');
-ok(interacciones_is_turn_confirmation('Confirmo 👍'), 'Confirmo + thumb');
-ok(interacciones_is_turn_confirmation('Confirmo, asistiré'), 'título botón Confirmo, asistiré');
-ok(interacciones_is_turn_confirmation('Confirmo que asistiré'), 'Confirmo que asistiré');
-ok(interacciones_is_turn_confirmation('confirmar_turno:evt123'), 'payload confirmar_turno');
-ok(!interacciones_is_turn_confirmation('Hola, confirmo que voy y además quiero mover el turno'), 'texto largo no es solo confirmación');
 $pdo = fresh('confirm-answered');
 $cBase = (new DateTimeImmutable('2026-11-01 21:10:00', new DateTimeZone('America/Argentina/Buenos_Aires')))->getTimestamp();
 interacciones_store_events([
@@ -536,11 +567,6 @@ $pdo->prepare(
     'wa' => '541161607595', // sin 9: clean_phone_number debe unificar
     'sum' => 'Paciente Botón',
 ]);
-eq(
-    interacciones_extract_calendar_event_id('confirmar_turno:cal-resolve-1'),
-    'cal-resolve-1',
-    'extrae event_id del payload'
-);
 eq(
     interacciones_resolve_patient_name($pdo, '5491161607595', 'Confirmo, asistiré', 'cal-resolve-1'),
     'Paciente Botón',
