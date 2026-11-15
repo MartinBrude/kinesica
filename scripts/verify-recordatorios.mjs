@@ -20,6 +20,7 @@ function mustExist(rel) {
 
 mustExist("admin/api/recordatorios.php");
 mustExist("admin/api/lib_recordatorios_store.php");
+mustExist("admin/api/lib_recordatorios_store_recordatorios_sync_paciente.php");
 mustExist("admin/api/lib_recordatorios_view.php");
 mustExist("admin/api/lib_recordatorios_n8n.php");
 mustExist("admin/modules/recordatorios.js");

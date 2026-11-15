@@ -22,17 +22,22 @@ function recordatorios_load_view(?PDO $pdo = null, int $days = RECORDATORIOS_DEF
         // Limpiar ruido de corridas omitidas (Clara pausada) y bloqueos.
         $pdo->exec("DELETE FROM recordatorio_eventos WHERE status = 'run_skipped' OR skip_reason = 'clara_inactive'");
         $pdo->exec("DELETE FROM recordatorio_eventos WHERE skip_reason = 'blocked' OR LOWER(patient_name) LIKE '%no dar%' OR LOWER(event_summary) LIKE '%no dar%' OR LOWER(patient_name) LIKE '%bloqueado%' OR LOWER(event_summary) LIKE '%bloqueado%' OR LOWER(patient_name) LIKE '%tk3%' OR LOWER(event_summary) LIKE '%tk3%' OR LOWER(patient_name) LIKE '%tk 3%' OR LOWER(event_summary) LIKE '%tk 3%'");
-        // En MySQL: limpiar registros duplicados manteniendo el último resultado relevante
+        // Si hay sent, borrar pending del mismo evento (aunque el pending sea más nuevo —
+        // p.ej. previsión posterior al cron). failed se conserva para auditoría.
+        $pdo->exec("DELETE pend FROM recordatorio_eventos pend
+                    INNER JOIN recordatorio_eventos sent
+                      ON pend.calendar_event_id = sent.calendar_event_id
+                     AND pend.calendar_event_id != ''
+                     AND pend.calendar_event_id != '_run'
+                     AND pend.status = 'pending'
+                     AND sent.status IN ('sent', 'sent_email')");
         $pdo->exec("DELETE r1 FROM recordatorio_eventos r1
                     JOIN recordatorio_eventos r2
                       ON r1.calendar_event_id = r2.calendar_event_id
                      AND r1.calendar_event_id != ''
                      AND r1.calendar_event_id != '_run'
                      AND r1.id < r2.id
-                     AND (
-                         r1.status = r2.status
-                         OR (r2.status IN ('sent', 'sent_email') AND r1.status IN ('failed', 'pending'))
-                     )");
+                     AND r1.status = r2.status");
     } catch (Throwable $e) {}
 
     $hasPacienteCol = false;

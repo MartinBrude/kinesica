@@ -138,6 +138,16 @@ eq(recordatorios_events_from_execution(['resultData' => ['runData' => []]], '1',
 
 eq(recordatorios_reconcile(null, 2, null, null)['status'], 'not_configured', 'sin credenciales => not_configured');
 
+section('Contrato anti-pending-tras-sent + sync placeholder');
+$storeSrc = file_get_contents($root . '/admin/api/lib_recordatorios_store_recordatorios_store_items.php') ?: '';
+ok(str_contains($storeSrc, 'recordatorios_was_sent_for_event'), 'store consulta was_sent antes de pending');
+ok(str_contains($storeSrc, 'recordatorios_sync_paciente_from_event'), 'store sincroniza pacientes');
+ok(is_file($root . '/admin/api/lib_recordatorios_store_recordatorios_sync_paciente.php'), 'existe sync_paciente');
+$syncSrc = file_get_contents($root . '/admin/api/lib_recordatorios_store_recordatorios_sync_paciente.php') ?: '';
+ok(str_contains($syncSrc, 'sin-tel-cal-'), 'placeholder sin-tel-cal para nombre sin teléfono');
+$viewSrc = file_get_contents($root . '/admin/api/lib_recordatorios_view_recordatorios_load_view.php') ?: '';
+ok(str_contains($viewSrc, "pend.status = 'pending'"), 'vista borra pending si ya hay sent');
+
 $host = getenv('KT_DB_HOST');
 if (!$host || !getenv('KT_TMP')) {
     echo "• Persistencia/reconcile omitidos (sin KT_DB_HOST / KT_TMP)\n";
@@ -370,6 +380,47 @@ eq($r4['status'], 'partial', 'success vacío => parcial');
 $st4 = recordatorios_reconcile_state();
 ok(!in_array(30, array_map('intval', $st4['done_ids'] ?? []), true), 'success vacío NO en done_ids');
 ok(in_array(31, array_map('intval', $st4['done_ids'] ?? []), true), 'error vacío SÍ en done_ids');
+
+section('Pending tras sent se ignora; missing_phone crea paciente placeholder');
+$pdo = rem_fresh('sent-pending');
+ensure_pacientes_tables($pdo);
+$pdo->exec("DELETE FROM pacientes WHERE telefono LIKE 'sin-tel-cal-%' OR telefono = '5491100000099'");
+$sentEv = recordatorios_normalize_item([
+    'status' => 'sent',
+    'calendar_event_id' => 'cal-sent-1',
+    'patient_name' => 'Ana Enviada',
+    'wa_id' => '5491100000099',
+    'appointment_date' => date('Y-m-d', strtotime('+1 day')),
+], 'fix-sent', time());
+eq(recordatorios_store_items([$sentEv], $pdo)['stored'], 1, 'guarda sent');
+$pendingEv = recordatorios_normalize_item([
+    'status' => 'pending',
+    'calendar_event_id' => 'cal-sent-1',
+    'patient_name' => 'Ana Enviada',
+    'wa_id' => '5491100000099',
+    'appointment_date' => date('Y-m-d', strtotime('+1 day')),
+], 'fix-prev', time() + 60);
+$pendRes = recordatorios_store_items([$pendingEv], $pdo);
+eq($pendRes['duplicates'], 1, 'pending tras sent = duplicate');
+eq($pendRes['stored'], 0, 'no inserta pending tras sent');
+eq((int) $pdo->query("SELECT COUNT(*) FROM recordatorio_eventos WHERE calendar_event_id='cal-sent-1' AND status='pending'")->fetchColumn(), 0, 'sin filas pending');
+
+$missEv = recordatorios_normalize_item([
+    'status' => 'missing_phone',
+    'calendar_event_id' => 'cal-miss-walter',
+    'patient_name' => 'Mira Walter',
+    'wa_id' => '',
+    'appointment_date' => date('Y-m-d', strtotime('+1 day')),
+], 'fix-miss', time());
+eq(recordatorios_store_items([$missEv], $pdo)['stored'], 1, 'guarda missing_phone');
+$ph = (string) $pdo->query("SELECT telefono FROM pacientes WHERE nombre_completo = 'Mira Walter' LIMIT 1")->fetchColumn();
+ok(str_starts_with($ph, 'sin-tel-cal-'), 'paciente placeholder sin-tel-cal-*');
+$viewMiss = recordatorios_load_view($pdo, 14);
+$pendingAfterSent = array_filter(
+    $viewMiss['items'],
+    static fn($i) => ($i['calendar_event_id'] ?? '') === 'cal-sent-1' && ($i['status'] ?? '') === 'pending'
+);
+eq(count($pendingAfterSent), 0, 'vista no muestra pending si hay sent');
 
 echo $fails === 0 ? "OK recordatorios ($passed assertions)\n" : "FAIL recordatorios ($fails)\n";
 exit($fails === 0 ? 0 : 1);
