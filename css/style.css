@@ -456,7 +456,7 @@ blockquote {
 }
 
 .section-intro .section-eyebrow {
-  font-size: 0.75rem;
+  font-size: 1.2rem; /* ≥12px with Bootstrap html { font-size: 10px } */
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -1965,9 +1965,9 @@ main:focus {
 }
 
 .tiny-footer .tiny-footer-link {
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: 0.03em;
-  color: #4b5563;
+  color: #d1d5db;
   background-color: transparent;
   text-decoration: none;
   font-weight: 400;
@@ -1980,14 +1980,14 @@ main:focus {
 .tiny-footer .tiny-footer-link:focus,
 .tiny-footer .tiny-footer-link:focus-visible,
 .tiny-footer .tiny-footer-link:active {
-  color: #9ca3af;
+  color: #fff;
   background-color: transparent;
   text-decoration: underline;
 }
 
 .tiny-footer .tiny-footer-sep {
-  font-size: 9px;
-  color: #374151;
+  font-size: 12px;
+  color: #9ca3af;
   margin: 0 4px;
   user-select: none;
 }
@@ -2196,7 +2196,7 @@ main:focus {
 
 .map-review-cta-text {
   margin: 0;
-  font-size: 1.125rem;
+  font-size: 1.25rem; /* ≥12px with Bootstrap html { font-size: 10px } */
   line-height: 1.55;
   color: var(--heading-color);
   font-weight: 500;
@@ -2270,7 +2270,7 @@ main:focus {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  font-size: 0.9375rem;
+  font-size: 1.2rem; /* ≥12px with Bootstrap html { font-size: 10px } */
   font-weight: 600;
   line-height: 1.45;
   color: var(--primary-color);
@@ -2341,7 +2341,7 @@ main:focus {
 .google-review-author {
   margin: 0;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 1.25rem; /* ≥12px with Bootstrap html { font-size: 10px } */
   line-height: 1.3;
 }
 
@@ -2351,12 +2351,12 @@ main:focus {
   align-items: center;
   gap: 0.35rem 0.5rem;
   margin: 0.2rem 0 0;
-  font-size: 0.8rem;
+  font-size: 1.2rem;
 }
 
 .google-review-star {
   color: #c5cdd8;
-  font-size: 0.75rem;
+  font-size: 1.1rem;
 }
 
 .google-review-star--on {
@@ -2369,7 +2369,7 @@ main:focus {
 
 .google-review-text {
   margin: 0;
-  font-size: 0.925rem;
+  font-size: 1.3rem; /* ≥12px with Bootstrap html { font-size: 10px } */
   line-height: 1.55;
   color: var(--text-color, #334155);
   display: -webkit-box;
@@ -3543,7 +3543,7 @@ Pathology detail pages (FAQ dolencias)
 }
 
 .content.articles-index p.section-eyebrow {
-  font-size: 0.75rem;
+  font-size: 1.2rem; /* ≥12px with Bootstrap html { font-size: 10px } */
   font-weight: 600;
   line-height: 1.4;
   letter-spacing: 0.16em;

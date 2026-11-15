@@ -87,7 +87,7 @@ export function mapEmbedFrameBlock(lang) {
   const src = mapEmbedSrc(lang);
   return [
     "                <div class=\"map-embed-frame\">",
-    `              <div class="map-embed-facade" data-embed-src="${src}" data-embed-title="${title}" aria-label="${title}" aria-busy="true"></div>`,
+    `              <div class="map-embed-facade" role="img" data-embed-src="${src}" data-embed-title="${title}" aria-label="${title}" aria-busy="true"></div>`,
     "                </div>",
   ];
 }
@@ -477,7 +477,7 @@ function homeMethodCard(lang, stem) {
     "              <div class=\"service-block\">",
     "                <div class=\"service-img mb20\">",
     `                  <a href="${escAttr(href)}"><img src="__PREFIX__images/${image}" title="${escAttr(card.imgTitle)}"`,
-    `                      alt="${escAttr(card.imgAlt)}" class="img-responsive" loading="lazy" /></a>`,
+    `                      alt="${escAttr(card.imgAlt)}" class="img-responsive" width="1536" height="1024" loading="lazy" decoding="async" /></a>`,
     "                </div>",
     "                <div class=\"service-content\">",
     `                  <h2><a href="${escAttr(href)}" class="title">${escHtml(card.title)}</a></h2>`,
