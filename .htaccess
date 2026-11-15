@@ -51,6 +51,10 @@ RewriteRule ^agendar/?$ /agendar.html [L]
 RewriteRule ^(en|fr|pt)/agendar/?$ /$1/agendar.html [L]
 RewriteRule ^turnos/?$ /agendar [R=301,L]
 
+# Manage appointment clean URL (/mi-turno and localized variants)
+RewriteRule ^mi-turno/?$ /mi-turno.html [L]
+RewriteRule ^(en|fr|pt)/mi-turno/?$ /$1/mi-turno.html [L]
+
 ErrorDocument 404 /404-router.html
 
 # Cache static images (SEO: Expires headers)
