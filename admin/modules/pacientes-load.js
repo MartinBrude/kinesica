@@ -12,7 +12,7 @@ import {
   getPendingSearchFromUrl,
   setPendingSearchFromUrl,
 } from "./pacientes-state.js";
-import { renderPacientesTable } from "./pacientes-table.js";
+import { renderPacientesTable } from "./pacientes-table.js?v=1";
 
 export async function loadPacientes() {
   if (!listEl) return;

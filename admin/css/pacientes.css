@@ -96,6 +96,50 @@
   background: #fbfdff;
 }
 
+.pacientes-section-row td {
+  background: #f1f5f9;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 10px 14px;
+  vertical-align: middle;
+}
+
+.pacientes-section-row.is-missing-phone td {
+  background: #fef2f2;
+  border-top-color: #fecaca;
+  border-bottom-color: #fecaca;
+}
+
+.pacientes-section-row:hover td {
+  background: #f1f5f9;
+}
+
+.pacientes-section-row.is-missing-phone:hover td {
+  background: #fef2f2;
+}
+
+.pacientes-section-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--navy);
+  letter-spacing: 0.01em;
+}
+
+.pacientes-section-row.is-missing-phone .pacientes-section-title {
+  color: #991b1b;
+}
+
+.pacientes-section-meta {
+  margin-left: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.pacientes-section-row.is-missing-phone .pacientes-section-meta {
+  color: #b91c1c;
+}
+
 .badge-prof {
   display: inline-block;
   padding: 2px 8px;

@@ -4,13 +4,13 @@
 
 import { api } from "./api.js?v=79";
 import { getSessionUser } from "./auth.js?v=83";
-import { setPacientesMissingPhoneBadge, stopPacientesBadgePoll } from "./pacientes.js?v=16";
+import { setPacientesMissingPhoneBadge, stopPacientesBadgePoll } from "./pacientes.js?v=17";
 import { updateDashboardClara, updateDashboardBooking } from "./dashboard.js?v=13";
 import { applyHoursToRuntime } from "./horarios.js?v=4";
 
 export { closeAllDropdowns } from "./app-tabs-dropdowns.js";
 export { closeMobileNav, openMobileNav, toggleMobileNav } from "./app-tabs-mobile.js";
-export { switchTab } from "./app-tabs-switch.js";
+export { switchTab } from "./app-tabs-switch.js?v=1";
 
 import { closeMobileNav } from "./app-tabs-mobile.js";
 import { bindAdminNavOnce } from "./app-tabs-nav.js";
