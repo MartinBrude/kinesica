@@ -61,10 +61,23 @@ function interacciones_handle_ingest(array $input): void
     if (!is_array($raw) || count($raw) > INTERACCIONES_MAX_BATCH) {
         json_out(413, ['error' => 'events debe ser un arreglo de hasta ' . INTERACCIONES_MAX_BATCH]);
     }
+    if (!function_exists('interacciones_sanitize_calendar_event_id')) {
+        require_once __DIR__ . '/lib_interacciones_view_resolve_name.php';
+    }
+    $topCal = interacciones_sanitize_calendar_event_id(
+        (string) ($input['calendar_event_id'] ?? $input['reminder_event_id'] ?? '')
+    );
     $events = [];
     $invalid = 0;
     foreach ($raw as $r) {
-        $ev = is_array($r) ? interacciones_normalize_event($r, 'push') : null;
+        if (!is_array($r)) {
+            $invalid++;
+            continue;
+        }
+        if ($topCal !== '' && trim((string) ($r['calendar_event_id'] ?? $r['reminder_event_id'] ?? '')) === '') {
+            $r['calendar_event_id'] = $topCal;
+        }
+        $ev = interacciones_normalize_event($r, 'push');
         $ev === null ? $invalid++ : $events[] = $ev;
     }
     interacciones_ingest_response($events, $invalid);
@@ -79,6 +92,7 @@ function interacciones_handle_legacy_push(array $input): void
         'wa_id' => $input['wa_id'] ?? '',
         'patient_name' => $input['patient_name'] ?? '',
         'message_id' => $input['message_id'] ?? '',
+        'calendar_event_id' => $input['calendar_event_id'] ?? $input['reminder_event_id'] ?? '',
     ];
     $events = [];
     $p = interacciones_normalize_event($base + [

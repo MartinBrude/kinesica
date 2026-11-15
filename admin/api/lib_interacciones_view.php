@@ -16,6 +16,7 @@ const INTERACCIONES_MAX_DAYS = 90;
 const INTERACCIONES_MAX_EVENTS = 5000;
 
 require_once __DIR__ . '/lib_interacciones_view_names.php';
+require_once __DIR__ . '/lib_interacciones_view_resolve_name.php';
 require_once __DIR__ . '/lib_interacciones_view_classify.php';
 require_once __DIR__ . '/lib_interacciones_view_load.php';
 require_once __DIR__ . '/lib_interacciones_view_build.php';

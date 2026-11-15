@@ -123,6 +123,18 @@ function recordatorios_ensure_schema(?PDO $pdo = null): void
 
 function recordatorios_clean_wa_id(string $raw): string
 {
+    if (!function_exists('clean_phone_number')) {
+        $helpers = __DIR__ . '/pacientes_helpers.php';
+        if (is_file($helpers)) {
+            require_once $helpers;
+        }
+    }
+    if (function_exists('clean_phone_number')) {
+        $normalized = clean_phone_number($raw);
+        if ($normalized !== '') {
+            return $normalized;
+        }
+    }
     return preg_replace('/\D/', '', $raw) ?? '';
 }
 

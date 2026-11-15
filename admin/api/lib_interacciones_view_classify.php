@@ -20,7 +20,8 @@ function interacciones_is_turn_confirmation(string $body): bool
     ]);
     $plain = preg_replace('/[^a-z0-9\s]/u', ' ', $plain) ?? $plain;
     $plain = trim(preg_replace('/\s+/u', ' ', $plain) ?? $plain);
-    return (bool) preg_match('/^confirm[oa](?:r)?(?: el turno)?$/u', $plain);
+    // Incluye título del botón Meta: "Confirmo", "Confirmo, asistiré".
+    return (bool) preg_match('/^confirm[oa](?:r)?(?: el turno)?(?:\s+asistire)?$/u', $plain);
 }
 
 /**

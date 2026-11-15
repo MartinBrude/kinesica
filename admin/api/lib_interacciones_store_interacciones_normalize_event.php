@@ -48,6 +48,12 @@ function interacciones_normalize_event(array $in, string $defaultSource = 'push'
     $mediaFilename = $mediaId !== ''
         ? mb_substr(preg_replace('/[\x00-\x1F\x7F\/\\\\]/', '_', trim((string) ($in['media_filename'] ?? $in['attachment_filename'] ?? ''))) ?? '', 0, 255, 'UTF-8')
         : '';
+    if (!function_exists('interacciones_sanitize_calendar_event_id')) {
+        require_once __DIR__ . '/lib_interacciones_view_resolve_name.php';
+    }
+    $calHint = interacciones_sanitize_calendar_event_id(
+        (string) ($in['calendar_event_id'] ?? $in['reminder_event_id'] ?? $in['event_id'] ?? '')
+    );
     return [
         'event_key' => $key,
         'wa_id' => $wa,
@@ -55,6 +61,7 @@ function interacciones_normalize_event(array $in, string $defaultSource = 'push'
         'body' => $body,
         'ts' => $ts,
         'patient_name' => mb_substr(trim((string) ($in['patient_name'] ?? '')), 0, 120, 'UTF-8'),
+        'calendar_event_id' => $calHint,
         'source' => substr(preg_replace('/[^a-z0-9_\-]/', '', strtolower((string) ($in['source'] ?? $defaultSource))) ?? '', 0, 24),
         'exec_id' => $execId !== '' ? substr($execId, 0, 32) : null,
         'media_id' => $mediaId !== '' ? $mediaId : null,
@@ -73,18 +80,25 @@ function interacciones_normalize_event(array $in, string $defaultSource = 'push'
  *
  * @return string 'stored'|'duplicate'
  */
-
-/**
- * Inserta un evento. Idempotente y sin pérdida:
- *  - misma clave y mismo texto => duplicado (se ignora)
- *  - misma clave y texto contenido/subconjunto => duplicado (evita fantasma live+reconcile)
- *  - misma clave y texto distinto no relacionado => se guarda como variante
- * Lanza PDOException solo ante fallos reales de BD.
- *
- * @return string 'stored'|'duplicate'
- */
 function interacciones_insert_event(PDO $pdo, array $ev): string
 {
+    // Si el bot no mandó nombre (habitual en confirmaciones), resolver por event_id / teléfono.
+    if (trim((string) ($ev['patient_name'] ?? '')) === '') {
+        try {
+            require_once __DIR__ . '/lib_interacciones_view_resolve_name.php';
+            $resolved = interacciones_resolve_patient_name(
+                $pdo,
+                (string) ($ev['wa_id'] ?? ''),
+                (string) ($ev['body'] ?? ''),
+                (string) ($ev['calendar_event_id'] ?? '')
+            );
+            if ($resolved !== '') {
+                $ev['patient_name'] = $resolved;
+            }
+        } catch (Throwable) {
+        }
+    }
+
     // REL: paciente_id en insert WA solo con REL_WRITE_IDS (lib_relational_resolve.php).
     $pacienteId = null;
     try {

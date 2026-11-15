@@ -482,6 +482,7 @@ section('Vista: confirmación de turno ya figura respondida');
 ok(interacciones_is_turn_confirmation('Confirmo'), 'Confirmo');
 ok(interacciones_is_turn_confirmation('✅ Confirmo'), 'emoji + Confirmo');
 ok(interacciones_is_turn_confirmation('Confirmo 👍'), 'Confirmo + thumb');
+ok(interacciones_is_turn_confirmation('Confirmo, asistiré'), 'título botón Confirmo, asistiré');
 ok(interacciones_is_turn_confirmation('confirmar_turno:evt123'), 'payload confirmar_turno');
 ok(!interacciones_is_turn_confirmation('Hola, confirmo que voy y además quiero mover el turno'), 'texto largo no es solo confirmación');
 $pdo = fresh('confirm-answered');
@@ -496,6 +497,70 @@ eq($cView['items'][0]['answered'], true, 'confirmación marcada respondida');
 eq($cView['items'][0]['category'], 'confirmacion_turno', 'categoría confirmación');
 eq($cView['answered_count'], 1, 'contador answered');
 eq($cView['unanswered_count'], 0, 'no queda pendiente');
+
+section('Resolve nombre: event_id → recordatorio → teléfono');
+require_once $root . '/admin/api/lib_recordatorios_store.php';
+$pdo = fresh('resolve-name');
+recordatorios_ensure_schema($pdo);
+$pdo->exec("DELETE FROM recordatorio_eventos WHERE calendar_event_id IN ('cal-resolve-1','cal-resolve-2') OR wa_id LIKE '549116160759%'");
+$pdo->prepare(
+    'INSERT INTO recordatorio_eventos
+     (event_key, exec_id, run_at, appointment_date, appointment_time, calendar_event_id,
+      patient_name, wa_id, status, skip_reason, error_code, error_message, event_summary, received_at)
+     VALUES
+     (:k, :ex, UTC_TIMESTAMP(), CURDATE(), "18:00", :cal, :name, :wa, "sent", "", "", "", :sum, UTC_TIMESTAMP())'
+)->execute([
+    'k' => 'rem:cal-resolve-1',
+    'ex' => 'test-ex',
+    'cal' => 'cal-resolve-1',
+    'name' => 'Paciente Botón',
+    'wa' => '541161607595', // sin 9: clean_phone_number debe unificar
+    'sum' => 'Paciente Botón',
+]);
+eq(
+    interacciones_extract_calendar_event_id('confirmar_turno:cal-resolve-1'),
+    'cal-resolve-1',
+    'extrae event_id del payload'
+);
+eq(
+    interacciones_resolve_patient_name($pdo, '5491161607595', 'Confirmo, asistiré', 'cal-resolve-1'),
+    'Paciente Botón',
+    'resolve por calendar_event_id del botón'
+);
+eq(
+    interacciones_resolve_patient_name($pdo, '5491161607595', 'Confirmo, asistiré', ''),
+    'Paciente Botón',
+    'resolve por teléfono aunque recordatorio tenga 5411…'
+);
+$rBase = (new DateTimeImmutable('2026-11-15 18:06:00', new DateTimeZone('America/Argentina/Buenos_Aires')))->getTimestamp();
+$confirmEv = interacciones_normalize_event([
+    'wa_id' => '5491161607595',
+    'direction' => 'patient',
+    'body' => 'Confirmo, asistiré',
+    'ts' => $rBase,
+    'message_id' => 'wamid.RESOLVE1',
+    'patient_name' => '',
+    'calendar_event_id' => 'cal-resolve-1',
+], 'push');
+eq(interacciones_insert_event($pdo, $confirmEv), 'stored', 'insert confirmación sin nombre');
+$rowName = (string) $pdo->query(
+    "SELECT patient_name FROM interaccion_eventos WHERE event_key = 'wa:wamid.RESOLVE1' LIMIT 1"
+)->fetchColumn();
+eq($rowName, 'Paciente Botón', 'ingest persiste nombre resuelto');
+$rView = interacciones_load_view($pdo);
+$rItem = null;
+foreach ($rView['items'] as $it) {
+    if (($it['wa_id'] ?? '') === '5491161607595') {
+        $rItem = $it;
+        break;
+    }
+}
+ok($rItem !== null, 'vista incluye confirmación');
+eq($rItem['patient_name'] ?? '', 'Paciente Botón', 'vista muestra nombre del recordatorio');
+eq($rItem['answered'] ?? false, true, 'Confirmo, asistiré queda respondida');
+eq($rItem['category'] ?? '', 'confirmacion_turno', 'categoría confirmación con título de botón');
+$pdo->exec("DELETE FROM recordatorio_eventos WHERE calendar_event_id = 'cal-resolve-1'");
+$pdo->exec("DELETE FROM interaccion_eventos WHERE wa_id = '5491161607595'");
 
 section('Vista: fusiona hilos 54 11… y 549 11… del mismo día');
 $pdo = fresh('merge-wa');

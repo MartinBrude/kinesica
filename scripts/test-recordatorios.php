@@ -49,6 +49,8 @@ $sent = recordatorios_normalize_item([
     'event_summary' => '🩺 Lucas',
 ], 'n8n-1', 1700000000);
 eq($sent['wa_id'], '5491144556677', 'wa_id limpio');
+eq(recordatorios_clean_wa_id('541161607595'), '5491161607595', '5411… se normaliza a 54911…');
+eq(recordatorios_clean_wa_id('+54 9 11 6160-7595'), '5491161607595', 'formato visual AR → 54911…');
 eq($sent['event_key'], 'rem:n8n-1:calABC:sent', 'clave sent');
 $sentMail = recordatorios_normalize_item([
     'status' => 'sent_email',
