@@ -373,4 +373,246 @@
     padding: 10px 12px;
     font-size: 13px;
   }
+
+  .merge-compare-grid {
+    grid-template-columns: 1fr !important;
+  }
 }
+
+/* Card de Unificación de Pacientes en Modal */
+.paciente-modal-merge-card {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+}
+
+.paciente-modal-merge-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.merge-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.merge-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.merge-subtitle {
+  font-size: 11.5px;
+  color: #64748b;
+}
+
+.paciente-merge-body {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed #cbd5e1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.merge-search-box {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.merge-search-box label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+}
+
+.merge-search-box input {
+  padding: 8px 10px;
+  border: 1px solid #94a3b8;
+  border-radius: 6px;
+  font-size: 13.5px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.merge-search-box input:focus {
+  border-color: #0284c7;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15);
+}
+
+.merge-results-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  max-height: 220px;
+  overflow-y: auto;
+  z-index: 1050;
+  margin-top: 4px;
+}
+
+.merge-result-item {
+  padding: 9px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background-color 0.12s ease;
+}
+
+.merge-result-item:last-child {
+  border-bottom: none;
+}
+
+.merge-result-item:hover {
+  background-color: #f0f9ff;
+}
+
+.merge-result-name {
+  font-weight: 600;
+  font-size: 13px;
+  color: #0f172a;
+}
+
+.merge-result-meta {
+  font-size: 11.5px;
+  color: #64748b;
+  display: flex;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.merge-no-results {
+  padding: 12px;
+  text-align: center;
+  color: #64748b;
+  font-size: 12.5px;
+}
+
+.merge-selection-box {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.merge-compare-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.merge-compare-card {
+  padding: 10px;
+  border-radius: 6px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  font-size: 12.5px;
+}
+
+.merge-compare-card.current {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+.merge-compare-card.target {
+  border-color: #fde68a;
+  background: #fffbeb;
+}
+
+.merge-compare-badge {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #475569;
+  margin-bottom: 4px;
+}
+
+.merge-compare-name {
+  font-weight: 700;
+  font-size: 13px;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.merge-compare-detail {
+  font-size: 11.5px;
+  color: #475569;
+  line-height: 1.4;
+}
+
+.merge-direction-choice {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #f8fafc;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+.merge-radio-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 12.5px;
+}
+
+.merge-radio-label input[type="radio"] {
+  margin-top: 3px;
+}
+
+.merge-radio-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.merge-radio-title {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.merge-radio-desc {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.merge-warning-alert {
+  padding: 8px 10px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  color: #991b1b;
+  font-size: 11.5px;
+  line-height: 1.35;
+}
+
+.merge-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  align-items: center;
+}
+

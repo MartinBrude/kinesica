@@ -2,7 +2,7 @@ import { api } from "./api.js?v=79";
 import { escapeHtml, dialogAlert, dialogConfirm } from "./dom.js?v=79";
 import { phoneMatches } from "./phone-search.js?v=3";
 import { formatDisplayPhone, capitalizePersonName } from "./pacientes-format.js";
-import { openFullPacienteModal } from "./pacientes-modal.js?v=3";
+import { openFullPacienteModal } from "./pacientes-modal.js?v=4";
 import { getSessionUser } from "./auth.js?v=83";
 import { invalidateDirectoryCache } from "./form-patient.js";
 import {

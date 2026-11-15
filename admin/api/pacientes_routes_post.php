@@ -50,6 +50,17 @@ declare(strict_types=1);
             json_out(200, ['status' => 'success', 'merged' => $merged, 'resolved' => $resolved, 'total' => $total]);
         }
 
+        if ($action === 'merge') {
+            $sourceId = (int) ($data['source_id'] ?? 0);
+            $targetId = (int) ($data['target_id'] ?? 0);
+            if ($sourceId <= 0 || $targetId <= 0 || $sourceId === $targetId) {
+                json_out(422, ['status' => 'error', 'message' => 'IDs de pacientes inválidos o idénticos para la unificación']);
+            }
+            require_once __DIR__ . '/pacientes_helpers_dedup_apply.php';
+            $res = kinesica_pacientes_merge_explicit($pdo, $sourceId, $targetId);
+            json_out($res['ok'] ? 200 : 400, $res);
+        }
+
         if ($action === 'upsert' || $action === 'insert') {
             kinesica_pacientes_upsert($pdo, $data);
         }

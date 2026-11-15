@@ -1,5 +1,5 @@
 import { debounce, dialogAlert } from "./dom.js?v=79";
-import { openFullPacienteModal } from "./pacientes-modal.js?v=3";
+import { openFullPacienteModal } from "./pacientes-modal.js?v=4";
 import {
   searchInput,
   profFilter,

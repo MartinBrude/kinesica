@@ -2,7 +2,7 @@ import { api } from "./api.js?v=79";
 import { escapeHtml } from "./dom.js?v=79";
 import { setListControlsEnabled } from "./list-controls.js?v=1";
 import { invalidateDirectoryCache } from "./form-patient.js";
-import { openFullPacienteModal } from "./pacientes-modal.js?v=3";
+import { openFullPacienteModal } from "./pacientes-modal.js?v=4";
 import { deduplicatePatientsInMemory } from "./pacientes-dedupe.js";
 import {
   listEl,

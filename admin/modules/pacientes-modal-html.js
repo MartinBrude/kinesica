@@ -104,6 +104,25 @@ export function buildPacienteModalMarkup({
               </div>
             </div>
           </div>
+          ${isEdit && !isColaborador ? `
+          <div class="paciente-modal-merge-card">
+            <div class="paciente-modal-merge-header">
+              <div class="merge-header-text">
+                <span class="merge-title">🔄 Unificar con otra ficha</span>
+                <span class="merge-subtitle">Fusionar si este paciente tiene fichas duplicadas o dispersas</span>
+              </div>
+              <button type="button" class="btn light small" id="btn-toggle-merge">Abrir</button>
+            </div>
+            <div id="paciente-merge-panel" style="display: none;" class="paciente-merge-body">
+              <div class="merge-search-box">
+                <label for="merge-search-input">Buscar la otra ficha a unificar:</label>
+                <input type="text" id="merge-search-input" placeholder="Nombre, apellido, teléfono o DNI..." autocomplete="off">
+                <div id="merge-results" class="merge-results-dropdown" style="display: none;"></div>
+              </div>
+              <div id="merge-selection-box" style="display: none;" class="merge-selection-box"></div>
+            </div>
+          </div>
+          ` : ''}
           <p id="modal-p-error" style="color:#dc2626; font-size:13px; margin:0;" hidden></p>
         </div>
         <div class="paciente-modal-footer">

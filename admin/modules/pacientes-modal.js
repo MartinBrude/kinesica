@@ -4,8 +4,9 @@
 
 import { getSessionUser } from "./auth.js?v=83";
 import { capitalizePersonName } from "./pacientes-format.js";
-import { buildPacienteModalMarkup } from "./pacientes-modal-html.js";
-import { bindPacienteModalForm } from "./pacientes-modal-submit.js";
+import { buildPacienteModalMarkup } from "./pacientes-modal-html.js?v=4";
+import { bindPacienteModalForm } from "./pacientes-modal-submit.js?v=4";
+import { bindPacienteModalMerge } from "./pacientes-modal-merge.js?v=4";
 
 export function openFullPacienteModal(paciente = null, onReload = null) {
   const isEdit = Boolean(paciente && paciente.id);
@@ -63,6 +64,14 @@ export function openFullPacienteModal(paciente = null, onReload = null) {
       errorEl,
       submitBtn,
       isEdit,
+      paciente,
+      onReload,
+    });
+  }
+
+  if (isEdit && !isColaborador) {
+    bindPacienteModalMerge({
+      backdrop,
       paciente,
       onReload,
     });
