@@ -8,9 +8,16 @@ $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $input = $method === 'POST' ? read_json() : [];
 $action = (string) ($input['action'] ?? '');
 
-if ($method === 'POST' && in_array($action, ['ingest', 'reconcile'], true) && recordatorios_bot_authenticated()) {
+if ($method === 'POST' && in_array($action, ['ingest', 'reconcile', 'check_sent'], true) && recordatorios_bot_authenticated()) {
     if ($action === 'ingest') {
         recordatorios_handle_ingest($input);
+    }
+    if ($action === 'check_sent') {
+        $ids = $input['calendar_event_ids'] ?? [];
+        if (!is_array($ids)) {
+            json_out(400, ['error' => 'calendar_event_ids debe ser un arreglo']);
+        }
+        json_out(200, ['ok' => true, 'sent' => recordatorios_check_sent_map($ids)]);
     }
     json_out(200, ['ok' => true] + recordatorios_reconcile(null, 8));
 }

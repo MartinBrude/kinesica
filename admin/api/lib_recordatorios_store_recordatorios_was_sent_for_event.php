@@ -28,6 +28,29 @@ function recordatorios_was_sent_for_event(string $calendarEventId, ?PDO $pdo = n
     }
 }
 
+/**
+ * @param list<mixed> $calendarEventIds
+ * @return array<string,bool> map calendar_event_id => already sent
+ */
+function recordatorios_check_sent_map(array $calendarEventIds, ?PDO $pdo = null): array
+{
+    $out = [];
+    $pdo = recordatorios_pdo($pdo);
+    $n = 0;
+    foreach ($calendarEventIds as $raw) {
+        if ($n >= 100) {
+            break;
+        }
+        $cal = trim((string) $raw);
+        if ($cal === '' || $cal === '_run') {
+            continue;
+        }
+        $out[$cal] = recordatorios_was_sent_for_event($cal, $pdo);
+        $n++;
+    }
+    return $out;
+}
+
 
 function recordatorios_dir(): string
 {
