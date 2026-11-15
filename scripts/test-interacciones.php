@@ -483,6 +483,7 @@ ok(interacciones_is_turn_confirmation('Confirmo'), 'Confirmo');
 ok(interacciones_is_turn_confirmation('✅ Confirmo'), 'emoji + Confirmo');
 ok(interacciones_is_turn_confirmation('Confirmo 👍'), 'Confirmo + thumb');
 ok(interacciones_is_turn_confirmation('Confirmo, asistiré'), 'título botón Confirmo, asistiré');
+ok(interacciones_is_turn_confirmation('Confirmo que asistiré'), 'Confirmo que asistiré');
 ok(interacciones_is_turn_confirmation('confirmar_turno:evt123'), 'payload confirmar_turno');
 ok(!interacciones_is_turn_confirmation('Hola, confirmo que voy y además quiero mover el turno'), 'texto largo no es solo confirmación');
 $pdo = fresh('confirm-answered');
@@ -497,6 +498,24 @@ eq($cView['items'][0]['answered'], true, 'confirmación marcada respondida');
 eq($cView['items'][0]['category'], 'confirmacion_turno', 'categoría confirmación');
 eq($cView['answered_count'], 1, 'contador answered');
 eq($cView['unanswered_count'], 0, 'no queda pendiente');
+
+// Último mensaje = Confirmo, asistiré aunque haya chat previo el mismo día → no pendiente.
+$pdo = fresh('confirm-last');
+$lBase = (new DateTimeImmutable('2026-11-15 17:00:00', new DateTimeZone('America/Argentina/Buenos_Aires')))->getTimestamp();
+interacciones_store_events([
+    ev('5491161607595', 'patient', 'Hola', $lBase, 'PREV1'),
+    ev('5491161607595', 'clara', 'Menú', $lBase + 1, 'PREV1'),
+    ev('5491161607595', 'patient', 'Confirmo, asistiré', $lBase + 3600, 'CONF2'),
+    ev('5491161607595', 'clara', '¡Gracias por confirmar!', $lBase + 3602, 'CONF2'),
+], $pdo);
+$lView = interacciones_load_view($pdo);
+eq($lView['items'][0]['answered'], true, 'último Confirmo, asistiré no queda pendiente');
+eq($lView['items'][0]['category'], 'confirmacion_turno', 'categoría confirmación aunque hubo Hola antes');
+eq($lView['unanswered_count'], 0, 'cero pendientes con confirmación final');
+$stAns = (int) $pdo->query(
+    "SELECT answered FROM interaccion_estado WHERE conversation_key LIKE '5491161607595_%' LIMIT 1"
+)->fetchColumn();
+eq($stAns, 1, 'estado answered persistido al ingestir confirmación');
 
 section('Resolve nombre: event_id → recordatorio → teléfono');
 require_once $root . '/admin/api/lib_recordatorios_store.php';

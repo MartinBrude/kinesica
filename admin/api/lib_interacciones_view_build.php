@@ -200,6 +200,11 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
             $cat = 'instagram_dm';
             $catLabel = '📸 Instagram Direct';
         }
+        // Confirmación/prueba pisan categoría guardada (evita "Consulta WhatsApp" + Pendiente).
+        if (!$isTurnConfirm && !$isDiagNoise) {
+            $cat = (string) (($st['category'] ?? '') !== '' ? $st['category'] : $cat);
+            $catLabel = (string) (($st['category_label'] ?? '') !== '' ? $st['category_label'] : $catLabel);
+        }
         $item = [
             'id' => $key,
             'channel' => $isIgConv ? 'instagram' : 'whatsapp',
@@ -213,8 +218,8 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
             'answered_at' => interacciones_iso($st['answered_at'] ?? null),
             'archived' => $archived,
             'archived_at' => interacciones_iso($st['archived_at'] ?? null),
-            'category' => (string) (($st['category'] ?? '') !== '' ? $st['category'] : $cat),
-            'category_label' => (string) (($st['category_label'] ?? '') !== '' ? $st['category_label'] : $catLabel),
+            'category' => $cat,
+            'category_label' => $catLabel,
             'summary' => (string) (($st['summary'] ?? '') !== '' ? $st['summary'] : mb_substr($firstPatient, 0, 120, 'UTF-8')),
             'has_attachment' => $hasAttachment,
             'messages' => $messages,

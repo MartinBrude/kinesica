@@ -20,8 +20,8 @@ function interacciones_is_turn_confirmation(string $body): bool
     ]);
     $plain = preg_replace('/[^a-z0-9\s]/u', ' ', $plain) ?? $plain;
     $plain = trim(preg_replace('/\s+/u', ' ', $plain) ?? $plain);
-    // Incluye título del botón Meta: "Confirmo", "Confirmo, asistiré".
-    return (bool) preg_match('/^confirm[oa](?:r)?(?: el turno)?(?:\s+asistire)?$/u', $plain);
+    // Título Meta ("Confirmo", "Confirmo, asistiré") y variantes cortas.
+    return (bool) preg_match('/^confirm[oa](?:r)?(?: el turno)?(?:(?:\s+que)?\s+asistire)?$/u', $plain);
 }
 
 /**
@@ -70,30 +70,52 @@ function interacciones_thread_is_diagnostic_noise(array $messages, string $patie
 }
 
 /**
+ * Hilo de confirmación de recordatorio: el último mensaje del paciente es "Confirmo…".
+ * Así no queda Pendiente aunque haya escrito algo antes el mismo día.
+ *
  * @param list<array{from?:string,text?:string}> $messages
  */
 function interacciones_thread_is_turn_confirmation(array $messages): bool
 {
-    $patientTexts = [];
+    $lastPatient = '';
     foreach ($messages as $m) {
         if (($m['from'] ?? '') !== 'patient') {
             continue;
         }
         $text = trim((string) ($m['text'] ?? ''));
-        if ($text === '') {
-            continue;
-        }
-        $patientTexts[] = $text;
-    }
-    if (!$patientTexts) {
-        return false;
-    }
-    foreach ($patientTexts as $text) {
-        if (!interacciones_is_turn_confirmation($text)) {
-            return false;
+        if ($text !== '') {
+            $lastPatient = $text;
         }
     }
-    return true;
+    return $lastPatient !== '' && interacciones_is_turn_confirmation($lastPatient);
+}
+
+/**
+ * Persiste answered=1 cuando el mensaje entrante es confirmación de turno.
+ * La vista también lo deriva; esto alinea badge/counts_only sin re-clasificar.
+ */
+function interacciones_mark_answered_if_confirmation(PDO $pdo, array $ev): void
+{
+    if (($ev['direction'] ?? '') !== 'patient') {
+        return;
+    }
+    if (!interacciones_is_turn_confirmation((string) ($ev['body'] ?? ''))) {
+        return;
+    }
+    try {
+        require_once __DIR__ . '/lib_relational_interacciones.php';
+        require_once __DIR__ . '/lib_interacciones_state.php';
+        $key = kinesica_rel_interaccion_conversation_key(
+            (string) ($ev['wa_id'] ?? ''),
+            (int) ($ev['ts'] ?? time())
+        );
+        if ($key === '') {
+            return;
+        }
+        interacciones_set_state($pdo, $key, 'toggle_answered', 'auto-confirm', true);
+    } catch (Throwable) {
+        // No bloquear ingest si falla el flag.
+    }
 }
 
 /** @return array{0:string,1:string} [category, label] */

@@ -154,6 +154,11 @@ function interacciones_insert_event(PDO $pdo, array $ev): string
             );
         } catch (Throwable) {
         }
+        try {
+            require_once __DIR__ . '/lib_interacciones_view_classify.php';
+            interacciones_mark_answered_if_confirmation($pdo, $ev);
+        } catch (Throwable) {
+        }
         return 'stored';
     } catch (PDOException $e) {
         if (!interacciones_is_duplicate_error($e)) {
@@ -174,6 +179,11 @@ function interacciones_insert_event(PDO $pdo, array $ev): string
                 'mfile' => $ev['media_filename'] ?? null,
                 'k' => $ev['event_key'],
             ]);
+        }
+        try {
+            require_once __DIR__ . '/lib_interacciones_view_classify.php';
+            interacciones_mark_answered_if_confirmation($pdo, $ev);
+        } catch (Throwable) {
         }
         return 'duplicate';
     }
