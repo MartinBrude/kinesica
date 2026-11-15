@@ -17,12 +17,18 @@ if ($method === 'POST' && in_array($action, ['ingest', 'reconcile', 'check_sent'
         if (!is_array($ids)) {
             json_out(400, ['error' => 'calendar_event_ids debe ser un arreglo']);
         }
-        json_out(200, ['ok' => true, 'sent' => recordatorios_check_sent_map($ids)]);
+        $appt = isset($input['appointment_date']) && is_string($input['appointment_date'])
+            ? trim($input['appointment_date'])
+            : null;
+        json_out(200, ['ok' => true, 'sent' => recordatorios_check_sent_map($ids, $appt)]);
     }
     json_out(200, ['ok' => true] + recordatorios_reconcile(null, 8));
 }
 
 if ($method === 'POST' && $action === 'ingest') {
+    json_out(401, ['error' => 'No autorizado']);
+}
+if ($method === 'POST' && $action === 'check_sent') {
     json_out(401, ['error' => 'No autorizado']);
 }
 

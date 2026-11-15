@@ -465,5 +465,14 @@ eq($map['cal-check-missing'] ?? null, false, 'ausente => false');
 ok(recordatorios_was_sent_for_event('cal-check-a', $pdo), 'was_sent alineado con mapa');
 ok(!recordatorios_was_sent_for_event('cal-check-c', $pdo), 'pending no cuenta como sent');
 
+$tomorrow = date('Y-m-d', strtotime('+1 day'));
+$futureDate = date('Y-m-d', strtotime('+5 days'));
+$mapDateOk = recordatorios_check_sent_map(['cal-check-a'], $tomorrow, $pdo);
+eq($mapDateOk['cal-check-a'] ?? null, true, 'sent con fecha coincidente => true');
+$mapDateRescheduled = recordatorios_check_sent_map(['cal-check-a'], $futureDate, $pdo);
+eq($mapDateRescheduled['cal-check-a'] ?? null, false, 'sent con fecha distinta (reagendado) => false');
+ok(recordatorios_was_sent_for_event('cal-check-a', $tomorrow, $pdo), 'was_sent con fecha coincidente => true');
+ok(!recordatorios_was_sent_for_event('cal-check-a', $futureDate, $pdo), 'was_sent con fecha reagendada => false');
+
 echo $fails === 0 ? "OK recordatorios ($passed assertions)\n" : "FAIL recordatorios ($fails)\n";
 exit($fails === 0 ? 0 : 1);

@@ -99,10 +99,10 @@ function buildPacienteRow(p) {
     : "";
 
   const rawTel = p.telefono || "";
-  const isPlaceholderTel = String(rawTel).startsWith("sin-tel-") || String(rawTel).startsWith("sin-telefono-") || String(rawTel).startsWith("ficha-");
-  const cleanDigits = isPlaceholderTel ? "" : String(rawTel).replace(/\D/g, "");
+  const isSinTel = patientMissingPhone(p);
+  const cleanDigits = isSinTel ? "" : String(rawTel).replace(/\D/g, "");
   const waLink = cleanDigits ? `https://wa.me/${cleanDigits}` : "#";
-  const displayTel = isPlaceholderTel ? "" : formatDisplayPhone(rawTel);
+  const displayTel = isSinTel ? "" : formatDisplayPhone(rawTel);
 
   const hasReview = patientHasReview(p);
   const encuestaEnviada = patientEncuestaEnviada(p);

@@ -59,11 +59,17 @@ function recordatorios_sync_paciente_from_event(array $ev, PDO $pdo): void
         : 'indistinto';
 
     $cal = trim((string) ($ev['calendar_event_id'] ?? ''));
+    $nameSeed = function_exists('canonical_patient_name_key')
+        ? canonical_patient_name_key($rawName)
+        : mb_strtolower($rawName, 'UTF-8');
+    if ($nameSeed === '') {
+        $nameSeed = $cal !== '' && $cal !== '_run' ? $cal : 'desconocido';
+    }
     $tel = $hasRealPhone
         ? $rawPhone
         : ($rawDni !== ''
             ? 'sin-tel-dni-' . substr($rawDni, 0, 18)
-            : 'sin-tel-cal-' . substr(md5($cal !== '' && $cal !== '_run' ? $cal : mb_strtolower($rawName, 'UTF-8')), 0, 18));
+            : 'sin-tel-cal-' . substr(md5($nameSeed), 0, 18));
 
     if ($existing) {
         $existingId = (int) $existing['id'];

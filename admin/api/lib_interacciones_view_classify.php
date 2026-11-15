@@ -20,8 +20,11 @@ function interacciones_is_turn_confirmation(string $body): bool
     ]);
     $plain = preg_replace('/[^a-z0-9\s]/u', ' ', $plain) ?? $plain;
     $plain = trim(preg_replace('/\s+/u', ' ', $plain) ?? $plain);
-    // Título Meta ("Confirmo", "Confirmo, asistiré") y variantes cortas.
-    return (bool) preg_match('/^confirm[oa](?:r)?(?: el turno)?(?:(?:\s+que)?\s+asistire)?$/u', $plain);
+    // Título Meta ("Confirmo", "Confirmo, asistiré") y variantes manuales ("Confirmado", "Sí confirmo", "Confirmo asistencia").
+    return (bool) preg_match(
+        '/^(?:(?:si|sip|sisi)\s+)?(?:turno\s+)?confirm(?:[oa](?:r)?|ad[oa])(?:(?: el| mi)? turno)?(?:(?:\s+que)?\s+asistire|\s+asistencia)?(?:\s+(?:muchas\s+)?gracias)?$/u',
+        $plain
+    );
 }
 
 /**

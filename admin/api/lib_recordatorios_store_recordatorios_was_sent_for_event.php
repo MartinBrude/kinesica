@@ -5,9 +5,20 @@ declare(strict_types=1);
 /**
  * True si este calendar_event_id ya tuvo un envío exitoso (WA o email).
  * Usado por catch-up same-day para garantizar 1 solo recordatorio por turno.
+ * Opcionalmente acotado por appointment_date para no suprimir turnos reprogramados.
+ *
+ * @param string $calendarEventId
+ * @param string|PDO|null $appointmentDateOrPdo Fecha YYYY-MM-DD o instancia PDO (retrocompatibilidad)
+ * @param PDO|null $pdo
  */
-function recordatorios_was_sent_for_event(string $calendarEventId, ?PDO $pdo = null): bool
+function recordatorios_was_sent_for_event(string $calendarEventId, $appointmentDateOrPdo = null, ?PDO $pdo = null): bool
 {
+    $apptDate = null;
+    if ($appointmentDateOrPdo instanceof PDO) {
+        $pdo = $appointmentDateOrPdo;
+    } elseif (is_string($appointmentDateOrPdo)) {
+        $apptDate = trim($appointmentDateOrPdo);
+    }
     $cal = trim($calendarEventId);
     if ($cal === '' || $cal === '_run' || str_starts_with($cal, 'test:')) {
         return false;
@@ -15,13 +26,24 @@ function recordatorios_was_sent_for_event(string $calendarEventId, ?PDO $pdo = n
     try {
         $pdo = recordatorios_pdo($pdo);
         recordatorios_ensure_schema($pdo);
-        $stmt = $pdo->prepare(
-            'SELECT 1 FROM recordatorio_eventos
-             WHERE calendar_event_id = :cal
-               AND status IN (\'sent\', \'sent_email\')
-             LIMIT 1'
-        );
-        $stmt->execute(['cal' => substr($cal, 0, 128)]);
+        if ($apptDate !== null && preg_match('/^\d{4}-\d{2}-\d{2}$/', $apptDate)) {
+            $stmt = $pdo->prepare(
+                'SELECT 1 FROM recordatorio_eventos
+                 WHERE calendar_event_id = :cal
+                   AND (appointment_date = :appt OR appointment_date IS NULL OR appointment_date = "")
+                   AND status IN (\'sent\', \'sent_email\')
+                 LIMIT 1'
+            );
+            $stmt->execute(['cal' => substr($cal, 0, 128), 'appt' => $apptDate]);
+        } else {
+            $stmt = $pdo->prepare(
+                'SELECT 1 FROM recordatorio_eventos
+                 WHERE calendar_event_id = :cal
+                   AND status IN (\'sent\', \'sent_email\')
+                 LIMIT 1'
+            );
+            $stmt->execute(['cal' => substr($cal, 0, 128)]);
+        }
         return (bool) $stmt->fetchColumn();
     } catch (Throwable) {
         return false;
@@ -30,12 +52,21 @@ function recordatorios_was_sent_for_event(string $calendarEventId, ?PDO $pdo = n
 
 /**
  * Consulta batch (una query) para que n8n Parse Patients filtre ya enviados.
+ * Opcionalmente acotada por appointment_date para admitir turnos reagendados.
  *
  * @param list<mixed> $calendarEventIds
+ * @param string|PDO|null $appointmentDateOrPdo Fecha YYYY-MM-DD o instancia PDO
+ * @param PDO|null $pdo
  * @return array<string,bool> map calendar_event_id => already sent
  */
-function recordatorios_check_sent_map(array $calendarEventIds, ?PDO $pdo = null): array
+function recordatorios_check_sent_map(array $calendarEventIds, $appointmentDateOrPdo = null, ?PDO $pdo = null): array
 {
+    $apptDate = null;
+    if ($appointmentDateOrPdo instanceof PDO) {
+        $pdo = $appointmentDateOrPdo;
+    } elseif (is_string($appointmentDateOrPdo)) {
+        $apptDate = trim($appointmentDateOrPdo);
+    }
     $out = [];
     $ids = [];
     foreach ($calendarEventIds as $raw) {
@@ -60,12 +91,20 @@ function recordatorios_check_sent_map(array $calendarEventIds, ?PDO $pdo = null)
         $pdo = recordatorios_pdo($pdo);
         recordatorios_ensure_schema($pdo);
         $placeholders = implode(',', array_fill(0, count($ids), '?'));
-        $stmt = $pdo->prepare(
-            "SELECT DISTINCT calendar_event_id FROM recordatorio_eventos
-             WHERE calendar_event_id IN ($placeholders)
-               AND status IN ('sent', 'sent_email')"
-        );
-        $stmt->execute($ids);
+        if ($apptDate !== null && preg_match('/^\d{4}-\d{2}-\d{2}$/', $apptDate)) {
+            $sql = "SELECT DISTINCT calendar_event_id FROM recordatorio_eventos
+                    WHERE calendar_event_id IN ($placeholders)
+                      AND (appointment_date = ? OR appointment_date IS NULL OR appointment_date = '')
+                      AND status IN ('sent', 'sent_email')";
+            $params = array_merge($ids, [$apptDate]);
+        } else {
+            $sql = "SELECT DISTINCT calendar_event_id FROM recordatorio_eventos
+                    WHERE calendar_event_id IN ($placeholders)
+                      AND status IN ('sent', 'sent_email')";
+            $params = $ids;
+        }
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
         while (($row = $stmt->fetchColumn()) !== false) {
             $out[(string) $row] = true;
         }
@@ -142,9 +181,25 @@ function recordatorios_ensure_schema(?PDO $pdo = null): void
             UNIQUE KEY uq_event_key (event_key),
             KEY idx_run_at (run_at),
             KEY idx_status (status),
-            KEY idx_appt_date (appointment_date)
+            KEY idx_appt_date (appointment_date),
+            KEY idx_cal_event (calendar_event_id),
+            KEY idx_cal_appt (calendar_event_id, appointment_date)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
     );
+    // Asegurar índices de búsqueda de calendar_event_id en tablas existentes
+    try {
+        $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+        if ($driver === 'mysql') {
+            $hasIdx = (bool) $pdo->query("SHOW INDEX FROM recordatorio_eventos WHERE Key_name = 'idx_cal_event'")->fetch();
+            if (!$hasIdx) {
+                $pdo->exec("ALTER TABLE recordatorio_eventos ADD INDEX idx_cal_event (calendar_event_id), ADD INDEX idx_cal_appt (calendar_event_id, appointment_date)");
+            }
+        } elseif ($driver === 'sqlite') {
+            $pdo->exec("CREATE INDEX IF NOT EXISTS idx_rec_cal_event ON recordatorio_eventos (calendar_event_id)");
+            $pdo->exec("CREATE INDEX IF NOT EXISTS idx_rec_cal_appt ON recordatorio_eventos (calendar_event_id, appointment_date)");
+        }
+    } catch (Throwable) {
+    }
     // REL: puente paciente_id/turno_id (mig 002). Retirar tras etapa 10.
     try {
         require_once __DIR__ . '/lib_migrations.php';

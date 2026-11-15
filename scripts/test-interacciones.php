@@ -93,6 +93,13 @@ ok(interacciones_is_turn_confirmation('✅ Confirmo'), 'emoji + Confirmo');
 ok(interacciones_is_turn_confirmation('Confirmo 👍'), 'Confirmo + thumb');
 ok(interacciones_is_turn_confirmation('Confirmo, asistiré'), 'título botón Confirmo, asistiré');
 ok(interacciones_is_turn_confirmation('Confirmo que asistiré'), 'Confirmo que asistiré');
+ok(interacciones_is_turn_confirmation('Confirmado'), 'Confirmado');
+ok(interacciones_is_turn_confirmation('Confirmada'), 'Confirmada');
+ok(interacciones_is_turn_confirmation('Sí, confirmo'), 'Sí, confirmo');
+ok(interacciones_is_turn_confirmation('Si confirmo'), 'Si confirmo');
+ok(interacciones_is_turn_confirmation('Confirmo asistencia'), 'Confirmo asistencia');
+ok(interacciones_is_turn_confirmation('Confirmo mi turno'), 'Confirmo mi turno');
+ok(interacciones_is_turn_confirmation('Confirmo, muchas gracias!'), 'Confirmo con agradecimiento');
 ok(interacciones_is_turn_confirmation('confirmar_turno:evt123'), 'payload confirmar_turno');
 ok(!interacciones_is_turn_confirmation('Hola, confirmo que voy y además quiero mover el turno'), 'texto largo no es solo confirmación');
 ok(
