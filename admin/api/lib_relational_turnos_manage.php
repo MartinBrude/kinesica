@@ -81,9 +81,10 @@ function kinesica_hash_manage_code(string $code): string
 
 /**
  * Adjunta email/apellido/código a un turno (por calendar_event_id).
+ * Un solo código por evento: si ya hay hash, no regenera (idempotente).
  * Crea fila sombra mínima si aún no existe.
  *
- * @return array{ok:bool,turno_id:?int,code:?string,reason?:string}
+ * @return array{ok:bool,turno_id:?int,code:?string,reused?:bool,reason?:string}
  */
 function kinesica_rel_attach_manage_code(
     PDO $pdo,
@@ -102,11 +103,6 @@ function kinesica_rel_attach_manage_code(
         return ['ok' => false, 'turno_id' => null, 'code' => null, 'reason' => 'missing_fields'];
     }
 
-    $code = $plainCode !== null && trim($plainCode) !== ''
-        ? strtoupper(trim($plainCode))
-        : kinesica_generate_manage_code();
-    $hash = kinesica_hash_manage_code($code);
-
     $tid = kinesica_rel_upsert_turno_by_calendar_event($pdo, [
         'calendar_event_id' => $calId,
         'patient_name_snapshot' => $fullName,
@@ -118,23 +114,78 @@ function kinesica_rel_attach_manage_code(
         return ['ok' => false, 'turno_id' => null, 'code' => null, 'reason' => 'upsert_failed'];
     }
 
-    $stmt = $pdo->prepare(
-        'UPDATE turnos SET
-            manage_email = :email,
-            manage_apellido_norm = :ape,
-            manage_code_hash = :hash,
-            manage_code_created_at = CURRENT_TIMESTAMP,
-            updated_at = CURRENT_TIMESTAMP
-         WHERE id = :id'
-    );
-    $stmt->execute([
-        'email' => mb_substr($emailNorm, 0, 120, 'UTF-8'),
-        'ape' => mb_substr($apeNorm, 0, 80, 'UTF-8'),
-        'hash' => $hash,
-        'id' => $tid,
-    ]);
+    $hasPlainCol = kinesica_migrations_column_exists($pdo, 'turnos', 'manage_code');
+    $selCols = 'manage_code_hash' . ($hasPlainCol ? ', manage_code' : '');
+    $existing = $pdo->prepare("SELECT {$selCols} FROM turnos WHERE id = :id LIMIT 1");
+    $existing->execute(['id' => $tid]);
+    $row = $existing->fetch(PDO::FETCH_ASSOC) ?: [];
+    $existingHash = trim((string) ($row['manage_code_hash'] ?? ''));
+    $existingPlain = $hasPlainCol ? strtoupper(trim((string) ($row['manage_code'] ?? ''))) : '';
 
-    return ['ok' => true, 'turno_id' => $tid, 'code' => $code];
+    // Ya tiene código: no regenerar. Devolver el plaintext si está guardado.
+    if ($existingHash !== '' && ($plainCode === null || trim((string) $plainCode) === '')) {
+        $updMeta = $pdo->prepare(
+            'UPDATE turnos SET
+                manage_email = :email,
+                manage_apellido_norm = :ape,
+                updated_at = CURRENT_TIMESTAMP
+             WHERE id = :id'
+        );
+        $updMeta->execute([
+            'email' => mb_substr($emailNorm, 0, 120, 'UTF-8'),
+            'ape' => mb_substr($apeNorm, 0, 80, 'UTF-8'),
+            'id' => $tid,
+        ]);
+        return [
+            'ok' => true,
+            'turno_id' => $tid,
+            'code' => $existingPlain !== '' ? $existingPlain : null,
+            'reused' => true,
+        ];
+    }
+
+    $code = $plainCode !== null && trim($plainCode) !== ''
+        ? strtoupper(trim($plainCode))
+        : kinesica_generate_manage_code();
+    $hash = kinesica_hash_manage_code($code);
+
+    if ($hasPlainCol) {
+        $stmt = $pdo->prepare(
+            'UPDATE turnos SET
+                manage_email = :email,
+                manage_apellido_norm = :ape,
+                manage_code_hash = :hash,
+                manage_code = :code,
+                manage_code_created_at = CURRENT_TIMESTAMP,
+                updated_at = CURRENT_TIMESTAMP
+             WHERE id = :id'
+        );
+        $stmt->execute([
+            'email' => mb_substr($emailNorm, 0, 120, 'UTF-8'),
+            'ape' => mb_substr($apeNorm, 0, 80, 'UTF-8'),
+            'hash' => $hash,
+            'code' => $code,
+            'id' => $tid,
+        ]);
+    } else {
+        $stmt = $pdo->prepare(
+            'UPDATE turnos SET
+                manage_email = :email,
+                manage_apellido_norm = :ape,
+                manage_code_hash = :hash,
+                manage_code_created_at = CURRENT_TIMESTAMP,
+                updated_at = CURRENT_TIMESTAMP
+             WHERE id = :id'
+        );
+        $stmt->execute([
+            'email' => mb_substr($emailNorm, 0, 120, 'UTF-8'),
+            'ape' => mb_substr($apeNorm, 0, 80, 'UTF-8'),
+            'hash' => $hash,
+            'id' => $tid,
+        ]);
+    }
+
+    return ['ok' => true, 'turno_id' => $tid, 'code' => $code, 'reused' => false];
 }
 
 /**

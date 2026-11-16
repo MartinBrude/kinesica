@@ -2415,9 +2415,9 @@
             <a href="${result.manageUrl || "/mi-turno.html"}" style="color: var(--kin-blue, #005f99); font-weight: 600;">${this.t("manageLink")}</a>.
           </div>
         </div>` : ""}
-        <div style="margin-top: 6px; font-size: 12px; color: var(--kin-text-muted);">
+        ${this.options.adminMode ? `<div style="margin-top: 6px; font-size: 12px; color: var(--kin-text-muted);">
           ${this.t("eventId")} <code>${result.eventId || "OK"}</code>
-        </div>
+        </div>` : ""}
       `;
 
       // Reglas del consultorio sólo si es presencial

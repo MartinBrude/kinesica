@@ -228,6 +228,9 @@ try {
 }
 $attach = kinesica_rel_attach_manage_code($pdo, 'manage-evt-1', 'juan@ejemplo.com', 'Juan Pérez', 'AB3K7MP');
 assert_true(!empty($attach['ok']) && ($attach['code'] ?? '') === 'AB3K7MP', 'attach manage code');
+$attach2 = kinesica_rel_attach_manage_code($pdo, 'manage-evt-1', 'juan@ejemplo.com', 'Juan Pérez');
+assert_true(!empty($attach2['ok']) && !empty($attach2['reused']), 'attach idempotent reused');
+assert_true(($attach2['code'] ?? '') === 'AB3K7MP', 'attach idempotent same code');
 $lookup = kinesica_rel_lookup_turno_by_manage($pdo, 'juan@ejemplo.com', 'Pérez', 'AB3K7MP');
 assert_true(!empty($lookup['ok']), 'lookup manage code');
 $lookupBad = kinesica_rel_lookup_turno_by_manage($pdo, 'juan@ejemplo.com', 'García', 'AB3K7MP');

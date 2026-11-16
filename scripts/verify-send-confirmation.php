@@ -51,6 +51,20 @@ $built = kinesica_build_confirmation_mail([
 ]);
 check(str_contains($built['subject'], 'Confirmación de turno') && str_contains($built['html'], 'Turno confirmado'), 'builder confirmación');
 check(str_contains($built['html'], 'Notas admin') && str_contains($built['html'], '<strong>24 hs</strong>'), 'builder usa textos del admin');
+$builtCode = kinesica_build_confirmation_mail([
+    'paciente' => 'Ana Test',
+    'fecha' => '2026-10-26',
+    'hora' => '10:00',
+    'profesional' => 'Lic. María Gulin',
+    'manageCode' => 'AB3K7MP',
+    'manageUrl' => 'https://www.kinesica.com.ar/mi-turno.html',
+    'settings' => [],
+]);
+$codeHits = substr_count($builtCode['html'], 'AB3K7MP');
+$labelHits = substr_count($builtCode['html'], 'Código de gestión');
+check($codeHits === 1, 'mail: un solo código de gestión en el HTML');
+check($labelHits === 1, 'mail: una sola etiqueta Código de gestión');
+check(!str_contains($builtCode['html'], 'eventId') && !str_contains($builtCode['html'], 'Identificador de cita'), 'mail: sin eventId');
 $builtCancel = kinesica_build_confirmation_mail([
     'paciente' => 'Ana Test',
     'fecha' => '2026-10-26',

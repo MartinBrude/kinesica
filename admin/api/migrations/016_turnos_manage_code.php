@@ -24,6 +24,10 @@ return [
             'manage_code_hash' => $sqlite
                 ? 'ALTER TABLE turnos ADD COLUMN manage_code_hash TEXT NULL'
                 : 'ALTER TABLE turnos ADD COLUMN manage_code_hash VARCHAR(64) NULL',
+            // Plaintext del código (7 chars) para re-mostrar el mismo valor en mail/UI sin regenerar.
+            'manage_code' => $sqlite
+                ? 'ALTER TABLE turnos ADD COLUMN manage_code TEXT NULL'
+                : 'ALTER TABLE turnos ADD COLUMN manage_code VARCHAR(12) NULL',
             'manage_code_created_at' => $sqlite
                 ? 'ALTER TABLE turnos ADD COLUMN manage_code_created_at TEXT NULL'
                 : 'ALTER TABLE turnos ADD COLUMN manage_code_created_at DATETIME NULL',
