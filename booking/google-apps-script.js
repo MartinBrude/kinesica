@@ -48,7 +48,7 @@ const ADMIN_HOURS_CACHE_KEY = "admin_practitioner_hours_v1";
 const ADMIN_HOURS_CACHE_SECONDS = 120;
 // Última copia buena de los horarios del admin (persistente): se usa si settings.php no responde.
 const ADMIN_HOURS_LAST_GOOD_PROP = "ADMIN_HOURS_LAST_GOOD";
-const GAS_CODE_VERSION = "v26-admin-secret-dni";
+const GAS_CODE_VERSION = "v27-web-cancel-get";
 const BOOKING_IDEMPOTENCY_PREFIX = "booking_result_v1_";
 
 function isValidHoursObject(h) {
@@ -326,6 +326,10 @@ function doGet(e) {
       });
     } else if (action === "book") {
       return handleBookAppointment(params);
+    } else if (action === "cancel") {
+      // GET: mismo patrón que book (POST a /exec a veces responde 405 en el deploy público).
+      if (!isAuthorizedSecret(params)) return unauthorizedResponse();
+      return handleCancelAppointment(params);
     } else if (action === "check_patient") {
       if (!isAuthorizedSecret(params)) return unauthorizedResponse();
       return handleCheckPatient(params);

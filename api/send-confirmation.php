@@ -248,10 +248,15 @@ if (!$esCancelacion && $eventId !== '') {
                 $endsAt = date('Y-m-d H:i:s', $endTs);
             }
         }
-        $attach = kinesica_rel_attach_manage_code(db(), $eventId, $email, $paciente, null, [
+        $attachExtra = [
             'starts_at' => $startsAt,
             'ends_at' => $endsAt,
-        ]);
+            'practitionerId' => $practitionerIdRaw,
+        ];
+        if ($practitionerIdRaw !== '') {
+            $attachExtra['summary'] = '🩺 [' . strtoupper($practitionerIdRaw) . '] ' . $paciente;
+        }
+        $attach = kinesica_rel_attach_manage_code(db(), $eventId, $email, $paciente, null, $attachExtra);
         if (!empty($attach['ok']) && !empty($attach['code'])) {
             $manageCode = (string) $attach['code'];
         } elseif (!empty($attach['reason'])) {

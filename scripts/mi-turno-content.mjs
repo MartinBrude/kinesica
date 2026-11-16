@@ -37,6 +37,9 @@ export const MI_TURNO = {
     whatsappClaraMsg:
       "Hola Clara, necesito anular un turno con menos de 24 hs de anticipación.",
     whatsappClaraDigits: "5491131781733",
+    whatsappProf: "Avisar a {name} por WhatsApp",
+    whatsappProfMsg:
+      "Hola {name}, no pude consultar/anular mi turno en la web con el código de gestión. ¿Me ayudás?",
     whatsappNorberto: "Avisar a Norberto por WhatsApp",
     whatsappNorbertoMsg:
       "Hola Norberto, no pude consultar/anular mi turno en la web con el código de gestión. ¿Me ayudás?",
@@ -80,6 +83,9 @@ export const MI_TURNO = {
     whatsappClaraMsg:
       "Hi Clara, I need to cancel an appointment with less than 24 hours’ notice.",
     whatsappClaraDigits: "5491131781733",
+    whatsappProf: "Message {name} on WhatsApp",
+    whatsappProfMsg:
+      "Hi {name}, I couldn’t look up or cancel my appointment on the website with the management code. Can you help?",
     whatsappNorberto: "Message Norberto on WhatsApp",
     whatsappNorbertoMsg:
       "Hi Norberto, I couldn’t look up or cancel my appointment on the website with the management code. Can you help?",
@@ -123,6 +129,9 @@ export const MI_TURNO = {
     whatsappClaraMsg:
       "Bonjour Clara, j’ai besoin d’annuler un rendez-vous à moins de 24 h.",
     whatsappClaraDigits: "5491131781733",
+    whatsappProf: "Prévenir {name} sur WhatsApp",
+    whatsappProfMsg:
+      "Bonjour {name}, je n’ai pas pu consulter/annuler mon rendez-vous sur le site avec le code de gestion. Pouvez-vous m’aider ?",
     whatsappNorberto: "Prévenir Norberto sur WhatsApp",
     whatsappNorbertoMsg:
       "Bonjour Norberto, je n’ai pas pu consulter/annuler mon rendez-vous sur le site avec le code de gestion. Pouvez-vous m’aider ?",
@@ -166,6 +175,9 @@ export const MI_TURNO = {
     whatsappClaraMsg:
       "Olá Clara, preciso cancelar um horário com menos de 24 h de antecedência.",
     whatsappClaraDigits: "5491131781733",
+    whatsappProf: "Avisar {name} no WhatsApp",
+    whatsappProfMsg:
+      "Olá {name}, não consegui consultar/cancelar meu horário no site com o código de gestão. Pode me ajudar?",
     whatsappNorberto: "Avisar Norberto no WhatsApp",
     whatsappNorbertoMsg:
       "Olá Norberto, não consegui consultar/cancelar meu horário no site com o código de gestão. Pode me ajudar?",

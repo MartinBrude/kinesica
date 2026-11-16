@@ -117,6 +117,20 @@ function kinesica_rel_attach_manage_code(
     if (!empty($extra['ends_at'])) {
         $upsert['ends_at'] = $extra['ends_at'];
     }
+    if (!empty($extra['profesional_id'])) {
+        $upsert['profesional_id'] = (int) $extra['profesional_id'];
+    } elseif (!empty($extra['practitioner_id']) || !empty($extra['practitionerId'])) {
+        $slug = strtolower(trim((string) ($extra['practitioner_id'] ?? $extra['practitionerId'] ?? '')));
+        if ($slug !== '' && function_exists('kinesica_rel_fetch_profesional_by_slug')) {
+            $prof = kinesica_rel_fetch_profesional_by_slug($pdo, $slug);
+            if ($prof && !empty($prof['id'])) {
+                $upsert['profesional_id'] = (int) $prof['id'];
+            }
+        }
+    }
+    if (!empty($extra['summary'])) {
+        $upsert['summary'] = (string) $extra['summary'];
+    }
     $tid = kinesica_rel_upsert_turno_by_calendar_event($pdo, $upsert);
     if ($tid === null) {
         return ['ok' => false, 'turno_id' => null, 'code' => null, 'reason' => 'upsert_failed'];

@@ -13,6 +13,7 @@ declare(strict_types=1);
  */
 
 require_once __DIR__ . '/lib_migrations.php';
+require_once __DIR__ . '/lib_relational_profesionales.php';
 
 /** @var list<string> */
 const KINESICA_REL_TURNO_STATUSES = ['scheduled', 'cancelled', 'completed', 'unknown'];

@@ -26,9 +26,34 @@
     (copy.whatsappNorbertoDigits || "5491161564311").replace(/\D/g, "");
   var CLARA_WA =
     (copy.whatsappClaraDigits || "5491131781733").replace(/\D/g, "");
+  var PROF_WA = {
+    norberto: { id: "norberto", name: "Norberto", digits: "5491161564311" },
+    maria: { id: "maria", name: "María", digits: "5491128531224" },
+  };
+  var lastPractitioner = null;
 
   function t(key) {
     return copy[key] != null ? copy[key] : key;
+  }
+
+  function tName(key, name) {
+    return String(t(key)).replace(/\{name\}/g, name || "Norberto");
+  }
+
+  function resolvePractitioner(raw) {
+    if (!raw || typeof raw !== "object") return null;
+    var id = String(raw.id || "").toLowerCase();
+    var fallback = PROF_WA[id] || PROF_WA.norberto;
+    var digits = String(raw.whatsappDigits || fallback.digits || "").replace(
+      /\D/g,
+      "",
+    );
+    if (!digits) digits = fallback.digits;
+    return {
+      id: fallback.id,
+      name: String(raw.name || fallback.name || "Norberto"),
+      digits: digits,
+    };
   }
 
   function isValidCode(code) {
@@ -67,10 +92,11 @@
     return waHref(CLARA_WA, appendCreds(t("whatsappClaraMsg")));
   }
 
-  function norbertoWaHref(context) {
-    var msg = appendCreds(t("whatsappNorbertoMsg"));
+  function practitionerWaHref(context, practitioner) {
+    var p = practitioner || lastPractitioner || PROF_WA.norberto;
+    var msg = appendCreds(tName("whatsappProfMsg", p.name));
     if (context) msg += "\n(" + context + ")";
-    return waHref(NORBERTO_WA, msg);
+    return waHref(p.digits || NORBERTO_WA, msg);
   }
 
   function setStatus(msg, kind, opts) {
@@ -90,12 +116,13 @@
         '" target="_blank" rel="noopener">' +
         escapeHtml(t("whatsapp")) +
         "</a>";
-    } else if (opts.showNorbertoWa) {
+    } else if (opts.showProfWa) {
+      var p = opts.practitioner || lastPractitioner || PROF_WA.norberto;
       html +=
         '<a class="mi-turno-btn mi-turno-btn-wa" href="' +
-        escapeHtml(norbertoWaHref(opts.waContext || "")) +
+        escapeHtml(practitionerWaHref(opts.waContext || "", p)) +
         '" target="_blank" rel="noopener">' +
-        escapeHtml(t("whatsappNorberto")) +
+        escapeHtml(tName("whatsappProf", p.name)) +
         "</a>";
     }
     statusEl.innerHTML = html;
@@ -125,6 +152,9 @@
     opts = opts || {};
     if (!resultEl) return;
     resultEl.hidden = false;
+    if (turno && turno.profesional) {
+      lastPractitioner = resolvePractitioner(turno.profesional);
+    }
     var canCancel = turno && turno.can_cancel && !opts.cancelled;
     var html =
       '<div class="mi-turno-card">' +
@@ -181,10 +211,14 @@
       .replace(/"/g, "&quot;");
   }
 
-  function showFailure(msg, waContext) {
+  function showFailure(msg, waContext, practitioner) {
     var valid = lastCreds && isValidCode(lastCreds.codigo);
+    if (practitioner) {
+      lastPractitioner = resolvePractitioner(practitioner);
+    }
     setStatus(msg, "error", {
-      showNorbertoWa: valid,
+      showProfWa: valid,
+      practitioner: lastPractitioner,
       waContext: waContext || "",
     });
   }
@@ -308,6 +342,8 @@
         showFailure(
           (res.data && res.data.error) || t("genericError"),
           "cancel_failed",
+          (res.data && (res.data.profesional || (res.data.turno && res.data.turno.profesional))) ||
+            null,
         );
         if (btn) {
           btn.disabled = false;

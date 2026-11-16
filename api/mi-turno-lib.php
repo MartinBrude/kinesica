@@ -64,8 +64,11 @@ function kinesica_mi_turno_rate_ok(string $key, int $max, int $windowSec): bool
     }
 }
 
-/** @param array<string,mixed> $turno */
-function kinesica_mi_turno_public_view(array $turno): array
+/**
+ * @param array<string,mixed> $turno
+ * @param array{id?:string,name?:string,whatsappDigits?:string,waMe?:string}|null $practitioner
+ */
+function kinesica_mi_turno_public_view(array $turno, ?array $practitioner = null): array
 {
     $starts = (string) ($turno['starts_at'] ?? '');
     $date = '';
@@ -75,7 +78,7 @@ function kinesica_mi_turno_public_view(array $turno): array
         $time = $m[2];
     }
     $policy = kinesica_rel_manage_cancel_allowed($turno);
-    return [
+    $out = [
         'paciente' => (string) (($turno['patient_name_snapshot'] ?? '') ?: ($turno['summary'] ?? '')),
         'fecha' => $date,
         'hora' => $time,
@@ -83,6 +86,95 @@ function kinesica_mi_turno_public_view(array $turno): array
         'status' => (string) ($turno['status'] ?? ''),
         'can_cancel' => !empty($policy['allowed']),
         'cancel_blocked_reason' => $policy['allowed'] ? null : ($policy['reason'] ?? 'policy'),
+    ];
+    if (is_array($practitioner) && !empty($practitioner['id'])) {
+        $out['profesional'] = [
+            'id' => (string) $practitioner['id'],
+            'name' => (string) ($practitioner['name'] ?? ''),
+            'whatsappDigits' => (string) ($practitioner['whatsappDigits'] ?? ''),
+            'whatsapp' => (string) ($practitioner['waMe'] ?? ''),
+        ];
+    }
+    return $out;
+}
+
+/**
+ * Contacto WhatsApp del profesional del turno (fallback: Norberto).
+ *
+ * @param array<string,mixed> $turno
+ * @return array{id:string,name:string,whatsappDigits:string,waMe:string}
+ */
+function kinesica_mi_turno_practitioner_contact(PDO $pdo, array $turno): array
+{
+    $catalog = [
+        'norberto' => ['id' => 'norberto', 'name' => 'Norberto', 'whatsapp' => '5491161564311'],
+        'maria' => ['id' => 'maria', 'name' => 'María', 'whatsapp' => '5491128531224'],
+    ];
+
+    $slug = '';
+    $profId = isset($turno['profesional_id']) ? (int) $turno['profesional_id'] : 0;
+    if ($profId > 0 && function_exists('kinesica_rel_profesionales_ready') && kinesica_rel_profesionales_ready($pdo)) {
+        try {
+            $st = $pdo->prepare('SELECT slug, display_name, phone FROM profesionales WHERE id = :id LIMIT 1');
+            $st->execute(['id' => $profId]);
+            $row = $st->fetch(PDO::FETCH_ASSOC) ?: [];
+            $slug = strtolower(trim((string) ($row['slug'] ?? '')));
+            if ($slug !== '' && isset($catalog[$slug])) {
+                $phone = preg_replace('/\D+/', '', (string) ($row['phone'] ?? '')) ?: $catalog[$slug]['whatsapp'];
+                $name = trim((string) ($row['display_name'] ?? '')) ?: $catalog[$slug]['name'];
+                if ($phone !== '' && !str_starts_with($phone, '54')) {
+                    $phone = '54' . $phone;
+                }
+                return [
+                    'id' => $slug,
+                    'name' => $name,
+                    'whatsappDigits' => $phone,
+                    'waMe' => 'https://wa.me/' . $phone,
+                ];
+            }
+        } catch (Throwable) {
+            // continue fallbacks
+        }
+    }
+
+    $hay = strtoupper(
+        (string) (($turno['summary'] ?? '') . ' ' . ($turno['patient_name_snapshot'] ?? ''))
+    );
+    if (str_contains($hay, '[MARIA]') || str_contains($hay, '[MARÍA]')) {
+        $slug = 'maria';
+    } elseif (str_contains($hay, '[NORBERTO]')) {
+        $slug = 'norberto';
+    }
+
+    if ($slug === '' || !isset($catalog[$slug])) {
+        $slug = 'norberto';
+    }
+
+    // Override phones from admin settings if present.
+    try {
+        $settingsFile = dirname(__DIR__) . '/admin/api/settings.json';
+        if (is_file($settingsFile)) {
+            $rawSettings = json_decode((string) file_get_contents($settingsFile), true);
+            $phones = is_array($rawSettings['practitioner_phones'] ?? null)
+                ? $rawSettings['practitioner_phones']
+                : [];
+            $override = preg_replace('/\D+/', '', (string) ($phones[$slug] ?? ''));
+            if ($override !== '') {
+                if (!str_starts_with($override, '54')) {
+                    $override = '54' . $override;
+                }
+                $catalog[$slug]['whatsapp'] = $override;
+            }
+        }
+    } catch (Throwable) {
+    }
+
+    $p = $catalog[$slug];
+    return [
+        'id' => $p['id'],
+        'name' => $p['name'],
+        'whatsappDigits' => $p['whatsapp'],
+        'waMe' => 'https://wa.me/' . $p['whatsapp'],
     ];
 }
 
@@ -111,7 +203,7 @@ function kinesica_mi_turno_cancel_calendar(string $calendarEventId, array $meta 
     $gasOk = false;
     $gasErr = '';
     if ($gasUrl !== '' && $gasUrl !== 'none' && $secret !== '' && function_exists('curl_init')) {
-        $payload = [
+        $query = http_build_query([
             'action' => 'cancel',
             'secret' => $secret,
             'eventId' => $calendarEventId,
@@ -119,21 +211,22 @@ function kinesica_mi_turno_cancel_calendar(string $calendarEventId, array $meta 
             'paciente' => (string) ($meta['paciente'] ?? ''),
             'fecha' => (string) ($meta['fecha'] ?? ''),
             'hora' => (string) ($meta['hora'] ?? ''),
-        ];
-        $ch = curl_init($gasUrl);
+        ], '', '&', PHP_QUERY_RFC3986);
+        // Preferir GET (como /agendar book): el deploy público a veces responde 405 a POST.
+        $ch = curl_init($gasUrl . (str_contains($gasUrl, '?') ? '&' : '?') . $query);
         curl_setopt_array($ch, [
-            CURLOPT_POST => true,
+            CURLOPT_HTTPGET => true,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
-            CURLOPT_HTTPHEADER => ['Content-Type: text/plain;charset=utf-8'],
-            CURLOPT_POSTFIELDS => json_encode($payload, JSON_UNESCAPED_UNICODE),
-            CURLOPT_TIMEOUT => 15,
+            CURLOPT_TIMEOUT => 20,
         ]);
         $raw = curl_exec($ch);
         $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $err = curl_error($ch);
-        if (!$err && $httpCode >= 200 && $httpCode < 300 && is_string($raw)) {
+        curl_close($ch);
+
+        if (!$err && $httpCode >= 200 && $httpCode < 300 && is_string($raw) && $raw !== '') {
             $decoded = json_decode($raw, true);
             if (is_array($decoded) && ($decoded['status'] ?? '') === 'success') {
                 $gasOk = true;
@@ -143,7 +236,42 @@ function kinesica_mi_turno_cancel_calendar(string $calendarEventId, array $meta 
                     : 'GAS respuesta inválida';
             }
         } else {
-            $gasErr = $err ?: ("HTTP {$httpCode}");
+            // Fallback POST text/plain (mismo estilo que booking-api-client).
+            $payload = [
+                'action' => 'cancel',
+                'secret' => $secret,
+                'eventId' => $calendarEventId,
+                'source' => 'web_mi_turno',
+                'paciente' => (string) ($meta['paciente'] ?? ''),
+                'fecha' => (string) ($meta['fecha'] ?? ''),
+                'hora' => (string) ($meta['hora'] ?? ''),
+            ];
+            $ch2 = curl_init($gasUrl);
+            curl_setopt_array($ch2, [
+                CURLOPT_POST => true,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_MAXREDIRS => 5,
+                CURLOPT_HTTPHEADER => ['Content-Type: text/plain;charset=utf-8'],
+                CURLOPT_POSTFIELDS => json_encode($payload, JSON_UNESCAPED_UNICODE),
+                CURLOPT_TIMEOUT => 20,
+            ]);
+            $raw2 = curl_exec($ch2);
+            $http2 = (int) curl_getinfo($ch2, CURLINFO_HTTP_CODE);
+            $err2 = curl_error($ch2);
+            curl_close($ch2);
+            if (!$err2 && $http2 >= 200 && $http2 < 300 && is_string($raw2)) {
+                $decoded2 = json_decode($raw2, true);
+                if (is_array($decoded2) && ($decoded2['status'] ?? '') === 'success') {
+                    $gasOk = true;
+                } else {
+                    $gasErr = is_array($decoded2)
+                        ? (string) ($decoded2['message'] ?? 'GAS cancel failed')
+                        : 'GAS respuesta inválida';
+                }
+            } else {
+                $gasErr = $err ?: $err2 ?: ("HTTP {$httpCode}/{$http2}");
+            }
         }
     } else {
         $gasErr = 'GAS no configurado';

@@ -70,7 +70,8 @@ if (empty($found['ok']) || empty($found['turno'])) {
 
 /** @var array<string,mixed> $turno */
 $turno = $found['turno'];
-$view = kinesica_mi_turno_public_view($turno);
+$practitioner = kinesica_mi_turno_practitioner_contact($pdo, $turno);
+$view = kinesica_mi_turno_public_view($turno, $practitioner);
 
 if ($action === 'lookup') {
     kinesica_mi_turno_json(200, [
@@ -91,6 +92,7 @@ if (empty($policy['allowed'])) {
         'error' => 'Para anular con menos de 24 hs de anticipación, escribinos por WhatsApp.',
         'code' => 'policy_blocked',
         'turno' => $view,
+        // Política 24 hs: Clara (recepción), no el profesional.
         'whatsapp' => 'https://wa.me/5491131781733',
     ]);
 }
@@ -107,7 +109,13 @@ if (empty($calRes['ok'])) {
     kinesica_mi_turno_json(502, [
         'success' => false,
         'error' => 'No pudimos anular el turno ahora. Probá de nuevo o escribinos por WhatsApp.',
-        'whatsapp' => 'https://wa.me/5491131781733',
+        'whatsapp' => $practitioner['waMe'],
+        'profesional' => [
+            'id' => $practitioner['id'],
+            'name' => $practitioner['name'],
+            'whatsappDigits' => $practitioner['whatsappDigits'],
+        ],
+        'turno' => $view,
     ]);
 }
 
