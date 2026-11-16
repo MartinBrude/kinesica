@@ -57,7 +57,7 @@ $builtCode = kinesica_build_confirmation_mail([
     'hora' => '10:00',
     'profesional' => 'Lic. María Gulin',
     'manageCode' => 'AB3K7MP',
-    'manageUrl' => 'https://www.kinesica.com.ar/mi-turno.html',
+    'manageUrl' => 'https://www.kinesica.com.ar/mi-turno?apellido=P%C3%A9rez&email=juan%40ejemplo.com&codigo=AB3K7MP',
     'settings' => [],
 ]);
 $codeHits = substr_count($builtCode['html'], 'AB3K7MP');

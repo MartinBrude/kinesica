@@ -376,16 +376,16 @@
     });
   }
 
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
-    var apellido = (document.getElementById("mt-apellido") || {}).value || "";
-    var email = (document.getElementById("mt-email") || {}).value || "";
-    var codigo = (document.getElementById("mt-codigo") || {}).value || "";
+  function runLookup() {
+    var apellidoEl = document.getElementById("mt-apellido");
+    var emailEl = document.getElementById("mt-email");
+    var codigoEl = document.getElementById("mt-codigo");
     lastCreds = {
-      apellido: apellido.trim(),
-      email: email.trim(),
-      codigo: codigo.trim().toUpperCase(),
+      apellido: ((apellidoEl && apellidoEl.value) || "").trim(),
+      email: ((emailEl && emailEl.value) || "").trim(),
+      codigo: ((codigoEl && codigoEl.value) || "").trim().toUpperCase(),
     };
+    if (codigoEl) codigoEl.value = lastCreds.codigo;
     if (resultEl) {
       resultEl.hidden = true;
       resultEl.innerHTML = "";
@@ -425,5 +425,29 @@
           submitBtn.textContent = t("submit");
         }
       });
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    runLookup();
   });
+
+  // Prefill from mail deep-link: /mi-turno?apellido=&email=&codigo=
+  try {
+    var params = new URLSearchParams(window.location.search || "");
+    var qApellido = (params.get("apellido") || params.get("a") || "").trim();
+    var qEmail = (params.get("email") || params.get("e") || "").trim();
+    var qCodigo = (params.get("codigo") || params.get("code") || params.get("c") || "")
+      .trim()
+      .toUpperCase();
+    var apellidoInput = document.getElementById("mt-apellido");
+    var emailInput = document.getElementById("mt-email");
+    var codigoInput = document.getElementById("mt-codigo");
+    if (qApellido && apellidoInput) apellidoInput.value = qApellido;
+    if (qEmail && emailInput) emailInput.value = qEmail;
+    if (qCodigo && codigoInput) codigoInput.value = qCodigo;
+    if (qApellido && qEmail && isValidCode(qCodigo)) {
+      runLookup();
+    }
+  } catch (prefillErr) {}
 })();

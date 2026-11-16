@@ -359,9 +359,10 @@ function kinesica_build_confirmation_mail(array $params): array
       <div class="card-details" style="border-left-color:#0f766e;">
         <div class="detail-item"><strong>Código de gestión:</strong> <span style="font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:0.08em;font-size:18px;font-weight:700;color:#0f766e;">' . htmlspecialchars($manageCode) . '</span></div>
         <p style="margin:10px 0 0 0;font-size:13px;color:#64748b;line-height:1.5;">
-          Con tu <strong>apellido</strong>, este <strong>email</strong> y el código podés consultar o anular el turno en
-          <a href="' . htmlspecialchars($manageUrl) . '" style="color:#005f99;font-weight:600;">' . htmlspecialchars($manageUrl) . '</a>
-          (aviso con 24&nbsp;hs de anticipación).
+          Podés consultar o anular el turno con un clic (los datos ya vienen cargados):
+          <a href="' . htmlspecialchars($manageUrl) . '" style="color:#005f99;font-weight:600;">Consultar o anular tu turno</a>.
+          También podés hacerlo en <a href="https://www.kinesica.com.ar/mi-turno" style="color:#005f99;">kinesica.com.ar/mi-turno</a>
+          con tu apellido, este email y el código (aviso con 24&nbsp;hs de anticipación).
         </p>
       </div>
 ' : '') . '

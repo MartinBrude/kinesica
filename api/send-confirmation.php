@@ -233,7 +233,7 @@ $practitionerIdRaw = trim((string) ($data['practitionerId'] ?? $data['practition
 
 // Código de gestión web (apellido + email + código) al confirmar reserva.
 $manageCode = '';
-$manageUrl = 'https://www.kinesica.com.ar/mi-turno.html';
+$manageUrl = 'https://www.kinesica.com.ar/mi-turno';
 $eventId = trim((string) ($data['eventId'] ?? $data['event_id'] ?? $data['calendar_event_id'] ?? ''));
 if (!$esCancelacion && $eventId !== '') {
     try {
@@ -259,6 +259,12 @@ if (!$esCancelacion && $eventId !== '') {
         $attach = kinesica_rel_attach_manage_code(db(), $eventId, $email, $paciente, null, $attachExtra);
         if (!empty($attach['ok']) && !empty($attach['code'])) {
             $manageCode = (string) $attach['code'];
+            $apellidoLink = kinesica_apellido_from_full_name($paciente);
+            $manageUrl = 'https://www.kinesica.com.ar/mi-turno?' . http_build_query([
+                'apellido' => $apellidoLink,
+                'email' => $email,
+                'codigo' => $manageCode,
+            ], '', '&', PHP_QUERY_RFC3986);
         } elseif (!empty($attach['reason'])) {
             error_log('kinesica send-confirmation manage code reason: ' . (string) $attach['reason']);
         }
