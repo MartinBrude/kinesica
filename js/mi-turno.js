@@ -24,6 +24,8 @@
   var CODE_RE = /^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{7}$/;
   var NORBERTO_WA =
     (copy.whatsappNorbertoDigits || "5491161564311").replace(/\D/g, "");
+  var CLARA_WA =
+    (copy.whatsappClaraDigits || "5491131781733").replace(/\D/g, "");
 
   function t(key) {
     return copy[key] != null ? copy[key] : key;
@@ -33,30 +35,42 @@
     return CODE_RE.test(String(code || "").trim().toUpperCase());
   }
 
-  function norbertoWaHref(context) {
-    var msg = t("whatsappNorbertoMsg");
-    if (lastCreds) {
-      msg +=
-        "\n\n" +
-        t("apellido") +
-        ": " +
-        lastCreds.apellido +
-        "\n" +
-        t("email") +
-        ": " +
-        lastCreds.email +
-        "\n" +
-        t("codigo") +
-        ": " +
-        lastCreds.codigo;
-    }
-    if (context) msg += "\n(" + context + ")";
+  function appendCreds(msg) {
+    if (!lastCreds) return msg;
+    return (
+      msg +
+      "\n\n" +
+      t("apellido") +
+      ": " +
+      lastCreds.apellido +
+      "\n" +
+      t("email") +
+      ": " +
+      lastCreds.email +
+      "\n" +
+      t("codigo") +
+      ": " +
+      lastCreds.codigo
+    );
+  }
+
+  function waHref(digits, msg) {
     return (
       "https://wa.me/" +
-      NORBERTO_WA +
+      digits +
       "?text=" +
       encodeURIComponent(msg)
     );
+  }
+
+  function claraWaHref() {
+    return waHref(CLARA_WA, appendCreds(t("whatsappClaraMsg")));
+  }
+
+  function norbertoWaHref(context) {
+    var msg = appendCreds(t("whatsappNorbertoMsg"));
+    if (context) msg += "\n(" + context + ")";
+    return waHref(NORBERTO_WA, msg);
   }
 
   function setStatus(msg, kind, opts) {
@@ -69,7 +83,14 @@
       return;
     }
     var html = "<p>" + escapeHtml(msg) + "</p>";
-    if (opts.showNorbertoWa) {
+    if (opts.showClaraWa) {
+      html +=
+        '<a class="mi-turno-btn mi-turno-btn-wa" href="' +
+        escapeHtml(claraWaHref()) +
+        '" target="_blank" rel="noopener">' +
+        escapeHtml(t("whatsapp")) +
+        "</a>";
+    } else if (opts.showNorbertoWa) {
       html +=
         '<a class="mi-turno-btn mi-turno-btn-wa" href="' +
         escapeHtml(norbertoWaHref(opts.waContext || "")) +
@@ -137,9 +158,9 @@
         escapeHtml(t("policyBlocked")) +
         "</p>" +
         '<a class="mi-turno-btn mi-turno-btn-wa" href="' +
-        escapeHtml(norbertoWaHref("policy_24h")) +
+        escapeHtml(claraWaHref()) +
         '" target="_blank" rel="noopener">' +
-        escapeHtml(t("whatsappNorberto")) +
+        escapeHtml(t("whatsapp")) +
         "</a>";
     }
 
@@ -185,7 +206,7 @@
           return;
         }
         if (res.status === 403) {
-          setStatus(t("policyBlocked"), "warn");
+          setStatus(t("policyBlocked"), "warn", { showClaraWa: true });
           if (res.data.turno) renderTurno(res.data.turno);
           return;
         }

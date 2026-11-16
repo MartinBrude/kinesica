@@ -33,6 +33,9 @@ export const MI_TURNO = {
     policyBlocked:
       "Para anular con menos de 24 hs de anticipación, escribinos por WhatsApp.",
     whatsapp: "Escribir por WhatsApp",
+    whatsappClaraMsg:
+      "Hola Clara, necesito anular un turno con menos de 24 hs de anticipación.",
+    whatsappClaraDigits: "5491131781733",
     whatsappNorberto: "Avisar a Norberto por WhatsApp",
     whatsappNorbertoMsg:
       "Hola Norberto, no pude consultar/anular mi turno en la web con el código de gestión. ¿Me ayudás?",
@@ -71,6 +74,9 @@ export const MI_TURNO = {
     policyBlocked:
       "To cancel with less than 24 hours’ notice, please message us on WhatsApp.",
     whatsapp: "Message on WhatsApp",
+    whatsappClaraMsg:
+      "Hi Clara, I need to cancel an appointment with less than 24 hours’ notice.",
+    whatsappClaraDigits: "5491131781733",
     whatsappNorberto: "Message Norberto on WhatsApp",
     whatsappNorbertoMsg:
       "Hi Norberto, I couldn’t look up or cancel my appointment on the website with the management code. Can you help?",
@@ -109,6 +115,9 @@ export const MI_TURNO = {
     policyBlocked:
       "Pour annuler à moins de 24 h, écrivez-nous sur WhatsApp.",
     whatsapp: "Écrire sur WhatsApp",
+    whatsappClaraMsg:
+      "Bonjour Clara, j’ai besoin d’annuler un rendez-vous à moins de 24 h.",
+    whatsappClaraDigits: "5491131781733",
     whatsappNorberto: "Prévenir Norberto sur WhatsApp",
     whatsappNorbertoMsg:
       "Bonjour Norberto, je n’ai pas pu consulter/annuler mon rendez-vous sur le site avec le code de gestion. Pouvez-vous m’aider ?",
@@ -147,6 +156,9 @@ export const MI_TURNO = {
     policyBlocked:
       "Para cancelar com menos de 24 h de antecedência, fale conosco no WhatsApp.",
     whatsapp: "Escrever no WhatsApp",
+    whatsappClaraMsg:
+      "Olá Clara, preciso cancelar um horário com menos de 24 h de antecedência.",
+    whatsappClaraDigits: "5491131781733",
     whatsappNorberto: "Avisar Norberto no WhatsApp",
     whatsappNorbertoMsg:
       "Olá Norberto, não consegui consultar/cancelar meu horário no site com o código de gestão. Pode me ajudar?",
