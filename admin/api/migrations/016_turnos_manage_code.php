@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 /**
  * Migración 016 — código de gestión web (apellido + email + código).
- * Columnas en turnos; hash del código (nunca plaintext).
+ * Columnas en turnos: hash para lookup + plaintext opcional para re-mostrar
+ * el mismo código en mail/UI sin regenerar (idempotencia).
  */
 
 return [

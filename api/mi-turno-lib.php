@@ -211,6 +211,7 @@ function kinesica_mi_turno_cancel_calendar(string $calendarEventId, array $meta 
             'paciente' => (string) ($meta['paciente'] ?? ''),
             'fecha' => (string) ($meta['fecha'] ?? ''),
             'hora' => (string) ($meta['hora'] ?? ''),
+            'practitionerId' => (string) ($meta['practitionerId'] ?? ''),
         ], '', '&', PHP_QUERY_RFC3986);
         // Preferir GET (como /agendar book): el deploy público a veces responde 405 a POST.
         $ch = curl_init($gasUrl . (str_contains($gasUrl, '?') ? '&' : '?') . $query);
@@ -245,6 +246,7 @@ function kinesica_mi_turno_cancel_calendar(string $calendarEventId, array $meta 
                 'paciente' => (string) ($meta['paciente'] ?? ''),
                 'fecha' => (string) ($meta['fecha'] ?? ''),
                 'hora' => (string) ($meta['hora'] ?? ''),
+                'practitionerId' => (string) ($meta['practitionerId'] ?? ''),
             ];
             $ch2 = curl_init($gasUrl);
             curl_setopt_array($ch2, [
@@ -302,6 +304,7 @@ function kinesica_mi_turno_cancel_calendar(string $calendarEventId, array $meta 
             CURLOPT_TIMEOUT => 10,
         ]);
         curl_exec($ch2);
+        curl_close($ch2);
     }
 
     if ($gasOk) {

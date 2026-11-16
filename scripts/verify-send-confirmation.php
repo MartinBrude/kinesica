@@ -60,10 +60,13 @@ $builtCode = kinesica_build_confirmation_mail([
     'manageUrl' => 'https://www.kinesica.com.ar/mi-turno?apellido=P%C3%A9rez&email=juan%40ejemplo.com&codigo=AB3K7MP',
     'settings' => [],
 ]);
-$codeHits = substr_count($builtCode['html'], 'AB3K7MP');
 $labelHits = substr_count($builtCode['html'], 'Código de gestión');
-check($codeHits === 1, 'mail: un solo código de gestión en el HTML');
+// Visible once in the card; again in the deep-link ?codigo= (expected).
+$visibleCodeHits = preg_match_all('/font-weight:700[^>]*>AB3K7MP</', $builtCode['html']);
+$deepLinkHits = substr_count($builtCode['html'], 'codigo=AB3K7MP');
 check($labelHits === 1, 'mail: una sola etiqueta Código de gestión');
+check($visibleCodeHits === 1, 'mail: un código visible en el bloque de gestión');
+check($deepLinkHits === 1, 'mail: deep-link incluye el código');
 check(!str_contains($builtCode['html'], 'eventId') && !str_contains($builtCode['html'], 'Identificador de cita'), 'mail: sin eventId');
 $builtCancel = kinesica_build_confirmation_mail([
     'paciente' => 'Ana Test',

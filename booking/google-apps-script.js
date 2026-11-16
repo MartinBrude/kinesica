@@ -48,7 +48,7 @@ const ADMIN_HOURS_CACHE_KEY = "admin_practitioner_hours_v1";
 const ADMIN_HOURS_CACHE_SECONDS = 120;
 // Última copia buena de los horarios del admin (persistente): se usa si settings.php no responde.
 const ADMIN_HOURS_LAST_GOOD_PROP = "ADMIN_HOURS_LAST_GOOD";
-const GAS_CODE_VERSION = "v27-web-cancel-get";
+const GAS_CODE_VERSION = "v28-cancel-wa-practitioner";
 const BOOKING_IDEMPOTENCY_PREFIX = "booking_result_v1_";
 
 function isValidHoursObject(h) {
@@ -713,6 +713,21 @@ function handleCheckPatient(payload) {
 }
 
 /**
+ * Extrae el slug del profesional desde el título de Calendar
+ * (p. ej. "🩺 [NORBERTO] Juan Pérez" → "norberto").
+ */
+function parsePractitionerIdFromTitle(title) {
+  const t = String(title || "").toUpperCase();
+  if (t.indexOf("[MARIA]") !== -1 || t.indexOf("[MARÍA]") !== -1) {
+    return "maria";
+  }
+  if (t.indexOf("[NORBERTO]") !== -1) {
+    return "norberto";
+  }
+  return "";
+}
+
+/**
  * Extrae el nombre de paciente desde el título de un evento de Calendar
  * (p. ej. "🩺 [NORBERTO] Juan Pérez (Agendó: María)").
  */
@@ -1317,6 +1332,9 @@ function handleCancelAppointment(payload) {
   const pacienteHint = String(payload.paciente || "").trim();
   const fechaHint = String(payload.fecha || "").trim();
   const horaHint = String(payload.hora || "").trim();
+  const practitionerHint = String(
+    payload.practitionerId || payload.practitioner || ""
+  ).trim().toLowerCase();
 
   try {
     event.deleteEvent();
@@ -1343,6 +1361,7 @@ function handleCancelAppointment(payload) {
       paciente: pacienteHint,
       fecha: fechaHint,
       hora: horaHint,
+      practitionerId: practitionerHint || parsePractitionerIdFromTitle(title),
       source: String(payload.source || "web_mi_turno")
     });
   } catch (eNotify) {
@@ -1382,7 +1401,13 @@ function notifyPractitionerWebCancel(data) {
   const token = props.getProperty("WHATSAPP_TOKEN") || props.getProperty("META_ACCESS_TOKEN");
   const phoneId = props.getProperty("WHATSAPP_PHONE_NUMBER_ID") || "1340013275870491";
   const n8nWebhookUrl = props.getProperty("N8N_ALERT_WEBHOOK_URL");
-  const norbertoPhone = props.getProperty("NORBERTO_PHONE") || "541161564311";
+
+  // Prefer payload practitionerId; fall back to [NORBERTO]/[MARIA] in Calendar title.
+  const practitionerId = String(
+    data.practitionerId || data.practitioner || parsePractitionerIdFromTitle(data.title || "") || "norberto"
+  ).toLowerCase();
+  const contact = resolvePractitionerContact(practitionerId);
+  const toPhone = contact.phone;
 
   let whenLabel = "";
   if (data.fecha && data.hora) {
@@ -1396,14 +1421,15 @@ function notifyPractitionerWebCancel(data) {
   }
 
   const message = "❌ *TURNO ANULADO (WEB)*\n" +
+    "• *Profesional:* " + contact.name + "\n" +
     "• *Paciente:* " + (data.paciente || data.title || "—") + "\n" +
     "• *Fecha/Hora:* " + (whenLabel || "—") + "\n" +
     "• *Origen:* " + (data.source || "web_mi_turno") + "\n" +
     "• *Evento:* " + (data.eventId || "—") + "\n\n" +
-    "_(El paciente anuló desde kinesica.com.ar/mi-turno.html)_";
+    "_(El paciente anuló desde kinesica.com.ar/mi-turno)_";
 
   let sent = false;
-  if (token && norbertoPhone) {
+  if (token && toPhone) {
     try {
       const url = "https://graph.facebook.com/v21.0/" + phoneId + "/messages";
       const res = UrlFetchApp.fetch(url, {
@@ -1413,7 +1439,7 @@ function notifyPractitionerWebCancel(data) {
         payload: JSON.stringify({
           messaging_product: "whatsapp",
           recipient_type: "individual",
-          to: norbertoPhone,
+          to: toPhone,
           type: "text",
           text: { body: message }
         }),
@@ -1435,6 +1461,7 @@ function notifyPractitionerWebCancel(data) {
           action: "web_cancel_alert",
           body: message,
           eventId: data.eventId || "",
+          practitionerId: contact.id,
           booking: data
         }),
         muteHttpExceptions: true,

@@ -102,6 +102,7 @@ $calRes = kinesica_mi_turno_cancel_calendar($calId, [
     'paciente' => $view['paciente'],
     'fecha' => $view['fecha'],
     'hora' => $view['hora'],
+    'practitionerId' => (string) ($practitioner['id'] ?? ''),
 ]);
 
 if (empty($calRes['ok'])) {

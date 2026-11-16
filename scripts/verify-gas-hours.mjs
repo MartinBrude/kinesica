@@ -124,9 +124,18 @@ test("una sola consulta al admin por ejecución", () => {
 });
 
 // --- Privacidad: get_slots / get_slots_range son públicos y no deben exponer eventos ---
+const GAS_HOLIDAYS = new Set(
+  (src.match(/ARGENTINA_HOLIDAYS\s*=\s*\[([^\]]+)\]/) || ["", ""])[1]
+    .match(/"(\d{4}-\d{2}-\d{2})"/g)
+    ?.map((s) => s.slice(1, -1)) || [],
+);
 function nextWeekday(offsetDays) {
   const d = new Date(Date.now() + offsetDays * 86400000);
-  while ([0, 6].includes(d.getUTCDay())) d.setUTCDate(d.getUTCDate() + 1);
+  for (let i = 0; i < 21; i++) {
+    const iso = d.toISOString().slice(0, 10);
+    if (![0, 6].includes(d.getUTCDay()) && !GAS_HOLIDAYS.has(iso)) return iso;
+    d.setUTCDate(d.getUTCDate() + 1);
+  }
   return d.toISOString().slice(0, 10);
 }
 const ALL_WEEK = { maria: Object.fromEntries([1, 2, 3, 4, 5].map((k) => [k, [{ start: "09:00", end: "17:00" }]])), norberto: {} };
@@ -310,7 +319,7 @@ test("guarda la última copia buena y la usa si luego falla settings.php", () =>
 test("ping informa admin_hours (sólo lectura)", () => {
   let ping = JSON.parse(load({ adminHours: ADMIN }).ctx.doGet({ parameter: { action: "ping" } }).text);
   assert.equal(ping.status, "online");
-  assert.equal(ping.code_version, "v26-admin-secret-dni");
+  assert.equal(ping.code_version, "v28-cancel-wa-practitioner");
   assert.deepEqual([ping.admin_hours.loaded, ping.admin_hours.http_code, ping.admin_hours.source], [true, 200, "admin"]);
   assert.ok(ping.admin_hours.fetched_at);
   ping = JSON.parse(load({ byUrl: { www: { status: 403, body: "x" }, apex: { throws: "DNS error" } } }).ctx.doGet({ parameter: { action: "ping" } }).text);
@@ -358,6 +367,61 @@ test("reserva pública exige DNI; adminMode sin secret no bypass; con secret sí
   assert.equal(adminNoDni.status, "error");
   assert.match(adminNoDni.message, /fuera del horario/);
   assert.equal(/DNI|documento/i.test(String(adminNoDni.message || "")), false);
+});
+
+test("parsePractitionerIdFromTitle lee tags del título de Calendar", () => {
+  const { ctx } = load({ adminHours: ADMIN });
+  assert.equal(ctx.parsePractitionerIdFromTitle("🩺 [NORBERTO] Juan Pérez"), "norberto");
+  assert.equal(ctx.parsePractitionerIdFromTitle("🩺 [MARIA] Ana"), "maria");
+  assert.equal(ctx.parsePractitionerIdFromTitle("🩺 [MARÍA] Ana"), "maria");
+  assert.equal(ctx.parsePractitionerIdFromTitle("Sin tag"), "");
+});
+
+test("notifyPractitionerWebCancel avisa a María cuando el título tiene [MARIA]", () => {
+  const { ctx, fetchOpts } = load({
+    adminHours: ADMIN,
+    props: {
+      WHATSAPP_TOKEN: "tok-test",
+      MARIA_PHONE: "541128531224",
+      NORBERTO_PHONE: "541161564311",
+    },
+  });
+  const sent = ctx.notifyPractitionerWebCancel({
+    eventId: "evt-1",
+    title: "🩺 [MARIA] Ana Test",
+    paciente: "Ana Test",
+    fecha: "2026-12-01",
+    hora: "10:00",
+    source: "web_mi_turno",
+  });
+  assert.equal(sent, true);
+  const wa = fetchOpts.find((o) => o && typeof o.payload === "string" && o.payload.includes("messaging_product"));
+  assert.ok(wa, "debió llamar a Meta WhatsApp");
+  const body = JSON.parse(wa.payload);
+  assert.equal(body.to, "541128531224");
+  assert.match(body.text.body, /\*Profesional:\*\s*María/);
+});
+
+test("notifyPractitionerWebCancel prioriza practitionerId del payload sobre el título", () => {
+  const { ctx, fetchOpts } = load({
+    adminHours: ADMIN,
+    props: {
+      WHATSAPP_TOKEN: "tok-test",
+      MARIA_PHONE: "541128531224",
+      NORBERTO_PHONE: "541161564311",
+    },
+  });
+  ctx.notifyPractitionerWebCancel({
+    eventId: "evt-2",
+    title: "🩺 [NORBERTO] Ana Test",
+    practitionerId: "maria",
+    paciente: "Ana Test",
+    fecha: "2026-12-01",
+    hora: "11:00",
+  });
+  const wa = fetchOpts.find((o) => o && typeof o.payload === "string" && o.payload.includes("messaging_product"));
+  assert.ok(wa);
+  assert.equal(JSON.parse(wa.payload).to, "541128531224");
 });
 
 console.log(`apps script horarios admin: ok (${n} pruebas)`);
