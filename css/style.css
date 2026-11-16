@@ -5137,6 +5137,15 @@ Anonymous Satisfaction Survey (/encuesta.html)
   font-size: 14px;
 }
 
+.mi-turno-status p {
+  margin: 0 0 10px;
+}
+
+.mi-turno-status .mi-turno-btn-wa {
+  display: inline-flex;
+  margin-top: 2px;
+}
+
 .mi-turno-status.is-error {
   background: #fef2f2;
   color: #991b1b;

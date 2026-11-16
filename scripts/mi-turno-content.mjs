@@ -1,6 +1,8 @@
 /**
  * Copy for /mi-turno (consultar / anular turno) in ES / EN / FR / PT.
  */
+import { CONTACT } from "./site-contact.mjs";
+
 export const MI_TURNO = {
   es: {
     title: "Consultar o anular turno | Kinésica",
@@ -31,6 +33,11 @@ export const MI_TURNO = {
     policyBlocked:
       "Para anular con menos de 24 hs de anticipación, escribinos por WhatsApp.",
     whatsapp: "Escribir por WhatsApp",
+    whatsappNorberto: "Avisar a Norberto por WhatsApp",
+    whatsappNorbertoMsg:
+      "Hola Norberto, no pude consultar/anular mi turno en la web con el código de gestión. ¿Me ayudás?",
+    whatsappNorbertoDigits: CONTACT.whatsappDigits,
+    invalidCode: "El código no tiene un formato válido. Revisá el mail de confirmación.",
     notFound: "No encontramos un turno con esos datos.",
     genericError: "Algo salió mal. Probá de nuevo en unos minutos.",
     hint: "El código está en el mail de confirmación de la reserva. Si no lo tenés, también podés gestionar el turno por WhatsApp con Clara.",
@@ -64,6 +71,11 @@ export const MI_TURNO = {
     policyBlocked:
       "To cancel with less than 24 hours’ notice, please message us on WhatsApp.",
     whatsapp: "Message on WhatsApp",
+    whatsappNorberto: "Message Norberto on WhatsApp",
+    whatsappNorbertoMsg:
+      "Hi Norberto, I couldn’t look up or cancel my appointment on the website with the management code. Can you help?",
+    whatsappNorbertoDigits: CONTACT.whatsappDigits,
+    invalidCode: "That code format isn’t valid. Please check your confirmation email.",
     notFound: "We couldn’t find an appointment with those details.",
     genericError: "Something went wrong. Please try again in a few minutes.",
     hint: "The code is in your booking confirmation email. You can also manage the appointment with Clara on WhatsApp.",
@@ -97,6 +109,11 @@ export const MI_TURNO = {
     policyBlocked:
       "Pour annuler à moins de 24 h, écrivez-nous sur WhatsApp.",
     whatsapp: "Écrire sur WhatsApp",
+    whatsappNorberto: "Prévenir Norberto sur WhatsApp",
+    whatsappNorbertoMsg:
+      "Bonjour Norberto, je n’ai pas pu consulter/annuler mon rendez-vous sur le site avec le code de gestion. Pouvez-vous m’aider ?",
+    whatsappNorbertoDigits: CONTACT.whatsappDigits,
+    invalidCode: "Le format du code n’est pas valide. Vérifiez l’e-mail de confirmation.",
     notFound: "Aucun rendez-vous trouvé avec ces informations.",
     genericError: "Une erreur s’est produite. Réessayez dans quelques minutes.",
     hint: "Le code figure dans l’e-mail de confirmation. Vous pouvez aussi gérer le rendez-vous avec Clara sur WhatsApp.",
@@ -130,6 +147,11 @@ export const MI_TURNO = {
     policyBlocked:
       "Para cancelar com menos de 24 h de antecedência, fale conosco no WhatsApp.",
     whatsapp: "Escrever no WhatsApp",
+    whatsappNorberto: "Avisar Norberto no WhatsApp",
+    whatsappNorbertoMsg:
+      "Olá Norberto, não consegui consultar/cancelar meu horário no site com o código de gestão. Pode me ajudar?",
+    whatsappNorbertoDigits: CONTACT.whatsappDigits,
+    invalidCode: "O código não tem um formato válido. Confira o e-mail de confirmação.",
     notFound: "Não encontramos um horário com esses dados.",
     genericError: "Algo deu errado. Tente de novo em alguns minutos.",
     hint: "O código está no e-mail de confirmação da reserva. Você também pode gerenciar o horário com a Clara no WhatsApp.",
