@@ -5216,3 +5216,110 @@ Anonymous Satisfaction Survey (/encuesta.html)
   line-height: 1.45;
 }
 
+.mi-turno-btn-ghost {
+  background: transparent;
+  color: var(--navy, #0f2744);
+  border: 1px solid var(--line, #e2e8f0);
+}
+
+.mi-turno-btn-ghost:hover {
+  background: #f8fafc;
+}
+
+html.mi-turno-confirm-open {
+  overflow: hidden;
+}
+
+.mi-turno-confirm {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.mi-turno-confirm[hidden] {
+  display: none !important;
+}
+
+.mi-turno-confirm-backdrop {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 30%, rgba(30, 201, 176, 0.12), transparent 70%),
+    rgba(15, 39, 68, 0.52);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.mi-turno-confirm.is-open .mi-turno-confirm-backdrop {
+  opacity: 1;
+}
+
+.mi-turno-confirm-card {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 400px);
+  padding: 22px 22px 18px;
+  background: #fff;
+  border: 1px solid rgba(0, 95, 153, 0.14);
+  border-radius: 14px;
+  box-shadow:
+    0 18px 50px rgba(15, 39, 68, 0.22),
+    0 0 0 1px rgba(255, 255, 255, 0.4) inset;
+  transform: translateY(10px) scale(0.98);
+  opacity: 0;
+  transition: transform 0.22s ease, opacity 0.22s ease;
+}
+
+.mi-turno-confirm.is-open .mi-turno-confirm-card {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+.mi-turno-confirm-brand {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #005f99;
+}
+
+.mi-turno-confirm-title {
+  margin: 0 0 8px;
+  font-size: 1.2rem;
+  color: var(--navy, #0f2744);
+}
+
+.mi-turno-confirm-body {
+  margin: 0 0 18px;
+  color: #556575;
+  line-height: 1.5;
+  font-size: 15px;
+}
+
+.mi-turno-confirm-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.mi-turno-confirm-actions .mi-turno-btn {
+  width: 100%;
+  margin: 0;
+}
+
+.mi-turno-confirm-actions .mi-turno-btn-danger {
+  margin-top: 0;
+}
+
+@media (max-width: 420px) {
+  .mi-turno-confirm-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
