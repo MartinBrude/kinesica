@@ -234,7 +234,7 @@
     confirmEl.className = "mi-turno-confirm";
     confirmEl.hidden = true;
     confirmEl.innerHTML =
-      '<div class="mi-turno-confirm-backdrop" data-mt-confirm="no"></div>' +
+      '<div class="mi-turno-confirm-backdrop" data-mt-dismiss="1"></div>' +
       '<div class="mi-turno-confirm-card" role="dialog" aria-modal="true" aria-labelledby="mt-confirm-title" aria-describedby="mt-confirm-body">' +
       '<p class="mi-turno-confirm-brand">Kinésica</p>' +
       '<h2 id="mt-confirm-title" class="mi-turno-confirm-title"></h2>' +
@@ -247,7 +247,17 @@
     document.body.appendChild(confirmEl);
 
     confirmEl.addEventListener("click", function (e) {
-      var action = e.target && e.target.getAttribute("data-mt-confirm");
+      var btn =
+        e.target &&
+        e.target.closest &&
+        e.target.closest("button[data-mt-confirm]");
+      var action =
+        (btn && btn.getAttribute("data-mt-confirm")) ||
+        (e.target &&
+        e.target.classList &&
+        e.target.classList.contains("mi-turno-confirm-backdrop")
+          ? "no"
+          : null);
       if (action === "yes" || action === "no") closeConfirm(action === "yes");
     });
 
@@ -304,17 +314,17 @@
         "confirmCancelTitle",
       );
       el.querySelector("#mt-confirm-body").textContent = t("confirmCancel");
-      el.querySelector('[data-mt-confirm="no"]').textContent = t(
+      el.querySelector('button[data-mt-confirm="no"]').textContent = t(
         "confirmCancelNo",
       );
-      el.querySelector('[data-mt-confirm="yes"]').textContent = t(
+      el.querySelector('button[data-mt-confirm="yes"]').textContent = t(
         "confirmCancelYes",
       );
       el.hidden = false;
       document.documentElement.classList.add("mi-turno-confirm-open");
       requestAnimationFrame(function () {
         el.classList.add("is-open");
-        var noBtn = el.querySelector('[data-mt-confirm="no"]');
+        var noBtn = el.querySelector('button[data-mt-confirm="no"]');
         if (noBtn) noBtn.focus();
       });
     });

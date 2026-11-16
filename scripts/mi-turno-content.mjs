@@ -24,7 +24,7 @@ export const MI_TURNO = {
     cancel: "Anular este turno",
     cancelling: "Anulando…",
     confirmCancelTitle: "Anular turno",
-    confirmCancel: "¿Confirmás anular este turno? Esta acción no se puede deshacer desde la web.",
+    confirmCancel: "¿Confirmás anular este turno?",
     confirmCancelYes: "Sí, anular",
     confirmCancelNo: "Volver",
     foundTitle: "Tu turno",
@@ -69,8 +69,7 @@ export const MI_TURNO = {
     cancel: "Cancel this appointment",
     cancelling: "Cancelling…",
     confirmCancelTitle: "Cancel appointment",
-    confirmCancel:
-      "Cancel this appointment? This can’t be undone from the website.",
+    confirmCancel: "Cancel this appointment?",
     confirmCancelYes: "Yes, cancel",
     confirmCancelNo: "Go back",
     foundTitle: "Your appointment",
@@ -115,8 +114,7 @@ export const MI_TURNO = {
     cancel: "Annuler ce rendez-vous",
     cancelling: "Annulation…",
     confirmCancelTitle: "Annuler le rendez-vous",
-    confirmCancel:
-      "Confirmer l’annulation ? Cette action ne peut pas être annulée depuis le site.",
+    confirmCancel: "Confirmer l’annulation ?",
     confirmCancelYes: "Oui, annuler",
     confirmCancelNo: "Retour",
     foundTitle: "Votre rendez-vous",
@@ -161,8 +159,7 @@ export const MI_TURNO = {
     cancel: "Cancelar este horário",
     cancelling: "Cancelando…",
     confirmCancelTitle: "Cancelar horário",
-    confirmCancel:
-      "Confirmar o cancelamento? Esta ação não pode ser desfeita pelo site.",
+    confirmCancel: "Confirmar o cancelamento?",
     confirmCancelYes: "Sim, cancelar",
     confirmCancelNo: "Voltar",
     foundTitle: "Seu horário",
