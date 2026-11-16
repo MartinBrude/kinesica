@@ -91,7 +91,8 @@ function kinesica_rel_attach_manage_code(
     string $calendarEventId,
     string $email,
     string $fullName,
-    ?string $plainCode = null
+    ?string $plainCode = null,
+    array $extra = []
 ): array {
     if (!kinesica_rel_turnos_manage_ready($pdo)) {
         return ['ok' => false, 'turno_id' => null, 'code' => null, 'reason' => 'manage_cols_missing'];
@@ -103,13 +104,20 @@ function kinesica_rel_attach_manage_code(
         return ['ok' => false, 'turno_id' => null, 'code' => null, 'reason' => 'missing_fields'];
     }
 
-    $tid = kinesica_rel_upsert_turno_by_calendar_event($pdo, [
+    $upsert = [
         'calendar_event_id' => $calId,
         'patient_name_snapshot' => $fullName,
         'summary' => $fullName,
         'status' => 'scheduled',
         'source' => 'booking',
-    ]);
+    ];
+    if (!empty($extra['starts_at'])) {
+        $upsert['starts_at'] = $extra['starts_at'];
+    }
+    if (!empty($extra['ends_at'])) {
+        $upsert['ends_at'] = $extra['ends_at'];
+    }
+    $tid = kinesica_rel_upsert_turno_by_calendar_event($pdo, $upsert);
     if ($tid === null) {
         return ['ok' => false, 'turno_id' => null, 'code' => null, 'reason' => 'upsert_failed'];
     }

@@ -51,7 +51,7 @@ $servicio = trim($data['servicio'] ?? $data['especialidad'] ?? '');
 if (empty($servicio) || preg_match('/osteopat[ií]a\s*(?:&|\/|y)?\s*(?:terapia[s]?\s*manual(?:es)?)?/i', $servicio) || $servicio === 'No especifica') {
     $servicio = 'Terapias Manuales';
 }
-$direccion = trim($data['direccion'] ?? 'Charcas 3889, Piso 5º B, Palermo (entre Scalabrini Ortiz y Aráoz)');
+$direccion = trim($data['direccion'] ?? 'Charcas 3889, Piso 5º B, Palermo');
 $esMenor = !empty($data['esMenor']) || !empty($data['isMenor']);
 $tipo = strtolower(trim($data['tipo'] ?? 'confirmacion'));
 $esCancelacion = in_array($tipo, ['cancelacion', 'cancelación', 'anulacion', 'anulación'], true);
@@ -239,9 +239,23 @@ if (!$esCancelacion && $eventId !== '') {
     try {
         require_once __DIR__ . '/../admin/api/lib.php';
         require_once __DIR__ . '/../admin/api/lib_relational_turnos.php';
-        $attach = kinesica_rel_attach_manage_code(db(), $eventId, $email, $paciente);
+        $startsAt = null;
+        $endsAt = null;
+        if (preg_match('/^(\d{4}-\d{2}-\d{2})$/', $fechaRaw) && preg_match('/^(\d{1,2}):(\d{2})/', $horaRaw, $hm)) {
+            $startsAt = sprintf('%s %02d:%02d:00', $fechaRaw, (int) $hm[1], (int) $hm[2]);
+            $endTs = strtotime($startsAt . ' +60 minutes');
+            if ($endTs !== false) {
+                $endsAt = date('Y-m-d H:i:s', $endTs);
+            }
+        }
+        $attach = kinesica_rel_attach_manage_code(db(), $eventId, $email, $paciente, null, [
+            'starts_at' => $startsAt,
+            'ends_at' => $endsAt,
+        ]);
         if (!empty($attach['ok']) && !empty($attach['code'])) {
             $manageCode = (string) $attach['code'];
+        } elseif (!empty($attach['reason'])) {
+            error_log('kinesica send-confirmation manage code reason: ' . (string) $attach['reason']);
         }
     } catch (Throwable $e) {
         error_log('kinesica send-confirmation manage code: ' . $e->getMessage());

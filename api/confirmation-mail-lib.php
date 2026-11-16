@@ -228,7 +228,7 @@ function kinesica_build_confirmation_mail(array $params): array
     if ($servicio === '' || preg_match('/osteopat[ií]a\s*(?:&|\/|y)?\s*(?:terapia[s]?\s*manual(?:es)?)?/i', $servicio) || $servicio === 'No especifica') {
         $servicio = 'Terapias Manuales';
     }
-    $direccion = trim((string) ($params['direccion'] ?? 'Charcas 3889, Piso 5º B, Palermo (entre Scalabrini Ortiz y Aráoz)'));
+    $direccion = trim((string) ($params['direccion'] ?? 'Charcas 3889, Piso 5º B, Palermo'));
     $esMenor = !empty($params['esMenor']);
     $esCancelacion = !empty($params['esCancelacion']);
     $manageCode = strtoupper(trim((string) ($params['manageCode'] ?? '')));

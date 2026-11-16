@@ -115,7 +115,7 @@ const server = http.createServer((req, res) => {
         const servicioTexto = body.servicio ? ` (${body.servicio})` : "";
         const direccion =
           body.direccion ||
-          `${CONTACT.address.streetAddress}, Piso 5º B, ${CONTACT.address.neighborhood} (entre Scalabrini Ortiz y Aráoz)`;
+          `${CONTACT.address.streetAddress}, Piso 5º B, ${CONTACT.address.neighborhood}`;
 
         const html = `<!DOCTYPE html>
 <html lang="es">

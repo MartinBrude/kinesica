@@ -107,7 +107,7 @@ function formatCalendarSummary(data) {
       ? `Turno en Kinésica — ${technique.label}`
       : "Turno en Kinésica";
 
-    const location = "Charcas 3889, Piso 5º B, Palermo, CABA (entre Scalabrini Ortiz y Aráoz)";
+    const location = "Charcas 3889, Piso 5º B, Palermo, CABA";
 
     const specialtyLabel = payload.techniqueId === "no-se"
       ? "No especifica"

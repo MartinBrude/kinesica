@@ -23,7 +23,8 @@ No hay link en el home todavía; URL directa: `https://www.kinesica.com.ar/mi-tu
 
 ```bash
 # 1) Migración DB (columnas manage_*)
-php admin/api/migrate.php --token="$INSTALL_TOKEN"
+php admin/api/migrate-self.php
+# (o: php admin/api/migrate.php --token="$INSTALL_TOKEN")
 
 # 2) Redeploy Apps Script (action=cancel)
 npm run gas:deploy
