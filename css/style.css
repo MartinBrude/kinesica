@@ -5077,6 +5077,14 @@ Anonymous Satisfaction Survey (/encuesta.html)
   color: var(--navy, #0f2744);
 }
 
+.mi-turno-field-note {
+  display: inline;
+  margin-left: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
+}
+
 .mi-turno-field input {
   width: 100%;
   padding: 11px 12px;

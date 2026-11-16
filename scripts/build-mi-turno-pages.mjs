@@ -87,7 +87,7 @@ ${bodyShellTop(prefix)}${headerShellMarkup(lang, prefix)}
               <input id="mt-email" name="email" type="email" autocomplete="email" maxlength="120" required placeholder="${escAttr(copy.emailPh)}" />
             </div>
             <div class="mi-turno-field">
-              <label for="mt-codigo">${escHtml(copy.codigo)}</label>
+              <label for="mt-codigo">${escHtml(copy.codigo)} <span class="mi-turno-field-note">${escHtml(copy.codigoHint)}</span></label>
               <input id="mt-codigo" name="codigo" type="text" autocomplete="one-time-code" maxlength="12" required placeholder="${escAttr(copy.codigoPh)}" spellcheck="false" autocapitalize="characters" />
             </div>
             <button type="submit" class="mi-turno-btn" id="mt-submit">${escHtml(copy.submit)}</button>
