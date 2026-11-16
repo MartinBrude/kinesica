@@ -84,12 +84,17 @@ function normalizeHeadStylesheets(html, file) {
   let head = html.slice(0, headEnd);
   const body = html.slice(headEnd);
 
+  const wantsBooking =
+    /(^|\/)agendar\.html$/.test(file) || /page-agendar/.test(html);
+
   head = head
     .replace(/<!-- Bootstrap -->|<!-- Google Fonts -->|<!-- Font Awesome -->|<!-- Style -->\s*/g, "")
     .replace(/^\s*<link rel="preconnect" href="https:\/\/fonts\.googleapis\.com"[^>]*\/>\s*\n/gm, "")
     .replace(/^\s*<link rel="preconnect" href="https:\/\/fonts\.gstatic\.com"[^>]*\/>\s*\n/gm, "")
     .replace(/^\s*<link rel="preload" href="(?:\.\.\/)?fonts\/roboto\/roboto-latin-400-normal\.woff2"[^>]*\/>\s*\n/gm, "")
     .replace(/^\s*<link rel="preconnect" href="https:\/\/www\.googletagmanager\.com"[^>]*\/>\s*\n/gm, "")
+    .replace(/^\s*<link rel="preconnect" href="https:\/\/script\.google\.com"[^>]*\/>\s*\n/gm, "")
+    .replace(/^\s*<link rel="preconnect" href="https:\/\/script\.googleusercontent\.com"[^>]*\/>\s*\n/gm, "")
     .replace(/<link[^>]*bootstrap\.min\.css[^>]*>\s*/gi, "")
     .replace(/<link[^>]*style\.min\.css[^>]*>\s*/gi, "")
     .replace(/<link[^>]*roboto\.min\.css[^>]*>\s*/gi, "")
@@ -105,7 +110,10 @@ function normalizeHeadStylesheets(html, file) {
           : block,
     );
 
-  const cssBlock = headStandardStylesheets(p, { gtm: true });
+  const cssBlock = headStandardStylesheets(p, {
+    gtm: true,
+    bookingWidget: wantsBooking,
+  });
 
   const hasBlockingLayout =
     head.includes(`href="${p}css/bootstrap.min.css" rel="stylesheet"`) &&

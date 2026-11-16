@@ -4585,7 +4585,8 @@ Terms of Service Page
 21. Booking Page (Agendar)
 -------------------------------------*/
 /* Focus on the booking widget: no Articles / Methods nav on this page. */
-.page-agendar .navigation {
+.page-agendar .navigation,
+.page-mi-turno .navigation {
   display: none;
 }
 

@@ -55,7 +55,7 @@ ${headLangDeferScripts(prefix)}${headSeoBlock({
     imageAlt: copy.title,
     canonical,
   })}
-${headStandardStylesheets(prefix)}  <script src="${prefix}partials/gtm-head.min.js" defer></script>
+${headStandardStylesheets(prefix, { bookingWidget: false })}  <script src="${prefix}partials/gtm-head.min.js" defer></script>
 ${jsonLdScript(homePageBreadcrumbSchema(lang, homeLabel, copy.breadcrumb, canonical))}
 ${jsonLdScript(
     webPageSchema({
@@ -100,7 +100,7 @@ ${bodyShellTop(prefix)}${headerShellMarkup(lang, prefix)}
       </div>
     </section>
   </main>
-${bodyFooterAndUiScripts(lang, prefix)}
+${bodyFooterAndUiScripts(lang, prefix, { bookingBundle: false })}
   <script type="application/json" id="mi-turno-i18n">${JSON.stringify(copy)}</script>
   <script src="${prefix}js/mi-turno.min.js" defer></script>
 </body>

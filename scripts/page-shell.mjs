@@ -312,7 +312,7 @@ export function ctaStripPlaceholder(lang, prefix, { insideMain = false } = {}) {
 export function bodyFooterAndUiScripts(
   lang,
   prefix,
-  { faqAccordion = false, mapEmbedFacade = false } = {},
+  { faqAccordion = false, mapEmbedFacade = false, bookingBundle = true } = {},
 ) {
   const l = partialLang(lang);
   const lines = [
@@ -321,8 +321,12 @@ export function bodyFooterAndUiScripts(
     `  <div id="site-whatsapp-root" data-whatsapp-lang="${lang}"></div>`,
     `  <script src="${prefix}js/shell-whatsapp-${l}.min.js" defer></script>`,
     `  <script src="${prefix}js/ui-core.min.js" defer></script>`,
-    `  <script src="${prefix}booking/booking-bundle.min.js" defer></script>`,
   ];
+  if (bookingBundle) {
+    lines.push(
+      `  <script src="${prefix}booking/booking-bundle.min.js" defer></script>`,
+    );
+  }
   if (faqAccordion || mapEmbedFacade) {
     lines.push(`  <script src="${prefix}js/ui-home.min.js" defer></script>`);
   }
