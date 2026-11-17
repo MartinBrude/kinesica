@@ -97,6 +97,7 @@ Versión resumida: [llms.txt](https://www.kinesica.com.ar/llms.txt)
 - [Book an appointment online](https://www.kinesica.com.ar/en/agendar.html): Book your in-person physiotherapy, osteopathy, RPG, TMJ or acupuncture session at Kinésica (Palermo, Buenos Aires). One-hour individual appointments.
 - [Articles & conditions](https://www.kinesica.com.ar/en/articulos.html): Articles about kinesiology, osteopathy, and manual therapy. Information about cervical pain, low back pain, and treatments in Palermo.
 - [CV — Norberto Silvio Brude](https://www.kinesica.com.ar/en/cv.html): Physiotherapist and osteopath profile.
+- [Professional network & interconsultation](https://www.kinesica.com.ar/profesionales.html): Professional network and interconsultation at Kinésica Palermo (Spanish page): collaboration with physicians, dentists, and physiotherapists.
 - [Privacy policy](https://www.kinesica.com.ar/en/privacidad.html): Personal data protection and deletion request procedure.
 - [Terms of service](https://www.kinesica.com.ar/en/condiciones.html): Website terms of use, physical therapy care guidelines, and health disclaimer.
 
@@ -158,6 +159,7 @@ Versión resumida: [llms.txt](https://www.kinesica.com.ar/llms.txt)
 - [Prendre rendez-vous en ligne](https://www.kinesica.com.ar/fr/agendar.html): Réservez votre séance en cabinet de kinésithérapie, ostéopathie, RPG, ATM ou acupuncture chez Kinésica (Palermo, Buenos Aires). Séances individuelles d'une heure.
 - [Articles et pathologies](https://www.kinesica.com.ar/fr/articulos.html): Articles sur la kinésithérapie, l'ostéopathie et la thérapie manuelle : douleur cervicale, lombalgie et traitements à Palermo.
 - [CV — Norberto Silvio Brude](https://www.kinesica.com.ar/fr/cv.html): Profil du kinésithérapeute et ostéopathe.
+- [Réseau professionnel et interconsultation](https://www.kinesica.com.ar/profesionales.html): Réseau professionnel et interconsultation chez Kinésica Palermo (page en espagnol) : collaboration avec médecins, dentistes et kinésithérapeutes.
 - [Politique de confidentialité](https://www.kinesica.com.ar/fr/privacidad.html): Protection des données personnelles et demande de suppression d'informations.
 - [Conditions de service](https://www.kinesica.com.ar/fr/condiciones.html): Conditions d'utilisation du site, modalités de soins et avertissement médical.
 
@@ -219,6 +221,7 @@ Versión resumida: [llms.txt](https://www.kinesica.com.ar/llms.txt)
 - [Agendar consulta online](https://www.kinesica.com.ar/pt/agendar.html): Reserve sua sessão presencial de fisioterapia, osteopatia, RPG, ATM ou acupuntura na Kinésica (Palermo, Buenos Aires). Consultas individuais de 1 hora.
 - [Artigos e condições](https://www.kinesica.com.ar/pt/articulos.html): Artigos sobre fisioterapia, osteopatia e terapia manual: dor cervical, lombalgia e tratamentos em Palermo.
 - [Currículo — Norberto Silvio Brude](https://www.kinesica.com.ar/pt/cv.html): Perfil do fisioterapeuta e osteopata.
+- [Rede profissional e interconsulta](https://www.kinesica.com.ar/profesionales.html): Rede profissional e interconsulta na Kinésica Palermo (página em espanhol): colaboração com médicos, odontólogos e fisioterapeutas.
 - [Política de privacidade](https://www.kinesica.com.ar/pt/privacidad.html): Proteção de dados pessoais e procedimento para solicitar a eliminação de informações.
 - [Condições do serviço](https://www.kinesica.com.ar/pt/condiciones.html): Regras de uso do site, diretrizes de atendimento fisioterapêutico e aviso de saúde.
 

@@ -6,6 +6,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { METHOD_STEMS, METHODS } from "./methods-content.mjs";
+import { METHOD_FAQS } from "./method-faq-content.mjs";
 import { absoluteUrl, repoPath } from "./i18n-urls.mjs";
 import { LANG_CODES } from "./languages.mjs";
 
@@ -47,6 +48,14 @@ for (const stem of METHOD_STEMS) {
     }
     if (!html.includes("page-header-word")) {
       errors.push(`${file}: missing decorative page header`);
+    }
+    const faqs = METHOD_FAQS[stem]?.[lang] || [];
+    if (!faqs.length) {
+      errors.push(`${stem}/${lang}: missing METHOD_FAQS entries`);
+    } else if (!html.includes('"@type": "FAQPage"')) {
+      errors.push(`${file}: missing FAQPage schema`);
+    } else if (!html.includes('id="faq"')) {
+      errors.push(`${file}: missing visible FAQ section`);
     }
   }
 }

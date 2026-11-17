@@ -106,6 +106,10 @@ check("robots.txt", (text) => {
     errors.push("robots.txt: missing User-agent ClaudeBot");
   if (!/User-agent:\s*Google-Extended/i.test(text))
     errors.push("robots.txt: missing User-agent Google-Extended");
+  if (!/User-agent:\s*PerplexityBot/i.test(text))
+    errors.push("robots.txt: missing User-agent PerplexityBot");
+  if (!/User-agent:\s*Applebot-Extended/i.test(text))
+    errors.push("robots.txt: missing User-agent Applebot-Extended");
   if (!/#\s*https:\/\/www\.kinesica\.com\.ar\/llms-small\.txt$/m.test(text))
     errors.push("robots.txt: missing commented llms-small.txt link");
   if (!/#\s*https:\/\/www\.kinesica\.com\.ar\/llms\.txt$/m.test(text))

@@ -222,6 +222,12 @@ const enMainLines = [
   ),
   link("Articles & conditions", "en", "articulos", metaDescription("en", "articulos")),
   link(`CV — ${FOUNDER.name}`, "en", "cv", "Physiotherapist and osteopath profile."),
+  link(
+    "Professional network & interconsultation",
+    "es",
+    "profesionales",
+    "Professional network and interconsultation at Kinésica Palermo (Spanish page): collaboration with physicians, dentists, and physiotherapists.",
+  ),
   link("Privacy policy", "en", "privacidad", "Personal data protection and deletion request procedure."),
   link("Terms of service", "en", "condiciones", "Website terms of use, physical therapy care guidelines, and health disclaimer."),
 ];
@@ -245,6 +251,12 @@ const frMainLines = [
     "fr",
     "cv",
     "Profil du kinésithérapeute et ostéopathe.",
+  ),
+  link(
+    "Réseau professionnel et interconsultation",
+    "es",
+    "profesionales",
+    "Réseau professionnel et interconsultation chez Kinésica Palermo (page en espagnol) : collaboration avec médecins, dentistes et kinésithérapeutes.",
   ),
   link(
     "Politique de confidentialité",
@@ -279,6 +291,12 @@ const ptMainLines = [
     "pt",
     "cv",
     "Perfil do fisioterapeuta e osteopata.",
+  ),
+  link(
+    "Rede profissional e interconsulta",
+    "es",
+    "profesionales",
+    "Rede profissional e interconsulta na Kinésica Palermo (página em espanhol): colaboração com médicos, odontólogos e fisioterapeutas.",
   ),
   link(
     "Política de privacidade",

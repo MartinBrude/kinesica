@@ -110,6 +110,7 @@ export const UI = {
 export const PATHOLOGIES = [
   {
     stem: "cefalea",
+    updatedAt: "2024-06-01",
     image: "hero-img.jpg",
     techniques: ["osteopatia", "atm", "rpg", "manipulaciones"],
     es: {
@@ -207,6 +208,7 @@ export const PATHOLOGIES = [
 
   {
     stem: "dorsalgia",
+    updatedAt: "2024-06-01",
     image: "hero-img.jpg",
     techniques: ["rpg", "osteopatia", "manipulaciones", "cadenas"],
     es: {
@@ -498,6 +500,7 @@ export const PATHOLOGIES = [
 
   {
     stem: "cervicobraquialgia",
+    updatedAt: "2024-06-01",
     image: "hero-img.jpg",
     techniques: ["neurodinamia", "osteopatia", "manipulaciones", "rpg"],
     es: {
@@ -594,6 +597,7 @@ export const PATHOLOGIES = [
 
   {
     stem: "pubalgia",
+    updatedAt: "2024-06-01",
     image: "hero-img.jpg",
     techniques: ["osteopatia", "cadenas", "rpg", "manipulaciones"],
     es: {
@@ -690,6 +694,7 @@ export const PATHOLOGIES = [
 
   {
     stem: "gonalgia",
+    updatedAt: "2024-06-01",
     image: "hero-img.jpg",
     techniques: ["osteopatia", "manipulaciones", "cadenas", "rpg"],
     es: {
@@ -786,6 +791,7 @@ export const PATHOLOGIES = [
 
   {
     stem: "talalgia",
+    updatedAt: "2024-06-01",
     image: "hero-img.jpg",
     techniques: ["osteopatia", "manipulaciones", "cadenas", "rpg"],
     es: {
@@ -882,6 +888,7 @@ export const PATHOLOGIES = [
 
   {
     stem: "dolor-sacroiliaco",
+    updatedAt: "2024-06-01",
     image: "hero-img.jpg",
     techniques: ["osteopatia", "manipulaciones", "cadenas", "rpg"],
     es: {
@@ -1075,6 +1082,7 @@ export const PATHOLOGIES = [
 
   {
     stem: "protrusion-discal",
+    updatedAt: "2024-06-01",
     image: "hero-img.jpg",
     techniques: ["rpg", "osteopatia", "manipulaciones", "cadenas"],
     es: {
@@ -1171,6 +1179,7 @@ export const PATHOLOGIES = [
 
   {
     stem: "hipercifosis",
+    updatedAt: "2024-06-01",
     image: "hero-img.jpg",
     techniques: ["rpg", "cadenas", "osteopatia", "manipulaciones"],
     es: {
@@ -1267,6 +1276,7 @@ export const PATHOLOGIES = [
 
   {
     stem: "hiperlordosis",
+    updatedAt: "2024-06-01",
     image: "hero-img.jpg",
     techniques: ["rpg", "cadenas", "osteopatia", "manipulaciones"],
     es: {
@@ -1363,6 +1373,7 @@ export const PATHOLOGIES = [
 
   {
     stem: "dorso-plano",
+    updatedAt: "2024-06-01",
     image: "hero-img.jpg",
     techniques: ["rpg", "cadenas", "osteopatia", "manipulaciones"],
     es: {
@@ -1459,6 +1470,7 @@ export const PATHOLOGIES = [
 
   {
     stem: "genu-valgo",
+    updatedAt: "2024-06-01",
     image: "hero-img.jpg",
     techniques: ["cadenas", "rpg", "osteopatia", "manipulaciones"],
     es: {
@@ -1555,6 +1567,7 @@ export const PATHOLOGIES = [
 
   {
     stem: "genu-varo",
+    updatedAt: "2024-06-01",
     image: "hero-img.jpg",
     techniques: ["cadenas", "rpg", "osteopatia", "manipulaciones"],
     es: {
@@ -1651,6 +1664,7 @@ export const PATHOLOGIES = [
 
   {
     stem: "pies-planos",
+    updatedAt: "2024-06-01",
     image: "hero-img.jpg",
     techniques: ["cadenas", "rpg", "osteopatia", "manipulaciones"],
     es: {
@@ -1747,6 +1761,7 @@ export const PATHOLOGIES = [
 
   {
     stem: "escoliosis",
+    updatedAt: "2024-06-01",
     image: "hero-img.jpg",
     techniques: ["rpg", "cadenas", "osteopatia", "manipulaciones"],
     es: {
@@ -1940,6 +1955,7 @@ export const PATHOLOGIES = [
 
   {
     stem: "epicondilitis-medial",
+    updatedAt: "2024-06-01",
     image: "hero-img.jpg",
     techniques: ["manipulaciones", "osteopatia", "cadenas"],
     es: {
@@ -2036,6 +2052,7 @@ export const PATHOLOGIES = [
 
   {
     stem: "impingement-subacromial",
+    updatedAt: "2024-06-01",
     image: "hero-img.jpg",
     techniques: ["osteopatia", "manipulaciones", "cadenas", "rpg"],
     es: {
@@ -2229,6 +2246,7 @@ export const PATHOLOGIES = [
 
   {
     stem: "radiculopatia",
+    updatedAt: "2024-06-01",
     image: "hero-img.jpg",
     techniques: ["neurodinamia", "osteopatia", "manipulaciones", "rpg"],
     es: {
@@ -2325,6 +2343,7 @@ export const PATHOLOGIES = [
 
   {
     stem: "meniscopatia",
+    updatedAt: "2024-06-01",
     image: "hero-img.jpg",
     techniques: ["osteopatia", "manipulaciones", "cadenas", "rpg"],
     es: {
@@ -2421,6 +2440,7 @@ export const PATHOLOGIES = [
 
   {
     stem: "fascitis-plantar",
+    updatedAt: "2024-06-01",
     image: "hero-img.jpg",
     techniques: ["osteopatia", "manipulaciones", "cadenas", "rpg"],
     es: {

@@ -234,6 +234,7 @@ export function headSeoBlock({
     `  <title>${escHtml(title)}</title>`,
     `  <link rel="canonical" href="${url}" />`,
     hreflangLinks(stem),
+    `  <link rel="alternate" type="text/plain" title="llms.txt" href="${SITE}/llms.txt" />`,
     `  <meta property="og:title" content="${escHtml(title)}" />`,
     `  <meta property="og:description" content="${escHtml(ogDesc)}" />`,
   ];

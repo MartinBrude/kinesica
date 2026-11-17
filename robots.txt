@@ -2,6 +2,8 @@
 User-agent: GPTBot
 User-agent: ClaudeBot
 User-agent: Google-Extended
+User-agent: PerplexityBot
+User-agent: Applebot-Extended
 Allow: /
 
 # Build tooling and non-public fragments

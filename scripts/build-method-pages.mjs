@@ -43,7 +43,7 @@ import {
   getMethodServiceCopy,
 } from "./schema-local-business.mjs";
 import { FOUNDER } from "./site-contact.mjs";
-import { METHOD_FAQS } from "./method-faq-content.mjs";
+import { METHOD_FAQ_UI, METHOD_FAQS } from "./method-faq-content.mjs";
 
 const ROOT = repoRoot(import.meta.url);
 
@@ -101,7 +101,38 @@ function methodPhrase(data) {
   return cut.charAt(0).toLowerCase() + cut.slice(1);
 }
 
-function buildMain(data, ui, imageSrc, lang) {
+function buildFaqSection(stem, lang) {
+  const faqs = METHOD_FAQS[stem]?.[lang];
+  if (!faqs?.length) return "";
+  const uiTitle = METHOD_FAQ_UI[lang]?.title || "Preguntas frecuentes";
+  const items = faqs
+    .map(
+      (faq) => `            <details class="pathology-faq-item">
+              <summary class="pathology-faq-question">
+                <span class="pathology-faq-q-text">${escHtml(faq.q)}</span>
+              </summary>
+              <div class="pathology-faq-answer">
+                <p>${escHtml(faq.a)}</p>
+              </div>
+            </details>`,
+    )
+    .join("\n");
+
+  return `    <section class="pathology-faq space-medium" id="faq">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12">
+            <h2>${escHtml(uiTitle)}</h2>
+            <div class="pathology-faq-list">
+${items}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>`;
+}
+
+function buildMain(data, ui, imageSrc, lang, stem) {
   const pageUi = METHOD_PAGE_UI[lang];
   const name = methodPhrase(data);
   const blocks = data.blocks ?? [];
@@ -133,7 +164,8 @@ ${rendered}
           </div>
         </div>
       </div>
-    </section>`;
+    </section>
+${buildFaqSection(stem, lang)}`;
 }
 
 function buildHtml(stem, lang) {
@@ -241,7 +273,7 @@ ${pageBreadcrumbSection({
       homeLabel: ui.homeLabel,
       activeLabel: data.breadcrumb,
     })}
-${buildMain(data, ui, pageImageSrc, lang)}
+${buildMain(data, ui, pageImageSrc, lang, stem)}
   </main>
 ${ctaStripPlaceholder(lang, p)}
 ${bodyFooterAndUiScripts(lang, p)}

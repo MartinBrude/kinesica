@@ -6,6 +6,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { SITE } from "./i18n-urls.mjs";
 import {
   ROBOTO_STYLESHEET,
   dedupePreconnects,
@@ -13,6 +14,8 @@ import {
   headJsClassScript,
   headStandardStylesheets,
 } from "./page-shell.mjs";
+
+const LLMS_ALTERNATE = `  <link rel="alternate" type="text/plain" title="llms.txt" href="${SITE}/llms.txt" />\n`;
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -48,6 +51,21 @@ function addRobotsMeta(html, file) {
   }
   const tag = isNoindexPage(file) ? ROBOTS_NOINDEX : ROBOTS_INDEX;
   return html.replace(/<meta name="viewport"[^>]*\/>\s*\n/, (m) => m + tag);
+}
+
+/** Discovery hint for LLM crawlers (https://llmstxt.org/). */
+function ensureLlmsAlternate(html, file) {
+  if (isNoindexPage(file)) return html;
+  if (html.includes('title="llms.txt"') || html.includes("/llms.txt")) {
+    return html;
+  }
+  if (/<link rel="canonical" href="[^"]+"\s*\/>/.test(html)) {
+    return html.replace(
+      /(<link rel="canonical" href="[^"]+"\s*\/>\s*\n)/,
+      `$1${LLMS_ALTERNATE}`,
+    );
+  }
+  return html.replace(/<\/title>\s*\n/, `</title>\n${LLMS_ALTERNATE}`);
 }
 
 function removeGoogleFonts(html) {
@@ -233,6 +251,7 @@ for (const file of listHtmlFiles(ROOT)) {
   let html = fs.readFileSync(full, "utf8");
   const original = html;
   html = addRobotsMeta(html, file);
+  html = ensureLlmsAlternate(html, file);
   html = removeGoogleFonts(html);
   html = ensureHeadJsClass(html);
   html = ensureCriticalCss(html, file);
