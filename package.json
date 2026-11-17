@@ -67,8 +67,6 @@
     "migrate:cta": "node scripts/migrate-cta-strip.mjs && node scripts/normalize-cta-strip.mjs && node scripts/inject-static-shell.mjs && npm run assets:build",
     "mail:test": "php scripts/verify-send-confirmation.php",
     "settings:test": "php scripts/verify-admin-settings.php",
-    "clara:sync-faqs": "node scripts/sync-clara-site-faqs.mjs",
-    "clara:verify-faqs": "node scripts/verify-clara-site-faqs.mjs",
     "admin:lint": "npx --yes eslint@9 --no-config-lookup -c scripts/eslint.admin.config.mjs admin/app.js admin/modules/*.js"
   },
   "devDependencies": {

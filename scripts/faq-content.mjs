@@ -303,29 +303,6 @@ export const FAQS = [
   },
 ];
 
-/** Stable ids for Clara WhatsApp FAQ routing (order matches home accordion). */
-export const CLARA_FAQ_IDS = [
-  "tratamiento_duracion",
-  "sesion_duracion",
-  "sesion_frecuencia",
-  "primera_sesion",
-  "puntualidad",
-  "prepagas",
-  "honorarios_faq",
-  "a_quienes_sirven",
-];
-
-/**
- * Plain Q/A for Clara (ES/EN). Uses concise `a[lang]` (not rich HTML panels).
- * @returns {Array<{id: string, q: {es: string, en: string}, a: {es: string, en: string}}>}
- */
-export function faqsForClara() {
-  return FAQS.map((item, i) => ({
-    id: CLARA_FAQ_IDS[i] || `faq_${i + 1}`,
-    q: { es: item.q.es, en: item.q.en },
-    a: { es: item.a.es, en: item.a.en },
-  }));
-}
 
 /** Concise Q/A for FAQPage JSON-LD. */
 export function faqsForSchema(lang) {
