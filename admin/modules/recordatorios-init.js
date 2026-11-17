@@ -8,7 +8,7 @@ import { recordatoriosStore } from "./recordatorios-store.js?v=1";
 import { loadRecordatorios } from "./recordatorios-load.js?v=1";
 import { applyFiltersAndRender, applyRecordatorioItemUpdate } from "./recordatorios-apply.js?v=1";
 import { openRecordatorioContactModal, openRecordatorioDispatchModal } from "./recordatorios-modal-contact.js?v=1";
-import { openTestCaseModal } from "./recordatorios-modal-test.js?v=1";
+import { openTestCaseModal } from "./recordatorios-modal-test.js?v=2";
 
 export function initRecordatoriosModule() {
   renderRecordatoriosRules(document.getElementById("recordatorios-rules"));
