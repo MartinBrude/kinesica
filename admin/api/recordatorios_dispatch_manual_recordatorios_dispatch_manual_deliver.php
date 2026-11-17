@@ -15,14 +15,16 @@ function recordatorios_dispatch_manual_deliver(
             return ['ok' => false, 'error' => 'Email no válido para el envío'];
         }
 
-        $subject = 'Recordatorio de turno — Kinésica';
-        $when = trim($apptDate . ' ' . $apptTime);
+        $when = function_exists('recordatorios_format_when_phrase')
+            ? recordatorios_format_when_phrase($apptDate, $apptTime)
+            : trim($apptDate . ' ' . $apptTime);
+        $subject = 'Recordatorio de turno — Kinésica (' . $when . ')';
         $html = '<div style="font-family:sans-serif;max-width:560px;margin:auto;padding:20px;border:1px solid #e5e7eb;border-radius:8px;">'
             . '<h2 style="color:#0b2545;">Recordatorio de turno — Kinésica</h2>'
             . '<p>¡Hola <strong>' . htmlspecialchars($firstName) . '</strong>! Te escribimos para recordarte tu turno:</p>'
             . '<ul>'
             . '<li><strong>Tipo:</strong> ' . htmlspecialchars($tipoCita) . '</li>'
-            . '<li><strong>Horario:</strong> ' . htmlspecialchars($when !== '' ? $when : $apptTime) . '</li>'
+            . '<li><strong>Cuándo:</strong> ' . htmlspecialchars($when !== '' ? $when : $apptTime) . '</li>'
             . ($isCall ? '<li><strong>Modalidad:</strong> Llamada por WhatsApp</li>' : '<li><strong>Ubicación:</strong> Charcas 3889, 5º, B (Palermo)</li>')
             . '</ul>'
             . '<p>' . nl2br(htmlspecialchars($indicaciones)) . '</p>'
@@ -92,14 +94,16 @@ function recordatorios_dispatch_manual_deliver(
 
     // Fallback email solo en canal auto (nunca en pruebas ni si eligieron Solo WhatsApp).
     if ($channel === 'auto' && !$isTestCase && $email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $subject = 'Recordatorio de turno — Kinésica';
-        $when = trim($apptDate . ' ' . $formattedTime);
+        $when = function_exists('recordatorios_format_when_phrase')
+            ? recordatorios_format_when_phrase($apptDate, $apptTime)
+            : trim($apptDate . ' ' . $apptTime);
+        $subject = 'Recordatorio de turno — Kinésica (' . $when . ')';
         $html = '<div style="font-family:sans-serif;max-width:560px;margin:auto;padding:20px;border:1px solid #e5e7eb;border-radius:8px;">'
             . '<h2 style="color:#0b2545;">Recordatorio de turno — Kinésica</h2>'
             . '<p>¡Hola <strong>' . htmlspecialchars($firstName) . '</strong>! Te escribimos para recordarte tu turno:</p>'
             . '<ul>'
             . '<li><strong>Tipo:</strong> ' . htmlspecialchars($tipoCita) . '</li>'
-            . '<li><strong>Horario:</strong> ' . htmlspecialchars($when !== '' ? $when : $formattedTime) . '</li>'
+            . '<li><strong>Cuándo:</strong> ' . htmlspecialchars($when !== '' ? $when : $apptTime) . '</li>'
             . ($isCall ? '<li><strong>Modalidad:</strong> Llamada por WhatsApp</li>' : '<li><strong>Ubicación:</strong> Charcas 3889, 5º, B (Palermo)</li>')
             . '</ul>'
             . '<p>' . nl2br(htmlspecialchars($indicaciones)) . '</p>'

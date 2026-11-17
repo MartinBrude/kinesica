@@ -96,14 +96,23 @@ function clean_phone_number(string $raw): string
         return '';
     }
 
+    // Si vienen múltiples teléfonos separados por barra, coma o punto y coma, tomar el primero
+    $parts = preg_split('/[\/,;]/', $t);
+    $first = trim($parts[0] ?? $t);
+
+    // Remover aclaraciones entre paréntesis como (celular), (casa), (hijo), etc.
+    $noParens = preg_replace('/\([^)]*\)/', '', $first) ?? $first;
     // Descartar prefijos de texto habituales ("WhatsApp:", "tel:", "teléfono:", etc.)
-    $withoutPrefix = preg_replace('/^(?:whatsapp|wa\.me|tel[eé]?fono|tel|cel|movil|celular|phone)[:\s\/]*/iu', '', $t) ?? $t;
+    $withoutPrefix = preg_replace('/^(?:whatsapp|wa\.me|tel[eé]?fono|tel|cel|movil|celular|phone)[:\s\/]*/iu', '', $noParens) ?? $noParens;
+    // Descartar palabras descriptivas comunes ("fijo", "particular", "laboral", etc.)
+    $withoutWords = preg_replace('/\b(?:fijo|cel|celular|movil|casa|particular|laboral|trabajo|int\.?\s*\d*)\b/iu', '', $withoutPrefix) ?? $withoutPrefix;
+
     // Si contiene letras sueltas que no eran prefijos conocidos, no es un teléfono válido
-    if (preg_match('/[a-zA-Z]/', $withoutPrefix)) {
+    if (preg_match('/[a-zA-Z]/', $withoutWords)) {
         return '';
     }
 
-    $digits = preg_replace('/\D+/', '', $withoutPrefix) ?? '';
+    $digits = preg_replace('/\D+/', '', $withoutWords) ?? '';
     if ($digits === '') {
         return '';
     }

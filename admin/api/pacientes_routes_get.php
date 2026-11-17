@@ -39,14 +39,70 @@ declare(strict_types=1);
                 $tel = clean_phone_number($rawTel);
                 $email = trim((string) ($row['email'] ?? ''));
                 $keys = [];
-                $norm = normalize_search_key($row['nombre_completo'] ?? '');
-                if ($norm !== '') $keys[] = $norm;
-                if (!empty($row['nombre_completo'])) $keys[] = (string) $row['nombre_completo'];
-                $firstLast = trim(($row['nombre'] ?? '') . ' ' . ($row['apellido'] ?? ''));
+                $fullName = trim((string) ($row['nombre_completo'] ?? ''));
+                $nom = trim((string) ($row['nombre'] ?? ''));
+                $ape = trim((string) ($row['apellido'] ?? ''));
+
+                if (($nom === '' || $ape === '') && $fullName !== '') {
+                    $cleanFull = preg_replace('/^(?:dr[a]?\.|lic\.|prof\.)\s*/i', '', $fullName) ?? $fullName;
+                    if (str_contains($cleanFull, ',')) {
+                        $partsComa = explode(',', $cleanFull, 2);
+                        if ($ape === '') $ape = trim($partsComa[0]);
+                        if ($nom === '') $nom = trim($partsComa[1]);
+                    } else {
+                        $words = preg_split('/\s+/', $cleanFull) ?: [];
+                        if (count($words) >= 4) {
+                            if ($nom === '') $nom = $words[0] . ' ' . $words[1];
+                            if ($ape === '') $ape = implode(' ', array_slice($words, 2));
+                        } elseif (count($words) === 3) {
+                            $firstLower = mb_strtolower($words[0]);
+                            if (in_array($firstLower, ['juan', 'maria', 'maría', 'jose', 'josé', 'ana', 'luis', 'carlos'], true)) {
+                                if ($nom === '') $nom = $words[0] . ' ' . $words[1];
+                                if ($ape === '') $ape = $words[2];
+                            } else {
+                                if ($nom === '') $nom = $words[0];
+                                if ($ape === '') $ape = $words[1] . ' ' . $words[2];
+                            }
+                        } elseif (count($words) === 2) {
+                            if ($nom === '') $nom = $words[0];
+                            if ($ape === '') $ape = $words[1];
+                        }
+                    }
+                }
+
+                if ($fullName !== '') {
+                    $keys[] = $fullName;
+                }
+                $firstLast = trim($nom . ' ' . $ape);
                 if ($firstLast !== '') $keys[] = $firstLast;
-                $lastFirst = trim(($row['apellido'] ?? '') . ' ' . ($row['nombre'] ?? ''));
+                $lastFirst = trim($ape . ' ' . $nom);
                 if ($lastFirst !== '') $keys[] = $lastFirst;
-                foreach (array_unique($keys) as $k) {
+
+                // Indexar variantes de primer apellido y primer nombre para nombres/apellidos compuestos
+                $partsApe = preg_split('/\s+/', $ape) ?: [];
+                if (count($partsApe) > 1) {
+                    $keys[] = trim($nom . ' ' . $partsApe[0]);
+                    $keys[] = trim($partsApe[0] . ' ' . $nom);
+                    $keys[] = trim($nom . ' ' . end($partsApe));
+                }
+                $partsNom = preg_split('/\s+/', $nom) ?: [];
+                if (count($partsNom) > 1) {
+                    $keys[] = trim($partsNom[0] . ' ' . $ape);
+                    if (count($partsApe) > 1) {
+                        $keys[] = trim($partsNom[0] . ' ' . $partsApe[0]);
+                    }
+                }
+
+                $expandedKeys = [];
+                foreach ($keys as $k) {
+                    $cleanK = trim($k);
+                    if ($cleanK === '') continue;
+                    $expandedKeys[] = $cleanK;
+                    $normK = normalize_search_key($cleanK);
+                    if ($normK !== '') $expandedKeys[] = $normK;
+                }
+
+                foreach (array_unique($expandedKeys) as $k) {
                     if ($tel !== '') $directory[$k] = $tel;
                     if ($email !== '' && is_valid_email_strict($email)) $emails[$k] = strtolower($email);
                 }

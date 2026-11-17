@@ -24,7 +24,18 @@ $settingsFile = kinesica_settings_source_file();
 
 function get_runtime_settings(string $file): array
 {
-    return load_full_runtime_settings($file);
+    $settings = load_full_runtime_settings($file);
+    try {
+        require_once __DIR__ . '/lib_recordatorios_store_recordatorios_was_sent_for_event.php';
+        $pdo = recordatorios_pdo();
+        $stmt = $pdo->query("SELECT wa_id, patient_name, appointment_date, appointment_time, calendar_event_id, run_at, event_summary FROM recordatorio_eventos WHERE status IN ('sent', 'sent_email') AND run_at >= (NOW() - INTERVAL 24 HOUR) ORDER BY id DESC LIMIT 50");
+        if ($stmt) {
+            $settings['active_reminders'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+    } catch (Throwable $e) {
+        // En ausencia de DB de recordatorios conectada, se preserva settings intacto
+    }
+    return $settings;
 }
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
@@ -111,10 +122,12 @@ if ($method === 'POST') {
             if (isset($input['clara_texts']) && is_array($input['clara_texts'])) {
                 $allowed = [
                     'menu_welcome', 'opt_a_text', 'opt_b_text', 'opt_c_text', 'opt_d_text', 'opt_e_text',
-                    'submenu_turnos_text', 'opt_a2_text',
+                    'submenu_turnos_text', 'opt_a2_text', 'cancel_fallback_text',
+                    'faq_medios_pago', 'faq_donde_consultar_turnos', 'faq_clara_bot',
                     'opt_e1_text', 'opt_e2_text', 'opt_e3_text',
                     'menu_welcome_en', 'opt_a_text_en', 'opt_b_text_en', 'opt_c_text_en', 'opt_d_text_en', 'opt_e_text_en',
-                    'submenu_turnos_text_en', 'opt_a2_text_en',
+                    'submenu_turnos_text_en', 'opt_a2_text_en', 'cancel_fallback_text_en',
+                    'faq_medios_pago_en', 'faq_donde_consultar_turnos_en', 'faq_clara_bot_en',
                     'opt_e1_text_en', 'opt_e2_text_en', 'opt_e3_text_en',
                     'cancellation_policy', 'confirmation_notes', 'reminder_text', 'reminder_notes'
                 ];

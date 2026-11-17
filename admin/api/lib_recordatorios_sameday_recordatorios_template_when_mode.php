@@ -55,8 +55,19 @@ function recordatorios_sameday_indicaciones(): string
 function recordatorios_sameday_first_name(string $patientName): string
 {
     $clean = preg_replace('/^(?:dr[a]?\.|lic\.|prof\.)\s*/i', '', trim($patientName)) ?? '';
+    if (str_contains($clean, ',')) {
+        $parts = explode(',', $clean, 2);
+        if (!empty($parts[1]) && mb_strlen(trim($parts[1])) >= 2) {
+            $clean = trim($parts[1]);
+        }
+    }
     $parts = preg_split('/\s+/', $clean) ?: [];
     if (!empty($parts[0]) && mb_strlen($parts[0]) >= 2) {
+        $firstLower = mb_strtolower($parts[0]);
+        $compoundFirst = ['juan', 'maria', 'maría', 'jose', 'josé', 'ana', 'luis', 'carlos'];
+        if (in_array($firstLower, $compoundFirst, true) && !empty($parts[1])) {
+            return $parts[0] . ' ' . $parts[1];
+        }
         return $parts[0];
     }
     return $patientName !== '' ? $patientName : 'Estimado/a paciente';
@@ -78,7 +89,7 @@ function recordatorios_sameday_extract_hhmm(array $appt): string
         }
     }
     $iso = trim((string) ($appt['startIso'] ?? $appt['start'] ?? ''));
-    if ($iso === '') {
+    if ($iso === '' || preg_match('/^\d{4}-\d{2}-\d{2}$/', $iso)) {
         return '';
     }
     try {

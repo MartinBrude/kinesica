@@ -127,6 +127,12 @@ function recordatorios_load_view(?PDO $pdo = null, int $days = RECORDATORIOS_DEF
         } elseif (function_exists('kinesica_rel_read_ids') && kinesica_rel_read_ids()) {
             kinesica_rel_note_read_fallback('recordatorios', $pid > 0 ? 'paciente_id_huerfano' : 'sin_paciente_id');
         }
+        if (trim((string) ($r['wa_id'] ?? '')) === '' && $nameKey !== '') {
+            if (!empty($directory['phone_by_name'][$nameKey])) {
+                $r['wa_id'] = $directory['phone_by_name'][$nameKey];
+                $phoneEnd = substr(recordatorios_clean_wa_id($r['wa_id']), -10);
+            }
+        }
         if ($email === '') {
             if ($phoneEnd !== '' && isset($directory['by_phone'][$phoneEnd])) {
                 $email = $directory['by_phone'][$phoneEnd];

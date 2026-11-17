@@ -45,8 +45,10 @@ function recordatorios_sameday_process_appointment(array $appt, string $today, s
 
     $phone = recordatorios_sameday_resolve_phone($appt);
     $email = recordatorios_sameday_resolve_email($phone, $patientName, $appt);
-    $timeLabel = $hhmm !== '' ? ($hhmm . ' hs') : 'horario convenido';
-    $whenPhrase = 'hoy a las ' . $timeLabel;
+    $timeLabel = $hhmm !== '' ? ($hhmm . ' hs') : 'a convenir';
+    $whenPhrase = function_exists('recordatorios_format_when_phrase')
+        ? recordatorios_format_when_phrase($apptDate, $timeLabel)
+        : ('hoy a las ' . $timeLabel);
     $firstName = recordatorios_sameday_first_name($patientName);
     $indicaciones = recordatorios_sameday_indicaciones();
     $tipoCita = 'sesión en el consultorio';
@@ -175,7 +177,7 @@ function recordatorios_sameday_send_email(
     string $whenPhrase,
     string $indicaciones
 ): bool {
-    $subject = 'Recordatorio de turno — Kinésica';
+    $subject = 'Recordatorio de turno — Kinésica (' . $whenPhrase . ')';
     $html = '<div style="font-family:sans-serif;max-width:560px;margin:auto;padding:20px;border:1px solid #e5e7eb;border-radius:8px;">'
         . '<h2 style="color:#0b2545;">Recordatorio de turno — Kinésica</h2>'
         . '<p>¡Hola <strong>' . htmlspecialchars($firstName) . '</strong>! Te escribimos para recordarte tu turno:</p>'

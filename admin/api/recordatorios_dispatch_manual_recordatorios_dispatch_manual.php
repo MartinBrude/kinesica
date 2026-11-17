@@ -92,6 +92,9 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
     if ($apptTime !== '' && !preg_match('/\bhs\b/i', $apptTime)) {
         $formattedTime = $apptTime . ' hs';
     }
+    $whenPhrase = function_exists('recordatorios_format_when_phrase')
+        ? recordatorios_format_when_phrase($apptDate, $formattedTime)
+        : ('mañana a las ' . $formattedTime);
 
     // Regla estricta: No debe intentar enviarse recordatorio más de una vez por día a nadie
     if (in_array($item['status'], ['sent', 'sent_email'], true)) {
@@ -166,7 +169,7 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
 
     return recordatorios_dispatch_manual_deliver(
         $id, $input, $auth, $item, $phone, $email, $channel, $patientName, $apptTime, $apptDate, $summary, $user,
-        $isCall, $tipoCita, $indicaciones, $firstName, $isTestCase, $formattedTime
+        $isCall, $tipoCita, $indicaciones, $firstName, $isTestCase, $whenPhrase
     );
 }
 

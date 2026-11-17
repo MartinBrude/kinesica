@@ -138,7 +138,7 @@ function recordatorios_resolve_contact_email(string $waId, string $patientName =
  */
 function recordatorios_lookup_directory_contacts(PDO $pdo, array $rows): array
 {
-    $out = ['by_phone' => [], 'by_name' => []];
+    $out = ['by_phone' => [], 'by_name' => [], 'phone_by_name' => []];
     try {
         $phones = [];
         $names = [];
@@ -182,18 +182,37 @@ function recordatorios_lookup_directory_contacts(PDO $pdo, array $rows): array
             foreach ($nameList as $i => $name) {
                 $conds[] = 'LOWER(nombre_completo) = LOWER(?)';
                 $params[] = $name;
+                $parts = preg_split('/\s+/u', trim($name)) ?: [];
+                if (count($parts) >= 2) {
+                    $conds[] = 'LOWER(nombre_completo) LIKE LOWER(?)';
+                    $params[] = '%' . $parts[0] . '%' . end($parts) . '%';
+                }
             }
             $stmt = $pdo->prepare(
-                'SELECT nombre_completo, telefono, email FROM pacientes
-                 WHERE email IS NOT NULL AND email != "" AND (' . implode(' OR ', $conds) . ')
+                'SELECT nombre, apellido, nombre_completo, telefono, email FROM pacientes
+                 WHERE ((' . implode(' OR ', $conds) . '))
                  LIMIT 500'
             );
             $stmt->execute($params);
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $key = mb_strtolower(trim((string) ($row['nombre_completo'] ?? '')));
                 $email = strtolower(trim((string) ($row['email'] ?? '')));
+                $rawTel = (string) ($row['telefono'] ?? '');
+                $tel = function_exists('clean_phone_number') ? clean_phone_number($rawTel) : preg_replace('/\D+/', '', $rawTel);
                 if ($key !== '' && $email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
                     $out['by_name'][$key] = $email;
+                }
+                if ($key !== '' && $tel !== '') {
+                    $out['phone_by_name'][$key] = $tel;
+                }
+                $firstLast = mb_strtolower(trim(($row['nombre'] ?? '') . ' ' . ($row['apellido'] ?? '')));
+                if ($firstLast !== '' && $tel !== '') {
+                    $out['phone_by_name'][$firstLast] = $tel;
+                }
+                $partsApe = preg_split('/\s+/u', trim((string) ($row['apellido'] ?? ''))) ?: [];
+                if (count($partsApe) > 1 && !empty($row['nombre']) && $tel !== '') {
+                    $singleApeKey = mb_strtolower(trim($row['nombre'] . ' ' . $partsApe[0]));
+                    $out['phone_by_name'][$singleApeKey] = $tel;
                 }
             }
         }
