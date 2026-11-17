@@ -98,6 +98,7 @@ function recordatorios_create_manual_test_case(array $auth, array $input = []): 
         $apptDate = $nowLocal->modify('+1 day')->format('Y-m-d');
         $apptTime = '11:00';
         $stamp = $nowLocal->format('Ymd-His');
+        $user = (string) ($auth['username'] ?? $auth['user'] ?? 'admin');
         $slug = preg_replace('/[^a-z0-9]+/i', '-', strtolower($user !== '' ? $user : 'admin')) ?: 'admin';
         $calId = 'test:' . $slug . ':' . $stamp;
         $eventKey = 'test:' . $slug . ':' . bin2hex(random_bytes(8));

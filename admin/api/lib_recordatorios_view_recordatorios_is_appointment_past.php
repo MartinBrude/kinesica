@@ -184,8 +184,16 @@ function recordatorios_lookup_directory_contacts(PDO $pdo, array $rows): array
                 $params[] = $name;
                 $parts = preg_split('/\s+/u', trim($name)) ?: [];
                 if (count($parts) >= 2) {
+                    $first = $parts[0];
+                    $last = end($parts);
                     $conds[] = 'LOWER(nombre_completo) LIKE LOWER(?)';
-                    $params[] = '%' . $parts[0] . '%' . end($parts) . '%';
+                    $params[] = '%' . $first . '%' . $last . '%';
+                    $conds[] = 'LOWER(nombre_completo) LIKE LOWER(?)';
+                    $params[] = '%' . $last . '%' . $first . '%';
+                    $conds[] = 'LOWER(TRIM(CONCAT(COALESCE(nombre, ""), " ", COALESCE(apellido, "")))) = LOWER(?)';
+                    $params[] = $name;
+                    $conds[] = 'LOWER(TRIM(CONCAT(COALESCE(apellido, ""), " ", COALESCE(nombre, "")))) = LOWER(?)';
+                    $params[] = $name;
                 }
             }
             $stmt = $pdo->prepare(
@@ -196,6 +204,8 @@ function recordatorios_lookup_directory_contacts(PDO $pdo, array $rows): array
             $stmt->execute($params);
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $key = mb_strtolower(trim((string) ($row['nombre_completo'] ?? '')));
+                $nom = trim((string) ($row['nombre'] ?? ''));
+                $ape = trim((string) ($row['apellido'] ?? ''));
                 $email = strtolower(trim((string) ($row['email'] ?? '')));
                 $rawTel = (string) ($row['telefono'] ?? '');
                 $tel = function_exists('clean_phone_number') ? clean_phone_number($rawTel) : preg_replace('/\D+/', '', $rawTel);
@@ -205,14 +215,35 @@ function recordatorios_lookup_directory_contacts(PDO $pdo, array $rows): array
                 if ($key !== '' && $tel !== '') {
                     $out['phone_by_name'][$key] = $tel;
                 }
-                $firstLast = mb_strtolower(trim(($row['nombre'] ?? '') . ' ' . ($row['apellido'] ?? '')));
+                $firstLast = mb_strtolower(trim($nom . ' ' . $ape));
                 if ($firstLast !== '' && $tel !== '') {
                     $out['phone_by_name'][$firstLast] = $tel;
                 }
-                $partsApe = preg_split('/\s+/u', trim((string) ($row['apellido'] ?? ''))) ?: [];
-                if (count($partsApe) > 1 && !empty($row['nombre']) && $tel !== '') {
-                    $singleApeKey = mb_strtolower(trim($row['nombre'] . ' ' . $partsApe[0]));
+                if ($firstLast !== '' && $email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    $out['by_name'][$firstLast] = $email;
+                }
+                $lastFirst = mb_strtolower(trim($ape . ' ' . $nom));
+                if ($lastFirst !== '' && $tel !== '') {
+                    $out['phone_by_name'][$lastFirst] = $tel;
+                }
+                if ($lastFirst !== '' && $email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    $out['by_name'][$lastFirst] = $email;
+                }
+                if (function_exists('canonical_patient_name_key')) {
+                    $canon = canonical_patient_name_key($key !== '' ? $key : $firstLast);
+                    if ($canon !== '' && $tel !== '') {
+                        $out['phone_by_name'][$canon] = $tel;
+                    }
+                    if ($canon !== '' && $email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                        $out['by_name'][$canon] = $email;
+                    }
+                }
+                $partsApe = preg_split('/\s+/u', $ape) ?: [];
+                if (count($partsApe) > 1 && $nom !== '' && $tel !== '') {
+                    $singleApeKey = mb_strtolower(trim($nom . ' ' . $partsApe[0]));
                     $out['phone_by_name'][$singleApeKey] = $tel;
+                    $singleApeInv = mb_strtolower(trim($partsApe[0] . ' ' . $nom));
+                    $out['phone_by_name'][$singleApeInv] = $tel;
                 }
             }
         }

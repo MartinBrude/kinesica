@@ -161,16 +161,23 @@ function recordatorios_sameday_resolve_phone(array $appt): string
             ['wa_id' => '', 'patient_name' => $name],
         ]);
         $nameKey = mb_strtolower(trim($name));
-        if ($nameKey !== '' && isset($map['by_name'][$nameKey])) {
-            // by_name maps to email in lookup; try pacientes by name for phone
+        if ($nameKey !== '' && !empty($map['phone_by_name'][$nameKey])) {
+            return clean_phone_number((string) $map['phone_by_name'][$nameKey]);
+        }
+        if (function_exists('canonical_patient_name_key')) {
+            $canon = canonical_patient_name_key($name);
+            if ($canon !== '' && !empty($map['phone_by_name'][$canon])) {
+                return clean_phone_number((string) $map['phone_by_name'][$canon]);
+            }
         }
         $stmt = $pdo->prepare(
             'SELECT telefono FROM pacientes
              WHERE LOWER(nombre_completo) = LOWER(:n)
                 OR LOWER(CONCAT(TRIM(nombre), \' \', TRIM(apellido))) = LOWER(:n2)
+                OR LOWER(CONCAT(TRIM(apellido), \' \', TRIM(nombre))) = LOWER(:n3)
              LIMIT 1'
         );
-        $stmt->execute(['n' => $name, 'n2' => $name]);
+        $stmt->execute(['n' => $name, 'n2' => $name, 'n3' => $name]);
         $tel = clean_phone_number((string) ($stmt->fetchColumn() ?: ''));
         if ($tel !== '') {
             return $tel;
@@ -197,10 +204,12 @@ function recordatorios_sameday_resolve_email(string $phone, string $patientName,
             'SELECT email FROM pacientes
              WHERE (telefono != \'\' AND RIGHT(REPLACE(telefono, \'+\', \'\'), 10) = :p)
                 OR LOWER(nombre_completo) = LOWER(:n)
+                OR LOWER(CONCAT(TRIM(nombre), \' \', TRIM(apellido))) = LOWER(:n2)
+                OR LOWER(CONCAT(TRIM(apellido), \' \', TRIM(nombre))) = LOWER(:n3)
              LIMIT 1'
         );
         $phoneEnd = substr(recordatorios_clean_wa_id($phone), -10);
-        $stmt->execute(['p' => $phoneEnd, 'n' => $patientName]);
+        $stmt->execute(['p' => $phoneEnd, 'n' => $patientName, 'n2' => $patientName, 'n3' => $patientName]);
         $em = strtolower(trim((string) ($stmt->fetchColumn() ?: '')));
         if ($em !== '' && filter_var($em, FILTER_VALIDATE_EMAIL)) {
             return $em;

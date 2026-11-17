@@ -101,6 +101,12 @@ declare(strict_types=1);
                     $normK = normalize_search_key($cleanK);
                     if ($normK !== '') $expandedKeys[] = $normK;
                 }
+                if (function_exists('canonical_patient_name_key')) {
+                    $canonK = canonical_patient_name_key($fullName !== '' ? $fullName : $firstLast);
+                    if ($canonK !== '') {
+                        $expandedKeys[] = $canonK;
+                    }
+                }
 
                 foreach (array_unique($expandedKeys) as $k) {
                     if ($tel !== '') $directory[$k] = $tel;

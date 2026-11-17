@@ -832,7 +832,7 @@ main {
 .app-dialog {
   position: fixed;
   inset: 0;
-  z-index: 1200; /* por encima de modales de creativos (1000/1100) */
+  z-index: 20000; /* por encima de cualquier backdrop o modal (10050) */
   display: flex;
   align-items: center;
   justify-content: center;

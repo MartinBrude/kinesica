@@ -117,9 +117,11 @@ export function openTestCaseModal() {
         toast(resp.message || "Caso de prueba listo. Usá «Enviar ahora».", { type: "success" });
         return;
       }
-      dialogAlert(resp?.error || "No se pudo crear el caso de prueba.", { type: "danger" });
+      close();
+      await dialogAlert(resp?.error || "No se pudo crear el caso de prueba.", { type: "danger" });
     } catch (err) {
-      dialogAlert(
+      close();
+      await dialogAlert(
         (err && (err.payload?.error || err.message)) || "Error al crear el caso de prueba.",
         { type: "danger" }
       );

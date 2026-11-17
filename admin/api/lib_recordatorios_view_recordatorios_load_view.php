@@ -131,6 +131,12 @@ function recordatorios_load_view(?PDO $pdo = null, int $days = RECORDATORIOS_DEF
             if (!empty($directory['phone_by_name'][$nameKey])) {
                 $r['wa_id'] = $directory['phone_by_name'][$nameKey];
                 $phoneEnd = substr(recordatorios_clean_wa_id($r['wa_id']), -10);
+            } elseif (function_exists('canonical_patient_name_key')) {
+                $canon = canonical_patient_name_key($nameKey);
+                if ($canon !== '' && !empty($directory['phone_by_name'][$canon])) {
+                    $r['wa_id'] = $directory['phone_by_name'][$canon];
+                    $phoneEnd = substr(recordatorios_clean_wa_id($r['wa_id']), -10);
+                }
             }
         }
         if ($email === '') {
@@ -138,6 +144,11 @@ function recordatorios_load_view(?PDO $pdo = null, int $days = RECORDATORIOS_DEF
                 $email = $directory['by_phone'][$phoneEnd];
             } elseif ($nameKey !== '' && isset($directory['by_name'][$nameKey])) {
                 $email = $directory['by_name'][$nameKey];
+            } elseif (function_exists('canonical_patient_name_key')) {
+                $canon = canonical_patient_name_key($nameKey);
+                if ($canon !== '' && isset($directory['by_name'][$canon])) {
+                    $email = $directory['by_name'][$canon];
+                }
             }
         }
         $item = recordatorios_format_item($r, $email !== '' ? $email : null);
