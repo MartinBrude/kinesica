@@ -1027,55 +1027,6 @@
               No hay opciones adicionales configuradas. Hacé clic en <strong>"+ Agregar opción"</strong> para sumar una (por ejemplo: F. ¿Con qué técnicas trabajan?).
             </div>
 
-            <!-- SUBSECCIÓN: FAQS / PREGUNTAS FRECUENTES AUTOMÁTICAS -->
-            <details class="clara-submenu-details" style="margin-top: 24px; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px;">
-              <summary style="font-weight: 700; font-size: 14px; color: var(--navy); cursor: pointer; display: flex; align-items: center; justify-content: space-between; user-select: none;">
-                <span style="display: flex; align-items: center; gap: 8px;">
-                  <span>💡 Preguntas Frecuentes Automáticas (FAQs en Lenguaje Natural)</span>
-                  <span style="font-size: 11px; background: #eff6ff; color: #1d4ed8; padding: 2px 8px; border-radius: 4px; font-weight: 600;">Sin IA</span>
-                </span>
-                <span style="font-size: 12px; color: var(--muted); font-weight: 500;">Desplegar para editar</span>
-              </summary>
-              <div style="display: flex; flex-direction: column; gap: 18px; margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--line);">
-                <p style="margin: 0; color: var(--muted); font-size: 13px; line-height: 1.45;">
-                  Respuestas deterministas instantáneas enviadas cuando un paciente consulta en lenguaje natural sobre medios de pago, consulta de turnos o sobre la identidad de Clara.
-                </p>
-
-                <!-- FAQ 1: MEDIOS DE PAGO -->
-                <div>
-                  <label for="cfg-faq-medios-pago" style="display: block; font-weight: 600; font-size: 13px; color: var(--navy); margin-bottom: 4px;">
-                    1. Consulta sobre Medios de Pago:
-                  </label>
-                  <small style="color: var(--muted); font-size: 12px; display: block; margin-bottom: 6px;">
-                    Enviada cuando el paciente pregunta cómo pagar, formas de abono, transferencia, tarjeta, etc. (sin consultar aranceles totales). Podés usar <code>{medios_pago}</code>.
-                  </small>
-                  <textarea id="cfg-faq-medios-pago" rows="4" style="width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:var(--radius); font-size:13px; font-family:inherit; line-height:1.45; resize:vertical; background:#f8fafc;"></textarea>
-                </div>
-
-                <!-- FAQ 2: DÓNDE CONSULTAR MIS TURNOS -->
-                <div>
-                  <label for="cfg-faq-donde-turnos" style="display: block; font-weight: 600; font-size: 13px; color: var(--navy); margin-bottom: 4px;">
-                    2. ¿Dónde puedo consultar mis turnos?:
-                  </label>
-                  <small style="color: var(--muted); font-size: 12px; display: block; margin-bottom: 6px;">
-                    Informa cómo consultar turnos agendados tanto por WhatsApp (A y luego 1, o DNI) como en la turnera web de autogestión mi-turno.html.
-                  </small>
-                  <textarea id="cfg-faq-donde-turnos" rows="4" style="width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:var(--radius); font-size:13px; font-family:inherit; line-height:1.45; resize:vertical; background:#f8fafc;"></textarea>
-                </div>
-
-                <!-- FAQ 3: CLARA, ¿ES UN BOT? -->
-                <div>
-                  <label for="cfg-faq-clara-bot" style="display: block; font-weight: 600; font-size: 13px; color: var(--navy); margin-bottom: 4px;">
-                    3. Clara, ¿es un bot?:
-                  </label>
-                  <small style="color: var(--muted); font-size: 12px; display: block; margin-bottom: 6px;">
-                    Respuesta cuando preguntan si Clara es un bot, robot o IA: "Sí, y la vamos mejorando poco a poco para que tengas la mejor experiencia con nosotros."
-                  </small>
-                  <textarea id="cfg-faq-clara-bot" rows="4" style="width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:var(--radius); font-size:13px; font-family:inherit; line-height:1.45; resize:vertical; background:#f8fafc;"></textarea>
-                </div>
-              </div>
-            </details>
-
             <!-- SUBSECCIÓN: MENÚ EN INGLÉS -->
             <details class="clara-submenu-details" style="margin-top: 24px; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px;">
               <summary style="font-weight: 700; font-size: 14px; color: var(--navy); cursor: pointer; display: flex; align-items: center; justify-content: space-between; user-select: none;">
@@ -1184,28 +1135,6 @@
                   </div>
                 </div>
 
-                <!-- FAQS EN INGLÉS -->
-                <div style="background: #f8fafc; border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; display: flex; flex-direction: column; gap: 12px;">
-                  <h4 style="margin: 0; font-size: 13px; color: var(--navy); font-weight: 700;">Automatic FAQs (English)</h4>
-                  <div>
-                    <label for="cfg-faq-medios-pago-en" style="display: block; font-weight: 600; font-size: 12px; color: var(--navy); margin-bottom: 4px;">
-                      1. Payment Methods Inquiry (English):
-                    </label>
-                    <textarea id="cfg-faq-medios-pago-en" rows="3" style="width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:var(--radius); font-size:12px; font-family:inherit; line-height:1.4; resize:vertical; background:#fff;"></textarea>
-                  </div>
-                  <div>
-                    <label for="cfg-faq-donde-turnos-en" style="display: block; font-weight: 600; font-size: 12px; color: var(--navy); margin-bottom: 4px;">
-                      2. Where to Check Appointments (English):
-                    </label>
-                    <textarea id="cfg-faq-donde-turnos-en" rows="3" style="width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:var(--radius); font-size:12px; font-family:inherit; line-height:1.4; resize:vertical; background:#fff;"></textarea>
-                  </div>
-                  <div>
-                    <label for="cfg-faq-clara-bot-en" style="display: block; font-weight: 600; font-size: 12px; color: var(--navy); margin-bottom: 4px;">
-                      3. Is Clara a Bot? (English):
-                    </label>
-                    <textarea id="cfg-faq-clara-bot-en" rows="3" style="width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:var(--radius); font-size:12px; font-family:inherit; line-height:1.4; resize:vertical; background:#fff;"></textarea>
-                  </div>
-                </div>
               </div>
             </details>
           </div>
