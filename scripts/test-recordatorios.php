@@ -159,6 +159,30 @@ ok(str_contains($wasSentSrc, 'IN ($placeholders)'), 'check_sent_map usa IN batch
 eq(recordatorios_check_sent_map([]), [], 'check_sent_map vacío => []');
 eq(recordatorios_check_sent_map(['', '_run']), [], 'ignora ids vacíos y _run');
 
+section('Frase amigable de cuándo (BA)');
+require_once $root . '/admin/api/pacientes_helpers_search_key.php';
+$tz = recordatorios_tz();
+$today = (new DateTimeImmutable('now', $tz))->format('Y-m-d');
+$tomorrow = (new DateTimeImmutable('now', $tz))->modify('+1 day')->format('Y-m-d');
+$later = (new DateTimeImmutable('now', $tz))->modify('+3 day')->format('Y-m-d');
+$hoyPhrase = recordatorios_format_when_phrase($today, '16:00');
+ok(str_starts_with($hoyPhrase, 'hoy '), 'hoy + fecha amigable: ' . $hoyPhrase);
+ok(str_contains($hoyPhrase, 'a las 16:00 hs'), 'incluye hora con hs');
+$mananaPhrase = recordatorios_format_when_phrase($tomorrow, '10:30 hs');
+ok(str_starts_with($mananaPhrase, 'mañana '), 'mañana + fecha: ' . $mananaPhrase);
+$elPhrase = recordatorios_format_when_phrase($later, '09:00');
+ok(str_starts_with($elPhrase, 'el '), 'día no relativo usa "el": ' . $elPhrase);
+$convenir = recordatorios_format_when_phrase($today, 'a convenir');
+ok(str_contains($convenir, 'horario a convenir'), 'all-day / a convenir');
+eq(recordatorios_format_when_phrase('', '16:00'), 'mañana a las 16:00 hs', 'sin fecha asume mañana');
+
+section('Limpieza de teléfonos sucios');
+eq(clean_phone_number('WhatsApp: 11 1234-5678'), '5491112345678', 'prefijo WhatsApp');
+eq(clean_phone_number('1155551212 / 1144443333'), '5491155551212', 'toma el primero de varios');
+eq(clean_phone_number('11 5555-1212 (celular)'), '5491155551212', 'quita aclaración entre paréntesis');
+eq(clean_phone_number('fijo 4711-2233'), '5491147112233', 'descarta palabra fijo');
+eq(clean_phone_number('tel: +54 9 11 5555-1212'), '5491155551212', 'prefijo tel + intl');
+
 $host = getenv('KT_DB_HOST');
 if (!$host || !getenv('KT_TMP')) {
     echo "• Persistencia/reconcile omitidos (sin KT_DB_HOST / KT_TMP)\n";
