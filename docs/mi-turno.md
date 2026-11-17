@@ -6,7 +6,7 @@ Los pacientes pueden **consultar o anular** un turno agendado por la turnera con
 2. Email de la reserva  
 3. Código de gestión (7 caracteres) enviado en el mail de confirmación
 
-No hay link en el home todavía; URL directa: `https://www.kinesica.com.ar/mi-turno` (también `/en/`, `/fr/`, `/pt/`).
+También aparece en las FAQ del home (*¿Dónde puedo consultar mis turnos?*). URL: `https://www.kinesica.com.ar/mi-turno` (también `/en/`, `/fr/`, `/pt/`).
 El mail de confirmación incluye un deep-link `?apellido=&email=&codigo=` que precarga el formulario y busca el turno (el código aparece una vez en el cuerpo del mail y otra en la URL del enlace).
 
 ## Flujo

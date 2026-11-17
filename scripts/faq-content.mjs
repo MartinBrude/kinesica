@@ -1,8 +1,9 @@
 /**
  * Home FAQ copy: accordion HTML + FAQPage JSON-LD (ES / EN / FR / PT).
- * Schema answers stay concise; accordion FAQ 4 and 8 keep richer HTML.
+ * Schema answers stay concise; accordion FAQ 4, mi-turno and examples keep richer HTML.
  */
 import { escHtml } from "./html-utils.mjs";
+import { absoluteUrl } from "./i18n-urls.mjs";
 import { pathologyForStem } from "./pathology-content.mjs";
 
 export const FAQ_UI = {
@@ -165,6 +166,20 @@ function clothingHtml(lang) {
                     </ul>`;
 }
 
+const MI_TURNO_LINK = {
+  es: "Consultar o cancelar mi turno",
+  en: "Check or cancel my appointment",
+  fr: "Consulter ou annuler mon rendez-vous",
+  pt: "Consultar ou cancelar meu horário",
+};
+
+function miTurnoHtml(lang) {
+  const item = FAQS.find((f) => f.html === miTurnoHtml);
+  const href = absoluteUrl(lang, "mi-turno");
+  return `<p>${escHtml(item.a[lang])}</p>
+                    <p><a href="${escHtml(href)}">${escHtml(MI_TURNO_LINK[lang])}</a></p>`;
+}
+
 function examplesHtml(lang) {
   const groups = EXAMPLE_GROUPS.map((group) => {
     const items = group.stems
@@ -285,6 +300,21 @@ export const FAQS = [
       fr: "Lors de la prise de rendez-vous, les tarifs des différentes techniques sont indiqués.",
       pt: "No processo de agendamento são informados os valores das diferentes técnicas.",
     },
+  },
+  {
+    q: {
+      es: "¿Dónde puedo consultar mis turnos?",
+      en: "Where can I check my appointments?",
+      fr: "Où puis-je consulter mes rendez-vous ?",
+      pt: "Onde posso consultar meus horários?",
+    },
+    a: {
+      es: "Podés consultar o cancelar tus turnos agendados en nuestra página de autogestión, con el apellido, el email de la reserva y el código de gestión del mail de confirmación.",
+      en: "You can check or cancel your booked appointments on our self-service page, using the last name, the booking email, and the management code from the confirmation email.",
+      fr: "Vous pouvez consulter ou annuler vos rendez-vous sur notre page en libre-service, avec le nom, l'e-mail de réservation et le code de gestion du mail de confirmation.",
+      pt: "Você pode consultar ou cancelar seus horários agendados na nossa página de autogestão, com o sobrenome, o e-mail da reserva e o código de gestão do e-mail de confirmação.",
+    },
+    html: miTurnoHtml,
   },
   {
     q: {
