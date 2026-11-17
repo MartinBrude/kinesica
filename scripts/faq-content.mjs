@@ -5,6 +5,7 @@
 import { escHtml } from "./html-utils.mjs";
 import { absoluteUrl } from "./i18n-urls.mjs";
 import { pathologyForStem } from "./pathology-content.mjs";
+import { waMeUrl } from "./site-contact.mjs";
 
 export const FAQ_UI = {
   es: { eyebrow: "Consultas", heading: "Preguntas Frecuentes" },
@@ -167,17 +168,35 @@ function clothingHtml(lang) {
 }
 
 const MI_TURNO_LINK = {
-  es: "Consultar o cancelar mi turno",
-  en: "Check or cancel my appointment",
-  fr: "Consulter ou annuler mon rendez-vous",
-  pt: "Consultar ou cancelar meu horário",
+  es: "Consultar o cancelar mi turno (web)",
+  en: "Check or cancel my appointment (web)",
+  fr: "Consulter ou annuler mon rendez-vous (web)",
+  pt: "Consultar ou cancelar meu horário (web)",
+};
+
+const MI_TURNO_WA_LINK = {
+  es: "Consultar por WhatsApp",
+  en: "Check via WhatsApp",
+  fr: "Consulter sur WhatsApp",
+  pt: "Consultar pelo WhatsApp",
+};
+
+const MI_TURNO_WA_MSG = {
+  es: "Hola, quiero consultar mis turnos",
+  en: "Hi, I'd like to check my appointments",
+  fr: "Bonjour, je voudrais consulter mes rendez-vous",
+  pt: "Olá, quero consultar meus horários",
 };
 
 function miTurnoHtml(lang) {
   const item = FAQS.find((f) => f.html === miTurnoHtml);
   const href = absoluteUrl(lang, "mi-turno");
+  const waHref = `${waMeUrl()}?text=${encodeURIComponent(MI_TURNO_WA_MSG[lang] || MI_TURNO_WA_MSG.es)}`;
   return `<p>${escHtml(item.a[lang])}</p>
-                    <p><a href="${escHtml(href)}">${escHtml(MI_TURNO_LINK[lang])}</a></p>`;
+                    <ul>
+                      <li><a href="${escHtml(href)}">${escHtml(MI_TURNO_LINK[lang])}</a></li>
+                      <li><a href="${escHtml(waHref)}" target="_blank" rel="noopener">${escHtml(MI_TURNO_WA_LINK[lang])}</a></li>
+                    </ul>`;
 }
 
 function examplesHtml(lang) {
@@ -309,10 +328,10 @@ export const FAQS = [
       pt: "Onde posso consultar meus horários?",
     },
     a: {
-      es: "Podés consultar o cancelar tus turnos agendados en nuestra página de autogestión, con el apellido, el email de la reserva y el código de gestión del mail de confirmación.",
-      en: "You can check or cancel your booked appointments on our self-service page, using the last name, the booking email, and the management code from the confirmation email.",
-      fr: "Vous pouvez consulter ou annuler vos rendez-vous sur notre page en libre-service, avec le nom, l'e-mail de réservation et le code de gestion du mail de confirmation.",
-      pt: "Você pode consultar ou cancelar seus horários agendados na nossa página de autogestão, com o sobrenome, o e-mail da reserva e o código de gestão do e-mail de confirmação.",
+      es: "Podés hacerlo por WhatsApp escribiéndonos, o en la web de autogestión con el apellido, el email de la reserva y el código de gestión del mail de confirmación.",
+      en: "You can check via WhatsApp by messaging us, or on the self-service page with the last name, booking email, and management code from the confirmation email.",
+      fr: "Vous pouvez le faire sur WhatsApp en nous écrivant, ou sur la page en libre-service avec le nom, l'e-mail de réservation et le code de gestion du mail de confirmation.",
+      pt: "Você pode consultar pelo WhatsApp escrevendo para nós, ou na página de autogestão com o sobrenome, o e-mail da reserva e o código de gestão do e-mail de confirmação.",
     },
     html: miTurnoHtml,
   },
