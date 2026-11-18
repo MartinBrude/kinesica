@@ -252,6 +252,8 @@ if (!$esCancelacion && $eventId !== '') {
             'starts_at' => $startsAt,
             'ends_at' => $endsAt,
             'practitionerId' => $practitionerIdRaw,
+            // Reintento de mail: rotar hash y devolver plaintext (no se persiste).
+            'rotate_manage_code' => true,
         ];
         if ($practitionerIdRaw !== '') {
             $attachExtra['summary'] = '🩺 [' . strtoupper($practitionerIdRaw) . '] ' . $paciente;

@@ -89,20 +89,27 @@ function campana_match_paciente(PDO $pdo, string $phone, string $patientName, st
     }
 
     $stmt = $pdo->query(
-        "SELECT id, nombre, apellido, nombre_completo, viene_de_campana FROM pacientes WHERE ({$alive})"
+        "SELECT id, nombre, apellido, nombre_completo, telefono, viene_de_campana
+         FROM pacientes WHERE ({$alive})"
     );
     if (!$stmt) {
         return null;
     }
+    $haveRealPhone = $phone !== '' && !is_placeholder_phone($phone);
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $cand = canonical_patient_name_key((string) ($row['nombre_completo'] ?? ''));
-        if ($cand !== '' && $cand === $nameKey) {
-            return campana_paciente_row($row);
-        }
         $alt = canonical_patient_name_key(trim(($row['nombre'] ?? '') . ' ' . ($row['apellido'] ?? '')));
-        if ($alt !== '' && $alt === $nameKey) {
-            return campana_paciente_row($row);
+        $nameHit = ($cand !== '' && $cand === $nameKey) || ($alt !== '' && $alt === $nameKey);
+        if (!$nameHit) {
+            continue;
         }
+        // Homónimos con WhatsApp reales distintos: no matchear solo por nombre.
+        if ($haveRealPhone
+            && !kinesica_phones_compatible_for_name_merge($phone, (string) ($row['telefono'] ?? ''))
+        ) {
+            continue;
+        }
+        return campana_paciente_row($row);
     }
     return null;
 }

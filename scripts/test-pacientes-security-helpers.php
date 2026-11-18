@@ -11,6 +11,8 @@ define('KINESICA_SKIP_ADMIN_EXCEPTION_HANDLER', true);
 require_once $root . '/admin/api/lib.php';
 require_once $root . '/admin/api/pacientes_helpers.php';
 require_once $root . '/admin/api/pacientes_helpers_email_by_phone.php';
+require_once $root . '/admin/api/campana_turnos_campana_default_date_range.php';
+require_once $root . '/admin/api/campana_turnos_campana_match_paciente.php';
 
 function assert_true(bool $cond, string $msg): void
 {
@@ -32,6 +34,8 @@ $pdo->exec('
         nombre_completo TEXT DEFAULT "",
         nombre_pila TEXT DEFAULT "",
         email TEXT,
+        dni TEXT,
+        viene_de_campana INTEGER NOT NULL DEFAULT 0,
         deleted_at TEXT NULL
     )
 ');
@@ -84,5 +88,16 @@ $fromPlaceholder = kinesica_resolve_merge_phone(
     '5491188880001'
 );
 assert_true($fromPlaceholder === '5491188880001', 'resolve_merge_phone adopta WA sobre placeholder');
+
+// Campaña: fallback por nombre no pisa homónimos con WA distintos.
+$pdo->exec("INSERT INTO pacientes (id, telefono, nombre, apellido, nombre_completo, viene_de_campana, deleted_at) VALUES
+ (20, '5491190010001', 'Ana', 'Garcia', 'Ana Garcia', 1, NULL),
+ (21, '5491190010002', 'Ana', 'Garcia', 'Ana Garcia', 0, NULL)");
+$campHit = campana_match_paciente($pdo, '5491190010002', 'Ana Garcia');
+assert_true(is_array($campHit) && (int) $campHit['id'] === 21, 'campaña match por tel exacto');
+$campHomonym = campana_match_paciente($pdo, '5491190019999', 'Ana Garcia');
+assert_true($campHomonym === null, 'campaña no matchea homónimo solo por nombre');
+$campNoPhone = campana_match_paciente($pdo, '', 'Ana Garcia');
+assert_true(is_array($campNoPhone) && in_array((int) $campNoPhone['id'], [20, 21], true), 'campaña sin tel puede matchear por nombre');
 
 echo "\n--- test-pacientes-security-helpers OK ---\n";

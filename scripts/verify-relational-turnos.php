@@ -238,4 +238,23 @@ assert_true(!empty($lookup['ok']), 'lookup manage code');
 $lookupBad = kinesica_rel_lookup_turno_by_manage($pdo, 'juan@ejemplo.com', 'García', 'AB3K7MP');
 assert_true(empty($lookupBad['ok']), 'lookup wrong apellido');
 
+// Reintento de confirmación: rotar hash y devolver plaintext nuevo (viejo deja de valer).
+$attach3 = kinesica_rel_attach_manage_code(
+    $pdo,
+    'manage-evt-1',
+    'juan@ejemplo.com',
+    'Juan Pérez',
+    null,
+    ['rotate_manage_code' => true]
+);
+assert_true(!empty($attach3['ok']) && !empty($attach3['code']), 'attach rotate returns plaintext');
+assert_true(!empty($attach3['rotated']), 'attach rotate marks rotated');
+assert_true(($attach3['code'] ?? '') !== 'AB3K7MP', 'attach rotate emits new code');
+$lookupOld = kinesica_rel_lookup_turno_by_manage($pdo, 'juan@ejemplo.com', 'Pérez', 'AB3K7MP');
+assert_true(empty($lookupOld['ok']), 'old code invalid after rotate');
+$lookupNew = kinesica_rel_lookup_turno_by_manage($pdo, 'juan@ejemplo.com', 'Pérez', (string) $attach3['code']);
+assert_true(!empty($lookupNew['ok']), 'new code works after rotate');
+$storedPlain2 = $pdo->query("SELECT manage_code FROM turnos WHERE calendar_event_id = 'manage-evt-1' LIMIT 1")->fetchColumn();
+assert_true($storedPlain2 === null || $storedPlain2 === '', 'rotate tampoco persiste plaintext');
+
 echo "verify-relational-turnos: OK\n";

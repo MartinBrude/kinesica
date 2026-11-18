@@ -81,10 +81,20 @@ function kinesica_hash_manage_code(string $code): string
 
 /**
  * Adjunta email/apellido/código a un turno (por calendar_event_id).
- * Un solo código por evento: si ya hay hash, no regenera (idempotente).
- * Crea fila sombra mínima si aún no existe.
+ * Si ya hay hash y no se pasa plaintext: idempotente (code null), salvo
+ * `$extra['rotate_manage_code']` (p. ej. reintento de send-confirmation).
+ * Crea fila sombra mínima si aún no existe. Nunca persiste plaintext.
  *
- * @return array{ok:bool,turno_id:?int,code:?string,reused?:bool,reason?:string}
+ * @param array{
+ *   starts_at?:string,
+ *   ends_at?:string,
+ *   profesional_id?:int,
+ *   practitioner_id?:string,
+ *   practitionerId?:string,
+ *   summary?:string,
+ *   rotate_manage_code?:bool
+ * } $extra
+ * @return array{ok:bool,turno_id:?int,code:?string,reused?:bool,rotated?:bool,reason?:string}
  */
 function kinesica_rel_attach_manage_code(
     PDO $pdo,
@@ -141,9 +151,11 @@ function kinesica_rel_attach_manage_code(
     $existing->execute(['id' => $tid]);
     $row = $existing->fetch(PDO::FETCH_ASSOC) ?: [];
     $existingHash = trim((string) ($row['manage_code_hash'] ?? ''));
+    $plainEmpty = $plainCode === null || trim((string) $plainCode) === '';
+    $rotate = !empty($extra['rotate_manage_code']);
 
-    // Ya tiene hash: no regenerar. El plaintext solo se conoce al generar (mail/confirmación).
-    if ($existingHash !== '' && ($plainCode === null || trim((string) $plainCode) === '')) {
+    // Ya tiene hash y no pedimos rotar: solo refrescar meta (sin reexponer plaintext).
+    if ($existingHash !== '' && $plainEmpty && !$rotate) {
         $clearPlain = $hasPlainCol ? ', manage_code = NULL' : '';
         $updMeta = $pdo->prepare(
             "UPDATE turnos SET
@@ -163,11 +175,13 @@ function kinesica_rel_attach_manage_code(
             'turno_id' => $tid,
             'code' => null,
             'reused' => true,
+            'rotated' => false,
         ];
     }
 
-    $code = $plainCode !== null && trim($plainCode) !== ''
-        ? strtoupper(trim($plainCode))
+    $hadHash = $existingHash !== '';
+    $code = !$plainEmpty
+        ? strtoupper(trim((string) $plainCode))
         : kinesica_generate_manage_code();
     $hash = kinesica_hash_manage_code($code);
 
@@ -190,7 +204,13 @@ function kinesica_rel_attach_manage_code(
         'id' => $tid,
     ]);
 
-    return ['ok' => true, 'turno_id' => $tid, 'code' => $code, 'reused' => false];
+    return [
+        'ok' => true,
+        'turno_id' => $tid,
+        'code' => $code,
+        'reused' => false,
+        'rotated' => $hadHash && $rotate && $plainEmpty,
+    ];
 }
 
 /**
