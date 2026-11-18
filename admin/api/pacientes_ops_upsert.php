@@ -160,7 +160,7 @@ function kinesica_pacientes_upsert(PDO $pdo, array $data): void
             ]);
         } catch (Throwable $e) {
             error_log('kinesica pacientes upsert merge: ' . $e->getMessage());
-            json_out(500, ['status' => 'error', 'message' => 'No se pudo guardar el paciente: ' . $e->getMessage()]);
+            json_out(500, ['status' => 'error', 'message' => 'No se pudo guardar el paciente']);
         }
 
         error_log('kinesica pacientes upsert merged id=' . $existingId . ' phone=' . $targetPhone);

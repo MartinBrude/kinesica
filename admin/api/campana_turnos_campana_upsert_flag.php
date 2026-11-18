@@ -163,9 +163,10 @@ try {
         }
 
         $pacienteId = isset($data['paciente_id']) ? (int) $data['paciente_id'] : 0;
-        $flag = array_key_exists('viene_de_campana', $data)
-            ? !empty($data['viene_de_campana'])
-            : true;
+        if (!array_key_exists('viene_de_campana', $data)) {
+            json_out(422, ['status' => 'error', 'message' => 'viene_de_campana requerido (true/false)']);
+        }
+        $flag = !empty($data['viene_de_campana']);
         $nombre = trim((string) ($data['nombre'] ?? ''));
         $apellido = trim((string) ($data['apellido'] ?? ''));
         $phone = trim((string) ($data['telefono'] ?? ''));
@@ -191,5 +192,5 @@ try {
     json_out(405, ['status' => 'error', 'message' => 'Método HTTP no permitido']);
 } catch (Throwable $e) {
     error_log('kinesica admin campana_turnos.php error: ' . $e->getMessage());
-    json_out(500, ['status' => 'error', 'message' => 'Error al procesar turnos de campaña: ' . $e->getMessage()]);
+    json_out(500, ['status' => 'error', 'message' => 'Error al procesar turnos de campaña']);
 }

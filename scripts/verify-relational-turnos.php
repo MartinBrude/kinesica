@@ -228,9 +228,11 @@ try {
 }
 $attach = kinesica_rel_attach_manage_code($pdo, 'manage-evt-1', 'juan@ejemplo.com', 'Juan Pérez', 'AB3K7MP');
 assert_true(!empty($attach['ok']) && ($attach['code'] ?? '') === 'AB3K7MP', 'attach manage code');
+$storedPlain = $pdo->query("SELECT manage_code FROM turnos WHERE calendar_event_id = 'manage-evt-1' LIMIT 1")->fetchColumn();
+assert_true($storedPlain === null || $storedPlain === '', 'manage_code plaintext no se persiste');
 $attach2 = kinesica_rel_attach_manage_code($pdo, 'manage-evt-1', 'juan@ejemplo.com', 'Juan Pérez');
 assert_true(!empty($attach2['ok']) && !empty($attach2['reused']), 'attach idempotent reused');
-assert_true(($attach2['code'] ?? '') === 'AB3K7MP', 'attach idempotent same code');
+assert_true(($attach2['code'] ?? null) === null, 'attach idempotent no reexpone plaintext');
 $lookup = kinesica_rel_lookup_turno_by_manage($pdo, 'juan@ejemplo.com', 'Pérez', 'AB3K7MP');
 assert_true(!empty($lookup['ok']), 'lookup manage code');
 $lookupBad = kinesica_rel_lookup_turno_by_manage($pdo, 'juan@ejemplo.com', 'García', 'AB3K7MP');

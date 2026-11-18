@@ -46,7 +46,7 @@ function kinesica_pacientes_upsert_insert(
         ]);
     } catch (Throwable $e) {
         error_log('kinesica pacientes upsert insert: ' . $e->getMessage());
-        json_out(500, ['status' => 'error', 'message' => 'No se pudo crear el paciente: ' . $e->getMessage()]);
+        json_out(500, ['status' => 'error', 'message' => 'No se pudo crear el paciente']);
     }
 
     $newId = (int) $pdo->lastInsertId();

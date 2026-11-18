@@ -152,9 +152,10 @@ declare(strict_types=1);
         if ($action === 'toggle_campana') {
             $id = (int) ($data['id'] ?? 0);
             if ($id <= 0) json_out(422, ['status' => 'error', 'message' => 'ID inválido']);
-            $val = array_key_exists('viene_de_campana', $data)
-                ? (!empty($data['viene_de_campana']) ? 1 : 0)
-                : 1;
+            if (!array_key_exists('viene_de_campana', $data)) {
+                json_out(422, ['status' => 'error', 'message' => 'viene_de_campana requerido (true/false)']);
+            }
+            $val = !empty($data['viene_de_campana']) ? 1 : 0;
             $stmt = $pdo->prepare('UPDATE pacientes SET viene_de_campana = :val WHERE id = :id');
             $stmt->execute(['val' => $val, 'id' => $id]);
             if ($stmt->rowCount() === 0) {

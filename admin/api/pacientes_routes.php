@@ -25,5 +25,5 @@ try {
     if (kinesica_rel_json_out_if_integrity($e)) {
         // exited via json_out
     }
-    json_out(500, ['status' => 'error', 'message' => 'Error al procesar pacientes: ' . $e->getMessage()]);
+    json_out(500, ['status' => 'error', 'message' => 'Error al procesar pacientes']);
 }

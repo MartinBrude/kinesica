@@ -171,6 +171,6 @@ function kinesica_pacientes_merge_explicit(PDO $pdo, int $sourceId, int $targetI
             $pdo->rollBack();
         }
         error_log('kinesica_pacientes_merge_explicit error: ' . $e->getMessage());
-        return ['ok' => false, 'status' => 'error', 'message' => 'Error al unificar pacientes: ' . $e->getMessage()];
+        return ['ok' => false, 'status' => 'error', 'message' => 'Error al unificar pacientes'];
     }
 }
