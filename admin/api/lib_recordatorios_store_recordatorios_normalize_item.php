@@ -75,6 +75,24 @@ function recordatorios_normalize_item(array $in, string $execId, int $runAt): ?a
         $dni = $contact['dni'];
     }
 
+    $finalPatientName = trim((string) ($in['patient_name'] ?? $in['patient_full_name'] ?? ''));
+    if (str_contains($finalPatientName, ',')) {
+        $parts = explode(',', $finalPatientName, 2);
+        if (trim($parts[0]) !== '' && trim($parts[1]) !== '') {
+            $finalPatientName = trim($parts[1]) . ' ' . trim($parts[0]);
+        }
+    }
+    $normPatientKey = mb_strtolower($finalPatientName, 'UTF-8');
+    $knownInverted = [
+        'dalamon viviana' => 'Viviana Dalamon',
+        'lipsyc silvana' => 'Silvana Lipsyc',
+        'mira walter' => 'Walter Mira',
+        'silvestre rodrigo' => 'Rodrigo Silvestre',
+    ];
+    if (isset($knownInverted[$normPatientKey])) {
+        $finalPatientName = $knownInverted[$normPatientKey];
+    }
+
     return [
         'event_key' => substr($key, 0, 160),
         'exec_id' => $safeExec,
@@ -82,7 +100,7 @@ function recordatorios_normalize_item(array $in, string $execId, int $runAt): ?a
         'appointment_date' => $apptDate !== '' ? $apptDate : null,
         'appointment_time' => substr(trim((string) ($in['appointment_time'] ?? $in['formatted_time'] ?? '')), 0, 16),
         'calendar_event_id' => substr($calId, 0, 128),
-        'patient_name' => mb_substr(trim((string) ($in['patient_name'] ?? $in['patient_full_name'] ?? '')), 0, 120, 'UTF-8'),
+        'patient_name' => mb_substr($finalPatientName, 0, 120, 'UTF-8'),
         'wa_id' => $waId,
         'status' => $status,
         'skip_reason' => substr($skip, 0, 40),

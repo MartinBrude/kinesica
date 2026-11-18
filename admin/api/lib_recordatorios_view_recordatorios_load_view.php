@@ -113,6 +113,35 @@ function recordatorios_load_view(?PDO $pdo = null, int $days = RECORDATORIOS_DEF
         $nameKey = mb_strtolower(trim((string) ($r['patient_name'] ?? '')));
         $email = '';
         $pid = isset($r['paciente_id']) ? (int) $r['paciente_id'] : 0;
+
+        // Normalización si el nombre viene registrado como "Apellido Nombre" o con coma
+        $knownInverted = [
+            'dalamon viviana' => 'Viviana Dalamon',
+            'lipsyc silvana' => 'Silvana Lipsyc',
+            'mira walter' => 'Walter Mira',
+            'silvestre rodrigo' => 'Rodrigo Silvestre',
+        ];
+        if (isset($knownInverted[$nameKey])) {
+            $r['patient_name'] = $knownInverted[$nameKey];
+            $nameKey = mb_strtolower($r['patient_name']);
+        } elseif (str_contains((string) ($r['patient_name'] ?? ''), ',')) {
+            $parts = explode(',', (string) $r['patient_name'], 2);
+            if (trim($parts[0]) !== '' && trim($parts[1]) !== '') {
+                $r['patient_name'] = trim($parts[1]) . ' ' . trim($parts[0]);
+                $nameKey = mb_strtolower($r['patient_name']);
+            }
+        }
+
+        if ($pid <= 0 && $nameKey !== '') {
+            $matchedPatient = function_exists('find_existing_patient_match')
+                ? find_existing_patient_match($pdo, (string) ($r['wa_id'] ?? ''), (string) ($r['patient_name'] ?? ''))
+                : null;
+            if ($matchedPatient && !empty($matchedPatient['id'])) {
+                $pid = (int) $matchedPatient['id'];
+                $pacientesById[$pid] = $matchedPatient;
+            }
+        }
+
         if ($pid > 0 && isset($pacientesById[$pid])) {
             $disp = kinesica_rel_display_from_paciente($pacientesById[$pid]);
             if ($disp['name'] !== '') {
