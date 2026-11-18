@@ -123,7 +123,10 @@ declare(strict_types=1);
                 'pila' => extract_first_name($nombreCompleto),
                 'id' => $id,
             ]);
-            json_out(200, ['status' => 'success', 'updated' => $stmt->rowCount(), 'id' => $id]);
+            if ($stmt->rowCount() < 1 && !kinesica_pacientes_fetch_alive($pdo, $id)) {
+                json_out(404, ['status' => 'error', 'message' => 'Paciente no encontrado']);
+            }
+            json_out(200, ['status' => 'success', 'updated' => max(1, $stmt->rowCount()), 'id' => $id]);
         }
 
         if ($action === 'update_phone') {
@@ -132,7 +135,10 @@ declare(strict_types=1);
             if ($id <= 0 || strlen($newPhone) < 6 || strlen($newPhone) > 16 || preg_match('/^(\d)\1+$/', $newPhone)) {
                 json_out(422, ['status' => 'error', 'message' => 'ID o teléfono inválido']);
             }
-            $check = $pdo->prepare('SELECT id FROM pacientes WHERE telefono = :tel AND id != :id');
+            require_once __DIR__ . '/pacientes_helpers_existing_patient_match.php';
+            kinesica_pacientes_require_alive($pdo, $id);
+            $alive = kinesica_pacientes_alive_sql($pdo);
+            $check = $pdo->prepare('SELECT id FROM pacientes WHERE telefono = :tel AND id != :id LIMIT 1');
             $check->execute(['tel' => $newPhone, 'id' => $id]);
             $existing = $check->fetch();
             if ($existing) {
@@ -142,49 +148,49 @@ declare(strict_types=1);
                     'conflict_id' => (int) $existing['id'],
                 ]);
             }
-            $stmt = $pdo->prepare('UPDATE pacientes SET telefono = :tel WHERE id = :id');
+            $stmt = $pdo->prepare("UPDATE pacientes SET telefono = :tel WHERE id = :id AND ({$alive})");
             $stmt->execute(['tel' => $newPhone, 'id' => $id]);
+            if ($stmt->rowCount() < 1 && !kinesica_pacientes_fetch_alive($pdo, $id)) {
+                json_out(404, ['status' => 'error', 'message' => 'Paciente no encontrado']);
+            }
             json_out(200, ['status' => 'success', 'id' => $id, 'nuevo_telefono' => $newPhone]);
         }
 
         if ($action === 'toggle_review') {
             $id = (int) ($data['id'] ?? 0);
-            if ($id <= 0) json_out(422, ['status' => 'error', 'message' => 'ID inválido']);
+            require_once __DIR__ . '/pacientes_helpers_existing_patient_match.php';
+            kinesica_pacientes_require_alive($pdo, $id);
+            $alive = kinesica_pacientes_alive_sql($pdo);
             $val = !empty($data['dejo_review']) ? 1 : 0;
-            $stmt = $pdo->prepare('UPDATE pacientes SET dejo_review = :val WHERE id = :id');
+            $stmt = $pdo->prepare("UPDATE pacientes SET dejo_review = :val WHERE id = :id AND ({$alive})");
             $stmt->execute(['val' => $val, 'id' => $id]);
+            if ($stmt->rowCount() < 1 && !kinesica_pacientes_fetch_alive($pdo, $id)) {
+                json_out(404, ['status' => 'error', 'message' => 'Paciente no encontrado']);
+            }
             json_out(200, ['status' => 'success', 'id' => $id, 'dejo_review' => $val]);
         }
 
         if ($action === 'toggle_campana') {
             $id = (int) ($data['id'] ?? 0);
-            if ($id <= 0) json_out(422, ['status' => 'error', 'message' => 'ID inválido']);
             if (!array_key_exists('viene_de_campana', $data)) {
                 json_out(422, ['status' => 'error', 'message' => 'viene_de_campana requerido (true/false)']);
             }
+            require_once __DIR__ . '/pacientes_helpers_existing_patient_match.php';
+            kinesica_pacientes_require_alive($pdo, $id);
+            $alive = kinesica_pacientes_alive_sql($pdo);
             $val = !empty($data['viene_de_campana']) ? 1 : 0;
-            $stmt = $pdo->prepare('UPDATE pacientes SET viene_de_campana = :val WHERE id = :id');
+            $stmt = $pdo->prepare("UPDATE pacientes SET viene_de_campana = :val WHERE id = :id AND ({$alive})");
             $stmt->execute(['val' => $val, 'id' => $id]);
-            if ($stmt->rowCount() === 0) {
-                $chk = $pdo->prepare('SELECT id FROM pacientes WHERE id = :id LIMIT 1');
-                $chk->execute(['id' => $id]);
-                if (!$chk->fetch()) {
-                    json_out(404, ['status' => 'error', 'message' => 'Paciente no encontrado']);
-                }
+            if ($stmt->rowCount() < 1 && !kinesica_pacientes_fetch_alive($pdo, $id)) {
+                json_out(404, ['status' => 'error', 'message' => 'Paciente no encontrado']);
             }
             json_out(200, ['status' => 'success', 'id' => $id, 'viene_de_campana' => $val]);
         }
 
         if ($action === 'send_encuesta_invite') {
             $id = (int) ($data['id'] ?? 0);
-            if ($id <= 0) json_out(422, ['status' => 'error', 'message' => 'ID inválido']);
-
-            $stmt = $pdo->prepare('SELECT id, telefono, nombre, apellido, nombre_completo, nombre_pila, encuesta_enviada FROM pacientes WHERE id = :id LIMIT 1');
-            $stmt->execute(['id' => $id]);
-            $paciente = $stmt->fetch(PDO::FETCH_ASSOC);
-            if (!$paciente) {
-                json_out(404, ['status' => 'error', 'message' => 'Paciente no encontrado']);
-            }
+            require_once __DIR__ . '/pacientes_helpers_existing_patient_match.php';
+            $paciente = kinesica_pacientes_require_alive($pdo, $id);
             if (!empty($paciente['encuesta_enviada'])) {
                 json_out(409, ['status' => 'error', 'message' => 'La encuesta ya fue enviada a este paciente', 'encuesta_enviada' => 1]);
             }
@@ -229,10 +235,23 @@ declare(strict_types=1);
                     error_log('send_encuesta_invite release flag failed: ' . $e->getMessage());
                 }
                 $err = (string) ($waResult['error'] ?? 'No se pudo enviar el WhatsApp');
+                error_log(
+                    'send_encuesta_invite wa fail id=' . $id
+                    . ' http=' . (string) ($waResult['http_code'] ?? '')
+                    . ' err=' . $err
+                );
+                $waSafe = function_exists('kinesica_whatsapp_client_safe_result')
+                    ? kinesica_whatsapp_client_safe_result($waResult)
+                    : [
+                        'ok' => false,
+                        'error' => $err,
+                        'http_code' => isset($waResult['http_code']) ? (int) $waResult['http_code'] : null,
+                        'via' => $waResult['via'] ?? null,
+                    ];
                 json_out(502, [
                     'status' => 'error',
                     'message' => $err,
-                    'wa' => $waResult,
+                    'wa' => $waSafe,
                 ]);
             }
 

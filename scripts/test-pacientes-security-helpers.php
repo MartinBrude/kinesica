@@ -100,4 +100,21 @@ assert_true($campHomonym === null, 'campaña no matchea homónimo solo por nombr
 $campNoPhone = campana_match_paciente($pdo, '', 'Ana Garcia');
 assert_true(is_array($campNoPhone) && in_array((int) $campNoPhone['id'], [20, 21], true), 'campaña sin tel puede matchear por nombre');
 
+// Soft-deleted: fetch/require alive
+$pdo->exec("INSERT INTO pacientes (id, telefono, nombre, apellido, nombre_completo, deleted_at) VALUES
+ (40, '5491444000001', 'Soft', 'Del', 'Soft Del', datetime('now'))");
+assert_true(kinesica_pacientes_fetch_alive($pdo, 40) === null, 'fetch_alive ignora soft-deleted');
+assert_true(is_array(kinesica_pacientes_fetch_alive($pdo, 20)), 'fetch_alive ve activo');
+
+require_once $root . '/admin/api/lib_whatsapp.php';
+$safe = kinesica_whatsapp_client_safe_result([
+    'ok' => false,
+    'http_code' => 400,
+    'error' => 'bad',
+    'via' => 'graph',
+    'response' => ['error' => ['message' => 'secret recipient']],
+]);
+assert_true($safe['ok'] === false && $safe['error'] === 'bad', 'wa safe conserva error');
+assert_true(!array_key_exists('response', $safe), 'wa safe no expone response Meta');
+
 echo "\n--- test-pacientes-security-helpers OK ---\n";

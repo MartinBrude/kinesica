@@ -7,14 +7,8 @@ require_once __DIR__ . '/pacientes_ops_upsert_insert.php';
 function kinesica_pacientes_update(PDO $pdo, array $data): void
 {
     $id = (int) ($data['id'] ?? 0);
-    if ($id <= 0) json_out(422, ['status' => 'error', 'message' => 'ID inválido']);
-
-    $current = $pdo->prepare('SELECT id, telefono, dni FROM pacientes WHERE id = :id LIMIT 1');
-    $current->execute(['id' => $id]);
-    $currentRow = $current->fetch(PDO::FETCH_ASSOC);
-    if (!$currentRow) {
-        json_out(404, ['status' => 'error', 'message' => 'Paciente no encontrado']);
-    }
+    require_once __DIR__ . '/pacientes_helpers_existing_patient_match.php';
+    $currentRow = kinesica_pacientes_require_alive($pdo, $id);
 
     $rawPhone = (string) ($data['telefono'] ?? '');
     $phone = clean_phone_number($rawPhone);
@@ -47,7 +41,8 @@ function kinesica_pacientes_update(PDO $pdo, array $data): void
     }
 
     if (!is_placeholder_phone($phone)) {
-        $check = $pdo->prepare('SELECT id FROM pacientes WHERE telefono = :tel AND id != :id');
+        // UNIQUE(telefono) incluye soft-deleted: cualquier otra fila bloquea.
+        $check = $pdo->prepare('SELECT id FROM pacientes WHERE telefono = :tel AND id != :id LIMIT 1');
         $check->execute(['tel' => $phone, 'id' => $id]);
         $existing = $check->fetch();
         if ($existing) {
@@ -84,15 +79,16 @@ function kinesica_pacientes_update(PDO $pdo, array $data): void
     $contactoNotas = !empty($data['contacto_notas']) ? mb_substr(trim((string) $data['contacto_notas']), 0, 100, 'UTF-8') : null;
     $dejoReview = isset($data['dejo_review']) ? (!empty($data['dejo_review']) ? 1 : 0) : null;
 
+    $alive = kinesica_pacientes_alive_sql($pdo);
     $stmt = $pdo->prepare('
         UPDATE pacientes SET
             telefono = :tel, nombre = :nombre, apellido = :apellido, nombre_completo = :nom,
             nombre_pila = :pila, dni = :dni, email = :email, profesional_habitual = :prof,
             motivo_consulta = :motivo, notas = :notas, contacto_nombre = :contacto_nombre,
             contacto_telefono = :contacto_telefono, contacto_email = :contacto_email, contacto_notas = :contacto_notas' .
-            ($dejoReview !== null ? ', dejo_review = :dejo_review' : '') . '
-        WHERE id = :id
-    ');
+            ($dejoReview !== null ? ', dejo_review = :dejo_review' : '') . "
+        WHERE id = :id AND ({$alive})
+    ");
     $params = [
         'tel' => $phone, 'nombre' => $nombre, 'apellido' => $apellido, 'nom' => $nombreCompleto,
         'pila' => $nombrePila, 'dni' => $dni, 'email' => $email, 'prof' => $profesional,
@@ -104,6 +100,10 @@ function kinesica_pacientes_update(PDO $pdo, array $data): void
         $params['dejo_review'] = $dejoReview;
     }
     $stmt->execute($params);
+    // rowCount=0 si no hubo cambio de valores; solo 404 si ya no está activo.
+    if ($stmt->rowCount() < 1 && !kinesica_pacientes_fetch_alive($pdo, $id)) {
+        json_out(404, ['status' => 'error', 'message' => 'Paciente no encontrado']);
+    }
 
     // REL: sync contactos tras edición (lib_relational_contactos.php).
     require_once __DIR__ . '/lib_relational_contactos.php';

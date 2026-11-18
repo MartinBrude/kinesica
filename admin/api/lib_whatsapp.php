@@ -222,3 +222,19 @@ function send_whatsapp_alert_payload(array $payload): array
     $viaN8n['via'] = 'n8n';
     return $viaN8n;
 }
+
+/**
+ * Vista segura para JSON al cliente admin: sin payload Meta crudo (`response`).
+ *
+ * @param array<string,mixed> $wa
+ * @return array{ok:bool,error:?string,http_code:?int,via:?string}
+ */
+function kinesica_whatsapp_client_safe_result(array $wa): array
+{
+    return [
+        'ok' => !empty($wa['ok']),
+        'error' => isset($wa['error']) ? (string) $wa['error'] : null,
+        'http_code' => isset($wa['http_code']) ? (int) $wa['http_code'] : null,
+        'via' => isset($wa['via']) ? (string) $wa['via'] : null,
+    ];
+}

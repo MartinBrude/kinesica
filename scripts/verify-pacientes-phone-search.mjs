@@ -56,6 +56,12 @@ assert.match(pacPhp, /send_email.*send_fallback_email|send_fallback_email.*send_
 assert.match(pacPhp, /Solo un administrador con sesión puede realizar esta acción/);
 assert.match(pacPhp, /Ese teléfono ya está asignado a otro paciente/);
 assert.ok(!pacPhp.includes("asignado al paciente ' . $existing"), "409 no debe revelar nombre_completo");
+assert.match(pacPhp, /kinesica_pacientes_require_alive/);
+assert.match(pacPhp, /kinesica_whatsapp_client_safe_result/);
+assert.ok(
+  !/['"]wa['"]\s*=>\s*\$waResult/.test(pacPhp),
+  "encuesta no debe devolver \$waResult crudo al cliente"
+);
 
 const turnosPhp = readFileSync("admin/api/turnos.php", "utf8");
 assert.match(turnosPhp, /gas_api_secret/);
