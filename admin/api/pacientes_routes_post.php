@@ -131,10 +131,16 @@ declare(strict_types=1);
             if ($id <= 0 || strlen($newPhone) < 6 || strlen($newPhone) > 16 || preg_match('/^(\d)\1+$/', $newPhone)) {
                 json_out(422, ['status' => 'error', 'message' => 'ID o teléfono inválido']);
             }
-            $check = $pdo->prepare('SELECT id, nombre_completo FROM pacientes WHERE telefono = :tel AND id != :id');
+            $check = $pdo->prepare('SELECT id FROM pacientes WHERE telefono = :tel AND id != :id');
             $check->execute(['tel' => $newPhone, 'id' => $id]);
             $existing = $check->fetch();
-            if ($existing) json_out(409, ['status' => 'error', 'message' => 'Ese teléfono ya está asignado al paciente ' . $existing['nombre_completo']]);
+            if ($existing) {
+                json_out(409, [
+                    'status' => 'error',
+                    'message' => 'Ese teléfono ya está asignado a otro paciente',
+                    'conflict_id' => (int) $existing['id'],
+                ]);
+            }
             $stmt = $pdo->prepare('UPDATE pacientes SET telefono = :tel WHERE id = :id');
             $stmt->execute(['tel' => $newPhone, 'id' => $id]);
             json_out(200, ['status' => 'success', 'id' => $id, 'nuevo_telefono' => $newPhone]);

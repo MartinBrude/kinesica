@@ -60,25 +60,6 @@
     return CODE_RE.test(String(code || "").trim().toUpperCase());
   }
 
-  function appendCreds(msg) {
-    if (!lastCreds) return msg;
-    return (
-      msg +
-      "\n\n" +
-      t("apellido") +
-      ": " +
-      lastCreds.apellido +
-      "\n" +
-      t("email") +
-      ": " +
-      lastCreds.email +
-      "\n" +
-      t("codigo") +
-      ": " +
-      lastCreds.codigo
-    );
-  }
-
   function waHref(digits, msg) {
     return (
       "https://wa.me/" +
@@ -88,13 +69,14 @@
     );
   }
 
+  // Prefill WA sin apellido/email/código (no filtrar secretos de gestión a Meta/chat logs).
   function claraWaHref() {
-    return waHref(CLARA_WA, appendCreds(t("whatsappClaraMsg")));
+    return waHref(CLARA_WA, t("whatsappClaraMsg"));
   }
 
   function practitionerWaHref(context, practitioner) {
     var p = practitioner || lastPractitioner || PROF_WA.norberto;
-    var msg = appendCreds(tName("whatsappProfMsg", p.name));
+    var msg = tName("whatsappProfMsg", p.name);
     if (context) msg += "\n(" + context + ")";
     return waHref(p.digits || NORBERTO_WA, msg);
   }

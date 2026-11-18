@@ -20,10 +20,8 @@ declare(strict_types=1);
         if (is_colaborador($auth)) {
             json_out(403, ['status' => 'error', 'message' => 'Los usuarios con rol Colaborador no tienen permiso para eliminar pacientes']);
         }
-        // Session auth usa `user`; tolerar `username` por si llega otro shape.
-        $user = (string) ($auth['user'] ?? $auth['username'] ?? '');
-        $allowedUsers = ['martin', 'norberto', 'maria'];
-        if (!is_admin($auth) && !in_array($user, $allowedUsers, true)) {
+        // Admin o profesional (rol), sin allowlist hardcodeada de usernames.
+        if (!can_use_admin_booking($auth)) {
             json_out(403, ['status' => 'error', 'message' => 'No tienes permiso para eliminar pacientes']);
         }
         $id = (int) ($_GET['id'] ?? 0);

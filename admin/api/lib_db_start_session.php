@@ -49,10 +49,43 @@ function read_json(): array
 }
 
 
+/**
+ * Gate anti-CSRF por cabecera no-simple (fuerza preflight CORS).
+ * El literal "1" no es un secreto: bloquea form POSTs cross-site simples.
+ * Con cookie de sesión, también acepta el token emitido por me.php.
+ */
 function require_header(): void
 {
-    $header = $_SERVER['HTTP_X_KINESICA'] ?? '';
+    $header = trim((string) ($_SERVER['HTTP_X_KINESICA'] ?? ''));
+    if ($header === '') {
+        json_out(403, ['error' => 'Solicitud rechazada']);
+    }
+    // Si hay cookie de sesión, arrancar para poder validar csrf_token.
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        $cookieName = session_name();
+        if ($cookieName !== '' && !empty($_COOKIE[$cookieName])) {
+            start_session();
+        }
+    }
+    if (session_status() === PHP_SESSION_ACTIVE && !empty($_SESSION['csrf_token'])) {
+        $token = (string) $_SESSION['csrf_token'];
+        if (hash_equals($token, $header) || $header === '1') {
+            return;
+        }
+        json_out(403, ['error' => 'Solicitud rechazada']);
+    }
     if ($header !== '1') {
         json_out(403, ['error' => 'Solicitud rechazada']);
     }
+}
+
+function kinesica_ensure_csrf_token(): string
+{
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        start_session();
+    }
+    if (empty($_SESSION['csrf_token']) || !is_string($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(16));
+    }
+    return (string) $_SESSION['csrf_token'];
 }

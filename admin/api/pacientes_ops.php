@@ -47,11 +47,15 @@ function kinesica_pacientes_update(PDO $pdo, array $data): void
     }
 
     if (!is_placeholder_phone($phone)) {
-        $check = $pdo->prepare('SELECT id, nombre_completo, dni FROM pacientes WHERE telefono = :tel AND id != :id');
+        $check = $pdo->prepare('SELECT id FROM pacientes WHERE telefono = :tel AND id != :id');
         $check->execute(['tel' => $phone, 'id' => $id]);
         $existing = $check->fetch();
         if ($existing) {
-            json_out(409, ['status' => 'error', 'message' => 'Ese teléfono ya está asignado al paciente ' . $existing['nombre_completo']]);
+            json_out(409, [
+                'status' => 'error',
+                'message' => 'Ese teléfono ya está asignado a otro paciente',
+                'conflict_id' => (int) $existing['id'],
+            ]);
         }
     }
 

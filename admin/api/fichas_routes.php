@@ -25,16 +25,17 @@ if ($method === 'DELETE') {
     $stmt = $pdo->prepare('SELECT payload, profesional FROM fichas WHERE id = :id');
     $stmt->execute(['id' => $id]);
     $row = $stmt->fetch();
-    if ($row) {
-        $owner = $row['profesional'] ?? '';
-        if ($owner !== false && $owner !== '' && !is_admin($auth) && $auth['username'] !== (string) $owner) {
-            json_out(403, ['error' => 'No tienes permiso para eliminar esta ficha']);
-        }
-        $prevData = json_decode((string) ($row['payload'] ?? ''), true);
-        if (is_array($prevData)) {
-            foreach (kinesica_extract_ficha_photos($prevData) as $fName) {
-                kinesica_delete_upload_file($fName);
-            }
+    if (!$row) {
+        json_out(404, ['error' => 'Ficha no encontrada']);
+    }
+    $owner = $row['profesional'] ?? '';
+    if ($owner !== false && $owner !== '' && !is_admin($auth) && $auth['username'] !== (string) $owner) {
+        json_out(403, ['error' => 'No tienes permiso para eliminar esta ficha']);
+    }
+    $prevData = json_decode((string) ($row['payload'] ?? ''), true);
+    if (is_array($prevData)) {
+        foreach (kinesica_extract_ficha_photos($prevData) as $fName) {
+            kinesica_delete_upload_file($fName);
         }
     }
     $pdo->prepare('DELETE FROM fichas WHERE id = :id')->execute(['id' => $id]);

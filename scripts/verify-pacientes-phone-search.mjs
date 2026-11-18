@@ -43,12 +43,13 @@ const pacPhp = readdirSync("admin/api")
   .filter((f) => f === "pacientes.php" || (f.startsWith("pacientes_") && f.endsWith(".php")))
   .map((f) => readFileSync(`admin/api/${f}`, "utf8"))
   .join("\n");
-assert.match(pacPhp, /norberto/);
-assert.match(pacPhp, /maria/);
+assert.match(pacPhp, /can_use_admin_booking\(\$auth\)/);
 assert.match(pacPhp, /Actualizar un paciente requiere sesión/);
 assert.match(pacPhp, /tokenAllowedGet/);
 assert.match(pacPhp, /send_email.*send_fallback_email|send_fallback_email.*send_email/);
 assert.match(pacPhp, /Solo un administrador con sesión puede realizar esta acción/);
+assert.match(pacPhp, /Ese teléfono ya está asignado a otro paciente/);
+assert.ok(!pacPhp.includes("asignado al paciente ' . $existing"), "409 no debe revelar nombre_completo");
 
 const turnosPhp = readFileSync("admin/api/turnos.php", "utf8");
 assert.match(turnosPhp, /gas_api_secret/);

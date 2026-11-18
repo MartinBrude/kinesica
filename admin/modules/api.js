@@ -1,12 +1,15 @@
 /**
  * Kinésica Admin - Cliente HTTP y Capa de API
  * Centraliza las peticiones hacia el backend PHP (/admin/api/*) con credenciales seguras,
- * cabecera de verificación anti-CSRF (X-Kinesica: 1) y detección de sesión caducada.
+ * cabecera no-simple X-Kinesica (gate CSRF / preflight) y detección de sesión caducada.
+ * El valor "1" no es secreto; tras me.php se usa el csrf de sesión si está disponible.
  */
 
 let onAuthRequiredHandler = null;
 let inFlightRequests = 0;
 let slowLoaderTimer = null;
+/** @type {string} */
+let csrfHeaderValue = "1";
 
 export const SLOW_REQUEST_THRESHOLD_MS = 200;
 
@@ -56,7 +59,7 @@ export async function api(path, options = {}) {
   const { timeoutMs = 30000, ...rest } = options;
   const fetchOptions = { ...rest };
   const headers = {
-    "X-Kinesica": "1",
+    "X-Kinesica": csrfHeaderValue || "1",
     ...(fetchOptions.headers || {}),
   };
 
@@ -132,6 +135,10 @@ export async function api(path, options = {}) {
     error.payload = data;
     error.status = res.status;
     throw error;
+  }
+
+  if (typeof data.csrf === "string" && data.csrf.length >= 16) {
+    csrfHeaderValue = data.csrf;
   }
 
   return data;

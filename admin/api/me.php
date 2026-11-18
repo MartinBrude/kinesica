@@ -26,6 +26,7 @@ $payload = [
     'name' => $auth['name'],
     'username' => $auth['username'],
     'role' => $role,
+    'csrf' => kinesica_ensure_csrf_token(),
 ];
 if ($role === 'admin') {
     ensure_login_counts();

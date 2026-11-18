@@ -1798,7 +1798,10 @@
         this.renderConfirmation(payload, result);
         this.setStep(4);
       } catch (err) {
-        this.showError(err.message, {
+        if (typeof console !== "undefined" && console.warn) {
+          console.warn("booking submit failed", err);
+        }
+        this.showError(this.friendlySubmitError(err), {
           offerWhatsAppFallback: Boolean(err && err.bothSystemsFailed),
         });
       } finally {
@@ -1929,6 +1932,20 @@
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#39;");
+    }
+
+    /** Mensaje seguro para UI: evita HTTP/stack/fetch crudos. */
+    friendlySubmitError(err) {
+      const raw = String((err && err.message) || "").trim();
+      const fallback = this.t("bookError");
+      if (!raw) return fallback;
+      if (
+        raw.length > 180
+        || /HTTP Error|Failed to fetch|NetworkError|TypeError|ECONN|SQLSTATE|stack|at \w+\s*\(/i.test(raw)
+      ) {
+        return fallback;
+      }
+      return raw;
     }
 
     defaultManageUrl() {
