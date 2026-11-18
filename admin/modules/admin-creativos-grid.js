@@ -14,7 +14,6 @@ import {
   colaHeartHtml,
   refreshColaButtons,
 } from "./admin-creativos-cola-ui.js?v=4";
-import { imageTextEditButtonHtml } from "./admin-creativos-image-text.js?v=5";
 import { CREATIVOS_DATA } from "./admin-creativos-data.js?v=1";
 import {
   getActiveFormat,
@@ -93,19 +92,6 @@ export function renderCreativosGrid() {
             <span class="creativo-pill">${escapeHtml(texts.cat)}</span>
             <h3 class="creativo-title">${escapeHtml(texts.title)}</h3>
             <p class="creativo-desc">${escapeHtml(texts.body)}</p>
-
-            <div class="creativo-actions">
-              <a href="${item.feedUrl}?v=${assetVersion}" download="kinesica_feed_${item.id}.png" class="btn light btn-sm" title="Descargar imagen en formato Feed 4:5">
-                📥 Feed (4:5)
-              </a>
-              <a href="${item.storyUrl}?v=${assetVersion}" download="kinesica_story_${item.id}.png" class="btn light btn-sm" title="Descargar imagen en formato Story 9:16">
-                📥 Story (9:16)
-              </a>
-              <button type="button" class="btn light btn-sm btn-creativo-copy" data-id="${item.id}" title="Copiar caption">
-                📋 Copiar caption
-              </button>
-              ${inTrash ? "" : imageTextEditButtonHtml(item.id)}
-            </div>
           </div>
         </article>
       `;

@@ -10,13 +10,14 @@ import {
   CAPTION_MAX,
   saveCaption,
   assetVersion,
+  isCreativoHidden,
 } from "./admin-creativos-cola.js?v=12";
-import { colaButtonHtml } from "./admin-creativos-cola-ui.js?v=4";
+import { colaButtonHtml, colaHeartHtml } from "./admin-creativos-cola-ui.js?v=4";
 import { canEditCaptions } from "./admin-creativos-caption.js?v=10";
 import {
   imageTextEditButtonHtml,
   canEditImageText,
-} from "./admin-creativos-image-text.js?v=5";
+} from "./admin-creativos-image-text.js?v=6";
 import {
   getActiveFormat,
   getSelectedItem,
@@ -41,6 +42,8 @@ export function setModalCaptionEditMode(editing) {
   if (els.editor) els.editor.hidden = !editing;
   if (els.btnEdit) els.btnEdit.hidden = editing || !canEditCaptions();
   if (els.btnCopy) els.btnCopy.hidden = editing;
+  const imgSlot = document.getElementById("creativo-modal-imgtext-slot");
+  if (imgSlot) imgSlot.hidden = editing;
 }
 
 function getModalCaptionText() {
@@ -82,6 +85,18 @@ export function openLightboxModal(item) {
     els.textarea.maxLength = CAPTION_MAX;
   }
   setModalCaptionEditMode(false);
+
+  const heartSlot = document.getElementById("creativo-modal-heart-slot");
+  if (heartSlot) {
+    heartSlot.innerHTML = isCreativoHidden(item.id) ? "" : colaHeartHtml(item);
+  }
+  const trashSlot = document.getElementById("creativo-modal-trash-slot");
+  if (trashSlot) {
+    const inTrash = isCreativoHidden(item.id);
+    trashSlot.innerHTML = inTrash
+      ? `<button type="button" class="btn-creativo-trash is-restore" data-trash-id="${item.id}" title="Restaurar al catálogo" aria-label="Restaurar">♻️</button>`
+      : `<button type="button" class="btn-creativo-trash" data-trash-id="${item.id}" title="Eliminar del catálogo" aria-label="Eliminar">🗑️</button>`;
+  }
 
   const imgSlot = document.getElementById("creativo-modal-imgtext-slot");
   if (imgSlot) {

@@ -13,7 +13,7 @@ import {
 } from "./admin-creativos-cola.js?v=12";
 import { ensureColaUiPaint } from "./admin-creativos-cola-ui.js?v=4";
 import { initListaUI } from "./admin-creativos-lista.js?v=12";
-import { bindImageTextUi } from "./admin-creativos-image-text.js?v=5";
+import { bindImageTextUi } from "./admin-creativos-image-text.js?v=6";
 import { CREATIVOS_DATA } from "./admin-creativos-data.js?v=1";
 import {
   setActiveFormat,
@@ -21,13 +21,13 @@ import {
   setSearchQuery,
   getSelectedItem,
 } from "./admin-creativos-state.js?v=1";
-import { renderCreativosGrid } from "./admin-creativos-grid.js?v=1";
+import { renderCreativosGrid } from "./admin-creativos-grid.js?v=3";
 import {
   openLightboxModal,
   closeLightboxModal,
   initModalCaptionControls,
   setModalCaptionEditMode,
-} from "./admin-creativos-modal.js?v=1";
+} from "./admin-creativos-modal.js?v=3";
 
 export { CREATIVOS_DATA };
 
@@ -81,62 +81,13 @@ export function initCreativosUI() {
 
   const gridEl = document.getElementById("admin-creativos-grid");
   if (gridEl) {
-    gridEl.addEventListener("click", async (e) => {
-      if (e.target.closest(".btn-creativo-heart, .btn-creativo-cola, .creativo-badge-cola")) {
+    gridEl.addEventListener("click", (e) => {
+      if (e.target.closest(".btn-creativo-heart, .btn-creativo-cola, .creativo-badge-cola, .btn-creativo-trash")) {
         return;
       }
-
-      const trashBtn = e.target.closest(".btn-creativo-trash");
-      if (trashBtn) {
-        e.preventDefault();
-        e.stopPropagation();
-        const id = trashBtn.dataset.trashId;
-        if (!id) return;
-        const restore = trashBtn.classList.contains("is-restore");
-        const item = CREATIVOS_DATA.find((it) => it.id === id);
-        const label = item?.title || id;
-        const ok = window.confirm(
-          restore
-            ? `¿Restaurar "${label}" al catálogo?`
-            : `¿Eliminar "${label}" del catálogo?\n\nVa a la papelera (se puede restaurar). Si estaba en la cola, se saca.`
-        );
-        if (!ok) return;
-        trashBtn.disabled = true;
-        try {
-          if (restore) await unhideCreativo(id);
-          else await hideCreativo(id);
-        } catch (err) {
-          if (!err.auth) window.alert(err.message || "No se pudo actualizar la papelera");
-        } finally {
-          trashBtn.disabled = false;
-        }
-        return;
-      }
-
-      const copyBtn = e.target.closest(".btn-creativo-copy");
-      if (copyBtn) {
-        const id = copyBtn.dataset.id;
-        const item = CREATIVOS_DATA.find((it) => it.id === id);
-        const text = item ? resolveCaption(id, item) : "";
-        if (text) {
-          navigator.clipboard.writeText(text).then(() => {
-            const originalText = copyBtn.textContent;
-            copyBtn.textContent = "✓ ¡Copiado!";
-            copyBtn.classList.add("btn-copied");
-            setTimeout(() => {
-              copyBtn.textContent = originalText;
-              copyBtn.classList.remove("btn-copied");
-            }, 2200);
-          });
-        }
-        return;
-      }
-
-      if (e.target.closest(".btn-creativo-trash")) return;
-      const zoomTrigger = e.target.closest(".creativo-thumb-box");
-      if (zoomTrigger) {
-        const id = zoomTrigger.dataset.id;
-        const item = CREATIVOS_DATA.find((it) => it.id === id);
+      const card = e.target.closest(".creativo-card");
+      if (card && card.dataset.id) {
+        const item = CREATIVOS_DATA.find((it) => it.id === card.dataset.id);
         if (item) openLightboxModal(item);
       }
     });
@@ -155,12 +106,41 @@ export function initCreativosUI() {
   subscribeCola(() => renderCreativosGrid());
   loadCola();
 
-  container.addEventListener("click", (e) => {
+  document.addEventListener("click", async (e) => {
     const btn = e.target.closest(".btn-creativo-cola, .btn-creativo-heart");
     if (btn && btn.dataset.colaId) {
       e.stopPropagation();
       e.preventDefault();
-      toggleCola(btn.dataset.colaId, resolver);
+      await toggleCola(btn.dataset.colaId, resolver);
+      return;
+    }
+
+    const trashBtn = e.target.closest(".btn-creativo-trash");
+    if (trashBtn && trashBtn.dataset.trashId) {
+      e.preventDefault();
+      e.stopPropagation();
+      const id = trashBtn.dataset.trashId;
+      const restore = trashBtn.classList.contains("is-restore");
+      const item = CREATIVOS_DATA.find((it) => it.id === id);
+      const label = item?.title || id;
+      const ok = window.confirm(
+        restore
+          ? `¿Restaurar "${label}" al catálogo?`
+          : `¿Eliminar "${label}" del catálogo?\n\nVa a la papelera (se puede restaurar). Si estaba en la cola, se saca.`
+      );
+      if (!ok) return;
+      trashBtn.disabled = true;
+      try {
+        if (restore) await unhideCreativo(id);
+        else await hideCreativo(id);
+        renderCreativosGrid();
+        closeLightboxModal();
+      } catch (err) {
+        if (!err.auth) window.alert(err.message || "No se pudo actualizar la papelera");
+      } finally {
+        trashBtn.disabled = false;
+      }
+      return;
     }
   });
 

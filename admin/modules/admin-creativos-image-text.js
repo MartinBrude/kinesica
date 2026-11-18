@@ -13,6 +13,7 @@ import {
   IMG_TITLE_MAX,
   IMG_BODY_MAX,
 } from "./admin-creativos-cola.js?v=12";
+import { getSelectedItem } from "./admin-creativos-state.js?v=1";
 
 let resolveSeed = () => null;
 let onSavedCb = null;
@@ -83,7 +84,13 @@ export function closeImageTextModal(opts = {}) {
   const hadId = editingId;
   editingId = null;
   if (!opts.skipUrl && hadId) writeCreativosViewState(null);
-  if (!document.getElementById("creativo-lightbox-modal")?.hidden) return;
+  const selected = getSelectedItem();
+  const lightbox = document.getElementById("creativo-lightbox-modal");
+  if (selected && lightbox) {
+    lightbox.hidden = false;
+    document.body.style.overflow = "hidden";
+    return;
+  }
   document.body.style.overflow = "";
 }
 
@@ -181,13 +188,15 @@ async function saveFromModal(btn) {
   }
 }
 
-/** @param {HTMLElement} container @param {{resolveItem?: Function, onDone?: Function}} [opts] */
+let imgtextBound = false;
+
+/** @param {HTMLElement} [container] @param {{resolveItem?: Function, onDone?: Function}} [opts] */
 export function bindImageTextUi(container, opts = {}) {
   if (typeof opts === "function") opts = { onDone: opts };
   if (opts.resolveItem) resolveSeed = opts.resolveItem;
   if (opts.onDone) onSavedCb = opts.onDone;
-  if (!container || container.dataset.imgtextBound === "1") return;
-  container.dataset.imgtextBound = "1";
+  if (imgtextBound) return;
+  imgtextBound = true;
 
   const els = modalEls();
   els.root?.addEventListener("input", (e) => {
@@ -206,7 +215,7 @@ export function bindImageTextUi(container, opts = {}) {
     }
   });
 
-  container.addEventListener("click", (e) => {
+  document.addEventListener("click", (e) => {
     const edit = e.target.closest(".btn-queue-edit-imgtext");
     if (!edit) return;
     e.preventDefault();

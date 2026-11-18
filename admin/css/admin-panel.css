@@ -1558,6 +1558,7 @@
   flex-direction: column;
   box-shadow: 0 2px 8px rgba(0, 30, 60, 0.04);
   transition: transform 0.22s ease, box-shadow 0.22s ease;
+  cursor: pointer;
 }
 
 .creativo-card:hover {
@@ -2067,7 +2068,7 @@
     grid-template-columns: 1fr;
   }
   .creativo-modal-preview {
-    position: static;
+    position: relative;
     max-width: 100%;
   }
   .creativos-toolbar {
