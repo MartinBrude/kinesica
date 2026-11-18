@@ -94,7 +94,6 @@ function send_whatsapp_text(string $to, string $body, bool $previewUrl = false):
     $response = curl_exec($ch);
     $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $curlError = curl_error($ch);
-    curl_close($ch);
 
     if ($curlError) {
         return ['ok' => false, 'http_code' => $httpCode, 'error' => 'Error de red: ' . $curlError];
@@ -170,7 +169,6 @@ function send_whatsapp_via_n8n_demo(string $to, string $body, array $extra = [])
     $response = curl_exec($ch);
     $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $curlError = curl_error($ch);
-    curl_close($ch);
 
     if ($curlError) {
         return ['ok' => false, 'http_code' => $httpCode, 'error' => 'Error de red n8n: ' . $curlError];

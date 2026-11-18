@@ -43,11 +43,6 @@ function initWhatsAppMobileScroll() {
   updateScrollState();
 }
 
-function initDesktopWhatsAppClickHandler() {
-  // Enlaces estándar con https://wa.me/ y target="_blank" para soporte universal
-  // (tanto WhatsApp Desktop nativo como WhatsApp Web, sin bloqueos de Chrome)
-}
-
 var CLARA_WHATSAPP_DIGITS = "5491131781733";
 var CLARA_PHONE_DISPLAY = "+54 (11) 3178-1733";
 
@@ -206,7 +201,6 @@ function syncPublicSettings() {
 
 function kinesicaApplyWhatsAppContact() {
   initWhatsAppMobileScroll();
-  initDesktopWhatsAppClickHandler();
 
   var site = window.KINESICA_SITE || {};
   var cfg = site.contact || {};

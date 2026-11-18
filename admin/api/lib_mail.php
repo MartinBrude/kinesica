@@ -45,7 +45,6 @@ function send_html_mail(string $to, string $subject, string $htmlBody, string $t
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $curlError = curl_error($ch);
-        curl_close($ch);
         if (!$curlError && $httpCode >= 200 && $httpCode < 300) {
             return true;
         }

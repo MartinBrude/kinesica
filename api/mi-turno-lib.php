@@ -225,7 +225,6 @@ function kinesica_mi_turno_cancel_calendar(string $calendarEventId, array $meta 
         $raw = curl_exec($ch);
         $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $err = curl_error($ch);
-        curl_close($ch);
 
         if (!$err && $httpCode >= 200 && $httpCode < 300 && is_string($raw) && $raw !== '') {
             $decoded = json_decode($raw, true);
@@ -261,7 +260,6 @@ function kinesica_mi_turno_cancel_calendar(string $calendarEventId, array $meta 
             $raw2 = curl_exec($ch2);
             $http2 = (int) curl_getinfo($ch2, CURLINFO_HTTP_CODE);
             $err2 = curl_error($ch2);
-            curl_close($ch2);
             if (!$err2 && $http2 >= 200 && $http2 < 300 && is_string($raw2)) {
                 $decoded2 = json_decode($raw2, true);
                 if (is_array($decoded2) && ($decoded2['status'] ?? '') === 'success') {
@@ -304,7 +302,6 @@ function kinesica_mi_turno_cancel_calendar(string $calendarEventId, array $meta 
             CURLOPT_TIMEOUT => 10,
         ]);
         curl_exec($ch2);
-        curl_close($ch2);
     }
 
     if ($gasOk) {

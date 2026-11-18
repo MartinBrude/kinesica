@@ -66,7 +66,6 @@ function send_whatsapp_template_alert(string $to, array $tpl): array
     $response = curl_exec($ch);
     $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $curlError = curl_error($ch);
-    curl_close($ch);
 
     if ($curlError) {
         return ['ok' => false, 'http_code' => $httpCode, 'error' => 'Error de red: ' . $curlError];
@@ -185,7 +184,6 @@ function send_whatsapp_reminder_template(string $to, array $data): array
     $response = curl_exec($ch);
     $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $curlError = curl_error($ch);
-    curl_close($ch);
 
     if ($curlError) {
         return ['ok' => false, 'http_code' => $httpCode, 'error' => 'Error de red Meta: ' . $curlError, 'to' => $to];

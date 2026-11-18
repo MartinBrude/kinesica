@@ -1,5 +1,6 @@
 /**
  * Fuente única de feriados nacionales AR (YYYY-MM-DD) para booking / GAS / respaldo.
+ * Trasladables según Ley 27399 art. 6 (sin puentes turísticos Art. 7 — esos se agregan a mano).
  * Tras editar: `npm run holidays:sync`
  */
 export const ARGENTINA_HOLIDAYS = Object.freeze([
@@ -36,4 +37,36 @@ export const ARGENTINA_HOLIDAYS = Object.freeze([
   "2027-11-20",
   "2027-12-08",
   "2027-12-25",
+  // 2028 (Ley 27399; sin Art. 7)
+  "2028-01-01",
+  "2028-02-28",
+  "2028-02-29",
+  "2028-03-24",
+  "2028-04-02",
+  "2028-04-14",
+  "2028-05-01",
+  "2028-05-25",
+  "2028-06-20",
+  "2028-07-09",
+  "2028-08-21",
+  "2028-10-16",
+  "2028-11-20",
+  "2028-12-08",
+  "2028-12-25",
+  // 2029
+  "2029-01-01",
+  "2029-02-12",
+  "2029-02-13",
+  "2029-03-24",
+  "2029-03-30",
+  "2029-04-02",
+  "2029-05-01",
+  "2029-05-25",
+  "2029-06-20",
+  "2029-07-09",
+  "2029-08-20",
+  "2029-10-15",
+  "2029-11-19",
+  "2029-12-08",
+  "2029-12-25",
 ]);

@@ -422,7 +422,6 @@ if ($apiKey !== '' && function_exists('curl_init')) {
     $response = curl_exec($ch);
     $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $curlError = curl_error($ch);
-    curl_close($ch);
     if (!$curlError && $httpCode >= 200 && $httpCode < 300) {
         kinesica_contact_respond(200, ['success' => true]);
     }

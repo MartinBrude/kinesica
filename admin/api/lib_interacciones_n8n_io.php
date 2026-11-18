@@ -139,7 +139,6 @@ function interacciones_n8n_http_client(array $conf): callable
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         $resp = curl_exec($ch);
         $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
         @chmod($cookie, 0600);
         return ['status' => $code, 'body' => is_string($resp) ? $resp : ''];
     };

@@ -30,7 +30,9 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
             if (($look['status'] ?? '') === 'success' && !empty($look['email'])) {
                 $email = strtolower(trim((string) $look['email']));
             }
-        } catch (Throwable $e) {}
+        } catch (Throwable $e) {
+            error_log('kinesica recordatorios dispatch: email_by_phone: ' . $e->getMessage());
+        }
     }
     // Fallback por nombre exacto (nunca LIKE %nombre% — evita email de otro paciente).
     if ($email === '' && !empty($item['patient_name'])) {
@@ -50,7 +52,9 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
             if ($foundEmail) {
                 $email = strtolower(trim((string) $foundEmail));
             }
-        } catch (Throwable $e) {}
+        } catch (Throwable $e) {
+            error_log('kinesica recordatorios dispatch: email_by_name: ' . $e->getMessage());
+        }
     }
 
     // Persistir contacto cargado en el modal para próximas corridas / directorio.
@@ -85,7 +89,9 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
         if (is_string($notes) && trim($notes) !== '') {
             $indicaciones = trim($notes);
         }
-    } catch (Throwable $e) {}
+    } catch (Throwable $e) {
+        error_log('kinesica recordatorios dispatch: reminder_notes: ' . $e->getMessage());
+    }
     if ($indicaciones === '') {
         $indicaciones = $isCall
             ? '📞 Norberto se comunicará con vos puntualmente a este número de WhatsApp.'
@@ -177,7 +183,14 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
                     ];
                 }
             }
-        } catch (Throwable $e) {}
+        } catch (Throwable $e) {
+            error_log('kinesica recordatorios dispatch: daily dedup failed: ' . $e->getMessage());
+            // Fail closed: sin dedup confiable no enviar (evita doble aviso).
+            return [
+                'ok' => false,
+                'error' => 'No se pudo verificar envíos previos. Reintentá en unos minutos.',
+            ];
+        }
     }
 
     // Claim atómico: evita doble WhatsApp/email por doble clic o dos pestañas.

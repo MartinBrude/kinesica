@@ -128,6 +128,7 @@ function kinesica_backup_notify_norberto_audit(array $bookingEntry, array $backu
             $mailSent = send_html_mail($norbertoEmail, $subject, $htmlBody, $plainBody);
         } catch (Throwable $e) {
             $mailSent = false;
+            error_log('kinesica calendar backup audit mail: ' . $e->getMessage());
         }
     }
 
@@ -222,10 +223,12 @@ function kinesica_backup_notify_norberto_read_fallback(string $contextInfo = '')
     try {
         send_whatsapp_alert_payload(['to' => $norbertoPhone, 'body' => $msg]);
     } catch (Throwable $e) {
+        error_log('kinesica calendar backup read-alert WA: ' . $e->getMessage());
     }
     try {
         send_mail($norbertoEmail, '⚠️ [KINÉSICA] Lectura de turnos servida desde Modo Respaldo', str_replace('*', '', $msg));
     } catch (Throwable $e) {
+        error_log('kinesica calendar backup read-alert mail: ' . $e->getMessage());
     }
 }
 

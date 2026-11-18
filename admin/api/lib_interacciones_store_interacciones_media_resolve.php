@@ -63,7 +63,6 @@ function interacciones_media_resolve(string $rawMediaId): ?array
             ]);
             $infoResp = curl_exec($ch);
             $infoCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
             $infoJson = is_string($infoResp) ? json_decode($infoResp, true) : null;
             $dlUrl = is_array($infoJson) ? (string) ($infoJson['url'] ?? '') : '';
             if ($infoCode === 200 && $dlUrl !== '') {
@@ -79,7 +78,6 @@ function interacciones_media_resolve(string $rawMediaId): ?array
                 ]);
                 $rawBytes = curl_exec($ch2);
                 $dlCode = (int) curl_getinfo($ch2, CURLINFO_HTTP_CODE);
-                curl_close($ch2);
                 if ($dlCode === 200 && is_string($rawBytes) && $rawBytes !== '') {
                     $saved = interacciones_media_save([
                         'media_id' => $mid,

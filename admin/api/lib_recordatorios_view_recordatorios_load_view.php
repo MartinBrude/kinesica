@@ -38,7 +38,9 @@ function recordatorios_load_view(?PDO $pdo = null, int $days = RECORDATORIOS_DEF
                      AND r1.calendar_event_id != '_run'
                      AND r1.id < r2.id
                      AND r1.status = r2.status");
-    } catch (Throwable $e) {}
+    } catch (Throwable $e) {
+        error_log('kinesica recordatorios view: dedupe cleanup: ' . $e->getMessage());
+    }
 
     $hasPacienteCol = false;
     try {
@@ -255,7 +257,9 @@ function recordatorios_load_view(?PDO $pdo = null, int $days = RECORDATORIOS_DEF
                                 ]);
                             }
                             $directory['by_phone'][$phoneEndCheck] = $email;
-                        } catch (Throwable $syncEx) {}
+                        } catch (Throwable $syncEx) {
+                            error_log('kinesica recordatorios view: directory sync: ' . $syncEx->getMessage());
+                        }
                     }
                 }
             }

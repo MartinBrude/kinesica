@@ -14,6 +14,8 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const require = createRequire(import.meta.url);
 const BookingWidget = require(path.join(root, "booking/booking-widget.js"));
 const src = fs.readFileSync(path.join(root, "booking/booking-widget.js"), "utf8");
+const copySrc = fs.readFileSync(path.join(root, "booking/booking-widget-copy.js"), "utf8");
+const i18nSrc = `${src}\n${copySrc}`;
 
 let n = 0;
 const test = (name, fn) => { fn(); n += 1; };
@@ -142,7 +144,7 @@ test("plantilla: cada campo tiene su contenedor role=alert y se cablea el evento
 
 test("i18n: los 4 idiomas tienen los textos de error y confirmación de teléfono", () => {
   for (const k of ["errContactName", "errContactPhone", "errPatientName", "errPhone", "phoneConfirm", "emailInvalid"]) {
-    assert.equal((src.match(new RegExp(`\\b${k}: "`, "g")) || []).length, 4, k);
+    assert.equal((i18nSrc.match(new RegExp(`\\b${k}: "`, "g")) || []).length, 4, k);
   }
 });
 
@@ -240,7 +242,7 @@ test("i18n: los 4 idiomas definen los textos de fallback de horarios hacia el Li
     "slotFallbackTextMaria",
     "slotFallbackBtnMaria",
   ]) {
-    assert.equal((src.match(new RegExp(`\\b${k}: "`, "g")) || []).length, 4, k);
+    assert.equal((i18nSrc.match(new RegExp(`\\b${k}: "`, "g")) || []).length, 4, k);
   }
   assert.match(src, /id="kb-slots-error-fallback"/);
   assert.match(src, /id="kb-btn-fallback-whatsapp"/);

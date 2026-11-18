@@ -45,8 +45,10 @@ function recordatorios_was_sent_for_event(string $calendarEventId, $appointmentD
             $stmt->execute(['cal' => substr($cal, 0, 128)]);
         }
         return (bool) $stmt->fetchColumn();
-    } catch (Throwable) {
-        return false;
+    } catch (Throwable $e) {
+        error_log('kinesica recordatorios was_sent_for_event: ' . $e->getMessage());
+        // Fail closed: si no podemos consultar, tratar como ya enviado (evita duplicados).
+        return true;
     }
 }
 
