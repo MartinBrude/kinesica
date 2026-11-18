@@ -78,20 +78,30 @@ function find_existing_patient_match(PDO $pdo, ?string $phone, ?string $name = n
             ");
             $stmt->execute(['full1' => $fullLower, 'full2' => $fullLower, 'full3' => $fullLower]);
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            if ($row) return $row;
+            if ($row
+                && ($cleanPhone === '' || is_placeholder_phone($cleanPhone)
+                    || kinesica_phones_compatible_for_name_merge($cleanPhone, (string) ($row['telefono'] ?? '')))
+            ) {
+                return $row;
+            }
 
-            $stmtAll = $pdo->query("SELECT id, nombre, apellido, nombre_completo, deleted_at FROM pacientes WHERE ({$alive})");
+            $stmtAll = $pdo->query("SELECT id, nombre, apellido, nombre_completo, telefono, deleted_at FROM pacientes WHERE ({$alive})");
             if ($stmtAll) {
                 while ($cand = $stmtAll->fetch(PDO::FETCH_ASSOC)) {
                     $candFull = trim(($cand['nombre_completo'] ?? '') ?: (($cand['nombre'] ?? '') . ' ' . ($cand['apellido'] ?? '')));
-                    if (canonical_patient_name_key($candFull) === $nameKey) {
-                        // Traer la fila completa: el scan liviano omite email/notas/contacto
-                        // y un UPDATE posterior los pisaba con null.
-                        $fullStmt = $pdo->prepare("SELECT * FROM pacientes WHERE id = :id AND ({$alive}) LIMIT 1");
-                        $fullStmt->execute(['id' => (int) $cand['id']]);
-                        $full = $fullStmt->fetch(PDO::FETCH_ASSOC);
-                        return is_array($full) ? $full : $cand;
+                    if (canonical_patient_name_key($candFull) !== $nameKey) {
+                        continue;
                     }
+                    // Homónimos con WhatsApp reales distintos: no matchear solo por nombre.
+                    if ($cleanPhone !== '' && !is_placeholder_phone($cleanPhone)
+                        && !kinesica_phones_compatible_for_name_merge($cleanPhone, (string) ($cand['telefono'] ?? ''))
+                    ) {
+                        continue;
+                    }
+                    $fullStmt = $pdo->prepare("SELECT * FROM pacientes WHERE id = :id AND ({$alive}) LIMIT 1");
+                    $fullStmt->execute(['id' => (int) $cand['id']]);
+                    $full = $fullStmt->fetch(PDO::FETCH_ASSOC);
+                    return is_array($full) ? $full : $cand;
                 }
             }
         }
@@ -101,15 +111,8 @@ function find_existing_patient_match(PDO $pdo, ?string $phone, ?string $name = n
 }
 
 /**
- * Resuelve qué teléfono conservar al unificar/actualizar.
- * Si el admin acaba de cargar un WhatsApp nuevo y el match fue por nombre/DNI,
- * ese número gana (salvo colisión con otro paciente).
- */
-
-/**
- * Resuelve qué teléfono conservar al unificar/actualizar.
- * Si el admin acaba de cargar un WhatsApp nuevo y el match fue por nombre/DNI,
- * ese número gana (salvo colisión con otro paciente).
+ * Teléfono al actualizar un match: placeholder/vacío → adoptar nuevo;
+ * dos WhatsApp reales distintos → conservar el existente (no pisar por homónimo).
  */
 function kinesica_resolve_merge_phone(PDO $pdo, array $existing, string $newPhone): string
 {
@@ -123,26 +126,10 @@ function kinesica_resolve_merge_phone(PDO $pdo, array $existing, string $newPhon
     if (is_placeholder_phone($existingTel) || $existingClean === '' || $existingClean === $newClean) {
         return $newClean;
     }
-
-    try {
-        $stmt = $pdo->prepare('SELECT id FROM pacientes WHERE telefono = :tel AND id != :id LIMIT 1');
-        $stmt->execute(['tel' => $newClean, 'id' => (int) ($existing['id'] ?? 0)]);
-        if ($stmt->fetch()) {
-            return $existingTel; // el nuevo ya pertenece a otro
-        }
-    } catch (Throwable) {
-        return $existingTel;
-    }
-    return $newClean;
+    return $existingTel;
 }
 
-/**
- * Homónimos con WhatsApp reales distintos no se unen solo por nombre.
- */
-
-/**
- * Homónimos con WhatsApp reales distintos no se unen solo por nombre.
- */
+/** Homónimos con WhatsApp reales distintos: no unir solo por nombre. */
 function kinesica_phones_compatible_for_name_merge(string $phoneA, string $phoneB): bool
 {
     $aClean = clean_phone_number($phoneA);

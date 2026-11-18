@@ -57,8 +57,11 @@ function kinesica_pacientes_reassign_children(PDO $pdo, int $sourceId, int $targ
                 'target' => $targetId,
                 'source' => $sourceId,
             ]);
-        } catch (Throwable) {
-            // Tabla ausente o constraint puntual: no abortar el merge completo aquí.
+        } catch (Throwable $e) {
+            // Si la tabla/columna existe y el UPDATE falla (UNIQUE, etc.), abortar:
+            // el caller hace rollback y no deja huérfanos tras el DELETE.
+            error_log('kinesica_pacientes_reassign_children ' . $table . ': ' . $e->getMessage());
+            throw $e;
         }
     }
 }

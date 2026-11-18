@@ -22,11 +22,30 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
     if ($email === '' && $item['status'] === 'sent_email') {
         $email = strtolower(trim((string) $item['error_message']));
     }
+    if ($email === '' && $phone !== '') {
+        try {
+            $pdo = recordatorios_pdo();
+            require_once __DIR__ . '/pacientes_helpers_email_by_phone.php';
+            $look = kinesica_pacientes_email_by_phone($pdo, $phone);
+            if (($look['status'] ?? '') === 'success' && !empty($look['email'])) {
+                $email = strtolower(trim((string) $look['email']));
+            }
+        } catch (Throwable $e) {}
+    }
+    // Fallback por nombre exacto (nunca LIKE %nombre% — evita email de otro paciente).
     if ($email === '' && !empty($item['patient_name'])) {
         try {
             $pdo = recordatorios_pdo();
-            $stmt = $pdo->prepare('SELECT email FROM pacientes WHERE (nombre_completo LIKE :nc OR (telefono != "" AND telefono = :tel)) AND email != "" LIMIT 1');
-            $stmt->execute(['nc' => '%' . $item['patient_name'] . '%', 'tel' => $phone]);
+            require_once __DIR__ . '/pacientes_helpers_existing_patient_match.php';
+            $alive = kinesica_pacientes_alive_sql($pdo);
+            $full = trim((string) $item['patient_name']);
+            $stmt = $pdo->prepare(
+                "SELECT email FROM pacientes
+                 WHERE ({$alive}) AND email IS NOT NULL AND email != ''
+                   AND LOWER(nombre_completo) = LOWER(:full)
+                 LIMIT 1"
+            );
+            $stmt->execute(['full' => $full]);
             $foundEmail = $stmt->fetchColumn();
             if ($foundEmail) {
                 $email = strtolower(trim((string) $foundEmail));

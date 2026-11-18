@@ -54,6 +54,7 @@ Con el flag: asserts en writes (p. ej. fichas) rechazan paciente/profesional ine
 - Paciente con fichas/contactos/etc. **sí** se soft-deleta (RESTRICT bloqueaba el hard-delete).
 - **Dedupe / merge / match de alta** también excluyen soft-deleted: un borrado nunca es survivor ni absorbe a un activo (ver [pacientes-dedupe.md](pacientes-dedupe.md)).
 - Antes de hard-delete de duplicados activos, el merge reasigna hijos (`kinesica_pacientes_reassign_children`) para no chocar con FK RESTRICT ni dejar huérfanos.
+- Mantenimiento de bloqueos de agenda (`tk3` / `no dar`): soft-delete, no `DELETE` duro.
 
 ## Backfill / migrate
 

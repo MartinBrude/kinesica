@@ -55,4 +55,34 @@ $pdo->exec("UPDATE pacientes SET deleted_at = datetime('now') WHERE id = 2");
 $soft = kinesica_pacientes_email_by_phone($pdo, '5491162222222');
 assert_true($soft['status'] === 'not_found', 'email ignora soft-deleted');
 
+// Homónimos: no match por nombre si WhatsApp reales distintos; no pisar teléfono.
+$pdo->exec("INSERT INTO pacientes (id, telefono, nombre, apellido, nombre_completo, email, deleted_at) VALUES
+ (10, '5491177770001', 'Juan', 'Perez', 'Juan Perez', 'jp1@example.com', NULL),
+ (11, '5491177770002', 'Juan', 'Perez', 'Juan Perez', 'jp2@example.com', NULL)");
+
+$noMatch = find_existing_patient_match($pdo, '5491177770002', 'Juan Perez', null);
+assert_true(
+    is_array($noMatch) && (int) $noMatch['id'] === 11,
+    'match por teléfono exacto gana sobre homónimo'
+);
+
+$pdo->exec("INSERT INTO pacientes (id, telefono, nombre, apellido, nombre_completo, email, deleted_at) VALUES
+ (12, '5491188880001', 'Maria', 'Lopez', 'Maria Lopez', 'ml@example.com', NULL)");
+$nameOnly = find_existing_patient_match($pdo, '5491188889999', 'Maria Lopez', null);
+assert_true($nameOnly === null, 'nombre + WhatsApp distinto no matchea homónimo');
+
+$kept = kinesica_resolve_merge_phone(
+    $pdo,
+    ['id' => 12, 'telefono' => '5491188880001'],
+    '5491188889999'
+);
+assert_true($kept === '5491188880001', 'resolve_merge_phone no pisa WhatsApp real');
+
+$fromPlaceholder = kinesica_resolve_merge_phone(
+    $pdo,
+    ['id' => 99, 'telefono' => 'sin-tel-f-99'],
+    '5491188880001'
+);
+assert_true($fromPlaceholder === '5491188880001', 'resolve_merge_phone adopta WA sobre placeholder');
+
 echo "\n--- test-pacientes-security-helpers OK ---\n";

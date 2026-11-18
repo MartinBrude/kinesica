@@ -24,7 +24,38 @@ function kinesica_pacientes_run_maintenance_if_due(PDO $pdo, bool $force = false
     }
 
     try {
-        $pdo->exec("DELETE FROM pacientes WHERE LOWER(nombre_completo) LIKE '%tk3%' OR LOWER(nombre_completo) LIKE '%tk 3%' OR LOWER(nombre) LIKE '%tk3%' OR LOWER(nombre) LIKE '%tk 3%' OR LOWER(nombre_completo) LIKE '%no dar%' OR LOWER(nombre) LIKE '%no dar%' OR LOWER(apellido) LIKE '%no dar%'");
+        // Bloqueos/agenda (tk3, no dar): soft-delete si existe deleted_at; nunca hard-delete
+        // con posibles hijos clínicos (FK RESTRICT / huérfanos).
+        require_once __DIR__ . '/lib_migrations.php';
+        require_once __DIR__ . '/lib_relational_integrity.php';
+        $blockedSql = "LOWER(nombre_completo) LIKE '%tk3%' OR LOWER(nombre_completo) LIKE '%tk 3%'
+            OR LOWER(nombre) LIKE '%tk3%' OR LOWER(nombre) LIKE '%tk 3%'
+            OR LOWER(nombre_completo) LIKE '%no dar%' OR LOWER(nombre) LIKE '%no dar%'
+            OR LOWER(apellido) LIKE '%no dar%'";
+        if (kinesica_migrations_column_exists($pdo, 'pacientes', 'deleted_at')) {
+            $ids = $pdo->query(
+                "SELECT id FROM pacientes WHERE deleted_at IS NULL AND ({$blockedSql})"
+            )->fetchAll(PDO::FETCH_COLUMN) ?: [];
+            foreach ($ids as $blockedId) {
+                try {
+                    kinesica_rel_paciente_soft_delete($pdo, (int) $blockedId);
+                } catch (Throwable $e) {
+                    error_log('maintenance soft-delete bloqueo id=' . $blockedId . ': ' . $e->getMessage());
+                }
+            }
+        } else {
+            // Esquema legacy sin soft-delete: solo borrar si no hay hijos clínicos.
+            $ids = $pdo->query("SELECT id FROM pacientes WHERE ({$blockedSql})")->fetchAll(PDO::FETCH_COLUMN) ?: [];
+            foreach ($ids as $blockedId) {
+                $bid = (int) $blockedId;
+                if (function_exists('kinesica_rel_paciente_has_clinical_children')
+                    && kinesica_rel_paciente_has_clinical_children($pdo, $bid)
+                ) {
+                    continue;
+                }
+                $pdo->prepare('DELETE FROM pacientes WHERE id = :id')->execute(['id' => $bid]);
+            }
+        }
 
         $pdo->exec("UPDATE pacientes SET 
             nombre = TRIM(REPLACE(REPLACE(REPLACE(nombre, '\r', ' '), '\n', ' '), ',', '')),

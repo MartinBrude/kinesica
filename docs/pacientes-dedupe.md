@@ -40,8 +40,15 @@ Regla dura:
 - El clustering **solo** considera filas con `deleted_at IS NULL`.
 - Match de alta (`find_existing_patient_match`) **ignora** soft-deleted.
 - Merge manual **rechaza** origen o destino eliminado.
+- Mantenimiento (nombres tipo `tk3` / `no dar`): **soft-delete**, no `DELETE` duro.
 
 Sin esto, un soft-deleted con WhatsApp real podía absorber a un activo placeholder y el paciente “desaparecía” del directorio.
+
+## Homónimos y WhatsApp
+
+- Match por nombre **no** une si ambos tienen WhatsApp reales distintos (`kinesica_phones_compatible_for_name_merge`).
+- `kinesica_resolve_merge_phone` **nunca** pisa un WhatsApp real con otro distinto (solo reemplaza placeholder/vacío).
+- Si falla un `UPDATE` de hijo en reassign, se **relanza** el error para rollback del merge.
 
 ## Criterios de duplicado (activos)
 
@@ -82,6 +89,8 @@ Cubren: reasignación de hijos, merge explícito, `around_patient`, y que soft-d
 | `GET fichas.php` | Lectura **compartida** entre sesiones de la clínica (biblioteca común). Escritura/borrado: owner o admin. |
 | Bot / `api_token` en `pacientes.php` | Permitido: upsert/insert, `update_name`, `get_email_by_phone`, waitlist. **Bloqueado:** merge, deduplicate, send_email, toggles, update_phone, encuesta. |
 | `get_email_by_phone` | Exacto primero; sufijo 8 dígitos solo si hay **un** candidato. |
+| Email en dispatch manual | Preferir helper por teléfono; fallback nombre **exacto** (nunca `LIKE %nombre%`). |
+| Campaña → paciente | Tel exacto; sufijo 8 solo si es único; vivos (`deleted_at IS NULL`). |
 | `update_name` | Siempre por `id` (si viene solo teléfono, se resuelve a un id activo). |
 | Recordatorio manual | Claim atómico (`claim:…`) antes de WhatsApp/email. |
 | UI directorio | No colapsa duplicados en memoria; se muestran para Unificar. |
