@@ -1,13 +1,42 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * ¿La fila está activa? Soft-deleted (deleted_at seteado) no participa de match/dedupe.
+ *
+ * @param array<string,mixed> $row
+ */
+function kinesica_pacientes_row_is_active(array $row): bool
+{
+    if (!array_key_exists('deleted_at', $row)) {
+        return true;
+    }
+    $v = $row['deleted_at'];
+    return $v === null || $v === '';
+}
+
+/**
+ * Fragmento SQL para excluir soft-deleted si la columna existe.
+ */
+function kinesica_pacientes_alive_sql(PDO $pdo, string $alias = ''): string
+{
+    require_once __DIR__ . '/lib_migrations.php';
+    if (!kinesica_migrations_column_exists($pdo, 'pacientes', 'deleted_at')) {
+        return '1=1';
+    }
+    $col = $alias !== '' ? "{$alias}.deleted_at" : 'deleted_at';
+    return "{$col} IS NULL";
+}
+
 
 function find_existing_patient_match(PDO $pdo, ?string $phone, ?string $name = null, ?string $dni = null): ?array
 {
+    $alive = kinesica_pacientes_alive_sql($pdo);
+
     // 1. Teléfono real
     $cleanPhone = clean_phone_number((string) ($phone ?? ''));
     if ($cleanPhone !== '' && !is_placeholder_phone($cleanPhone)) {
-        $stmt = $pdo->prepare('SELECT * FROM pacientes WHERE telefono = :tel LIMIT 1');
+        $stmt = $pdo->prepare("SELECT * FROM pacientes WHERE telefono = :tel AND ({$alive}) LIMIT 1");
         $stmt->execute(['tel' => $cleanPhone]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($row) return $row;
@@ -16,13 +45,16 @@ function find_existing_patient_match(PDO $pdo, ?string $phone, ?string $name = n
     // 2. DNI limpio o placeholder de DNI
     $cleanDni = clean_patient_dni($dni);
     if ($cleanDni !== '') {
-        $stmt = $pdo->prepare('
+        $stmt = $pdo->prepare("
             SELECT * FROM pacientes 
-            WHERE dni = :dni 
-               OR REPLACE(REPLACE(COALESCE(dni, ""), ".", ""), " ", "") = :clean
-               OR telefono = :telDni
+            WHERE ({$alive})
+              AND (
+                dni = :dni 
+                OR REPLACE(REPLACE(COALESCE(dni, \"\"), \".\", \"\"), \" \", \"\") = :clean
+                OR telefono = :telDni
+              )
             LIMIT 1
-        ');
+        ");
         $stmt->execute(['dni' => $cleanDni, 'clean' => $cleanDni, 'telDni' => 'sin-tel-dni-' . $cleanDni]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($row) return $row;
@@ -34,25 +66,28 @@ function find_existing_patient_match(PDO $pdo, ?string $phone, ?string $name = n
         if ($nameKey !== '' && str_contains($nameKey, ' ')) {
             // PDO nativo (ATTR_EMULATE_PREPARES=false) no permite reutilizar el mismo :nombre.
             $fullLower = mb_strtolower(trim($name), 'UTF-8');
-            $stmt = $pdo->prepare('
+            $stmt = $pdo->prepare("
                 SELECT * FROM pacientes 
-                WHERE LOWER(nombre_completo) = :full1
-                   OR LOWER(TRIM(CONCAT(nombre, " ", apellido))) = :full2
-                   OR LOWER(TRIM(CONCAT(apellido, " ", nombre))) = :full3
+                WHERE ({$alive})
+                  AND (
+                    LOWER(nombre_completo) = :full1
+                    OR LOWER(TRIM(CONCAT(nombre, \" \", apellido))) = :full2
+                    OR LOWER(TRIM(CONCAT(apellido, \" \", nombre))) = :full3
+                  )
                 LIMIT 1
-            ');
+            ");
             $stmt->execute(['full1' => $fullLower, 'full2' => $fullLower, 'full3' => $fullLower]);
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if ($row) return $row;
 
-            $stmtAll = $pdo->query('SELECT id, nombre, apellido, nombre_completo FROM pacientes');
+            $stmtAll = $pdo->query("SELECT id, nombre, apellido, nombre_completo, deleted_at FROM pacientes WHERE ({$alive})");
             if ($stmtAll) {
                 while ($cand = $stmtAll->fetch(PDO::FETCH_ASSOC)) {
                     $candFull = trim(($cand['nombre_completo'] ?? '') ?: (($cand['nombre'] ?? '') . ' ' . ($cand['apellido'] ?? '')));
                     if (canonical_patient_name_key($candFull) === $nameKey) {
                         // Traer la fila completa: el scan liviano omite email/notas/contacto
                         // y un UPDATE posterior los pisaba con null.
-                        $fullStmt = $pdo->prepare('SELECT * FROM pacientes WHERE id = :id LIMIT 1');
+                        $fullStmt = $pdo->prepare("SELECT * FROM pacientes WHERE id = :id AND ({$alive}) LIMIT 1");
                         $fullStmt->execute(['id' => (int) $cand['id']]);
                         $full = $fullStmt->fetch(PDO::FETCH_ASSOC);
                         return is_array($full) ? $full : $cand;
@@ -124,9 +159,12 @@ function kinesica_phones_compatible_for_name_merge(string $phoneA, string $phone
 function deduplicate_pacientes_table(PDO $pdo): int
 {
     try {
-        $stmt = $pdo->query('SELECT * FROM pacientes ORDER BY id ASC');
+        // Solo fichas activas: un soft-deleted nunca puede ser survivor ni absorber a un activo.
+        $alive = kinesica_pacientes_alive_sql($pdo);
+        $stmt = $pdo->query("SELECT * FROM pacientes WHERE ({$alive}) ORDER BY id ASC");
         if (!$stmt) return 0;
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $rows = array_values(array_filter($rows, 'kinesica_pacientes_row_is_active'));
         if (count($rows) <= 1) return 0;
 
         $n = count($rows);

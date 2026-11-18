@@ -3,7 +3,6 @@ import { escapeHtml } from "./dom.js?v=79";
 import { setListControlsEnabled } from "./list-controls.js?v=1";
 import { invalidateDirectoryCache } from "./form-patient.js";
 import { openFullPacienteModal } from "./pacientes-modal.js?v=5";
-import { deduplicatePatientsInMemory } from "./pacientes-dedupe.js";
 import {
   listEl,
   searchInput,
@@ -22,8 +21,8 @@ export async function loadPacientes() {
   try {
     const res = await api("pacientes.php");
     const raw = Array.isArray(res?.items) ? res.items : (Array.isArray(res) ? res : []);
-    const deduplicated = deduplicatePatientsInMemory(raw);
-    setPacientesCache(deduplicated);
+    // No colapsar en memoria: la DB es la fuente de verdad; duplicados visibles → Unificar.
+    setPacientesCache(raw);
     invalidateDirectoryCache();
     renderPacientesTable();
 
@@ -49,7 +48,7 @@ export async function loadPacientes() {
           window._kinesicaPatientModalAutoOpened = true;
           const normQ = initialQuery.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/,/g, " ").trim();
           const qTokens = normQ.split(/\s+/).filter(Boolean);
-          const cache = deduplicated;
+          const cache = raw;
 
           const found = cache.find((p) => {
             const raw = `${p.nombre_completo || ""} ${p.apellido || ""} ${p.nombre || ""}`;

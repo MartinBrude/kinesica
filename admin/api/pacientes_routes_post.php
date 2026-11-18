@@ -9,22 +9,35 @@ declare(strict_types=1);
             json_out(403, ['status' => 'error', 'message' => 'Los usuarios con rol Colaborador tienen permisos de solo lectura.']);
         }
 
+        $authType = (string) ($auth['type'] ?? '');
+        $isSession = $authType === 'session';
+        // Acciones admin/destructivas o de correo libre: solo sesión humana (no webhook/bot).
+        $sessionOnlyActions = [
+            'merge',
+            'deduplicate',
+            'resolve_indistintos',
+            'send_email',
+            'send_fallback_email',
+            'send_encuesta_invite',
+            'toggle_review',
+            'toggle_campana',
+            'update_phone',
+        ];
+        if (in_array($action, $sessionOnlyActions, true) && !$isSession) {
+            json_out(403, ['status' => 'error', 'message' => 'Esta acción requiere sesión de usuario en el panel admin.']);
+        }
+
         // La invitación dispara un mensaje real a un paciente: no debe quedar
         // disponible para integraciones autenticadas únicamente con el secreto
         // de webhook.
-        if ($action === 'send_encuesta_invite' && (($auth['type'] ?? '') !== 'session' || !is_admin($auth))) {
+        if ($action === 'send_encuesta_invite' && !is_admin($auth)) {
             json_out(403, ['status' => 'error', 'message' => 'Solo un administrador con sesión puede enviar invitaciones de encuesta.']);
         }
 
         if ($action === 'get_email_by_phone') {
-            $phone = clean_phone_number((string) ($data['telefono'] ?? ''));
-            if ($phone !== '') {
-                $stmt = $pdo->prepare('SELECT email FROM pacientes WHERE telefono = :tel OR telefono LIKE :tel_end LIMIT 1');
-                $stmt->execute(['tel' => $phone, 'tel_end' => '%' . substr($phone, -8)]);
-                $row = $stmt->fetch();
-                if ($row && !empty($row['email'])) json_out(200, ['status' => 'success', 'email' => $row['email']]);
-            }
-            json_out(200, ['status' => 'not_found', 'email' => '']);
+            require_once __DIR__ . '/pacientes_helpers_email_by_phone.php';
+            $res = kinesica_pacientes_email_by_phone($pdo, (string) ($data['telefono'] ?? ''));
+            json_out(200, $res);
         }
 
         if ($action === 'send_fallback_email' || $action === 'send_email') {
@@ -82,14 +95,33 @@ declare(strict_types=1);
             if (is_tk3_or_blocked_name($nombreCompleto) || is_tk3_or_blocked_name($nombre)) {
                 json_out(422, ['status' => 'error', 'message' => 'El nombre no corresponde a un paciente válido']);
             }
-            if ($id > 0) {
-                $stmt = $pdo->prepare('UPDATE pacientes SET nombre = :nombre, apellido = :apellido, nombre_completo = :full, nombre_pila = :pila WHERE id = :id');
-                $stmt->execute(['nombre' => $nombre, 'apellido' => $apellido, 'full' => $nombreCompleto, 'pila' => extract_first_name($nombreCompleto), 'id' => $id]);
-            } else {
-                $stmt = $pdo->prepare('UPDATE pacientes SET nombre = :nombre, apellido = :apellido, nombre_completo = :full, nombre_pila = :pila WHERE telefono = :tel');
-                $stmt->execute(['nombre' => $nombre, 'apellido' => $apellido, 'full' => $nombreCompleto, 'pila' => extract_first_name($nombreCompleto), 'tel' => $phone]);
+            require_once __DIR__ . '/pacientes_helpers_existing_patient_match.php';
+            $alive = kinesica_pacientes_alive_sql($pdo);
+            if ($id <= 0) {
+                // Resolver a un único id activo por teléfono exacto (evita UPDATE masivo).
+                $find = $pdo->prepare("SELECT id FROM pacientes WHERE telefono = :tel AND ({$alive}) LIMIT 2");
+                $find->execute(['tel' => $phone]);
+                $ids = $find->fetchAll(PDO::FETCH_COLUMN) ?: [];
+                if (count($ids) === 0) {
+                    json_out(404, ['status' => 'error', 'message' => 'No se encontró paciente activo con ese teléfono']);
+                }
+                if (count($ids) > 1) {
+                    json_out(409, ['status' => 'error', 'message' => 'Hay más de un paciente con ese teléfono; indicá el id']);
+                }
+                $id = (int) $ids[0];
             }
-            json_out(200, ['status' => 'success', 'updated' => $stmt->rowCount()]);
+            $stmt = $pdo->prepare(
+                "UPDATE pacientes SET nombre = :nombre, apellido = :apellido, nombre_completo = :full, nombre_pila = :pila
+                 WHERE id = :id AND ({$alive})"
+            );
+            $stmt->execute([
+                'nombre' => $nombre,
+                'apellido' => $apellido,
+                'full' => $nombreCompleto,
+                'pila' => extract_first_name($nombreCompleto),
+                'id' => $id,
+            ]);
+            json_out(200, ['status' => 'success', 'updated' => $stmt->rowCount(), 'id' => $id]);
         }
 
         if ($action === 'update_phone') {

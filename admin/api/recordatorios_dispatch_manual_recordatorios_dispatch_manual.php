@@ -96,11 +96,6 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
         ? recordatorios_format_when_phrase($apptDate, $formattedTime)
         : ('mañana a las ' . $formattedTime);
 
-    // Regla estricta: No debe intentar enviarse recordatorio más de una vez por día a nadie
-    if (in_array($item['status'], ['sent', 'sent_email'], true)) {
-        return ['ok' => false, 'error' => 'Este recordatorio ya fue enviado exitosamente hoy.'];
-    }
-
     // Regla: No tiene sentido enviar recordatorio si el turno ya pasó
     // (los casos de prueba usan turno de mañana; se permiten reintentos).
     if (
@@ -166,11 +161,28 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
         } catch (Throwable $e) {}
     }
 
+    // Claim atómico: evita doble WhatsApp/email por doble clic o dos pestañas.
+    $claimed = recordatorios_claim_manual_send($id);
+    if (empty($claimed['ok'])) {
+        return ['ok' => false, 'error' => (string) ($claimed['error'] ?? 'No se pudo reservar el envío')];
+    }
+    $item = $claimed['item'] ?? $item;
+    $claimToken = (string) ($claimed['claim'] ?? '');
 
-    return recordatorios_dispatch_manual_deliver(
+    $result = recordatorios_dispatch_manual_deliver(
         $id, $input, $auth, $item, $phone, $email, $channel, $patientName, $apptTime, $apptDate, $summary, $user,
         $isCall, $tipoCita, $indicaciones, $firstName, $isTestCase, $whenPhrase
     );
+
+    if (empty($result['ok']) && $claimToken !== '') {
+        $prevStatus = (string) ($item['status'] ?? 'pending');
+        if (!in_array($prevStatus, ['pending', 'missing_phone', 'failed', 'skipped', 'run_skipped'], true)) {
+            $prevStatus = 'pending';
+        }
+        recordatorios_release_manual_claim($id, $claimToken, $prevStatus);
+    }
+
+    return $result;
 }
 
 /**

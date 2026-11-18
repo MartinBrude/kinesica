@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/pacientes_helpers_reassign_children.php';
+require_once __DIR__ . '/pacientes_helpers_existing_patient_match.php';
 
 /**
  * Fusiona explícitamente un paciente origen ($sourceId) dentro de un paciente destino ($targetId).
@@ -15,17 +16,18 @@ function kinesica_pacientes_merge_explicit(PDO $pdo, int $sourceId, int $targetI
         return ['ok' => false, 'status' => 'error', 'message' => 'IDs de pacientes inválidos o idénticos para la unificación'];
     }
 
-    $stmt = $pdo->prepare('SELECT * FROM pacientes WHERE id = :id LIMIT 1');
+    $alive = kinesica_pacientes_alive_sql($pdo);
+    $stmt = $pdo->prepare("SELECT * FROM pacientes WHERE id = :id AND ({$alive}) LIMIT 1");
     $stmt->execute(['id' => $sourceId]);
     $source = $stmt->fetch(PDO::FETCH_ASSOC);
     if (!$source) {
-        return ['ok' => false, 'status' => 'error', 'message' => 'El paciente origen no existe o ya fue eliminado'];
+        return ['ok' => false, 'status' => 'error', 'message' => 'El paciente origen no existe, está eliminado o ya fue unificado'];
     }
 
     $stmt->execute(['id' => $targetId]);
     $target = $stmt->fetch(PDO::FETCH_ASSOC);
     if (!$target) {
-        return ['ok' => false, 'status' => 'error', 'message' => 'El paciente destino no existe o ya fue eliminado'];
+        return ['ok' => false, 'status' => 'error', 'message' => 'El paciente destino no existe, está eliminado o ya fue unificado'];
     }
 
     $cluster = [$target, $source];

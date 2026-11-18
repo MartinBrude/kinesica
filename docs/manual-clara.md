@@ -547,6 +547,7 @@ El **Directorio de Pacientes** ([`kinesica.com.ar/admin/pacientes`](https://www.
 3. **Normalización en Title Case y Limpieza Estricta:** Los nombres se guardan prolijamente en mayúsculas y minúsculas (ej: *Juan Carlos Pérez*), eliminando comas, saltos de línea y emojis erróneos.
 4. **Exclusión Estricta de Bloqueos:** El sistema descarta eventos como `No dar`, `Tk3`, `Bloqueado` o `Vacaciones`, impidiendo que contaminen la base de pacientes.
 5. **Privacidad y Grilla Visual Limpia:** La columna DNI se oculta de la tabla principal para proteger datos sensibles frente a terceros (pudiendo consultarse o editarse al abrir la ficha del paciente). La grilla incluye un botón compacto **`WhatsApp`** que abre directamente el chat con un clic.
+6. **Unificación de fichas duplicadas:** Si la misma persona quedó cargada más de una vez (p. ej. sin teléfono desde la agenda y luego con WhatsApp), el sistema intenta **unir** esas fichas al dar de alta un paciente nuevo o en un mantenimiento periódico. Conserva una sola ficha activa, traslada turnos/historias/recordatorios y **no** mezcla pacientes eliminados (soft-delete). También podés unificar a mano con el botón **Unificar** en el directorio. Detalle técnico: [pacientes-dedupe.md](pacientes-dedupe.md).
 
 ### ⭐ 7.2. Invitaciones a Reseñas de Google (`Pedir review por WhatsApp`)
 

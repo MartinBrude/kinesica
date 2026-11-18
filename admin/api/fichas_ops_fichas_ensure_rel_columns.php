@@ -51,7 +51,13 @@ function kinesica_fichas_check_structure(array $data): bool
 }
 
 
-function kinesica_fichas_get_all(PDO $pdo): void
+/**
+ * Listado de historias clínicas.
+ * Lectura compartida entre roles de sesión de la clínica (admin / professional / colaborador):
+ * es un consultorio chico y la biblioteca se usa en común. Escritura/borrado siguen
+ * restringidos por owner o admin (ver fichas_routes DELETE / POST).
+ */
+function kinesica_fichas_get_all(PDO $pdo, ?array $auth = null): void
 {
     kinesica_fichas_ensure_rel_columns($pdo);
     require_once __DIR__ . '/lib_migrations.php';

@@ -208,4 +208,24 @@ $noop = kinesica_pacientes_dedupe_around_patient($pdo, 20);
 assert_true(($noop['merged'] ?? -1) === 0, 'around_patient sin candidatos merged=0');
 assert_true((int) ($noop['survivor_id'] ?? 0) === 20, 'around_patient conserva id si no une');
 
+// Soft-deleted con WhatsApp real NO debe absorber a un activo placeholder
+$pdo->exec('ALTER TABLE pacientes ADD COLUMN deleted_at TEXT NULL');
+$pdo->prepare('
+    INSERT INTO pacientes (id, telefono, nombre, apellido, nombre_completo, dni, deleted_at)
+    VALUES (30, "5491333333333", "Ana", "Gomez", "Ana Gomez", "888", datetime("now"))
+')->execute();
+$pdo->prepare('
+    INSERT INTO pacientes (id, telefono, nombre, apellido, nombre_completo, dni, deleted_at)
+    VALUES (31, "sin-tel-f-31", "Ana", "Gómez", "Ana Gómez", "888", NULL)
+')->execute();
+$mergedSoft = deduplicate_pacientes_table($pdo);
+assert_true($mergedSoft === 0, 'dedupe no une activos con soft-deleted (merged=0)');
+$active31 = $pdo->query('SELECT id, deleted_at FROM pacientes WHERE id = 31')->fetch(PDO::FETCH_ASSOC);
+assert_true($active31 && ($active31['deleted_at'] === null || $active31['deleted_at'] === ''), 'paciente activo 31 sigue vivo');
+$soft30 = $pdo->query('SELECT id FROM pacientes WHERE id = 30')->fetch(PDO::FETCH_ASSOC);
+assert_true((bool) $soft30, 'soft-deleted 30 sigue existiendo sin absorber al activo');
+
+$mergeSoft = kinesica_pacientes_merge_explicit($pdo, 31, 30);
+assert_true(!$mergeSoft['ok'], 'merge_explicit rechaza target soft-deleted');
+
 echo "\n--- Todos los tests de kinesica_pacientes_merge_explicit pasaron exitosamente ---\n";

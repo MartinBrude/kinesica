@@ -117,14 +117,9 @@ declare(strict_types=1);
         }
 
         if ($action === 'get_email_by_phone') {
-            $phone = clean_phone_number((string) ($_GET['telefono'] ?? ''));
-            if ($phone !== '') {
-                $stmt = $pdo->prepare('SELECT email FROM pacientes WHERE telefono = :tel OR telefono LIKE :tel_end LIMIT 1');
-                $stmt->execute(['tel' => $phone, 'tel_end' => '%' . substr($phone, -8)]);
-                $row = $stmt->fetch();
-                if ($row && !empty($row['email'])) json_out(200, ['status' => 'success', 'email' => $row['email']]);
-            }
-            json_out(200, ['status' => 'not_found', 'email' => '']);
+            require_once __DIR__ . '/pacientes_helpers_email_by_phone.php';
+            $res = kinesica_pacientes_email_by_phone($pdo, (string) ($_GET['telefono'] ?? ''));
+            json_out(200, $res);
         }
 
         if ($action === 'waitlist') {

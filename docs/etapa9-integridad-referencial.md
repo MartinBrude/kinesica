@@ -52,6 +52,8 @@ Con el flag: asserts en writes (p. ej. fichas) rechazan paciente/profesional ine
 
 - Listados/búsqueda/directory excluyen `deleted_at IS NOT NULL`.
 - Paciente con fichas/contactos/etc. **sí** se soft-deleta (RESTRICT bloqueaba el hard-delete).
+- **Dedupe / merge / match de alta** también excluyen soft-deleted: un borrado nunca es survivor ni absorbe a un activo (ver [pacientes-dedupe.md](pacientes-dedupe.md)).
+- Antes de hard-delete de duplicados activos, el merge reasigna hijos (`kinesica_pacientes_reassign_children`) para no chocar con FK RESTRICT ni dejar huérfanos.
 
 ## Backfill / migrate
 

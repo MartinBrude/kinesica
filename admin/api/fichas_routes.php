@@ -6,7 +6,8 @@ declare(strict_types=1);
  */
 
 if ($method === 'GET') {
-    kinesica_fichas_get_all($pdo);
+    // Lectura clínica compartida (sesión). Mutaciones: owner/admin. Ver docs/pacientes-dedupe.md §seguridad.
+    kinesica_fichas_get_all($pdo, $auth);
 }
 
 if ($method === 'POST') {

@@ -5,91 +5,11 @@ declare(strict_types=1);
  * Cuándo unificar pacientes automáticamente:
  * - Al crear uno nuevo → solo candidatos cercanos (tel / DNI / nombre).
  * - Cada cierto tiempo → barrido completo vía maintenance (marker ~6h / cron).
- * La mayoría de las corridas no une nada; eso es el caso normal.
+ * Soft-deleted no participan. Docs: docs/pacientes-dedupe.md
  */
 
 require_once __DIR__ . '/pacientes_helpers_dedup_apply.php';
-
-/**
- * Candidatos plausibles de duplicado para un paciente (sin barrer todo el directorio).
- *
- * @param array<string,mixed> $me
- * @return list<array<string,mixed>>
- */
-function kinesica_pacientes_dedupe_candidates_for(PDO $pdo, array $me): array
-{
-    $id = (int) ($me['id'] ?? 0);
-    if ($id <= 0) {
-        return [];
-    }
-
-    $byId = [$id => $me];
-
-    $rawPhone = (string) ($me['telefono'] ?? '');
-    $cleanPhone = clean_phone_number($rawPhone);
-    if ($cleanPhone !== '' && !is_placeholder_phone($cleanPhone) && !is_placeholder_phone($rawPhone)) {
-        $stmt = $pdo->prepare('SELECT * FROM pacientes WHERE telefono = :tel');
-        $stmt->execute(['tel' => $cleanPhone]);
-        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) ?: [] as $row) {
-            $byId[(int) $row['id']] = $row;
-        }
-    }
-
-    $dni = clean_patient_dni($me['dni'] ?? null);
-    if ($dni === '' && str_starts_with($rawPhone, 'sin-tel-dni-')) {
-        $dni = substr($rawPhone, 12);
-    }
-    if ($dni !== '') {
-        $stmt = $pdo->prepare(
-            'SELECT * FROM pacientes
-             WHERE dni = :dni
-                OR telefono = :sintel
-                OR REPLACE(REPLACE(REPLACE(COALESCE(dni, ""), ".", ""), "-", ""), " ", "") = :dni'
-        );
-        $stmt->execute([
-            'dni' => $dni,
-            'sintel' => 'sin-tel-dni-' . $dni,
-        ]);
-        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) ?: [] as $row) {
-            $byId[(int) $row['id']] = $row;
-        }
-    }
-
-    $full = trim((string) (($me['nombre_completo'] ?? '') ?: trim(($me['nombre'] ?? '') . ' ' . ($me['apellido'] ?? ''))));
-    $nameKey = canonical_patient_name_key($full);
-    if ($nameKey !== '' && str_contains($nameKey, ' ')) {
-        $tokens = preg_split('/\s+/u', $nameKey, -1, PREG_SPLIT_NO_EMPTY) ?: [];
-        $apellidoHint = (string) (end($tokens) ?: '');
-        if (mb_strlen($apellidoHint, 'UTF-8') >= 3) {
-            $stmt = $pdo->prepare(
-                'SELECT * FROM pacientes
-                 WHERE id != :id
-                   AND (
-                     LOWER(apellido) LIKE :ape
-                     OR LOWER(nombre_completo) LIKE :ape_full
-                   )
-                 LIMIT 80'
-            );
-            $stmt->execute([
-                'id' => $id,
-                'ape' => '%' . mb_strtolower($apellidoHint, 'UTF-8') . '%',
-                'ape_full' => '%' . mb_strtolower($apellidoHint, 'UTF-8') . '%',
-            ]);
-            foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) ?: [] as $row) {
-                $otherFull = trim((string) (($row['nombre_completo'] ?? '') ?: trim(($row['nombre'] ?? '') . ' ' . ($row['apellido'] ?? ''))));
-                if (canonical_patient_name_key($otherFull) !== $nameKey) {
-                    continue;
-                }
-                if (!kinesica_phones_compatible_for_name_merge($rawPhone, (string) ($row['telefono'] ?? ''))) {
-                    continue;
-                }
-                $byId[(int) $row['id']] = $row;
-            }
-        }
-    }
-
-    return array_values($byId);
-}
+require_once __DIR__ . '/pacientes_helpers_dedupe_candidates.php';
 
 /**
  * Une duplicados que involucren a $patientId.
@@ -105,7 +25,7 @@ function kinesica_pacientes_dedupe_around_patient(PDO $pdo, int $patientId): arr
     $stmt = $pdo->prepare('SELECT * FROM pacientes WHERE id = :id LIMIT 1');
     $stmt->execute(['id' => $patientId]);
     $me = $stmt->fetch(PDO::FETCH_ASSOC);
-    if (!$me) {
+    if (!$me || !kinesica_pacientes_row_is_active($me)) {
         return ['merged' => 0, 'survivor_id' => 0];
     }
 

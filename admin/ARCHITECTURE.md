@@ -208,6 +208,13 @@ flowchart LR
   - `pacientes.php`: Endpoint del directorio unificado de pacientes y lista de espera.
   - `pacientes_ops.php`: Operaciones de inserción, actualización, deduplicación y consolidación de historias.
   - `pacientes_helpers.php`: Normalización de teléfonos E.164, extracción de apellidos y formateo de nombres.
+  - **Unificación (dedupe/merge):** reasignación de hijos + merge manual + alta acotada + barrido periódico. Soft-deleted (`deleted_at`) **no** participan. Detalle: [docs/pacientes-dedupe.md](../docs/pacientes-dedupe.md).
+    - `pacientes_helpers_reassign_children.php` — mueve turnos/fichas/recordatorios/… al survivor antes del DELETE.
+    - `pacientes_helpers_merge_explicit.php` — unificar manual (`action=merge`).
+    - `pacientes_helpers_dedup_apply.php` — aplica clusters del barrido automático.
+    - `pacientes_helpers_dedupe_candidates.php` — candidatos cercanos (solo activos).
+    - `pacientes_helpers_dedupe_schedule.php` — unificación al alta (`try_dedupe_after_create` / `around_patient`).
+    - `pacientes_helpers_existing_patient_match.php` — match de alta + `deduplicate_pacientes_table` + filtro `alive_sql`.
 - **Agenda y Horarios**:
   - `horarios.php`: Endpoint de persistencia de días y turnos de atención.
   - `horarios_validator.php`: Validación matemática de intervalos horarios y garantía de **1 sola camilla física**.
@@ -236,7 +243,7 @@ flowchart LR
 | :--- | :---: | :--- |
 | **CSRF (Cross-Site Request Forgery)** | **Blindado** | Obligatoriedad de la cabecera `X-Kinesica: 1` en todas las peticiones `fetch`. Las peticiones cross-site no pueden enviar cabeceras personalizadas sin preflight CORS. |
 | **XSS (Cross-Site Scripting)** | **Blindado** | Sanitización obligatoria en `dom.js` con `escapeHtml()`. Asignación de cadenas dinámicas exclusivamente mediante `textContent` o `node()`. |
-| **IDOR / Control de Acceso** | **Blindado** | Verificación en cada request con `require_auth()` consultando el rol en vivo en la base de datos. Solo administradores o el creador de una ficha pueden modificarla o borrarla. |
+| **IDOR / Control de Acceso** | **Blindado (escritura)** | `require_auth()` + rol en vivo. **Fichas:** lectura compartida en la clínica; modificar/borrar solo admin o owner. **Pacientes:** merge/dedupe/mail libre solo con sesión (no webhook). |
 | **Inyección SQL** | **Blindado** | 100% de consultas parametrizadas con sentencias preparadas de PDO (`$pdo->prepare(...)`). |
 | **Ataques de Fuerza Bruta** | **Blindado** | Tablas `login_attempts` y `login_code_attempts`. Rate limiting con bloqueo temporal progresivo ante fallos reiterados (`HTTP 429`). |
 | **Autenticación en Dos Pasos (2FA)** | **Blindado** | Implementación nativa TOTP RFC 6238 en `lib_auth.php`. Enrolamiento protegido por contraseña previa. |

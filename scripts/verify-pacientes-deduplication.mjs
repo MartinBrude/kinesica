@@ -146,4 +146,12 @@ const phpOut = execSync("php scripts/verify-pacientes-deduplication.php", {
 assert.ok(phpOut.includes("OK_PHP_TESTS"), "El backend PHP debe pasar todas las pruebas de deduplicación");
 
 console.log("✓ Pruebas en base de datos PHP: OK");
+
+const secOut = execSync("php scripts/test-pacientes-security-helpers.php", {
+  cwd: process.cwd(),
+  encoding: "utf8",
+});
+assert.ok(secOut.includes("test-pacientes-security-helpers OK"), "Helpers de email/seguridad deben pasar");
+console.log("✓ Pruebas seguridad email_by_phone: OK");
+
 console.log("pacientes deduplicación y prevención: ok");
