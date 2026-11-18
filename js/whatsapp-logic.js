@@ -230,8 +230,9 @@ function kinesicaApplyWhatsAppContact() {
     });
   }
 
+  // Solo enlaces marcados: no reescribir wa.me de mi-turno / profesionales.
   setupWhatsAppLinks(
-    ".dynamic-whatsapp-link, .dynamic-whatsapp-url, #whatsapp-link, a[href*='wa.me/'], a[href*='whatsapp://']",
+    ".dynamic-whatsapp-link, .dynamic-whatsapp-url, #whatsapp-link",
     contactData.whatsapp
   );
 

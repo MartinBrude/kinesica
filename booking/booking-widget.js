@@ -2258,7 +2258,7 @@
         const mailMeta = await this.sendConfirmationEmail(payload, result);
         if (mailMeta && mailMeta.manageCode) {
           result.manageCode = mailMeta.manageCode;
-          result.manageUrl = mailMeta.manageUrl || "/mi-turno.html";
+          result.manageUrl = mailMeta.manageUrl || this.defaultManageUrl();
         }
 
         this.trackBookingConversion(payload, result);
@@ -2389,34 +2389,62 @@
       return `${day} ${this.t("at")} ${hm} hs`;
     }
 
+    escapeHtml(value) {
+      return String(value == null ? "" : value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    defaultManageUrl() {
+      const lang = this.lang || "es";
+      if (lang === "en") return "/en/mi-turno.html";
+      if (lang === "fr") return "/fr/mi-turno.html";
+      if (lang === "pt") return "/pt/mi-turno.html";
+      return "/mi-turno.html";
+    }
+
+    safeManageUrl(raw) {
+      const fallback = this.defaultManageUrl();
+      const url = String(raw || fallback).trim();
+      if (/^\/(?:[a-z]{2}\/)?mi-turno\.html(?:[?#].*)?$/i.test(url)) {
+        return url;
+      }
+      return fallback;
+    }
+
     renderConfirmation(payload, result) {
       const q = (sel) => this.container.querySelector(sel);
+      const esc = (v) => this.escapeHtml(v);
 
       const technique = engine.getTechnique(payload.techniqueId);
       const professional = this.practitionerFullName(payload.practitionerId) || this.t("bySchedulePro");
       const isExisting = Boolean(payload.esPaciente || this.state.existingPatient || payload.techniqueId === "paciente");
       q("#kb-success-title").textContent = this.t("success");
 
+      const manageUrl = this.safeManageUrl(result && result.manageUrl);
       const summaryBox = q("#kb-success-summary");
       summaryBox.innerHTML = `
         <div style="font-weight: 700; color: var(--kin-green-deep); margin-bottom: 8px;">
-          ${this.t("summaryKind")}
+          ${esc(this.t("summaryKind"))}
         </div>
-        ${technique && !technique.bySchedule && !technique.internal ? `<div><strong>${this.t("technique")}:</strong> ${this.techniqueLabel(technique)}</div>` : ""}
-        <div><strong>${this.t("practitioner")}:</strong> ${professional}</div>
-        <div><strong>${this.t("patient")}:</strong> ${payload.nombre}</div>
-        <div><strong>${this.t("when")}:</strong> ${this.formatConfirmationWhen(payload.date, payload.time)}</div>
-        ${!isExisting && !this.options.adminMode ? `<div><strong>${this.t("fee")}:</strong> ${this.feeDisplayHtml(payload.techniqueId, { compact: true })} <span style="font-size: 12px; color: var(--kin-text-muted);">(${this.t("paymentMethodsNote")})</span></div>` : ""}
-        ${payload.email ? `<div><strong>${this.t("email")}:</strong> ${payload.email}</div>` : ""}
+        ${technique && !technique.bySchedule && !technique.internal ? `<div><strong>${esc(this.t("technique"))}:</strong> ${esc(this.techniqueLabel(technique))}</div>` : ""}
+        <div><strong>${esc(this.t("practitioner"))}:</strong> ${esc(professional)}</div>
+        <div><strong>${esc(this.t("patient"))}:</strong> ${esc(payload.nombre)}</div>
+        <div><strong>${esc(this.t("when"))}:</strong> ${esc(this.formatConfirmationWhen(payload.date, payload.time))}</div>
+        ${!isExisting && !this.options.adminMode ? `<div><strong>${esc(this.t("fee"))}:</strong> ${esc(this.feeDisplayHtml(payload.techniqueId, { compact: true }))} <span style="font-size: 12px; color: var(--kin-text-muted);">(${esc(this.t("paymentMethodsNote"))})</span></div>` : ""}
+        ${payload.email ? `<div><strong>${esc(this.t("email"))}:</strong> ${esc(payload.email)}</div>` : ""}
         ${result.manageCode ? `<div style="margin-top: 10px; padding: 10px 12px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px;">
-          <div><strong>${this.t("manageCode")}</strong> <code style="font-size: 16px; letter-spacing: 0.08em; font-weight: 700; color: #0f766e;">${result.manageCode}</code></div>
+          <div><strong>${esc(this.t("manageCode"))}</strong> <code style="font-size: 16px; letter-spacing: 0.08em; font-weight: 700; color: #0f766e;">${esc(result.manageCode)}</code></div>
           <div style="margin-top: 6px; font-size: 12px; color: var(--kin-text-muted);">
-            ${this.t("manageHint")}
-            <a href="${result.manageUrl || "/mi-turno.html"}" style="color: var(--kin-blue, #005f99); font-weight: 600;">${this.t("manageLink")}</a>.
+            ${esc(this.t("manageHint"))}
+            <a href="${esc(manageUrl)}" style="color: var(--kin-blue, #005f99); font-weight: 600;">${esc(this.t("manageLink"))}</a>.
           </div>
         </div>` : ""}
         ${this.options.adminMode ? `<div style="margin-top: 6px; font-size: 12px; color: var(--kin-text-muted);">
-          ${this.t("eventId")} <code>${result.eventId || "OK"}</code>
+          ${esc(this.t("eventId"))} <code>${esc(result.eventId || "OK")}</code>
         </div>` : ""}
       `;
 

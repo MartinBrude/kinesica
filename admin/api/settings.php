@@ -4,7 +4,8 @@ declare(strict_types=1);
 /**
  * API settings (Clara, fees, flags, textos). Comparte loaders con horarios.php.
  *
- * GET: settings efectivos (overlay DB etapa 8).
+ * GET público: subset (flags, fees, hours, header) — sin PII ni textos Clara.
+ * GET autenticado (sesión + X-Kinesica): settings completos + active_reminders.
  * POST: mutate bajo lock; conflict 409 si `clara_texts_revision` no coincide;
  *       espejo allowlisted → `configuraciones` + auditoría.
  *
@@ -22,11 +23,58 @@ header('Content-Type: application/json; charset=utf-8');
 
 $settingsFile = kinesica_settings_source_file();
 
-function get_runtime_settings(string $file): array
+/**
+ * Vista pública: lo que necesitan el sitio y GAS (horarios/fees/flags).
+ * Nunca incluye clara_texts, reminders ni metadatos de edición.
+ */
+function kinesica_settings_public_view(array $settings): array
+{
+    $feesIn = is_array($settings['fees'] ?? null) ? $settings['fees'] : [];
+    $headerIn = is_array($settings['header_schedule'] ?? null) ? $settings['header_schedule'] : [];
+
+    return [
+        'clara_active' => (bool) ($settings['clara_active'] ?? false),
+        'booking_active' => (bool) ($settings['booking_active'] ?? true),
+        'practitioner_hours' => is_array($settings['practitioner_hours'] ?? null)
+            ? $settings['practitioner_hours']
+            : [],
+        'fees' => [
+            'atm' => (int) ($feesIn['atm'] ?? 65000),
+            'general' => (int) ($feesIn['general'] ?? 75000),
+            'payment_methods' => (string) ($feesIn['payment_methods'] ?? 'Efectivo o transferencia bancaria'),
+        ],
+        'header_schedule' => [
+            'opens' => (string) ($headerIn['opens'] ?? '08:00'),
+            'closes' => (string) ($headerIn['closes'] ?? '19:30'),
+        ],
+    ];
+}
+
+function kinesica_settings_can_read_private(): bool
+{
+    if (($_SERVER['HTTP_X_KINESICA'] ?? '') !== '1') {
+        return false;
+    }
+    require_once __DIR__ . '/lib.php';
+    if (!function_exists('start_session')) {
+        return false;
+    }
+    start_session();
+    return !empty($_SESSION['user']) && !empty($_SESSION['full']);
+}
+
+function get_runtime_settings(string $file, bool $includePrivate = false): array
 {
     $settings = load_full_runtime_settings($file);
+    if (!$includePrivate) {
+        return $settings;
+    }
+    $remindersLib = __DIR__ . '/lib_recordatorios_store_recordatorios_was_sent_for_event.php';
+    if (!is_file($remindersLib)) {
+        return $settings;
+    }
     try {
-        require_once __DIR__ . '/lib_recordatorios_store_recordatorios_was_sent_for_event.php';
+        require_once $remindersLib;
         $pdo = recordatorios_pdo();
         $stmt = $pdo->query("SELECT wa_id, patient_name, appointment_date, appointment_time, calendar_event_id, run_at, event_summary FROM recordatorio_eventos WHERE status IN ('sent', 'sent_email') AND run_at >= (NOW() - INTERVAL 24 HOUR) ORDER BY id DESC LIMIT 50");
         if ($stmt) {
@@ -41,13 +89,21 @@ function get_runtime_settings(string $file): array
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 if ($method === 'GET') {
-    if (!empty($_SERVER['HTTP_X_KINESICA']) || isset($_GET['_t'])) {
+    $private = kinesica_settings_can_read_private();
+    if ($private || !empty($_SERVER['HTTP_X_KINESICA']) || isset($_GET['_t'])) {
         header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
         header('Pragma: no-cache');
     } else {
         header('Cache-Control: public, max-age=15, stale-while-revalidate=45');
     }
-    echo json_encode(get_runtime_settings($settingsFile), JSON_UNESCAPED_UNICODE);
+    if ($private) {
+        echo json_encode(get_runtime_settings($settingsFile, true), JSON_UNESCAPED_UNICODE);
+    } else {
+        echo json_encode(
+            kinesica_settings_public_view(load_full_runtime_settings($settingsFile)),
+            JSON_UNESCAPED_UNICODE
+        );
+    }
     exit;
 }
 
@@ -170,12 +226,12 @@ if ($method === 'POST') {
             return $raw;
         }, $userName);
     } catch (KinesicaSettingsConflict $e) {
-        json_out(409, ['error' => $e->getMessage(), 'conflict' => true, 'current' => get_runtime_settings(kinesica_settings_source_file())]);
+        json_out(409, ['error' => $e->getMessage(), 'conflict' => true, 'current' => get_runtime_settings(kinesica_settings_source_file(), true)]);
     } catch (Throwable $e) {
         json_out(500, ['error' => 'No se pudo guardar la configuración.']);
     }
 
-    json_out(200, get_runtime_settings(kinesica_settings_source_file()));
+    json_out(200, get_runtime_settings(kinesica_settings_source_file(), true));
 }
 
 http_response_code(405);
