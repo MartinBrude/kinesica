@@ -56,7 +56,7 @@ declare(strict_types=1);
             if ($sourceId <= 0 || $targetId <= 0 || $sourceId === $targetId) {
                 json_out(422, ['status' => 'error', 'message' => 'IDs de pacientes inválidos o idénticos para la unificación']);
             }
-            require_once __DIR__ . '/pacientes_helpers_dedup_apply.php';
+            require_once __DIR__ . '/pacientes_helpers_merge_explicit.php';
             $res = kinesica_pacientes_merge_explicit($pdo, $sourceId, $targetId);
             json_out($res['ok'] ? 200 : 400, $res);
         }

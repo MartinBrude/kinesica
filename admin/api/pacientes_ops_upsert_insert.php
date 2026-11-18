@@ -57,7 +57,16 @@ function kinesica_pacientes_upsert_insert(
         $newId = (int) ($find->fetchColumn() ?: 0);
     }
     error_log('kinesica pacientes upsert inserted/updated id=' . $newId . ' phone=' . $phone);
+    $autoMerged = false;
     if ($newId > 0) {
+        // Unificación acotada al alta (no barrido O(n) del directorio).
+        require_once __DIR__ . '/pacientes_helpers_dedupe_schedule.php';
+        $survivorId = kinesica_pacientes_try_dedupe_after_create($pdo, $newId);
+        if ($survivorId > 0 && $survivorId !== $newId) {
+            $autoMerged = true;
+            $newId = $survivorId;
+        }
+
         // REL: sync contactos tras alta/upsert (lib_relational_contactos.php).
         require_once __DIR__ . '/lib_relational_contactos.php';
         kinesica_rel_sync_paciente_contactos_safe($pdo, $newId, [
@@ -70,7 +79,7 @@ function kinesica_pacientes_upsert_insert(
     json_out(200, [
         'status' => 'success',
         'action' => 'upsert',
-        'merged' => false,
+        'merged' => $autoMerged,
         'id' => $newId,
         'phone' => $phone,
         'nombre' => $nombre,

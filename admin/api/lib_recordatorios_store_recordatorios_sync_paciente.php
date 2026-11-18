@@ -122,4 +122,15 @@ function recordatorios_sync_paciente_from_event(array $ev, PDO $pdo): void
         'dni' => $rawDni !== '' ? mb_substr($rawDni, 0, 20, 'UTF-8') : null,
         'prof' => $profInferred,
     ]);
+
+    $newId = (int) $pdo->lastInsertId();
+    if ($newId <= 0) {
+        $find = $pdo->prepare('SELECT id FROM pacientes WHERE telefono = :tel LIMIT 1');
+        $find->execute(['tel' => mb_substr($tel, 0, 30, 'UTF-8')]);
+        $newId = (int) ($find->fetchColumn() ?: 0);
+    }
+    if ($newId > 0) {
+        require_once __DIR__ . '/pacientes_helpers_dedupe_schedule.php';
+        kinesica_pacientes_try_dedupe_after_create($pdo, $newId);
+    }
 }

@@ -339,4 +339,101 @@ if ((int) ($lucia['viene_de_campana'] ?? 0) !== 1) {
     exit(1);
 }
 
+// 11. Dedupe automático debe reasignar hijos (turnos/fichas) al survivor
+//     — con FK RESTRICT — para no dejar huérfanos ni fallar en silencio.
+// Nota: el test 5 crea `fichas` legacy sin paciente_id; acá recreamos el esquema REL.
+$pdo->exec("DROP TRIGGER IF EXISTS trg_pacientes_fk_restrict");
+$pdo->exec("DROP TABLE IF EXISTS recordatorio_eventos");
+$pdo->exec("DROP TABLE IF EXISTS turnos");
+$pdo->exec("DROP TABLE IF EXISTS fichas");
+$pdo->exec("
+CREATE TABLE turnos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    paciente_id INTEGER NOT NULL,
+    profesional_id INTEGER NOT NULL DEFAULT 1,
+    fecha_hora TEXT
+);
+CREATE TABLE fichas (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    paciente_id INTEGER NOT NULL,
+    profesional_id INTEGER NOT NULL DEFAULT 1,
+    notas TEXT
+);
+CREATE TABLE recordatorio_eventos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    paciente_id INTEGER NOT NULL,
+    turno_id INTEGER
+);
+");
+
+// Simular ON DELETE RESTRICT (como mig 013 en MariaDB).
+$pdo->exec("
+CREATE TRIGGER trg_pacientes_fk_restrict
+BEFORE DELETE ON pacientes
+BEGIN
+  SELECT RAISE(ABORT, 'FK RESTRICT turnos')
+  WHERE EXISTS (SELECT 1 FROM turnos WHERE paciente_id = OLD.id);
+  SELECT RAISE(ABORT, 'FK RESTRICT fichas')
+  WHERE EXISTS (SELECT 1 FROM fichas WHERE paciente_id = OLD.id);
+  SELECT RAISE(ABORT, 'FK RESTRICT recordatorio_eventos')
+  WHERE EXISTS (SELECT 1 FROM recordatorio_eventos WHERE paciente_id = OLD.id);
+END;
+");
+
+$pdo->exec("DELETE FROM pacientes WHERE id IN (601, 602)");
+
+$pdo->exec("INSERT INTO pacientes (id, telefono, nombre, apellido, nombre_completo, nombre_pila, dni, profesional_habitual, dejo_review)
+VALUES (601, 'sin-tel-f-601', 'Sofia', 'Rivas', 'Sofia Rivas', 'Sofia', '66112233', 'indistinto', 0)");
+$pdo->exec("INSERT INTO pacientes (id, telefono, nombre, apellido, nombre_completo, nombre_pila, dni, profesional_habitual, dejo_review)
+VALUES (602, '5491166611222', 'Sofía', 'Rivas', 'Sofía Rivas', 'Sofía', '66112233', 'maria', 1)");
+
+$pdo->exec("INSERT INTO turnos (paciente_id, fecha_hora) VALUES (601, '2026-12-01 10:00:00')");
+$pdo->exec("INSERT INTO turnos (paciente_id, fecha_hora) VALUES (602, '2026-12-08 11:00:00')");
+$pdo->exec("INSERT INTO fichas (paciente_id, notas) VALUES (601, 'Evaluación inicial')");
+$pdo->exec("INSERT INTO recordatorio_eventos (paciente_id) VALUES (601)");
+
+$mergedSofia = deduplicate_pacientes_table($pdo);
+if ($mergedSofia < 1) {
+    echo "ERROR: Sofía Rivas con turnos debía unificarse bajo FK RESTRICT (merged=$mergedSofia)\n";
+    exit(1);
+}
+
+$sofiaCount = (int) $pdo->query("SELECT COUNT(*) FROM pacientes WHERE id IN (601, 602)")->fetchColumn();
+if ($sofiaCount !== 1) {
+    echo "ERROR: Debía quedar 1 ficha Sofía, hay $sofiaCount\n";
+    exit(1);
+}
+
+$sofia = $pdo->query("SELECT * FROM pacientes WHERE telefono = '5491166611222' OR id IN (601, 602)")->fetch(PDO::FETCH_ASSOC);
+if (!$sofia) {
+    echo "ERROR: No quedó survivor Sofía Rivas\n";
+    exit(1);
+}
+$survivorId = (int) $sofia['id'];
+$turnosSofia = (int) $pdo->query("SELECT COUNT(*) FROM turnos WHERE paciente_id = {$survivorId}")->fetchColumn();
+$orphansTurnos = (int) $pdo->query("SELECT COUNT(*) FROM turnos t LEFT JOIN pacientes p ON p.id = t.paciente_id WHERE p.id IS NULL")->fetchColumn();
+$fichasSofia = (int) $pdo->query("SELECT COUNT(*) FROM fichas WHERE paciente_id = {$survivorId}")->fetchColumn();
+$recsSofia = (int) $pdo->query("SELECT COUNT(*) FROM recordatorio_eventos WHERE paciente_id = {$survivorId}")->fetchColumn();
+
+if ($turnosSofia !== 2) {
+    echo "ERROR: Ambos turnos debían quedar en survivor #$survivorId, hay $turnosSofia\n";
+    exit(1);
+}
+if ($orphansTurnos !== 0) {
+    echo "ERROR: Quedaron $orphansTurnos turnos huérfanos tras dedupe\n";
+    exit(1);
+}
+if ($fichasSofia !== 1) {
+    echo "ERROR: Ficha clínica no reasignada al survivor\n";
+    exit(1);
+}
+if ($recsSofia !== 1) {
+    echo "ERROR: Recordatorio no reasignado al survivor\n";
+    exit(1);
+}
+if ((int) ($sofia['dejo_review'] ?? 0) !== 1) {
+    echo "ERROR: dejo_review debía conservarse en Sofía\n";
+    exit(1);
+}
+
 echo "OK_PHP_TESTS\n";

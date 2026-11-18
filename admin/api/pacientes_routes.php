@@ -9,8 +9,8 @@ try {
     $auth = authenticate_request($data);
     $pdo = db();
     ensure_pacientes_tables($pdo);
-    // Mantenimiento pesado (dedupe/sync/indistintos) NO corre en cada request:
-    // está throttled dentro de ensure_pacientes_tables y también vía action=deduplicate.
+    // Mantenimiento pesado NO corre en cada request (solo cron / action=deduplicate / force).
+    // Altas: unificación acotada en try_dedupe_after_create (dedupe_schedule).
     $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
     require __DIR__ . '/pacientes_routes_get.php';

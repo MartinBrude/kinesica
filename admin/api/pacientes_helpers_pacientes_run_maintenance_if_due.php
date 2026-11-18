@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 /**
  * Mantenimiento pesado del directorio (sanitize + sync fichas + dedupe + indistintos).
- * Throttle por marker file para no bloquear POST insert/upsert del admin.
+ * Throttle ~6h por marker (salvo $force: cron diario / action=deduplicate).
+ * El alta de pacientes usa unificación acotada (dedupe_schedule), no este barrido.
+ * Es normal que deduplicate_pacientes_table devuelva 0 (nada para unir).
  */
 function kinesica_pacientes_run_maintenance_if_due(PDO $pdo, bool $force = false): void
 {

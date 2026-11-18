@@ -10,7 +10,7 @@ $root = dirname(__DIR__);
 
 require_once $root . '/admin/api/lib.php';
 require_once $root . '/admin/api/pacientes_helpers.php';
-require_once $root . '/admin/api/pacientes_helpers_dedup_apply.php';
+require_once $root . '/admin/api/pacientes_helpers_merge_explicit.php';
 require_once $root . '/admin/api/lib_relational_contactos.php';
 
 function assert_true(bool $cond, string $msg): void
@@ -175,5 +175,37 @@ assert_true($resMerge3['ok'] === true, 'Merge dos teléfonos reales ok');
 $p5 = $pdo->query('SELECT * FROM pacientes WHERE id = 5')->fetch(PDO::FETCH_ASSOC);
 assert_true($p5['telefono'] === '5491155551111', 'Target 5 conserva su teléfono');
 assert_true(str_contains($p5['notas'], '5491155552222'), 'Teléfono previo de 6 guardado en notas de 5');
+
+// Test 5: dedupe acotado al alta (around_patient) une y reasigna hijos
+require_once $root . '/admin/api/pacientes_helpers_dedupe_schedule.php';
+
+$pdo->prepare('
+    INSERT INTO pacientes (id, telefono, nombre, apellido, nombre_completo, dni, dejo_review)
+    VALUES (10, "sin-tel-f-10", "Sofia", "Rivas", "Sofia Rivas", "66112233", 0)
+')->execute();
+$pdo->prepare('
+    INSERT INTO pacientes (id, telefono, nombre, apellido, nombre_completo, dni, dejo_review)
+    VALUES (11, "5491166611222", "Sofía", "Rivas", "Sofía Rivas", "66112233", 1)
+')->execute();
+$pdo->exec('INSERT INTO turnos (paciente_id, fecha_hora) VALUES (10, "2026-12-01 10:00:00")');
+$pdo->exec('INSERT INTO turnos (paciente_id, fecha_hora) VALUES (11, "2026-12-08 11:00:00")');
+
+$around = kinesica_pacientes_dedupe_around_patient($pdo, 10);
+assert_true(($around['merged'] ?? 0) >= 1, 'around_patient une Sofía con DNI compartido');
+assert_true((int) ($around['survivor_id'] ?? 0) > 0, 'around_patient devuelve survivor');
+$survivor = (int) $around['survivor_id'];
+$sofiaCount = (int) $pdo->query('SELECT COUNT(*) FROM pacientes WHERE id IN (10, 11)')->fetchColumn();
+assert_true($sofiaCount === 1, 'Queda una sola ficha Sofía tras around_patient');
+$turnosSofia = (int) $pdo->query("SELECT COUNT(*) FROM turnos WHERE paciente_id = {$survivor}")->fetchColumn();
+assert_true($turnosSofia === 2, 'around_patient reasigna turnos al survivor');
+
+// Sin candidatos: no-op
+$pdo->prepare('
+    INSERT INTO pacientes (id, telefono, nombre, apellido, nombre_completo)
+    VALUES (20, "5491100009999", "Unico", "Paciente", "Unico Paciente")
+')->execute();
+$noop = kinesica_pacientes_dedupe_around_patient($pdo, 20);
+assert_true(($noop['merged'] ?? -1) === 0, 'around_patient sin candidatos merged=0');
+assert_true((int) ($noop['survivor_id'] ?? 0) === 20, 'around_patient conserva id si no une');
 
 echo "\n--- Todos los tests de kinesica_pacientes_merge_explicit pasaron exitosamente ---\n";

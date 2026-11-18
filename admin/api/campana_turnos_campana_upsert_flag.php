@@ -82,6 +82,15 @@ function campana_upsert_flag(
         json_out(500, ['status' => 'error', 'message' => 'No se pudo crear el paciente para el flag de campaña']);
     }
 
+    require_once __DIR__ . '/pacientes_helpers_dedupe_schedule.php';
+    $survivorId = kinesica_pacientes_try_dedupe_after_create($pdo, $id);
+    if ($survivorId > 0) {
+        $id = $survivorId;
+        // Reaplicar flag sobre el survivor por si el alta fue absorbida.
+        $pdo->prepare('UPDATE pacientes SET viene_de_campana = :val WHERE id = :id')
+            ->execute(['val' => $val, 'id' => $id]);
+    }
+
     return ['id' => $id, 'viene_de_campana' => $val];
 }
 

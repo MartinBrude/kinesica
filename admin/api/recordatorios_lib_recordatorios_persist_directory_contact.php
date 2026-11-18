@@ -93,8 +93,14 @@ function recordatorios_persist_directory_contact(string $patientName, string $ph
                 $newId = (int) ($find->fetchColumn() ?: 0);
             }
             error_log('recordatorios persist contact inserted id=' . $newId . ' phone=' . $phone);
-            // No correr deduplicate_pacientes_table acá: es O(n) sobre todo el directorio
-            // y en la carga manual de WhatsApp puede colgar/timeout el request.
+            // Solo unificación acotada al nuevo id (no barrido O(n) del directorio).
+            if ($newId > 0) {
+                require_once __DIR__ . '/pacientes_helpers_dedupe_schedule.php';
+                $survivorId = kinesica_pacientes_try_dedupe_after_create($pdo, $newId);
+                if ($survivorId > 0) {
+                    $newId = $survivorId;
+                }
+            }
             return ['ok' => true, 'phone' => $phone, 'email' => $email, 'id' => $newId];
         }
 
