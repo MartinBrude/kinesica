@@ -1,6 +1,42 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Teléfono WhatsApp de Norberto en formato AR con 9 (Meta / wa.me).
+ */
+function kinesica_backup_norberto_whatsapp_digits(): string
+{
+    $raw = (string) (getenv('NORBERTO_PHONE') ?: '');
+    if ($raw === '') {
+        $raw = (string) ($_SERVER['NORBERTO_PHONE'] ?? $_ENV['NORBERTO_PHONE'] ?? '');
+    }
+    if ($raw === '' && function_exists('cfg')) {
+        $raw = (string) (cfg()['norberto_phone'] ?? '');
+    }
+    if ($raw === '') {
+        $raw = '5491161564311';
+    }
+    if (!function_exists('clean_phone_number')) {
+        $helpers = __DIR__ . '/pacientes_helpers.php';
+        if (is_file($helpers)) {
+            require_once $helpers;
+        }
+    }
+    if (function_exists('clean_phone_number')) {
+        $normalized = clean_phone_number($raw);
+        if ($normalized !== '') {
+            return $normalized;
+        }
+    }
+    $digits = preg_replace('/\D+/', '', $raw) ?: '5491161564311';
+    if (str_starts_with($digits, '549')) {
+        return $digits;
+    }
+    if (str_starts_with($digits, '54')) {
+        return '549' . substr($digits, 2);
+    }
+    return $digits;
+}
 
 /**
  * Envía alerta de auditoría EXCLUSIVAMENTE a Norberto (WhatsApp + Email de resguardo).
@@ -8,10 +44,7 @@ declare(strict_types=1);
  */
 function kinesica_backup_notify_norberto_audit(array $bookingEntry, array $backupState, array $syncOutcome): array
 {
-    $norbertoPhone = (string) (
-        getenv('NORBERTO_PHONE')
-        ?: ($_SERVER['NORBERTO_PHONE'] ?? $_ENV['NORBERTO_PHONE'] ?? cfg()['norberto_phone'] ?? '541161564311')
-    );
+    $norbertoPhone = kinesica_backup_norberto_whatsapp_digits();
     $norbertoEmail = (string) (
         getenv('NORBERTO_EMAIL')
         ?: ($_SERVER['NORBERTO_EMAIL'] ?? $_ENV['NORBERTO_EMAIL'] ?? cfg()['norberto_email'] ?? 'norberto1712@gmail.com')
@@ -174,10 +207,7 @@ function kinesica_backup_notify_norberto_read_fallback(string $contextInfo = '')
         return;
     }
 
-    $norbertoPhone = (string) (
-        getenv('NORBERTO_PHONE')
-        ?: ($_SERVER['NORBERTO_PHONE'] ?? $_ENV['NORBERTO_PHONE'] ?? cfg()['norberto_phone'] ?? '541161564311')
-    );
+    $norbertoPhone = kinesica_backup_norberto_whatsapp_digits();
     $norbertoEmail = (string) (
         getenv('NORBERTO_EMAIL')
         ?: ($_SERVER['NORBERTO_EMAIL'] ?? $_ENV['NORBERTO_EMAIL'] ?? cfg()['norberto_email'] ?? 'norberto1712@gmail.com')

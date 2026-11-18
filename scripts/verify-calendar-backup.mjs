@@ -210,18 +210,29 @@ await test("3. La alerta de auditoría en modo respaldo va ÚNICAMENTE a Norbert
   });
   const auditOut = JSON.parse(proc.stdout.trim());
   assert.equal(auditOut.notified_to, "norberto_only");
-  assert.equal(auditOut.recipient_phone, "541161564311");
+  assert.equal(auditOut.recipient_phone, CONTACT.whatsappDigits);
   assert.equal(auditOut.recipient_email, CONTACT.email);
   assert.match(auditOut.message, /Lic\. María Gulin/);
   assert.match(auditOut.message, /Lucía Fernández/);
 
+  // Tras el split, el notify vive en el partial; el flag opt-in también aparece en el entrypoint.
   const libSrc = fs.readFileSync(path.join(root, "admin/api/lib_calendar_backup.php"), "utf8");
-  assert.ok(!libSrc.includes("541128531224"), "lib_calendar_backup.php no debe enviar alertas de respaldo al teléfono de María");
-  assert.ok(!libSrc.includes("manosmagicas7116"), "lib_calendar_backup.php no debe enviar alertas de respaldo al mail de María");
-  assert.ok(libSrc.includes("541161564311"), "La alerta de auditoría debe dirigirse a Norberto");
+  const notifySrc = fs.readFileSync(
+    path.join(root, "admin/api/lib_calendar_backup_backup_notify_norberto_audit.php"),
+    "utf8"
+  );
+  const backupSrc = `${libSrc}\n${notifySrc}`;
+  assert.ok(!backupSrc.includes("541128531224"), "el respaldo no debe enviar alertas al teléfono de María");
+  assert.ok(!backupSrc.includes("5491128531224"), "el respaldo no debe enviar alertas al WhatsApp de María");
+  assert.ok(!backupSrc.includes("manosmagicas7116"), "el respaldo no debe enviar alertas al mail de María");
+  assert.ok(
+    notifySrc.includes(CONTACT.whatsappDigits),
+    "La alerta de auditoría debe dirigirse a Norberto (549…, mismo formato que site-contact)"
+  );
+  assert.ok(!notifySrc.includes("541161564311"), "No usar el formato sin 9 (541…) para alertas WhatsApp AR");
   // Lecturas de horarios en respaldo NO deben spamear: solo auditoría al agendar.
   assert.ok(
-    libSrc.includes("KINESICA_BACKUP_READ_ALERTS"),
+    backupSrc.includes("KINESICA_BACKUP_READ_ALERTS"),
     "Las alertas por lectura de horarios deben ser opt-in (KINESICA_BACKUP_READ_ALERTS)"
   );
 });

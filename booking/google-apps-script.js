@@ -225,8 +225,9 @@ function getGasWorkingWindows(practitionerId, dayOfWeek, customHoursRaw, opts) {
   return combined;
 }
 
-// Feriados Oficiales de Argentina
+// Feriados Oficiales de Argentina (fuente: scripts/argentina-holidays.mjs → npm run holidays:sync)
 const ARGENTINA_HOLIDAYS = [
+  // BEGIN_ARGENTINA_HOLIDAYS
   "2026-01-01", "2026-02-16", "2026-02-17", "2026-03-24", "2026-04-02",
   "2026-04-03", "2026-05-01", "2026-05-25", "2026-06-15", "2026-06-20",
   "2026-07-09", "2026-08-17", "2026-10-12", "2026-11-23", "2026-12-08",
@@ -234,6 +235,7 @@ const ARGENTINA_HOLIDAYS = [
   "2027-03-26", "2027-04-02", "2027-05-01", "2027-05-25", "2027-06-20",
   "2027-07-09", "2027-08-16", "2027-10-11", "2027-11-20", "2027-12-08",
   "2027-12-25"
+  // END_ARGENTINA_HOLIDAYS
 ];
 
 // TODO('revisar si hay llamadores externos de check_patient/get_directory')

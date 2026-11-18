@@ -19,6 +19,8 @@
   let inlineWidgetInstance = null;
   let previousActiveElement = null;
   let bookingAvailable = null;
+  let availabilityPromise = null;
+  let pendingOpenAction = null;
 
   const OFFLINE_COPY = {
     es: {
@@ -69,6 +71,81 @@
       }
     } catch (_) {}
     return null;
+  }
+
+  function renderAvailabilityLoading(mount) {
+    if (!mount) return;
+    const lang = resolveLang();
+    const label =
+      lang === "en"
+        ? "Checking online booking…"
+        : lang === "fr"
+          ? "Vérification de la réservation en ligne…"
+          : lang === "pt"
+            ? "Verificando agendamento online…"
+            : "Comprobando reserva online…";
+    mount.innerHTML = `<div class="kb-booking-loading" role="status" aria-live="polite">${label}</div>`;
+    inlineWidgetInstance = null;
+  }
+
+  /**
+   * Resuelve booking_active antes de montar/abrir.
+   * Evita flash del widget cuando booking está off y aún no llegó settings.php.
+   */
+  function resolveBookingAvailability() {
+    if (bookingAvailable !== null) {
+      return Promise.resolve(bookingAvailable);
+    }
+    const cached = readCachedBookingActive();
+    if (cached !== null) {
+      bookingAvailable = cached;
+      return Promise.resolve(bookingAvailable);
+    }
+    if (availabilityPromise) return availabilityPromise;
+    availabilityPromise = (typeof fetch === "function"
+      ? fetch("/admin/api/settings.php", { cache: "no-cache" })
+          .then(function (res) {
+            return res.ok ? res.json() : null;
+          })
+          .catch(function () {
+            return null;
+          })
+      : Promise.resolve(null)
+    )
+      .then(function (data) {
+        if (data && typeof data.booking_active !== "undefined") {
+          bookingAvailable = Boolean(data.booking_active);
+        } else {
+          // Si settings no responde, no bloquear la turnera.
+          bookingAvailable = true;
+        }
+        return bookingAvailable;
+      })
+      .finally(function () {
+        availabilityPromise = null;
+      });
+    return availabilityPromise;
+  }
+
+  function whenBookingAllowed(action) {
+    if (bookingAvailable === false) {
+      openWhatsAppFallback();
+      return;
+    }
+    if (bookingAvailable === true) {
+      if (typeof action === "function") action();
+      return;
+    }
+    pendingOpenAction = action;
+    resolveBookingAvailability().then(function (active) {
+      const cb = pendingOpenAction;
+      pendingOpenAction = null;
+      if (!active) {
+        openWhatsAppFallback();
+        return;
+      }
+      if (typeof cb === "function") cb();
+    });
   }
 
   /** Always Norberto — never Clara (activeWhatsappDigits). Clara redirects back to the site. */
@@ -157,17 +234,15 @@
           window.location.hash === "#habitual" ||
           window.location.search.indexOf("agendar=true") !== -1
         ) {
-          if (bookingAvailable === false) {
-            openWhatsAppFallback();
-            return;
-          }
-          if (inlineWidgetInstance) {
-            if (window.location.hash === "#habitual" && typeof inlineWidgetInstance.selectExistingPatient === "function") {
-              inlineWidgetInstance.selectExistingPatient(true);
+          whenBookingAllowed(function () {
+            if (inlineWidgetInstance) {
+              if (window.location.hash === "#habitual" && typeof inlineWidgetInstance.selectExistingPatient === "function") {
+                inlineWidgetInstance.selectExistingPatient(true);
+              }
+            } else {
+              KinesicaBookingModal.open();
             }
-          } else {
-            KinesicaBookingModal.open();
-          }
+          });
         }
       };
 
@@ -180,21 +255,19 @@
       // Hashchange listener para botón atrás de Android / navegador
       window.addEventListener("hashchange", function () {
         if (window.location.hash === "#agendar" || window.location.hash === "#habitual") {
-          if (bookingAvailable === false) {
-            openWhatsAppFallback();
-            return;
-          }
-          if (inlineWidgetInstance) {
-            if (window.location.hash === "#habitual" && typeof inlineWidgetInstance.selectExistingPatient === "function") {
-              inlineWidgetInstance.selectExistingPatient(true);
+          whenBookingAllowed(function () {
+            if (inlineWidgetInstance) {
+              if (window.location.hash === "#habitual" && typeof inlineWidgetInstance.selectExistingPatient === "function") {
+                inlineWidgetInstance.selectExistingPatient(true);
+              }
+              const mount = document.getElementById("kinesica-booking-widget");
+              if (mount && typeof mount.scrollIntoView === "function") {
+                mount.scrollIntoView({ behavior: "smooth", block: "start" });
+              }
+            } else if (!KinesicaBookingModal.isOpen()) {
+              KinesicaBookingModal.open({ skipHashPush: true });
             }
-            const mount = document.getElementById("kinesica-booking-widget");
-            if (mount && typeof mount.scrollIntoView === "function") {
-              mount.scrollIntoView({ behavior: "smooth", block: "start" });
-            }
-          } else if (!KinesicaBookingModal.isOpen()) {
-            KinesicaBookingModal.open({ skipHashPush: true });
-          }
+          });
         } else if (KinesicaBookingModal.isOpen()) {
           KinesicaBookingModal.close({ skipHashPush: true });
         }
@@ -214,11 +287,9 @@
         );
         if (trigger) {
           e.preventDefault();
-          if (bookingAvailable === false) {
-            openWhatsAppFallback();
-            return;
-          }
-          KinesicaBookingModal.open();
+          whenBookingAllowed(function () {
+            KinesicaBookingModal.open();
+          });
         }
       });
 
@@ -264,6 +335,13 @@
       if (typeof document === "undefined") return null;
       const mount = document.getElementById("kinesica-booking-widget");
       if (!mount) return null;
+      if (bookingAvailable === null) {
+        renderAvailabilityLoading(mount);
+        resolveBookingAvailability().then(function () {
+          KinesicaBookingModal.mountInlineWidget();
+        });
+        return null;
+      }
       if (bookingAvailable === false) {
         renderOfflineFallback(mount);
         return null;
@@ -423,6 +501,12 @@
 
     open(options) {
       options = options || {};
+      if (bookingAvailable === null) {
+        whenBookingAllowed(function () {
+          KinesicaBookingModal.open(options);
+        });
+        return;
+      }
       if (bookingAvailable === false) {
         openWhatsAppFallback();
         return;

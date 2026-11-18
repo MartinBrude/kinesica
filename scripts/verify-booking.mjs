@@ -6,8 +6,12 @@
  */
 
 import assert from "node:assert";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import engine from "../booking/booking-engine.js";
 import { CONTACT } from "./site-contact.mjs";
+import { ARGENTINA_HOLIDAYS } from "./argentina-holidays.mjs";
 
 const {
   calculateAvailableSlots,
@@ -19,7 +23,24 @@ const {
   DEFAULT_ARGENTINA_HOLIDAYS,
 } = engine;
 
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+
 console.log("🩺 Ejecutando tests del motor de reservas de Kinésica...\n");
+
+{
+  const source = [...ARGENTINA_HOLIDAYS];
+  const engineList = [...DEFAULT_ARGENTINA_HOLIDAYS];
+  assert.deepEqual(engineList, source, "booking-engine holidays deben coincidir con scripts/argentina-holidays.mjs (npm run holidays:sync)");
+  const extractMarked = (rel) => {
+    const src = fs.readFileSync(path.join(root, rel), "utf8");
+    const m = src.match(/BEGIN_ARGENTINA_HOLIDAYS\n([\s\S]*?)\n\s*\/\/ END_ARGENTINA_HOLIDAYS/);
+    assert.ok(m, `faltan markers de feriados en ${rel}`);
+    return [...m[1].matchAll(/(\d{4}-\d{2}-\d{2})/g)].map((x) => x[1]);
+  };
+  assert.deepEqual(extractMarked("booking/google-apps-script.js"), source, "GAS holidays desfasados — npm run holidays:sync");
+  assert.deepEqual(extractMarked("admin/api/lib_calendar_backup.php"), source, "backup PHP holidays desfasados — npm run holidays:sync");
+  console.log("  ✅ Feriados DRY (engine / GAS / backup) alineados con argentina-holidays.mjs\n");
+}
 
 let passed = 0;
 let total = 0;

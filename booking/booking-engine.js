@@ -348,39 +348,15 @@
   // Lista oficial de Feriados Nacionales de Argentina (YYYY-MM-DD)
   // Incluye inamovibles, trasladables y puentes turísticos oficiales
   const DEFAULT_ARGENTINA_HOLIDAYS = [
-    // 2026
-    "2026-01-01", // Año Nuevo
-    "2026-02-16", // Carnaval
-    "2026-02-17", // Carnaval
-    "2026-03-24", // Memoria por la Verdad y la Justicia
-    "2026-04-02", // Veteranos y Caídos en Malvinas
-    "2026-04-03", // Viernes Santo
-    "2026-05-01", // Día del Trabajador
-    "2026-05-25", // Revolución de Mayo
-    "2026-06-15", // Paso a la Inmortalidad de Güemes (trasladado)
-    "2026-06-20", // Paso a la Inmortalidad de Belgrano
-    "2026-07-09", // Día de la Independencia
-    "2026-08-17", // Paso a la Inmortalidad de San Martín
-    "2026-10-12", // Diversidad Cultural
-    "2026-11-23", // Día de la Soberanía Nacional
-    "2026-12-08", // Inmaculada Concepción
-    "2026-12-25", // Navidad
-    // 2027
-    "2027-01-01",
-    "2027-02-08",
-    "2027-02-09",
-    "2027-03-24",
-    "2027-03-26",
-    "2027-04-02",
-    "2027-05-01",
-    "2027-05-25",
-    "2027-06-20",
-    "2027-07-09",
-    "2027-08-16",
-    "2027-10-11",
-    "2027-11-20",
-    "2027-12-08",
-    "2027-12-25",
+    // BEGIN_ARGENTINA_HOLIDAYS
+    "2026-01-01", "2026-02-16", "2026-02-17", "2026-03-24", "2026-04-02",
+    "2026-04-03", "2026-05-01", "2026-05-25", "2026-06-15", "2026-06-20",
+    "2026-07-09", "2026-08-17", "2026-10-12", "2026-11-23", "2026-12-08",
+    "2026-12-25", "2027-01-01", "2027-02-08", "2027-02-09", "2027-03-24",
+    "2027-03-26", "2027-04-02", "2027-05-01", "2027-05-25", "2027-06-20",
+    "2027-07-09", "2027-08-16", "2027-10-11", "2027-11-20", "2027-12-08",
+    "2027-12-25"
+    // END_ARGENTINA_HOLIDAYS
   ];
 
   /**

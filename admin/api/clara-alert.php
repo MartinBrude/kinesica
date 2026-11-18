@@ -23,8 +23,9 @@ if (!in_array($targetRaw, $allowed, true)) {
 }
 
 $phones = [
-    'norberto' => '541161564311',
-    'maria' => '541128531224',
+    // Prefijo móvil 9 (Meta Graph / wa.me AR) — alineado con site-contact / booking-engine.
+    'norberto' => '5491161564311',
+    'maria' => '5491128531224',
 ];
 $names = [
     'norberto' => 'Lic. Norberto Brude',
