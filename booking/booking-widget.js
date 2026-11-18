@@ -1885,30 +1885,39 @@
           serviceName = "Terapias Manuales";
         }
 
-        const res = await fetch("/api/send-confirmation.php", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: payload.email,
-            paciente: payload.nombre,
-            telefono: payload.telefono,
-            dni: payload.dni,
-            fecha: payload.date,
-            hora: payload.time,
-            profesional: professionalName,
-            servicio: serviceName,
-            motivo: payload.motivo || payload.especialidad,
-            esMenor: Boolean(payload.isMenor),
-            esParaTercero: Boolean(payload.esParaTercero),
-            contactoNombre: payload.contactoNombre || "",
-            contactoTelefono: payload.contactoTelefono || "",
-            contactoNotas: payload.contactoNotas || "",
-            eventId: (bookResult && bookResult.eventId) || "",
-            practitionerId: payload.practitionerId || "",
-          }),
-        });
+        const eventId = (bookResult && bookResult.eventId) || "";
+        const body = {
+          email: payload.email,
+          paciente: payload.nombre,
+          telefono: payload.telefono,
+          dni: payload.dni,
+          fecha: payload.date,
+          hora: payload.time,
+          profesional: professionalName,
+          servicio: serviceName,
+          motivo: payload.motivo || payload.especialidad,
+          esMenor: Boolean(payload.isMenor),
+          esParaTercero: Boolean(payload.esParaTercero),
+          contactoNombre: payload.contactoNombre || "",
+          contactoTelefono: payload.contactoTelefono || "",
+          contactoNotas: payload.contactoNotas || "",
+          eventId,
+          practitionerId: payload.practitionerId || "",
+        };
+
+        const postConfirm = (extra) =>
+          fetch("/api/send-confirmation.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(Object.assign({}, body, extra || {})),
+          });
+
+        let res = await postConfirm();
+        // Si el mail falló tras haber adjuntado el hash, un reintento con rotate
+        // permite incluir un código nuevo en el segundo mail (el primero no llegó).
+        if (!res.ok && eventId) {
+          res = await postConfirm({ retry: true, rotate_manage_code: true });
+        }
         if (!res.ok) return null;
         const data = await res.json().catch(() => null);
         return data && data.success ? data : null;

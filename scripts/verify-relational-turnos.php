@@ -238,7 +238,11 @@ assert_true(!empty($lookup['ok']), 'lookup manage code');
 $lookupBad = kinesica_rel_lookup_turno_by_manage($pdo, 'juan@ejemplo.com', 'García', 'AB3K7MP');
 assert_true(empty($lookupBad['ok']), 'lookup wrong apellido');
 
-// Reintento de confirmación: rotar hash y devolver plaintext nuevo (viejo deja de valer).
+// Segundo attach sin rotate: el código del primer mail sigue válido.
+$lookupStill = kinesica_rel_lookup_turno_by_manage($pdo, 'juan@ejemplo.com', 'Pérez', 'AB3K7MP');
+assert_true(!empty($lookupStill['ok']), 'sin rotate el código original sigue válido');
+
+// Reintento explícito: rotar hash y devolver plaintext nuevo (viejo deja de valer).
 $attach3 = kinesica_rel_attach_manage_code(
     $pdo,
     'manage-evt-1',

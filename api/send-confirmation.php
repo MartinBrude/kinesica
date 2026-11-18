@@ -185,42 +185,88 @@ if ($rawPhone !== '') {
                 } catch (Throwable) {}
             }
 
-            $stmtUpsert = $db->prepare('
-                INSERT INTO pacientes (
-                    telefono, nombre, apellido, nombre_completo, nombre_pila, dni, email, profesional_habitual, motivo_consulta, origen,
-                    contacto_nombre, contacto_telefono, contacto_notas
-                ) VALUES (
-                    :telefono, :nombre, :apellido, :nombre_completo, :nombre_pila, :dni, :email, :profesional, :motivo, "web",
-                    :contacto_nombre, :contacto_telefono, :contacto_notas
-                )
-                ON DUPLICATE KEY UPDATE
-                    nombre = CASE WHEN VALUES(nombre) != "" THEN VALUES(nombre) ELSE nombre END,
-                    apellido = CASE WHEN VALUES(apellido) != "" THEN VALUES(apellido) ELSE apellido END,
-                    nombre_completo = VALUES(nombre_completo),
-                    nombre_pila = VALUES(nombre_pila),
-                    dni = COALESCE(VALUES(dni), dni),
-                    email = CASE WHEN email IS NULL OR email = "" THEN VALUES(email) ELSE email END,
-                    profesional_habitual = CASE WHEN VALUES(profesional_habitual) != "indistinto" THEN VALUES(profesional_habitual) ELSE profesional_habitual END,
-                    motivo_consulta = COALESCE(VALUES(motivo_consulta), motivo_consulta),
-                    contacto_nombre = COALESCE(VALUES(contacto_nombre), contacto_nombre),
-                    contacto_telefono = COALESCE(VALUES(contacto_telefono), contacto_telefono),
-                    contacto_notas = COALESCE(VALUES(contacto_notas), contacto_notas)
-            ');
+            // Soft-deleted con mismo teléfono: revivir en lugar de UPDATE fantasma.
+            $revivedSoft = false;
+            if (function_exists('kinesica_pacientes_find_soft_deleted_by_phone')) {
+                $softRow = kinesica_pacientes_find_soft_deleted_by_phone($db, $phone);
+                if ($softRow && empty($existing)) {
+                    $db->prepare(
+                        'UPDATE pacientes SET
+                            deleted_at = NULL,
+                            nombre = CASE WHEN :nom != "" THEN :nom2 ELSE nombre END,
+                            apellido = CASE WHEN :ape != "" THEN :ape2 ELSE apellido END,
+                            nombre_completo = :full,
+                            nombre_pila = :pila,
+                            dni = COALESCE(:dni, dni),
+                            email = CASE WHEN email IS NULL OR email = "" THEN :email ELSE email END,
+                            profesional_habitual = CASE WHEN :prof != "indistinto" THEN :prof2 ELSE profesional_habitual END,
+                            motivo_consulta = COALESCE(:motivo, motivo_consulta),
+                            contacto_nombre = COALESCE(:cnom, contacto_nombre),
+                            contacto_telefono = COALESCE(:ctel, contacto_telefono),
+                            contacto_notas = COALESCE(:cnot, contacto_notas)
+                         WHERE id = :id'
+                    )->execute([
+                        'nom' => $nom,
+                        'nom2' => $nom,
+                        'ape' => $ape,
+                        'ape2' => $ape,
+                        'full' => $fullName,
+                        'pila' => $pila,
+                        'dni' => $dniVal,
+                        'email' => $email,
+                        'prof' => $profVal,
+                        'prof2' => $profVal,
+                        'motivo' => $motivoVal,
+                        'cnom' => $contactoNombre,
+                        'ctel' => $contactoTel,
+                        'cnot' => $contactoNotas,
+                        'id' => (int) $softRow['id'],
+                    ]);
+                    $revivedSoft = true;
+                }
+            }
 
-            $stmtUpsert->execute([
-                'telefono' => $phone,
-                'nombre' => $nom,
-                'apellido' => $ape,
-                'nombre_completo' => $fullName,
-                'nombre_pila' => $pila,
-                'dni' => $dniVal,
-                'email' => $email,
-                'profesional' => $profVal,
-                'motivo' => $motivoVal,
-                'contacto_nombre' => $contactoNombre,
-                'contacto_telefono' => $contactoTel,
-                'contacto_notas' => $contactoNotas,
-            ]);
+            if (!$revivedSoft) {
+                $hasDeletedAt = in_array('deleted_at', $cols, true);
+                $reviveOnDup = $hasDeletedAt ? ', deleted_at = NULL' : '';
+                $stmtUpsert = $db->prepare("
+                    INSERT INTO pacientes (
+                        telefono, nombre, apellido, nombre_completo, nombre_pila, dni, email, profesional_habitual, motivo_consulta, origen,
+                        contacto_nombre, contacto_telefono, contacto_notas
+                    ) VALUES (
+                        :telefono, :nombre, :apellido, :nombre_completo, :nombre_pila, :dni, :email, :profesional, :motivo, \"web\",
+                        :contacto_nombre, :contacto_telefono, :contacto_notas
+                    )
+                    ON DUPLICATE KEY UPDATE
+                        nombre = CASE WHEN VALUES(nombre) != \"\" THEN VALUES(nombre) ELSE nombre END,
+                        apellido = CASE WHEN VALUES(apellido) != \"\" THEN VALUES(apellido) ELSE apellido END,
+                        nombre_completo = VALUES(nombre_completo),
+                        nombre_pila = VALUES(nombre_pila),
+                        dni = COALESCE(VALUES(dni), dni),
+                        email = CASE WHEN email IS NULL OR email = \"\" THEN VALUES(email) ELSE email END,
+                        profesional_habitual = CASE WHEN VALUES(profesional_habitual) != \"indistinto\" THEN VALUES(profesional_habitual) ELSE profesional_habitual END,
+                        motivo_consulta = COALESCE(VALUES(motivo_consulta), motivo_consulta),
+                        contacto_nombre = COALESCE(VALUES(contacto_nombre), contacto_nombre),
+                        contacto_telefono = COALESCE(VALUES(contacto_telefono), contacto_telefono),
+                        contacto_notas = COALESCE(VALUES(contacto_notas), contacto_notas)
+                        {$reviveOnDup}
+                ");
+
+                $stmtUpsert->execute([
+                    'telefono' => $phone,
+                    'nombre' => $nom,
+                    'apellido' => $ape,
+                    'nombre_completo' => $fullName,
+                    'nombre_pila' => $pila,
+                    'dni' => $dniVal,
+                    'email' => $email,
+                    'profesional' => $profVal,
+                    'motivo' => $motivoVal,
+                    'contacto_nombre' => $contactoNombre,
+                    'contacto_telefono' => $contactoTel,
+                    'contacto_notas' => $contactoNotas,
+                ]);
+            }
         }
     } catch (Throwable $e) {
         error_log('kinesica send-confirmation auto-paciente error: ' . $e->getMessage());
@@ -248,12 +294,16 @@ if (!$esCancelacion && $eventId !== '') {
                 $endsAt = date('Y-m-d H:i:s', $endTs);
             }
         }
+        // Rotar solo si el cliente pide reintento (retry / rotate_manage_code).
+        // Rotar siempre invalidaba el link del mail anterior en reenvíos accidentales.
+        $rotateManage = !empty($data['retry'])
+            || !empty($data['rotate_manage_code'])
+            || !empty($data['force_new_manage_code']);
         $attachExtra = [
             'starts_at' => $startsAt,
             'ends_at' => $endsAt,
             'practitionerId' => $practitionerIdRaw,
-            // Reintento de mail: rotar hash y devolver plaintext (no se persiste).
-            'rotate_manage_code' => true,
+            'rotate_manage_code' => $rotateManage,
         ];
         if ($practitionerIdRaw !== '') {
             $attachExtra['summary'] = '🩺 [' . strtoupper($practitionerIdRaw) . '] ' . $paciente;

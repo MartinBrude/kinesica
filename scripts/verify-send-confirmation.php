@@ -98,6 +98,24 @@ $adminHtml = file_get_contents(__DIR__ . '/../admin/index.html');
 check(str_contains($adminHtml, 'id="btn-send-confirmation-preview"'), 'botón mail de prueba en admin/clara');
 check(str_contains($adminHtml, 'id="cfg-mail-preview-paciente"'), 'formulario mail de prueba en admin/clara');
 
+// Manage code: no rotar por defecto (evita invalidar mi-turno en reenvíos).
+$sendConfSrc = file_get_contents(__DIR__ . '/../api/send-confirmation.php');
+check(
+    !preg_match("/'rotate_manage_code'\\s*=>\\s*true/", $sendConfSrc),
+    'send-confirmation: rotate_manage_code no hardcodeado a true'
+);
+check(
+    str_contains($sendConfSrc, "data['retry']")
+    && str_contains($sendConfSrc, "data['rotate_manage_code']"),
+    'send-confirmation: rota solo con retry / rotate_manage_code'
+);
+$widgetSrc = file_get_contents(__DIR__ . '/../booking/booking-widget.js');
+check(
+    str_contains($widgetSrc, 'rotate_manage_code: true')
+    && str_contains($widgetSrc, 'retry: true'),
+    'booking-widget: reintento de mail pide rotate'
+);
+
 // --- endpoint real, mail capturado ---
 function render_mail(array $post, ?array $settings): array
 {

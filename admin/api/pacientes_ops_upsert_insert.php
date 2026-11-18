@@ -9,7 +9,13 @@ function kinesica_pacientes_upsert_insert(
     ?string $dni, ?string $email, string $profesional, ?string $motivo, ?string $notas, string $origen,
     ?string $contactoNombre, ?string $contactoTel, ?string $contactoEmail, ?string $contactoNotas, int $dejoReview
 ): void {
-    $stmt = $pdo->prepare('
+    // Carrera: si otro request soft-deleted/ocupa el teléfono, ON DUPLICATE no debe dejar deleted_at.
+    require_once __DIR__ . '/lib_migrations.php';
+    $reviveOnDup = kinesica_migrations_column_exists($pdo, 'pacientes', 'deleted_at')
+        ? ', deleted_at = NULL'
+        : '';
+
+    $stmt = $pdo->prepare("
         INSERT INTO pacientes (
             telefono, nombre, apellido, nombre_completo, nombre_pila, dni, email, profesional_habitual, 
             motivo_consulta, notas, origen, contacto_nombre, contacto_telefono, contacto_email, contacto_notas, dejo_review
@@ -18,13 +24,13 @@ function kinesica_pacientes_upsert_insert(
             :motivo_consulta, :notas, :origen, :contacto_nombre, :contacto_telefono, :contacto_email, :contacto_notas, :dejo_review
         )
         ON DUPLICATE KEY UPDATE
-            nombre = CASE WHEN VALUES(nombre) != "" THEN VALUES(nombre) ELSE nombre END,
-            apellido = CASE WHEN VALUES(apellido) != "" THEN VALUES(apellido) ELSE apellido END,
+            nombre = CASE WHEN VALUES(nombre) != \"\" THEN VALUES(nombre) ELSE nombre END,
+            apellido = CASE WHEN VALUES(apellido) != \"\" THEN VALUES(apellido) ELSE apellido END,
             nombre_completo = VALUES(nombre_completo),
             nombre_pila = VALUES(nombre_pila),
             dni = COALESCE(VALUES(dni), dni),
             email = COALESCE(VALUES(email), email),
-            profesional_habitual = CASE WHEN VALUES(profesional_habitual) != "indistinto" THEN VALUES(profesional_habitual) ELSE profesional_habitual END,
+            profesional_habitual = CASE WHEN VALUES(profesional_habitual) != \"indistinto\" THEN VALUES(profesional_habitual) ELSE profesional_habitual END,
             motivo_consulta = COALESCE(VALUES(motivo_consulta), motivo_consulta),
             notas = COALESCE(VALUES(notas), notas),
             contacto_nombre = COALESCE(VALUES(contacto_nombre), contacto_nombre),
@@ -32,7 +38,8 @@ function kinesica_pacientes_upsert_insert(
             contacto_email = COALESCE(VALUES(contacto_email), contacto_email),
             contacto_notas = COALESCE(VALUES(contacto_notas), contacto_notas),
             dejo_review = CASE WHEN VALUES(dejo_review) = 1 THEN 1 ELSE dejo_review END
-    ');
+            {$reviveOnDup}
+    ");
 
     try {
         $stmt->execute([

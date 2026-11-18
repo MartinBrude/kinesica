@@ -228,4 +228,36 @@ assert_true((bool) $soft30, 'soft-deleted 30 sigue existiendo sin absorber al ac
 $mergeSoft = kinesica_pacientes_merge_explicit($pdo, 31, 30);
 assert_true(!$mergeSoft['ok'], 'merge_explicit rechaza target soft-deleted');
 
+// Upsert + soft-delete: match activo no ve la ficha; find_soft sí → rama revive
+$pdo->prepare('
+    INSERT INTO pacientes (id, telefono, nombre, apellido, nombre_completo, deleted_at)
+    VALUES (40, "5491444444444", "Bruno", "Soft", "Bruno Soft", datetime("now"))
+')->execute();
+$matchAlive = find_existing_patient_match($pdo, '5491444444444', 'Bruno Soft', null);
+assert_true($matchAlive === null, 'match activo ignora soft-deleted');
+$soft = kinesica_pacientes_find_soft_deleted_by_phone($pdo, '5491444444444');
+assert_true((int) ($soft['id'] ?? 0) === 40, 'find_soft_deleted_by_phone encuentra 40');
+
+// Misma decisión que kinesica_pacientes_upsert: soft → update + clear deleted_at
+$existing = $matchAlive ?: $soft;
+$reviving = $matchAlive === null && $soft !== null;
+assert_true($reviving && (int) ($existing['id'] ?? 0) === 40, 'upsert elegiría revive de id=40');
+$pdo->prepare(
+    'UPDATE pacientes SET deleted_at = NULL, nombre = :n, apellido = :a, nombre_completo = :f WHERE id = :id'
+)->execute(['n' => 'Bruno', 'a' => 'Revived', 'f' => 'Bruno Revived', 'id' => 40]);
+$row40 = $pdo->query('SELECT id, deleted_at, nombre_completo FROM pacientes WHERE id = 40')->fetch(PDO::FETCH_ASSOC);
+assert_true($row40 && ($row40['deleted_at'] === null || $row40['deleted_at'] === ''), 'revive limpia deleted_at');
+assert_true(($row40['nombre_completo'] ?? '') === 'Bruno Revived', 'revive actualiza nombre');
+$matchAfter = find_existing_patient_match($pdo, '5491444444444', 'Bruno Revived', null);
+assert_true((int) ($matchAfter['id'] ?? 0) === 40, 'tras revive el match activo es 40');
+
+$upsertSrc = file_get_contents($root . '/admin/api/pacientes_ops_upsert.php');
+$insertSrc = file_get_contents($root . '/admin/api/pacientes_ops_upsert_insert.php');
+assert_true(
+    str_contains($upsertSrc, 'kinesica_pacientes_find_soft_deleted_by_phone')
+    && str_contains($upsertSrc, 'deleted_at = NULL'),
+    'pacientes_ops_upsert revive soft-deleted'
+);
+assert_true(str_contains($insertSrc, 'deleted_at = NULL'), 'upsert_insert ON DUPLICATE revive deleted_at');
+
 echo "\n--- Todos los tests de kinesica_pacientes_merge_explicit pasaron exitosamente ---\n";

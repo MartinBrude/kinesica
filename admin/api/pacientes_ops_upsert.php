@@ -70,6 +70,15 @@ function kinesica_pacientes_upsert(PDO $pdo, array $data): void
 
     // Buscar si ya existe el paciente por teléfono, DNI o coincidencia de nombre (prevención de duplicados)
     $existing = find_existing_patient_match($pdo, $phone, $nombreCompleto, $dni);
+    $reviving = false;
+    // Soft-deleted con mismo WhatsApp: UNIQUE sigue ocupado → revivir, no INSERT fantasma.
+    if (!$existing && function_exists('kinesica_pacientes_find_soft_deleted_by_phone')) {
+        $soft = kinesica_pacientes_find_soft_deleted_by_phone($pdo, $phone);
+        if ($soft) {
+            $existing = $soft;
+            $reviving = true;
+        }
+    }
 
     if ($existing) {
         $existingId = (int) $existing['id'];
@@ -118,7 +127,12 @@ function kinesica_pacientes_upsert(PDO $pdo, array $data): void
         $mergePila = $nombrePila !== '' ? $nombrePila : (string) ($existing['nombre_pila'] ?? '');
         $mergeOrigen = kinesica_prefer_origen((string) ($existing['origen'] ?? 'whatsapp'), $origen);
 
-        $stmtUpd = $pdo->prepare('
+        require_once __DIR__ . '/lib_migrations.php';
+        $clearDeletedSql = ($reviving && kinesica_migrations_column_exists($pdo, 'pacientes', 'deleted_at'))
+            ? ', deleted_at = NULL'
+            : '';
+
+        $stmtUpd = $pdo->prepare("
             UPDATE pacientes SET
                 telefono = :tel,
                 nombre = :nom,
@@ -136,8 +150,9 @@ function kinesica_pacientes_upsert(PDO $pdo, array $data): void
                 contacto_email = :cemail,
                 contacto_notas = :cnot,
                 dejo_review = :rev
+                {$clearDeletedSql}
             WHERE id = :id
-        ');
+        ");
         try {
             $stmtUpd->execute([
                 'tel' => $targetPhone,
@@ -163,7 +178,11 @@ function kinesica_pacientes_upsert(PDO $pdo, array $data): void
             json_out(500, ['status' => 'error', 'message' => 'No se pudo guardar el paciente']);
         }
 
-        error_log('kinesica pacientes upsert merged id=' . $existingId . ' phone=' . $targetPhone);
+        error_log(
+            'kinesica pacientes upsert merged id=' . $existingId
+            . ' phone=' . $targetPhone
+            . ($reviving ? ' revived=1' : '')
+        );
         // REL: espejo legacy → paciente_contactos (lib_relational_contactos.php).
         require_once __DIR__ . '/lib_relational_contactos.php';
         kinesica_rel_sync_paciente_contactos_safe($pdo, $existingId, [
@@ -176,6 +195,7 @@ function kinesica_pacientes_upsert(PDO $pdo, array $data): void
             'status' => 'success',
             'action' => 'upsert',
             'merged' => true,
+            'revived' => $reviving,
             'id' => $existingId,
             'phone' => $targetPhone,
             'nombre' => $nombre,

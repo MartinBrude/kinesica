@@ -28,6 +28,30 @@ function kinesica_pacientes_alive_sql(PDO $pdo, string $alias = ''): string
     return "{$col} IS NULL";
 }
 
+/**
+ * Ficha soft-deleted que aún ocupa UNIQUE(telefono).
+ * Usado en upsert para revivir en lugar de un ON DUPLICATE "fantasma".
+ *
+ * @return array<string,mixed>|null
+ */
+function kinesica_pacientes_find_soft_deleted_by_phone(PDO $pdo, string $phone): ?array
+{
+    require_once __DIR__ . '/lib_migrations.php';
+    if (!kinesica_migrations_column_exists($pdo, 'pacientes', 'deleted_at')) {
+        return null;
+    }
+    $clean = clean_phone_number($phone);
+    if ($clean === '' || is_placeholder_phone($clean)) {
+        return null;
+    }
+    $stmt = $pdo->prepare(
+        'SELECT * FROM pacientes WHERE telefono = :tel AND deleted_at IS NOT NULL LIMIT 1'
+    );
+    $stmt->execute(['tel' => $clean]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    return is_array($row) ? $row : null;
+}
+
 
 function find_existing_patient_match(PDO $pdo, ?string $phone, ?string $name = null, ?string $dni = null): ?array
 {
