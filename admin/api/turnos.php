@@ -6,7 +6,7 @@ declare(strict_types=1);
  *
  * Auth:
  * - Sesión admin/profesional (register / cancel desde UI)
- * - O secret (webhook_secret / gas_api_secret / install_token) para mirror desde GAS
+ * - O secret (gas_api_secret; si vacío, webhook_secret) para mirror desde GAS
  *
  * POST action=register — upsert por calendar_event_id tras book
  * POST action=cancel   — status cancelled + anula recordatorios pending
@@ -37,25 +37,18 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
 }
 
 /**
+ * Auth por secreto solo para mirror GAS → turnos.
+ * Preferir gas_api_secret; si está vacío, webhook_secret (compat).
+ * No aceptar install_token ni KINESICA_BACKUP_SECRET (otro blast radius).
+ *
  * @param array<string,mixed> $params
  */
 function kinesica_turnos_api_authorized(array $params): bool
 {
     $cfg = function_exists('cfg') ? cfg() : [];
-    $candidates = [];
-    foreach (['gas_api_secret', 'webhook_secret', 'install_token'] as $k) {
-        $v = trim((string) ($cfg[$k] ?? ''));
-        if ($v !== '') {
-            $candidates[] = $v;
-        }
-    }
-    $envSecret = trim((string) (
-        getenv('KINESICA_BACKUP_SECRET')
-        ?: ($_SERVER['KINESICA_BACKUP_SECRET'] ?? $_ENV['KINESICA_BACKUP_SECRET'] ?? '')
-    ));
-    if ($envSecret !== '') {
-        $candidates[] = $envSecret;
-    }
+    $gas = trim((string) ($cfg['gas_api_secret'] ?? ''));
+    $webhook = trim((string) ($cfg['webhook_secret'] ?? ''));
+    $candidates = $gas !== '' ? [$gas] : ($webhook !== '' ? [$webhook] : []);
     $given = trim((string) (
         $params['secret']
         ?? $_SERVER['HTTP_X_WEBHOOK_SECRET']

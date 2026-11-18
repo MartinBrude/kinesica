@@ -27,11 +27,12 @@ declare(strict_types=1);
             json_out(403, ['status' => 'error', 'message' => 'Esta acción requiere sesión de usuario en el panel admin.']);
         }
 
-        // La invitación dispara un mensaje real a un paciente: no debe quedar
-        // disponible para integraciones autenticadas únicamente con el secreto
-        // de webhook.
-        if ($action === 'send_encuesta_invite' && !is_admin($auth)) {
-            json_out(403, ['status' => 'error', 'message' => 'Solo un administrador con sesión puede enviar invitaciones de encuesta.']);
+        // Correo libre / encuesta: solo admin con sesión (no profesional ni token).
+        if (
+            ($action === 'send_encuesta_invite' || $action === 'send_email' || $action === 'send_fallback_email')
+            && !is_admin($auth)
+        ) {
+            json_out(403, ['status' => 'error', 'message' => 'Solo un administrador con sesión puede realizar esta acción.']);
         }
 
         if ($action === 'get_email_by_phone') {

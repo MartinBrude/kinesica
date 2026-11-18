@@ -3,6 +3,15 @@ declare(strict_types=1);
 
     if ($method === 'GET') {
         $action = $_GET['action'] ?? '';
+        // Token de integración: solo lecturas puntuales (email por tel / waitlist).
+        // Listado completo, directorio y búsqueda exponen PHI → solo sesión.
+        $tokenAllowedGet = ['get_email_by_phone', 'waitlist'];
+        if (($auth['type'] ?? '') !== 'session' && !in_array((string) $action, $tokenAllowedGet, true)) {
+            json_out(403, [
+                'status' => 'error',
+                'message' => 'Esta lectura requiere sesión de usuario en el panel admin.',
+            ]);
+        }
 
         if (!empty($_GET['counts_only']) || $action === 'counts' || $action === 'missing_phone_count' || $action === 'badge') {
             require_once __DIR__ . '/lib_relational_integrity.php';

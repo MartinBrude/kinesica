@@ -38,13 +38,23 @@ assert.equal(capitalizePersonName("juan-carlos"), "Juan-Carlos");
 assert.equal(capitalizePersonName("d'alessandro"), "D'Alessandro");
 assert.equal(sanitizePersonName("  FLORENCIA, GONZALEZ 👍\r\n"), "Florencia Gonzalez");
 
-// Verificar permisos de eliminación en pacientes.php
+// Verificar permisos de eliminación + gates de token/admin en pacientes.php
 const pacPhp = readdirSync("admin/api")
   .filter((f) => f === "pacientes.php" || (f.startsWith("pacientes_") && f.endsWith(".php")))
   .map((f) => readFileSync(`admin/api/${f}`, "utf8"))
   .join("\n");
 assert.match(pacPhp, /norberto/);
 assert.match(pacPhp, /maria/);
+assert.match(pacPhp, /Actualizar un paciente requiere sesión/);
+assert.match(pacPhp, /tokenAllowedGet/);
+assert.match(pacPhp, /send_email.*send_fallback_email|send_fallback_email.*send_email/);
+assert.match(pacPhp, /Solo un administrador con sesión puede realizar esta acción/);
+
+const turnosPhp = readFileSync("admin/api/turnos.php", "utf8");
+assert.match(turnosPhp, /gas_api_secret/);
+assert.ok(!/getenv\s*\(\s*['"]KINESICA_BACKUP_SECRET['"]/.test(turnosPhp), "turnos.php no debe aceptar KINESICA_BACKUP_SECRET");
+const turnosAuthFn = turnosPhp.split("function kinesica_turnos_api_authorized")[1] || "";
+assert.ok(!/['"]install_token['"]/.test(turnosAuthFn), "turnos secret auth no debe aceptar install_token");
 
 const html = readFileSync("admin/index.html", "utf8");
 assert.ok(!html.includes("(A, B, D)"), "el subtítulo no debe decir (A, B, D)");

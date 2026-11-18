@@ -2,6 +2,10 @@
 declare(strict_types=1);
 
     if ($method === 'PUT') {
+        // Full PHI overwrite: solo sesión humana (no webhook/bot token).
+        if (($auth['type'] ?? '') !== 'session') {
+            json_out(403, ['status' => 'error', 'message' => 'Actualizar un paciente requiere sesión de usuario en el panel admin.']);
+        }
         if (is_colaborador($auth)) {
             json_out(403, ['status' => 'error', 'message' => 'Los usuarios con rol Colaborador tienen permisos de solo lectura.']);
         }
@@ -10,6 +14,9 @@ declare(strict_types=1);
     }
 
     if ($method === 'DELETE') {
+        if (($auth['type'] ?? '') !== 'session') {
+            json_out(403, ['status' => 'error', 'message' => 'Eliminar un paciente requiere sesión de usuario en el panel admin.']);
+        }
         if (is_colaborador($auth)) {
             json_out(403, ['status' => 'error', 'message' => 'Los usuarios con rol Colaborador no tienen permiso para eliminar pacientes']);
         }
