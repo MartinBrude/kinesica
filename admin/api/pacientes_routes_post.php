@@ -22,6 +22,7 @@ declare(strict_types=1);
             'toggle_review',
             'toggle_campana',
             'update_phone',
+            'get_email_by_phone',
         ];
         if (in_array($action, $sessionOnlyActions, true) && !$isSession) {
             json_out(403, ['status' => 'error', 'message' => 'Esta acción requiere sesión de usuario en el panel admin.']);

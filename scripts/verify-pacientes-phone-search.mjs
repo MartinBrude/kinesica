@@ -46,6 +46,12 @@ const pacPhp = readdirSync("admin/api")
 assert.match(pacPhp, /can_use_admin_booking\(\$auth\)/);
 assert.match(pacPhp, /Actualizar un paciente requiere sesión/);
 assert.match(pacPhp, /tokenAllowedGet/);
+assert.match(pacPhp, /\$tokenAllowedGet\s*=\s*\['waitlist'\]/);
+assert.match(pacPhp, /'get_email_by_phone'/);
+assert.ok(
+  /\$sessionOnlyActions\s*=\s*\[[^\]]*['"]get_email_by_phone['"]/s.test(pacPhp),
+  "get_email_by_phone debe ser session-only en POST"
+);
 assert.match(pacPhp, /send_email.*send_fallback_email|send_fallback_email.*send_email/);
 assert.match(pacPhp, /Solo un administrador con sesión puede realizar esta acción/);
 assert.match(pacPhp, /Ese teléfono ya está asignado a otro paciente/);

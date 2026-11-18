@@ -87,9 +87,9 @@ Cubren: reasignación de hijos, merge explícito, `around_patient`, y que soft-d
 | Tema | Política |
 |------|----------|
 | `GET fichas.php` | Lectura **compartida** entre sesiones de la clínica (biblioteca común). Escritura/borrado: owner o admin. |
-| Bot / `api_token` en `pacientes.php` | Permitido: upsert/insert, `update_name`, `get_email_by_phone`, waitlist. **Bloqueado:** PUT/DELETE, listado/directorio/búsqueda GET, merge, deduplicate, send_email, toggles, update_phone, encuesta. |
+| Bot / `api_token` en `pacientes.php` | Permitido: upsert/insert, `update_name`, waitlist. **Bloqueado:** PUT/DELETE, listado/directorio/búsqueda GET, `get_email_by_phone`, merge, deduplicate, send_email, toggles, update_phone, encuesta. |
 | `send_email` / `send_fallback_email` | Solo **admin** con sesión (no profesional ni token). |
-| `get_email_by_phone` | Exacto primero; sufijo 8 dígitos solo si hay **un** candidato. |
+| `get_email_by_phone` | Solo **sesión** (GET/POST). Exacto primero; sufijo 8 dígitos solo si hay **un** candidato. Helper PHP interno (recordatorios) no pasa por HTTP. |
 | Email en dispatch manual | Preferir helper por teléfono; fallback nombre **exacto** (nunca `LIKE %nombre%`). |
 | Campaña → paciente | Tel exacto; sufijo 8 solo si es único; vivos (`deleted_at IS NULL`). |
 | `update_name` | Siempre por `id` (si viene solo teléfono, se resuelve a un id activo). |
