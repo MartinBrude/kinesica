@@ -113,25 +113,41 @@ function campana_fetch_appointments_from_gas(string $from, string $to): array
  * @return array{nombre:string,apellido:string}
  */
 
+function campana_clean_name_string(string $full): string
+{
+    $s = trim($full);
+    // Quitar números telefónicos o dígitos largos
+    $s = preg_replace('/\b\d{6,14}\b/', ' ', $s) ?? $s;
+    // Quitar palabras de ruido de turnos
+    $s = preg_replace('/\b(?:turno|aca|acá)\b/iu', ' ', $s) ?? $s;
+    $s = preg_replace('/\s+/u', ' ', trim($s)) ?? '';
+    return trim($s, " ,-");
+}
+
 /**
  * @return array{nombre:string,apellido:string}
  */
 function campana_split_name(string $full): array
 {
-    $full = trim($full);
-    if ($full === '') {
+    $cleaned = campana_clean_name_string($full);
+    if ($cleaned === '') {
+        $cleaned = trim($full);
+    }
+    if ($cleaned === '') {
         return ['nombre' => '', 'apellido' => ''];
     }
-    $parts = preg_split('/\s+/u', $full, 2, PREG_SPLIT_NO_EMPTY) ?: [];
+    if (str_contains($cleaned, ',')) {
+        $parts = explode(',', $cleaned, 2);
+        $ape = trim($parts[0]);
+        $nom = trim($parts[1]);
+        return ['nombre' => $nom !== '' ? $nom : $ape, 'apellido' => $nom !== '' ? $ape : ''];
+    }
+    $parts = preg_split('/\s+/u', $cleaned, 2, PREG_SPLIT_NO_EMPTY) ?: [];
     return [
-        'nombre' => $parts[0] ?? $full,
+        'nombre' => $parts[0] ?? $cleaned,
         'apellido' => $parts[1] ?? '',
     ];
 }
-
-/**
- * @return array{id:?int,nombre:string,apellido:string,viene_de_campana:bool}|null
- */
 
 /**
  * @return array{id:?int,nombre:string,apellido:string,viene_de_campana:bool}|null
@@ -140,11 +156,13 @@ function campana_match_paciente(PDO $pdo, string $phone, string $patientName, st
 {
     $phone = clean_phone_number($phone);
     $dni = clean_patient_dni($dni);
+    $cleanedName = campana_clean_name_string($patientName);
+    $nameToMatch = $cleanedName !== '' ? $cleanedName : $patientName;
     if (function_exists('find_existing_patient_match')) {
         $existing = find_existing_patient_match(
             $pdo,
             $phone !== '' && !is_placeholder_phone($phone) ? $phone : null,
-            $patientName,
+            $nameToMatch,
             $dni !== '' ? $dni : null
         );
         if ($existing) {

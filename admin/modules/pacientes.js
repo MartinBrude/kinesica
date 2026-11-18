@@ -31,7 +31,7 @@ export { formatPatientName } from "./pacientes-name.js";
 
 export { showPacientesView, hidePacientesView } from "./pacientes-view.js";
 export { loadPacientes } from "./pacientes-load.js";
-export { renderPacientesTable } from "./pacientes-table.js?v=1";
+export { renderPacientesTable } from "./pacientes-table.js?v=2";
 export { initPacientesModule } from "./pacientes-init.js";
 
 export {

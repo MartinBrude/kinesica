@@ -39,9 +39,30 @@ function searchCandidates(query, currentId) {
 }
 
 /**
+ * Busca fichas sugeridas que coincidan por tokens de nombre con el paciente actual.
+ * @param {object} paciente
+ * @returns {Array<object>}
+ */
+export function getCandidateSuggestions(paciente) {
+  if (!paciente || !paciente.id) return [];
+  const rawPatientNames = `${paciente.nombre_completo || ""} ${paciente.apellido || ""} ${paciente.nombre || ""}`;
+  const normPatient = rawPatientNames.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\d+/g, " ");
+  const stopWords = new Set(["turno", "aca", "acá", "de", "del", "la", "el", "los", "las", "mama", "mamá", "papa", "papá", "hijo", "hija", "para", "indistinto"]);
+  const tokens = normPatient.split(/\W+/).filter((tok) => tok.length >= 3 && !stopWords.has(tok));
+  if (tokens.length === 0) return [];
+
+  const cache = getPacientesCache();
+  return cache.filter((p) => {
+    if (Number(p.id) === Number(paciente.id)) return false;
+    const pNames = `${p.nombre_completo || ""} ${p.apellido || ""} ${p.nombre || ""}`.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    return tokens.some((tok) => pNames.includes(tok));
+  }).slice(0, 8);
+}
+
+/**
  * Enlaza los controles y flujo de unificación de fichas en el modal de edición de pacientes.
  */
-export function bindPacienteModalMerge({ backdrop, paciente, onReload }) {
+export function bindPacienteModalMerge({ backdrop, paciente, onReload, startInMerge = false }) {
   if (!paciente || !paciente.id) return;
 
   const btnToggle = backdrop.querySelector("#btn-toggle-merge");
@@ -68,12 +89,82 @@ export function bindPacienteModalMerge({ backdrop, paciente, onReload }) {
     }
   }
 
+  function renderCandidates(matches, headerTitle = "") {
+    if (matches.length === 0) {
+      const q = searchInput.value.trim();
+      resultsEl.innerHTML = q
+        ? `<div class="merge-no-results">No se encontraron pacientes para "${escapeHtml(q)}"</div>`
+        : "";
+      resultsEl.style.display = q ? "block" : "none";
+      return;
+    }
+
+    resultsEl.innerHTML = `
+      ${headerTitle ? `<div style="font-size:11px; font-weight:700; color:#475569; text-transform:uppercase; padding:6px 10px; background:#f8fafc; border-bottom:1px solid #e2e8f0; border-radius: 6px 6px 0 0;">${escapeHtml(headerTitle)}</div>` : ""}
+      ${matches.map((m) => {
+        const name = formatPatientName(m).display;
+        const tel = patientMissingPhone(m) ? "⚠️ Sin teléfono" : formatDisplayPhone(m.telefono);
+        const dni = m.dni ? `· DNI ${escapeHtml(m.dni)}` : "";
+        return `
+          <div class="merge-result-item" data-id="${m.id}" role="button" tabindex="0">
+            <div>
+              <div class="merge-result-name">${escapeHtml(name)}</div>
+              <div class="merge-result-meta">
+                <span>${escapeHtml(tel)}</span>
+                ${dni ? `<span>${dni}</span>` : ""}
+                <span>#${m.id}</span>
+              </div>
+            </div>
+            <button type="button" class="btn light small" style="font-size:11.5px; padding:3px 8px; pointer-events:none;">Elegir</button>
+          </div>
+        `;
+      }).join("")}
+    `;
+    resultsEl.style.display = "block";
+
+    resultsEl.querySelectorAll(".merge-result-item").forEach((item) => {
+      item.addEventListener("click", () => {
+        const id = Number(item.dataset.id);
+        const found = getPacientesCache().find((p) => Number(p.id) === id);
+        if (found) {
+          selectTarget(found);
+        }
+      });
+    });
+  }
+
+  function showSuggestions() {
+    const suggestions = getCandidateSuggestions(paciente);
+    if (suggestions.length > 0) {
+      renderCandidates(suggestions, "Candidatos sugeridos para unificar:");
+    } else {
+      resultsEl.style.display = "none";
+      resultsEl.innerHTML = "";
+    }
+  }
+
+  if (startInMerge) {
+    isOpen = true;
+    panel.style.display = "flex";
+    btnToggle.textContent = "Cerrar";
+    setTimeout(() => {
+      panel.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 100);
+    ensureCache().then(() => {
+      showSuggestions();
+      searchInput.focus();
+    });
+  }
+
   btnToggle.addEventListener("click", async () => {
     isOpen = !isOpen;
     panel.style.display = isOpen ? "flex" : "none";
     btnToggle.textContent = isOpen ? "Cerrar" : "Abrir";
     if (isOpen) {
       await ensureCache();
+      if (!searchInput.value.trim()) {
+        showSuggestions();
+      }
       setTimeout(() => searchInput.focus(), 60);
     }
   });
@@ -86,52 +177,20 @@ export function bindPacienteModalMerge({ backdrop, paciente, onReload }) {
 
   searchInput.addEventListener("focus", () => {
     ensureCache();
+    if (!searchInput.value.trim()) {
+      showSuggestions();
+    }
   });
 
   searchInput.addEventListener("input", () => {
     const val = searchInput.value.trim();
     if (val.length < 2) {
-      resultsEl.style.display = "none";
-      resultsEl.innerHTML = "";
+      showSuggestions();
       return;
     }
 
     const matches = searchCandidates(val, paciente.id);
-    if (matches.length === 0) {
-      resultsEl.innerHTML = `<div class="merge-no-results">No se encontraron pacientes para "${escapeHtml(val)}"</div>`;
-      resultsEl.style.display = "block";
-      return;
-    }
-
-    resultsEl.innerHTML = matches.map((m) => {
-      const name = formatPatientName(m).display;
-      const tel = patientMissingPhone(m) ? "⚠️ Sin teléfono" : formatDisplayPhone(m.telefono);
-      const dni = m.dni ? `· DNI ${escapeHtml(m.dni)}` : "";
-      return `
-        <div class="merge-result-item" data-id="${m.id}" role="button" tabindex="0">
-          <div>
-            <div class="merge-result-name">${escapeHtml(name)}</div>
-            <div class="merge-result-meta">
-              <span>${escapeHtml(tel)}</span>
-              ${dni ? `<span>${dni}</span>` : ""}
-              <span>#${m.id}</span>
-            </div>
-          </div>
-          <button type="button" class="btn light small" style="font-size:11.5px; padding:3px 8px; pointer-events:none;">Elegir</button>
-        </div>
-      `;
-    }).join("");
-    resultsEl.style.display = "block";
-
-    resultsEl.querySelectorAll(".merge-result-item").forEach((item) => {
-      item.addEventListener("click", () => {
-        const id = Number(item.dataset.id);
-        const found = getPacientesCache().find((p) => Number(p.id) === id);
-        if (found) {
-          selectTarget(found);
-        }
-      });
-    });
+    renderCandidates(matches, "Resultados de búsqueda:");
   });
 
   // Cerrar dropdown si se hace click fuera

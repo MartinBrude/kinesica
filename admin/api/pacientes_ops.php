@@ -9,7 +9,23 @@ function kinesica_pacientes_update(PDO $pdo, array $data): void
     $id = (int) ($data['id'] ?? 0);
     if ($id <= 0) json_out(422, ['status' => 'error', 'message' => 'ID inválido']);
 
-    $phone = clean_phone_number((string) ($data['telefono'] ?? ''));
+    $current = $pdo->prepare('SELECT id, telefono, dni FROM pacientes WHERE id = :id LIMIT 1');
+    $current->execute(['id' => $id]);
+    $currentRow = $current->fetch(PDO::FETCH_ASSOC);
+    if (!$currentRow) {
+        json_out(404, ['status' => 'error', 'message' => 'Paciente no encontrado']);
+    }
+
+    $rawPhone = (string) ($data['telefono'] ?? '');
+    $phone = clean_phone_number($rawPhone);
+    $existingTel = (string) ($currentRow['telefono'] ?? '');
+
+    if ($phone === '' && is_placeholder_phone($existingTel)) {
+        $phone = $existingTel;
+    } elseif (strlen($phone) < 6 || strlen($phone) > 16 || preg_match('/^(\d)\1+$/', $phone)) {
+        json_out(422, ['status' => 'error', 'message' => 'Nombre, apellido y teléfono son obligatorios']);
+    }
+
     $nombre = mb_substr(sanitize_patient_name((string) ($data['nombre'] ?? '')), 0, 60, 'UTF-8');
     $apellido = mb_substr(sanitize_patient_name((string) ($data['apellido'] ?? '')), 0, 60, 'UTF-8');
     $nombreCompleto = mb_substr(sanitize_patient_name((string) ($data['nombre_completo'] ?? '')), 0, 120, 'UTF-8');
@@ -22,7 +38,7 @@ function kinesica_pacientes_update(PDO $pdo, array $data): void
         $apellido = $parts[1] ?? '';
     }
 
-    if (strlen($phone) < 6 || strlen($phone) > 16 || preg_match('/^(\d)\1+$/', $phone) || $nombreCompleto === '') {
+    if ($nombreCompleto === '') {
         json_out(422, ['status' => 'error', 'message' => 'Nombre, apellido y teléfono son obligatorios']);
     }
 
@@ -30,16 +46,14 @@ function kinesica_pacientes_update(PDO $pdo, array $data): void
         json_out(422, ['status' => 'error', 'message' => 'El nombre no corresponde a un paciente válido']);
     }
 
-    $check = $pdo->prepare('SELECT id, nombre_completo, dni FROM pacientes WHERE telefono = :tel AND id != :id');
-    $check->execute(['tel' => $phone, 'id' => $id]);
-    $existing = $check->fetch();
-    if ($existing) {
-        json_out(409, ['status' => 'error', 'message' => 'Ese teléfono ya está asignado al paciente ' . $existing['nombre_completo']]);
+    if (!is_placeholder_phone($phone)) {
+        $check = $pdo->prepare('SELECT id, nombre_completo, dni FROM pacientes WHERE telefono = :tel AND id != :id');
+        $check->execute(['tel' => $phone, 'id' => $id]);
+        $existing = $check->fetch();
+        if ($existing) {
+            json_out(409, ['status' => 'error', 'message' => 'Ese teléfono ya está asignado al paciente ' . $existing['nombre_completo']]);
+        }
     }
-
-    $current = $pdo->prepare('SELECT dni FROM pacientes WHERE id = :id LIMIT 1');
-    $current->execute(['id' => $id]);
-    $currentRow = $current->fetch(PDO::FETCH_ASSOC) ?: [];
 
     $nombrePila = extract_first_name($nombreCompleto);
     // No perder DNI existente al actualizar contacto sin documento (merge / formulario incompleto).

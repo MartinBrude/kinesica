@@ -1,5 +1,5 @@
 import { debounce, dialogAlert } from "./dom.js?v=79";
-import { openFullPacienteModal } from "./pacientes-modal.js?v=4";
+import { openFullPacienteModal } from "./pacientes-modal.js?v=5";
 import {
   searchInput,
   profFilter,
@@ -8,7 +8,7 @@ import {
   setActiveFilterProf,
 } from "./pacientes-state.js";
 import { refreshPacientesMissingPhoneBadge, startPacientesBadgePoll } from "./pacientes-badge.js";
-import { renderPacientesTable } from "./pacientes-table.js?v=1";
+import { renderPacientesTable } from "./pacientes-table.js?v=2";
 import { loadPacientes } from "./pacientes-load.js";
 
 export function initPacientesModule() {

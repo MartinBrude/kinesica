@@ -2,7 +2,7 @@ import { api } from "./api.js?v=79";
 import { escapeHtml, dialogAlert, dialogConfirm } from "./dom.js?v=79";
 import { phoneMatches } from "./phone-search.js?v=3";
 import { formatDisplayPhone, capitalizePersonName } from "./pacientes-format.js";
-import { openFullPacienteModal } from "./pacientes-modal.js?v=4";
+import { openFullPacienteModal } from "./pacientes-modal.js?v=5";
 import { getSessionUser } from "./auth.js?v=83";
 import { invalidateDirectoryCache } from "./form-patient.js";
 import {
@@ -166,6 +166,7 @@ function buildPacienteRow(p) {
         ${reviewAction}
         ${encuestaAction}
         <button type="button" class="btn light btn-edit-paciente" data-id="${p.id}" title="${isColaborador ? "Ver datos del paciente" : "Editar paciente"}">${isColaborador ? "Ver datos" : "Editar"}</button>
+        ${!isColaborador ? `<button type="button" class="btn light btn-merge-paciente" data-id="${p.id}" title="Unificar o fusionar con otra ficha" style="color: #0369a1; border-color: #bae6fd; background: #f0f9ff; gap: 4px; font-size: 12px; padding: 4px 9px; font-weight: 600;"><span aria-hidden="true">🔄</span><span>Unificar</span></button>` : ""}
         ${deleteBtn}
       </div>
     </td>
@@ -209,6 +210,13 @@ export function renderPacientesTable() {
     btn.addEventListener("click", () => {
       const paciente = pacientesCache.find((p) => String(p.id) === String(btn.dataset.id));
       if (paciente) openFullPacienteModal(paciente, loadPacientes);
+    });
+  });
+
+  listEl.querySelectorAll(".btn-merge-paciente").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const paciente = pacientesCache.find((p) => String(p.id) === String(btn.dataset.id));
+      if (paciente) openFullPacienteModal(paciente, loadPacientes, { startInMerge: true });
     });
   });
 

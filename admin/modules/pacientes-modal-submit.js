@@ -5,6 +5,7 @@ import {
   suggestAdminEmailDomain,
   inspectAdminPhone,
 } from "./pacientes-format.js";
+import { patientMissingPhone } from "./pacientes-identifiers.js";
 import { sanitizePersonName, capitalizePersonName, hasDisallowedNameChars } from "../ficha-rules.mjs?v=91";
 
 export function bindPacienteModalForm({
@@ -73,7 +74,9 @@ export function bindPacienteModalForm({
     const contactoNotas = backdrop.querySelector("#modal-p-contacto-notas")?.value.trim() || "";
     const dejoReview = backdrop.querySelector("#modal-p-dejo-review")?.checked ? 1 : 0;
 
-    if (!nombre || !apellido || !tel) {
+    const isExistingSinTel = Boolean(isEdit && paciente && patientMissingPhone(paciente));
+
+    if (!nombre || !apellido || (!tel && !isExistingSinTel)) {
       errorEl.textContent = "Nombre, apellido y teléfono son obligatorios.";
       errorEl.hidden = false;
       return;
@@ -98,18 +101,25 @@ export function bindPacienteModalForm({
       errorEl.hidden = false;
       return;
     }
-    const telInfo = inspectAdminPhone(tel);
-    if (!telInfo.valid) {
-      errorEl.textContent = "Por favor ingresá un número de teléfono válido.";
-      errorEl.hidden = false;
-      return;
+
+    let finalTel = tel;
+    if (!tel && isExistingSinTel) {
+      finalTel = paciente.telefono || "";
+    } else {
+      const telInfo = inspectAdminPhone(tel);
+      if (!telInfo.valid) {
+        errorEl.textContent = "Por favor ingresá un número de teléfono válido.";
+        errorEl.hidden = false;
+        return;
+      }
+      if (!telInfo.standard && !confirmedWeirdPhones.has(telInfo.digits)) {
+        confirmedWeirdPhones.add(telInfo.digits);
+        errorEl.textContent = "¿El teléfono es correcto? Si es de otro país o ya lo revisaste, volvé a tocar Guardar para confirmar.";
+        errorEl.hidden = false;
+        return;
+      }
     }
-    if (!telInfo.standard && !confirmedWeirdPhones.has(telInfo.digits)) {
-      confirmedWeirdPhones.add(telInfo.digits);
-      errorEl.textContent = "¿El teléfono es correcto? Si es de otro país o ya lo revisaste, volvé a tocar Guardar para confirmar.";
-      errorEl.hidden = false;
-      return;
-    }
+
     if (contactoTel) {
       const cTelInfo = inspectAdminPhone(contactoTel);
       if (!cTelInfo.valid) {
@@ -128,7 +138,7 @@ export function bindPacienteModalForm({
       nombre,
       apellido,
       nombre_completo: nombreCompleto,
-      telefono: tel,
+      telefono: finalTel,
       email,
       dni,
       profesional_habitual: prof,

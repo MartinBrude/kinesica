@@ -9,6 +9,9 @@ declare(strict_types=1);
 if (!function_exists('clean_phone_number') || !function_exists('clean_patient_dni')) {
     require_once __DIR__ . '/pacientes_helpers.php';
 }
+if (!function_exists('recordatorios_extract_phone_candidate')) {
+    require_once __DIR__ . '/lib_recordatorios_view_recordatorios_tz.php';
+}
 
 /**
  * Mapa clave→valor desde texto libre (líneas o segmentos " | ").

@@ -66,6 +66,7 @@ declare(strict_types=1);
         }
 
         if ($action === 'update_name') {
+            $id = (int) ($data['id'] ?? 0);
             $phone = clean_phone_number((string) ($data['telefono'] ?? ''));
             $nombre = sanitize_patient_name((string) ($data['nombre'] ?? ''));
             $apellido = sanitize_patient_name((string) ($data['apellido'] ?? ''));
@@ -76,12 +77,18 @@ declare(strict_types=1);
                 $nombre = $parts[0] ?? $nombreCompleto;
                 $apellido = $parts[1] ?? '';
             }
-            if ($phone === '' || $nombreCompleto === '') json_out(422, ['status' => 'error', 'message' => 'Teléfono y nombre requeridos']);
+            if ($id <= 0 && $phone === '') json_out(422, ['status' => 'error', 'message' => 'ID o teléfono requerido']);
+            if ($nombreCompleto === '') json_out(422, ['status' => 'error', 'message' => 'Nombre requerido']);
             if (is_tk3_or_blocked_name($nombreCompleto) || is_tk3_or_blocked_name($nombre)) {
                 json_out(422, ['status' => 'error', 'message' => 'El nombre no corresponde a un paciente válido']);
             }
-            $stmt = $pdo->prepare('UPDATE pacientes SET nombre = :nombre, apellido = :apellido, nombre_completo = :full, nombre_pila = :pila WHERE telefono = :tel');
-            $stmt->execute(['nombre' => $nombre, 'apellido' => $apellido, 'full' => $nombreCompleto, 'pila' => extract_first_name($nombreCompleto), 'tel' => $phone]);
+            if ($id > 0) {
+                $stmt = $pdo->prepare('UPDATE pacientes SET nombre = :nombre, apellido = :apellido, nombre_completo = :full, nombre_pila = :pila WHERE id = :id');
+                $stmt->execute(['nombre' => $nombre, 'apellido' => $apellido, 'full' => $nombreCompleto, 'pila' => extract_first_name($nombreCompleto), 'id' => $id]);
+            } else {
+                $stmt = $pdo->prepare('UPDATE pacientes SET nombre = :nombre, apellido = :apellido, nombre_completo = :full, nombre_pila = :pila WHERE telefono = :tel');
+                $stmt->execute(['nombre' => $nombre, 'apellido' => $apellido, 'full' => $nombreCompleto, 'pila' => extract_first_name($nombreCompleto), 'tel' => $phone]);
+            }
             json_out(200, ['status' => 'success', 'updated' => $stmt->rowCount()]);
         }
 

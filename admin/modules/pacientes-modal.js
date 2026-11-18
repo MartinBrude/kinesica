@@ -5,10 +5,10 @@
 import { getSessionUser } from "./auth.js?v=83";
 import { capitalizePersonName } from "./pacientes-format.js";
 import { buildPacienteModalMarkup } from "./pacientes-modal-html.js?v=4";
-import { bindPacienteModalForm } from "./pacientes-modal-submit.js?v=4";
-import { bindPacienteModalMerge } from "./pacientes-modal-merge.js?v=4";
+import { bindPacienteModalForm } from "./pacientes-modal-submit.js?v=5";
+import { bindPacienteModalMerge } from "./pacientes-modal-merge.js?v=5";
 
-export function openFullPacienteModal(paciente = null, onReload = null) {
+export function openFullPacienteModal(paciente = null, onReload = null, options = {}) {
   const isEdit = Boolean(paciente && paciente.id);
   const isColaborador = getSessionUser()?.role === "colaborador";
   const backdrop = document.createElement("div");
@@ -74,6 +74,7 @@ export function openFullPacienteModal(paciente = null, onReload = null) {
       backdrop,
       paciente,
       onReload,
+      startInMerge: Boolean(options?.startInMerge),
     });
   }
 }
