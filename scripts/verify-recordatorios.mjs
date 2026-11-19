@@ -132,6 +132,10 @@ if (fs.existsSync(wfPath)) {
     console.error("✗ kinesica-bot Parse Patients debe usar check_sent / already_sent");
     process.exit(1);
   }
+  if (!code.includes("check_alive") || !code.includes("fetchDeadEventReasons")) {
+    console.error("✗ kinesica-bot Parse Patients debe usar check_alive / fetchDeadEventReasons (TC-50)");
+    process.exit(1);
+  }
 }
 
 const n8n = fs
