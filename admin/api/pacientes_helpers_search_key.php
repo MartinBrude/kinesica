@@ -22,9 +22,18 @@ function is_tk3_or_blocked_name(string $text): bool
     if (preg_match('/(^|[\s\-_\[\(])tk[\s\-_]*3($|[\s\-_\]\)])/iu', $t)) {
         return true;
     }
+    // Coincide con No Dar, No dar: <motivo>, no-dar, no_dar
+    if (preg_match('/(?:^|[\s\-_:\[\(])no[\s\-_]*dar(?:$|[\s\-_:\]\)])/iu', $t)
+        || preg_match('/(?:^|[\s\-_:\[\(])no[\s\-_]*dar\b/iu', $t)
+    ) {
+        return true;
+    }
     $norm = mb_strtolower($t, 'UTF-8');
-    foreach (['no dar', 'bloqueado', 'bloqueo', 'feriado', 'vacaciones'] as $kw) {
-        if (str_contains($norm, $kw)) {
+    $unaccent = strtr($norm, [
+        'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u', 'ü' => 'u',
+    ]);
+    foreach (['no dar', 'bloqueado', 'bloqueo', 'feriado', 'vacaciones', 'vacacion', 'lista de espera', 'waitlist'] as $kw) {
+        if (str_contains($norm, $kw) || str_contains($unaccent, $kw)) {
             return true;
         }
     }

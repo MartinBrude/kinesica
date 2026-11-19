@@ -65,6 +65,13 @@ function kinesica_normalize_calendar_kv_key(string $raw): string
  */
 function kinesica_extract_calendar_contacts(string $titleOrSummary = '', string $description = ''): array
 {
+    if (!function_exists('is_tk3_or_blocked_name')) {
+        require_once __DIR__ . '/pacientes_helpers_search_key.php';
+    }
+    if (is_tk3_or_blocked_name($titleOrSummary)) {
+        return ['phone' => '', 'dni' => ''];
+    }
+
     $phone = '';
     $dni = '';
 

@@ -19,7 +19,7 @@ const seed = readFileSync("admin/api/seed_pacientes.sql", "utf8");
 assert.ok(!/INSERT\s+INTO/i.test(seed), "seed_pacientes.sql no debe insertar pacientes");
 const conf = readFileSync("api/send-confirmation.php", "utf8");
 assert.ok(!conf.includes("email = COALESCE(VALUES(email), email)"), "la turnera no debe pisar el mail ya guardado de un paciente");
-assert.match(conf, /email = CASE WHEN email IS NULL OR email = "" THEN VALUES\(email\) ELSE email END/);
+assert.match(conf, /email = CASE WHEN email IS NULL OR email = (?:""|\\"\\") THEN VALUES\(email\) ELSE email END/);
 assert.match(conf, /kinesica_confirmation_rate_ok\('email:/, "falta el límite por mail");
 assert.match(conf, /http_response_code\(429\)/);
 const botHash = readFileSync("admin/api/bot_token.sha256", "utf8").trim();

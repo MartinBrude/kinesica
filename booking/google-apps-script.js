@@ -741,23 +741,34 @@ function parsePractitionerIdFromTitle(title) {
  */
 function parseAppointmentPatientName(title) {
   let t = String(title || "").trim();
-  if (!t) return "";
+  if (!t || isNonPatientAppointmentTitle(t)) return "";
   // Quitar emoji / símbolos iniciales y tags de profesional / menor.
   t = t.replace(/^[^\wáéíóúÁÉÍÓÚñÑüÜ\[]+/u, "");
   t = t.replace(/^\[[^\]]+\]\s*/g, "");
   t = t.replace(/^\[MENOR\]\s*/i, "");
   t = t.replace(/\s*\((?:Familiar|Agend[oó]|Adulto[^)]*)\s*:[^)]*\)\s*$/iu, "");
   t = t.replace(/\s+/g, " ").trim();
-  return t;
+  return isNonPatientAppointmentTitle(t) ? "" : t;
 }
 
 /**
  * Detecta eventos que no son turnos de paciente (bloqueos, feriados, TK3, etc.).
  */
 function isNonPatientAppointmentTitle(title) {
-  const t = String(title || "").toLowerCase();
-  if (!t.trim()) return true;
-  const blocked = ["no dar", "bloqueado", "bloqueo", "feriado", "vacaciones", "tk3", "tk 3", "lista de espera", "waitlist"];
+  const raw = String(title || "").trim();
+  if (!raw) return true;
+  // Detectar variantes de no dar: "No dar", "No dar: ir a comprar queso", "No-dar", "no_dar", etc.
+  if (/(?:^|[\s\-_:\[\(])no[\s\-_]*dar(?:$|[\s\-_:\]\)])/i.test(raw) || /(?:^|[\s\-_:\[\(])no[\s\-_]*dar\b/i.test(raw)) {
+    return true;
+  }
+  if (/(?:^|[\s\-_\[\(])tk[\s\-_]*3(?:$|[\s\-_\]\)])/i.test(raw)) {
+    return true;
+  }
+  let t = raw.toLowerCase();
+  try {
+    t = t.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  } catch (e) {}
+  const blocked = ["no dar", "bloqueado", "bloqueo", "feriado", "vacaciones", "vacacion", "tk3", "tk 3", "lista de espera", "waitlist"];
   for (let i = 0; i < blocked.length; i++) {
     if (t.indexOf(blocked[i]) !== -1) return true;
   }

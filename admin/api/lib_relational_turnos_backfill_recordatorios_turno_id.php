@@ -118,6 +118,12 @@ function kinesica_rel_register_turno_from_booking(PDO $pdo, array $booking): ?in
         return null;
     }
 
+    require_once __DIR__ . '/pacientes_helpers_search_key.php';
+    $title = (string) ($booking['summary'] ?? $booking['nombre'] ?? $booking['patient_name'] ?? '');
+    if (is_tk3_or_blocked_name($title)) {
+        return null;
+    }
+
     $pacienteId = isset($booking['paciente_id']) ? (int) $booking['paciente_id'] : 0;
     if ($pacienteId <= 0) {
         try {

@@ -56,4 +56,12 @@ $c8 = kinesica_extract_calendar_contacts('Paciente', 'DU 28.111.222');
 eq($c8['phone'], '', 'DU suelto no es teléfono');
 eq($c8['dni'], '28111222', 'DU suelto es dni');
 
+// Eventos de bloqueo / "No Dar" jamás deben extraer contacto de paciente
+$c9 = kinesica_extract_calendar_contacts('No Dar: ir a comprar queso', "WhatsApp: 1122334455\nDNI: 30111222");
+eq($c9['phone'], '', 'No Dar: con motivo no extrae telefono');
+eq($c9['dni'], '', 'No Dar: con motivo no extrae dni');
+eq(is_tk3_or_blocked_name('No Dar: ir a comprar queso'), true, 'is_tk3_or_blocked_name detecta No Dar: ir a comprar queso');
+eq(is_tk3_or_blocked_name('No dar'), true, 'is_tk3_or_blocked_name detecta No dar');
+eq(is_tk3_or_blocked_name('no dar: medico'), true, 'is_tk3_or_blocked_name detecta no dar: medico');
+
 echo "calendar event parse: ok ($n pruebas)\n";
