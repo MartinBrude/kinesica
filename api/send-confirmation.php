@@ -168,7 +168,9 @@ if ($rawPhone !== '') {
 
             $contactoNombre = !empty($data['contactoNombre']) ? mb_substr(sanitize_patient_name((string) $data['contactoNombre']), 0, 120, 'UTF-8') : (!empty($data['contacto_nombre']) ? mb_substr(sanitize_patient_name((string) $data['contacto_nombre']), 0, 120, 'UTF-8') : null);
             $contactoTelRaw = !empty($data['contactoTelefono']) ? (string) $data['contactoTelefono'] : (!empty($data['contacto_telefono']) ? (string) $data['contacto_telefono'] : '');
-            $contactoTel = $contactoTelRaw !== '' ? $normalizePhone($contactoTelRaw) : null;
+            $contactoTel = $contactoTelRaw !== ''
+                ? (function_exists('clean_phone_number') ? clean_phone_number($contactoTelRaw) : (preg_replace('/[^0-9]/', '', $contactoTelRaw) ?? ''))
+                : null;
             if ($contactoTel === '') {
                 $contactoTel = null;
             }
@@ -179,8 +181,12 @@ if ($rawPhone !== '') {
                 try {
                     $existing = find_existing_patient_match($db, $phone, $fullName, $dniVal);
                     if ($existing && function_exists('is_placeholder_phone') && is_placeholder_phone((string) ($existing['telefono'] ?? ''))) {
+                        $existingId = (int) $existing['id'];
+                        if (function_exists('kinesica_pacientes_release_soft_deleted_phone')) {
+                            kinesica_pacientes_release_soft_deleted_phone($db, $phone, $existingId);
+                        }
                         $db->prepare('UPDATE pacientes SET telefono = :tel WHERE id = :id')
-                            ->execute(['tel' => $phone, 'id' => (int) $existing['id']]);
+                            ->execute(['tel' => $phone, 'id' => $existingId]);
                     }
                 } catch (Throwable) {}
             }

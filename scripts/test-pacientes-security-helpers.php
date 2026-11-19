@@ -199,6 +199,20 @@ assert_true(($row61['telefono'] ?? '') === '5491177777777', 'activo puede tomar 
 $noopRelease = kinesica_pacientes_release_soft_deleted_phone($pdo, '5491177777777');
 assert_true($noopRelease === false, 'release no-op si el teléfono ya no está soft-deleted');
 
+// Placeholder activo + soft-deleted con mismo WA: release (excepto self) desbloquea UNIQUE.
+$pdo->exec("INSERT INTO pacientes (id, telefono, nombre, apellido, nombre_completo, deleted_at) VALUES
+ (70, '5491199990001', 'Ghost', 'Soft', 'Ghost Soft', datetime('now')),
+ (71, 'sin-tel-f-71', 'Activo', 'Place', 'Activo Place', NULL)");
+$skipSelf = kinesica_pacientes_release_soft_deleted_phone($pdo, '5491199990001', 70);
+assert_true($skipSelf === false, 'release exceptId no toca la propia ficha soft');
+$releasedForPlaceholder = kinesica_pacientes_release_soft_deleted_phone($pdo, '5491199990001', 71);
+assert_true($releasedForPlaceholder === true, 'release libera WA para placeholder activo');
+$pdo->prepare('UPDATE pacientes SET telefono = :tel WHERE id = 71')->execute(['tel' => '5491199990001']);
+assert_true(
+    ($pdo->query('SELECT telefono FROM pacientes WHERE id = 71')->fetchColumn() ?: '') === '5491199990001',
+    'placeholder activo adopta WA tras release'
+);
+
 $campanaSrc = file_get_contents($root . '/admin/api/campana_turnos_campana_upsert_flag.php');
 assert_true(
     str_contains($campanaSrc, 'kinesica_pacientes_find_soft_deleted_by_phone')
@@ -211,5 +225,12 @@ assert_true(
     && str_contains($routesSrc, 'AND ({$alive}) LIMIT 1'),
     'update_phone solo confluye con vivos y libera soft-deleted'
 );
+$upsertSrc = file_get_contents($root . '/admin/api/pacientes_ops_upsert.php');
+$sendSrc = file_get_contents($root . '/api/send-confirmation.php');
+$recordSrc = file_get_contents($root . '/admin/api/recordatorios_lib_recordatorios_persist_directory_contact.php');
+assert_true(str_contains($upsertSrc, 'kinesica_pacientes_release_soft_deleted_phone'), 'upsert merge libera soft-deleted');
+assert_true(str_contains($sendSrc, 'kinesica_pacientes_release_soft_deleted_phone'), 'send-confirmation libera soft-deleted');
+assert_true(str_contains($recordSrc, 'kinesica_pacientes_release_soft_deleted_phone'), 'recordatorios persist libera soft-deleted');
+assert_true(!str_contains($sendSrc, '$normalizePhone'), 'send-confirmation no usa $normalizePhone indefinido');
 
 echo "\n--- test-pacientes-security-helpers OK ---\n";

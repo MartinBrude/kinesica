@@ -91,17 +91,18 @@ function kinesica_pacientes_find_soft_deleted_by_phone(PDO $pdo, string $phone):
 }
 
 /**
- * Libera UNIQUE(telefono) de una ficha soft-deleted para que un activo pueda tomarlo.
+ * Libera UNIQUE(telefono) de una ficha soft-deleted para que otro paciente pueda tomarlo.
  * No revive: solo mueve el número a un placeholder estable por id.
+ * $exceptId: no liberar si el soft-deleted es la misma ficha que estamos actualizando/reviviendo.
  */
-function kinesica_pacientes_release_soft_deleted_phone(PDO $pdo, string $phone): bool
+function kinesica_pacientes_release_soft_deleted_phone(PDO $pdo, string $phone, ?int $exceptId = null): bool
 {
     $soft = kinesica_pacientes_find_soft_deleted_by_phone($pdo, $phone);
     if (!$soft) {
         return false;
     }
     $id = (int) ($soft['id'] ?? 0);
-    if ($id <= 0) {
+    if ($id <= 0 || ($exceptId !== null && $id === $exceptId)) {
         return false;
     }
     $placeholder = 'sin-tel-deleted-' . $id;

@@ -119,6 +119,11 @@ function kinesica_pacientes_upsert(PDO $pdo, array $data): void
             ? kinesica_resolve_merge_phone($pdo, $existing, $phone)
             : ($isExistingPlaceholder ? $phone : (string) ($existing['telefono'] ?? $phone));
 
+        // Soft-deleted ajeno no debe bloquear UNIQUE al adoptar el WhatsApp.
+        if (function_exists('kinesica_pacientes_release_soft_deleted_phone')) {
+            kinesica_pacientes_release_soft_deleted_phone($pdo, $targetPhone, $existingId);
+        }
+
         // Resolver campos en PHP: con ATTR_EMULATE_PREPARES=false no se puede
         // reutilizar el mismo named param dos veces (CASE WHEN :x THEN :x rompe).
         $mergeNombre = $nombre !== '' ? $nombre : (string) ($existing['nombre'] ?? '');

@@ -49,6 +49,9 @@ function recordatorios_persist_directory_contact(string $patientName, string $ph
                 // Cargar WhatsApp desde recordatorios debe reflejarse en el directorio.
                 try {
                     if ($targetPhone !== '' && $targetPhone !== (string) ($existing['telefono'] ?? '')) {
+                        if (function_exists('kinesica_pacientes_release_soft_deleted_phone')) {
+                            kinesica_pacientes_release_soft_deleted_phone($pdo, $targetPhone, $existingId);
+                        }
                         $pdo->prepare('UPDATE pacientes SET telefono = :tel WHERE id = :id')
                             ->execute(['tel' => $targetPhone, 'id' => $existingId]);
                     }

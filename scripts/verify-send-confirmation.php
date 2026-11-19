@@ -136,7 +136,16 @@ function render_mail(array $post, ?array $settings): array
     $mail = is_file($out) ? file_get_contents($out) : '';
     return [$resp, $mail];
 }
-$base = ['email' => 'paciente@example.com', 'paciente' => 'Ana <Test>', 'fecha' => '2026-10-26', 'hora' => '10:00', 'profesional' => 'Lic. María Gulin', 'servicio' => 'Acupuntura'];
+// Emails únicos por corrida: el rate-limit de send-confirmation (4/h por email) no debe flakeyar CI.
+$mailNonce = bin2hex(random_bytes(4));
+$base = [
+    'email' => "paciente+{$mailNonce}@example.com",
+    'paciente' => 'Ana <Test>',
+    'fecha' => '2026-10-26',
+    'hora' => '10:00',
+    'profesional' => 'Lic. María Gulin',
+    'servicio' => 'Acupuntura',
+];
 $wa = ['clara_texts' => ['cancellation_policy' => 'Cancelá con *24 hs*.', 'confirmation_notes' => "• *Puntualidad:* llegá _a horario_."]];
 [$resp, $mail] = render_mail($base, $wa);
 check(str_contains($mail, '<strong>24 hs</strong>') && str_contains($mail, '<strong>Puntualidad:</strong> llegá <em>a horario</em>.'), 'mail renderiza negrita/cursiva del admin');
@@ -145,7 +154,7 @@ $admin = ['clara_texts' => [
     'cancellation_policy' => "Cancelá con 48 hs <b>mínimo</b>.\nGracias & saludos",
     'confirmation_notes' => "Traé toalla.\nLlegá puntual <script>x</script>",
 ]];
-[$resp, $mail] = render_mail($base, $admin);
+[$resp, $mail] = render_mail($base + ['email' => "paciente-admin+{$mailNonce}@example.com"], $admin);
 check(str_contains((string) $resp, '"success":true'), 'endpoint responde success: ' . $resp);
 check(str_contains($mail, 'Reply-To: Kinésica <manosmagicas7116@gmail.com>'), 'Reply-To María');
 check(str_contains($mail, 'Cancelá con 48 hs &lt;b&gt;mínimo&lt;/b&gt;.<br>'), 'política del admin escapada con salto');
@@ -155,11 +164,11 @@ check(str_contains($mail, '&lt;script&gt;x&lt;/script&gt;') && !str_contains($ma
 check(!str_contains($mail, 'Ropa adecuada') && !str_contains($mail, '24 horas'), 'no usa los textos hardcodeados');
 check(str_contains($mail, 'Información importante para tu sesión'), 'mantiene el título de la sección');
 
-[$resp, $mail] = render_mail(['profesional' => 'Lic. Norberto Brude'] + $base, null);
+[$resp, $mail] = render_mail(['profesional' => 'Lic. Norberto Brude', 'email' => "paciente-nb+{$mailNonce}@example.com"] + $base, null);
 check(str_contains($mail, 'Reply-To: Kinésica <norberto1712@gmail.com>'), 'Reply-To Norberto');
 check(str_contains($mail, '24 horas') && str_contains($mail, 'Ropa adecuada'), 'sin settings: textos actuales');
 
-[$resp, $mail] = render_mail(['tipo' => 'cancelacion', 'profesional' => 'Lic. María Gulin'] + $base, $admin);
+[$resp, $mail] = render_mail(['tipo' => 'cancelacion', 'profesional' => 'Lic. María Gulin', 'email' => "paciente-cancel+{$mailNonce}@example.com"] + $base, $admin);
 check(str_contains($mail, 'Turno anulado') && str_contains($mail, 'Reply-To: Kinésica <manosmagicas7116@gmail.com>'), 'anulación: Reply-To del profesional');
 
 echo "mail de confirmación: ok ($n comprobaciones)\n";

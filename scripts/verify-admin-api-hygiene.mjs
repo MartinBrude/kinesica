@@ -96,5 +96,16 @@ assert.match(
 const aliveHelpers = read("admin/api/pacientes_helpers_alive.php");
 assert.match(aliveHelpers, /function kinesica_pacientes_release_soft_deleted_phone/);
 assert.match(aliveHelpers, /sin-tel-deleted-/);
+assert.match(aliveHelpers, /\?int \$exceptId/);
+
+const upsert = read("admin/api/pacientes_ops_upsert.php");
+assert.match(upsert, /kinesica_pacientes_release_soft_deleted_phone/);
+
+const sendConf = read("api/send-confirmation.php");
+assert.match(sendConf, /kinesica_pacientes_release_soft_deleted_phone/);
+assert.ok(!sendConf.includes("$normalizePhone("), "send-confirmation no llama $normalizePhone indefinido");
+
+const recordPersist = read("admin/api/recordatorios_lib_recordatorios_persist_directory_contact.php");
+assert.match(recordPersist, /kinesica_pacientes_release_soft_deleted_phone/);
 
 console.log("admin-api-hygiene: ok");

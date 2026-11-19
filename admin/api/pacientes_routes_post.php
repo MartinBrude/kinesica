@@ -151,7 +151,7 @@ declare(strict_types=1);
                     'conflict_id' => (int) $existing['id'],
                 ]);
             }
-            kinesica_pacientes_release_soft_deleted_phone($pdo, $newPhone);
+            kinesica_pacientes_release_soft_deleted_phone($pdo, $newPhone, $id);
             $stmt = $pdo->prepare("UPDATE pacientes SET telefono = :tel WHERE id = :id AND ({$alive})");
             $stmt->execute(['tel' => $newPhone, 'id' => $id]);
             if ($stmt->rowCount() < 1 && !kinesica_pacientes_fetch_alive($pdo, $id)) {
