@@ -89,3 +89,25 @@ function kinesica_pacientes_find_soft_deleted_by_phone(PDO $pdo, string $phone):
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     return is_array($row) ? $row : null;
 }
+
+/**
+ * Libera UNIQUE(telefono) de una ficha soft-deleted para que un activo pueda tomarlo.
+ * No revive: solo mueve el número a un placeholder estable por id.
+ */
+function kinesica_pacientes_release_soft_deleted_phone(PDO $pdo, string $phone): bool
+{
+    $soft = kinesica_pacientes_find_soft_deleted_by_phone($pdo, $phone);
+    if (!$soft) {
+        return false;
+    }
+    $id = (int) ($soft['id'] ?? 0);
+    if ($id <= 0) {
+        return false;
+    }
+    $placeholder = 'sin-tel-deleted-' . $id;
+    $stmt = $pdo->prepare(
+        'UPDATE pacientes SET telefono = :ph WHERE id = :id AND deleted_at IS NOT NULL'
+    );
+    $stmt->execute(['ph' => $placeholder, 'id' => $id]);
+    return $stmt->rowCount() > 0;
+}

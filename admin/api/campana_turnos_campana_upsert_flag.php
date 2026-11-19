@@ -54,6 +54,41 @@ function campana_upsert_flag(
         $tel = 'sin-tel-camp-' . substr(md5($full), 0, 14);
     }
 
+    // Soft-deleted con mismo WhatsApp: UNIQUE ocupado → revivir (mismo criterio que upsert admin).
+    $soft = kinesica_pacientes_find_soft_deleted_by_phone($pdo, $tel);
+    if ($soft) {
+        $id = (int) $soft['id'];
+        require_once __DIR__ . '/lib_migrations.php';
+        $clearDeleted = kinesica_migrations_column_exists($pdo, 'pacientes', 'deleted_at')
+            ? ', deleted_at = NULL'
+            : '';
+        $stmt = $pdo->prepare(
+            "UPDATE pacientes SET
+                nombre = :nombre,
+                apellido = :apellido,
+                nombre_completo = :full,
+                nombre_pila = :pila,
+                viene_de_campana = :camp
+                {$clearDeleted}
+             WHERE id = :id"
+        );
+        $stmt->execute([
+            'nombre' => mb_substr($nombre, 0, 60, 'UTF-8'),
+            'apellido' => mb_substr($apellido, 0, 60, 'UTF-8'),
+            'full' => mb_substr($full, 0, 120, 'UTF-8'),
+            'pila' => mb_substr($pila !== '' ? $pila : $nombre, 0, 60, 'UTF-8'),
+            'camp' => $val,
+            'id' => $id,
+        ]);
+        return ['id' => $id, 'viene_de_campana' => $val];
+    }
+
+    // Carrera / placeholder: ON DUPLICATE no debe dejar deleted_at seteado.
+    require_once __DIR__ . '/lib_migrations.php';
+    $reviveOnDup = kinesica_migrations_column_exists($pdo, 'pacientes', 'deleted_at')
+        ? ', deleted_at = NULL'
+        : '';
+
     $stmt = $pdo->prepare(
         'INSERT INTO pacientes (telefono, nombre, apellido, nombre_completo, nombre_pila, origen, viene_de_campana)
          VALUES (:tel, :nombre, :apellido, :full, :pila, :origen, :camp)
@@ -63,6 +98,7 @@ function campana_upsert_flag(
             nombre_completo = VALUES(nombre_completo),
             nombre_pila = VALUES(nombre_pila),
             viene_de_campana = VALUES(viene_de_campana)'
+            . $reviveOnDup
     );
     $stmt->execute([
         'tel' => $tel,

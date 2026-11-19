@@ -83,5 +83,18 @@ assert.match(read("admin/api/migrations/017_scrub_manage_code_plaintext.php"), /
 const campana = read("admin/api/campana_turnos_campana_upsert_flag.php");
 assert.match(campana, /kinesica_pacientes_alive_sql/);
 assert.match(campana, /kinesica_pacientes_require_alive/);
+assert.match(campana, /kinesica_pacientes_find_soft_deleted_by_phone/);
+assert.match(campana, /deleted_at\s*=\s*NULL/);
+
+const routesPost = read("admin/api/pacientes_routes_post.php");
+assert.match(routesPost, /kinesica_pacientes_release_soft_deleted_phone/);
+assert.match(
+  routesPost,
+  /UPDATE pacientes SET telefono = :tel WHERE id = :id AND \(\{\$alive\}\)/
+);
+
+const aliveHelpers = read("admin/api/pacientes_helpers_alive.php");
+assert.match(aliveHelpers, /function kinesica_pacientes_release_soft_deleted_phone/);
+assert.match(aliveHelpers, /sin-tel-deleted-/);
 
 console.log("admin-api-hygiene: ok");

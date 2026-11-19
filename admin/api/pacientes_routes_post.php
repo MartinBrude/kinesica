@@ -138,7 +138,10 @@ declare(strict_types=1);
             require_once __DIR__ . '/pacientes_helpers_existing_patient_match.php';
             kinesica_pacientes_require_alive($pdo, $id);
             $alive = kinesica_pacientes_alive_sql($pdo);
-            $check = $pdo->prepare('SELECT id FROM pacientes WHERE telefono = :tel AND id != :id LIMIT 1');
+            // Solo activos: soft-deleted no debe bloquear reasignación (libera UNIQUE abajo).
+            $check = $pdo->prepare(
+                "SELECT id FROM pacientes WHERE telefono = :tel AND id != :id AND ({$alive}) LIMIT 1"
+            );
             $check->execute(['tel' => $newPhone, 'id' => $id]);
             $existing = $check->fetch();
             if ($existing) {
@@ -148,6 +151,7 @@ declare(strict_types=1);
                     'conflict_id' => (int) $existing['id'],
                 ]);
             }
+            kinesica_pacientes_release_soft_deleted_phone($pdo, $newPhone);
             $stmt = $pdo->prepare("UPDATE pacientes SET telefono = :tel WHERE id = :id AND ({$alive})");
             $stmt->execute(['tel' => $newPhone, 'id' => $id]);
             if ($stmt->rowCount() < 1 && !kinesica_pacientes_fetch_alive($pdo, $id)) {

@@ -260,4 +260,38 @@ assert_true(
 );
 assert_true(str_contains($insertSrc, 'deleted_at = NULL'), 'upsert_insert ON DUPLICATE revive deleted_at');
 
+$campanaSrc = file_get_contents($root . '/admin/api/campana_turnos_campana_upsert_flag.php');
+assert_true(
+    str_contains($campanaSrc, 'kinesica_pacientes_find_soft_deleted_by_phone')
+    && str_contains($campanaSrc, 'deleted_at = NULL'),
+    'campaña upsert revive soft-deleted (find + ON DUPLICATE)'
+);
+$routesSrc = file_get_contents($root . '/admin/api/pacientes_routes_post.php');
+assert_true(
+    str_contains($routesSrc, 'kinesica_pacientes_release_soft_deleted_phone'),
+    'update_phone libera teléfono soft-deleted'
+);
+assert_true(
+    function_exists('kinesica_pacientes_release_soft_deleted_phone'),
+    'helper release_soft_deleted_phone disponible'
+);
+
+// Simula decisión de campaña: soft → revive + flag (sin INSERT fantasma)
+$pdo->prepare('
+    INSERT INTO pacientes (id, telefono, nombre, apellido, nombre_completo, viene_de_campana, deleted_at)
+    VALUES (50, "5491555555555", "Carla", "Soft", "Carla Soft", 0, datetime("now"))
+')->execute();
+$campSoft = kinesica_pacientes_find_soft_deleted_by_phone($pdo, '5491555555555');
+assert_true((int) ($campSoft['id'] ?? 0) === 50, 'campaña find_soft encuentra 50');
+$pdo->prepare(
+    'UPDATE pacientes SET deleted_at = NULL, viene_de_campana = 1, nombre_completo = :f WHERE id = :id'
+)->execute(['f' => 'Carla Soft', 'id' => 50]);
+$row50 = $pdo->query('SELECT deleted_at, viene_de_campana FROM pacientes WHERE id = 50')->fetch(PDO::FETCH_ASSOC);
+assert_true(
+    $row50
+    && ($row50['deleted_at'] === null || $row50['deleted_at'] === '')
+    && (int) $row50['viene_de_campana'] === 1,
+    'campaña revive limpia deleted_at y setea flag'
+);
+
 echo "\n--- Todos los tests de kinesica_pacientes_merge_explicit pasaron exitosamente ---\n";

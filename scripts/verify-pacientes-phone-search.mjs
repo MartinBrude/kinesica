@@ -80,7 +80,19 @@ assert.match(authPhp, /bot_token\.sha256/, "pacientes_authenticate acepta bot_to
 const campanaFlag = readFileSync("admin/api/campana_turnos_campana_upsert_flag.php", "utf8");
 assert.match(campanaFlag, /kinesica_pacientes_alive_sql/, "campaña upsert respeta alive SQL");
 assert.match(campanaFlag, /kinesica_pacientes_require_alive/, "campaña upsert exige paciente vivo");
+assert.match(
+  campanaFlag,
+  /kinesica_pacientes_find_soft_deleted_by_phone/,
+  "campaña upsert revive soft-deleted por teléfono"
+);
+assert.match(campanaFlag, /deleted_at\s*=\s*NULL/, "campaña ON DUPLICATE limpia deleted_at");
 
+const routesPost = readFileSync("admin/api/pacientes_routes_post.php", "utf8");
+assert.match(
+  routesPost,
+  /kinesica_pacientes_release_soft_deleted_phone/,
+  "update_phone libera teléfono soft-deleted"
+);
 const campanaMatch = readFileSync("admin/api/campana_turnos_campana_match_paciente.php", "utf8");
 assert.ok(
   /viene_de_campana[\s\S]*:\s*false/.test(campanaMatch),

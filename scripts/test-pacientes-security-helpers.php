@@ -180,4 +180,36 @@ $safe = kinesica_whatsapp_client_safe_result([
 assert_true($safe['ok'] === false && $safe['error'] === 'bad', 'wa safe conserva error');
 assert_true(!array_key_exists('response', $safe), 'wa safe no expone response Meta');
 
+// Soft-deleted ocupa UNIQUE: release para que un activo pueda tomar el número.
+$pdo->exec("INSERT INTO pacientes (id, telefono, nombre, apellido, nombre_completo, deleted_at) VALUES
+ (60, '5491177777777', 'Soft', 'Phone', 'Soft Phone', datetime('now')),
+ (61, '5491188888888', 'Activo', 'Phone', 'Activo Phone', NULL)");
+$released = kinesica_pacientes_release_soft_deleted_phone($pdo, '5491177777777');
+assert_true($released === true, 'release_soft_deleted_phone libera UNIQUE');
+$soft60 = $pdo->query('SELECT telefono, deleted_at FROM pacientes WHERE id = 60')->fetch(PDO::FETCH_ASSOC);
+assert_true(
+    is_array($soft60)
+    && ($soft60['telefono'] ?? '') === 'sin-tel-deleted-60'
+    && ($soft60['deleted_at'] !== null && $soft60['deleted_at'] !== ''),
+    'release deja soft-deleted con placeholder'
+);
+$pdo->prepare('UPDATE pacientes SET telefono = :tel WHERE id = 61')->execute(['tel' => '5491177777777']);
+$row61 = $pdo->query('SELECT telefono FROM pacientes WHERE id = 61')->fetch(PDO::FETCH_ASSOC);
+assert_true(($row61['telefono'] ?? '') === '5491177777777', 'activo puede tomar teléfono liberado');
+$noopRelease = kinesica_pacientes_release_soft_deleted_phone($pdo, '5491177777777');
+assert_true($noopRelease === false, 'release no-op si el teléfono ya no está soft-deleted');
+
+$campanaSrc = file_get_contents($root . '/admin/api/campana_turnos_campana_upsert_flag.php');
+assert_true(
+    str_contains($campanaSrc, 'kinesica_pacientes_find_soft_deleted_by_phone')
+    && str_contains($campanaSrc, 'deleted_at = NULL'),
+    'campaña upsert revive soft-deleted'
+);
+$routesSrc = file_get_contents($root . '/admin/api/pacientes_routes_post.php');
+assert_true(
+    str_contains($routesSrc, 'kinesica_pacientes_release_soft_deleted_phone')
+    && str_contains($routesSrc, 'AND ({$alive}) LIMIT 1'),
+    'update_phone solo confluye con vivos y libera soft-deleted'
+);
+
 echo "\n--- test-pacientes-security-helpers OK ---\n";
