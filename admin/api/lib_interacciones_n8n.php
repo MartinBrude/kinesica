@@ -141,7 +141,8 @@ function interacciones_reconcile(?PDO $pdo = null, int $maxSeconds = 6, ?callabl
         }
     } catch (Throwable $e) {
         $hadError = true;
-        $result['message'] = 'Error: ' . $e->getMessage();
+        error_log('kinesica interacciones reconcile: ' . $e->getMessage());
+        $result['message'] = 'Reconciliación interrumpida';
     }
     if ($hadError || !$finishedScan) {
         $result['status'] = 'partial';

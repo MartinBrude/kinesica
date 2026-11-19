@@ -61,6 +61,28 @@ if (
   console.error("✗ check_sent_map debe consultar sent/sent_email en batch (IN ?)");
   process.exit(1);
 }
+if (
+  !/catch\s*\(Throwable[^\)]*\)\s*\{[\s\S]*?\$out\[\$cal\]\s*=\s*true/.test(wasSent) ||
+  !wasSent.includes("foreach ($ids as $cal)")
+) {
+  console.error("✗ check_sent_map debe fallar cerrado (todos true) ante error de DB");
+  process.exit(1);
+}
+if (!/catch\s*\(Throwable[^\)]*\)\s*\{[\s\S]*?return true/.test(wasSent)) {
+  console.error("✗ was_sent_for_event debe fallar cerrado (return true) ante error de DB");
+  process.exit(1);
+}
+const reconcileSrc = fs.readFileSync(
+  path.join(admin, "api/lib_recordatorios_n8n_recordatorios_reconcile.php"),
+  "utf8"
+);
+if (
+  /\$result\['message'\]\s*=\s*'Error:\s*'\s*\.\s*\$e->getMessage\(\)/.test(reconcileSrc) ||
+  !reconcileSrc.includes("Reconciliación interrumpida")
+) {
+  console.error("✗ reconcile no debe exponer \$e->getMessage() al cliente");
+  process.exit(1);
+}
 
 // Sanity: el workflow n8n hermano debe llamar check_sent antes de reenviar.
 const wfPath = path.join(root, "..", "kinesica-bot", "workflow_recordatorios.json");

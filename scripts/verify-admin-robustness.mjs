@@ -971,10 +971,39 @@ await test("recordatorios.php ingest + vista SPA + reconcile", () => {
   const remN8n = fs.readFileSync(path.join(adminDir, "api/lib_recordatorios_n8n.php"), "utf8");
   assert.match(remN8n, /baseline_ts/, "reconcile usa baseline_ts post-deploy");
   assert.match(remN8n, /n8n_recordatorios_workflow_id/, "workflow id dedicado de recordatorios");
+  const wasSentMap = fs.readFileSync(
+    path.join(adminDir, "api/lib_recordatorios_store_recordatorios_was_sent_for_event.php"),
+    "utf8"
+  );
+  assert.match(wasSentMap, /\$out\[\$cal\]\s*=\s*true/, "check_sent_map fail-closed ante error DB");
+  const reconcilePhp = fs.readFileSync(
+    path.join(adminDir, "api/lib_recordatorios_n8n_recordatorios_reconcile.php"),
+    "utf8"
+  );
+  assert.match(reconcilePhp, /Reconciliación interrumpida/, "reconcile mensaje genérico");
+  assert.ok(
+    !/\$result\['message'\]\s*=\s*'Error:\s*'\s*\.\s*\$e->getMessage\(\)/.test(reconcilePhp),
+    "reconcile no filtra getMessage"
+  );
   const indexHtml = fs.readFileSync(path.join(adminDir, "index.html"), "utf8");
   assert.match(indexHtml, /id="view-recordatorios"/, "shell view-recordatorios");
   assert.match(indexHtml, /id="nav-btn-recordatorios"/, "nav Recordatorios");
   assert.match(indexHtml, /id="recordatorios-sync"/, "indicador sync");
+});
+
+await test("admin API hygiene: errores genéricos + auth + WA", () => {
+  const cola = fs.readFileSync(path.join(adminDir, "api/instagram_cola.php"), "utf8");
+  assert.ok(!/json_out\s*\(\s*500\s*,\s*\[[^\]]*\$e->getMessage\(\)/.test(cola), "instagram_cola sin getMessage");
+  const servicios = fs.readFileSync(path.join(adminDir, "api/servicios.php"), "utf8");
+  assert.ok(!/\$hostinger\['error'\]\s*=\s*\$e->getMessage\(\)/.test(servicios), "servicios sin getMessage");
+  const auth = fs.readFileSync(path.join(adminDir, "api/pacientes_authenticate.php"), "utf8");
+  assert.ok(!/\$config\[['\"]install_token['\"]\]/.test(auth), "auth pacientes sin install_token");
+  const wa = fs.readFileSync(path.join(adminDir, "api/lib_whatsapp.php"), "utf8");
+  assert.ok(!wa.includes("1340013275870491"), "WA sin phone id hardcodeado");
+  assert.ok(
+    fs.existsSync(path.join(adminDir, "api/migrations/017_scrub_manage_code_plaintext.php")),
+    "migración 017 scrub manage_code"
+  );
 });
 
 await test("Clara dropdown + secciones deep-link + mail preview", () => {

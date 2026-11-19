@@ -149,5 +149,6 @@ try {
     }
     json_out(200, ig_cola_payload());
 } catch (Throwable $e) {
-    json_out(500, ['error' => $e->getMessage() ?: 'Error al procesar la cola de Instagram']);
+    error_log('kinesica instagram_cola: ' . $e->getMessage());
+    json_out(500, ['error' => 'Error al procesar la cola de Instagram']);
 }

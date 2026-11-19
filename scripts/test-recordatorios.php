@@ -156,8 +156,38 @@ ok(str_contains($routesSrc, 'recordatorios_check_sent_map'), 'ruta responde con 
 $wasSentSrc = file_get_contents($root . '/admin/api/lib_recordatorios_store_recordatorios_was_sent_for_event.php') ?: '';
 ok(str_contains($wasSentSrc, 'function recordatorios_check_sent_map'), 'existe check_sent_map');
 ok(str_contains($wasSentSrc, 'IN ($placeholders)'), 'check_sent_map usa IN batch');
+ok(str_contains($wasSentSrc, 'foreach ($ids as $cal)'), 'check_sent_map fail-closed itera ids');
+ok(
+    preg_match('/catch\s*\(Throwable[^\)]*\)\s*\{[^}]*\$out\[\$cal\]\s*=\s*true/s', $wasSentSrc) === 1,
+    'check_sent_map catch marca todos true (fail-closed)'
+);
+ok(
+    preg_match('/catch\s*\(Throwable[^\)]*\)\s*\{[^}]*return true/s', $wasSentSrc) === 1,
+    'was_sent_for_event catch retorna true (fail-closed)'
+);
 eq(recordatorios_check_sent_map([]), [], 'check_sent_map vacío => []');
 eq(recordatorios_check_sent_map(['', '_run']), [], 'ignora ids vacíos y _run');
+
+section('check_sent_map / was_sent fail-closed ante PDO roto');
+final class RemThrowingPreparePdo extends PDO
+{
+    public function __construct()
+    {
+        parent::__construct('sqlite::memory:');
+        $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    }
+
+    #[\ReturnTypeWillChange]
+    public function prepare($query, $options = [])
+    {
+        throw new RuntimeException('forced db failure for fail-closed test');
+    }
+}
+$brokenPdo = new RemThrowingPreparePdo();
+$failMap = recordatorios_check_sent_map(['cal-fail-a', 'cal-fail-b'], $brokenPdo);
+eq($failMap['cal-fail-a'] ?? null, true, 'check_sent_map DB error => true (a)');
+eq($failMap['cal-fail-b'] ?? null, true, 'check_sent_map DB error => true (b)');
+ok(recordatorios_was_sent_for_event('cal-fail-a', $brokenPdo), 'was_sent DB error => true');
 
 section('Frase amigable de cuándo (BA)');
 require_once $root . '/admin/api/pacientes_helpers_search_key.php';

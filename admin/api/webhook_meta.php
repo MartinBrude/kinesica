@@ -108,7 +108,7 @@ foreach ($payload['entry'] ?? [] as $entry) {
             $insertResults[] = [
                 'mid' => $mid,
                 'result' => 'error',
-                'error' => $e->getMessage(),
+                'error' => 'insert_failed',
             ];
         }
     }

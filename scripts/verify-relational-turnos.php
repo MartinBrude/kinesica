@@ -261,4 +261,13 @@ assert_true(!empty($lookupNew['ok']), 'new code works after rotate');
 $storedPlain2 = $pdo->query("SELECT manage_code FROM turnos WHERE calendar_event_id = 'manage-evt-1' LIMIT 1")->fetchColumn();
 assert_true($storedPlain2 === null || $storedPlain2 === '', 'rotate tampoco persiste plaintext');
 
+// Migración 017: scrub de plaintext residual
+$pdo->exec("UPDATE turnos SET manage_code = 'LEAKED1' WHERE calendar_event_id = 'manage-evt-1'");
+$leaked = $pdo->query("SELECT manage_code FROM turnos WHERE calendar_event_id = 'manage-evt-1' LIMIT 1")->fetchColumn();
+assert_true($leaked === 'LEAKED1', 'precondición: plaintext residual insertado');
+$mig17 = require $root . '/admin/api/migrations/017_scrub_manage_code_plaintext.php';
+($mig17['up'])($pdo);
+$scrubbed = $pdo->query("SELECT manage_code FROM turnos WHERE calendar_event_id = 'manage-evt-1' LIMIT 1")->fetchColumn();
+assert_true($scrubbed === null || $scrubbed === '', '017 scrub limpia manage_code plaintext');
+
 echo "verify-relational-turnos: OK\n";

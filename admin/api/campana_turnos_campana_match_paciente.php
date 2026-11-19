@@ -20,7 +20,7 @@ function campana_paciente_row(array $row): array
     }
     $flag = array_key_exists('viene_de_campana', $row)
         ? ((int) $row['viene_de_campana'] !== 0)
-        : true;
+        : false;
 
     return [
         'id' => (int) $row['id'],

@@ -45,7 +45,11 @@ function campana_build_rows(PDO $pdo, array $appointments): array
             'nombre' => $matched['nombre'] ?? $split['nombre'],
             'apellido' => $matched['apellido'] ?? $split['apellido'],
             'fecha' => $date,
-            'viene_de_campana' => $matched['viene_de_campana'] ?? true,
+            // Sin match: asumir campaña (fila de calendario aún no vinculada).
+            // Con match: usar el flag real de la fila (default false si falta la columna).
+            'viene_de_campana' => $matched !== null
+                ? (bool) ($matched['viene_de_campana'] ?? false)
+                : true,
             'calendar_event_id' => (string) ($appt['eventId'] ?? ''),
             'telefono' => $phone,
             'dni' => $dni,

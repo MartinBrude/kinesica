@@ -7,7 +7,8 @@ declare(strict_types=1);
 function authenticate_request(?array &$bodyData = null): array
 {
     $config = cfg();
-    $expectedSecret = (string) ($config['webhook_secret'] ?? $config['install_token'] ?? '');
+    // Solo webhook_secret (o bot_token.sha256 arriba). No aceptar install_token.
+    $expectedSecret = (string) ($config['webhook_secret'] ?? '');
 
     $botTokenOk = static function (string $token): bool {
         if (strlen($token) < 32) return false;

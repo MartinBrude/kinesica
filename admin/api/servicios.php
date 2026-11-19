@@ -27,7 +27,7 @@ $waToken = (string) (getenv('WHATSAPP_TOKEN') ?: ($_SERVER['WHATSAPP_TOKEN'] ?? 
 
 $whatsapp = [
     'configured' => $waToken !== '',
-    'phone_number_id' => (string) ($c['whatsapp_phone_number_id'] ?? '1340013275870491'),
+    'phone_number_id' => (string) ($c['whatsapp_phone_number_id'] ?? ''),
     'free_conversations_limit' => 1000,
     'month_active_conversations' => 0,
     'month_inbound_messages' => 0,
@@ -128,7 +128,8 @@ try {
 
 } catch (Throwable $e) {
     $hostinger['connected'] = false;
-    $hostinger['error'] = $e->getMessage();
+    error_log('kinesica servicios hostinger metrics: ' . $e->getMessage());
+    $hostinger['error'] = 'No se pudo conectar a la base de datos';
 }
 
 // Almacenamiento uploads en disco

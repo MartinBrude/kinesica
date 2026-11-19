@@ -39,7 +39,7 @@ function whatsapp_credentials(): array
 
     return [
         'token' => trim($token),
-        'phone_number_id' => trim($phoneId) !== '' ? trim($phoneId) : '1340013275870491',
+        'phone_number_id' => trim($phoneId),
     ];
 }
 
@@ -65,6 +65,13 @@ function send_whatsapp_text(string $to, string $body, bool $previewUrl = false):
             'ok' => false,
             'http_code' => 0,
             'error' => 'Falta WHATSAPP_TOKEN (config.php o variable de entorno)',
+        ];
+    }
+    if ($creds['phone_number_id'] === '') {
+        return [
+            'ok' => false,
+            'http_code' => 0,
+            'error' => 'Falta WHATSAPP_PHONE_NUMBER_ID (config.php o variable de entorno)',
         ];
     }
 

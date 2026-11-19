@@ -122,6 +122,9 @@ assert_true(kinesica_migrations_table_exists($pdo, 'auditoria_cambios'), 'tabla 
 assert_true(kinesica_migrations_table_exists($pdo, 'gastos'), 'tabla gastos (012)');
 assert_true(in_array('013_rel_integrity_fks', $first['applied'], true), '013_rel_integrity_fks aplicada');
 assert_true(in_array('014_etapa10_compat', $first['applied'], true), '014_etapa10_compat aplicada');
+assert_true(in_array('016_turnos_manage_code', $first['applied'], true), '016_turnos_manage_code aplicada');
+assert_true(in_array('017_scrub_manage_code_plaintext', $first['applied'], true), '017 scrub manage_code aplicada');
+assert_true(kinesica_migrations_column_exists($pdo, 'turnos', 'manage_code_hash'), 'turnos.manage_code_hash');
 assert_true(kinesica_schema_bridges_should_run($pdo, false) === true, 'bridges siguen on (no corte productivo)');
 
 $second = kinesica_migrations_run($pdo, false);

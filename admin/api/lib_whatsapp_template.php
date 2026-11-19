@@ -16,6 +16,9 @@ function send_whatsapp_template_alert(string $to, array $tpl): array
     if ($token === '' || $to === '') {
         return ['ok' => false, 'http_code' => 0, 'error' => 'Falta token o destino'];
     }
+    if ($phoneId === '') {
+        return ['ok' => false, 'http_code' => 0, 'error' => 'Falta WHATSAPP_PHONE_NUMBER_ID'];
+    }
     if (!function_exists('curl_init')) {
         return ['ok' => false, 'http_code' => 0, 'error' => 'cURL no disponible'];
     }
@@ -97,6 +100,9 @@ function send_whatsapp_reminder_template(string $to, array $data): array
     $to = preg_replace('/\D+/', '', $to) ?? '';
     if ($token === '' || $to === '') {
         return ['ok' => false, 'http_code' => 0, 'error' => 'Falta token de WhatsApp o teléfono de destino'];
+    }
+    if ($phoneId === '') {
+        return ['ok' => false, 'http_code' => 0, 'error' => 'Falta WHATSAPP_PHONE_NUMBER_ID'];
     }
     if (!function_exists('curl_init')) {
         return ['ok' => false, 'http_code' => 0, 'error' => 'cURL no disponible en el servidor'];

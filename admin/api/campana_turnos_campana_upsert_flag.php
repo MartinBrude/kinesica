@@ -17,11 +17,14 @@ function campana_upsert_flag(
     bool $flag
 ): array {
     $val = $flag ? 1 : 0;
+    require_once __DIR__ . '/pacientes_helpers_existing_patient_match.php';
+    $alive = kinesica_pacientes_alive_sql($pdo);
 
     if ($pacienteId && $pacienteId > 0) {
-        $stmt = $pdo->prepare('UPDATE pacientes SET viene_de_campana = :val WHERE id = :id');
+        kinesica_pacientes_require_alive($pdo, $pacienteId);
+        $stmt = $pdo->prepare("UPDATE pacientes SET viene_de_campana = :val WHERE id = :id AND ({$alive})");
         $stmt->execute(['val' => $val, 'id' => $pacienteId]);
-        $chk = $pdo->prepare('SELECT id FROM pacientes WHERE id = :id LIMIT 1');
+        $chk = $pdo->prepare("SELECT id FROM pacientes WHERE id = :id AND ({$alive}) LIMIT 1");
         $chk->execute(['id' => $pacienteId]);
         if ($chk->fetch()) {
             return ['id' => $pacienteId, 'viene_de_campana' => $val];
@@ -41,7 +44,7 @@ function campana_upsert_flag(
     $matched = campana_match_paciente($pdo, $phone, $full);
     if ($matched) {
         $id = (int) $matched['id'];
-        $stmt = $pdo->prepare('UPDATE pacientes SET viene_de_campana = :val WHERE id = :id');
+        $stmt = $pdo->prepare("UPDATE pacientes SET viene_de_campana = :val WHERE id = :id AND ({$alive})");
         $stmt->execute(['val' => $val, 'id' => $id]);
         return ['id' => $id, 'viene_de_campana' => $val];
     }
@@ -87,7 +90,7 @@ function campana_upsert_flag(
     if ($survivorId > 0) {
         $id = $survivorId;
         // Reaplicar flag sobre el survivor por si el alta fue absorbida.
-        $pdo->prepare('UPDATE pacientes SET viene_de_campana = :val WHERE id = :id')
+        $pdo->prepare("UPDATE pacientes SET viene_de_campana = :val WHERE id = :id AND ({$alive})")
             ->execute(['val' => $val, 'id' => $id]);
     }
 

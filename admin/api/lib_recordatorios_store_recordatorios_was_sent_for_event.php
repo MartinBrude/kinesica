@@ -110,8 +110,12 @@ function recordatorios_check_sent_map(array $calendarEventIds, $appointmentDateO
         while (($row = $stmt->fetchColumn()) !== false) {
             $out[(string) $row] = true;
         }
-    } catch (Throwable) {
-        // Fallar cerrado: todos false → el bot puede reintentar; staticData sigue como red de seguridad.
+    } catch (Throwable $e) {
+        error_log('kinesica recordatorios check_sent_map: ' . $e->getMessage());
+        // Fail closed: sin consulta fiable, tratar como ya enviado (evita reenvíos duplicados).
+        foreach ($ids as $cal) {
+            $out[$cal] = true;
+        }
     }
     return $out;
 }

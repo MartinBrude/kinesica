@@ -132,12 +132,20 @@ function ig_publish_piece(array $item, bool $publishFeed = true, bool $publishSt
     $storyId = null;
 
     if ($publishFeed) {
-        try { $feedId = ig_publish_channel($item, 'feed', $userId, $token); }
-        catch (Throwable $e) { $feedError = 'Feed: ' . $e->getMessage(); }
+        try {
+            $feedId = ig_publish_channel($item, 'feed', $userId, $token);
+        } catch (Throwable $e) {
+            error_log('kinesica ig feed publish: ' . $e->getMessage());
+            $feedError = 'Feed: error de publicación';
+        }
     }
     if ($publishStory) {
-        try { $storyId = ig_publish_channel($item, 'story', $userId, $token); }
-        catch (Throwable $e) { $storyError = 'Story: ' . $e->getMessage(); }
+        try {
+            $storyId = ig_publish_channel($item, 'story', $userId, $token);
+        } catch (Throwable $e) {
+            error_log('kinesica ig story publish: ' . $e->getMessage());
+            $storyError = 'Story: error de publicación';
+        }
     }
 
     if (!$feedId && !$storyId) {

@@ -103,7 +103,8 @@ function ig_image_text_save(string $id, string $cat, string $title, string $body
     try {
         $render = ig_render_piece($id, $norm['cat'], $norm['title'], $norm['body']);
     } catch (Throwable $e) {
-        return ['ok' => false, 'http' => 500, 'error' => $e->getMessage() ?: 'Error al regenerar imagen'];
+        error_log('kinesica ig_render_piece: ' . $e->getMessage());
+        return ['ok' => false, 'http' => 500, 'error' => 'Error al regenerar imagen'];
     }
     return [
         'ok' => true,

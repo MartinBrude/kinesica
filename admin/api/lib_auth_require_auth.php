@@ -215,7 +215,11 @@ function ensure_users_role_column(bool $force = false): void
             @mkdir($dir, 0775, true);
         }
         @file_put_contents($marker, (string) time());
-    } catch (Throwable $e) {}
+    } catch (Throwable $e) {
+        error_log('kinesica ensure_users_role_column: ' . $e->getMessage());
+        // No escribir marker: reintentar en el próximo request.
+        return;
+    }
     $checked = true;
 }
 

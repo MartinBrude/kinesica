@@ -457,6 +457,25 @@ it('inventario original/feed|story = 152', function () {
     if ($lf !== 152 || $ls !== 152) throw new Exception("live feed={$lf} story={$ls}");
 });
 
+it('instagram_cola y render no exponen getMessage al cliente', function () {
+    $root = dirname(__DIR__);
+    $cola = file_get_contents($root . '/admin/api/instagram_cola.php') ?: '';
+    if (preg_match('/json_out\s*\(\s*500\s*,\s*\[[^\]]*\$e->getMessage\(\)/', $cola)) {
+        throw new Exception('instagram_cola 500 no debe usar getMessage');
+    }
+    if (!str_contains($cola, 'Error al procesar la cola de Instagram')) {
+        throw new Exception('instagram_cola debe devolver mensaje genérico');
+    }
+    $img = file_get_contents($root . '/admin/api/lib_instagram_image_text.php') ?: '';
+    if (preg_match("/'error'\\s*=>\\s*\\\$e->getMessage\\(\\)/", $img)) {
+        throw new Exception('lib_instagram_image_text no debe devolver getMessage');
+    }
+    $pub = file_get_contents($root . '/admin/api/lib_instagram.php') ?: '';
+    if (str_contains($pub, "\$feedError = 'Feed: ' . \$e->getMessage()")) {
+        throw new Exception('ig_publish_piece no debe concatenar getMessage a feedError');
+    }
+});
+
 // Limpieza
 @unlink($tmpDb);
 @unlink($cfgFile);
