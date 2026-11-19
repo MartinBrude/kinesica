@@ -48,7 +48,7 @@ const ADMIN_HOURS_CACHE_KEY = "admin_practitioner_hours_v1";
 const ADMIN_HOURS_CACHE_SECONDS = 120;
 // Última copia buena de los horarios del admin (persistente): se usa si settings.php no responde.
 const ADMIN_HOURS_LAST_GOOD_PROP = "ADMIN_HOURS_LAST_GOOD";
-const GAS_CODE_VERSION = "v28-cancel-wa-practitioner";
+const GAS_CODE_VERSION = "v29-check-events-cancel-filter";
 const BOOKING_IDEMPOTENCY_PREFIX = "booking_result_v1_";
 
 function isValidHoursObject(h) {
@@ -347,6 +347,9 @@ function doGet(e) {
     } else if (action === "list_appointments") {
       if (!isAuthorizedSecret(params)) return unauthorizedResponse();
       return handleListAppointments(params);
+    } else if (action === "check_events") {
+      if (!isAuthorizedSecret(params)) return unauthorizedResponse();
+      return handleCheckEvents(params);
     }
 
     return createJsonResponse({ status: "error", message: "Acción no reconocida en GET" }, 400);
@@ -383,6 +386,9 @@ function doPost(e) {
     } else if (action === "list_appointments") {
       if (!isAuthorizedSecret(payload)) return unauthorizedResponse();
       return handleListAppointments(payload);
+    } else if (action === "check_events") {
+      if (!isAuthorizedSecret(payload)) return unauthorizedResponse();
+      return handleCheckEvents(payload);
     } else if (action === "cancel") {
       if (!isAuthorizedSecret(payload)) return unauthorizedResponse();
       return handleCancelAppointment(payload);
@@ -768,10 +774,43 @@ function isNonPatientAppointmentTitle(title) {
   try {
     t = t.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   } catch (e) {}
-  const blocked = ["no dar", "bloqueado", "bloqueo", "feriado", "vacaciones", "vacacion", "tk3", "tk 3", "lista de espera", "waitlist"];
+  const blocked = [
+    "no dar",
+    "bloqueado",
+    "bloqueo",
+    "feriado",
+    "vacaciones",
+    "vacacion",
+    "tk3",
+    "tk 3",
+    "lista de espera",
+    "waitlist",
+    "cancelado",
+    "anulado",
+    "suspendido",
+    "baja"
+  ];
   for (let i = 0; i < blocked.length; i++) {
     if (t.indexOf(blocked[i]) !== -1) return true;
   }
+  return false;
+}
+
+/**
+ * ¿Título/descripción marcan el turno como cancelado/anulado? (aunque el evento siga en Calendar).
+ */
+function isCancelledAppointmentText(text) {
+  let t = String(text || "").toLowerCase();
+  if (!t) return false;
+  try {
+    t = t.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  } catch (e) {}
+  const markers = ["cancelado", "anulado", "suspendido", "[baja]"];
+  for (let i = 0; i < markers.length; i++) {
+    if (t.indexOf(markers[i]) !== -1) return true;
+  }
+  // "baja" solo como etiqueta, no en apellidos tipo "Bajarotti"
+  if (/(?:^|[\s\-_:\[\(])baja(?:$|[\s\-_:\]\)])/i.test(String(text || ""))) return true;
   return false;
 }
 
@@ -958,6 +997,73 @@ function handleListAppointments(params) {
     dateTo: dateTo,
     total: appointments.length,
     appointments: appointments
+  });
+}
+
+/**
+ * Verifica existencia/cancelación de eventos por ID (recordatorios: TC-50 pre-send).
+ * Body: { calendar_event_ids: ["…"] } o { eventIds: ["…"] }
+ * → { events: { "<id>": { exists, cancelled, title } } }
+ */
+function handleCheckEvents(params) {
+  let ids = params && (params.calendar_event_ids || params.eventIds || params.event_ids);
+  if (typeof ids === "string") {
+    try {
+      ids = JSON.parse(ids);
+    } catch (e) {
+      ids = String(ids).split(",").map(function (s) { return s.trim(); });
+    }
+  }
+  if (!Array.isArray(ids)) ids = [];
+  const uniq = [];
+  const seen = {};
+  for (let i = 0; i < ids.length && uniq.length < 100; i++) {
+    const id = String(ids[i] || "").trim();
+    if (!id || seen[id]) continue;
+    seen[id] = true;
+    uniq.push(id);
+  }
+
+  const cal = getKinesicaCalendar();
+  const events = {};
+  for (let j = 0; j < uniq.length; j++) {
+    const eventId = uniq[j];
+    let event = null;
+    try {
+      event = cal.getEventById(eventId);
+    } catch (errFind) {
+      event = null;
+    }
+    if (!event) {
+      events[eventId] = { exists: false, cancelled: false, title: "" };
+      continue;
+    }
+    let title = "";
+    let description = "";
+    try {
+      title = String(event.getTitle() || "");
+    } catch (eTitle) {
+      title = "";
+    }
+    try {
+      description = String(event.getDescription() || "");
+    } catch (eDesc) {
+      description = "";
+    }
+    const cancelled = isCancelledAppointmentText(title + " " + description)
+      || isNonPatientAppointmentTitle(title);
+    events[eventId] = {
+      exists: true,
+      cancelled: Boolean(cancelled),
+      title: title
+    };
+  }
+
+  return createJsonResponse({
+    status: "success",
+    action: "check_events",
+    total: uniq.length,
+    events: events
   });
 }
 

@@ -5,7 +5,7 @@ import { showDashboardView, hideDashboardView } from "./dashboard.js?v=13";
 import { showConsultorioView, hideConsultorioView, showClaraView, hideClaraView } from "./configuracion.js?v=39";
 import { showAdminView, hideAdminView } from "./admin-panel.js?v=96";
 import { showInteraccionesView, hideInteraccionesView } from "./interacciones.js?v=19";
-import { showRecordatoriosView, hideRecordatoriosView } from "./recordatorios.js?v=26";
+import { showRecordatoriosView, hideRecordatoriosView } from "./recordatorios.js?v=27";
 import { showEncuestasView, hideEncuestasView } from "./encuestas.js?v=2";
 import { closeAllDropdowns } from "./app-tabs-dropdowns.js";
 import { closeMobileNav } from "./app-tabs-mobile.js";

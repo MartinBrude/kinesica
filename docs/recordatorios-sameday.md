@@ -62,9 +62,24 @@ Respuesta: `{ "ok": true, "sent": { "<calendar_event_id>": true|false } }` (máx
 
 Si `sent[id] === true` → el ítem se omite con `skip_reason: already_sent` (no reenvía aunque `staticData` no lo tenga). La previsión (webhook) **no** consulta `check_sent`.
 
+### `POST action=check_alive` (bot → admin, TC-50)
+
+Justo antes de armar/enviar, el mismo nodo (o uno siguiente) debe preguntar si el evento sigue vivo en Google Calendar:
+
+```http
+POST /admin/api/recordatorios.php
+X-Kinesica-Bot-Secret: …
+{ "action": "check_alive", "calendar_event_ids": ["…", "…"] }
+```
+
+Respuesta: `{ "ok": true, "alive": { "<id>": true|false }, "reasons": { "<id>": "ok|event_gone|cancelled|calendar_unverified|…" } }`.
+
+Si `alive[id] === false` → omitir con `skip_reason` = `reasons[id]` (`event_gone` / `cancelled` / `calendar_unverified`). El admin PHP (catch-up same-day y disparo manual) ya hace esta revalidación vía GAS `check_events` antes de WhatsApp/email. **Deploy GAS** (`npm run gas:deploy`, code_version ≥ `v29-check-events-cancel-filter`) es obligatorio para que `check_events` exista en producción.
+
 Sanity checks: `npm run admin:test` → `verify-recordatorios.mjs` + `scripts/test-recordatorios.php`; en el bot, `tests/test_reminders_fix.py::TestAdminCheckSent`.
 
 - Éxito previo para el mismo `calendar_event_id` (`sent` / `sent_email`) → skip `already_sent`.
+- Evento borrado o `[CANCELADO]`/`[ANULADO]` en Calendar → skip `event_gone` / `cancelled` (no se envía).
 - Margen &lt; 60 min al inicio → skip `too_soon`.
 - Turno ya pasado → skip `past_appointment`.
 - Sigue valiendo el tope de 1 envío por persona y día en el disparo manual.

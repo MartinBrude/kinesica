@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/lib_recordatorios_store.php';
 require_once __DIR__ . '/lib_recordatorios_view.php';
+require_once __DIR__ . '/lib_recordatorios_calendar_verify.php';
 require_once __DIR__ . '/campana_turnos.php';
 require_once __DIR__ . '/lib_whatsapp_template.php';
 require_once __DIR__ . '/lib_mail.php';

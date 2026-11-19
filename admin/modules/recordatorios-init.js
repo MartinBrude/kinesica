@@ -3,7 +3,7 @@
  */
 
 import { getSessionUser } from "./auth.js?v=83";
-import { renderRecordatoriosRules } from "./recordatorios-rules.js?v=7";
+import { renderRecordatoriosRules } from "./recordatorios-rules.js?v=8";
 import { recordatoriosStore } from "./recordatorios-store.js?v=1";
 import { loadRecordatorios } from "./recordatorios-load.js?v=1";
 import { applyFiltersAndRender, applyRecordatorioItemUpdate } from "./recordatorios-apply.js?v=1";

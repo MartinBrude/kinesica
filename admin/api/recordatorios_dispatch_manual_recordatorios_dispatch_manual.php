@@ -193,6 +193,22 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
         }
     }
 
+    // TC-50: no disparar si el turno ya no está vivo en Calendar (salvo casos de prueba).
+    if (!$isTestCase) {
+        $calId = trim((string) ($item['calendar_event_id'] ?? ''));
+        $alive = recordatorios_calendar_event_is_sendable($calId);
+        if (empty($alive['ok'])) {
+            $reason = (string) ($alive['reason'] ?? 'calendar_unverified');
+            $msg = match ($reason) {
+                'event_gone' => 'El turno ya no está en Google Calendar (fue eliminado). No se envía el recordatorio.',
+                'cancelled' => 'El turno figura cancelado/anulado en Google Calendar. No se envía el recordatorio.',
+                'missing_event_id' => 'Este registro no tiene calendar_event_id. No se puede verificar el turno.',
+                default => 'No se pudo verificar el turno en Google Calendar. Reintentá en unos minutos.',
+            };
+            return ['ok' => false, 'error' => $msg, 'skip_reason' => $reason];
+        }
+    }
+
     // Claim atómico: evita doble WhatsApp/email por doble clic o dos pestañas.
     $claimed = recordatorios_claim_manual_send($id);
     if (empty($claimed['ok'])) {

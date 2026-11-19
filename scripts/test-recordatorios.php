@@ -168,6 +168,28 @@ ok(
 eq(recordatorios_check_sent_map([]), [], 'check_sent_map vacío => []');
 eq(recordatorios_check_sent_map(['', '_run']), [], 'ignora ids vacíos y _run');
 
+section('Contrato check_alive (TC-50 Calendar vivo)');
+require_once $root . '/admin/api/lib_recordatorios_calendar_verify.php';
+ok(str_contains($routesSrc, "'check_alive'"), 'ruta acepta action check_alive');
+ok(str_contains($routesSrc, 'recordatorios_check_alive_map'), 'ruta responde con check_alive_map');
+ok(function_exists('recordatorios_calendar_event_is_sendable'), 'existe is_sendable');
+$testAlive = recordatorios_calendar_event_is_sendable('test:unit-1');
+eq($testAlive['ok'] ?? null, true, 'casos test:… se consideran sendable');
+eq($testAlive['reason'] ?? null, 'test', 'reason test');
+$missing = recordatorios_calendar_event_is_sendable('');
+eq($missing['ok'] ?? null, false, 'sin event id => no sendable');
+eq($missing['reason'] ?? null, 'missing_event_id', 'reason missing_event_id');
+$aliveEmpty = recordatorios_check_alive_map([]);
+eq($aliveEmpty['ok'] ?? null, true, 'check_alive_map vacío ok');
+eq($aliveEmpty['alive'] ?? null, [], 'check_alive_map vacío alive=[]');
+$aliveTest = recordatorios_check_alive_map(['test:a', 'test:a', '']);
+eq($aliveTest['alive']['test:a'] ?? null, true, 'check_alive_map test id alive');
+eq($aliveTest['reasons']['test:a'] ?? null, 'test', 'check_alive_map test reason');
+$samedaySrc = file_get_contents($root . '/admin/api/lib_recordatorios_sameday_recordatorios_sameday_process_appointment.php') ?: '';
+ok(str_contains($samedaySrc, 'recordatorios_calendar_event_is_sendable'), 'sameday revalida Calendar pre-send');
+$manualSrc = file_get_contents($root . '/admin/api/recordatorios_dispatch_manual_recordatorios_dispatch_manual.php') ?: '';
+ok(str_contains($manualSrc, 'recordatorios_calendar_event_is_sendable'), 'dispatch manual revalida Calendar');
+
 section('check_sent_map / was_sent fail-closed ante PDO roto');
 final class RemThrowingPreparePdo extends PDO
 {

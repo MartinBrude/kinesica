@@ -8,7 +8,7 @@ $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $input = $method === 'POST' ? read_json() : [];
 $action = (string) ($input['action'] ?? '');
 
-if ($method === 'POST' && in_array($action, ['ingest', 'reconcile', 'check_sent'], true) && recordatorios_bot_authenticated()) {
+if ($method === 'POST' && in_array($action, ['ingest', 'reconcile', 'check_sent', 'check_alive'], true) && recordatorios_bot_authenticated()) {
     if ($action === 'ingest') {
         recordatorios_handle_ingest($input);
     }
@@ -22,6 +22,18 @@ if ($method === 'POST' && in_array($action, ['ingest', 'reconcile', 'check_sent'
             : null;
         json_out(200, ['ok' => true, 'sent' => recordatorios_check_sent_map($ids, $appt)]);
     }
+    if ($action === 'check_alive') {
+        $ids = $input['calendar_event_ids'] ?? [];
+        if (!is_array($ids)) {
+            json_out(400, ['error' => 'calendar_event_ids debe ser un arreglo']);
+        }
+        $map = recordatorios_check_alive_map($ids);
+        json_out(200, [
+            'ok' => !empty($map['ok']),
+            'alive' => $map['alive'] ?? [],
+            'reasons' => $map['reasons'] ?? [],
+        ] + (isset($map['error']) ? ['error' => $map['error']] : []));
+    }
     json_out(200, ['ok' => true] + recordatorios_reconcile(null, 8));
 }
 
@@ -29,6 +41,9 @@ if ($method === 'POST' && $action === 'ingest') {
     json_out(401, ['error' => 'No autorizado']);
 }
 if ($method === 'POST' && $action === 'check_sent') {
+    json_out(401, ['error' => 'No autorizado']);
+}
+if ($method === 'POST' && $action === 'check_alive') {
     json_out(401, ['error' => 'No autorizado']);
 }
 

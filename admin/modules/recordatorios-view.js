@@ -3,7 +3,7 @@
  */
 
 import { switchActiveView } from "./dom.js?v=79";
-import { renderRecordatoriosRules } from "./recordatorios-rules.js?v=7";
+import { renderRecordatoriosRules } from "./recordatorios-rules.js?v=8";
 import { recordatoriosStore, CACHE_TTL_MS } from "./recordatorios-store.js?v=1";
 import { applyFiltersAndRender } from "./recordatorios-apply.js?v=1";
 import { loadRecordatorios } from "./recordatorios-load.js?v=1";

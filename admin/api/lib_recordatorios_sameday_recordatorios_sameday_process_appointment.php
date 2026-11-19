@@ -82,6 +82,21 @@ function recordatorios_sameday_process_appointment(array $appt, string $today, s
         return ['status' => 'missing_phone', 'skip_reason' => 'same_day_catchup', 'patient' => $patientName];
     }
 
+    // TC-50: revalidar en Calendar justo antes de enviar (evento borrado o [CANCELADO]).
+    $alive = recordatorios_calendar_event_is_sendable($calId);
+    if (empty($alive['ok'])) {
+        $reason = (string) ($alive['reason'] ?? 'calendar_unverified');
+        $norm = recordatorios_normalize_item(array_merge($baseEv, [
+            'status' => 'skipped',
+            'skip_reason' => $reason,
+            'error_message' => 'Pre-send Calendar: ' . $reason,
+        ]), $execId, $runAt);
+        if ($norm) {
+            recordatorios_store_items([$norm]);
+        }
+        return ['status' => 'skipped', 'skip_reason' => $reason, 'patient' => $patientName];
+    }
+
     $whenMode = recordatorios_template_when_mode();
     $waParam = $whenMode === 'when_phrase' ? $whenPhrase : $timeLabel;
     $canWhatsapp = $phone !== '' && $whenMode === 'when_phrase';

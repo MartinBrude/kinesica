@@ -55,6 +55,17 @@ function load({ adminHours, status = 200, throws = false, events = [], props = {
           getId: () => e.id || "evt-test",
           getDescription: () => e.description || "",
         })),
+        getEventById: (id) => {
+          const e = events.find((ev) => String(ev.id || "evt-test") === String(id));
+          if (!e) return null;
+          return {
+            getTitle: () => e.title,
+            getStartTime: () => new Date(e.start),
+            getEndTime: () => new Date(e.end),
+            getId: () => e.id || "evt-test",
+            getDescription: () => e.description || "",
+          };
+        },
       }),
     },
     Utilities: {
@@ -212,6 +223,12 @@ test("list_appointments con secret: filtra bloqueos y parsea paciente/teléfono"
       start: `${day}T10:00:00-03:00`,
       end: `${day}T11:00:00-03:00`,
     },
+    {
+      id: "e-cancel",
+      title: "[CANCELADO] Paulina Test",
+      start: `${day}T16:00:00-03:00`,
+      end: `${day}T17:00:00-03:00`,
+    },
   ];
   const { ctx } = load({ adminHours: ALL_WEEK, props: { GAS_API_SECRET: SECRET }, events });
   const res = JSON.parse(ctx.doGet({
@@ -222,6 +239,36 @@ test("list_appointments con secret: filtra bloqueos y parsea paciente/teléfono"
   assert.equal(res.appointments[0].patientName, "Ana Pérez");
   assert.equal(res.appointments[0].date, day);
   assert.ok(String(res.appointments[0].phone).includes("1155556666") || String(res.appointments[0].phone).includes("55556666"));
+});
+
+test("check_events: exists / cancelled / gone", () => {
+  const day = "2026-03-12";
+  const events = [
+    {
+      id: "alive-1",
+      title: "🩺 [MARIA] Viva Paciente",
+      start: `${day}T10:00:00-03:00`,
+      end: `${day}T11:00:00-03:00`,
+    },
+    {
+      id: "cancel-1",
+      title: "[ANULADO] Ya No",
+      start: `${day}T12:00:00-03:00`,
+      end: `${day}T13:00:00-03:00`,
+    },
+  ];
+  const { ctx } = load({ adminHours: ALL_WEEK, props: { GAS_API_SECRET: SECRET }, events });
+  const res = JSON.parse(post(ctx, {
+    action: "check_events",
+    secret: SECRET,
+    calendar_event_ids: ["alive-1", "cancel-1", "missing-9"],
+  }));
+  assert.equal(res.status, "success");
+  assert.equal(res.events["alive-1"].exists, true);
+  assert.equal(res.events["alive-1"].cancelled, false);
+  assert.equal(res.events["cancel-1"].exists, true);
+  assert.equal(res.events["cancel-1"].cancelled, true);
+  assert.equal(res.events["missing-9"].exists, false);
 });
 
 test("list_appointments parsea telefono/dni clave:valor desde descripción", () => {
@@ -319,7 +366,7 @@ test("guarda la última copia buena y la usa si luego falla settings.php", () =>
 test("ping informa admin_hours (sólo lectura)", () => {
   let ping = JSON.parse(load({ adminHours: ADMIN }).ctx.doGet({ parameter: { action: "ping" } }).text);
   assert.equal(ping.status, "online");
-  assert.equal(ping.code_version, "v28-cancel-wa-practitioner");
+  assert.equal(ping.code_version, "v29-check-events-cancel-filter");
   assert.deepEqual([ping.admin_hours.loaded, ping.admin_hours.http_code, ping.admin_hours.source], [true, 200, "admin"]);
   assert.ok(ping.admin_hours.fetched_at);
   ping = JSON.parse(load({ byUrl: { www: { status: 403, body: "x" }, apex: { throws: "DNS error" } } }).ctx.doGet({ parameter: { action: "ping" } }).text);

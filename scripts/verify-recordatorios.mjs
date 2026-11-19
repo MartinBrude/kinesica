@@ -41,10 +41,48 @@ if (
   !php.includes("'reconcile'") ||
   !php.includes("'check_sent'") ||
   !php.includes("recordatorios_check_sent_map") ||
+  !php.includes("'check_alive'") ||
+  !php.includes("recordatorios_check_alive_map") ||
   !php.includes("save_contact") ||
   !php.includes("recordatorios_persist_directory_contact")
 ) {
-  console.error("✗ recordatorios.php no cumple contrato ingest/check_sent/vista/reconcile/save_contact");
+  console.error("✗ recordatorios.php no cumple contrato ingest/check_sent/check_alive/vista/reconcile/save_contact");
+  process.exit(1);
+}
+
+mustExist("admin/api/lib_recordatorios_calendar_verify.php");
+const calVerify = fs.readFileSync(path.join(admin, "api/lib_recordatorios_calendar_verify.php"), "utf8");
+if (
+  !calVerify.includes("function recordatorios_calendar_event_is_sendable") ||
+  !calVerify.includes("check_events") ||
+  !calVerify.includes("calendar_unverified")
+) {
+  console.error("✗ lib_recordatorios_calendar_verify.php incompleto (is_sendable / check_events)");
+  process.exit(1);
+}
+const samedayProc = fs.readFileSync(
+  path.join(admin, "api/lib_recordatorios_sameday_recordatorios_sameday_process_appointment.php"),
+  "utf8"
+);
+if (!samedayProc.includes("recordatorios_calendar_event_is_sendable")) {
+  console.error("✗ sameday process debe revalidar Calendar antes de enviar");
+  process.exit(1);
+}
+const manualDispatch = fs.readFileSync(
+  path.join(admin, "api/recordatorios_dispatch_manual_recordatorios_dispatch_manual.php"),
+  "utf8"
+);
+if (!manualDispatch.includes("recordatorios_calendar_event_is_sendable")) {
+  console.error("✗ dispatch manual debe revalidar Calendar antes de enviar");
+  process.exit(1);
+}
+const gasSrc = fs.readFileSync(path.join(root, "booking/google-apps-script.js"), "utf8");
+if (
+  !gasSrc.includes('action === "check_events"') ||
+  !gasSrc.includes("function handleCheckEvents") ||
+  !gasSrc.includes('"cancelado"')
+) {
+  console.error("✗ GAS debe exponer check_events y filtrar cancelado en list_appointments");
   process.exit(1);
 }
 
