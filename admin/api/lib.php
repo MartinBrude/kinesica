@@ -165,6 +165,12 @@ function sanitize_patient_name(string $str): string
     if ($trimmed === '') {
         return '';
     }
+    // Ruido típico de títulos de Calendar ("turno acá", "aca", etc.)
+    $trimmed = preg_replace('/\b(?:turno|aca|acá)\b/iu', ' ', $trimmed) ?? $trimmed;
+    $trimmed = trim(preg_replace('/\s+/u', ' ', $trimmed) ?? $trimmed, " ,-");
+    if ($trimmed === '') {
+        return '';
+    }
     return capitalize_patient_name($trimmed);
 }
 

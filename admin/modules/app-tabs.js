@@ -8,7 +8,7 @@ import {
   setPacientesMissingPhoneBadge,
   startPacientesBadgePoll,
   stopPacientesBadgePoll,
-} from "./pacientes.js?v=18";
+} from "./pacientes.js?v=19";
 import {
   setInteraccionesPendingBadge,
   startBadgePoll,

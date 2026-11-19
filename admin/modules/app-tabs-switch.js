@@ -1,6 +1,6 @@
 import { getSessionUser } from "./auth.js?v=83";
 import { showLibrary } from "./library.js?v=94";
-import { showPacientesView, hidePacientesView } from "./pacientes.js?v=18";
+import { showPacientesView, hidePacientesView } from "./pacientes.js?v=19";
 import { showDashboardView, hideDashboardView } from "./dashboard.js?v=13";
 import { showConsultorioView, hideConsultorioView, showClaraView, hideClaraView } from "./configuracion.js?v=39";
 import { showAdminView, hideAdminView } from "./admin-panel.js?v=96";

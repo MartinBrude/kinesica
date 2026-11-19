@@ -159,6 +159,10 @@ assert_true($emailSuf['status'] === 'success' && $emailSuf['email'] === 'unica@e
 
 $cleaned = campana_clean_name_string('Juan Perez 5491150000001 turno');
 assert_true($cleaned === 'Juan Perez', 'campana_clean_name_string quita dígitos y ruido');
+$cleanedAca = campana_clean_name_string('Mario Racket Aca');
+assert_true($cleanedAca === 'Mario Racket', 'campana_clean_name_string quita aca');
+$sanAca = sanitize_patient_name('Racket Aca');
+assert_true($sanAca === 'Racket', 'sanitize_patient_name quita aca del apellido');
 $campClean = campana_match_paciente($pdo, '', 'Diego Ruiz 5491150000001 turno');
 assert_true(is_array($campClean) && (int) $campClean['id'] === 50, 'campaña: match con título sucio vía clean');
 

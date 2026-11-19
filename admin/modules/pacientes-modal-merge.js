@@ -7,7 +7,7 @@ import { escapeHtml, dialogAlert, dialogConfirm, toast } from "./dom.js?v=79";
 import { getPacientesCache, setPacientesCache } from "./pacientes-state.js";
 import { phoneMatches } from "./phone-search.js?v=3";
 import { formatDisplayPhone } from "./pacientes-format.js";
-import { formatPatientName } from "./pacientes-name.js";
+import { formatPatientName } from "./pacientes-name.js?v=2";
 import { patientMissingPhone, isPlaceholderPhone } from "./pacientes-identifiers.js";
 
 /**

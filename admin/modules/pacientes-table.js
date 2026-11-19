@@ -2,7 +2,7 @@ import { api } from "./api.js?v=79";
 import { escapeHtml, dialogAlert, dialogConfirm } from "./dom.js?v=79";
 import { phoneMatches } from "./phone-search.js?v=3";
 import { formatDisplayPhone, capitalizePersonName } from "./pacientes-format.js";
-import { openFullPacienteModal } from "./pacientes-modal.js?v=5";
+import { openFullPacienteModal } from "./pacientes-modal.js?v=6";
 import { getSessionUser } from "./auth.js?v=83";
 import { invalidateDirectoryCache } from "./form-patient.js";
 import {
@@ -14,13 +14,13 @@ import {
   countEl,
 } from "./pacientes-state.js";
 import { syncPacientesBadgeFromCache } from "./pacientes-badge.js";
-import { formatPatientName } from "./pacientes-name.js";
+import { formatPatientName } from "./pacientes-name.js?v=2";
 import {
   getPatientFirstName,
   buildReviewInviteMessage,
   patientEncuestaEnviada,
   patientHasReview,
-} from "./pacientes-patient-meta.js";
+} from "./pacientes-patient-meta.js?v=2";
 import { patientMissingPhone } from "./pacientes-identifiers.js";
 import { loadPacientes } from "./pacientes-load.js";
 

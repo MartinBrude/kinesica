@@ -1,11 +1,20 @@
 import { capitalizePersonName } from "./pacientes-format.js";
 
+/** Ruido de títulos de Calendar ("turno acá", "aca") — alineado con sanitize_patient_name PHP. */
+function stripCalendarNameNoise(raw) {
+  return String(raw || "")
+    .replace(/\b(?:turno|aca|acá)\b/giu, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/^[\s,-]+|[\s,-]+$/g, "");
+}
+
 export function formatPatientName(p) {
-  let ap = (p?.apellido || "").trim();
-  let nom = (p?.nombre || "").trim();
+  let ap = stripCalendarNameNoise(p?.apellido || "");
+  let nom = stripCalendarNameNoise(p?.nombre || "");
 
   if (!ap && !nom) {
-    const full = (p?.nombre_completo || "").trim();
+    const full = stripCalendarNameNoise(p?.nombre_completo || "");
     if (full) {
       const parts = full.split(/\s+/);
       if (parts.length === 1) {

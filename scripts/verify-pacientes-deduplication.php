@@ -110,6 +110,9 @@ $capTests = [
     "ÁLVAREZ, MARÍA LAURA 👍\r\n" => 'Álvarez María Laura',
     'juan-carlos d\'alessandro' => 'Juan-Carlos D\'Alessandro',
     'DE LA TORRE' => 'De La Torre',
+    'Mario Racket Aca' => 'Mario Racket',
+    'Racket Aca Mario' => 'Racket Mario',
+    'turno acá Juan Perez' => 'Juan Perez',
 ];
 foreach ($capTests as $input => $expected) {
     $clean = sanitize_patient_name($input);

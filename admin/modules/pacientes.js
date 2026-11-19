@@ -16,7 +16,7 @@ export {
   buildReviewInviteMessage,
   patientEncuestaEnviada,
   patientHasReview,
-} from "./pacientes-patient-meta.js";
+} from "./pacientes-patient-meta.js?v=2";
 
 export {
   canonicalPatientNameKey,
@@ -27,11 +27,11 @@ export {
 } from "./pacientes-identifiers.js";
 
 export { deduplicatePatientsInMemory } from "./pacientes-dedupe.js";
-export { formatPatientName } from "./pacientes-name.js";
+export { formatPatientName } from "./pacientes-name.js?v=2";
 
 export { showPacientesView, hidePacientesView } from "./pacientes-view.js";
 export { loadPacientes } from "./pacientes-load.js";
-export { renderPacientesTable } from "./pacientes-table.js?v=2";
+export { renderPacientesTable } from "./pacientes-table.js?v=3";
 export { initPacientesModule } from "./pacientes-init.js";
 
 export {

@@ -4,9 +4,10 @@
 
 import { getSessionUser } from "./auth.js?v=83";
 import { capitalizePersonName } from "./pacientes-format.js";
+import { formatPatientName } from "./pacientes-name.js?v=2";
 import { buildPacienteModalMarkup } from "./pacientes-modal-html.js?v=4";
 import { bindPacienteModalForm } from "./pacientes-modal-submit.js?v=5";
-import { bindPacienteModalMerge } from "./pacientes-modal-merge.js?v=5";
+import { bindPacienteModalMerge } from "./pacientes-modal-merge.js?v=6";
 
 export function openFullPacienteModal(paciente = null, onReload = null, options = {}) {
   const isEdit = Boolean(paciente && paciente.id);
@@ -14,10 +15,11 @@ export function openFullPacienteModal(paciente = null, onReload = null, options 
   const backdrop = document.createElement("div");
   backdrop.className = "paciente-modal-backdrop";
 
-  let nombreVal = paciente?.nombre || "";
-  let apellidoVal = paciente?.apellido || "";
+  const formatted = formatPatientName(paciente || {});
+  let nombreVal = formatted.nombre || "";
+  let apellidoVal = formatted.apellido || "";
   if (!nombreVal && !apellidoVal && paciente?.nombre_completo) {
-    const parts = paciente.nombre_completo.trim().split(/\s+/);
+    const parts = String(paciente.nombre_completo).trim().split(/\s+/);
     nombreVal = parts[0] || "";
     apellidoVal = parts.slice(1).join(" ") || "";
   }

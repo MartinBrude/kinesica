@@ -2,7 +2,7 @@ import { api } from "./api.js?v=79";
 import { escapeHtml } from "./dom.js?v=79";
 import { setListControlsEnabled } from "./list-controls.js?v=1";
 import { invalidateDirectoryCache } from "./form-patient.js";
-import { openFullPacienteModal } from "./pacientes-modal.js?v=5";
+import { openFullPacienteModal } from "./pacientes-modal.js?v=6";
 import {
   listEl,
   searchInput,
@@ -11,7 +11,7 @@ import {
   getPendingSearchFromUrl,
   setPendingSearchFromUrl,
 } from "./pacientes-state.js";
-import { renderPacientesTable } from "./pacientes-table.js?v=2";
+import { renderPacientesTable } from "./pacientes-table.js?v=3";
 
 export async function loadPacientes() {
   if (!listEl) return;
