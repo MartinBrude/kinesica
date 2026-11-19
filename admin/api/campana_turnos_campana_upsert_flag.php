@@ -76,7 +76,7 @@ function campana_upsert_flag(
 
     $id = (int) $pdo->lastInsertId();
     if ($id <= 0) {
-        $find = $pdo->prepare('SELECT id FROM pacientes WHERE telefono = :tel LIMIT 1');
+        $find = $pdo->prepare("SELECT id FROM pacientes WHERE telefono = :tel AND ({$alive}) LIMIT 1");
         $find->execute(['tel' => $tel]);
         $found = $find->fetch(PDO::FETCH_ASSOC);
         $id = $found ? (int) $found['id'] : 0;

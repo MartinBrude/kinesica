@@ -106,6 +106,69 @@ $pdo->exec("INSERT INTO pacientes (id, telefono, nombre, apellido, nombre_comple
 assert_true(kinesica_pacientes_fetch_alive($pdo, 40) === null, 'fetch_alive ignora soft-deleted');
 assert_true(is_array(kinesica_pacientes_fetch_alive($pdo, 20)), 'fetch_alive ve activo');
 
+// --- Matriz de caracterización (match) ---
+$pdo->exec("INSERT INTO pacientes (id, telefono, nombre, apellido, nombre_completo, dni, email, deleted_at) VALUES
+ (50, '5491150000001', 'Diego', 'Ruiz', 'Diego Ruiz', '30111222', 'diego@example.com', NULL),
+ (51, 'sin-tel-dni-40999888', 'Lara', 'Dni', 'Lara Dni', '40999888', NULL, NULL),
+ (52, '5491150000099', 'Solo', '', 'Solo', NULL, NULL, NULL),
+ (53, '5491188800011', 'Pia', 'Suffix', 'Pia Suffix', NULL, 'pia@example.com', NULL),
+ (54, '5491288800011', 'Otra', 'Suffix', 'Otra Suffix', NULL, 'otra@example.com', NULL),
+ (55, '5491188800099', 'Unica', 'Suf', 'Unica Suf', NULL, 'unica@example.com', NULL),
+ (56, 'sin-tel-cal-abc', 'Cal', 'Place', 'Cal Place', NULL, NULL, NULL),
+ (57, '5491444000099', 'Soft', 'Match', 'Soft Match', NULL, NULL, datetime('now'))");
+
+$byTel = find_existing_patient_match($pdo, '5491150000001', 'Otro Nombre', null);
+assert_true(is_array($byTel) && (int) $byTel['id'] === 50, 'strict: tel exacto');
+
+$byDni = find_existing_patient_match($pdo, null, null, '30111222');
+assert_true(is_array($byDni) && (int) $byDni['id'] === 50, 'strict: DNI columna');
+
+$byDniPh = find_existing_patient_match($pdo, null, null, '40999888');
+assert_true(is_array($byDniPh) && (int) $byDniPh['id'] === 51, 'strict: DNI via sin-tel-dni-*');
+
+$byName2 = find_existing_patient_match($pdo, null, 'Diego Ruiz', null);
+assert_true(is_array($byName2) && (int) $byName2['id'] === 50, 'strict: nombre ≥2 tokens');
+
+$byName1 = find_existing_patient_match($pdo, null, 'Solo', null);
+assert_true($byName1 === null, 'strict: nombre 1 token → null');
+
+$campName1 = campana_match_paciente($pdo, '', 'Solo');
+assert_true(is_array($campName1) && (int) $campName1['id'] === 52, 'campaña: nombre 1 token puede matchear');
+
+$softMatch = find_existing_patient_match($pdo, '5491444000099', 'Soft Match', null);
+assert_true($softMatch === null, 'strict: soft-deleted no matchea por tel');
+
+$softCamp = campana_match_paciente($pdo, '5491444000099', 'Soft Match');
+assert_true($softCamp === null, 'campaña: soft-deleted no matchea');
+
+$phMatch = find_existing_patient_match($pdo, 'sin-tel-cal-abc', 'Cal Place', null);
+assert_true(is_array($phMatch) && (int) $phMatch['id'] === 56, 'strict: placeholder no usa rama tel; nombre sí');
+
+// Mismo sufijo 88800011, query con otro prefijo (no exact match ni tras re-clean).
+$campSuffixAmb = campana_match_paciente($pdo, '5499988800011', 'Desconocido');
+assert_true($campSuffixAmb === null, 'campaña: suffix-8 ambiguo → null');
+
+$campSuffixOk = campana_match_paciente($pdo, '5499988800099', 'Desconocido');
+assert_true(is_array($campSuffixOk) && (int) $campSuffixOk['id'] === 55, 'campaña: suffix-8 único');
+
+$emailAmb = kinesica_pacientes_email_by_phone($pdo, '5499988800011');
+assert_true($emailAmb['status'] === 'not_found', 'email: suffix ambiguo');
+
+$emailSuf = kinesica_pacientes_email_by_phone($pdo, '5499988800099');
+assert_true($emailSuf['status'] === 'success' && $emailSuf['email'] === 'unica@example.com', 'email: suffix único');
+
+$cleaned = campana_clean_name_string('Juan Perez 5491150000001 turno');
+assert_true($cleaned === 'Juan Perez', 'campana_clean_name_string quita dígitos y ruido');
+$campClean = campana_match_paciente($pdo, '', 'Diego Ruiz 5491150000001 turno');
+assert_true(is_array($campClean) && (int) $campClean['id'] === 50, 'campaña: match con título sucio vía clean');
+
+if (function_exists('kinesica_match_patient')) {
+    $polStrict = kinesica_match_patient($pdo, ['phone' => null, 'name' => 'Solo', 'dni' => null], 'strict');
+    assert_true($polStrict === null, 'policy strict: 1 token null');
+    $polCamp = kinesica_match_patient($pdo, ['phone' => null, 'name' => 'Solo', 'dni' => null], 'campana');
+    assert_true(is_array($polCamp) && (int) $polCamp['id'] === 52, 'policy campana: 1 token hit');
+}
+
 require_once $root . '/admin/api/lib_whatsapp.php';
 $safe = kinesica_whatsapp_client_safe_result([
     'ok' => false,

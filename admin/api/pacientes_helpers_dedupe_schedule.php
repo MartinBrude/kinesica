@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/pacientes_helpers_dedup_apply.php';
 require_once __DIR__ . '/pacientes_helpers_dedupe_candidates.php';
+require_once __DIR__ . '/pacientes_helpers_dedupe_link.php';
 
 /**
  * Une duplicados que involucren a $patientId.
@@ -34,69 +35,7 @@ function kinesica_pacientes_dedupe_around_patient(PDO $pdo, int $patientId): arr
         return ['merged' => 0, 'survivor_id' => $patientId];
     }
 
-    $n = count($rows);
-    $parent = range(0, $n - 1);
-    $find = static function (int $i) use (&$parent, &$find): int {
-        if ($parent[$i] === $i) {
-            return $i;
-        }
-        return $parent[$i] = $find($parent[$i]);
-    };
-    $union = static function (int $i, int $j) use (&$parent, &$find): void {
-        $rootI = $find($i);
-        $rootJ = $find($j);
-        if ($rootI !== $rootJ) {
-            $parent[$rootI] = $rootJ;
-        }
-    };
-
-    $byDni = [];
-    $byName = [];
-    $byPhone = [];
-    foreach ($rows as $idx => $r) {
-        $dni = clean_patient_dni($r['dni'] ?? null);
-        if ($dni === '' && str_starts_with((string) ($r['telefono'] ?? ''), 'sin-tel-dni-')) {
-            $dni = substr((string) $r['telefono'], 12);
-        }
-        if ($dni !== '') {
-            if (isset($byDni[$dni])) {
-                $union($idx, $byDni[$dni]);
-            } else {
-                $byDni[$dni] = $idx;
-            }
-        }
-
-        $rawPhone = (string) ($r['telefono'] ?? '');
-        $cleanPhone = clean_phone_number($rawPhone);
-        if ($cleanPhone !== '' && !is_placeholder_phone($cleanPhone) && !is_placeholder_phone($rawPhone)) {
-            if (isset($byPhone[$cleanPhone])) {
-                $union($idx, $byPhone[$cleanPhone]);
-            } else {
-                $byPhone[$cleanPhone] = $idx;
-            }
-        }
-
-        $full = trim((string) (($r['nombre_completo'] ?? '') ?: trim(($r['nombre'] ?? '') . ' ' . ($r['apellido'] ?? ''))));
-        $nameKey = canonical_patient_name_key($full);
-        if ($nameKey !== '' && str_contains($nameKey, ' ')) {
-            if (isset($byName[$nameKey])) {
-                $otherIdx = $byName[$nameKey];
-                if (kinesica_phones_compatible_for_name_merge(
-                    (string) ($rows[$otherIdx]['telefono'] ?? ''),
-                    $rawPhone
-                )) {
-                    $union($idx, $otherIdx);
-                }
-            } else {
-                $byName[$nameKey] = $idx;
-            }
-        }
-    }
-
-    $clusters = [];
-    for ($i = 0; $i < $n; $i++) {
-        $clusters[$find($i)][] = $rows[$i];
-    }
+    $clusters = kinesica_dedupe_build_clusters($rows);
 
     $relevant = [];
     $clusterIds = [];

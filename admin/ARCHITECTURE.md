@@ -214,7 +214,10 @@ flowchart LR
     - `pacientes_helpers_dedup_apply.php` — aplica clusters del barrido automático.
     - `pacientes_helpers_dedupe_candidates.php` — candidatos cercanos (solo activos).
     - `pacientes_helpers_dedupe_schedule.php` — unificación al alta (`try_dedupe_after_create` / `around_patient`).
-    - `pacientes_helpers_existing_patient_match.php` — match de alta + `deduplicate_pacientes_table` + filtro `alive_sql`.
+    - `pacientes_helpers_match.php` — motor `kinesica_match_patient` (policies `strict` / `campana` / `email_suffix`).
+    - `pacientes_helpers_match_steps.php` — primitivas tel/DNI/suffix/nombre; `pacientes_helpers_alive.php` — `alive_sql`.
+    - `pacientes_helpers_existing_patient_match.php` — wrapper `find_existing` → `strict`.
+    - `pacientes_helpers_dedupe_full.php` + `dedupe_link.php` — barrido y criterios de unión compartidos.
 - **Agenda y Horarios**:
   - `horarios.php`: Endpoint de persistencia de días y turnos de atención.
   - `horarios_validator.php`: Validación matemática de intervalos horarios y garantía de **1 sola camilla física**.

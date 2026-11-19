@@ -3,9 +3,14 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/pacientes_helpers_search_key.php';
 require_once __DIR__ . '/pacientes_helpers_canonical_patient_name_key.php';
+require_once __DIR__ . '/pacientes_helpers_alive.php';
+require_once __DIR__ . '/pacientes_helpers_match_steps.php';
+require_once __DIR__ . '/pacientes_helpers_match.php';
 require_once __DIR__ . '/pacientes_helpers_reassign_children.php';
 require_once __DIR__ . '/pacientes_helpers_merge_explicit.php';
 require_once __DIR__ . '/pacientes_helpers_dedup_apply.php';
+require_once __DIR__ . '/pacientes_helpers_dedupe_link.php';
+require_once __DIR__ . '/pacientes_helpers_dedupe_full.php';
 require_once __DIR__ . '/pacientes_helpers_existing_patient_match.php';
 require_once __DIR__ . '/pacientes_helpers_dedupe_candidates.php';
 require_once __DIR__ . '/pacientes_helpers_dedupe_schedule.php';

@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Match de paciente para turnos de campaña (tel exacto / sufijo único / nombre canónico).
+ * Match de paciente para turnos de campaña (policy campana).
  */
 
 /**
@@ -35,81 +35,22 @@ function campana_paciente_row(array $row): array
  */
 function campana_match_paciente(PDO $pdo, string $phone, string $patientName, string $dni = ''): ?array
 {
-    require_once __DIR__ . '/pacientes_helpers_existing_patient_match.php';
+    require_once __DIR__ . '/pacientes_helpers_match.php';
 
-    $phone = clean_phone_number($phone);
     $dni = clean_patient_dni($dni);
     $cleanedName = campana_clean_name_string($patientName);
     $nameToMatch = $cleanedName !== '' ? $cleanedName : $patientName;
-    if (function_exists('find_existing_patient_match')) {
-        $existing = find_existing_patient_match(
-            $pdo,
-            $phone !== '' && !is_placeholder_phone($phone) ? $phone : null,
-            $nameToMatch,
-            $dni !== '' ? $dni : null
-        );
-        if ($existing) {
-            return campana_paciente_row($existing);
-        }
-    }
+    $cleanPhone = clean_phone_number($phone);
+    $phoneForMatch = ($cleanPhone !== '' && !is_placeholder_phone($cleanPhone)) ? $phone : null;
 
-    $alive = kinesica_pacientes_alive_sql($pdo);
-    if ($phone !== '' && !is_placeholder_phone($phone)) {
-        $stmt = $pdo->prepare(
-            "SELECT id, nombre, apellido, nombre_completo, viene_de_campana
-             FROM pacientes
-             WHERE telefono = :tel AND ({$alive})
-             LIMIT 1"
-        );
-        $stmt->execute(['tel' => $phone]);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        if ($row) {
-            return campana_paciente_row($row);
-        }
-        // Sufijo de 8 solo si es único (mismo criterio que email_by_phone).
-        $suffix = substr($phone, -8);
-        if (strlen($suffix) >= 8) {
-            $stmt = $pdo->prepare(
-                "SELECT id, nombre, apellido, nombre_completo, viene_de_campana
-                 FROM pacientes
-                 WHERE ({$alive}) AND telefono LIKE :tel_end
-                 LIMIT 2"
-            );
-            $stmt->execute(['tel_end' => '%' . $suffix]);
-            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
-            if (count($rows) === 1) {
-                return campana_paciente_row($rows[0]);
-            }
-        }
-    }
+    $existing = kinesica_match_patient($pdo, [
+        // Raw phone: el motor limpia una sola vez.
+        'phone' => $phoneForMatch,
+        'name' => $nameToMatch,
+        'dni' => $dni !== '' ? $dni : null,
+        // Fallback histórico: scan con nombre crudo (permite 1 token).
+        'name_fallback' => $patientName,
+    ], 'campana');
 
-    $nameKey = canonical_patient_name_key($patientName);
-    if ($nameKey === '') {
-        return null;
-    }
-
-    $stmt = $pdo->query(
-        "SELECT id, nombre, apellido, nombre_completo, telefono, viene_de_campana
-         FROM pacientes WHERE ({$alive})"
-    );
-    if (!$stmt) {
-        return null;
-    }
-    $haveRealPhone = $phone !== '' && !is_placeholder_phone($phone);
-    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        $cand = canonical_patient_name_key((string) ($row['nombre_completo'] ?? ''));
-        $alt = canonical_patient_name_key(trim(($row['nombre'] ?? '') . ' ' . ($row['apellido'] ?? '')));
-        $nameHit = ($cand !== '' && $cand === $nameKey) || ($alt !== '' && $alt === $nameKey);
-        if (!$nameHit) {
-            continue;
-        }
-        // Homónimos con WhatsApp reales distintos: no matchear solo por nombre.
-        if ($haveRealPhone
-            && !kinesica_phones_compatible_for_name_merge($phone, (string) ($row['telefono'] ?? ''))
-        ) {
-            continue;
-        }
-        return campana_paciente_row($row);
-    }
-    return null;
+    return $existing ? campana_paciente_row($existing) : null;
 }

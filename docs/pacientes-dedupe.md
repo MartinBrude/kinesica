@@ -60,27 +60,48 @@ Se unen si comparten, con las salvaguardas habituales:
 
 Survivor preferido: teléfono real > review > profesional concreto > id menor. Se OR-mergean flags (`dejo_review`, `encuesta_enviada`, `viene_de_campana`) y se enriquecen notas/email/contacto.
 
+## Match (alta / campaña / email)
+
+Motor único: `kinesica_match_patient(PDO, $query, $policy)` en `pacientes_helpers_match.php`.
+
+| Policy | Uso | Reglas |
+|--------|-----|--------|
+| `strict` | Upsert, recordatorios, fichas (`find_existing_patient_match`) | Tel exacto → DNI → nombre ≥2 tokens + guardia homónimos |
+| `campana` | Agenda campaña (`campana_match_paciente`) | `strict` + suffix-8 único + nombre ≥1 token |
+| `email_suffix` | `get_email_by_phone` | Tel exacto → suffix-8 único **con email** |
+
+Soft-deleted nunca entran. Revive soft-deleted solo en upsert (`find_soft_deleted_by_phone`), no en el matcher.
+
+Excepción deliberada: persistencia email-only de recordatorios sigue con `LOWER(nombre_completo)` (no policy).
+
 ## Módulos
 
 | Módulo | Rol |
 |--------|-----|
+| `pacientes_helpers_alive.php` | `alive_sql`, fetch/require alive, soft-deleted-by-phone |
+| `pacientes_helpers_match_steps.php` | Primitivas exact / DNI / suffix-8 / nombre + `phones_compatible` |
+| `pacientes_helpers_match.php` | Motor `kinesica_match_patient` + policies |
+| `pacientes_helpers_existing_patient_match.php` | Wrapper `find_existing_patient_match` → policy `strict` |
+| `pacientes_helpers_dedupe_link.php` | Keys + union-find compartido |
+| `pacientes_helpers_dedupe_full.php` | Barrido `deduplicate_pacientes_table` |
 | `pacientes_helpers_reassign_children.php` | Reasignación de tablas hijas |
 | `pacientes_helpers_merge_explicit.php` | Merge manual 1→1 |
 | `pacientes_helpers_dedup_apply.php` | Aplicar clusters (auto) |
 | `pacientes_helpers_dedupe_candidates.php` | Candidatos cercanos (tel / DNI / nombre), solo activos |
 | `pacientes_helpers_dedupe_schedule.php` | Alta acotada (`around_patient` / `try_dedupe_after_create`) |
-| `pacientes_helpers_existing_patient_match.php` | Match de alta + barrido + `alive_sql` |
 
 ## Tests
 
 ```bash
+php scripts/test-pacientes-security-helpers.php
 php scripts/test-pacientes-merge.php
 php scripts/verify-pacientes-deduplication.php
+node scripts/verify-pacientes-match.mjs
 # o vía
 npm run admin:test
 ```
 
-Cubren: reasignación de hijos, merge explícito, `around_patient`, y que soft-deleted no absorba activos.
+Cubren: matriz de match (strict/campaña/suffix), reasignación de hijos, merge explícito, `around_patient`, y que soft-deleted no absorba activos.
 
 ## Seguridad relacionada (panel)
 
