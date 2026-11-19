@@ -7,15 +7,18 @@ import {
   btnBackupSql,
   setActiveFilterProf,
 } from "./pacientes-state.js";
-import { refreshPacientesMissingPhoneBadge, startPacientesBadgePoll } from "./pacientes-badge.js";
+import { refreshPacientesMissingPhoneBadge } from "./pacientes-badge.js";
 import { renderPacientesTable } from "./pacientes-table.js?v=2";
 import { loadPacientes } from "./pacientes-load.js";
+import { getSessionUser } from "./auth.js?v=83";
 
 export function initPacientesModule() {
-  startPacientesBadgePoll();
+  // El poll arranca en mountAdminChannels (sesión lista); acá solo revalidar al volver a la pestaña.
   if (typeof document !== "undefined") {
     document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "visible") refreshPacientesMissingPhoneBadge();
+      if (document.visibilityState !== "visible") return;
+      if (!getSessionUser()) return;
+      refreshPacientesMissingPhoneBadge();
     });
   }
 

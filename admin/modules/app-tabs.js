@@ -4,7 +4,16 @@
 
 import { api } from "./api.js?v=79";
 import { getSessionUser } from "./auth.js?v=83";
-import { setPacientesMissingPhoneBadge, stopPacientesBadgePoll } from "./pacientes.js?v=17";
+import {
+  setPacientesMissingPhoneBadge,
+  startPacientesBadgePoll,
+  stopPacientesBadgePoll,
+} from "./pacientes.js?v=18";
+import {
+  setInteraccionesPendingBadge,
+  startBadgePoll,
+  stopBadgePoll,
+} from "./interacciones.js?v=19";
 import { updateDashboardClara, updateDashboardBooking } from "./dashboard.js?v=13";
 import { applyHoursToRuntime } from "./horarios.js?v=4";
 
@@ -38,6 +47,8 @@ export function unmountAdminChannels() {
   setAdminOnlyVisibility(false);
   setPacientesMissingPhoneBadge(0);
   stopPacientesBadgePoll();
+  setInteraccionesPendingBadge(0);
+  stopBadgePoll();
 }
 
 export function mountAdminChannels() {
@@ -60,6 +71,10 @@ export function mountAdminChannels() {
   if (dock) dock.hidden = false;
   setAdminOnlyVisibility(isAdmin);
   bindAdminNavOnce(adminNav);
+
+  // Tras login/restore: reiniciar polls (unmount los corta en el 401 previo).
+  startPacientesBadgePoll();
+  startBadgePoll();
 
   api("settings.php")
     .then((data) => {

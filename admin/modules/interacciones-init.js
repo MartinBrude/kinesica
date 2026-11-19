@@ -7,11 +7,12 @@ import {
   getActiveStatusFilter,
   setActiveStatusFilter,
 } from "./interacciones-state.js";
-import { startBadgePoll, refreshInteraccionesPendingBadge } from "./interacciones-badge.js";
+import { refreshInteraccionesPendingBadge } from "./interacciones-badge.js";
 import { loadInteracciones } from "./interacciones-load.js";
 import { applyFilters } from "./interacciones-page.js";
 import { isWithinAutoRefreshHours } from "./interacciones-hours.js";
 import { AUTO_REFRESH_INTERVAL_MS } from "./interacciones-constants.js";
+import { getSessionUser } from "./auth.js?v=83";
 
 export function initInteraccionesModule() {
   const searchInput = document.getElementById("interacciones-search");
@@ -20,9 +21,11 @@ export function initInteraccionesModule() {
   const daysSelect = document.getElementById("interacciones-days");
   const statsEl = document.getElementById("interacciones-stats");
 
-  startBadgePoll();
+  // El poll arranca en mountAdminChannels (sesión lista); acá solo revalidar al volver a la pestaña.
   document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") refreshInteraccionesPendingBadge();
+    if (document.visibilityState !== "visible") return;
+    if (!getSessionUser()) return;
+    refreshInteraccionesPendingBadge();
   });
 
   if (daysSelect) {
