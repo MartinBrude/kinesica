@@ -568,6 +568,18 @@ await test("vía alternativa de login por código al mail disponible para María
   const loginPhp = fs.readFileSync(path.join(adminDir, "api/login.php"), "utf8");
   assert.match(loginPhp, /login_code_verify/, "login.php tradicional debe aceptar código de mail como fallback de 2FA");
 
+  // Sesión admin: 30 días de inactividad, path propio (no /tmp del hosting) y cookie renovable
+  const sessionStartPhp = fs.readFileSync(path.join(adminDir, "api/lib_db_start_session.php"), "utf8");
+  assert.match(sessionStartPhp, /function kinesica_session_save_path/, "start_session debe usar path propio de sesiones");
+  assert.match(sessionStartPhp, /data\/sessions/, "sesiones deben vivir en admin/api/data/sessions");
+  assert.match(sessionStartPhp, /session_lifetime_admin\(\)/, "cookie/GC inicial deben cubrir 30 días admin");
+  const sessionLifePhp = fs.readFileSync(path.join(adminDir, "api/lib_db_config_candidate_paths.php"), "utf8");
+  assert.match(sessionLifePhp, /30 \* 24 \* 3600/, "admin session lifetime = 30 días");
+  assert.match(sessionLifePhp, /8 \* 3600/, "sesión no-admin = 8 horas");
+  assert.match(sessionLifePhp, /\$_SESSION\['auth_at'\] = time\(\)/, "auth_at debe renovarse (ventana deslizante)");
+  const sessionsHtaccess = fs.readFileSync(path.join(adminDir, "api/data/sessions/.htaccess"), "utf8");
+  assert.match(sessionsHtaccess, /Require all denied/, "data/sessions debe bloquear acceso HTTP");
+
   // 3. Simulación de cliente API para envío y verificación de código
   let payloadSent = null;
   mockFetch((url, options) => {

@@ -2,17 +2,40 @@
 declare(strict_types=1);
 
 
+/**
+ * Directorio propio para archivos de sesión.
+ * Evita que el GC del /tmp compartido del hosting borre sesiones admin antes de 30 días.
+ */
+function kinesica_session_save_path(): string
+{
+    $dir = __DIR__ . '/data/sessions';
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0775, true);
+    }
+    $htaccess = $dir . '/.htaccess';
+    if (is_dir($dir) && !is_file($htaccess)) {
+        @file_put_contents($htaccess, "Require all denied\n");
+    }
+    return is_dir($dir) && is_writable($dir) ? $dir : '';
+}
+
+
 function start_session(): void
 {
     if (session_status() === PHP_SESSION_ACTIVE) {
         enforce_session_lifetime();
         return;
     }
+    $savePath = kinesica_session_save_path();
+    if ($savePath !== '') {
+        session_save_path($savePath);
+    }
     // GC debe cubrir la sesión admin más larga (30 días).
     ini_set('session.gc_maxlifetime', (string) session_lifetime_admin());
     session_name('kinesica_atm');
+    // Cookie inicial al máximo (admin); enforce_session_lifetime ajusta por rol.
     session_set_cookie_params([
-        'lifetime' => session_lifetime_default(),
+        'lifetime' => session_lifetime_admin(),
         'path' => '/admin/',
         'secure' => true,
         'httponly' => true,

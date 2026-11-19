@@ -105,17 +105,13 @@ if (!defined('KINESICA_SKIP_ADMIN_EXCEPTION_HANDLER') || !KINESICA_SKIP_ADMIN_EX
     });
 }
 
-/** Sesión estándar (profesionales / colaboradores): 8 horas. */
-
-/** Sesión estándar (profesionales / colaboradores): 8 horas. */
+/** Sesión estándar (profesionales / colaboradores): 8 horas de inactividad. */
 function session_lifetime_default(): int
 {
     return 8 * 3600;
 }
 
-/** Sesión de administradores (role === admin): 30 días absolutos desde el login. */
-
-/** Sesión de administradores (role === admin): 30 días absolutos desde el login. */
+/** Sesión de administradores (role === admin): 30 días de inactividad. */
 function session_lifetime_admin(): int
 {
     return 30 * 24 * 3600;
@@ -126,10 +122,6 @@ function session_lifetime_for_role(string $role): int
 {
     return $role === 'admin' ? session_lifetime_admin() : session_lifetime_default();
 }
-
-/**
- * @return array{expires:int,path:string,secure:bool,httponly:bool,samesite:string}
- */
 
 /**
  * @return array{expires:int,path:string,secure:bool,httponly:bool,samesite:string}
@@ -176,12 +168,7 @@ function session_role_from_session(): string
 }
 
 /**
- * Caducidad absoluta desde auth_at.
- * Admin: 30 días. Resto: 8 horas.
- */
-
-/**
- * Caducidad absoluta desde auth_at.
+ * Caducidad por inactividad desde auth_at (ventana deslizante).
  * Admin: 30 días. Resto: 8 horas.
  */
 function enforce_session_lifetime(): void
@@ -211,10 +198,10 @@ function enforce_session_lifetime(): void
         return;
     }
 
-    refresh_session_cookie(max(60, $lifetime - $age));
+    // Actividad renueva la ventana y la cookie al lifetime completo del rol.
+    $_SESSION['auth_at'] = time();
+    refresh_session_cookie($lifetime);
 }
-
-/** Marca login completo y fija auth_at + cookie según el rol. */
 
 /** Marca login completo y fija auth_at + cookie según el rol. */
 function mark_full_session(): void

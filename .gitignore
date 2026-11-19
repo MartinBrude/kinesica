@@ -16,6 +16,11 @@ scripts/reports/css-purge-audit.json
 # Datos vivos del admin (no versionar: el deploy por git los pisaría)
 admin/api/data/*
 !admin/api/data/.htaccess
+# Path propio de PHP sessions (evita GC del /tmp del hosting); sin archivos sess_*
+!admin/api/data/sessions/
+admin/api/data/sessions/*
+!admin/api/data/sessions/.htaccess
+!admin/api/data/sessions/.gitkeep
 
 # Cache JPEG para Instagram (se regenera solo)
 admin/campanas/ig/
