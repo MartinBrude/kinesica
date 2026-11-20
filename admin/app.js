@@ -63,9 +63,7 @@ import {
   unmountAdminChannels,
 } from "./modules/app-tabs.js?v=48";
 
-import {
-  initAppControllers,
-} from "./modules/app-init.js?v=39";
+import { initAppControllers } from "./modules/app-init.js?v=48";
 
 export {
   api,
