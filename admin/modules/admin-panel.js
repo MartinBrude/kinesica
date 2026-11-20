@@ -40,7 +40,9 @@ import { applyCreativosEditFromRoute } from "./admin-creativos-image-text.js?v=6
 import {
   initPendientesUI,
   loadPendientesData,
-} from "./admin-pendientes.js?v=1";
+  closePendienteModal,
+  isPendienteModalOpen,
+} from "./admin-pendientes.js?v=2";
 
 const viewAdmin = document.querySelector("#view-admin");
 
@@ -162,6 +164,7 @@ export function initAdminModule() {
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
+      if (isPendienteModalOpen()) closePendienteModal();
       if (isProfModalOpen()) closeProfModal();
       if (isGastoModalOpen()) closeGastoModal();
       if (isErrorModalOpen()) closeErrorModal();

@@ -3,7 +3,7 @@
  */
 
 import { api, formatDate } from "./api.js?v=79";
-import { escapeHtml, dialogAlert, dialogConfirm } from "./dom.js?v=79";
+import { escapeHtml, dialogAlert, dialogConfirm, toast } from "./dom.js?v=79";
 import { setListControlsEnabled } from "./list-controls.js?v=1";
 
 let cachedPendientes = [];
@@ -13,6 +13,34 @@ let pendientesLoading = false;
 const countPill = document.querySelector("#admin-pendientes-count-label");
 const tbody = document.querySelector("#admin-pendientes-tbody");
 const filterBtns = document.querySelectorAll(".admin-pendientes-filter-btn");
+const btnNuevo = document.querySelector("#admin-btn-nuevo-pendiente");
+const modal = document.querySelector("#admin-pendiente-modal");
+const form = document.querySelector("#admin-pendiente-form");
+const inputTitulo = document.querySelector("#admin-pendiente-titulo");
+const btnSave = document.querySelector("#admin-pendiente-modal-save");
+
+function openPendienteModal() {
+  if (!modal) return;
+  if (form) form.reset();
+  modal.hidden = false;
+  queueMicrotask(() => inputTitulo?.focus());
+}
+
+function closePendienteModal() {
+  if (!modal) return;
+  modal.hidden = true;
+  if (form) form.reset();
+}
+
+function setSaveDisabled(disabled) {
+  if (btnSave) btnSave.disabled = Boolean(disabled);
+}
+
+export function isPendienteModalOpen() {
+  return Boolean(modal && !modal.hidden);
+}
+
+export { closePendienteModal };
 
 function countOpen(list) {
   return (Array.isArray(list) ? list : []).filter((i) => i && i.estado !== "resuelto").length;
@@ -159,6 +187,43 @@ async function handleTogglePendiente(item, onReload) {
   }
 }
 
+async function handleSavePendiente(e, onReload) {
+  if (e) e.preventDefault();
+  const titulo = String(inputTitulo?.value || "").trim();
+  if (!titulo) {
+    dialogAlert("Escribí el título de la tarea.");
+    inputTitulo?.focus();
+    return;
+  }
+  if (titulo.length > 255) {
+    dialogAlert("El título no puede superar los 255 caracteres.");
+    inputTitulo?.focus();
+    return;
+  }
+
+  setSaveDisabled(true);
+  try {
+    await api("pendientes.php", {
+      method: "POST",
+      body: JSON.stringify({ action: "create", titulo }),
+    });
+    toast("Pendiente agregado.", { type: "success" });
+    closePendienteModal();
+    if (currentFilter === "resueltos") {
+      currentFilter = "pendientes";
+      filterBtns.forEach((btn) => {
+        btn.classList.toggle("is-active", btn.dataset.filter === "pendientes");
+      });
+    }
+    if (typeof onReload === "function") await onReload();
+    else await loadPendientesData();
+  } catch (err) {
+    dialogAlert("Error al agregar pendiente: " + (err.message || "Error desconocido"));
+  } finally {
+    setSaveDisabled(false);
+  }
+}
+
 export async function loadPendientesData(onReload) {
   if (pendientesLoading) return;
   pendientesLoading = true;
@@ -186,4 +251,11 @@ export function initPendientesUI({ onReload }) {
   filterBtns.forEach((btn) => {
     btn.addEventListener("click", () => setPendientesFilter(btn.dataset.filter, onReload));
   });
+  btnNuevo?.addEventListener("click", openPendienteModal);
+  document.getElementById("admin-pendiente-modal-close")?.addEventListener("click", closePendienteModal);
+  document.getElementById("admin-pendiente-modal-cancel")?.addEventListener("click", closePendienteModal);
+  modal?.addEventListener("click", (e) => {
+    if (e.target === modal) closePendienteModal();
+  });
+  form?.addEventListener("submit", (e) => handleSavePendiente(e, onReload));
 }

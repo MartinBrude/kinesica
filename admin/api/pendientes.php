@@ -49,6 +49,42 @@ if ($method !== 'POST') {
 $input = read_json();
 $action = (string) ($input['action'] ?? '');
 
+if ($action === 'create') {
+    $titulo = trim((string) ($input['titulo'] ?? ''));
+    if ($titulo === '') {
+        json_out(422, ['error' => 'El título de la tarea es obligatorio.']);
+    }
+    if (mb_strlen($titulo) > 255) {
+        json_out(422, ['error' => 'El título no puede superar los 255 caracteres.']);
+    }
+
+    try {
+        $id = 'pend_' . bin2hex(random_bytes(6));
+    } catch (Throwable $e) {
+        $id = 'pend_' . uniqid('', true);
+    }
+
+    $nuevo = [
+        'id' => $id,
+        'titulo' => $titulo,
+        'estado' => 'pendiente',
+        'created_at' => gmdate('Y-m-d\TH:i:s\Z'),
+        'created_by' => (string) ($auth['username'] ?? 'admin'),
+        'resolved_at' => null,
+        'resolved_by' => null,
+    ];
+
+    $pendientes = kinesica_pendientes_load();
+    array_unshift($pendientes, $nuevo);
+    kinesica_pendientes_save($pendientes);
+
+    json_out(200, [
+        'status' => 'success',
+        'message' => 'Pendiente agregado.',
+        'pendiente' => $nuevo,
+    ]);
+}
+
 if ($action === 'toggle_status') {
     $id = trim((string) ($input['id'] ?? ''));
     if ($id === '') {
