@@ -16,12 +16,7 @@ import { recordatoriosStore, recalculateCounts } from "./recordatorios-store.js?
 export function updateHeaderAndTotal(total) {
   const totalEl = document.getElementById("recordatorios-total");
   if (!totalEl) return;
-  const countText = `${total} registro${total === 1 ? "" : "s"}`;
-  if (recordatoriosStore.isRefreshing) {
-    totalEl.innerHTML = `${countText} <span class="recordatorios-reloading-badge"><span class="recordatorios-spinner-sm" aria-hidden="true"></span> Recargando…</span>`;
-  } else {
-    totalEl.textContent = countText;
-  }
+  totalEl.textContent = `${total} registro${total === 1 ? "" : "s"}`;
 }
 
 export function applyFiltersAndRender() {

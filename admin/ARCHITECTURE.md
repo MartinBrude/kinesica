@@ -156,11 +156,12 @@ Motor de lógica clínica agnóstico del DOM, compartido y verificado por la sui
 - **`print-sections.js`**: Ensamblado de secciones clínicas con protección contra cortes de página (`break-inside: avoid`).
 - **`print-parts.js`**: Carga asíncrona segura de sellos y firmas digitales (`img.decode()`).
 
-### 3.12. Contención y Responsividad Mobile (`admin/css/`)
-Para prevenir desbordes y scroll horizontal no deseado en dispositivos móviles:
+### 3.12. Contención, Responsividad y Feedback Visual (`admin/css/` y `admin/modules/`)
+Para prevenir desbordes, scroll horizontal y fatiga visual en dispositivos móviles y de escritorio:
 - **Contención en Root y Main:** `width: 100%; max-width: 100%; overflow-x: clip; box-sizing: border-box;` en `html`, `body`, `main` y `.view`, evitando el uso de `100vw` (que computa el ancho incluyendo la barra de desplazamiento y causa desborde horizontal).
 - **Grids Dinámicos Seguros:** Uso de `minmax(min(100%, Xpx), 1fr)` en resúmenes, tarjetas y paneles (gastos, honorarios, servicios, clara, backups) para que las columnas colapsen fluidamente sin forzar un ancho mínimo rígido superior al viewport.
 - **Scroll Horizontal Localizado:** En elementos inherentemente tabulares o anchos por diseño (ej. línea de tiempo semanal en `horarios.css`), el desplazamiento horizontal se confina exclusivamente a la tarjeta contenedora (`overflow-x: auto; -webkit-overflow-scrolling: touch;`).
+- **Regla Estricta de Spinner Único:** Nunca presentar más de un indicador de carga (`loading-spinner` / `recordatorios-spinner-sm`) simultáneamente para una misma acción. En carga inicial o lista vacía, el único spinner reside en el contenedor principal (deshabilitando los botones de acción sin inyectarles spinners concurrentes ni agregar badges animados a las barras de herramientas). En recargas manuales con datos en pantalla, el spinner se limita exclusivamente al botón accionado (`refreshBtn`).
 
 ---
 

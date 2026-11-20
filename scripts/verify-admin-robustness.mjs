@@ -1010,6 +1010,16 @@ await test("recordatorios.php ingest + vista SPA + reconcile", () => {
   assert.match(indexHtml, /id="view-recordatorios"/, "shell view-recordatorios");
   assert.match(indexHtml, /id="nav-btn-recordatorios"/, "nav Recordatorios");
   assert.match(indexHtml, /id="recordatorios-sync"/, "indicador sync");
+
+  const remApplyJs = fs.readFileSync(path.join(adminDir, "modules/recordatorios-apply.js"), "utf8");
+  assert.ok(!remApplyJs.includes("recordatorios-reloading-badge"), "recordatorios-apply no debe inyectar spinner en toolbar total");
+  assert.ok(!remApplyJs.includes("recordatorios-spinner-sm"), "recordatorios-apply no debe contener spinners secundarios");
+
+  const remLoadJs = fs.readFileSync(path.join(adminDir, "modules/recordatorios-load.js"), "utf8");
+  assert.match(remLoadJs, /if\s*\(force\s*&&\s*hasExistingData\)/, "recordatorios-load solo pone spinner en botón si hay datos previos");
+
+  const remRenderListJs = fs.readFileSync(path.join(adminDir, "modules/recordatorios-render-list.js"), "utf8");
+  assert.ok(!remRenderListJs.includes("recordatorios-spinner-sm"), "recordatorios-render-list no debe duplicar spinners en avisos vacíos");
 });
 
 await test("admin API hygiene: errores genéricos + auth + WA", () => {

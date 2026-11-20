@@ -19,7 +19,7 @@ export function renderRecordatoriosList(container, items, state = {}) {
     const totalCached = typeof state.totalCached === "number" ? state.totalCached : 0;
     if (totalCached === 0) {
       const refreshNotice = state.isRefreshing
-        ? `<p class="recordatorios-empty-refreshing"><span class="recordatorios-spinner-sm" aria-hidden="true"></span> Recargando datos desde el servidor…</p>`
+        ? `<p class="recordatorios-empty-refreshing">Recargando datos desde el servidor…</p>`
         : "";
       container.innerHTML = `
         <div class="recordatorios-empty">
@@ -40,7 +40,7 @@ export function renderRecordatoriosList(container, items, state = {}) {
     }
 
     const refreshNotice = state.isRefreshing
-      ? `<p class="recordatorios-empty-refreshing"><span class="recordatorios-spinner-sm" aria-hidden="true"></span> Recargando datos desde el servidor…</p>`
+      ? `<p class="recordatorios-empty-refreshing">Recargando datos desde el servidor…</p>`
       : "";
 
     container.innerHTML = `

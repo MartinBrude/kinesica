@@ -31,13 +31,16 @@ export async function loadInteracciones(force = false) {
   ];
   setListControlsEnabled(filterRoots, false);
 
+  const hasExisting = container.children.length > 0;
   if (refreshBtn && force) {
     refreshBtn.disabled = true;
     refreshBtn.style.opacity = "0.75";
-    refreshBtn.innerHTML = `<span class="loading-spinner-sm" aria-hidden="true"></span> Actualizando...`;
+    if (hasExisting) {
+      refreshBtn.innerHTML = `<span class="loading-spinner-sm" aria-hidden="true"></span> Actualizando...`;
+    }
   }
 
-  if (container.children.length === 0) {
+  if (!hasExisting) {
     container.innerHTML = `<div class="admin-view-loading" role="status"><span class="loading-spinner" aria-hidden="true"></span><span>Cargando conversaciones recientes...</span></div>`;
   }
 

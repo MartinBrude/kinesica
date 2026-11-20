@@ -19,13 +19,17 @@ export async function loadRecordatorios(force = false) {
   ];
   setListControlsEnabled(filterRoots, false);
 
+  const hasExistingData = recordatoriosStore.hasLoadedOnce && recordatoriosStore.cachedItems.length > 0;
+
   if (refreshBtn) {
     refreshBtn.disabled = true;
-    refreshBtn.innerHTML = `<span class="recordatorios-spinner-sm" aria-hidden="true"></span> Actualizando...`;
     refreshBtn.style.opacity = "0.75";
+    if (force && hasExistingData) {
+      refreshBtn.innerHTML = `<span class="recordatorios-spinner-sm" aria-hidden="true"></span> Actualizando...`;
+    }
   }
 
-  if (!recordatoriosStore.hasLoadedOnce || !recordatoriosStore.cachedItems.length) {
+  if (!hasExistingData) {
     container.innerHTML = `
       <div class="recordatorios-empty is-loading">
         <span class="loading-spinner" aria-hidden="true"></span>
