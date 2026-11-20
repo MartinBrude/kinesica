@@ -13,7 +13,7 @@ import {
 } from "./admin-creativos-cola.js?v=12";
 import { ensureColaUiPaint } from "./admin-creativos-cola-ui.js?v=4";
 import { initListaUI } from "./admin-creativos-lista.js?v=12";
-import { bindImageTextUi } from "./admin-creativos-image-text.js?v=6";
+import { bindImageTextUi } from "./admin-creativos-image-text.js?v=7";
 import { CREATIVOS_DATA } from "./admin-creativos-data.js?v=1";
 import {
   setActiveFormat,
@@ -27,7 +27,7 @@ import {
   closeLightboxModal,
   initModalCaptionControls,
   setModalCaptionEditMode,
-} from "./admin-creativos-modal.js?v=3";
+} from "./admin-creativos-modal.js?v=4";
 
 export { CREATIVOS_DATA };
 

@@ -171,8 +171,13 @@ async function saveFromModal(btn) {
       // Tras regenerar, mostrar la pieza live (con capas nuevas).
       els.preview.src = `${seed.feedUrl}?v=${assetVersion}`;
     }
+    const warnLabels = {
+      original_was_finished: "placa base ya tenía capas (se taparon)",
+      title_truncated: "título truncado",
+      body_truncated: "cuerpo truncado",
+    };
     const warn = Array.isArray(data?.warnings) && data.warnings.length
-      ? ` · ${data.warnings.join(", ")}`
+      ? ` · ${data.warnings.map((w) => warnLabels[w] || w).join(", ")}`
       : "";
     toast(`Imagen regenerada${warn}`, { type: "success", duration: 2600 });
     flashPieceThumbs(editingId);

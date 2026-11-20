@@ -114,7 +114,8 @@ function ig_paint_gradient($im, int $w, int $h, float $fadeStart, float $solidSt
 
 /**
  * Detecta placas que ya son pieza terminada (banda navy + copy).
- * Re-pintar encima duplica logo/texto — hay que usar foto limpia en original/.
+ * No bloquea el render: se usa para warning; la banda nueva y ig_paint_logo
+ * tapan el copy/logo previos cuando original/ vino contaminado desde live.
  */
 function ig_original_looks_finished($im, int $w, int $h): bool
 {
