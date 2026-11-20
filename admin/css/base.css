@@ -45,19 +45,30 @@
   pointer-events: none;
 }
 
-html,
-body {
-  overflow-x: hidden;
-  max-width: 100vw;
+html {
+  overflow-x: clip;
+  width: 100%;
+  max-width: 100%;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+  position: relative;
   font-family: var(--font);
   color: var(--ink);
   background: linear-gradient(180deg, #c8dce8 0%, #dce9f2 28%, #f6f9fb 62%, #fff 100%);
   background-attachment: scroll;
+}
+
+@supports not (overflow-x: clip) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
 }
 
 @media (min-width: 801px) {
@@ -271,8 +282,23 @@ main {
   z-index: 5;
   max-width: 1080px;
   width: 100%;
+  min-width: 0;
   margin: 0 auto;
   padding: 36px 20px 64px;
+  box-sizing: border-box;
+  overflow-x: clip;
+}
+
+@supports not (overflow-x: clip) {
+  main {
+    overflow-x: hidden;
+  }
+}
+
+.view {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   box-sizing: border-box;
 }
 
@@ -510,6 +536,12 @@ main {
     height: 42px;
   }
   html:not(.is-authenticated) .btn-nav-toggle,
+  html:not(.is-authenticated) .session-box,
+  html:not(.is-authenticated) #session-user-name,
+  html:not(.is-authenticated) #btn-logout,
+  body:has(#view-gate:not([hidden])) .session-box,
+  body:has(#view-gate:not([hidden])) #session-user-name,
+  body:has(#view-gate:not([hidden])) #btn-logout,
   #btn-nav-toggle[hidden] {
     display: none !important;
   }
@@ -658,6 +690,16 @@ main {
   }
   main {
     padding: 12px 10px 48px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: clip;
+    box-sizing: border-box;
+  }
+  @supports not (overflow-x: clip) {
+    main {
+      overflow-x: hidden;
+    }
   }
 }
 

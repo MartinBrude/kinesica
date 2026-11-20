@@ -15,6 +15,15 @@ html.is-authenticated #view-gate {
   display: none !important;
 }
 
+html:not(.is-authenticated) .session-box,
+html:not(.is-authenticated) #session-user-name,
+html:not(.is-authenticated) #btn-logout,
+body:has(#view-gate:not([hidden])) .session-box,
+body:has(#view-gate:not([hidden])) #session-user-name,
+body:has(#view-gate:not([hidden])) #btn-logout {
+  display: none !important;
+}
+
 #view-gate .gate-card[hidden],
 #login-form[hidden],
 #enroll-form[hidden],

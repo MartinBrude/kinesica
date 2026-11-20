@@ -815,6 +815,14 @@ details.admin-collapsible-card[open] > summary .admin-collapsible-chevron {
 }
 
 @media (max-width: 640px) {
+  .horarios-timeline-card {
+    padding: 14px 12px;
+    margin-bottom: 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
   summary.admin-collapsible-summary {
     padding: 14px 16px;
   }

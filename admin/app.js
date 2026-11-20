@@ -243,6 +243,9 @@ if (resetToken && resetFormEl) {
     });
 } else {
   refresh().catch((error) => {
-    if (!error.auth) showGate({ login: true });
+    if (!error.auth) {
+      setSessionUser(null);
+      showGate({ login: true });
+    }
   });
 }

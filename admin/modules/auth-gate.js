@@ -2,7 +2,7 @@
 
 import { switchActiveView } from "./dom.js?v=79";
 import { clearAuthStorage, saveAuthStorage } from "./auth-utils.js";
-import { getSessionUserRef } from "./auth-session.js";
+import { getSessionUserRef, setSessionUser } from "./auth-session.js";
 import {
   viewGate,
   loginForm,
@@ -22,9 +22,15 @@ import {
 
 export function showGate(data = {}) {
   clearAuthStorage();
+  setSessionUser(null);
   if (typeof document !== "undefined") {
     document.documentElement.classList.remove("is-authenticated");
     document.documentElement.classList.remove("is-admin-role");
+    const userLabel = document.getElementById("session-user-name");
+    if (userLabel) {
+      userLabel.textContent = "";
+      userLabel.hidden = true;
+    }
   }
 
   switchActiveView("view-gate");

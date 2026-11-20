@@ -146,6 +146,7 @@ Motor de lógica clínica agnóstico del DOM, compartido y verificado por la sui
 
 ### 3.10. Autenticación y Seguridad Frontend (`admin/modules/auth*.js`)
 - **`auth.js`**: Controlador principal del gate de acceso y verificación 2FA.
+- **`auth-gate.js`**: Orquestador visual del Gate de acceso (login, TOTP, restablecimiento). Garantiza el aislamiento estricto de sesión limpiando y ocultando la información del usuario previo (`setSessionUser(null)`) cada vez que se requiere re-autenticación.
 - **`auth-email-code.js`**: Flujo alternativo de inicio de sesión mediante código de 6 dígitos enviado por correo.
 - **`auth-recovery.js`**: Solicitud de restablecimiento de contraseña y cambio seguro.
 - **`auth-utils.js`**: Toggles de visibilidad de contraseña accesibles e indicadores de fortaleza.
@@ -154,6 +155,12 @@ Motor de lógica clínica agnóstico del DOM, compartido y verificado por la sui
 - **`print.js`**: Orquestador de impresión institucional en formato A4.
 - **`print-sections.js`**: Ensamblado de secciones clínicas con protección contra cortes de página (`break-inside: avoid`).
 - **`print-parts.js`**: Carga asíncrona segura de sellos y firmas digitales (`img.decode()`).
+
+### 3.12. Contención y Responsividad Mobile (`admin/css/`)
+Para prevenir desbordes y scroll horizontal no deseado en dispositivos móviles:
+- **Contención en Root y Main:** `width: 100%; max-width: 100%; overflow-x: clip; box-sizing: border-box;` en `html`, `body`, `main` y `.view`, evitando el uso de `100vw` (que computa el ancho incluyendo la barra de desplazamiento y causa desborde horizontal).
+- **Grids Dinámicos Seguros:** Uso de `minmax(min(100%, Xpx), 1fr)` en resúmenes, tarjetas y paneles (gastos, honorarios, servicios, clara, backups) para que las columnas colapsen fluidamente sin forzar un ancho mínimo rígido superior al viewport.
+- **Scroll Horizontal Localizado:** En elementos inherentemente tabulares o anchos por diseño (ej. línea de tiempo semanal en `horarios.css`), el desplazamiento horizontal se confina exclusivamente a la tarjeta contenedora (`overflow-x: auto; -webkit-overflow-scrolling: touch;`).
 
 ---
 
@@ -251,6 +258,7 @@ flowchart LR
 | **Ataques de Fuerza Bruta** | **Blindado** | Tablas `login_attempts` y `login_code_attempts`. Rate limiting con bloqueo temporal progresivo ante fallos reiterados (`HTTP 429`). |
 | **Autenticación en Dos Pasos (2FA)** | **Blindado** | Implementación nativa TOTP RFC 6238 en `lib_auth.php`. Enrolamiento protegido por contraseña previa. |
 | **Cookies de Sesión Seguras** | **Blindado** | `SameSite = Lax`, `HttpOnly = true`, `Secure = true`, `path = /admin/`. Regeneración del Session ID con `session_regenerate_id(true)` en cada login. |
+| **Aislamiento de Sesión en Gate** | **Blindado** | Ante expiración de sesión (401) o reautenticación, `auth-gate.js` purga en memoria y oculta vía CSS (`html:not(.is-authenticated)` / `body:has(#view-gate:not([hidden]))`) el usuario en la barra superior. |
 | **Filtrado de Archivos Sensibles** | **Blindado** | Reglas estrictas en `.htaccess` denegando el acceso HTTP a `*.php` internos de configuración, `.sql`, `.bak` y `.log`. |
 
 ---

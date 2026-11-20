@@ -36,9 +36,16 @@
     html.is-authenticated #view-gate {
       display: none !important;
     }
+    html:not(.is-authenticated) .session-box,
+    html:not(.is-authenticated) #session-user-name,
     html:not(.is-authenticated) #btn-logout,
     html:not(.is-authenticated) #admin-nav,
     html:not(.is-authenticated) #admin-mobile-dock {
+      display: none !important;
+    }
+    body:has(#view-gate:not([hidden])) .session-box,
+    body:has(#view-gate:not([hidden])) #session-user-name,
+    body:has(#view-gate:not([hidden])) #btn-logout {
       display: none !important;
     }
     html:not(.is-admin-role) #dash-card-admin,
@@ -723,7 +730,7 @@
 
           <div class="horarios-timeline-card" style="margin-bottom: 24px;">
             <h3 class="horarios-timeline-title" style="margin-bottom: 18px; font-size:15px;">Valores de Sesión</h3>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 24px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 16px; margin-bottom: 24px;">
               <div>
                 <label for="input-fee-atm" style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px; color: var(--navy);">
                   ATM (Bruxismo / Dolor Mandibular) ($ ARS)
@@ -800,27 +807,27 @@
         </summary>
 
         <div class="admin-collapsible-body">
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px;">
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius);">
-              <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 16px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 16px 18px; background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius);">
+              <div style="display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1 1 180px;">
                 <span class="dash-status-dot active" id="cfg-clara-dot"></span>
-                <div>
+                <div style="min-width: 0;">
                   <div style="font-weight: 700; font-size: 14px; color: var(--navy);" id="cfg-clara-status-text">Clara WhatsApp: Activa</div>
-                  <small style="color: var(--muted); font-size: 12px;">Botón web + recordatorios (el chat siempre responde)</small>
+                  <small style="color: var(--muted); font-size: 12px; display: block; word-break: break-word;">Botón web + recordatorios (el chat siempre responde)</small>
                 </div>
               </div>
-              <button type="button" class="btn light" id="cfg-btn-toggle-clara" style="font-size: 13px; padding: 6px 14px;">Pausar bot</button>
+              <button type="button" class="btn light" id="cfg-btn-toggle-clara" style="font-size: 13px; padding: 6px 14px; flex-shrink: 0;">Pausar bot</button>
             </div>
 
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius);">
-              <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 16px 18px; background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius);">
+              <div style="display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1 1 180px;">
                 <span class="dash-status-dot active" id="cfg-booking-dot"></span>
-                <div>
+                <div style="min-width: 0;">
                   <div style="font-weight: 700; font-size: 14px; color: var(--navy);" id="cfg-booking-status-text">Reservas Web: Activas</div>
-                  <small style="color: var(--muted); font-size: 12px;">Turnera online en vivo</small>
+                  <small style="color: var(--muted); font-size: 12px; display: block; word-break: break-word;">Turnera online en vivo</small>
                 </div>
               </div>
-              <button type="button" class="btn light" id="cfg-btn-toggle-booking" style="font-size: 13px; padding: 6px 14px;">Pausar turnera</button>
+              <button type="button" class="btn light" id="cfg-btn-toggle-booking" style="font-size: 13px; padding: 6px 14px; flex-shrink: 0;">Pausar turnera</button>
             </div>
           </div>
         </div>
@@ -1513,7 +1520,7 @@
             </div>
           </div>
           <div class="admin-card-body">
-            <div class="gastos-summary-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+            <div class="gastos-summary-grid" style="grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));">
               <div class="gastos-stat-card card-eur">
                 <span class="stat-name">1. Kinésica Web (MariaDB)</span>
                 <span class="stat-equiv" style="margin-top: 6px; line-height: 1.5; color: var(--navy); font-weight: 500;">
@@ -2833,7 +2840,9 @@
       try {
         if (localStorage.getItem("kinesica_logged_in") === "1") {
           var user = localStorage.getItem("kinesica_user_name");
-          if (user) {
+          var gateEl = document.getElementById("view-gate");
+          var isGateVisible = gateEl && !gateEl.hidden;
+          if (user && !isGateVisible) {
             var logoutBtn = document.getElementById("btn-logout");
             if (logoutBtn) logoutBtn.hidden = false;
             var userLabel = document.getElementById("session-user-name");

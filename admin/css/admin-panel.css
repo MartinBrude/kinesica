@@ -741,6 +741,22 @@
     justify-content: center;
   }
 
+  .admin-gastos-header-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .admin-gastos-header-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .admin-gastos-header-actions .gastos-count-pill {
+    text-align: center;
+  }
+
   .admin-card-body {
     padding: 16px;
   }
@@ -794,6 +810,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .admin-gastos-toolbar {
@@ -915,7 +932,7 @@
 
 .gastos-summary-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
   gap: 16px;
   margin-bottom: 20px;
 }
@@ -1267,9 +1284,15 @@
    ========================================================================== */
 .servicios-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   gap: 16px;
   margin-top: 8px;
+}
+
+@media (max-width: 768px) {
+  .servicios-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .servicio-card {

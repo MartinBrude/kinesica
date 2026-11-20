@@ -580,6 +580,15 @@ await test("vía alternativa de login por código al mail disponible para María
   const sessionsHtaccess = fs.readFileSync(path.join(adminDir, "api/data/sessions/.htaccess"), "utf8");
   assert.match(sessionsHtaccess, /Require all denied/, "data/sessions debe bloquear acceso HTTP");
 
+  // Protección de gate y mobile: showGate debe resetear sesión y ocultar usuario en topbar
+  const authGateJs = fs.readFileSync(path.join(adminDir, "modules/auth-gate.js"), "utf8");
+  assert.match(authGateJs, /setSessionUser\(null\)/, "showGate debe invocar setSessionUser(null)");
+  assert.match(authGateJs, /session-user-name/, "showGate debe limpiar/ocultar el label de usuario");
+  const baseCss = fs.readFileSync(path.join(adminDir, "css/base.css"), "utf8");
+  assert.match(baseCss, /html:not\(\.is-authenticated\)[^{]*#session-user-name/, "base.css debe ocultar #session-user-name cuando no está autenticado");
+  assert.match(baseCss, /overflow-x:\s*clip/, "base.css debe usar overflow-x: clip para prevenir scroll horizontal");
+  assert.ok(!baseCss.includes("max-width: 100vw"), "base.css no debe usar max-width: 100vw para evitar scrollbar overflow");
+
   // 3. Simulación de cliente API para envío y verificación de código
   let payloadSent = null;
   mockFetch((url, options) => {
