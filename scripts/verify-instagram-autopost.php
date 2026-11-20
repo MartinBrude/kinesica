@@ -406,7 +406,7 @@ it('image_text: normalize, override, reject limits y publishing', function () {
 it('render regenera feed/story, bust cache y no toca original/', function () {
     require_once __DIR__ . '/../admin/api/lib_instagram_render.php';
     $root = dirname(__DIR__) . '/admin/campanas';
-    // Usar pieza con placa limpia (sin banda/texto). Originales "terminados" ya no se re-pintan.
+    // Pieza con placa limpia (sin banda/texto) para el camino feliz sin warning.
     $id = '134_deseamos_fiestas';
     $origF = "{$root}/original/feed/catalogo_feed_{$id}.png";
     $liveF = "{$root}/feed/catalogo_feed_{$id}.png";
@@ -436,15 +436,35 @@ it('render regenera feed/story, bust cache y no toca original/', function () {
     }
 });
 
-it('render rechaza original que ya es pieza terminada', function () {
+it('render permite editar aunque original ya sea pieza terminada', function () {
     require_once __DIR__ . '/../admin/api/lib_instagram_render.php';
-    $threw = false;
-    try {
-        ig_render_piece('02_sintoma_senal', 'CAT', 'Titulo', 'Cuerpo de prueba suficiente.');
-    } catch (Throwable $e) {
-        $threw = str_contains($e->getMessage(), 'pieza terminada');
+    $root = dirname(__DIR__) . '/admin/campanas';
+    $id = '02_sintoma_senal';
+    $liveF = "{$root}/feed/catalogo_feed_{$id}.png";
+    $liveS = "{$root}/story/catalogo_story_{$id}.png";
+    if (!is_file($liveF) || !is_file($liveS)) {
+        throw new Exception('Faltan PNG live de 02');
     }
-    if (!$threw) throw new Exception('Debía rechazar original terminado (02)');
+    $bakF = $liveF . '.baktest';
+    $bakS = $liveS . '.baktest';
+    copy($liveF, $bakF);
+    copy($liveS, $bakS);
+    try {
+        $res = ig_render_piece($id, 'FILOSOFIA', 'El sintoma es solo una senal', 'Cuerpo de prueba suficiente para regenerar.');
+        if (empty($res['feed']) || empty($res['story'])) {
+            throw new Exception('paths vacíos');
+        }
+        $warn = $res['warnings'] ?? [];
+        if (!in_array('original_was_finished', $warn, true)) {
+            throw new Exception('Debía avisar original_was_finished en 02');
+        }
+        if (!is_file($liveF) || !is_file($liveS)) {
+            throw new Exception('PNG live no escritos tras regen de terminado');
+        }
+    } finally {
+        rename($bakF, $liveF);
+        rename($bakS, $liveS);
+    }
 });
 
 it('inventario original/feed|story = 152', function () {

@@ -16,14 +16,13 @@ function ig_render_format(string $id, string $kind, string $cat, string $title, 
     $src = ig_original_path($id, $kind);
     if (!is_file($src)) throw new RuntimeException('Falta original ' . $kind . ' para ' . $id);
     $im = ig_load_scaled($src, $w, $h);
+    $warn = [];
+    // Si original/ ya es pieza terminada (backup desde live), igual se puede editar:
+    // la banda navy nueva tapa el copy viejo y ig_paint_logo cubre el badge previo.
     if (ig_original_looks_finished($im, $w, $h)) {
-        throw new RuntimeException(
-            "El original {$kind} de {$id} ya parece una pieza terminada (banda/texto). "
-            . 'Reemplazá original/ con una foto limpia (sin logo ni copy) y volvé a renderizar.'
-        );
+        $warn[] = 'original_was_finished';
     }
 
-    $warn = [];
     $fontR = ig_font_path('regular');
     $fontB = ig_font_path('bold');
     $fontS = ig_font_path('semibold');

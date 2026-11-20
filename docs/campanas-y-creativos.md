@@ -66,7 +66,7 @@ Directamente desde la interfaz de Creativos, Norberto y los administradores gest
    - **Cálculo de slots estimados**: Fechas proyectadas según la frecuencia configurada en admin (default Lun/Mié/Vie 10:00 AR).
    - **Frecuencia**: días + hora en la barra de la cola; persiste en DB y alimenta el cron (1 pieza/día).
    - **🗑️ Papelera**: tachito en cada pieza para sacarla del catálogo (soft-delete). Se restaura desde el filtro Papelera.
-   - **original/** debe ser **foto limpia** (sin logo ni copy). Si el original ya es la pieza terminada, el render se niega (evita logo/texto duplicados).
+   - **original/** idealmente es **foto limpia** (sin logo ni copy). Si el original ya es la pieza terminada (p. ej. backup desde live), el render igual regenera: tapa la banda/copy previos y vuelve a pintar logo + textos (warning `original_was_finished`).
    - **Compositor**: logo = pill blanco **con margen** (estilo 122), no cápsula pegada a la esquina. Copy anclado abajo con aire; banda navy solo del alto necesario.
    - **Editar imagen** refleja URL: `/admin/creativos/editar/{id}` (atrás del browser cierra el modal).
    - **⚡ Publicar ya**: Publica de inmediato según el canal elegido (timeout 180s). Cuenta para el cupo del día.

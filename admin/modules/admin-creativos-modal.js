@@ -13,11 +13,11 @@ import {
   isCreativoHidden,
 } from "./admin-creativos-cola.js?v=12";
 import { colaButtonHtml, colaHeartHtml } from "./admin-creativos-cola-ui.js?v=4";
-import { canEditCaptions } from "./admin-creativos-caption.js?v=10";
+import { canEditCaptions } from "./admin-creativos-caption.js?v=11";
 import {
   imageTextEditButtonHtml,
   canEditImageText,
-} from "./admin-creativos-image-text.js?v=6";
+} from "./admin-creativos-image-text.js?v=7";
 import {
   getActiveFormat,
   getSelectedItem,

@@ -35,8 +35,8 @@ import {
 import {
   initCreativosUI,
   loadCreativosData,
-} from "./admin-creativos.js?v=113";
-import { applyCreativosEditFromRoute } from "./admin-creativos-image-text.js?v=6";
+} from "./admin-creativos.js?v=114";
+import { applyCreativosEditFromRoute } from "./admin-creativos-image-text.js?v=7";
 import {
   initPendientesUI,
   loadPendientesData,

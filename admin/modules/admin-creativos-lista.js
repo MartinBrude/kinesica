@@ -19,7 +19,7 @@ import {
   handleServiceToggleClick,
   serviceToggleHtml,
   channelLabel,
-} from "./admin-creativos-caption.js?v=10";
+} from "./admin-creativos-caption.js?v=11";
 import { getNextPublishSlots, handleScheduleSaveClick } from "./admin-creativos-schedule.js?v=1";
 
 let resolveItem = () => null, draggedId = null;
