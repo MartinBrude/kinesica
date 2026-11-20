@@ -31,6 +31,9 @@ function showBookingOpenError(message) {
 export function closeAdminBooking() {
   const modal = getModal();
   if (!modal) return;
+  if (typeof document !== "undefined" && document.activeElement && modal.contains(document.activeElement)) {
+    document.activeElement.blur();
+  }
   modal.classList.remove("is-open");
   modal.setAttribute("aria-hidden", "true");
   document.body.classList.remove("kinesica-booking-modal-open");

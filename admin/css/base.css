@@ -579,6 +579,9 @@ main {
     gap: 2px;
     white-space: normal;
   }
+  html.is-nav-open .topbar {
+    z-index: 50;
+  }
   html.is-nav-open .admin-nav,
   html.is-nav-open #admin-nav {
     display: flex;
@@ -595,6 +598,10 @@ main {
   }
   html.is-nav-open .btn-nav-toggle .nav-toggle-close {
     display: block;
+  }
+  html.is-nav-open #dock-btn-menu {
+    color: var(--navy);
+    background: rgba(11, 37, 69, 0.08);
   }
 
   /* Mobile: accesos directos de escritorio */
@@ -792,7 +799,7 @@ main {
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 45;
+    z-index: 55;
     display: none;
     grid-template-columns: repeat(5, 1fr);
     gap: 2px;

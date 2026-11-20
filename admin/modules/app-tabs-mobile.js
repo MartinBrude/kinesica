@@ -6,6 +6,10 @@ export function closeMobileNav() {
     toggle.setAttribute("aria-expanded", "false");
     toggle.setAttribute("aria-label", "Abrir menú");
   }
+  const dockBtn = document.getElementById("dock-btn-menu");
+  if (dockBtn) {
+    dockBtn.setAttribute("aria-expanded", "false");
+  }
   const backdrop = document.getElementById("admin-nav-backdrop");
   if (backdrop) backdrop.hidden = true;
 }
@@ -17,6 +21,10 @@ export function openMobileNav() {
   if (toggle) {
     toggle.setAttribute("aria-expanded", "true");
     toggle.setAttribute("aria-label", "Cerrar menú");
+  }
+  const dockBtn = document.getElementById("dock-btn-menu");
+  if (dockBtn) {
+    dockBtn.setAttribute("aria-expanded", "true");
   }
   const backdrop = document.getElementById("admin-nav-backdrop");
   if (backdrop) backdrop.hidden = false;

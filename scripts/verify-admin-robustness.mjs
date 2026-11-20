@@ -588,6 +588,7 @@ await test("vía alternativa de login por código al mail disponible para María
   assert.match(baseCss, /html:not\(\.is-authenticated\)[^{]*#session-user-name/, "base.css debe ocultar #session-user-name cuando no está autenticado");
   assert.match(baseCss, /overflow-x:\s*clip/, "base.css debe usar overflow-x: clip para prevenir scroll horizontal");
   assert.ok(!baseCss.includes("max-width: 100vw"), "base.css no debe usar max-width: 100vw para evitar scrollbar overflow");
+  assert.match(baseCss, /html\.is-nav-open\s+\.topbar\s*\{[^}]*z-index:\s*50/, "base.css debe elevar .topbar por encima de .admin-nav-backdrop en mobile");
 
   // 3. Simulación de cliente API para envío y verificación de código
   let payloadSent = null;

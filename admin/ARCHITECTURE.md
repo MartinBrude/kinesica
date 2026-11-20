@@ -162,6 +162,7 @@ Para prevenir desbordes, scroll horizontal y fatiga visual en dispositivos móvi
 - **Grids Dinámicos Seguros:** Uso de `minmax(min(100%, Xpx), 1fr)` en resúmenes, tarjetas y paneles (gastos, honorarios, servicios, clara, backups) para que las columnas colapsen fluidamente sin forzar un ancho mínimo rígido superior al viewport.
 - **Scroll Horizontal Localizado:** En elementos inherentemente tabulares o anchos por diseño (ej. línea de tiempo semanal en `horarios.css`), el desplazamiento horizontal se confina exclusivamente a la tarjeta contenedora (`overflow-x: auto; -webkit-overflow-scrolling: touch;`).
 - **Regla Estricta de Spinner Único:** Nunca presentar más de un indicador de carga (`loading-spinner` / `recordatorios-spinner-sm`) simultáneamente para una misma acción. En carga inicial o lista vacía, el único spinner reside en el contenedor principal (deshabilitando los botones de acción sin inyectarles spinners concurrentes ni agregar badges animados a las barras de herramientas). En recargas manuales con datos en pantalla, el spinner se limita exclusivamente al botón accionado (`refreshBtn`).
+- **Apilamiento y Capas en Mobile (`z-index`):** Al abrir el menú de navegación (`html.is-nav-open`), `.topbar` se eleva a `z-index: 50` para que el panel `#admin-nav` quede nítido y por encima de `.admin-nav-backdrop` (`z-index: 35`), asegurando que la capa semitransparente solo atenúe el contenido de fondo y no opaque ni bloquee las interacciones táctiles en el menú desplegable.
 
 ---
 
