@@ -1,10 +1,15 @@
 /**
  * Kinésica Admin — Tareas pendientes (Administración)
+ * Badge de notificaciones: solo para Norberto.
  */
 
 import { api, formatDate } from "./api.js?v=79";
 import { escapeHtml, dialogAlert, dialogConfirm, toast } from "./dom.js?v=79";
 import { setListControlsEnabled } from "./list-controls.js?v=1";
+import { getSessionUser } from "./auth.js?v=83";
+
+/** Username que recibe el badge de tareas pendientes. */
+export const PENDIENTES_BADGE_USERNAME = "norberto";
 
 let cachedPendientes = [];
 let currentFilter = "pendientes"; // 'todos' | 'pendientes' | 'resueltos'
@@ -46,29 +51,43 @@ function countOpen(list) {
   return (Array.isArray(list) ? list : []).filter((i) => i && i.estado !== "resuelto").length;
 }
 
+export function canShowPendientesBadge(user = getSessionUser()) {
+  return String(user?.username || "").toLowerCase() === PENDIENTES_BADGE_USERNAME;
+}
+
+function applyBadgeEl(el, show, label, aria) {
+  if (!el) return;
+  el.textContent = label;
+  el.hidden = !show;
+  el.setAttribute("aria-hidden", show ? "false" : "true");
+  if (show) {
+    el.setAttribute("aria-label", aria);
+    el.title = aria;
+  } else {
+    el.removeAttribute("aria-label");
+    el.removeAttribute("title");
+  }
+}
+
+/**
+ * Actualiza el badge de Pendientes.
+ * Solo Norberto ve el contador (menú + grupo Administración).
+ * Otros usuarios: oculta el badge del ítem Pendientes sin tocar el del grupo.
+ */
 export function setPendientesPendingBadge(count) {
-  const n = Math.max(0, Number(count) || 0);
+  const audience = canShowPendientesBadge();
+  const n = audience ? Math.max(0, Number(count) || 0) : 0;
   const label = n > 99 ? "99+" : String(n);
   const show = n > 0;
   const aria = show
     ? `${n === 1 ? "1 pendiente" : `${n} pendientes`} en Administración`
     : "";
 
-  for (const id of ["nav-badge-admin", "nav-badge-pendientes"]) {
-    const el = document.getElementById(id);
-    if (!el) continue;
-    el.textContent = label;
-    el.hidden = !show;
-    el.setAttribute("aria-hidden", show ? "false" : "true");
-    if (show) {
-      el.setAttribute("aria-label", aria);
-      el.title = aria;
-    } else {
-      el.removeAttribute("aria-label");
-      el.removeAttribute("title");
-    }
-  }
+  applyBadgeEl(document.getElementById("nav-badge-pendientes"), show, label, aria);
 
+  if (!audience) return;
+
+  applyBadgeEl(document.getElementById("nav-badge-admin"), show, label, aria);
   const adminBtn = document.getElementById("nav-btn-admin");
   if (adminBtn) {
     if (show) adminBtn.setAttribute("aria-label", `Administración, ${aria}`);
@@ -81,6 +100,10 @@ export function syncPendientesBadgeFromCache() {
 }
 
 export async function refreshPendientesPendingBadge() {
+  if (!canShowPendientesBadge()) {
+    setPendientesPendingBadge(0);
+    return;
+  }
   try {
     const resp = await api(`pendientes.php?counts_only=1&_t=${Date.now()}`, { cache: "no-store" });
     if (!resp || resp.status !== "success") return;
