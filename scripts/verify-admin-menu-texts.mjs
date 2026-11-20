@@ -226,6 +226,8 @@ test("demo Clara: línea solo WhatsApp, variantes MENU y secuencia ABC", () => {
   );
   assert.equal(isWhatsAppOnlyLineFaq("llamé y no atienden"), true);
   assert.equal(isWhatsAppOnlyLineFaq("dónde queda el consultorio"), false);
+  assert.equal(isWhatsAppOnlyLineFaq("cuánto sale la sesión"), false);
+  assert.equal(isWhatsAppOnlyLineFaq("quiero un turno"), false);
   assert.match(getWhatsAppOnlyLineText("es"), /solo de \*WhatsApp\*/);
   assert.match(getWhatsAppOnlyLineText("en"), /WhatsApp only/);
 
@@ -233,13 +235,37 @@ test("demo Clara: línea solo WhatsApp, variantes MENU y secuencia ABC", () => {
   assert.deepEqual(parseMenuLetterSequence("ABC", valid), ["a", "b", "c"]);
   assert.deepEqual(parseMenuLetterSequence("A\nB\nC", valid), ["a", "b", "c"]);
   assert.deepEqual(parseMenuLetterSequence("a b c", valid), ["a", "b", "c"]);
+  // No-regresión: una sola letra o DNI no son secuencia.
   assert.equal(parseMenuLetterSequence("a", valid), null);
+  assert.equal(parseMenuLetterSequence("A", valid), null);
+  assert.equal(parseMenuLetterSequence("b.", valid), null);
   assert.equal(parseMenuLetterSequence("12345678", valid), null);
+  assert.equal(parseMenuLetterSequence("30.111.222", valid), null);
 
   const input = read("admin/modules/chat-simulator-input.js");
   assert.match(input, /isWhatsAppOnlyLineFaq/);
   assert.match(input, /parseMenuLetterSequence/);
   assert.match(input, /isMenuCommand/);
+  // Orden de manejo en handleChatUserInput: WhatsApp FAQ → secuencia → no reconocido.
+  const body = input.slice(input.indexOf("export function handleChatUserInput"));
+  const waIdx = body.indexOf("isWhatsAppOnlyLineFaq(");
+  const seqIdx = body.indexOf("parseMenuLetterSequence(");
+  const unrecIdx = body.indexOf("resolveUnrecognizedReply(");
+  assert.ok(waIdx > 0 && seqIdx > waIdx && unrecIdx > seqIdx, "orden de handlers en input");
+});
+
+test("demo Clara: no-regresión — gracias, prepagas y letra suelta siguen intactas", () => {
+  assert.equal(isThanksMessage("gracias"), true);
+  assert.equal(isThanksMessage("mil gracias"), true);
+  assert.equal(isCoverageQuery("atienden por osde"), true);
+  assert.equal(isMediosPagoQuery("medios de pago"), true);
+  assert.equal(isMenuCommand("a"), false);
+  assert.equal(isMenuCommand("opcion a"), false);
+  assert.equal(isWhatsAppOnlyLineFaq("hola"), false);
+  assert.equal(parseMenuLetterSequence("opcion a", new Set(["a", "b", "c"])), null);
+  const first = resolveUnrecognizedReply("es", { unrecCount: 1, menuShownRecently: true });
+  assert.equal(first.kind, "clarify");
+  assert.equal(first.alert, false);
 });
 
 console.log(`admin menú C: ok (${n} pruebas)`);
