@@ -7,7 +7,7 @@ import { escapeHtml } from "./dom.js?v=79";
 import { api } from "./api.js?v=79";
 import { renderOptCText, renderOptCTextEn } from "./menu-texts.js?v=3";
 import { isIncompleteClaraTextStub } from "./config-defaults.js?v=5";
-import { isCoverageQuery } from "./chat-simulator-faq.js?v=1";
+import { isCoverageQuery } from "./chat-simulator-faq.js?v=2";
 
 export function pickSimText(inputEl, key, ctx) {
   const fromInput = inputEl?.value?.trim() || "";
