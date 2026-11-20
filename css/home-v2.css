@@ -297,12 +297,17 @@ body.page-home-v2 .methods-scroller {
 body.page-home-v2 .methods-track {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
+  grid-auto-flow: row;
   row-gap: 36px;
   width: 100%;
+  max-width: 100%;
+  transform: none;
 }
 
 body.page-home-v2 .methods-card {
   min-width: 0;
+  width: 100%;
+  max-width: 100%;
 }
 
 body.page-home-v2 .methods-scroll-btn {
@@ -373,6 +378,8 @@ body.page-home-v2 .methods-scroll-btn {
 
   body.page-home-v2 .methods-card {
     min-width: 0;
+    width: auto;
+    max-width: none;
   }
 
   body.page-home-v2 .methods-card:nth-child(8n + 1),
@@ -1091,6 +1098,21 @@ body.page-home-v2 .team-meta:has(a) .team-designation:focus-within {
     --home-space: 2.75rem;
     --home-space-sm: 2rem;
     --home-gap: 1.35rem;
+  }
+
+  /* Override leftover inline grid-* from the tablet carousel after resize/rotate */
+  body.page-home-v2 .methods-track {
+    grid-template-columns: minmax(0, 1fr) !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    transform: none !important;
+  }
+
+  body.page-home-v2 .methods-card {
+    grid-column: 1 / -1 !important;
+    grid-row: auto !important;
+    width: 100%;
+    max-width: 100%;
   }
 
   /* Currículum: target táctil legible (desktop conserva 0.72rem) */

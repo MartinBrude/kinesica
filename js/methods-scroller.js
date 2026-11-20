@@ -55,6 +55,21 @@
     });
   }
 
+  /** Undo carousel grid placement so mobile CSS can stack one column. */
+  function clearLoopLayout(track) {
+    track.querySelectorAll(".methods-card.is-clone").forEach(function (card) {
+      card.remove();
+    });
+    delete track.dataset.loopReady;
+    track.style.removeProperty("--methods-cols");
+    track.style.removeProperty("--methods-col");
+    track.style.transform = "";
+    track.querySelectorAll(".methods-card").forEach(function (card) {
+      card.style.gridColumn = "";
+      card.style.gridRow = "";
+    });
+  }
+
   function ensureClones(track) {
     if (track.dataset.loopReady !== "1") {
       var cards = Array.prototype.slice.call(originals(track));
@@ -281,22 +296,25 @@
       paint();
     }, canLoop, settle);
 
-    window.addEventListener("resize", function () {
+    function applyMode() {
       if (canLoop()) {
         ensureClones(track);
         park();
       } else {
         offset = 0;
-        track.style.transform = "";
+        clearLoopLayout(track);
       }
       sync();
-    });
-
-    if (canLoop()) {
-      ensureClones(track);
-      park();
     }
-    sync();
+
+    window.addEventListener("resize", applyMode);
+    if (typeof mqLoop.addEventListener === "function") {
+      mqLoop.addEventListener("change", applyMode);
+    } else if (typeof mqLoop.addListener === "function") {
+      mqLoop.addListener(applyMode);
+    }
+
+    applyMode();
   }
 
   function enableDrag(scroller, getOffset, setOffset, canLoop, onEnd) {
