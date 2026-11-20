@@ -81,6 +81,81 @@ export function getMenuAntiSpamText(lang = "es") {
     : "Ya te enviamos el menú recién arriba 👆. Por favor respondé con la letra de tu consulta (*A* para Turnos, *B* para Ubicación, *C* para Honorarios, *D* para Indumentaria o *E* para hablar con un profesional) 🌿.";
 }
 
+/** Variantes de MENU / Menú / ver menú / start / reiniciar (alineado a kinesica-bot). */
+const MENU_COMMAND_RE = /^(?:(?:\*|_)?menu(?:\*|_)?|el\s+menu|ver\s+menu|mostrar\s+menu|abrir\s+menu|volver\s+(?:al\s+)?menu|menu\s+principal|show\s+menu|main\s+menu|back\s+to\s+menu|start|reiniciar|inicio)$/i;
+
+export function isMenuCommand(norm) {
+  const cleaned = String(norm || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+  return MENU_COMMAND_RE.test(cleaned);
+}
+
+/**
+ * Intentaron llamar / el número "no existe" → aclarar que es solo WhatsApp.
+ * Requiere señal de intento telefónico + problema, o mención explícita de "solo WhatsApp".
+ */
+export function isWhatsAppOnlyLineFaq(msg) {
+  const normClean = String(msg || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[.,!?;:()«»""'']/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  const phoneAttemptCue = /\b(?:telefon\w*|llamar\w*|llame|llamo|llamando|trate\s+de\s+comunicarme|comunicarme\s+por\s+telefono|trate\s+de\s+llamar|marque|marcar|marcando|called|calling|call\s+you|phone(?:\s+number)?|dial(?:ed|ling)?)\b/iu.test(normClean);
+  const phoneProblemCue = /\b(?:no\s+existe|no\s+atienden|no\s+contesta(?:n)?|no\s+funciona|fuera\s+de\s+servicio|dice(?:n)?\s+que\s+no\s+existe|doesn'?t\s+exist|does\s+not\s+exist|not\s+in\s+service|out\s+of\s+service|no\s+answer|doesn'?t\s+answer|isn'?t\s+working|not\s+working)\b/iu.test(normClean);
+  const notPhoneLineCue = /\b(?:no\s+es\s+(?:un\s+)?(?:telefono|linea(?:\s+telefonica)?)|not\s+(?:a\s+)?(?:phone|telephone)(?:\s+line)?|whatsapp\s+only|solo\s+(?:de\s+)?whatsapp)\b/iu.test(normClean);
+  return (phoneAttemptCue && phoneProblemCue) || notPhoneLineCue;
+}
+
+export function getWhatsAppOnlyLineText(lang = "es") {
+  return lang === "en"
+    ? "This number is *WhatsApp only* (it is not a voice phone line). That is why dialing it may show that it does not exist. Just write here and I will help you 🙌."
+    : "Este número es solo de *WhatsApp* (no es una línea telefónica para llamadas). Por eso al marcar puede figurar que no existe. Escribime por acá y te ayudo 🙌.";
+}
+
+/**
+ * Parsea secuencias tipo ABC / A B C / A\\nB\\nC (2+ letras del menú, sin dígitos/DNI).
+ * @param {string} raw
+ * @param {Set<string>|string[]} validLetters
+ * @returns {string[]|null}
+ */
+export function parseMenuLetterSequence(raw, validLetters) {
+  const valid = validLetters instanceof Set
+    ? validLetters
+    : new Set(Array.from(validLetters || []).map((l) => String(l).toLowerCase()));
+  const text = String(raw || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+  const cleaned = text.replace(/^[*_~"`'«»()\[\]{}]+|[*_~"`'«»()\[\]{}]+$/g, "").trim();
+  if (!cleaned) return null;
+  const digitsCompact = cleaned.replace(/[.\s-]/g, "");
+  if (/^\d{6,9}$/.test(digitsCompact)) return null;
+  if (/\d/.test(cleaned)) return null;
+
+  let parts = null;
+  if (/^[a-z]{2,5}$/i.test(cleaned)) {
+    parts = cleaned.split("");
+  } else if (/^[a-z](?:[\s,/|;]+[a-z]){1,4}$/i.test(cleaned)) {
+    parts = cleaned.split(/[\s,/|;]+/).filter(Boolean);
+    if (!parts.every((p) => /^[a-z]$/i.test(p))) return null;
+  } else {
+    return null;
+  }
+
+  const seen = new Set();
+  const letters = [];
+  for (const p of parts) {
+    const L = p.toLowerCase();
+    if (!valid.has(L) || seen.has(L)) continue;
+    seen.add(L);
+    letters.push(L);
+    if (letters.length >= 5) break;
+  }
+  return letters.length >= 2 ? letters : null;
+}
+
 /** Primer texto libre no reconocido (menú reciente) vs 2º strike → derivación. */
 export function resolveUnrecognizedReply(lang, { unrecCount, menuShownRecently }) {
   if (unrecCount >= 2) {

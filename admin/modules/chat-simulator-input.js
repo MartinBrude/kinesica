@@ -13,7 +13,9 @@ import {
   isThanksMessage, getThanksText, isClaraBotQuery, getClaraBotText,
   isMediosPagoQuery, getMediosPagoText, getSaludoBreveText,
   getMenuAntiSpamText, resolveUnrecognizedReply,
-} from "./chat-simulator-faq.js?v=1";
+  isMenuCommand, isWhatsAppOnlyLineFaq, getWhatsAppOnlyLineText,
+  parseMenuLetterSequence,
+} from "./chat-simulator-faq.js?v=2";
 import {
   appendChatMessage, replyAsBot, buildWelcomeMessage, getLangOptionLetter,
   mapMainMenuDigitToLetter, getChatSubmenu, setChatSubmenu, getChatLang,
@@ -72,9 +74,18 @@ export function handleChatUserInput(inputRaw) {
     }, 400);
     return;
   }
-  if (norm === "menu" || norm === "reiniciar" || norm === "start") {
+  if (isMenuCommand(norm)) {
     setChatSubmenu(null);
     setTimeout(() => showWelcome(getChatLang(), { force: true }), 400);
+    return;
+  }
+
+  if (isWhatsAppOnlyLineFaq(input)) {
+    setChatSubmenu(null);
+    setTimeout(() => {
+      replyHandled(getWhatsAppOnlyLineText(getChatLang()));
+      setTimeout(() => showWelcome(getChatLang(), { force: true }), 900);
+    }, 450);
     return;
   }
 
@@ -119,6 +130,46 @@ export function handleChatUserInput(inputRaw) {
       letter: "c",
     }), 450);
     return;
+  }
+
+  // Secuencia multi-letra: ABC / A B C / A\nB\nC (alineado a kinesica-bot menu_secuencia).
+  const validLetters = new Set(["a", "b", "c", "d", "e", langLetter]);
+  for (const opt of ctx.getCustomOptions() || []) {
+    const l = String(opt.letter || "").trim().toLowerCase();
+    if (l) validLetters.add(l);
+  }
+  const seqRaw = parseMenuLetterSequence(norm, validLetters);
+  const seq = seqRaw ? seqRaw.filter((L) => L !== langLetter) : null;
+  if (seq && seq.length >= 2) {
+    const responses = [];
+    let nextSub = null;
+    for (const L of seq) {
+      if (L === "a") nextSub = "turnos";
+      else if (L === "e") nextSub = "profesional";
+      const custom = (ctx.getCustomOptions() || []).find(
+        (o) => String(o.letter || "").trim().toLowerCase() === L,
+      );
+      if (custom) {
+        responses.push(withMenuFooter(custom.response || "Información no disponible.", getChatLang()));
+        continue;
+      }
+      const mainResp = resolveMainMenuResponse(L, getChatLang(), ctx, { exactLetterOnly: true });
+      if (mainResp.handled) {
+        let block = mainResp.text;
+        if (mainResp.followup) block = `${block}\n\n${mainResp.followup}`;
+        responses.push(block);
+      }
+    }
+    if (responses.length >= 1) {
+      setChatSubmenu(nextSub);
+      setTimeout(() => {
+        replyHandled(responses[0]);
+        if (responses.length > 1) {
+          setTimeout(() => appendChatMessage(responses.slice(1).join("\n\n"), "bot"), 900);
+        }
+      }, 450);
+      return;
+    }
   }
 
   const isExactMainOption = /^(?:(?:opcion|option)\s+[a-e]|[a-e]\.?)$/i.test(norm);

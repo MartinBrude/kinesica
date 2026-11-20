@@ -11,6 +11,10 @@ import {
   isMediosPagoQuery,
   isClaraBotQuery,
   resolveUnrecognizedReply,
+  isMenuCommand,
+  isWhatsAppOnlyLineFaq,
+  getWhatsAppOnlyLineText,
+  parseMenuLetterSequence,
 } from "../admin/modules/chat-simulator-faq.js";
 import { CONTACT } from "./site-contact.mjs";
 
@@ -204,6 +208,38 @@ test("demo Clara: FAQs alineadas al bot (gracias, prepagas, 2º no reconocido)",
   assert.match(input, /resolveUnrecognizedReply/);
   assert.match(input, /isThanksMessage/);
   assert.match(input, /chat-simulator-faq\.js/);
+});
+
+test("demo Clara: línea solo WhatsApp, variantes MENU y secuencia ABC", () => {
+  assert.equal(isMenuCommand("menu"), true);
+  assert.equal(isMenuCommand("Menú"), true);
+  assert.equal(isMenuCommand("ver menu"), true);
+  assert.equal(isMenuCommand("el menu"), true);
+  assert.equal(isMenuCommand("*MENU*"), true);
+  assert.equal(isMenuCommand("show menu"), true);
+  assert.equal(isMenuCommand("reiniciar"), true);
+  assert.equal(isMenuCommand("hola menu de opciones"), false);
+
+  assert.equal(
+    isWhatsAppOnlyLineFaq("Hola Trate de comunicarme por teléfono y dicen que no existe"),
+    true,
+  );
+  assert.equal(isWhatsAppOnlyLineFaq("llamé y no atienden"), true);
+  assert.equal(isWhatsAppOnlyLineFaq("dónde queda el consultorio"), false);
+  assert.match(getWhatsAppOnlyLineText("es"), /solo de \*WhatsApp\*/);
+  assert.match(getWhatsAppOnlyLineText("en"), /WhatsApp only/);
+
+  const valid = new Set(["a", "b", "c", "d", "e", "f"]);
+  assert.deepEqual(parseMenuLetterSequence("ABC", valid), ["a", "b", "c"]);
+  assert.deepEqual(parseMenuLetterSequence("A\nB\nC", valid), ["a", "b", "c"]);
+  assert.deepEqual(parseMenuLetterSequence("a b c", valid), ["a", "b", "c"]);
+  assert.equal(parseMenuLetterSequence("a", valid), null);
+  assert.equal(parseMenuLetterSequence("12345678", valid), null);
+
+  const input = read("admin/modules/chat-simulator-input.js");
+  assert.match(input, /isWhatsAppOnlyLineFaq/);
+  assert.match(input, /parseMenuLetterSequence/);
+  assert.match(input, /isMenuCommand/);
 });
 
 console.log(`admin menú C: ok (${n} pruebas)`);

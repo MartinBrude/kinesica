@@ -158,7 +158,8 @@ Escribir *E* solo no avisa a ningún profesional. En el menú principal, los nú
 
 | Qué escribe el paciente | Qué hace Clara |
 |---|---|
-| Cualquier saludo, consulta suelta o `MENU` | Muestra el menú de bienvenida (*A* a *E*, más idioma y opciones personalizadas *F*, *G*... configuradas en `/admin/clara`). Escribir `MENU` desde cualquier submenú siempre regresa al menú principal. |
+| Cualquier saludo, consulta suelta o `MENU` (también *Menú*, *ver menú*, *el menú*, *start*, *reiniciar*) | Muestra el menú de bienvenida (*A* a *E*, más idioma y opciones personalizadas *F*, *G*... configuradas en `/admin/clara`). Escribir `MENU` (o variantes) desde cualquier submenú siempre regresa al menú principal. |
+| Varias letras a la vez (`ABC`, `A B C` o `A`/`B`/`C` en líneas) | Envía la secuencia de respuestas en orden (1.ª burbuja + follow-up con el resto). |
 | Dígitos *1* a *9* en el menú principal | Mapea automáticamente a la letra en orden visual: *1* = A (Turnos), *2* = B (Ubicación), *3* = C (Honorarios), *4* = D (Vestimenta), *5* = E (Profesional), etc. |
 | *A* (o *1* en menú principal) | Envía de inmediato el enlace directo a la turnera online: `https://kinesica.com.ar/agendar` y abre la opción de consultar turnos: `*1.* 📋 Consultar o cancelar mis turnos`. |
 | *1* después de *A* (o *2* por compatibilidad, o escribir *"mis turnos"*) | Lista los turnos futuros de ese WhatsApp en Google Calendar (`consultorio`), numerados, y cierra el submenú anterior. Si no encuentra turnos con ese teléfono, ofrece buscarlos ingresando el **DNI o Pasaporte**. |
@@ -188,6 +189,10 @@ Para brindar una experiencia cálida y sin fricciones, Clara incluye respuestas 
    - Si quien escribe se presenta como un colega, médico, odontólogo o derivador, el sistema canaliza la comunicación de forma prioritaria con Norberto.
 4. **Identificación de Soporte Técnico:**  
    El sistema reconoce de forma unívoca a **Martín Brude** (`+34 658 44 49 35`) en la sincronización e ingesta de mensajes, garantizando soporte técnico y auditoría sin mezclarlo con pacientes clínicos.
+5. **Línea solo WhatsApp:**  
+   Si el paciente dice que llamó por teléfono y que el número *no existe*, *no atienden* o *no funciona*, Clara aclara que **este número es solo de WhatsApp** (no es línea de voz) y vuelve a ofrecer el menú.
+6. **Secuencia de letras (`ABC`):**  
+   Si el paciente responde con varias opciones a la vez (`ABC`, `A B C` o letras en líneas separadas), Clara envía las respuestas en secuencia en lugar de marcar el mensaje como no comprendido.
 
 ---
 
