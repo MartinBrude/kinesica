@@ -61,9 +61,9 @@ import {
   switchTab,
   mountAdminChannels,
   unmountAdminChannels,
-} from "./modules/app-tabs.js?v=49";
+} from "./modules/app-tabs.js?v=50";
 
-import { initAppControllers } from "./modules/app-init.js?v=49";
+import { initAppControllers } from "./modules/app-init.js?v=50";
 
 export {
   api,

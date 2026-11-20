@@ -17,7 +17,7 @@ import {
 import {
   setPendientesPendingBadge,
   refreshPendientesPendingBadge,
-} from "./admin-pendientes.js?v=1";
+} from "./admin-pendientes.js?v=2";
 import { updateDashboardClara, updateDashboardBooking } from "./dashboard.js?v=13";
 import { applyHoursToRuntime } from "./horarios.js?v=4";
 

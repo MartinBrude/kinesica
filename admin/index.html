@@ -1358,6 +1358,7 @@
             </div>
             <div class="admin-gastos-header-actions">
               <span class="gastos-count-pill" id="admin-pendientes-count-label">0 pendientes</span>
+              <button type="button" class="btn green" id="admin-btn-nuevo-pendiente">+ Nuevo pendiente</button>
             </div>
           </div>
           <div class="admin-card-body">
@@ -1965,6 +1966,28 @@
             <div class="prof-modal-footer">
               <button type="button" class="btn ghost" id="admin-gasto-modal-cancel">Cancelar</button>
               <button type="submit" class="btn green" id="admin-gasto-modal-save">Guardar Gasto</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- MODAL NUEVO PENDIENTE -->
+      <div id="admin-pendiente-modal" class="prof-modal-backdrop" hidden>
+        <div class="prof-modal-card gasto-modal-card" role="dialog" aria-modal="true" aria-labelledby="admin-pendiente-modal-title">
+          <div class="prof-modal-header">
+            <h3 id="admin-pendiente-modal-title">Nuevo pendiente</h3>
+            <button type="button" class="prof-modal-close" id="admin-pendiente-modal-close" aria-label="Cerrar">&times;</button>
+          </div>
+          <form id="admin-pendiente-form">
+            <div class="prof-modal-body">
+              <div class="prof-form-group">
+                <label for="admin-pendiente-titulo">Tarea *</label>
+                <input type="text" id="admin-pendiente-titulo" required maxlength="255" placeholder="Ej: Revisar cotización de hosting" autocomplete="off">
+              </div>
+            </div>
+            <div class="prof-modal-footer">
+              <button type="button" class="btn ghost" id="admin-pendiente-modal-cancel">Cancelar</button>
+              <button type="submit" class="btn green" id="admin-pendiente-modal-save">Agregar</button>
             </div>
           </form>
         </div>
@@ -3090,6 +3113,6 @@
   </div>
   <div id="print-root"></div>
   <script src="/booking/booking-bundle.min.js?v=1795202759" defer></script>
-  <script type="module" src="/admin/app.js?v=228"></script>
+  <script type="module" src="/admin/app.js?v=229"></script>
 </body>
 </html>
