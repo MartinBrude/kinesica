@@ -59,9 +59,7 @@
       subBtn.setAttribute("aria-label", submenuLabel);
       li.insertBefore(subBtn, li.firstChild);
 
-      subBtn.addEventListener("click", function (e) {
-        e.preventDefault();
-        e.stopPropagation();
+      function toggleSubmenu() {
         var sub = li.querySelector(":scope > ul");
         if (!sub) {
           return;
@@ -69,7 +67,28 @@
         var open = sub.classList.toggle("open");
         subBtn.classList.toggle("submenu-opened", open);
         subBtn.setAttribute("aria-expanded", open ? "true" : "false");
+        var parentBtn = li.querySelector(":scope > .nav-parent");
+        if (parentBtn) {
+          parentBtn.setAttribute("aria-expanded", open ? "true" : "false");
+        }
+      }
+
+      subBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleSubmenu();
       });
+
+      var parentBtn = li.querySelector(":scope > .nav-parent");
+      if (parentBtn) {
+        parentBtn.addEventListener("click", function (e) {
+          if (!nav.classList.contains("small-screen")) {
+            return;
+          }
+          e.preventDefault();
+          toggleSubmenu();
+        });
+      }
     });
 
     function closeSubmenus() {
@@ -78,6 +97,9 @@
       });
       nav.querySelectorAll(".submenu-button").forEach(function (b) {
         b.classList.remove("submenu-opened");
+        b.setAttribute("aria-expanded", "false");
+      });
+      nav.querySelectorAll(".nav-parent").forEach(function (b) {
         b.setAttribute("aria-expanded", "false");
       });
     }

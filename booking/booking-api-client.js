@@ -26,6 +26,14 @@
     { telefono: "5491100002222", nombre: "Paciente Demo Dos" },
   ];
 
+  /** Un servidor estático (python http.server, file://) no acepta el POST y el navegador lo muestra como error aunque el fetch esté capturado. */
+  function isStaticPreviewHost() {
+    if (typeof location === "undefined") return false;
+    if (location.protocol === "file:") return true;
+    const host = String(location.hostname || "").toLowerCase();
+    return host === "localhost" || host === "127.0.0.1" || host === "::1" || host === "[::1]";
+  }
+
   function createBookingRequestId() {
     if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
       return crypto.randomUUID();
@@ -158,7 +166,7 @@
      */
     syncBackupSlots(payload) {
       const backupUrl = this.getBackupApiUrl();
-      if (!backupUrl || typeof fetch !== "function") return;
+      if (!backupUrl || typeof fetch !== "function" || isStaticPreviewHost()) return;
       try {
         fetch(`${backupUrl}?action=sync_client_slots`, {
           method: "POST",
