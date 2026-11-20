@@ -133,7 +133,7 @@ Motor de lógica clínica agnóstico del DOM, compartido y verificado por la sui
 - **`config-save.js`**: Persistencia asíncrona hacia el backend.
 - **`config-defaults.js`**: Configuración de respaldo por defecto.
 - **`config-views.js`**: Renderizado de pestañas de configuración.
-- **`chat-simulator.js`**: Simulador interactivo en tiempo real del bot de WhatsApp Clara.
+- **`chat-simulator.js`**: Simulador interactivo del menú de WhatsApp Clara (modo sin IA), alineado a `kinesica-bot` `04_menu_router.js` (letras A–E, FAQs, agradecimientos, circuit breaker de 2 strikes).
 - **`menu-texts.js`**: Catálogo de textos informativos de consultorio, direcciones e indicaciones.
 
 ### 3.9. Profesionales, Gastos y Administración (`admin/modules/admin*.js`)

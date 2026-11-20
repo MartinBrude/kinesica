@@ -1,6 +1,6 @@
 import { DEFAULT_CLARA_TEXTS, bindConfigInputs } from "./config-defaults.js?v=5";
 import { bindPolicyElements, bindToggleElements } from "./config-toggles.js";
-import { setChatContext } from "./chat-simulator.js?v=18";
+import { setChatContext } from "./chat-simulator.js?v=19";
 
 export const configTabBtns = document.querySelectorAll(".config-tab-btn");
 export const claraInputs = bindConfigInputs();

@@ -4,6 +4,14 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { DEFAULT_OPT_C_TEXT, DEFAULT_OPT_C_TEXT_EN, renderOptCText, renderOptCTextEn, REMINDER_TEMPLATE_TEXT, renderReminderPreview } from "../admin/modules/menu-texts.js";
+import {
+  isThanksMessage,
+  getThanksText,
+  isCoverageQuery,
+  isMediosPagoQuery,
+  isClaraBotQuery,
+  resolveUnrecognizedReply,
+} from "../admin/modules/chat-simulator-faq.js";
 import { CONTACT } from "./site-contact.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -172,6 +180,30 @@ test("demo Clara: el simulador resuelve A con el texto del submenú (link inclui
   const labels = read("admin/index.html");
   assert.match(labels, /debe incluir el link de \/agendar/);
   assert.ok(!labels.includes("preguntando si desea agendar nuevo o consultar turnos"));
+});
+
+test("demo Clara: FAQs alineadas al bot (gracias, prepagas, 2º no reconocido)", () => {
+  assert.equal(isThanksMessage("gracias"), true);
+  assert.equal(isThanksMessage("muchas gracias"), true);
+  assert.equal(isThanksMessage("joya"), true);
+  assert.match(getThanksText("es"), /De nada! Que tengas un excelente día/);
+  assert.match(getThanksText("en"), /You're welcome/);
+  assert.equal(isCoverageQuery("atienden por osde"), true);
+  assert.equal(isCoverageQuery("swiss medical"), true);
+  assert.equal(isCoverageQuery("galeno"), true);
+  assert.equal(isMediosPagoQuery("con qué medios de pago se puede abonar"), true);
+  assert.equal(isMediosPagoQuery("cuánto sale la sesión"), false);
+  assert.equal(isClaraBotQuery("sos un bot?"), true);
+  const second = resolveUnrecognizedReply("es", { unrecCount: 2, menuShownRecently: true });
+  assert.equal(second.kind, "second");
+  assert.equal(second.alert, true);
+  assert.match(second.text, /Norberto Brude/);
+  const first = resolveUnrecognizedReply("es", { unrecCount: 1, menuShownRecently: true });
+  assert.equal(first.kind, "clarify");
+  const input = read("admin/modules/chat-simulator-input.js");
+  assert.match(input, /resolveUnrecognizedReply/);
+  assert.match(input, /isThanksMessage/);
+  assert.match(input, /chat-simulator-faq\.js/);
 });
 
 console.log(`admin menú C: ok (${n} pruebas)`);

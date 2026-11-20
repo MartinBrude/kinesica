@@ -7,6 +7,7 @@ import { escapeHtml } from "./dom.js?v=79";
 import { api } from "./api.js?v=79";
 import { renderOptCText, renderOptCTextEn } from "./menu-texts.js?v=3";
 import { isIncompleteClaraTextStub } from "./config-defaults.js?v=5";
+import { isCoverageQuery } from "./chat-simulator-faq.js?v=1";
 
 export function pickSimText(inputEl, key, ctx) {
   const fromInput = inputEl?.value?.trim() || "";
@@ -106,10 +107,11 @@ export function resolveProfessionalSubmenu(norm, chatLang, ctx) {
   return { proMsg, alertTarget, optionLabel };
 }
 
-const NL_FEES = /\b(?:honorarios?|precios?|arancel(?:es)?|costos?|tarifas?|valor(?:es)?|cuanto\s+(?:sale|cuesta|vale)|fees?|prices?|costs?|rates?|how\s+much|obras?\s+social|prepagas?|osde|reintegros?)\b/i;
+const NL_FEES = /\b(?:honorarios?|precios?|arancel(?:es)?|costos?|tarifas?|valor(?:es)?|cuanto\s+(?:sale|cuesta|vale)|fees?|prices?|costs?|rates?|how\s+much)\b/i;
+const isFeesOrCoverage = (raw) => NL_FEES.test(raw) || isCoverageQuery(raw);
 const NL_LOCATION = /\b(?:donde\s+(?:queda|estan|atienden)|direccion|ubicacion|como\s+llego|donde\s+es|horarios?|where\s+(?:are\s+you|is)|address|location|office\s+hours|opening\s+hours)\b/i;
 const NL_ATTIRE = /\b(?:ropa|vestimenta|indumentaria|attire|clothes|clothing|what\s+(?:should\s+i\s+|to\s+)?wear|dress\s+code)\b/i;
-const NL_BOOKING = /\b(?:agendar|agendame|sacar\s+turno|pedir\s+turno|reservar\s+turno|quiero\s+(?:un\s+)?turno|necesito\s+(?:un\s+)?turno|quisiera\s+(?:un\s+)?turno|turnera|book|appointment|schedule)\b/i;
+const NL_BOOKING = /\b(?:agendar|agendame|sacar\s+turno|pedir\s+turno|reservar\s+turno|quiero\s+(?:un\s+)?turno|necesito\s+(?:un\s+)?turno|quisiera\s+(?:un\s+)?turno|tienen\s+lugar|hay\s+lugar|turnera|book|appointment|schedule)\b/i;
 const NL_PROFESSIONAL = /\b(?:profesional|hablar\s+con|practitioner|talk\s+to|speak\s+with)\b/i;
 
 /**
@@ -139,7 +141,7 @@ export function resolveMainMenuResponse(norm, chatLang, ctx, opts = {}) {
   if (!exactOnly && NL_BOOKING.test(raw) && !/\b(?:cancelar|anular|consultar|cancel|reschedule|check)\b/i.test(raw)) {
     // Alineado al bot: NL de agendar → texto de opción A (turnera), no el submenú.
     // Precio + agendar: honorarios primero; invite en followup (2ª burbuja).
-    if (NL_FEES.test(raw)) {
+    if (isFeesOrCoverage(raw)) {
       return {
         handled: true,
         text: resolveOptionCText(chatLang, ctx),
@@ -178,7 +180,7 @@ export function resolveMainMenuResponse(norm, chatLang, ctx, opts = {}) {
       viaNaturalLanguage: false,
     };
   }
-  if (!exactOnly && NL_FEES.test(raw)) {
+  if (!exactOnly && isFeesOrCoverage(raw)) {
     return {
       handled: true,
       text: resolveOptionCText(chatLang, ctx),
