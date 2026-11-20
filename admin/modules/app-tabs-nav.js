@@ -45,7 +45,7 @@ export function bindAdminNavOnce(adminNav) {
           "nav-group-consultorio": () => switchTab("consultorio", "agendar"),
           "nav-group-whatsapp": () => switchTab("interacciones"),
           "nav-group-clara": () => switchTab("clara", "mensajes"),
-          "nav-group-admin": () => switchTab("admin", "usuarios"),
+          "nav-group-admin": () => switchTab("admin", "pendientes"),
         };
         const action = defaultActions[groupEl.id];
         closeAllDropdowns();
@@ -115,6 +115,7 @@ export function bindAdminNavOnce(adminNav) {
   bindNavLink("nav-btn-interacciones", "interacciones");
   bindNavLink("nav-btn-recordatorios", "recordatorios");
   bindNavLink("nav-btn-encuestas", "encuestas");
+  bindNavLink("nav-btn-admin-pendientes", "admin", "pendientes");
   bindNavLink("nav-btn-admin-usuarios", "admin", "usuarios");
   bindNavLink("nav-btn-admin-gastos", "admin", "gastos");
   bindNavLink("nav-btn-admin-errores", "admin", "errores");

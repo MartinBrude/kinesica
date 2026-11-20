@@ -3,7 +3,7 @@ import { showLibrary } from "./library.js?v=94";
 import { showPacientesView, hidePacientesView } from "./pacientes.js?v=19";
 import { showDashboardView, hideDashboardView } from "./dashboard.js?v=13";
 import { showConsultorioView, hideConsultorioView, showClaraView, hideClaraView } from "./configuracion.js?v=39";
-import { showAdminView, hideAdminView } from "./admin-panel.js?v=96";
+import { showAdminView, hideAdminView } from "./admin-panel.js?v=97";
 import { showInteraccionesView, hideInteraccionesView } from "./interacciones.js?v=19";
 import { showRecordatoriosView, hideRecordatoriosView } from "./recordatorios.js?v=27";
 import { showEncuestasView, hideEncuestasView } from "./encuestas.js?v=2";
@@ -30,6 +30,7 @@ export function switchTab(tab, subtab, routeState = null) {
   const btnClaraPoliticas = document.querySelector("#nav-btn-clara-politicas");
   const btnClaraSimulador = document.querySelector("#nav-btn-clara-simulador");
   const btnAdmin = document.querySelector("#nav-btn-admin");
+  const btnAdminPendientes = document.querySelector("#nav-btn-admin-pendientes");
   const btnAdminUsuarios = document.querySelector("#nav-btn-admin-usuarios");
   const btnAdminGastos = document.querySelector("#nav-btn-admin-gastos");
   const btnAdminErrores = document.querySelector("#nav-btn-admin-errores");
@@ -106,6 +107,7 @@ export function switchTab(tab, subtab, routeState = null) {
     tab === "admin" ||
     tab === "administracion" ||
     tab === "usuarios" ||
+    tab === "pendientes" ||
     tab === "gastos" ||
     tab === "errores" ||
     tab === "reportes" ||
@@ -128,14 +130,17 @@ export function switchTab(tab, subtab, routeState = null) {
     let section = subtab || null;
     if (!section) {
       if (tab === "usuarios") section = "usuarios";
+      else if (tab === "pendientes") section = "pendientes";
       else if (tab === "gastos") section = "gastos";
       else if (tab === "errores" || tab === "reportes") section = "errores";
       else if (tab === "backups" || tab === "copias" || tab === "copias-seguridad") section = "backups";
       else if (tab === "servicios" || tab === "consumos" || tab === "cuotas") section = "servicios";
       else if (tab === "campana" || tab === "campaña" || tab === "turnos-campana") section = "campana";
-      else section = "usuarios";
+      else section = "pendientes";
     }
-    if (section === "gastos") {
+    if (section === "pendientes") {
+      btnAdminPendientes?.classList.add("is-active");
+    } else if (section === "gastos") {
       btnAdminGastos?.classList.add("is-active");
     } else if (section === "errores") {
       btnAdminErrores?.classList.add("is-active");

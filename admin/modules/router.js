@@ -34,6 +34,7 @@ export function parseAdminRouteFromLocation() {
   if (head === "encuestas" || head === "encuesta") return { view: "encuestas" };
   if (head === "administracion" || head === "admin" || head === "sistema") return { view: "admin", section: parts[1] || "" };
   if (head === "usuarios" || head === "profesionales") return { view: "admin", section: "usuarios" };
+  if (head === "pendientes") return { view: "admin", section: "pendientes" };
   if (head === "gastos") return { view: "admin", section: "gastos" };
   if (head === "errores" || head === "reportes") return { view: "admin", section: "errores" };
   if (head === "backups" || head === "copias" || head === "copias-seguridad") return { view: "admin", section: "backups" };
@@ -118,7 +119,10 @@ export function syncUrlWithViewState(state, isInitialBoot = false, isHandlingPop
     docTitle = "Kinésica — Encuestas de Satisfacción";
   } else if (v === "admin" || v === "administracion") {
     const sec = state.section;
-    if (sec === "gastos") {
+    if (sec === "pendientes") {
+      targetPath = "/admin/pendientes";
+      docTitle = "Kinésica — Pendientes";
+    } else if (sec === "gastos") {
       targetPath = "/admin/gastos";
       docTitle = "Kinésica — Gastos";
     } else if (sec === "errores") {
