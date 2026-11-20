@@ -14,12 +14,16 @@ import {
   startBadgePoll,
   stopBadgePoll,
 } from "./interacciones.js?v=19";
+import {
+  setPendientesPendingBadge,
+  refreshPendientesPendingBadge,
+} from "./admin-pendientes.js?v=1";
 import { updateDashboardClara, updateDashboardBooking } from "./dashboard.js?v=13";
 import { applyHoursToRuntime } from "./horarios.js?v=4";
 
 export { closeAllDropdowns } from "./app-tabs-dropdowns.js";
 export { closeMobileNav, openMobileNav, toggleMobileNav } from "./app-tabs-mobile.js";
-export { switchTab } from "./app-tabs-switch.js?v=3";
+export { switchTab } from "./app-tabs-switch.js?v=4";
 
 import { closeMobileNav } from "./app-tabs-mobile.js";
 import { bindAdminNavOnce } from "./app-tabs-nav.js";
@@ -49,6 +53,7 @@ export function unmountAdminChannels() {
   stopPacientesBadgePoll();
   setInteraccionesPendingBadge(0);
   stopBadgePoll();
+  setPendientesPendingBadge(0);
 }
 
 export function mountAdminChannels() {
@@ -75,6 +80,8 @@ export function mountAdminChannels() {
   // Tras login/restore: reiniciar polls (unmount los corta en el 401 previo).
   startPacientesBadgePoll();
   startBadgePoll();
+  if (isAdmin) refreshPendientesPendingBadge();
+  else setPendientesPendingBadge(0);
 
   api("settings.php")
     .then((data) => {

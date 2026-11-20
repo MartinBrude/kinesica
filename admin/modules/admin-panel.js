@@ -37,13 +37,18 @@ import {
   loadCreativosData,
 } from "./admin-creativos.js?v=113";
 import { applyCreativosEditFromRoute } from "./admin-creativos-image-text.js?v=6";
+import {
+  initPendientesUI,
+  loadPendientesData,
+} from "./admin-pendientes.js?v=1";
 
 const viewAdmin = document.querySelector("#view-admin");
 
-export function setAdminActiveSection(section = "usuarios") {
+export function setAdminActiveSection(section = "pendientes") {
   const norm = String(section || "").toLowerCase().trim();
-  let target = "usuarios";
-  if (norm === "gastos") target = "gastos";
+  let target = "pendientes";
+  if (norm === "usuarios" || norm === "profesionales") target = "usuarios";
+  else if (norm === "gastos") target = "gastos";
   else if (norm === "errores" || norm === "reportes") target = "errores";
   else if (norm === "backups" || norm === "copias" || norm === "copias-seguridad") target = "backups";
   else if (norm === "servicios" || norm === "consumos" || norm === "cuotas") target = "servicios";
@@ -51,6 +56,7 @@ export function setAdminActiveSection(section = "usuarios") {
   else if (norm === "creativos" || norm === "galeria" || norm === "campana-ig" || norm === "instagram") target = "creativos";
 
   const cardUsuarios = document.getElementById("admin-usuarios-card");
+  const cardPendientes = document.getElementById("admin-pendientes-card");
   const cardGastos = document.getElementById("admin-gastos-card");
   const cardErrores = document.getElementById("admin-errores-card");
   const cardBackups = document.getElementById("admin-backups-card");
@@ -59,6 +65,7 @@ export function setAdminActiveSection(section = "usuarios") {
   const cardCreativos = document.getElementById("admin-creativos-card");
 
   if (cardUsuarios) cardUsuarios.hidden = target !== "usuarios";
+  if (cardPendientes) cardPendientes.hidden = target !== "pendientes";
   if (cardGastos) cardGastos.hidden = target !== "gastos";
   if (cardErrores) cardErrores.hidden = target !== "errores";
   if (cardBackups) cardBackups.hidden = target !== "backups";
@@ -69,6 +76,7 @@ export function setAdminActiveSection(section = "usuarios") {
   const heroTitle = document.getElementById("admin-hero-title");
   if (heroTitle) {
     const titles = {
+      pendientes: "Administración · Pendientes",
       usuarios: "Administración · Usuarios",
       gastos: "Administración · Registro de Gastos",
       errores: "Administración · Reporte de Errores",
@@ -86,12 +94,14 @@ export function setAdminActiveSection(section = "usuarios") {
 export const scrollToAdminSection = setAdminActiveSection;
 
 /** @param {string} section @param {{editId?: string}|null} [routeState] */
-export function showAdminView(section = "usuarios", routeState = null) {
+export function showAdminView(section = "pendientes", routeState = null) {
   const normSection = String(section || "").toLowerCase();
   const mappedSection = (normSection === "campaña" || normSection === "turnos-campana")
     ? "campana"
     : (normSection === "galeria" || normSection === "campana-ig" || normSection === "instagram")
     ? "creativos"
+    : (normSection === "profesionales")
+    ? "usuarios"
     : normSection;
 
   const user = getSessionUser();
@@ -102,9 +112,9 @@ export function showAdminView(section = "usuarios", routeState = null) {
     } catch { /* ignore */ }
     return;
   }
-  const validSection = ["usuarios", "gastos", "errores", "backups", "servicios", "campana", "creativos"].includes(mappedSection)
+  const validSection = ["pendientes", "usuarios", "gastos", "errores", "backups", "servicios", "campana", "creativos"].includes(mappedSection)
     ? mappedSection
-    : "usuarios";
+    : "pendientes";
 
   const view = switchActiveView("view-admin");
   if (view) {
@@ -132,6 +142,7 @@ export function hideAdminView() {
 export async function loadAdminData() {
   await Promise.allSettled([
     loadProfesionalesData(loadAdminData),
+    loadPendientesData(loadAdminData),
     loadGastosData(loadAdminData),
     loadErroresData(loadAdminData),
     loadServiciosData(),
@@ -142,6 +153,7 @@ export async function loadAdminData() {
 
 export function initAdminModule() {
   initProfesionalesUI({ onReload: loadAdminData });
+  initPendientesUI({ onReload: loadAdminData });
   initGastosUI({ onReload: loadAdminData });
   initErroresUI({ onReload: loadAdminData });
   initServiciosUI({ onReload: loadAdminData });
