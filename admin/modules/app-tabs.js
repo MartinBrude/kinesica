@@ -17,7 +17,13 @@ import {
 import {
   setPendientesPendingBadge,
   refreshPendientesPendingBadge,
-} from "./admin-pendientes.js?v=2";
+  canShowPendientesBadge,
+} from "./admin-pendientes.js?v=3";
+import {
+  setErroresPendingBadge,
+  refreshErroresPendingBadge,
+  canShowErroresBadge,
+} from "./admin-errores.js?v=4";
 import { updateDashboardClara, updateDashboardBooking } from "./dashboard.js?v=13";
 import { applyHoursToRuntime } from "./horarios.js?v=4";
 
@@ -37,6 +43,35 @@ function setAdminOnlyVisibility(isAdmin) {
   if (dashCardAdmin) dashCardAdmin.hidden = !isAdmin;
 }
 
+/** Limpia badges de Administración (grupo + ítems) al salir de sesión. */
+function clearAdminNotifBadges() {
+  for (const id of ["nav-badge-admin", "nav-badge-pendientes", "nav-badge-errores"]) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    el.textContent = "0";
+    el.hidden = true;
+    el.setAttribute("aria-hidden", "true");
+    el.removeAttribute("aria-label");
+    el.removeAttribute("title");
+  }
+  const adminBtn = document.getElementById("nav-btn-admin");
+  if (adminBtn) adminBtn.removeAttribute("aria-label");
+}
+
+function refreshAdminAudienceBadges(isAdmin) {
+  if (!isAdmin) {
+    clearAdminNotifBadges();
+    return;
+  }
+  // Ocultar el badge del ítem que no corresponde a este usuario.
+  if (!canShowPendientesBadge()) setPendientesPendingBadge(0);
+  if (!canShowErroresBadge()) setErroresPendingBadge(0);
+
+  if (canShowPendientesBadge()) refreshPendientesPendingBadge();
+  else if (canShowErroresBadge()) refreshErroresPendingBadge();
+  else clearAdminNotifBadges();
+}
+
 export function unmountAdminChannels() {
   if (typeof document !== "undefined") {
     document.documentElement.classList.remove("is-admin-role");
@@ -53,7 +88,7 @@ export function unmountAdminChannels() {
   stopPacientesBadgePoll();
   setInteraccionesPendingBadge(0);
   stopBadgePoll();
-  setPendientesPendingBadge(0);
+  clearAdminNotifBadges();
 }
 
 export function mountAdminChannels() {
@@ -80,8 +115,7 @@ export function mountAdminChannels() {
   // Tras login/restore: reiniciar polls (unmount los corta en el 401 previo).
   startPacientesBadgePoll();
   startBadgePoll();
-  if (isAdmin) refreshPendientesPendingBadge();
-  else setPendientesPendingBadge(0);
+  refreshAdminAudienceBadges(isAdmin);
 
   api("settings.php")
     .then((data) => {

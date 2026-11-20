@@ -15,9 +15,7 @@ $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 if ($method === 'GET') {
     $errores = kinesica_errores_load();
-    usort($errores, static function (array $a, array $b): int {
-        return strcmp((string) ($b['created_at'] ?? ''), (string) ($a['created_at'] ?? ''));
-    });
+    $countsOnly = isset($_GET['counts_only']) && (string) $_GET['counts_only'] === '1';
 
     $pendientes = 0;
     $resueltos = 0;
@@ -29,15 +27,24 @@ if ($method === 'GET') {
         }
     }
 
-    json_out(200, [
+    $payload = [
         'status' => 'success',
-        'errores' => $errores,
         'totales' => [
             'total' => count($errores),
             'pendientes' => $pendientes,
             'resueltos' => $resueltos,
         ],
-    ]);
+        'pending_count' => $pendientes,
+    ];
+
+    if (!$countsOnly) {
+        usort($errores, static function (array $a, array $b): int {
+            return strcmp((string) ($b['created_at'] ?? ''), (string) ($a['created_at'] ?? ''));
+        });
+        $payload['errores'] = $errores;
+    }
+
+    json_out(200, $payload);
 }
 
 if ($method !== 'POST') {
