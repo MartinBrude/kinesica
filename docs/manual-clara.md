@@ -182,7 +182,7 @@ Para brindar una experiencia cálida y sin fricciones, Clara incluye respuestas 
    Si el paciente consulta directamente por coberturas mencionando entidades como **OSDE, Swiss Medical (SMG), Galeno, Medicus, IOMA, PAMI, Accord Salud, Omint, Sancor Salud**, etc., Clara no lo hace perder tiempo: le informa de inmediato los honorarios vigentes, aclarando amablemente que el consultorio atiende de forma **particular** y que se entrega **factura oficial electrónica** para que pueda gestionar el reintegro en su cobertura.
 2. **Agradecimientos afectuosos:**  
    Cuando un paciente responde *"gracias"*, *"muchas gracias"*, *"mil gracias"*, *"genial"* o *"joya"*, Clara no le vuelve a enviar todo el menú desplegable. Responde con calidez humana:  
-   > *"¡De nada! Quedo a tu disposición si necesitás algo más 🌿"*
+   > *"¡De nada! Que tengas un excelente día 🙌."*
 3. **Derivación de Consultas Indistintas y Colegas Médicos:**  
    - Si un paciente escribe pidiendo hablar con *"un kinesiólogo"* o *"el profesional"* sin indicar a quién, Clara deriva la consulta directamente a **Norberto Brude** (`+54 11 6156-4311`).  
    - Si quien escribe se presenta como un colega, médico, odontólogo o derivador, el sistema canaliza la comunicación de forma prioritaria con Norberto.

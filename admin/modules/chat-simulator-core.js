@@ -3,7 +3,7 @@ import {
   formatWhatsAppMarkdown,
   withTraditionalFirstContactGreeting,
   pickSimText,
-} from "./chat-simulator-engine.js?v=6";
+} from "./chat-simulator-engine.js?v=7";
 
 let ctx = {
   defaults: {},
@@ -28,19 +28,31 @@ export const chatQuickBtns = document.querySelectorAll(".chat-quick-btn");
 let chatSubmenu = null;
 let chatLang = "es";
 export const traditionalGreetingState = { used: false };
-let botRepliedOnce = false;
+let lastMenuShownAt = 0;
+let unrecCount = 0;
 
 export function getChatSubmenu() { return chatSubmenu; }
 export function setChatSubmenu(value) { chatSubmenu = value; }
 export function getChatLang() { return chatLang; }
 export function setChatLang(value) { chatLang = value; }
 
+export function markMenuShown() {
+  lastMenuShownAt = Date.now();
+}
+
+export function wasMenuShownWithin(ms) {
+  return lastMenuShownAt > 0 && (Date.now() - lastMenuShownAt) < ms;
+}
+
+export function resetUnrecCount() { unrecCount = 0; }
+export function bumpUnrecCount() { unrecCount += 1; return unrecCount; }
+export function getUnrecCount() { return unrecCount; }
+
 export function replyAsBot(text, { viaNaturalLanguage = false, letter = null } = {}) {
   let out = text;
   if (viaNaturalLanguage && ["a", "b", "c", "d"].includes(letter)) {
     out = withTraditionalFirstContactGreeting(text, chatLang, traditionalGreetingState);
   }
-  botRepliedOnce = true;
   appendChatMessage(out, "bot");
 }
 
@@ -118,7 +130,10 @@ export function resetChatDemo(lang = chatLang) {
   chatSubmenu = null;
   chatLang = lang;
   traditionalGreetingState.used = false;
-  botRepliedOnce = false;
+  lastMenuShownAt = 0;
+  unrecCount = 0;
+  appendChatMessage(buildWelcomeMessage(chatLang), "bot");
+  markMenuShown();
 }
 
 function mainMenuLettersInOrder(menuText) {
