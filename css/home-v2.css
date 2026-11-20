@@ -90,6 +90,19 @@ body.page-home-v2 main::after {
   border-radius: 42% 58% 38% 62%;
 }
 
+/* Las manchas salen del viewport (left/right negativos) y ensanchan el scroll en móvil. */
+@media (max-width: 768px) {
+  body.page-home-v2 main::before {
+    left: 0;
+    width: min(42rem, 72vw);
+  }
+
+  body.page-home-v2 main::after {
+    right: 0;
+    width: min(36rem, 62vw);
+  }
+}
+
 /* —— 1. Hero: photo + organic shapes connecting copy and image —— */
 body.page-home-v2 .hero-section {
   position: relative;
@@ -663,6 +676,8 @@ body.page-home-v2 .team-grid .team-block {
 }
 
 body.page-home-v2 .team-img {
+  width: 100%;
+  max-width: 280px;
   margin-bottom: 18px;
   padding: 0;
   background: none;

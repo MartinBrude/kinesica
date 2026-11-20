@@ -1247,7 +1247,7 @@ main:focus {
 
 #navigation.small-screen ul li {
   width: 100%;
-  border-top: 1px solid #474747;
+  border-top: 1px solid var(--panel-border);
 }
 
 #navigation.small-screen ul ul li,
@@ -1259,16 +1259,24 @@ main:focus {
 #navigation.small-screen ul li .nav-parent,
 #navigation.small-screen ul ul li a {
   width: 100%;
+  max-width: 100%;
   border-bottom: 0;
-  padding: 20px 15px;
+  padding: 16px 16px;
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 
 #navigation.small-screen>ul>li {
   float: none;
 }
 
+#navigation.small-screen > ul > li.has-sub > a,
+#navigation.small-screen > ul > li.has-sub > .nav-parent {
+  padding-right: 52px;
+}
+
 #navigation.small-screen ul ul li a {
-  padding-left: 25px;
+  padding-left: 32px;
 }
 
 #navigation.small-screen ul ul ul li a {
@@ -1392,9 +1400,8 @@ main:focus {
   top: 0;
   display: block;
   border: none;
-  border-left: 1px solid #474747;
-  height: 53px;
-  width: 53px;
+  height: 49px;
+  width: 48px;
   padding: 0;
   margin: 0;
   font: inherit;
@@ -1410,13 +1417,14 @@ main:focus {
 
 #navigation.small-screen .submenu-button:after {
   position: absolute;
-  top: 22px;
+  top: 50%;
   right: 20px;
   width: 8px;
   height: 2px;
   display: block;
-  background: #dddddd;
+  background: #474747;
   content: "";
+  transform: translateY(-50%);
 }
 
 #navigation.small-screen ul ul .submenu-button:after {
@@ -1430,13 +1438,14 @@ main:focus {
 
 #navigation.small-screen .submenu-button:before {
   position: absolute;
-  top: 19px;
+  top: 50%;
   right: 23px;
   display: block;
   width: 2px;
   height: 8px;
-  background: #dddddd;
+  background: #474747;
   content: "";
+  transform: translateY(-50%);
 }
 
 #navigation.small-screen ul ul .submenu-button:before {
@@ -3068,9 +3077,12 @@ address {
     min-width: 0;
   }
 
+  /* La columna Bootstrap es position:relative y se encoge al botón.
+     Si el panel absoluto se ancla a ella, queda ~80px y se sale de la pantalla. */
   .header > .container > .row > [class*="col-"]:last-child {
     flex: 0 0 auto;
     width: auto;
+    position: static;
   }
 
   .header a:has(img) {
@@ -3123,7 +3135,10 @@ address {
     left: 0;
     right: 0;
     top: 100%;
-    width: 100%;
+    width: auto;
+    max-width: none;
+    margin-left: 0;
+    float: none;
     z-index: 10001;
     background-color: var(--bg-white);
     box-shadow: 0 8px 20px rgba(0, 40, 70, 0.12);
