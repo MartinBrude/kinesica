@@ -572,13 +572,19 @@ await test("vía alternativa de login por código al mail disponible para María
   const sessionStartPhp = fs.readFileSync(path.join(adminDir, "api/lib_db_start_session.php"), "utf8");
   assert.match(sessionStartPhp, /function kinesica_session_save_path/, "start_session debe usar path propio de sesiones");
   assert.match(sessionStartPhp, /data\/sessions/, "sesiones deben vivir en admin/api/data/sessions");
+  assert.match(sessionStartPhp, /private\/sessions/, "start_session debe contemplar directorio persistente private/sessions fuera de public_html");
+  assert.match(sessionStartPhp, /kinesica_session_name\(\)/, "require_header debe usar kinesica_session_name para chequear cookie");
   assert.match(sessionStartPhp, /session_lifetime_admin\(\)/, "cookie/GC inicial deben cubrir 30 días admin");
   const sessionLifePhp = fs.readFileSync(path.join(adminDir, "api/lib_db_config_candidate_paths.php"), "utf8");
   assert.match(sessionLifePhp, /30 \* 24 \* 3600/, "admin session lifetime = 30 días");
   assert.match(sessionLifePhp, /8 \* 3600/, "sesión no-admin = 8 horas");
   assert.match(sessionLifePhp, /\$_SESSION\['auth_at'\] = time\(\)/, "auth_at debe renovarse (ventana deslizante)");
+  assert.match(sessionLifePhp, /user_role\(\$username\)/, "session_role_from_session debe validar rol admin en DB");
   const sessionsHtaccess = fs.readFileSync(path.join(adminDir, "api/data/sessions/.htaccess"), "utf8");
   assert.match(sessionsHtaccess, /Require all denied/, "data/sessions debe bloquear acceso HTTP");
+
+  const appJsAuth = fs.readFileSync(path.join(adminDir, "app.js"), "utf8");
+  assert.ok(!appJsAuth.includes("if (!error.auth)"), "app.js no debe desloguear al usuario en errores que no sean de auth");
 
   // Protección de gate y mobile: showGate debe resetear sesión y ocultar usuario en topbar
   const authGateJs = fs.readFileSync(path.join(adminDir, "modules/auth-gate.js"), "utf8");

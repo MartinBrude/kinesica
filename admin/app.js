@@ -241,9 +241,6 @@ if (resetToken && resetFormEl) {
     });
 } else {
   refresh().catch((error) => {
-    if (!error.auth) {
-      setSessionUser(null);
-      showGate({ login: true });
-    }
+    if (!error?.auth) console.warn("No se pudo refrescar la sesión del admin:", error);
   });
 }

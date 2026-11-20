@@ -143,13 +143,16 @@ function clear_session_cookie(): void
     if (headers_sent()) {
         return;
     }
-    setcookie(session_name(), '', [
-        'expires' => time() - 42000,
-        'path' => '/admin/',
-        'secure' => true,
-        'httponly' => true,
-        'samesite' => 'Lax',
-    ]);
+    $cookieName = session_name();
+    foreach (['/admin/', '/admin'] as $path) {
+        setcookie($cookieName, '', [
+            'expires' => time() - 42000,
+            'path' => $path,
+            'secure' => true,
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ]);
+    }
 }
 
 
@@ -164,7 +167,19 @@ function refresh_session_cookie(int $lifetimeSeconds): void
 
 function session_role_from_session(): string
 {
-    return (string) ($_SESSION['role'] ?? 'professional');
+    $role = (string) ($_SESSION['role'] ?? '');
+    if ($role === 'admin') {
+        return 'admin';
+    }
+    $username = (string) ($_SESSION['user'] ?? '');
+    if ($username !== '' && function_exists('user_role')) {
+        $dbRole = user_role($username);
+        if ($dbRole === 'admin') {
+            $_SESSION['role'] = 'admin';
+            return 'admin';
+        }
+    }
+    return $role !== '' ? $role : 'professional';
 }
 
 /**

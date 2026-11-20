@@ -1,22 +1,47 @@
 <?php
 declare(strict_types=1);
 
+const KINESICA_SESSION_NAME = 'kinesica_atm';
+
+function kinesica_session_name(): string
+{
+    return KINESICA_SESSION_NAME;
+}
+
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_name(KINESICA_SESSION_NAME);
+}
 
 /**
  * Directorio propio para archivos de sesión.
+ * Prioriza private/sessions fuera de public_html para persistir a través de deploys,
+ * y data/sessions local como fallback.
  * Evita que el GC del /tmp compartido del hosting borre sesiones admin antes de 30 días.
  */
 function kinesica_session_save_path(): string
 {
-    $dir = __DIR__ . '/data/sessions';
-    if (!is_dir($dir)) {
-        @mkdir($dir, 0775, true);
+    $domainRoot = dirname(__DIR__, 3);
+    $docRoot = dirname(__DIR__, 2);
+    $normalizedDoc = str_replace('\\', '/', $docRoot);
+    $candidates = [];
+    if (str_ends_with($normalizedDoc, '/public_html') || basename($normalizedDoc) === 'public_html') {
+        $candidates[] = $domainRoot . '/private/sessions';
     }
-    $htaccess = $dir . '/.htaccess';
-    if (is_dir($dir) && !is_file($htaccess)) {
-        @file_put_contents($htaccess, "Require all denied\n");
+    $candidates[] = __DIR__ . '/data/sessions';
+
+    foreach ($candidates as $dir) {
+        if (!is_dir($dir)) {
+            @mkdir($dir, 0775, true);
+        }
+        $htaccess = $dir . '/.htaccess';
+        if (is_dir($dir) && !is_file($htaccess)) {
+            @file_put_contents($htaccess, "Require all denied\n");
+        }
+        if (is_dir($dir) && is_writable($dir)) {
+            return $dir;
+        }
     }
-    return is_dir($dir) && is_writable($dir) ? $dir : '';
+    return '';
 }
 
 
@@ -32,7 +57,7 @@ function start_session(): void
     }
     // GC debe cubrir la sesión admin más larga (30 días).
     ini_set('session.gc_maxlifetime', (string) session_lifetime_admin());
-    session_name('kinesica_atm');
+    session_name(KINESICA_SESSION_NAME);
     // Cookie inicial al máximo (admin); enforce_session_lifetime ajusta por rol.
     session_set_cookie_params([
         'lifetime' => session_lifetime_admin(),
@@ -85,8 +110,8 @@ function require_header(): void
     }
     // Si hay cookie de sesión, arrancar para poder validar csrf_token.
     if (session_status() !== PHP_SESSION_ACTIVE) {
-        $cookieName = session_name();
-        if ($cookieName !== '' && !empty($_COOKIE[$cookieName])) {
+        $cookieName = kinesica_session_name();
+        if (!empty($_COOKIE[$cookieName])) {
             start_session();
         }
     }
