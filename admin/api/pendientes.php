@@ -51,6 +51,7 @@ $action = (string) ($input['action'] ?? '');
 
 if ($action === 'create') {
     $titulo = trim((string) ($input['titulo'] ?? ''));
+    $posicion = (string) ($input['posicion'] ?? 'top');
     if ($titulo === '') {
         json_out(422, ['error' => 'El título de la tarea es obligatorio.']);
     }
@@ -68,6 +69,7 @@ if ($action === 'create') {
         'id' => $id,
         'titulo' => $titulo,
         'estado' => 'pendiente',
+        'prioridad' => 1,
         'created_at' => gmdate('Y-m-d\TH:i:s\Z'),
         'created_by' => (string) ($auth['username'] ?? 'admin'),
         'resolved_at' => null,
@@ -75,13 +77,73 @@ if ($action === 'create') {
     ];
 
     $pendientes = kinesica_pendientes_load();
-    array_unshift($pendientes, $nuevo);
+    if ($posicion === 'bottom') {
+        $pendingList = [];
+        $resolvedList = [];
+        foreach ($pendientes as $p) {
+            if (($p['estado'] ?? '') === 'resuelto') {
+                $resolvedList[] = $p;
+            } else {
+                $pendingList[] = $p;
+            }
+        }
+        $pendingList[] = $nuevo;
+        $pendientes = array_merge($pendingList, $resolvedList);
+    } else {
+        array_unshift($pendientes, $nuevo);
+    }
+    $pendientes = kinesica_pendientes_normalize_priorities($pendientes);
     kinesica_pendientes_save($pendientes);
 
     json_out(200, [
         'status' => 'success',
         'message' => 'Pendiente agregado.',
         'pendiente' => $nuevo,
+        'pendientes' => $pendientes,
+    ]);
+}
+
+if ($action === 'reorder') {
+    $ids = $input['ids'] ?? null;
+    if (!is_array($ids)) {
+        json_out(422, ['error' => 'Se requiere la lista de IDs ordenada.']);
+    }
+
+    $pendientes = kinesica_pendientes_load();
+    $byId = [];
+    $resueltos = [];
+    foreach ($pendientes as $item) {
+        $iid = (string) ($item['id'] ?? '');
+        if ($iid === '') {
+            continue;
+        }
+        if (($item['estado'] ?? '') === 'resuelto') {
+            $resueltos[] = $item;
+        } else {
+            $byId[$iid] = $item;
+        }
+    }
+
+    $reordered = [];
+    foreach ($ids as $rawId) {
+        $sid = trim((string) $rawId);
+        if (isset($byId[$sid])) {
+            $reordered[] = $byId[$sid];
+            unset($byId[$sid]);
+        }
+    }
+    foreach ($byId as $remaining) {
+        $reordered[] = $remaining;
+    }
+
+    $all = array_merge($reordered, $resueltos);
+    $all = kinesica_pendientes_normalize_priorities($all);
+    kinesica_pendientes_save($all);
+
+    json_out(200, [
+        'status' => 'success',
+        'message' => 'Orden de pendientes actualizado.',
+        'pendientes' => $all,
     ]);
 }
 
@@ -112,11 +174,13 @@ if ($action === 'toggle_status') {
         json_out(404, ['error' => 'Tarea pendiente no encontrada.']);
     }
 
+    $pendientes = kinesica_pendientes_normalize_priorities($pendientes);
     kinesica_pendientes_save($pendientes);
     json_out(200, [
         'status' => 'success',
         'message' => 'Estado actualizado.',
         'pendiente' => $updated,
+        'pendientes' => $pendientes,
     ]);
 }
 

@@ -248,6 +248,35 @@ a {
   background: var(--accent-deep);
 }
 
+.btn:disabled,
+.btn[disabled],
+.file-btn:disabled,
+.file-btn[disabled] {
+  opacity: 0.45 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.btn.solid:disabled,
+.btn.solid[disabled],
+.btn.green:disabled,
+.btn.green[disabled] {
+  background: var(--accent) !important;
+  color: white !important;
+  opacity: 0.45 !important;
+  cursor: not-allowed !important;
+}
+
+.btn.green:disabled:hover,
+.btn.green[disabled]:hover,
+.btn.solid:disabled:hover,
+.btn.solid[disabled]:hover {
+  background: var(--accent) !important;
+  color: white !important;
+  transform: none !important;
+}
+
 .btn.light {
   background: white;
   color: var(--primary);

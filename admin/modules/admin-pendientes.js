@@ -3,13 +3,23 @@
  * Badge de notificaciones: solo para Norberto.
  */
 
-import { api, formatDate } from "./api.js?v=79";
-import { escapeHtml, dialogAlert, dialogConfirm, toast } from "./dom.js?v=79";
+import { api } from "./api.js?v=79";
+import { dialogAlert, dialogConfirm } from "./dom.js?v=79";
 import { setListControlsEnabled } from "./list-controls.js?v=1";
 import { getSessionUser } from "./auth.js?v=83";
+import {
+  renderPendientesRows,
+  setupPendientesDragAndDrop,
+} from "./admin-pendientes-render.js?v=1";
+import {
+  closePendienteModal,
+  isPendienteModalOpen,
+  handleSavePendiente,
+  initPendienteModalListeners,
+} from "./admin-pendientes-modal.js?v=1";
 
-/** Username que recibe el badge de tareas pendientes. */
 export const PENDIENTES_BADGE_USERNAME = "norberto";
+export { closePendienteModal, isPendienteModalOpen };
 
 let cachedPendientes = [];
 let currentFilter = "pendientes"; // 'todos' | 'pendientes' | 'resueltos'
@@ -18,34 +28,6 @@ let pendientesLoading = false;
 const countPill = document.querySelector("#admin-pendientes-count-label");
 const tbody = document.querySelector("#admin-pendientes-tbody");
 const filterBtns = document.querySelectorAll(".admin-pendientes-filter-btn");
-const btnNuevo = document.querySelector("#admin-btn-nuevo-pendiente");
-const modal = document.querySelector("#admin-pendiente-modal");
-const form = document.querySelector("#admin-pendiente-form");
-const inputTitulo = document.querySelector("#admin-pendiente-titulo");
-const btnSave = document.querySelector("#admin-pendiente-modal-save");
-
-function openPendienteModal() {
-  if (!modal) return;
-  if (form) form.reset();
-  modal.hidden = false;
-  queueMicrotask(() => inputTitulo?.focus());
-}
-
-function closePendienteModal() {
-  if (!modal) return;
-  modal.hidden = true;
-  if (form) form.reset();
-}
-
-function setSaveDisabled(disabled) {
-  if (btnSave) btnSave.disabled = Boolean(disabled);
-}
-
-export function isPendienteModalOpen() {
-  return Boolean(modal && !modal.hidden);
-}
-
-export { closePendienteModal };
 
 function countOpen(list) {
   return (Array.isArray(list) ? list : []).filter((i) => i && i.estado !== "resuelto").length;
@@ -60,31 +42,18 @@ function applyBadgeEl(el, show, label, aria) {
   el.textContent = label;
   el.hidden = !show;
   el.setAttribute("aria-hidden", show ? "false" : "true");
-  if (show) {
-    el.setAttribute("aria-label", aria);
-    el.title = aria;
-  } else {
-    el.removeAttribute("aria-label");
-    el.removeAttribute("title");
-  }
+  if (show) { el.setAttribute("aria-label", aria); el.title = aria; }
+  else { el.removeAttribute("aria-label"); el.removeAttribute("title"); }
 }
 
-/**
- * Actualiza el badge de Pendientes.
- * Solo Norberto ve el contador (menú + grupo Administración).
- * Otros usuarios: oculta el badge del ítem Pendientes sin tocar el del grupo.
- */
 export function setPendientesPendingBadge(count) {
   const audience = canShowPendientesBadge();
   const n = audience ? Math.max(0, Number(count) || 0) : 0;
   const label = n > 99 ? "99+" : String(n);
   const show = n > 0;
-  const aria = show
-    ? `${n === 1 ? "1 pendiente" : `${n} pendientes`} en Administración`
-    : "";
+  const aria = show ? `${n === 1 ? "1 pendiente" : `${n} pendientes`} en Administración` : "";
 
   applyBadgeEl(document.getElementById("nav-badge-pendientes"), show, label, aria);
-
   if (!audience) return;
 
   applyBadgeEl(document.getElementById("nav-badge-admin"), show, label, aria);
@@ -126,6 +95,52 @@ export function setPendientesFilter(filter, onReload) {
   renderPendientes(cachedPendientes, onReload);
 }
 
+function normalizeLocalPriorities(list) {
+  let pIdx = 1;
+  list.forEach((i) => { i.prioridad = i.estado !== "resuelto" ? pIdx++ : 0; });
+}
+
+async function reorderPendientes(srcId, targetId, onReload) {
+  if (!srcId || !targetId || srcId === targetId) return;
+  const fromIdx = cachedPendientes.findIndex((p) => p.id === srcId);
+  const toIdx = cachedPendientes.findIndex((p) => p.id === targetId);
+  if (fromIdx < 0 || toIdx < 0) return;
+
+  const previous = [...cachedPendientes];
+  const copy = [...cachedPendientes];
+  const [moved] = copy.splice(fromIdx, 1);
+  copy.splice(toIdx, 0, moved);
+  normalizeLocalPriorities(copy);
+  cachedPendientes = copy;
+  renderPendientes(cachedPendientes, onReload);
+
+  const pendingIds = cachedPendientes.filter((p) => p.estado !== "resuelto").map((p) => p.id);
+  try {
+    const resp = await api("pendientes.php", {
+      method: "POST",
+      body: JSON.stringify({ action: "reorder", ids: pendingIds }),
+    });
+    if (resp && Array.isArray(resp.pendientes)) {
+      cachedPendientes = resp.pendientes;
+      renderPendientes(cachedPendientes, onReload);
+    }
+  } catch (err) {
+    cachedPendientes = previous;
+    renderPendientes(cachedPendientes, onReload);
+    dialogAlert("No se pudo guardar el nuevo orden: " + (err.message || "Error desconocido"));
+  }
+}
+
+function handleMovePriority(id, direction, onReload) {
+  const pending = cachedPendientes.filter((p) => p.estado !== "resuelto");
+  const pIdx = pending.findIndex((p) => p.id === id);
+  if (pIdx < 0) return;
+  const targetIdx = direction === "up" ? pIdx - 1 : pIdx + 1;
+  if (targetIdx < 0 || targetIdx >= pending.length) return;
+  const targetId = pending[targetIdx].id;
+  reorderPendientes(id, targetId, onReload);
+}
+
 export function renderPendientes(pendientes, onReload) {
   const total = pendientes.length;
   const resueltos = pendientes.filter((e) => e.estado === "resuelto").length;
@@ -146,48 +161,18 @@ export function renderPendientes(pendientes, onReload) {
   });
 
   if (filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--muted); padding:32px 16px;">
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--muted); padding:32px 16px;">
       ${pendientes.length === 0 ? "No hay tareas pendientes." : "No hay tareas con el filtro seleccionado."}
     </td></tr>`;
     return;
   }
 
-  tbody.replaceChildren(...filtered.map((item) => {
-    const tr = document.createElement("tr");
-    const isResuelto = item.estado === "resuelto";
-    if (isResuelto) tr.classList.add("error-row-resolved");
-
-    const tdEstado = document.createElement("td");
-    tdEstado.innerHTML = isResuelto
-      ? '<span class="error-badge badge-resolved">✓ Resuelto</span>'
-      : '<span class="error-badge badge-pending">⚡ Pendiente</span>';
-
-    const tdTitulo = document.createElement("td");
-    tdTitulo.innerHTML = `
-      <div class="error-info-title">${escapeHtml(item.titulo || "")}</div>
-      <div class="error-info-sub">${
-        isResuelto && item.resolved_at
-          ? `Resuelto por <strong>${escapeHtml(item.resolved_by || "admin")}</strong> el ${escapeHtml(formatDate(String(item.resolved_at).slice(0, 10)))}`
-          : "Tarea administrativa pendiente"
-      }</div>
-    `;
-
-    const tdActions = document.createElement("td");
-    tdActions.className = "prof-actions-td";
-    const cell = document.createElement("div");
-    cell.className = "prof-actions-cell";
-
-    const btnToggle = document.createElement("button");
-    btnToggle.type = "button";
-    btnToggle.className = `btn ghost btn-sm ${isResuelto ? "btn-reopen" : "btn-resolve"}`;
-    btnToggle.textContent = isResuelto ? "Reabrir" : "Marcar resuelto";
-    btnToggle.addEventListener("click", () => handleTogglePendiente(item, onReload));
-    cell.appendChild(btnToggle);
-
-    tdActions.appendChild(cell);
-    tr.append(tdEstado, tdTitulo, tdActions);
-    return tr;
+  tbody.replaceChildren(...renderPendientesRows(filtered, {
+    onToggle: (item) => handleTogglePendiente(item, onReload),
+    onMovePriority: (id, dir) => handleMovePriority(id, dir, onReload),
   }));
+
+  setupPendientesDragAndDrop(tbody, (src, target) => reorderPendientes(src, target, onReload));
 }
 
 async function handleTogglePendiente(item, onReload) {
@@ -199,10 +184,13 @@ async function handleTogglePendiente(item, onReload) {
   if (!ok) return;
 
   try {
-    await api("pendientes.php", {
+    const resp = await api("pendientes.php", {
       method: "POST",
       body: JSON.stringify({ action: "toggle_status", id: item.id }),
     });
+    if (resp && Array.isArray(resp.pendientes)) {
+      cachedPendientes = resp.pendientes;
+    }
     if (typeof onReload === "function") await onReload();
     else await loadPendientesData();
   } catch (err) {
@@ -210,48 +198,11 @@ async function handleTogglePendiente(item, onReload) {
   }
 }
 
-async function handleSavePendiente(e, onReload) {
-  if (e) e.preventDefault();
-  const titulo = String(inputTitulo?.value || "").trim();
-  if (!titulo) {
-    dialogAlert("Escribí el título de la tarea.");
-    inputTitulo?.focus();
-    return;
-  }
-  if (titulo.length > 255) {
-    dialogAlert("El título no puede superar los 255 caracteres.");
-    inputTitulo?.focus();
-    return;
-  }
-
-  setSaveDisabled(true);
-  try {
-    await api("pendientes.php", {
-      method: "POST",
-      body: JSON.stringify({ action: "create", titulo }),
-    });
-    toast("Pendiente agregado.", { type: "success" });
-    closePendienteModal();
-    if (currentFilter === "resueltos") {
-      currentFilter = "pendientes";
-      filterBtns.forEach((btn) => {
-        btn.classList.toggle("is-active", btn.dataset.filter === "pendientes");
-      });
-    }
-    if (typeof onReload === "function") await onReload();
-    else await loadPendientesData();
-  } catch (err) {
-    dialogAlert("Error al agregar pendiente: " + (err.message || "Error desconocido"));
-  } finally {
-    setSaveDisabled(false);
-  }
-}
-
 export async function loadPendientesData(onReload) {
   if (pendientesLoading) return;
   pendientesLoading = true;
   if (tbody && (!cachedPendientes || !cachedPendientes.length)) {
-    tbody.innerHTML = `<tr><td colspan="3" class="admin-table-loading"><span class="loading-spinner" aria-hidden="true"></span><span>Cargando pendientes…</span></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="4" class="admin-table-loading"><span class="loading-spinner" aria-hidden="true"></span><span>Cargando pendientes…</span></td></tr>`;
   }
   const filterRoot = document.querySelector("#view-admin .admin-pendientes-filters")
     || document.querySelector(".admin-pendientes-filters");
@@ -274,11 +225,20 @@ export function initPendientesUI({ onReload }) {
   filterBtns.forEach((btn) => {
     btn.addEventListener("click", () => setPendientesFilter(btn.dataset.filter, onReload));
   });
-  btnNuevo?.addEventListener("click", openPendienteModal);
-  document.getElementById("admin-pendiente-modal-close")?.addEventListener("click", closePendienteModal);
-  document.getElementById("admin-pendiente-modal-cancel")?.addEventListener("click", closePendienteModal);
-  modal?.addEventListener("click", (e) => {
-    if (e.target === modal) closePendienteModal();
+  initPendienteModalListeners({
+    onSubmit: (e) => handleSavePendiente(e, {
+      onSuccess: async (resp) => {
+        if (resp && Array.isArray(resp.pendientes)) {
+          cachedPendientes = resp.pendientes;
+        }
+        if (currentFilter === "resueltos") {
+          currentFilter = "pendientes";
+          filterBtns.forEach((btn) => {
+            btn.classList.toggle("is-active", btn.dataset.filter === "pendientes");
+          });
+        }
+      },
+      onReload,
+    }),
   });
-  form?.addEventListener("submit", (e) => handleSavePendiente(e, onReload));
 }

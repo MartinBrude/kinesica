@@ -34,7 +34,7 @@ function renderListWithState() {
 
 export async function loadCesionesFromServer() {
   try {
-    const res = await api.get("/admin/api/horarios_cesiones.php");
+    const res = await api("horarios_cesiones.php");
     if (res && res.status === "success") {
       currentOverrides = Array.isArray(res.overrides) ? res.overrides : [];
       applyOverridesToRuntime(currentOverrides);
@@ -53,9 +53,12 @@ async function handleCreateCesion(draft) {
   }
 
   try {
-    const res = await api.post("/admin/api/horarios_cesiones.php", {
-      ...draft,
-      action: "create",
+    const res = await api("horarios_cesiones.php", {
+      method: "POST",
+      body: {
+        ...draft,
+        action: "create",
+      },
     });
 
     if (res && res.status === "success") {
@@ -84,9 +87,12 @@ async function handleAnularCesion(id) {
   if (!ok) return;
 
   try {
-    const res = await api.post("/admin/api/horarios_cesiones.php", {
-      action: "anular",
-      id,
+    const res = await api("horarios_cesiones.php", {
+      method: "POST",
+      body: {
+        action: "anular",
+        id,
+      },
     });
     if (res && res.status === "success") {
       toast("Cambio de horario anulado correctamente.", "success");
@@ -106,9 +112,12 @@ async function handleDeleteCesion(id) {
   if (!ok) return;
 
   try {
-    const res = await api.post("/admin/api/horarios_cesiones.php", {
-      action: "delete",
-      id,
+    const res = await api("horarios_cesiones.php", {
+      method: "POST",
+      body: {
+        action: "delete",
+        id,
+      },
     });
     if (res && res.status === "success") {
       toast("Registro eliminado del historial.", "success");
@@ -131,7 +140,7 @@ async function handleCheckConflicts({ startDate, endDate, practitionerId }) {
       end_date: endDate,
       practitioner_id: practitionerId || "",
     });
-    const res = await api.get(`/admin/api/horarios_cesiones.php?${q.toString()}`);
+    const res = await api(`horarios_cesiones.php?${q.toString()}`);
     return res && res.conflicts ? res.conflicts : [];
   } catch {
     return [];

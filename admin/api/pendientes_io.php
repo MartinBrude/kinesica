@@ -24,6 +24,32 @@ function kinesica_pendientes_source_file(): string
     return is_file($runtime) ? $runtime : kinesica_pendientes_seed_file();
 }
 
+function kinesica_pendientes_normalize_priorities(array $items): array
+{
+    $pendientes = [];
+    $resueltos = [];
+
+    foreach ($items as $item) {
+        if (!is_array($item)) {
+            continue;
+        }
+        if (($item['estado'] ?? '') === 'resuelto') {
+            $item['prioridad'] = 0;
+            $resueltos[] = $item;
+        } else {
+            $pendientes[] = $item;
+        }
+    }
+
+    $idx = 1;
+    foreach ($pendientes as &$item) {
+        $item['prioridad'] = $idx++;
+    }
+    unset($item);
+
+    return array_merge($pendientes, $resueltos);
+}
+
 function kinesica_pendientes_load(): array
 {
     $file = kinesica_pendientes_source_file();
@@ -36,6 +62,7 @@ function kinesica_pendientes_load(): array
         return [];
     }
     $out = [];
+    $pIdx = 1;
     foreach ($data as $item) {
         if (!is_array($item)) {
             continue;
@@ -46,17 +73,22 @@ function kinesica_pendientes_load(): array
             continue;
         }
         $estado = (($item['estado'] ?? '') === 'resuelto') ? 'resuelto' : 'pendiente';
+        $prioridad = isset($item['prioridad']) && is_numeric($item['prioridad'])
+            ? (int) $item['prioridad']
+            : ($estado === 'pendiente' ? $pIdx++ : 0);
+
         $out[] = [
             'id' => $id,
             'titulo' => $titulo,
             'estado' => $estado,
+            'prioridad' => $prioridad,
             'created_at' => (string) ($item['created_at'] ?? ''),
             'created_by' => (string) ($item['created_by'] ?? ''),
             'resolved_at' => $item['resolved_at'] ?? null,
             'resolved_by' => $item['resolved_by'] ?? null,
         ];
     }
-    return $out;
+    return kinesica_pendientes_normalize_priorities($out);
 }
 
 function kinesica_pendientes_save(array $pendientes): void

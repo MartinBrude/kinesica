@@ -10,8 +10,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/styles.css?v=158">
-  <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1795253340">
+  <link rel="stylesheet" href="/admin/styles.css?v=160">
+  <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1795255222">
   <script>
     (function () {
       try {
@@ -636,7 +636,7 @@
               <small id="horarios-last-updated" style="display:block; color:var(--accent-deep); font-weight:600;"></small>
             </div>
             <div class="config-subpanel-actions" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-              <button type="button" class="btn green" id="btn-save-horarios">Guardar horarios</button>
+              <button type="button" class="btn green" id="btn-save-horarios" disabled>Guardar horarios</button>
               <a href="/admin/consultorio/cesiones" class="btn light" id="btn-goto-cesiones">🔄 Ceder horarios / Cierres</a>
               <button type="button" class="btn light" id="btn-test-horarios-booking" data-admin-booking-open>📅 Abrir turnera profesional</button>
             </div>
@@ -745,7 +745,7 @@
               <small id="honorarios-last-updated" style="display:block; color:var(--accent-deep); font-weight:600;"></small>
             </div>
             <div class="config-subpanel-actions" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-              <button type="button" class="btn green" id="btn-save-honorarios">Guardar honorarios</button>
+              <button type="button" class="btn green" id="btn-save-honorarios" disabled>Guardar honorarios</button>
             </div>
           </div>
 
@@ -1391,17 +1391,18 @@
               </div>
             </div>
             <div class="prof-table-wrapper">
-              <table class="prof-table">
+              <table class="prof-table admin-pendientes-table">
                 <thead>
                   <tr>
-                    <th>Estado</th>
+                    <th style="width: 120px;">Prioridad</th>
+                    <th style="width: 130px;">Estado</th>
                     <th>Tarea</th>
-                    <th style="text-align: right;">Acciones</th>
+                    <th style="text-align: right; width: 170px;">Acciones</th>
                   </tr>
                 </thead>
                 <tbody id="admin-pendientes-tbody">
                   <tr>
-                    <td colspan="3" class="admin-table-loading"><span class="loading-spinner" aria-hidden="true"></span><span>Cargando pendientes…</span></td>
+                    <td colspan="4" class="admin-table-loading"><span class="loading-spinner" aria-hidden="true"></span><span>Cargando pendientes…</span></td>
                   </tr>
                 </tbody>
               </table>
@@ -2004,6 +2005,13 @@
               <div class="prof-form-group">
                 <label for="admin-pendiente-titulo">Tarea *</label>
                 <input type="text" id="admin-pendiente-titulo" required maxlength="255" placeholder="Ej: Revisar cotización de hosting" autocomplete="off">
+              </div>
+              <div class="prof-form-group" style="margin-top: 14px;">
+                <label for="admin-pendiente-posicion">Prioridad inicial</label>
+                <select id="admin-pendiente-posicion" class="prof-select" style="width: 100%; padding: 8px 12px; border: 1px solid var(--line); border-radius: 6px; font-size: 14px; background: #fff;">
+                  <option value="top">Máxima prioridad (#1 · Al inicio)</option>
+                  <option value="bottom" selected>Normal (Al final de los pendientes)</option>
+                </select>
               </div>
             </div>
             <div class="prof-modal-footer">
@@ -3135,7 +3143,7 @@
     <div class="admin-top-progress-bar"></div>
   </div>
   <div id="print-root"></div>
-  <script src="/booking/booking-bundle.min.js?v=1795253340" defer></script>
-  <script type="module" src="/admin/app.js?v=233"></script>
+  <script src="/booking/booking-bundle.min.js?v=1795255222" defer></script>
+  <script type="module" src="/admin/app.js?v=234"></script>
 </body>
 </html>

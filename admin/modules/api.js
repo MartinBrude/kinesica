@@ -56,6 +56,7 @@ export function setAuthRequiredHandler(handler) {
  * @throws {Error} Error estructurado con propiedad .auth en caso de 401 o .network si no hay conexión
  */
 export async function api(path, options = {}) {
+  const cleanPath = String(path || "").replace(/^\/?(admin\/)?api\//, "");
   const { timeoutMs = 30000, ...rest } = options;
   const fetchOptions = { ...rest };
   const headers = {
@@ -89,7 +90,7 @@ export async function api(path, options = {}) {
   beginGlobalLoading();
   try {
     try {
-      res = await fetch(`api/${path}`, {
+      res = await fetch(`api/${cleanPath}`, {
         credentials: "same-origin",
         ...fetchOptions,
         headers,
@@ -143,6 +144,9 @@ export async function api(path, options = {}) {
 
   return data;
 }
+
+api.get = (path, options = {}) => api(path, { ...options, method: "GET" });
+api.post = (path, body, options = {}) => api(path, { ...options, method: "POST", body });
 
 /**
  * Formatea una fecha ISO (YYYY-MM-DD) al formato local legible DD/MM/AAAA.
