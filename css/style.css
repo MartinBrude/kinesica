@@ -306,11 +306,28 @@ blockquote {
 .btn-primary {
   background-color: var(--accent-color);
   color: #fff;
+  box-shadow: var(--shadow-md);
 }
 
-.btn-primary:hover {
+.btn-primary:hover,
+.btn-primary:focus {
   background-color: #249a85;
   /* Darker accent */
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+  transition-duration: 0.1s;
+}
+
+.btn-primary.focus,
+.btn-primary:focus {
+  background-color: #249a85;
+  border-color: #249a85;
   color: #fff;
 }
 
@@ -966,6 +983,7 @@ html:not(.js) .lang-picker__option[aria-current="true"] {
 
 .hero-section .hero-title,
 .hero-section .hero-text,
+.hero-section .btn-primary,
 .hero-section .btn-default {
   animation: heroFadeInUp 0.6s ease-out backwards;
 }
@@ -974,6 +992,7 @@ html:not(.js) .lang-picker__option[aria-current="true"] {
   animation-delay: 0.1s;
 }
 
+.hero-section .btn-primary,
 .hero-section .btn-default {
   animation-delay: 0.2s;
 }

@@ -738,14 +738,17 @@ body.page-home-v2 .team-meta {
 body.page-home-v2 .team-designation {
   display: inline-flex;
   align-items: center;
-  padding: 6px 12px;
+  justify-content: center;
+  text-align: center;
+  padding: 8px 16px;
   border-radius: 999px;
   background: color-mix(in srgb, var(--home-accent) 16%, #fff);
   color: var(--home-navy);
-  font-size: 0.72rem;
+  font-size: 0.8125rem;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
+  line-height: 1.35;
 }
 
 body.page-home-v2 .team-designation a {
@@ -1115,19 +1118,29 @@ body.page-home-v2 .team-meta:has(a) .team-designation:focus-within {
     max-width: 100%;
   }
 
-  /* Currículum: target táctil legible (desktop conserva 0.72rem) */
+  /* Currículum: target táctil legible; Lic.: cápsula agrandada y con presencia */
   body.page-home-v2 .team-designation {
-    font-size: 14px;
+    font-size: 15px;
+    font-weight: 700;
     letter-spacing: 0.04em;
+    padding: 10px 20px;
+    min-height: 42px;
+    box-sizing: border-box;
+    box-shadow: 0 2px 8px rgba(3, 28, 66, 0.08);
+  }
+
+  body.page-home-v2 .team-meta:has(a) .team-designation {
     padding: 0;
     min-height: 44px;
+    font-weight: 600;
+    box-shadow: none;
   }
 
   body.page-home-v2 .team-designation a {
     display: inline-flex;
     align-items: center;
     min-height: 44px;
-    padding: 10px 14px;
+    padding: 10px 18px;
     font-size: 14px;
     line-height: 1.2;
   }
@@ -1205,6 +1218,7 @@ body.page-home-v2 .team-meta:has(a) .team-designation:focus-within {
 
   body.page-home-v2 .hero-section .hero-title,
   body.page-home-v2 .hero-section .hero-text,
+  body.page-home-v2 .hero-section .btn-primary,
   body.page-home-v2 .hero-section .btn-default {
     animation: none;
   }
