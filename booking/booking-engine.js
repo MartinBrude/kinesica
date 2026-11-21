@@ -531,12 +531,13 @@
     if (pid) {
       let windows = getBaseWindows(pid);
       activeForDate.forEach(function (ov) {
-        if (ov.action === "closure" && ov.time_scope === "custom_hours" && ov.custom_range) {
-          windows = subtractTimeWindow(
-            windows,
-            parseHmToMinutes(ov.custom_range.start),
-            parseHmToMinutes(ov.custom_range.end)
-          );
+        const ranges = Array.isArray(ov.custom_ranges) && ov.custom_ranges.length > 0
+          ? ov.custom_ranges
+          : (ov.custom_range ? [ov.custom_range] : []);
+        if (ov.action === "closure" && ov.time_scope === "custom_hours") {
+          ranges.forEach(function (r) {
+            windows = subtractTimeWindow(windows, parseHmToMinutes(r.start), parseHmToMinutes(r.end));
+          });
         } else if (ov.action === "transfer") {
           const from = ov.from_practitioner;
           const to = ov.to_practitioner;
@@ -544,22 +545,19 @@
           if (pid === from) {
             if (scope === "all_day") {
               windows = [];
-            } else if (scope === "custom_hours" && ov.custom_range) {
-              windows = subtractTimeWindow(
-                windows,
-                parseHmToMinutes(ov.custom_range.start),
-                parseHmToMinutes(ov.custom_range.end)
-              );
+            } else if (scope === "custom_hours") {
+              ranges.forEach(function (r) {
+                windows = subtractTimeWindow(windows, parseHmToMinutes(r.start), parseHmToMinutes(r.end));
+              });
             }
           } else if (pid === to) {
             if (scope === "all_day") {
               const ceded = getBaseWindows(from);
               windows = mergeTimeWindows(windows, ceded);
-            } else if (scope === "custom_hours" && ov.custom_range) {
-              const added = [{
-                startMin: parseHmToMinutes(ov.custom_range.start),
-                endMin: parseHmToMinutes(ov.custom_range.end),
-              }];
+            } else if (scope === "custom_hours") {
+              const added = ranges.map(function (r) {
+                return { startMin: parseHmToMinutes(r.start), endMin: parseHmToMinutes(r.end) };
+              });
               windows = mergeTimeWindows(windows, added);
             }
           }

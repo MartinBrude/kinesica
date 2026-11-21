@@ -14,11 +14,17 @@ export function getOverrideStatusBadge(ov, todayIso) {
 
 export function formatOverrideDescription(ov) {
   const isTransfer = ov.action === "transfer";
-  const toName = ov.to_practitioner === "maria" ? "Lic. María Gulin" : "Lic. Norberto Brude";
-  const fromName = ov.from_practitioner === "norberto" ? "Lic. Norberto Brude" : "Lic. María Gulin";
+  const toName = ov.to_practitioner === "maria" ? "María" : "Norberto";
+  const fromName = ov.from_practitioner === "norberto" ? "Norberto" : "María";
   const title = isTransfer ? `Disponible para ${toName} (cede ${fromName})` : "Cierre total de consultorio";
   const dates = ov.start_date === ov.end_date ? ov.start_date : `Del ${ov.start_date} al ${ov.end_date}`;
-  const hours = ov.time_scope === "custom_hours" && ov.custom_range ? `${ov.custom_range.start} a ${ov.custom_range.end} hs` : "Jornada habitual completa";
+  const ranges = Array.isArray(ov.custom_ranges) && ov.custom_ranges.length > 0
+    ? ov.custom_ranges
+    : (ov.custom_range ? [ov.custom_range] : []);
+  let hours = "Jornada completa";
+  if (ov.time_scope === "custom_hours" && ranges.length > 0) {
+    hours = ranges.map((r) => `${r.start} a ${r.end} hs`).join(" y ");
+  }
   const reason = ov.reason ? ` · <em>${escapeHtml(ov.reason)}</em>` : "";
   const audit = ov.created_by ? ` · <span style="color:#64748b;">Por ${escapeHtml(ov.created_by)}</span>` : "";
   const annulled = !ov.active && ov.annulled_by ? ` · <span style="color:#dc2626;">Anulado por ${escapeHtml(ov.annulled_by)}</span>` : "";

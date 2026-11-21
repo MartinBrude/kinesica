@@ -285,8 +285,13 @@ function applyGasOverrides(windows, practitionerId, dateStr, overrides, baseHour
 
   let res = windows.slice();
   active.forEach(function(ov) {
-    if (ov.action === "closure" && ov.time_scope === "custom_hours" && ov.custom_range) {
-      res = subWin(res, ov.custom_range.start, ov.custom_range.end);
+    const ranges = Array.isArray(ov.custom_ranges) && ov.custom_ranges.length > 0
+      ? ov.custom_ranges
+      : (ov.custom_range ? [ov.custom_range] : []);
+    if (ov.action === "closure" && ov.time_scope === "custom_hours") {
+      ranges.forEach(function(r) {
+        res = subWin(res, r.start, r.end);
+      });
     } else if (ov.action === "transfer") {
       const from = ov.from_practitioner;
       const to = ov.to_practitioner;
@@ -294,16 +299,18 @@ function applyGasOverrides(windows, practitionerId, dateStr, overrides, baseHour
       if (practitionerId === from) {
         if (scope === "all_day") {
           res = [];
-        } else if (scope === "custom_hours" && ov.custom_range) {
-          res = subWin(res, ov.custom_range.start, ov.custom_range.end);
+        } else if (scope === "custom_hours") {
+          ranges.forEach(function(r) {
+            res = subWin(res, r.start, r.end);
+          });
         }
       } else if (practitionerId === to) {
         if (scope === "all_day" && baseHours && baseHours[from]) {
           const dayKey = String(new Date(dateStr + "T12:00:00Z").getUTCDay());
           const ceded = baseHours[from][dayKey] || [];
           res = mergeGasWindows(res, ceded);
-        } else if (scope === "custom_hours" && ov.custom_range) {
-          res = mergeGasWindows(res, [ov.custom_range]);
+        } else if (scope === "custom_hours") {
+          res = mergeGasWindows(res, ranges);
         }
       }
     }

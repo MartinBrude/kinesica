@@ -58,6 +58,22 @@ $validClosure = validate_schedule_override([
 assert_true($validClosure['isValid'], 'Cierre total debe ser válido');
 assert_equals($validClosure['normalized']['action'], 'closure', 'Acción normalizada');
 
+// Cesión con múltiples franjas horarias
+$multiRangeTransfer = validate_schedule_override([
+    'action' => 'transfer',
+    'from_practitioner' => 'norberto',
+    'to_practitioner' => 'maria',
+    'period_type' => 'single_day',
+    'start_date' => '2026-11-25',
+    'time_scope' => 'custom_hours',
+    'custom_ranges' => [
+        ['start' => '09:00', 'end' => '11:00'],
+        ['start' => '14:00', 'end' => '16:00'],
+    ],
+]);
+assert_true($multiRangeTransfer['isValid'], 'Cesión con múltiples franjas debe ser válida');
+assert_equals(count($multiRangeTransfer['normalized']['custom_ranges']), 2, 'Debe preservar las 2 franjas');
+
 // Cierre parcial con franja válida
 $validPartialClosure = validate_schedule_override([
     'action' => 'closure',
@@ -199,6 +215,24 @@ $wedNorbertoCeded = resolve_practitioner_windows_for_date($baseHours, $overrides
 $wedMariaCeded = resolve_practitioner_windows_for_date($baseHours, $overridesTransfer, $testWed, 'maria');
 assert_equals($wedNorbertoCeded, [], 'Norberto queda con 0 ventanas al ceder');
 assert_equals($wedMariaCeded, [['start' => '09:00', 'end' => '16:30']], 'María recibe jornada de Norberto');
+
+// Cesión parcial con múltiples franjas (2 franjas separadas)
+$overridesMultiCustom = [[
+    'id' => 'ov_multi',
+    'action' => 'transfer',
+    'from_practitioner' => 'norberto',
+    'to_practitioner' => 'maria',
+    'start_date' => $testWed,
+    'end_date' => $testWed,
+    'time_scope' => 'custom_hours',
+    'custom_ranges' => [
+        ['start' => '09:00', 'end' => '11:00'],
+        ['start' => '14:00', 'end' => '16:00'],
+    ],
+    'active' => true,
+]];
+$wedMariaMulti = resolve_practitioner_windows_for_date($baseHours, $overridesMultiCustom, $testWed, 'maria');
+assert_equals($wedMariaMulti, [['start' => '09:00', 'end' => '11:00'], ['start' => '14:00', 'end' => '16:00']], 'María recibe ambas franjas');
 
 // Si la cesión está anulada (active = false), se ignora
 $overridesAnnulled = [[

@@ -215,7 +215,29 @@ assert.ok(mariaPart.length > 0, "María recibe turnos desde las 14:00");
 assert.equal(mariaPart[0].time, "14:00");
 assert.equal(mariaPart.some((s) => s.time < "14:00"), false, "María no tiene slots antes de las 14:00");
 
-console.log("  ✓ División de jornada horaria con precisión de minutos validada.");
+// Test de múltiples franjas horarias (2 franjas separadas: 09:00 a 11:00 y 14:00 a 16:00)
+engine.setScheduleOverrides([
+  {
+    id: "cov_multi_part",
+    action: "transfer",
+    from_practitioner: "norberto",
+    to_practitioner: "maria",
+    start_date: "2026-11-25",
+    end_date: "2026-11-25",
+    time_scope: "custom_hours",
+    custom_ranges: [
+      { start: "09:00", end: "11:00" },
+      { start: "14:00", end: "16:00" },
+    ],
+    active: true,
+  },
+]);
+const mMulti = engine.calculateAvailableSlots({ date: "2026-11-25", practitionerId: "maria" });
+assert.ok(mMulti.some((s) => s.time === "09:00" || s.time === "10:00"), "María tiene turnos en franja 1");
+assert.ok(mMulti.some((s) => s.time === "14:00" || s.time === "15:00"), "María tiene turnos en franja 2");
+assert.equal(mMulti.some((s) => s.time === "11:00" || s.time === "12:00" || s.time === "13:00"), false, "María no tiene turnos intermedios");
+
+console.log("  ✓ División de jornada horaria con precisión de minutos y múltiples franjas validada.");
 
 // =========================================================================
 // 8. Cierre Total y Parcial de Consultorio
@@ -324,10 +346,25 @@ const descAudit = formatOverrideDescription({
   active: false,
   annulled_by: "admin_maria",
 });
-assert.ok(descAudit.title.includes("María Gulin"));
+assert.ok(descAudit.title.includes("María"));
 assert.ok(descAudit.hours.includes("14:00 a 17:00"));
 assert.ok(descAudit.extra.includes("admin_norberto"));
 assert.ok(descAudit.extra.includes("admin_maria"));
+
+const descMulti = formatOverrideDescription({
+  action: "transfer",
+  from_practitioner: "norberto",
+  to_practitioner: "maria",
+  start_date: "2026-11-25",
+  end_date: "2026-11-25",
+  time_scope: "custom_hours",
+  custom_ranges: [
+    { start: "09:00", end: "11:00" },
+    { start: "14:00", end: "16:00" },
+  ],
+  active: true,
+});
+assert.ok(descMulti.hours.includes("09:00 a 11:00 hs y 14:00 a 16:00 hs"));
 console.log("  ✓ Metadatos de consulta y auditoría validados al 100%.");
 
 // =========================================================================

@@ -1,6 +1,6 @@
 /**
  * Kinésica Admin - UI para Formulario de Cesión de Horarios y Cierres
- * Permite seleccionar tal día o rango, tales horarios y a quién se asignan.
+ * Permite seleccionar día puntual o rango, franja(s) horaria(s) y asignación.
  */
 
 import { escapeHtml } from "./dom.js?v=79";
@@ -21,6 +21,7 @@ function buildHourOptions(selected) {
 export function renderCesionesForm({ container, onSubmit, onCheckConflicts }) {
   if (!container) return;
   const today = new Date().toISOString().split("T")[0];
+  let franjas = [{ start: "14:00", end: "17:00" }];
 
   container.innerHTML = `
     <div class="cesiones-form-card" style="background:#fff; border:1px solid var(--line); border-radius:8px; padding:20px; margin-bottom:24px;">
@@ -30,16 +31,16 @@ export function renderCesionesForm({ container, onSubmit, onCheckConflicts }) {
           <div>
             <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">1. ¿Para quién pasan a estar disponibles?</label>
             <select id="cesion-target-flow" style="width:100%; height:38px; border:1px solid var(--line); border-radius:6px; padding:0 8px;">
-              <option value="to_maria">Disponibles para Lic. María Gulin (liberado por Norberto)</option>
-              <option value="to_norberto">Disponibles para Lic. Norberto Brude (liberado por María)</option>
+              <option value="to_maria">Disponibles para María (liberada por Norberto)</option>
+              <option value="to_norberto">Disponibles para Norberto (liberado por María)</option>
               <option value="closure">Cierre total de consultorio (bloqueo para ambos)</option>
             </select>
           </div>
           <div>
             <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">2. Período de fechas</label>
             <select id="cesion-period-type" style="width:100%; height:38px; border:1px solid var(--line); border-radius:6px; padding:0 8px;">
-              <option value="single_day">Tal día (día puntual)</option>
-              <option value="date_range">De tal día a tal día (rango de fechas)</option>
+              <option value="single_day">Día puntual</option>
+              <option value="date_range">Rango de fechas</option>
             </select>
           </div>
         </div>
@@ -56,25 +57,16 @@ export function renderCesionesForm({ container, onSubmit, onCheckConflicts }) {
           <div>
             <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">3. Alcance horario</label>
             <select id="cesion-time-scope" style="width:100%; height:38px; border:1px solid var(--line); border-radius:6px; padding:0 8px;">
-              <option value="all_day">Jornada habitual completa</option>
-              <option value="custom_hours">Tales horarios (franja horaria puntual)</option>
+              <option value="all_day">Jornada completa</option>
+              <option value="custom_hours">Franja horaria</option>
             </select>
           </div>
         </div>
 
-        <div id="wrapper-cesion-custom-hours" style="display:none; grid-template-columns:repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap:14px; margin-bottom:14px;">
-          <div>
-            <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">Desde hora</label>
-            <select id="cesion-custom-start" style="width:100%; height:38px; border:1px solid var(--line); border-radius:6px; padding:0 8px;">
-              ${buildHourOptions("14:00")}
-            </select>
-          </div>
-          <div>
-            <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">Hasta hora</label>
-            <select id="cesion-custom-end" style="width:100%; height:38px; border:1px solid var(--line); border-radius:6px; padding:0 8px;">
-              ${buildHourOptions("17:00")}
-            </select>
-          </div>
+        <div id="wrapper-cesion-custom-hours" style="display:none; margin-bottom:14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:12px 14px;">
+          <div style="font-size:13px; font-weight:600; color:var(--navy); margin-bottom:8px;">Franjas horarias a habilitar:</div>
+          <div id="cesion-franjas-list"></div>
+          <button type="button" class="btn light small" id="btn-add-franja" style="margin-top:6px; font-size:12px;">+ Agregar otra franja horaria</button>
         </div>
 
         <div style="margin-bottom:14px;">
@@ -101,25 +93,67 @@ export function renderCesionesForm({ container, onSubmit, onCheckConflicts }) {
   const endDateWrapper = container.querySelector("#wrapper-cesion-end-date");
   const timeScopeSel = container.querySelector("#cesion-time-scope");
   const customHoursWrapper = container.querySelector("#wrapper-cesion-custom-hours");
-  const cStartSel = container.querySelector("#cesion-custom-start");
-  const cEndSel = container.querySelector("#cesion-custom-end");
+  const franjasListEl = container.querySelector("#cesion-franjas-list");
+  const btnAddFranja = container.querySelector("#btn-add-franja");
   const banner = container.querySelector("#cesion-conflicts-banner");
   const preview = container.querySelector("#cesion-preview-banner");
+
+  const renderFranjaRows = () => {
+    franjasListEl.innerHTML = franjas.map((f, idx) => `
+      <div class="franja-row" data-idx="${idx}" style="display:flex; align-items:center; gap:8px; margin-bottom:8px; flex-wrap:wrap;">
+        <span style="font-size:12px; font-weight:600; min-width:62px; color:#475569;">Franja ${idx + 1}:</span>
+        <label style="font-size:12px; color:#475569;">Desde</label>
+        <select class="franja-start" style="height:32px; border:1px solid var(--line); border-radius:4px; padding:0 6px; font-size:13px;">
+          ${buildHourOptions(f.start)}
+        </select>
+        <label style="font-size:12px; color:#475569;">Hasta</label>
+        <select class="franja-end" style="height:32px; border:1px solid var(--line); border-radius:4px; padding:0 6px; font-size:13px;">
+          ${buildHourOptions(f.end)}
+        </select>
+        ${franjas.length > 1 ? `<button type="button" class="btn-remove-franja btn ghost small" data-remove="${idx}" style="color:#ef4444; padding:2px 8px; font-weight:bold;" title="Quitar franja">✕</button>` : ""}
+      </div>
+    `).join("");
+
+    franjasListEl.querySelectorAll(".franja-start").forEach((sel, i) => {
+      sel.addEventListener("change", (e) => { franjas[i].start = e.target.value; updatePreviewAndConflicts(); });
+    });
+    franjasListEl.querySelectorAll(".franja-end").forEach((sel, i) => {
+      sel.addEventListener("change", (e) => { franjas[i].end = e.target.value; updatePreviewAndConflicts(); });
+    });
+    franjasListEl.querySelectorAll(".btn-remove-franja").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const removeIdx = Number(btn.getAttribute("data-remove"));
+        franjas.splice(removeIdx, 1);
+        renderFranjaRows();
+        updatePreviewAndConflicts();
+      });
+    });
+  };
+
+  btnAddFranja.addEventListener("click", () => {
+    const lastEnd = franjas[franjas.length - 1]?.end || "17:00";
+    franjas.push({ start: lastEnd, end: "20:00" });
+    renderFranjaRows();
+    updatePreviewAndConflicts();
+  });
+  renderFranjaRows();
 
   const updatePreviewAndConflicts = () => {
     const isRange = periodSel.value === "date_range";
     lblStart.textContent = isRange ? "Desde fecha" : "Fecha";
     endDateWrapper.style.display = isRange ? "block" : "none";
     const isCustom = timeScopeSel.value === "custom_hours";
-    customHoursWrapper.style.display = isCustom ? "grid" : "none";
+    customHoursWrapper.style.display = isCustom ? "block" : "none";
 
     const sDate = sDateInput.value;
     const eDate = isRange ? eDateInput.value : sDate;
-    const dateText = isRange ? (sDate === eDate ? sDate : `del ${sDate} al ${eDate}`) : `el día ${sDate}`;
-    const hoursText = isCustom ? `de ${cStartSel.value} a ${cEndSel.value} hs` : "durante la jornada completa";
+    const dateText = isRange ? (sDate === eDate ? `el día ${sDate}` : `el rango del ${sDate} al ${eDate}`) : `el día ${sDate}`;
+    const hoursText = isCustom
+      ? franjas.map((f) => `de ${f.start} a ${f.end} hs`).join(" y ")
+      : "durante la jornada completa";
     let targetText = "el consultorio estará CERRADO para ambos profesionales";
-    if (targetSel.value === "to_maria") targetText = "los turnos pasan a estar disponibles para Lic. María Gulin (liberado por Norberto)";
-    if (targetSel.value === "to_norberto") targetText = "los turnos pasan a estar disponibles para Lic. Norberto Brude (liberado por María)";
+    if (targetSel.value === "to_maria") targetText = "los turnos pasan a estar disponibles para María liberada por Norberto";
+    if (targetSel.value === "to_norberto") targetText = "los turnos pasan a estar disponibles para Norberto liberado por María";
     preview.innerHTML = `📌 <strong>Resumen:</strong> Para ${escapeHtml(dateText)}, ${escapeHtml(hoursText)}, ${escapeHtml(targetText)}.`;
 
     if (typeof onCheckConflicts !== "function" || targetSel.value === "closure") {
@@ -140,7 +174,7 @@ export function renderCesionesForm({ container, onSubmit, onCheckConflicts }) {
     });
   };
 
-  [targetSel, periodSel, sDateInput, eDateInput, timeScopeSel, cStartSel, cEndSel].forEach((el) => {
+  [targetSel, periodSel, sDateInput, eDateInput, timeScopeSel].forEach((el) => {
     el.addEventListener("change", updatePreviewAndConflicts);
   });
   updatePreviewAndConflicts();
@@ -148,6 +182,7 @@ export function renderCesionesForm({ container, onSubmit, onCheckConflicts }) {
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const isClosure = targetSel.value === "closure";
+    const isCustom = timeScopeSel.value === "custom_hours";
     const draft = {
       action: isClosure ? "closure" : "transfer",
       from_practitioner: isClosure ? null : (targetSel.value === "to_maria" ? "norberto" : "maria"),
@@ -156,7 +191,8 @@ export function renderCesionesForm({ container, onSubmit, onCheckConflicts }) {
       start_date: sDateInput.value,
       end_date: periodSel.value === "single_day" ? sDateInput.value : eDateInput.value,
       time_scope: timeScopeSel.value,
-      custom_range: timeScopeSel.value === "custom_hours" ? { start: cStartSel.value, end: cEndSel.value } : null,
+      custom_ranges: isCustom ? franjas.slice() : [],
+      custom_range: isCustom && franjas.length > 0 ? franjas[0] : null,
       reason: container.querySelector("#cesion-reason").value.trim(),
     };
     if (typeof onSubmit === "function") onSubmit(draft);

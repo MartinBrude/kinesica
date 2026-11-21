@@ -55,20 +55,40 @@ export function validateCesionDraft(draft) {
   }
 
   if (draft.time_scope === "custom_hours") {
-    const range = draft.custom_range || {};
-    const start = String(range.start || "").trim();
-    const end = String(range.end || "").trim();
-    if (!isValidHm(start) || !isValidHm(end)) {
-      errors.push("Horario personalizado inválido (usar HH:00 o HH:30).");
+    const rawRanges = Array.isArray(draft.custom_ranges) && draft.custom_ranges.length > 0
+      ? draft.custom_ranges
+      : (draft.custom_range ? [draft.custom_range] : []);
+
+    if (rawRanges.length === 0) {
+      errors.push("Debés indicar al menos una franja horaria.");
     } else {
-      const sMin = hmToMin(start);
-      const eMin = hmToMin(end);
-      if (sMin < 8 * 60 || eMin > 20 * 60) {
-        errors.push("La franja debe estar dentro de las 08:00 y las 20:00 hs.");
-      } else if (eMin <= sMin) {
-        errors.push("La hora de fin debe ser posterior a la de inicio.");
-      } else if ((eMin - sMin) < 60) {
-        errors.push("La franja debe durar al menos 60 minutos.");
+      const parsedIntervals = [];
+      for (let i = 0; i < rawRanges.length; i++) {
+        const r = rawRanges[i];
+        const start = String(r?.start || "").trim();
+        const end = String(r?.end || "").trim();
+        if (!isValidHm(start) || !isValidHm(end)) {
+          errors.push(`Franja ${i + 1}: formato de hora inválido (usar HH:00 o HH:30).`);
+          continue;
+        }
+        const sMin = hmToMin(start);
+        const eMin = hmToMin(end);
+        if (sMin < 8 * 60 || eMin > 20 * 60) {
+          errors.push(`Franja ${i + 1}: debe estar entre las 08:00 y las 20:00 hs.`);
+        } else if (eMin <= sMin) {
+          errors.push(`Franja ${i + 1}: la hora de fin debe ser posterior a la de inicio.`);
+        } else if ((eMin - sMin) < 60) {
+          errors.push(`Franja ${i + 1}: debe durar al menos 60 minutos.`);
+        } else {
+          parsedIntervals.push({ sMin, eMin, idx: i + 1 });
+        }
+      }
+      parsedIntervals.sort((a, b) => a.sMin - b.sMin);
+      for (let i = 0; i < parsedIntervals.length - 1; i++) {
+        if (parsedIntervals[i].eMin > parsedIntervals[i + 1].sMin) {
+          errors.push("Las franjas horarias no deben superponerse entre sí.");
+          break;
+        }
       }
     }
   }

@@ -57,34 +57,33 @@ function validate_schedule_override(array $input): array
     $timeScope = trim((string) ($input['time_scope'] ?? 'all_day'));
     if (!in_array($timeScope, ['all_day', 'custom_hours'], true)) $timeScope = 'all_day';
 
-    $customRange = null;
+    $customRanges = [];
     if ($timeScope === 'custom_hours') {
-        $rawRange = $input['custom_range'] ?? [];
-        $start = is_array($rawRange) ? trim((string) ($rawRange['start'] ?? '')) : '';
-        $end = is_array($rawRange) ? trim((string) ($rawRange['end'] ?? '')) : '';
-        if (!is_valid_hm($start) || !is_valid_hm($end)) {
-            $errors[] = 'Formato de hora de franja personalizada inválido (usar HH:00 o HH:30).';
-        } else {
-            $sMin = hm_to_minutes($start);
-            $eMin = hm_to_minutes($end);
-            if ($sMin < 8 * 60 || $eMin > 20 * 60) {
-                $errors[] = 'La franja debe estar entre las 08:00 y las 20:00 hs.';
-            } elseif ($eMin <= $sMin) {
-                $errors[] = 'La hora de fin debe ser posterior a la de inicio.';
-            } elseif (($eMin - $sMin) < 60) {
-                $errors[] = 'La franja personalizada debe durar al menos 60 minutos.';
-            } else {
-                $customRange = ['start' => $start, 'end' => $end];
+        $rawRanges = isset($input['custom_ranges']) && is_array($input['custom_ranges'])
+            ? $input['custom_ranges']
+            : (isset($input['custom_range']) && is_array($input['custom_range']) ? [$input['custom_range']] : []);
+        if ($rawRanges === []) $errors[] = 'Debes especificar al menos una franja horaria.';
+        foreach ($rawRanges as $r) {
+            $s = is_array($r) ? trim((string) ($r['start'] ?? '')) : '';
+            $e = is_array($r) ? trim((string) ($r['end'] ?? '')) : '';
+            if (!is_valid_hm($s) || !is_valid_hm($e)) {
+                $errors[] = 'Formato de hora inválido (usar HH:00 o HH:30).';
+                break;
             }
+            $sMin = hm_to_minutes($s);
+            $eMin = hm_to_minutes($e);
+            if ($sMin < 480 || $eMin > 1200 || $eMin <= $sMin || ($eMin - $sMin) < 60) {
+                $errors[] = "Franja inválida: {$s} a {$e} (debe ser de 08:00 a 20:00 y mínimo 60 min).";
+                break;
+            }
+            $customRanges[] = ['start' => $s, 'end' => $e];
         }
     }
 
     if ($errors !== []) return ['isValid' => false, 'errors' => $errors, 'normalized' => null];
 
     $rawId = trim((string) ($input['id'] ?? ''));
-    $id = ($rawId !== '' && preg_match('/^[a-z0-9_-]{4,64}$/i', $rawId))
-        ? $rawId
-        : 'cov_' . date('Ymd_His') . '_' . bin2hex(random_bytes(3));
+    $id = ($rawId !== '' && preg_match('/^[a-z0-9_-]{4,64}$/i', $rawId)) ? $rawId : 'cov_' . date('Ymd_His') . '_' . bin2hex(random_bytes(3));
 
     $normalized = [
         'id' => $id,
@@ -95,7 +94,8 @@ function validate_schedule_override(array $input): array
         'start_date' => $startDate,
         'end_date' => $endDate,
         'time_scope' => $timeScope,
-        'custom_range' => $customRange,
+        'custom_range' => $customRanges[0] ?? null,
+        'custom_ranges' => $customRanges,
         'reason' => mb_substr(trim((string) ($input['reason'] ?? '')), 0, 200),
         'active' => isset($input['active']) ? (bool) $input['active'] : true,
         'created_at' => (string) ($input['created_at'] ?? gmdate('Y-m-d\TH:i:s\Z')),
@@ -114,9 +114,8 @@ function fetch_conflicting_turnos(PDO $pdo, string $startDate, string $endDate, 
     require_once __DIR__ . '/lib_migrations_migrations_dir.php';
     require_once __DIR__ . '/lib_relational_turnos_turnos_ready.php';
     if (!kinesica_rel_turnos_ready($pdo)) return [];
-    $sql = 'SELECT id, appointment_date, appointment_time, patient_name, practitioner_id, status '
-        . 'FROM turnos WHERE appointment_date BETWEEN :start_date AND :end_date '
-        . 'AND status NOT IN ("cancelled", "rescheduled")';
+    $sql = 'SELECT id, appointment_date, appointment_time, patient_name, practitioner_id, status FROM turnos '
+        . 'WHERE appointment_date BETWEEN :start_date AND :end_date AND status NOT IN ("cancelled", "rescheduled")';
     $params = [':start_date' => $startDate, ':end_date' => $endDate];
     if ($practitionerId !== null && in_array($practitionerId, ['norberto', 'maria'], true)) {
         $sql .= ' AND practitioner_id = :pid';
@@ -161,11 +160,15 @@ function resolve_practitioner_windows_for_date(
     if ($practitionerId !== null && trim($practitionerId) !== '') {
         $pid = strtolower(trim($practitionerId));
         $windows = $getWindows($pid);
+        $getRanges = static fn(array $o): array => !empty($o['custom_ranges']) && is_array($o['custom_ranges'])
+            ? $o['custom_ranges']
+            : (!empty($o['custom_range']) && is_array($o['custom_range']) ? [$o['custom_range']] : []);
         foreach ($activeForDate as $ov) {
             $action = $ov['action'] ?? '';
+            $ranges = $getRanges($ov);
             if ($action === 'closure' && ($ov['time_scope'] ?? '') === 'custom_hours') {
-                if (!empty($ov['custom_range'])) {
-                    $windows = subtract_time_window($windows, $ov['custom_range']['start'], $ov['custom_range']['end']);
+                foreach ($ranges as $r) {
+                    $windows = subtract_time_window($windows, (string) $r['start'], (string) $r['end']);
                 }
             } elseif ($action === 'transfer') {
                 $from = strtolower(trim((string) ($ov['from_practitioner'] ?? '')));
@@ -174,14 +177,16 @@ function resolve_practitioner_windows_for_date(
                 if ($pid === $from) {
                     if ($scope === 'all_day') {
                         $windows = [];
-                    } elseif ($scope === 'custom_hours' && isset($ov['custom_range'])) {
-                        $windows = subtract_time_window($windows, $ov['custom_range']['start'], $ov['custom_range']['end']);
+                    } elseif ($scope === 'custom_hours') {
+                        foreach ($ranges as $r) {
+                            $windows = subtract_time_window($windows, (string) $r['start'], (string) $r['end']);
+                        }
                     }
                 } elseif ($pid === $to) {
                     if ($scope === 'all_day') {
                         $windows = merge_time_windows($windows, $getWindows($from));
-                    } elseif ($scope === 'custom_hours' && isset($ov['custom_range'])) {
-                        $windows = merge_time_windows($windows, [$ov['custom_range']]);
+                    } elseif ($scope === 'custom_hours') {
+                        $windows = merge_time_windows($windows, $ranges);
                     }
                 }
             }
