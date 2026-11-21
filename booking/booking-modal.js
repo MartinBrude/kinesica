@@ -181,8 +181,37 @@
     }
   }
 
+  function getAgendarPageHref(hash) {
+    hash = hash || "";
+    if (typeof window !== "undefined" && window.KINESICA_LANG_ROUTES) {
+      if (typeof window.KINESICA_LANG_ROUTES.isFileProtocol === "function" && window.KINESICA_LANG_ROUTES.isFileProtocol()) {
+        return "agendar.html" + hash;
+      }
+      const lang = resolveLang();
+      if (typeof window.KINESICA_LANG_ROUTES.pathForLang === "function") {
+        return window.KINESICA_LANG_ROUTES.pathForLang(lang, "agendar") + hash;
+      }
+    }
+    const lang = resolveLang();
+    const prefix = lang === "es" ? "" : lang + "/";
+    return prefix + "agendar.html" + hash;
+  }
+
+  function ensureBookingWidgetCssLoaded() {
+    if (typeof document === "undefined") return;
+    if (document.querySelector('link[href*="booking-widget"]')) return;
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    const lang = resolveLang();
+    const prefix = lang === "es" ? "" : "../";
+    link.href = prefix + "booking/booking-widget.min.css";
+    document.head.appendChild(link);
+  }
+
   function createModalDOM() {
     if (modalEl) return modalEl;
+
+    ensureBookingWidgetCssLoaded();
 
     modalEl = document.createElement("div");
     modalEl.id = "kinesica-booking-modal";
@@ -526,49 +555,15 @@
         return;
       }
 
-      previousActiveElement = document.activeElement;
-
-      createModalDOM();
-
-      if (!widgetInstance) {
-        const mount = document.getElementById("kinesica-modal-widget-mount");
-        const Widget = WidgetClass || (typeof window !== "undefined" && window.KinesicaBookingWidget);
-        if (Widget && mount) {
-          widgetInstance = new Widget(mount, {
-            apiUrl: getApiUrl(),
-            forceMock: false,
-            isModal: true,
-            lang: document.documentElement.lang,
-            onClose: () => KinesicaBookingModal.close(),
-          });
-        }
+      // Si no hay widget inline en la página actual, redirigir a la página dedicada de agendar
+      const hash =
+        typeof window !== "undefined" && window.location.hash === "#habitual"
+          ? "#habitual"
+          : "";
+      if (typeof window !== "undefined") {
+        window.location.href = getAgendarPageHref(hash);
       }
-
-      if (window.location.hash === "#habitual" && widgetInstance && typeof widgetInstance.selectExistingPatient === "function") {
-        widgetInstance.selectExistingPatient(true);
-      }
-
-      modalEl.classList.add("is-open");
-      modalEl.setAttribute("aria-hidden", "false");
-      document.body.classList.add("kinesica-booking-modal-open");
-
-      if (!options.skipHashPush) {
-        try {
-          if (window.location.hash !== "#agendar" && window.location.hash !== "#habitual") {
-            history.pushState(null, "", "#agendar");
-          }
-        } catch (e) {
-          window.location.hash = "agendar";
-        }
-      }
-
-      // Enfocar la X del widget (no el backdrop: también tiene data-action=close-modal).
-      const closeBtn =
-        modalEl.querySelector(".kb-close-btn") ||
-        modalEl.querySelector('.kinesica-booking-container [data-action="close-modal"]');
-      if (closeBtn && typeof closeBtn.focus === "function") {
-        closeBtn.focus();
-      }
+      return;
     },
 
     close(options) {

@@ -38,9 +38,18 @@ export const SHOW_HERO_BOOKING_BUTTON = true;
  * con hidden y style="display:none;", y controlado dinámicamente por syncPublicSettings()
  * según el estado de booking_active en el Admin).
  * @param {import("./languages.mjs").LangCode} lang
- * @param {string} [bookingHref="#agendar"]
+ * @param {string} [bookingHref]
  */
-export function renderHeroActions(lang, bookingHref = "#agendar") {
+export function renderHeroActions(lang, bookingHref = null) {
+  const defaultBookingHref = {
+    es: "agendar.html",
+    en: "/en/agendar.html",
+    fr: "/fr/agendar.html",
+    pt: "/pt/agendar.html",
+  }[lang] || "agendar.html";
+
+  const href = bookingHref || defaultBookingHref;
+
   const whatsappText = {
     es: "WhatsApp",
     en: "WhatsApp",
@@ -57,7 +66,7 @@ export function renderHeroActions(lang, bookingHref = "#agendar") {
 
   return [
     "            <div class=\"hero-actions\">",
-    `              <a href="${bookingHref}" class="btn btn-primary mr10 js-booking-open js-hero-booking-btn" id="hero-btn-booking" data-booking-open hidden style="display:none;">${bookingText}</a>`,
+    `              <a href="${href}" class="btn btn-primary mr10 js-hero-booking-btn" id="hero-btn-booking" hidden style="display:none;">${bookingText}</a>`,
     `              <a href="${HOME_WHATSAPP_HREF}" target="_blank" class="btn btn-default dynamic-whatsapp-url"`,
     `                rel="noopener noreferrer">${whatsappText}</a>`,
     "            </div>",
