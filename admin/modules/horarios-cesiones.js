@@ -71,6 +71,11 @@ async function handleCreateCesion(draft) {
       if (form) {
         const reasonInput = form.querySelector("#cesion-reason");
         if (reasonInput) reasonInput.value = "";
+        const sDateInput = form.querySelector("#cesion-start-date");
+        const eDateInput = form.querySelector("#cesion-end-date");
+        if (sDateInput) sDateInput.value = "";
+        if (eDateInput) eDateInput.value = "";
+        sDateInput?.dispatchEvent(new Event("change"));
       }
     } else {
       toast(res?.message || "No se pudo registrar la excepción.", "error");

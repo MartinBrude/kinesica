@@ -4,6 +4,7 @@
  */
 
 import { escapeHtml } from "./dom.js?v=79";
+import { validateCesionDraft } from "./horarios-cesiones-validator.js?v=79";
 export { getOverrideStatusBadge, formatOverrideDescription, renderCesionesList } from "./horarios-cesiones-list.js?v=79";
 
 function buildHourOptions(selected) {
@@ -48,11 +49,11 @@ export function renderCesionesForm({ container, onSubmit, onCheckConflicts }) {
         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap:14px; margin-bottom:14px;">
           <div>
             <label id="lbl-cesion-start" style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">Fecha</label>
-            <input type="date" id="cesion-start-date" value="${today}" min="${today}" style="width:100%; height:38px; border:1px solid var(--line); border-radius:6px; padding:0 8px;">
+            <input type="date" id="cesion-start-date" value="" min="${today}" style="width:100%; height:38px; border:1px solid var(--line); border-radius:6px; padding:0 8px;">
           </div>
           <div id="wrapper-cesion-end-date" style="display:none;">
             <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">Hasta fecha</label>
-            <input type="date" id="cesion-end-date" value="${today}" min="${today}" style="width:100%; height:38px; border:1px solid var(--line); border-radius:6px; padding:0 8px;">
+            <input type="date" id="cesion-end-date" value="" min="${today}" style="width:100%; height:38px; border:1px solid var(--line); border-radius:6px; padding:0 8px;">
           </div>
           <div>
             <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">3. Alcance horario</label>
@@ -78,7 +79,7 @@ export function renderCesionesForm({ container, onSubmit, onCheckConflicts }) {
         <div id="cesion-conflicts-banner" style="display:none; margin-bottom:14px; padding:10px 14px; border-radius:6px; font-size:13px; line-height:1.4;"></div>
 
         <div style="display:flex; justify-content:flex-end;">
-          <button type="submit" class="btn green" id="btn-save-cesion">Guardar y habilitar turnos</button>
+          <button type="submit" class="btn green" id="btn-save-cesion" disabled>Guardar y habilitar turnos</button>
         </div>
       </form>
     </div>
@@ -97,6 +98,7 @@ export function renderCesionesForm({ container, onSubmit, onCheckConflicts }) {
   const btnAddFranja = container.querySelector("#btn-add-franja");
   const banner = container.querySelector("#cesion-conflicts-banner");
   const preview = container.querySelector("#cesion-preview-banner");
+  const btnSave = container.querySelector("#btn-save-cesion");
 
   const renderFranjaRows = () => {
     franjasListEl.innerHTML = franjas.map((f, idx) => `
@@ -145,8 +147,45 @@ export function renderCesionesForm({ container, onSubmit, onCheckConflicts }) {
     const isCustom = timeScopeSel.value === "custom_hours";
     customHoursWrapper.style.display = isCustom ? "block" : "none";
 
-    const sDate = sDateInput.value;
-    const eDate = isRange ? eDateInput.value : sDate;
+    const sDate = String(sDateInput.value || "").trim();
+    const eDate = isRange ? String(eDateInput.value || "").trim() : sDate;
+
+    if (!sDate) {
+      if (btnSave) btnSave.disabled = true;
+      preview.innerHTML = "ℹ️ <em>Seleccioná una fecha para ver el resumen y programar la excepción.</em>";
+      banner.style.display = "none";
+      return;
+    }
+    if (isRange && !eDate) {
+      if (btnSave) btnSave.disabled = true;
+      preview.innerHTML = "ℹ️ <em>Seleccioná la fecha de finalización del rango.</em>";
+      banner.style.display = "none";
+      return;
+    }
+
+    const isClosure = targetSel.value === "closure";
+    const draft = {
+      action: isClosure ? "closure" : "transfer",
+      from_practitioner: isClosure ? null : (targetSel.value === "to_maria" ? "norberto" : "maria"),
+      to_practitioner: isClosure ? null : (targetSel.value === "to_maria" ? "maria" : "norberto"),
+      period_type: periodSel.value,
+      start_date: sDate,
+      end_date: eDate,
+      time_scope: timeScopeSel.value,
+      custom_ranges: isCustom ? franjas.slice() : [],
+      custom_range: isCustom && franjas.length > 0 ? franjas[0] : null,
+    };
+
+    const validation = validateCesionDraft(draft);
+    if (!validation.isValid) {
+      if (btnSave) btnSave.disabled = true;
+      preview.innerHTML = `⚠️ <strong>Revisá los datos:</strong> ${escapeHtml(validation.errors[0])}`;
+      banner.style.display = "none";
+      return;
+    }
+
+    if (btnSave) btnSave.disabled = false;
+
     const dateText = isRange ? (sDate === eDate ? `el día ${sDate}` : `el rango del ${sDate} al ${eDate}`) : `el día ${sDate}`;
     const hoursText = isCustom
       ? franjas.map((f) => `de ${f.start} a ${f.end} hs`).join(" y ")
@@ -156,7 +195,7 @@ export function renderCesionesForm({ container, onSubmit, onCheckConflicts }) {
     if (targetSel.value === "to_norberto") targetText = "los turnos pasan a estar disponibles para Norberto liberado por María";
     preview.innerHTML = `📌 <strong>Resumen:</strong> Para ${escapeHtml(dateText)}, ${escapeHtml(hoursText)}, ${escapeHtml(targetText)}.`;
 
-    if (typeof onCheckConflicts !== "function" || targetSel.value === "closure") {
+    if (typeof onCheckConflicts !== "function" || isClosure) {
       banner.style.display = "none";
       return;
     }
@@ -176,6 +215,7 @@ export function renderCesionesForm({ container, onSubmit, onCheckConflicts }) {
 
   [targetSel, periodSel, sDateInput, eDateInput, timeScopeSel].forEach((el) => {
     el.addEventListener("change", updatePreviewAndConflicts);
+    el.addEventListener("input", updatePreviewAndConflicts);
   });
   updatePreviewAndConflicts();
 
