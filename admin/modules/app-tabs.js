@@ -18,7 +18,7 @@ import {
   setPendientesPendingBadge,
   refreshPendientesPendingBadge,
   canShowPendientesBadge,
-} from "./admin-pendientes.js?v=4";
+} from "./admin-pendientes.js?v=5";
 import {
   setErroresPendingBadge,
   refreshErroresPendingBadge,

@@ -10,7 +10,7 @@ import { getSessionUser } from "./auth.js?v=83";
 import {
   renderPendientesRows,
   setupPendientesDragAndDrop,
-} from "./admin-pendientes-render.js?v=1";
+} from "./admin-pendientes-render.js?v=2";
 import {
   closePendienteModal,
   isPendienteModalOpen,
@@ -100,19 +100,21 @@ function normalizeLocalPriorities(list) {
   list.forEach((i) => { i.prioridad = i.estado !== "resuelto" ? pIdx++ : 0; });
 }
 
-async function reorderPendientes(srcId, targetId, onReload) {
+async function reorderPendientes(srcId, targetId, position = "before", onReload) {
   if (!srcId || !targetId || srcId === targetId) return;
-  const fromIdx = cachedPendientes.findIndex((p) => p.id === srcId);
-  const toIdx = cachedPendientes.findIndex((p) => p.id === targetId);
-  if (fromIdx < 0 || toIdx < 0) return;
-
   const previous = [...cachedPendientes];
-  const copy = [...cachedPendientes];
-  const [moved] = copy.splice(fromIdx, 1);
-  copy.splice(toIdx, 0, moved);
+  const moved = cachedPendientes.find((p) => p.id === srcId);
+  if (!moved) return;
+
+  const copy = cachedPendientes.filter((p) => p.id !== srcId);
+  const targetIdx = copy.findIndex((p) => p.id === targetId);
+  if (targetIdx < 0) return;
+
+  const insertIdx = position === "after" ? targetIdx + 1 : targetIdx;
+  copy.splice(insertIdx, 0, moved);
   normalizeLocalPriorities(copy);
   cachedPendientes = copy;
-  renderPendientes(cachedPendientes, onReload);
+  renderPendientes(cachedPendientes, onReload, srcId);
 
   const pendingIds = cachedPendientes.filter((p) => p.estado !== "resuelto").map((p) => p.id);
   try {
@@ -122,7 +124,7 @@ async function reorderPendientes(srcId, targetId, onReload) {
     });
     if (resp && Array.isArray(resp.pendientes)) {
       cachedPendientes = resp.pendientes;
-      renderPendientes(cachedPendientes, onReload);
+      renderPendientes(cachedPendientes, onReload, srcId);
     }
   } catch (err) {
     cachedPendientes = previous;
@@ -138,10 +140,11 @@ function handleMovePriority(id, direction, onReload) {
   const targetIdx = direction === "up" ? pIdx - 1 : pIdx + 1;
   if (targetIdx < 0 || targetIdx >= pending.length) return;
   const targetId = pending[targetIdx].id;
-  reorderPendientes(id, targetId, onReload);
+  const pos = direction === "up" ? "before" : "after";
+  reorderPendientes(id, targetId, pos, onReload);
 }
 
-export function renderPendientes(pendientes, onReload) {
+export function renderPendientes(pendientes, onReload, highlightId = null) {
   const total = pendientes.length;
   const resueltos = pendientes.filter((e) => e.estado === "resuelto").length;
   const open = total - resueltos;
@@ -170,9 +173,10 @@ export function renderPendientes(pendientes, onReload) {
   tbody.replaceChildren(...renderPendientesRows(filtered, {
     onToggle: (item) => handleTogglePendiente(item, onReload),
     onMovePriority: (id, dir) => handleMovePriority(id, dir, onReload),
+    highlightId,
   }));
 
-  setupPendientesDragAndDrop(tbody, (src, target) => reorderPendientes(src, target, onReload));
+  setupPendientesDragAndDrop(tbody, (src, target, pos) => reorderPendientes(src, target, pos, onReload));
 }
 
 async function handleTogglePendiente(item, onReload) {

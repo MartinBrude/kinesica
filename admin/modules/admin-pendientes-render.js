@@ -6,6 +6,8 @@ import { formatDate } from "./api.js?v=79";
 import { escapeHtml } from "./dom.js?v=79";
 
 let draggedId = null;
+let currentDropTarget = null;
+let currentDropPosition = "before";
 
 function priorityClass(p) {
   if (p === 1) return "priority-p1";
@@ -18,6 +20,12 @@ export function setupPendientesDragAndDrop(tbody, onReorder) {
   if (!tbody || tbody._dndInit) return;
   tbody._dndInit = true;
 
+  function clearDropIndicators() {
+    tbody.querySelectorAll("tr").forEach((el) => {
+      el.classList.remove("is-dragging", "is-drag-over-top", "is-drag-over-bottom");
+    });
+  }
+
   tbody.addEventListener("dragstart", (e) => {
     if (e.target.closest("button, a, input, select, textarea")) {
       e.preventDefault();
@@ -28,7 +36,9 @@ export function setupPendientesDragAndDrop(tbody, onReorder) {
     draggedId = tr.dataset.id;
     e.dataTransfer.effectAllowed = "move";
     e.dataTransfer.setData("text/plain", draggedId);
-    tr.classList.add("is-dragging");
+    setTimeout(() => {
+      if (draggedId) tr.classList.add("is-dragging");
+    }, 0);
   });
 
   tbody.addEventListener("dragover", (e) => {
@@ -36,40 +46,59 @@ export function setupPendientesDragAndDrop(tbody, onReorder) {
     if (!tr || !draggedId || tr.dataset.id === draggedId) return;
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
-    tr.classList.add("is-drag-over");
+
+    const rect = tr.getBoundingClientRect();
+    const isTop = e.clientY < (rect.top + rect.height / 2);
+    currentDropTarget = tr.dataset.id;
+    currentDropPosition = isTop ? "before" : "after";
+
+    tbody.querySelectorAll("tr").forEach((el) => {
+      if (el !== tr) el.classList.remove("is-drag-over-top", "is-drag-over-bottom");
+    });
+    tr.classList.toggle("is-drag-over-top", isTop);
+    tr.classList.toggle("is-drag-over-bottom", !isTop);
   });
 
   tbody.addEventListener("dragleave", (e) => {
     const tr = e.target.closest("tr.is-draggable");
-    if (tr) tr.classList.remove("is-drag-over");
+    if (tr && !tr.contains(e.relatedTarget)) {
+      tr.classList.remove("is-drag-over-top", "is-drag-over-bottom");
+    }
   });
 
   tbody.addEventListener("dragend", () => {
     draggedId = null;
-    tbody.querySelectorAll("tr").forEach((el) => el.classList.remove("is-dragging", "is-drag-over"));
+    currentDropTarget = null;
+    clearDropIndicators();
   });
 
   tbody.addEventListener("drop", (e) => {
     e.preventDefault();
     const tr = e.target.closest("tr.is-draggable");
-    tbody.querySelectorAll("tr").forEach((el) => el.classList.remove("is-dragging", "is-drag-over"));
-    if (!tr || !draggedId || tr.dataset.id === draggedId) return;
     const src = draggedId;
+    const target = currentDropTarget || (tr ? tr.dataset.id : null);
+    const pos = currentDropPosition;
+
     draggedId = null;
+    currentDropTarget = null;
+    clearDropIndicators();
+
+    if (!src || !target || src === target) return;
     if (typeof onReorder === "function") {
-      onReorder(src, tr.dataset.id);
+      onReorder(src, target, pos);
     }
   });
 }
 
-export function renderPendientesRows(filtered, { onToggle, onMovePriority }) {
+export function renderPendientesRows(filtered, { onToggle, onMovePriority, highlightId }) {
   const pendingItems = filtered.filter((i) => i.estado !== "resuelto");
 
   return filtered.map((item) => {
     const tr = document.createElement("tr");
     const isResuelto = item.estado === "resuelto";
+    const isHighlighted = Boolean(highlightId && item.id === highlightId);
     tr.dataset.id = item.id;
-    tr.className = `admin-pendiente-row${isResuelto ? " error-row-resolved" : " is-draggable"}`;
+    tr.className = `admin-pendiente-row${isResuelto ? " error-row-resolved" : " is-draggable"}${isHighlighted ? " just-dropped" : ""}`;
     if (!isResuelto) {
       tr.draggable = true;
     }
@@ -94,7 +123,8 @@ export function renderPendientesRows(filtered, { onToggle, onMovePriority }) {
       wrap.className = "pendiente-priority-wrap";
       wrap.innerHTML = `
         <span class="pendiente-drag-handle" title="Arrastrar para reordenar prioridad (Drag & drop)">⋮⋮</span>
-        <span class="pendiente-priority-badge ${pCls}" title="Índice de prioridad #${pNum}">#${pNum}</span>
+        <span class="pendiente-priority-badge ${pCls}${isHighlighted ? " is-highlighted" : ""}" title="Índice de prioridad #${pNum}">#${pNum}</span>
+        ${isHighlighted ? `<span class="pendiente-dropped-pill">¡Posición #${pNum}!</span>` : ""}
       `;
 
       const arrows = document.createElement("div");
