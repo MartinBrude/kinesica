@@ -228,6 +228,9 @@
               if (data.practitioner_hours && engine && typeof engine.setPractitionerHours === "function") {
                 engine.setPractitionerHours(data.practitioner_hours);
               }
+              if (data.schedule_overrides && engine && typeof engine.setScheduleOverrides === "function") {
+                engine.setScheduleOverrides(data.schedule_overrides);
+              }
               if (data.fees) {
                 this.updateFees(data.fees);
               }

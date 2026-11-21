@@ -18,6 +18,7 @@ function kinesica_rel_config_allowed_keys(): array
         'booking_active',
         'horarios_updated_at',
         'horarios_updated_by',
+        'schedule_overrides',
         'relational_flags',
     ];
 }

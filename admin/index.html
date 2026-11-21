@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/admin/styles.css?v=158">
-  <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1795220676">
+  <link rel="stylesheet" href="/booking/booking-widget.min.css?v=1795252299">
   <script>
     (function () {
       try {
@@ -96,6 +96,7 @@
           <div class="nav-dropdown-menu" id="nav-menu-consultorio" role="menu">
             <a href="/admin/consultorio/agendar" class="nav-dropdown-item" id="nav-btn-consultorio-agendar" role="menuitem">Agendar Turnos</a>
             <a href="/admin/consultorio/horarios" class="nav-dropdown-item" id="nav-btn-consultorio-horarios" role="menuitem">Horarios de Atención</a>
+            <a href="/admin/consultorio/cesiones" class="nav-dropdown-item" id="nav-btn-consultorio-cesiones" role="menuitem">Cesión y Cierres</a>
             <a href="/admin/consultorio/honorarios" class="nav-dropdown-item" id="nav-btn-consultorio-honorarios" role="menuitem">Honorarios y Formas de Pago</a>
           </div>
         </div>
@@ -636,6 +637,7 @@
             </div>
             <div class="config-subpanel-actions" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
               <button type="button" class="btn green" id="btn-save-horarios">Guardar horarios</button>
+              <a href="/admin/consultorio/cesiones" class="btn light" id="btn-goto-cesiones">🔄 Ceder horarios / Cierres</a>
               <button type="button" class="btn light" id="btn-test-horarios-booking" data-admin-booking-open>📅 Abrir turnera profesional</button>
             </div>
           </div>
@@ -701,7 +703,26 @@
         </div>
       </details>
 
-      <!-- SECCIÓN 3: HONORARIOS Y FORMAS DE PAGO -->
+      <!-- SECCIÓN 3: CESIÓN DE HORARIOS Y CIERRES DE CONSULTORIO -->
+      <details class="admin-collapsible-card" id="consultorio-section-cesiones" data-consultorio-section="cesiones">
+        <summary class="admin-collapsible-summary">
+          <div class="admin-collapsible-header-left">
+            <span class="admin-collapsible-icon" aria-hidden="true">🔄</span>
+            <div class="admin-collapsible-titles">
+              <h2 class="admin-collapsible-title">Cesión de Horarios y Cierres de Consultorio</h2>
+              <p class="admin-collapsible-desc">Transferencia temporal de camilla entre Norberto y María o bloqueo total del consultorio.</p>
+            </div>
+          </div>
+          <div class="admin-collapsible-header-right">
+            <svg class="admin-collapsible-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+        </summary>
+        <div class="admin-collapsible-body" id="horarios-cesiones-container"></div>
+      </details>
+
+      <!-- SECCIÓN 4: HONORARIOS Y FORMAS DE PAGO -->
       <details class="admin-collapsible-card" id="consultorio-section-honorarios" data-consultorio-section="honorarios">
         <summary class="admin-collapsible-summary">
           <div class="admin-collapsible-header-left">
@@ -2973,22 +2994,24 @@
           } else if (saved.view === "pacientes") {
             var pac = document.getElementById("view-pacientes");
             if (pac) pac.hidden = false;
-          } else if (saved.view === "consultorio" || saved.view === "horarios" || saved.view === "honorarios" || saved.view === "agendar") {
+          } else if (saved.view === "consultorio" || saved.view === "horarios" || saved.view === "cesiones" || saved.view === "honorarios" || saved.view === "agendar") {
             var con = document.getElementById("view-consultorio");
             if (con) con.hidden = false;
             var conSec = (saved.section || saved.view || "").toLowerCase();
-            var conAllowed = { agendar: 1, horarios: 1, honorarios: 1 };
+            var conAllowed = { agendar: 1, horarios: 1, cesiones: 1, honorarios: 1 };
             if (!conAllowed[conSec]) conSec = "agendar";
             var conTitles = {
               agendar: "Consultorio · Agendar Turnos",
               horarios: "Consultorio · Horarios de Atención",
+              cesiones: "Consultorio · Cesión de Horarios y Cierres",
               honorarios: "Consultorio · Honorarios y Formas de Pago"
             };
             var conHero = con ? con.querySelector(".hero-title") : null;
             if (conHero) conHero.textContent = conTitles[conSec] || "Consultorio";
             var conCards = con ? con.querySelectorAll("[data-consultorio-section]") : [];
             for (var cci = 0; cci < conCards.length; cci++) {
-              var matchCon = conCards[cci].getAttribute("data-consultorio-section") === conSec;
+              var secAttr = conCards[cci].getAttribute("data-consultorio-section");
+              var matchCon = secAttr === conSec || (conSec === "horarios" && secAttr === "cesiones");
               conCards[cci].hidden = !matchCon;
               if (matchCon && conCards[cci].tagName === "DETAILS") conCards[cci].open = true;
             }
@@ -3112,7 +3135,7 @@
     <div class="admin-top-progress-bar"></div>
   </div>
   <div id="print-root"></div>
-  <script src="/booking/booking-bundle.min.js?v=1795220676" defer></script>
-  <script type="module" src="/admin/app.js?v=231"></script>
+  <script src="/booking/booking-bundle.min.js?v=1795252299" defer></script>
+  <script type="module" src="/admin/app.js?v=232"></script>
 </body>
 </html>

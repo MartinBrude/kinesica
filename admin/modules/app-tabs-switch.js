@@ -18,6 +18,7 @@ export function switchTab(tab, subtab, routeState = null) {
   const btnConsultorio = document.querySelector("#nav-btn-consultorio");
   const btnConsultorioAgendar = document.querySelector("#nav-btn-consultorio-agendar");
   const btnConsultorioHorarios = document.querySelector("#nav-btn-consultorio-horarios");
+  const btnConsultorioCesiones = document.querySelector("#nav-btn-consultorio-cesiones");
   const btnConsultorioHonorarios = document.querySelector("#nav-btn-consultorio-honorarios");
   const btnWhatsapp = document.querySelector("#nav-btn-whatsapp");
   const btnInteracciones = document.querySelector("#nav-btn-interacciones");
@@ -60,16 +61,18 @@ export function switchTab(tab, subtab, routeState = null) {
     btnClinica?.classList.add("is-active");
     btnPacientes?.classList.add("is-active");
     showPacientesView();
-  } else if (tab === "consultorio" || tab === "agendar" || tab === "horarios" || tab === "honorarios") {
+  } else if (tab === "consultorio" || tab === "agendar" || tab === "horarios" || tab === "cesiones" || tab === "honorarios") {
     btnConsultorio?.classList.add("is-active");
     let section = subtab || null;
     if (!section) {
       if (tab === "agendar") section = "agendar";
       else if (tab === "horarios") section = "horarios";
+      else if (tab === "cesiones") section = "cesiones";
       else if (tab === "honorarios") section = "honorarios";
       else section = "agendar";
     }
     if (section === "horarios") btnConsultorioHorarios?.classList.add("is-active");
+    else if (section === "cesiones") btnConsultorioCesiones?.classList.add("is-active");
     else if (section === "honorarios") btnConsultorioHonorarios?.classList.add("is-active");
     else {
       btnConsultorioAgendar?.classList.add("is-active");

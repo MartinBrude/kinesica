@@ -43,7 +43,21 @@ function kinesica_backup_compute_day_slots(
         return [];
     }
 
-    $windows = kinesica_backup_working_windows($practitionerId, $dayOfWeek, $hoursOverride);
+    require_once __DIR__ . '/kinesica_settings_storage.php';
+    require_once __DIR__ . '/lib_horarios_cesiones.php';
+    $settings = function_exists('kinesica_settings_load') ? kinesica_settings_load() : [];
+    $overrides = is_array($settings['schedule_overrides'] ?? null) ? $settings['schedule_overrides'] : [];
+    if ($overrides !== []) {
+        $activeHours = $hoursOverride ?? kinesica_backup_active_hours();
+        $windows = resolve_practitioner_windows_for_date(
+            $activeHours,
+            $overrides,
+            $dateStr,
+            $practitionerId !== '' ? $practitionerId : null
+        );
+    } else {
+        $windows = kinesica_backup_working_windows($practitionerId, $dayOfWeek, $hoursOverride);
+    }
     if ($windows === []) {
         return [];
     }

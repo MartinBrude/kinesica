@@ -79,7 +79,10 @@
       const h = engine && typeof engine.getPractitionerHours === "function"
         ? engine.getPractitionerHours()
         : (engine && engine.PRACTITIONER_HOURS) || {};
-      return JSON.stringify(h);
+      const ov = engine && typeof engine.getScheduleOverrides === "function"
+        ? engine.getScheduleOverrides()
+        : [];
+      return JSON.stringify({ h, ov });
     } catch (e) {
       return "";
     }
@@ -718,6 +721,10 @@
       // como en el cuerpo POST en formato JSON
       const effectiveUrl = this.getEffectiveApiUrl();
       const hoursSig = currentHoursSignature();
+      const currentOverrides = engine && typeof engine.getScheduleOverrides === "function"
+        ? engine.getScheduleOverrides()
+        : [];
+      const overridesJson = JSON.stringify(currentOverrides);
       // Se conserva en el objeto para que un reintento tras un timeout sea idempotente.
       if (!data.bookingRequestId) data.bookingRequestId = createBookingRequestId();
       const query = new URLSearchParams({
@@ -738,10 +745,11 @@
         notas: data.notas || "",
         bookingRequestId: data.bookingRequestId,
         hours: hoursSig,
+        schedule_overrides: overridesJson,
       });
 
       const url = `${effectiveUrl}?${query.toString()}`;
-      const payload = Object.assign({ action: "book", hours: hoursSig }, data);
+      const payload = Object.assign({ action: "book", hours: hoursSig, schedule_overrides: overridesJson }, data);
 
       const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
       // El script crea el evento y después avisa por WhatsApp. 25s cortaba la espera con el turno ya agendado.

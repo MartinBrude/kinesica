@@ -58,7 +58,10 @@ function isValidHoursObject(h) {
 /** Horarios enviados por la web: estructura válida, días 1–5, franjas HH:mm dentro de 08:00–20:00. */
 function sanitizeClientHours(raw) {
   try {
-    const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+    let parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+    if (parsed && parsed.h && typeof parsed.h === "object") {
+      parsed = parsed.h;
+    }
     if (!isValidHoursObject(parsed)) return null;
     const out = {};
     const okTime = function(t) { return typeof t === "string" && /^([01]\d|2[0-3]):[0-5]\d$/.test(t); };
@@ -209,20 +212,123 @@ function resolveActivePractitionerHours(customHoursRaw, opts) {
   return PRACTITIONER_HOURS;
 }
 
+function gasToMinutes(hm) {
+  const p = String(hm || "").split(":");
+  return parseInt(p[0], 10) * 60 + parseInt(p[1] || "0", 10);
+}
+
+function gasMinutesToHm(m) {
+  const h = String(Math.floor(m / 60)).padStart(2, "0");
+  const min = String(m % 60).padStart(2, "0");
+  return h + ":" + min;
+}
+
+function mergeGasWindows(w1, w2) {
+  const all = (w1 || []).concat(w2 || []);
+  if (all.length <= 1) return all;
+  all.sort(function(a, b) { return gasToMinutes(a.start) - gasToMinutes(b.start); });
+  const merged = [];
+  let curr = { start: all[0].start, end: all[0].end };
+  for (let i = 1; i < all.length; i++) {
+    const next = all[i];
+    if (gasToMinutes(next.start) <= gasToMinutes(curr.end)) {
+      curr.end = gasMinutesToHm(Math.max(gasToMinutes(curr.end), gasToMinutes(next.end)));
+    } else {
+      merged.push(curr);
+      curr = { start: next.start, end: next.end };
+    }
+  }
+  merged.push(curr);
+  return merged;
+}
+
+function extractGasOverrides(opts, params, customHoursRaw) {
+  let ov = (opts && (opts.overrides || opts.schedule_overrides)) || (params && (params.overrides || params.schedule_overrides));
+  if (typeof ov === "string") {
+    try { ov = JSON.parse(ov); } catch (_) { ov = null; }
+  }
+  if (Array.isArray(ov)) return ov;
+  if (customHoursRaw) {
+    try {
+      const parsed = typeof customHoursRaw === "string" ? JSON.parse(customHoursRaw) : customHoursRaw;
+      if (parsed && Array.isArray(parsed.ov)) return parsed.ov;
+    } catch (_) {}
+  }
+  return [];
+}
+
+function applyGasOverrides(windows, practitionerId, dateStr, overrides, baseHours) {
+  if (!dateStr || !Array.isArray(overrides) || overrides.length === 0) return windows;
+  const active = overrides.filter(function(ov) {
+    return ov && ov.active !== false && dateStr >= ov.start_date && dateStr <= ov.end_date;
+  });
+  if (active.length === 0) return windows;
+
+  const hasClosure = active.some(function(ov) {
+    return ov.action === "closure" && (ov.time_scope === "all_day" || !ov.time_scope);
+  });
+  if (hasClosure) return [];
+
+  function subWin(wins, cutS, cutE) {
+    const res = [];
+    const cs = gasToMinutes(cutS);
+    const ce = gasToMinutes(cutE);
+    wins.forEach(function(w) {
+      const ws = gasToMinutes(w.start);
+      const we = gasToMinutes(w.end);
+      if (ce <= ws || cs >= we) { res.push(w); return; }
+      if (cs > ws && (cs - ws) >= 60) res.push({ start: gasMinutesToHm(ws), end: gasMinutesToHm(cs) });
+      if (ce < we && (we - ce) >= 60) res.push({ start: gasMinutesToHm(ce), end: gasMinutesToHm(we) });
+    });
+    return res;
+  }
+
+  let res = windows.slice();
+  active.forEach(function(ov) {
+    if (ov.action === "closure" && ov.time_scope === "custom_hours" && ov.custom_range) {
+      res = subWin(res, ov.custom_range.start, ov.custom_range.end);
+    } else if (ov.action === "transfer") {
+      const from = ov.from_practitioner;
+      const to = ov.to_practitioner;
+      const scope = ov.time_scope || "all_day";
+      if (practitionerId === from) {
+        if (scope === "all_day") {
+          res = [];
+        } else if (scope === "custom_hours" && ov.custom_range) {
+          res = subWin(res, ov.custom_range.start, ov.custom_range.end);
+        }
+      } else if (practitionerId === to) {
+        if (scope === "all_day" && baseHours && baseHours[from]) {
+          const dayKey = String(new Date(dateStr + "T12:00:00Z").getUTCDay());
+          const ceded = baseHours[from][dayKey] || [];
+          res = mergeGasWindows(res, ceded);
+        } else if (scope === "custom_hours" && ov.custom_range) {
+          res = mergeGasWindows(res, [ov.custom_range]);
+        }
+      }
+    }
+  });
+  return res;
+}
+
 function getGasWorkingWindows(practitionerId, dayOfWeek, customHoursRaw, opts) {
   if (dayOfWeek === 0 || dayOfWeek === 6) return [];
   const activeHours = resolveActivePractitionerHours(customHoursRaw, opts);
   const dayKey = String(dayOfWeek);
-  if (practitionerId && activeHours[practitionerId]) {
-    return activeHours[practitionerId][dayKey] || activeHours[practitionerId][dayOfWeek] || [];
+  const pid = practitionerId ? String(practitionerId).toLowerCase().trim() : "";
+  const overrides = extractGasOverrides(opts, null, customHoursRaw);
+
+  if (pid && activeHours[pid]) {
+    const baseWindows = (activeHours[pid][dayKey] || activeHours[pid][dayOfWeek] || []).slice();
+    if (opts && opts.date && overrides.length > 0) {
+      return applyGasOverrides(baseWindows, pid, opts.date, overrides, activeHours);
+    }
+    return baseWindows;
   }
-  const combined = [];
-  ["maria", "norberto"].forEach(function(pid) {
-    const pMap = activeHours[pid] || {};
-    const list = pMap[dayKey] || pMap[dayOfWeek] || [];
-    list.forEach(function(w) { combined.push(w); });
-  });
-  return combined;
+
+  const mWin = getGasWorkingWindows("maria", dayOfWeek, customHoursRaw, opts);
+  const nWin = getGasWorkingWindows("norberto", dayOfWeek, customHoursRaw, opts);
+  return mergeGasWindows(mWin, nWin);
 }
 
 // Feriados Oficiales de Argentina (fuente: scripts/argentina-holidays.mjs → npm run holidays:sync)
@@ -514,7 +620,7 @@ function handleGetSlots(params) {
   }
 
   const practitionerId = params.practitioner || params.practitionerId || "";
-  const windows = getGasWorkingWindows(practitionerId, dayOfWeek, params.hours);
+  const windows = getGasWorkingWindows(practitionerId, dayOfWeek, params.hours, { date: dateStr, overrides: params.overrides || params.schedule_overrides });
   if (!windows.length) {
     return createJsonResponse({
       status: "success",
@@ -622,10 +728,11 @@ function handleGetSlotsRange(params) {
   const todayInArg = Utilities.formatDate(now, "America/Argentina/Buenos_Aires", "yyyy-MM-dd");
   const practitionerId = params.practitioner || params.practitionerId || "";
   const customHoursRaw = params.hours || null;
+  const overrides = extractGasOverrides(null, params, customHoursRaw);
   const days = {};
   let cursor = fromStr;
   while (cursor <= toStr) {
-    days[cursor] = computeDaySlots(cursor, busy, now, todayInArg, practitionerId, customHoursRaw);
+    days[cursor] = computeDaySlots(cursor, busy, now, todayInArg, practitionerId, customHoursRaw, overrides);
     cursor = nextIsoDate(cursor);
   }
 
@@ -644,7 +751,7 @@ function nextIsoDate(dateStr) {
   return Utilities.formatDate(d, "America/Argentina/Buenos_Aires", "yyyy-MM-dd");
 }
 
-function computeDaySlots(dateStr, busy, now, todayInArg, practitionerId, customHoursRaw) {
+function computeDaySlots(dateStr, busy, now, todayInArg, practitionerId, customHoursRaw, overrides) {
   const targetDate = parseArgentinaDate(dateStr, "12:00");
   const dayOfWeek = targetDate.getUTCDay();
   if (dayOfWeek === 0 || dayOfWeek === 6 || ARGENTINA_HOLIDAYS.indexOf(dateStr) !== -1) {
@@ -658,7 +765,7 @@ function computeDaySlots(dateStr, busy, now, todayInArg, practitionerId, customH
     return [];
   }
 
-  const windows = getGasWorkingWindows(practitionerId, dayOfWeek, customHoursRaw);
+  const windows = getGasWorkingWindows(practitionerId, dayOfWeek, customHoursRaw, { date: dateStr, overrides: overrides });
   if (!windows.length) return [];
 
   const dayStart = parseArgentinaDate(dateStr, "08:00");
@@ -1229,7 +1336,7 @@ function handleBookAppointment(payload) {
   const dayOfWeek = targetDate.getUTCDay();
   const practitionerId = payload.practitionerId || "";
   // Reserva: admin > última copia buena > horarios de la web (validados) > respaldo del código.
-  const windows = getGasWorkingWindows(practitionerId, dayOfWeek, payload.hours || null, { forBooking: true });
+  const windows = getGasWorkingWindows(practitionerId, dayOfWeek, payload.hours || null, { forBooking: true, date: dateStr, overrides: payload.schedule_overrides || payload.overrides });
   const timeParts = timeStr.split(":").map(Number);
   const reqMin = timeParts[0] * 60 + timeParts[1];
   const fitsWindow = windows.some(function(w) {

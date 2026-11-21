@@ -6,12 +6,14 @@
 import { switchActiveView } from "./dom.js?v=79";
 import { loadHorariosFromServer } from "./horarios.js?v=4";
 import { loadHonorarios } from "./honorarios.js?v=3";
+import { initCesionesModule } from "./horarios-cesiones.js";
 
-const CONSULTORIO_SECTIONS = new Set(["agendar", "horarios", "honorarios"]);
+const CONSULTORIO_SECTIONS = new Set(["agendar", "horarios", "cesiones", "honorarios"]);
 
 const CONSULTORIO_SECTION_TITLES = {
   agendar: "Consultorio · Agendar Turnos",
   horarios: "Consultorio · Horarios de Atención",
+  cesiones: "Consultorio · Cesión de Horarios y Cierres",
   honorarios: "Consultorio · Honorarios y Formas de Pago",
 };
 
@@ -19,6 +21,7 @@ export function normalizeConsultorioSection(section) {
   const raw = String(section || "").toLowerCase().trim();
   if (raw === "turnos" || raw === "agenda" || raw === "booking" || raw === "turnera") return "agendar";
   if (raw === "horario" || raw === "hours" || raw === "schedules") return "horarios";
+  if (raw === "cesion" || raw === "cesiones" || raw === "excepciones" || raw === "cierres") return "cesiones";
   if (raw === "honorario" || raw === "fees" || raw === "aranceles" || raw === "precios") return "honorarios";
   return CONSULTORIO_SECTIONS.has(raw) ? raw : "";
 }
@@ -27,7 +30,8 @@ export function normalizeConsultorioSection(section) {
 export function setConsultorioActiveSection(section = "agendar") {
   const id = normalizeConsultorioSection(section) || "agendar";
   document.querySelectorAll("#view-consultorio [data-consultorio-section]").forEach((card) => {
-    const match = card.getAttribute("data-consultorio-section") === id;
+    const sec = card.getAttribute("data-consultorio-section");
+    const match = sec === id || (id === "horarios" && sec === "cesiones");
     card.hidden = !match;
     if (match && card.tagName === "DETAILS") {
       card.open = true;
@@ -54,6 +58,7 @@ export function showConsultorioView(section = "") {
     } catch { /* ignore */ }
     setConsultorioActiveSection(normalized);
     loadHorariosFromServer();
+    initCesionesModule();
     loadHonorarios();
   }
 }

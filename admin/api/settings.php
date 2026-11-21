@@ -38,6 +38,9 @@ function kinesica_settings_public_view(array $settings): array
         'practitioner_hours' => is_array($settings['practitioner_hours'] ?? null)
             ? $settings['practitioner_hours']
             : [],
+        'schedule_overrides' => is_array($settings['schedule_overrides'] ?? null)
+            ? $settings['schedule_overrides']
+            : [],
         'fees' => [
             'atm' => (int) ($feesIn['atm'] ?? 65000),
             'general' => (int) ($feesIn['general'] ?? 75000),

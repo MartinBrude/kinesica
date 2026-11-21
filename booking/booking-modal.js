@@ -417,10 +417,19 @@
         }
       };
 
+      const applyOverrides = (ovs) => {
+        if (typeof window !== "undefined" && window.KinesicaBookingEngine?.setScheduleOverrides) {
+          window.KinesicaBookingEngine.setScheduleOverrides(ovs);
+        }
+      };
+
       try {
         const cached = JSON.parse(localStorage.getItem("kinesica_public_settings") || "null");
         if (cached && cached.practitioner_hours) {
           applyHours(cached.practitioner_hours);
+        }
+        if (cached && cached.schedule_overrides) {
+          applyOverrides(cached.schedule_overrides);
         }
         if (cached && cached.fees) {
           applyFees(cached.fees);
@@ -437,6 +446,9 @@
             } catch (_) {}
             if (data.practitioner_hours) {
               applyHours(data.practitioner_hours);
+            }
+            if (data.schedule_overrides) {
+              applyOverrides(data.schedule_overrides);
             }
             if (data.fees) {
               applyFees(data.fees);

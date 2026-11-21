@@ -106,6 +106,8 @@ export function bindAdminNavOnce(adminNav) {
     document.querySelector("[data-admin-booking-open]")?.click();
   });
   bindNavLink("nav-btn-consultorio-horarios", "consultorio", "horarios");
+  bindNavLink("nav-btn-consultorio-cesiones", "consultorio", "cesiones");
+  bindNavLink("btn-goto-cesiones", "consultorio", "cesiones");
   bindNavLink("nav-btn-consultorio-honorarios", "consultorio", "honorarios");
   bindNavLink("nav-btn-clara-estado", "clara", "estado");
   bindNavLink("nav-btn-clara-mensajes", "clara", "mensajes");

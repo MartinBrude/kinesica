@@ -24,6 +24,7 @@ export function parseAdminRouteFromLocation() {
   }
   if (head === "agendar" || head === "turnos") return { view: "consultorio", section: "agendar" };
   if (head === "horarios") return { view: "consultorio", section: "horarios" };
+  if (head === "cesiones" || head === "cesion" || head === "excepciones") return { view: "consultorio", section: "cesiones" };
   if (head === "honorarios") return { view: "consultorio", section: "honorarios" };
   if (head === "clara" || head === "configuracion") {
     const section = (parts[1] || "").toLowerCase();
@@ -78,13 +79,14 @@ export function syncUrlWithViewState(state, isInitialBoot = false, isHandlingPop
     const curSearch = (typeof window !== "undefined" && window.location) ? window.location.search : "";
     targetPath = `/admin/pacientes${curSearch}`;
     docTitle = "Kinésica — Pacientes";
-  } else if (v === "consultorio" || v === "agendar" || v === "horarios" || v === "honorarios") {
+  } else if (v === "consultorio" || v === "agendar" || v === "horarios" || v === "cesiones" || v === "honorarios") {
     const sec = String(state.section || (v === "consultorio" ? "" : v) || "").toLowerCase();
-    if (sec === "agendar" || sec === "horarios" || sec === "honorarios") {
+    if (sec === "agendar" || sec === "horarios" || sec === "cesiones" || sec === "honorarios") {
       targetPath = `/admin/consultorio/${sec}`;
       const titles = {
         agendar: "Agendar Turnos",
         horarios: "Horarios de Atención",
+        cesiones: "Cesión de Horarios y Cierres",
         honorarios: "Honorarios y Formas de Pago",
       };
       docTitle = `Kinésica — Consultorio · ${titles[sec]}`;

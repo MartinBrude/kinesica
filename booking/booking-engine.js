@@ -116,6 +116,27 @@
   }
 
   const PRACTITIONER_HOURS = clonePractitionerHours(DEFAULT_PRACTITIONER_HOURS);
+  let runtimeScheduleOverrides = [];
+
+  function setScheduleOverrides(overrides) {
+    if (Array.isArray(overrides)) {
+      runtimeScheduleOverrides = overrides.filter(function (ov) {
+        return ov && typeof ov === "object" && ov.active !== false;
+      });
+    } else {
+      runtimeScheduleOverrides = [];
+    }
+    return runtimeScheduleOverrides.slice();
+  }
+
+  function getScheduleOverrides() {
+    return runtimeScheduleOverrides.slice();
+  }
+
+  function resetScheduleOverrides() {
+    runtimeScheduleOverrides = [];
+    return [];
+  }
 
   const DAY_NAMES_ES = {
     1: "Lunes",
@@ -369,7 +390,15 @@
    * Determina si una fecha (Date o string YYYY-MM-DD) es día hábil en Kinésica.
    */
   function isBusinessDay(dateInput, customHolidays) {
-    const d = typeof dateInput === "string" ? parseLocalDate(dateInput) : new Date(dateInput);
+    if (!dateInput) return false;
+    let d;
+    if (typeof dateInput === "string") {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(dateInput.trim())) return false;
+      d = parseLocalDate(dateInput.trim());
+    } else {
+      d = new Date(dateInput);
+    }
+    if (isNaN(d.getTime())) return false;
     const dayOfWeek = d.getDay(); // 0 = Domingo, 6 = Sábado
     if (dayOfWeek === 0 || dayOfWeek === 6) return false;
 
@@ -381,8 +410,15 @@
   }
 
   function parseLocalDate(dateStr) {
-    const parts = dateStr.split("-");
-    return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+    const parts = String(dateStr || "").split("-").map(Number);
+    if (parts.length !== 3 || isNaN(parts[0]) || isNaN(parts[1]) || isNaN(parts[2])) {
+      return new Date(NaN);
+    }
+    const d = new Date(parts[0], parts[1] - 1, parts[2]);
+    if (d.getFullYear() !== parts[0] || d.getMonth() !== parts[1] - 1 || d.getDate() !== parts[2]) {
+      return new Date(NaN);
+    }
+    return d;
   }
 
   function formatDateIso(date) {
@@ -403,10 +439,10 @@
     return technique.practitioners.indexOf(practitionerId) !== -1;
   }
 
-  function practitionersAt(dateInput, timeHm) {
+  function practitionersAt(dateInput, timeHm, customOverrides) {
     const timeMin = parseHmToMinutes(timeHm);
     return Object.keys(PRACTITIONERS).filter(function (id) {
-      return getWorkingWindows(id, dateInput).some(function (w) {
+      return getWorkingWindows(id, dateInput, customOverrides).some(function (w) {
         return timeMin >= w.startMin && timeMin + SESSION_DURATION_MINUTES <= w.endMin;
       });
     });
@@ -417,35 +453,124 @@
     return parseInt(parts[0], 10) * 60 + parseInt(parts[1] || "0", 10);
   }
 
+  function subtractTimeWindow(windows, cutStartMin, cutEndMin) {
+    const result = [];
+    windows.forEach(function (w) {
+      if (cutEndMin <= w.startMin || cutStartMin >= w.endMin) {
+        result.push(w);
+        return;
+      }
+      if (cutStartMin > w.startMin && (cutStartMin - w.startMin) >= SESSION_DURATION_MINUTES) {
+        result.push({ startMin: w.startMin, endMin: cutStartMin });
+      }
+      if (cutEndMin < w.endMin && (w.endMin - cutEndMin) >= SESSION_DURATION_MINUTES) {
+        result.push({ startMin: cutEndMin, endMin: w.endMin });
+      }
+    });
+    return result;
+  }
+
+  function mergeTimeWindows(w1, w2) {
+    const all = w1.concat(w2);
+    if (all.length <= 1) return all;
+    all.sort(function (a, b) { return a.startMin - b.startMin; });
+    const merged = [];
+    let curr = Object.assign({}, all[0]);
+    for (let i = 1; i < all.length; i++) {
+      const next = all[i];
+      if (next.startMin <= curr.endMin) {
+        curr.endMin = Math.max(curr.endMin, next.endMin);
+      } else {
+        merged.push(curr);
+        curr = Object.assign({}, next);
+      }
+    }
+    merged.push(curr);
+    return merged;
+  }
+
   /**
    * Ventanas de trabajo de un profesional en una fecha.
    * Si practitionerId no se especifica (null), devuelve todas las ventanas de atención del consultorio ese día.
    */
-  function getWorkingWindows(practitionerId, dateInput) {
-    const d = typeof dateInput === "string" ? parseLocalDate(dateInput) : new Date(dateInput);
+  function getWorkingWindows(practitionerId, dateInput, customOverrides) {
+    if (!dateInput) return [];
+    let d;
+    if (typeof dateInput === "string") {
+      d = /^\d{4}-\d{2}-\d{2}$/.test(dateInput.trim())
+        ? parseLocalDate(dateInput.trim())
+        : new Date(dateInput);
+    } else {
+      d = new Date(dateInput);
+    }
+    if (isNaN(d.getTime())) return [];
     const dow = d.getDay();
     if (dow === 0 || dow === 6) return [];
 
-    if (!practitionerId) {
-      const combined = [];
-      Object.keys(PRACTITIONERS).forEach(function (id) {
-        const hours = PRACTITIONER_HOURS[id];
-        if (!hours) return;
-        const ranges = hours[dow] || [];
-        ranges.forEach(function (range) {
-          combined.push({ startMin: parseHmToMinutes(range.start), endMin: parseHmToMinutes(range.end) });
-        });
+    const pid = practitionerId ? String(practitionerId).toLowerCase().trim() : "";
+    const isoDate = formatDateIso(d);
+    const overridesList = Array.isArray(customOverrides) ? customOverrides : runtimeScheduleOverrides;
+    const activeForDate = overridesList.filter(function (ov) {
+      return ov && ov.active !== false && isoDate >= ov.start_date && isoDate <= ov.end_date;
+    });
+
+    const hasFullClosure = activeForDate.some(function (ov) {
+      return ov.action === "closure" && (ov.time_scope === "all_day" || !ov.time_scope);
+    });
+    if (hasFullClosure) return [];
+
+    const getBaseWindows = function (id) {
+      const hours = PRACTITIONER_HOURS[id];
+      if (!hours) return [];
+      const ranges = hours[dow] || [];
+      return ranges.map(function (range) {
+        return { startMin: parseHmToMinutes(range.start), endMin: parseHmToMinutes(range.end) };
       });
-      combined.sort(function (a, b) { return a.startMin - b.startMin; });
-      return combined;
+    };
+
+    if (pid) {
+      let windows = getBaseWindows(pid);
+      activeForDate.forEach(function (ov) {
+        if (ov.action === "closure" && ov.time_scope === "custom_hours" && ov.custom_range) {
+          windows = subtractTimeWindow(
+            windows,
+            parseHmToMinutes(ov.custom_range.start),
+            parseHmToMinutes(ov.custom_range.end)
+          );
+        } else if (ov.action === "transfer") {
+          const from = ov.from_practitioner;
+          const to = ov.to_practitioner;
+          const scope = ov.time_scope || "all_day";
+          if (pid === from) {
+            if (scope === "all_day") {
+              windows = [];
+            } else if (scope === "custom_hours" && ov.custom_range) {
+              windows = subtractTimeWindow(
+                windows,
+                parseHmToMinutes(ov.custom_range.start),
+                parseHmToMinutes(ov.custom_range.end)
+              );
+            }
+          } else if (pid === to) {
+            if (scope === "all_day") {
+              const ceded = getBaseWindows(from);
+              windows = mergeTimeWindows(windows, ceded);
+            } else if (scope === "custom_hours" && ov.custom_range) {
+              const added = [{
+                startMin: parseHmToMinutes(ov.custom_range.start),
+                endMin: parseHmToMinutes(ov.custom_range.end),
+              }];
+              windows = mergeTimeWindows(windows, added);
+            }
+          }
+        }
+      });
+      return windows;
     }
 
-    const hours = PRACTITIONER_HOURS[practitionerId];
-    if (!hours) return [];
-    const ranges = hours[dow] || [];
-    return ranges.map(function (range) {
-      return { startMin: parseHmToMinutes(range.start), endMin: parseHmToMinutes(range.end) };
-    });
+    const mWin = getWorkingWindows("maria", d, customOverrides);
+    const nWin = getWorkingWindows("norberto", d, customOverrides);
+    return mergeTimeWindows(mWin, nWin);
   }
 
   function eventBlocksPractitioner() {
@@ -483,11 +608,20 @@
    * @returns {Array<{ time: string, startIso: string, endIso: string }>}
    */
   function calculateAvailableSlots(options) {
+    if (!options || !options.date) {
+      return [];
+    }
     const durationMinutes = SESSION_DURATION_MINUTES;
     const practitionerId = options.practitionerId || null;
 
-    const baseDate =
-      typeof options.date === "string" ? parseLocalDate(options.date) : new Date(options.date);
+    let baseDate;
+    if (typeof options.date === "string") {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(options.date.trim())) return [];
+      baseDate = parseLocalDate(options.date.trim());
+    } else {
+      baseDate = new Date(options.date);
+    }
+    if (isNaN(baseDate.getTime())) return [];
 
     if (!isBusinessDay(baseDate, options.holidays)) {
       return [];
@@ -502,7 +636,8 @@
       return [];
     }
 
-    const windows = getWorkingWindows(practitionerId, baseDate);
+    const overrides = options.overrides || runtimeScheduleOverrides;
+    const windows = getWorkingWindows(practitionerId, baseDate, overrides);
     if (!windows.length) return [];
 
     const rawBusy = Array.isArray(options.busyIntervals) ? options.busyIntervals : [];
@@ -531,7 +666,7 @@
             return slotStart < b.end && slotEnd > b.start;
           });
           if (!overlaps) {
-            const onDuty = practitionerId || (practitionersAt(baseDate, formatTime(current))[0] || null);
+            const onDuty = practitionerId || (practitionersAt(baseDate, formatTime(current), overrides)[0] || null);
             slots.push({
               time: formatTime(current),
               startIso: new Date(slotStart).toISOString(),
@@ -721,6 +856,9 @@
     setPractitionerHours: setPractitionerHours,
     resetPractitionerHours: resetPractitionerHours,
     getPractitionerHours: getPractitionerHours,
+    setScheduleOverrides: setScheduleOverrides,
+    getScheduleOverrides: getScheduleOverrides,
+    resetScheduleOverrides: resetScheduleOverrides,
     formatClaraScheduleSummary: formatClaraScheduleSummary,
     parseHmToMinutes: parseHmToMinutes,
     minutesToHm: minutesToHm,
