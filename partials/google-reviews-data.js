@@ -1,7 +1,7 @@
 /** AUTO-GENERATED — no editar. Fuente: npm run reviews:fetch */
 window.KINESICA_GOOGLE_REVIEWS = {
   "placeId": "ChIJZ2mPW9K1vJUR3J5kGRi5gws",
-  "fetchedAt": "2026-11-20T19:41:24.519Z",
+  "fetchedAt": "2026-11-22T01:03:42.877Z",
   "displayName": "Kinesica",
   "googleMapsUri": "https://maps.google.com/?cid=829710269522681564&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA",
   "rating": 5,
@@ -119,14 +119,14 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "publishTime": "2026-11-13T14:17:37.188096687Z"
       },
       {
-        "author": "Mario Schonfeld",
-        "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJvo1RJ2skq3nr_pJRwvQZNdUrw77voXh3yGLaVweufqb-vbg=s128-c0x00000000-cc-rp-mo",
-        "authorProfile": "https://www.google.com/maps/contrib/116485618727629391879/reviews",
+        "author": "Manu Covic",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjXT_z1Jocd8RtQKJjZNPHtT6nWADbK9htmMD0ZnLXcr5WYoZBU=s128-c0x00000000-cc-rp-mo-ba4",
+        "authorProfile": "https://www.google.com/maps/contrib/101062939083218654733/reviews",
         "rating": 5,
-        "text": "Norberto Brude has been my doctor for a long time. I trust him completely. He's also a professional who sees one patient per session, dedicating himself fully and with absolute seriousness.",
+        "text": "Norberto helped me a lot and relieved the back and knee pain I'd been suffering from. He was very friendly and professional. I highly recommend him!",
         "language": "en",
-        "relativeTime": "2 weeks ago",
-        "publishTime": "2026-11-03T00:13:29.224441962Z"
+        "relativeTime": "a month ago",
+        "publishTime": "2026-10-17T15:27:44.938806512Z"
       },
       {
         "author": "Mailín Schneeberger",
