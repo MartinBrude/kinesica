@@ -101,16 +101,23 @@
         errors.push("Elegí el profesional de la sesión.");
       }
 
-      if (technique && !technique.bySchedule && req.date && req.time && req.practitionerId && PRACTITIONERS[req.practitionerId]) {
-        const windows = getWorkingWindows(req.practitionerId, req.date);
-        const timeMin = parseHmToMinutes(req.time);
-        const fits = windows.some(function (w) {
-          return timeMin >= w.startMin && timeMin + SESSION_DURATION_MINUTES <= w.endMin;
-        });
-        if (!fits) errors.push("Ese horario está fuera del día de atención del profesional.");
+      if (technique && req.date && deps.isTechniqueOfferedOnDate && !deps.isTechniqueOfferedOnDate(req.techniqueId, req.date)) {
+        errors.push("Esa técnica no está disponible en la fecha elegida (profesional de baja).");
+      } else if (technique && !technique.bySchedule && req.date && req.time && req.practitionerId && PRACTITIONERS[req.practitionerId]) {
+        if (deps.isPractitionerOnLeave && deps.isPractitionerOnLeave(req.practitionerId, req.date)) {
+          errors.push("El profesional está de baja en esa fecha.");
+        } else {
+          const windows = getWorkingWindows(req.practitionerId, req.date);
+          const timeMin = parseHmToMinutes(req.time);
+          const fits = windows.some(function (w) {
+            return timeMin >= w.startMin && timeMin + SESSION_DURATION_MINUTES <= w.endMin;
+          });
+          if (!fits) errors.push("Ese horario está fuera del día de atención del profesional.");
+        }
       } else if (technique && !technique.bySchedule && req.date && req.time && !req.practitionerId) {
         const timeMin = parseHmToMinutes(req.time);
         const fitsAny = technique.practitioners.some(function (pid) {
+          if (deps.isPractitionerOnLeave && deps.isPractitionerOnLeave(pid, req.date)) return false;
           return getWorkingWindows(pid, req.date).some(function (w) {
             return timeMin >= w.startMin && timeMin + SESSION_DURATION_MINUTES <= w.endMin;
           });

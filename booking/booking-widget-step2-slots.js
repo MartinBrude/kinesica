@@ -20,10 +20,19 @@
     };
 
     proto.fetchFilteredSlots = async function (dateIso, forceRefresh = false) {
+      const techniqueId = this.state.techniqueId;
+      if (
+        techniqueId
+        && engine
+        && typeof engine.isTechniqueOfferedOnDate === "function"
+        && !engine.isTechniqueOfferedOnDate(techniqueId, dateIso)
+      ) {
+        return [];
+      }
       const res = await this.client.getAvailableSlots(dateIso, "session", {
         forceRefresh,
         practitionerId: this.state.practitionerId,
-        techniqueId: this.state.techniqueId,
+        techniqueId,
       });
       if (!res || res.status === "error" || !Array.isArray(res.availableSlots)) {
         throw new Error((res && res.message) || "Error al procesar los horarios disponibles");
@@ -37,7 +46,7 @@
         validSlots.push(Object.assign({}, slot, { time: slot.time.trim() }));
       }
       let slots = this.filterSlotsWithBuffer(validSlots, dateIso, this.state.appointmentType);
-      const chosen = engine.getTechnique(this.state.techniqueId);
+      const chosen = engine.getTechnique(techniqueId);
       slots = this.restrictToPractitioner(slots, dateIso);
       if (!this.state.practitionerId && chosen && chosen.bySchedule) {
         slots = slots.filter((slot) => engine.practitionersAt(dateIso, slot.time).length > 0);

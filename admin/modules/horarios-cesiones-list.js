@@ -25,10 +25,13 @@ export function formatOverrideDescription(ov) {
   if (ov.time_scope === "custom_hours" && ranges.length > 0) {
     hours = ranges.map((r) => `${r.start} a ${r.end} hs`).join(" y ");
   }
+  const leave = ov.practitioner_on_leave
+    ? ` · <span style="color:#b45309; font-weight:600;">De baja (${escapeHtml(fromName)})</span>`
+    : "";
   const reason = ov.reason ? ` · <em>${escapeHtml(ov.reason)}</em>` : "";
   const audit = ov.created_by ? ` · <span style="color:#64748b;">Por ${escapeHtml(ov.created_by)}</span>` : "";
   const annulled = !ov.active && ov.annulled_by ? ` · <span style="color:#dc2626;">Anulado por ${escapeHtml(ov.annulled_by)}</span>` : "";
-  return { title, dates, hours, extra: `${reason}${audit}${annulled}` };
+  return { title, dates, hours, extra: `${leave}${reason}${audit}${annulled}` };
 }
 
 export function renderCesionesList({ container, overrides = [], onAnular, onDelete }) {

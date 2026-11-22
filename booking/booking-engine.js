@@ -84,6 +84,8 @@
     isBusinessDay,
     getWorkingWindows: slotsMod.getWorkingWindows,
     practitionersAt: slotsMod.practitionersAt,
+    isPractitionerOnLeave: slotsMod.isPractitionerOnLeave,
+    isTechniqueOfferedOnDate: slotsMod.isTechniqueOfferedOnDate,
   });
 
   const syncFactory = (calendarSyncModule && calendarSyncModule.createCalendarSync)
@@ -128,6 +130,8 @@
     getTechnique: cfg.getTechnique,
     practitionersAt: slotsMod.practitionersAt,
     getWorkingWindows: slotsMod.getWorkingWindows,
+    isPractitionerOnLeave: slotsMod.isPractitionerOnLeave,
+    isTechniqueOfferedOnDate: slotsMod.isTechniqueOfferedOnDate,
     practitionerOffersTechnique: cfg.practitionerOffersTechnique,
     calculateAvailableSlots,
     validateBookingRequest,

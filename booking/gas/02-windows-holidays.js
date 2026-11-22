@@ -87,8 +87,10 @@ function applyGasOverrides(windows, practitionerId, dateStr, overrides, baseHour
       const from = ov.from_practitioner;
       const to = ov.to_practitioner;
       const scope = ov.time_scope || "all_day";
+      const onLeave = ov.practitioner_on_leave === true;
       if (practitionerId === from) {
-        if (scope === "all_day") {
+        // De baja: ausente todo el día (disciplinas exclusivas no se ofrecen).
+        if (onLeave || scope === "all_day") {
           res = [];
         } else if (scope === "custom_hours") {
           ranges.forEach(function(r) {

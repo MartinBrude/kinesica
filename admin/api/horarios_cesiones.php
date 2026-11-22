@@ -72,7 +72,13 @@ if ($method === 'POST') {
     }
 
     if ($action === 'create') {
-        $val = validate_schedule_override($input);
+        // El cliente envía action:"create" (op HTTP) y schedule_action: transfer|closure.
+        $toValidate = $input;
+        $scheduleAction = trim((string) ($input['schedule_action'] ?? ''));
+        if (in_array($scheduleAction, ['transfer', 'closure'], true)) {
+            $toValidate['action'] = $scheduleAction;
+        }
+        $val = validate_schedule_override($toValidate);
         if (!$val['isValid'] || $val['normalized'] === null) {
             json_out(422, [
                 'status' => 'error',

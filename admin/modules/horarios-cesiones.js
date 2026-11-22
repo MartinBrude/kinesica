@@ -57,6 +57,7 @@ async function handleCreateCesion(draft) {
       method: "POST",
       body: {
         ...draft,
+        schedule_action: draft.action,
         action: "create",
       },
     });

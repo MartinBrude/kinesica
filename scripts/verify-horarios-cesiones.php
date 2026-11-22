@@ -46,6 +46,31 @@ $validTransfer = validate_schedule_override([
 assert_true($validTransfer['isValid'], 'Cesión válida debe pasar validación');
 assert_equals($validTransfer['normalized']['to_practitioner'], 'maria', 'to_practitioner normalizado');
 assert_equals($validTransfer['normalized']['end_date'], '2026-11-25', 'end_date igual a start_date en single_day');
+assert_equals($validTransfer['normalized']['practitioner_on_leave'], false, 'single_day no marca de baja');
+
+$leaveRange = validate_schedule_override([
+    'action' => 'transfer',
+    'from_practitioner' => 'maria',
+    'to_practitioner' => 'norberto',
+    'period_type' => 'date_range',
+    'start_date' => '2026-12-01',
+    'end_date' => '2026-12-14',
+    'time_scope' => 'all_day',
+    'practitioner_on_leave' => true,
+]);
+assert_true($leaveRange['isValid'], 'Cesión multi-día con de baja debe ser válida');
+assert_equals($leaveRange['normalized']['practitioner_on_leave'], true, 'de baja persistida en rango');
+
+$leaveIgnoredOnSingle = validate_schedule_override([
+    'action' => 'transfer',
+    'from_practitioner' => 'maria',
+    'to_practitioner' => 'norberto',
+    'period_type' => 'single_day',
+    'start_date' => '2026-12-01',
+    'time_scope' => 'all_day',
+    'practitioner_on_leave' => true,
+]);
+assert_equals($leaveIgnoredOnSingle['normalized']['practitioner_on_leave'], false, 'de baja ignorada en día puntual');
 
 // Cierre total válido
 $validClosure = validate_schedule_override([

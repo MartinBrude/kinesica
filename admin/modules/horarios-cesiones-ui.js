@@ -5,18 +5,24 @@
 
 import { escapeHtml } from "./dom.js?v=79";
 import { validateCesionDraft } from "./horarios-cesiones-validator.js?v=79";
+import { buildCesionFormHtml, buildHourOptions } from "./horarios-cesiones-form-html.js?v=1";
 export { getOverrideStatusBadge, formatOverrideDescription, renderCesionesList } from "./horarios-cesiones-list.js?v=79";
 
-function buildHourOptions(selected) {
-  const opts = [];
-  for (let h = 8; h <= 20; h++) {
-    for (const m of ["00", "30"]) {
-      if (h === 20 && m === "30") continue;
-      const val = `${String(h).padStart(2, "0")}:${m}`;
-      opts.push(`<option value="${val}" ${val === selected ? "selected" : ""}>${val} hs</option>`);
-    }
-  }
-  return opts.join("");
+function buildDraftFromForm({ isClosure, targetValue, periodType, sDate, eDate, timeScope, franjas, onLeave, reason }) {
+  const isCustom = timeScope === "custom_hours";
+  return {
+    action: isClosure ? "closure" : "transfer",
+    from_practitioner: isClosure ? null : (targetValue === "to_maria" ? "norberto" : "maria"),
+    to_practitioner: isClosure ? null : (targetValue === "to_maria" ? "maria" : "norberto"),
+    period_type: periodType,
+    start_date: sDate,
+    end_date: eDate,
+    time_scope: timeScope,
+    custom_ranges: isCustom ? franjas.slice() : [],
+    custom_range: isCustom && franjas.length > 0 ? franjas[0] : null,
+    practitioner_on_leave: Boolean(onLeave),
+    ...(reason !== undefined ? { reason } : {}),
+  };
 }
 
 export function renderCesionesForm({ container, onSubmit, onCheckConflicts }) {
@@ -24,66 +30,7 @@ export function renderCesionesForm({ container, onSubmit, onCheckConflicts }) {
   const today = new Date().toISOString().split("T")[0];
   let franjas = [{ start: "14:00", end: "17:00" }];
 
-  container.innerHTML = `
-    <div class="cesiones-form-card" style="background:#fff; border:1px solid var(--line); border-radius:8px; padding:20px; margin-bottom:24px;">
-      <h3 style="margin-top:0; margin-bottom:14px; font-size:16px; color:var(--navy);">Programar Excepción: Cesión de Horarios o Cierre</h3>
-      <form id="form-horarios-cesion">
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap:14px; margin-bottom:14px;">
-          <div>
-            <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">1. ¿Para quién pasan a estar disponibles?</label>
-            <select id="cesion-target-flow" style="width:100%; height:38px; border:1px solid var(--line); border-radius:6px; padding:0 8px;">
-              <option value="to_maria">Disponibles para María (liberada por Norberto)</option>
-              <option value="to_norberto">Disponibles para Norberto (liberado por María)</option>
-              <option value="closure">Cierre total de consultorio (bloqueo para ambos)</option>
-            </select>
-          </div>
-          <div>
-            <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">2. Período de fechas</label>
-            <select id="cesion-period-type" style="width:100%; height:38px; border:1px solid var(--line); border-radius:6px; padding:0 8px;">
-              <option value="single_day">Día puntual</option>
-              <option value="date_range">Rango de fechas</option>
-            </select>
-          </div>
-        </div>
-
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap:14px; margin-bottom:14px;">
-          <div>
-            <label id="lbl-cesion-start" style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">Fecha</label>
-            <input type="date" id="cesion-start-date" value="" min="${today}" style="width:100%; height:38px; border:1px solid var(--line); border-radius:6px; padding:0 8px;">
-          </div>
-          <div id="wrapper-cesion-end-date" style="display:none;">
-            <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">Hasta fecha</label>
-            <input type="date" id="cesion-end-date" value="" min="${today}" style="width:100%; height:38px; border:1px solid var(--line); border-radius:6px; padding:0 8px;">
-          </div>
-          <div>
-            <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">3. Alcance horario</label>
-            <select id="cesion-time-scope" style="width:100%; height:38px; border:1px solid var(--line); border-radius:6px; padding:0 8px;">
-              <option value="all_day">Jornada completa</option>
-              <option value="custom_hours">Franja horaria</option>
-            </select>
-          </div>
-        </div>
-
-        <div id="wrapper-cesion-custom-hours" style="display:none; margin-bottom:14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:12px 14px;">
-          <div style="font-size:13px; font-weight:600; color:var(--navy); margin-bottom:8px;">Franjas horarias a habilitar:</div>
-          <div id="cesion-franjas-list"></div>
-          <button type="button" class="btn light small" id="btn-add-franja" style="margin-top:6px; font-size:12px;">+ Agregar otra franja horaria</button>
-        </div>
-
-        <div style="margin-bottom:14px;">
-          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">Motivo o nota interna (opcional)</label>
-          <input type="text" id="cesion-reason" placeholder="Ej. Congreso médico, día libre acordado, refacción" maxlength="200" style="width:100%; height:38px; border:1px solid var(--line); border-radius:6px; padding:0 8px;">
-        </div>
-
-        <div id="cesion-preview-banner" style="margin-bottom:14px; padding:10px 14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; font-size:13px; color:#334155;"></div>
-        <div id="cesion-conflicts-banner" style="display:none; margin-bottom:14px; padding:10px 14px; border-radius:6px; font-size:13px; line-height:1.4;"></div>
-
-        <div style="display:flex; justify-content:flex-end;">
-          <button type="submit" class="btn green" id="btn-save-cesion" disabled>Guardar y habilitar turnos</button>
-        </div>
-      </form>
-    </div>
-  `;
+  container.innerHTML = buildCesionFormHtml(today);
 
   const form = container.querySelector("#form-horarios-cesion");
   const targetSel = container.querySelector("#cesion-target-flow");
@@ -94,6 +41,8 @@ export function renderCesionesForm({ container, onSubmit, onCheckConflicts }) {
   const endDateWrapper = container.querySelector("#wrapper-cesion-end-date");
   const timeScopeSel = container.querySelector("#cesion-time-scope");
   const customHoursWrapper = container.querySelector("#wrapper-cesion-custom-hours");
+  const onLeaveWrapper = container.querySelector("#wrapper-cesion-on-leave");
+  const onLeaveInput = container.querySelector("#cesion-on-leave");
   const franjasListEl = container.querySelector("#cesion-franjas-list");
   const btnAddFranja = container.querySelector("#btn-add-franja");
   const banner = container.querySelector("#cesion-conflicts-banner");
@@ -124,8 +73,7 @@ export function renderCesionesForm({ container, onSubmit, onCheckConflicts }) {
     });
     franjasListEl.querySelectorAll(".btn-remove-franja").forEach((btn) => {
       btn.addEventListener("click", () => {
-        const removeIdx = Number(btn.getAttribute("data-remove"));
-        franjas.splice(removeIdx, 1);
+        franjas.splice(Number(btn.getAttribute("data-remove")), 1);
         renderFranjaRows();
         updatePreviewAndConflicts();
       });
@@ -146,6 +94,11 @@ export function renderCesionesForm({ container, onSubmit, onCheckConflicts }) {
     endDateWrapper.style.display = isRange ? "block" : "none";
     const isCustom = timeScopeSel.value === "custom_hours";
     customHoursWrapper.style.display = isCustom ? "block" : "none";
+    const isClosure = targetSel.value === "closure";
+    const showOnLeave = isRange && !isClosure;
+    if (onLeaveWrapper) onLeaveWrapper.style.display = showOnLeave ? "block" : "none";
+    if (!showOnLeave && onLeaveInput) onLeaveInput.checked = false;
+    const onLeave = Boolean(showOnLeave && onLeaveInput && onLeaveInput.checked);
 
     const sDate = String(sDateInput.value || "").trim();
     const eDate = isRange ? String(eDateInput.value || "").trim() : sDate;
@@ -163,18 +116,16 @@ export function renderCesionesForm({ container, onSubmit, onCheckConflicts }) {
       return;
     }
 
-    const isClosure = targetSel.value === "closure";
-    const draft = {
-      action: isClosure ? "closure" : "transfer",
-      from_practitioner: isClosure ? null : (targetSel.value === "to_maria" ? "norberto" : "maria"),
-      to_practitioner: isClosure ? null : (targetSel.value === "to_maria" ? "maria" : "norberto"),
-      period_type: periodSel.value,
-      start_date: sDate,
-      end_date: eDate,
-      time_scope: timeScopeSel.value,
-      custom_ranges: isCustom ? franjas.slice() : [],
-      custom_range: isCustom && franjas.length > 0 ? franjas[0] : null,
-    };
+    const draft = buildDraftFromForm({
+      isClosure,
+      targetValue: targetSel.value,
+      periodType: periodSel.value,
+      sDate,
+      eDate,
+      timeScope: timeScopeSel.value,
+      franjas,
+      onLeave,
+    });
 
     const validation = validateCesionDraft(draft);
     if (!validation.isValid) {
@@ -193,7 +144,10 @@ export function renderCesionesForm({ container, onSubmit, onCheckConflicts }) {
     let targetText = "el consultorio estará CERRADO para ambos profesionales";
     if (targetSel.value === "to_maria") targetText = "los turnos pasan a estar disponibles para María liberada por Norberto";
     if (targetSel.value === "to_norberto") targetText = "los turnos pasan a estar disponibles para Norberto liberado por María";
-    preview.innerHTML = `📌 <strong>Resumen:</strong> Para ${escapeHtml(dateText)}, ${escapeHtml(hoursText)}, ${escapeHtml(targetText)}.`;
+    const leaveText = onLeave
+      ? " Además, quien cede queda de baja: Agendar no ofrecerá disciplinas que solo esa persona atiende."
+      : "";
+    preview.innerHTML = `📌 <strong>Resumen:</strong> Para ${escapeHtml(dateText)}, ${escapeHtml(hoursText)}, ${escapeHtml(targetText)}.${escapeHtml(leaveText)}`;
 
     if (typeof onCheckConflicts !== "function" || isClosure) {
       banner.style.display = "none";
@@ -213,7 +167,8 @@ export function renderCesionesForm({ container, onSubmit, onCheckConflicts }) {
     });
   };
 
-  [targetSel, periodSel, sDateInput, eDateInput, timeScopeSel].forEach((el) => {
+  [targetSel, periodSel, sDateInput, eDateInput, timeScopeSel, onLeaveInput].forEach((el) => {
+    if (!el) return;
     el.addEventListener("change", updatePreviewAndConflicts);
     el.addEventListener("input", updatePreviewAndConflicts);
   });
@@ -222,19 +177,19 @@ export function renderCesionesForm({ container, onSubmit, onCheckConflicts }) {
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const isClosure = targetSel.value === "closure";
-    const isCustom = timeScopeSel.value === "custom_hours";
-    const draft = {
-      action: isClosure ? "closure" : "transfer",
-      from_practitioner: isClosure ? null : (targetSel.value === "to_maria" ? "norberto" : "maria"),
-      to_practitioner: isClosure ? null : (targetSel.value === "to_maria" ? "maria" : "norberto"),
-      period_type: periodSel.value,
-      start_date: sDateInput.value,
-      end_date: periodSel.value === "single_day" ? sDateInput.value : eDateInput.value,
-      time_scope: timeScopeSel.value,
-      custom_ranges: isCustom ? franjas.slice() : [],
-      custom_range: isCustom && franjas.length > 0 ? franjas[0] : null,
+    const isRange = periodSel.value === "date_range";
+    const onLeave = Boolean(isRange && !isClosure && onLeaveInput && onLeaveInput.checked);
+    const draft = buildDraftFromForm({
+      isClosure,
+      targetValue: targetSel.value,
+      periodType: periodSel.value,
+      sDate: sDateInput.value,
+      eDate: periodSel.value === "single_day" ? sDateInput.value : eDateInput.value,
+      timeScope: timeScopeSel.value,
+      franjas,
+      onLeave,
       reason: container.querySelector("#cesion-reason").value.trim(),
-    };
+    });
     if (typeof onSubmit === "function") onSubmit(draft);
   });
 }

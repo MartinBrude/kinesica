@@ -888,3 +888,83 @@ details.admin-collapsible-card[open] > summary .admin-collapsible-chevron {
   }
 }
 
+/* Toggle «profesional de baja» en cesiones multi-día */
+.cesion-on-leave-row {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.cesion-switch {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  margin: 0;
+}
+
+.cesion-switch input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+
+.cesion-switch-track {
+  position: relative;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 26px;
+  margin-top: 2px;
+  border-radius: 999px;
+  background: #cbd5e1;
+  transition: background 0.18s ease;
+}
+
+.cesion-switch-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.25);
+  transition: transform 0.18s ease;
+}
+
+.cesion-switch input:checked + .cesion-switch-track {
+  background: #d97706;
+}
+
+.cesion-switch input:checked + .cesion-switch-track .cesion-switch-thumb {
+  transform: translateX(18px);
+}
+
+.cesion-switch input:focus-visible + .cesion-switch-track {
+  outline: 2px solid #0369a1;
+  outline-offset: 2px;
+}
+
+.cesion-switch-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.cesion-switch-copy strong {
+  font-size: 13px;
+  color: var(--navy, #0f2744);
+}
+
+.cesion-switch-hint {
+  font-size: 12px;
+  line-height: 1.4;
+  color: #78716c;
+  font-weight: 400;
+}
+

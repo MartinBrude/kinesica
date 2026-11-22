@@ -59,6 +59,41 @@
     return merged;
   }
 
+  function isPractitionerOnLeave(practitionerId, dateInput, customOverrides) {
+    if (!practitionerId || !dateInput) return false;
+    let isoDate;
+    if (typeof dateInput === "string" && /^\d{4}-\d{2}-\d{2}$/.test(dateInput.trim())) {
+      isoDate = dateInput.trim();
+    } else {
+      const d = typeof dateInput === "string" ? parseLocalDate(dateInput) : new Date(dateInput);
+      if (isNaN(d.getTime())) return false;
+      isoDate = formatDateIso(d);
+    }
+    const pid = String(practitionerId).toLowerCase().trim();
+    const overridesList = Array.isArray(customOverrides) ? customOverrides : cfg.getScheduleOverrides();
+    return overridesList.some(function (ov) {
+      return ov
+        && ov.active !== false
+        && ov.action === "transfer"
+        && ov.practitioner_on_leave === true
+        && String(ov.from_practitioner || "").toLowerCase() === pid
+        && isoDate >= ov.start_date
+        && isoDate <= ov.end_date;
+    });
+  }
+
+  function isTechniqueOfferedOnDate(techniqueId, dateInput, customOverrides) {
+    const technique = cfg.getTechnique(techniqueId);
+    if (!technique) return false;
+    const candidates = technique.bySchedule
+      ? Object.keys(PRACTITIONERS)
+      : (Array.isArray(technique.practitioners) ? technique.practitioners : []);
+    return candidates.some(function (pid) {
+      if (isPractitionerOnLeave(pid, dateInput, customOverrides)) return false;
+      return getWorkingWindows(pid, dateInput, customOverrides).length > 0;
+    });
+  }
+
   function getWorkingWindows(practitionerId, dateInput, customOverrides) {
     if (!dateInput) return [];
     let d;
@@ -108,8 +143,10 @@
           const from = ov.from_practitioner;
           const to = ov.to_practitioner;
           const scope = ov.time_scope || "all_day";
+          const onLeave = ov.practitioner_on_leave === true;
           if (pid === from) {
-            if (scope === "all_day") {
+            // De baja: ausente todo el día (no solo la franja cedida).
+            if (onLeave || scope === "all_day") {
               windows = [];
             } else if (scope === "custom_hours") {
               ranges.forEach(function (r) {
@@ -225,6 +262,8 @@
   return {
     getWorkingWindows,
     practitionersAt,
+    isPractitionerOnLeave,
+    isTechniqueOfferedOnDate,
     createSlotCalculator,
   };
 });

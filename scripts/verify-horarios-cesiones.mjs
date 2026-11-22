@@ -46,8 +46,10 @@ console.log("\n2. Auditando regla arquitectónica: archivos en admin/ <= 250 lí
 const adminFiles = [
   "admin/api/horarios_cesiones.php",
   "admin/api/lib_horarios_cesiones.php",
+  "admin/api/lib_horarios_cesiones_windows.php",
   "admin/modules/horarios-cesiones.js",
   "admin/modules/horarios-cesiones-ui.js",
+  "admin/modules/horarios-cesiones-form-html.js",
   "admin/modules/horarios-cesiones-list.js",
   "admin/modules/horarios-cesiones-validator.js",
   "admin/api/lib_calendar_backup_backup_compute_day_slots.php",
@@ -140,6 +142,39 @@ assert.ok(monNorbertoAfter.length > 2, "Norberto recibe la jornada completa de l
 assert.equal(monNorbertoAfter[0].time, "09:00");
 
 console.log("  ✓ Cesiones de jornada completa validadas en ambas direcciones.");
+
+// =========================================================================
+// 4b. Profesional de baja (multi-día): disciplinas exclusivas no se ofrecen
+// =========================================================================
+console.log("\n4b. Verificando profesional de baja y disciplinas exclusivas...");
+engine.setScheduleOverrides([
+  {
+    id: "cov_maria_leave",
+    action: "transfer",
+    from_practitioner: "maria",
+    to_practitioner: "norberto",
+    period_type: "date_range",
+    start_date: "2026-12-01",
+    end_date: "2026-12-14",
+    time_scope: "custom_hours",
+    custom_range: { start: "14:00", end: "17:00" },
+    custom_ranges: [{ start: "14:00", end: "17:00" }],
+    practitioner_on_leave: true,
+    active: true,
+  },
+]);
+// 2026-12-01 es martes (María suele atender mañana)
+assert.equal(engine.isPractitionerOnLeave("maria", "2026-12-01"), true, "María de baja el 1/12");
+assert.equal(engine.isPractitionerOnLeave("norberto", "2026-12-01"), false, "Norberto no está de baja");
+assert.equal(engine.isTechniqueOfferedOnDate("acupuntura", "2026-12-01"), false, "Acupuntura no se ofrece con María de baja");
+assert.equal(engine.isTechniqueOfferedOnDate("posturologia", "2026-12-01"), false, "Posturología no se ofrece con María de baja");
+assert.equal(engine.isTechniqueOfferedOnDate("osteopatia", "2026-12-01"), true, "Osteopatía sigue (Norberto)");
+assert.equal(engine.getWorkingWindows("maria", "2026-12-01").length, 0, "María sin ventanas al estar de baja");
+const norbertoLeaveSlots = engine.calculateAvailableSlots({ date: "2026-12-01", practitionerId: "norberto" });
+assert.ok(norbertoLeaveSlots.some((s) => s.time === "14:00"), "Norberto recibe la franja cedida 14:00");
+assert.equal(engine.isTechniqueOfferedOnDate("acupuntura", "2026-12-15"), true, "Acupuntura vuelve fuera del rango");
+engine.resetScheduleOverrides();
+console.log("  ✓ De baja oculta disciplinas exclusivas y libera franjas al receptor.");
 
 // =========================================================================
 // 5. Regla Física Estricta de 1 Sola Camilla (Sin Solapamientos)
