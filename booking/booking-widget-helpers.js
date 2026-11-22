@@ -103,15 +103,26 @@
       return this.practitionerGenderLabel(normalized);
     };
 
+    /** true si hay ≥2 profesionales elegibles (horizonte o día concreto). */
+    proto.hasGenderPreferenceChoice = function (dateIso) {
+      if (!this.state || this.state.existingPatient === true) return false;
+      const techniqueId = this.state.techniqueId;
+      if (!techniqueId || !engine) return false;
+      if (dateIso && typeof engine.practitionersAvailableOnDate === "function") {
+        return engine.practitionersAvailableOnDate(techniqueId, dateIso).length > 1;
+      }
+      if (typeof engine.practitionersBookableForTechnique === "function") {
+        return engine.practitionersBookableForTechnique(techniqueId).length > 1;
+      }
+      const technique = typeof engine.getTechnique === "function" ? engine.getTechnique(techniqueId) : null;
+      return Boolean(technique && Array.isArray(technique.practitioners) && technique.practitioners.length > 1);
+    };
+
     proto.getPractitionerPreferenceDisplay = function () {
       if (!this.state || this.state.existingPatient === true) return null;
-      const techniqueId = this.state.techniqueId;
-      const technique = engine && typeof engine.getTechnique === "function" ? engine.getTechnique(techniqueId) : null;
-      const hasMultiplePros = Boolean(technique && Array.isArray(technique.practitioners) && technique.practitioners.length > 1);
+      const dateIso = this.state.selectedDate || null;
+      if (!this.hasGenderPreferenceChoice(dateIso)) return null;
       const pref = typeof this.state.practitionerPreference === "string" ? this.state.practitionerPreference.trim().toLowerCase() : null;
-      if (!hasMultiplePros && !pref) {
-        return null;
-      }
 
       if (pref === "norberto") {
         return this.t("proMale");
@@ -119,10 +130,24 @@
       if (pref === "maria") {
         return this.t("proFemale");
       }
-      if (pref === "any" || hasMultiplePros) {
+      if (pref === "any" || this.hasGenderPreferenceChoice(null)) {
         return this.t("proAny");
       }
       return null;
+    };
+
+    proto.syncStep2PreferencePill = function () {
+      const prefContainer = this.container && this.container.querySelector("#kb-step2-pref-container");
+      const prefVal = this.container && this.container.querySelector("#kb-step2-pref-val");
+      if (!prefContainer || !prefVal) return;
+      const onStep2 = this.state && Number(this.state.step) === 2;
+      const prefText = this.getPractitionerPreferenceDisplay();
+      if (prefText && onStep2) {
+        prefVal.textContent = prefText;
+        prefContainer.style.display = "block";
+      } else {
+        prefContainer.style.display = "none";
+      }
     };
 
     proto.practitionerWhatsappUrl = function (id) {

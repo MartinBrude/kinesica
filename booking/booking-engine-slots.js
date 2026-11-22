@@ -82,16 +82,45 @@
     });
   }
 
-  function isTechniqueOfferedOnDate(techniqueId, dateInput, customOverrides) {
+  function techniquePractitionerCandidates(techniqueId) {
     const technique = cfg.getTechnique(techniqueId);
-    if (!technique) return false;
-    const candidates = technique.bySchedule
-      ? Object.keys(PRACTITIONERS)
-      : (Array.isArray(technique.practitioners) ? technique.practitioners : []);
-    return candidates.some(function (pid) {
+    if (!technique) return [];
+    if (technique.bySchedule) return Object.keys(PRACTITIONERS);
+    return Array.isArray(technique.practitioners) ? technique.practitioners.slice() : [];
+  }
+
+  function practitionersAvailableOnDate(techniqueId, dateInput, customOverrides) {
+    return techniquePractitionerCandidates(techniqueId).filter(function (pid) {
       if (isPractitionerOnLeave(pid, dateInput, customOverrides)) return false;
       return getWorkingWindows(pid, dateInput, customOverrides).length > 0;
     });
+  }
+
+  function isTechniqueOfferedOnDate(techniqueId, dateInput, customOverrides) {
+    return practitionersAvailableOnDate(techniqueId, dateInput, customOverrides).length > 0;
+  }
+
+  /** Profesionales de la técnica con al menos un día hábil con ventanas en el horizonte de reserva. */
+  function practitionersBookableForTechnique(techniqueId, customOverrides) {
+    const candidates = techniquePractitionerCandidates(techniqueId);
+    if (candidates.length === 0) return [];
+    const remaining = {};
+    candidates.forEach(function (pid) { remaining[pid] = true; });
+    const found = [];
+    const now = new Date();
+    for (let i = 0; i < MAX_BOOKING_DAYS; i += 1) {
+      const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + i);
+      const still = Object.keys(remaining);
+      if (still.length === 0) break;
+      still.forEach(function (pid) {
+        if (isPractitionerOnLeave(pid, d, customOverrides)) return;
+        if (getWorkingWindows(pid, d, customOverrides).length > 0) {
+          found.push(pid);
+          delete remaining[pid];
+        }
+      });
+    }
+    return candidates.filter(function (pid) { return found.indexOf(pid) !== -1; });
   }
 
   function getWorkingWindows(practitionerId, dateInput, customOverrides) {
@@ -264,6 +293,8 @@
     practitionersAt,
     isPractitionerOnLeave,
     isTechniqueOfferedOnDate,
+    practitionersAvailableOnDate,
+    practitionersBookableForTechnique,
     createSlotCalculator,
   };
 });

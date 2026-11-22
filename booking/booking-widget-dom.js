@@ -136,15 +136,19 @@
           : this.t("slotTitle");
       }
 
-      const prefContainer = this.container.querySelector("#kb-step2-pref-container");
-      const prefVal = this.container.querySelector("#kb-step2-pref-val");
-      if (prefContainer && prefVal) {
-        const prefText = this.getPractitionerPreferenceDisplay();
-        if (prefText && stepNumber === 2) {
-          prefVal.textContent = prefText;
-          prefContainer.style.display = "block";
-        } else {
-          prefContainer.style.display = "none";
+      if (typeof this.syncStep2PreferencePill === "function") {
+        this.syncStep2PreferencePill();
+      } else {
+        const prefContainer = this.container.querySelector("#kb-step2-pref-container");
+        const prefVal = this.container.querySelector("#kb-step2-pref-val");
+        if (prefContainer && prefVal) {
+          const prefText = this.getPractitionerPreferenceDisplay();
+          if (prefText && stepNumber === 2) {
+            prefVal.textContent = prefText;
+            prefContainer.style.display = "block";
+          } else {
+            prefContainer.style.display = "none";
+          }
         }
       }
 

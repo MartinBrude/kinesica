@@ -169,6 +169,11 @@ assert.equal(engine.isTechniqueOfferedOnDate("acupuntura", "2026-12-01"), false,
 assert.equal(engine.isTechniqueOfferedOnDate("posturologia", "2026-12-01"), false, "Posturología no se ofrece con María de baja");
 assert.equal(engine.isTechniqueOfferedOnDate("osteopatia", "2026-12-01"), true, "Osteopatía sigue (Norberto)");
 assert.equal(engine.isTechniqueOfferedOnDate("rpg", "2026-12-01"), true, "RPG sigue (Norberto la ofrece)");
+assert.deepEqual(
+  engine.practitionersAvailableOnDate("rpg", "2026-12-01").slice().sort(),
+  ["norberto"],
+  "RPG con María de baja: solo Norberto disponible ese día"
+);
 assert.equal(engine.getWorkingWindows("maria", "2026-12-01").length, 0, "María sin ventanas al estar de baja");
 const norbertoLeaveSlots = engine.calculateAvailableSlots({ date: "2026-12-01", practitionerId: "norberto" });
 assert.ok(norbertoLeaveSlots.some((s) => s.time === "14:00"), "Norberto recibe la franja cedida 14:00");

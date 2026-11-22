@@ -161,11 +161,17 @@
 
         grid.style.display = "grid";
         grid.innerHTML = "";
+        const availableToday = engine && typeof engine.practitionersAvailableOnDate === "function"
+          ? engine.practitionersAvailableOnDate(this.state.techniqueId, dateIso)
+          : [];
+        const showGenderOnSlots = availableToday.length > 1;
         slots.forEach((slot) => {
           const chip = document.createElement("div");
           chip.className = "kb-slot-chip";
           const onDuty = !this.state.practitionerId ? this.practitionersForSlot(dateIso, slot.time) : [];
-          const dutyLabel = onDuty.length === 1 ? ` · ${this.practitionerGenderLabel(onDuty[0])}` : "";
+          const dutyLabel = showGenderOnSlots && onDuty.length === 1
+            ? ` · ${this.practitionerGenderLabel(onDuty[0])}`
+            : "";
           const hs = this.t("hs");
           chip.textContent = `${slot.time}${hs ? " " + hs : ""}${dutyLabel}`;
           chip.dataset.time = slot.time;

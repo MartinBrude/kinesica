@@ -132,6 +132,8 @@
     getWorkingWindows: slotsMod.getWorkingWindows,
     isPractitionerOnLeave: slotsMod.isPractitionerOnLeave,
     isTechniqueOfferedOnDate: slotsMod.isTechniqueOfferedOnDate,
+    practitionersAvailableOnDate: slotsMod.practitionersAvailableOnDate,
+    practitionersBookableForTechnique: slotsMod.practitionersBookableForTechnique,
     practitionerOffersTechnique: cfg.practitionerOffersTechnique,
     calculateAvailableSlots,
     validateBookingRequest,

@@ -193,6 +193,9 @@
       this.container.querySelectorAll(".kb-date-card").forEach((c) => {
         c.classList.toggle("selected", c.dataset.date === dateIso);
       });
+      if (typeof this.syncStep2PreferencePill === "function") {
+        this.syncStep2PreferencePill();
+      }
       await this.loadSlotsForDate(dateIso);
     };
 

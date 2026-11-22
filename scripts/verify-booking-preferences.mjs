@@ -365,16 +365,9 @@ test("Paso 2: píldora visible y con texto correcto para técnicas multi-profesi
   const widget = Object.create(BookingWidget.prototype);
   widget.container = container;
   widget.copy = BookingWidgetCopy.COPY.es;
-  widget.state = { existingPatient: false, techniqueId: "rpg", practitionerPreference: "any" };
+  widget.state = { existingPatient: false, techniqueId: "rpg", practitionerPreference: "any", step: 2 };
 
-  // Simular lógica de setStep(2)
-  const prefText = widget.getPractitionerPreferenceDisplay();
-  if (prefText) {
-    prefVal.textContent = prefText;
-    prefBox.style.display = "block";
-  } else {
-    prefBox.style.display = "none";
-  }
+  widget.syncStep2PreferencePill();
 
   assert.strictEqual(prefBox.style.display, "block");
   assert.strictEqual(prefVal.textContent, "Indistinto");
@@ -390,18 +383,124 @@ test("Paso 2: píldora oculta para técnicas mono-profesional (Osteopatía)", ()
   const widget = Object.create(BookingWidget.prototype);
   widget.container = container;
   widget.copy = BookingWidgetCopy.COPY.es;
-  widget.state = { existingPatient: false, techniqueId: "osteopatia", practitionerPreference: null, practitionerId: "norberto" };
+  widget.state = { existingPatient: false, techniqueId: "osteopatia", practitionerPreference: null, practitionerId: "norberto", step: 2 };
 
-  const prefText = widget.getPractitionerPreferenceDisplay();
-  if (prefText) {
-    prefVal.textContent = prefText;
-    prefBox.style.display = "block";
-  } else {
-    prefBox.style.display = "none";
-  }
+  widget.syncStep2PreferencePill();
 
   assert.strictEqual(prefBox.style.display, "none");
-  assert.strictEqual(prefText, null);
+  assert.strictEqual(widget.getPractitionerPreferenceDisplay(), null);
+});
+
+test("practitionersAvailableOnDate: con María de baja solo queda Norberto en RPG", () => {
+  engine.setScheduleOverrides([{
+    id: "cov_pref_maria_leave",
+    action: "transfer",
+    from_practitioner: "maria",
+    to_practitioner: "norberto",
+    period_type: "date_range",
+    start_date: "2026-12-01",
+    end_date: "2026-12-14",
+    time_scope: "all_day",
+    practitioner_on_leave: true,
+    active: true,
+  }]);
+  try {
+    assert.deepEqual(
+      engine.practitionersAvailableOnDate("rpg", "2026-12-01").slice().sort(),
+      ["norberto"]
+    );
+    assert.ok(engine.practitionersAvailableOnDate("rpg", "2026-12-15").includes("maria"));
+  } finally {
+    engine.resetScheduleOverrides();
+  }
+});
+
+test("Paso 2: píldora oculta el día en que María está de baja (solo un profesional)", () => {
+  const container = createMockElement("container");
+  const prefBox = createMockElement("kb-step2-pref-container");
+  const prefVal = createMockElement("kb-step2-pref-val");
+  container.appendChild(prefBox);
+  container.appendChild(prefVal);
+
+  engine.setScheduleOverrides([{
+    id: "cov_pref_maria_leave_day",
+    action: "transfer",
+    from_practitioner: "maria",
+    to_practitioner: "norberto",
+    period_type: "date_range",
+    start_date: "2026-12-01",
+    end_date: "2026-12-14",
+    time_scope: "all_day",
+    practitioner_on_leave: true,
+    active: true,
+  }]);
+
+  const widget = Object.create(BookingWidget.prototype);
+  widget.container = container;
+  widget.copy = BookingWidgetCopy.COPY.es;
+  widget.state = {
+    existingPatient: false,
+    techniqueId: "rpg",
+    practitionerPreference: "any",
+    selectedDate: "2026-12-01",
+    step: 2,
+  };
+
+  try {
+    assert.strictEqual(widget.hasGenderPreferenceChoice("2026-12-01"), false);
+    assert.strictEqual(widget.getPractitionerPreferenceDisplay(), null);
+    widget.syncStep2PreferencePill();
+    assert.strictEqual(prefBox.style.display, "none");
+  } finally {
+    engine.resetScheduleOverrides();
+  }
+});
+
+test("selectTechnique: si María no tiene ningún día bookable, oculta hombre/mujer", () => {
+  const today = new Date();
+  const start = engine.formatDateIso(today);
+  const endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 70);
+  const end = engine.formatDateIso(endDate);
+
+  engine.setScheduleOverrides([{
+    id: "cov_pref_maria_leave_horizon",
+    action: "transfer",
+    from_practitioner: "maria",
+    to_practitioner: "norberto",
+    period_type: "date_range",
+    start_date: start,
+    end_date: end,
+    time_scope: "all_day",
+    practitioner_on_leave: true,
+    active: true,
+  }]);
+
+  const container = createMockElement("container");
+  const techGrid = createMockElement("kb-technique-grid");
+  const techMoreGrid = createMockElement("kb-technique-more-grid");
+  const pracBox = createMockElement("kb-practitioner-box");
+  const pracGrid = createMockElement("kb-practitioner-grid");
+  const btnNext1 = createMockElement("kb-btn-next-1");
+  container.appendChild(techGrid);
+  container.appendChild(techMoreGrid);
+  container.appendChild(pracBox);
+  container.appendChild(pracGrid);
+  container.appendChild(btnNext1);
+
+  const widget = Object.create(BookingWidget.prototype);
+  widget.container = container;
+  widget.copy = BookingWidgetCopy.COPY.es;
+  widget.state = { existingPatient: false, techniqueId: null, practitionerPreference: null, practitionerId: null };
+
+  try {
+    assert.deepEqual(engine.practitionersBookableForTechnique("rpg"), ["norberto"]);
+    widget.selectTechnique("rpg");
+    assert.strictEqual(pracBox.hidden, true, "Sin elección de género si solo Norberto está bookable");
+    assert.strictEqual(widget.state.practitionerPreference, null);
+    assert.strictEqual(widget.state.practitionerId, "norberto");
+  } finally {
+    engine.resetScheduleOverrides();
+  }
 });
 
 // 5. Tests de generación de páginas Agendar (sin tarjetas de destacados)

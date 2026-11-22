@@ -77,19 +77,30 @@
       moreWrap.appendChild(moreGrid);
     };
 
+    proto.bookablePractitionersForTechnique = function (technique) {
+      if (!technique) return [];
+      if (engine && typeof engine.practitionersBookableForTechnique === "function") {
+        return engine.practitionersBookableForTechnique(technique.id);
+      }
+      return Array.isArray(technique.practitioners) ? technique.practitioners.slice() : [];
+    };
+
     proto.selectTechnique = function (techniqueId) {
       if (!techniqueId || typeof techniqueId !== "string") return;
       const technique = engine && typeof engine.getTechnique === "function" ? engine.getTechnique(techniqueId) : null;
       if (!technique) return;
 
       this.state.techniqueId = techniqueId;
-      const hasMultiple = Boolean(Array.isArray(technique.practitioners) && technique.practitioners.length > 1);
+      const bookable = this.bookablePractitionersForTechnique(technique);
+      const hasMultiple = bookable.length > 1;
       this.state.practitionerPreference = hasMultiple ? "any" : null;
       this.state.practitionerId = technique.bySchedule || hasMultiple
         ? null
-        : technique.practitioners.length === 1
-          ? technique.practitioners[0]
-          : null;
+        : bookable.length === 1
+          ? bookable[0]
+          : (Array.isArray(technique.practitioners) && technique.practitioners.length === 1
+            ? technique.practitioners[0]
+            : null);
       this.container.querySelectorAll("#kb-technique-grid .kb-choice-card, #kb-technique-more-grid .kb-choice-card").forEach((card) => {
         card.classList.toggle("selected", card.dataset.technique === techniqueId);
       });
@@ -102,12 +113,18 @@
       const grid = this.container.querySelector("#kb-practitioner-grid");
       if (!grid) return;
       grid.innerHTML = "";
-      if (!technique || !Array.isArray(technique.practitioners) || technique.practitioners.length < 2) {
+      const bookable = this.bookablePractitionersForTechnique(technique);
+      // Si por cesión/baja solo queda uno, no ofrecer hombre/mujer.
+      if (!technique || bookable.length < 2) {
         if (box) box.hidden = true;
+        if (bookable.length === 1) {
+          this.state.practitionerPreference = null;
+          this.state.practitionerId = bookable[0];
+        }
         return;
       }
       if (box) box.hidden = false;
-      const options = technique.practitioners.map((id) => ({
+      const options = bookable.map((id) => ({
         value: id,
         label: this.practitionerGenderLabel(id),
       }));
@@ -118,6 +135,11 @@
 
       if (!this.state.practitionerPreference) {
         this.state.practitionerPreference = "any";
+      }
+      if (this.state.practitionerPreference !== "any"
+        && bookable.indexOf(this.state.practitionerPreference) === -1) {
+        this.state.practitionerPreference = "any";
+        this.state.practitionerId = null;
       }
 
       options.forEach((opt) => {

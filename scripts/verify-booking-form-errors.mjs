@@ -345,7 +345,7 @@ await (async () => {
   n += 1;
 
   // Caso 3: Aunque la disciplina sea de María, el fallback por falla de agenda va a Norberto
-  // (evitar el loop Clara → web rota).
+  // (evitar el loop Clara → web rota). Usar martes: María atiende; miércoles no ofrece la técnica.
   for (const mariaTech of ["acupuntura", "posturologia"]) {
     const { w: wMaria, els: elsMaria } = makeSlotsWidget({
       hasCachedSlots: () => false,
@@ -355,11 +355,12 @@ await (async () => {
     });
     wMaria.state.techniqueId = mariaTech;
     wMaria.state.practitionerId = "maria";
+    wMaria.state.selectedDate = "2026-10-06";
     let openedMaria = null;
     wMaria.openPractitionerWhatsApp = (id) => {
       openedMaria = id;
     };
-    await wMaria.loadSlotsForDate("2026-10-07", true);
+    await wMaria.loadSlotsForDate("2026-10-06", true);
     assert.equal(elsMaria["kb-slots-error"].style.display, "flex");
     assert.match(elsMaria["kb-slots-error-fallback"].textContent, /Lic\. Norberto Brude/);
     assert.match(elsMaria["kb-btn-fallback-whatsapp"].textContent, /Norberto/i);
