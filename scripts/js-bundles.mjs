@@ -34,11 +34,17 @@ export const SHARED_BUNDLES = {
   "js/ui-home.min.js": [
     "js/faq-accordion.js",
     "js/map-embed-facade.js",
+    "js/methods-scroller-layout.js",
     "js/methods-scroller.js",
   ],
   "js/reviews.min.js": [
     "partials/google-reviews-data.js",
+    "js/google-reviews-data-helpers.js",
     "js/google-reviews.js",
+  ],
+  "js/mi-turno.min.js": [
+    "js/mi-turno-dialog.js",
+    "js/mi-turno.js",
   ],
   "booking/booking-bundle.min.js": [
     "booking/booking-calendar-sync.js",

@@ -37,18 +37,27 @@
       }
       moreWrap.innerHTML = "";
 
-      if (more.length === 0) return;
+      if (!more.length) {
+        moreWrap.hidden = true;
+        return;
+      }
+      moreWrap.hidden = false;
+
+      const selectedInMore = more.some((t) => t.id === this.state.techniqueId);
+      if (selectedInMore) this.state.showMoreTechniques = true;
 
       const toggle = document.createElement("button");
       toggle.type = "button";
-      toggle.className = "kb-btn-link kb-more-toggle";
+      toggle.className = "kb-tech-more-toggle";
+      toggle.id = "kb-btn-tech-more";
+      toggle.setAttribute("aria-expanded", this.state.showMoreTechniques ? "true" : "false");
       toggle.textContent = this.state.showMoreTechniques
         ? this.t("showFewerTechniques")
         : this.t("showMoreTechniques");
 
       const moreGrid = document.createElement("div");
       moreGrid.id = "kb-technique-more-grid";
-      moreGrid.className = "kb-choice-grid kb-choice-grid--secondary";
+      moreGrid.className = "kb-choice-grid kb-technique-more-grid";
       moreGrid.hidden = !this.state.showMoreTechniques;
 
       more.forEach((technique) => {

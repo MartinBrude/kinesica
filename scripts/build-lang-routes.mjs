@@ -26,8 +26,6 @@ const langsJson = JSON.stringify(
     urlPrefix: l.urlPrefix,
     isDefault: l.isDefault,
   })),
-  null,
-  2,
 );
 
 const subdirsJson = JSON.stringify(SUBDIR_LANGS);

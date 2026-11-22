@@ -10,7 +10,6 @@ function initWhatsAppMobileScroll() {
   if (!isHome) return;
 
   whatsappBtn.classList.add("whatsapp-float--hero-hide");
-
   if (mobileScrollBound) return;
   mobileScrollBound = true;
 
@@ -35,11 +34,8 @@ function initWhatsAppMobileScroll() {
   }
 
   window.addEventListener("scroll", updateScrollState, { passive: true });
-  if (mobile.addEventListener) {
-    mobile.addEventListener("change", updateScrollState);
-  } else if (mobile.addListener) {
-    mobile.addListener(updateScrollState);
-  }
+  if (mobile.addEventListener) mobile.addEventListener("change", updateScrollState);
+  else if (mobile.addListener) mobile.addListener(updateScrollState);
   updateScrollState();
 }
 
@@ -53,38 +49,59 @@ function applyBookingCtaVisibility(bookingActive) {
 
   document.querySelectorAll(".js-booking-cta").forEach(function (el) {
     el.hidden = !active;
-    if (active) {
-      el.style.removeProperty("display");
-    } else {
-      el.style.display = "none";
-    }
+    if (active) el.style.removeProperty("display");
+    else el.style.display = "none";
   });
 
   document.querySelectorAll(".js-booking-fallback-cta").forEach(function (el) {
     el.hidden = active;
-    if (active) {
-      el.style.display = "none";
-    } else {
-      el.style.removeProperty("display");
-    }
+    if (active) el.style.display = "none";
+    else el.style.removeProperty("display");
   });
 
   var heroBookingBtn = document.getElementById("hero-btn-booking");
   if (heroBookingBtn) {
     heroBookingBtn.hidden = !active;
-    if (active) {
-      heroBookingBtn.style.display = "";
-    } else {
-      heroBookingBtn.style.display = "none";
-    }
+    heroBookingBtn.style.display = active ? "" : "none";
   }
 
-  if (
-    window.KinesicaBookingModal &&
-    typeof window.KinesicaBookingModal.applyBookingAvailability === "function"
-  ) {
+  if (window.KinesicaBookingModal && typeof window.KinesicaBookingModal.applyBookingAvailability === "function") {
     window.KinesicaBookingModal.applyBookingAvailability(active);
   }
+}
+
+function updateHeaderSchedule(opens, closes) {
+  function parseHm(hm) {
+    var parts = String(hm || "00:00").split(":");
+    return { hour: parseInt(parts[0], 10) || 0, minute: parseInt(parts[1], 10) || 0 };
+  }
+  function hour24(hm) {
+    var t = parseHm(hm);
+    return t.minute === 0 ? String(t.hour) : t.hour + ":" + (t.minute < 10 ? "0" : "") + t.minute;
+  }
+  function hourEn12(hm) {
+    var t = parseHm(hm);
+    var suffix = t.hour < 12 || t.hour === 24 ? "a.m." : "p.m.";
+    var h12 = t.hour % 12 || 12;
+    var time = t.minute === 0 ? String(h12) : h12 + ":" + (t.minute < 10 ? "0" : "") + t.minute;
+    return time + " " + suffix;
+  }
+
+  var root = document.getElementById("site-header-root");
+  var lang = ((root && root.getAttribute("data-header-lang")) || document.documentElement.lang || "es").toLowerCase().slice(0, 2);
+  var o24 = hour24(opens);
+  var c24 = hour24(closes);
+  var html = lang === "en"
+    ? "Monday to Friday: <strong>" + hourEn12(opens) + " to " + hourEn12(closes) + "</strong>"
+    : lang === "fr"
+      ? "Lundi au vendredi : <strong>" + o24 + " h \u00E0 " + c24 + " h</strong>"
+      : lang === "pt"
+        ? "Segunda a sexta: <strong>" + o24 + " h \u00E0s " + c24 + " h</strong>"
+        : "Lunes a viernes: <strong>" + o24 + " a " + c24 + " h</strong>";
+
+  document.querySelectorAll(".time-text").forEach(function (el) {
+    el.innerHTML = html;
+  });
 }
 
 function syncPublicSettings() {
@@ -92,89 +109,24 @@ function syncPublicSettings() {
     if (!settings) return;
     var claraActive = Boolean(settings.clara_active);
     var bookingActive = Boolean(settings.booking_active);
+    var cfg = (window.KINESICA_SITE || {}).contact || {};
 
-    var site = window.KINESICA_SITE || {};
-    var cfg = site.contact || {};
+    cfg.activeWhatsappDigits = claraActive ? CLARA_WHATSAPP_DIGITS : cfg.whatsappDigits;
+    cfg.activePhoneDisplay = claraActive ? CLARA_PHONE_DISPLAY : cfg.phoneDisplay;
 
-    if (claraActive) {
-      cfg.activeWhatsappDigits = CLARA_WHATSAPP_DIGITS;
-      cfg.activePhoneDisplay = CLARA_PHONE_DISPLAY;
-    } else {
-      cfg.activeWhatsappDigits = cfg.whatsappDigits;
-      cfg.activePhoneDisplay = cfg.phoneDisplay;
-    }
-
-    if (typeof kinesicaApplyWhatsAppContact === "function") {
-      kinesicaApplyWhatsAppContact();
-    }
-
+    if (typeof kinesicaApplyWhatsAppContact === "function") kinesicaApplyWhatsAppContact();
     applyBookingCtaVisibility(bookingActive);
 
-    if (
-      settings.practitioner_hours &&
-      window.KinesicaBookingEngine &&
-      typeof window.KinesicaBookingEngine.setPractitionerHours === "function"
-    ) {
-      window.KinesicaBookingEngine.setPractitionerHours(settings.practitioner_hours);
+    var eng = window.KinesicaBookingEngine;
+    if (settings.practitioner_hours && eng && typeof eng.setPractitionerHours === "function") {
+      eng.setPractitionerHours(settings.practitioner_hours);
     }
-
-    if (
-      settings.fees &&
-      window.KinesicaBookingEngine &&
-      typeof window.KinesicaBookingEngine.setRuntimeFees === "function"
-    ) {
-      window.KinesicaBookingEngine.setRuntimeFees(settings.fees);
+    if (settings.fees && eng && typeof eng.setRuntimeFees === "function") {
+      eng.setRuntimeFees(settings.fees);
     }
-
     if (settings.header_schedule && settings.header_schedule.opens && settings.header_schedule.closes) {
       updateHeaderSchedule(settings.header_schedule.opens, settings.header_schedule.closes);
     }
-  }
-
-  function updateHeaderSchedule(opens, closes) {
-    function parseHm(hm) {
-      var parts = String(hm || "00:00").split(":");
-      return { hour: parseInt(parts[0], 10) || 0, minute: parseInt(parts[1], 10) || 0 };
-    }
-    function hour24(hm) {
-      var t = parseHm(hm);
-      return t.minute === 0 ? String(t.hour) : t.hour + ":" + (t.minute < 10 ? "0" : "") + t.minute;
-    }
-    function hourEn12(hm) {
-      var t = parseHm(hm);
-      var suffix = t.hour < 12 || t.hour === 24 ? "a.m." : "p.m.";
-      var h12 = t.hour % 12;
-      if (h12 === 0) h12 = 12;
-      var time = t.minute === 0 ? String(h12) : h12 + ":" + (t.minute < 10 ? "0" : "") + t.minute;
-      return time + " " + suffix;
-    }
-
-    var root = document.getElementById("site-header-root");
-    var lang = (root && root.getAttribute("data-header-lang")) || document.documentElement.lang || "es";
-    lang = String(lang).toLowerCase().slice(0, 2);
-
-    var o24 = hour24(opens);
-    var c24 = hour24(closes);
-    var html = "";
-    switch (lang) {
-      case "en":
-        html = "Monday to Friday: <strong>" + hourEn12(opens) + " to " + hourEn12(closes) + "</strong>";
-        break;
-      case "fr":
-        html = "Lundi au vendredi : <strong>" + o24 + " h \u00E0 " + c24 + " h</strong>";
-        break;
-      case "pt":
-        html = "Segunda a sexta: <strong>" + o24 + " h \u00E0s " + c24 + " h</strong>";
-        break;
-      case "es":
-      default:
-        html = "Lunes a viernes: <strong>" + o24 + " a " + c24 + " h</strong>";
-        break;
-    }
-
-    document.querySelectorAll(".time-text").forEach(function (el) {
-      el.innerHTML = html;
-    });
   }
 
   try {
@@ -184,14 +136,10 @@ function syncPublicSettings() {
 
   if (typeof fetch === "function") {
     fetch("/admin/api/settings.php", { cache: "no-cache" })
-      .then(function (res) {
-        return res.ok ? res.json() : null;
-      })
+      .then(function (res) { return res.ok ? res.json() : null; })
       .then(function (data) {
         if (data && typeof data === "object") {
-          try {
-            localStorage.setItem("kinesica_public_settings", JSON.stringify(data));
-          } catch { /* ignore */ }
+          try { localStorage.setItem("kinesica_public_settings", JSON.stringify(data)); } catch { /* ignore */ }
           applySettings(data);
         }
       })
@@ -202,53 +150,35 @@ function syncPublicSettings() {
 function kinesicaApplyWhatsAppContact() {
   initWhatsAppMobileScroll();
 
-  var site = window.KINESICA_SITE || {};
-  var cfg = site.contact || {};
+  var cfg = (window.KINESICA_SITE || {}).contact || {};
   var currentWhatsapp = cfg.activeWhatsappDigits || cfg.whatsappDigits;
   var currentDisplay = cfg.activePhoneDisplay || cfg.phoneDisplay;
   if (!currentWhatsapp || !currentDisplay) return;
 
-  var contactData = {
-    whatsapp: currentWhatsapp,
-    whatsappText: currentDisplay,
-  };
-
-  var whatsappBase = "https://wa.me/";
-
   function setupWhatsAppLinks(selector, phone) {
     var sanitized = String(phone).replace(/\D/g, "");
     document.querySelectorAll(selector).forEach(function (el) {
-      el.href = whatsappBase + sanitized;
+      el.href = "https://wa.me/" + sanitized;
       el.setAttribute("target", "_blank");
       el.setAttribute("rel", "noopener noreferrer");
     });
   }
 
   // Solo enlaces marcados: no reescribir wa.me de mi-turno / profesionales.
-  setupWhatsAppLinks(
-    ".dynamic-whatsapp-link, .dynamic-whatsapp-url, #whatsapp-link",
-    contactData.whatsapp
-  );
+  setupWhatsAppLinks(".dynamic-whatsapp-link, .dynamic-whatsapp-url, #whatsapp-link", currentWhatsapp);
 
   // Booking fallbacks must reach Norberto, never Clara (she sends users back to the site).
-  var norbertoDigits = cfg.whatsappDigits || "5491161564311";
-  setupWhatsAppLinks(".js-norberto-whatsapp, .js-booking-fallback-cta", norbertoDigits);
+  setupWhatsAppLinks(".js-norberto-whatsapp, .js-booking-fallback-cta", cfg.whatsappDigits || "5491161564311");
 
-  function setupLinks(selector, urlBase, phone) {
-    var sanitized = String(phone).replace(/\D/g, "");
-    document.querySelectorAll(selector).forEach(function (el) {
-      el.href = urlBase + sanitized;
-    });
-  }
-
-  setupLinks(".dynamic-telegram-link", "https://t.me/+", contactData.whatsapp);
-
-  document.querySelectorAll(".dynamic-tel-link").forEach(function (el) {
-    el.href = "tel:+" + String(contactData.whatsapp).replace(/\D/g, "");
+  var sanitizedCurrent = String(currentWhatsapp).replace(/\D/g, "");
+  document.querySelectorAll(".dynamic-telegram-link").forEach(function (el) {
+    el.href = "https://t.me/+" + sanitizedCurrent;
   });
-
+  document.querySelectorAll(".dynamic-tel-link").forEach(function (el) {
+    el.href = "tel:+" + sanitizedCurrent;
+  });
   document.querySelectorAll(".dynamic-whatsapp-text, .dynamic-phone-text").forEach(function (el) {
-    el.textContent = contactData.whatsappText;
+    el.textContent = currentDisplay;
   });
 }
 
@@ -264,5 +194,3 @@ if (document.readyState === "loading") {
   kinesicaApplyWhatsAppContact();
   syncPublicSettings();
 }
-
-

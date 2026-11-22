@@ -1,113 +1,18 @@
+/**
+ * Methods infinite scroller controller (layout/drag helpers in methods-scroller-layout.js).
+ */
 (function () {
   "use strict";
 
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var mqLoop = window.matchMedia("(min-width: 768px)");
 
-  function originals(track) {
-    return track.querySelectorAll(".methods-card:not(.is-clone)");
-  }
-
-  function decorateClone(card) {
-    var clone = card.cloneNode(true);
-    clone.classList.add("is-clone");
-    clone.setAttribute("aria-hidden", "true");
-    clone.querySelectorAll("a").forEach(function (link) {
-      link.setAttribute("tabindex", "-1");
-    });
-    clone.querySelectorAll("img").forEach(function (img) {
-      img.removeAttribute("loading");
-      img.loading = "eager";
-      var src = img.getAttribute("src");
-      if (src) {
-        img.src = src;
-      }
-    });
-    clone.querySelectorAll(".ui-reveal").forEach(function (el) {
-      el.classList.add("is-visible");
-    });
-    return clone;
-  }
-
-  function placeCards(track) {
-    var cards = track.querySelectorAll(".methods-card");
-    track.style.setProperty("--methods-cols", String(Math.ceil(cards.length / 2)));
-    cards.forEach(function (card, i) {
-      var idx = i % 8;
-      var set = Math.floor(i / 8);
-      var colInSet;
-      var row;
-      if (idx <= 2) {
-        colInSet = idx + 1;
-        row = 1;
-      } else if (idx <= 5) {
-        colInSet = idx - 2;
-        row = 2;
-      } else if (idx === 6) {
-        colInSet = 4;
-        row = 1;
-      } else {
-        colInSet = 4;
-        row = 2;
-      }
-      card.style.gridColumn = String(set * 4 + colInSet);
-      card.style.gridRow = String(row);
-    });
-  }
-
-  /** Undo carousel grid placement so mobile CSS can stack one column. */
-  function clearLoopLayout(track) {
-    track.querySelectorAll(".methods-card.is-clone").forEach(function (card) {
-      card.remove();
-    });
-    delete track.dataset.loopReady;
-    track.style.removeProperty("--methods-cols");
-    track.style.removeProperty("--methods-col");
-    track.style.transform = "";
-    track.querySelectorAll(".methods-card").forEach(function (card) {
-      card.style.gridColumn = "";
-      card.style.gridRow = "";
-    });
-  }
-
-  function ensureClones(track) {
-    if (track.dataset.loopReady !== "1") {
-      var cards = Array.prototype.slice.call(originals(track));
-      var before = document.createDocumentFragment();
-      var after = document.createDocumentFragment();
-      cards.forEach(function (card) {
-        before.appendChild(decorateClone(card));
-        after.appendChild(decorateClone(card));
-      });
-      track.insertBefore(before, track.firstChild);
-      track.appendChild(after);
-      track.dataset.loopReady = "1";
-    }
-    placeCards(track);
-  }
-
-  function cycleWidth(track) {
-    var step = pageSize(track);
-    return step > 8 ? step * 4 : 0;
-  }
-
-  function pageSize(track) {
-    var col = parseFloat(track.style.getPropertyValue("--methods-col"));
-    var gap = parseFloat(window.getComputedStyle(track).columnGap) || 0;
-    if (!(col > 0)) {
-      var card = track.querySelector(".methods-card");
-      col = card ? card.getBoundingClientRect().width : 0;
-    }
-    return col + gap;
-  }
-
   function initMethodsScroller(root) {
+    var H = window.KinesicaMethodsScrollerHelpers;
     var scroller = root.querySelector(".methods-scroller");
     var track = root.querySelector(".methods-track");
     var btn = root.querySelector(".methods-scroll-btn");
-    if (!scroller || !track || !btn) {
-      return;
-    }
+    if (!H || !scroller || !track || !btn) return;
 
     track.querySelectorAll(".methods-card .service-block").forEach(function (el) {
       el.classList.add("is-visible");
@@ -122,7 +27,7 @@
     var animFrame = 0;
 
     function canLoop() {
-      return mqLoop.matches && originals(track).length > 0;
+      return mqLoop.matches && H.originals(track).length > 0;
     }
 
     function sizeColumns() {
@@ -130,30 +35,20 @@
       var visible = parseFloat(styles.getPropertyValue("--methods-visible")) || 2;
       var gap = parseFloat(styles.getPropertyValue("--methods-gap")) || 32;
       var col = (scroller.clientWidth - (visible - 1) * gap) / visible;
-      if (col > 0) {
-        track.style.setProperty("--methods-col", col + "px");
-      }
+      if (col > 0) track.style.setProperty("--methods-col", col + "px");
     }
 
     function wrapOffset() {
-      var cycle = cycleWidth(track);
-      if (cycle <= 8) {
-        return;
-      }
-      while (offset >= cycle * 2) {
-        offset -= cycle;
-      }
-      while (offset < 0) {
-        offset += cycle;
-      }
+      var cycle = H.cycleWidth(track);
+      if (cycle <= 8) return;
+      while (offset >= cycle * 2) offset -= cycle;
+      while (offset < 0) offset += cycle;
     }
 
     function snapDest(from) {
-      var step = pageSize(track);
-      var cycle = cycleWidth(track);
-      if (step <= 8 || cycle <= 8) {
-        return from;
-      }
+      var step = H.pageSize(track);
+      var cycle = H.cycleWidth(track);
+      if (step <= 8 || cycle <= 8) return from;
       return cycle + Math.round((from - cycle) / step) * step;
     }
 
@@ -164,19 +59,17 @@
 
     function park() {
       sizeColumns();
-      var cycle = cycleWidth(track);
+      var cycle = H.cycleWidth(track);
       offset = cycle > 8 ? cycle : 0;
       paint();
     }
 
     function sync() {
-      var overflow = canLoop() && cycleWidth(track) > 8;
+      var overflow = canLoop() && H.cycleWidth(track) > 8;
       btn.hidden = !overflow;
       scroller.tabIndex = overflow ? 0 : -1;
       var nextLabel = btn.getAttribute("data-label-next");
-      if (nextLabel) {
-        btn.setAttribute("aria-label", nextLabel);
-      }
+      if (nextLabel) btn.setAttribute("aria-label", nextLabel);
       btn.setAttribute("aria-expanded", "false");
     }
 
@@ -200,8 +93,7 @@
       animating = true;
       function frame(now) {
         var t = Math.min(1, (now - t0) / dur);
-        var ease = 1 - Math.pow(1 - t, 3);
-        offset = start + delta * ease;
+        offset = start + delta * (1 - Math.pow(1 - t, 3));
         paint();
         if (t < 1) {
           animFrame = window.requestAnimationFrame(frame);
@@ -215,30 +107,20 @@
     }
 
     function advance(direction) {
-      if (!canLoop() || animating) {
-        return;
-      }
-      var cycle = cycleWidth(track);
-      var page = pageSize(track);
-      if (cycle <= 8 || page <= 8) {
-        return;
-      }
+      if (!canLoop() || animating) return;
+      var cycle = H.cycleWidth(track);
+      var page = H.pageSize(track);
+      if (cycle <= 8 || page <= 8) return;
       wrapOffset();
       offset = snapDest(offset);
       var dest = offset + direction * page;
-      if (direction > 0 && dest > cycle * 2) {
-        dest = cycle * 2;
-      }
-      if (direction < 0 && dest < 0) {
-        dest = 0;
-      }
+      if (direction > 0 && dest > cycle * 2) dest = cycle * 2;
+      if (direction < 0 && dest < 0) dest = 0;
       animateTo(dest);
     }
 
     function settle() {
-      if (!canLoop() || animating) {
-        return;
-      }
+      if (!canLoop() || animating) return;
       wrapOffset();
       var dest = snapDest(offset);
       if (Math.abs(dest - offset) < 1) {
@@ -250,19 +132,11 @@
     }
 
     btn.addEventListener("click", function () {
-      if (btn.hidden) {
-        return;
-      }
-      advance(1);
+      if (!btn.hidden) advance(1);
     });
 
     scroller.addEventListener("keydown", function (event) {
-      if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") {
-        return;
-      }
-      if (btn.hidden) {
-        return;
-      }
+      if ((event.key !== "ArrowRight" && event.key !== "ArrowLeft") || btn.hidden) return;
       event.preventDefault();
       advance(event.key === "ArrowRight" ? 1 : -1);
     });
@@ -271,16 +145,10 @@
     scroller.addEventListener(
       "wheel",
       function (event) {
-        if (!canLoop() || btn.hidden) {
-          return;
-        }
-        if (Math.abs(event.deltaX) <= Math.abs(event.deltaY)) {
-          return;
-        }
+        if (!canLoop() || btn.hidden) return;
+        if (Math.abs(event.deltaX) <= Math.abs(event.deltaY)) return;
         event.preventDefault();
-        if (animating) {
-          return;
-        }
+        if (animating) return;
         offset += event.deltaX;
         paint();
         window.clearTimeout(wheelTimer);
@@ -289,109 +157,30 @@
       { passive: false },
     );
 
-    enableDrag(scroller, function () {
-      return offset;
-    }, function (value) {
-      offset = value;
-      paint();
-    }, canLoop, settle);
+    H.enableDrag(
+      scroller,
+      function () { return offset; },
+      function (value) { offset = value; paint(); },
+      canLoop,
+      settle,
+    );
 
     function applyMode() {
       if (canLoop()) {
-        ensureClones(track);
+        H.ensureClones(track);
         park();
       } else {
         offset = 0;
-        clearLoopLayout(track);
+        H.clearLoopLayout(track);
       }
       sync();
     }
 
     window.addEventListener("resize", applyMode);
-    if (typeof mqLoop.addEventListener === "function") {
-      mqLoop.addEventListener("change", applyMode);
-    } else if (typeof mqLoop.addListener === "function") {
-      mqLoop.addListener(applyMode);
-    }
+    if (typeof mqLoop.addEventListener === "function") mqLoop.addEventListener("change", applyMode);
+    else if (typeof mqLoop.addListener === "function") mqLoop.addListener(applyMode);
 
     applyMode();
-  }
-
-  function enableDrag(scroller, getOffset, setOffset, canLoop, onEnd) {
-    var startX = 0;
-    var startOffset = 0;
-    var pointerId = null;
-    var tracking = false;
-    var dragging = false;
-    var didDrag = false;
-    var threshold = 8;
-
-    scroller.addEventListener("pointerdown", function (event) {
-      if (event.button !== 0) {
-        return;
-      }
-      if (!canLoop()) {
-        return;
-      }
-      tracking = true;
-      dragging = false;
-      didDrag = false;
-      pointerId = event.pointerId;
-      startX = event.clientX;
-      startOffset = getOffset();
-    });
-
-    scroller.addEventListener("pointermove", function (event) {
-      if (!tracking || event.pointerId !== pointerId) {
-        return;
-      }
-      var dx = event.clientX - startX;
-      if (!dragging) {
-        if (Math.abs(dx) < threshold) {
-          return;
-        }
-        dragging = true;
-        didDrag = true;
-        scroller.classList.add("is-dragging");
-        try {
-          scroller.setPointerCapture(event.pointerId);
-        } catch {
-          /* ignore */
-        }
-      }
-      setOffset(startOffset - dx);
-    });
-
-    function stopDrag(event) {
-      if (!tracking || (event && event.pointerId !== pointerId)) {
-        return;
-      }
-      var wasDragging = dragging;
-      tracking = false;
-      dragging = false;
-      pointerId = null;
-      scroller.classList.remove("is-dragging");
-      if (wasDragging && typeof onEnd === "function") {
-        onEnd();
-      }
-    }
-
-    scroller.addEventListener("pointerup", stopDrag);
-    scroller.addEventListener("pointercancel", stopDrag);
-    scroller.addEventListener("lostpointercapture", stopDrag);
-
-    scroller.addEventListener(
-      "click",
-      function (event) {
-        if (!didDrag) {
-          return;
-        }
-        event.preventDefault();
-        event.stopPropagation();
-        didDrag = false;
-      },
-      true,
-    );
   }
 
   function init() {

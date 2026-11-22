@@ -6,36 +6,7 @@
   var DEFAULT_LANG = "es";
   var SUBDIRS = ["en","fr","pt"];
   var LANG_CODES = ["es","en","fr","pt"];
-  var LANGS = [
-  {
-    "code": "es",
-    "nativeName": "Español",
-    "hreflang": "es-AR",
-    "urlPrefix": "",
-    "isDefault": true
-  },
-  {
-    "code": "en",
-    "nativeName": "English",
-    "hreflang": "en",
-    "urlPrefix": "en",
-    "isDefault": false
-  },
-  {
-    "code": "fr",
-    "nativeName": "Français",
-    "hreflang": "fr",
-    "urlPrefix": "fr",
-    "isDefault": false
-  },
-  {
-    "code": "pt",
-    "nativeName": "Português",
-    "hreflang": "pt",
-    "urlPrefix": "pt",
-    "isDefault": false
-  }
-];
+  var LANGS = [{"code":"es","nativeName":"Español","hreflang":"es-AR","urlPrefix":"","isDefault":true},{"code":"en","nativeName":"English","hreflang":"en","urlPrefix":"en","isDefault":false},{"code":"fr","nativeName":"Français","hreflang":"fr","urlPrefix":"fr","isDefault":false},{"code":"pt","nativeName":"Português","hreflang":"pt","urlPrefix":"pt","isDefault":false}];
   var STEMS = ["index","agendar","mi-turno","articulos","atm","acupuntura","cadenas","cv","404","manipulaciones","neurodinamia","osteopatia","kinesiologia","posturologia-clinica","rpg","privacidad","condiciones","encuesta","cefalea","dorsalgia","lumbalgia","ciatalgia","cervicobraquialgia","pubalgia","gonalgia","talalgia","dolor-sacroiliaco","hernia-disco","protrusion-discal","hipercifosis","hiperlordosis","dorso-plano","genu-valgo","genu-varo","pies-planos","escoliosis","epicondilitis-lateral","epicondilitis-medial","impingement-subacromial","manguito-rotador","radiculopatia","meniscopatia","fascitis-plantar","cervicalgia","bruxismo","desplazamiento-disco-atm","artrosis-atm","torticolis","artrosis-artritis","hombro-congelado","contracturas-desgarros","tunel-carpiano","coxalgia","oclusion-dental","rectificacion"];
 
   function langEntry(code) {
