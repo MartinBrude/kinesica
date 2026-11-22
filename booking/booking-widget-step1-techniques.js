@@ -17,17 +17,27 @@
       return engine.isTechniqueBlockedByActiveLeave(techniqueId);
     };
 
+    proto.syncTechniqueLeaveNotice = function () {
+      const notice = this.container.querySelector("#kb-technique-leave-notice");
+      const noticeText = this.container.querySelector("#kb-technique-leave-notice-text");
+      const newBox = this.container.querySelector("#kb-new-box");
+      if (!notice || !noticeText) return;
+      const isAdmin = Boolean(this.options && this.options.adminMode);
+      const text = !isAdmin && this.getMariaReturnNoticeText ? this.getMariaReturnNoticeText() : null;
+      const hasBlocked = Boolean(text) && ((engine && engine.TECHNIQUES) || []).some((t) => {
+        return t && !t.internal && this.isTechniqueBlockedByLeave(t.id);
+      });
+      const show = Boolean(hasBlocked && newBox && !newBox.hidden);
+      notice.hidden = !show;
+      noticeText.textContent = show ? text : "";
+    };
+
     proto.renderTechniqueChoices = function () {
       const grid = this.container.querySelector("#kb-technique-grid");
       if (!grid) return;
       grid.innerHTML = "";
       const isAdmin = Boolean(this.options && this.options.adminMode);
-      const techniques = ((engine && engine.TECHNIQUES) || []).filter((t) => {
-        if (!t || t.internal) return false;
-        // Admin puede seguir viendo exclusivas; en público se ocultan con baja.
-        if (!isAdmin && this.isTechniqueBlockedByLeave(t.id)) return false;
-        return true;
-      });
+      const techniques = ((engine && engine.TECHNIQUES) || []).filter((t) => Boolean(t && !t.internal));
       if (this.state.techniqueId && this.isTechniqueBlockedByLeave(this.state.techniqueId) && !isAdmin) {
         this.state.techniqueId = null;
         this.state.practitionerId = null;
@@ -57,12 +67,14 @@
 
       if (!more.length) {
         moreWrap.hidden = true;
+        this.syncTechniqueLeaveNotice();
         return;
       }
       moreWrap.hidden = false;
 
       const selectedInMore = more.some((t) => t.id === this.state.techniqueId);
-      if (selectedInMore) this.state.showMoreTechniques = true;
+      const hasUnavailableInMore = !isAdmin && more.some((t) => this.isTechniqueBlockedByLeave(t.id));
+      if (selectedInMore || hasUnavailableInMore) this.state.showMoreTechniques = true;
 
       const toggle = document.createElement("button");
       toggle.type = "button";
@@ -93,6 +105,7 @@
 
       moreWrap.appendChild(toggle);
       moreWrap.appendChild(moreGrid);
+      this.syncTechniqueLeaveNotice();
     };
 
     proto.bookablePractitionersForTechnique = function (technique) {

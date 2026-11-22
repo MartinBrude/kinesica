@@ -122,6 +122,14 @@
       return String(tpl).replace("{date}", this.formatIsoDateDisplay(endIso));
     };
 
+    /** Leyenda corta para técnicas exclusivas grises durante la baja. */
+    proto.getMariaReturnNoticeText = function () {
+      const endIso = this.getActiveLeaveEndIso("maria");
+      if (!endIso) return null;
+      const tpl = this.t("mariaReturnNotice") || "";
+      return String(tpl).replace("{date}", this.formatIsoDateDisplay(endIso));
+    };
+
     /** true si hay ≥2 profesionales elegibles (horizonte o día concreto). */
     proto.hasGenderPreferenceChoice = function (dateIso) {
       if (!this.state || this.state.existingPatient === true) return false;
@@ -216,14 +224,25 @@
     };
 
     proto.buildTechniqueCard = function (technique) {
+      const isAdmin = Boolean(this.options && this.options.adminMode);
+      const unavailable = !isAdmin && typeof this.isTechniqueBlockedByLeave === "function"
+        && this.isTechniqueBlockedByLeave(technique.id);
       const card = document.createElement("div");
-      card.className = "kb-choice-card";
-      if (this.state.techniqueId === technique.id) card.classList.add("selected");
+      card.className = "kb-choice-card" + (unavailable ? " kb-choice-card--unavailable" : "");
+      if (!unavailable && this.state.techniqueId === technique.id) card.classList.add("selected");
       card.dataset.technique = technique.id;
-      card.innerHTML = this.options.adminMode
+      if (unavailable) {
+        card.setAttribute("aria-disabled", "true");
+        const note = (this.getMariaReturnNoticeText && this.getMariaReturnNoticeText()) || "";
+        if (note) card.title = note;
+      }
+      card.innerHTML = isAdmin
         ? `<h3>${this.techniqueLabel(technique)}</h3>`
         : `<h3>${this.techniqueLabel(technique)}</h3>${this.feeDisplayHtml(technique.id)}`;
-      card.addEventListener("click", () => this.selectTechnique(technique.id));
+      card.addEventListener("click", () => {
+        if (unavailable) return;
+        this.selectTechnique(technique.id);
+      });
       return card;
     };
 

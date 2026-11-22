@@ -650,7 +650,7 @@ test("con María de baja: exclusivas (acupuntura/posturología) bloqueadas; comp
   }
 });
 
-test("paso 1 público: con baja no renderiza chips exclusivos de María", () => {
+test("paso 1 público: con baja grisa exclusivas y muestra leyenda de reincorporación", () => {
   engine.setScheduleOverrides([{
     id: "cov_pref_exclusive_ui",
     action: "transfer",
@@ -665,10 +665,16 @@ test("paso 1 público: con baja no renderiza chips exclusivos de María", () => 
   }]);
 
   const container = createMockElement("container");
+  const newBox = createMockElement("kb-new-box");
+  newBox.hidden = false;
   const techGrid = createMockElement("kb-technique-grid");
-  const techParent = createMockElement("kb-technique-parent");
-  techParent.appendChild(techGrid);
-  container.appendChild(techParent);
+  const notice = createMockElement("kb-technique-leave-notice");
+  notice.hidden = true;
+  const noticeText = createMockElement("kb-technique-leave-notice-text");
+  notice.appendChild(noticeText);
+  newBox.appendChild(techGrid);
+  newBox.appendChild(notice);
+  container.appendChild(newBox);
 
   const widget = Object.create(BookingWidget.prototype);
   widget.container = container;
@@ -678,30 +684,40 @@ test("paso 1 público: con baja no renderiza chips exclusivos de María", () => 
     existingPatient: false,
     techniqueId: "acupuntura",
     practitionerId: "maria",
-    showMoreTechniques: true,
+    showMoreTechniques: false,
   };
   widget.fees = { general: 75000, atm: 65000 };
   widget.formatFee = (n) => String(n);
   widget.getFeeForTechnique = () => 75000;
   widget.t = (k) => (BookingWidgetCopy.COPY.es && BookingWidgetCopy.COPY.es[k]) || k;
+  widget.feeDisplayHtml = () => "";
+  widget.techniqueLabel = (t) => t.label;
 
   try {
     assert.equal(widget.isTechniqueBlockedByLeave("acupuntura"), true);
+    assert.match(widget.getMariaReturnNoticeText(), /Lic\. María Gulin se reincorpora el 11\/12/);
     widget.renderTechniqueChoices();
-    const ids = [];
-    const walk = (node) => {
+    const walkCards = (node, out) => {
       if (!node) return;
-      if (node.dataset && node.dataset.technique) ids.push(node.dataset.technique);
-      (node.children || []).forEach(walk);
+      if (node.dataset && node.dataset.technique) out.push(node);
+      (node.children || []).forEach((c) => walkCards(c, out));
     };
-    walk(container);
-    assert.ok(!ids.includes("acupuntura"), "Acupuntura no debe ofrecerse en baja");
-    assert.ok(!ids.includes("posturologia"), "Posturología no debe ofrecerse en baja");
-    assert.ok(ids.includes("rpg") || ids.includes("osteopatia") || ids.includes("no-se"));
+    const cards = [];
+    walkCards(container, cards);
+    const acu = cards.find((c) => c.dataset.technique === "acupuntura");
+    const post = cards.find((c) => c.dataset.technique === "posturologia");
+    const rpg = cards.find((c) => c.dataset.technique === "rpg");
+    assert.ok(acu, "Acupuntura sigue visible");
+    assert.ok(post, "Posturología sigue visible");
+    assert.ok(acu.className.includes("kb-choice-card--unavailable"));
+    assert.ok(post.className.includes("kb-choice-card--unavailable"));
+    assert.ok(rpg && !rpg.className.includes("kb-choice-card--unavailable"));
+    assert.equal(notice.hidden, false);
+    assert.match(noticeText.textContent, /reincorpora el 11\/12/);
     assert.equal(widget.state.techniqueId, null, "Selección exclusiva se limpia");
+    assert.equal(widget.state.showMoreTechniques, true, "Abre «más técnicas» para ver grises");
   } finally {
     engine.resetScheduleOverrides();
   }
 });
-
 console.log(`\n🎉 Resultado: ${passed}/${total} tests de preferencias y agendar superados con éxito.\n`);

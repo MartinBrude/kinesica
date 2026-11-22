@@ -47,6 +47,9 @@
               <div class="kb-section-title" style="font-size: 17px;">${widget.t("qTechnique")}</div>
               <p class="kb-section-hint" id="kb-technique-hint" ${widget.options.adminMode ? "hidden" : ""}>${widget.t("techniqueHint")}</p>
               <div class="kb-choice-grid" id="kb-technique-grid"></div>
+              <div id="kb-technique-leave-notice" class="kb-leave-notice kb-leave-notice--compact" hidden role="status">
+                <p class="kb-leave-notice-text" id="kb-technique-leave-notice-text"></p>
+              </div>
               <div id="kb-practitioner-box" class="kb-step1-followup" hidden>
                 <div class="kb-section-title" style="font-size: 17px;">${widget.t("qPrefer")}</div>
                 <div class="kb-choice-grid" id="kb-practitioner-grid"></div>
