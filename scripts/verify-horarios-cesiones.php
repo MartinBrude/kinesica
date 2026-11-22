@@ -293,6 +293,28 @@ assert_equals($closedGeneral, [], 'Cierre total bloquea consultorio general');
 $satWindows = resolve_practitioner_windows_for_date($baseHours, $overridesTransfer, '2026-11-28', 'maria');
 assert_equals($satWindows, [], 'Sábados devuelven 0 ventanas siempre');
 
+// De baja + cesión parcial: María sin ventanas (todo el día), Norberto recibe franja
+$testTue = '2026-12-01'; // Martes
+$overridesLeave = [[
+    'id' => 'ov_leave',
+    'action' => 'transfer',
+    'from_practitioner' => 'maria',
+    'to_practitioner' => 'norberto',
+    'start_date' => $testTue,
+    'end_date' => '2026-12-14',
+    'time_scope' => 'custom_hours',
+    'custom_ranges' => [['start' => '14:00', 'end' => '17:00']],
+    'practitioner_on_leave' => true,
+    'active' => true,
+]];
+$tueMariaLeave = resolve_practitioner_windows_for_date($baseHours, $overridesLeave, $testTue, 'maria');
+$tueNorbertoLeave = resolve_practitioner_windows_for_date($baseHours, $overridesLeave, $testTue, 'norberto');
+assert_equals($tueMariaLeave, [], 'De baja: María sin ventanas aunque la cesión sea parcial');
+assert_true(
+    count($tueNorbertoLeave) > 0 && $tueNorbertoLeave[0]['start'] === '14:00',
+    'De baja: Norberto recibe franja 14:00'
+);
+
 echo "  --- 6. Consulta de turnos en conflicto (SQLite in-memory) ---\n";
 $pdo = new PDO('sqlite::memory:');
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

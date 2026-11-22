@@ -147,34 +147,89 @@ console.log("  ✓ Cesiones de jornada completa validadas en ambas direcciones."
 // 4b. Profesional de baja (multi-día): disciplinas exclusivas no se ofrecen
 // =========================================================================
 console.log("\n4b. Verificando profesional de baja y disciplinas exclusivas...");
-engine.setScheduleOverrides([
-  {
-    id: "cov_maria_leave",
-    action: "transfer",
-    from_practitioner: "maria",
-    to_practitioner: "norberto",
-    period_type: "date_range",
-    start_date: "2026-12-01",
-    end_date: "2026-12-14",
-    time_scope: "custom_hours",
-    custom_range: { start: "14:00", end: "17:00" },
-    custom_ranges: [{ start: "14:00", end: "17:00" }],
-    practitioner_on_leave: true,
-    active: true,
-  },
-]);
+const mariaLeavePartial = {
+  id: "cov_maria_leave",
+  action: "transfer",
+  from_practitioner: "maria",
+  to_practitioner: "norberto",
+  period_type: "date_range",
+  start_date: "2026-12-01",
+  end_date: "2026-12-14",
+  time_scope: "custom_hours",
+  custom_range: { start: "14:00", end: "17:00" },
+  custom_ranges: [{ start: "14:00", end: "17:00" }],
+  practitioner_on_leave: true,
+  active: true,
+};
+engine.setScheduleOverrides([mariaLeavePartial]);
 // 2026-12-01 es martes (María suele atender mañana)
 assert.equal(engine.isPractitionerOnLeave("maria", "2026-12-01"), true, "María de baja el 1/12");
 assert.equal(engine.isPractitionerOnLeave("norberto", "2026-12-01"), false, "Norberto no está de baja");
 assert.equal(engine.isTechniqueOfferedOnDate("acupuntura", "2026-12-01"), false, "Acupuntura no se ofrece con María de baja");
 assert.equal(engine.isTechniqueOfferedOnDate("posturologia", "2026-12-01"), false, "Posturología no se ofrece con María de baja");
 assert.equal(engine.isTechniqueOfferedOnDate("osteopatia", "2026-12-01"), true, "Osteopatía sigue (Norberto)");
+assert.equal(engine.isTechniqueOfferedOnDate("rpg", "2026-12-01"), true, "RPG sigue (Norberto la ofrece)");
 assert.equal(engine.getWorkingWindows("maria", "2026-12-01").length, 0, "María sin ventanas al estar de baja");
 const norbertoLeaveSlots = engine.calculateAvailableSlots({ date: "2026-12-01", practitionerId: "norberto" });
 assert.ok(norbertoLeaveSlots.some((s) => s.time === "14:00"), "Norberto recibe la franja cedida 14:00");
+assert.equal(engine.calculateAvailableSlots({ date: "2026-12-01", practitionerId: "maria" }).length, 0, "María 0 slots de baja");
 assert.equal(engine.isTechniqueOfferedOnDate("acupuntura", "2026-12-15"), true, "Acupuntura vuelve fuera del rango");
+
+// Sin flag de baja, cesión parcial deja la mañana de María (Acupuntura sí)
+engine.setScheduleOverrides([{ ...mariaLeavePartial, practitioner_on_leave: false, id: "cov_partial_no_leave" }]);
+assert.equal(engine.isPractitionerOnLeave("maria", "2026-12-01"), false, "Sin flag no está de baja");
+assert.ok(engine.getWorkingWindows("maria", "2026-12-01").length > 0, "Sin de baja María conserva mañana");
+assert.equal(engine.isTechniqueOfferedOnDate("acupuntura", "2026-12-01"), true, "Sin de baja Acupuntura sigue en mañana");
+
+// Jornada completa + de baja: mismas exclusivas bloqueadas
+engine.setScheduleOverrides([{
+  id: "cov_maria_leave_full",
+  action: "transfer",
+  from_practitioner: "maria",
+  to_practitioner: "norberto",
+  period_type: "date_range",
+  start_date: "2026-12-01",
+  end_date: "2026-12-14",
+  time_scope: "all_day",
+  practitioner_on_leave: true,
+  active: true,
+}]);
+assert.equal(engine.isTechniqueOfferedOnDate("acupuntura", "2026-12-01"), false, "Jornada completa + baja: sin Acupuntura");
+assert.equal(engine.isTechniqueOfferedOnDate("viscerales", "2026-12-01"), true, "Viscerales de Norberto siguen");
+
+// validateBookingRequest rechaza Acupuntura con María de baja
+const rejectAcu = engine.validateBookingRequest({
+  nombre: "Paciente Prueba",
+  telefono: "1144445555",
+  email: "test@example.com",
+  date: "2026-12-01",
+  time: "14:00",
+  techniqueId: "acupuntura",
+  practitionerId: "maria",
+  appointmentType: "session",
+  now: new Date(2026, 10, 20, 10, 0),
+});
+assert.equal(rejectAcu.isValid, false, "Reserva Acupuntura con María de baja debe fallar");
+assert.ok(
+  rejectAcu.errors.some((e) => /baja|disponible/i.test(e)),
+  "Error menciona baja o no disponible"
+);
+
+const okOsteo = engine.validateBookingRequest({
+  nombre: "Paciente Prueba",
+  telefono: "1144445555",
+  email: "test@example.com",
+  date: "2026-12-01",
+  time: "14:00",
+  techniqueId: "osteopatia",
+  practitionerId: "norberto",
+  appointmentType: "session",
+  now: new Date(2026, 10, 20, 10, 0),
+});
+assert.equal(okOsteo.isValid, true, "Osteopatía con Norberto en día de baja de María debe pasar");
+
 engine.resetScheduleOverrides();
-console.log("  ✓ De baja oculta disciplinas exclusivas y libera franjas al receptor.");
+console.log("  ✓ De baja: exclusivas bloqueadas, parcial vs flag, validación de reserva.");
 
 // =========================================================================
 // 5. Regla Física Estricta de 1 Sola Camilla (Sin Solapamientos)
@@ -504,6 +559,32 @@ assert.equal(gasWinMaria[0].end, "16:30");
 
 const gasWinNorberto = gasCtx.getGasWorkingWindows("norberto", 3, null, { date: "2026-11-25", overrides: transferWed });
 assert.equal(gasWinNorberto.length, 0, "GAS devuelve 0 ventanas para Norberto en día cedido");
+
+// Paridad GAS: María de baja + franja parcial → 0 ventanas María, Norberto recibe desde 14:00
+const leaveTue = [{
+  id: "cov_gas_leave",
+  action: "transfer",
+  from_practitioner: "maria",
+  to_practitioner: "norberto",
+  start_date: "2026-12-01",
+  end_date: "2026-12-14",
+  time_scope: "custom_hours",
+  custom_ranges: [{ start: "14:00", end: "17:00" }],
+  practitioner_on_leave: true,
+  active: true,
+}];
+engine.setScheduleOverrides(leaveTue);
+const engMariaLeave = engine.getWorkingWindows("maria", "2026-12-01");
+const engNorbLeave = engine.getWorkingWindows("norberto", "2026-12-01");
+const gasMariaLeave = gasCtx.getGasWorkingWindows("maria", 2, null, { date: "2026-12-01", overrides: leaveTue });
+const gasNorbLeave = gasCtx.getGasWorkingWindows("norberto", 2, null, { date: "2026-12-01", overrides: leaveTue });
+assert.equal(gasMariaLeave.length, 0, "GAS: María de baja sin ventanas");
+assert.equal(engMariaLeave.length, 0, "Engine: María de baja sin ventanas");
+assert.equal(gasMariaLeave.length, engMariaLeave.length, "Paridad: ambas 0 ventanas María");
+assert.ok(gasNorbLeave.some((w) => String(w.start) <= "14:00"), "GAS: Norberto cubre desde ≤14:00");
+assert.ok(engNorbLeave.some((w) => w.startMin <= 14 * 60), "Engine: Norberto cubre desde ≤14:00");
+assert.equal(gasNorbLeave.length > 0, engNorbLeave.length > 0, "Paridad: Norberto con ventanas en ambos");
+engine.resetScheduleOverrides();
 
 console.log("  ✓ Paridad matemática exacta entre Apps Script y Engine confirmada.");
 
