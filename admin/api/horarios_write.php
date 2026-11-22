@@ -150,6 +150,11 @@ function load_full_runtime_settings(string $file): array
         }
     }
 
+    $scheduleOverrides = [];
+    if (isset($data['schedule_overrides']) && is_array($data['schedule_overrides'])) {
+        $scheduleOverrides = array_values($data['schedule_overrides']);
+    }
+
     return [
         'clara_active' => isset($data['clara_active']) ? (bool) $data['clara_active'] : true,
         'booking_active' => isset($data['booking_active']) ? (bool) $data['booking_active'] : true,
@@ -163,6 +168,7 @@ function load_full_runtime_settings(string $file): array
         'horarios_updated_at' => $data['horarios_updated_at'] ?? null,
         'horarios_updated_by' => $data['horarios_updated_by'] ?? null,
         'clara_texts_revision' => (int) ($data['clara_texts_revision'] ?? 0),
+        'schedule_overrides' => $scheduleOverrides,
     ];
 }
 
