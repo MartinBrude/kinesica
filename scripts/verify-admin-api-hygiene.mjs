@@ -101,7 +101,7 @@ assert.match(aliveHelpers, /\?int \$exceptId/);
 const upsert = read("admin/api/pacientes_ops_upsert.php");
 assert.match(upsert, /kinesica_pacientes_release_soft_deleted_phone/);
 
-const sendConf = read("api/send-confirmation.php");
+const sendConf = read("api/send-confirmation.php") + "\n" + read("api/send-confirmation-patient.php");
 assert.match(sendConf, /kinesica_pacientes_release_soft_deleted_phone/);
 assert.ok(!sendConf.includes("$normalizePhone("), "send-confirmation no llama $normalizePhone indefinido");
 

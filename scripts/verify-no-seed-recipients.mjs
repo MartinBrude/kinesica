@@ -17,7 +17,9 @@ const pac = readdirSync("admin/api")
 assert.ok(!/seed_pacientes\.sql/.test(pac), "pacientes.php no debe auto-cargar seed_pacientes.sql");
 const seed = readFileSync("admin/api/seed_pacientes.sql", "utf8");
 assert.ok(!/INSERT\s+INTO/i.test(seed), "seed_pacientes.sql no debe insertar pacientes");
-const conf = readFileSync("api/send-confirmation.php", "utf8");
+const conf = ["api/send-confirmation.php", "api/send-confirmation-patient.php", "api/send-confirmation-transport.php"]
+  .map((f) => readFileSync(f, "utf8"))
+  .join("\n");
 assert.ok(!conf.includes("email = COALESCE(VALUES(email), email)"), "la turnera no debe pisar el mail ya guardado de un paciente");
 assert.match(conf, /email = CASE WHEN email IS NULL OR email = (?:""|\\"\\") THEN VALUES\(email\) ELSE email END/);
 assert.match(conf, /kinesica_confirmation_rate_ok\('email:/, "falta el límite por mail");

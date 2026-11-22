@@ -123,7 +123,7 @@ function render_mail(array $post, ?array $settings): array
     $root = sys_get_temp_dir() . '/kin-mail-' . bin2hex(random_bytes(4));
     @mkdir("$root/api", 0777, true);
     @mkdir("$root/admin/api", 0777, true);
-    foreach (['send-confirmation.php', 'confirmation-mail-lib.php'] as $f) {
+    foreach (['send-confirmation.php', 'send-confirmation-patient.php', 'send-confirmation-transport.php', 'confirmation-mail-lib.php', 'confirmation-mail-templates.php'] as $f) {
         copy(__DIR__ . "/../api/$f", "$root/api/$f");
     }
     if ($settings !== null) {

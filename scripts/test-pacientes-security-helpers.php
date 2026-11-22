@@ -230,7 +230,7 @@ assert_true(
     'update_phone solo confluye con vivos y libera soft-deleted'
 );
 $upsertSrc = file_get_contents($root . '/admin/api/pacientes_ops_upsert.php');
-$sendSrc = file_get_contents($root . '/api/send-confirmation.php');
+$sendSrc = file_get_contents($root . '/api/send-confirmation.php') . "\n" . file_get_contents($root . '/api/send-confirmation-patient.php');
 $recordSrc = file_get_contents($root . '/admin/api/recordatorios_lib_recordatorios_persist_directory_contact.php');
 assert_true(str_contains($upsertSrc, 'kinesica_pacientes_release_soft_deleted_phone'), 'upsert merge libera soft-deleted');
 assert_true(str_contains($sendSrc, 'kinesica_pacientes_release_soft_deleted_phone'), 'send-confirmation libera soft-deleted');

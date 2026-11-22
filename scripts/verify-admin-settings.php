@@ -20,7 +20,7 @@ foreach ([
 ] as $f) {
     copy(__DIR__ . "/../admin/api/$f", "$root/admin/api/$f");
 }
-foreach (['confirmation-mail-lib.php'] as $f) copy(__DIR__ . "/../api/$f", "$root/api/$f");
+foreach (['confirmation-mail-lib.php', 'confirmation-mail-templates.php'] as $f) copy(__DIR__ . "/../api/$f", "$root/api/$f");
 file_put_contents("$root/admin/api/lib.php", '<?php
 function require_header(): void {}
 function require_auth(): array { return ["name" => "Test", "username" => "test"]; }
