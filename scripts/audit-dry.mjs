@@ -81,13 +81,8 @@ const SITE_ALLOW = new Set([
 function auditSiteUrlHardcodes() {
   for (const rel of scriptMjsFiles()) {
     if (SITE_ALLOW.has(rel)) continue;
-    const text = readRel(rel);
-    if (text.includes(SITE)) {
-      add(
-        "error",
-        rel,
-        `Hardcoded ${SITE} — import SITE from scripts/i18n-urls.mjs`,
-      );
+    if (readRel(rel).includes(SITE)) {
+      add("error", rel, `Hardcoded ${SITE} — import SITE from scripts/i18n-urls.mjs`);
     }
   }
 }
@@ -97,36 +92,20 @@ function auditHomeFaqSource() {
   const src = readRel(rel);
   const placeholders = (src.match(/__FAQ_ACCORDION__/g) || []).length;
   if (placeholders !== LANG_CODES.length) {
-    add(
-      "error",
-      rel,
-      `expected ${LANG_CODES.length} __FAQ_ACCORDION__ placeholders, got ${placeholders}`,
-    );
+    add("error", rel, `expected ${LANG_CODES.length} __FAQ_ACCORDION__ placeholders, got ${placeholders}`);
   }
   if (src.includes("faqAccordion")) {
-    add(
-      "error",
-      rel,
-      "FAQ accordion markup must live in faq-content.mjs (use __FAQ_ACCORDION__)",
-    );
+    add("error", rel, "FAQ accordion markup must live in faq-content.mjs (use __FAQ_ACCORDION__)");
   }
   if (!src.includes("renderHomeMethodCards") || !src.includes("sitePath")) {
-    add(
-      "error",
-      rel,
-      "method cards must be rendered via renderHomeMethodCards() + sitePath()",
-    );
+    add("error", rel, "method cards must be rendered via renderHomeMethodCards() + sitePath()");
   }
   if (/href=\\"rpg\.html\\"/.test(src)) {
     add("error", rel, "hardcoded rpg.html — use sitePath(lang, stem) in renderHomeMethodCards()");
   }
   for (const prefix of SUBDIR_PREFIXES) {
     if (src.includes(`href="/${prefix}/`) || src.includes(`href=\\"/${prefix}/`)) {
-      add(
-        "error",
-        rel,
-        `lang-prefixed href "/${prefix}/…" hardcoded — call sitePath(lang, stem)`,
-      );
+      add("error", rel, `lang-prefixed href "/${prefix}/…" hardcoded — call sitePath(lang, stem)`);
     }
   }
 }
@@ -138,11 +117,7 @@ function auditFaqSchemaSource() {
     add("error", rel, "FAQ JSON-LD must import faqsForSchema from faq-content.mjs");
   }
   if (!src.includes("googleReviewsAggregateRating")) {
-    add(
-      "error",
-      rel,
-      "clinic schema must import googleReviewsAggregateRating from fetch-google-reviews.mjs",
-    );
+    add("error", rel, "clinic schema must import googleReviewsAggregateRating from fetch-google-reviews.mjs");
   }
   if (/\bfaqs:\s*\[/.test(src)) {
     add("error", rel, "COPY.faqs duplicates faq-content.mjs — remove and use faqsForSchema()");
@@ -185,11 +160,7 @@ function auditArticulosBuilder() {
 
 function auditNavMethodStems() {
   if (JSON.stringify(TECHNIQUE_NAV_STEMS) !== JSON.stringify(METHOD_STEMS)) {
-    add(
-      "error",
-      "scripts/partials-strings.mjs",
-      "TECHNIQUE_NAV_STEMS must stay aligned with METHOD_STEMS",
-    );
+    add("error", "scripts/partials-strings.mjs", "TECHNIQUE_NAV_STEMS must stay aligned with METHOD_STEMS");
   }
 }
 
@@ -212,27 +183,15 @@ function auditGeneratedHomes() {
       continue;
     }
     const html = fs.readFileSync(full, "utf8");
-    if (!html.includes('id="faqAccordion"')) {
-      add("error", rel, "generated FAQ accordion missing");
-    }
+    if (!html.includes('id="faqAccordion"')) add("error", rel, "generated FAQ accordion missing");
     for (const item of faqsForSchema(lang)) {
       if (!html.includes(item.q)) {
-        add(
-          "error",
-          rel,
-          `FAQ question missing from generated HTML (source: faq-content.mjs): “${item.q}”`,
-        );
+        add("error", rel, `FAQ question missing from generated HTML (source: faq-content.mjs): “${item.q}”`);
       }
     }
     for (const stem of HOME_METHOD_CARD_STEMS) {
       const href = sitePath(lang, stem);
-      if (!html.includes(`href="${href}"`)) {
-        add(
-          "error",
-          rel,
-          `method card missing sitePath href ${href}`,
-        );
-      }
+      if (!html.includes(`href="${href}"`)) add("error", rel, `method card missing sitePath href ${href}`);
     }
     if (googleReviewsAggregateRating() && !html.includes('"AggregateRating"')) {
       add("error", rel, "home schema missing AggregateRating from Google reviews payload");

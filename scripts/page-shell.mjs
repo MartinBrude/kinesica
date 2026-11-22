@@ -3,48 +3,30 @@
  */
 import path from "path";
 import { fileURLToPath } from "url";
-import { SITE, absoluteUrl, HTML_LANG } from "./i18n-urls.mjs";
+import { HTML_LANG } from "./i18n-urls.mjs";
 import { faviconCacheQuery } from "./favicon-version.mjs";
-import { OG_LOCALE, ogLocaleFor, partialLang } from "./languages.mjs";
-import { escHtml, hreflangLinks } from "./html-utils.mjs";
-import {
-  buildClinicOnly,
-  buildHomeGraph,
-  ldJsonScript,
-} from "./schema-local-business.mjs";
+import { OG_LOCALE, partialLang } from "./languages.mjs";
+import { escHtml } from "./html-utils.mjs";
+
+export {
+  OG_IMAGE_WIDTH,
+  OG_IMAGE_HEIGHT,
+  SITE_OG_IMAGE,
+  socialImageUrl,
+  socialImageDimensions,
+  headSeoBlock,
+  headLocalBusinessSchema,
+  headTwitterBlock,
+  dedupePreconnects,
+} from "./page-shell-seo.mjs";
 
 export const ROBOTO_STYLESHEET = "css/roboto.min.css";
-
-/** Open Graph / Twitter share image (1200×630). Generated from hero-img.jpg. */
-export const OG_IMAGE_WIDTH = 1200;
-export const OG_IMAGE_HEIGHT = 630;
-export const SITE_OG_IMAGE = `${SITE}/images/og-image.jpg`;
-
-/** Map legacy hero art to the correct social preview asset. */
-export function socialImageUrl(filename) {
-  const file =
-    !filename || filename === "hero-img.jpg" ? "og-image.jpg" : filename;
-  return `${SITE}/images/${file}`;
-}
-
-export function socialImageDimensions(imageUrl) {
-  if (
-    imageUrl === SITE_OG_IMAGE ||
-    imageUrl.endsWith("/images/og-image.jpg")
-  ) {
-    return { width: OG_IMAGE_WIDTH, height: OG_IMAGE_HEIGHT };
-  }
-  return null;
-}
-
 export const LOCALE = HTML_LANG;
-export { OG_LOCALE };
+export { OG_LOCALE, partialLang };
 
 export function assetPrefixForLang(lang) {
   return lang === "es" ? "" : "../";
 }
-
-export { partialLang };
 
 /** Non-blocking: icons and WhatsApp widget only. */
 export function asyncCssLink(href) {
@@ -59,11 +41,8 @@ export function syncCssLink(href) {
   return `  <link href="${href}" rel="stylesheet" />\n`;
 }
 
-/** Preload regular Roboto (hero/body default weight). */
 export function headRobotoPreload(prefix) {
-  return (
-    `  <link rel="preload" href="${prefix}fonts/roboto/roboto-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />\n`
-  );
+  return `  <link rel="preload" href="${prefix}fonts/roboto/roboto-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />\n`;
 }
 
 export function headRobotoStylesheet(prefix) {
@@ -90,10 +69,7 @@ export function headHeroImagePreload(prefix) {
 }
 
 /** Standard site CSS: blocking layout + async icons/WhatsApp. */
-export function headStandardStylesheets(
-  prefix,
-  { gtm = true, bookingWidget = true } = {},
-) {
+export function headStandardStylesheets(prefix, { gtm = true, bookingWidget = true } = {}) {
   return (
     headRobotoPreload(prefix) +
     (gtm ? headPreconnectGtm() : "") +
@@ -108,16 +84,13 @@ export function headStandardStylesheets(
 }
 
 export function headFavicon(prefix) {
-  const q = faviconCacheQuery(
-    path.resolve(path.dirname(fileURLToPath(import.meta.url)), ".."),
-  );
+  const q = faviconCacheQuery(path.resolve(path.dirname(fileURLToPath(import.meta.url)), ".."));
   return (
     `  <link rel="icon" type="image/svg+xml" href="${prefix}images/favicon.svg${q}" />\n` +
     `  <link rel="apple-touch-icon" href="${prefix}images/apple-touch-icon.png${q}" />\n`
   );
 }
 
-/** Marks JS before body paint so lang-picker CSS does not flash inline links. */
 export function headJsClassScript() {
   return '  <script>document.documentElement.classList.add("js");</script>\n';
 }
@@ -126,12 +99,10 @@ export function headLangDeferScripts(prefix) {
   return `  <script src="${prefix}js/head-lang.min.js" defer></script>\n`;
 }
 
-/** Blocking critical CSS (shared file; no inline duplicate per page). */
 export function headCriticalCss(prefix) {
   return syncCssLink(`${prefix}css/critical.min.css`);
 }
 
-/** Decorative page-header-word caption (métodos, RPG, patologías, artículos index). */
 export function pageCaptionMarkup(label, { variant = "word" } = {}) {
   const longClass = label.length > 11 ? " page-header-word--long" : "";
   if (variant === "title") {
@@ -156,17 +127,9 @@ ${captionMarkup}
     </section>`;
 }
 
-export function pageBreadcrumbSection({
-  homeHref,
-  homeLabel,
-  parentHref,
-  parentLabel,
-  activeLabel,
-}) {
+export function pageBreadcrumbSection({ homeHref, homeLabel, parentHref, parentLabel, activeLabel }) {
   const parentItem =
-    parentHref && parentLabel
-      ? `\n            <li><a href="${parentHref}">${parentLabel}</a></li>`
-      : "";
+    parentHref && parentLabel ? `\n            <li><a href="${parentHref}">${parentLabel}</a></li>` : "";
 
   return `    <section class="page-breadcrumb">
       <div class="container">
@@ -178,90 +141,6 @@ export function pageBreadcrumbSection({
         </div>
       </div>
     </section>`;
-}
-
-/** Title, description, canonical, hreflang and Open Graph tags for page builders. */
-export function headSeoBlock({
-  lang,
-  stem,
-  title,
-  description,
-  ogDescription,
-  twitterDescription,
-  type = "website",
-  image,
-  imageAlt,
-  imageWidth,
-  imageHeight,
-  canonical,
-}) {
-  const url = canonical ?? absoluteUrl(lang, stem);
-  const locale = OG_LOCALE[lang] ?? ogLocaleFor(lang);
-  const ogDesc = ogDescription ?? description;
-  const twDesc = twitterDescription ?? ogDesc;
-  const twAlt = imageAlt ?? title;
-  const lines = [
-    `  <meta name="description" content="${escHtml(description)}" />`,
-    `  <title>${escHtml(title)}</title>`,
-    `  <link rel="canonical" href="${url}" />`,
-    hreflangLinks(stem),
-    `  <link rel="alternate" type="text/plain" title="llms.txt" href="${SITE}/llms.txt" />`,
-    `  <meta property="og:title" content="${escHtml(title)}" />`,
-    `  <meta property="og:description" content="${escHtml(ogDesc)}" />`,
-  ];
-  if (image) {
-    lines.push(`  <meta property="og:image" content="${image}" />`);
-    if (twAlt) {
-      lines.push(`  <meta property="og:image:alt" content="${escHtml(twAlt)}" />`);
-    }
-    const dims =
-      imageWidth && imageHeight
-        ? { width: imageWidth, height: imageHeight }
-        : socialImageDimensions(image);
-    if (dims) {
-      lines.push(
-        `  <meta property="og:image:width" content="${dims.width}" />`,
-        `  <meta property="og:image:height" content="${dims.height}" />`,
-      );
-    }
-  }
-  lines.push(
-    `  <meta property="og:url" content="${url}" />`,
-    `  <meta property="og:type" content="${type}" />`,
-    `  <meta property="og:site_name" content="Kinésica" />`,
-    `  <meta property="og:locale" content="${locale}" />`,
-    headTwitterBlock({
-      title,
-      description: twDesc,
-      image,
-      imageAlt: twAlt,
-    }),
-  );
-  return lines.join("\n");
-}
-
-/** JSON-LD LocalBusiness (contacto vía site-contact.mjs) — SEO local / Local Pack. */
-export function headLocalBusinessSchema(lang, { home = false } = {}) {
-  const schema = home ? buildHomeGraph(lang) : buildClinicOnly(lang);
-  return ldJsonScript(schema);
-}
-
-/** Twitter Card tags (home and shareable pages). */
-export function headTwitterBlock({ title, description, image, imageAlt }) {
-  const lines = [
-    `  <meta name="twitter:card" content="summary_large_image" />`,
-    `  <meta name="twitter:title" content="${escHtml(title)}" />`,
-    `  <meta name="twitter:description" content="${escHtml(description)}" />`,
-  ];
-  if (image) {
-    lines.push(`  <meta name="twitter:image" content="${image}" />`);
-  }
-  if (imageAlt) {
-    lines.push(
-      `  <meta name="twitter:image:alt" content="${escHtml(imageAlt)}" />`,
-    );
-  }
-  return lines.join("\n");
 }
 
 export function bodyShellTop(prefix) {
@@ -294,30 +173,7 @@ export function bodyFooterAndUiScripts(
     `  <script src="${prefix}js/shell-whatsapp-${l}.min.js" defer></script>`,
     `  <script src="${prefix}js/ui-core.min.js" defer></script>`,
   ];
-  if (bookingBundle) {
-    lines.push(
-      `  <script src="${prefix}booking/booking-bundle.min.js" defer></script>`,
-    );
-  }
-  if (faqAccordion || mapEmbedFacade) {
-    lines.push(`  <script src="${prefix}js/ui-home.min.js" defer></script>`);
-  }
+  if (bookingBundle) lines.push(`  <script src="${prefix}booking/booking-bundle.min.js" defer></script>`);
+  if (faqAccordion || mapEmbedFacade) lines.push(`  <script src="${prefix}js/ui-home.min.js" defer></script>`);
   return lines.join("\n");
-}
-
-/** Collapse repeated preconnect hints (e.g. fonts.gstatic.com × 5). */
-export function dedupePreconnects(html) {
-  const seen = new Set();
-  return html.replace(
-    /^[ \t]*<link rel="preconnect" href="([^"]+)"([^>]*)\/>\s*\n/gm,
-    (match, href, rest) => {
-      const cross = /crossorigin/i.test(rest);
-      const key = `${href}|${cross}`;
-      if (seen.has(key)) {
-        return "";
-      }
-      seen.add(key);
-      return match;
-    },
-  );
 }
