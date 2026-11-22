@@ -1,12 +1,21 @@
 /** AUTO-GENERATED — no editar. Fuente: npm run reviews:fetch */
 window.KINESICA_GOOGLE_REVIEWS = {
   "placeId": "ChIJZ2mPW9K1vJUR3J5kGRi5gws",
-  "fetchedAt": "2026-11-22T01:03:42.877Z",
+  "fetchedAt": "2026-11-22T19:09:27.716Z",
   "displayName": "Kinesica",
   "googleMapsUri": "https://maps.google.com/?cid=829710269522681564&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA",
   "rating": 5,
   "userRatingCount": 38,
   "reviews": [
+    {
+      "author": "Anita Engel",
+      "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjW_bw6AdlTOCwdRqF9NK14uGrd_zF7ulvqHFA14KYT3FgY-6Z6W=s128-c0x00000000-cc-rp-mo",
+      "authorProfile": "https://www.google.com/maps/contrib/109689142682966713827/reviews",
+      "rating": 5,
+      "publishTime": "2026-11-20T18:20:14.000Z",
+      "text": "Llegué a consulta sin conocerlos, después de años de dar vueltas entre varios profesionales por lesiones y dolencias que no encontraban respuestas. Desde la primera sesión con Norberto sentí alivio. Es un profesional dedicado que se tomó el tiempo de escucharme y analizar mi cuerpo como nadie. Cálido en sus explicaciones y con un conocimiento enorme. Trabaja en equipo con el paciente y se nota ama lo que hace.",
+      "language": "es"
+    },
     {
       "author": "Mario Schonfeld",
       "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJvo1RJ2skq3nr_pJRwvQZNdUrw77voXh3yGLaVweufqb-vbg=s128-c0x00000000-cc-rp-mo",
@@ -45,19 +54,19 @@ window.KINESICA_GOOGLE_REVIEWS = {
       "publishTime": "2026-07-29T22:10:00.000Z",
       "text": "Hace años que concurro, la atención de Norberto es excelente. Sabe escuchar para poder determinar sobre que puntos focalizar el trabajo y conoce diversas técnicas que utiliza según la necesidad del paciente. Siempre salí de la consulta sintiéndome mejor que al inicio. Lo recomiendo muchísimo!!!!!",
       "language": "es"
-    },
-    {
-      "author": "Gabriel Rotman",
-      "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjU1sZgbUvf5_hu4GC95IP3lszyj_ugBsPntmjHporpoV7pMUC2sNg=s128-c0x00000000-cc-rp-mo-ba12",
-      "authorProfile": "https://www.google.com/maps/contrib/111063243092495440410/reviews",
-      "rating": 5,
-      "publishTime": "2026-07-24T02:05:02.000Z",
-      "text": "Increíblemente sorprendido para bien, llevo 3 años con un dolor por epicondilitis, en apenas 2 sesiones con el kinesiologo Norberto Brude no tengo dolor, pude volver a entrenar, me despertaba con la mano dormida, no me volvió a suceder! Sinceramente un profesional fuera de serie, y sobre todo supo llevar calma cuando más lo necesitaba.",
-      "language": "es"
     }
   ],
   "byLang": {
     "es": [
+      {
+        "author": "Anita Engel",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjW_bw6AdlTOCwdRqF9NK14uGrd_zF7ulvqHFA14KYT3FgY-6Z6W=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/109689142682966713827/reviews",
+        "rating": 5,
+        "publishTime": "2026-11-20T18:20:14.000Z",
+        "text": "Llegué a consulta sin conocerlos, después de años de dar vueltas entre varios profesionales por lesiones y dolencias que no encontraban respuestas. Desde la primera sesión con Norberto sentí alivio. Es un profesional dedicado que se tomó el tiempo de escucharme y analizar mi cuerpo como nadie. Cálido en sus explicaciones y con un conocimiento enorme. Trabaja en equipo con el paciente y se nota ama lo que hace.",
+        "language": "es"
+      },
       {
         "author": "Mario Schonfeld",
         "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocJvo1RJ2skq3nr_pJRwvQZNdUrw77voXh3yGLaVweufqb-vbg=s128-c0x00000000-cc-rp-mo",
@@ -96,18 +105,18 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "publishTime": "2026-07-29T22:10:00.000Z",
         "text": "Hace años que concurro, la atención de Norberto es excelente. Sabe escuchar para poder determinar sobre que puntos focalizar el trabajo y conoce diversas técnicas que utiliza según la necesidad del paciente. Siempre salí de la consulta sintiéndome mejor que al inicio. Lo recomiendo muchísimo!!!!!",
         "language": "es"
-      },
-      {
-        "author": "Gabriel Rotman",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjU1sZgbUvf5_hu4GC95IP3lszyj_ugBsPntmjHporpoV7pMUC2sNg=s128-c0x00000000-cc-rp-mo-ba12",
-        "authorProfile": "https://www.google.com/maps/contrib/111063243092495440410/reviews",
-        "rating": 5,
-        "publishTime": "2026-07-24T02:05:02.000Z",
-        "text": "Increíblemente sorprendido para bien, llevo 3 años con un dolor por epicondilitis, en apenas 2 sesiones con el kinesiologo Norberto Brude no tengo dolor, pude volver a entrenar, me despertaba con la mano dormida, no me volvió a suceder! Sinceramente un profesional fuera de serie, y sobre todo supo llevar calma cuando más lo necesitaba.",
-        "language": "es"
       }
     ],
     "en": [
+      {
+        "author": "Anita Engel",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjW_bw6AdlTOCwdRqF9NK14uGrd_zF7ulvqHFA14KYT3FgY-6Z6W=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/109689142682966713827/reviews",
+        "rating": 5,
+        "publishTime": "2026-11-20T18:20:14.000Z",
+        "text": "I came to the practice without knowing them, after years of going between various professionals for injuries and ailments that had no answers. From the first session with Norberto I felt relief. He is a dedicated professional who took the time to listen to me and analyze my body like no one else. Warm in his explanations and with enormous knowledge. He works as a team with the patient and you can tell he loves what he does.",
+        "language": "en"
+      },
       {
         "author": "Laurence Hamon",
         "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocKl_d7ICqQMOauSKBwMImTq5Wu3WONxcY5h2vpYCMW3nCqRgA=s128-c0x00000000-cc-rp-mo",
@@ -146,18 +155,18 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "publishTime": "2026-07-29T22:10:00.000Z",
         "text": "I've been coming here for years, and Norberto's care is excellent. He knows how to listen so he can decide where to focus the work, and he uses a range of techniques according to the patient's needs. I always left feeling better than when I arrived. I recommend him highly!!!!!",
         "language": "en"
-      },
-      {
-        "author": "Gabriel Rotman",
-        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjU1sZgbUvf5_hu4GC95IP3lszyj_ugBsPntmjHporpoV7pMUC2sNg=s128-c0x00000000-cc-rp-mo-ba12",
-        "authorProfile": "https://www.google.com/maps/contrib/111063243092495440410/reviews",
-        "rating": 5,
-        "publishTime": "2026-07-24T02:05:02.000Z",
-        "text": "Incredibly surprised, in a good way: I had epicondylitis pain for 3 years, and after just 2 sessions with kinesiologist Norberto Brude I have no pain, I was able to go back to training, I used to wake up with a numb hand and it hasn't happened again! Truly an outstanding professional, and above all he brought calm when I needed it most.",
-        "language": "en"
       }
     ],
     "fr": [
+      {
+        "author": "Anita Engel",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjW_bw6AdlTOCwdRqF9NK14uGrd_zF7ulvqHFA14KYT3FgY-6Z6W=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/109689142682966713827/reviews",
+        "rating": 5,
+        "publishTime": "2026-11-20T18:20:14.000Z",
+        "text": "Je suis venue en consultation sans les connaître, après des années d'errance entre plusieurs professionnels pour des blessures et des douleurs sans réponse. Dès la primera séance avec Norberto, j'ai ressenti un soulagement. C'est un professionnel dévoué qui a pris le temps de m'écouter et d'analyser mon corps comme personne. Chaleureux dans ses explications et avec un savoir immense. Il travaille en équipe avec le patient et on voit qu'il aime ce qu'il fait.",
+        "language": "fr"
+      },
       {
         "author": "Laurence Hamon",
         "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocKl_d7ICqQMOauSKBwMImTq5Wu3WONxcY5h2vpYCMW3nCqRgA=s128-c0x00000000-cc-rp-mo",
@@ -197,18 +206,18 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "language": "fr",
         "relativeTime": "il y a 2 mois",
         "publishTime": "2026-09-05T09:51:49.661002767Z"
-      },
-      {
-        "author": "Mariana González Cadahía",
-        "authorPhoto": null,
-        "authorProfile": null,
-        "rating": 5,
-        "publishTime": "2026-07-29T22:10:00.000Z",
-        "text": "Je viens le consulter depuis des années, et l'accompagnement de Norberto est excellent. Il sait écouter pour déterminer sur quels points concentrer le travail, et il maîtrise diverses techniques qu'il utilise selon les besoins du patient. Je suis toujours sortie de la séance mieux qu'à l'arrivée. Je le recommande vivement !!!!!",
-        "language": "fr"
       }
     ],
     "pt": [
+      {
+        "author": "Anita Engel",
+        "authorPhoto": "https://lh3.googleusercontent.com/a-/ALV-UjW_bw6AdlTOCwdRqF9NK14uGrd_zF7ulvqHFA14KYT3FgY-6Z6W=s128-c0x00000000-cc-rp-mo",
+        "authorProfile": "https://www.google.com/maps/contrib/109689142682966713827/reviews",
+        "rating": 5,
+        "publishTime": "2026-11-20T18:20:14.000Z",
+        "text": "Cheguei à consulta sem conhecê-los, depois de anos passando por vários profissionais por lesões e dores que não encontravam respostas. Desde a primeira sessão com o Norberto senti alívio. É um profissional dedicado que se deu o tiempo de me ouvir e analisar meu corpo como ninguém. Caloroso em suas explicações e com um conhecimento enorme. Trabalha em equipe com o paciente e nota-se que ama o que faz.",
+        "language": "pt"
+      },
       {
         "author": "Laurence Hamon",
         "authorPhoto": "https://lh3.googleusercontent.com/a/ACg8ocKl_d7ICqQMOauSKBwMImTq5Wu3WONxcY5h2vpYCMW3nCqRgA=s128-c0x00000000-cc-rp-mo",
@@ -248,19 +257,16 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "language": "pt",
         "relativeTime": "há 2 meses",
         "publishTime": "2026-09-05T09:51:49.661002767Z"
-      },
-      {
-        "author": "Mariana González Cadahía",
-        "authorPhoto": null,
-        "authorProfile": null,
-        "rating": 5,
-        "publishTime": "2026-07-29T22:10:00.000Z",
-        "text": "Venho há anos, e o atendimento do Norberto é excelente. Ele sabe escutar para definir em que pontos focar o trabalho e conhece diversas técnicas que usa conforme a necessidade do paciente. Sempre saí da consulta me sentindo melhor do que no início. Recomendo muitíssimo!!!!!",
-        "language": "pt"
       }
     ]
   },
   "translations": {
+    "anita engel": {
+      "es": "Llegué a consulta sin conocerlos, después de años de dar vueltas entre varios profesionales por lesiones y dolencias que no encontraban respuestas. Desde la primera sesión con Norberto sentí alivio. Es un profesional dedicado que se tomó el tiempo de escucharme y analizar mi cuerpo como nadie. Cálido en sus explicaciones y con un conocimiento enorme. Trabaja en equipo con el paciente y se nota ama lo que hace.",
+      "en": "I came to the practice without knowing them, after years of going between various professionals for injuries and ailments that had no answers. From the first session with Norberto I felt relief. He is a dedicated professional who took the time to listen to me and analyze my body like no one else. Warm in his explanations and with enormous knowledge. He works as a team with the patient and you can tell he loves what he does.",
+      "fr": "Je suis venue en consultation sans les connaître, après des années d'errance entre plusieurs professionnels pour des blessures et des douleurs sans réponse. Dès la primera séance avec Norberto, j'ai ressenti un soulagement. C'est un professionnel dévoué qui a pris le temps de m'écouter et d'analyser mon corps comme personne. Chaleureux dans ses explications et avec un savoir immense. Il travaille en équipe avec le patient et on voit qu'il aime ce qu'il fait.",
+      "pt": "Cheguei à consulta sem conhecê-los, depois de anos passando por vários profissionais por lesões e dores que não encontravam respostas. Desde a primeira sessão com o Norberto senti alívio. É um profissional dedicado que se deu o tiempo de me ouvir e analisar meu corpo como ninguém. Caloroso em suas explicações e com um conhecimento enorme. Trabalha em equipe com o paciente e nota-se que ama o que faz."
+    },
     "mariana gonzalez cadahia": {
       "es": "Hace años que concurro, la atención de Norberto es excelente. Sabe escuchar para poder determinar sobre que puntos focalizar el trabajo y conoce diversas técnicas que utiliza según la necesidad del paciente. Siempre salí de la consulta sintiéndome mejor que al inicio. Lo recomiendo muchísimo!!!!!",
       "en": "I've been coming here for years, and Norberto's care is excellent. He knows how to listen so he can decide where to focus the work, and he uses a range of techniques according to the patient's needs. I always left feeling better than when I arrived. I recommend him highly!!!!!",
