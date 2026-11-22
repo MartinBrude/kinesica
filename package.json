@@ -4,7 +4,7 @@
   "description": "Static site tooling (CSS purge audit, scripts)",
   "scripts": {
     "holidays:sync": "node scripts/sync-argentina-holidays.mjs",
-    "booking:test": "NODE_OPTIONS=--disable-warning=MODULE_TYPELESS_PACKAGE_JSON node scripts/verify-booking.mjs && node scripts/verify-gas-hours.mjs && node scripts/verify-booking-form-errors.mjs && node scripts/verify-calendar-backup.mjs && node scripts/verify-booking-dni-rules.mjs && node scripts/verify-horarios-cesiones.mjs",
+    "booking:test": "NODE_OPTIONS=--disable-warning=MODULE_TYPELESS_PACKAGE_JSON node scripts/verify-booking.mjs && node scripts/verify-gas-hours.mjs && node scripts/verify-booking-form-errors.mjs && node scripts/verify-calendar-backup.mjs && node scripts/verify-booking-dni-rules.mjs && node scripts/verify-horarios-cesiones.mjs && node scripts/verify-booking-preferences.mjs",
     "gas:setup": "node scripts/deploy-gas-booking.mjs setup",
     "gas:login": "node scripts/deploy-gas-booking.mjs login",
     "gas:push": "node scripts/deploy-gas-booking.mjs push",

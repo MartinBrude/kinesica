@@ -158,33 +158,55 @@
       return COPY.es[key] != null ? COPY.es[key] : key;
     }
 
+    /**
+     * Retorna la etiqueta i18n del género del profesional según su ID ('norberto' -> Hombre, 'maria' -> Mujer).
+     * @param {string} id
+     * @returns {string}
+     */
     practitionerGenderLabel(id) {
-      if (id === "norberto") return this.t("proMale");
-      if (id === "maria") return this.t("proFemale");
+      if (typeof id !== "string") return "";
+      const normalized = id.trim().toLowerCase();
+      if (normalized === "norberto") return this.t("proMale");
+      if (normalized === "maria") return this.t("proFemale");
       return "";
     }
 
+    /**
+     * Retorna el nombre completo del profesional para mostrar en el título o resúmenes.
+     * @param {string} id
+     * @returns {string}
+     */
     practitionerFullName(id) {
-      if (id === "norberto") return "Norberto Brude";
-      if (id === "maria") return "María Gulin";
-      return this.practitionerGenderLabel(id);
+      if (typeof id !== "string") return "";
+      const normalized = id.trim().toLowerCase();
+      if (normalized === "norberto") return "Norberto Brude";
+      if (normalized === "maria") return "María Gulin";
+      return this.practitionerGenderLabel(normalized);
     }
 
+    /**
+     * Retorna el texto para la píldora de preferencia de profesional en el Paso 2
+     * (ej. "Hombre", "Mujer", "Indistinto"). Si el paciente es habitual o la técnica solo la atiende
+     * 1 solo profesional, retorna null para no mostrar la píldora.
+     * @returns {string|null}
+     */
     getPractitionerPreferenceDisplay() {
-      if (this.state.existingPatient === true) return null;
-      const technique = engine.getTechnique(this.state.techniqueId);
-      const hasMultiplePros = technique && Array.isArray(technique.practitioners) && technique.practitioners.length > 1;
-      if (!hasMultiplePros && !this.state.practitionerPreference) {
+      if (!this.state || this.state.existingPatient === true) return null;
+      const techniqueId = this.state.techniqueId;
+      const technique = engine && typeof engine.getTechnique === "function" ? engine.getTechnique(techniqueId) : null;
+      const hasMultiplePros = Boolean(technique && Array.isArray(technique.practitioners) && technique.practitioners.length > 1);
+      const pref = typeof this.state.practitionerPreference === "string" ? this.state.practitionerPreference.trim().toLowerCase() : null;
+      if (!hasMultiplePros && !pref) {
         return null;
       }
 
-      if (this.state.practitionerPreference === "norberto") {
+      if (pref === "norberto") {
         return this.t("proMale");
       }
-      if (this.state.practitionerPreference === "maria") {
+      if (pref === "maria") {
         return this.t("proFemale");
       }
-      if (this.state.practitionerPreference === "any" || hasMultiplePros) {
+      if (pref === "any" || hasMultiplePros) {
         return this.t("proAny");
       }
       return null;
@@ -1038,10 +1060,21 @@
       moreWrap.appendChild(moreGrid);
     }
 
+    /**
+     * Selecciona una técnica en el Paso 1.
+     * Si la técnica la atienden múltiples profesionales (ej. RPG o 'no-se'),
+     * se preselecciona la preferencia 'any' (Indistinto) por defecto y se muestran las opciones.
+     * Si la atiende un único profesional (ej. osteopatia -> Norberto, acupuntura -> María),
+     * se fija el profesional y se ocultan las opciones de preferencia.
+     * @param {string} techniqueId
+     */
     selectTechnique(techniqueId) {
-      const technique = engine.getTechnique(techniqueId);
+      if (!techniqueId || typeof techniqueId !== "string") return;
+      const technique = engine && typeof engine.getTechnique === "function" ? engine.getTechnique(techniqueId) : null;
+      if (!technique) return;
+
       this.state.techniqueId = techniqueId;
-      const hasMultiple = technique && Array.isArray(technique.practitioners) && technique.practitioners.length > 1;
+      const hasMultiple = Boolean(Array.isArray(technique.practitioners) && technique.practitioners.length > 1);
       this.state.practitionerPreference = hasMultiple ? "any" : null;
       this.state.practitionerId = technique.bySchedule || hasMultiple
         ? null
@@ -1055,11 +1088,17 @@
       this.syncStep1Continue();
     }
 
+    /**
+     * Renderiza las opciones de preferencia de profesional (Hombre / Mujer / Indistinto).
+     * Preselecciona 'Indistinto' por defecto cuando hay más de 1 profesional disponible.
+     * @param {Object} technique
+     */
     renderPractitionerChoices(technique) {
       const box = this.container.querySelector("#kb-practitioner-box");
       const grid = this.container.querySelector("#kb-practitioner-grid");
+      if (!grid) return;
       grid.innerHTML = "";
-      if (technique.practitioners.length < 2) {
+      if (!technique || !Array.isArray(technique.practitioners) || technique.practitioners.length < 2) {
         if (box) box.hidden = true;
         return;
       }
@@ -1072,6 +1111,11 @@
         value: "any",
         label: this.t("proAny"),
       });
+
+      if (!this.state.practitionerPreference) {
+        this.state.practitionerPreference = "any";
+      }
+
       options.forEach((opt) => {
         const card = document.createElement("div");
         const isSelected = this.state.practitionerPreference === opt.value;

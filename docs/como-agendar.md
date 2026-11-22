@@ -65,13 +65,18 @@ En `kinesica.com.ar/agendar`, el flujo está diseñado para reservar en 60 segun
 1. **¿Primera vez o Habitual?**  
    - **Primera vez:** avanza a la selección de técnica y horarios disponibles.  
    - **Ya me atendí (Habitual):** el paciente puede elegir si desea **auto-agendar directamente online** su día y hora, o contactar a su kinesiólogo habitual por WhatsApp con un solo clic.
-2. **Selección de técnica:** Se muestran las técnicas más frecuentes destacadas (Kinesiología & Fisiatría, RPG, Osteopatía, ATM / Bruxismo) y un botón **"Ver más técnicas"** para patologías posturales específicas o consultar con la opción *"No sé cuál técnica necesito"*.
-3. **Día y horario:** Visualizador en tiempo real de slots libres de 1 hora de lunes a viernes (respetando la regla de 1 sola camilla física).
-4. **Datos de contacto:**  
+2. **Selección de técnica y preferencia de profesional:**  
+   - Se muestran las técnicas más frecuentes destacadas (Kinesiología & Fisiatría, RPG, Osteopatía, ATM / Bruxismo) y un botón **"Ver más técnicas"** para patologías posturales específicas o consultar con la opción *"No sé cuál técnica necesito"*.  
+   - **Preferencia de profesional:** Si la técnica la atienden ambos kinesiólogos (Norberto y María, o si se elige *"No sé"*), se despliega la opción de preferencia: *Hombre*, *Mujer* o *Indistinto*. Por defecto viene seleccionada **Indistinto**, permitiendo ver el 100% de los horarios disponibles de inmediato sin requerir clics adicionales. Si la técnica es exclusiva de un profesional (ej. Osteopatía con Norberto o Acupuntura con María), el sistema asigna automáticamente al profesional correspondiente y oculta la pregunta para evitar fricción.  
+3. **Día y horario (con indicador de preferencia en Paso 2):**  
+   - Visualizador en tiempo real de slots libres de 1 hora de lunes a viernes (respetando la regla de 1 sola camilla física).  
+   - **Píldora sutil de contexto:** En el paso 2, una píldora visual en la parte superior indica sutilmente la preferencia activa (*Preferencia: Indistinto*, *Hombre* o *Mujer*) con un enlace rápido *(Cambiar)* que permite volver al paso 1 en un solo clic si el paciente desea filtrar por género.  
+4. **Diseño enfocado y sin distracciones:** La pantalla `/agendar.html` está optimizada para la conversión: sin tarjetas informativas redundantes al pie, centrando la atención visual exclusivamente en el widget de turnos y los blobs orgánicos de fondo.  
+5. **Datos de contacto:**  
    - **Nombre completo** y **WhatsApp:** campos obligatorios para el contacto y los recordatorios automáticos de 24h previas.  
    - **DNI:** opcional (sin asterisco obligatorio).  
    - **Email:** opcional. Si el paciente no lo indica, la reserva se completa y confirma exitosamente de todos modos.
-5. **Respaldo de alta disponibilidad:** Si Google Calendar presentara alguna demora o intermitencia externa, el motor de reservas conmuta en milisegundos y de forma transparente a la base de datos local de respaldo, garantizando que ninguna reserva se pierda.
+6. **Respaldo de alta disponibilidad:** Si Google Calendar presentara alguna demora o intermitencia externa, el motor de reservas conmuta en milisegundos y de forma transparente a la base de datos local de respaldo, garantizando que ninguna reserva se pierda.
 
 <p align="center">
   <img src="assets/mockup_agendar_web.png" alt="Pantalla Agendar del sitio Kinésica" width="640">
