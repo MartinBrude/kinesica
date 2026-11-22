@@ -167,6 +167,13 @@ export function renderCesionesForm({ container, onSubmit, onCheckConflicts }) {
     });
   };
 
+  if (onLeaveInput) {
+    onLeaveInput.checked = false;
+    onLeaveInput.addEventListener("change", () => {
+      onLeaveInput.setAttribute("aria-checked", onLeaveInput.checked ? "true" : "false");
+    });
+  }
+
   [targetSel, periodSel, sDateInput, eDateInput, timeScopeSel, onLeaveInput].forEach((el) => {
     if (!el) return;
     el.addEventListener("change", updatePreviewAndConflicts);

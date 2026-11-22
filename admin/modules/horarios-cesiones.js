@@ -76,6 +76,8 @@ async function handleCreateCesion(draft) {
         const eDateInput = form.querySelector("#cesion-end-date");
         if (sDateInput) sDateInput.value = "";
         if (eDateInput) eDateInput.value = "";
+        const onLeaveInput = form.querySelector("#cesion-on-leave");
+        if (onLeaveInput) onLeaveInput.checked = false;
         sDateInput?.dispatchEvent(new Event("change"));
       }
     } else {

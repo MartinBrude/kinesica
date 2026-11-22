@@ -63,7 +63,7 @@ export function buildCesionFormHtml(todayIso) {
 
         <div id="wrapper-cesion-on-leave" class="cesion-on-leave-row" style="display:none; margin-bottom:14px;">
           <label class="cesion-switch" for="cesion-on-leave">
-            <input type="checkbox" id="cesion-on-leave" role="switch">
+            <input type="checkbox" id="cesion-on-leave" role="switch" aria-checked="false">
             <span class="cesion-switch-track" aria-hidden="true"><span class="cesion-switch-thumb"></span></span>
             <span class="cesion-switch-copy">
               <strong>Profesional de baja</strong>
