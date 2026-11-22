@@ -1,28 +1,22 @@
 <?php
 declare(strict_types=1);
 
-
 function recordatorios_is_appointment_past(?string $apptDate, ?string $apptTime): bool
 {
     if (!$apptDate || trim($apptDate) === '') {
         return false;
     }
     $timeStr = '23:59:59';
-    if ($apptTime && trim($apptTime) !== '') {
-        if (preg_match('/(\d{1,2}):(\d{2})/', $apptTime, $m)) {
-            $timeStr = sprintf('%02d:%02d:00', (int) $m[1], (int) $m[2]);
-        }
+    if ($apptTime && trim($apptTime) !== '' && preg_match('/(\d{1,2}):(\d{2})/', $apptTime, $m)) {
+        $timeStr = sprintf('%02d:%02d:00', (int) $m[1], (int) $m[2]);
     }
     try {
         $tz = recordatorios_tz();
-        $apptDt = new DateTimeImmutable(trim($apptDate) . ' ' . $timeStr, $tz);
-        $now = new DateTimeImmutable('now', $tz);
-        return $apptDt < $now;
+        return (new DateTimeImmutable(trim($apptDate) . ' ' . $timeStr, $tz)) < (new DateTimeImmutable('now', $tz));
     } catch (Throwable) {
         return false;
     }
 }
-
 
 function recordatorios_extract_contact_email(string $errorMessage): string
 {
@@ -37,15 +31,6 @@ function recordatorios_extract_contact_email(string $errorMessage): string
 
 /**
  * Completa el mapa de emails con la agenda del staff (`users`: profesionales del admin).
- * Útil para casos de prueba (Martín/Norberto/María) cuyo mail no está en `pacientes`.
- *
- * @param array{by_phone: array<string,string>, by_name: array<string,string>} $out
- * @return array{by_phone: array<string,string>, by_name: array<string,string>}
- */
-
-/**
- * Completa el mapa de emails con la agenda del staff (`users`: profesionales del admin).
- * Útil para casos de prueba (Martín/Norberto/María) cuyo mail no está en `pacientes`.
  *
  * @param array{by_phone: array<string,string>, by_name: array<string,string>} $out
  * @return array{by_phone: array<string,string>, by_name: array<string,string>}
@@ -54,11 +39,7 @@ function recordatorios_merge_staff_emails(array $out): array
 {
     try {
         $pdo = function_exists('db') ? db() : null;
-        if (!$pdo instanceof PDO) {
-            return $out;
-        }
-        $colEmail = $pdo->query("SHOW COLUMNS FROM users LIKE 'email'")->fetch();
-        if (!$colEmail) {
+        if (!$pdo instanceof PDO || !$pdo->query("SHOW COLUMNS FROM users LIKE 'email'")->fetch()) {
             return $out;
         }
         $hasTel = (bool) $pdo->query("SHOW COLUMNS FROM users LIKE 'telefono'")->fetch();
@@ -88,7 +69,6 @@ function recordatorios_merge_staff_emails(array $out): array
                     $out['by_name'][$key] = $email;
                 }
             }
-            // Alias frecuentes de prueba (Martín Brude ↔ Martín).
             if ($composed !== '' && mb_stripos($composed, 'brude') !== false) {
                 $first = mb_strtolower(trim((string) ($row['first_name'] ?? '')));
                 if ($first !== '' && !isset($out['by_name'][$first])) {
@@ -97,18 +77,11 @@ function recordatorios_merge_staff_emails(array $out): array
             }
         }
     } catch (Throwable $e) {
-        // Staff opcional: no bloquear.
     }
     return $out;
 }
 
-/**
- * Resuelve email de staff/directorio para un wa_id + nombre (p. ej. al crear caso de prueba).
- */
-
-/**
- * Resuelve email de staff/directorio para un wa_id + nombre (p. ej. al crear caso de prueba).
- */
+/** Resuelve email de staff/directorio para un wa_id + nombre. */
 function recordatorios_resolve_contact_email(string $waId, string $patientName = ''): string
 {
     $map = recordatorios_merge_staff_emails(['by_phone' => [], 'by_name' => []]);
@@ -124,17 +97,10 @@ function recordatorios_resolve_contact_email(string $waId, string $patientName =
 }
 
 /**
- * Busca emails del directorio para enriquecer la vista (por teléfono o nombre).
+ * Busca emails y teléfonos del directorio para enriquecer la vista.
  *
  * @param list<array<string,mixed>> $rows
- * @return array{by_phone: array<string,string>, by_name: array<string,string>}
- */
-
-/**
- * Busca emails del directorio para enriquecer la vista (por teléfono o nombre).
- *
- * @param list<array<string,mixed>> $rows
- * @return array{by_phone: array<string,string>, by_name: array<string,string>}
+ * @return array{by_phone: array<string,string>, by_name: array<string,string>, phone_by_name: array<string,string>}
  */
 function recordatorios_lookup_directory_contacts(PDO $pdo, array $rows): array
 {
@@ -176,10 +142,9 @@ function recordatorios_lookup_directory_contacts(PDO $pdo, array $rows): array
         }
 
         if ($names) {
-            $nameList = array_values($names);
             $conds = [];
             $params = [];
-            foreach ($nameList as $i => $name) {
+            foreach (array_values($names) as $name) {
                 $conds[] = 'LOWER(nombre_completo) = LOWER(?)';
                 $params[] = $name;
                 $parts = preg_split('/\s+/u', trim($name)) ?: [];
@@ -196,63 +161,44 @@ function recordatorios_lookup_directory_contacts(PDO $pdo, array $rows): array
                     $params[] = $name;
                 }
             }
-            $stmt = $pdo->prepare(
-                'SELECT nombre, apellido, nombre_completo, telefono, email FROM pacientes
-                 WHERE ((' . implode(' OR ', $conds) . '))
-                 LIMIT 500'
-            );
+            $stmt = $pdo->prepare('SELECT nombre, apellido, nombre_completo, telefono, email FROM pacientes WHERE ((' . implode(' OR ', $conds) . ')) LIMIT 500');
             $stmt->execute($params);
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $key = mb_strtolower(trim((string) ($row['nombre_completo'] ?? '')));
                 $nom = trim((string) ($row['nombre'] ?? ''));
                 $ape = trim((string) ($row['apellido'] ?? ''));
                 $email = strtolower(trim((string) ($row['email'] ?? '')));
+                $emailValid = $email !== '' && (bool) filter_var($email, FILTER_VALIDATE_EMAIL);
                 $rawTel = (string) ($row['telefono'] ?? '');
-                $tel = function_exists('clean_phone_number') ? clean_phone_number($rawTel) : preg_replace('/\D+/', '', $rawTel);
-                if ($key !== '' && $email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                    $out['by_name'][$key] = $email;
-                }
-                if ($key !== '' && $tel !== '') {
-                    $out['phone_by_name'][$key] = $tel;
-                }
+                $tel = function_exists('clean_phone_number') ? clean_phone_number($rawTel) : (string) preg_replace('/\D+/', '', $rawTel);
+
+                $register = static function (string $k) use (&$out, $tel, $email, $emailValid): void {
+                    if ($k === '') {
+                        return;
+                    }
+                    if ($tel !== '') {
+                        $out['phone_by_name'][$k] = $tel;
+                    }
+                    if ($emailValid) {
+                        $out['by_name'][$k] = $email;
+                    }
+                };
+
                 $firstLast = mb_strtolower(trim($nom . ' ' . $ape));
-                if ($firstLast !== '' && $tel !== '') {
-                    $out['phone_by_name'][$firstLast] = $tel;
-                }
-                if ($firstLast !== '' && $email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                    $out['by_name'][$firstLast] = $email;
-                }
-                $lastFirst = mb_strtolower(trim($ape . ' ' . $nom));
-                if ($lastFirst !== '' && $tel !== '') {
-                    $out['phone_by_name'][$lastFirst] = $tel;
-                }
-                if ($lastFirst !== '' && $email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                    $out['by_name'][$lastFirst] = $email;
-                }
+                $register($key);
+                $register($firstLast);
+                $register(mb_strtolower(trim($ape . ' ' . $nom)));
                 if (function_exists('canonical_patient_name_key')) {
-                    $canon = canonical_patient_name_key($key !== '' ? $key : $firstLast);
-                    if ($canon !== '' && $tel !== '') {
-                        $out['phone_by_name'][$canon] = $tel;
-                    }
-                    if ($canon !== '' && $email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                        $out['by_name'][$canon] = $email;
-                    }
+                    $register(canonical_patient_name_key($key !== '' ? $key : $firstLast));
                 }
                 $partsApe = preg_split('/\s+/u', $ape) ?: [];
                 if (count($partsApe) > 1 && $nom !== '' && $tel !== '') {
-                    $singleApeKey = mb_strtolower(trim($nom . ' ' . $partsApe[0]));
-                    $out['phone_by_name'][$singleApeKey] = $tel;
-                    $singleApeInv = mb_strtolower(trim($partsApe[0] . ' ' . $nom));
-                    $out['phone_by_name'][$singleApeInv] = $tel;
+                    $out['phone_by_name'][mb_strtolower(trim($nom . ' ' . $partsApe[0]))] = $tel;
+                    $out['phone_by_name'][mb_strtolower(trim($partsApe[0] . ' ' . $nom))] = $tel;
                 }
             }
         }
     } catch (Throwable $e) {
-        // Directorio opcional: no bloquear la vista.
     }
     return recordatorios_merge_staff_emails($out);
 }
-
-/**
- * @return array{items:list,grouped:array,counts:array,total:int,days:int}
- */

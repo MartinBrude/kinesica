@@ -1,6 +1,6 @@
 /**
  * Kinésica Admin - Gestión de Reporte y Seguimiento de Errores
- * Badge de notificaciones: solo para Martín.
+ * Badge de notificaciones: solo para Martín (ver admin-errores-badge.js).
  */
 
 import { api, formatDate } from "./api.js?v=79";
@@ -14,12 +14,22 @@ import {
   bindErrorModalEvents,
 } from "./admin-errores-modal.js";
 import { setListControlsEnabled } from "./list-controls.js?v=1";
-import { getSessionUser } from "./auth.js?v=83";
+import {
+  ERRORES_BADGE_USERNAME,
+  countOpenErrores,
+  canShowErroresBadge,
+  setErroresPendingBadge,
+  refreshErroresPendingBadge,
+} from "./admin-errores-badge.js";
 
-export { isErrorModalOpen, closeErrorModal };
-
-/** Username que recibe el badge de reportes de errores. */
-export const ERRORES_BADGE_USERNAME = "martin";
+export {
+  isErrorModalOpen,
+  closeErrorModal,
+  ERRORES_BADGE_USERNAME,
+  canShowErroresBadge,
+  setErroresPendingBadge,
+  refreshErroresPendingBadge,
+};
 
 let cachedErrores = [];
 let currentFilter = "todos"; // 'todos' | 'pendientes' | 'resueltos'
@@ -31,74 +41,8 @@ const filterBtns = document.querySelectorAll("#admin-errores-card .admin-errores
 
 let erroresLoading = false;
 
-function countOpenErrores(list) {
-  return (Array.isArray(list) ? list : []).filter((e) => e && e.estado !== "resuelto").length;
-}
-
-export function canShowErroresBadge(user = getSessionUser()) {
-  return String(user?.username || "").toLowerCase() === ERRORES_BADGE_USERNAME;
-}
-
-function applyBadgeEl(el, show, label, aria) {
-  if (!el) return;
-  el.textContent = label;
-  el.hidden = !show;
-  el.setAttribute("aria-hidden", show ? "false" : "true");
-  if (show) {
-    el.setAttribute("aria-label", aria);
-    el.title = aria;
-  } else {
-    el.removeAttribute("aria-label");
-    el.removeAttribute("title");
-  }
-}
-
-/**
- * Actualiza el badge de Reporte de errores.
- * Solo Martín ve el contador (menú + grupo Administración).
- * Otros usuarios: oculta el badge del ítem Errores sin tocar el del grupo.
- */
-export function setErroresPendingBadge(count) {
-  const audience = canShowErroresBadge();
-  const n = audience ? Math.max(0, Number(count) || 0) : 0;
-  const label = n > 99 ? "99+" : String(n);
-  const show = n > 0;
-  const aria = show
-    ? `${n === 1 ? "1 error pendiente" : `${n} errores pendientes`} en Administración`
-    : "";
-
-  applyBadgeEl(document.getElementById("nav-badge-errores"), show, label, aria);
-
-  if (!audience) return;
-
-  applyBadgeEl(document.getElementById("nav-badge-admin"), show, label, aria);
-  const adminBtn = document.getElementById("nav-btn-admin");
-  if (adminBtn) {
-    if (show) adminBtn.setAttribute("aria-label", `Administración, ${aria}`);
-    else adminBtn.removeAttribute("aria-label");
-  }
-}
-
 export function syncErroresBadgeFromCache() {
   setErroresPendingBadge(countOpenErrores(cachedErrores));
-}
-
-export async function refreshErroresPendingBadge() {
-  if (!canShowErroresBadge()) {
-    setErroresPendingBadge(0);
-    return;
-  }
-  try {
-    const resp = await api(`errores.php?counts_only=1&_t=${Date.now()}`, { cache: "no-store" });
-    if (!resp || resp.status !== "success") return;
-    const count =
-      typeof resp.pending_count === "number"
-        ? resp.pending_count
-        : Number(resp.totales?.pendientes) || 0;
-    setErroresPendingBadge(count);
-  } catch {
-    /* silencioso */
-  }
 }
 
 export function setErroresFilter(filter, onReload) {
@@ -108,6 +52,12 @@ export function setErroresFilter(filter, onReload) {
     btn.classList.toggle("is-active", btn.dataset.filter === filter);
   });
   renderErrores(cachedErrores, onReload);
+}
+
+function isSafeMediaUrl(url) {
+  if (!url || typeof url !== "string") return false;
+  const u = url.trim().toLowerCase();
+  return u.startsWith("https://") || u.startsWith("http://") || u.startsWith("/admin/api/") || u.startsWith("/admin/uploads/");
 }
 
 export function renderErrores(errores, onReload) {
@@ -120,7 +70,6 @@ export function renderErrores(errores, onReload) {
   if (countPill) {
     countPill.textContent = `${pendientes} pendiente${pendientes === 1 ? "" : "s"} · ${resueltos} resuelto${resueltos === 1 ? "" : "s"}`;
   }
-
   if (!tbody) return;
 
   const filtered = errores.filter((e) => {
@@ -141,24 +90,20 @@ export function renderErrores(errores, onReload) {
     const isResuelto = item.estado === "resuelto";
     if (isResuelto) tr.classList.add("error-row-resolved");
 
-    // 1. Estado
     const tdEstado = document.createElement("td");
     tdEstado.innerHTML = isResuelto
       ? '<span class="error-badge badge-resolved">✓ Resuelto</span>'
       : '<span class="error-badge badge-pending">⚡ Pendiente</span>';
 
-    // 2. Sección
     const tdSeccion = document.createElement("td");
     tdSeccion.innerHTML = `<strong>${escapeHtml(item.seccion || "General")}</strong>`;
 
-    // 3. Info & Contexto
     const tdInfo = document.createElement("td");
     tdInfo.innerHTML = `
       <div class="error-info-title">${escapeHtml(item.info)}</div>
       <div class="error-info-sub">Por <strong>${escapeHtml(item.created_by || "admin")}</strong> el ${escapeHtml(formatDate(item.created_at?.slice(0, 10)))}</div>
     `;
 
-    // 4. Detalle (Actual vs Esperado)
     const tdDetalle = document.createElement("td");
     tdDetalle.className = "error-cell-behavior";
     tdDetalle.innerHTML = `
@@ -166,15 +111,9 @@ export function renderErrores(errores, onReload) {
       <div class="behavior-block expected"><span class="behavior-tag tag-esperado">Esperado:</span> ${escapeHtml(item.comportamiento_esperado)}</div>
     `;
 
-    // 5. Multimedia (Foto / Video)
     const tdMedia = document.createElement("td");
     tdMedia.className = "error-media-td";
     const mediaLinks = [];
-    const isSafeMediaUrl = (url) => {
-      if (!url || typeof url !== "string") return false;
-      const u = url.trim().toLowerCase();
-      return u.startsWith("https://") || u.startsWith("http://") || u.startsWith("/admin/api/") || u.startsWith("/admin/uploads/");
-    };
     if (item.foto && isSafeMediaUrl(item.foto)) {
       mediaLinks.push(`<a href="${escapeHtml(item.foto)}" target="_blank" rel="noopener noreferrer" class="error-media-pill">📷 Foto</a>`);
     }
@@ -183,13 +122,11 @@ export function renderErrores(errores, onReload) {
     }
     tdMedia.innerHTML = mediaLinks.length > 0 ? mediaLinks.join(" ") : '<span style="color:var(--muted)">—</span>';
 
-    // 6. Fecha / Resolución
     const tdFecha = document.createElement("td");
     tdFecha.innerHTML = isResuelto && item.resolved_at
       ? `<div style="font-size:12px; color:var(--text-success)">Resuelto el ${escapeHtml(formatDate(item.resolved_at?.slice(0, 10)))}</div>`
       : `<div style="font-size:12px; color:var(--muted)">${escapeHtml(formatDate(item.created_at?.slice(0, 10)))}</div>`;
 
-    // 7. Acciones
     const tdActions = document.createElement("td");
     tdActions.className = "prof-actions-td";
     const cell = document.createElement("div");
@@ -218,13 +155,10 @@ export function renderErrores(errores, onReload) {
 export async function handleSaveError(e, onReload) {
   if (e) e.preventDefault();
   const payload = await getErrorFormPayload();
-  if (!payload) return; // getErrorFormPayload ya mostró el aviso
+  if (!payload) return;
   setErrorSaveButtonDisabled(true);
   try {
-    await api("errores.php", {
-      method: "POST",
-      body: JSON.stringify({ action: "create", ...payload }),
-    });
+    await api("errores.php", { method: "POST", body: JSON.stringify({ action: "create", ...payload }) });
     toast("Error reportado correctamente.", { type: "success" });
     closeErrorModal();
     if (typeof onReload === "function") await onReload();
@@ -242,12 +176,8 @@ export async function handleToggleStatus(item, onReload) {
     : `¿Marcar como resuelto el reporte sobre "${item.seccion}"?`;
   const ok = await dialogConfirm(confirmMsg);
   if (!ok) return;
-
   try {
-    await api("errores.php", {
-      method: "POST",
-      body: JSON.stringify({ action: "toggle_status", id: item.id }),
-    });
+    await api("errores.php", { method: "POST", body: JSON.stringify({ action: "toggle_status", id: item.id }) });
     if (typeof onReload === "function") await onReload();
   } catch (err) {
     dialogAlert("Error al cambiar estado: " + (err.message || "Error desconocido"));
@@ -255,14 +185,10 @@ export async function handleToggleStatus(item, onReload) {
 }
 
 export async function handleDeleteError(item, onReload) {
-  const ok = await dialogConfirm(`¿Seguro que deseas eliminar este reporte de error?`);
+  const ok = await dialogConfirm("¿Seguro que deseas eliminar este reporte de error?");
   if (!ok) return;
-
   try {
-    await api("errores.php", {
-      method: "POST",
-      body: JSON.stringify({ action: "delete", id: item.id }),
-    });
+    await api("errores.php", { method: "POST", body: JSON.stringify({ action: "delete", id: item.id }) });
     if (typeof onReload === "function") await onReload();
   } catch (err) {
     dialogAlert("Error al eliminar reporte: " + (err.message || "Error desconocido"));
@@ -272,19 +198,16 @@ export async function handleDeleteError(item, onReload) {
 export async function loadErroresData(onReload) {
   if (erroresLoading) return;
   erroresLoading = true;
-  const tbody = document.getElementById("admin-errores-tbody");
-  if (tbody && (!cachedErrores || !cachedErrores.length)) {
-    tbody.innerHTML = `<tr><td colspan="7" class="admin-table-loading"><span class="loading-spinner" aria-hidden="true"></span><span>Cargando registro de incidencias…</span></td></tr>`;
+  const el = document.getElementById("admin-errores-tbody");
+  if (el && (!cachedErrores || !cachedErrores.length)) {
+    el.innerHTML = `<tr><td colspan="7" class="admin-table-loading"><span class="loading-spinner" aria-hidden="true"></span><span>Cargando registro de incidencias…</span></td></tr>`;
   }
-  const filterRoot = document.querySelector("#view-admin .admin-errores-filters")
-    || document.querySelector(".admin-errores-filters");
+  const filterRoot = document.querySelector("#view-admin .admin-errores-filters") || document.querySelector(".admin-errores-filters");
   setListControlsEnabled(filterRoot, false, { extra: Array.from(filterBtns) });
   try {
     const data = await api("errores.php");
-    if (data && Array.isArray(data.errores)) {
-      cachedErrores = data.errores;
-    }
-  } catch (_) {
+    if (data && Array.isArray(data.errores)) cachedErrores = data.errores;
+  } catch {
     // Modo offline o sin red
   } finally {
     erroresLoading = false;
@@ -298,7 +221,5 @@ export function initErroresUI({ onReload }) {
   filterBtns.forEach((btn) => {
     btn.addEventListener("click", () => setErroresFilter(btn.dataset.filter, onReload));
   });
-  bindErrorModalEvents({
-    onSaveSubmit: (e) => handleSaveError(e, onReload),
-  });
+  bindErrorModalEvents({ onSaveSubmit: (e) => handleSaveError(e, onReload) });
 }

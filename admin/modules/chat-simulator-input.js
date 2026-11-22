@@ -3,8 +3,6 @@
  */
 
 import {
-  pickSimText,
-  resolveProfessionalSubmenu,
   notifyProfessionalFromSimulator,
   resolveMainMenuResponse,
   withMenuFooter,
@@ -14,7 +12,6 @@ import {
   isMediosPagoQuery, getMediosPagoText, getSaludoBreveText,
   getMenuAntiSpamText, resolveUnrecognizedReply,
   isMenuCommand, isWhatsAppOnlyLineFaq, getWhatsAppOnlyLineText,
-  parseMenuLetterSequence,
 } from "./chat-simulator-faq.js?v=2";
 import {
   appendChatMessage, replyAsBot, buildWelcomeMessage, getLangOptionLetter,
@@ -22,6 +19,10 @@ import {
   setChatLang, getSimContext, markMenuShown, wasMenuShownWithin,
   resetUnrecCount, bumpUnrecCount,
 } from "./chat-simulator-core.js";
+import {
+  handleMultiLetterSequence,
+  handleActiveSubmenu,
+} from "./chat-simulator-submenus.js";
 
 const MENU_RECENT_MS = 15 * 60 * 1000;
 const MENU_ANTISPAM_MS = 60 * 1000;
@@ -79,7 +80,6 @@ export function handleChatUserInput(inputRaw) {
     setTimeout(() => showWelcome(getChatLang(), { force: true }), 400);
     return;
   }
-
   if (isWhatsAppOnlyLineFaq(input)) {
     setChatSubmenu(null);
     setTimeout(() => {
@@ -132,124 +132,32 @@ export function handleChatUserInput(inputRaw) {
     return;
   }
 
-  // Secuencia multi-letra: ABC / A B C / A\nB\nC (alineado a kinesica-bot menu_secuencia).
-  const validLetters = new Set(["a", "b", "c", "d", "e", langLetter]);
-  for (const opt of ctx.getCustomOptions() || []) {
-    const l = String(opt.letter || "").trim().toLowerCase();
-    if (l) validLetters.add(l);
-  }
-  const seqRaw = parseMenuLetterSequence(norm, validLetters);
-  const seq = seqRaw ? seqRaw.filter((L) => L !== langLetter) : null;
-  if (seq && seq.length >= 2) {
-    const responses = [];
-    let nextSub = null;
-    for (const L of seq) {
-      if (L === "a") nextSub = "turnos";
-      else if (L === "e") nextSub = "profesional";
-      const custom = (ctx.getCustomOptions() || []).find(
-        (o) => String(o.letter || "").trim().toLowerCase() === L,
-      );
-      if (custom) {
-        responses.push(withMenuFooter(custom.response || "Información no disponible.", getChatLang()));
-        continue;
-      }
-      const mainResp = resolveMainMenuResponse(L, getChatLang(), ctx, { exactLetterOnly: true });
-      if (mainResp.handled) {
-        let block = mainResp.text;
-        if (mainResp.followup) block = `${block}\n\n${mainResp.followup}`;
-        responses.push(block);
-      }
-    }
-    if (responses.length >= 1) {
-      setChatSubmenu(nextSub);
-      setTimeout(() => {
-        replyHandled(responses[0]);
-        if (responses.length > 1) {
-          setTimeout(() => appendChatMessage(responses.slice(1).join("\n\n"), "bot"), 900);
-        }
-      }, 450);
-      return;
-    }
-  }
+  if (handleMultiLetterSequence(norm, langLetter, ctx, replyHandled)) return;
 
-  const isExactMainOption = /^(?:(?:opcion|option)\s+[a-e]|[a-e]\.?)$/i.test(norm);
-  if (isExactMainOption) {
+  if (/^(?:(?:opcion|option)\s+[a-e]|[a-e]\.?)$/i.test(norm)) {
     const mainResp = resolveMainMenuResponse(norm.replace(/\.$/, ""), getChatLang(), ctx, { exactLetterOnly: true });
     if (mainResp.handled) {
       setChatSubmenu(mainResp.nextSubmenu);
       setTimeout(() => {
         replyHandled(mainResp.text);
-        if (mainResp.followup) {
-          setTimeout(() => appendChatMessage(mainResp.followup, "bot"), 900);
-        }
+        if (mainResp.followup) setTimeout(() => appendChatMessage(mainResp.followup, "bot"), 900);
       }, 450);
       return;
     }
   }
 
-  if (getChatSubmenu() === "turnos") {
-    if (
-      norm === "1" || norm === "1." || norm === "2" || norm === "2."
-      || norm === "consultar" || norm === "cancelar" || norm === "check" || norm === "cancel"
-      || norm === "my appointments" || norm === "mis turnos"
-    ) {
-      setChatSubmenu("buscar_dni");
-      const optA2 = (getChatLang() === "en")
-        ? pickSimText(ctx.inputs.optA2En, "opt_a2_text_en", ctx)
-        : pickSimText(ctx.inputs.optA2, "opt_a2_text", ctx);
-      setTimeout(() => replyHandled(optA2), 600);
-      return;
-    }
-    if (norm === "agendar" || norm === "book" || norm === "schedule") {
-      setChatSubmenu(null);
-      const optA = (getChatLang() === "en")
-        ? pickSimText(ctx.inputs.optAEn, "opt_a_text_en", ctx)
-        : pickSimText(ctx.inputs.optA, "opt_a_text", ctx);
-      setTimeout(() => replyHandled(optA), 500);
-      return;
-    }
-  }
-
-  if (getChatSubmenu() === "buscar_dni" && /\d/.test(norm)) {
-    const docMatch = norm.match(/^(?:dni|documento|pasaporte|doc|id|passport)?\s*:?\s*([0-9a-zA-Z.\s-]{5,15})$/i);
-    const cleanDoc = docMatch ? docMatch[1].replace(/[.\s-]/g, "").toUpperCase() : "";
-    setChatSubmenu(null);
-    setTimeout(() => {
-      const notFoundMsg = (getChatLang() === "en")
-        ? `We didn't find any scheduled appointments associated with document *${cleanDoc || input}*.\n\n_(Type *MENU* to return to the menu)_`
-        : `No encontramos turnos agendados asociados al documento *${cleanDoc || input}*.\n\n_(Escribí *MENU* para volver al inicio)_`;
-      replyHandled(notFoundMsg);
-    }, 600);
-    return;
-  }
-
-  if (getChatSubmenu() === "profesional") {
-    const { proMsg, alertTarget, optionLabel } = resolveProfessionalSubmenu(norm.replace(/\.$/, ""), getChatLang(), ctx);
-    setChatSubmenu(null);
-    const patientMessage = input;
-    setTimeout(() => {
-      replyHandled(proMsg);
-      notifyProfessionalFromSimulator(alertTarget, optionLabel, patientMessage, (errNotice) => appendChatMessage(errNotice, "bot"));
-    }, 500);
-    return;
-  }
+  if (handleActiveSubmenu(norm, input, ctx, replyHandled)) return;
 
   const mainResp = resolveMainMenuResponse(norm, getChatLang(), ctx);
   if (mainResp.handled) {
     setChatSubmenu(mainResp.nextSubmenu);
     setTimeout(() => {
-      replyHandled(mainResp.text, {
-        viaNaturalLanguage: mainResp.viaNaturalLanguage,
-        letter: mainResp.letter,
-      });
-      if (mainResp.followup) {
-        setTimeout(() => appendChatMessage(mainResp.followup, "bot"), 900);
-      }
+      replyHandled(mainResp.text, { viaNaturalLanguage: mainResp.viaNaturalLanguage, letter: mainResp.letter });
+      if (mainResp.followup) setTimeout(() => appendChatMessage(mainResp.followup, "bot"), 900);
     }, 450);
     return;
   }
 
-  // Texto libre no mapeado: 1º aclarar / menú; 2º derivar (igual que el bot).
   const startsWithGreeting = /^(?:hola|buenas|buen\s+d[ií]a|hello|hi|hey|good\s+(?:morning|afternoon|evening)|qu[eé]\s+tal|c[oó]mo\s+est[aá]s?)\b/iu.test(norm);
   const greetingOnly = startsWithGreeting && norm.split(/\s+/).length <= 4
     && !/\b(?:turno|dolor|precio|donde|osde|agendar|appointment|pain|fee|where)\b/i.test(norm);
@@ -263,26 +171,17 @@ export function handleChatUserInput(inputRaw) {
     return;
   }
 
-  const count = bumpUnrecCount();
   const unrec = resolveUnrecognizedReply(getChatLang(), {
-    unrecCount: count,
+    unrecCount: bumpUnrecCount(),
     menuShownRecently: wasMenuShownWithin(MENU_RECENT_MS),
   });
   setTimeout(() => {
-    if (unrec.kind === "menu") {
-      showWelcome(getChatLang());
-      return;
-    }
+    if (unrec.kind === "menu") { showWelcome(getChatLang()); return; }
     replyAsBot(unrec.text);
     if (unrec.alert) {
       resetUnrecCount();
       setChatSubmenu(null);
-      notifyProfessionalFromSimulator(
-        "norberto",
-        "texto libre (2º no reconocido)",
-        input,
-        (errNotice) => appendChatMessage(errNotice, "bot"),
-      );
+      notifyProfessionalFromSimulator("norberto", "texto libre (2º no reconocido)", input, (errNotice) => appendChatMessage(errNotice, "bot"));
     }
   }, 500);
 }

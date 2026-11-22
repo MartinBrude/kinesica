@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/lib_recordatorios_view_when.php';
 
 function recordatorios_tz(): DateTimeZone
 {
@@ -10,7 +11,6 @@ function recordatorios_tz(): DateTimeZone
         return new DateTimeZone('UTC');
     }
 }
-
 
 function recordatorios_status_label(string $status): string
 {
@@ -25,7 +25,6 @@ function recordatorios_status_label(string $status): string
         default => $status,
     };
 }
-
 
 function recordatorios_skip_label(string $reason): string
 {
@@ -47,19 +46,15 @@ function recordatorios_skip_label(string $reason): string
     };
 }
 
-
 function recordatorios_is_blocked_event(array $r): bool
 {
-    $reason = strtolower(trim((string) ($r['skip_reason'] ?? '')));
-    if ($reason === 'blocked') {
+    if (strtolower(trim((string) ($r['skip_reason'] ?? ''))) === 'blocked') {
         return true;
     }
     $name = (string) ($r['patient_name'] ?? '');
     $summary = (string) ($r['event_summary'] ?? '');
-    if (function_exists('is_tk3_or_blocked_name')) {
-        if (is_tk3_or_blocked_name($name) || is_tk3_or_blocked_name($summary)) {
-            return true;
-        }
+    if (function_exists('is_tk3_or_blocked_name') && (is_tk3_or_blocked_name($name) || is_tk3_or_blocked_name($summary))) {
+        return true;
     }
     $nameLower = mb_strtolower(trim($name));
     $summaryLower = mb_strtolower(trim($summary));
@@ -71,7 +66,6 @@ function recordatorios_is_blocked_event(array $r): bool
     return false;
 }
 
-
 function recordatorios_extract_phone_candidate(string $text): string
 {
     $t = trim($text);
@@ -79,24 +73,19 @@ function recordatorios_extract_phone_candidate(string $text): string
         return '';
     }
 
-    // Preferir clave:valor (telefono/teléfono/whatsapp/…) sin llamar extract_contacts (evita recursión).
     if (function_exists('kinesica_parse_calendar_kv_map')) {
         $map = kinesica_parse_calendar_kv_map($t);
         foreach (['telefono', 'whatsapp', 'wa', 'tel', 'celular', 'movil', 'phone'] as $k) {
             if (!empty($map[$k])) {
                 $fromKv = clean_phone_number((string) $map[$k]);
                 if ($fromKv !== '' && (!function_exists('is_placeholder_phone') || !is_placeholder_phone($fromKv))) {
-                    // Rechazar si el valor de telefono: es en realidad el DNI del mismo texto.
                     $dniFromMap = '';
                     foreach (['dni', 'documento', 'doc', 'pasaporte', 'document', 'passport', 'ci', 'du'] as $dk) {
                         if ($dniFromMap === '' && !empty($map[$dk]) && function_exists('clean_patient_dni')) {
                             $dniFromMap = clean_patient_dni((string) $map[$dk]);
                         }
                     }
-                    if ($dniFromMap !== '' && function_exists('kinesica_phone_looks_like_dni')
-                        && kinesica_phone_looks_like_dni($fromKv, $dniFromMap)) {
-                        // Seguir buscando otro candidato.
-                    } else {
+                    if (!($dniFromMap !== '' && function_exists('kinesica_phone_looks_like_dni') && kinesica_phone_looks_like_dni($fromKv, $dniFromMap))) {
                         return $fromKv;
                     }
                 }
@@ -111,43 +100,25 @@ function recordatorios_extract_phone_candidate(string $text): string
         }
     }
 
-    // Descartar menciones de documento para que sus dígitos no se confundan con un teléfono
-    // (alineado con extractPhoneCandidate en phone-format.js).
-    $withoutDni = preg_replace(
-        '/(?:dni|doc(?:umento)?|c\.?i\.?|d\.?u\.?|pasaporte|passport)[:\s.#]*[\d.\-]+/iu',
-        ' ',
-        $t
-    ) ?? $t;
+    $withoutDni = preg_replace('/(?:dni|doc(?:umento)?|c\.?i\.?|d\.?u\.?|pasaporte|passport)[:\s.#]*[\d.\-]+/iu', ' ', $t) ?? $t;
 
     if (preg_match('/\+\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{3,4}[-.\s]?\d{3,4}/', $withoutDni, $m)) {
         return clean_phone_number($m[0]);
     }
-
     if (preg_match('/(?:\+?54\s*9?\s*)?(?:\b0?11\b|\b15\b)?[-.\s]?\d{4}[-.\s]?\d{4}\b/', $withoutDni, $m)) {
         $cleaned = clean_phone_number($m[0]);
         if (strlen($cleaned) >= 8) {
             return $cleaned;
         }
     }
-
-    // Bloque continuo con prefijo móvil verosímil (no 7–8 dígitos sueltos típicos de DNI).
     if (preg_match('/\b(?:11|15|549)\d{8,10}\b/', $withoutDni, $m)) {
         return clean_phone_number($m[0]);
     }
-
     if (preg_match('/\b\d{10,13}\b/', $withoutDni, $m)) {
         return clean_phone_number($m[0]);
     }
-
     return '';
 }
-
-/**
- * Formatea una fila de recordatorio_eventos para la SPA.
- *
- * @param array<string,mixed> $r
- * @return array<string,mixed>
- */
 
 /**
  * Formatea una fila de recordatorio_eventos para la SPA.
@@ -162,18 +133,16 @@ function recordatorios_format_item(array $r, ?string $email = null): array
     $runDay = '';
     $runLocal = $runUtc;
     try {
-        $dt = new DateTimeImmutable($runUtc . ' UTC');
-        $local = $dt->setTimezone(recordatorios_tz());
+        $local = (new DateTimeImmutable($runUtc . ' UTC'))->setTimezone(recordatorios_tz());
         $runDay = $local->format('Y-m-d');
         $runLocal = $local->format('Y-m-d H:i');
     } catch (Throwable $e) {
         $runDay = substr($runUtc, 0, 10);
     }
 
-    $resolvedEmail = $email;
-    if ($resolvedEmail === null || $resolvedEmail === '') {
-        $resolvedEmail = recordatorios_extract_contact_email((string) ($r['error_message'] ?? ''));
-    }
+    $resolvedEmail = ($email === null || $email === '')
+        ? recordatorios_extract_contact_email((string) ($r['error_message'] ?? ''))
+        : $email;
 
     $waId = (string) ($r['wa_id'] ?? '');
     if ($waId === '') {
@@ -184,10 +153,8 @@ function recordatorios_format_item(array $r, ?string $email = null): array
         if ($contact['phone'] !== '') {
             $waId = $contact['phone'];
         } else {
-            $candidate = recordatorios_extract_phone_candidate((string) ($r['event_summary'] ?? ''));
-            if ($candidate === '') {
-                $candidate = recordatorios_extract_phone_candidate((string) ($r['patient_name'] ?? ''));
-            }
+            $candidate = recordatorios_extract_phone_candidate((string) ($r['event_summary'] ?? ''))
+                ?: recordatorios_extract_phone_candidate((string) ($r['patient_name'] ?? ''));
             if ($candidate !== '') {
                 $waId = $candidate;
             }
@@ -219,62 +186,3 @@ function recordatorios_format_item(array $r, ?string $email = null): array
         'is_past' => recordatorios_is_appointment_past(isset($r['appointment_date']) ? (string) $r['appointment_date'] : null, (string) ($r['appointment_time'] ?? '')),
     ];
 }
-
-/**
- * Formatea fecha en español de forma amigable (ej: "miércoles 18 de noviembre").
- */
-function recordatorios_format_friendly_date(string $dateStr): string
-{
-    if (!preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $dateStr, $m)) {
-        return $dateStr;
-    }
-    $dias = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
-    $meses = ['', 'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
-    $ts = strtotime($dateStr . ' 12:00:00 UTC');
-    if ($ts === false) return $dateStr;
-    $w = (int) gmdate('w', $ts);
-    $d = (int) $m[3];
-    $mo = (int) $m[2];
-    return trim(($dias[$w] ?? '') . ' ' . $d . ' de ' . ($meses[$mo] ?? ''));
-}
-
-/**
- * Genera la frase completa para el recordatorio (parámetro {{3}} de WhatsApp y cuándo de Email).
- * Ejemplos:
- *   - "mañana miércoles 18 de noviembre a las 16:00 hs"
- *   - "hoy martes 17 de noviembre a las 16:00 hs"
- *   - "el jueves 19 de noviembre a las 10:30 hs"
- */
-function recordatorios_format_when_phrase(?string $dateStr, ?string $timeStr): string
-{
-    $time = trim((string) $timeStr);
-    $isConvenir = false;
-    if ($time === '' || stripos($time, 'convenir') !== false || stripos($time, 'convenido') !== false) {
-        $time = 'horario a convenir';
-        $isConvenir = true;
-    } elseif (!preg_match('/\bhs\b/i', $time)) {
-        $time .= ' hs';
-    }
-
-    $date = trim((string) $dateStr);
-    if ($date === '' || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
-        return $isConvenir ? 'mañana en horario a convenir' : 'mañana a las ' . $time;
-    }
-
-    $tz = recordatorios_tz();
-    $now = new DateTimeImmutable('now', $tz);
-    $todayKey = $now->format('Y-m-d');
-    $tomorrowKey = $now->modify('+1 day')->format('Y-m-d');
-
-    $friendly = recordatorios_format_friendly_date($date);
-    $timePart = $isConvenir ? ' (' . $time . ')' : ' a las ' . $time;
-
-    if ($date === $todayKey) {
-        return 'hoy ' . $friendly . $timePart;
-    }
-    if ($date === $tomorrowKey) {
-        return 'mañana ' . $friendly . $timePart;
-    }
-    return 'el ' . $friendly . $timePart;
-}
-

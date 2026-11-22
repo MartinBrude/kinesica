@@ -194,76 +194,8 @@ function recordatorios_load_view(?PDO $pdo = null, int $days = RECORDATORIOS_DEF
         $grouped[$runDay][] = $item;
 
         // Auto-sincronizar pacientes existentes en los eventos de recordatorios con la tabla `pacientes`
-        if (!empty($item['wa_id']) && !empty($item['patient_name'])) {
-            $rawPhone = clean_phone_number((string) $item['wa_id']);
-            $rawName = trim((string) $item['patient_name']);
-            if (strlen($rawPhone) >= 6 && strlen($rawPhone) <= 16 && $rawName !== '' && $rawName !== 'Estimado/a paciente' && $rawName !== 'Paciente') {
-                if (function_exists('is_tk3_or_blocked_name') && !is_tk3_or_blocked_name($rawName)) {
-                    $phoneEndCheck = substr($rawPhone, -10);
-                    if (!isset($directory['by_phone'][$phoneEndCheck])) {
-                        try {
-                            ensure_pacientes_tables($pdo);
-                            $existing = function_exists('find_existing_patient_match')
-                                ? find_existing_patient_match($pdo, $rawPhone, $rawName)
-                                : null;
-
-                            $profInferred = function_exists('infer_practitioner_from_schedule')
-                                ? infer_practitioner_from_schedule(
-                                    (string) ($item['appointment_date'] ?? $r['appointment_date'] ?? ''),
-                                    (string) ($item['appointment_time'] ?? $r['appointment_time'] ?? ''),
-                                    (string) (($item['event_summary'] ?? $r['event_summary'] ?? '') . ' ' . ($item['creator'] ?? ''))
-                                )
-                                : 'indistinto';
-
-                            if ($existing) {
-                                $existingId = (int) $existing['id'];
-                                $updates = [];
-                                $params = ['id' => $existingId];
-                                if (function_exists('is_placeholder_phone') && is_placeholder_phone((string) ($existing['telefono'] ?? ''))) {
-                                    $updates[] = 'telefono = :tel';
-                                    $params['tel'] = $rawPhone;
-                                }
-                                if (($existing['profesional_habitual'] ?? 'indistinto') === 'indistinto' && $profInferred !== 'indistinto') {
-                                    $updates[] = 'profesional_habitual = :prof';
-                                    $params['prof'] = $profInferred;
-                                }
-                                if (!empty($updates)) {
-                                    $pdo->prepare('UPDATE pacientes SET ' . implode(', ', $updates) . ' WHERE id = :id')->execute($params);
-                                }
-                            } else {
-                                $cleanNom = function_exists('sanitize_patient_name') ? sanitize_patient_name($rawName) : $rawName;
-                                $parts = preg_split('/\s+/u', $cleanNom, 2, PREG_SPLIT_NO_EMPTY) ?: [];
-                                $nom = $parts[0] ?? $cleanNom;
-                                $ape = $parts[1] ?? '';
-                                $pila = function_exists('extract_first_name') ? extract_first_name($cleanNom) : $nom;
-
-                                $stmtPac = $pdo->prepare(
-                                    'INSERT INTO pacientes (telefono, nombre, apellido, nombre_completo, nombre_pila, profesional_habitual, origen)
-                                     VALUES (:tel, :nombre, :apellido, :full, :pila, :prof, "admin")
-                                     ON DUPLICATE KEY UPDATE
-                                        nombre = CASE WHEN nombre IS NULL OR nombre = "" THEN VALUES(nombre) ELSE nombre END,
-                                        apellido = CASE WHEN apellido IS NULL OR apellido = "" THEN VALUES(apellido) ELSE apellido END,
-                                        nombre_completo = CASE WHEN nombre_completo IS NULL OR nombre_completo = "" THEN VALUES(nombre_completo) ELSE nombre_completo END,
-                                        nombre_pila = CASE WHEN nombre_pila IS NULL OR nombre_pila = "" THEN VALUES(nombre_pila) ELSE nombre_pila END,
-                                        profesional_habitual = CASE WHEN profesional_habitual = "indistinto" AND VALUES(profesional_habitual) != "indistinto" THEN VALUES(profesional_habitual) ELSE profesional_habitual END'
-                                );
-                                $stmtPac->execute([
-                                    'tel' => $rawPhone,
-                                    'nombre' => mb_substr($nom, 0, 60, 'UTF-8'),
-                                    'apellido' => mb_substr($ape, 0, 60, 'UTF-8'),
-                                    'full' => mb_substr($cleanNom, 0, 120, 'UTF-8'),
-                                    'pila' => mb_substr($pila, 0, 60, 'UTF-8'),
-                                    'prof' => $profInferred,
-                                ]);
-                            }
-                            $directory['by_phone'][$phoneEndCheck] = $email;
-                        } catch (Throwable $syncEx) {
-                            error_log('kinesica recordatorios view: directory sync: ' . $syncEx->getMessage());
-                        }
-                    }
-                }
-            }
-        }
+        require_once __DIR__ . '/lib_recordatorios_view_sync_directory.php';
+        recordatorios_sync_item_to_directory($pdo, $item, $r, $email, $directory);
     }
 
     return [
