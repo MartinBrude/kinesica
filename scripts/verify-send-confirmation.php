@@ -109,7 +109,8 @@ check(
     && str_contains($sendConfSrc, "data['rotate_manage_code']"),
     'send-confirmation: rota solo con retry / rotate_manage_code'
 );
-$widgetSrc = file_get_contents(__DIR__ . '/../booking/booking-widget.js');
+$widgetSrc = file_get_contents(__DIR__ . '/../booking/booking-widget.js')
+    . "\n" . file_get_contents(__DIR__ . '/../booking/booking-widget-step3.js');
 check(
     str_contains($widgetSrc, 'rotate_manage_code: true')
     && str_contains($widgetSrc, 'retry: true'),

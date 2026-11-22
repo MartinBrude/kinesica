@@ -13,7 +13,12 @@ import { waMeUrl } from "./site-contact.mjs";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const require = createRequire(import.meta.url);
 const BookingWidget = require(path.join(root, "booking/booking-widget.js"));
-const src = fs.readFileSync(path.join(root, "booking/booking-widget.js"), "utf8");
+const src = [
+  "booking/booking-widget.js",
+  "booking/booking-widget-template.js",
+  "booking/booking-widget-events.js",
+  "booking/booking-widget-step2-dates.js",
+].map((f) => fs.readFileSync(path.join(root, f), "utf8")).join("\n");
 const copySrc = fs.readFileSync(path.join(root, "booking/booking-widget-copy.js"), "utf8");
 const i18nSrc = `${src}\n${copySrc}`;
 
