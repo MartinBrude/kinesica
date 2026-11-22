@@ -165,11 +165,7 @@ function kinesica_backup_friendly_date(string $dateStr): string
 }
 
 /**
- * Construye el título canónico del evento de Google Calendar igual que google-apps-script.js.
- */
-
-/**
- * Construye el título canónico del evento de Google Calendar igual que google-apps-script.js.
+ * Construye el título canónico del evento de Google Calendar igual que booking/gas (buildBookingEventMeta).
  */
 function kinesica_backup_build_summary(array $payload): string
 {

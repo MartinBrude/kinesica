@@ -86,7 +86,7 @@ function campana_fetch_appointments_from_gas(string $from, string $to): array
         $msg = (string) ($decoded['message'] ?? 'Error GAS list_appointments');
         if (stripos($msg, 'no reconocida') !== false) {
             $msg = 'El Apps Script en producción todavía no tiene list_appointments. '
-                . 'Pegá booking/google-apps-script.js en el editor de GAS y hacé Deploy → Manage deployments → Edit → New version. '
+                . 'Redeploy booking/gas con npm run gas:deploy (clasp actualiza la web app). '
                 . 'El ping debe devolver code_version v23-dni-not-phone.';
         } elseif (stripos($msg, 'unauthorized') !== false) {
             $msg = 'Secret no autorizado contra Apps Script. '

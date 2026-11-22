@@ -22,12 +22,13 @@ import path from "node:path";
 import vm from "node:vm";
 import { execSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { readGasSource } from "./gas-source.mjs";
 import engine from "../booking/booking-engine.js";
 import { validateCesionDraft, isValidIsoDate, isValidHm, hmToMin } from "../admin/modules/horarios-cesiones-validator.js";
 import { getOverrideStatusBadge, formatOverrideDescription } from "../admin/modules/horarios-cesiones-list.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const gasSource = fs.readFileSync(path.join(root, "booking/google-apps-script.js"), "utf8");
+const gasSource = readGasSource();
 
 console.log("\n🧪 --- Suite de Verificación Integral: Cesión de Horarios y Cierres ---");
 

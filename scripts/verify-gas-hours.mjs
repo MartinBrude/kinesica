@@ -4,9 +4,10 @@ import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
 import { fileURLToPath } from "node:url";
+import { readGasSource } from "./gas-source.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const src = fs.readFileSync(path.join(root, "booking/google-apps-script.js"), "utf8");
+const src = readGasSource();
 
 function load({ adminHours, status = 200, throws = false, events = [], props = {}, byUrl = null, body = null }) {
   const calls = [];

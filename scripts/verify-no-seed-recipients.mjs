@@ -1,6 +1,7 @@
 // Garantiza que ningún teléfono/mail de prueba pueda terminar recibiendo mensajes de pacientes reales.
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
+import { readGasSource } from "./gas-source.mjs";
 
 const SEED_PHONES = ["5491144556677", "5491155667788", "5491133445566", "5491177889900", "5491122334455",
   "5491166778899", "5491188990011", "5491111223344", "5491199001122", "5491133221100"];
@@ -29,8 +30,7 @@ assert.match(botHash, /^[0-9a-f]{64}$/, "bot_token.sha256 debe ser un SHA-256 en
 assert.match(pac, /bot_token\.sha256/);
 assert.match(pac, /hash_equals\(\$expectedHash, hash\('sha256', \$token\)\)/);
 console.log("destinatarios: ok (sin números de prueba, sin seed, sin pisar mails, con límite)");
-for (const f of ["booking/google-apps-script.js", "booking/google-apps-script.min.js"]) {
-  const g = readFileSync(f, "utf8");
+for (const [f, g] of [["booking/gas/*.js", readGasSource()]]) {
   assert.ok(!g.includes("1362220846964898"), `${f} usa el Phone Number ID viejo`);
   assert.ok(g.includes('"1340013275870491"'), `${f} debe usar el Phone Number ID 1340013275870491`);
 }

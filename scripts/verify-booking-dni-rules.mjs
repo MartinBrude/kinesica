@@ -9,6 +9,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "url";
 import { spawnSync } from "node:child_process";
+import { readGasSource } from "./gas-source.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const require = createRequire(import.meta.url);
@@ -50,7 +51,7 @@ echo "ok\\n";
 assert.equal(php.status, 0, php.stderr || php.stdout || "php failed");
 n += cases.length;
 
-const gasSrc = fs.readFileSync(path.join(root, "booking/google-apps-script.js"), "utf8");
+const gasSrc = readGasSource();
 assert.match(gasSrc, /function isValidBookingDni\(raw\)/);
 assert.match(gasSrc, /alnum\.length >= 5 && alnum\.length <= 12/);
 assert.match(gasSrc, /alnum\.length >= 5 && alnum\.length <= 20/);

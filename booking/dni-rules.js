@@ -2,7 +2,7 @@
  * Fuente única de validación DNI/pasaporte para la turnera.
  * Usar desde booking-validation.js; espejar en:
  *   - admin/api/lib_booking_dni.php (calendar_backup)
- *   - booking/google-apps-script.js → isValidBookingDni
+ *   - booking/gas/07-booking-validation.js → isValidBookingDni
  * Verificar: node scripts/verify-booking-dni-rules.mjs
  */
 (function (root, factory) {

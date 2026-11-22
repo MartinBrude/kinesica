@@ -37,13 +37,11 @@ npm run gas:deploy
 # 'clara_web_cancel_webhook_url' => 'https://n8n.kinesica.com.ar/webhook/web-cancel',
 ```
 
-Tras cambios en `booking/google-apps-script.js`, regenerar el minificado de respaldo:
+Tras cambios en `booking/gas/*.js`, redeploy:
 
 ```bash
-npx esbuild booking/google-apps-script.js --minify --outfile=booking/google-apps-script.min.js
+npm run gas:deploy
 ```
-
-(`npm run gas:deploy` sube el fuente `.js`, no el `.min.js`.)
 
 ## Build / tests
 

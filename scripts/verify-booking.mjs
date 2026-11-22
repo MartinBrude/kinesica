@@ -12,6 +12,7 @@ import { fileURLToPath } from "node:url";
 import engine from "../booking/booking-engine.js";
 import { CONTACT } from "./site-contact.mjs";
 import { ARGENTINA_HOLIDAYS } from "./argentina-holidays.mjs";
+import { GAS_HOLIDAYS_FILE } from "./gas-source.mjs";
 
 const {
   calculateAvailableSlots,
@@ -37,7 +38,7 @@ console.log("🩺 Ejecutando tests del motor de reservas de Kinésica...\n");
     assert.ok(m, `faltan markers de feriados en ${rel}`);
     return [...m[1].matchAll(/(\d{4}-\d{2}-\d{2})/g)].map((x) => x[1]);
   };
-  assert.deepEqual(extractMarked("booking/google-apps-script.js"), source, "GAS holidays desfasados — npm run holidays:sync");
+  assert.deepEqual(extractMarked(GAS_HOLIDAYS_FILE), source, "GAS holidays desfasados — npm run holidays:sync");
   assert.deepEqual(extractMarked("admin/api/lib_calendar_backup.php"), source, "backup PHP holidays desfasados — npm run holidays:sync");
   console.log("  ✅ Feriados DRY (engine / GAS / backup) alineados con argentina-holidays.mjs\n");
 }

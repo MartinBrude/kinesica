@@ -65,7 +65,7 @@ Valida:
 
 ## 🌐 4. Conexión con tu Google Calendar Real (Producción)
 
-El archivo [`google-apps-script.js`](./google-apps-script.js) es el backend serverless (Calendar + Sheets). El deploy a [script.google.com](https://script.google.com/) se hace con **clasp** (no hace falta copiar/pegar).
+El backend serverless (Calendar + Sheets) vive en [`gas/`](./gas/) como módulos `NN-*.js` (≤250 líneas c/u; ámbito global compartido). El deploy a [script.google.com](https://script.google.com/) se hace con **clasp** (no hace falta copiar/pegar).
 
 ### Deploy automático (recomendado)
 
@@ -82,7 +82,7 @@ Proyecto: [Apps Script turnera](https://script.google.com/home/projects/1oDT31aC
 Cada cambio después:
 
 ```bash
-# editás booking/google-apps-script.js
+# editás booking/gas/NN-*.js
 npm run gas:deploy
 ```
 

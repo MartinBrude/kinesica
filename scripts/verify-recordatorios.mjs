@@ -6,6 +6,7 @@ import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { readGasSource } from "./gas-source.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const admin = path.join(root, "admin");
@@ -76,7 +77,7 @@ if (!manualDispatch.includes("recordatorios_calendar_event_is_sendable")) {
   console.error("✗ dispatch manual debe revalidar Calendar antes de enviar");
   process.exit(1);
 }
-const gasSrc = fs.readFileSync(path.join(root, "booking/google-apps-script.js"), "utf8");
+const gasSrc = readGasSource();
 if (
   !gasSrc.includes('action === "check_events"') ||
   !gasSrc.includes("function handleCheckEvents") ||

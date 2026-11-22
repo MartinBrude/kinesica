@@ -82,7 +82,7 @@ function recordatorios_verify_calendar_events(array $calendarEventIds): array
         $msg = (string) ($decoded['message'] ?? 'Error GAS check_events');
         if (stripos($msg, 'no reconocida') !== false) {
             $msg = 'El Apps Script en producción todavía no tiene check_events. '
-                . 'Redeploy booking/google-apps-script.js (npm run gas:deploy).';
+                . 'Redeploy booking/gas (npm run gas:deploy).';
         }
         return ['ok' => false, 'error' => $msg, 'http_code' => $httpCode];
     }

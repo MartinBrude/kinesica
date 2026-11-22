@@ -1,4 +1,18 @@
 {
   "scriptId": "1oDT31aCTKOB35n1kS-iKzVHUn0ILDz8ZlRPwLEyvnnMsOTyZ5AYVebIm",
-  "rootDir": "."
+  "rootDir": ".",
+  "filePushOrder": [
+    "00-config.js",
+    "01-admin-hours.js",
+    "02-windows-holidays.js",
+    "03-router.js",
+    "04-slots.js",
+    "05-calendar-parse.js",
+    "06-appointments-read.js",
+    "07-booking-validation.js",
+    "08-booking.js",
+    "09-cancel.js",
+    "10-notify.js",
+    "11-backup.js"
+  ]
 }

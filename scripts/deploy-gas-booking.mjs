@@ -2,6 +2,8 @@
 /**
  * Deploy del backend de turnos a Google Apps Script vía clasp.
  *
+ * Fuente de verdad: booking/gas/NN-*.js (ámbito global compartido; ≤250 líneas c/u).
+ *
  * Uso:
  *   npm run gas:login          # una sola vez (abre el browser)
  *   npm run gas:setup          # crea .clasp.json si falta
@@ -18,14 +20,15 @@ import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { GAS_DIR, gasSourceFiles } from "./gas-source.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
-const gasDir = path.join(root, "booking", "gas");
-const sourceFile = path.join(root, "booking", "google-apps-script.js");
-const codeFile = path.join(gasDir, "Code.js");
+const gasDir = GAS_DIR;
 const claspJson = path.join(gasDir, ".clasp.json");
 const claspExample = path.join(gasDir, ".clasp.json.example");
+const legacyCodeJs = path.join(gasDir, "Code.js");
+const MAX_GAS_LINES = 250;
 
 /** Deployment ID de la web app pública (bookingApiUrl). NO crear uno nuevo. */
 const DEFAULT_DEPLOYMENT_ID =
@@ -52,11 +55,38 @@ function runClasp(args, { allowFail = false } = {}) {
   return result.status ?? 1;
 }
 
-function syncCode() {
-  if (!fs.existsSync(sourceFile)) die(`No existe ${sourceFile}`);
-  fs.mkdirSync(gasDir, { recursive: true });
-  fs.copyFileSync(sourceFile, codeFile);
-  console.log(`✓ Sync ${path.relative(root, sourceFile)} → booking/gas/Code.js`);
+/** Comprueba que existan los módulos numerados y ninguno pase de 250 líneas. */
+function assertGasSources() {
+  const files = gasSourceFiles();
+  if (!files.length) {
+    die(`No hay módulos NN-*.js en ${path.relative(root, gasDir)}`);
+  }
+  const oversized = [];
+  for (const name of files) {
+    const rel = path.join("booking", "gas", name);
+    const lines = fs.readFileSync(path.join(gasDir, name), "utf8").split(/\r?\n/).length;
+    if (lines > MAX_GAS_LINES) oversized.push(`${rel} (${lines})`);
+  }
+  if (oversized.length) {
+    die(
+      `Módulos GAS por encima de ${MAX_GAS_LINES} líneas:\n  - ${oversized.join("\n  - ")}`
+    );
+  }
+  console.log(
+    `✓ Fuente GAS: ${files.length} módulos en booking/gas/ (todos ≤${MAX_GAS_LINES} líneas)`
+  );
+  return files;
+}
+
+/**
+ * Quita el monolito legado Code.js (sync viejo desde google-apps-script.js)
+ * para que clasp no lo vuelva a subir junto con los NN-*.js.
+ */
+function removeLegacyCodeJs() {
+  if (fs.existsSync(legacyCodeJs)) {
+    fs.unlinkSync(legacyCodeJs);
+    console.log("✓ Eliminado booking/gas/Code.js legado (fuente = NN-*.js)");
+  }
 }
 
 function readClaspConfig() {
@@ -68,7 +98,7 @@ function readClaspConfig() {
   }
 }
 
-function ensureClaspConfig() {
+function ensureClaspConfig(files) {
   const fromEnv = String(process.env.GAS_BOOKING_SCRIPT_ID || "").trim();
   let cfg = readClaspConfig();
 
@@ -81,7 +111,6 @@ function ensureClaspConfig() {
 
   if (fromEnv) {
     cfg.scriptId = fromEnv;
-    fs.writeFileSync(claspJson, `${JSON.stringify(cfg, null, 2)}\n`);
   }
 
   const scriptId = String(cfg?.scriptId || "").trim();
@@ -101,6 +130,7 @@ function ensureClaspConfig() {
   }
 
   cfg.rootDir = ".";
+  cfg.filePushOrder = files;
   fs.writeFileSync(claspJson, `${JSON.stringify(cfg, null, 2)}\n`);
   return cfg;
 }
@@ -111,14 +141,22 @@ function deploymentId() {
   );
 }
 
+function preparePush() {
+  const files = assertGasSources();
+  removeLegacyCodeJs();
+  ensureClaspConfig(files);
+  return files;
+}
+
 function cmdSetup() {
-  syncCode();
+  const files = assertGasSources();
+  removeLegacyCodeJs();
   if (!fs.existsSync(claspJson) && fs.existsSync(claspExample)) {
     fs.copyFileSync(claspExample, claspJson);
     console.log("✓ Creado booking/gas/.clasp.json — pegá el scriptId y volvé a correr gas:deploy");
     return;
   }
-  ensureClaspConfig();
+  ensureClaspConfig(files);
   console.log("✓ Config lista. Corré: npm run gas:login && npm run gas:deploy");
 }
 
@@ -127,19 +165,17 @@ function cmdLogin() {
 }
 
 function cmdPush() {
-  syncCode();
-  ensureClaspConfig();
+  preparePush();
   runClasp(["push", "--force"]);
 }
 
 function cmdDeployments() {
-  ensureClaspConfig();
+  preparePush();
   runClasp(["list-deployments"]);
 }
 
 function cmdDeploy() {
-  syncCode();
-  ensureClaspConfig();
+  preparePush();
   const id = deploymentId();
   const desc =
     String(process.env.GAS_DEPLOY_DESCRIPTION || "").trim() ||

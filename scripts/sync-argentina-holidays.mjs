@@ -7,6 +7,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { ARGENTINA_HOLIDAYS } from "./argentina-holidays.mjs";
+import { GAS_HOLIDAYS_FILE } from "./gas-source.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const BEGIN = "BEGIN_ARGENTINA_HOLIDAYS";
@@ -47,6 +48,6 @@ function patch(rel, body) {
 }
 
 patch("booking/booking-engine.js", jsBody("    "));
-patch("booking/google-apps-script.js", jsBody("  "));
+patch(GAS_HOLIDAYS_FILE, jsBody("  "));
 patch("admin/api/lib_calendar_backup.php", phpBody("    "));
 console.log(`Synced ${ARGENTINA_HOLIDAYS.length} holidays.`);
