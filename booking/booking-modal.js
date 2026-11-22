@@ -15,9 +15,7 @@
   "use strict";
 
   let modalEl = null;
-  let widgetInstance = null;
   let inlineWidgetInstance = null;
-  let previousActiveElement = null;
   let bookingAvailable = null;
   let availabilityPromise = null;
   let pendingOpenAction = null;
@@ -197,58 +195,6 @@
     return prefix + "agendar.html" + hash;
   }
 
-  function ensureBookingWidgetCssLoaded() {
-    if (typeof document === "undefined") return;
-    if (document.querySelector('link[href*="booking-widget"]')) return;
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    const lang = resolveLang();
-    const prefix = lang === "es" ? "" : "../";
-    link.href = prefix + "booking/booking-widget.min.css";
-    document.head.appendChild(link);
-  }
-
-  function createModalDOM() {
-    if (modalEl) return modalEl;
-
-    ensureBookingWidgetCssLoaded();
-
-    modalEl = document.createElement("div");
-    modalEl.id = "kinesica-booking-modal";
-    modalEl.className = "kinesica-booking-modal-overlay";
-    modalEl.setAttribute("role", "dialog");
-    modalEl.setAttribute("aria-modal", "true");
-    const lang = (document.documentElement.lang || "es").toLowerCase();
-    const aria = lang.indexOf("en") === 0 ? "Book" : lang.indexOf("fr") === 0 ? "Réserver" : lang.indexOf("pt") === 0 ? "Agendar" : "Agendar";
-    modalEl.setAttribute("aria-label", aria);
-    modalEl.setAttribute("aria-hidden", "true");
-
-    modalEl.innerHTML = `
-      <div class="kinesica-booking-modal-backdrop" data-action="close-modal"></div>
-      <div class="kinesica-booking-modal-dialog">
-        <div class="kinesica-booking-modal-body">
-          <div id="kinesica-modal-widget-mount"></div>
-        </div>
-      </div>
-    `;
-
-    document.body.appendChild(modalEl);
-
-    // Click en backdrop para cerrar
-    modalEl.addEventListener("click", function (e) {
-      if (
-        e.target === modalEl ||
-        (e.target.dataset && e.target.dataset.action === "close-modal") ||
-        (e.target.closest && e.target.closest('[data-action="close-modal"]'))
-      ) {
-        e.preventDefault();
-        KinesicaBookingModal.close();
-      }
-    });
-
-    return modalEl;
-  }
-
   const KinesicaBookingModal = {
     init() {
       const cachedActive = readCachedBookingActive();
@@ -412,9 +358,6 @@
         if (inlineWidgetInstance && typeof inlineWidgetInstance.updateFees === "function") {
           inlineWidgetInstance.updateFees(fees);
         }
-        if (widgetInstance && typeof widgetInstance.updateFees === "function") {
-          widgetInstance.updateFees(fees);
-        }
       };
 
       const applyOverrides = (ovs) => {
@@ -461,9 +404,6 @@
     invalidateCache() {
       if (inlineWidgetInstance && inlineWidgetInstance.client && typeof inlineWidgetInstance.client.clearCache === "function") {
         inlineWidgetInstance.client.clearCache();
-      }
-      if (widgetInstance && widgetInstance.client && typeof widgetInstance.client.clearCache === "function") {
-        widgetInstance.client.clearCache();
       } else if (
         typeof window !== "undefined" &&
         window.KinesicaBookingClient &&
@@ -526,10 +466,6 @@
         inlineWidgetInstance.client.prewarm();
         return;
       }
-      if (widgetInstance && widgetInstance.client && typeof widgetInstance.client.prewarm === "function") {
-        widgetInstance.client.prewarm();
-        return;
-      }
       const now = Date.now();
       if (window.__kinesicaPrewarmAt && now - window.__kinesicaPrewarmAt < 90000) return;
       window.__kinesicaPrewarmAt = now;
@@ -586,9 +522,6 @@
       modalEl.setAttribute("aria-hidden", "true");
       document.body.classList.remove("kinesica-booking-modal-open");
 
-      if (widgetInstance && typeof widgetInstance.reset === "function") {
-        widgetInstance.reset();
-      }
       const dialog = modalEl.querySelector(".kinesica-booking-modal-dialog");
       if (dialog) dialog.scrollTop = 0;
       const body = modalEl.querySelector(".kinesica-booking-modal-body");
@@ -602,12 +535,6 @@
             window.location.hash = "";
           }
         }
-      }
-
-      if (previousActiveElement && typeof previousActiveElement.focus === "function") {
-        try {
-          previousActiveElement.focus();
-        } catch (e) {}
       }
     },
   };

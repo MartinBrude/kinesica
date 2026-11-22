@@ -94,24 +94,3 @@ export function repoPath(lang, stem) {
     ? `${entry.urlPrefix}/index.html`
     : `${entry.urlPrefix}/${stem}.html`;
 }
-
-/** Legacy absolute URLs (pre-migration) for redirects. */
-export function legacyAbsoluteUrl(lang, stem) {
-  if (lang === DEFAULT_LANG) {
-    return absoluteUrl(DEFAULT_LANG, stem);
-  }
-  if (stem === "index") {
-    return `${SITE}/index_${lang}.html`;
-  }
-  return `${SITE}/${stem}_${lang}.html`;
-}
-
-export function legacyRepoPath(lang, stem) {
-  if (lang === DEFAULT_LANG) {
-    return repoPath(DEFAULT_LANG, stem);
-  }
-  if (stem === "index") {
-    return `index_${lang}.html`;
-  }
-  return `${stem}_${lang}.html`;
-}

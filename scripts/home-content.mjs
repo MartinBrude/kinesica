@@ -1158,25 +1158,4 @@ export function homeForLang(lang) {
   return HOME[lang] ?? null;
 }
 
-/** Team copy for home about block. */
-export function homeTeamAbout(lang) {
-  return TEAM_ABOUT[lang] || TEAM_ABOUT.es;
-}
-
-/** Method cards with hrefs for home method grid. */
-export function homeMethodCardsForLang(lang) {
-  return HOME_METHOD_CARD_STEMS.map((stem) => {
-    const card = HOME_METHOD_CARDS[stem][lang];
-    return {
-      stem,
-      href: sitePath(lang, stem),
-      image: HOME_METHOD_CARD_IMAGES[stem],
-      title: card.title,
-      imgTitle: card.imgTitle,
-      imgAlt: card.imgAlt,
-      lead: card.lead,
-    };
-  });
-}
-
 export { LANG_CODES };

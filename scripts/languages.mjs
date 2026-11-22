@@ -97,10 +97,6 @@ export function partialLang(code) {
   return langByCode(code) ? code : DEFAULT_LANG;
 }
 
-export function snippetVar(prefix, code) {
-  return `__KINESICA_${prefix}_SNIPPET_${partialLang(code).toUpperCase()}`;
-}
-
 export function expectedLangFromFile(file) {
   for (const lang of LANGUAGES) {
     if (lang.urlPrefix && file.startsWith(`${lang.urlPrefix}/`)) {

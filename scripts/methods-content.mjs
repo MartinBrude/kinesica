@@ -575,7 +575,3 @@ export const METHODS = {
 };
 
 /** @typedef {{ metaTitle: string, metaDescription: string, breadcrumb: string, h1: string, lead: string, blocks: Array<{ type: 'p'|'h2', text: string }> }} MethodLang */
-
-export function methodForStem(stem) {
-  return METHODS[stem] ?? null;
-}
