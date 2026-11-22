@@ -82,6 +82,20 @@
     });
   }
 
+  /**
+   * true si la técnica solo la ofrecen profesionales con baja activa (end ≥ hoy).
+   * Ej. Acupuntura/Posturología con María de baja.
+   */
+  function isTechniqueBlockedByActiveLeave(techniqueId, customOverrides) {
+    const technique = cfg.getTechnique(techniqueId);
+    if (!technique || technique.bySchedule || technique.internal) return false;
+    const pracs = Array.isArray(technique.practitioners) ? technique.practitioners : [];
+    if (pracs.length === 0) return false;
+    return pracs.every(function (pid) {
+      return Boolean(getActiveLeaveEndIso(pid, customOverrides));
+    });
+  }
+
   /** Fin de baja activa (end_date ≥ hoy), o null si no hay. */
   function getActiveLeaveEndIso(practitionerId, customOverrides) {
     if (!practitionerId) return null;
@@ -319,6 +333,7 @@
     practitionersAt,
     isPractitionerOnLeave,
     getActiveLeaveEndIso,
+    isTechniqueBlockedByActiveLeave,
     isTechniqueOfferedOnDate,
     practitionersAvailableOnDate,
     practitionersBookableForTechnique,

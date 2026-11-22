@@ -142,6 +142,10 @@
                 if (typeof this.renderExistingPractitionerChoices === "function") {
                   this.renderExistingPractitionerChoices();
                 }
+                if (typeof this.renderTechniqueChoices === "function") {
+                  this.renderTechniqueChoices();
+                }
+                if (typeof this.syncStep1Continue === "function") this.syncStep1Continue();
               }
               if (data.fees) this.updateFees(data.fees);
             }

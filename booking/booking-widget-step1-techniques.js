@@ -10,11 +10,29 @@
   "use strict";
 
   function attachStep1Techniques(proto) {
+    proto.isTechniqueBlockedByLeave = function (techniqueId) {
+      if (!techniqueId || !engine || typeof engine.isTechniqueBlockedByActiveLeave !== "function") {
+        return false;
+      }
+      return engine.isTechniqueBlockedByActiveLeave(techniqueId);
+    };
+
     proto.renderTechniqueChoices = function () {
       const grid = this.container.querySelector("#kb-technique-grid");
       if (!grid) return;
       grid.innerHTML = "";
-      const techniques = (engine && engine.TECHNIQUES) || [];
+      const isAdmin = Boolean(this.options && this.options.adminMode);
+      const techniques = ((engine && engine.TECHNIQUES) || []).filter((t) => {
+        if (!t || t.internal) return false;
+        // Admin puede seguir viendo exclusivas; en público se ocultan con baja.
+        if (!isAdmin && this.isTechniqueBlockedByLeave(t.id)) return false;
+        return true;
+      });
+      if (this.state.techniqueId && this.isTechniqueBlockedByLeave(this.state.techniqueId) && !isAdmin) {
+        this.state.techniqueId = null;
+        this.state.practitionerId = null;
+        this.state.practitionerPreference = null;
+      }
       const featuredIds = this.featuredTechniqueIds();
       const featured = [];
       const more = [];
@@ -89,6 +107,7 @@
       if (!techniqueId || typeof techniqueId !== "string") return;
       const technique = engine && typeof engine.getTechnique === "function" ? engine.getTechnique(techniqueId) : null;
       if (!technique) return;
+      if (!(this.options && this.options.adminMode) && this.isTechniqueBlockedByLeave(techniqueId)) return;
 
       this.state.techniqueId = techniqueId;
       const bookable = this.bookablePractitionersForTechnique(technique);

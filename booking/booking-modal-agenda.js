@@ -39,6 +39,15 @@
       if (typeof window !== "undefined" && window.KinesicaBookingEngine?.setScheduleOverrides) {
         window.KinesicaBookingEngine.setScheduleOverrides(ovs);
       }
+      if (inlineWidgetInstance && typeof inlineWidgetInstance.renderTechniqueChoices === "function") {
+        inlineWidgetInstance.renderTechniqueChoices();
+      }
+      if (inlineWidgetInstance && typeof inlineWidgetInstance.renderExistingPractitionerChoices === "function") {
+        inlineWidgetInstance.renderExistingPractitionerChoices();
+      }
+      if (inlineWidgetInstance && typeof inlineWidgetInstance.syncStep1Continue === "function") {
+        inlineWidgetInstance.syncStep1Continue();
+      }
     };
 
     try {

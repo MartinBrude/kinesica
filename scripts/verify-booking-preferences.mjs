@@ -88,6 +88,19 @@ function createMockElement(id = "", tag = "div") {
       child.parentNode = el;
       return child;
     },
+    insertBefore: (newNode, refNode) => {
+      if (!newNode) return null;
+      const idx = refNode ? children.indexOf(refNode) : -1;
+      if (idx === -1) children.push(newNode);
+      else children.splice(idx, 0, newNode);
+      newNode.parentNode = el;
+      return newNode;
+    },
+    get nextSibling() {
+      if (!el.parentNode || !Array.isArray(el.parentNode.children)) return null;
+      const idx = el.parentNode.children.indexOf(el);
+      return idx >= 0 ? el.parentNode.children[idx + 1] || null : null;
+    },
     querySelectorAll: (sel) => {
       const results = [];
       function walk(node) {
@@ -607,6 +620,85 @@ test("paciente habitual: con María de baja se grisá su tarjeta, muestra leyend
     assert.equal(waBtn.dataset.waPractitioner, "norberto");
     assert.match(waBtn.textContent, /Norberto/);
     assert.equal(btnNext1.disabled, true);
+  } finally {
+    engine.resetScheduleOverrides();
+  }
+});
+
+test("con María de baja: exclusivas (acupuntura/posturología) bloqueadas; compartidas no", () => {
+  const leave = {
+    id: "cov_pref_exclusive_leave",
+    action: "transfer",
+    from_practitioner: "maria",
+    to_practitioner: "norberto",
+    period_type: "date_range",
+    start_date: "2026-11-23",
+    end_date: "2026-12-11",
+    time_scope: "all_day",
+    practitioner_on_leave: true,
+    active: true,
+  };
+  engine.setScheduleOverrides([leave]);
+  try {
+    assert.equal(engine.isTechniqueBlockedByActiveLeave("acupuntura"), true);
+    assert.equal(engine.isTechniqueBlockedByActiveLeave("posturologia"), true);
+    assert.equal(engine.isTechniqueBlockedByActiveLeave("rpg"), false);
+    assert.equal(engine.isTechniqueBlockedByActiveLeave("osteopatia"), false);
+    assert.equal(engine.isTechniqueBlockedByActiveLeave("no-se"), false);
+  } finally {
+    engine.resetScheduleOverrides();
+  }
+});
+
+test("paso 1 público: con baja no renderiza chips exclusivos de María", () => {
+  engine.setScheduleOverrides([{
+    id: "cov_pref_exclusive_ui",
+    action: "transfer",
+    from_practitioner: "maria",
+    to_practitioner: "norberto",
+    period_type: "date_range",
+    start_date: "2026-11-23",
+    end_date: "2026-12-11",
+    time_scope: "all_day",
+    practitioner_on_leave: true,
+    active: true,
+  }]);
+
+  const container = createMockElement("container");
+  const techGrid = createMockElement("kb-technique-grid");
+  const techParent = createMockElement("kb-technique-parent");
+  techParent.appendChild(techGrid);
+  container.appendChild(techParent);
+
+  const widget = Object.create(BookingWidget.prototype);
+  widget.container = container;
+  widget.copy = BookingWidgetCopy.COPY.es;
+  widget.options = { adminMode: false };
+  widget.state = {
+    existingPatient: false,
+    techniqueId: "acupuntura",
+    practitionerId: "maria",
+    showMoreTechniques: true,
+  };
+  widget.fees = { general: 75000, atm: 65000 };
+  widget.formatFee = (n) => String(n);
+  widget.getFeeForTechnique = () => 75000;
+  widget.t = (k) => (BookingWidgetCopy.COPY.es && BookingWidgetCopy.COPY.es[k]) || k;
+
+  try {
+    assert.equal(widget.isTechniqueBlockedByLeave("acupuntura"), true);
+    widget.renderTechniqueChoices();
+    const ids = [];
+    const walk = (node) => {
+      if (!node) return;
+      if (node.dataset && node.dataset.technique) ids.push(node.dataset.technique);
+      (node.children || []).forEach(walk);
+    };
+    walk(container);
+    assert.ok(!ids.includes("acupuntura"), "Acupuntura no debe ofrecerse en baja");
+    assert.ok(!ids.includes("posturologia"), "Posturología no debe ofrecerse en baja");
+    assert.ok(ids.includes("rpg") || ids.includes("osteopatia") || ids.includes("no-se"));
+    assert.equal(widget.state.techniqueId, null, "Selección exclusiva se limpia");
   } finally {
     engine.resetScheduleOverrides();
   }
