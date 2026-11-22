@@ -324,10 +324,38 @@
   text-align: left;
 }
 
-.kb-choice-card:hover:not(.selected) {
+.kb-choice-card:hover:not(.selected):not(.kb-choice-card--unavailable) {
   border-color: var(--kin-primary);
   background: var(--kin-bg-sky);
   box-shadow: 0 4px 14px rgba(0, 95, 153, 0.1);
+}
+
+.kb-choice-card--unavailable {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #f3f5f7;
+  border-color: #e2e8f0;
+  box-shadow: none;
+  color: #64748b;
+}
+
+.kb-choice-card--unavailable h3 {
+  color: #64748b;
+}
+
+.kb-leave-notice {
+  margin: -4px 0 18px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #f7fafc 0%, #eef4f8 100%);
+  border: 1px solid #d5e3ee;
+}
+
+.kb-leave-notice-text {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: #334155;
 }
 
 .kb-choice-card.selected {

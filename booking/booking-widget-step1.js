@@ -43,6 +43,7 @@
       });
       const practitionerBox = this.container.querySelector("#kb-practitioner-box");
       if (practitionerBox) practitionerBox.hidden = true;
+      if (isExisting) this.renderExistingPractitionerChoices();
       if (!isExisting) this.renderTechniqueChoices();
       if (this.options.adminMode) this.applyAdminPatientData();
       this.syncStep1Continue();
@@ -130,31 +131,6 @@
       if (techTitle) techTitle.textContent = "Técnica";
       const preferTitle = q("#kb-practitioner-box .kb-section-title");
       if (preferTitle) preferTitle.textContent = "Profesional";
-    };
-
-    proto.renderExistingPractitionerChoices = function () {
-      const grid = this.container.querySelector("#kb-existing-practitioner-grid");
-      if (!grid) return;
-      grid.innerHTML = "";
-      const practitioners = (engine && engine.PRACTITIONERS) || {};
-      Object.keys(practitioners).forEach((id) => {
-        const card = document.createElement("div");
-        card.className = "kb-choice-card";
-        if (this.state.practitionerId === id && this.state.techniqueId === "paciente") {
-          card.classList.add("selected");
-        }
-        card.dataset.practitioner = id;
-        card.innerHTML = `<h3>${this.practitionerFullName(id)}</h3>`;
-        card.addEventListener("click", () => {
-          this.state.practitionerId = id;
-          this.state.techniqueId = "paciente";
-          grid.querySelectorAll(".kb-choice-card").forEach((c) => {
-            c.classList.toggle("selected", c.dataset.practitioner === id);
-          });
-          this.syncStep1Continue();
-        });
-        grid.appendChild(card);
-      });
     };
 
     proto.reset = function () {

@@ -82,6 +82,32 @@
     });
   }
 
+  /** Fin de baja activa (end_date ≥ hoy), o null si no hay. */
+  function getActiveLeaveEndIso(practitionerId, customOverrides) {
+    if (!practitionerId) return null;
+    const pid = String(practitionerId).toLowerCase().trim();
+    const today = formatDateIso(new Date());
+    const overridesList = Array.isArray(customOverrides) ? customOverrides : cfg.getScheduleOverrides();
+    let endIso = null;
+    overridesList.forEach(function (ov) {
+      if (!ov || ov.active === false || ov.action !== "transfer") return;
+      if (ov.practitioner_on_leave !== true) return;
+      if (String(ov.from_practitioner || "").toLowerCase() !== pid) return;
+      const start = String(ov.start_date || "").trim();
+      const end = String(ov.end_date || start).trim();
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(end) || end < today) return;
+      // Incluye bajas ya iniciadas o próximas (configuradas con pasajes).
+      if (start && /^\d{4}-\d{2}-\d{2}$/.test(start) && start > today) {
+        const startDate = parseLocalDate(start);
+        const limit = new Date();
+        limit.setDate(limit.getDate() + MAX_BOOKING_DAYS);
+        if (startDate > limit) return;
+      }
+      if (!endIso || end > endIso) endIso = end;
+    });
+    return endIso;
+  }
+
   function techniquePractitionerCandidates(techniqueId) {
     const technique = cfg.getTechnique(techniqueId);
     if (!technique) return [];
@@ -292,6 +318,7 @@
     getWorkingWindows,
     practitionersAt,
     isPractitionerOnLeave,
+    getActiveLeaveEndIso,
     isTechniqueOfferedOnDate,
     practitionersAvailableOnDate,
     practitionersBookableForTechnique,

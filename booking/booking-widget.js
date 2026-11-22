@@ -20,6 +20,7 @@
       "./booking-widget-dom",
       "./booking-widget-events",
       "./booking-widget-step1-techniques",
+      "./booking-widget-step1-existing",
       "./booking-widget-step1",
       "./booking-widget-step2-dates",
       "./booking-widget-step2-slots",
@@ -37,6 +38,7 @@
       require("./booking-widget-dom"),
       require("./booking-widget-events"),
       require("./booking-widget-step1-techniques"),
+      require("./booking-widget-step1-existing"),
       require("./booking-widget-step1"),
       require("./booking-widget-step2-dates"),
       require("./booking-widget-step2-slots"),
@@ -54,6 +56,7 @@
       root.KinesicaBookingWidgetDom,
       root.KinesicaBookingWidgetEvents,
       root.KinesicaBookingWidgetStep1Techniques,
+      root.KinesicaBookingWidgetStep1Existing,
       root.KinesicaBookingWidgetStep1,
       root.KinesicaBookingWidgetStep2Dates,
       root.KinesicaBookingWidgetStep2Slots,
@@ -71,6 +74,7 @@
   domModule,
   eventsModule,
   step1TechModule,
+  step1ExistingModule,
   step1Module,
   step2DatesModule,
   step2SlotsModule,
@@ -135,6 +139,9 @@
               }
               if (data.schedule_overrides && engine && typeof engine.setScheduleOverrides === "function") {
                 engine.setScheduleOverrides(data.schedule_overrides);
+                if (typeof this.renderExistingPractitionerChoices === "function") {
+                  this.renderExistingPractitionerChoices();
+                }
               }
               if (data.fees) this.updateFees(data.fees);
             }
@@ -151,6 +158,7 @@
   const dom = domModule || (typeof self !== "undefined" && self.KinesicaBookingWidgetDom);
   const events = eventsModule || (typeof self !== "undefined" && self.KinesicaBookingWidgetEvents);
   const step1Tech = step1TechModule || (typeof self !== "undefined" && self.KinesicaBookingWidgetStep1Techniques);
+  const step1Existing = step1ExistingModule || (typeof self !== "undefined" && self.KinesicaBookingWidgetStep1Existing);
   const step1 = step1Module || (typeof self !== "undefined" && self.KinesicaBookingWidgetStep1);
   const step2Dates = step2DatesModule || (typeof self !== "undefined" && self.KinesicaBookingWidgetStep2Dates);
   const step2Slots = step2SlotsModule || (typeof self !== "undefined" && self.KinesicaBookingWidgetStep2Slots);
@@ -161,6 +169,7 @@
   if (dom && dom.attachDomMethods) dom.attachDomMethods(BookingWidget.prototype, BookingWidget);
   if (events && events.attachEventMethods) events.attachEventMethods(BookingWidget.prototype, BookingWidget);
   if (step1Tech && step1Tech.attachStep1Techniques) step1Tech.attachStep1Techniques(BookingWidget.prototype);
+  if (step1Existing && step1Existing.attachStep1Existing) step1Existing.attachStep1Existing(BookingWidget.prototype);
   if (step1 && step1.attachStep1Methods) step1.attachStep1Methods(BookingWidget.prototype);
   if (step2Dates && step2Dates.attachStep2Dates) step2Dates.attachStep2Dates(BookingWidget.prototype);
   if (step2Slots && step2Slots.attachStep2Slots) step2Slots.attachStep2Slots(BookingWidget.prototype);

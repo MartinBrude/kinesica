@@ -45,9 +45,11 @@
       const waExistingBtn = q("#kb-btn-wa-existing");
       if (waExistingBtn) {
         waExistingBtn.addEventListener("click", () => {
-          if (!this.state.practitionerId) { this.showError(this.t("errWho")); return; }
+          const fromBtn = (waExistingBtn.dataset && waExistingBtn.dataset.waPractitioner) || "";
+          const pid = fromBtn || this.state.practitionerId;
+          if (!pid) { this.showError(this.t("errWho")); return; }
           this.clearError();
-          this.openPractitionerWhatsApp(this.state.practitionerId);
+          this.openPractitionerWhatsApp(pid);
         });
       }
 

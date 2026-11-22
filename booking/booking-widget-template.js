@@ -38,6 +38,9 @@
               <div class="kb-section-title" style="font-size: 17px;">${widget.t("qWho")}</div>
               <p class="kb-section-hint" id="kb-existing-hint" ${widget.options.adminMode ? "hidden" : ""}>${widget.t("existingHint")}</p>
               <div class="kb-choice-grid" id="kb-existing-practitioner-grid"></div>
+              <div id="kb-existing-leave-notice" class="kb-leave-notice" hidden role="status">
+                <p class="kb-leave-notice-text" id="kb-existing-leave-notice-text"></p>
+              </div>
             </div>
 
             <div id="kb-new-box" class="kb-step1-followup" hidden>

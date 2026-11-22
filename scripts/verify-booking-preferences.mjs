@@ -550,4 +550,66 @@ test("css/style.css: .booking-page-widget-mount tiene margin: 0 auto; y no hay b
   );
 });
 
+test("paciente habitual: con María de baja se grisá su tarjeta, muestra leyenda y WA a Norberto", () => {
+  engine.setScheduleOverrides([{
+    id: "cov_pref_existing_leave_ui",
+    action: "transfer",
+    from_practitioner: "maria",
+    to_practitioner: "norberto",
+    period_type: "date_range",
+    start_date: "2026-11-23",
+    end_date: "2026-12-11",
+    time_scope: "all_day",
+    practitioner_on_leave: true,
+    active: true,
+  }]);
+
+  const container = createMockElement("container");
+  const existingBox = createMockElement("kb-existing-box");
+  existingBox.hidden = false;
+  const pracGrid = createMockElement("kb-existing-practitioner-grid");
+  const notice = createMockElement("kb-existing-leave-notice");
+  notice.hidden = true;
+  const noticeText = createMockElement("kb-existing-leave-notice-text");
+  const waBtn = createMockElement("kb-btn-wa-existing");
+  waBtn.hidden = true;
+  const btnNext1 = createMockElement("kb-btn-next-1");
+  existingBox.appendChild(pracGrid);
+  existingBox.appendChild(notice);
+  notice.appendChild(noticeText);
+  container.appendChild(existingBox);
+  container.appendChild(waBtn);
+  container.appendChild(btnNext1);
+
+  const widget = Object.create(BookingWidget.prototype);
+  widget.container = container;
+  widget.copy = BookingWidgetCopy.COPY.es;
+  widget.options = { adminMode: false };
+  widget.state = {
+    existingPatient: true,
+    practitionerId: "maria",
+    techniqueId: "paciente",
+  };
+
+  try {
+    assert.equal(engine.getActiveLeaveEndIso("maria"), "2026-12-11");
+    assert.match(widget.getMariaLeaveNoticeText(), /ausente hasta el 11\/12/);
+    widget.renderExistingPractitionerChoices();
+
+    const cardMaria = pracGrid.children.find((c) => c.dataset.practitioner === "maria");
+    const cardNorberto = pracGrid.children.find((c) => c.dataset.practitioner === "norberto");
+    assert.ok(cardMaria && cardNorberto);
+    assert.ok(cardMaria.className.includes("kb-choice-card--unavailable"));
+    assert.equal(widget.state.practitionerId, null, "No puede quedar María seleccionada en baja");
+    assert.equal(notice.hidden, false);
+    assert.match(noticeText.textContent, /Norberto Brude/);
+    assert.equal(waBtn.hidden, false);
+    assert.equal(waBtn.dataset.waPractitioner, "norberto");
+    assert.match(waBtn.textContent, /Norberto/);
+    assert.equal(btnNext1.disabled, true);
+  } finally {
+    engine.resetScheduleOverrides();
+  }
+});
+
 console.log(`\n🎉 Resultado: ${passed}/${total} tests de preferencias y agendar superados con éxito.\n`);

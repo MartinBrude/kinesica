@@ -66,6 +66,7 @@ export const SHARED_BUNDLES = {
     "booking/booking-widget-dom.js",
     "booking/booking-widget-events.js",
     "booking/booking-widget-step1-techniques.js",
+    "booking/booking-widget-step1-existing.js",
     "booking/booking-widget-step1.js",
     "booking/booking-widget-step2-dates.js",
     "booking/booking-widget-step2-slots.js",

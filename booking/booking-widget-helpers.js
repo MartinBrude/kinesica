@@ -103,6 +103,25 @@
       return this.practitionerGenderLabel(normalized);
     };
 
+    proto.formatIsoDateDisplay = function (iso) {
+      const parts = String(iso || "").split("-");
+      if (parts.length !== 3) return String(iso || "");
+      return `${parts[2]}/${parts[1]}`;
+    };
+
+    /** Fin de baja activa de un profesional (ISO), o null. */
+    proto.getActiveLeaveEndIso = function (practitionerId) {
+      if (!practitionerId || !engine || typeof engine.getActiveLeaveEndIso !== "function") return null;
+      return engine.getActiveLeaveEndIso(practitionerId);
+    };
+
+    proto.getMariaLeaveNoticeText = function () {
+      const endIso = this.getActiveLeaveEndIso("maria");
+      if (!endIso) return null;
+      const tpl = this.t("mariaLeaveNotice") || "";
+      return String(tpl).replace("{date}", this.formatIsoDateDisplay(endIso));
+    };
+
     /** true si hay ≥2 profesionales elegibles (horizonte o día concreto). */
     proto.hasGenderPreferenceChoice = function (dateIso) {
       if (!this.state || this.state.existingPatient === true) return false;

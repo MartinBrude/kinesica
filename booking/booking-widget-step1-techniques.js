@@ -167,6 +167,11 @@
       const waBtn = this.container.querySelector("#kb-btn-wa-existing");
       const technique = engine && typeof engine.getTechnique === "function" ? engine.getTechnique(this.state.techniqueId) : null;
       const isExisting = this.state.existingPatient === true;
+      const mariaOnLeave = Boolean(this.getActiveLeaveEndIso && this.getActiveLeaveEndIso("maria"));
+      if (isExisting && mariaOnLeave && this.state.practitionerId === "maria") {
+        this.state.practitionerId = null;
+        this.state.techniqueId = null;
+      }
       const ready = isExisting
         ? Boolean(this.state.practitionerId)
         : Boolean(technique);
@@ -174,11 +179,15 @@
         btn.disabled = !ready;
         btn.textContent = this.t("seeSlots");
       }
+      if (typeof this.syncExistingLeaveNotice === "function") this.syncExistingLeaveNotice();
       if (waBtn) {
-        const showWa = isExisting && !this.options.adminMode && Boolean(this.state.practitionerId);
+        const leaveWaTarget = isExisting && mariaOnLeave && !this.options.adminMode ? "norberto" : null;
+        const waTarget = leaveWaTarget || (isExisting && !this.options.adminMode ? this.state.practitionerId : null);
+        const showWa = Boolean(waTarget);
         waBtn.hidden = !showWa;
+        waBtn.dataset.waPractitioner = waTarget || "";
         if (showWa) {
-          const name = this.practitionerFullName(this.state.practitionerId);
+          const name = this.practitionerFullName(waTarget);
           waBtn.textContent = String(this.t("whatsappToPro") || "").replace("{name}", name);
         }
       }

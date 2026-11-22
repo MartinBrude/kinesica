@@ -131,6 +131,7 @@
     practitionersAt: slotsMod.practitionersAt,
     getWorkingWindows: slotsMod.getWorkingWindows,
     isPractitionerOnLeave: slotsMod.isPractitionerOnLeave,
+    getActiveLeaveEndIso: slotsMod.getActiveLeaveEndIso,
     isTechniqueOfferedOnDate: slotsMod.isTechniqueOfferedOnDate,
     practitionersAvailableOnDate: slotsMod.practitionersAvailableOnDate,
     practitionersBookableForTechnique: slotsMod.practitionersBookableForTechnique,
