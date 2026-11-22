@@ -377,7 +377,7 @@
     if (summarySlot) summarySlot.remove();
 
     clearLoading(grid);
-    balanceReviewOrder(data.reviews)
+    data.reviews
       .slice(0, DISPLAY_REVIEWS)
       .forEach(function (review) {
         grid.appendChild(renderCard(review, copy.lang || "es"));

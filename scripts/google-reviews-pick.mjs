@@ -111,9 +111,9 @@ export function pickReviews(reviews, max = 5) {
     .slice(0, max);
 }
 
-/** Pick + balanced layout for display (extremes dense, center lighter). */
+/** Pick reviews for display in chronological order (newest first). */
 export function pickReviewsForDisplay(reviews, max = 5) {
-  return balanceReviewOrder(pickReviews(reviews, max));
+  return pickReviews(reviews, max);
 }
 
 export const REVIEW_LANG_CODES = ["es", "en", "fr", "pt"];

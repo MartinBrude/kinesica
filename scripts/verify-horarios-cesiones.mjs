@@ -143,7 +143,7 @@ console.log("  ✓ Cesiones de jornada completa validadas en ambas direcciones."
 // =========================================================================
 // 5. Regla Física Estricta de 1 Sola Camilla (Sin Solapamientos)
 // =========================================================================
-console.log("\n5. Verificando regla física de 1 sola camilla en Charcas 3889...");
+console.log("\n5. Verificando regla física de 1 sola camilla en el consultorio...");
 const generalSlots = engine.calculateAvailableSlots({ date: "2026-11-30" });
 const slotTimes = new Set();
 for (const s of generalSlots) {

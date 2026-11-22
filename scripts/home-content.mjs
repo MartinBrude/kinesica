@@ -14,7 +14,6 @@ import { SITE_OG_IMAGE } from "./page-shell.mjs";
 import { waMeUrl } from "./site-contact.mjs";
 import { readExistingPayload } from "./fetch-google-reviews.mjs";
 import {
-  balanceReviewOrder,
   localizeReviews,
   pickReviews,
 } from "./google-reviews-pick.mjs";
@@ -672,8 +671,7 @@ export function getStaticReviews(lang, count = 3) {
   const list =
     payload.byLang?.[lang] || (lang === "es" ? payload.reviews : []) || [];
   const localized = localizeReviews(list, lang, payload.translations);
-  const picked = pickReviews(localized, 5);
-  return balanceReviewOrder(picked).slice(0, count);
+  return pickReviews(localized, count);
 }
 
 /** Google review cards (Places API → static HTML + js/google-reviews.js). */

@@ -4625,22 +4625,33 @@ Terms of Service Page
 }
 
 .page-agendar {
-  background-color: var(--canvas-mist);
+  background-color: #f3f6fa;
   background-image:
-    radial-gradient(ellipse 70% 42% at 8% 18%, rgba(30, 201, 176, 0.1), transparent 58%),
-    radial-gradient(ellipse 55% 38% at 94% 52%, rgba(0, 95, 153, 0.06), transparent 62%),
-    linear-gradient(180deg, #f3f7f9 0%, #f7fafb 42%, var(--canvas-mist) 100%);
+    radial-gradient(ellipse 65% 45% at 5% 15%, rgba(30, 201, 176, 0.12), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 95% 45%, rgba(0, 95, 153, 0.09), transparent 62%),
+    linear-gradient(180deg, #edf3f8 0%, #f5f8fa 42%, #edf3f8 100%);
   background-repeat: no-repeat;
   background-size: 100% max(100%, 100vh);
 }
 
 .booking-page {
-  padding-top: 28px;
+  position: relative;
+  overflow: hidden;
+  padding-top: 36px;
   padding-bottom: 72px;
-  background: linear-gradient(180deg, var(--canvas-mist) 0%, var(--bg-white) 100%);
+  background-color: #f3f6fa;
+  background-image:
+    radial-gradient(ellipse 70% 50% at 92% 12%, rgba(46, 191, 165, 0.14), transparent 65%),
+    radial-gradient(ellipse 65% 55% at 8% 26%, rgba(0, 95, 153, 0.10), transparent 65%),
+    radial-gradient(ellipse 60% 45% at 88% 75%, rgba(0, 95, 153, 0.08), transparent 60%),
+    radial-gradient(ellipse 55% 40% at 10% 88%, rgba(30, 201, 176, 0.11), transparent 60%),
+    linear-gradient(180deg, #edf3f8 0%, #f4f7fb 35%, #edf3f7 100%);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
 }
 
 .booking-page-layout {
+  position: relative;
   max-width: 980px;
   margin: 0 auto;
 }
@@ -4687,11 +4698,80 @@ Terms of Service Page
 }
 
 .booking-page-widget-mount {
+  position: relative;
   margin: 0 auto 38px;
   min-height: 360px;
 }
 
+/* Blobs de fondo orgánicos con cuerpo y profundidad (alineados con el estilo del index) */
+.booking-page-widget-mount::before {
+  content: "";
+  position: absolute;
+  top: -55px;
+  right: -75px;
+  width: 500px;
+  height: 480px;
+  border-radius: 32% 68% 62% 38% / 42% 36% 64% 58%;
+  background:
+    radial-gradient(
+      ellipse at 38% 38%,
+      rgba(30, 201, 176, 0.46) 0%,
+      rgba(30, 201, 176, 0.26) 48%,
+      rgba(0, 95, 153, 0.10) 70%,
+      transparent 84%
+    );
+  filter: blur(36px);
+  box-shadow: 0 20px 50px rgba(30, 201, 176, 0.20);
+  opacity: 0.92;
+  pointer-events: none;
+  z-index: 0;
+  transform: rotate(-10deg);
+}
+
+.booking-page-widget-mount::after {
+  content: "";
+  position: absolute;
+  bottom: -60px;
+  left: -80px;
+  width: 540px;
+  height: 520px;
+  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  background:
+    radial-gradient(
+      ellipse at 50% 50%,
+      rgba(0, 95, 153, 0.36) 0%,
+      rgba(3, 28, 66, 0.22) 46%,
+      rgba(30, 201, 176, 0.10) 70%,
+      transparent 85%
+    );
+  filter: blur(40px);
+  box-shadow: 0 24px 60px rgba(0, 95, 153, 0.18);
+  opacity: 0.90;
+  pointer-events: none;
+  z-index: 0;
+  transform: rotate(8deg);
+}
+
+@media (max-width: 767px) {
+  .booking-page-widget-mount::before {
+    width: 290px;
+    height: 280px;
+    top: -25px;
+    right: -35px;
+    filter: blur(28px);
+  }
+  .booking-page-widget-mount::after {
+    width: 310px;
+    height: 300px;
+    bottom: -25px;
+    left: -35px;
+    filter: blur(30px);
+  }
+}
+
 .booking-highlights-grid {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 20px;

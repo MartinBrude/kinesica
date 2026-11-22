@@ -47,10 +47,34 @@
       },
       {
         "@type": "Question",
+        "name": "¿Es importante llegar a horario?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Pedimos puntualidad estricta. Como no contamos con secretaria, llegar a horario evita esperas en la entrada y permite que te atiendan sin demoras."
+        }
+      },
+      {
+        "@type": "Question",
         "name": "¿Atienden a través de Prepagas u Obras Sociales?",
         "acceptedAnswer": {
           "@type": "Answer",
           "text": "Podés solicitar reintegros a tu obra social o prepaga."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Cuáles son los honorarios?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "En el proceso de agendar se informan los valores de las diferentes técnicas."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Dónde puedo consultar mis turnos?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Podés hacerlo por WhatsApp escribiéndonos, o en la web de autogestión con el apellido, el email de la reserva y el código de gestión del mail de confirmación."
         }
       },
       {
@@ -104,10 +128,34 @@
       },
       {
         "@type": "Question",
+        "name": "Is it important to arrive on time?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "We ask for strict punctuality. As we do not have a receptionist, arriving on time avoids waiting at the entrance and lets us see you without delay."
+        }
+      },
+      {
+        "@type": "Question",
         "name": "Do you accept prepaid health plans or insurance?",
         "acceptedAnswer": {
           "@type": "Answer",
           "text": "You can request reimbursements from your health insurance provider."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What are the fees?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "During the booking process, the fees for the different techniques are provided."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Where can I check my appointments?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "You can check via WhatsApp by messaging us, or on the self-service page with the last name, booking email, and management code from the confirmation email."
         }
       },
       {
@@ -161,10 +209,34 @@
       },
       {
         "@type": "Question",
+        "name": "Est-il important d'arriver à l'heure ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Nous demandons une ponctualité stricte. Sans secrétaire à l'accueil, arriver à l'heure évite d'attendre à l'entrée et permet de vous recevoir sans retard."
+        }
+      },
+      {
+        "@type": "Question",
         "name": "Acceptez-vous les mutuelles ou assurances ?",
         "acceptedAnswer": {
           "@type": "Answer",
           "text": "Vous pouvez demander un remboursement auprès de votre assurance ou mutuelle."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Quels sont les honoraires ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Lors de la prise de rendez-vous, les tarifs des différentes techniques sont indiqués."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Où puis-je consulter mes rendez-vous ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Vous pouvez le faire sur WhatsApp en nous écrivant, ou sur la page en libre-service avec le nom, l'e-mail de réservation et le code de gestion du mail de confirmation."
         }
       },
       {
@@ -218,10 +290,34 @@
       },
       {
         "@type": "Question",
+        "name": "É importante chegar no horário?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Pedimos pontualidade rigorosa. Como não temos secretária, chegar no horário evita esperas na entrada e permite o atendimento sem atrasos."
+        }
+      },
+      {
+        "@type": "Question",
         "name": "Vocês aceitam planos de saúde ou reembolso?",
         "acceptedAnswer": {
           "@type": "Answer",
           "text": "Você pode solicitar reembolso junto ao seu plano ou seguro de saúde."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Quais são os honorários?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No processo de agendamento são informados os valores das diferentes técnicas."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Onde posso consultar meus horários?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Você pode consultar pelo WhatsApp escrevendo para nós, ou na página de autogestão com o sobrenome, o e-mail da reserva e o código de gestão do e-mail de confirmação."
         }
       },
       {

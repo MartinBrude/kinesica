@@ -170,6 +170,26 @@
       return this.practitionerGenderLabel(id);
     }
 
+    getPractitionerPreferenceDisplay() {
+      if (this.state.existingPatient === true) return null;
+      const technique = engine.getTechnique(this.state.techniqueId);
+      const hasMultiplePros = technique && Array.isArray(technique.practitioners) && technique.practitioners.length > 1;
+      if (!hasMultiplePros && !this.state.practitionerPreference) {
+        return null;
+      }
+
+      if (this.state.practitionerPreference === "norberto") {
+        return this.t("proMale");
+      }
+      if (this.state.practitionerPreference === "maria") {
+        return this.t("proFemale");
+      }
+      if (this.state.practitionerPreference === "any" || hasMultiplePros) {
+        return this.t("proAny");
+      }
+      return null;
+    }
+
     practitionerWhatsappUrl(id) {
       const prac = engine && engine.PRACTITIONERS && engine.PRACTITIONERS[id];
       const digits = (prac && prac.whatsapp) || (id === "maria" ? "5491128531224" : "5491161564311");
@@ -384,6 +404,17 @@
             <!-- PASO 2: DÍA Y HORA -->
             <div class="kb-step-panel" id="kb-step-2">
               <div class="kb-section-title">${this.t("pickDay")}</div>
+              <div class="kb-step2-pref-container" id="kb-step2-pref-container" style="display: none;">
+                <button type="button" class="kb-step2-pref-pill" id="kb-step2-pref-pill" title="${this.t("changePref")}">
+                  <svg class="kb-step2-pref-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                  <span class="kb-step2-pref-label">${this.t("prefTag")}</span>
+                  <strong class="kb-step2-pref-val" id="kb-step2-pref-val"></strong>
+                  <span class="kb-step2-pref-change">(${this.t("changePref")})</span>
+                </button>
+              </div>
               <div class="kb-section-desc" id="kb-slots-subtitle" style="display: none;"></div>
 
               <label class="kb-slots-label">${this.t("daysLabel")}</label>
@@ -639,6 +670,18 @@
         this.clearError();
         this.setStep(1);
       });
+
+      const prefPill = q("#kb-step2-pref-pill");
+      if (prefPill) {
+        prefPill.addEventListener("click", () => {
+          this.clearError();
+          this.setStep(1);
+          const prefBox = q("#kb-practitioner-box");
+          if (prefBox && !prefBox.hidden) {
+            prefBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          }
+        });
+      }
 
       const fallbackWaBtn = q("#kb-btn-fallback-whatsapp");
       if (fallbackWaBtn) {
@@ -1288,6 +1331,19 @@
         step2Title.textContent = named
           ? `${this.t("slotTitleWith")} ${named}`
           : this.t("slotTitle");
+      }
+
+      // Indicador sutil de preferencia de profesional (Hombre / Mujer / Indistinto)
+      const prefContainer = this.container.querySelector("#kb-step2-pref-container");
+      const prefVal = this.container.querySelector("#kb-step2-pref-val");
+      if (prefContainer && prefVal) {
+        const prefText = this.getPractitionerPreferenceDisplay();
+        if (prefText && stepNumber === 2) {
+          prefVal.textContent = prefText;
+          prefContainer.style.display = "block";
+        } else {
+          prefContainer.style.display = "none";
+        }
       }
 
       const subtitle = this.container.querySelector("#kb-slots-subtitle");

@@ -348,7 +348,7 @@
       "ratingValue": 5,
       "bestRating": 5,
       "worstRating": 1,
-      "ratingCount": 35
+      "ratingCount": 38
     }
   },
   "en": {
@@ -693,7 +693,7 @@
       "ratingValue": 5,
       "bestRating": 5,
       "worstRating": 1,
-      "ratingCount": 35
+      "ratingCount": 38
     }
   },
   "fr": {
@@ -1038,7 +1038,7 @@
       "ratingValue": 5,
       "bestRating": 5,
       "worstRating": 1,
-      "ratingCount": 35
+      "ratingCount": 38
     }
   },
   "pt": {
@@ -1379,7 +1379,7 @@
       "ratingValue": 5,
       "bestRating": 5,
       "worstRating": 1,
-      "ratingCount": 35
+      "ratingCount": 38
     }
   }
 };
