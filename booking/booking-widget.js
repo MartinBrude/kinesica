@@ -1041,8 +1041,9 @@
     selectTechnique(techniqueId) {
       const technique = engine.getTechnique(techniqueId);
       this.state.techniqueId = techniqueId;
-      this.state.practitionerPreference = null;
-      this.state.practitionerId = technique.bySchedule
+      const hasMultiple = technique && Array.isArray(technique.practitioners) && technique.practitioners.length > 1;
+      this.state.practitionerPreference = hasMultiple ? "any" : null;
+      this.state.practitionerId = technique.bySchedule || hasMultiple
         ? null
         : technique.practitioners.length === 1
           ? technique.practitioners[0]
@@ -1073,15 +1074,15 @@
       });
       options.forEach((opt) => {
         const card = document.createElement("div");
-        card.className = "kb-choice-card";
+        const isSelected = this.state.practitionerPreference === opt.value;
+        card.className = "kb-choice-card" + (isSelected ? " selected" : "");
         card.dataset.practitioner = opt.value;
         card.innerHTML = `<h3>${opt.label}</h3>`;
         card.addEventListener("click", () => {
-          const isAny = opt.value === "any";
           const isSame = this.state.practitionerPreference === opt.value;
-          const nextPref = isSame ? null : opt.value;
+          const nextPref = isSame ? "any" : opt.value;
           this.state.practitionerPreference = nextPref;
-          this.state.practitionerId = !nextPref || isAny ? null : opt.value;
+          this.state.practitionerId = !nextPref || nextPref === "any" ? null : nextPref;
           grid.querySelectorAll(".kb-choice-card").forEach((c) => {
             c.classList.toggle("selected", c.dataset.practitioner === nextPref);
           });
