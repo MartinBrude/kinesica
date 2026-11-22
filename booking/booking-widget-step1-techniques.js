@@ -72,9 +72,10 @@
       }
       moreWrap.hidden = false;
 
+      // Solo expandir si ya hay una técnica de "más" seleccionada.
+      // Técnicas no disponibles (licencia) no deben abrir el listado por defecto.
       const selectedInMore = more.some((t) => t.id === this.state.techniqueId);
-      const hasUnavailableInMore = !isAdmin && more.some((t) => this.isTechniqueBlockedByLeave(t.id));
-      if (selectedInMore || hasUnavailableInMore) this.state.showMoreTechniques = true;
+      if (selectedInMore) this.state.showMoreTechniques = true;
 
       const toggle = document.createElement("button");
       toggle.type = "button";

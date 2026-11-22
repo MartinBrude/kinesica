@@ -715,7 +715,7 @@ test("paso 1 público: con baja grisa exclusivas y muestra leyenda de reincorpor
     assert.equal(notice.hidden, false);
     assert.match(noticeText.textContent, /reincorpora el 11\/12/);
     assert.equal(widget.state.techniqueId, null, "Selección exclusiva se limpia");
-    assert.equal(widget.state.showMoreTechniques, true, "Abre «más técnicas» para ver grises");
+    assert.equal(widget.state.showMoreTechniques, false, "Mantiene «más técnicas» colapsadas por defecto");
   } finally {
     engine.resetScheduleOverrides();
   }
