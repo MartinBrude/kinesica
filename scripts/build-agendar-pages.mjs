@@ -6,7 +6,7 @@
 import { AGENDAR } from "./agendar-content.mjs";
 import { SITE, absoluteUrl, HTML_LANG } from "./i18n-urls.mjs";
 import { headerShellMarkup } from "./header-shell.mjs";
-import { escAttr, escHtml } from "./html-utils.mjs";
+import { escHtml } from "./html-utils.mjs";
 import {
   HOME_LABELS,
   homePageBreadcrumbSchema,
@@ -30,28 +30,11 @@ import {
 
 const ROOT = repoRoot(import.meta.url);
 
-function renderHighlights(highlights) {
-  return (highlights || [])
-    .map(
-      (item) => `            <div class="booking-highlight-card">
-              <div class="booking-highlight-icon" aria-hidden="true">
-                <i class="fa ${escAttr(item.icon)}"></i>
-              </div>
-              <div class="booking-highlight-body">
-                <h2 class="booking-highlight-title">${escHtml(item.title)}</h2>
-                <p class="booking-highlight-text">${escHtml(item.text)}</p>
-              </div>
-            </div>`,
-    )
-    .join("\n");
-}
-
 function buildHtml(lang) {
   const copy = AGENDAR[lang];
   const prefix = assetPrefixForLang(lang);
   const canonical = absoluteUrl(lang, "agendar");
   const homeLabel = HOME_LABELS[lang];
-  const highlightsHtml = renderHighlights(copy.highlights);
 
   return `<!doctype html>
 <html lang="${HTML_LANG[lang]}">
@@ -94,10 +77,6 @@ ${bodyShellTop(prefix)}${headerShellMarkup(lang, prefix)}
           <h1 class="sr-only">${escHtml(copy.h1)}</h1>
 
           <div id="kinesica-booking-widget" class="booking-page-widget-mount"></div>
-
-          <div class="booking-highlights-grid">
-${highlightsHtml}
-          </div>
         </div>
       </div>
     </section>
