@@ -18,12 +18,13 @@ import {
   setPendientesPendingBadge,
   refreshPendientesPendingBadge,
   canShowPendientesBadge,
-} from "./admin-pendientes.js?v=5";
+} from "./admin-pendientes.js?v=6";
 import {
   setErroresPendingBadge,
   refreshErroresPendingBadge,
   canShowErroresBadge,
 } from "./admin-errores.js?v=4";
+import { clearAdminGroupBadges } from "./admin-group-badge.js";
 import { updateDashboardClara, updateDashboardBooking } from "./dashboard.js?v=13";
 import { applyHoursToRuntime } from "./horarios.js?v=4";
 
@@ -45,7 +46,8 @@ function setAdminOnlyVisibility(isAdmin) {
 
 /** Limpia badges de Administración (grupo + ítems) al salir de sesión. */
 function clearAdminNotifBadges() {
-  for (const id of ["nav-badge-admin", "nav-badge-pendientes", "nav-badge-errores"]) {
+  clearAdminGroupBadges();
+  for (const id of ["nav-badge-pendientes", "nav-badge-errores"]) {
     const el = document.getElementById(id);
     if (!el) continue;
     el.textContent = "0";
@@ -54,8 +56,6 @@ function clearAdminNotifBadges() {
     el.removeAttribute("aria-label");
     el.removeAttribute("title");
   }
-  const adminBtn = document.getElementById("nav-btn-admin");
-  if (adminBtn) adminBtn.removeAttribute("aria-label");
 }
 
 function refreshAdminAudienceBadges(isAdmin) {
@@ -68,8 +68,8 @@ function refreshAdminAudienceBadges(isAdmin) {
   if (!canShowErroresBadge()) setErroresPendingBadge(0);
 
   if (canShowPendientesBadge()) refreshPendientesPendingBadge();
-  else if (canShowErroresBadge()) refreshErroresPendingBadge();
-  else clearAdminNotifBadges();
+  if (canShowErroresBadge()) refreshErroresPendingBadge();
+  if (!canShowPendientesBadge() && !canShowErroresBadge()) clearAdminNotifBadges();
 }
 
 export function unmountAdminChannels() {

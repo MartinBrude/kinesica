@@ -1,12 +1,13 @@
 /**
  * Kinésica Admin — Tareas pendientes (Administración)
- * Badge de notificaciones: solo para Norberto.
+ * Badge de notificaciones: visible para todos los administradores.
  */
 
 import { api } from "./api.js?v=79";
 import { dialogAlert, dialogConfirm } from "./dom.js?v=79";
 import { setListControlsEnabled } from "./list-controls.js?v=1";
 import { getSessionUser } from "./auth.js?v=83";
+import { applyBadgeEl, recordAdminPendientesCount } from "./admin-group-badge.js";
 import {
   renderPendientesRows,
   setupPendientesDragAndDrop,
@@ -34,16 +35,7 @@ function countOpen(list) {
 }
 
 export function canShowPendientesBadge(user = getSessionUser()) {
-  return String(user?.username || "").toLowerCase() === PENDIENTES_BADGE_USERNAME;
-}
-
-function applyBadgeEl(el, show, label, aria) {
-  if (!el) return;
-  el.textContent = label;
-  el.hidden = !show;
-  el.setAttribute("aria-hidden", show ? "false" : "true");
-  if (show) { el.setAttribute("aria-label", aria); el.title = aria; }
-  else { el.removeAttribute("aria-label"); el.removeAttribute("title"); }
+  return user?.role === "admin";
 }
 
 export function setPendientesPendingBadge(count) {
@@ -54,14 +46,7 @@ export function setPendientesPendingBadge(count) {
   const aria = show ? `${n === 1 ? "1 pendiente" : `${n} pendientes`} en Administración` : "";
 
   applyBadgeEl(document.getElementById("nav-badge-pendientes"), show, label, aria);
-  if (!audience) return;
-
-  applyBadgeEl(document.getElementById("nav-badge-admin"), show, label, aria);
-  const adminBtn = document.getElementById("nav-btn-admin");
-  if (adminBtn) {
-    if (show) adminBtn.setAttribute("aria-label", `Administración, ${aria}`);
-    else adminBtn.removeAttribute("aria-label");
-  }
+  recordAdminPendientesCount(audience ? n : 0);
 }
 
 export function syncPendientesBadgeFromCache() {

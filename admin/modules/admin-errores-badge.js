@@ -4,6 +4,7 @@
 
 import { api } from "./api.js?v=79";
 import { getSessionUser } from "./auth.js?v=83";
+import { applyBadgeEl, recordAdminErroresCount } from "./admin-group-badge.js";
 
 /** Username que recibe el badge de reportes de errores. */
 export const ERRORES_BADGE_USERNAME = "martin";
@@ -14,20 +15,6 @@ export function countOpenErrores(list) {
 
 export function canShowErroresBadge(user = getSessionUser()) {
   return String(user?.username || "").toLowerCase() === ERRORES_BADGE_USERNAME;
-}
-
-function applyBadgeEl(el, show, label, aria) {
-  if (!el) return;
-  el.textContent = label;
-  el.hidden = !show;
-  el.setAttribute("aria-hidden", show ? "false" : "true");
-  if (show) {
-    el.setAttribute("aria-label", aria);
-    el.title = aria;
-  } else {
-    el.removeAttribute("aria-label");
-    el.removeAttribute("title");
-  }
 }
 
 /**
@@ -45,15 +32,7 @@ export function setErroresPendingBadge(count) {
     : "";
 
   applyBadgeEl(document.getElementById("nav-badge-errores"), show, label, aria);
-
-  if (!audience) return;
-
-  applyBadgeEl(document.getElementById("nav-badge-admin"), show, label, aria);
-  const adminBtn = document.getElementById("nav-btn-admin");
-  if (adminBtn) {
-    if (show) adminBtn.setAttribute("aria-label", `Administración, ${aria}`);
-    else adminBtn.removeAttribute("aria-label");
-  }
+  recordAdminErroresCount(audience ? n : 0);
 }
 
 export async function refreshErroresPendingBadge() {
