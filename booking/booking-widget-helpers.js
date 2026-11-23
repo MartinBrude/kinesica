@@ -138,10 +138,13 @@
       if (dateIso && typeof engine.practitionersAvailableOnDate === "function") {
         return engine.practitionersAvailableOnDate(techniqueId, dateIso).length > 1;
       }
+      const technique = typeof engine.getTechnique === "function" ? engine.getTechnique(techniqueId) : null;
+      if (technique && typeof this.bookablePractitionersForTechnique === "function") {
+        return this.bookablePractitionersForTechnique(technique).length > 1;
+      }
       if (typeof engine.practitionersBookableForTechnique === "function") {
         return engine.practitionersBookableForTechnique(techniqueId).length > 1;
       }
-      const technique = typeof engine.getTechnique === "function" ? engine.getTechnique(techniqueId) : null;
       return Boolean(technique && Array.isArray(technique.practitioners) && technique.practitioners.length > 1);
     };
 

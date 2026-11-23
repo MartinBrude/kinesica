@@ -145,7 +145,17 @@
                 if (typeof this.renderTechniqueChoices === "function") {
                   this.renderTechniqueChoices();
                 }
-                if (typeof this.syncStep1Continue === "function") this.syncStep1Continue();
+                // Reaplicar caja hombre/mujer con la baja ya cargada (solo pacientes nuevos).
+                if (
+                  this.state
+                  && this.state.existingPatient === false
+                  && this.state.techniqueId
+                  && typeof this.selectTechnique === "function"
+                ) {
+                  this.selectTechnique(this.state.techniqueId);
+                } else if (typeof this.syncStep1Continue === "function") {
+                  this.syncStep1Continue();
+                }
               }
               if (data.fees) this.updateFees(data.fees);
             }

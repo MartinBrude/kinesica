@@ -111,10 +111,17 @@
 
     proto.bookablePractitionersForTechnique = function (technique) {
       if (!technique) return [];
+      let list;
       if (engine && typeof engine.practitionersBookableForTechnique === "function") {
-        return engine.practitionersBookableForTechnique(technique.id);
+        list = engine.practitionersBookableForTechnique(technique.id);
+      } else {
+        list = Array.isArray(technique.practitioners) ? technique.practitioners.slice() : [];
       }
-      return Array.isArray(technique.practitioners) ? technique.practitioners.slice() : [];
+      // Baja activa (p. ej. María hasta reincorporación): no ofrecer hombre/mujer
+      // aunque vuelva dentro del horizonte de reserva.
+      if (this.options && this.options.adminMode) return list;
+      if (typeof this.getActiveLeaveEndIso !== "function") return list;
+      return list.filter((pid) => !this.getActiveLeaveEndIso(pid));
     };
 
     proto.selectTechnique = function (techniqueId) {
