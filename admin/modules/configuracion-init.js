@@ -37,11 +37,21 @@ import {
   syncTogglesUI,
 } from "./configuracion-clara-data.js";
 import { switchConfigSubtab } from "./configuracion-nav.js";
+import { loadEstadoServicios } from "./clara-estado-servicios.js?v=1";
 
 export function initConfiguracionModule(callbacks = {}) {
   configTabBtns.forEach((btn) => {
     btn.addEventListener("click", () => switchConfigSubtab(btn.dataset.subtab));
   });
+
+  const secEstado = document.querySelector("#clara-section-estado");
+  if (secEstado) {
+    secEstado.addEventListener("toggle", () => {
+      if (secEstado.open) {
+        loadEstadoServicios();
+      }
+    });
+  }
 
   bindClaraDirtyListeners();
   clearClaraDirty();

@@ -818,8 +818,8 @@
           <div class="admin-collapsible-header-left">
             <span class="admin-collapsible-icon" aria-hidden="true">🤖</span>
             <div class="admin-collapsible-titles">
-              <h2 class="admin-collapsible-title">Clara: Estado de Servicios</h2>
-              <p class="admin-collapsible-desc">Control operativo y disponibilidad en vivo del bot de WhatsApp y de la turnera web.</p>
+              <h2 class="admin-collapsible-title">Clara: Estado de Servicios y APIs</h2>
+              <p class="admin-collapsible-desc">Monitor en tiempo real de salud operativa de todas las APIs y servicios (correos, turnera, IA, base de datos y reseñas).</p>
             </div>
           </div>
           <div class="admin-collapsible-header-right">
@@ -851,6 +851,14 @@
                 </div>
               </div>
               <button type="button" class="btn light" id="cfg-btn-toggle-booking" style="font-size: 13px; padding: 6px 14px; flex-shrink: 0;">Pausar turnera</button>
+            </div>
+          </div>
+
+          <!-- MONITOR INTEGRAL DE SALUD DE TODAS LAS APIS Y SERVICIOS -->
+          <div id="clara-estado-monitor-wrap" style="margin-top: 20px;">
+            <div class="admin-view-loading" style="padding: 24px; text-align: center;">
+              <span class="loading-spinner" aria-hidden="true"></span>
+              <span style="margin-left: 8px; color: var(--muted); font-size: 13px;">Comprobando la salud de todas las APIs y servicios...</span>
             </div>
           </div>
         </div>
