@@ -80,11 +80,13 @@ function kinesica_pacientes_run_maintenance_if_due(PDO $pdo, bool $force = false
                 $ape = sanitize_patient_name($row['apellido'] ?? '');
                 $full = sanitize_patient_name($row['nombre_completo'] ?? '');
                 $cont = isset($row['contacto_nombre']) && $row['contacto_nombre'] !== null ? sanitize_patient_name($row['contacto_nombre']) : null;
-                $resolved = kinesica_resolve_known_inverted_name_parts($nom, $ape, $full);
-                if ($resolved) {
-                    $nom = sanitize_patient_name($resolved['nombre']);
-                    $ape = sanitize_patient_name($resolved['apellido']);
-                    $full = sanitize_patient_name($resolved['nombre_completo']);
+                if (function_exists('kinesica_resolve_known_inverted_name_parts')) {
+                    $resolved = kinesica_resolve_known_inverted_name_parts($nom, $ape, $full);
+                    if ($resolved) {
+                        $nom = sanitize_patient_name($resolved['nombre']);
+                        $ape = sanitize_patient_name($resolved['apellido']);
+                        $full = sanitize_patient_name($resolved['nombre_completo']);
+                    }
                 }
                 if ($nom !== $row['nombre'] || $ape !== $row['apellido'] || $full !== $row['nombre_completo'] || $cont !== ($row['contacto_nombre'] ?? null)) {
                     $pila = extract_first_name($full !== '' ? $full : trim($nom . ' ' . $ape));
