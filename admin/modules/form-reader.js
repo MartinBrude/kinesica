@@ -3,7 +3,7 @@
  */
 
 import { emptyFicha, coerceFicha, ageOn } from "../ficha-rules.mjs?v=90";
-import { todayISO } from "./form-eva.js";
+import { todayISO } from "./form-eva.js?v=3";
 
 export function getBlankFicha() {
   return {

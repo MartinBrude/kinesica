@@ -651,4 +651,11 @@ assert.match(html, /data-compare-tab="5">6\. Anotaciones<\/button>/);
 const matchesAnotaciones = (html.match(/name="anotaciones"/g) || []).length;
 assert.equal(matchesAnotaciones, 1, "Debe haber exactamente un textarea de anotaciones en toda la ficha (solo en tab 6)");
 
+// Pastillas (motivo, ruidos, etc.): un solo objeto `singles` compartido entre click y readForm
+const formEvaSrc = fs.readFileSync(path.join(root, "admin/modules/form-eva.js"), "utf8");
+const formRuntimeSrc = fs.readFileSync(path.join(root, "admin/modules/form-runtime.js"), "utf8");
+assert.match(formRuntimeSrc, /export const singles = \{\}/, "form-runtime debe exportar el singles canónico");
+assert.match(formEvaSrc, /import \{ singles \} from ["']\.\/form-runtime\.js/, "form-eva debe usar el singles de form-runtime (no uno propio)");
+assert.doesNotMatch(formEvaSrc, /export const singles = \{\}/, "form-eva no debe declarar un segundo singles (rompe motivo/pastillas al guardar)");
+
 console.log("fichas ATM: ok");

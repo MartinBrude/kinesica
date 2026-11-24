@@ -3,7 +3,7 @@
  */
 
 import { patientKey, validateField, getSessionIndex } from "../ficha-rules.mjs?v=90";
-import { syncFollowups, syncEva } from "./form-eva.js";
+import { syncFollowups, syncEva } from "./form-eva.js?v=3";
 import { showStep, updateStepValidation as updateStepValidationNav } from "./form-nav.js";
 import { setDniPower, setPatientLocked, populatePatientPicker } from "./form-patient.js";
 import { syncFotoPreview } from "./form-photos.js";
@@ -19,7 +19,7 @@ import {
   currentAllFichas,
   setCurrentId,
   setCurrentAllFichas,
-} from "./form-runtime.js?v=2";
+} from "./form-runtime.js?v=3";
 
 function readForm() {
   return readFormData({ form, currentId, singles, getCurrentFotos });

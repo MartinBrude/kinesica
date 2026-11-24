@@ -74,6 +74,12 @@
    - [⭐ 7.2. Invitaciones a Reseñas de Google (`Pedir review por WhatsApp`)](#72-invitaciones-a-reseñas-de-google-pedir-review-por-whatsapp)
    - [📋 7.3. Columnas de la Planilla de Primeras Sesiones](#73-columnas-de-la-planilla-de-primeras-sesiones)
    - [🩺 7.4. Historias Clínicas de ATM y Evaluación Craneomandibular (`/admin/fichas`)](#74-historias-clinicas-de-atm-y-evaluacion-craneomandibular-adminfichas)
+     - [Cómo abrir y crear una ficha](#como-abrir-y-crear-una-ficha)
+     - [Los 6 pasos del formulario](#los-6-pasos-del-formulario)
+     - [Campos obligatorios (requisitos para guardar)](#campos-obligatorios-requisitos-para-guardar)
+     - [Fotos clínicas adjuntas](#fotos-clinicas-adjuntas)
+     - [Guardar, editar y nueva sesión](#guardar-editar-y-nueva-sesion)
+     - [Comparar evolución y PDF](#comparar-evolucion-y-pdf)
    - [📁 7.5. Acceso al Directorio Web y a Google Sheets](#75-acceso-al-directorio-web-y-a-google-sheets)
 8. [**🧪 8. ¿Cómo probar a Clara y Supervisar el Sistema?**](#8-como-probar-a-clara-y-supervisar-el-sistema)
    - [A. Desde el Simulador Interactivo del Panel Admin](#a-desde-el-simulador-interactivo-del-panel-admin)
@@ -571,11 +577,79 @@ El consultorio cuenta con una herramienta nativa para potenciar la reputación d
 
 ### 🩺 7.4. Historias Clínicas de ATM y Evaluación Craneomandibular (`/admin/fichas`)
 
-El módulo clínico de **Historias Clínicas** ([`kinesica.com.ar/admin/fichas`](https://www.kinesica.com.ar/admin/fichas)) está especialmente diseñado para el abordaje de disfunciones temporomandibulares y dolor orofacial (criterios internacionales CDI-TTM):
-1. **Formulario Clínico en 6 Pasos:** Anamnesis, hábitos parafuncionales, apertura mandibular activa/pasiva (medición en mm), palpación de músculos masticatorios (maseteros, temporales, pterigoideos), ruidos articulares (clics/crepitaciones) y plan de tratamiento.
-2. **Selector de Motivos de Consulta:** Incluye la opción específica **Bruxismo**, además de dolor orofacial, limitación de apertura, chasquidos articulares y cervicalgia asociada.
-3. **Evolución y Comparativa:** Permite comparar visualmente la evolución del dolor (escala EVA de 0 a 10) y rangos articulares entre distintas sesiones de un mismo paciente.
-4. **Exportación A4 en PDF:** Generación instantánea de informes clínicos profesionales con membrete institucional, firma y sello digital.
+El módulo clínico de **Historias Clínicas** ([`kinesica.com.ar/admin/fichas`](https://www.kinesica.com.ar/admin/fichas)) está diseñado para el abordaje de disfunciones temporomandibulares y dolor orofacial según criterios internacionales **CDI-TTM**. Cada registro es una **sesión** (evaluación inicial o control) vinculada a un paciente.
+
+#### Cómo abrir y crear una ficha
+
+1. Entrá a **Clínica → Historias Clínicas** (`/admin/fichas`), o desde el Dashboard tocá la tarjeta **Historias Clínicas ATM**.
+2. Para una **primera evaluación**:
+   - Tocá **Nueva sesión**.
+   - En el paso 1 podés elegir un paciente ya registrado en el consultorio (selector rápido) o cargar uno nuevo.
+3. Para un **control / seguimiento** del mismo paciente:
+   - En la lista, abrí el grupo del paciente y tocá **+ Nueva sesión**.
+   - Se copian automáticamente nombre, DNI, nacimiento, motivo, antecedentes y profesional; la fecha queda en el día de hoy y los hallazgos clínicos de esa sesión se cargan en blanco.
+4. Para **editar** una sesión ya guardada: abrila desde la lista (clic en la fila).
+
+> El buscador de la biblioteca filtra por nombre, DNI, motivo o profesional. Podés agrupar por paciente o ver la lista cronológica de sesiones.
+
+#### Los 6 pasos del formulario
+
+Navegá con **Siguiente →** / **← Anterior** o tocando las pestañas superiores. Un punto rojo en la pestaña indica campos incompletos o inconsistentes en ese paso.
+
+| Paso | Contenido |
+|---|---|
+| **1. Paciente** | Filiación (nombre, DNI opcional, nacimiento, edad calculada), motivo (Traumático / No Traumático / Pos Quirúrgico / **Bruxismo**), hábitos parafuncionales, antecedentes y fecha de la sesión. |
+| **2. ATM palpación y rango** | Ruidos articulares, dolor condilar, apertura libre/con dolor (mm), desviación de trayectoria, protrusión y laterales; mediciones **pre y post** sesión cuando corresponda. |
+| **3. Músculos craneales** | Palpación de masetero, temporal, pterigoideos; hallazgos discales; correlación cervical/postural (trapecio, ECOM, suboccipitales). |
+| **4. Dolor y oclusión** | Escala EVA (0–10), zona y características del dolor, factores, contacto dentario, estabilidad oclusal, Angle y patrón esqueletal. |
+| **5. Criterios CDI-TTM** | Checkboxes de Grupos I (musculares), II (disco) y III (artralgia/artrosis); observaciones y plan de tratamiento. |
+| **6. Anotaciones** | Notas libres de la sesión y **fotos clínicas** adjuntas. Desde acá también aparecen (si hay historial) **Comparar evolución** e **Historial completo (PDF)**. |
+
+**Regla de lados (paso 2):** si marcás **Sí** en ruidos, dolor condilar o desviación, tenés que indicar al menos un lado (**Izq** y/o **Der**). Si no, el sistema no te deja avanzar ni guardar.
+
+#### Campos obligatorios (requisitos para guardar)
+
+Para poder **Guardar sesión** deben estar completos:
+
+| Campo | Notas |
+|---|---|
+| **Nombre completo** | Sin números, comas ni emojis |
+| **Fecha de la sesión** | Formato fecha |
+| **Fecha de nacimiento** | No puede ser posterior a la fecha de la sesión; la **edad** se calcula sola |
+| **Edad** | Se completa al cargar la fecha de nacimiento |
+| **Motivo de consulta** | Una de las 4 pastillas |
+| **Antecedentes clínicos** | Texto libre obligatorio |
+
+- **DNI / Pasaporte** es **opcional**. Si el paciente no aporta documento, usá el botón de apagar el pedido de DNI (ícono de power junto al campo).
+- Los rangos articulares (mm), EVA, CDI y fotos **no** son obligatorios para guardar, pero si cargás un número (apertura, protrusión, etc.) debe estar entre 0 y 500 mm; EVA entre 0 y 10.
+- Si el DNI ya figura en otra ficha con **otro nombre**, el sistema bloquea el guardado para evitar mezclar pacientes.
+
+#### Fotos clínicas adjuntas
+
+En el **paso 6 (Anotaciones)**:
+
+1. Tocá la zona **📷 Fotos / Imágenes clínicas** o arrastrá archivos encima (también sirve desde el celular).
+2. Formatos admitidos: **JPG, PNG o WebP**. Hasta **10 fotos por sesión**.
+3. El sistema **optimiza y sube** cada imagen automáticamente; esperá a que termine el indicador “Optimizando y subiendo…” antes de guardar (si hay una subida en curso, el guardado espera a que termine).
+4. Podés ver miniaturas, abrir en tamaño completo, **eliminar una** o **quitar todas**, y **agregar más**.
+5. Las fotos quedan **vinculadas a esa sesión** (no se heredan a la siguiente sesión del mismo paciente).
+
+> Las fotos son **opcionales**: podés guardar la ficha sin adjuntos. No uses PDFs ni videos en este bloque (solo imágenes).
+
+#### Guardar, editar y nueva sesión
+
+1. Completá al menos los campos obligatorios del paso 1.
+2. Tocá **Guardar sesión** (botón verde del pie del formulario). Está disponible en cualquier paso.
+3. Si falta algo, el sistema te lleva al paso correspondiente, marca en rojo lo pendiente y muestra el mensaje de error.
+4. Tras guardar, volvés a la biblioteca de fichas. El paciente también se **crea o vincula** en el Directorio (`/admin/pacientes`) si aún no existía.
+5. Si tocás **← Fichas** con cambios sin guardar, el sistema pide confirmación para no perder datos.
+6. **Nueva sesión** del mismo paciente (desde la lista o “+ Nueva sesión”) arranca con la filiación ya cargada y hallazgos clínicos vacíos, listos para el control del día.
+
+#### Comparar evolución y PDF
+
+- **Comparar evolución:** elegí dos sesiones del mismo paciente (base vs. control) para ver deltas de EVA, apertura mandibular y el detalle de “lo que cambió”.
+- **Imprimir / Descargar PDF** de una sesión o del historial completo: informe A4 con membrete, datos del profesional y firma digital.
+- Desde la biblioteca también podés exportar la ficha en **JSON** (respaldo técnico) o abrir el PDF de una o de todas las sesiones del paciente.
 
 ### 📁 7.5. Acceso al Directorio Web y a Google Sheets
 - **Directorio de Pacientes en el Panel Admin:** [`https://www.kinesica.com.ar/admin/pacientes`](https://www.kinesica.com.ar/admin/pacientes)
@@ -641,7 +715,7 @@ Guardá esta tablita a mano para gestionar a Clara desde el celular de **Norbert
 | **Monitorear y gestionar recordatorios** | En **Meta → Registro de Recordatorios** (`/admin/recordatorios`). Permite ver turnos en "A enviar", cargar teléfonos/emails con `＋ Cargar contacto` y despachar con `⚡ Enviar ahora` o `⚡ Disparar manualmente`. |
 | **Auditar WhatsApp e Instagram Direct** | En **Meta → Bandeja de Interacciones** (`/admin/interacciones`). Revisa mensajes de Clara, DMs de Instagram, derivaciones (`wa.me`), estado `answered`, adjuntos e historial. Filtrá con `instagram` / `ig` / `meta`. |
 | **Pedir reseña de Google a un paciente** | En **Clínica → Directorio de Pacientes** (`/admin/pacientes`), tocando el botón de WhatsApp `⭐ Pedir review` en la fila del paciente. |
-| **Cargar ficha clínica de ATM** | En **Clínica → Historias Clínicas** (`/admin/fichas`), con selector de motivo (Bruxismo, ATM, dolor), DNI opcional, buscador ágil y exportación a PDF A4. |
+| **Cargar ficha clínica de ATM** | En **Clínica → Historias Clínicas** (`/admin/fichas`): **Nueva sesión** o **+ Nueva sesión** del paciente. Completá obligatorios (nombre, nacimiento, motivo, antecedentes, fecha), cargá hallazgos y fotos opcionales (hasta 10 JPG/PNG/WebP) y tocá **Guardar sesión**. Detalle: [Sección 7.4](#74-historias-clinicas-de-atm-y-evaluacion-craneomandibular-adminfichas). |
 | **Cambiar horarios de atención u honorarios ($)** | En **Consultorio → Horarios de Atención** o **Honorarios y Formas de Pago** (`/admin/consultorio`). Rango configurable hasta las 19:30 hs. |
 | **Editar los textos del menú de Clara (A–E, F...)** | En **Clara → Mensajes y menú** (`/admin/clara`). Probá el resultado en **Clara → Simulador**. |
 | **Editar plantilla / políticas del mail** | En **Clara → Plantilla de recordatorio** o **Clara → Políticas del mail** (incluye mail de prueba de confirmación). |

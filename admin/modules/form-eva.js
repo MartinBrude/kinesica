@@ -3,12 +3,14 @@
  */
 
 import { ageOn } from "../ficha-rules.mjs?v=89";
+import { singles } from "./form-runtime.js?v=3";
 
 const form = document.querySelector("#ficha");
 const evaInput = form ? form.elements.eva : null;
 const evaValue = document.querySelector("#eva-value");
 
-export const singles = {};
+/** Re-export del estado canónico (mismo objeto que usa readForm / fillForm). */
+export { singles };
 
 export function getSingles() {
   return singles;
