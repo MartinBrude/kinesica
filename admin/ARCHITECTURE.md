@@ -246,7 +246,7 @@ flowchart LR
 - **Recordatorios WhatsApp 24h**:
   - `recordatorios.php`: `ingest` / `check_sent` / `reconcile` (bot) + listado (sesión). `check_sent` evita reenvíos cuando n8n `staticData` no registró un éxito.
   - Catch-up mismo día: `cron_recordatorios_sameday.php` (ver `docs/recordatorios-sameday.md`).
-  - Digesto semanal (pendientes → Norberto, errores → Martín): `cron_weekly_digest.php` + `lib_digest_*.php` (ver `docs/pendientes-digest.md`). Sin ítems abiertos no envía mail.
+  - Digesto semanal (pendientes → Norberto, errores → Martín): `cron_weekly_digest.php` + `lib_digest_*.php` (ver `docs/pendientes-digest.md`). Sin ítems abiertos no envía mail. Destinatarios solo vía env/`user_emails` (fail-closed).
 
 ---
 

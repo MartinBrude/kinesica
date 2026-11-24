@@ -117,11 +117,15 @@
       } else {
         list = Array.isArray(technique.practitioners) ? technique.practitioners.slice() : [];
       }
-      // Baja activa (p. ej. María hasta reincorporación): no ofrecer hombre/mujer
-      // aunque vuelva dentro del horizonte de reserva.
+      // Baja en curso (start ≤ hoy ≤ end): no ofrecer hombre/mujer aunque vuelva
+      // mid-horizonte. Bajas futuras no se adelantan (sigue bookable hoy).
       if (this.options && this.options.adminMode) return list;
-      if (typeof this.getActiveLeaveEndIso !== "function") return list;
-      return list.filter((pid) => !this.getActiveLeaveEndIso(pid));
+      if (!engine || typeof engine.isPractitionerOnLeave !== "function") return list;
+      const todayIso = typeof engine.formatDateIso === "function"
+        ? engine.formatDateIso(new Date())
+        : null;
+      if (!todayIso) return list;
+      return list.filter((pid) => !engine.isPractitionerOnLeave(pid, todayIso));
     };
 
     proto.selectTechnique = function (techniqueId) {

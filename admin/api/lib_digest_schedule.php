@@ -100,3 +100,23 @@ function kinesica_digest_not_before(): ?string
     }
     return '2026-11-25';
 }
+
+/**
+ * true si hoy puede enviar: primer hábil, o cualquier hábil ≥ not_before
+ * dentro de la semana ISO inaugural (reintento si falló el día 1).
+ */
+function kinesica_digest_may_send_today(DateTimeImmutable $today, DateTimeImmutable $first, ?string $notBefore): bool
+{
+    $todayIso = $today->format('Y-m-d');
+    if ($notBefore !== null && $todayIso < $notBefore) {
+        return false;
+    }
+    if ($todayIso === $first->format('Y-m-d')) {
+        return true;
+    }
+    if ($notBefore === null || !kinesica_digest_is_business_day($today)) {
+        return false;
+    }
+    $nb = new DateTimeImmutable($notBefore, $today->getTimezone());
+    return kinesica_digest_week_key($today) === kinesica_digest_week_key($nb);
+}

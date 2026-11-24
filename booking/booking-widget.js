@@ -139,6 +139,9 @@
               }
               if (data.schedule_overrides && engine && typeof engine.setScheduleOverrides === "function") {
                 engine.setScheduleOverrides(data.schedule_overrides);
+                this._slotCacheGen = (this._slotCacheGen || 0) + 1;
+                this._prefetchedSlots = {};
+                this._prefetchRun = false;
                 if (typeof this.renderExistingPractitionerChoices === "function") {
                   this.renderExistingPractitionerChoices();
                 }
@@ -155,6 +158,12 @@
                   this.selectTechnique(this.state.techniqueId);
                 } else if (typeof this.syncStep1Continue === "function") {
                   this.syncStep1Continue();
+                }
+                // Si ya está en paso 2+, refrescar carrusel/slots con el practitioner filtrado.
+                if (this.state && this.state.step >= 2 && typeof this.renderDateCarousel === "function") {
+                  this.renderDateCarousel();
+                } else if (typeof this.prefetchUpcomingDays === "function") {
+                  this.prefetchUpcomingDays();
                 }
               }
               if (data.fees) this.updateFees(data.fees);

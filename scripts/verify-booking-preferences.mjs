@@ -554,12 +554,59 @@ test("selectTechnique: con baja parcial de María (vuelve mid-horizonte) oculta 
     // El motor aún ve a María bookable tras la reincorporación…
     assert.ok(engine.practitionersBookableForTechnique("rpg").includes("maria"));
     assert.ok(engine.practitionersBookableForTechnique("no-se").includes("maria"));
-    // …pero el paso 1 público no ofrece hombre/mujer mientras la baja esté activa.
+    // …pero el paso 1 público no ofrece hombre/mujer mientras la baja esté en curso.
     widget.selectTechnique("no-se");
     assert.strictEqual(pracBox.hidden, true, "Oculta preferencia de género durante la baja");
     assert.strictEqual(widget.state.practitionerPreference, null);
     assert.strictEqual(widget.state.practitionerId, "norberto");
     assert.strictEqual(widget.hasGenderPreferenceChoice(null), false);
+  } finally {
+    engine.resetScheduleOverrides();
+  }
+});
+
+test("selectTechnique: baja futura de María no adelanta el filtro (sigue hombre/mujer hoy)", () => {
+  const today = new Date();
+  const startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 5);
+  const endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 20);
+  const start = engine.formatDateIso(startDate);
+  const end = engine.formatDateIso(endDate);
+
+  engine.setScheduleOverrides([{
+    id: "cov_pref_maria_leave_upcoming_ui",
+    action: "transfer",
+    from_practitioner: "maria",
+    to_practitioner: "norberto",
+    period_type: "date_range",
+    start_date: start,
+    end_date: end,
+    time_scope: "all_day",
+    practitioner_on_leave: true,
+    active: true,
+  }]);
+
+  const container = createMockElement("container");
+  const pracBox = createMockElement("kb-practitioner-box");
+  const pracGrid = createMockElement("kb-practitioner-grid");
+  const btnNext1 = createMockElement("kb-btn-next-1");
+  container.appendChild(pracBox);
+  container.appendChild(pracGrid);
+  container.appendChild(btnNext1);
+
+  const widget = Object.create(BookingWidget.prototype);
+  widget.container = container;
+  widget.copy = BookingWidgetCopy.COPY.es;
+  widget.options = { adminMode: false };
+  widget.state = { existingPatient: false, techniqueId: null, practitionerPreference: null, practitionerId: null };
+
+  try {
+    assert.ok(engine.getActiveLeaveEndIso("maria"), "leave próxima visible para avisos");
+    assert.equal(engine.isPractitionerOnLeave("maria", engine.formatDateIso(today)), false);
+    widget.selectTechnique("rpg");
+    assert.strictEqual(pracBox.hidden, false, "Sigue ofreciendo preferencia antes de la baja");
+    assert.strictEqual(widget.state.practitionerPreference, "any");
+    assert.strictEqual(widget.state.practitionerId, null);
+    assert.strictEqual(widget.hasGenderPreferenceChoice(null), true);
   } finally {
     engine.resetScheduleOverrides();
   }

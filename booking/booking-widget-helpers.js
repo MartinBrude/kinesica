@@ -135,15 +135,17 @@
       if (!this.state || this.state.existingPatient === true) return false;
       const techniqueId = this.state.techniqueId;
       if (!techniqueId || !engine) return false;
+      const technique = typeof engine.getTechnique === "function" ? engine.getTechnique(techniqueId) : null;
+      // Baja en curso: la UI pública ya redujo a 1 → no mostrar preferencia
+      // aunque el día elegido sea post-reincorporación.
+      if (technique && typeof this.bookablePractitionersForTechnique === "function") {
+        if (this.bookablePractitionersForTechnique(technique).length < 2) return false;
+      }
       if (dateIso && typeof engine.practitionersAvailableOnDate === "function") {
         return engine.practitionersAvailableOnDate(techniqueId, dateIso).length > 1;
       }
-      const technique = typeof engine.getTechnique === "function" ? engine.getTechnique(techniqueId) : null;
       if (technique && typeof this.bookablePractitionersForTechnique === "function") {
         return this.bookablePractitionersForTechnique(technique).length > 1;
-      }
-      if (typeof engine.practitionersBookableForTechnique === "function") {
-        return engine.practitionersBookableForTechnique(techniqueId).length > 1;
       }
       return Boolean(technique && Array.isArray(technique.practitioners) && technique.practitioners.length > 1);
     };

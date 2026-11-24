@@ -11,14 +11,14 @@ if (PHP_SAPI !== 'cli') {
     exit;
 }
 
-$args = array_slice($argv, 1);
-if (!in_array('--channel=pendientes', $args, true) && !in_array('--channel=all', $args, true)) {
-    $args[] = '--channel=pendientes';
+$hasChannel = false;
+foreach ($argv as $arg) {
+    if (str_starts_with((string) $arg, '--channel=')) {
+        $hasChannel = true;
+        break;
+    }
 }
-$php = PHP_BINARY !== '' ? PHP_BINARY : 'php';
-$cmd = escapeshellarg($php) . ' ' . escapeshellarg(__DIR__ . '/cron_weekly_digest.php');
-foreach ($args as $a) {
-    $cmd .= ' ' . escapeshellarg((string) $a);
+if (!$hasChannel) {
+    $argv[] = '--channel=pendientes';
 }
-passthru($cmd, $code);
-exit($code);
+require __DIR__ . '/cron_weekly_digest.php';

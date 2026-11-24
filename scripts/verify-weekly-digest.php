@@ -39,6 +39,19 @@ $sat = new DateTimeImmutable('2026-11-21', $tz);
 check(!kinesica_digest_is_business_day($sat), 'sábado no hábil');
 check(kinesica_digest_week_key(new DateTimeImmutable('2026-11-24', $tz)) === '2026-W48', 'week key');
 
+$tue = new DateTimeImmutable('2026-11-24', $tz);
+$wed = new DateTimeImmutable('2026-11-25', $tz);
+$thu = new DateTimeImmutable('2026-11-26', $tz);
+$firstTue = kinesica_digest_first_business_day($tue);
+check(kinesica_digest_may_send_today($tue, $firstTue, '2026-11-25') === false, 'mar 24 < not_before no envía');
+check(kinesica_digest_may_send_today($wed, $firstTue, '2026-11-25') === true, 'mié inaugural OK');
+check(kinesica_digest_may_send_today($thu, $firstTue, '2026-11-25') === true, 'jue inaugural retry OK');
+$nextMon = new DateTimeImmutable('2026-11-30', $tz);
+$firstNext = kinesica_digest_first_business_day($nextMon);
+check(kinesica_digest_may_send_today($nextMon, $firstNext, '2026-11-25') === true, 'lun siguiente = primer hábil');
+$nextTue = new DateTimeImmutable('2026-12-01', $tz);
+check(kinesica_digest_may_send_today($nextTue, $firstNext, '2026-11-25') === false, 'mar post-inaugural no envía');
+
 // --- mail builder ---
 $channel = [
     'greeting' => 'Norberto',
@@ -79,11 +92,17 @@ $okHttps = kinesica_digest_build_mail([
 ], [['title' => 'X', 'badge' => '1']], $first);
 check(str_contains($okHttps['html'], 'https://ejemplo.com/admin/pendientes'), 'https genérico OK');
 
-// --- resolve email ---
+// --- resolve email (fail-closed) ---
 check(
-    kinesica_digest_resolve_email([], [], 'martin.brude@gmail.com') === 'martin.brude@gmail.com',
-    'fallback email'
+    kinesica_digest_resolve_email([], [], 'martin@example.test') === 'martin@example.test',
+    'fallback email explícito (tests)'
 );
+try {
+    kinesica_digest_resolve_email([], [], '');
+    check(false, 'sin email debe fallar');
+} catch (InvalidArgumentException $e) {
+    check(true, 'fail-closed sin email');
+}
 try {
     kinesica_digest_resolve_email([], [], 'not-an-email');
     check(false, 'fallback inválido');
@@ -92,61 +111,96 @@ try {
 }
 
 // --- run: skip día / empty / dry ---
-require_once $root . '/admin/api/lib_digest_channels.php';
+// Env aísla destinos de cfg.php real (fail-closed sigue testeable sin env/cfg/fallback).
+putenv('MARTIN_EMAIL=martin@example.test');
+putenv('NORBERTO_EMAIL=norberto@example.test');
+$_ENV['MARTIN_EMAIL'] = 'martin@example.test';
+$_ENV['NORBERTO_EMAIL'] = 'norberto@example.test';
 
 $chErr = kinesica_digest_channel_errores();
 $chErr['load_items'] = static fn(): array => [];
-$tue = new DateTimeImmutable('2026-11-24 09:00', $tz);
-$rEarly = kinesica_digest_run($chErr, ['now' => $tue, 'dry_run' => true, 'items' => [['title' => 'Bug']]]);
+$tueRun = new DateTimeImmutable('2026-11-24 09:00', $tz);
+$rEarly = kinesica_digest_run($chErr, ['now' => $tueRun, 'dry_run' => true, 'items' => [['title' => 'Bug']]]);
 check(($rEarly['action'] ?? '') === 'skip_too_early', 'skip antes de not_before (2026-11-25)');
+check(($rEarly['html'] ?? null) === null, 'skip no arma html');
 
-$wed = new DateTimeImmutable('2026-11-25 09:00', $tz);
-$rInaug = kinesica_digest_run($chErr, ['now' => $wed, 'dry_run' => true, 'items' => [['title' => 'Bug']]]);
+$wedRun = new DateTimeImmutable('2026-11-25 09:00', $tz);
+$rInaug = kinesica_digest_run($chErr, ['now' => $wedRun, 'dry_run' => true, 'items' => [['title' => 'Bug']]]);
 check(($rInaug['action'] ?? '') === 'dry_run', 'inaugural mié 25 aunque no sea primer hábil');
 
-$thu = new DateTimeImmutable('2026-11-26 09:00', $tz);
-$rSkip = kinesica_digest_run($chErr, ['now' => $thu, 'dry_run' => true, 'items' => [['title' => 'Bug']]]);
+$thuRun = new DateTimeImmutable('2026-11-26 09:00', $tz);
+$rRetry = kinesica_digest_run($chErr, ['now' => $thuRun, 'dry_run' => true, 'items' => [['title' => 'Bug']]]);
+check(($rRetry['action'] ?? '') === 'dry_run', 'jue inaugural permite reintento si no marcado');
+
+$friNext = new DateTimeImmutable('2026-12-04 09:00', $tz);
+$rSkip = kinesica_digest_run($chErr, ['now' => $friNext, 'dry_run' => true, 'items' => [['title' => 'Bug']]]);
 check(($rSkip['action'] ?? '') === 'skip_not_first_business_day', 'skip mid-week post-inaugural');
 
-$rEmpty = kinesica_digest_run($chErr, ['now' => $wed, 'dry_run' => true, 'items' => []]);
+$rEmpty = kinesica_digest_run($chErr, ['now' => $wedRun, 'dry_run' => true, 'items' => []]);
 check(($rEmpty['action'] ?? '') === 'skip_empty', 'errores skip_if_empty');
 
 $chPend = kinesica_digest_channel_pendientes();
-$rPendEmpty = kinesica_digest_run($chPend, ['now' => $wed, 'dry_run' => true, 'items' => []]);
+$rPendEmpty = kinesica_digest_run($chPend, ['now' => $wedRun, 'dry_run' => true, 'items' => []]);
 check(($rPendEmpty['action'] ?? '') === 'skip_empty', 'pendientes skip_if_empty');
 $rDry = kinesica_digest_run($chPend, [
-    'now' => $wed,
+    'now' => $wedRun,
     'dry_run' => true,
     'items' => [['title' => 'Demo', 'badge' => '1']],
 ]);
 check(($rDry['action'] ?? '') === 'dry_run', 'pendientes dry_run');
-check(($rDry['to'] ?? '') === 'norberto1712@gmail.com', 'to Norberto');
+check(($rDry['to'] ?? '') === 'norberto@example.test', 'to Norberto desde env de test');
 check(($rDry['count'] ?? 0) === 1, 'count dry');
 
+$chNoMail = kinesica_digest_channel_errores();
+$chNoMail['email_env'] = [];
+$chNoMail['email_cfg_paths'] = [];
+$chNoMail['email_fallback'] = '';
+$rCfg = kinesica_digest_run($chNoMail, [
+    'now' => $wedRun,
+    'dry_run' => true,
+    'items' => [['title' => 'Bug']],
+]);
+check(($rCfg['action'] ?? '') === 'config_error', 'fail-closed sin email en canal');
+
 $rPrev = kinesica_digest_run($chErr, [
-    'now' => $wed,
+    'now' => $wedRun,
     'preview' => true,
     'items' => [
         ['title' => 'Bug Clara', 'subtitle' => 'Clara (IA)', 'badge' => '1'],
     ],
 ]);
 check(($rPrev['action'] ?? '') === 'preview', 'preview errores');
-check(($rPrev['to'] ?? '') === 'martin.brude@gmail.com', 'to Martín');
+check(($rPrev['to'] ?? '') === 'martin@example.test', 'to Martín test');
 check(str_contains((string) ($rPrev['subject'] ?? ''), '1 bug'), 'subject singular bug');
 check(str_contains((string) $rPrev['html'], 'Abrir Reporte de Errores'), 'CTA errores');
 check(str_contains((string) $rPrev['html'], 'Bug Clara'), 'título bug');
 check(str_contains((string) $rPrev['html'], 'Clara (IA)'), 'sección subtitle');
 check(str_contains((string) $rPrev['html'], 'www.kinesica.com.ar/admin/errores'), 'link errores');
 
+putenv('MARTIN_EMAIL');
+putenv('NORBERTO_EMAIL');
+unset($_ENV['MARTIN_EMAIL'], $_ENV['NORBERTO_EMAIL']);
+
 // --- markers ---
 $tmpId = 'test_digest_' . getmypid();
 $marker = kinesica_digest_marker_file($tmpId);
 @unlink($marker);
 check(!kinesica_digest_already_sent($tmpId, '2026-W48'), 'marker ausente');
-kinesica_digest_mark_sent($tmpId, '2026-W48', 'martin.brude@gmail.com');
+kinesica_digest_mark_sent($tmpId, '2026-W48', 'martin@example.test');
 check(kinesica_digest_already_sent($tmpId, '2026-W48'), 'marker presente');
 check(!kinesica_digest_already_sent($tmpId, '2026-W49'), 'otra semana');
+check(is_file($marker) && str_contains((string) file_get_contents($marker), '2026-W48'), 'marker atómico legible');
 @unlink($marker);
+check(kinesica_digest_mark_sent_best_effort($tmpId, '2026-W48', 'martin@example.test'), 'best_effort mark');
+check(kinesica_digest_already_sent($tmpId, '2026-W48'), 'best_effort readable');
+@unlink($marker);
+@unlink(kinesica_digest_lock_file($tmpId));
+
+// Canales de producción sin emails hardcodeados
+$prodPend = kinesica_digest_channel_pendientes();
+$prodErr = kinesica_digest_channel_errores();
+check(($prodPend['email_fallback'] ?? 'x') === '', 'pendientes sin fallback hardcodeado');
+check(($prodErr['email_fallback'] ?? 'x') === '', 'errores sin fallback hardcodeado');
 
 // --- line budget admin digest modules ---
 foreach ([
@@ -166,5 +220,9 @@ foreach ([
 }
 
 check(!is_file($root . '/admin/api/lib_pendientes_digest.php'), 'sin lib_pendientes_digest legacy');
+$docs = (string) file_get_contents($root . '/docs/pendientes-digest.md');
+check(!str_contains($docs, 'norberto1712@'), 'docs sin gmail Norberto');
+check(!str_contains($docs, 'martin.brude@'), 'docs sin gmail Martín');
+check(!str_contains($docs, 'u696348908'), 'docs sin path Hostinger real');
 
 echo "verify-weekly-digest OK ({$n} checks)\n";

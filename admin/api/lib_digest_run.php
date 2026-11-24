@@ -8,48 +8,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/lib_digest_schedule.php';
 require_once __DIR__ . '/lib_digest_marker.php';
 require_once __DIR__ . '/lib_digest_mail.php';
-
-/**
- * @param list<string> $envKeys
- * @param list<string> $cfgPaths  p.ej. user_emails.martin
- */
-function kinesica_digest_resolve_email(array $envKeys, array $cfgPaths, string $fallback): string
-{
-    foreach ($envKeys as $key) {
-        $key = (string) $key;
-        if ($key === '') {
-            continue;
-        }
-        $v = (string) (getenv($key) ?: ($_SERVER[$key] ?? $_ENV[$key] ?? ''));
-        $v = trim($v);
-        if ($v !== '' && filter_var($v, FILTER_VALIDATE_EMAIL)) {
-            return $v;
-        }
-    }
-    if (function_exists('cfg')) {
-        $cfg = cfg();
-        foreach ($cfgPaths as $path) {
-            $parts = explode('.', (string) $path);
-            $cur = $cfg;
-            foreach ($parts as $p) {
-                if (!is_array($cur) || !array_key_exists($p, $cur)) {
-                    $cur = null;
-                    break;
-                }
-                $cur = $cur[$p];
-            }
-            $v = is_string($cur) ? trim($cur) : '';
-            if ($v !== '' && filter_var($v, FILTER_VALIDATE_EMAIL)) {
-                return $v;
-            }
-        }
-    }
-    $fallback = trim($fallback);
-    if (!filter_var($fallback, FILTER_VALIDATE_EMAIL)) {
-        throw new InvalidArgumentException('email_fallback inválido en canal de digesto.');
-    }
-    return $fallback;
-}
+require_once __DIR__ . '/lib_digest_channels.php';
 
 /**
  * @param array<string,mixed> $channel
@@ -89,21 +48,11 @@ function kinesica_digest_run(array $channel, array $opts = []): array
     }
     $items = [];
     foreach ($rawItems as $row) {
-        if (!is_array($row)) {
-            continue;
-        }
-        if (trim((string) ($row['title'] ?? '')) === '') {
+        if (!is_array($row) || trim((string) ($row['title'] ?? '')) === '') {
             continue;
         }
         $items[] = $row;
     }
-
-    $to = kinesica_digest_resolve_email(
-        is_array($channel['email_env'] ?? null) ? $channel['email_env'] : [],
-        is_array($channel['email_cfg_paths'] ?? null) ? $channel['email_cfg_paths'] : [],
-        (string) ($channel['email_fallback'] ?? '')
-    );
-    $mail = kinesica_digest_build_mail($channel, $items, $now);
     $count = count($items);
 
     $base = [
@@ -113,80 +62,139 @@ function kinesica_digest_run(array $channel, array $opts = []): array
         'first_business_day' => $first->format('Y-m-d'),
         'today' => $today->format('Y-m-d'),
         'count' => $count,
-        'to' => $to,
-        'subject' => $mail['subject'],
-        'html' => $mail['html'],
-        'text' => $mail['text'],
+        'to' => null,
+        'subject' => null,
+        'html' => null,
+        'text' => null,
     ];
 
+    $resolveAndBuild = static function () use ($channel, $items, $now): array {
+        $to = kinesica_digest_resolve_email(
+            is_array($channel['email_env'] ?? null) ? $channel['email_env'] : [],
+            is_array($channel['email_cfg_paths'] ?? null) ? $channel['email_cfg_paths'] : [],
+            (string) ($channel['email_fallback'] ?? '')
+        );
+        return [$to, kinesica_digest_build_mail($channel, $items, $now)];
+    };
+
     if ($preview) {
-        return $base + ['action' => 'preview', 'message' => "Preview digesto {$id} (sin envío)."];
+        try {
+            [$to, $mail] = $resolveAndBuild();
+        } catch (Throwable $e) {
+            return array_merge($base, [
+                'ok' => false, 'action' => 'config_error',
+                'message' => "Config digesto {$id}: " . $e->getMessage(),
+                'error' => $e->getMessage(),
+            ]);
+        }
+        return array_merge($base, [
+            'to' => $to, 'subject' => $mail['subject'],
+            'html' => $mail['html'], 'text' => $mail['text'],
+            'action' => 'preview', 'message' => "Preview digesto {$id} (sin envío).",
+        ]);
     }
 
     $notBefore = kinesica_digest_not_before();
     $todayIso = $today->format('Y-m-d');
     if (!$force && $notBefore !== null && $todayIso < $notBefore) {
-        return $base + [
+        return array_merge($base, [
             'action' => 'skip_too_early',
-            'html' => null, 'text' => null,
             'message' => "Digesto aún no inicia (desde {$notBefore}).",
-        ];
+        ]);
     }
-    // Día inaugural (= not_before): permite envío aunque no sea el primer hábil de la semana.
-    $inaugural = ($notBefore !== null && $todayIso === $notBefore);
-    if (!$force && !$inaugural && $todayIso !== $first->format('Y-m-d')) {
-        return $base + [
+    if (!$force && !kinesica_digest_may_send_today($today, $first, $notBefore)) {
+        return array_merge($base, [
             'action' => 'skip_not_first_business_day',
-            'html' => null, 'text' => null,
-            'message' => 'Hoy no es el primer día hábil; no se envía.',
-        ];
+            'message' => 'Hoy no es día de envío del digesto; no se envía.',
+        ]);
     }
     if (!$force && !empty($channel['skip_if_empty']) && $count === 0) {
-        return $base + [
+        return array_merge($base, [
             'action' => 'skip_empty',
-            'html' => null, 'text' => null,
             'message' => "Sin ítems abiertos en {$id}; no se envía.",
-        ];
+        ]);
     }
     if (!$force && kinesica_digest_already_sent($id, $weekKey)) {
-        return $base + [
+        return array_merge($base, [
             'action' => 'skip_already_sent',
-            'html' => null, 'text' => null,
             'message' => "Digesto {$id} de {$weekKey} ya enviado.",
-        ];
-    }
-    if ($dry) {
-        return $base + ['action' => 'dry_run', 'message' => "Dry-run: se habría enviado a {$to}."];
+        ]);
     }
 
     try {
+        [$to, $mail] = $resolveAndBuild();
+    } catch (Throwable $e) {
+        return array_merge($base, [
+            'ok' => false, 'action' => 'config_error',
+            'message' => "Config digesto {$id}: " . $e->getMessage(),
+            'error' => $e->getMessage(),
+        ]);
+    }
+    $base['to'] = $to;
+    $base['subject'] = $mail['subject'];
+    $base['html'] = $mail['html'];
+    $base['text'] = $mail['text'];
+
+    if ($dry) {
+        return array_merge($base, ['action' => 'dry_run', 'message' => "Dry-run: se habría enviado a {$to}."]);
+    }
+
+    $lock = kinesica_digest_acquire_send_lock($id);
+    if ($lock === false) {
+        return array_merge($base, [
+            'ok' => false, 'action' => 'lock_busy',
+            'html' => null, 'text' => null,
+            'message' => "Otro proceso está enviando digesto {$id}.",
+            'error' => 'lock_busy',
+        ]);
+    }
+
+    try {
+        if (!$force && kinesica_digest_already_sent($id, $weekKey)) {
+            return array_merge($base, [
+                'action' => 'skip_already_sent',
+                'html' => null, 'text' => null,
+                'message' => "Digesto {$id} de {$weekKey} ya enviado.",
+            ]);
+        }
         if (!function_exists('send_html_mail') || !send_html_mail($to, $mail['subject'], $mail['html'], $mail['text'])) {
-            return $base + [
+            return array_merge($base, [
                 'ok' => false, 'action' => 'send_failed',
                 'message' => "No se pudo enviar digesto {$id}.",
                 'error' => 'send_html_mail failed',
-            ];
+            ]);
         }
-        kinesica_digest_mark_sent($id, $weekKey, $to);
-        return $base + [
+        try {
+            kinesica_digest_mark_sent($id, $weekKey, $to);
+        } catch (Throwable $markErr) {
+            $marked = kinesica_digest_mark_sent_best_effort($id, $weekKey, $to);
+            error_log('[digest] sent_unmarked channel=' . $id . ' week=' . $weekKey
+                . ' best_effort=' . ($marked ? '1' : '0') . ' err=' . $markErr->getMessage());
+            return array_merge($base, [
+                'ok' => false, 'action' => 'sent_unmarked',
+                'message' => "Digesto {$id} enviado a {$to} pero el marker falló"
+                    . ($marked ? ' (best-effort OK; no reintentar).' : ' (sin marker; revisar a mano).'),
+                'error' => $markErr->getMessage(),
+            ]);
+        }
+        return array_merge($base, [
             'action' => 'sent',
             'message' => "Digesto {$id} enviado a {$to} ({$count} ítems).",
-        ];
+        ]);
     } catch (Throwable $e) {
-        return $base + [
+        return array_merge($base, [
             'ok' => false, 'action' => 'send_failed',
             'message' => "Error al enviar digesto {$id}.",
             'error' => $e->getMessage(),
-        ];
+        ]);
+    } finally {
+        kinesica_digest_release_send_lock($lock);
     }
 }
 
-/**
- * @return list<array<string,mixed>>
- */
+/** @return list<array<string,mixed>> */
 function kinesica_digest_run_all(array $opts = []): array
 {
-    require_once __DIR__ . '/lib_digest_channels.php';
     $out = [];
     foreach (kinesica_digest_channels() as $ch) {
         $out[] = kinesica_digest_run($ch, $opts);

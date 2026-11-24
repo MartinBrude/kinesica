@@ -12,6 +12,51 @@ if (is_file(__DIR__ . '/errores_io.php')) {
     require_once __DIR__ . '/errores_io.php';
 }
 
+/**
+ * @param list<string> $envKeys
+ * @param list<string> $cfgPaths  p.ej. user_emails.martin
+ */
+function kinesica_digest_resolve_email(array $envKeys, array $cfgPaths, string $fallback = ''): string
+{
+    foreach ($envKeys as $key) {
+        $key = (string) $key;
+        if ($key === '') {
+            continue;
+        }
+        $v = (string) (getenv($key) ?: ($_SERVER[$key] ?? $_ENV[$key] ?? ''));
+        $v = trim($v);
+        if ($v !== '' && filter_var($v, FILTER_VALIDATE_EMAIL)) {
+            return $v;
+        }
+    }
+    if (function_exists('cfg')) {
+        $cfg = cfg();
+        foreach ($cfgPaths as $path) {
+            $parts = explode('.', (string) $path);
+            $cur = $cfg;
+            foreach ($parts as $p) {
+                if (!is_array($cur) || !array_key_exists($p, $cur)) {
+                    $cur = null;
+                    break;
+                }
+                $cur = $cur[$p];
+            }
+            $v = is_string($cur) ? trim($cur) : '';
+            if ($v !== '' && filter_var($v, FILTER_VALIDATE_EMAIL)) {
+                return $v;
+            }
+        }
+    }
+    $fallback = trim($fallback);
+    if ($fallback === '') {
+        throw new InvalidArgumentException('email de digesto no configurado (env/cfg).');
+    }
+    if (!filter_var($fallback, FILTER_VALIDATE_EMAIL)) {
+        throw new InvalidArgumentException('email_fallback inválido en canal de digesto.');
+    }
+    return $fallback;
+}
+
 /** Base del admin (sin slash final), desde cfg o fallback del sitio. */
 function kinesica_digest_admin_base(): string
 {
@@ -46,7 +91,8 @@ function kinesica_digest_channel_pendientes(): array
         'skip_if_empty' => true,
         'email_env' => ['NORBERTO_EMAIL'],
         'email_cfg_paths' => ['norberto_email', 'user_emails.norberto'],
-        'email_fallback' => 'norberto1712@gmail.com',
+        // Sin fallback hardcodeado: requiere env o config.php (fail-closed).
+        'email_fallback' => '',
         'load_items' => 'kinesica_digest_items_pendientes',
     ];
 }
@@ -72,7 +118,7 @@ function kinesica_digest_channel_errores(): array
         'skip_if_empty' => true,
         'email_env' => ['MARTIN_EMAIL'],
         'email_cfg_paths' => ['martin_email', 'user_emails.martin'],
-        'email_fallback' => 'martin.brude@gmail.com',
+        'email_fallback' => '',
         'load_items' => 'kinesica_digest_items_errores',
     ];
 }
