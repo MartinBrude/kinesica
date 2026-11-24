@@ -1,4 +1,4 @@
-import { patientKey } from "../ficha-rules.mjs?v=89";
+import { patientKey } from "../ficha-rules.mjs?v=90";
 import { form, getDirectoryPacientesCache } from "./form-patient-state.js";
 import { setDniPower, setPatientLocked } from "./form-patient-lock.js";
 import { clearPatientInputs, applyPatientData } from "./form-patient-fill.js";
@@ -58,10 +58,8 @@ export function setupPatientHandlers({
       const match = all.find((f) => patientKey(f) === selectedKey);
       if (match) {
         const pSessions = all.filter((f) => patientKey(f) === selectedKey);
+        // applyPatientData ya sincroniza motivo (DOM + singles); no duplicar callback.
         applyPatientData(match, pSessions.length);
-        if (match.motivo && typeof onSelectPatientMotivo === "function") {
-          onSelectPatientMotivo(match.motivo);
-        }
         if (typeof onSyncAge === "function") onSyncAge();
         if (typeof onValidationChange === "function") onValidationChange();
         form.elements.fechaSesion?.focus();

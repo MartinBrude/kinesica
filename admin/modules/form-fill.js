@@ -3,13 +3,13 @@
  */
 
 import { patientKey, validateField, getSessionIndex } from "../ficha-rules.mjs?v=90";
-import { syncFollowups, syncEva } from "./form-eva.js?v=4";
-import { showStep, updateStepValidation as updateStepValidationNav } from "./form-nav.js";
+import { syncFollowups, syncEva } from "./form-eva.js?v=5";
+import { showStep, updateStepValidation as updateStepValidationNav } from "./form-nav.js?v=2";
 import { setDniPower, setPatientLocked, populatePatientPicker } from "./form-patient.js";
 import { syncFotoPreview } from "./form-photos.js";
 import { readFormData, getFormSerializedState } from "./form-reader.js";
 import { getCurrentFotos } from "./form-photos.js";
-import { applySingleSelection } from "./form-singles.js?v=1";
+import { applySingleSelection } from "./form-singles.js?v=2";
 import {
   form,
   singles,
@@ -20,7 +20,7 @@ import {
   currentAllFichas,
   setCurrentId,
   setCurrentAllFichas,
-} from "./form-runtime.js?v=4";
+} from "./form-runtime.js?v=5";
 
 function readForm() {
   return readFormData({ form, currentId, singles, getCurrentFotos });
@@ -114,10 +114,16 @@ export function fillForm(data, allFichas = []) {
     form.querySelectorAll("input, textarea, select").forEach((el) => {
       el.disabled = true;
     });
+    form.querySelectorAll("[data-single] button").forEach((btn) => {
+      btn.disabled = true;
+    });
   } else if (colabBanner) {
     colabBanner.hidden = true;
     form.querySelectorAll("input, textarea, select").forEach((el) => {
       el.disabled = false;
+    });
+    form.querySelectorAll("[data-single] button").forEach((btn) => {
+      btn.disabled = false;
     });
   }
 

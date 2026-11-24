@@ -1,4 +1,4 @@
-import { getUniquePatients, capitalizePersonName } from "../ficha-rules.mjs?v=89";
+import { getUniquePatients, capitalizePersonName } from "../ficha-rules.mjs?v=90";
 import { getDirectoryPacientesCache, isDirectoryLoaded } from "./form-patient-state.js";
 import { fetchDirectoryPacientes } from "./form-patient-directory.js";
 

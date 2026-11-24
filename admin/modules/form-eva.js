@@ -2,9 +2,9 @@
  * Kinésica Admin - Controles EVA, Edad, Hábitos y Derivaciones Condicionales
  */
 
-import { ageOn } from "../ficha-rules.mjs?v=89";
-import { singles } from "./form-runtime.js?v=4";
-import { toggleSingleSelection } from "./form-singles.js?v=1";
+import { ageOn } from "../ficha-rules.mjs?v=90";
+import { singles } from "./form-runtime.js?v=5";
+import { selectedSingleValue, toggleSingleSelection } from "./form-singles.js?v=2";
 
 const form = document.querySelector("#ficha");
 const evaInput = form ? form.elements.eva : null;
@@ -65,7 +65,11 @@ export function syncAge() {
 
 export function syncFollowups() {
   document.querySelectorAll("[data-follow]").forEach((box) => {
-    const show = singles[box.dataset.follow] === "Sí";
+    const key = box.dataset.follow;
+    const group = document.querySelector(`[data-single="${key}"]`);
+    const fromDom = selectedSingleValue(group);
+    const show = (fromDom || String(singles[key] ?? "")) === "Sí";
+    if (key && fromDom) singles[key] = fromDom;
     box.hidden = !show;
     if (!show) {
       box.querySelectorAll("input").forEach((input) => {
@@ -85,6 +89,7 @@ export function setupSingleButtons(onChange) {
       const btn = event.target.closest("button");
       if (!btn || btn.disabled) return;
       toggleSingleSelection(group, btn.dataset.value, singles);
+      group.classList.remove("input-error");
       syncFollowups();
       if (typeof onChange === "function") onChange();
     });

@@ -1,7 +1,7 @@
 import { form } from "./form-patient-state.js";
 import { setDniPower, setPatientLocked } from "./form-patient-lock.js";
-import { singles } from "./form-runtime.js?v=4";
-import { applySingleSelection } from "./form-singles.js?v=1";
+import { singles } from "./form-runtime.js?v=5";
+import { applySingleSelection } from "./form-singles.js?v=2";
 
 export function clearPatientInputs() {
   if (!form) return;

@@ -2,9 +2,8 @@
  * Kinésica Admin - Lectura y Serialización del Formulario de Ficha
  */
 
-import { emptyFicha, coerceFicha, ageOn } from "../ficha-rules.mjs?v=90";
-import { todayISO } from "./form-eva.js?v=4";
-import { syncSinglesFromDom } from "./form-singles.js?v=1";
+import { emptyFicha, coerceFicha, ageOn, todayISO } from "../ficha-rules.mjs?v=90";
+import { writeSinglesFromDom, syncSinglesFromDom } from "./form-singles.js?v=2";
 
 export function getBlankFicha() {
   return {
@@ -17,7 +16,8 @@ export function getBlankFicha() {
 
 export function readFormData({ form, currentId, singles, getCurrentFotos }) {
   if (!form) return coerceFicha({});
-  // DOM (button.on) pisa memoria: evita "pastilla azul" sin motivo al guardar.
+  // DOM → memoria viva + snapshot: evita "pastilla azul" sin motivo al guardar.
+  writeSinglesFromDom(form, singles);
   const singlesFromDom = syncSinglesFromDom(form, singles);
   const raw = {
     id: currentId || crypto.randomUUID(),
@@ -28,8 +28,9 @@ export function readFormData({ form, currentId, singles, getCurrentFotos }) {
   for (const [key, val] of fd.entries()) {
     if (key !== "cdi") raw[key] = val;
   }
-  // Volver a aplicar pastillas: FormData no las incluye, y no deben perderse.
-  Object.assign(raw, syncSinglesFromDom(form, singlesFromDom));
+  // Pastillas no van en FormData; reafirmar desde DOM después del merge.
+  writeSinglesFromDom(form, singles);
+  Object.assign(raw, syncSinglesFromDom(form, singles));
   for (const el of form.querySelectorAll('input[type="checkbox"]')) {
     if (el.name && el.name !== "cdi") raw[el.name] = el.checked;
   }

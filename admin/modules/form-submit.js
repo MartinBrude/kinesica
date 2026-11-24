@@ -10,7 +10,7 @@ import {
   patientKey,
 } from "../ficha-rules.mjs?v=90";
 import { dialogAlert } from "./dom.js?v=79";
-import { showStep, highlightMissingFields, highlightErrorFields } from "./form-nav.js";
+import { showStep, highlightMissingFields, highlightErrorFields } from "./form-nav.js?v=2";
 
 const stepForField = {
   nombre: 0,
@@ -47,8 +47,14 @@ export async function submitFichaForm({
     showStep(0);
     highlightMissingFields(missingKeys);
     await dialogAlert(`Falta completar: ${missingFields(data).join(", ")}.`);
-    const firstMissing = form.elements[missingKeys[0]];
-    if (firstMissing) firstMissing.focus();
+    const firstKey = missingKeys[0];
+    const firstMissing = form.elements[firstKey]
+      || form.querySelector(`[data-single="${firstKey}"] button`)
+      || form.querySelector(".input-error");
+    if (firstMissing) {
+      firstMissing.focus?.();
+      firstMissing.scrollIntoView?.({ behavior: "smooth", block: "center" });
+    }
     return false;
   }
 

@@ -660,6 +660,13 @@ assert.match(formRuntimeSrc, /export const singles = \{\}/, "form-runtime debe e
 assert.match(formEvaSrc, /import \{ singles \} from ["']\.\/form-runtime\.js/, "form-eva debe usar el singles de form-runtime (no uno propio)");
 assert.doesNotMatch(formEvaSrc, /export const singles = \{\}/, "form-eva no debe declarar un segundo singles (rompe motivo/pastillas al guardar)");
 assert.match(formSinglesSrc, /export function syncSinglesFromDom/, "form-singles debe exponer syncSinglesFromDom");
+assert.match(formSinglesSrc, /export function writeSinglesFromDom/, "form-singles debe exponer writeSinglesFromDom");
+assert.match(formReaderSrc, /writeSinglesFromDom/, "readFormData debe sincronizar memoria desde el DOM");
 assert.match(formReaderSrc, /syncSinglesFromDom/, "readFormData debe leer pastillas desde el DOM (button.on)");
+assert.match(formEvaSrc, /selectedSingleValue/, "syncFollowups debe poder leer pastillas desde el DOM");
+assert.doesNotMatch(formReaderSrc, /from ["']\.\/form-eva\.js/, "form-reader no debe acoplarse a form-eva solo por todayISO");
+
+const formNavSrc = fs.readFileSync(path.join(root, "admin/modules/form-nav.js"), "utf8");
+assert.match(formNavSrc, /\[data-single="\$\{key\}"\]/, "highlightMissingFields debe marcar pastillas sin input (motivo)");
 
 console.log("fichas ATM: ok");

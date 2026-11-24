@@ -2,7 +2,7 @@
  * Kinésica Admin - Navegación y Validación Visual de Pasos del Formulario
  */
 
-import { REQUIRED_FIELDS, validateStep, missingFieldKeys, missingFields } from "../ficha-rules.mjs?v=89";
+import { REQUIRED_FIELDS, validateStep, missingFieldKeys, missingFields } from "../ficha-rules.mjs?v=90";
 import { switchActiveView } from "./dom.js?v=79";
 
 const form = document.querySelector("#ficha");
@@ -86,6 +86,8 @@ export function highlightMissingFields(keys = []) {
   for (const [key] of REQUIRED_FIELDS) {
     const el = form.elements[key];
     if (el) el.classList.toggle("input-error", keys.includes(key));
+    const pillGroup = form.querySelector(`[data-single="${key}"]`);
+    if (pillGroup) pillGroup.classList.toggle("input-error", keys.includes(key));
   }
 }
 
@@ -105,6 +107,8 @@ export function highlightErrorFields(keys = []) {
   keys.forEach((key) => {
     const el = form.elements[key];
     if (el) el.classList.add("input-error");
+    const pillGroup = form.querySelector(`[data-single="${key}"]`);
+    if (pillGroup) pillGroup.classList.add("input-error");
 
     if (sideConfig[key]) {
       const cfg = sideConfig[key];
@@ -128,9 +132,12 @@ export async function advanceNextStep(data) {
         alertEl.textContent = `⚠️ Por favor completá los campos obligatorios: ${missingFields(data).join(", ")}.`;
         alertEl.hidden = false;
       }
-      const firstMissing = form.elements[missingKeys[0]] || form.querySelector(".input-error");
+      const firstKey = missingKeys[0];
+      const firstMissing = form.elements[firstKey]
+        || form.querySelector(`[data-single="${firstKey}"] button`)
+        || form.querySelector(".input-error");
       if (firstMissing) {
-        firstMissing.focus();
+        firstMissing.focus?.();
         firstMissing.scrollIntoView({ behavior: "smooth", block: "center" });
       }
       return;

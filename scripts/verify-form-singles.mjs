@@ -7,6 +7,7 @@ import test from "node:test";
 import {
   selectedSingleValue,
   syncSinglesFromDom,
+  writeSinglesFromDom,
   applySingleSelection,
   toggleSingleSelection,
 } from "../admin/modules/form-singles.js";
@@ -143,4 +144,32 @@ test("sin button.on el valor queda vacío (y motivo sigue obligatorio)", () => {
     motivo: merged.motivo,
   });
   assert.deepEqual(missingFields(ficha), ["el motivo de consulta"]);
+});
+
+test("toggleSingleSelection: DOM gana sobre singles stale", () => {
+  const singles = { motivo: "Bruxismo" }; // memoria vieja
+  const group = createPillGroup("motivo", MOTIVOS, "Traumático"); // DOM real
+  // Clic en Traumático (ya on) → deselecciona, no marca Bruxismo
+  assert.equal(toggleSingleSelection(group, "Traumático", singles), "");
+  assert.equal(singles.motivo, "");
+  assert.equal(selectedSingleValue(group), "");
+});
+
+test("writeSinglesFromDom muta el objeto singles en vivo", () => {
+  const singles = { motivo: "", ruidos: "No", version: 3 };
+  const root = createFormRoot([
+    createPillGroup("motivo", MOTIVOS, "Pos Quirúrgico"),
+    createPillGroup("ruidos", ["Sí", "No"], "Sí"),
+  ]);
+  writeSinglesFromDom(root, singles);
+  assert.equal(singles.motivo, "Pos Quirúrgico");
+  assert.equal(singles.ruidos, "Sí");
+  assert.equal(singles.version, 3, "No debe borrar meta ajena a pastillas");
+});
+
+test("REGRESIÓN: memoria vacía + DOM Sí en ruidos se recupera para follow-ups", () => {
+  const singles = {};
+  const group = createPillGroup("ruidos", ["Sí", "No"], "Sí");
+  writeSinglesFromDom(createFormRoot([group]), singles);
+  assert.equal(singles.ruidos, "Sí");
 });
