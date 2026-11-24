@@ -66,18 +66,23 @@ function getGlobalHealthBanner(totals, checkedAt, isRefreshing) {
 function renderCard(itemKey, item) {
   const pill = getStatusPill(item.status, item.badge);
   const testButtonHtml = item.can_test
-    ? `<button type="button" class="btn light btn-sm btn-test-service-mail" data-target="${escapeHtml(item.target_key)}" style="font-size: 11px; padding: 4px 10px; margin-top: 8px;">✉️ Probar entrega de correo</button>`
+    ? `<div class="salud-card-action">
+         <button type="button" class="btn light btn-sm btn-test-service-mail" data-target="${escapeHtml(item.target_key)}">✉️ Probar entrega de correo</button>
+       </div>`
+    : "";
+
+  const metaHtml = item.meta
+    ? `<div class="salud-card-meta"><span class="salud-pill-meta">${escapeHtml(item.meta)}</span></div>`
     : "";
 
   return `
     <div class="salud-card salud-status-${escapeHtml(item.status || "ok")}">
-      <div class="salud-card-top">
-        <div style="min-width: 0; flex: 1;">
-          <div class="salud-card-type">${escapeHtml(item.type || "Servicio")}</div>
-          <h3 class="salud-card-name">${escapeHtml(item.name || itemKey)}</h3>
-        </div>
+      <div class="salud-card-header">
+        <span class="salud-card-type">${escapeHtml(item.type || "Servicio")}</span>
         <div class="salud-card-badge-wrap">${pill}</div>
       </div>
+      <h3 class="salud-card-name">${escapeHtml(item.name || itemKey)}</h3>
+      ${metaHtml}
       <div class="salud-card-detail">${escapeHtml(item.detail || "")}</div>
       ${testButtonHtml}
     </div>

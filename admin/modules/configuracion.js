@@ -16,8 +16,8 @@ export { DEFAULT_CLARA_TEXTS };
 export { showConsultorioView, hideConsultorioView, hideClaraView, showConfiguracionView, hideConfiguracionView };
 export { appendChatMessage, resetChatDemo, initChatSimulator } from "./chat-simulator.js?v=19";
 
-export { showClaraView, switchConfigSubtab } from "./configuracion-nav.js?v=2";
-export { initConfiguracionModule } from "./configuracion-init.js?v=2";
+export { showClaraView, switchConfigSubtab } from "./configuracion-nav.js?v=3";
+export { initConfiguracionModule } from "./configuracion-init.js?v=3";
 export { loadConfigData } from "./configuracion-clara-data.js";
 
 export function previewOptCText(optC, fees) {

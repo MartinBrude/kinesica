@@ -132,7 +132,8 @@ record_check($results['apis_internas_admin'], 'db_mariadb', [
     'status' => $dbStatus,
     'latency_ms' => $dbLatencyMs,
     'detail' => $dbConnected ? "Conexión activa · Latencia {$dbLatencyMs} ms" : "Error de conexión: {$dbError}",
-    'badge' => $dbConnected ? "{$dbLatencyMs} ms" : "Desconectado",
+    'badge' => $dbConnected ? 'Operativo' : 'Desconectado',
+    'meta' => $dbConnected ? "Latencia: {$dbLatencyMs} ms" : 'Sin conexión',
 ], $totals);
 
 // =========================================================================
@@ -172,7 +173,7 @@ if ($patientRecentFails > 0) {
 }
 
 record_check($results['comunicaciones'], 'mail_pacientes', [
-    'name' => 'Mails a Pacientes (Confirmaciones y Recordatorios)',
+    'name' => 'Mails a Pacientes',
     'type' => 'Correo Transaccional',
     'status' => $patientMailsStatus,
     'transport' => $mailTransportName,
@@ -181,7 +182,8 @@ record_check($results['comunicaciones'], 'mail_pacientes', [
     'month_count' => $patientMonthSent,
     'recent_fails_24h' => $patientRecentFails,
     'detail' => "Transporte: {$mailTransportName} · {$patientMonthSent} despachados este mes" . ($patientRecentFails > 0 ? " · ⚠️ {$patientRecentFails} fallos en 24h" : " · Sin fallos recientes"),
-    'badge' => $patientRecentFails > 0 ? "{$patientRecentFails} fallos 24h" : "Operativo ({$mailTransportName})",
+    'badge' => $patientRecentFails > 0 ? "{$patientRecentFails} fallos" : "Operativo",
+    'meta' => $mailTransportName,
 ], $totals);
 
 // B) Mails a Norberto
@@ -198,15 +200,16 @@ if ($dbConnected) {
 }
 
 record_check($results['comunicaciones'], 'mail_norberto', [
-    'name' => 'Mails a Norberto (Alertas de Turnos y Contactos Web)',
+    'name' => 'Mails a Norberto',
     'type' => 'Notificaciones Operativas',
     'status' => $norbertoStatus,
     'recipient' => $norbertoEmail,
     'can_test' => true,
     'target_key' => 'norberto',
     'last_activity' => $norbertoLastNotif ?: 'En espera de nuevos turnos',
-    'detail' => "Destino: {$norbertoEmail} · Avisos de turnos agendados, modo respaldo y formulario web",
-    'badge' => $norbertoStatus === 'ok' ? "Conectado ({$norbertoEmail})" : "Email inválido",
+    'detail' => "Avisos de turnos agendados, modo respaldo y formulario de contacto web",
+    'badge' => $norbertoStatus === 'ok' ? "Conectado" : "Email inválido",
+    'meta' => $norbertoEmail,
 ], $totals);
 
 // C) Mails a Martín
@@ -222,15 +225,16 @@ if ($dbConnected) {
 }
 
 record_check($results['comunicaciones'], 'mail_martin', [
-    'name' => 'Mails a Martín (Reportes Técnicos, Digest y 2FA)',
-    'type' => 'Alertas Técnicas & Seguridad',
+    'name' => 'Mails a Martín',
+    'type' => 'Alertas Técnicas & 2FA',
     'status' => $martinStatus,
     'recipient' => $martinEmail,
     'can_test' => true,
     'target_key' => 'martin',
     'last_code_sent' => $martinLastLoginCode ?: 'Sin códigos recientes',
-    'detail' => "Destino: {$martinEmail} · Reportes de incidencias, digesto semanal y códigos de acceso 2FA",
-    'badge' => $martinStatus === 'ok' ? "Conectado ({$martinEmail})" : "Email inválido",
+    'detail' => "Reportes de incidencias, digesto semanal y códigos de acceso 2FA",
+    'badge' => $martinStatus === 'ok' ? "Conectado" : "Email inválido",
+    'meta' => $martinEmail,
 ], $totals);
 
 // =========================================================================
@@ -271,7 +275,8 @@ record_check($results['clara_ia'], 'whatsapp_api', [
     'detail' => $waConfigured
         ? "Phone ID: {$waPhoneId} · {$waActiveConvs} conversaciones activas este mes"
         : "Falta configurar token permanente en config.php",
-    'badge' => $waConfigured ? "{$waActiveConvs} convs / mes" : "Pendiente configuración",
+    'badge' => $waConfigured ? 'Operativo' : 'Pendiente',
+    'meta' => "Phone ID: {$waPhoneId}",
 ], $totals);
 
 // B) Google Gemini IA
@@ -292,14 +297,15 @@ if ($dbConnected) {
 
 $geminiStatus = ($geminiToday >= $geminiLimit) ? 'error' : (($geminiToday >= 1200) ? 'warning' : 'ok');
 record_check($results['clara_ia'], 'gemini_ai', [
-    'name' => 'Google Gemini (IA de Comprensión Clínica de Clara)',
+    'name' => 'Google Gemini (IA de Clara)',
     'type' => 'API Externa / LLM',
     'status' => $geminiStatus,
     'today_requests' => $geminiToday,
     'daily_limit' => $geminiLimit,
     'month_requests' => $geminiMonth,
     'detail' => "Consultas hoy: {$geminiToday} de {$geminiLimit} gratuitas/día · {$geminiMonth} acumuladas este mes",
-    'badge' => "{$geminiToday} / {$geminiLimit} hoy",
+    'badge' => $geminiStatus === 'ok' ? 'Operativo' : 'Límite alcanzado',
+    'meta' => "{$geminiToday} / {$geminiLimit} reqs hoy",
 ], $totals);
 
 // C) n8n Automation Engine
@@ -311,7 +317,8 @@ record_check($results['clara_ia'], 'n8n_engine', [
     'status' => $n8nStatus === 'info' ? 'ok' : $n8nStatus,
     'configured_url' => $n8nUrl ?: 'Webhook predeterminado n8n.kinesica.com.ar',
     'detail' => "Orquestador de alertas automáticas y sincronización de eventos de Clara",
-    'badge' => $n8nUrl !== '' ? "Conectado" : "Predeterminado",
+    'badge' => 'Conectado',
+    'meta' => 'n8n.kinesica.com.ar',
 ], $totals);
 
 // =========================================================================
@@ -337,7 +344,7 @@ try {
 
 $turneraStatus = (!$bookingActive) ? 'warning' : ($turneraError ? 'error' : 'ok');
 record_check($results['agenda_y_web'], 'turnera_slots', [
-    'name' => 'Turnera Web (Generador de Disponibilidad y Slots)',
+    'name' => 'Turnera Web (Generador de Slots)',
     'type' => 'API Interna / Agendamiento',
     'status' => $turneraStatus,
     'booking_active' => $bookingActive,
@@ -345,7 +352,8 @@ record_check($results['agenda_y_web'], 'turnera_slots', [
     'detail' => $bookingActive 
         ? "Turnera activa · Horarios profesionales cargados para Norberto y María" 
         : "⚠️ Turnera actualmente pausada manualmente desde el panel",
-    'badge' => $bookingActive ? "Activa y Operativa" : "Pausada Manualmente",
+    'badge' => $bookingActive ? 'Operativo' : 'Pausada',
+    'meta' => $bookingActive ? 'Disponibilidad online activa' : 'Pausada temporalmente',
 ], $totals);
 
 // B) Google Reviews API (Sincronización de Reseñas)
@@ -382,7 +390,7 @@ if (is_file($reviewsFilePath)) {
 }
 
 record_check($results['agenda_y_web'], 'google_reviews', [
-    'name' => 'Sistema de Actualización de Reseñas (Google Places API)',
+    'name' => 'Sincronización de Reseñas (Google Places)',
     'type' => 'Sincronización Automática',
     'status' => $reviewsStatus,
     'rating' => $reviewsRating,
@@ -390,7 +398,8 @@ record_check($results['agenda_y_web'], 'google_reviews', [
     'fetched_at' => $reviewsFetchedAt,
     'age_hours' => $reviewsAgeHours,
     'detail' => "{$reviewsCount} valoraciones de Google (Puntaje {$reviewsRating} ★) · Sincronizado hace {$reviewsAgeHours} horas vía GitHub Actions",
-    'badge' => $reviewsAgeHours <= 48 ? "Al día ({$reviewsCount} reviews)" : "Hace {$reviewsAgeHours}h",
+    'badge' => $reviewsAgeHours <= 48 ? 'Al día' : "Hace {$reviewsAgeHours}h",
+    'meta' => "{$reviewsCount} reviews · {$reviewsRating} ★",
 ], $totals);
 
 // C) Google Calendar & Google Apps Script (GAS) Sync
@@ -398,36 +407,39 @@ $gasUrl = (string) ($c['gas_booking_url'] ?? '');
 $gasSecret = (string) ($c['gas_api_secret'] ?? '');
 $gasConfigured = ($gasUrl !== '');
 record_check($results['agenda_y_web'], 'gas_calendar', [
-    'name' => 'Sincronización Google Calendar (Google Apps Script)',
+    'name' => 'Sincronización Google Calendar (GAS)',
     'type' => 'API Externa / Calendario',
     'status' => 'ok',
     'mode' => $gasConfigured ? 'Directo (GAS Webhook)' : 'Modo Respaldo Híbrido (MariaDB + Alertas)',
     'detail' => $gasConfigured
         ? "Conectado con Google Apps Script para sincronización en vivo con Google Calendar"
         : "Operando en Modo Respaldo Híbrido seguro con MariaDB local y notificación instantánea",
-    'badge' => $gasConfigured ? "GAS Conectado" : "Modo Respaldo Activo",
+    'badge' => $gasConfigured ? 'Conectado' : 'Modo Respaldo',
+    'meta' => $gasConfigured ? 'GAS Webhook activo' : 'Respaldo local seguro',
 ], $totals);
 
 // D) API Mi Turno (/api/mi-turno.php)
 $miTurnoFile = dirname(__DIR__, 2) . '/api/mi-turno.php';
 $miTurnoOk = is_file($miTurnoFile);
 record_check($results['agenda_y_web'], 'api_mi_turno', [
-    'name' => 'API de Autogestión de Turnos (/api/mi-turno.php)',
+    'name' => 'API de Autogestión de Turnos',
     'type' => 'API Pública / Pacientes',
     'status' => $miTurnoOk ? 'ok' : 'error',
     'detail' => "Permite a los pacientes consultar, descargar .ics, cancelar o reprogramar sus turnos",
-    'badge' => $miTurnoOk ? "Disponible" : "Error de archivo",
+    'badge' => $miTurnoOk ? 'Disponible' : 'Error',
+    'meta' => '/api/mi-turno.php',
 ], $totals);
 
 // E) API Formulario de Contacto (/api/send-contact.php)
 $sendContactFile = dirname(__DIR__, 2) . '/api/send-contact.php';
 $sendContactOk = is_file($sendContactFile);
 record_check($results['agenda_y_web'], 'api_send_contact', [
-    'name' => 'API Formulario de Contacto (/api/send-contact.php)',
+    'name' => 'API Formulario de Contacto',
     'type' => 'API Pública / Consultas Web',
     'status' => $sendContactOk ? 'ok' : 'error',
     'detail' => "Procesa y valida las solicitudes de contacto enviadas desde la página principal hacia el mail de Norberto",
-    'badge' => $sendContactOk ? "Disponible" : "Error de archivo",
+    'badge' => $sendContactOk ? 'Disponible' : 'Error',
+    'meta' => '/api/send-contact.php',
 ], $totals);
 
 // =========================================================================
@@ -498,7 +510,8 @@ foreach ($adminApis as $aKey => $aInfo) {
         'table' => $aInfo['table'],
         'records_count' => $rowCount,
         'detail' => $detail,
-        'badge' => $rowCount !== null ? "{$rowCount} registros" : "Operativa",
+        'badge' => $apiStatus === 'ok' ? 'Operativo' : 'Error',
+        'meta' => $rowCount !== null ? "{$rowCount} registros" : null,
     ], $totals);
 }
 

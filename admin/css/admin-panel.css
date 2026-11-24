@@ -2828,24 +2828,24 @@
 
 .salud-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 310px), 1fr));
+  gap: 16px;
 }
 
 .salud-card {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding: 14px 16px;
+  justify-content: flex-start;
+  padding: 16px 18px;
   background: var(--bg, #f8fafc);
   border: 1px solid var(--line, #e2e8f0);
-  border-radius: 8px;
+  border-radius: 10px;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .salud-card:hover {
   border-color: #cbd5e1;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 .salud-card.salud-status-warning {
@@ -2857,12 +2857,12 @@
   background: #fffafa;
 }
 
-.salud-card-top {
+.salud-card-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 10px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .salud-card-type {
@@ -2871,25 +2871,71 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: var(--muted, #64748b);
-  margin-bottom: 2px;
-}
-
-.salud-card-name {
-  margin: 0;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--navy, #0f172a);
-  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .salud-card-badge-wrap {
   flex-shrink: 0;
 }
 
+.salud-card-name {
+  margin: 0 0 8px 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--navy, #0f172a);
+  line-height: 1.35;
+  width: 100%;
+  word-break: normal;
+}
+
+.salud-card-meta {
+  margin-bottom: 10px;
+}
+
+.salud-pill-meta {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #334155;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  padding: 2px 8px;
+  border-radius: 4px;
+  word-break: break-all;
+}
+
 .salud-card-detail {
-  font-size: 12px;
+  font-size: 12.5px;
   color: #475569;
-  line-height: 1.45;
-  margin-top: 4px;
+  line-height: 1.5;
+  margin-bottom: 14px;
+  flex-grow: 1;
+}
+
+.salud-card-action {
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.salud-card-action .btn {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 12px;
+  border-color: #cbd5e1;
+  color: var(--navy, #0f172a);
+  background: #ffffff;
+}
+
+.salud-card-action .btn:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
 }
 

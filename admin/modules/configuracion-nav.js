@@ -5,7 +5,7 @@ import {
   switchConfigSubtab as switchConfigSubView,
 } from "./config-views.js?v=4";
 import { loadConfigData } from "./configuracion-clara-data.js";
-import { loadEstadoServicios } from "./clara-estado-servicios.js?v=2";
+import { loadEstadoServicios } from "./clara-estado-servicios.js?v=3";
 
 export function showClaraView(section = "") {
   showClaraSubView(() => {
