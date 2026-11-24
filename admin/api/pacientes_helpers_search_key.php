@@ -207,6 +207,72 @@ function is_valid_email_strict(?string $raw): bool
 }
 
 
+/**
+ * Calendar a veces trae "Apellido Nombre". Mapa de correcciones conocidas → "Nombre Apellido".
+ *
+ * @return array<string,string> clave lower => nombre canónico
+ */
+function kinesica_known_inverted_patient_names(): array
+{
+    return [
+        'dalamon viviana' => 'Viviana Dalamon',
+        'lipsyc silvana' => 'Silvana Lipsyc',
+        'mira walter' => 'Walter Mira',
+        'silvestre rodrigo' => 'Rodrigo Silvestre',
+    ];
+}
+
+/** Corrige "Apellido, Nombre" / entradas del mapa a "Nombre Apellido". */
+function kinesica_correct_inverted_patient_name(string $name): string
+{
+    $trimmed = trim($name);
+    if ($trimmed === '') {
+        return '';
+    }
+    if (str_contains($trimmed, ',')) {
+        $parts = explode(',', $trimmed, 2);
+        if (trim($parts[0]) !== '' && trim($parts[1]) !== '') {
+            $trimmed = trim($parts[1]) . ' ' . trim($parts[0]);
+        }
+    }
+    $key = mb_strtolower($trimmed, 'UTF-8');
+    $map = kinesica_known_inverted_patient_names();
+    return $map[$key] ?? $trimmed;
+}
+
+/**
+ * Si nombre/apellido/completo matchean el mapa de invertidos, devuelve partes canónicas.
+ *
+ * @return array{nombre:string,apellido:string,nombre_completo:string}|null
+ */
+function kinesica_resolve_known_inverted_name_parts(string $nombre, string $apellido, string $full = ''): ?array
+{
+    $map = kinesica_known_inverted_patient_names();
+    // Solo full y "nombre apellido": NO usar "apellido nombre" (en fichas correctas
+    // eso reproduce la clave invertida y re-swappearíamos a Walter Mira → Mira Walter).
+    $candidates = [
+        trim($full),
+        trim($nombre . ' ' . $apellido),
+    ];
+    foreach ($candidates as $candidate) {
+        if ($candidate === '') {
+            continue;
+        }
+        $key = mb_strtolower(trim($candidate), 'UTF-8');
+        if (!isset($map[$key])) {
+            continue;
+        }
+        $corrected = $map[$key];
+        $parts = preg_split('/\s+/u', $corrected, 2, PREG_SPLIT_NO_EMPTY) ?: [];
+        return [
+            'nombre' => $parts[0] ?? $corrected,
+            'apellido' => $parts[1] ?? '',
+            'nombre_completo' => $corrected,
+        ];
+    }
+    return null;
+}
+
 function extract_first_name(string $fullName): string
 {
     $clean = trim($fullName);

@@ -4,7 +4,7 @@
 
 import { escapeHtml } from "./dom.js?v=79";
 import { formatDisplayPhone } from "./pacientes-format.js";
-import { formatPatientName } from "./pacientes-name.js?v=3";
+import { formatPatientName } from "./pacientes-name.js?v=4";
 import { patientMissingPhone, isPlaceholderPhone } from "./pacientes-identifiers.js";
 
 export function renderMergeCandidatesHtml(matches, headerTitle = "") {

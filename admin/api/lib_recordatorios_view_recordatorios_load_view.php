@@ -116,16 +116,13 @@ function recordatorios_load_view(?PDO $pdo = null, int $days = RECORDATORIOS_DEF
         $email = '';
         $pid = isset($r['paciente_id']) ? (int) $r['paciente_id'] : 0;
 
-        // Normalización si el nombre viene registrado como "Apellido Nombre" o con coma
-        $knownInverted = [
-            'dalamon viviana' => 'Viviana Dalamon',
-            'lipsyc silvana' => 'Silvana Lipsyc',
-            'mira walter' => 'Walter Mira',
-            'silvestre rodrigo' => 'Rodrigo Silvestre',
-        ];
-        if (isset($knownInverted[$nameKey])) {
-            $r['patient_name'] = $knownInverted[$nameKey];
-            $nameKey = mb_strtolower($r['patient_name']);
+        // Normalización si el nombre viene como "Apellido Nombre" / con coma (mapa compartido).
+        if (function_exists('kinesica_correct_inverted_patient_name')) {
+            $correctedName = kinesica_correct_inverted_patient_name((string) ($r['patient_name'] ?? ''));
+            if ($correctedName !== '' && $correctedName !== (string) ($r['patient_name'] ?? '')) {
+                $r['patient_name'] = $correctedName;
+                $nameKey = mb_strtolower($r['patient_name']);
+            }
         } elseif (str_contains((string) ($r['patient_name'] ?? ''), ',')) {
             $parts = explode(',', (string) $r['patient_name'], 2);
             if (trim($parts[0]) !== '' && trim($parts[1]) !== '') {

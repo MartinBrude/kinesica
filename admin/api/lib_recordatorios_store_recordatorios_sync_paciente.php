@@ -98,6 +98,9 @@ function recordatorios_sync_paciente_from_event(array $ev, PDO $pdo): void
     }
 
     $cleanNom = function_exists('sanitize_patient_name') ? sanitize_patient_name($rawName) : $rawName;
+    if (function_exists('kinesica_correct_inverted_patient_name')) {
+        $cleanNom = kinesica_correct_inverted_patient_name($cleanNom);
+    }
     $parts = preg_split('/\s+/u', $cleanNom, 2, PREG_SPLIT_NO_EMPTY) ?: [];
     $nom = $parts[0] ?? $cleanNom;
     $ape = $parts[1] ?? '';

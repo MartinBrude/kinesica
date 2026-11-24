@@ -4,7 +4,7 @@
 
 import { getSessionUser } from "./auth.js?v=83";
 import { capitalizePersonName } from "./pacientes-format.js";
-import { formatPatientName } from "./pacientes-name.js?v=3";
+import { formatPatientName } from "./pacientes-name.js?v=4";
 import { patientMissingPhone } from "./pacientes-identifiers.js";
 import { buildPacienteModalMarkup } from "./pacientes-modal-html.js?v=5";
 import { bindPacienteModalForm } from "./pacientes-modal-submit.js?v=6";

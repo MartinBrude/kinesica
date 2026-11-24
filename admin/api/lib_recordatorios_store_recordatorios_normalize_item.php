@@ -76,21 +76,13 @@ function recordatorios_normalize_item(array $in, string $execId, int $runAt): ?a
     }
 
     $finalPatientName = trim((string) ($in['patient_name'] ?? $in['patient_full_name'] ?? ''));
-    if (str_contains($finalPatientName, ',')) {
+    if (function_exists('kinesica_correct_inverted_patient_name')) {
+        $finalPatientName = kinesica_correct_inverted_patient_name($finalPatientName);
+    } elseif (str_contains($finalPatientName, ',')) {
         $parts = explode(',', $finalPatientName, 2);
         if (trim($parts[0]) !== '' && trim($parts[1]) !== '') {
             $finalPatientName = trim($parts[1]) . ' ' . trim($parts[0]);
         }
-    }
-    $normPatientKey = mb_strtolower($finalPatientName, 'UTF-8');
-    $knownInverted = [
-        'dalamon viviana' => 'Viviana Dalamon',
-        'lipsyc silvana' => 'Silvana Lipsyc',
-        'mira walter' => 'Walter Mira',
-        'silvestre rodrigo' => 'Rodrigo Silvestre',
-    ];
-    if (isset($knownInverted[$normPatientKey])) {
-        $finalPatientName = $knownInverted[$normPatientKey];
     }
 
     return [

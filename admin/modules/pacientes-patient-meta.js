@@ -1,4 +1,4 @@
-import { formatPatientName } from "./pacientes-name.js?v=3";
+import { formatPatientName } from "./pacientes-name.js?v=4";
 
 export const GOOGLE_REVIEW_INVITE_URL = "https://search.google.com/local/writereview?placeid=ChIJZ2mPW9K1vJUR3J5kGRi5gws";
 

@@ -5,7 +5,7 @@
 import { escapeHtml } from "./dom.js?v=79";
 import { formatDisplayPhone, capitalizePersonName } from "./pacientes-format.js";
 import { getSessionUser } from "./auth.js?v=83";
-import { formatPatientName } from "./pacientes-name.js?v=3";
+import { formatPatientName } from "./pacientes-name.js?v=4";
 import {
   getPatientFirstName,
   buildReviewInviteMessage,

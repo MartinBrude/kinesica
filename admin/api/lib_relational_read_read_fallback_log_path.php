@@ -113,9 +113,20 @@ function kinesica_rel_paciente_display_name(?array $paciente): string
     if ($paciente === null) {
         return '';
     }
+    $nombre = trim((string) ($paciente['nombre'] ?? ''));
+    $apellido = trim((string) ($paciente['apellido'] ?? ''));
     $display = trim((string) ($paciente['nombre_completo'] ?? ''));
+    if (function_exists('kinesica_resolve_known_inverted_name_parts')) {
+        $resolved = kinesica_resolve_known_inverted_name_parts($nombre, $apellido, $display);
+        if ($resolved) {
+            $display = $resolved['nombre_completo'];
+        }
+    }
     if ($display === '') {
-        $display = trim(trim((string) ($paciente['nombre'] ?? '')) . ' ' . trim((string) ($paciente['apellido'] ?? '')));
+        $display = trim($nombre . ' ' . $apellido);
+    }
+    if (function_exists('kinesica_correct_inverted_patient_name')) {
+        $display = kinesica_correct_inverted_patient_name($display);
     }
     if ($display !== '' && function_exists('sanitize_patient_name')) {
         return sanitize_patient_name($display);

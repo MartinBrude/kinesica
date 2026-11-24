@@ -23,20 +23,28 @@ assert.match(pac, /button\.btn-encuesta-invite\[data-id\]/);
 assert.match(pac, /pointer-events:none/);
 assert.doesNotMatch(pac, /btn-encuesta-invite" title="Sin teléfono/);
 
-// Verificar formato de nombre Apellido, Nombre(s) y capitalización solo inicial
+// Verificar formato de nombre "Nombre Apellido" y capitalización solo inicial
 import { formatPatientName } from "../admin/modules/pacientes-name.js";
 import { capitalizePersonName, sanitizePersonName } from "../admin/ficha-rules.mjs";
 
-assert.equal(formatPatientName({ apellido: "Pérez", nombre: "Juan Carlos" }).display, "Pérez, Juan Carlos");
-assert.equal(formatPatientName({ nombre_completo: "Ana Clara Gómez" }).display, "Gómez, Ana Clara");
-assert.equal(formatPatientName({ apellido: "PÉREZ", nombre: "JUAN CARLOS" }).display, "Pérez, Juan Carlos");
-assert.equal(formatPatientName({ apellido: "pérez", nombre: "juan carlos" }).display, "Pérez, Juan Carlos");
-assert.equal(formatPatientName({ nombre_completo: "FLORENCIA MARÍA GONZÁLEZ" }).display, "González, Florencia María");
-assert.equal(formatPatientName({ apellido: "d'alessandro", nombre: "maría-laura" }).display, "D'Alessandro, María-Laura");
+assert.equal(formatPatientName({ apellido: "Pérez", nombre: "Juan Carlos" }).display, "Juan Carlos Pérez");
+assert.equal(formatPatientName({ nombre_completo: "Ana Clara Gómez" }).display, "Ana Clara Gómez");
+assert.equal(formatPatientName({ apellido: "PÉREZ", nombre: "JUAN CARLOS" }).display, "Juan Carlos Pérez");
+assert.equal(formatPatientName({ apellido: "pérez", nombre: "juan carlos" }).display, "Juan Carlos Pérez");
+assert.equal(formatPatientName({ nombre_completo: "FLORENCIA MARÍA GONZÁLEZ" }).display, "Florencia María González");
+assert.equal(formatPatientName({ apellido: "d'alessandro", nombre: "maría-laura" }).display, "María-Laura D'Alessandro");
 assert.equal(formatPatientName({ nombre_completo: "álvarez" }).display, "Álvarez");
-assert.equal(formatPatientName({ nombre_completo: "Walter Mira" }).display, "Mira, Walter");
-assert.equal(formatPatientName({ nombre_completo: "Mira, Walter" }).display, "Mira, Walter");
-assert.equal(formatPatientName({ apellido: "Mira", nombre: "Walter" }).display, "Mira, Walter");
+assert.equal(formatPatientName({ nombre_completo: "Walter Mira" }).display, "Walter Mira");
+assert.equal(formatPatientName({ nombre_completo: "Mira, Walter" }).display, "Walter Mira");
+assert.equal(formatPatientName({ apellido: "Mira", nombre: "Walter" }).display, "Walter Mira");
+// Campos invertidos respecto del nombre completo "Nombre Apellido"
+assert.equal(formatPatientName({ nombre_completo: "Walter Mira", apellido: "Walter", nombre: "Mira" }).display, "Walter Mira");
+assert.equal(formatPatientName({ nombre_completo: "Walter Mira", apellido: "Walter", nombre: "Mira" }).nombre, "Walter");
+assert.equal(formatPatientName({ nombre_completo: "Walter Mira", apellido: "Walter", nombre: "Mira" }).apellido, "Mira");
+// Mapa conocido Calendar "Apellido Nombre" (Mira Walter → Walter Mira)
+assert.equal(formatPatientName({ nombre_completo: "Mira Walter", apellido: "Walter", nombre: "Mira" }).display, "Walter Mira");
+assert.equal(formatPatientName({ apellido: "Walter", nombre: "Mira" }).display, "Walter Mira");
+assert.equal(formatPatientName({ apellido: "Mira", nombre: "Walter" }).display, "Walter Mira");
 
 assert.equal(capitalizePersonName("FLORENCIA"), "Florencia");
 assert.equal(capitalizePersonName("gonzález"), "González");
@@ -113,6 +121,6 @@ assert.match(waPhp, /Falta WHATSAPP_PHONE_NUMBER_ID/, "send_whatsapp_text exige 
 const html = readFileSync("admin/index.html", "utf8");
 assert.ok(!html.includes("(A, B, D)"), "el subtítulo no debe decir (A, B, D)");
 assert.ok(html.includes("respuestas automáticas (A, B, C, D y E)"));
-assert.match(html, /Apellido, Nombre\(s\)/);
+assert.match(html, /Nombre y apellido/);
 assert.match(html, /app\.js\?v=\d+/);
 console.log("pacientes (búsqueda por teléfono, orden por apellido, permisos DELETE) y subtítulo del admin: ok");

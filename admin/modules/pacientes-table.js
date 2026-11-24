@@ -12,7 +12,7 @@ import {
   countEl,
 } from "./pacientes-state.js";
 import { syncPacientesBadgeFromCache } from "./pacientes-badge.js";
-import { formatPatientName } from "./pacientes-name.js?v=3";
+import { formatPatientName } from "./pacientes-name.js?v=4";
 import { patientMissingPhone } from "./pacientes-identifiers.js";
 import { loadPacientes } from "./pacientes-load.js";
 import { createPacientesSectionHeader, buildPacienteRow } from "./pacientes-table-row.js?v=2";

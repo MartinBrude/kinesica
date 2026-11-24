@@ -1,5 +1,13 @@
 import { capitalizePersonName } from "./pacientes-format.js";
 
+/** Alineado con kinesica_known_inverted_patient_names() en PHP. */
+const KNOWN_INVERTED_NAMES = {
+  "dalamon viviana": { nombre: "Viviana", apellido: "Dalamon" },
+  "lipsyc silvana": { nombre: "Silvana", apellido: "Lipsyc" },
+  "mira walter": { nombre: "Walter", apellido: "Mira" },
+  "silvestre rodrigo": { nombre: "Rodrigo", apellido: "Silvestre" },
+};
+
 /** Ruido de títulos de Calendar ("turno acá", "aca") — alineado con sanitize_patient_name PHP. */
 function stripCalendarNameNoise(raw) {
   return String(raw || "")
@@ -7,6 +15,14 @@ function stripCalendarNameNoise(raw) {
     .replace(/\s+/g, " ")
     .trim()
     .replace(/^[\s,-]+|[\s,-]+$/g, "");
+}
+
+function normNameKey(str) {
+  return String(str || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
 }
 
 /** Parte "Apellido, Nombre(s)" o "Nombre Apellido" desde un nombre completo. */
@@ -31,24 +47,64 @@ function splitFullName(fullRaw) {
   };
 }
 
+function lookupKnownInverted(nombre, apellido, full) {
+  // Solo full y "nombre apellido" (no "apellido nombre": en fichas ya correctas
+  // eso reproduce la clave invertida y volveríamos a invertirlo).
+  const candidates = [
+    stripCalendarNameNoise(full),
+    stripCalendarNameNoise(`${nombre} ${apellido}`),
+  ];
+  for (const candidate of candidates) {
+    if (!candidate) continue;
+    const hit = KNOWN_INVERTED_NAMES[normNameKey(candidate)];
+    if (hit) return { ...hit };
+  }
+  return null;
+}
+
+/**
+ * Normaliza nombre/apellido para listado y edición.
+ * Corrige entradas conocidas del Calendar ("Mira Walter" → Walter Mira)
+ * y campos invertidos respecto de un nombre_completo "Nombre Apellido".
+ * Display: "Nombre Apellido".
+ */
 export function formatPatientName(p) {
   let ap = stripCalendarNameNoise(p?.apellido || "");
   let nom = stripCalendarNameNoise(p?.nombre || "");
+  const fullRaw = p?.nombre_completo || "";
 
-  if (!ap && !nom) {
-    const split = splitFullName(p?.nombre_completo || "");
+  const known = lookupKnownInverted(nom, ap, fullRaw);
+  if (known) {
+    nom = known.nombre;
+    ap = known.apellido;
+  } else if (!ap && !nom) {
+    const split = splitFullName(fullRaw);
     ap = split.apellido;
     nom = split.nombre;
+  } else {
+    const fromFull = splitFullName(fullRaw);
+    // Campos al revés respecto de un nombre_completo "Nombre Apellido"
+    // (ej. full=Walter Mira, apellido=Walter, nombre=Mira).
+    if (
+      fromFull.nombre &&
+      fromFull.apellido &&
+      !String(fullRaw || "").includes(",") &&
+      normNameKey(ap) === normNameKey(fromFull.nombre) &&
+      normNameKey(nom) === normNameKey(fromFull.apellido)
+    ) {
+      nom = fromFull.nombre;
+      ap = fromFull.apellido;
+    }
   }
 
   ap = capitalizePersonName(ap);
   nom = capitalizePersonName(nom);
 
   let display = "";
-  if (ap && nom) display = `${ap}, ${nom}`;
-  else if (ap) display = ap;
+  if (nom && ap) display = `${nom} ${ap}`;
   else if (nom) display = nom;
-  else display = capitalizePersonName((p?.nombre_completo || "").trim()) || "Paciente";
+  else if (ap) display = ap;
+  else display = capitalizePersonName(String(fullRaw).trim()) || "Paciente";
 
   return { apellido: ap, nombre: nom, display };
 }

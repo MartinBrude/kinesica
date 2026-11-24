@@ -27,11 +27,11 @@ export {
 } from "./pacientes-identifiers.js";
 
 export { deduplicatePatientsInMemory } from "./pacientes-dedupe.js";
-export { formatPatientName } from "./pacientes-name.js?v=3";
+export { formatPatientName } from "./pacientes-name.js?v=4";
 
 export { showPacientesView, hidePacientesView } from "./pacientes-view.js";
 export { loadPacientes } from "./pacientes-load.js";
-export { renderPacientesTable } from "./pacientes-table.js?v=4";
+export { renderPacientesTable } from "./pacientes-table.js?v=5";
 export { initPacientesModule } from "./pacientes-init.js";
 
 export {

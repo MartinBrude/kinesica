@@ -8,7 +8,7 @@ import {
   setActiveFilterProf,
 } from "./pacientes-state.js";
 import { refreshPacientesMissingPhoneBadge } from "./pacientes-badge.js";
-import { renderPacientesTable } from "./pacientes-table.js?v=4";
+import { renderPacientesTable } from "./pacientes-table.js?v=5";
 import { loadPacientes } from "./pacientes-load.js";
 import { getSessionUser } from "./auth.js?v=83";
 
