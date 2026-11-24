@@ -5,7 +5,7 @@
 import { api } from "./api.js?v=79";
 import { toast, dialogAlert } from "./dom.js?v=79";
 import { markTestFieldError, clearTestFieldError } from "./recordatorios-modal-fields.js?v=1";
-import { loadRecordatorios } from "./recordatorios-load.js?v=1";
+import { loadRecordatorios } from "./recordatorios-load.js?v=2";
 
 export function createRecordatorioContactApiHandlers(backdrop, item, { onSuccess, readFields, close }) {
   const clearDispatchFieldErrors = () => {

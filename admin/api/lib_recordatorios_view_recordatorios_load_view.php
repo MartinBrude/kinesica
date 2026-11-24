@@ -116,44 +116,48 @@ function recordatorios_load_view(?PDO $pdo = null, int $days = RECORDATORIOS_DEF
         $email = '';
         $pid = isset($r['paciente_id']) ? (int) $r['paciente_id'] : 0;
 
-        // Normalización si el nombre viene como "Apellido Nombre" / con coma (mapa compartido).
-        if (function_exists('kinesica_correct_inverted_patient_name')) {
-            $correctedName = kinesica_correct_inverted_patient_name((string) ($r['patient_name'] ?? ''));
-            if ($correctedName !== '' && $correctedName !== (string) ($r['patient_name'] ?? '')) {
-                $r['patient_name'] = $correctedName;
-                $nameKey = mb_strtolower($r['patient_name']);
+        // Normalización de nombre: nunca tumbar la vista entera por un caso raro.
+        try {
+            if (function_exists('kinesica_correct_inverted_patient_name')) {
+                $correctedName = kinesica_correct_inverted_patient_name((string) ($r['patient_name'] ?? ''));
+                if ($correctedName !== '' && $correctedName !== (string) ($r['patient_name'] ?? '')) {
+                    $r['patient_name'] = $correctedName;
+                    $nameKey = mb_strtolower($r['patient_name']);
+                }
+            } elseif (str_contains((string) ($r['patient_name'] ?? ''), ',')) {
+                $parts = explode(',', (string) $r['patient_name'], 2);
+                if (trim($parts[0]) !== '' && trim($parts[1]) !== '') {
+                    $r['patient_name'] = trim($parts[1]) . ' ' . trim($parts[0]);
+                    $nameKey = mb_strtolower($r['patient_name']);
+                }
             }
-        } elseif (str_contains((string) ($r['patient_name'] ?? ''), ',')) {
-            $parts = explode(',', (string) $r['patient_name'], 2);
-            if (trim($parts[0]) !== '' && trim($parts[1]) !== '') {
-                $r['patient_name'] = trim($parts[1]) . ' ' . trim($parts[0]);
-                $nameKey = mb_strtolower($r['patient_name']);
-            }
-        }
 
-        if ($pid <= 0 && $nameKey !== '') {
-            $matchedPatient = function_exists('find_existing_patient_match')
-                ? find_existing_patient_match($pdo, (string) ($r['wa_id'] ?? ''), (string) ($r['patient_name'] ?? ''))
-                : null;
-            if ($matchedPatient && !empty($matchedPatient['id'])) {
-                $pid = (int) $matchedPatient['id'];
-                $pacientesById[$pid] = $matchedPatient;
+            if ($pid <= 0 && $nameKey !== '') {
+                $matchedPatient = function_exists('find_existing_patient_match')
+                    ? find_existing_patient_match($pdo, (string) ($r['wa_id'] ?? ''), (string) ($r['patient_name'] ?? ''))
+                    : null;
+                if ($matchedPatient && !empty($matchedPatient['id'])) {
+                    $pid = (int) $matchedPatient['id'];
+                    $pacientesById[$pid] = $matchedPatient;
+                }
             }
-        }
 
-        if ($pid > 0 && isset($pacientesById[$pid])) {
-            $disp = kinesica_rel_display_from_paciente($pacientesById[$pid]);
-            if ($disp['name'] !== '') {
-                $r['patient_name'] = $disp['name'];
+            if ($pid > 0 && isset($pacientesById[$pid])) {
+                $disp = kinesica_rel_display_from_paciente($pacientesById[$pid]);
+                if ($disp['name'] !== '') {
+                    $r['patient_name'] = $disp['name'];
+                }
+                if ($disp['phone'] !== '' && trim((string) ($r['wa_id'] ?? '')) === '') {
+                    $r['wa_id'] = preg_replace('/\D+/', '', $disp['phone']) ?? $disp['phone'];
+                }
+                if ($disp['email'] !== '') {
+                    $email = $disp['email'];
+                }
+            } elseif (function_exists('kinesica_rel_read_ids') && kinesica_rel_read_ids()) {
+                kinesica_rel_note_read_fallback('recordatorios', $pid > 0 ? 'paciente_id_huerfano' : 'sin_paciente_id');
             }
-            if ($disp['phone'] !== '' && trim((string) ($r['wa_id'] ?? '')) === '') {
-                $r['wa_id'] = preg_replace('/\D+/', '', $disp['phone']) ?? $disp['phone'];
-            }
-            if ($disp['email'] !== '') {
-                $email = $disp['email'];
-            }
-        } elseif (function_exists('kinesica_rel_read_ids') && kinesica_rel_read_ids()) {
-            kinesica_rel_note_read_fallback('recordatorios', $pid > 0 ? 'paciente_id_huerfano' : 'sin_paciente_id');
+        } catch (Throwable $e) {
+            error_log('recordatorios enrich row: ' . $e->getMessage());
         }
         if (trim((string) ($r['wa_id'] ?? '')) === '' && $nameKey !== '') {
             if (!empty($directory['phone_by_name'][$nameKey])) {
@@ -191,8 +195,12 @@ function recordatorios_load_view(?PDO $pdo = null, int $days = RECORDATORIOS_DEF
         $grouped[$runDay][] = $item;
 
         // Auto-sincronizar pacientes existentes en los eventos de recordatorios con la tabla `pacientes`
-        require_once __DIR__ . '/lib_recordatorios_view_sync_directory.php';
-        recordatorios_sync_item_to_directory($pdo, $item, $r, $email, $directory);
+        try {
+            require_once __DIR__ . '/lib_recordatorios_view_sync_directory.php';
+            recordatorios_sync_item_to_directory($pdo, $item, $r, $email, $directory);
+        } catch (Throwable $e) {
+            error_log('recordatorios sync directory: ' . $e->getMessage());
+        }
     }
 
     return [

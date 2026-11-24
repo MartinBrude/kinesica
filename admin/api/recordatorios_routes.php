@@ -56,8 +56,11 @@ if ($method === 'GET') {
         $days = isset($_GET['days']) ? (int) $_GET['days'] : RECORDATORIOS_DEFAULT_DAYS;
         $view = recordatorios_load_view(null, $days);
     } catch (Throwable $e) {
-        error_log('recordatorios GET: ' . $e->getMessage());
-        json_out(503, ['error' => 'Base de datos no disponible']);
+        error_log('recordatorios GET: ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
+        json_out(503, [
+            'error' => 'No se pudieron cargar los recordatorios',
+            'detail' => $e->getMessage(),
+        ]);
     }
     $st = recordatorios_reconcile_state();
     json_out(200, [

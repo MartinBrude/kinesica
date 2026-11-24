@@ -67,9 +67,13 @@ export async function loadRecordatorios(force = false) {
         }
       }, 1500);
     }
-  } catch {
+  } catch (err) {
     if (!recordatoriosStore.cachedItems.length) {
-      container.innerHTML = `<div class="recordatorios-empty"><p>Error al cargar recordatorios.</p></div>`;
+      const detail = String(err?.payload?.detail || err?.message || "").trim();
+      const safeDetail = detail && detail !== "auth"
+        ? `<p style="margin-top:8px;font-size:12px;color:var(--muted);max-width:42rem;margin-left:auto;margin-right:auto;">${detail.replace(/[<>&]/g, "")}</p>`
+        : "";
+      container.innerHTML = `<div class="recordatorios-empty"><p>Error al cargar recordatorios.</p>${safeDetail}</div>`;
     }
   } finally {
     recordatoriosStore.isRefreshing = false;
