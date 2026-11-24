@@ -651,11 +651,15 @@ assert.match(html, /data-compare-tab="5">6\. Anotaciones<\/button>/);
 const matchesAnotaciones = (html.match(/name="anotaciones"/g) || []).length;
 assert.equal(matchesAnotaciones, 1, "Debe haber exactamente un textarea de anotaciones en toda la ficha (solo en tab 6)");
 
-// Pastillas (motivo, ruidos, etc.): un solo objeto `singles` compartido entre click y readForm
+// Pastillas (motivo, ruidos, etc.): un solo objeto `singles` + DOM como fuente al serializar
 const formEvaSrc = fs.readFileSync(path.join(root, "admin/modules/form-eva.js"), "utf8");
 const formRuntimeSrc = fs.readFileSync(path.join(root, "admin/modules/form-runtime.js"), "utf8");
+const formReaderSrc = fs.readFileSync(path.join(root, "admin/modules/form-reader.js"), "utf8");
+const formSinglesSrc = fs.readFileSync(path.join(root, "admin/modules/form-singles.js"), "utf8");
 assert.match(formRuntimeSrc, /export const singles = \{\}/, "form-runtime debe exportar el singles canónico");
 assert.match(formEvaSrc, /import \{ singles \} from ["']\.\/form-runtime\.js/, "form-eva debe usar el singles de form-runtime (no uno propio)");
 assert.doesNotMatch(formEvaSrc, /export const singles = \{\}/, "form-eva no debe declarar un segundo singles (rompe motivo/pastillas al guardar)");
+assert.match(formSinglesSrc, /export function syncSinglesFromDom/, "form-singles debe exponer syncSinglesFromDom");
+assert.match(formReaderSrc, /syncSinglesFromDom/, "readFormData debe leer pastillas desde el DOM (button.on)");
 
 console.log("fichas ATM: ok");

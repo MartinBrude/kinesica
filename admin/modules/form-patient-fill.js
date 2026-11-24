@@ -1,5 +1,7 @@
 import { form } from "./form-patient-state.js";
 import { setDniPower, setPatientLocked } from "./form-patient-lock.js";
+import { singles } from "./form-runtime.js?v=4";
+import { applySingleSelection } from "./form-singles.js?v=1";
 
 export function clearPatientInputs() {
   if (!form) return;
@@ -10,7 +12,8 @@ export function clearPatientInputs() {
   form.elements.nacimiento.value = "";
   form.elements.lugarNac.value = "";
   form.elements.edad.value = "";
-  document.querySelectorAll('[data-single="motivo"] button').forEach((b) => b.classList.remove("on"));
+  const motivoGroup = form.querySelector('[data-single="motivo"]');
+  applySingleSelection(motivoGroup, "", singles);
   if (form.elements.habitoApretamiento) form.elements.habitoApretamiento.checked = false;
   if (form.elements.habitoBruxismo) form.elements.habitoBruxismo.checked = false;
   if (form.elements.habitoMasticacionUni) form.elements.habitoMasticacionUni.checked = false;
@@ -25,11 +28,8 @@ export function applyPatientData(match, pSessionsCount = 1) {
   form.elements.nacimiento.value = match.nacimiento || "";
   form.elements.lugarNac.value = match.lugarNac || "";
 
-  if (match.motivo) {
-    document.querySelectorAll('[data-single="motivo"] button').forEach((btn) => {
-      btn.classList.toggle("on", btn.dataset.value === match.motivo);
-    });
-  }
+  const motivoGroup = form.querySelector('[data-single="motivo"]');
+  applySingleSelection(motivoGroup, match.motivo || "", singles);
   if (form.elements.habitoApretamiento) form.elements.habitoApretamiento.checked = Boolean(match.habitoApretamiento);
   if (form.elements.habitoBruxismo) form.elements.habitoBruxismo.checked = Boolean(match.habitoBruxismo);
   if (form.elements.habitoMasticacionUni) form.elements.habitoMasticacionUni.checked = Boolean(match.habitoMasticacionUni);

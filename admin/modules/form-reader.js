@@ -3,7 +3,8 @@
  */
 
 import { emptyFicha, coerceFicha, ageOn } from "../ficha-rules.mjs?v=90";
-import { todayISO } from "./form-eva.js?v=3";
+import { todayISO } from "./form-eva.js?v=4";
+import { syncSinglesFromDom } from "./form-singles.js?v=1";
 
 export function getBlankFicha() {
   return {
@@ -16,15 +17,19 @@ export function getBlankFicha() {
 
 export function readFormData({ form, currentId, singles, getCurrentFotos }) {
   if (!form) return coerceFicha({});
+  // DOM (button.on) pisa memoria: evita "pastilla azul" sin motivo al guardar.
+  const singlesFromDom = syncSinglesFromDom(form, singles);
   const raw = {
     id: currentId || crypto.randomUUID(),
     savedAt: new Date().toISOString(),
-    ...singles,
+    ...singlesFromDom,
   };
   const fd = new FormData(form);
   for (const [key, val] of fd.entries()) {
     if (key !== "cdi") raw[key] = val;
   }
+  // Volver a aplicar pastillas: FormData no las incluye, y no deben perderse.
+  Object.assign(raw, syncSinglesFromDom(form, singlesFromDom));
   for (const el of form.querySelectorAll('input[type="checkbox"]')) {
     if (el.name && el.name !== "cdi") raw[el.name] = el.checked;
   }
@@ -44,9 +49,9 @@ export function readFormData({ form, currentId, singles, getCurrentFotos }) {
   raw.fotosUrls = [...fotos];
   raw.fotoUrl = fotos[0] || "";
   // Preserve relational meta from singles (fillForm) before coerce strips unknowns.
-  if (singles.version != null) raw.version = singles.version;
-  if (singles.paciente_id != null) raw.paciente_id = singles.paciente_id;
-  if (singles.profesional_id != null) raw.profesional_id = singles.profesional_id;
+  if (singles?.version != null) raw.version = singles.version;
+  if (singles?.paciente_id != null) raw.paciente_id = singles.paciente_id;
+  if (singles?.profesional_id != null) raw.profesional_id = singles.profesional_id;
   return coerceFicha(raw);
 }
 

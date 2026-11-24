@@ -3,7 +3,8 @@
  */
 
 import { ageOn } from "../ficha-rules.mjs?v=89";
-import { singles } from "./form-runtime.js?v=3";
+import { singles } from "./form-runtime.js?v=4";
+import { toggleSingleSelection } from "./form-singles.js?v=1";
 
 const form = document.querySelector("#ficha");
 const evaInput = form ? form.elements.eva : null;
@@ -82,13 +83,8 @@ export function setupSingleButtons(onChange) {
   document.querySelectorAll("[data-single]").forEach((group) => {
     group.addEventListener("click", (event) => {
       const btn = event.target.closest("button");
-      if (!btn) return;
-      const key = group.dataset.single;
-      const next = singles[key] === btn.dataset.value ? "" : btn.dataset.value;
-      singles[key] = next;
-      group.querySelectorAll("button").forEach((el) => {
-        el.classList.toggle("on", el.dataset.value === next);
-      });
+      if (!btn || btn.disabled) return;
+      toggleSingleSelection(group, btn.dataset.value, singles);
       syncFollowups();
       if (typeof onChange === "function") onChange();
     });

@@ -3,12 +3,13 @@
  */
 
 import { patientKey, validateField, getSessionIndex } from "../ficha-rules.mjs?v=90";
-import { syncFollowups, syncEva } from "./form-eva.js?v=3";
+import { syncFollowups, syncEva } from "./form-eva.js?v=4";
 import { showStep, updateStepValidation as updateStepValidationNav } from "./form-nav.js";
 import { setDniPower, setPatientLocked, populatePatientPicker } from "./form-patient.js";
 import { syncFotoPreview } from "./form-photos.js";
 import { readFormData, getFormSerializedState } from "./form-reader.js";
 import { getCurrentFotos } from "./form-photos.js";
+import { applySingleSelection } from "./form-singles.js?v=1";
 import {
   form,
   singles,
@@ -19,7 +20,7 @@ import {
   currentAllFichas,
   setCurrentId,
   setCurrentAllFichas,
-} from "./form-runtime.js?v=3";
+} from "./form-runtime.js?v=4";
 
 function readForm() {
   return readFormData({ form, currentId, singles, getCurrentFotos });
@@ -64,10 +65,7 @@ export function fillForm(data, allFichas = []) {
 
   document.querySelectorAll("[data-single]").forEach((group) => {
     const key = group.dataset.single;
-    group.querySelectorAll("button").forEach((btn) => {
-      btn.classList.toggle("on", btn.dataset.value === (data[key] || ""));
-    });
-    if (data[key]) singles[key] = data[key];
+    applySingleSelection(group, data[key] || "", singles);
   });
 
   syncFollowups();

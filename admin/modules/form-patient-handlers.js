@@ -41,11 +41,8 @@ export function setupPatientHandlers({
             else if (mot.includes("traum")) matchedVal = "Traumático";
             else if (mot.includes("brux")) matchedVal = "Bruxismo";
             else if (mot.includes("quirurg") || mot.includes("post")) matchedVal = "Pos Quirúrgico";
-            if (matchedVal) {
-              document.querySelectorAll('[data-single="motivo"] button').forEach((btn) => {
-                btn.classList.toggle("on", btn.dataset.value === matchedVal);
-              });
-              if (typeof onSelectPatientMotivo === "function") onSelectPatientMotivo(matchedVal);
+            if (matchedVal && typeof onSelectPatientMotivo === "function") {
+              onSelectPatientMotivo(matchedVal);
             }
           }
           setPatientLocked(false, { nombre: fullName, dni: match.dni }, 0, false, true);
