@@ -4,9 +4,10 @@
 
 import { getSessionUser } from "./auth.js?v=83";
 import { capitalizePersonName } from "./pacientes-format.js";
-import { formatPatientName } from "./pacientes-name.js?v=2";
-import { buildPacienteModalMarkup } from "./pacientes-modal-html.js?v=4";
-import { bindPacienteModalForm } from "./pacientes-modal-submit.js?v=5";
+import { formatPatientName } from "./pacientes-name.js?v=3";
+import { patientMissingPhone } from "./pacientes-identifiers.js";
+import { buildPacienteModalMarkup } from "./pacientes-modal-html.js?v=5";
+import { bindPacienteModalForm } from "./pacientes-modal-submit.js?v=6";
 import { bindPacienteModalMerge } from "./pacientes-modal-merge.js?v=6";
 
 export function openFullPacienteModal(paciente = null, onReload = null, options = {}) {
@@ -31,6 +32,7 @@ export function openFullPacienteModal(paciente = null, onReload = null, options 
   if (telVal.startsWith("sin-tel-") || telVal.startsWith("sin-telefono-") || telVal.startsWith("ficha-")) {
     telVal = "";
   }
+  const allowSaveWithoutPhone = Boolean(isEdit && paciente && patientMissingPhone(paciente));
 
   backdrop.innerHTML = buildPacienteModalMarkup({
     isEdit,
@@ -40,6 +42,7 @@ export function openFullPacienteModal(paciente = null, onReload = null, options 
     telVal,
     paciente,
     contactoNombreVal,
+    phoneRequired: !allowSaveWithoutPhone,
   });
 
   document.body.append(backdrop);
@@ -50,7 +53,8 @@ export function openFullPacienteModal(paciente = null, onReload = null, options 
     backdrop.querySelectorAll("input, textarea, select").forEach((el) => {
       el.disabled = true;
     });
-  } else if (nombreVal) {
+  } else if (nombreVal && !allowSaveWithoutPhone) {
+    // Si ya hay nombre y falta completar teléfono real, priorizar ese campo.
     const telInput = backdrop.querySelector("#modal-p-tel");
     if (telInput) setTimeout(() => telInput.focus(), 60);
   }

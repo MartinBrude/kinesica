@@ -18,9 +18,13 @@ const pac = readdirSync("admin/modules")
 assert.match(pac, /phoneMatches\(p\.telefono, query\)/);
 assert.match(pac, /phoneMatches\(p\.contacto_telefono, query\)/);
 assert.match(pac, /formatPatientName/);
+assert.match(pac, /phoneRequired/);
+assert.match(pac, /button\.btn-encuesta-invite\[data-id\]/);
+assert.match(pac, /pointer-events:none/);
+assert.doesNotMatch(pac, /btn-encuesta-invite" title="Sin teléfono/);
 
 // Verificar formato de nombre Apellido, Nombre(s) y capitalización solo inicial
-import { formatPatientName } from "../admin/modules/pacientes.js";
+import { formatPatientName } from "../admin/modules/pacientes-name.js";
 import { capitalizePersonName, sanitizePersonName } from "../admin/ficha-rules.mjs";
 
 assert.equal(formatPatientName({ apellido: "Pérez", nombre: "Juan Carlos" }).display, "Pérez, Juan Carlos");
@@ -30,6 +34,9 @@ assert.equal(formatPatientName({ apellido: "pérez", nombre: "juan carlos" }).di
 assert.equal(formatPatientName({ nombre_completo: "FLORENCIA MARÍA GONZÁLEZ" }).display, "González, Florencia María");
 assert.equal(formatPatientName({ apellido: "d'alessandro", nombre: "maría-laura" }).display, "D'Alessandro, María-Laura");
 assert.equal(formatPatientName({ nombre_completo: "álvarez" }).display, "Álvarez");
+assert.equal(formatPatientName({ nombre_completo: "Walter Mira" }).display, "Mira, Walter");
+assert.equal(formatPatientName({ nombre_completo: "Mira, Walter" }).display, "Mira, Walter");
+assert.equal(formatPatientName({ apellido: "Mira", nombre: "Walter" }).display, "Mira, Walter");
 
 assert.equal(capitalizePersonName("FLORENCIA"), "Florencia");
 assert.equal(capitalizePersonName("gonzález"), "González");

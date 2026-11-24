@@ -76,7 +76,12 @@ export function bindPacienteModalForm({
 
     const isExistingSinTel = Boolean(isEdit && paciente && patientMissingPhone(paciente));
 
-    if (!nombre || !apellido || (!tel && !isExistingSinTel)) {
+    if (!nombre || !apellido) {
+      errorEl.textContent = "Nombre y apellido son obligatorios.";
+      errorEl.hidden = false;
+      return;
+    }
+    if (!tel && !isExistingSinTel) {
       errorEl.textContent = "Nombre, apellido y teléfono son obligatorios.";
       errorEl.hidden = false;
       return;

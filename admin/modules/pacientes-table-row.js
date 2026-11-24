@@ -5,13 +5,13 @@
 import { escapeHtml } from "./dom.js?v=79";
 import { formatDisplayPhone, capitalizePersonName } from "./pacientes-format.js";
 import { getSessionUser } from "./auth.js?v=83";
-import { formatPatientName } from "./pacientes-name.js?v=2";
+import { formatPatientName } from "./pacientes-name.js?v=3";
 import {
   getPatientFirstName,
   buildReviewInviteMessage,
   patientEncuestaEnviada,
   patientHasReview,
-} from "./pacientes-patient-meta.js?v=2";
+} from "./pacientes-patient-meta.js?v=3";
 import { patientMissingPhone } from "./pacientes-identifiers.js";
 
 export function createPacientesSectionHeader(title, count, { accent = false } = {}) {
@@ -55,6 +55,8 @@ export function buildPacienteRow(p) {
   const reviewMsg = buildReviewInviteMessage(p);
   const waReviewLink = (cleanDigits && hasLoadedName) ? `https://wa.me/${cleanDigits}?text=${encodeURIComponent(reviewMsg)}` : "#";
 
+  const disabledActionStyle = "opacity:0.45; cursor:not-allowed; pointer-events:none; gap:4px; font-size:12px; padding:4px 9px;";
+
   const reviewAction = hasReview
     ? `<span class="badge-review-ok" title="Ya dejó una reseña en Google" style="display:inline-flex; align-items:center; gap:4px; font-size:11.5px; padding:3px 8px; border-radius:6px; background:#fef9c3; color:#854d0e; font-weight:600; border:1px solid #fde047;">
          <span aria-hidden="true">⭐</span> Con review
@@ -63,7 +65,7 @@ export function buildPacienteRow(p) {
         ? `<a class="btn light btn-review-invite" href="${waReviewLink}" target="_blank" rel="noopener" title="Enviar WhatsApp a ${escapeHtml(firstName)} invitándole a dejar una reseña en Google" style="color:#0f766e; border-color:#99f6e4; background:#f0fdfa; gap:4px; font-size:12px; padding:4px 9px; font-weight:600; text-decoration:none;">
              <span aria-hidden="true">⭐</span><span>Pedir review</span>
            </a>`
-        : `<span class="btn light btn-review-invite" title="${!hasLoadedName ? "El nombre del paciente debe estar cargado para pedirle review" : "Sin teléfono para WhatsApp"}" style="opacity:0.45; cursor:not-allowed; gap:4px; font-size:12px; padding:4px 9px;">
+        : `<span class="btn light is-disabled" aria-disabled="true" title="${!hasLoadedName ? "El nombre del paciente debe estar cargado para pedirle review" : "Sin teléfono para WhatsApp"}" style="${disabledActionStyle}">
              <span aria-hidden="true">⭐</span><span>Pedir review</span>
            </span>`);
 
@@ -75,7 +77,7 @@ export function buildPacienteRow(p) {
          <span aria-hidden="true">📋</span> Encuesta enviada
        </span>`;
   } else if (isColaborador) {
-    encuestaAction = `<span class="btn light btn-encuesta-invite" title="Los colaboradores no pueden disparar envíos de Clara" style="opacity:0.45; cursor:not-allowed; gap:4px; font-size:12px; padding:4px 9px;">
+    encuestaAction = `<span class="btn light is-disabled" aria-disabled="true" title="Los colaboradores no pueden disparar envíos de Clara" style="${disabledActionStyle}">
          <span aria-hidden="true">📋</span><span>Pedir encuesta</span>
        </span>`;
   } else if (cleanDigits && hasLoadedName) {
@@ -83,7 +85,7 @@ export function buildPacienteRow(p) {
          <span aria-hidden="true">📋</span><span>Pedir encuesta</span>
        </button>`;
   } else {
-    encuestaAction = `<span class="btn light btn-encuesta-invite" title="${!hasLoadedName ? "El nombre del paciente debe estar cargado para pedirle la encuesta" : "Sin teléfono para WhatsApp"}" style="opacity:0.45; cursor:not-allowed; gap:4px; font-size:12px; padding:4px 9px;">
+    encuestaAction = `<span class="btn light is-disabled" aria-disabled="true" title="${!hasLoadedName ? "El nombre del paciente debe estar cargado para pedirle la encuesta" : "Sin teléfono para WhatsApp"}" style="${disabledActionStyle}">
          <span aria-hidden="true">📋</span><span>Pedir encuesta</span>
        </span>`;
   }

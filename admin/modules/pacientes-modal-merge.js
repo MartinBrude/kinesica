@@ -6,7 +6,7 @@ import { api } from "./api.js?v=79";
 import { escapeHtml, dialogAlert, dialogConfirm, toast } from "./dom.js?v=79";
 import { getPacientesCache, setPacientesCache } from "./pacientes-state.js";
 import { phoneMatches } from "./phone-search.js?v=3";
-import { formatPatientName } from "./pacientes-name.js?v=2";
+import { formatPatientName } from "./pacientes-name.js?v=3";
 import {
   renderMergeCandidatesHtml,
   renderMergeSelectionHtml,

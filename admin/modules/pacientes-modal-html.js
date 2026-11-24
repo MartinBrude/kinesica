@@ -13,11 +13,17 @@ export function buildPacienteModalMarkup({
   telVal,
   paciente,
   contactoNombreVal,
+  phoneRequired = true,
 }) {
   const modalTitle = isColaborador ? "Datos del Paciente" : (isEdit ? "Editar Paciente" : "Nuevo Paciente");
   const readOnlyBanner = isColaborador
     ? '<div style="background:#fef3c7; color:#92400e; padding:10px 14px; border-radius:6px; margin-bottom:14px; font-size:13px; font-weight:500;">👁️ Modo solo lectura (Colaborador): Datos del paciente en modo de solo consulta.</div>'
     : '';
+  const phoneLabel = phoneRequired ? "Teléfono (WhatsApp) *" : "Teléfono (WhatsApp)";
+  const phoneHint = phoneRequired
+    ? "Para WhatsApp y recordatorios automáticos."
+    : "Opcional por ahora: podés guardar nombre y apellido sin teléfono, y cargarlo después.";
+  const phoneRequiredAttr = phoneRequired ? " required" : "";
 
   return `
     <div class="paciente-modal-card">
@@ -40,9 +46,9 @@ export function buildPacienteModalMarkup({
           </div>
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
             <div class="paciente-modal-field">
-              <label>Teléfono (WhatsApp) *</label>
-              <input type="tel" id="modal-p-tel" value="${escapeHtml(telVal)}" placeholder="Ej: 11 6123-4567 o +34..." maxlength="24" inputmode="tel" required>
-              <small>Para WhatsApp y recordatorios automáticos.</small>
+              <label>${phoneLabel}</label>
+              <input type="tel" id="modal-p-tel" value="${escapeHtml(telVal)}" placeholder="Ej: 11 6123-4567 o +34..." maxlength="24" inputmode="tel"${phoneRequiredAttr}>
+              <small>${phoneHint}</small>
             </div>
             <div class="paciente-modal-field">
               <label>Email</label>

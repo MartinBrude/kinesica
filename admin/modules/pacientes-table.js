@@ -1,7 +1,7 @@
 import { api } from "./api.js?v=79";
 import { dialogAlert, dialogConfirm } from "./dom.js?v=79";
 import { phoneMatches } from "./phone-search.js?v=3";
-import { openFullPacienteModal } from "./pacientes-modal.js?v=6";
+import { openFullPacienteModal } from "./pacientes-modal.js?v=7";
 import { invalidateDirectoryCache } from "./form-patient.js";
 import {
   getPacientesCache,
@@ -12,10 +12,10 @@ import {
   countEl,
 } from "./pacientes-state.js";
 import { syncPacientesBadgeFromCache } from "./pacientes-badge.js";
-import { formatPatientName } from "./pacientes-name.js?v=2";
+import { formatPatientName } from "./pacientes-name.js?v=3";
 import { patientMissingPhone } from "./pacientes-identifiers.js";
 import { loadPacientes } from "./pacientes-load.js";
-import { createPacientesSectionHeader, buildPacienteRow } from "./pacientes-table-row.js";
+import { createPacientesSectionHeader, buildPacienteRow } from "./pacientes-table-row.js?v=2";
 
 function filterPacientes() {
   const query = (searchInput?.value || "").toLowerCase().trim();
@@ -109,9 +109,10 @@ export function renderPacientesTable() {
     });
   });
 
-  listEl.querySelectorAll(".btn-encuesta-invite").forEach((btn) => {
+  listEl.querySelectorAll("button.btn-encuesta-invite[data-id]").forEach((btn) => {
     btn.addEventListener("click", async () => {
       const id = btn.dataset.id;
+      if (!id) return;
       const name = btn.dataset.name || "el paciente";
       const confirmed = await dialogConfirm(
         `¿Que Clara le envíe a ${name} la invitación a la breve encuesta por WhatsApp?\n\nSolo se puede enviar una vez.`,
