@@ -71,56 +71,68 @@ function kinesica_digest_admin_base(): string
 }
 
 /**
+ * @param array{
+ *   id:string,greeting:string,cta:string,panel:string,
+ *   noun_one:string,noun_many:string,
+ *   email_env:list<string>,email_cfg_paths:list<string>,
+ *   load_items:callable|string,path?:string
+ * } $spec
  * @return array{
  *   id:string,greeting:string,url:string,cta:string,panel:string,
  *   noun_one:string,noun_many:string,skip_if_empty:bool,
  *   email_env:list<string>,email_cfg_paths:list<string>,email_fallback:string,
- *   load_items:callable():list<array{title:string,badge?:string,subtitle?:string}>
+ *   load_items:callable|string
  * }
  */
+function kinesica_digest_channel(array $spec): array
+{
+    $id = (string) ($spec['id'] ?? '');
+    $path = (string) ($spec['path'] ?? $id);
+    return [
+        'id' => $id,
+        'greeting' => (string) ($spec['greeting'] ?? ''),
+        'url' => kinesica_digest_admin_base() . '/' . ltrim($path, '/'),
+        'cta' => (string) ($spec['cta'] ?? 'Abrir'),
+        'panel' => (string) ($spec['panel'] ?? $id),
+        'noun_one' => (string) ($spec['noun_one'] ?? 'ítem'),
+        'noun_many' => (string) ($spec['noun_many'] ?? 'ítems'),
+        'skip_if_empty' => true,
+        'email_env' => is_array($spec['email_env'] ?? null) ? $spec['email_env'] : [],
+        'email_cfg_paths' => is_array($spec['email_cfg_paths'] ?? null) ? $spec['email_cfg_paths'] : [],
+        // Sin fallback hardcodeado: requiere env o config.php (fail-closed).
+        'email_fallback' => '',
+        'load_items' => $spec['load_items'] ?? static fn(): array => [],
+    ];
+}
+
 function kinesica_digest_channel_pendientes(): array
 {
-    return [
+    return kinesica_digest_channel([
         'id' => 'pendientes',
         'greeting' => 'Norberto',
-        'url' => kinesica_digest_admin_base() . '/pendientes',
         'cta' => 'Abrir Pendientes',
         'panel' => 'Pendientes',
         'noun_one' => 'pendiente',
         'noun_many' => 'pendientes',
-        'skip_if_empty' => true,
         'email_env' => ['NORBERTO_EMAIL'],
         'email_cfg_paths' => ['norberto_email', 'user_emails.norberto'],
-        // Sin fallback hardcodeado: requiere env o config.php (fail-closed).
-        'email_fallback' => '',
         'load_items' => 'kinesica_digest_items_pendientes',
-    ];
+    ]);
 }
 
-/**
- * @return array{
- *   id:string,greeting:string,url:string,cta:string,panel:string,
- *   noun_one:string,noun_many:string,skip_if_empty:bool,
- *   email_env:list<string>,email_cfg_paths:list<string>,email_fallback:string,
- *   load_items:callable():list<array{title:string,badge?:string,subtitle?:string}>
- * }
- */
 function kinesica_digest_channel_errores(): array
 {
-    return [
+    return kinesica_digest_channel([
         'id' => 'errores',
         'greeting' => 'Martín',
-        'url' => kinesica_digest_admin_base() . '/errores',
         'cta' => 'Abrir Reporte de Errores',
         'panel' => 'Reporte de Errores',
         'noun_one' => 'bug',
         'noun_many' => 'bugs',
-        'skip_if_empty' => true,
         'email_env' => ['MARTIN_EMAIL'],
         'email_cfg_paths' => ['martin_email', 'user_emails.martin'],
-        'email_fallback' => '',
         'load_items' => 'kinesica_digest_items_errores',
-    ];
+    ]);
 }
 
 /** @return list<array{id:string,...}> */

@@ -39,8 +39,12 @@ console.log("🩺 Ejecutando tests del motor de reservas de Kinésica...\n");
     return [...m[1].matchAll(/(\d{4}-\d{2}-\d{2})/g)].map((x) => x[1]);
   };
   assert.deepEqual(extractMarked(GAS_HOLIDAYS_FILE), source, "GAS holidays desfasados — npm run holidays:sync");
-  assert.deepEqual(extractMarked("admin/api/lib_calendar_backup.php"), source, "backup PHP holidays desfasados — npm run holidays:sync");
-  console.log("  ✅ Feriados DRY (engine / GAS / backup) alineados con argentina-holidays.mjs\n");
+  assert.deepEqual(
+    extractMarked("admin/api/lib_argentina_holidays.php"),
+    source,
+    "PHP holidays desfasados — npm run holidays:sync"
+  );
+  console.log("  ✅ Feriados DRY (engine / GAS / PHP) alineados con argentina-holidays.mjs\n");
 }
 
 let passed = 0;

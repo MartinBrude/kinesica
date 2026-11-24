@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Propaga ARGENTINA_HOLIDAYS a booking-engine, GAS y respaldo PHP.
+ * Propaga ARGENTINA_HOLIDAYS a booking-engine, GAS y lib_argentina_holidays.php.
  * Run: npm run holidays:sync
  */
 import fs from "fs";
@@ -49,5 +49,5 @@ function patch(rel, body) {
 
 patch("booking/booking-engine.js", jsBody("    "));
 patch(GAS_HOLIDAYS_FILE, jsBody("  "));
-patch("admin/api/lib_calendar_backup.php", phpBody("    "));
+patch("admin/api/lib_argentina_holidays.php", phpBody("    "));
 console.log(`Synced ${ARGENTINA_HOLIDAYS.length} holidays.`);

@@ -210,6 +210,7 @@ foreach ([
     'lib_digest_mail.php',
     'lib_digest_channels.php',
     'lib_digest_run.php',
+    'lib_argentina_holidays.php',
     'cron_weekly_digest.php',
     'cron_pendientes_digest.php',
 ] as $rel) {
@@ -220,9 +221,16 @@ foreach ([
 }
 
 check(!is_file($root . '/admin/api/lib_pendientes_digest.php'), 'sin lib_pendientes_digest legacy');
+$scheduleSrc = (string) file_get_contents($root . '/admin/api/lib_digest_schedule.php');
+check(!str_contains($scheduleSrc, 'file_get_contents'), 'schedule sin parse regex de feriados');
+check(str_contains($scheduleSrc, 'lib_argentina_holidays.php'), 'schedule usa lib_argentina_holidays');
+$channelsSrc = (string) file_get_contents($root . '/admin/api/lib_digest_channels.php');
+check(str_contains($channelsSrc, 'function kinesica_digest_channel('), 'factory común de canales');
+check(!defined('KINESICA_BACKUP_HOLIDAYS') || is_array(KINESICA_BACKUP_HOLIDAYS), 'const feriados cargada');
 $docs = (string) file_get_contents($root . '/docs/pendientes-digest.md');
 check(!str_contains($docs, 'norberto1712@'), 'docs sin gmail Norberto');
 check(!str_contains($docs, 'martin.brude@'), 'docs sin gmail Martín');
 check(!str_contains($docs, 'u696348908'), 'docs sin path Hostinger real');
+check(!str_contains((string) file_get_contents($root . '/admin/api/lib_calendar_backup.php'), 'BEGIN_ARGENTINA_HOLIDAYS'), 'backup ya no duplica feriados');
 
 echo "verify-weekly-digest OK ({$n} checks)\n";

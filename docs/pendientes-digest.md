@@ -19,7 +19,8 @@ Markers independientes: `admin/api/data/digest_{canal}_sent.json` (escritura at�
 | Archivo | Rol |
 |---------|-----|
 | `lib_digest.php` | Fachada |
-| `lib_digest_schedule.php` | Feriados + primer día hábil + ventana inaugural |
+| `lib_digest_schedule.php` | Días hábiles + ventana inaugural (feriados vía `lib_argentina_holidays.php`) |
+| `lib_argentina_holidays.php` | Feriados AR (sync: `npm run holidays:sync`) |
 | `lib_digest_marker.php` | Anti-doble-envío (lock + atomic) |
 | `lib_digest_mail.php` | HTML/texto Kinésica |
 | `lib_digest_channels.php` | Canales + loaders |

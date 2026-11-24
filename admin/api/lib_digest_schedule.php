@@ -5,46 +5,14 @@ declare(strict_types=1);
  * Calendario del digesto semanal (días hábiles AR + feriados del motor de turnos).
  */
 
+require_once __DIR__ . '/lib_argentina_holidays.php';
+
 /**
  * @return list<string> YYYY-MM-DD
  */
 function kinesica_digest_holidays(): array
 {
-    static $list = null;
-    if (is_array($list)) {
-        return $list;
-    }
-    if (defined('KINESICA_BACKUP_HOLIDAYS') && is_array(KINESICA_BACKUP_HOLIDAYS)) {
-        $list = [];
-        foreach (KINESICA_BACKUP_HOLIDAYS as $d) {
-            $d = (string) $d;
-            if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $d)) {
-                $list[] = $d;
-            }
-        }
-        return $list;
-    }
-    $file = __DIR__ . '/lib_calendar_backup.php';
-    $raw = is_file($file) ? (string) @file_get_contents($file) : '';
-    $list = [];
-    $chunk = '';
-    if ($raw !== '' && preg_match(
-        '/\/\/ BEGIN_ARGENTINA_HOLIDAYS\s*(.*?)\s*\/\/ END_ARGENTINA_HOLIDAYS/s',
-        $raw,
-        $m
-    )) {
-        $chunk = $m[1];
-    } elseif ($raw !== '' && preg_match(
-        '/const\s+KINESICA_BACKUP_HOLIDAYS\s*=\s*\[(.*?)\];/s',
-        $raw,
-        $m
-    )) {
-        $chunk = $m[1];
-    }
-    if ($chunk !== '' && preg_match_all("/'(\\d{4}-\\d{2}-\\d{2})'/", $chunk, $dates)) {
-        $list = $dates[1];
-    }
-    return $list;
+    return kinesica_argentina_holidays();
 }
 
 function kinesica_digest_ar_now(?DateTimeImmutable $now = null): DateTimeImmutable
