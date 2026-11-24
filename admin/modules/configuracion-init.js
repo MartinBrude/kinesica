@@ -37,7 +37,7 @@ import {
   syncTogglesUI,
 } from "./configuracion-clara-data.js";
 import { switchConfigSubtab } from "./configuracion-nav.js";
-import { loadEstadoServicios } from "./clara-estado-servicios.js?v=1";
+import { loadEstadoServicios } from "./clara-estado-servicios.js?v=2";
 
 export function initConfiguracionModule(callbacks = {}) {
   configTabBtns.forEach((btn) => {
