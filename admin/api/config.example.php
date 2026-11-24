@@ -46,6 +46,9 @@ return [
 
     'mail_from' => 'no-reply@kinesica.com.ar',
     'admin_url' => 'https://www.kinesica.com.ar/admin/',
+    // Digesto semanal: no enviar antes de esta fecha (Y-m-d). 'none' = sin piso.
+    // 'digest_not_before' => '2026-11-25',
+
     // Token permanente Meta WhatsApp Cloud API (mismo que n8n / Apps Script).
     // También se puede inyectar por env: WHATSAPP_TOKEN / WHATSAPP_PHONE_NUMBER_ID.
     'whatsapp_token' => '',

@@ -82,3 +82,21 @@ function kinesica_digest_week_key(DateTimeImmutable $now): string
 {
     return $now->format('o-\\WW');
 }
+
+/**
+ * Fecha YYYY-MM-DD desde la cual puede enviar (inclusive).
+ * cfg digest_not_before; "none" desactiva. Default Kinésica: 2026-11-25 (primer envío).
+ */
+function kinesica_digest_not_before(): ?string
+{
+    if (function_exists('cfg')) {
+        $raw = trim((string) (cfg()['digest_not_before'] ?? ''));
+        if ($raw === 'none' || $raw === '0') {
+            return null;
+        }
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $raw)) {
+            return $raw;
+        }
+    }
+    return '2026-11-25';
+}

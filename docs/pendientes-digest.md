@@ -8,6 +8,7 @@ El **primer día hábil** de cada semana (lun–vie, feriados AR) Kinésica env�
 | `errores` | Martín (`martin.brude@gmail.com`) | [/admin/errores](https://www.kinesica.com.ar/admin/errores) |
 
 - Ambos canales: **si no hay ítems abiertos, no se envía mail** (`skip_if_empty`).
+- Primer envío Kinésica: **2026-11-25** (`digest_not_before`; ese día se permite aunque no sea el primer hábil). Después, solo el primer día hábil de cada semana.
 
 Markers independientes: `admin/api/data/digest_{canal}_sent.json`.
 

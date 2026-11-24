@@ -96,19 +96,26 @@ require_once $root . '/admin/api/lib_digest_channels.php';
 
 $chErr = kinesica_digest_channel_errores();
 $chErr['load_items'] = static fn(): array => [];
-$wed = new DateTimeImmutable('2026-11-25 09:00', $tz);
-$rSkip = kinesica_digest_run($chErr, ['now' => $wed, 'dry_run' => true, 'items' => [['title' => 'Bug']]]);
-check(($rSkip['action'] ?? '') === 'skip_not_first_business_day', 'skip mid-week');
-
 $tue = new DateTimeImmutable('2026-11-24 09:00', $tz);
-$rEmpty = kinesica_digest_run($chErr, ['now' => $tue, 'dry_run' => true, 'items' => []]);
+$rEarly = kinesica_digest_run($chErr, ['now' => $tue, 'dry_run' => true, 'items' => [['title' => 'Bug']]]);
+check(($rEarly['action'] ?? '') === 'skip_too_early', 'skip antes de not_before (2026-11-25)');
+
+$wed = new DateTimeImmutable('2026-11-25 09:00', $tz);
+$rInaug = kinesica_digest_run($chErr, ['now' => $wed, 'dry_run' => true, 'items' => [['title' => 'Bug']]]);
+check(($rInaug['action'] ?? '') === 'dry_run', 'inaugural mié 25 aunque no sea primer hábil');
+
+$thu = new DateTimeImmutable('2026-11-26 09:00', $tz);
+$rSkip = kinesica_digest_run($chErr, ['now' => $thu, 'dry_run' => true, 'items' => [['title' => 'Bug']]]);
+check(($rSkip['action'] ?? '') === 'skip_not_first_business_day', 'skip mid-week post-inaugural');
+
+$rEmpty = kinesica_digest_run($chErr, ['now' => $wed, 'dry_run' => true, 'items' => []]);
 check(($rEmpty['action'] ?? '') === 'skip_empty', 'errores skip_if_empty');
 
 $chPend = kinesica_digest_channel_pendientes();
-$rPendEmpty = kinesica_digest_run($chPend, ['now' => $tue, 'dry_run' => true, 'items' => []]);
+$rPendEmpty = kinesica_digest_run($chPend, ['now' => $wed, 'dry_run' => true, 'items' => []]);
 check(($rPendEmpty['action'] ?? '') === 'skip_empty', 'pendientes skip_if_empty');
 $rDry = kinesica_digest_run($chPend, [
-    'now' => $tue,
+    'now' => $wed,
     'dry_run' => true,
     'items' => [['title' => 'Demo', 'badge' => '1']],
 ]);
@@ -117,7 +124,7 @@ check(($rDry['to'] ?? '') === 'norberto1712@gmail.com', 'to Norberto');
 check(($rDry['count'] ?? 0) === 1, 'count dry');
 
 $rPrev = kinesica_digest_run($chErr, [
-    'now' => $tue,
+    'now' => $wed,
     'preview' => true,
     'items' => [
         ['title' => 'Bug Clara', 'subtitle' => 'Clara (IA)', 'badge' => '1'],

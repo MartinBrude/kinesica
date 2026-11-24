@@ -122,7 +122,19 @@ function kinesica_digest_run(array $channel, array $opts = []): array
     if ($preview) {
         return $base + ['action' => 'preview', 'message' => "Preview digesto {$id} (sin envío)."];
     }
-    if (!$force && $today->format('Y-m-d') !== $first->format('Y-m-d')) {
+
+    $notBefore = kinesica_digest_not_before();
+    $todayIso = $today->format('Y-m-d');
+    if (!$force && $notBefore !== null && $todayIso < $notBefore) {
+        return $base + [
+            'action' => 'skip_too_early',
+            'html' => null, 'text' => null,
+            'message' => "Digesto aún no inicia (desde {$notBefore}).",
+        ];
+    }
+    // Día inaugural (= not_before): permite envío aunque no sea el primer hábil de la semana.
+    $inaugural = ($notBefore !== null && $todayIso === $notBefore);
+    if (!$force && !$inaugural && $todayIso !== $first->format('Y-m-d')) {
         return $base + [
             'action' => 'skip_not_first_business_day',
             'html' => null, 'text' => null,
