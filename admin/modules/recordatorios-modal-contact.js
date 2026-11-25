@@ -2,6 +2,7 @@
  * Modal contacto / dispatch — Recordatorios.
  */
 
+import { api } from "./api.js?v=79";
 import { escapeHtml, toast } from "./dom.js?v=79";
 import { normalizePhoneForWhatsApp } from "./phone-format.js?v=6";
 import { markTestFieldError, clearTestFieldError } from "./recordatorios-modal-fields.js?v=1";
@@ -102,8 +103,35 @@ export function openRecordatorioContactModal(item, { mode = "contact", onSuccess
 
   document.body.appendChild(backdrop);
   const phoneInput = backdrop.querySelector("#dispatch-phone");
+  const emailInput = backdrop.querySelector("#dispatch-email");
+
+  const rawName = String(item.patient_name || item.event_summary || "").trim();
+  const cleanLookupName = rawName.replace(/^(?:dr[a]?\.|lic\.|prof\.)\s*/i, "").trim();
+  if (!item.wa_id && cleanLookupName && phoneInput) {
+    api(`/api/pacientes.php?q=${encodeURIComponent(cleanLookupName)}`)
+      .then((res) => {
+        const items = Array.isArray(res?.items) ? res.items : [];
+        const match = items.find((p) => {
+          const t = String(p.telefono || "").replace(/\D/g, "");
+          return t.length >= 6;
+        });
+        if (match && phoneInput && !phoneInput.value.trim()) {
+          const rawMatchPhone = String(match.telefono || "").trim();
+          phoneInput.value = rawMatchPhone;
+          const hintBox = document.createElement("div");
+          hintBox.style.cssText = "font-size:12px;color:#0f766e;margin-top:5px;padding:4px 8px;background:#f0fdfa;border-radius:4px;border:1px solid #ccfbf1;";
+          hintBox.innerHTML = `💡 Teléfono sugerido del registro: <strong>${escapeHtml(match.nombre_completo || cleanLookupName)}</strong> (${escapeHtml(rawMatchPhone)})`;
+          phoneInput.parentElement.appendChild(hintBox);
+          if (match.email && emailInput && !emailInput.value.trim()) {
+            emailInput.value = String(match.email).trim();
+          }
+        }
+      })
+      .catch(() => {});
+  }
+
   if (!item.wa_id) phoneInput?.focus();
-  else backdrop.querySelector("#dispatch-email")?.focus();
+  else emailInput?.focus();
 
   const close = () => {
     backdrop.remove();

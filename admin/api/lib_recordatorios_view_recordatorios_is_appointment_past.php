@@ -197,6 +197,32 @@ function recordatorios_lookup_directory_contacts(PDO $pdo, array $rows): array
                     $out['phone_by_name'][mb_strtolower(trim($partsApe[0] . ' ' . $nom))] = $tel;
                 }
             }
+
+            // Si algún paciente aún no tiene teléfono, buscar en citas previas de recordatorio_eventos
+            foreach (array_values($names) as $name) {
+                $nameLower = mb_strtolower(trim($name));
+                if (empty($out['phone_by_name'][$nameLower])) {
+                    try {
+                        $histStmt = $pdo->prepare(
+                            'SELECT wa_id, event_summary FROM recordatorio_eventos
+                             WHERE (LOWER(patient_name) = LOWER(?) OR LOWER(event_summary) LIKE LOWER(?))
+                             ORDER BY id DESC LIMIT 5'
+                        );
+                        $histStmt->execute([$name, '%' . $name . '%']);
+                        while ($histRow = $histStmt->fetch(PDO::FETCH_ASSOC)) {
+                            $foundWa = preg_replace('/\D+/', '', (string) ($histRow['wa_id'] ?? ''));
+                            if (strlen($foundWa) >= 8) {
+                                $out['phone_by_name'][$nameLower] = $foundWa;
+                                break;
+                            }
+                            if (preg_match('/\b(549\d{10,11}|11\d{8}|[1-9]\d{7,9})\b/', (string) ($histRow['event_summary'] ?? ''), $m)) {
+                                $out['phone_by_name'][$nameLower] = preg_replace('/\D+/', '', $m[1]);
+                                break;
+                            }
+                        }
+                    } catch (Throwable) {}
+                }
+            }
         }
     } catch (Throwable $e) {
     }
