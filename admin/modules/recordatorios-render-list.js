@@ -1,5 +1,5 @@
 import { escapeHtml } from "./dom.js?v=79";
-import { buildRecordatorioCardHtml } from "./recordatorios-render-card.js?v=1";
+import { buildRecordatorioCardHtml } from "./recordatorios-render-card.js?v=2";
 import { formatRunDayHeader } from "./recordatorios-render-pages.js?v=1";
 
 export function renderRecordatoriosList(container, items, state = {}) {

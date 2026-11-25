@@ -8,6 +8,7 @@ import { recordatoriosStore } from "./recordatorios-store.js?v=1";
 import { loadRecordatorios } from "./recordatorios-load.js?v=2";
 import { applyFiltersAndRender, applyRecordatorioItemUpdate } from "./recordatorios-apply.js?v=1";
 import { openRecordatorioContactModal, openRecordatorioDispatchModal } from "./recordatorios-modal-contact.js?v=2";
+import { openRecordatorioMessageModal } from "./recordatorios-modal-message.js?v=1";
 import { openTestCaseModal } from "./recordatorios-modal-test.js?v=2";
 
 export function initRecordatoriosModule() {
@@ -61,6 +62,14 @@ export function initRecordatoriosModule() {
         mode: "contact",
         onSuccess: applyRecordatorioItemUpdate,
       });
+      return;
+    }
+    const viewBtn = e.target.closest('[data-action="view-message"]');
+    if (viewBtn) {
+      const id = viewBtn.getAttribute("data-id");
+      const item = recordatoriosStore.cachedItems.find((it) => String(it.id) === String(id));
+      if (!item) return;
+      openRecordatorioMessageModal(item);
       return;
     }
     const btn = e.target.closest('[data-action="dispatch-manual"]');

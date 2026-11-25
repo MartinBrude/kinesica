@@ -618,3 +618,183 @@
 .recordatorios-sync.is-ok {
   color: var(--muted);
 }
+
+/* Botón ojo en título de tarjeta */
+.recordatorio-eye-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid #cbd5e1;
+  background: var(--white);
+  color: #475569;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  vertical-align: middle;
+}
+
+.recordatorio-eye-btn:hover {
+  background: #f1f5f9;
+  color: #0b2545;
+  border-color: #94a3b8;
+  transform: scale(1.08);
+}
+
+.btn-view-message.is-sent {
+  border-color: #86efac;
+  color: #15803d;
+  background: #f0fdf4;
+}
+
+.btn-view-message.is-sent:hover {
+  background: #dcfce7;
+  border-color: #4ade80;
+}
+
+/* Modal de visualización de mensaje */
+.recordatorio-message-modal-card {
+  max-width: 540px;
+}
+
+.recordatorio-message-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.recordatorio-message-title-wrap h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.recordatorio-info-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.recordatorio-channel-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.recordatorio-channel-badge.wa {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.recordatorio-channel-badge.email {
+  background: #f0f9ff;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
+
+.recordatorio-message-box-wrap {
+  margin-top: 14px;
+}
+
+.recordatorio-message-box-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+/* Burbuja estilo WhatsApp */
+.recordatorio-wa-preview-container {
+  background: #efeae2;
+  background-image: radial-gradient(#d1c7b7 0.75px, transparent 0.75px);
+  background-size: 16px 16px;
+  border: 1px solid #dcd5c9;
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.recordatorio-wa-bubble {
+  background: #e7fed9;
+  border: 1px solid #c8f5be;
+  border-radius: 8px 8px 8px 2px;
+  padding: 10px 14px;
+  color: #111b21;
+  font-size: 13px;
+  line-height: 1.5;
+  word-break: break-word;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08);
+}
+
+.recordatorio-wa-bubble-time {
+  text-align: right;
+  font-size: 11px;
+  color: #667781;
+  margin-top: 6px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4px;
+}
+
+.wa-checkmarks {
+  color: #53bdeb;
+  font-weight: bold;
+}
+
+.recordatorio-wa-buttons {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.recordatorio-wa-button-pill {
+  background: #ffffff;
+  border: 1px solid #e1e7ec;
+  border-radius: 6px;
+  padding: 7px 12px;
+  text-align: center;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #00a884;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+/* Vista previa Email */
+.recordatorio-email-preview {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.recordatorio-email-header {
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 10px 14px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #475569;
+}
+
+.recordatorio-email-body {
+  padding: 14px 16px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #1e293b;
+}
+
+.recordatorio-message-modal-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

@@ -167,6 +167,15 @@ export function buildRecordatorioCardHtml(item) {
           ${sendLabel}
         </button>`);
   }
+  if (alreadySent) {
+    actions.push(`
+        <button type="button" class="btn light btn-view-message is-sent" data-action="view-message" data-id="${escapeHtml(item.id)}" title="Ver mensaje enviado">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;margin-right:4px;">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>Ver mensaje
+        </button>`);
+  }
   const actionBtn = actions.length
     ? `<div class="recordatorio-card-actions">${actions.join("")}</div>`
     : "";
@@ -176,11 +185,20 @@ export function buildRecordatorioCardHtml(item) {
       ? "is-missing-contact"
       : "";
 
+  const eyeIconBtn = `
+        <button type="button" class="recordatorio-eye-btn" data-action="view-message" data-id="${escapeHtml(item.id)}" title="${alreadySent ? 'Ver mensaje enviado' : 'Ver mensaje de recordatorio'}" aria-label="Ver mensaje">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </button>`;
+
   return `<article class="recordatorio-card ${statusClass(item.status)} ${phoneCardClass}" data-id="${escapeHtml(item.id)}">
     <div class="recordatorio-card-main">
       <div class="recordatorio-card-title">
         <strong>${name}</strong>
         <span class="recordatorio-status-pill ${statusClass(item.status)}">${statusLabel}</span>
+        ${eyeIconBtn}
         ${warningPill}
         ${reason}
       </div>

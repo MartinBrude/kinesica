@@ -9,5 +9,5 @@ export {
   formatRunDayHeader,
   isAppointmentPast,
 } from "./recordatorios-render-pages.js?v=1";
-export { buildRecordatorioCardHtml } from "./recordatorios-render-card.js?v=1";
+export { buildRecordatorioCardHtml } from "./recordatorios-render-card.js?v=2";
 export { renderRecordatoriosList, renderRecordatoriosPager } from "./recordatorios-render-list.js?v=1";
