@@ -71,30 +71,36 @@ function recordatorios_store_items(array $items, ?PDO $pdo = null): array
             }
 
             if ($cal !== '' && $cal !== '_run') {
-                $baseCal = str_replace('@google.com', '', $cal);
                 try {
+                    if (!function_exists('kinesica_calendar_event_id_variants')) {
+                        require_once __DIR__ . '/lib_relational_turnos_turnos_ready.php';
+                    }
+                    $delVariants = kinesica_calendar_event_id_variants($cal);
+                    if ($delVariants === []) {
+                        $delVariants = [$cal];
+                    }
+                    $delPh = [];
+                    $delParams = [];
+                    foreach ($delVariants as $i => $vid) {
+                        $key = 'd' . $i;
+                        $delPh[] = ':' . $key;
+                        $delParams[$key] = $vid;
+                    }
+                    $delIn = implode(', ', $delPh);
                     if (in_array($status, ['sent', 'sent_email'], true)) {
                         // Cualquier pending (con o sin WA) queda obsoleto tras envío real.
                         $pdo->prepare(
-                            'DELETE FROM recordatorio_eventos
-                             WHERE (calendar_event_id = :cal OR calendar_event_id = :baseCal OR calendar_event_id = :withGoogle)
-                               AND status = "pending"'
-                        )->execute([
-                            'cal' => $cal,
-                            'baseCal' => $baseCal,
-                            'withGoogle' => $baseCal . '@google.com',
-                        ]);
+                            "DELETE FROM recordatorio_eventos
+                             WHERE calendar_event_id IN ($delIn)
+                               AND status = 'pending'"
+                        )->execute($delParams);
                     } elseif ($status !== 'pending') {
                         $pdo->prepare(
-                            'DELETE FROM recordatorio_eventos
-                             WHERE (calendar_event_id = :cal OR calendar_event_id = :baseCal OR calendar_event_id = :withGoogle)
-                               AND status = "pending"
-                               AND (wa_id IS NULL OR wa_id = "")'
-                        )->execute([
-                            'cal' => $cal,
-                            'baseCal' => $baseCal,
-                            'withGoogle' => $baseCal . '@google.com',
-                        ]);
+                            "DELETE FROM recordatorio_eventos
+                             WHERE calendar_event_id IN ($delIn)
+                               AND status = 'pending'
+                               AND (wa_id IS NULL OR wa_id = '')"
+                        )->execute($delParams);
                     }
                 } catch (Throwable $delEx) {
                 }

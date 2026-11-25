@@ -223,6 +223,35 @@ $skipped = (int) $pdo->query(
 )->fetchColumn();
 assert_true($skipped === 1, 'pending → skipped/cancelled');
 
+// Cancel con variante @google.com debe hallar el turno guardado sin sufijo.
+$variantTurnoId = kinesica_rel_upsert_turno_by_calendar_event($pdo, [
+    'calendar_event_id' => 'variant-base-1',
+    'paciente_id' => 55,
+    'status' => 'confirmed',
+    'source' => 'manual',
+]);
+assert_true($variantTurnoId !== null && $variantTurnoId > 0, 'turno variant-base creado');
+$pdo->exec(
+    "INSERT INTO recordatorio_eventos
+     (event_key, calendar_event_id, patient_name, status, run_at, received_at, turno_id)
+     VALUES
+     ('rem:x:variant-base-1:pending', 'variant-base-1', 'Booking Test', 'pending', '2026-11-19 00:00:00', '2026-11-19 00:00:00', NULL)"
+);
+$cancelVariant = kinesica_rel_cancel_turno($pdo, ['calendar_event_id' => 'variant-base-1@google.com']);
+assert_true(!empty($cancelVariant['ok']), 'cancel con @google.com ok');
+assert_true(
+    (int) ($cancelVariant['turno_id'] ?? 0) === (int) $variantTurnoId,
+    'cancel con @google.com reusa turno existente'
+);
+assert_true(
+    (string) $pdo->query("SELECT status FROM turnos WHERE calendar_event_id = 'variant-base-1'")->fetchColumn() === 'cancelled',
+    'turno variant-base cancelled vía sufijo'
+);
+$variantPendingLeft = (int) $pdo->query(
+    "SELECT COUNT(*) FROM recordatorio_eventos WHERE calendar_event_id = 'variant-base-1' AND status = 'pending'"
+)->fetchColumn();
+assert_true($variantPendingLeft === 0, 'pending variant-base anulado vía @google.com');
+
 // Gestión web: apellido + email + código
 try {
     $mig16 = require $root . '/admin/api/migrations/016_turnos_manage_code.php';

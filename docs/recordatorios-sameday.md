@@ -74,7 +74,7 @@ X-Kinesica-Bot-Secret: …
 
 Respuesta: `{ "ok": true, "alive": { "<id>": true|false }, "reasons": { "<id>": "ok|event_gone|cancelled|calendar_unverified|…" } }`.
 
-Si `alive[id] === false` → omitir con `skip_reason` = `reasons[id]` (`event_gone` / `cancelled` / `calendar_unverified`). El admin PHP (catch-up same-day y disparo manual) ya hace esta revalidación vía GAS `check_events` antes de WhatsApp/email. **Deploy GAS** (`npm run gas:deploy`, code_version ≥ `v29-check-events-cancel-filter`) es obligatorio para que `check_events` exista en producción.
+Si `alive[id] === false` → omitir con `skip_reason` = `reasons[id]` (`event_gone` / `cancelled` / `calendar_unverified`). El admin PHP (catch-up same-day y disparo manual) ya hace esta revalidación vía GAS `check_events` antes de WhatsApp/email. **Deploy GAS** (`npm run gas:deploy`, code_version ≥ `v30-calendar-id-variants`) es obligatorio para que `check_events` y el lookup flexible de IDs con/sin `@google.com` existan en producción.
 
 Sanity checks: `npm run admin:test` → `verify-recordatorios.mjs` + `scripts/test-recordatorios.php`; en el bot, `tests/test_reminders_fix.py::TestAdminCheckSent`.
 

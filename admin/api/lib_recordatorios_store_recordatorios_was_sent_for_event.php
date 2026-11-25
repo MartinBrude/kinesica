@@ -26,25 +26,39 @@ function recordatorios_was_sent_for_event(string $calendarEventId, $appointmentD
     try {
         $pdo = recordatorios_pdo($pdo);
         recordatorios_ensure_schema($pdo);
-        $baseCal = str_replace('@google.com', '', $cal);
-        $withGoogle = $baseCal . '@google.com';
+        if (!function_exists('kinesica_calendar_event_id_variants')) {
+            require_once __DIR__ . '/lib_relational_turnos_turnos_ready.php';
+        }
+        $variants = kinesica_calendar_event_id_variants($cal);
+        if ($variants === []) {
+            return false;
+        }
+        $ph = [];
+        $params = [];
+        foreach ($variants as $i => $vid) {
+            $key = 'c' . $i;
+            $ph[] = ':' . $key;
+            $params[$key] = $vid;
+        }
+        $inList = implode(', ', $ph);
         if ($apptDate !== null && preg_match('/^\d{4}-\d{2}-\d{2}$/', $apptDate)) {
             $stmt = $pdo->prepare(
-                'SELECT 1 FROM recordatorio_eventos
-                 WHERE (calendar_event_id = :cal OR calendar_event_id = :baseCal OR calendar_event_id = :withGoogle)
-                   AND (appointment_date = :appt OR appointment_date IS NULL OR appointment_date = "")
-                   AND status IN (\'sent\', \'sent_email\')
-                 LIMIT 1'
+                "SELECT 1 FROM recordatorio_eventos
+                 WHERE calendar_event_id IN ($inList)
+                   AND (appointment_date = :appt OR appointment_date IS NULL OR appointment_date = '')
+                   AND status IN ('sent', 'sent_email')
+                 LIMIT 1"
             );
-            $stmt->execute(['cal' => $cal, 'baseCal' => $baseCal, 'withGoogle' => $withGoogle, 'appt' => $apptDate]);
+            $params['appt'] = $apptDate;
+            $stmt->execute($params);
         } else {
             $stmt = $pdo->prepare(
-                'SELECT 1 FROM recordatorio_eventos
-                 WHERE (calendar_event_id = :cal OR calendar_event_id = :baseCal OR calendar_event_id = :withGoogle)
-                   AND status IN (\'sent\', \'sent_email\')
-                 LIMIT 1'
+                "SELECT 1 FROM recordatorio_eventos
+                 WHERE calendar_event_id IN ($inList)
+                   AND status IN ('sent', 'sent_email')
+                 LIMIT 1"
             );
-            $stmt->execute(['cal' => $cal, 'baseCal' => $baseCal, 'withGoogle' => $withGoogle]);
+            $stmt->execute($params);
         }
         return (bool) $stmt->fetchColumn();
     } catch (Throwable $e) {
@@ -94,18 +108,21 @@ function recordatorios_check_sent_map(array $calendarEventIds, $appointmentDateO
     try {
         $pdo = recordatorios_pdo($pdo);
         recordatorios_ensure_schema($pdo);
+        if (!function_exists('kinesica_calendar_event_id_variants')) {
+            require_once __DIR__ . '/lib_relational_turnos_turnos_ready.php';
+        }
         $baseToRaw = [];
         $queryIds = [];
         foreach ($ids as $cal) {
-            $base = str_replace('@google.com', '', $cal);
-            $baseToRaw[$cal][] = $cal;
-            $baseToRaw[$base][] = $cal;
-            $baseToRaw[$base . '@google.com'][] = $cal;
-            $queryIds[] = $cal;
-            $queryIds[] = $base;
-            $queryIds[] = $base . '@google.com';
+            foreach (kinesica_calendar_event_id_variants($cal) as $variant) {
+                $baseToRaw[$variant][] = $cal;
+                $queryIds[] = $variant;
+            }
         }
         $queryIds = array_values(array_unique($queryIds));
+        if ($queryIds === []) {
+            return $out;
+        }
         $placeholders = implode(',', array_fill(0, count($queryIds), '?'));
         if ($apptDate !== null && preg_match('/^\d{4}-\d{2}-\d{2}$/', $apptDate)) {
             $sql = "SELECT DISTINCT calendar_event_id FROM recordatorio_eventos

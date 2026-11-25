@@ -136,7 +136,11 @@ ok(!str_contains($php, 'deduplicate_pacientes_table($pdo)'), 'carga de contacto 
 $storeFiles = glob($root . '/admin/api/lib_recordatorios_store*.php') ?: [];
 $store = implode("\n", array_map(fn($f) => file_get_contents($f) ?: '', $storeFiles));
 ok(str_contains($store, 'Contacto manual ya resuelve'), 'ingest no pisa WhatsApp cargado a mano');
-ok(str_contains($store, 'wa_id IS NULL OR wa_id = ""'), 'delete pending preserva filas con WhatsApp');
+ok(
+    str_contains($store, 'wa_id IS NULL OR wa_id = ""')
+        || str_contains($store, "wa_id IS NULL OR wa_id = ''"),
+    'delete pending preserva filas con WhatsApp'
+);
 
 ok(str_contains($js, 'recordatorioDedupeScore'), 'SPA prioriza filas con WhatsApp al deduplicar');
 

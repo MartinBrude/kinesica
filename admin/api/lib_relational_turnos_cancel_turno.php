@@ -28,8 +28,26 @@ function kinesica_rel_cancel_turno(PDO $pdo, array $ref): array
         $stmt = $pdo->prepare('SELECT id, calendar_event_id, status FROM turnos WHERE id = :id LIMIT 1');
         $stmt->execute(['id' => $turnoId]);
     } elseif ($calId !== '') {
-        $stmt = $pdo->prepare('SELECT id, calendar_event_id, status FROM turnos WHERE calendar_event_id = :c LIMIT 1');
-        $stmt->execute(['c' => $calId]);
+        $variants = function_exists('kinesica_calendar_event_id_variants')
+            ? kinesica_calendar_event_id_variants($calId)
+            : [$calId];
+        if ($variants === []) {
+            $out['reason'] = 'missing_ref';
+            return $out;
+        }
+        $placeholders = [];
+        $params = [];
+        foreach ($variants as $i => $vid) {
+            $key = 'c' . $i;
+            $placeholders[] = ':' . $key;
+            $params[$key] = $vid;
+        }
+        $stmt = $pdo->prepare(
+            'SELECT id, calendar_event_id, status FROM turnos
+             WHERE calendar_event_id IN (' . implode(', ', $placeholders) . ')
+             LIMIT 1'
+        );
+        $stmt->execute($params);
     } else {
         $out['reason'] = 'missing_ref';
         return $out;
