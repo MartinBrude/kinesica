@@ -36,12 +36,27 @@ function recordatorios_store_items(array $items, ?PDO $pdo = null): array
                 in_array($status, ['missing_phone', 'failed', 'skipped', 'pending'], true)
             ) {
                 try {
+                    if (!function_exists('kinesica_calendar_event_id_variants')) {
+                        require_once __DIR__ . '/lib_relational_turnos_turnos_ready.php';
+                    }
+                    $variants = kinesica_calendar_event_id_variants($cal);
+                    if ($variants === []) {
+                        $variants = [$cal];
+                    }
+                    $ph = [];
+                    $keepParams = [];
+                    foreach ($variants as $i => $vid) {
+                        $key = 'c' . $i;
+                        $ph[] = ':' . $key;
+                        $keepParams[$key] = $vid;
+                    }
                     $keptStmt = $pdo->prepare(
                         'SELECT wa_id FROM recordatorio_eventos
-                         WHERE calendar_event_id = :cal AND wa_id IS NOT NULL AND wa_id != ""
+                         WHERE calendar_event_id IN (' . implode(', ', $ph) . ')
+                           AND wa_id IS NOT NULL AND wa_id != ""
                          ORDER BY id DESC LIMIT 1'
                     );
-                    $keptStmt->execute(['cal' => $cal]);
+                    $keptStmt->execute($keepParams);
                     $keptWa = $keptStmt->fetchColumn();
                     if (is_string($keptWa) && $keptWa !== '') {
                         if ($status === 'missing_phone') {

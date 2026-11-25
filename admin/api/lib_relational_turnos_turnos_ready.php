@@ -18,6 +18,35 @@ function kinesica_rel_normalize_calendar_event_id(string $raw): string
 }
 
 /**
+ * Variantes del mismo evento Google Calendar (con y sin sufijo @google.com).
+ *
+ * @return list<string>
+ */
+function kinesica_calendar_event_id_variants(string $raw): array
+{
+    $id = trim($raw);
+    if ($id === '' || $id === '_run') {
+        return [];
+    }
+    $base = str_ireplace('@google.com', '', $id);
+    $candidates = [$id, $base];
+    if ($base !== '') {
+        $candidates[] = $base . '@google.com';
+    }
+    $out = [];
+    $seen = [];
+    foreach ($candidates as $cand) {
+        $cand = substr((string) $cand, 0, 128);
+        if ($cand === '' || isset($seen[$cand])) {
+            continue;
+        }
+        $seen[$cand] = true;
+        $out[] = $cand;
+    }
+    return $out;
+}
+
+/**
  * @param array{
  *   calendar_event_id:string,
  *   paciente_id?:?int,

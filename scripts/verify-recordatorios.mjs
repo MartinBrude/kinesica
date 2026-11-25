@@ -81,9 +81,19 @@ const gasSrc = readGasSource();
 if (
   !gasSrc.includes('action === "check_events"') ||
   !gasSrc.includes("function handleCheckEvents") ||
+  !gasSrc.includes("function getCalendarEventByIdFlexible") ||
   !gasSrc.includes('"cancelado"')
 ) {
-  console.error("✗ GAS debe exponer check_events y filtrar cancelado en list_appointments");
+  console.error("✗ GAS debe exponer check_events, variantes @google.com y filtrar cancelado en list_appointments");
+  process.exit(1);
+}
+if (
+  !calVerify.includes("kinesica_calendar_event_id_variants") ||
+  !fs
+    .readFileSync(path.join(admin, "api/lib_relational_turnos_cancel_turno.php"), "utf8")
+    .includes("kinesica_calendar_event_id_variants")
+) {
+  console.error("✗ verify/cancel deben homologar calendar_event_id con/sin @google.com");
   process.exit(1);
 }
 

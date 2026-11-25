@@ -14,12 +14,11 @@ function handleCancelAppointment(payload) {
   }
 
   const cal = getKinesicaCalendar();
-  let event = null;
-  try {
-    event = cal.getEventById(eventId);
-  } catch (errFind) {
-    event = null;
-  }
+  const event = typeof getCalendarEventByIdFlexible === "function"
+    ? getCalendarEventByIdFlexible(cal, eventId)
+    : (function () {
+        try { return cal.getEventById(eventId); } catch (errFind) { return null; }
+      })();
   if (!event) {
     // Idempotente: si ya no está, consideramos OK para que la web cierre el ciclo.
     try {

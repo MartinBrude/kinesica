@@ -85,6 +85,31 @@ function handleListAppointments(params) {
 }
 
 /**
+ * getEventById tolerante a IDs con/sin sufijo @google.com.
+ * Calendar a veces guarda "abc" y a veces "abc@google.com".
+ */
+function getCalendarEventByIdFlexible(cal, eventId) {
+  const id = String(eventId || "").trim();
+  if (!id || !cal) return null;
+  const base = id.replace(/@google\.com$/i, "");
+  const candidates = [id];
+  if (base && base !== id) candidates.push(base);
+  if (base) {
+    const withSuffix = base + "@google.com";
+    if (candidates.indexOf(withSuffix) < 0) candidates.push(withSuffix);
+  }
+  for (let i = 0; i < candidates.length; i++) {
+    try {
+      const ev = cal.getEventById(candidates[i]);
+      if (ev) return ev;
+    } catch (errFind) {
+      // probar siguiente variante
+    }
+  }
+  return null;
+}
+
+/**
  * Verifica existencia/cancelación de eventos por ID (recordatorios: TC-50 pre-send).
  * Body: { calendar_event_ids: ["…"] } o { eventIds: ["…"] }
  * → { events: { "<id>": { exists, cancelled, title } } }
@@ -112,12 +137,7 @@ function handleCheckEvents(params) {
   const events = {};
   for (let j = 0; j < uniq.length; j++) {
     const eventId = uniq[j];
-    let event = null;
-    try {
-      event = cal.getEventById(eventId);
-    } catch (errFind) {
-      event = null;
-    }
+    const event = getCalendarEventByIdFlexible(cal, eventId);
     if (!event) {
       events[eventId] = { exists: false, cancelled: false, title: "" };
       continue;

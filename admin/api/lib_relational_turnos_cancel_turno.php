@@ -80,14 +80,28 @@ function kinesica_rel_cancel_recordatorios_for_calendar_event(PDO $pdo, string $
         return 0;
     }
     $updated = 0;
+    $variants = function_exists('kinesica_calendar_event_id_variants')
+        ? kinesica_calendar_event_id_variants($calId)
+        : [$calId];
+    if ($variants === []) {
+        return 0;
+    }
+    $placeholders = [];
+    $params = [];
+    foreach ($variants as $i => $vid) {
+        $key = 'c' . $i;
+        $placeholders[] = ':' . $key;
+        $params[$key] = $vid;
+    }
+    $inList = implode(', ', $placeholders);
     try {
         $stmt = $pdo->prepare(
-            'UPDATE recordatorio_eventos
-             SET status = \'skipped\', skip_reason = \'cancelled\'
-             WHERE calendar_event_id = :c
-               AND status IN (\'pending\', \'missing_phone\', \'failed\')'
+            "UPDATE recordatorio_eventos
+             SET status = 'skipped', skip_reason = 'cancelled'
+             WHERE calendar_event_id IN ($inList)
+               AND status IN ('pending', 'missing_phone', 'failed')"
         );
-        $stmt->execute(['c' => $calId]);
+        $stmt->execute($params);
         $updated = $stmt->rowCount();
 
         if (
@@ -95,11 +109,13 @@ function kinesica_rel_cancel_recordatorios_for_calendar_event(PDO $pdo, string $
             && $turnoId > 0
             && kinesica_migrations_column_exists($pdo, 'recordatorio_eventos', 'turno_id')
         ) {
+            $linkParams = $params;
+            $linkParams['tid'] = $turnoId;
             $link = $pdo->prepare(
-                'UPDATE recordatorio_eventos SET turno_id = COALESCE(turno_id, :tid)
-                 WHERE calendar_event_id = :c AND turno_id IS NULL'
+                "UPDATE recordatorio_eventos SET turno_id = COALESCE(turno_id, :tid)
+                 WHERE calendar_event_id IN ($inList) AND turno_id IS NULL"
             );
-            $link->execute(['tid' => $turnoId, 'c' => $calId]);
+            $link->execute($linkParams);
         }
     } catch (Throwable $e) {
         error_log('kinesica rel cancel recordatorios: ' . $e->getMessage());

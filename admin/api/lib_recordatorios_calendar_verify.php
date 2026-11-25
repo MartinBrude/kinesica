@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/lib_calendar_backup.php';
 require_once __DIR__ . '/campana_turnos_campana_default_date_range.php';
+require_once __DIR__ . '/lib_relational_turnos_turnos_ready.php';
 
 /**
  * Consulta GAS check_events.
@@ -39,6 +40,22 @@ function recordatorios_verify_calendar_events(array $calendarEventIds): array
         return ['ok' => true, 'events' => []];
     }
 
+    // Enviar variantes con/sin @google.com para que funcione aunque GAS aún no las pruebe.
+    $gasIds = [];
+    $seenGas = [];
+    foreach ($ids as $id) {
+        foreach (kinesica_calendar_event_id_variants($id) as $variant) {
+            if (isset($seenGas[$variant])) {
+                continue;
+            }
+            $seenGas[$variant] = true;
+            $gasIds[] = $variant;
+            if (count($gasIds) >= 100) {
+                break 2;
+            }
+        }
+    }
+
     $gasUrl = campana_gas_url();
     $secret = campana_gas_secret();
     if ($gasUrl === '' || $gasUrl === 'none') {
@@ -53,7 +70,7 @@ function recordatorios_verify_calendar_events(array $calendarEventIds): array
 
     $payload = [
         'action' => 'check_events',
-        'calendar_event_ids' => $ids,
+        'calendar_event_ids' => $gasIds,
         'secret' => $secret,
     ];
 
@@ -94,12 +111,22 @@ function recordatorios_verify_calendar_events(array $calendarEventIds): array
     }
     $events = [];
     foreach ($ids as $id) {
-        $row = is_array($rawEvents[$id] ?? null) ? $rawEvents[$id] : [];
-        $events[$id] = [
-            'exists' => !empty($row['exists']),
-            'cancelled' => !empty($row['cancelled']),
-            'title' => trim((string) ($row['title'] ?? '')),
-        ];
+        $best = ['exists' => false, 'cancelled' => false, 'title' => ''];
+        foreach (kinesica_calendar_event_id_variants($id) as $variant) {
+            $row = is_array($rawEvents[$variant] ?? null) ? $rawEvents[$variant] : null;
+            if ($row === null) {
+                continue;
+            }
+            if (!empty($row['exists'])) {
+                $best = [
+                    'exists' => true,
+                    'cancelled' => !empty($row['cancelled']),
+                    'title' => trim((string) ($row['title'] ?? '')),
+                ];
+                break;
+            }
+        }
+        $events[$id] = $best;
     }
 
     return ['ok' => true, 'events' => $events, 'http_code' => $httpCode];

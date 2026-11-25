@@ -16,6 +16,8 @@ function getTimingMetaHtml(item) {
   const localTime = item.run_at_local || item.run_at || "";
   const timeOnly = localTime ? localTime.split(" ")[1] || localTime : "";
 
+  const clockIcon = `<svg class="recordatorio-meta-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
+
   if (item.status === "pending") {
     let dispatchSchedule = "Hoy 18:00 hs";
     if (item.appointment_date) {
@@ -31,18 +33,19 @@ function getTimingMetaHtml(item) {
       } catch { /* ignore */ }
     }
     const detectedStr = timeOnly ? ` · Detectado: ${escapeHtml(timeOnly)} hs` : "";
-    return `<span>Envío automático: <strong>${escapeHtml(dispatchSchedule)}</strong>${detectedStr}</span>`;
+    return `${clockIcon}<span><span class="recordatorio-meta-label">Envío automático:</span> <strong>${escapeHtml(dispatchSchedule)}</strong>${detectedStr}</span>`;
   }
 
   if (item.status === "sent" || item.status === "sent_email") {
-    return `<span>Enviado: ${escapeHtml(localTime)}</span>`;
+    return `${clockIcon}<span><span class="recordatorio-meta-label">Enviado:</span> <span class="recordatorio-meta-val">${escapeHtml(localTime)}</span></span>`;
   }
 
   if (item.status === "failed" || item.status === "missing_phone") {
-    return `<span>Falló en ejecución: ${escapeHtml(localTime)}</span>`;
+    const alertIcon = `<svg class="recordatorio-meta-icon is-danger" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`;
+    return `${alertIcon}<span><span class="recordatorio-meta-label">Falló en ejecución:</span> <span class="recordatorio-meta-val">${escapeHtml(localTime)}</span></span>`;
   }
 
-  return `<span>Ejecución: ${escapeHtml(localTime)}</span>`;
+  return `${clockIcon}<span><span class="recordatorio-meta-label">Ejecución:</span> <span class="recordatorio-meta-val">${escapeHtml(localTime)}</span></span>`;
 }
 
 export function buildRecordatorioCardHtml(item) {
@@ -89,7 +92,7 @@ export function buildRecordatorioCardHtml(item) {
     contactBits.push(`<a href="${mailtoUrl}" class="recordatorio-contact-link recordatorio-email-link" title="Enviar correo">✉️ ${emailEscaped}</a>`);
   }
   const contact = contactBits.length
-    ? contactBits.join(" · ")
+    ? `<div class="recordatorio-contact-group">${contactBits.join("")}</div>`
     : `<span class="recordatorio-contact-warning">⚠️ Sin contacto registrado</span>`;
 
   const warningPill = isMissingPhone && (item.status === "pending" || item.status === "missing_phone")
@@ -167,15 +170,13 @@ export function buildRecordatorioCardHtml(item) {
           ${sendLabel}
         </button>`);
   }
-  if (alreadySent) {
-    actions.push(`
-        <button type="button" class="btn light btn-view-message is-sent" data-action="view-message" data-id="${escapeHtml(item.id)}" title="Ver mensaje enviado">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;margin-right:4px;">
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-            <circle cx="12" cy="12" r="3"></circle>
-          </svg>Ver mensaje
-        </button>`);
-  }
+  actions.push(`
+      <button type="button" class="btn light btn-view-message ${alreadySent ? 'is-sent' : ''}" data-action="view-message" data-id="${escapeHtml(item.id)}" title="${alreadySent ? 'Ver mensaje enviado' : 'Ver mensaje de recordatorio'}">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;margin-right:4px;">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>Ver mensaje
+      </button>`);
   const actionBtn = actions.length
     ? `<div class="recordatorio-card-actions">${actions.join("")}</div>`
     : "";
@@ -185,28 +186,34 @@ export function buildRecordatorioCardHtml(item) {
       ? "is-missing-contact"
       : "";
 
-  const eyeIconBtn = `
-        <button type="button" class="recordatorio-eye-btn" data-action="view-message" data-id="${escapeHtml(item.id)}" title="${alreadySent ? 'Ver mensaje enviado' : 'Ver mensaje de recordatorio'}" aria-label="Ver mensaje">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-            <circle cx="12" cy="12" r="3"></circle>
-          </svg>
-        </button>`;
-
   return `<article class="recordatorio-card ${statusClass(item.status)} ${phoneCardClass}" data-id="${escapeHtml(item.id)}">
     <div class="recordatorio-card-main">
       <div class="recordatorio-card-title">
         <strong>${name}</strong>
         <span class="recordatorio-status-pill ${statusClass(item.status)}">${statusLabel}</span>
-        ${eyeIconBtn}
         ${warningPill}
         ${reason}
       </div>
       ${summary}
       <div class="recordatorio-meta">
-        <span>Turno: ${escapeHtml(appt)}</span>
-        <span>${contact}</span>
-        ${getTimingMetaHtml(item)}
+        <div class="recordatorio-meta-item meta-turno">
+          <svg class="recordatorio-meta-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <span class="recordatorio-meta-label">Turno:</span>
+          <span class="recordatorio-turno-val">${escapeHtml(appt)}</span>
+        </div>
+        <span class="recordatorio-meta-divider" aria-hidden="true"></span>
+        <div class="recordatorio-meta-item meta-contacto">
+          ${contact}
+        </div>
+        <span class="recordatorio-meta-divider" aria-hidden="true"></span>
+        <div class="recordatorio-meta-item meta-timing">
+          ${getTimingMetaHtml(item)}
+        </div>
       </div>
       ${err}
     </div>

@@ -79,6 +79,9 @@ assert_true((string) $rowRace['summary'] === 'Tras carrera', 'carrera mergea sum
 
 assert_true(kinesica_rel_normalize_calendar_event_id('') === '', 'vacío rechazado');
 assert_true(kinesica_rel_normalize_calendar_event_id('_run') === '', '_run rechazado');
+$calVariants = kinesica_calendar_event_id_variants('abc@google.com');
+assert_true(in_array('abc', $calVariants, true) && in_array('abc@google.com', $calVariants, true), 'variantes @google.com');
+assert_true(kinesica_calendar_event_id_variants('_run') === [], 'variantes rechaza _run');
 assert_true(kinesica_rel_upsert_turno_by_calendar_event($pdo, [
     'calendar_event_id' => '_run',
 ]) === null, 'skip _run');
