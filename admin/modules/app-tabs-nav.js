@@ -30,35 +30,12 @@ export function bindAdminNavOnce(adminNav) {
 
     triggerBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      const isMobile = window.matchMedia("(max-width: 800px)").matches;
-      if (isMobile) {
-        const isOpen = groupEl.classList.contains("is-open");
-        closeAllDropdowns();
-        if (!isOpen) {
-          groupEl.classList.remove("is-closed");
-          groupEl.classList.add("is-open");
-          triggerBtn.setAttribute("aria-expanded", "true");
-        }
-      } else {
-        const defaultActions = {
-          "nav-group-clinica": () => switchTab("fichas"),
-          "nav-group-consultorio": () => switchTab("consultorio", "agendar"),
-          "nav-group-whatsapp": () => switchTab("interacciones"),
-          "nav-group-clara": () => switchTab("clara", "mensajes"),
-          "nav-group-admin": () => switchTab("admin", "pendientes"),
-        };
-        const action = defaultActions[groupEl.id];
-        closeAllDropdowns();
-        if (action) {
-          action();
-        } else {
-          const isOpen = groupEl.classList.contains("is-open");
-          if (!isOpen) {
-            groupEl.classList.remove("is-closed");
-            groupEl.classList.add("is-open");
-            triggerBtn.setAttribute("aria-expanded", "true");
-          }
-        }
+      const isOpen = groupEl.classList.contains("is-open");
+      closeAllDropdowns();
+      if (!isOpen) {
+        groupEl.classList.remove("is-closed");
+        groupEl.classList.add("is-open");
+        triggerBtn.setAttribute("aria-expanded", "true");
       }
     });
   };
