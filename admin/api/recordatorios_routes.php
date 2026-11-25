@@ -120,11 +120,19 @@ if ($action === 'dispatch' || $action === 'retry' || $action === 'send_manual') 
     if ($id <= 0) {
         json_out(400, ['error' => 'ID de recordatorio inválido']);
     }
-    $res = recordatorios_dispatch_manual($id, $input, $auth);
-    if (!empty($res['ok'])) {
-        json_out(200, $res);
-    } else {
-        json_out(400, $res);
+    try {
+        $res = recordatorios_dispatch_manual($id, $input, $auth);
+        if (!empty($res['ok'])) {
+            json_out(200, $res);
+        } else {
+            json_out(400, $res);
+        }
+    } catch (Throwable $e) {
+        error_log('recordatorios dispatch error: ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
+        json_out(500, [
+            'ok' => false,
+            'error' => 'No se pudo procesar el envío: ' . $e->getMessage(),
+        ]);
     }
 }
 

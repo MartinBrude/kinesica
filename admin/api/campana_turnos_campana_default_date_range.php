@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/lib_calendar_backup.php';
 
 /**
  * @return array{0:string,1:string} [from, to] YYYY-MM-DD
@@ -16,9 +17,11 @@ function campana_default_date_range(): array
 
 function campana_gas_url(): string
 {
+    require_once __DIR__ . '/lib_calendar_backup.php';
+    $defaultGas = defined('KINESICA_BACKUP_DEFAULT_GAS_URL') ? KINESICA_BACKUP_DEFAULT_GAS_URL : '';
     return trim((string) (
         getenv('KINESICA_GAS_BOOKING_URL')
-        ?: ($_SERVER['KINESICA_GAS_BOOKING_URL'] ?? $_ENV['KINESICA_GAS_BOOKING_URL'] ?? cfg()['gas_booking_url'] ?? KINESICA_BACKUP_DEFAULT_GAS_URL)
+        ?: ($_SERVER['KINESICA_GAS_BOOKING_URL'] ?? $_ENV['KINESICA_GAS_BOOKING_URL'] ?? cfg()['gas_booking_url'] ?? $defaultGas)
     ));
 }
 

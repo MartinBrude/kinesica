@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/lib_recordatorios_store_schema.php';
+
 /**
  * Claim atómico previo al envío manual (anti doble-clic / dos pestañas).
  * Usa error_code "claim:…" + run_at; no introduce status fuera del CHECK SQL.

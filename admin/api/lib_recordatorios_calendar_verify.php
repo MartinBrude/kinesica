@@ -6,6 +6,7 @@ declare(strict_types=1);
  * Fuente de verdad: GAS action=check_events sobre el calendario consultorio.
  */
 
+require_once __DIR__ . '/lib_calendar_backup.php';
 require_once __DIR__ . '/campana_turnos_campana_default_date_range.php';
 
 /**
