@@ -1386,6 +1386,10 @@
               <p class="admin-card-desc">Tareas administrativas abiertas. Marcá cada ítem como resuelto cuando esté listo.</p>
             </div>
             <div class="admin-gastos-header-actions">
+              <button type="button" class="btn light btn-sm" id="admin-btn-toggle-digest-pendientes" title="Estado de los correos semanales de pendientes a Norberto" style="display: inline-flex; align-items: center; gap: 7px; font-size: 13px; padding: 5px 12px; border-radius: 6px;">
+                <span class="dash-status-dot inactive" id="admin-digest-pendientes-dot" style="width: 8px; height: 8px; flex-shrink: 0;"></span>
+                <span id="admin-digest-pendientes-label">Mails: Pausados</span>
+              </button>
               <span class="gastos-count-pill" id="admin-pendientes-count-label">0 pendientes</span>
               <button type="button" class="btn green" id="admin-btn-nuevo-pendiente">+ Nuevo pendiente</button>
             </div>
@@ -3152,6 +3156,6 @@
   </div>
   <div id="print-root"></div>
   <script src="/booking/booking-bundle.min.js?v=1795561209" defer></script>
-  <script type="module" src="/admin/app.js?v=245"></script>
+  <script type="module" src="/admin/app.js?v=246"></script>
 </body>
 </html>

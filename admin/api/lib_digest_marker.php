@@ -121,3 +121,100 @@ function kinesica_digest_mark_sent_best_effort(string $channelId, string $weekKe
         return is_string($payload) && @file_put_contents($file, $payload) !== false;
     }
 }
+
+/** Ruta del archivo marker de pausa voluntaria por canal. */
+function kinesica_digest_pause_file(string $channelId): string
+{
+    $id = preg_replace('/[^a-z0-9_\\-]/i', '', $channelId) ?? '';
+    if ($id === '') {
+        throw new InvalidArgumentException('channelId inválido para pause de digesto.');
+    }
+    return __DIR__ . '/data/digest_' . $id . '_paused';
+}
+
+/**
+ * Determina si un canal de digesto está pausado.
+ * Prioridades:
+ * 1. Runtime override explícito en data/: digest_{id}_active (fuerza activo) o digest_{id}_paused (fuerza pausa)
+ * 2. Variable de entorno: DIGEST_{ID}_PAUSED=1 o DIGEST_PAUSED=1
+ * 3. Configuración cfg(): digest_{id}_paused = true o digest_paused = true o digest_channels_paused list
+ */
+function kinesica_digest_is_paused(string $channelId): bool
+{
+    $id = preg_replace('/[^a-z0-9_\\-]/i', '', $channelId) ?? '';
+    if ($id === '') {
+        return false;
+    }
+
+    // 1. Runtime overrides explícitos desde UI / data
+    $activeFile = __DIR__ . '/data/digest_' . $id . '_active';
+    if (is_file($activeFile)) {
+        return false;
+    }
+    $pauseFile = kinesica_digest_pause_file($id);
+    if (is_file($pauseFile)) {
+        return true;
+    }
+
+    // 2. Variables de entorno
+    $envVar = getenv('DIGEST_' . strtoupper($id) . '_PAUSED');
+    if ($envVar !== false && $envVar !== '') {
+        $v = strtolower(trim((string) $envVar));
+        if ($v === '1' || $v === 'true' || $v === 'yes') {
+            return true;
+        }
+    }
+    $envAll = getenv('DIGEST_PAUSED');
+    if ($envAll !== false && $envAll !== '') {
+        $v = strtolower(trim((string) $envAll));
+        if ($v === '1' || $v === 'true' || $v === 'yes') {
+            return true;
+        }
+    }
+
+    // 3. Configuración php
+    if (function_exists('cfg')) {
+        $cfg = cfg();
+        if (isset($cfg['digest_' . $id . '_paused'])) {
+            return (bool) $cfg['digest_' . $id . '_paused'];
+        }
+        if (!empty($cfg['digest_paused'])) {
+            return true;
+        }
+        $pausedList = $cfg['digest_channels_paused'] ?? null;
+        if (is_array($pausedList)) {
+            return in_array($id, $pausedList, true);
+        }
+    }
+
+    // 4. Default seguro por canal: 'pendientes' inicia pausado hasta activación explícita
+    if ($id === 'pendientes') {
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * Establece el estado de pausa voluntaria para un canal desde la UI o API.
+ */
+function kinesica_digest_set_paused(string $channelId, bool $paused): void
+{
+    $id = preg_replace('/[^a-z0-9_\\-]/i', '', $channelId) ?? '';
+    if ($id === '') {
+        throw new InvalidArgumentException('channelId inválido.');
+    }
+    $pauseFile = kinesica_digest_pause_file($id);
+    $activeFile = __DIR__ . '/data/digest_' . $id . '_active';
+    $dir = dirname($pauseFile);
+    if (!is_dir($dir) && !@mkdir($dir, 0775, true) && !is_dir($dir)) {
+        throw new RuntimeException('No se pudo crear data dir de digestos.');
+    }
+    if ($paused) {
+        @unlink($activeFile);
+        @touch($pauseFile);
+    } else {
+        @unlink($pauseFile);
+        @touch($activeFile);
+    }
+}

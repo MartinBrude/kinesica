@@ -29,6 +29,27 @@ let pendientesLoading = false;
 const countPill = document.querySelector("#admin-pendientes-count-label");
 const tbody = document.querySelector("#admin-pendientes-tbody");
 const filterBtns = document.querySelectorAll(".admin-pendientes-filter-btn");
+const digestToggleBtn = document.querySelector("#admin-btn-toggle-digest-pendientes");
+const digestDot = document.querySelector("#admin-digest-pendientes-dot");
+const digestLabel = document.querySelector("#admin-digest-pendientes-label");
+
+let cachedDigestPaused = true;
+
+export function updateDigestToggleUI(isPaused) {
+  cachedDigestPaused = Boolean(isPaused);
+  if (digestDot) {
+    digestDot.className = `dash-status-dot ${cachedDigestPaused ? "inactive" : "active"}`;
+  }
+  if (digestLabel) {
+    digestLabel.textContent = cachedDigestPaused ? "Mails: Pausados" : "Mails: Activos";
+  }
+  if (digestToggleBtn) {
+    digestToggleBtn.title = cachedDigestPaused
+      ? "Los mails semanales de pendientes a Norberto están pausados. Tocá para reanudarlos."
+      : "Los mails semanales de pendientes a Norberto están activos. Tocá para pausarlos.";
+    digestToggleBtn.setAttribute("aria-label", digestToggleBtn.title);
+  }
+}
 
 function countOpen(list) {
   return (Array.isArray(list) ? list : []).filter((i) => i && i.estado !== "resuelto").length;
@@ -198,8 +219,13 @@ export async function loadPendientesData(onReload) {
   setListControlsEnabled(filterRoot, false, { extra: Array.from(filterBtns) });
   try {
     const data = await api("pendientes.php");
-    if (data && Array.isArray(data.pendientes)) {
-      cachedPendientes = data.pendientes;
+    if (data) {
+      if (typeof data.digest_paused === "boolean") {
+        updateDigestToggleUI(data.digest_paused);
+      }
+      if (Array.isArray(data.pendientes)) {
+        cachedPendientes = data.pendientes;
+      }
     }
   } catch (_) {
     /* offline */
@@ -214,6 +240,33 @@ export function initPendientesUI({ onReload }) {
   filterBtns.forEach((btn) => {
     btn.addEventListener("click", () => setPendientesFilter(btn.dataset.filter, onReload));
   });
+
+  if (digestToggleBtn) {
+    digestToggleBtn.addEventListener("click", async () => {
+      const willPause = !cachedDigestPaused;
+      const msg = willPause
+        ? "¿Pausar los recordatorios semanales por correo a Norberto?\n\nNo se enviarán digestos de pendientes los lunes hasta que los vuelvas a activar."
+        : "¿Reanudar los recordatorios semanales por correo a Norberto?\n\nSe volverá a enviar el resumen de pendientes el próximo día hábil.";
+      const ok = await dialogConfirm(msg);
+      if (!ok) return;
+
+      try {
+        digestToggleBtn.disabled = true;
+        const resp = await api("pendientes.php", {
+          method: "POST",
+          body: JSON.stringify({ action: "toggle_digest_pause", paused: willPause }),
+        });
+        if (resp && typeof resp.digest_paused === "boolean") {
+          updateDigestToggleUI(resp.digest_paused);
+        }
+      } catch (err) {
+        dialogAlert("No se pudo cambiar el estado de los mails: " + (err.message || "Error desconocido"));
+      } finally {
+        digestToggleBtn.disabled = false;
+      }
+    });
+  }
+
   initPendienteModalListeners({
     onSubmit: (e) => handleSavePendiente(e, {
       onSuccess: async (resp) => {

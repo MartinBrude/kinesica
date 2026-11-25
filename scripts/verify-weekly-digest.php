@@ -145,11 +145,57 @@ check(($rPendEmpty['action'] ?? '') === 'skip_empty', 'pendientes skip_if_empty'
 $rDry = kinesica_digest_run($chPend, [
     'now' => $wedRun,
     'dry_run' => true,
+    'force' => true,
     'items' => [['title' => 'Demo', 'badge' => '1']],
 ]);
 check(($rDry['action'] ?? '') === 'dry_run', 'pendientes dry_run');
 check(($rDry['to'] ?? '') === 'norberto@example.test', 'to Norberto desde env de test');
 check(($rDry['count'] ?? 0) === 1, 'count dry');
+
+// Test de pausa de canal (default seguro para pendientes, env, marker, bypass con force)
+check(kinesica_digest_is_paused('pendientes'), 'canal pendientes pausado por defecto');
+check(!kinesica_digest_is_paused('errores'), 'canal errores activo por defecto');
+$rPaused = kinesica_digest_run($chPend, [
+    'now' => $wedRun,
+    'dry_run' => true,
+    'items' => [['title' => 'Demo', 'badge' => '1']],
+]);
+check(($rPaused['action'] ?? '') === 'skip_paused', 'action skip_paused cuando está pausado');
+check(!empty($rPaused['ok']), 'skip_paused retorna ok true');
+$rForced = kinesica_digest_run($chPend, [
+    'now' => $wedRun,
+    'dry_run' => true,
+    'force' => true,
+    'items' => [['title' => 'Demo', 'badge' => '1']],
+]);
+check(($rForced['action'] ?? '') === 'dry_run', 'force ignora pausa voluntaria');
+
+
+$pauseMarker = kinesica_digest_pause_file('test_pause_chan');
+@unlink($pauseMarker);
+check(!kinesica_digest_is_paused('test_pause_chan'), 'marker de pausa ausente');
+@touch($pauseMarker);
+check(kinesica_digest_is_paused('test_pause_chan'), 'marker de pausa detectado');
+@unlink($pauseMarker);
+
+// Test kinesica_digest_set_paused
+$testToggleChan = 'test_toggle_chan';
+$activeMarker = $root . '/admin/api/data/digest_' . $testToggleChan . '_active';
+$pausedMarker = kinesica_digest_pause_file($testToggleChan);
+@unlink($activeMarker);
+@unlink($pausedMarker);
+kinesica_digest_set_paused($testToggleChan, true);
+check(kinesica_digest_is_paused($testToggleChan), 'kinesica_digest_set_paused true pausa');
+check(is_file($pausedMarker), 'archivo digest_paused creado');
+check(!is_file($activeMarker), 'archivo digest_active ausente al pausar');
+kinesica_digest_set_paused($testToggleChan, false);
+check(!kinesica_digest_is_paused($testToggleChan), 'kinesica_digest_set_paused false activa');
+check(is_file($activeMarker), 'archivo digest_active creado al activar');
+check(!is_file($pausedMarker), 'archivo digest_paused eliminado al activar');
+@unlink($activeMarker);
+@unlink($pausedMarker);
+
+
 
 $chNoMail = kinesica_digest_channel_errores();
 $chNoMail['email_env'] = [];

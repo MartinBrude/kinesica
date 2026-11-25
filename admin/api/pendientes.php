@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require __DIR__ . '/lib.php';
 require_once __DIR__ . '/pendientes_io.php';
+require_once __DIR__ . '/lib_digest_marker.php';
 
 require_header();
 $auth = require_auth();
@@ -35,6 +36,7 @@ if ($method === 'GET') {
             'resueltos' => $resueltos,
         ],
         'pending_count' => $open,
+        'digest_paused' => kinesica_digest_is_paused('pendientes'),
     ];
     if (!$countsOnly) {
         $payload['pendientes'] = $pendientes;
@@ -181,6 +183,17 @@ if ($action === 'toggle_status') {
         'message' => 'Estado actualizado.',
         'pendiente' => $updated,
         'pendientes' => $pendientes,
+    ]);
+}
+
+if ($action === 'toggle_digest_pause') {
+    $currentPaused = kinesica_digest_is_paused('pendientes');
+    $newPaused = isset($input['paused']) ? (bool) $input['paused'] : !$currentPaused;
+    kinesica_digest_set_paused('pendientes', $newPaused);
+    json_out(200, [
+        'status' => 'success',
+        'digest_paused' => $newPaused,
+        'message' => $newPaused ? 'Mails semanales de pendientes pausados.' : 'Mails semanales de pendientes activados.',
     ]);
 }
 

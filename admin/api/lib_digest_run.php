@@ -120,6 +120,12 @@ function kinesica_digest_run(array $channel, array $opts = []): array
             'message' => "Digesto {$id} de {$weekKey} ya enviado.",
         ]);
     }
+    if (!$force && kinesica_digest_is_paused($id)) {
+        return array_merge($base, [
+            'action' => 'skip_paused',
+            'message' => "Digesto {$id} pausado por configuración.",
+        ]);
+    }
 
     try {
         [$to, $mail] = $resolveAndBuild();

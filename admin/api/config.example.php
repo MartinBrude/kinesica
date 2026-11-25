@@ -48,6 +48,9 @@ return [
     'admin_url' => 'https://www.kinesica.com.ar/admin/',
     // Digesto semanal: no enviar antes de esta fecha (Y-m-d). 'none' = sin piso.
     // 'digest_not_before' => '2026-11-25',
+    // Pausa de digestos: pausar canal individual ('digest_pendientes_paused' => true) o general ('digest_paused' => true).
+    // También configurable vía env: DIGEST_PENDIENTES_PAUSED=1 / DIGEST_PAUSED=1 o marker data/digest_pendientes_paused.
+    // 'digest_pendientes_paused' => true,
     // Destinatarios: user_emails.norberto / user_emails.martin (o NORBERTO_EMAIL / MARTIN_EMAIL).
     // Sin email configurado el canal falla cerrado (no hay fallback hardcodeado).
 

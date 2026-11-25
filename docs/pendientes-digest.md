@@ -13,6 +13,7 @@ Sin email en env/cfg el canal falla cerrado (`config_error`); no hay fallback ha
 - Primer envío Kinésica: **2026-11-25** (`digest_not_before`). Ese día (y los hábiles restantes de esa semana ISO si aún no se marcó enviado) permiten el envío aunque no sea el primer hábil. Después, solo el primer día hábil de cada semana.
 
 Markers independientes: `admin/api/data/digest_{canal}_sent.json` (escritura atómica + lock de envío).
+Pausa voluntaria: vía config (`digest_pendientes_paused => true`), env (`DIGEST_PENDIENTES_PAUSED=1`) o marker (`admin/api/data/digest_{canal}_paused`).
 
 ## Arquitectura (≤250 líneas / archivo)
 
