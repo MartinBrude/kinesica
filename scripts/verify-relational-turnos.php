@@ -302,4 +302,61 @@ $mig17 = require $root . '/admin/api/migrations/017_scrub_manage_code_plaintext.
 $scrubbed = $pdo->query("SELECT manage_code FROM turnos WHERE calendar_event_id = 'manage-evt-1' LIMIT 1")->fetchColumn();
 assert_true($scrubbed === null || $scrubbed === '', '017 scrub limpia manage_code plaintext');
 
+// Test: Consolidación canónica de calendar_event_id (scripts/consolidate-canonical-calendar-ids.php)
+require_once $root . '/scripts/consolidate-canonical-calendar-ids.php';
+
+// Escenario 1: Turno con @google.com sin conflicto
+$pdo->exec("INSERT INTO turnos (calendar_event_id, summary) VALUES ('alone-evt@google.com', 'Turno Solo')");
+$idAlone = (int) $pdo->lastInsertId();
+
+// Escenario 2: Turnos duplicados (base y @google.com)
+$pdo->exec("INSERT INTO turnos (calendar_event_id, paciente_id, summary) VALUES ('dup-evt', 55, 'Master Base')");
+$idMaster = (int) $pdo->lastInsertId();
+$pdo->exec("INSERT INTO turnos (calendar_event_id, paciente_id, summary) VALUES ('dup-evt@google.com', NULL, 'Copia Con Google')");
+$idDup = (int) $pdo->lastInsertId();
+
+// Escenario 3: Recordatorios dependientes
+$pdo->exec("INSERT INTO recordatorio_eventos (event_key, run_at, calendar_event_id, turno_id, status, received_at)
+            VALUES ('k-alone', '2026-11-25 10:00:00', 'alone-evt@google.com', NULL, 'scheduled', '2026-11-25 09:00:00')");
+$pdo->exec("INSERT INTO recordatorio_eventos (event_key, run_at, calendar_event_id, turno_id, status, received_at)
+            VALUES ('k-dup', '2026-11-25 11:00:00', 'dup-evt@google.com', {$idDup}, 'scheduled', '2026-11-25 09:00:00')");
+
+// Comprobación de Dry-Run
+$dryReport = kinesica_consolidate_calendar_ids($pdo, false);
+assert_true($dryReport['dry_run'] === true, 'dry-run flag activo');
+assert_true($dryReport['turnos_renamed'] === 1, 'dry-run detecta 1 renombrado');
+assert_true($dryReport['turnos_merged'] === 1, 'dry-run detecta 1 duplicado a fusionar');
+assert_true($dryReport['recordatorios_renamed'] === 2, 'dry-run detecta 2 recordatorios a normalizar');
+
+$stillGoogle = $pdo->query("SELECT calendar_event_id FROM turnos WHERE id = {$idAlone}")->fetchColumn();
+assert_true($stillGoogle === 'alone-evt@google.com', 'dry-run no muta turnos');
+
+// Comprobación de Apply real
+$applyReport = kinesica_consolidate_calendar_ids($pdo, true);
+assert_true($applyReport['dry_run'] === false, 'apply flag confirmado');
+assert_true($applyReport['turnos_renamed'] === 1, 'apply renombra 1');
+assert_true($applyReport['turnos_merged'] === 1, 'apply fusiona 1');
+
+// Validar estado final en DB
+$renamed = $pdo->query("SELECT calendar_event_id FROM turnos WHERE id = {$idAlone}")->fetchColumn();
+assert_true($renamed === 'alone-evt', 'turno renombrado a formato canónico');
+
+$dupExists = $pdo->query("SELECT COUNT(*) FROM turnos WHERE id = {$idDup}")->fetchColumn();
+assert_true((int) $dupExists === 0, 'fila duplicada eliminada');
+
+$masterCheck = $pdo->query("SELECT paciente_id FROM turnos WHERE id = {$idMaster}")->fetchColumn();
+assert_true((int) $masterCheck === 55, 'master preserva datos no nulos');
+
+$recAlone = $pdo->query("SELECT calendar_event_id, turno_id FROM recordatorio_eventos WHERE event_key = 'k-alone'")->fetch(PDO::FETCH_ASSOC);
+assert_true($recAlone['calendar_event_id'] === 'alone-evt', 'recordatorio renombrado a formato canónico');
+assert_true((int) $recAlone['turno_id'] === $idAlone, 'recordatorio vinculado exitosamente a turno_id');
+
+$recDup = $pdo->query("SELECT calendar_event_id, turno_id FROM recordatorio_eventos WHERE event_key = 'k-dup'")->fetch(PDO::FETCH_ASSOC);
+assert_true($recDup['calendar_event_id'] === 'dup-evt', 'recordatorio dup normalizado');
+assert_true((int) $recDup['turno_id'] === $idMaster, 'recordatorio reasignado al turno master');
+
+// Idempotencia: segunda pasada
+$secondPass = kinesica_consolidate_calendar_ids($pdo, true);
+assert_true($secondPass['turnos_renamed'] === 0 && $secondPass['turnos_merged'] === 0, 'segunda pasada idempotente');
+
 echo "verify-relational-turnos: OK\n";

@@ -38,7 +38,6 @@ function kinesica_rel_backfill_recordatorios_turno_id(PDO $pdo, bool $apply): ar
     $rows = $pdo->query(
         'SELECT id, calendar_event_id, turno_id FROM recordatorio_eventos'
     )->fetchAll(PDO::FETCH_ASSOC) ?: [];
-    $find = $pdo->prepare('SELECT id FROM turnos WHERE calendar_event_id = :c LIMIT 1');
     $upd = $apply
         ? $pdo->prepare('UPDATE recordatorio_eventos SET turno_id = :tid WHERE id = :id AND turno_id IS NULL')
         : null;
@@ -54,7 +53,22 @@ function kinesica_rel_backfill_recordatorios_turno_id(PDO $pdo, bool $apply): ar
             $stats['unmatched']++;
             continue;
         }
-        $find->execute(['c' => $calId]);
+        $variants = function_exists('kinesica_calendar_event_id_variants')
+            ? kinesica_calendar_event_id_variants($calId)
+            : [$calId];
+        if ($variants === []) {
+            $stats['unmatched']++;
+            continue;
+        }
+        $ph = [];
+        $params = [];
+        foreach ($variants as $vi => $vval) {
+            $pk = 'c' . $vi;
+            $ph[] = ':' . $pk;
+            $params[$pk] = $vval;
+        }
+        $find = $pdo->prepare('SELECT id FROM turnos WHERE calendar_event_id IN (' . implode(', ', $ph) . ') LIMIT 1');
+        $find->execute($params);
         $tid = $find->fetchColumn();
         if (!$tid) {
             $stats['unmatched']++;
