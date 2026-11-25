@@ -49,22 +49,24 @@ function kinesica_consolidate_calendar_ids(PDO $pdo, bool $apply = false): array
 
     $hasTurnos = kinesica_migrations_table_exists($pdo, 'turnos');
     $hasRecordatorios = kinesica_migrations_table_exists($pdo, 'recordatorio_eventos');
+    $hasTurnosCalCol = $hasTurnos && kinesica_migrations_column_exists($pdo, 'turnos', 'calendar_event_id');
+    $hasRecCalCol = $hasRecordatorios && kinesica_migrations_column_exists($pdo, 'recordatorio_eventos', 'calendar_event_id');
     $hasTurnoIdCol = $hasRecordatorios && kinesica_migrations_column_exists($pdo, 'recordatorio_eventos', 'turno_id');
 
-    if (!$hasTurnos && !$hasRecordatorios) {
-        $report['details'][] = 'No se encontraron las tablas turnos ni recordatorio_eventos.';
+    if (!$hasTurnosCalCol && !$hasRecCalCol) {
+        $report['details'][] = 'No se encontraron las tablas o columnas calendar_event_id necesarias.';
         return $report;
     }
 
     $inTx = false;
-    if ($apply) {
+    if ($apply && !$pdo->inTransaction()) {
         $pdo->beginTransaction();
         $inTx = true;
     }
 
     try {
         // 1. CONSOLIDAR TABLA TURNOS
-        if ($hasTurnos) {
+        if ($hasTurnosCalCol) {
             $stmt = $pdo->query(
                 "SELECT id, calendar_event_id, paciente_id, profesional_id, starts_at, ends_at, status, summary
                  FROM turnos
@@ -135,7 +137,7 @@ function kinesica_consolidate_calendar_ids(PDO $pdo, bool $apply = false): array
         }
 
         // 2. CONSOLIDAR TABLA RECORDATORIO_EVENTOS
-        if ($hasRecordatorios) {
+        if ($hasRecCalCol) {
             $stmt = $pdo->query(
                 "SELECT id, calendar_event_id, turno_id
                  FROM recordatorio_eventos

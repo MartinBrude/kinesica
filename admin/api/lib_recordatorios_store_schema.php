@@ -55,6 +55,26 @@ function recordatorios_ensure_schema(?PDO $pdo = null): void
         require_once __DIR__ . '/lib_migrations.php';
         kinesica_migrations_add_column_if_missing($pdo, 'recordatorio_eventos', 'paciente_id', 'INT UNSIGNED NULL', 'INTEGER NULL');
         kinesica_migrations_add_column_if_missing($pdo, 'recordatorio_eventos', 'turno_id', 'INT UNSIGNED NULL', 'INTEGER NULL');
+
+        // Autoconsolidación de IDs de Google Calendar (Migración 018)
+        if (!kinesica_migrations_is_applied($pdo, '018_consolidate_canonical_calendar_ids')) {
+            $migFile = __DIR__ . '/migrations/018_consolidate_canonical_calendar_ids.php';
+            if (is_file($migFile)) {
+                $mig = require $migFile;
+                ($mig['up'])($pdo);
+                kinesica_migrations_ensure_control_table($pdo);
+                $ins = $pdo->prepare(
+                    'INSERT INTO schema_migrations (id, checksum, applied_at) VALUES (:id, :checksum, :at)'
+                );
+                $rawCode = file_get_contents($migFile);
+                $cs = hash('sha256', $rawCode !== false ? $rawCode : '018');
+                $ins->execute([
+                    'id' => '018_consolidate_canonical_calendar_ids',
+                    'checksum' => $cs,
+                    'at' => gmdate('Y-m-d H:i:s'),
+                ]);
+            }
+        }
     } catch (Throwable $e) {
     }
     $done[$pdo] = true;
