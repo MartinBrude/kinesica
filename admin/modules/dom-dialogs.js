@@ -23,7 +23,18 @@ export function dialogAlert(message, options = {}) {
   const inferredDanger = options.type === "danger" || (!inferredSuccess && /(error|falló|supera|inválido|no es|no se pudo|falta)/i.test(msgStr));
   const finalType = options.type || (inferredSuccess ? "success" : (inferredDanger ? "danger" : "info"));
 
-  return enqueueDialog(() => openDialog({ message: msgStr, confirm: false, alertType: finalType }));
+  return enqueueDialog(() =>
+    openDialog({
+      message: msgStr,
+      confirm: false,
+      alertType: finalType,
+      title: options.title,
+      hint: options.hint,
+      category: options.category,
+      errorId: options.errorId,
+      errorCode: options.errorCode,
+    })
+  );
 }
 
 /**
@@ -106,7 +117,19 @@ export function toast(message, options = {}) {
   });
 }
 
-export function openDialog({ message, confirm, danger, okText, cancelText, alertType, title }) {
+export function openDialog({
+  message,
+  confirm,
+  danger,
+  okText,
+  cancelText,
+  alertType,
+  title,
+  hint,
+  category,
+  errorId,
+  errorCode,
+}) {
   return new Promise((resolve) => {
     const root = document.createElement("div");
     root.className = "app-dialog";
@@ -132,11 +155,56 @@ export function openDialog({ message, confirm, danger, okText, cancelText, alert
       heading.textContent = titleText;
       card.setAttribute("aria-labelledby", "app-dialog-title");
       card.append(heading);
+    } else if (category && alertType === "danger") {
+      const badge = document.createElement("div");
+      badge.className = "app-dialog-badge";
+      badge.style.cssText =
+        "font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;padding:3px 8px;border-radius:4px;display:inline-block;";
+      if (category === "user_input") {
+        badge.style.background = "#fffaeb";
+        badge.style.color = "#b54708";
+        badge.textContent = "⚠️ Verificación de datos";
+      } else if (category === "software_logic") {
+        badge.style.background = "#fef3f2";
+        badge.style.color = "#b42318";
+        badge.textContent = "🛠️ Error en el software";
+      } else if (category === "external_service") {
+        badge.style.background = "#eff8ff";
+        badge.style.color = "#175cd3";
+        badge.textContent = "🌐 Servicio externo";
+      } else if (category === "infrastructure") {
+        badge.style.background = "#f4f3ff";
+        badge.style.color = "#5925dc";
+        badge.textContent = "🖥️ Sistema / Base de datos";
+      } else if (category === "auth") {
+        badge.style.background = "#fef6ee";
+        badge.style.color = "#c4320a";
+        badge.textContent = "🔒 Permisos / Sesión";
+      }
+      card.append(badge);
     }
 
     const text = document.createElement("p");
     text.className = "app-dialog-text";
     text.textContent = String(message ?? "");
+    card.append(text);
+
+    if (hint) {
+      const hintEl = document.createElement("div");
+      hintEl.className = "app-dialog-hint";
+      hintEl.style.cssText =
+        "margin-top:10px;font-size:13px;line-height:1.45;color:#344054;background:#f8fafc;padding:9px 12px;border-radius:6px;border-left:3px solid #0b2545;";
+      hintEl.textContent = `💡 Sugerencia: ${hint}`;
+      card.append(hintEl);
+    }
+
+    if (errorId) {
+      const refEl = document.createElement("div");
+      refEl.className = "app-dialog-ref";
+      refEl.style.cssText = "margin-top:8px;font-size:11px;color:#667085;";
+      refEl.textContent = `Referencia de diagnóstico: ${errorId}`;
+      card.append(refEl);
+    }
 
     const actions = document.createElement("div");
     actions.className = "app-dialog-actions";
@@ -160,7 +228,7 @@ export function openDialog({ message, confirm, danger, okText, cancelText, alert
       actions.append(cancel);
     }
     actions.append(ok);
-    card.append(text, actions);
+    card.append(actions);
     root.append(card);
     document.body.append(root);
 

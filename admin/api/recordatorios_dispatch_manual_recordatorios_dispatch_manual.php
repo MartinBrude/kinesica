@@ -9,7 +9,13 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
 {
     $item = recordatorios_find_item_by_id($id);
     if (!$item) {
-        return ['ok' => false, 'error' => 'Registro de recordatorio no encontrado'];
+        return [
+            'ok' => false,
+            'error' => 'Registro de recordatorio no encontrado',
+            'error_category' => 'user_input',
+            'error_code' => 'RECORDATORIO_NOT_FOUND',
+            'hint' => 'El turno puede haber sido eliminado o refrescado. Actualizá la vista de recordatorios.',
+        ];
     }
 
     $rawPhone = trim((string) ($input['wa_id'] ?? $input['phone'] ?? $item['wa_id'] ?? ''));
@@ -128,7 +134,13 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
         && function_exists('recordatorios_is_appointment_past')
         && recordatorios_is_appointment_past($apptDate, $apptTime)
     ) {
-        return ['ok' => false, 'error' => 'El horario del turno ya pasó. No se puede enviar un recordatorio.'];
+        return [
+            'ok' => false,
+            'error' => 'El horario del turno ya pasó. No se puede enviar un recordatorio.',
+            'error_category' => 'user_input',
+            'error_code' => 'APPOINTMENT_ALREADY_PAST',
+            'hint' => 'Solo se pueden enviar recordatorios para turnos futuros.',
+        ];
     }
 
     // Deduplicación diaria: no aplica a casos de prueba (test:…) para poder reintentar a mano.
@@ -180,6 +192,9 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
                     return [
                         'ok' => false,
                         'error' => 'Ya se envió un recordatorio hoy a este paciente (' . ($alreadySent['status'] === 'sent' ? 'WhatsApp' : 'Email') . '). Máximo 1 envío por día.',
+                        'error_category' => 'user_input',
+                        'error_code' => 'ALREADY_SENT_TODAY',
+                        'hint' => 'Para evitar molestias al paciente, el sistema limita los recordatorios a 1 por día.',
                     ];
                 }
             }
@@ -188,7 +203,10 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
             // Fail closed: sin dedup confiable no enviar (evita doble aviso).
             return [
                 'ok' => false,
-                'error' => 'No se pudo verificar envíos previos. Reintentá en unos minutos.',
+                'error' => 'No se pudo verificar envíos previos en la base de datos.',
+                'error_category' => 'infrastructure',
+                'error_code' => 'DEDUP_DB_CHECK_FAILED',
+                'hint' => 'Por seguridad y para evitar duplicados, el envío se pausó. Reintentá en unos segundos.',
             ];
         }
     }
@@ -205,14 +223,27 @@ function recordatorios_dispatch_manual(int $id, array $input, array $auth): arra
                 'missing_event_id' => 'Este registro no tiene calendar_event_id. No se puede verificar el turno.',
                 default => 'No se pudo verificar el turno en Google Calendar. Reintentá en unos minutos.',
             };
-            return ['ok' => false, 'error' => $msg, 'skip_reason' => $reason];
+            return [
+                'ok' => false,
+                'error' => $msg,
+                'error_category' => 'external_service',
+                'error_code' => 'CALENDAR_CHECK_FAILED',
+                'skip_reason' => $reason,
+                'hint' => 'Verificá el estado del turno en Google Calendar o actualizá la lista.',
+            ];
         }
     }
 
     // Claim atómico: evita doble WhatsApp/email por doble clic o dos pestañas.
     $claimed = recordatorios_claim_manual_send($id);
     if (empty($claimed['ok'])) {
-        return ['ok' => false, 'error' => (string) ($claimed['error'] ?? 'No se pudo reservar el envío')];
+        return [
+            'ok' => false,
+            'error' => (string) ($claimed['error'] ?? 'No se pudo reservar el envío'),
+            'error_category' => 'infrastructure',
+            'error_code' => 'DISPATCH_CLAIM_LOCKED',
+            'hint' => 'Hay otro envío en curso para este turno o se detectó doble clic. Aguardá unos segundos.',
+        ];
     }
     $item = $claimed['item'] ?? $item;
     $claimToken = (string) ($claimed['claim'] ?? '');

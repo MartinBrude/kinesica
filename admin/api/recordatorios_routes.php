@@ -98,13 +98,17 @@ if ($action === 'reconcile') {
 if ($action === 'save_contact' || $action === 'update_contact') {
     $id = (int) ($input['id'] ?? 0);
     if ($id <= 0) {
-        json_out(400, ['error' => 'ID de recordatorio inválido']);
+        json_error(400, 'ID de recordatorio inválido', 'user_input', 'INVALID_RECORDATORIO_ID', 'Seleccioná un turno válido de la lista.');
     }
     $res = recordatorios_save_contact($id, $input, $auth);
     if (!empty($res['ok'])) {
         json_out(200, $res);
     }
-    json_out(400, $res);
+    $cat = (string) ($res['error_category'] ?? 'user_input');
+    $code = (string) ($res['error_code'] ?? 'SAVE_CONTACT_FAILED');
+    $hint = isset($res['hint']) && is_string($res['hint']) ? $res['hint'] : null;
+    $msg = (string) ($res['error'] ?? 'No se pudo guardar el contacto');
+    json_error(400, $msg, $cat, $code, $hint, $res);
 }
 
 if ($action === 'create_test_case' || $action === 'seed_test') {
@@ -112,27 +116,39 @@ if ($action === 'create_test_case' || $action === 'seed_test') {
     if (!empty($res['ok'])) {
         json_out(200, $res);
     }
-    json_out(isset($res['error']) && str_contains((string) $res['error'], 'Solo admin') ? 403 : 400, $res);
+    $is403 = isset($res['error']) && str_contains((string) $res['error'], 'Solo admin');
+    $cat = $is403 ? 'auth' : 'user_input';
+    $code = $is403 ? 'ADMIN_REQUIRED' : 'TEST_CASE_FAILED';
+    json_error($is403 ? 403 : 400, (string) ($res['error'] ?? 'No se pudo crear el caso de prueba'), $cat, $code, null, $res);
 }
 
 if ($action === 'dispatch' || $action === 'retry' || $action === 'send_manual') {
     $id = (int) ($input['id'] ?? 0);
     if ($id <= 0) {
-        json_out(400, ['error' => 'ID de recordatorio inválido']);
+        json_error(400, 'ID de recordatorio inválido', 'user_input', 'INVALID_RECORDATORIO_ID', 'Seleccioná un turno válido de la lista.');
     }
     try {
         $res = recordatorios_dispatch_manual($id, $input, $auth);
         if (!empty($res['ok'])) {
             json_out(200, $res);
         } else {
-            json_out(400, $res);
+            $cat = (string) ($res['error_category'] ?? 'user_input');
+            $code = (string) ($res['error_code'] ?? 'DISPATCH_ERROR');
+            $hint = isset($res['hint']) && is_string($res['hint']) ? $res['hint'] : null;
+            $msg = (string) ($res['error'] ?? 'No se pudo procesar el envío');
+            json_error(400, $msg, $cat, $code, $hint, $res);
         }
     } catch (Throwable $e) {
-        error_log('recordatorios dispatch error: ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
-        json_out(500, [
-            'ok' => false,
-            'error' => 'No se pudo procesar el envío: ' . $e->getMessage(),
-        ]);
+        $errorId = 'err_' . substr(md5(uniqid((string) mt_rand(), true)), 0, 8);
+        error_log('recordatorios dispatch error [' . $errorId . ']: ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
+        json_error(
+            500,
+            'Error interno en el software al procesar el envío (Ref: ' . $errorId . ').',
+            'software_logic',
+            'DISPATCH_LOGIC_EXCEPTION',
+            'Se registró el error para diagnóstico. Podés reportarlo con la referencia ' . $errorId . '.',
+            ['error_id' => $errorId]
+        );
     }
 }
 

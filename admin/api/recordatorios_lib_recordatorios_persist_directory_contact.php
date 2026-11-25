@@ -148,22 +148,46 @@ function recordatorios_save_contact(int $id, array $input, array $auth): array
 {
     $item = recordatorios_find_item_by_id($id);
     if (!$item) {
-        return ['ok' => false, 'error' => 'Registro de recordatorio no encontrado'];
+        return [
+            'ok' => false,
+            'error' => 'Registro de recordatorio no encontrado',
+            'error_category' => 'user_input',
+            'error_code' => 'RECORDATORIO_NOT_FOUND',
+            'hint' => 'El registro puede haber cambiado. Actualizá la lista de recordatorios.',
+        ];
     }
 
     $rawPhone = trim((string) ($input['wa_id'] ?? $input['phone'] ?? ''));
     $phone = recordatorios_normalize_phone_input($rawPhone);
     $email = strtolower(trim((string) ($input['email'] ?? '')));
     if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        return ['ok' => false, 'error' => 'El correo electrónico no es válido'];
+        return [
+            'ok' => false,
+            'error' => 'El formato del correo electrónico no es válido',
+            'error_category' => 'user_input',
+            'error_code' => 'EMAIL_INVALID_FORMAT',
+            'hint' => 'Revisá la dirección de correo ingresada (ej: nombre@ejemplo.com).',
+        ];
     }
     if ($phone === '' && $email === '') {
-        return ['ok' => false, 'error' => 'Ingresá un número de WhatsApp o un correo electrónico'];
+        return [
+            'ok' => false,
+            'error' => 'Ingresá al menos un número de WhatsApp o un correo electrónico',
+            'error_category' => 'user_input',
+            'error_code' => 'CONTACT_REQUIRED',
+            'hint' => 'Completá el campo de WhatsApp o de correo antes de guardar.',
+        ];
     }
 
     // Validar WhatsApp acá para fallar claro antes de tocar directorio/recordatorio.
-    if ($phone !== '' && (strlen($phone) < 6 || strlen($phone) > 16)) {
-        return ['ok' => false, 'error' => 'Número de WhatsApp inválido o incompleto'];
+    if ($phone !== '' && (strlen($phone) < 8 || strlen($phone) > 16)) {
+        return [
+            'ok' => false,
+            'error' => 'El número de WhatsApp (' . $phone . ') es inválido o está incompleto',
+            'error_category' => 'user_input',
+            'error_code' => 'PHONE_INVALID_LENGTH',
+            'hint' => 'Asegurate de incluir código de país y de área (ej: 5491144556677).',
+        ];
     }
 
     // 1) Primero el recordatorio (lo que el usuario ve). El directorio es secundario.

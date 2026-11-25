@@ -12,7 +12,13 @@ function recordatorios_dispatch_manual_deliver(
 ): array {
     if ($channel === 'email' || ($channel === 'auto' && $phone === '' && $email !== '')) {
         if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return ['ok' => false, 'error' => 'Email no válido para el envío'];
+            return [
+                'ok' => false,
+                'error' => 'El correo electrónico no es válido para el envío',
+                'error_category' => 'user_input',
+                'error_code' => 'EMAIL_INVALID_FORMAT',
+                'hint' => 'Revisá la dirección de correo cargada para el paciente (ej: nombre@ejemplo.com).',
+            ];
         }
 
         $when = function_exists('recordatorios_format_when_phrase')
@@ -52,12 +58,33 @@ function recordatorios_dispatch_manual_deliver(
                 'item' => recordatorios_format_item($updated ?: $item, $email),
             ];
         }
-        return ['ok' => false, 'error' => 'No se pudo enviar el correo a ' . $email];
+        return [
+            'ok' => false,
+            'error' => 'No se pudo entregar el correo electrónico a ' . $email,
+            'error_category' => 'external_service',
+            'error_code' => 'EMAIL_SEND_FAILED',
+            'hint' => 'El servidor de correo rechazó el mensaje o no respondió. Verificá la dirección o probá por WhatsApp.',
+        ];
     }
 
     // 2. Enviar por WhatsApp
     if ($phone === '') {
-        return ['ok' => false, 'error' => 'Se requiere un número de WhatsApp válido para el envío'];
+        return [
+            'ok' => false,
+            'error' => 'Se requiere un número de WhatsApp para el envío',
+            'error_category' => 'user_input',
+            'error_code' => 'PHONE_REQUIRED',
+            'hint' => 'Cargá un número con código de país (ej: 5491144556677) en "Cargar contacto".',
+        ];
+    }
+    if (strlen($phone) < 8) {
+        return [
+            'ok' => false,
+            'error' => 'El número de WhatsApp (' . $phone . ') es demasiado corto o incompleto',
+            'error_category' => 'user_input',
+            'error_code' => 'PHONE_INVALID_LENGTH',
+            'hint' => 'Asegurate de incluir código de país y de área sin símbolos (ej: 5491144556677).',
+        ];
     }
 
     $waRes = send_whatsapp_reminder_template($phone, [
@@ -91,6 +118,9 @@ function recordatorios_dispatch_manual_deliver(
 
     $errMsg = (string) ($waRes['error'] ?? 'No se pudo entregar el mensaje por WhatsApp');
     $errTo = (string) ($waRes['to'] ?? $phone);
+    $errCategory = (string) ($waRes['error_category'] ?? 'external_service');
+    $errCode = (string) ($waRes['error_code'] ?? 'WA_DISPATCH_FAILED');
+    $errHint = (string) ($waRes['hint'] ?? 'Podés verificar el número de teléfono o intentar el envío por correo.');
 
     // Fallback email solo en canal auto (nunca en pruebas ni si eligieron Solo WhatsApp).
     if ($channel === 'auto' && !$isTestCase && $email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -141,6 +171,9 @@ function recordatorios_dispatch_manual_deliver(
     return [
         'ok' => false,
         'error' => 'WhatsApp no entregó a ' . $errTo . ': ' . $errMsg,
+        'error_category' => $errCategory,
+        'error_code' => $errCode,
+        'hint' => $errHint,
         'whatsapp_error' => $errMsg,
         'to' => $errTo,
     ];

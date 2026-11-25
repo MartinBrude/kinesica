@@ -81,6 +81,41 @@ function json_out(int $status, array $body): void
 }
 
 
+/**
+ * Emite una respuesta de error estructurada con clasificación de causa y sugerencia de acción.
+ *
+ * @param int $status Código HTTP (400, 401, 403, 404, 422, 500, 502, 503)
+ * @param string $message Mensaje descriptivo y legible
+ * @param string $category 'user_input' | 'software_logic' | 'external_service' | 'infrastructure' | 'auth'
+ * @param string|null $code Código de error nemotécnico (ej: 'PHONE_INVALID', 'META_ERROR')
+ * @param string|null $hint Sugerencia accionable para el usuario
+ * @param array $extra Metadatos adicionales de contexto
+ */
+function json_error(
+    int $status,
+    string $message,
+    string $category = 'user_input',
+    ?string $code = null,
+    ?string $hint = null,
+    array $extra = []
+): void {
+    $body = array_merge([
+        'ok' => false,
+        'status' => 'error',
+        'error' => $message,
+        'message' => $message,
+        'error_category' => $category,
+        'error_code' => $code ?: ('ERR_' . $status),
+    ], $extra);
+
+    if ($hint !== null && $hint !== '') {
+        $body['hint'] = $hint;
+    }
+
+    json_out($status, $body);
+}
+
+
 function read_json(): array
 {
     $max = 512 * 1024;

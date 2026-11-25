@@ -95,13 +95,46 @@ function db(): PDO
 // No registrar el handler admin ahí: reescribiría errores del endpoint público.
 if (!defined('KINESICA_SKIP_ADMIN_EXCEPTION_HANDLER') || !KINESICA_SKIP_ADMIN_EXCEPTION_HANDLER) {
     set_exception_handler(static function (Throwable $error): void {
-        error_log('kinesica admin: ' . $error->getMessage());
+        $errorId = 'err_' . substr(md5(uniqid((string) mt_rand(), true)), 0, 8);
+        $file = basename($error->getFile());
+        $line = $error->getLine();
+        $msg = $error->getMessage();
+        $isDbError = ($error instanceof PDOException);
+
+        error_log(sprintf(
+            '[kinesica admin %s] %s in %s:%d: %s',
+            $errorId,
+            get_class($error),
+            $file,
+            $line,
+            $msg
+        ));
+
         if (!headers_sent()) {
             http_response_code(500);
             header('Content-Type: application/json; charset=utf-8');
             header('Cache-Control: no-store');
         }
-        echo json_encode(['error' => 'Error interno. Intentá de nuevo.'], JSON_UNESCAPED_UNICODE);
+
+        $category = $isDbError ? 'infrastructure' : 'software_logic';
+        $userMsg = $isDbError
+            ? 'Error al conectar o consultar la base de datos (Ref: ' . $errorId . ').'
+            : 'Ocurrió un error en la lógica del sistema (Ref: ' . $errorId . ').';
+        $hint = $isDbError
+            ? 'La base de datos puede estar ocupada o temporalmente inaccesible. Reintentá en unos segundos.'
+            : 'Se registró el fallo de software con identificador ' . $errorId . ' para su diagnóstico.';
+
+        echo json_encode([
+            'ok' => false,
+            'status' => 'error',
+            'error' => $userMsg,
+            'message' => $userMsg,
+            'error_category' => $category,
+            'error_code' => $isDbError ? 'DB_EXCEPTION' : 'SOFTWARE_LOGIC_EXCEPTION',
+            'error_id' => $errorId,
+            'hint' => $hint,
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
     });
 }
 

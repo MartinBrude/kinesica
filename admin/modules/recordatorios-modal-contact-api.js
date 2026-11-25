@@ -41,12 +41,26 @@ export function createRecordatorioContactApiHandlers(backdrop, item, { onSuccess
         else loadRecordatorios(false);
         return resp;
       }
-      dialogAlert(resp?.error || "No se pudo guardar el contacto.", { type: "danger" });
+      const payload = resp || {};
+      dialogAlert(payload.error || "No se pudo guardar el contacto.", {
+        type: "danger",
+        category: payload.error_category || "user_input",
+        hint: payload.hint,
+        errorId: payload.error_id,
+        errorCode: payload.error_code,
+      });
       return false;
     } catch (err) {
+      const payload = (err && err.payload) || {};
       dialogAlert(
-        (err && (err.payload?.error || err.message)) || "Error al guardar el contacto.",
-        { type: "danger" }
+        payload.error || err.message || "Error al guardar el contacto.",
+        {
+          type: "danger",
+          category: payload.error_category || err.category || "user_input",
+          hint: payload.hint || err.hint,
+          errorId: payload.error_id || err.errorId,
+          errorCode: payload.error_code || err.code,
+        }
       );
       return false;
     } finally {
@@ -93,13 +107,31 @@ export function createRecordatorioContactApiHandlers(backdrop, item, { onSuccess
         else loadRecordatorios(false);
         toast(resp.message || "Recordatorio enviado correctamente.", { type: "success" });
       } else {
-        dialogAlert(resp?.error || "No se pudo enviar el recordatorio.", { type: "danger" });
+        const payload = resp || {};
+        dialogAlert(payload.error || "No se pudo enviar el recordatorio.", {
+          type: "danger",
+          category: payload.error_category || "user_input",
+          hint: payload.hint,
+          errorId: payload.error_id,
+          errorCode: payload.error_code,
+        });
       }
     } catch (err) {
+      const payload = (err && err.payload) || {};
       dialogAlert(
-        (err && (err.payload?.error || err.message)) ||
+        payload.error ||
+          err.message ||
           "Error al conectar con el servidor para disparar el recordatorio.",
-        { type: "danger" }
+        {
+          type: "danger",
+          category:
+            payload.error_category ||
+            err.category ||
+            (err.network ? "infrastructure" : "software_logic"),
+          hint: payload.hint || err.hint,
+          errorId: payload.error_id || err.errorId,
+          errorCode: payload.error_code || err.code,
+        }
       );
     } finally {
       btn.disabled = false;

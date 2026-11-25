@@ -135,6 +135,10 @@ export async function api(path, options = {}) {
     const error = new Error(msg);
     error.payload = data;
     error.status = res.status;
+    error.category = data.error_category || (res.status >= 500 ? "software_logic" : "user_input");
+    error.code = data.error_code || null;
+    error.hint = data.hint || null;
+    error.errorId = data.error_id || null;
     throw error;
   }
 
