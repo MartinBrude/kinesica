@@ -1,6 +1,15 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Taxonomía de errores admin (Meta WA, validaciones, clasificación de excepciones).
+ * Ejecución: php scripts/verify-error-taxonomy.php
+ *
+ * Sin KT_DB_HOST: omite persistencia de contactos (mismo patrón que test-recordatorios-contact.php).
+ */
+
+define('KINESICA_SKIP_ADMIN_EXCEPTION_HANDLER', true);
+
 require_once __DIR__ . '/../admin/api/lib.php';
 require_once __DIR__ . '/../admin/api/lib_whatsapp_template.php';
 
@@ -15,68 +24,71 @@ function assert_test(bool $cond, string $msg): void
 
 echo "=== Test 1: Traductor de errores de WhatsApp / Meta ===\n";
 $trans131030 = whatsapp_explain_meta_error(400, 131030, '', '5491144556677');
-assert_test($trans131030['category'] === 'user_input', 'Código 131030 clasificado como user_input (mal uso / número sin WA)');
-assert_test(str_contains($trans131030['user_message'], 'no pertenece a una cuenta activa de WhatsApp'), 'Mensaje amigable para 131030');
-assert_test(str_contains($trans131030['hint'], 'Verificá el número'), 'Hint accionable para 131030');
+assert_test($trans131030['category'] === 'user_input', '131030 → user_input');
+assert_test(str_contains($trans131030['user_message'], 'no pertenece a una cuenta activa de WhatsApp'), '131030 mensaje claro');
+assert_test(str_contains($trans131030['hint'], 'Verificá el número'), '131030 hint');
 
 $trans190 = whatsapp_explain_meta_error(401, 190, '', '5491144556677');
-assert_test($trans190['category'] === 'external_service', 'Código 190 clasificado como external_service (token expirado)');
-assert_test(str_contains($trans190['user_message'], 'token de acceso de WhatsApp (Meta) expiró'), 'Mensaje claro para token expirado');
+assert_test($trans190['category'] === 'external_service', '190 → external_service');
+assert_test(str_contains($trans190['user_message'], 'token de acceso de WhatsApp (Meta) expiró'), '190 mensaje');
 
-$trans132000 = whatsapp_explain_meta_error(400, 132000, '', '5491144556677');
-assert_test($trans132000['category'] === 'software_logic', 'Código 132000 clasificado como software_logic (plantilla no existente en Meta)');
+assert_test(
+    whatsapp_explain_meta_error(400, 132000, '', '5491144556677')['category'] === 'software_logic',
+    '132000 → software_logic'
+);
+assert_test(
+    whatsapp_explain_meta_error(500, null, '', '5491144556677')['category'] === 'external_service',
+    'HTTP 500 Meta → external_service'
+);
 
-$trans500 = whatsapp_explain_meta_error(500, null, '', '5491144556677');
-assert_test($trans500['category'] === 'external_service', 'HTTP 500 de Meta clasificado como external_service');
-
-echo "\n=== Test 2: Comportamiento de validación de teléfonos en recordatorios ===\n";
+echo "\n=== Test 2: Validación en dispatch deliver ===\n";
 require_once __DIR__ . '/../admin/api/recordatorios_dispatch_manual_recordatorios_dispatch_manual_deliver.php';
 
-// Teléfono vacío
-$emptyPhone = recordatorios_dispatch_manual_deliver(
-    1, [], ['username' => 'test'], ['status' => 'pending'], '', '', 'whatsapp',
-    'Juan Perez', '10:00', '2026-11-26', '', 'admin',
-    false, 'sesión', '', 'Juan', false, '10:00 hs'
-);
-assert_test($emptyPhone['ok'] === false, 'Teléfono vacío falla');
-assert_test($emptyPhone['error_category'] === 'user_input', 'Teléfono vacío es user_input');
-assert_test($emptyPhone['error_code'] === 'PHONE_REQUIRED', 'Código de error PHONE_REQUIRED');
-assert_test(isset($emptyPhone['hint']), 'Hint presente');
+$deliver = static function (string $phone, string $email, string $channel) {
+    return recordatorios_dispatch_manual_deliver(
+        1, [], ['username' => 'test'], ['status' => 'pending'], $phone, $email, $channel,
+        'Juan Perez', '10:00', '2026-11-26', '', 'admin',
+        false, 'sesión', '', 'Juan', false, '10:00 hs'
+    );
+};
 
-// Teléfono demasiado corto
-$shortPhone = recordatorios_dispatch_manual_deliver(
-    1, [], ['username' => 'test'], ['status' => 'pending'], '12345', '', 'whatsapp',
-    'Juan Perez', '10:00', '2026-11-26', '', 'admin',
-    false, 'sesión', '', 'Juan', false, '10:00 hs'
-);
-assert_test($shortPhone['ok'] === false, 'Teléfono corto falla');
-assert_test($shortPhone['error_category'] === 'user_input', 'Teléfono corto es user_input');
-assert_test($shortPhone['error_code'] === 'PHONE_INVALID_LENGTH', 'Código de error PHONE_INVALID_LENGTH');
+$emptyPhone = $deliver('', '', 'whatsapp');
+assert_test($emptyPhone['ok'] === false && ($emptyPhone['error_code'] ?? '') === 'PHONE_REQUIRED', 'PHONE_REQUIRED');
+assert_test(($emptyPhone['error_category'] ?? '') === 'user_input' && isset($emptyPhone['hint']), 'PHONE_REQUIRED category+hint');
 
-// Email inválido
-$badEmail = recordatorios_dispatch_manual_deliver(
-    1, [], ['username' => 'test'], ['status' => 'pending'], '', 'correo_invalido', 'email',
-    'Juan Perez', '10:00', '2026-11-26', '', 'admin',
-    false, 'sesión', '', 'Juan', false, '10:00 hs'
-);
-assert_test($badEmail['ok'] === false, 'Email inválido falla');
-assert_test($badEmail['error_category'] === 'user_input', 'Email inválido es user_input');
-assert_test($badEmail['error_code'] === 'EMAIL_INVALID_FORMAT', 'Código de error EMAIL_INVALID_FORMAT');
+assert_test(($deliver('12345', '', 'whatsapp')['error_code'] ?? '') === 'PHONE_INVALID_LENGTH', 'PHONE_INVALID_LENGTH');
+assert_test(($deliver('', 'correo_invalido', 'email')['error_code'] ?? '') === 'EMAIL_INVALID_FORMAT', 'EMAIL_INVALID_FORMAT');
 
-echo "\n=== Test 3: Guardado de contactos en recordatorios ===\n";
+echo "\n=== Test 3: Guardado de contactos ===\n";
 require_once __DIR__ . '/../admin/api/lib_recordatorios_store.php';
 require_once __DIR__ . '/../admin/api/recordatorios_lib.php';
 
-$emptyContact = recordatorios_save_contact(999999, ['wa_id' => '', 'email' => ''], ['username' => 'test']);
-assert_test($emptyContact['ok'] === false, 'Item no existente o contacto vacío falla');
-assert_test($emptyContact['error_category'] === 'user_input', 'Falla de contacto es user_input');
+$host = getenv('KT_DB_HOST');
+if ($host === false || $host === '') {
+    echo "• Persistencia contacto omitida (sin KT_DB_HOST)\n";
+} else {
+    $emptyContact = recordatorios_save_contact(999999, ['wa_id' => '', 'email' => ''], ['username' => 'test']);
+    assert_test($emptyContact['ok'] === false, 'contacto inválido falla');
+    assert_test(($emptyContact['error_category'] ?? '') === 'user_input', 'contacto → user_input');
+    assert_test(
+        in_array((string) ($emptyContact['error_code'] ?? ''), ['RECORDATORIO_NOT_FOUND', 'CONTACT_REQUIRED'], true),
+        'código contacto esperado'
+    );
+}
 
-echo "\n=== Test 4: Comprobación del manejador de excepciones (simulación) ===\n";
-$errId = 'err_' . substr(md5('test'), 0, 8);
-$isDbError = false;
-$category = $isDbError ? 'infrastructure' : 'software_logic';
-assert_test($category === 'software_logic', 'Excepción general clasificada como software_logic');
-$dbErrorCategory = true ? 'infrastructure' : 'software_logic';
-assert_test($dbErrorCategory === 'infrastructure', 'Excepción de base de datos clasificada como infrastructure');
+echo "\n=== Test 4: kinesica_classify_exception ===\n";
+assert_test(function_exists('kinesica_classify_exception'), 'función disponible');
+assert_test(function_exists('json_error_from'), 'json_error_from disponible');
+
+$logic = kinesica_classify_exception(new RuntimeException('boom'), 'err_test01');
+assert_test($logic['error_category'] === 'software_logic' && $logic['error_code'] === 'SOFTWARE_LOGIC_EXCEPTION', 'Runtime → SOFTWARE_LOGIC_EXCEPTION');
+assert_test($logic['error_id'] === 'err_test01' && str_contains($logic['error'], 'err_test01'), 'preserva error_id');
+
+$dispatch = kinesica_classify_exception(new RuntimeException('boom'), 'err_test02', 'el envío', 'DISPATCH');
+assert_test($dispatch['error_code'] === 'DISPATCH_LOGIC_EXCEPTION', 'prefijo DISPATCH + lógica');
+assert_test(str_contains($dispatch['error'], 'el envío'), 'contexto en mensaje');
+
+$db = kinesica_classify_exception(new PDOException('Connection refused'), 'err_db01', 'el envío', 'DISPATCH');
+assert_test($db['error_category'] === 'infrastructure' && $db['error_code'] === 'DISPATCH_DB_EXCEPTION', 'PDO + DISPATCH → DISPATCH_DB_EXCEPTION');
 
 echo "\nTodos los tests de taxonomía y claridad de errores pasaron exitosamente.\n";

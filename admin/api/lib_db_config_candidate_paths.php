@@ -91,23 +91,63 @@ function db(): PDO
     return $pdo;
 }
 
+/**
+ * Clasifica una excepción no capturada para respuestas JSON consistentes.
+ *
+ * @param string $codePrefix Prefijo opcional del código (ej. "DISPATCH" → DISPATCH_DB_EXCEPTION).
+ * @return array{
+ *   error_id: string,
+ *   error_category: 'infrastructure'|'software_logic',
+ *   error_code: string,
+ *   error: string,
+ *   hint: string
+ * }
+ */
+function kinesica_classify_exception(
+    Throwable $error,
+    ?string $errorId = null,
+    string $contextLabel = 'sistema',
+    string $codePrefix = ''
+): array {
+    $errorId = $errorId ?: ('err_' . substr(md5(uniqid((string) mt_rand(), true)), 0, 8));
+    $isDbError = ($error instanceof PDOException);
+    $prefix = strtoupper(preg_replace('/[^A-Z0-9_]/i', '', $codePrefix) ?? '');
+
+    if ($isDbError) {
+        return [
+            'error_id' => $errorId,
+            'error_category' => 'infrastructure',
+            'error_code' => $prefix !== '' ? ($prefix . '_DB_EXCEPTION') : 'DB_EXCEPTION',
+            'error' => 'Error al conectar o consultar la base de datos (Ref: ' . $errorId . ').',
+            'hint' => 'La base de datos puede estar ocupada o temporalmente inaccesible. Reintentá en unos segundos.',
+        ];
+    }
+
+    $userMsg = $contextLabel !== 'sistema'
+        ? 'Error interno en el software al procesar ' . $contextLabel . ' (Ref: ' . $errorId . ').'
+        : 'Ocurrió un error en la lógica del sistema (Ref: ' . $errorId . ').';
+
+    return [
+        'error_id' => $errorId,
+        'error_category' => 'software_logic',
+        'error_code' => $prefix !== '' ? ($prefix . '_LOGIC_EXCEPTION') : 'SOFTWARE_LOGIC_EXCEPTION',
+        'error' => $userMsg,
+        'hint' => 'Se registró el fallo de software con identificador ' . $errorId . ' para su diagnóstico.',
+    ];
+}
+
 // Formularios públicos (p.ej. encuestas vía send-contact) cargan lib_db solo para PDO.
 // No registrar el handler admin ahí: reescribiría errores del endpoint público.
 if (!defined('KINESICA_SKIP_ADMIN_EXCEPTION_HANDLER') || !KINESICA_SKIP_ADMIN_EXCEPTION_HANDLER) {
     set_exception_handler(static function (Throwable $error): void {
-        $errorId = 'err_' . substr(md5(uniqid((string) mt_rand(), true)), 0, 8);
-        $file = basename($error->getFile());
-        $line = $error->getLine();
-        $msg = $error->getMessage();
-        $isDbError = ($error instanceof PDOException);
-
+        $meta = kinesica_classify_exception($error);
         error_log(sprintf(
             '[kinesica admin %s] %s in %s:%d: %s',
-            $errorId,
+            $meta['error_id'],
             get_class($error),
-            $file,
-            $line,
-            $msg
+            basename($error->getFile()),
+            $error->getLine(),
+            $error->getMessage()
         ));
 
         if (!headers_sent()) {
@@ -116,25 +156,18 @@ if (!defined('KINESICA_SKIP_ADMIN_EXCEPTION_HANDLER') || !KINESICA_SKIP_ADMIN_EX
             header('Cache-Control: no-store');
         }
 
-        $category = $isDbError ? 'infrastructure' : 'software_logic';
-        $userMsg = $isDbError
-            ? 'Error al conectar o consultar la base de datos (Ref: ' . $errorId . ').'
-            : 'Ocurrió un error en la lógica del sistema (Ref: ' . $errorId . ').';
-        $hint = $isDbError
-            ? 'La base de datos puede estar ocupada o temporalmente inaccesible. Reintentá en unos segundos.'
-            : 'Se registró el fallo de software con identificador ' . $errorId . ' para su diagnóstico.';
-
         echo json_encode([
             'ok' => false,
             'status' => 'error',
-            'error' => $userMsg,
-            'message' => $userMsg,
-            'error_category' => $category,
-            'error_code' => $isDbError ? 'DB_EXCEPTION' : 'SOFTWARE_LOGIC_EXCEPTION',
-            'error_id' => $errorId,
-            'hint' => $hint,
+            'error' => $meta['error'],
+            'message' => $meta['error'],
+            'error_category' => $meta['error_category'],
+            'error_code' => $meta['error_code'],
+            'error_id' => $meta['error_id'],
+            'hint' => $meta['hint'],
         ], JSON_UNESCAPED_UNICODE);
-        exit;
+        // exit(1): en CLI (tests) uncaught no debe verse como éxito.
+        exit(1);
     });
 }
 

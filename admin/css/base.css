@@ -970,6 +970,39 @@ main {
   margin-top: 18px;
 }
 
+.app-dialog-badge {
+  display: inline-block;
+  margin-bottom: 8px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.app-dialog-badge.is-user_input { background: #fffaeb; color: #b54708; }
+.app-dialog-badge.is-software_logic { background: #fef3f2; color: #b42318; }
+.app-dialog-badge.is-external_service { background: #eff8ff; color: #175cd3; }
+.app-dialog-badge.is-infrastructure { background: #f4f3ff; color: #5925dc; }
+.app-dialog-badge.is-auth { background: #fef6ee; color: #c4320a; }
+
+.app-dialog-hint {
+  margin-top: 10px;
+  padding: 9px 12px;
+  border-radius: 6px;
+  border-left: 3px solid #0b2545;
+  background: #f8fafc;
+  color: #344054;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.app-dialog-ref {
+  margin-top: 8px;
+  color: #667085;
+  font-size: 11px;
+}
+
 .btn.danger {
   background: #9f1239;
   border-color: #9f1239;

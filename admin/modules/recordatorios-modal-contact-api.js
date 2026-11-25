@@ -7,13 +7,26 @@ import { toast, dialogAlert } from "./dom.js?v=79";
 import { markTestFieldError, clearTestFieldError } from "./recordatorios-modal-fields.js?v=1";
 import { loadRecordatorios } from "./recordatorios-load.js?v=2";
 
+function alertApiFailure(fallback, payload = {}, err = null) {
+  dialogAlert(payload.error || err?.message || fallback, {
+    type: "danger",
+    category:
+      payload.error_category ||
+      err?.category ||
+      (err?.network ? "infrastructure" : "user_input"),
+    hint: payload.hint || err?.hint,
+    errorId: payload.error_id || err?.errorId,
+    errorCode: payload.error_code || err?.code,
+  });
+}
+
 export function createRecordatorioContactApiHandlers(backdrop, item, { onSuccess, readFields, close }) {
   const clearDispatchFieldErrors = () => {
     clearTestFieldError(backdrop.querySelector("#dispatch-phone"));
     clearTestFieldError(backdrop.querySelector("#dispatch-email"));
   };
 
-    const saveContactOnly = async (btn) => {
+  const saveContactOnly = async (btn) => {
     clearDispatchFieldErrors();
     const { phone, email } = readFields();
     if (!phone && !email) {
@@ -41,27 +54,10 @@ export function createRecordatorioContactApiHandlers(backdrop, item, { onSuccess
         else loadRecordatorios(false);
         return resp;
       }
-      const payload = resp || {};
-      dialogAlert(payload.error || "No se pudo guardar el contacto.", {
-        type: "danger",
-        category: payload.error_category || "user_input",
-        hint: payload.hint,
-        errorId: payload.error_id,
-        errorCode: payload.error_code,
-      });
+      alertApiFailure("No se pudo guardar el contacto.", resp || {});
       return false;
     } catch (err) {
-      const payload = (err && err.payload) || {};
-      dialogAlert(
-        payload.error || err.message || "Error al guardar el contacto.",
-        {
-          type: "danger",
-          category: payload.error_category || err.category || "user_input",
-          hint: payload.hint || err.hint,
-          errorId: payload.error_id || err.errorId,
-          errorCode: payload.error_code || err.code,
-        }
-      );
+      alertApiFailure("Error al guardar el contacto.", err?.payload || {}, err);
       return false;
     } finally {
       btn.disabled = false;
@@ -107,31 +103,13 @@ export function createRecordatorioContactApiHandlers(backdrop, item, { onSuccess
         else loadRecordatorios(false);
         toast(resp.message || "Recordatorio enviado correctamente.", { type: "success" });
       } else {
-        const payload = resp || {};
-        dialogAlert(payload.error || "No se pudo enviar el recordatorio.", {
-          type: "danger",
-          category: payload.error_category || "user_input",
-          hint: payload.hint,
-          errorId: payload.error_id,
-          errorCode: payload.error_code,
-        });
+        alertApiFailure("No se pudo enviar el recordatorio.", resp || {});
       }
     } catch (err) {
-      const payload = (err && err.payload) || {};
-      dialogAlert(
-        payload.error ||
-          err.message ||
-          "Error al conectar con el servidor para disparar el recordatorio.",
-        {
-          type: "danger",
-          category:
-            payload.error_category ||
-            err.category ||
-            (err.network ? "infrastructure" : "software_logic"),
-          hint: payload.hint || err.hint,
-          errorId: payload.error_id || err.errorId,
-          errorCode: payload.error_code || err.code,
-        }
+      alertApiFailure(
+        "Error al conectar con el servidor para disparar el recordatorio.",
+        err?.payload || {},
+        err
       );
     } finally {
       btn.disabled = false;

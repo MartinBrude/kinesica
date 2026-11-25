@@ -3,7 +3,7 @@
  * Utilidades para construcción eficiente de elementos del DOM, prevención de XSS y debounce.
  */
 
-import { dialogAlert, dialogConfirm, toast } from "./dom-dialogs.js?v=2";
+import { dialogAlert, dialogConfirm, toast } from "./dom-dialogs.js?v=3";
 
 export { dialogAlert, dialogConfirm, toast };
 

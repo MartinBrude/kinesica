@@ -9,7 +9,7 @@
  * - print.css: Formato de impresión A4, firmas digitales y reportes PDF
  */
 
-@import "./css/base.css?v=101";
+@import "./css/base.css?v=102";
 @import "./css/gate.css";
 @import "./css/library.css?v=90";
 @import "./css/form.css?v=88";
@@ -20,7 +20,7 @@
 @import "./css/horarios.css?v=14";
 @import "./css/admin-panel.css?v=32";
 @import "./css/interacciones.css?v=5";
-@import "./css/recordatorios.css?v=9";
+@import "./css/recordatorios.css?v=11";
 
 
 /* Turnera profesional: selector autenticado de paciente + widget oficial. */

@@ -115,6 +115,27 @@ function json_error(
     json_out($status, $body);
 }
 
+/**
+ * Emite json_error desde un payload de fallo ya tipado (error / category / code / hint).
+ */
+function json_error_from(
+    array $res,
+    int $status = 400,
+    string $fallbackMessage = 'Error',
+    string $fallbackCode = 'ERROR',
+    string $fallbackCategory = 'user_input'
+): void {
+    $hint = isset($res['hint']) && is_string($res['hint']) ? $res['hint'] : null;
+    json_error(
+        $status,
+        (string) ($res['error'] ?? $fallbackMessage),
+        (string) ($res['error_category'] ?? $fallbackCategory),
+        (string) ($res['error_code'] ?? $fallbackCode),
+        $hint,
+        $res
+    );
+}
+
 
 function read_json(): array
 {

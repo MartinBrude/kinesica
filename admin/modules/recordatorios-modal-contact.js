@@ -108,23 +108,25 @@ export function openRecordatorioContactModal(item, { mode = "contact", onSuccess
   const rawName = String(item.patient_name || item.event_summary || "").trim();
   const cleanLookupName = rawName.replace(/^(?:dr[a]?\.|lic\.|prof\.)\s*/i, "").trim();
   if (!item.wa_id && cleanLookupName && phoneInput) {
-    api(`/api/pacientes.php?q=${encodeURIComponent(cleanLookupName)}`)
+    const q = cleanLookupName.toLowerCase();
+    api(`pacientes.php?q=${encodeURIComponent(cleanLookupName)}`)
       .then((res) => {
         const items = Array.isArray(res?.items) ? res.items : [];
         const match = items.find((p) => {
           const t = String(p.telefono || "").replace(/\D/g, "");
-          return t.length >= 6;
+          if (t.length < 6) return false;
+          const full = String(p.nombre_completo || p.nombre || "").toLowerCase();
+          return full !== "" && (full.includes(q) || q.includes(full));
         });
-        if (match && phoneInput && !phoneInput.value.trim()) {
-          const rawMatchPhone = String(match.telefono || "").trim();
-          phoneInput.value = rawMatchPhone;
-          const hintBox = document.createElement("div");
-          hintBox.style.cssText = "font-size:12px;color:#0f766e;margin-top:5px;padding:4px 8px;background:#f0fdfa;border-radius:4px;border:1px solid #ccfbf1;";
-          hintBox.innerHTML = `💡 Teléfono sugerido del registro: <strong>${escapeHtml(match.nombre_completo || cleanLookupName)}</strong> (${escapeHtml(rawMatchPhone)})`;
-          phoneInput.parentElement.appendChild(hintBox);
-          if (match.email && emailInput && !emailInput.value.trim()) {
-            emailInput.value = String(match.email).trim();
-          }
+        if (!match || phoneInput.value.trim()) return;
+        const rawMatchPhone = String(match.telefono || "").trim();
+        phoneInput.value = rawMatchPhone;
+        const hintBox = document.createElement("div");
+        hintBox.className = "recordatorio-phone-suggest";
+        hintBox.innerHTML = `Teléfono sugerido: <strong>${escapeHtml(match.nombre_completo || cleanLookupName)}</strong> (${escapeHtml(rawMatchPhone)})`;
+        phoneInput.parentElement.appendChild(hintBox);
+        if (match.email && emailInput && !emailInput.value.trim()) {
+          emailInput.value = String(match.email).trim();
         }
       })
       .catch(() => {});

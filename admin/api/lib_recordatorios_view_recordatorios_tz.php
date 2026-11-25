@@ -161,6 +161,9 @@ function recordatorios_format_item(array $r, ?string $email = null): array
         }
     }
 
+    $apptDate = isset($r['appointment_date']) && $r['appointment_date'] !== null ? (string) $r['appointment_date'] : '';
+    $apptTime = (string) ($r['appointment_time'] ?? '');
+
     return [
         'id' => (string) ($r['id'] ?? ''),
         'event_key' => (string) ($r['event_key'] ?? ''),
@@ -168,8 +171,9 @@ function recordatorios_format_item(array $r, ?string $email = null): array
         'run_at' => $runUtc,
         'run_at_local' => $runLocal,
         'run_day' => $runDay,
-        'appointment_date' => isset($r['appointment_date']) && $r['appointment_date'] !== null ? (string) $r['appointment_date'] : '',
-        'appointment_time' => (string) ($r['appointment_time'] ?? ''),
+        'appointment_date' => $apptDate,
+        'appointment_time' => $apptTime,
+        'when_phrase' => recordatorios_format_when_phrase($apptDate !== '' ? $apptDate : null, $apptTime !== '' ? $apptTime : null),
         'calendar_event_id' => (string) ($r['calendar_event_id'] ?? ''),
         'patient_name' => (string) ($r['patient_name'] ?? ''),
         'wa_id' => $waId,
@@ -183,6 +187,6 @@ function recordatorios_format_item(array $r, ?string $email = null): array
         'event_summary' => (string) ($r['event_summary'] ?? ''),
         'event_description' => (string) ($r['event_description'] ?? $r['description'] ?? ''),
         'dni' => (string) ($r['dni'] ?? ''),
-        'is_past' => recordatorios_is_appointment_past(isset($r['appointment_date']) ? (string) $r['appointment_date'] : null, (string) ($r['appointment_time'] ?? '')),
+        'is_past' => recordatorios_is_appointment_past($apptDate !== '' ? $apptDate : null, $apptTime),
     ];
 }
