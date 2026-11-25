@@ -56,19 +56,30 @@ function recordatorios_store_items(array $items, ?PDO $pdo = null): array
             }
 
             if ($cal !== '' && $cal !== '_run') {
+                $baseCal = str_replace('@google.com', '', $cal);
                 try {
                     if (in_array($status, ['sent', 'sent_email'], true)) {
                         // Cualquier pending (con o sin WA) queda obsoleto tras envío real.
                         $pdo->prepare(
                             'DELETE FROM recordatorio_eventos
-                             WHERE calendar_event_id = :cal AND status = "pending"'
-                        )->execute(['cal' => $cal]);
+                             WHERE (calendar_event_id = :cal OR calendar_event_id = :baseCal OR calendar_event_id = :withGoogle)
+                               AND status = "pending"'
+                        )->execute([
+                            'cal' => $cal,
+                            'baseCal' => $baseCal,
+                            'withGoogle' => $baseCal . '@google.com',
+                        ]);
                     } elseif ($status !== 'pending') {
                         $pdo->prepare(
                             'DELETE FROM recordatorio_eventos
-                             WHERE calendar_event_id = :cal AND status = "pending"
+                             WHERE (calendar_event_id = :cal OR calendar_event_id = :baseCal OR calendar_event_id = :withGoogle)
+                               AND status = "pending"
                                AND (wa_id IS NULL OR wa_id = "")'
-                        )->execute(['cal' => $cal]);
+                        )->execute([
+                            'cal' => $cal,
+                            'baseCal' => $baseCal,
+                            'withGoogle' => $baseCal . '@google.com',
+                        ]);
                     }
                 } catch (Throwable $delEx) {
                 }

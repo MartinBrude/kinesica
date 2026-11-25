@@ -26,14 +26,20 @@ function recordatorios_load_view(?PDO $pdo = null, int $days = RECORDATORIOS_DEF
         // p.ej. previsión posterior al cron). failed se conserva para auditoría.
         $pdo->exec("DELETE pend FROM recordatorio_eventos pend
                     INNER JOIN recordatorio_eventos sent
-                      ON pend.calendar_event_id = sent.calendar_event_id
+                      ON (
+                        pend.calendar_event_id = sent.calendar_event_id
+                        OR REPLACE(pend.calendar_event_id, '@google.com', '') = REPLACE(sent.calendar_event_id, '@google.com', '')
+                      )
                      AND pend.calendar_event_id != ''
                      AND pend.calendar_event_id != '_run'
                      AND pend.status = 'pending'
                      AND sent.status IN ('sent', 'sent_email')");
         $pdo->exec("DELETE r1 FROM recordatorio_eventos r1
                     JOIN recordatorio_eventos r2
-                      ON r1.calendar_event_id = r2.calendar_event_id
+                      ON (
+                        r1.calendar_event_id = r2.calendar_event_id
+                        OR REPLACE(r1.calendar_event_id, '@google.com', '') = REPLACE(r2.calendar_event_id, '@google.com', '')
+                      )
                      AND r1.calendar_event_id != ''
                      AND r1.calendar_event_id != '_run'
                      AND r1.id < r2.id

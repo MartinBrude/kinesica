@@ -26,23 +26,25 @@ function recordatorios_was_sent_for_event(string $calendarEventId, $appointmentD
     try {
         $pdo = recordatorios_pdo($pdo);
         recordatorios_ensure_schema($pdo);
+        $baseCal = str_replace('@google.com', '', $cal);
+        $withGoogle = $baseCal . '@google.com';
         if ($apptDate !== null && preg_match('/^\d{4}-\d{2}-\d{2}$/', $apptDate)) {
             $stmt = $pdo->prepare(
                 'SELECT 1 FROM recordatorio_eventos
-                 WHERE calendar_event_id = :cal
+                 WHERE (calendar_event_id = :cal OR calendar_event_id = :baseCal OR calendar_event_id = :withGoogle)
                    AND (appointment_date = :appt OR appointment_date IS NULL OR appointment_date = "")
                    AND status IN (\'sent\', \'sent_email\')
                  LIMIT 1'
             );
-            $stmt->execute(['cal' => substr($cal, 0, 128), 'appt' => $apptDate]);
+            $stmt->execute(['cal' => $cal, 'baseCal' => $baseCal, 'withGoogle' => $withGoogle, 'appt' => $apptDate]);
         } else {
             $stmt = $pdo->prepare(
                 'SELECT 1 FROM recordatorio_eventos
-                 WHERE calendar_event_id = :cal
+                 WHERE (calendar_event_id = :cal OR calendar_event_id = :baseCal OR calendar_event_id = :withGoogle)
                    AND status IN (\'sent\', \'sent_email\')
                  LIMIT 1'
             );
-            $stmt->execute(['cal' => substr($cal, 0, 128)]);
+            $stmt->execute(['cal' => $cal, 'baseCal' => $baseCal, 'withGoogle' => $withGoogle]);
         }
         return (bool) $stmt->fetchColumn();
     } catch (Throwable $e) {
@@ -92,23 +94,40 @@ function recordatorios_check_sent_map(array $calendarEventIds, $appointmentDateO
     try {
         $pdo = recordatorios_pdo($pdo);
         recordatorios_ensure_schema($pdo);
-        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $baseToRaw = [];
+        $queryIds = [];
+        foreach ($ids as $cal) {
+            $base = str_replace('@google.com', '', $cal);
+            $baseToRaw[$cal][] = $cal;
+            $baseToRaw[$base][] = $cal;
+            $baseToRaw[$base . '@google.com'][] = $cal;
+            $queryIds[] = $cal;
+            $queryIds[] = $base;
+            $queryIds[] = $base . '@google.com';
+        }
+        $queryIds = array_values(array_unique($queryIds));
+        $placeholders = implode(',', array_fill(0, count($queryIds), '?'));
         if ($apptDate !== null && preg_match('/^\d{4}-\d{2}-\d{2}$/', $apptDate)) {
             $sql = "SELECT DISTINCT calendar_event_id FROM recordatorio_eventos
                     WHERE calendar_event_id IN ($placeholders)
                       AND (appointment_date = ? OR appointment_date IS NULL OR appointment_date = '')
                       AND status IN ('sent', 'sent_email')";
-            $params = array_merge($ids, [$apptDate]);
+            $params = array_merge($queryIds, [$apptDate]);
         } else {
             $sql = "SELECT DISTINCT calendar_event_id FROM recordatorio_eventos
                     WHERE calendar_event_id IN ($placeholders)
                       AND status IN ('sent', 'sent_email')";
-            $params = $ids;
+            $params = $queryIds;
         }
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
         while (($row = $stmt->fetchColumn()) !== false) {
-            $out[(string) $row] = true;
+            $matched = (string) $row;
+            if (isset($baseToRaw[$matched])) {
+                foreach ($baseToRaw[$matched] as $originalId) {
+                    $out[$originalId] = true;
+                }
+            }
         }
     } catch (Throwable $e) {
         error_log('kinesica recordatorios check_sent_map: ' . $e->getMessage());
