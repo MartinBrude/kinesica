@@ -12,21 +12,21 @@
  */
 
 :root {
-  --kin-primary: #005f99;
+  --kin-primary: var(--primary-color, #005f99);
   --kin-primary-hover: #004d7c;
-  --kin-navy: #031c42;
-  --kin-teal: #2ebfa5;
+  --kin-navy: var(--secondary-color, #031c42);
+  --kin-teal: var(--accent-color, #2ebfa5);
   --kin-teal-dark: #0d7d6c;
   --kin-teal-light: #e6f9f5;
   --kin-bg-light: #f6f9fb;
   --kin-bg-sky: #f0f6fa;
   --kin-border: #c5d8e6;
-  --kin-text-heading: #1f2937;
-  --kin-text-body: #4b5563;
+  --kin-text-heading: var(--heading-color, #1f2937);
+  --kin-text-body: var(--text-color, #4b5563);
   --kin-text-muted: #6b7280;
   --kin-danger: #dc2626;
   --kin-danger-bg: #fef2f2;
-  --kin-radius: 16px;
+  --kin-radius: var(--radius-lg, 16px);
   --kin-shadow: 0 12px 36px rgba(0, 95, 153, 0.08), 0 2px 8px rgba(3, 28, 66, 0.04);
 }
 

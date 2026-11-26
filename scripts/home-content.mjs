@@ -50,18 +50,52 @@ export function renderHeroActions(lang, bookingHref = null) {
   const href = bookingHref || defaultBookingHref;
 
   const whatsappText = {
-    es: "WhatsApp",
-    en: "WhatsApp",
-    fr: "WhatsApp",
-    pt: "WhatsApp",
-  }[lang];
+    es: "Consultar por WhatsApp",
+    en: "WhatsApp inquiry",
+    fr: "Contact WhatsApp",
+    pt: "Contato WhatsApp",
+  }[lang] || "WhatsApp";
 
   const bookingText = {
-    es: "Agendar",
-    en: "Book",
+    es: "Agendar turno",
+    en: "Book appointment",
     fr: "Prendre RDV",
-    pt: "Agendar",
-  }[lang];
+    pt: "Agendar consulta",
+  }[lang] || "Agendar";
+
+  const trustItems = {
+    es: [
+      { icon: "fa-clock-o", text: "1 h individual" },
+      { icon: "fa-map-marker", text: "Palermo" },
+      { icon: "fa-file-text-o", text: "Factura para reintegro" },
+    ],
+    en: [
+      { icon: "fa-clock-o", text: "1-on-1 1-hour sessions" },
+      { icon: "fa-map-marker", text: "Palermo" },
+      { icon: "fa-file-text-o", text: "Invoice for reimbursement" },
+    ],
+    fr: [
+      { icon: "fa-clock-o", text: "Séance individuelle d'1 h" },
+      { icon: "fa-map-marker", text: "Palermo" },
+      { icon: "fa-file-text-o", text: "Facture pour remboursement" },
+    ],
+    pt: [
+      { icon: "fa-clock-o", text: "1 h individual" },
+      { icon: "fa-map-marker", text: "Palermo" },
+      { icon: "fa-file-text-o", text: "Recibo para reembolso" },
+    ],
+  }[lang] || [
+    { icon: "fa-clock-o", text: "1 h individual" },
+    { icon: "fa-map-marker", text: "Palermo" },
+    { icon: "fa-file-text-o", text: "Factura para reintegro" },
+  ];
+
+  const trustBadgeHtml = trustItems
+    .map(
+      (item) =>
+        `<span class="hero-trust-item"><i class="fa ${item.icon}" aria-hidden="true"></i> ${item.text}</span>`,
+    )
+    .join(' <span class="hero-trust-sep" aria-hidden="true">·</span> ');
 
   return [
     "            <div class=\"hero-actions\">",
@@ -69,6 +103,7 @@ export function renderHeroActions(lang, bookingHref = null) {
     `              <a href="${HOME_WHATSAPP_HREF}" target="_blank" class="btn btn-default dynamic-whatsapp-url"`,
     `                rel="noopener noreferrer">${whatsappText}</a>`,
     "            </div>",
+    `            <p class="hero-trust-badge">${trustBadgeHtml}</p>`,
   ];
 }
 
