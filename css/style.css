@@ -3751,8 +3751,11 @@ Pathology detail pages (FAQ dolencias)
   margin-top: 0.4rem;
 }
 
+.content h2.articles-category-heading-title,
+.articles-category .articles-category-heading-title,
 .articles-category-heading-title {
   margin: 0;
+  padding: 0;
   font: inherit;
   line-height: inherit;
 }
