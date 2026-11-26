@@ -153,6 +153,7 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
         }
         $st = $estado[$key] ?? [];
         $isTurnConfirm = interacciones_thread_is_turn_confirmation($messages);
+        $isTurnCancel = interacciones_thread_is_turn_cancellation($messages);
         $name = '';
         // REL: preferir paciente_id de la conversación (estado) sobre el derivado de eventos.
         $convPid = isset($st['paciente_id']) ? (int) $st['paciente_id'] : 0;
@@ -183,8 +184,11 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
             $name = (string) ($dirNames[$matchKey] ?? $reminderNames[$matchKey] ?? '');
         }
         $isDiagNoise = interacciones_thread_is_diagnostic_noise($messages, $name);
-        [$cat, $catLabel] = interacciones_classify($firstPatient, (string) $c['wa_id']);
-        if ($isTurnConfirm) {
+        [$cat, $catLabel] = interacciones_classify($firstPatient, (string) $c['wa_id'], $messages);
+        if ($isTurnCancel) {
+            $cat = 'cancelacion_turno';
+            $catLabel = '❌ Cancelación de turno';
+        } elseif ($isTurnConfirm) {
             $cat = 'confirmacion_turno';
             $catLabel = '✅ Confirmación de turno';
         } elseif ($isDiagNoise) {
@@ -192,16 +196,47 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
             $catLabel = '🧪 Prueba Técnica';
         }
         $archived = !empty($st['archived']);
-        // Confirmación del recordatorio o ruido de prueba: no quedan pendientes.
-        $answered = !empty($st['answered']) || $isTurnConfirm || $isDiagNoise;
+
+        $lastMsgFrom = '';
+        for ($i = count($messages) - 1; $i >= 0; $i--) {
+            if (!empty($messages[$i]['from'])) {
+                $lastMsgFrom = $messages[$i]['from'];
+                break;
+            }
+        }
+
+        // LÓGICA DETERMINISTA DE ESTADO:
+        // 1. Cancelaciones de turno: INMUNIDAD TOTAL. NUNCA respondidas automáticamente.
+        //    Deben exigir atención humana en '⏳ Pendientes' para ver el turno liberado.
+        if ($isTurnCancel) {
+            $answered = false;
+        }
+        // 2. Confirmación de turno pura: puede ir a respondidas.
+        elseif ($isTurnConfirm) {
+            $answered = true;
+        }
+        // 3. Ruido de diagnóstico técnico puro (test/PRUEBA explícito)
+        elseif ($isDiagNoise) {
+            $answered = true;
+        }
+        // 4. Reapertura: si el último mensaje del hilo lo envió el paciente y no es confirmación,
+        //    la conversación se reabre como Pendiente (ignora answered=1 previo del día).
+        elseif ($lastMsgFrom === 'patient') {
+            $answered = false;
+        }
+        // 5. En el resto de los casos, respeta el flag persistido manualmente o por el bot
+        else {
+            $answered = !empty($st['answered']);
+        }
+
         $counts[$archived ? 'archived' : ($answered ? 'answered' : 'unanswered')]++;
         $isIgConv = ($c['channel'] ?? 'whatsapp') === 'instagram' || str_starts_with((string) $c['wa_id'], 'ig_');
         if ($isIgConv && ($cat === 'consulta_general' || empty($st['category_label']))) {
             $cat = 'instagram_dm';
             $catLabel = '📸 Instagram Direct';
         }
-        // Confirmación/prueba pisan categoría guardada (evita "Consulta WhatsApp" + Pendiente).
-        if (!$isTurnConfirm && !$isDiagNoise) {
+        // Confirmación/cancelación/prueba pisan categoría guardada (evita "Consulta WhatsApp" + Pendiente).
+        if (!$isTurnCancel && !$isTurnConfirm && !$isDiagNoise) {
             $cat = (string) (($st['category'] ?? '') !== '' ? $st['category'] : $cat);
             $catLabel = (string) (($st['category_label'] ?? '') !== '' ? $st['category_label'] : $catLabel);
         }

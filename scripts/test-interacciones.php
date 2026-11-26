@@ -118,6 +118,51 @@ ok(
     ]),
     'confirmación vieja + pregunta nueva ≠ hilo confirmación'
 );
+
+// ---------------------------------------------------------------- cancelación de turno
+section('Clasificación cancelación de turno e inmunidad (sin DB)');
+ok(interacciones_is_turn_cancellation('cancelar_turno:evt123'), 'payload cancelar_turno');
+ok(interacciones_is_turn_cancellation('anular_evt456'), 'payload anular_evt');
+ok(interacciones_is_turn_cancellation('Cancelo'), 'Cancelo');
+ok(interacciones_is_turn_cancellation('cancelo el turno'), 'cancelo el turno');
+ok(interacciones_is_turn_cancellation('No puedo ir hoy'), 'No puedo ir');
+ok(interacciones_is_turn_cancellation('no voy a poder asistir'), 'no voy a poder asistir');
+ok(interacciones_is_turn_cancellation('dar de baja el turno'), 'dar de baja el turno');
+ok(interacciones_is_turn_cancellation('quiero reprogramar'), 'reprogramar');
+ok(!interacciones_is_turn_cancellation('Confirmo mi turno'), 'confirmar no es cancelar');
+ok(!interacciones_is_turn_cancellation('Hola buenas tardes'), 'saludo no es cancelar');
+
+ok(
+    interacciones_thread_is_turn_cancellation([
+        ['from' => 'patient', 'text' => 'Hola'],
+        ['from' => 'clara', 'text' => 'Recordatorio'],
+        ['from' => 'patient', 'text' => 'cancelo el turno'],
+    ]),
+    'último mensaje cancelo = hilo cancelación'
+);
+
+ok(
+    interacciones_thread_is_turn_cancellation([
+        ['from' => 'patient', 'text' => 'Confirmo'],
+        ['from' => 'clara', 'text' => 'Gracias por confirmar'],
+        ['from' => 'patient', 'text' => 'Perdón, me surgió algo y cancelo'],
+    ]),
+    'confirmación previa + cancelación posterior = hilo cancelación'
+);
+
+ok(
+    !interacciones_thread_is_turn_confirmation([
+        ['from' => 'patient', 'text' => 'Confirmo'],
+        ['from' => 'clara', 'text' => 'Gracias por confirmar'],
+        ['from' => 'patient', 'text' => 'Perdón, me surgió algo y cancelo'],
+    ]),
+    'confirmación previa + cancelación posterior ≠ hilo confirmación'
+);
+
+eq(interacciones_classify('cancelo el turno', '5491100000000')[0], 'cancelacion_turno', 'categoría cancelacion_turno');
+eq(interacciones_classify('Confirmo', '5491100000000')[0], 'confirmacion_turno', 'categoría confirmacion_turno');
+eq(interacciones_classify('A', '34658444935')[0], 'consulta_general', 'número conocido no se auto-silencia como prueba técnica');
+
 eq(interacciones_extract_calendar_event_id('confirmar_turno:cal-abc'), 'cal-abc', 'extrae event_id del payload');
 eq(interacciones_extract_calendar_event_id('hola', 'cal-hint-1'), 'cal-hint-1', 'hint explícito gana');
 eq(interacciones_sanitize_calendar_event_id('bad id!!'), '', 'sanitiza ids inválidos');

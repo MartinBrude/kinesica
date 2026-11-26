@@ -157,6 +157,7 @@ function interacciones_insert_event(PDO $pdo, array $ev): string
         try {
             require_once __DIR__ . '/lib_interacciones_view_classify.php';
             interacciones_mark_answered_if_confirmation($pdo, $ev);
+            interacciones_mark_reopened_on_patient_message($pdo, $ev);
         } catch (Throwable) {
         }
         return 'stored';
@@ -183,6 +184,7 @@ function interacciones_insert_event(PDO $pdo, array $ev): string
         try {
             require_once __DIR__ . '/lib_interacciones_view_classify.php';
             interacciones_mark_answered_if_confirmation($pdo, $ev);
+            interacciones_mark_reopened_on_patient_message($pdo, $ev);
         } catch (Throwable) {
         }
         return 'duplicate';
