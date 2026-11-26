@@ -122,12 +122,9 @@ foreach ($capTests as $input => $expected) {
     }
 }
 
-// 5. Verificación de corrección de lo ya persistido en DB (pacientes, lista_espera, fichas)
+// 5. Verificación de corrección de lo ya persistido en DB (pacientes, fichas)
 $pdo->exec("INSERT INTO pacientes (id, telefono, nombre, apellido, nombre_completo, nombre_pila, contacto_nombre)
 VALUES (99, '5491199990000', 'CAROLINA', 'MENDEZ', 'CAROLINA MENDEZ', 'CAROLINA', 'LAURA GOMEZ')");
-
-$pdo->exec("INSERT INTO lista_espera (id, paciente_telefono, paciente_nombre)
-VALUES (99, '5491199990000', 'ESTEBAN QUITO')");
 
 $pdo->exec("CREATE TABLE IF NOT EXISTS fichas (
     id TEXT PRIMARY KEY,
@@ -146,12 +143,6 @@ ensure_pacientes_tables($pdo, true);
 $p99 = $pdo->query("SELECT * FROM pacientes WHERE id = 99")->fetch(PDO::FETCH_ASSOC);
 if (!$p99 || $p99['nombre'] !== 'Carolina' || $p99['apellido'] !== 'Mendez' || $p99['nombre_completo'] !== 'Carolina Mendez' || $p99['nombre_pila'] !== 'Carolina' || $p99['contacto_nombre'] !== 'Laura Gomez') {
     echo "ERROR: Paciente 99 no fue corregido a solo iniciales mayúsculas: " . json_encode($p99) . "\n";
-    exit(1);
-}
-
-$esp99 = $pdo->query("SELECT * FROM lista_espera WHERE id = 99")->fetch(PDO::FETCH_ASSOC);
-if (!$esp99 || $esp99['paciente_nombre'] !== 'Esteban Quito') {
-    echo "ERROR: lista_espera 99 no fue corregida: " . json_encode($esp99) . "\n";
     exit(1);
 }
 
@@ -323,7 +314,7 @@ if ($juanCount !== 2) {
 // 10. Placeholder + mismo nombre + mismo DNI sí se une; flag campaña se OR-mergea
 $pdo->exec("DELETE FROM pacientes WHERE id IN (501, 502)");
 $pdo->exec("INSERT INTO pacientes (id, telefono, nombre, apellido, nombre_completo, nombre_pila, dni, profesional_habitual, dejo_review, encuesta_enviada, viene_de_campana)
-VALUES (501, 'sin-tel-f-501', 'Lucia', 'Sosa', 'Lucia Sosa', 'Lucia', '55111222', 'indistinto', 0, 1, 0)");
+VALUES (501, 'sin-tel-f-501', 'Lucia', 'Sosa', 'Lucia Sosa', 'Lucia', '55.111.222', 'indistinto', 0, 1, 0)");
 $pdo->exec("INSERT INTO pacientes (id, telefono, nombre, apellido, nombre_completo, nombre_pila, dni, profesional_habitual, dejo_review, encuesta_enviada, viene_de_campana)
 VALUES (502, '5491199988877', 'Lucía', 'Sosa', 'Lucía Sosa', 'Lucía', '55111222', 'norberto', 0, 0, 1)");
 
@@ -386,7 +377,7 @@ END;
 $pdo->exec("DELETE FROM pacientes WHERE id IN (601, 602)");
 
 $pdo->exec("INSERT INTO pacientes (id, telefono, nombre, apellido, nombre_completo, nombre_pila, dni, profesional_habitual, dejo_review)
-VALUES (601, 'sin-tel-f-601', 'Sofia', 'Rivas', 'Sofia Rivas', 'Sofia', '66112233', 'indistinto', 0)");
+VALUES (601, 'sin-tel-f-601', 'Sofia', 'Rivas', 'Sofia Rivas', 'Sofia', '66.112.233', 'indistinto', 0)");
 $pdo->exec("INSERT INTO pacientes (id, telefono, nombre, apellido, nombre_completo, nombre_pila, dni, profesional_habitual, dejo_review)
 VALUES (602, '5491166611222', 'Sofía', 'Rivas', 'Sofía Rivas', 'Sofía', '66112233', 'maria', 1)");
 

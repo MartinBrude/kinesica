@@ -132,8 +132,12 @@ declare(strict_types=1);
         }
 
         if ($action === 'waitlist') {
+            require_once __DIR__ . '/lib_migrations.php';
+            if (!kinesica_migrations_table_exists($pdo, 'lista_espera')) {
+                json_out(200, ['status' => 'success', 'items' => []]);
+            }
             $stmt = $pdo->query('SELECT * FROM lista_espera WHERE estado = "activa" ORDER BY created_at DESC');
-            $items = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            $items = $stmt ? ($stmt->fetchAll(PDO::FETCH_ASSOC) ?: []) : [];
             try {
                 // REL: enrich waitlist si REL_READ_IDS (lib_relational_read.php).
                 require_once __DIR__ . '/lib_relational_read.php';

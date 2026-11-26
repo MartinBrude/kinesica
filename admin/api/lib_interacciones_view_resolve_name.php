@@ -25,7 +25,11 @@ function interacciones_recordatorio_table_exists(PDO $pdo): bool
 function interacciones_sanitize_calendar_event_id(string $raw): string
 {
     $raw = trim($raw);
-    if ($raw === '' || !preg_match('/^[A-Za-z0-9_@.\-]{1,200}$/', $raw)) {
+    if ($raw === '') {
+        return '';
+    }
+    $raw = str_ireplace('@google.com', '', $raw);
+    if (!preg_match('/^[A-Za-z0-9_\-]{1,200}$/', $raw)) {
         return '';
     }
     return substr($raw, 0, 128);

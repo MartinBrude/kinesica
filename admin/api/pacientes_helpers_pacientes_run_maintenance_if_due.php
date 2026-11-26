@@ -68,9 +68,14 @@ function kinesica_pacientes_run_maintenance_if_due(PDO $pdo, bool $force = false
            OR nombre_completo LIKE '%,%' OR nombre_completo LIKE '%\n%' OR nombre_completo LIKE '%\r%'
            OR contacto_nombre LIKE '%,%' OR contacto_nombre LIKE '%\n%' OR contacto_nombre LIKE '%\r%'");
 
-        $pdo->exec("UPDATE lista_espera SET
-            paciente_nombre = TRIM(REPLACE(REPLACE(REPLACE(paciente_nombre, '\r', ' '), '\n', ' '), ',', ''))
-        WHERE paciente_nombre LIKE '%,%' OR paciente_nombre LIKE '%\n%' OR paciente_nombre LIKE '%\r%'");
+        if (kinesica_migrations_table_exists($pdo, 'lista_espera')) {
+            try {
+                $pdo->exec("UPDATE lista_espera SET
+                    paciente_nombre = TRIM(REPLACE(REPLACE(REPLACE(paciente_nombre, '\r', ' '), '\n', ' '), ',', ''))
+                WHERE paciente_nombre LIKE '%,%' OR paciente_nombre LIKE '%\n%' OR paciente_nombre LIKE '%\r%'");
+            } catch (Throwable) {
+            }
+        }
 
         $stmtSanitize = $pdo->query("SELECT id, nombre, apellido, nombre_completo, contacto_nombre FROM pacientes");
         if ($stmtSanitize) {

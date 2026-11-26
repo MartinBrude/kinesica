@@ -1,4 +1,4 @@
--- Esquema de Tablas para Directorio de Pacientes y Lista de Espera en Kinésica
+-- Esquema de Tablas para Directorio de Pacientes en Kinésica
 -- Base de datos: MySQL 8+ / MariaDB (Hostinger)
 
 CREATE TABLE IF NOT EXISTS pacientes (
@@ -23,20 +23,9 @@ CREATE TABLE IF NOT EXISTS pacientes (
     viene_de_campana TINYINT(1) NOT NULL DEFAULT 1,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_pacientes_dni (dni),
     INDEX idx_pacientes_tel (telefono),
     INDEX idx_pacientes_nombre (nombre_completo),
     INDEX idx_pacientes_email (email),
     INDEX idx_pacientes_contacto_tel (contacto_telefono)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS lista_espera (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    paciente_telefono VARCHAR(20) NOT NULL,
-    paciente_nombre VARCHAR(120) NOT NULL,
-    rango_horario_preferido VARCHAR(100) DEFAULT NULL,
-    dias_preferidos VARCHAR(100) DEFAULT NULL,
-    profesional ENUM('norberto', 'maria', 'indistinto') NOT NULL DEFAULT 'indistinto',
-    estado ENUM('activa', 'notificado', 'asignado', 'expirada') NOT NULL DEFAULT 'activa',
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_waitlist_tel (paciente_telefono)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

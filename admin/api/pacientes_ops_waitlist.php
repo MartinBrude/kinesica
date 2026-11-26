@@ -6,6 +6,10 @@ declare(strict_types=1);
  */
 function kinesica_pacientes_waitlist_ops(PDO $pdo, string $action, array $data): void
 {
+    require_once __DIR__ . '/lib_migrations.php';
+    if (!kinesica_migrations_table_exists($pdo, 'lista_espera')) {
+        json_out(200, ['status' => 'success', 'message' => 'Lista de espera desactivada']);
+    }
     if ($action === 'waitlist_insert' || $action === 'insert_waitlist') {
         $phone = clean_phone_number((string) ($data['telefono'] ?? $data['paciente_telefono'] ?? ''));
         $nombre = sanitize_patient_name(trim((string) ($data['nombre'] ?? $data['paciente_nombre'] ?? '')));

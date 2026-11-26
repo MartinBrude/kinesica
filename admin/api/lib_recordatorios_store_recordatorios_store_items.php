@@ -88,11 +88,25 @@ function recordatorios_store_items(array $items, ?PDO $pdo = null): array
                     }
                     $delIn = implode(', ', $delPh);
                     if (in_array($status, ['sent', 'sent_email'], true)) {
-                        // Cualquier pending (con o sin WA) queda obsoleto tras envío real.
+                        // Cualquier pending o missing_phone queda obsoleto tras envío real.
                         $pdo->prepare(
                             "DELETE FROM recordatorio_eventos
                              WHERE calendar_event_id IN ($delIn)
-                               AND status = 'pending'"
+                               AND status IN ('pending', 'missing_phone')"
+                        )->execute($delParams);
+                    } elseif (in_array($status, ['skipped'], true) && in_array((string) ($ev['skip_reason'] ?? ''), ['cancelled', 'event_gone', 'event_moved', 'duplicate', 'already_sent'], true)) {
+                        // Si el turno fue cancelado o movido, eliminar registros pendientes obsoletos.
+                        $pdo->prepare(
+                            "DELETE FROM recordatorio_eventos
+                             WHERE calendar_event_id IN ($delIn)
+                               AND status IN ('pending', 'missing_phone')"
+                        )->execute($delParams);
+                    } elseif ($status === 'pending' && ($ev['wa_id'] ?? '') !== '') {
+                        // Si ya tiene teléfono, limpiar el missing_phone previo.
+                        $pdo->prepare(
+                            "DELETE FROM recordatorio_eventos
+                             WHERE calendar_event_id IN ($delIn)
+                               AND status = 'missing_phone'"
                         )->execute($delParams);
                     } elseif ($status !== 'pending') {
                         $pdo->prepare(

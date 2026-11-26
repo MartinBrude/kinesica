@@ -14,7 +14,7 @@ const RECORDATORIOS_STATUSES = ['pending', 'sent', 'sent_email', 'failed', 'miss
 const RECORDATORIOS_SKIP_REASONS = [
     'clara_inactive', 'cancelled', 'blocked', 'waitlist', 'non_appointment',
     'duplicate', 'not_tomorrow', 'already_sent', 'too_soon', 'past_appointment',
-    'same_day_catchup', 'other',
+    'same_day_catchup', 'calendar_unverified', 'event_gone', 'event_moved', 'other',
 ];
 
 /**

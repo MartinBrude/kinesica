@@ -105,7 +105,7 @@ assert_true(kinesica_migrations_table_exists($pdo, 'paciente_contactos'), 'tabla
 assert_true(kinesica_migrations_column_exists($pdo, 'fichas', 'paciente_id'), 'fichas.paciente_id');
 assert_true(kinesica_migrations_column_exists($pdo, 'fichas', 'profesional_id'), 'fichas.profesional_id');
 assert_true(kinesica_migrations_column_exists($pdo, 'fichas', 'version'), 'fichas.version');
-assert_true(kinesica_migrations_column_exists($pdo, 'lista_espera', 'paciente_id'), 'lista_espera.paciente_id');
+assert_true(!kinesica_migrations_table_exists($pdo, 'lista_espera'), 'lista_espera eliminada por 020');
 assert_true(kinesica_migrations_column_exists($pdo, 'interaccion_eventos', 'paciente_id'), 'interaccion_eventos.paciente_id');
 assert_true(kinesica_migrations_column_exists($pdo, 'recordatorio_eventos', 'paciente_id'), 'recordatorio_eventos.paciente_id');
 assert_true(kinesica_migrations_column_exists($pdo, 'recordatorio_eventos', 'turno_id'), 'recordatorio_eventos.turno_id');
@@ -123,6 +123,8 @@ assert_true(kinesica_migrations_table_exists($pdo, 'gastos'), 'tabla gastos (012
 assert_true(in_array('013_rel_integrity_fks', $first['applied'], true), '013_rel_integrity_fks aplicada');
 assert_true(in_array('014_etapa10_compat', $first['applied'], true), '014_etapa10_compat aplicada');
 assert_true(in_array('016_turnos_manage_code', $first['applied'], true), '016_turnos_manage_code aplicada');
+assert_true(in_array('019_pacientes_dni_unique', $first['applied'], true), '019_pacientes_dni_unique aplicada');
+assert_true(in_array('020_drop_lista_espera', $first['applied'], true), '020_drop_lista_espera aplicada');
 assert_true(in_array('017_scrub_manage_code_plaintext', $first['applied'], true), '017 scrub manage_code aplicada');
 assert_true(kinesica_migrations_column_exists($pdo, 'turnos', 'manage_code_hash'), 'turnos.manage_code_hash');
 assert_true(kinesica_schema_bridges_should_run($pdo, false) === true, 'bridges siguen on (no corte productivo)');

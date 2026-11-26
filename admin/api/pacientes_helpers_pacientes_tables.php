@@ -37,19 +37,23 @@ function ensure_pacientes_tables(PDO $pdo, bool $force = false): void
                 updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )
         ');
-        $pdo->exec('
-            CREATE TABLE IF NOT EXISTS lista_espera (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                paciente_telefono TEXT NOT NULL,
-                paciente_nombre TEXT NOT NULL,
-                rango_horario_preferido TEXT NULL,
-                dias_preferidos TEXT NULL,
-                profesional TEXT NOT NULL DEFAULT "indistinto",
-                estado TEXT NOT NULL DEFAULT "activa",
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-            )
-        ');
+        $hasDni = true;
+        if (function_exists('kinesica_migrations_column_exists')) {
+            $hasDni = kinesica_migrations_column_exists($pdo, 'pacientes', 'dni');
+        } else {
+            try {
+                $cols = $pdo->query("PRAGMA table_info(pacientes)")->fetchAll(PDO::FETCH_ASSOC);
+                $hasDni = false;
+                foreach ($cols as $col) {
+                    if (($col['name'] ?? '') === 'dni') { $hasDni = true; break; }
+                }
+            } catch (Throwable $e) {
+                $hasDni = false;
+            }
+        }
+        if ($hasDni) {
+            $pdo->exec('CREATE UNIQUE INDEX IF NOT EXISTS uq_pacientes_dni ON pacientes (dni) WHERE dni IS NOT NULL AND dni != ""');
+        }
     } else {
         $pdo->exec('
             CREATE TABLE IF NOT EXISTS pacientes (
@@ -74,24 +78,9 @@ function ensure_pacientes_tables(PDO $pdo, bool $force = false): void
                 viene_de_campana TINYINT(1) NOT NULL DEFAULT 1,
                 created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                INDEX idx_pacientes_dni (dni),
+                UNIQUE KEY uq_pacientes_dni (dni),
                 INDEX idx_pacientes_email (email),
                 INDEX idx_pacientes_nombre (nombre, apellido)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-        ');
-        $pdo->exec('
-            CREATE TABLE IF NOT EXISTS lista_espera (
-                id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-                paciente_telefono VARCHAR(30) NOT NULL,
-                paciente_nombre VARCHAR(120) NOT NULL,
-                rango_horario_preferido VARCHAR(120) NULL,
-                dias_preferidos VARCHAR(120) NULL,
-                profesional ENUM("norberto", "maria", "indistinto") NOT NULL DEFAULT "indistinto",
-                estado ENUM("activa", "contactado", "asignado", "cancelada") NOT NULL DEFAULT "activa",
-                created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                INDEX idx_espera_telefono (paciente_telefono),
-                INDEX idx_espera_estado (estado)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         ');
     }

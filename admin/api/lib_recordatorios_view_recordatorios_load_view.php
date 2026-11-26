@@ -22,8 +22,7 @@ function recordatorios_load_view(?PDO $pdo = null, int $days = RECORDATORIOS_DEF
         // Limpiar ruido de corridas omitidas (Clara pausada) y bloqueos.
         $pdo->exec("DELETE FROM recordatorio_eventos WHERE status = 'run_skipped' OR skip_reason = 'clara_inactive'");
         $pdo->exec("DELETE FROM recordatorio_eventos WHERE skip_reason = 'blocked' OR LOWER(patient_name) LIKE '%no dar%' OR LOWER(event_summary) LIKE '%no dar%' OR LOWER(patient_name) LIKE '%bloqueado%' OR LOWER(event_summary) LIKE '%bloqueado%' OR LOWER(patient_name) LIKE '%tk3%' OR LOWER(event_summary) LIKE '%tk3%' OR LOWER(patient_name) LIKE '%tk 3%' OR LOWER(event_summary) LIKE '%tk 3%'");
-        // Si hay sent, borrar pending del mismo evento (aunque el pending sea más nuevo —
-        // p.ej. previsión posterior al cron). failed se conserva para auditoría.
+        // Si hay sent, borrar pending/missing_phone del mismo evento. failed se conserva para auditoría.
         $pdo->exec("DELETE pend FROM recordatorio_eventos pend
                     INNER JOIN recordatorio_eventos sent
                       ON (
@@ -32,8 +31,20 @@ function recordatorios_load_view(?PDO $pdo = null, int $days = RECORDATORIOS_DEF
                       )
                      AND pend.calendar_event_id != ''
                      AND pend.calendar_event_id != '_run'
-                     AND pend.status = 'pending'
+                     AND pend.status IN ('pending', 'missing_phone')
                      AND sent.status IN ('sent', 'sent_email')");
+        // Si el evento fue cancelado o eliminado, borrar pending/missing_phone huérfano.
+        $pdo->exec("DELETE pend FROM recordatorio_eventos pend
+                    INNER JOIN recordatorio_eventos sk
+                      ON (
+                        pend.calendar_event_id = sk.calendar_event_id
+                        OR REPLACE(pend.calendar_event_id, '@google.com', '') = REPLACE(sk.calendar_event_id, '@google.com', '')
+                      )
+                     AND pend.calendar_event_id != ''
+                     AND pend.calendar_event_id != '_run'
+                     AND pend.status IN ('pending', 'missing_phone')
+                     AND sk.status = 'skipped'
+                     AND sk.skip_reason IN ('cancelled', 'event_gone', 'event_moved')");
         $pdo->exec("DELETE r1 FROM recordatorio_eventos r1
                     JOIN recordatorio_eventos r2
                       ON (

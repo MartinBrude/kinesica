@@ -14,6 +14,7 @@ function kinesica_rel_normalize_calendar_event_id(string $raw): string
     if ($id === '' || $id === '_run') {
         return '';
     }
+    $id = str_ireplace('@google.com', '', $id);
     return substr($id, 0, 128);
 }
 

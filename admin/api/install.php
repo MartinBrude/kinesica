@@ -70,22 +70,10 @@ $pdo->exec(
         origen ENUM(\'whatsapp\', \'web\', \'admin\') NOT NULL DEFAULT \'whatsapp\',
         created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        UNIQUE KEY uq_pacientes_dni (dni),
         INDEX idx_pacientes_tel (telefono),
         INDEX idx_pacientes_nombre (nombre_completo),
         INDEX idx_pacientes_email (email)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
-);
-$pdo->exec(
-    'CREATE TABLE IF NOT EXISTS lista_espera (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        paciente_telefono VARCHAR(20) NOT NULL,
-        paciente_nombre VARCHAR(120) NOT NULL,
-        rango_horario_preferido VARCHAR(100) DEFAULT NULL,
-        dias_preferidos VARCHAR(100) DEFAULT NULL,
-        profesional ENUM(\'norberto\', \'maria\', \'indistinto\') NOT NULL DEFAULT \'indistinto\',
-        estado ENUM(\'activa\', \'notificado\', \'asignado\', \'expirada\') NOT NULL DEFAULT \'activa\',
-        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        INDEX idx_waitlist_tel (paciente_telefono)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
 );
 $column = $pdo->query("SHOW COLUMNS FROM fichas LIKE 'profesional'")->fetch();

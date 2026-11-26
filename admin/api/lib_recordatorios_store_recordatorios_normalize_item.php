@@ -16,6 +16,9 @@ function recordatorios_normalize_item(array $in, string $execId, int $runAt): ?a
         return null;
     }
     $calId = trim((string) ($in['calendar_event_id'] ?? $in['event_id'] ?? ''));
+    if ($calId !== '' && $calId !== '_run') {
+        $calId = str_ireplace('@google.com', '', $calId);
+    }
     // "Corrida omitida / Clara inactiva" no aporta al historial clínico: no se guarda.
     if ($status === 'run_skipped') {
         return null;
@@ -51,7 +54,7 @@ function recordatorios_normalize_item(array $in, string $execId, int $runAt): ?a
     if ($safeExec === '') {
         $safeExec = 'na';
     }
-    $safeCal = substr(preg_replace('/[^A-Za-z0-9_\-@.]/', '', $calId) ?? '', 0, 100);
+    $safeCal = substr(preg_replace('/[^A-Za-z0-9_\-]/', '', $calId) ?? '', 0, 100);
     $key = 'rem:' . $safeExec . ':' . $safeCal . ':' . $status;
     $apptDate = trim((string) ($in['appointment_date'] ?? ''));
     if ($apptDate !== '' && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $apptDate)) {

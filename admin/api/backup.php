@@ -18,7 +18,7 @@ $pdo = db();
 $tablesStmt = $pdo->query("SHOW FULL TABLES WHERE Table_type = 'BASE TABLE'");
 $tables = $tablesStmt ? $tablesStmt->fetchAll(PDO::FETCH_COLUMN) : [];
 if (empty($tables)) {
-    $tables = ['users', 'fichas', 'pacientes', 'lista_espera'];
+    $tables = ['users', 'fichas', 'pacientes'];
 }
 
 $sql = "-- Kinésica Backup " . gmdate('c') . "\n";

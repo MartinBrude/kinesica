@@ -39,8 +39,8 @@ function kinesica_pacientes_upsert(PDO $pdo, array $data): void
         $nombrePila = sanitize_patient_name($nombrePila);
     }
 
-    $dni = isset($data['dni']) && trim((string) $data['dni']) !== '' && trim((string) $data['dni']) !== 'No provisto' 
-        ? mb_substr(trim((string) $data['dni']), 0, 20, 'UTF-8') : null;
+    $cleanDni = clean_patient_dni($data['dni'] ?? null);
+    $dni = $cleanDni !== '' ? $cleanDni : null;
 
     $email = isset($data['email']) && trim((string) $data['email']) !== '' ? trim((string) $data['email']) : null;
     if (!is_valid_email_strict($email)) {

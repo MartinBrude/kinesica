@@ -20,8 +20,10 @@ function isAuthorizedSecret(params) {
     const props = PropertiesService.getScriptProperties();
     const gasSecret = props.getProperty("GAS_API_SECRET");
     const webhookSecret = props.getProperty("WEBHOOK_SECRET");
+    const pacientesSecret = props.getProperty("PACIENTES_API_SECRET");
     if (gasSecret) candidates.push(gasSecret);
     if (webhookSecret && webhookSecret !== gasSecret) candidates.push(webhookSecret);
+    if (pacientesSecret && candidates.indexOf(pacientesSecret) < 0) candidates.push(pacientesSecret);
   } catch (e) {
     candidates = [];
   }
@@ -136,6 +138,9 @@ function doPost(e) {
     if (action === "check_patient") {
       if (!isAuthorizedSecret(payload)) return unauthorizedResponse();
       return handleCheckPatient(payload);
+    } else if (action === "get_directory") {
+      if (!isAuthorizedSecret(payload)) return unauthorizedResponse();
+      return handleGetDirectory();
     } else if (action === "book") {
       return handleBookAppointment(payload);
     } else if (action === "get_slots") {

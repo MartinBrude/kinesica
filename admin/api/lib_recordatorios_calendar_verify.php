@@ -246,5 +246,41 @@ function recordatorios_check_alive_map(array $calendarEventIds): array
         $reasons[$id] = 'ok';
     }
 
+    $deadIds = [];
+    foreach ($toVerify as $id) {
+        if (!empty($alive[$id])) {
+            continue;
+        }
+        if (in_array($reasons[$id] ?? '', ['event_gone', 'cancelled'], true)) {
+            $deadIds[] = $id;
+        }
+    }
+    if ($deadIds !== []) {
+        try {
+            $pdo = recordatorios_pdo();
+            $delPh = [];
+            $delParams = [];
+            foreach ($deadIds as $did) {
+                if (!function_exists('kinesica_calendar_event_id_variants')) {
+                    require_once __DIR__ . '/lib_relational_turnos_turnos_ready.php';
+                }
+                foreach (kinesica_calendar_event_id_variants($did) as $v) {
+                    $k = 'd' . count($delParams);
+                    $delPh[] = ':' . $k;
+                    $delParams[$k] = $v;
+                }
+            }
+            if ($delPh !== []) {
+                $pdo->prepare(
+                    'DELETE FROM recordatorio_eventos
+                     WHERE calendar_event_id IN (' . implode(', ', $delPh) . ')
+                       AND status IN ("pending", "missing_phone")'
+                )->execute($delParams);
+            }
+        } catch (Throwable $e) {
+            error_log('kinesica check_alive cleanup dead pending: ' . $e->getMessage());
+        }
+    }
+
     return ['ok' => true, 'alive' => $alive, 'reasons' => $reasons];
 }
