@@ -607,27 +607,21 @@ body.page-home-v2 .section-intro .service-content p {
   }
 }
 
-/* —— CTA: space after methods; keep clear air before About —— */
-body.page-home-v2 .site-cta-strip.bg-primary {
+/* —— CTA after methods: quiet title + buttons (no band) —— */
+body.page-home-v2 .site-cta-strip {
   position: relative;
   z-index: 4;
-  isolation: isolate;
   max-width: min(var(--home-container), calc(100% - 28px));
-  margin: 20px auto 56px;
-  padding: 28px 32px;
-  overflow: visible;
-  background-color: var(--primary-color);
-  background-image:
-    radial-gradient(ellipse 70% 90% at 92% 20%, color-mix(in srgb, var(--home-accent) 28%, transparent), transparent 62%);
-  border-radius: 28px 16px 28px 16px;
-  box-shadow:
-    0 22px 48px rgba(0, 95, 153, 0.22),
-    0 2px 0 color-mix(in srgb, var(--home-accent) 35%, transparent);
+  margin: 8px auto 40px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
 }
 
-body.page-home-v2 .site-cta-strip.bg-primary::before,
-body.page-home-v2 .site-cta-strip.bg-primary::after {
-  display: none;
+body.page-home-v2 .site-cta-strip.space-small {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
 }
 
 body.page-home-v2 .site-cta-strip .container {
@@ -648,21 +642,6 @@ body.page-home-v2 .site-cta-strip [class*="col-"]:first-child {
 
 body.page-home-v2 .site-cta-strip [class*="col-"]:last-child {
   padding-right: 0;
-}
-
-body.page-home-v2 .site-cta-strip .btn-white {
-  color: var(--primary-color);
-  background-color: #fff;
-  border-color: #fff;
-  border-radius: 999px;
-}
-
-body.page-home-v2 .site-cta-strip .btn-white:hover,
-body.page-home-v2 .site-cta-strip .btn-white:focus {
-  color: var(--primary-color);
-  background-color: #f3fbfd;
-  border-color: #fff;
-  transform: translateY(-1px);
 }
 
 /* —— About / professionals: editorial cards + credential pills —— */
@@ -1171,12 +1150,10 @@ body.page-home-v2 .team-meta:has(a) .team-designation:focus-within {
     padding-bottom: calc(var(--home-space) + 2.1rem);
   }
 
-  body.page-home-v2 .site-cta-strip.bg-primary {
+  body.page-home-v2 .site-cta-strip {
     max-width: calc(100% - 1.25rem);
-    margin-top: 16px;
-    margin-bottom: 32px;
-    padding: 22px 18px;
-    border-radius: 22px 14px 22px 14px;
+    margin-top: 8px;
+    margin-bottom: 28px;
   }
 
   body.page-home-v2 .section-intro--about,
