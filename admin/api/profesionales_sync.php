@@ -65,7 +65,7 @@ function sync_settings_practitioner(string $username, string $email, string $pho
                     if (isset($raw['clara_texts']['menu_welcome'])) {
                         $raw['clara_texts']['menu_welcome'] = preg_replace(
                             '/\*E\.\*\s*💬\s*Comunicarte con un profesional[^\n]*/u',
-                            "*E.* 💬 Comunicarte con un profesional ({$namesJoined})",
+                            "*E.* 💬 Comunicarte con un profesional",
                             $raw['clara_texts']['menu_welcome']
                         );
                     }

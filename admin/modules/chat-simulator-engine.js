@@ -206,14 +206,16 @@ export function resolveMainMenuResponse(norm, chatLang, ctx, opts = {}) {
 
   if (isExactE || (!exactOnly && NL_PROFESSIONAL.test(raw))) {
     const text = (chatLang === "en")
-      ? pickSimText(ctx.inputs.optEEn, "opt_e_text_en", ctx)
-      : pickSimText(ctx.inputs.optE, "opt_e_text", ctx);
+      ? pickSimText(ctx.inputs.optE1En, "opt_e1_text_en", ctx)
+      : pickSimText(ctx.inputs.optE1, "opt_e1_text", ctx);
     return {
       handled: true,
       text,
-      nextSubmenu: "profesional",
+      nextSubmenu: null,
       letter: "e",
       viaNaturalLanguage: !isExactE,
+      notifyTarget: "norberto",
+      optionLabel: "E → Norberto Brude",
     };
   }
   return { handled: false, text: "", nextSubmenu: null, letter: null, viaNaturalLanguage: false };

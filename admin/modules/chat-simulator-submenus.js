@@ -34,7 +34,6 @@ export function handleMultiLetterSequence(norm, langLetter, ctx, replyHandled) {
   let nextSub = null;
   for (const L of seq) {
     if (L === "a") nextSub = "turnos";
-    else if (L === "e") nextSub = "profesional";
     const custom = (ctx.getCustomOptions() || []).find(
       (o) => String(o.letter || "").trim().toLowerCase() === L,
     );

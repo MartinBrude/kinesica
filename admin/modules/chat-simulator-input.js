@@ -141,6 +141,9 @@ export function handleChatUserInput(inputRaw) {
       setTimeout(() => {
         replyHandled(mainResp.text);
         if (mainResp.followup) setTimeout(() => appendChatMessage(mainResp.followup, "bot"), 900);
+        if (mainResp.notifyTarget) {
+          notifyProfessionalFromSimulator(mainResp.notifyTarget, mainResp.optionLabel || "E → Norberto Brude", input, (errNotice) => appendChatMessage(errNotice, "bot"));
+        }
       }, 450);
       return;
     }
@@ -154,6 +157,9 @@ export function handleChatUserInput(inputRaw) {
     setTimeout(() => {
       replyHandled(mainResp.text, { viaNaturalLanguage: mainResp.viaNaturalLanguage, letter: mainResp.letter });
       if (mainResp.followup) setTimeout(() => appendChatMessage(mainResp.followup, "bot"), 900);
+      if (mainResp.notifyTarget) {
+        notifyProfessionalFromSimulator(mainResp.notifyTarget, mainResp.optionLabel || "E → Norberto Brude", input, (errNotice) => appendChatMessage(errNotice, "bot"));
+      }
     }, 450);
     return;
   }

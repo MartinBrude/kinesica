@@ -17,7 +17,7 @@ Por favor, respondé con la letra de la opción que necesitás:
 *B.* 📍 Ubicación del consultorio
 *C.* 💳 Honorarios y cobertura (obras sociales / reintegros)
 *D.* 👕 ¿Cómo venir vestido/a a la sesión?
-*E.* 💬 Comunicarte con un profesional (Lic. Norberto Brude / Lic. María Gulin)
+*E.* 💬 Comunicarte con un profesional
 *F.* 🌐 English
 
 _(Escribí la letra de la opción deseada, por ejemplo *A* o *C*)_`,
@@ -75,7 +75,7 @@ Please reply with the letter of the option you need:
 *B.* 📍 Clinic location
 *C.* 💳 Fees and coverage (health insurance / reimbursement)
 *D.* 👕 Session attire and dress code
-*E.* 💬 Speak with a practitioner (Lic. Norberto Brude / Lic. María Gulin)
+*E.* 💬 Speak with a practitioner
 *F.* 🇪🇸 Español
 
 _(Reply with the option letter, for example *A* or *C*)_`,

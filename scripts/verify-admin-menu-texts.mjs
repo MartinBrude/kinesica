@@ -157,6 +157,8 @@ test("demo Clara: defaults y settings.json traen B sin horarios, D con estudios 
   const defaultsSrc = read("admin/modules/config-defaults.js");
   assert.match(defaultsSrc, /Ubicación del consultorio/);
   assert.ok(!defaultsSrc.includes("Ubicación y horarios del consultorio"));
+  assert.match(defaultsSrc, /\*E\.\* 💬 Comunicarte con un profesional\n/);
+  assert.ok(!defaultsSrc.includes("Comunicarte con un profesional (Lic."));
   assert.match(defaultsSrc, /estudios médicos previos/);
   assert.match(defaultsSrc, /https:\/\/kinesica\.com\.ar\/agendar/);
   assert.match(defaultsSrc, /Consultar o cancelar mis turnos/);
@@ -166,6 +168,8 @@ test("demo Clara: defaults y settings.json traen B sin horarios, D con estudios 
   const t = settings.clara_texts || {};
   assert.match(t.menu_welcome, /Ubicación del consultorio/);
   assert.ok(!t.menu_welcome.includes("Ubicación y horarios"));
+  assert.match(t.menu_welcome, /\*E\.\* 💬 Comunicarte con un profesional\n/);
+  assert.ok(!t.menu_welcome.includes("Comunicarte con un profesional (Lic."));
   assert.match(t.opt_d_text, /estudios médicos previos/);
   assert.match(t.submenu_turnos_text, /https:\/\/kinesica\.com\.ar\/agendar/);
   assert.match(t.submenu_turnos_text, /Consultar o cancelar mis turnos/);
@@ -186,12 +190,19 @@ test("demo Clara: el simulador resuelve A con el texto del submenú (link inclui
   assert.ok(!labels.includes("preguntando si desea agendar nuevo o consultar turnos"));
 });
 
+test("demo Clara: el simulador resuelve E directo a Norberto Brude sin submenú", () => {
+  const engine = read("admin/modules/chat-simulator-engine.js");
+  assert.match(engine, /notifyTarget:\s*"norberto"/);
+  assert.match(engine, /optionLabel:\s*"E → Norberto Brude"/);
+  assert.match(engine, /isExactE[\s\S]*?optE1[\s\S]*?nextSubmenu:\s*null/);
+});
+
 test("demo Clara: FAQs alineadas al bot (gracias, prepagas, 2º no reconocido)", () => {
   assert.equal(isThanksMessage("gracias"), true);
   assert.equal(isThanksMessage("muchas gracias"), true);
   assert.equal(isThanksMessage("joya"), true);
-  assert.match(getThanksText("es"), /De nada! Que tengas un excelente día/);
-  assert.match(getThanksText("en"), /You're welcome/);
+  assert.match(getThanksText("es"), /^(?:A vos! 🙏|De nada!)$/);
+  assert.equal(getThanksText("en"), "You're welcome! 🙌");
   assert.equal(isCoverageQuery("atienden por osde"), true);
   assert.equal(isCoverageQuery("swiss medical"), true);
   assert.equal(isCoverageQuery("galeno"), true);
@@ -243,13 +254,14 @@ test("demo Clara: línea solo WhatsApp, variantes MENU y secuencia ABC", () => {
   assert.equal(parseMenuLetterSequence("30.111.222", valid), null);
 
   const input = read("admin/modules/chat-simulator-input.js");
+  const submenus = read("admin/modules/chat-simulator-submenus.js");
   assert.match(input, /isWhatsAppOnlyLineFaq/);
-  assert.match(input, /parseMenuLetterSequence/);
+  assert.match(submenus, /parseMenuLetterSequence/);
   assert.match(input, /isMenuCommand/);
   // Orden de manejo en handleChatUserInput: WhatsApp FAQ → secuencia → no reconocido.
   const body = input.slice(input.indexOf("export function handleChatUserInput"));
   const waIdx = body.indexOf("isWhatsAppOnlyLineFaq(");
-  const seqIdx = body.indexOf("parseMenuLetterSequence(");
+  const seqIdx = body.indexOf("handleMultiLetterSequence(");
   const unrecIdx = body.indexOf("resolveUnrecognizedReply(");
   assert.ok(waIdx > 0 && seqIdx > waIdx && unrecIdx > seqIdx, "orden de handlers en input");
 });

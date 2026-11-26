@@ -19,8 +19,8 @@ export function isThanksMessage(norm) {
 
 export function getThanksText(lang = "es") {
   return lang === "en"
-    ? "You're welcome! Have a great day 🙌.\n\n_(Type *MENU* if you need anything else)_"
-    : "¡De nada! Que tengas un excelente día 🙌.\n\n_(Si necesitás algo más, escribí *MENU*)_";
+    ? "You're welcome! 🙌"
+    : (Math.random() < 0.5 ? "A vos! 🙏" : "De nada!");
 }
 
 export function isClaraBotQuery(msg) {
