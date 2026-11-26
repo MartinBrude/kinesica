@@ -70,15 +70,12 @@ export const UI = {
     relatedTitle: "Condiciones relacionadas",
     relatedLead:
       "Otras dolencias que suelen evaluarse junto con esta condición o comparten un abordaje similar.",
-    bookCtaBadge: "Atención personalizada",
-    bookCtaTitle: "Reservá una evaluación individual",
-    bookCtaLead:
-      "Sesión individual de 1 hora en Palermo. Abordamos la causa con diagnóstico kinésico y plan a medida.",
+    bookCtaBadge: "Consultorio en Palermo",
+    bookCtaTitle: "Abordaje kinésico y reserva de turno",
+    techniquesLabel: "Técnicas que integramos según tu evaluación:",
     bookCtaBooking: "Agendar online",
     bookCtaWhatsApp: "Consultar por WhatsApp",
-    bookCtaFeature1: "Sesión de 1 hora individual",
-    bookCtaFeature2: "Evaluación y tratamiento integral",
-    bookCtaFeature3: "Turno confirmado en el momento",
+    bookCtaMeta: "Sesión individual de 1 hora · Palermo",
   },
   en: {
     eyebrow: "Conditions",
@@ -91,15 +88,12 @@ export const UI = {
     relatedTitle: "Related conditions",
     relatedLead:
       "Other conditions often assessed alongside this one or that share a similar treatment approach.",
-    bookCtaBadge: "Personalized care",
-    bookCtaTitle: "Book an individual assessment",
-    bookCtaLead:
-      "One-hour individual session in Palermo. We address the root cause with comprehensive evaluation and a tailored plan.",
+    bookCtaBadge: "Clinic in Palermo",
+    bookCtaTitle: "Treatment approach & appointment booking",
+    techniquesLabel: "Techniques integrated based on evaluation:",
     bookCtaBooking: "Book online",
     bookCtaWhatsApp: "Message on WhatsApp",
-    bookCtaFeature1: "1-on-1 one-hour session",
-    bookCtaFeature2: "Tailored treatment plan",
-    bookCtaFeature3: "Instant appointment booking",
+    bookCtaMeta: "1-hour individual session · Palermo",
   },
   fr: {
     eyebrow: "Pathologies",
@@ -112,15 +106,12 @@ export const UI = {
     relatedTitle: "Pathologies associées",
     relatedLead:
       "D’autres affections souvent évaluées avec celle-ci ou partageant une approche thérapeutique similaire.",
-    bookCtaBadge: "Soins personnalisés",
-    bookCtaTitle: "Prenez rendez-vous pour un bilan",
-    bookCtaLead:
-      "Séance individuelle d’une heure à Palermo. Nous traitons la cause profonde avec un bilan complet et un plan sur mesure.",
+    bookCtaBadge: "Cabinet à Palermo",
+    bookCtaTitle: "Approche thérapeutique et prise de RDV",
+    techniquesLabel: "Techniques combinées selon le bilan :",
     bookCtaBooking: "Prendre RDV en ligne",
     bookCtaWhatsApp: "Écrire sur WhatsApp",
-    bookCtaFeature1: "Séance individuelle d’une heure",
-    bookCtaFeature2: "Traitement sur mesure",
-    bookCtaFeature3: "Confirmation immédiate",
+    bookCtaMeta: "Séance individuelle d’1 heure · Palermo",
   },
   pt: {
     eyebrow: "Condições",
@@ -131,15 +122,12 @@ export const UI = {
     pathologiesBreadcrumb: "Condições",
     relatedTitle: "Condições relacionadas",
     relatedLead: "Outras condições frequentemente avaliadas junto com esta ou que compartilham abordagem semelhante.",
-    bookCtaBadge: "Atendimento personalizado",
-    bookCtaTitle: "Agende uma avaliação individual",
-    bookCtaLead:
-      "Sessão individual de 1 hora em Palermo. Avaliamos a causa com diagnóstico funcional e plano sob medida.",
+    bookCtaBadge: "Consultório em Palermo",
+    bookCtaTitle: "Abordagem fisioterapêutica e agendamento",
+    techniquesLabel: "Técnicas combinadas conforme avaliação:",
     bookCtaBooking: "Agendar online",
     bookCtaWhatsApp: "Falar pelo WhatsApp",
-    bookCtaFeature1: "Sessão individual de 1 hora",
-    bookCtaFeature2: "Tratamento sob medida",
-    bookCtaFeature3: "Confirmação imediata",
+    bookCtaMeta: "Sessão individual de 1 hora · Palermo",
   },
 };
 

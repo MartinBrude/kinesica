@@ -27,9 +27,6 @@ for (const stem of PATHOLOGY_STEMS) {
     if (!html.includes("pathology-technique-links")) {
       errors.push(`${file}: missing technique links`);
     }
-    if (!html.includes("pathology-related")) {
-      errors.push(`${file}: missing pathology-related section`);
-    }
     if (!html.includes("pathology-faq")) {
       errors.push(`${file}: missing pathology-faq section`);
     }
