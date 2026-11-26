@@ -3247,12 +3247,25 @@ Pathology detail pages (FAQ dolencias)
   padding-bottom: 8px;
 }
 
-.pathology-urgent-care.space-medium,
-.pathology-techniques.space-medium,
+.pathology-urgent-care.space-medium {
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+
+.pathology-techniques.space-medium {
+  padding-top: 20px;
+  padding-bottom: 24px;
+}
+
+.pathology-book-cta.space-medium {
+  padding-top: 16px;
+  padding-bottom: 32px;
+}
+
 .pathology-faq.space-medium,
 .pathology-related.space-medium {
-  padding-top: 12px;
-  padding-bottom: 20px;
+  padding-top: 24px;
+  padding-bottom: 24px;
 }
 
 .content p.pathology-eyebrow,
@@ -3264,6 +3277,73 @@ Pathology detail pages (FAQ dolencias)
   text-transform: uppercase;
   color: var(--secondary-color);
   margin: 0 0 0.75rem;
+}
+
+/* Pathology urgent care card */
+.pathology-urgent-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid var(--primary-color);
+  border-radius: var(--radius-md);
+  padding: 22px 26px;
+}
+
+.pathology-urgent-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.pathology-urgent-icon {
+  color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.pathology-urgent-card h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--secondary-color);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.pathology-urgent-card h2::after {
+  display: none !important;
+}
+
+.pathology-urgent-lead {
+  font-size: 0.9375rem;
+  color: #64748b;
+  margin-bottom: 12px;
+}
+
+.pathology-urgent-card ul {
+  margin: 0 0 14px;
+  padding-left: 1.25rem;
+}
+
+.pathology-urgent-card li {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: #334155;
+  margin-bottom: 6px;
+}
+
+.pathology-urgent-card li:last-child {
+  margin-bottom: 0;
+}
+
+.pathology-urgent-close {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.pathology-urgent-close a {
+  color: var(--primary-color);
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .pathology-aside {
@@ -3309,58 +3389,139 @@ Pathology detail pages (FAQ dolencias)
   background-color: transparent;
 }
 
-.pathology-book-cta {
-  padding-top: 12px;
-  padding-bottom: 20px;
+/* Integrated Pathology CTA Card */
+.pathology-cta-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(240, 247, 251, 0.95) 100%);
+  border: 1px solid rgba(0, 95, 153, 0.14);
+  border-radius: var(--radius-organic);
+  box-shadow: 0 12px 32px -4px rgba(0, 95, 153, 0.08), 0 2px 6px -1px rgba(0, 95, 153, 0.04);
+  padding: 32px 34px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  overflow: hidden;
 }
 
-.pathology-book-cta h2 {
-  font-size: 1.375rem;
-  margin: 0 0 0.75rem;
+@media (min-width: 992px) {
+  .pathology-cta-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(210px, auto);
+    align-items: center;
+    gap: 36px;
+    padding: 36px 42px;
+  }
+}
+
+.pathology-cta-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(0, 95, 153, 0.08);
+  border: 1px solid rgba(0, 95, 153, 0.15);
+  color: var(--primary-color);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.pathology-cta-title {
+  font-size: clamp(1.4rem, 2.2vw, 1.75rem);
+  font-weight: 700;
+  color: var(--secondary-color);
+  margin: 0 0 10px;
   letter-spacing: -0.02em;
+  line-height: 1.25;
 }
 
-.pathology-book-cta h2::after {
-  content: "";
-  display: block;
-  width: 3rem;
-  height: 3px;
-  margin-top: 0.75rem;
-  background-color: var(--accent-bright);
-  border-radius: 3px;
+.pathology-cta-title::after {
+  display: none !important;
 }
 
-.pathology-book-cta-lead {
-  margin: 0 0 1.25rem;
-  max-width: 42rem;
+.pathology-cta-lead {
+  font-size: 1.05rem;
+  line-height: 1.55;
+  color: #4b5563;
+  margin: 0 0 16px;
+  max-width: 44rem;
 }
 
-.pathology-book-cta-actions {
+.pathology-cta-features {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem 1.25rem;
+  gap: 10px 22px;
+}
+
+.pathology-cta-features li {
+  display: inline-flex;
   align-items: center;
-}
-
-.pathology-book-cta-actions .btn {
-  margin: 0;
-}
-
-.pathology-book-cta-wa {
+  gap: 7px;
   font-size: 0.9375rem;
   font-weight: 500;
-  color: var(--primary-color);
-  text-decoration: none;
-  border-bottom: 1px solid color-mix(in srgb, var(--primary-color) 35%, transparent);
-  padding-bottom: 1px;
-  transition: border-color 0.15s ease, color 0.15s ease;
+  color: var(--secondary-color);
 }
 
-.pathology-book-cta-wa:hover,
-.pathology-book-cta-wa:focus {
-  color: var(--secondary-color);
-  border-bottom-color: var(--secondary-color);
+.pathology-cta-check {
+  color: var(--accent-color);
+  flex-shrink: 0;
+}
+
+.pathology-cta-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 210px;
+}
+
+@media (min-width: 576px) and (max-width: 991px) {
+  .pathology-cta-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+}
+
+.pathology-cta-actions .btn {
+  margin: 0;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 22px;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.btn-cta-whatsapp {
+  background: #ffffff;
+  color: #0b7c46;
+  border: 1px solid rgba(11, 124, 70, 0.32);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.25s ease;
+}
+
+.btn-cta-whatsapp:hover,
+.btn-cta-whatsapp:focus {
+  background: #25d366;
+  color: #ffffff;
+  border-color: #25d366;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25);
   text-decoration: none;
+}
+
+.pathology-cta-wa-icon {
+  flex-shrink: 0;
 }
 
 .pathology-techniques {
