@@ -49,12 +49,12 @@ export function renderHeroActions(lang, bookingHref = null) {
 
   const href = bookingHref || defaultBookingHref;
 
-  const whatsappText = {
-    es: "Consultar por WhatsApp",
-    en: "WhatsApp inquiry",
-    fr: "Contact WhatsApp",
-    pt: "Contato WhatsApp",
-  }[lang] || "WhatsApp";
+  const contactText = {
+    es: "Contactar",
+    en: "Contact",
+    fr: "Contacter",
+    pt: "Contato",
+  }[lang] || "Contactar";
 
   const bookingText = {
     es: "Agendar turno",
@@ -63,47 +63,12 @@ export function renderHeroActions(lang, bookingHref = null) {
     pt: "Agendar consulta",
   }[lang] || "Agendar";
 
-  const trustItems = {
-    es: [
-      { icon: "fa-clock-o", text: "1 h individual" },
-      { icon: "fa-map-marker", text: "Palermo" },
-      { icon: "fa-file-text-o", text: "Factura para reintegro" },
-    ],
-    en: [
-      { icon: "fa-clock-o", text: "1-on-1 1-hour sessions" },
-      { icon: "fa-map-marker", text: "Palermo" },
-      { icon: "fa-file-text-o", text: "Invoice for reimbursement" },
-    ],
-    fr: [
-      { icon: "fa-clock-o", text: "Séance individuelle d'1 h" },
-      { icon: "fa-map-marker", text: "Palermo" },
-      { icon: "fa-file-text-o", text: "Facture pour remboursement" },
-    ],
-    pt: [
-      { icon: "fa-clock-o", text: "1 h individual" },
-      { icon: "fa-map-marker", text: "Palermo" },
-      { icon: "fa-file-text-o", text: "Recibo para reembolso" },
-    ],
-  }[lang] || [
-    { icon: "fa-clock-o", text: "1 h individual" },
-    { icon: "fa-map-marker", text: "Palermo" },
-    { icon: "fa-file-text-o", text: "Factura para reintegro" },
-  ];
-
-  const trustBadgeHtml = trustItems
-    .map(
-      (item) =>
-        `<span class="hero-trust-item"><i class="fa ${item.icon}" aria-hidden="true"></i> ${item.text}</span>`,
-    )
-    .join(' <span class="hero-trust-sep" aria-hidden="true">·</span> ');
-
   return [
     "            <div class=\"hero-actions\">",
     `              <a href="${href}" class="btn btn-primary mr10 js-hero-booking-btn" id="hero-btn-booking" hidden style="display:none;">${bookingText}</a>`,
     `              <a href="${HOME_WHATSAPP_HREF}" target="_blank" class="btn btn-default dynamic-whatsapp-url"`,
-    `                rel="noopener noreferrer">${whatsappText}</a>`,
+    `                rel="noopener noreferrer">${contactText}</a>`,
     "            </div>",
-    `            <p class="hero-trust-badge">${trustBadgeHtml}</p>`,
   ];
 }
 
