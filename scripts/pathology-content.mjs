@@ -70,6 +70,11 @@ export const UI = {
     relatedTitle: "Condiciones relacionadas",
     relatedLead:
       "Otras dolencias que suelen evaluarse junto con esta condición o comparten un abordaje similar.",
+    bookCtaTitle: "Reservá una evaluación",
+    bookCtaLead:
+      "Sesión individual de 1 hora en Palermo. Elegí horario online o escribinos por WhatsApp.",
+    bookCtaBooking: "Agendar",
+    bookCtaWhatsApp: "WhatsApp",
   },
   en: {
     eyebrow: "Conditions",
@@ -82,6 +87,11 @@ export const UI = {
     relatedTitle: "Related conditions",
     relatedLead:
       "Other conditions often assessed alongside this one or that share a similar treatment approach.",
+    bookCtaTitle: "Book an assessment",
+    bookCtaLead:
+      "One-hour individual session in Palermo. Choose a time online or message us on WhatsApp.",
+    bookCtaBooking: "Book",
+    bookCtaWhatsApp: "WhatsApp",
   },
   fr: {
     eyebrow: "Pathologies",
@@ -94,6 +104,11 @@ export const UI = {
     relatedTitle: "Pathologies associées",
     relatedLead:
       "D’autres affections souvent évaluées avec celle-ci ou partageant une approche thérapeutique similaire.",
+    bookCtaTitle: "Prenez rendez-vous pour un bilan",
+    bookCtaLead:
+      "Séance individuelle d’une heure à Palermo. Choisissez un créneau en ligne ou écrivez-nous sur WhatsApp.",
+    bookCtaBooking: "Prendre RDV",
+    bookCtaWhatsApp: "WhatsApp",
   },
   pt: {
     eyebrow: "Condições",
@@ -104,6 +119,11 @@ export const UI = {
     pathologiesBreadcrumb: "Condições",
     relatedTitle: "Condições relacionadas",
     relatedLead: "Outras condições frequentemente avaliadas junto com esta ou que compartilham abordagem semelhante.",
+    bookCtaTitle: "Agende uma avaliação",
+    bookCtaLead:
+      "Sessão individual de 1 hora em Palermo. Escolha o horário online ou fale conosco pelo WhatsApp.",
+    bookCtaBooking: "Agendar",
+    bookCtaWhatsApp: "WhatsApp",
   },
 };
 

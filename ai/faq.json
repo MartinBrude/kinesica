@@ -24,11 +24,11 @@
       },
       {
         "q": "¿Atienden a través de Prepagas u Obras Sociales?",
-        "a": "Podés solicitar reintegros a tu obra social o prepaga."
+        "a": "No atendemos por cartilla de prepagas ni obras sociales: la atención es particular. Al finalizar la sesión entregamos factura oficial para que gestiones el reintegro en tu prepaga u obra social, según tu plan."
       },
       {
         "q": "¿Cuáles son los honorarios?",
-        "a": "En el proceso de agendar se informan los valores de las diferentes técnicas."
+        "a": "La sesión es individual y dura 60 minutos. ATM (bruxismo / dolor mandibular): $65.000. Resto de las consultas (kinesiología, osteopatía, RPG, etc.): $75.000. Se abona en efectivo o transferencia bancaria."
       },
       {
         "q": "¿Dónde puedo consultar mis turnos?",
@@ -62,11 +62,11 @@
       },
       {
         "q": "Do you accept prepaid health plans or insurance?",
-        "a": "You can request reimbursements from your health insurance provider."
+        "a": "We do not work in-network with health plans or insurance: care is private (out-of-pocket). After the session we issue an official invoice so you can request reimbursement from your plan or insurer, according to your coverage."
       },
       {
         "q": "What are the fees?",
-        "a": "During the booking process, the fees for the different techniques are provided."
+        "a": "Sessions are one-on-one and last 60 minutes. TMJ / ATM (bruxism / jaw pain): ARS 65.000. All other consultations (physiotherapy, osteopathy, RPG, etc.): ARS 75.000. Payment in cash or bank transfer."
       },
       {
         "q": "Where can I check my appointments?",
@@ -100,11 +100,11 @@
       },
       {
         "q": "Acceptez-vous les mutuelles ou assurances ?",
-        "a": "Vous pouvez demander un remboursement auprès de votre assurance ou mutuelle."
+        "a": "Nous ne travaillons pas en tiers payant avec mutuelles ou assurances : la consultation est en privé. À la fin de la séance, nous délivrons une facture officielle pour demander le remboursement auprès de votre mutuelle ou assurance, selon votre contrat."
       },
       {
         "q": "Quels sont les honoraires ?",
-        "a": "Lors de la prise de rendez-vous, les tarifs des différentes techniques sont indiqués."
+        "a": "La séance est individuelle et dure 60 minutes. ATM (bruxisme / douleur mandibulaire) : $65.000. Autres consultations (kinésithérapie, ostéopathie, RPG, etc.) : $75.000. Paiement en espèces ou virement bancaire."
       },
       {
         "q": "Où puis-je consulter mes rendez-vous ?",
@@ -138,11 +138,11 @@
       },
       {
         "q": "Vocês aceitam planos de saúde ou reembolso?",
-        "a": "Você pode solicitar reembolso junto ao seu plano ou seguro de saúde."
+        "a": "Não atendemos por convênio/cartilha de planos ou obras sociais: o atendimento é particular. Ao final da sessão emitimos nota/fatura oficial para você solicitar o reembolso no seu plano ou obra social, conforme sua cobertura."
       },
       {
         "q": "Quais são os honorários?",
-        "a": "No processo de agendamento são informados os valores das diferentes técnicas."
+        "a": "A sessão é individual e dura 60 minutos. ATM (bruxismo / dor mandibular): $65.000. Demais consultas (cinesiologia, osteopatia, RPG, etc.): $75.000. Pagamento em dinheiro ou transferência bancária."
       },
       {
         "q": "Onde posso consultar meus horários?",

@@ -3300,12 +3300,44 @@ Pathology detail pages (FAQ dolencias)
 }
 
 .pathology-techniques,
-.pathology-related {
+.pathology-related,
+.pathology-book-cta {
   position: relative;
 }
 
 .pathology-techniques.bg-light {
   background-color: transparent;
+}
+
+.pathology-book-cta {
+  background: color-mix(in srgb, var(--primary-color) 8%, #fff);
+  border-block: 1px solid rgba(3, 28, 66, 0.08);
+}
+
+.pathology-book-cta h2 {
+  margin: 0 0 0.5rem;
+  color: var(--secondary-color);
+  font-size: clamp(1.35rem, 2.5vw, 1.65rem);
+  font-weight: 700;
+}
+
+.pathology-book-cta-lead {
+  margin: 0 0 1.15rem;
+  max-width: 36rem;
+  color: #374151;
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.pathology-book-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.pathology-book-cta-actions .btn {
+  min-width: 8.5rem;
 }
 
 .pathology-techniques {
@@ -3613,8 +3645,8 @@ Pathology detail pages (FAQ dolencias)
   flex-direction: column;
   border-radius: 1.15rem;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.78);
-  border: 1px solid rgba(3, 28, 66, 0.06);
+  background: #fff;
+  border: 1px solid rgba(3, 28, 66, 0.14);
   box-shadow: none;
   transition:
     box-shadow var(--cat-header-color-duration) ease,
@@ -3744,7 +3776,7 @@ Pathology detail pages (FAQ dolencias)
 .articles-category-title {
   font-size: clamp(1.125rem, 2.4vw, 1.3rem);
   font-weight: 700;
-  color: var(--heading-color);
+  color: var(--secondary-color);
   line-height: 1.25;
   transition: color var(--cat-header-color-duration, 0.9s) ease;
 }
@@ -3763,7 +3795,7 @@ Pathology detail pages (FAQ dolencias)
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--secondary-color);
-  background: color-mix(in srgb, var(--accent-bright) 16%, #fff);
+  background: color-mix(in srgb, var(--primary-color) 14%, #e8f1f8);
   transition:
     color var(--cat-header-color-duration, 0.9s) ease,
     background var(--cat-header-color-duration, 0.9s) ease;
@@ -3779,7 +3811,7 @@ Pathology detail pages (FAQ dolencias)
   max-width: none;
   font-size: 0.9375rem;
   line-height: 1.5;
-  color: var(--text-color);
+  color: #374151;
   transition: color var(--cat-header-color-duration, 0.9s) ease;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -3800,8 +3832,8 @@ Pathology detail pages (FAQ dolencias)
   width: 0.65rem;
   height: 0.65rem;
   margin-right: 0.15rem;
-  border-right: 2px solid #5a7288;
-  border-bottom: 2px solid #5a7288;
+  border-right: 2px solid #334155;
+  border-bottom: 2px solid #334155;
   transform: rotate(45deg);
   transition:
     transform var(--cat-panel-close-duration) cubic-bezier(0.22, 1, 0.36, 1),

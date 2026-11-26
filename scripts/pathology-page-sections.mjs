@@ -8,7 +8,7 @@ import {
   pathologyForStem,
 } from "./pathology-content.mjs";
 import { sitePath } from "./i18n-urls.mjs";
-import { escHtml } from "./html-utils.mjs";
+import { escAttr, escHtml } from "./html-utils.mjs";
 import { PATHOLOGY_FAQS, PATHOLOGY_FAQ_UI } from "./pathology-faq-content.mjs";
 import { PATHOLOGY_RED_FLAGS } from "./pathology-red-flags.mjs";
 import {
@@ -16,6 +16,7 @@ import {
   conditionPhrase,
   firstSentence,
 } from "./pathology-page-ui.mjs";
+import { waMeUrl } from "./site-contact.mjs";
 
 function buildRelatedSection(pathology, lang) {
   const ui = UI[lang];
@@ -61,6 +62,26 @@ function buildUrgentCareSection(lang, name, stem) {
 ${items}
             </ul>
             <p>${escHtml(ui.urgentClose)} <a href="${sitePath(lang, "condiciones")}">${escHtml(ui.urgentLinkLabel)}</a>.</p>
+          </div>
+        </div>
+      </div>
+    </section>`;
+}
+
+function buildBookCtaSection(lang) {
+  const ui = UI[lang];
+  const bookingHref = sitePath(lang, "agendar");
+  const waHref = waMeUrl();
+  return `    <section class="pathology-book-cta space-medium" aria-labelledby="pathology-book-cta-title">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12">
+            <h2 id="pathology-book-cta-title">${escHtml(ui.bookCtaTitle)}</h2>
+            <p class="pathology-book-cta-lead">${escHtml(ui.bookCtaLead)}</p>
+            <div class="pathology-book-cta-actions">
+              <a href="${escAttr(bookingHref)}" class="btn btn-primary js-booking-cta" title="${escAttr(ui.bookCtaBooking)}">${escHtml(ui.bookCtaBooking)}</a>
+              <a href="${escAttr(waHref)}" target="_blank" rel="noopener noreferrer" class="btn btn-default dynamic-whatsapp-url js-norberto-whatsapp" title="${escAttr(ui.bookCtaWhatsApp)}">${escHtml(ui.bookCtaWhatsApp)}</a>
+            </div>
           </div>
         </div>
       </div>
@@ -173,6 +194,7 @@ ${buildUrgentCareSection(lang, name, pathology.stem)}
         </div>
       </div>
     </section>
+${buildBookCtaSection(lang)}
 ${buildFaqSection(pathology, lang)}
 ${buildRelatedSection(pathology, lang)}`;
 }

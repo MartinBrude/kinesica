@@ -6,6 +6,36 @@ import { escHtml } from "./html-utils.mjs";
 import { absoluteUrl } from "./i18n-urls.mjs";
 import { pathologyForStem } from "./pathology-content.mjs";
 import { waMeUrl } from "./site-contact.mjs";
+import {
+  formatFeeAmount,
+  formatPaymentMethods,
+  getSiteFees,
+} from "./site-fees.mjs";
+
+const SITE_FEES = getSiteFees();
+
+/** @param {"es"|"en"|"fr"|"pt"} lang */
+function honorariosAnswer(lang) {
+  const atm = formatFeeAmount(SITE_FEES.atm, lang);
+  const general = formatFeeAmount(SITE_FEES.general, lang);
+  const pay = formatPaymentMethods(SITE_FEES.payment_methods, lang);
+  return {
+    es: `La sesión es individual y dura 60 minutos. ATM (bruxismo / dolor mandibular): ${atm}. Resto de las consultas (kinesiología, osteopatía, RPG, etc.): ${general}. Se abona en ${pay}.`,
+    en: `Sessions are one-on-one and last 60 minutes. TMJ / ATM (bruxism / jaw pain): ${atm}. All other consultations (physiotherapy, osteopathy, RPG, etc.): ${general}. Payment in ${pay}.`,
+    fr: `La séance est individuelle et dure 60 minutes. ATM (bruxisme / douleur mandibulaire) : ${atm}. Autres consultations (kinésithérapie, ostéopathie, RPG, etc.) : ${general}. Paiement en ${pay}.`,
+    pt: `A sessão é individual e dura 60 minutos. ATM (bruxismo / dor mandibular): ${atm}. Demais consultas (cinesiologia, osteopatia, RPG, etc.): ${general}. Pagamento em ${pay}.`,
+  }[lang];
+}
+
+/** @param {"es"|"en"|"fr"|"pt"} lang */
+function obrasSocialesAnswer(lang) {
+  return {
+    es: "No atendemos por cartilla de prepagas ni obras sociales: la atención es particular. Al finalizar la sesión entregamos factura oficial para que gestiones el reintegro en tu prepaga u obra social, según tu plan.",
+    en: "We do not work in-network with health plans or insurance: care is private (out-of-pocket). After the session we issue an official invoice so you can request reimbursement from your plan or insurer, according to your coverage.",
+    fr: "Nous ne travaillons pas en tiers payant avec mutuelles ou assurances : la consultation est en privé. À la fin de la séance, nous délivrons une facture officielle pour demander le remboursement auprès de votre mutuelle ou assurance, selon votre contrat.",
+    pt: "Não atendemos por convênio/cartilha de planos ou obras sociais: o atendimento é particular. Ao final da sessão emitimos nota/fatura oficial para você solicitar o reembolso no seu plano ou obra social, conforme sua cobertura.",
+  }[lang];
+}
 
 export const FAQ_UI = {
   es: { eyebrow: "Consultas", heading: "Preguntas Frecuentes" },
@@ -300,10 +330,10 @@ export const FAQS = [
       pt: "Vocês aceitam planos de saúde ou reembolso?",
     },
     a: {
-      es: "Podés solicitar reintegros a tu obra social o prepaga.",
-      en: "You can request reimbursements from your health insurance provider.",
-      fr: "Vous pouvez demander un remboursement auprès de votre assurance ou mutuelle.",
-      pt: "Você pode solicitar reembolso junto ao seu plano ou seguro de saúde.",
+      es: obrasSocialesAnswer("es"),
+      en: obrasSocialesAnswer("en"),
+      fr: obrasSocialesAnswer("fr"),
+      pt: obrasSocialesAnswer("pt"),
     },
   },
   {
@@ -314,10 +344,10 @@ export const FAQS = [
       pt: "Quais são os honorários?",
     },
     a: {
-      es: "En el proceso de agendar se informan los valores de las diferentes técnicas.",
-      en: "During the booking process, the fees for the different techniques are provided.",
-      fr: "Lors de la prise de rendez-vous, les tarifs des différentes techniques sont indiqués.",
-      pt: "No processo de agendamento são informados os valores das diferentes técnicas.",
+      es: honorariosAnswer("es"),
+      en: honorariosAnswer("en"),
+      fr: honorariosAnswer("fr"),
+      pt: honorariosAnswer("pt"),
     },
   },
   {
