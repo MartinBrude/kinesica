@@ -29,7 +29,7 @@ function stripInlinedHeader(html) {
 /** Remove baked-in CTA; keep empty #site-cta-strip-root. */
 function stripInlinedCta(html) {
   const filled =
-    /<div id="site-cta-strip-root"([^>]*)>\s*<section class="space-small(?:\s+bg-primary)?\s+site-cta-strip">[\s\S]*?<\/section>\s*<\/div>/;
+    /<div id="site-cta-strip-root"([^>]*)>\s*<section class="space-small bg-primary site-cta-strip">[\s\S]*?<\/section>\s*<\/div>/;
   if (!filled.test(html)) {
     return html;
   }

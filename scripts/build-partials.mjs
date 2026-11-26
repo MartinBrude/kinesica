@@ -203,15 +203,15 @@ function buildCtaStrip(lang, s) {
     "cta-strip",
     lang,
     "CTA strip — edit strings in scripts/partials-strings.mjs",
-    `    <section class="space-small site-cta-strip">
+    `    <section class="space-small bg-primary site-cta-strip">
       <div class="container">
         <div class="row">
           <div class="col-lg-8 col-sm-8 col-md-8 col-xs-12">
             <h2 class="cta-title">${s.ctaTitle}</h2>${textHtml}
           </div>
           <div class="col-lg-4 col-sm-4 col-md-4 col-xs-12 site-cta-strip-actions">
-            <a href="agendar.html" class="btn btn-primary js-booking-cta" title="${escAttr(s.booking.title)}" hidden>${escHtml(s.booking.label)}</a>
-            <a href="${waMeUrl(CONTACT.whatsappDigits)}" target="_blank" class="btn btn-default dynamic-whatsapp-url js-norberto-whatsapp" rel="noopener noreferrer" title="${escAttr(s.contact.title)}">${escHtml(s.contact.label)}</a>
+            <a href="agendar.html" class="btn btn-white btn-lg js-booking-cta" title="${escAttr(s.booking.title)}" hidden>${escHtml(s.booking.label)}</a>
+            <a href="${waMeUrl(CONTACT.whatsappDigits)}" target="_blank" class="btn btn-white btn-lg js-booking-fallback-cta js-norberto-whatsapp" rel="noopener noreferrer" title="${escAttr(s.bookingFallback.title)}">${escHtml(s.bookingFallback.label)}</a>
           </div>
         </div>
       </div>
