@@ -154,15 +154,32 @@ function recordatorios_load_view(?PDO $pdo = null, int $days = RECORDATORIOS_DEF
                     ? find_existing_patient_match($pdo, (string) ($r['wa_id'] ?? ''), (string) ($r['patient_name'] ?? ''))
                     : null;
                 if ($matchedPatient && !empty($matchedPatient['id'])) {
-                    $pid = (int) $matchedPatient['id'];
-                    $pacientesById[$pid] = $matchedPatient;
+                    $candName = (string) ($matchedPatient['nombre_completo'] ?? trim(($matchedPatient['nombre'] ?? '') . ' ' . ($matchedPatient['apellido'] ?? '')));
+                    // Si el paciente encontrado por teléfono tiene un nombre incompatible con el turno,
+                    // es un teléfono compartido (ej. cónyuge/familiar). NO atribuir el turno a este paciente.
+                    if ($candName === '' || !function_exists('kinesica_names_compatible') || kinesica_names_compatible((string) ($r['patient_name'] ?? ''), $candName)) {
+                        $pid = (int) $matchedPatient['id'];
+                        $pacientesById[$pid] = $matchedPatient;
+                    } else {
+                        // Buscar si existe el paciente real por nombre
+                        $byName = function_exists('kinesica_match_patient')
+                            ? kinesica_match_patient($pdo, ['name' => (string) ($r['patient_name'] ?? '')], 'strict')
+                            : null;
+                        if ($byName && !empty($byName['id'])) {
+                            $pid = (int) $byName['id'];
+                            $pacientesById[$pid] = $byName;
+                        }
+                    }
                 }
             }
 
             if ($pid > 0 && isset($pacientesById[$pid])) {
                 $disp = kinesica_rel_display_from_paciente($pacientesById[$pid]);
                 if ($disp['name'] !== '') {
-                    $r['patient_name'] = $disp['name'];
+                    $currentName = trim((string) ($r['patient_name'] ?? ''));
+                    if ($currentName === '' || is_tk3_or_blocked_name($currentName) || (function_exists('kinesica_names_compatible') && kinesica_names_compatible($currentName, $disp['name']))) {
+                        $r['patient_name'] = $disp['name'];
+                    }
                 }
                 if ($disp['phone'] !== '' && trim((string) ($r['wa_id'] ?? '')) === '') {
                     $r['wa_id'] = preg_replace('/\D+/', '', $disp['phone']) ?? $disp['phone'];

@@ -163,6 +163,10 @@ function recordatorios_format_item(array $r, ?string $email = null): array
 
     $apptDate = isset($r['appointment_date']) && $r['appointment_date'] !== null ? (string) $r['appointment_date'] : '';
     $apptTime = (string) ($r['appointment_time'] ?? '');
+    $patientName = (string) ($r['patient_name'] ?? '');
+    if ($patientName !== '' && function_exists('kinesica_correct_inverted_patient_name')) {
+        $patientName = kinesica_correct_inverted_patient_name($patientName);
+    }
 
     return [
         'id' => (string) ($r['id'] ?? ''),
@@ -175,7 +179,7 @@ function recordatorios_format_item(array $r, ?string $email = null): array
         'appointment_time' => $apptTime,
         'when_phrase' => recordatorios_format_when_phrase($apptDate !== '' ? $apptDate : null, $apptTime !== '' ? $apptTime : null),
         'calendar_event_id' => (string) ($r['calendar_event_id'] ?? ''),
-        'patient_name' => (string) ($r['patient_name'] ?? ''),
+        'patient_name' => $patientName,
         'wa_id' => $waId,
         'email' => (string) ($resolvedEmail ?? ''),
         'status' => $status,

@@ -188,6 +188,9 @@ function interacciones_lookup_recordatorio_names(PDO $pdo, array $waIds): array
             $key = interacciones_phone_match_key((string) ($row['wa_id'] ?? ''));
             $name = trim((string) ($row['patient_name'] ?? ''));
             if ($key !== '' && $name !== '' && isset($ends[$key]) && !isset($out[$key])) {
+                if (function_exists('kinesica_correct_inverted_patient_name')) {
+                    $name = kinesica_correct_inverted_patient_name($name);
+                }
                 $out[$key] = mb_substr($name, 0, 120, 'UTF-8');
             }
         }

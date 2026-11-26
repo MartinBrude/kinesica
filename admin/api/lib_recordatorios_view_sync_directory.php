@@ -32,6 +32,15 @@ function recordatorios_sync_item_to_directory(PDO $pdo, array $item, array $r, s
             ? find_existing_patient_match($pdo, $rawPhone, $rawName)
             : null;
 
+        if ($existing && function_exists('kinesica_names_compatible')) {
+            $candName = (string) ($existing['nombre_completo'] ?? trim(($existing['nombre'] ?? '') . ' ' . ($existing['apellido'] ?? '')));
+            if ($candName !== '' && !kinesica_names_compatible($rawName, $candName)) {
+                $existing = function_exists('kinesica_match_patient')
+                    ? kinesica_match_patient($pdo, ['name' => $rawName], 'strict')
+                    : null;
+            }
+        }
+
         $profInferred = function_exists('infer_practitioner_from_schedule')
             ? infer_practitioner_from_schedule(
                 (string) ($item['appointment_date'] ?? $r['appointment_date'] ?? ''),
@@ -61,6 +70,19 @@ function recordatorios_sync_item_to_directory(PDO $pdo, array $item, array $r, s
             $ape = $parts[1] ?? '';
             $pila = function_exists('extract_first_name') ? extract_first_name($cleanNom) : $nom;
 
+            $targetTel = $rawPhone;
+            if (function_exists('kinesica_names_compatible')) {
+                $stmtOther = $pdo->prepare('SELECT id, nombre_completo FROM pacientes WHERE telefono = :tel LIMIT 1');
+                $stmtOther->execute(['tel' => $rawPhone]);
+                $rowOther = $stmtOther->fetch(PDO::FETCH_ASSOC);
+                if ($rowOther) {
+                    $otherName = (string) ($rowOther['nombre_completo'] ?? '');
+                    if ($otherName !== '' && !kinesica_names_compatible($rawName, $otherName)) {
+                        $targetTel = 'sin-tel-cal-' . substr(md5(canonical_patient_name_key($rawName)), 0, 18);
+                    }
+                }
+            }
+
             $stmtPac = $pdo->prepare(
                 'INSERT INTO pacientes (telefono, nombre, apellido, nombre_completo, nombre_pila, profesional_habitual, origen)
                  VALUES (:tel, :nombre, :apellido, :full, :pila, :prof, "admin")
@@ -72,7 +94,7 @@ function recordatorios_sync_item_to_directory(PDO $pdo, array $item, array $r, s
                     profesional_habitual = CASE WHEN profesional_habitual = "indistinto" AND VALUES(profesional_habitual) != "indistinto" THEN VALUES(profesional_habitual) ELSE profesional_habitual END'
             );
             $stmtPac->execute([
-                'tel' => $rawPhone,
+                'tel' => $targetTel,
                 'nombre' => mb_substr($nom, 0, 60, 'UTF-8'),
                 'apellido' => mb_substr($ape, 0, 60, 'UTF-8'),
                 'full' => mb_substr($cleanNom, 0, 120, 'UTF-8'),

@@ -50,6 +50,16 @@ function recordatorios_sync_paciente_from_event(array $ev, PDO $pdo): void
         )
         : null;
 
+    if ($existing && function_exists('kinesica_names_compatible')) {
+        $candName = (string) ($existing['nombre_completo'] ?? trim(($existing['nombre'] ?? '') . ' ' . ($existing['apellido'] ?? '')));
+        if ($candName !== '' && !kinesica_names_compatible($rawName, $candName)) {
+            // Teléfono compartido (cónyuge/familiar): buscar si existe el paciente por nombre
+            $existing = function_exists('kinesica_match_patient')
+                ? kinesica_match_patient($pdo, ['name' => $rawName], 'strict')
+                : null;
+        }
+    }
+
     $profInferred = function_exists('infer_practitioner_from_schedule')
         ? infer_practitioner_from_schedule(
             (string) ($ev['appointment_date'] ?? ''),
@@ -65,11 +75,26 @@ function recordatorios_sync_paciente_from_event(array $ev, PDO $pdo): void
     if ($nameSeed === '') {
         $nameSeed = $cal !== '' && $cal !== '_run' ? $cal : 'desconocido';
     }
+
     $tel = $hasRealPhone
         ? $rawPhone
         : ($rawDni !== ''
             ? 'sin-tel-dni-' . substr($rawDni, 0, 18)
             : 'sin-tel-cal-' . substr(md5($nameSeed), 0, 18));
+
+    // Si el teléfono real ya está ocupado por otro paciente con nombre incompatible (ej. cónyuge/familiar),
+    // usar placeholder para no colisionar con la restricción UNIQUE de MySQL.
+    if ($hasRealPhone && !$existing) {
+        $stmtOther = $pdo->prepare('SELECT id, nombre_completo FROM pacientes WHERE telefono = :tel LIMIT 1');
+        $stmtOther->execute(['tel' => $rawPhone]);
+        $rowOther = $stmtOther->fetch(PDO::FETCH_ASSOC);
+        if ($rowOther && function_exists('kinesica_names_compatible')) {
+            $otherName = (string) ($rowOther['nombre_completo'] ?? '');
+            if ($otherName !== '' && !kinesica_names_compatible($rawName, $otherName)) {
+                $tel = 'sin-tel-cal-' . substr(md5($nameSeed), 0, 18);
+            }
+        }
+    }
 
     if ($existing) {
         $existingId = (int) $existing['id'];

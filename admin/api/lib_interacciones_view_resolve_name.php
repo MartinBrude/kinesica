@@ -70,6 +70,9 @@ function interacciones_lookup_recordatorio_name_by_event_id(PDO $pdo, string $ca
         );
         $stmt->execute(['cal' => $calId]);
         $name = trim((string) ($stmt->fetchColumn() ?: ''));
+        if ($name !== '' && function_exists('kinesica_correct_inverted_patient_name')) {
+            $name = kinesica_correct_inverted_patient_name($name);
+        }
         return $name !== '' ? mb_substr($name, 0, 120, 'UTF-8') : '';
     } catch (Throwable) {
         return '';

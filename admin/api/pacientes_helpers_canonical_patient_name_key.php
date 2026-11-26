@@ -196,3 +196,45 @@ function kinesica_prefer_origen(string $current, string $candidate): string
     return $n > $c ? $candidate : ($current !== '' ? $current : 'whatsapp');
 }
 
+/**
+ * Comprueba si dos nombres corresponden a la misma persona o si son incompatibles
+ * (evita atribuir turnos a cónyuges/familiares que comparten número de teléfono).
+ */
+function kinesica_names_compatible(string $nameA, string $nameB): bool
+{
+    $a = trim($nameA);
+    $b = trim($nameB);
+    if ($a === '' || $b === '') {
+        return true;
+    }
+    if (strcasecmp($a, 'Estimado/a paciente') === 0 || strcasecmp($b, 'Estimado/a paciente') === 0) {
+        return true;
+    }
+    if (strcasecmp($a, 'Paciente') === 0 || strcasecmp($b, 'Paciente') === 0) {
+        return true;
+    }
+
+    $keyA = canonical_patient_name_key($a);
+    $keyB = canonical_patient_name_key($b);
+    if ($keyA === '' || $keyB === '') {
+        return true;
+    }
+    if ($keyA === $keyB) {
+        return true;
+    }
+
+    $tokensA = preg_split('/\s+/u', $keyA, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+    $tokensB = preg_split('/\s+/u', $keyB, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+
+    $stopwords = ['de', 'la', 'el', 'los', 'las', 'del', 'san', 'santa', 'von', 'van', 'di', 'da', 'y'];
+    $cleanA = array_values(array_diff($tokensA, $stopwords));
+    $cleanB = array_values(array_diff($tokensB, $stopwords));
+    if (empty($cleanA) || empty($cleanB)) {
+        return true;
+    }
+
+    $intersect = array_intersect($cleanA, $cleanB);
+    return count($intersect) > 0;
+}
+
+

@@ -216,6 +216,7 @@ function kinesica_known_inverted_patient_names(): array
 {
     return [
         'dalamon viviana' => 'Viviana Dalamon',
+        'leiro andrea' => 'Andrea Leiro',
         'lipsyc silvana' => 'Silvana Lipsyc',
         'mira walter' => 'Walter Mira',
         'silvestre rodrigo' => 'Rodrigo Silvestre',

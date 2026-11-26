@@ -235,6 +235,20 @@ eq(clean_phone_number('11 5555-1212 (celular)'), '5491155551212', 'quita aclarac
 eq(clean_phone_number('fijo 4711-2233'), '5491147112233', 'descarta palabra fijo');
 eq(clean_phone_number('tel: +54 9 11 5555-1212'), '5491155551212', 'prefijo tel + intl');
 
+section('Compatibilidad de nombres e inversión Leiro / Benamo');
+ok(!kinesica_names_compatible('Andrea Leiro', 'Elías Benamo'), 'Andrea Leiro y Elías Benamo son nombres incompatibles');
+ok(kinesica_names_compatible('Andrea Leiro', 'Leiro Andrea'), 'Andrea Leiro y Leiro Andrea son nombres compatibles');
+ok(kinesica_names_compatible('Daniel Eduardo Martirena', 'Daniel Martirena'), 'Daniel Eduardo Martirena y Daniel Martirena son compatibles');
+$rowFormatted = recordatorios_format_item([
+    'id' => 99,
+    'patient_name' => 'Leiro Andrea',
+    'status' => 'sent',
+    'wa_id' => '5491144756562',
+    'appointment_date' => '2026-11-27',
+    'appointment_time' => '13:00 hs',
+]);
+eq($rowFormatted['patient_name'], 'Andrea Leiro', 'Leiro Andrea se formatea canónicamente a Andrea Leiro');
+
 $host = getenv('KT_DB_HOST');
 if (!$host || !getenv('KT_TMP')) {
     echo "• Persistencia/reconcile omitidos (sin KT_DB_HOST / KT_TMP)\n";
