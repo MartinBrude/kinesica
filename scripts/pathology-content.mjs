@@ -73,7 +73,7 @@ export const UI = {
     bookCtaBadge: "Consultorio en Palermo",
     bookCtaTitle: "Abordaje kinésico y reserva de turno",
     techniquesLabel: "Técnicas que integramos según tu evaluación:",
-    bookCtaBooking: "Agendar online",
+    bookCtaBooking: "Agendar turno",
     bookCtaWhatsApp: "Consultar por WhatsApp",
     bookCtaMeta: "Sesión individual de 1 hora · Palermo",
   },
