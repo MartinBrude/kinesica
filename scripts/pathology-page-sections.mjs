@@ -72,7 +72,7 @@ function buildBookCtaSection(lang) {
   const ui = UI[lang];
   const bookingHref = sitePath(lang, "agendar");
   const waHref = waMeUrl();
-  return `    <section class="pathology-book-cta space-medium" aria-labelledby="pathology-book-cta-title">
+  return `    <section class="pathology-book-cta" aria-labelledby="pathology-book-cta-title">
       <div class="container">
         <div class="row">
           <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12">
@@ -80,7 +80,7 @@ function buildBookCtaSection(lang) {
             <p class="pathology-book-cta-lead">${escHtml(ui.bookCtaLead)}</p>
             <div class="pathology-book-cta-actions">
               <a href="${escAttr(bookingHref)}" class="btn btn-primary js-booking-cta" title="${escAttr(ui.bookCtaBooking)}">${escHtml(ui.bookCtaBooking)}</a>
-              <a href="${escAttr(waHref)}" target="_blank" rel="noopener noreferrer" class="btn btn-default dynamic-whatsapp-url js-norberto-whatsapp" title="${escAttr(ui.bookCtaWhatsApp)}">${escHtml(ui.bookCtaWhatsApp)}</a>
+              <a href="${escAttr(waHref)}" target="_blank" rel="noopener noreferrer" class="pathology-book-cta-wa dynamic-whatsapp-url js-norberto-whatsapp" title="${escAttr(ui.bookCtaWhatsApp)}">${escHtml(ui.bookCtaWhatsApp)}</a>
             </div>
           </div>
         </div>

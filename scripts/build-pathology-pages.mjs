@@ -30,7 +30,6 @@ import {
   assetPrefixForLang,
   bodyFooterAndUiScripts,
   bodyShellTop,
-  ctaStripPlaceholder,
   headFavicon,
   headCriticalCss,
   headJsClassScript,
@@ -155,7 +154,6 @@ ${pageBreadcrumbSection({
     })}
 ${buildPathologyMain(pathology, lang)}
   </main>
-${ctaStripPlaceholder(lang, p)}
 ${bodyFooterAndUiScripts(lang, p)}
 </body>
 

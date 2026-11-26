@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Verify pathology pages: techniques section + lang hrefs + CTA partial.
+ * Verify pathology pages: techniques section + lang hrefs + mid-page book CTA.
  */
 import fs from "fs";
 import path from "path";
@@ -42,8 +42,11 @@ for (const stem of PATHOLOGY_STEMS) {
     if (!html.includes('"codingSystem": "ICD-10"')) {
       errors.push(`${file}: missing ICD-10 code in MedicalCondition`);
     }
-    if (!html.includes("site-cta-strip-root")) {
-      errors.push(`${file}: missing site-cta-strip-root`);
+    if (!html.includes("pathology-book-cta")) {
+      errors.push(`${file}: missing pathology-book-cta section`);
+    }
+    if (html.includes("site-cta-strip-root")) {
+      errors.push(`${file}: unexpected site-cta-strip-root (mid-page CTA only)`);
     }
     for (const targetLang of LANG_CODES) {
       const expected = absoluteUrl(targetLang, stem);
