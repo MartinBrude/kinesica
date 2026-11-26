@@ -671,16 +671,89 @@ blockquote {
 }
 
 body:has(main .page-header):not(.page-home) .site-cta-strip.bg-primary {
-  background-image: radial-gradient(
-    ellipse 70% 90% at 92% 20%,
-    color-mix(in srgb, var(--accent-bright) 28%, transparent),
-    transparent 62%
-  );
+  background-color: transparent;
+  background-image: none;
+  padding-top: 1.5rem;
+  padding-bottom: 4.5rem;
+}
+
+body:has(main .page-header):not(.page-home) .site-cta-strip .container {
+  background-color: var(--primary-color);
+  background-image:
+    radial-gradient(
+      ellipse 70% 90% at 92% 20%,
+      color-mix(in srgb, var(--accent-bright) 28%, transparent),
+      transparent 62%
+    ),
+    linear-gradient(135deg, var(--primary-color) 0%, #00426b 100%);
+  border-radius: 24px;
+  padding: 26px 36px;
+  box-shadow:
+    0 14px 34px -4px rgba(0, 95, 153, 0.22),
+    0 3px 8px -1px rgba(0, 95, 153, 0.08);
+}
+
+body:has(main .page-header):not(.page-home) .site-cta-strip .row {
+  margin-left: 0;
+  margin-right: 0;
+  display: flex;
+  align-items: center;
+}
+
+body:has(main .page-header):not(.page-home) .site-cta-strip [class*="col-"] {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+body:has(main .page-header):not(.page-home) .site-cta-strip .cta-title {
+  font-size: clamp(22px, 2.6vw, 28px);
+  letter-spacing: -0.5px;
+  line-height: 1.25;
 }
 
 body:has(main .page-header):not(.page-home) .site-cta-strip .btn-white {
   border-radius: 999px;
   border-color: #fff;
+  font-weight: 700;
+  padding: 12px 28px;
+  box-shadow: 0 4px 12px rgba(0, 40, 70, 0.12);
+}
+
+body:has(main .page-header):not(.page-home) .site-cta-strip .btn-white:hover {
+  background-color: #fff;
+  color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 40, 70, 0.2);
+}
+
+@media (max-width: 767px) {
+  body:has(main .page-header):not(.page-home) .site-cta-strip.bg-primary {
+    padding-top: 1rem;
+    padding-bottom: 2.75rem;
+  }
+
+  body:has(main .page-header):not(.page-home) .site-cta-strip .container {
+    border-radius: 18px;
+    padding: 22px 20px;
+    margin-left: 15px;
+    margin-right: 15px;
+    width: calc(100% - 30px);
+  }
+
+  body:has(main .page-header):not(.page-home) .site-cta-strip .cta-title {
+    text-align: center;
+    font-size: 22px;
+  }
+
+  body:has(main .page-header):not(.page-home) .site-cta-strip-actions {
+    justify-content: center;
+    width: 100%;
+    margin-top: 16px;
+  }
+
+  body:has(main .page-header):not(.page-home) .site-cta-strip .btn {
+    width: 100%;
+  }
 }
 
 /*--------------------------------
