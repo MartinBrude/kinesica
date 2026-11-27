@@ -111,10 +111,14 @@
           }
         }
 
-        const mailMeta = await this.sendConfirmationEmail(payload, result);
-        if (mailMeta && mailMeta.manageCode) {
-          result.manageCode = mailMeta.manageCode;
-          result.manageUrl = mailMeta.manageUrl || this.defaultManageUrl();
+        const confirmMeta = await this.sendBookingConfirmation(payload, result);
+        if (confirmMeta) {
+          if (confirmMeta.manageCode) {
+            result.manageCode = confirmMeta.manageCode;
+            result.manageUrl = confirmMeta.manageUrl || this.defaultManageUrl();
+          }
+          result.confirmationEmail = confirmMeta.email || null;
+          result.confirmationWhatsapp = confirmMeta.whatsapp || null;
         }
 
         this.trackBookingConversion(payload, result);
@@ -172,8 +176,11 @@
       window.dataLayer.push(Object.assign({ event: eventName }, params));
     };
 
-    proto.sendConfirmationEmail = async function (payload, bookResult) {
-      if (!payload || !payload.email) return null;
+    proto.sendBookingConfirmation = async function (payload, bookResult) {
+      if (!payload) return null;
+      const hasEmail = Boolean(payload.email && String(payload.email).trim());
+      const hasPhone = Boolean(payload.telefono && String(payload.telefono).trim());
+      if (!hasEmail && !hasPhone) return null;
       try {
         const professionalName = this.practitionerFullName(payload.practitionerId) || "Lic. Norberto Brude";
         const technique = engine && typeof engine.getTechnique === "function" ? engine.getTechnique(payload.techniqueId) : null;
@@ -183,7 +190,7 @@
         }
         const eventId = (bookResult && bookResult.eventId) || "";
         const body = {
-          email: payload.email, paciente: payload.nombre, telefono: payload.telefono,
+          email: payload.email || "", paciente: payload.nombre, telefono: payload.telefono || "",
           dni: payload.dni, fecha: payload.date, hora: payload.time,
           profesional: professionalName, servicio: serviceName,
           motivo: payload.motivo || payload.especialidad,
@@ -200,14 +207,20 @@
         });
 
         let res = await postConfirm();
-        if (!res.ok && eventId) res = await postConfirm({ retry: true, rotate_manage_code: true });
-        if (!res.ok) return null;
+        if (!res.ok && eventId && hasEmail) res = await postConfirm({ retry: true, rotate_manage_code: true });
         const data = await res.json().catch(() => null);
-        return data && data.success ? data : null;
+        if (!data) return null;
+        // Devolver flags aunque success=false para que admin muestre el estado.
+        return data;
       } catch (err) {
-        console.warn("No se pudo enviar el correo de confirmación:", err);
+        console.warn("No se pudo enviar la confirmación (mail/WhatsApp):", err);
         return null;
       }
+    };
+
+    /** @deprecated Usar sendBookingConfirmation */
+    proto.sendConfirmationEmail = function (payload, bookResult) {
+      return this.sendBookingConfirmation(payload, bookResult);
     };
   }
 

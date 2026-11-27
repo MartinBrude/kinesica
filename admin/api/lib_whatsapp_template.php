@@ -347,3 +347,165 @@ function send_whatsapp_reminder_template(string $to, array $data): array
         'to' => $to,
     ];
 }
+
+/**
+ * Envía plantilla confirmacion_turno_kinesica (solo texto, sin botones) vía Graph API.
+ *
+ * Params Meta: {{1}} nombre · {{2}} fecha · {{3}} hora · {{4}} profesional · {{5}} dirección.
+ *
+ * @param string $to
+ * @param array{patient_name?: string, fecha?: string, hora?: string, profesional?: string, direccion?: string} $data
+ * @return array{ok: bool, http_code: int, error?: string, response?: string, to?: string}
+ */
+function send_whatsapp_booking_confirmation_template(string $to, array $data): array
+{
+    $creds = whatsapp_credentials();
+    $token = $creds['token'];
+    $phoneId = $creds['phone_number_id'];
+    $to = preg_replace('/\D+/', '', $to) ?? '';
+    if ($to === '') {
+        return [
+            'ok' => false,
+            'http_code' => 0,
+            'error' => 'El número de teléfono de destino está vacío',
+            'error_category' => 'user_input',
+            'error_code' => 'PHONE_REQUIRED',
+            'hint' => 'Ingresá un número de WhatsApp para el paciente.',
+            'to' => '',
+        ];
+    }
+    if ($token === '') {
+        return [
+            'ok' => false,
+            'http_code' => 0,
+            'error' => 'Falta configurar el token de acceso de WhatsApp en el servidor',
+            'error_category' => 'external_service',
+            'error_code' => 'META_TOKEN_MISSING',
+            'hint' => 'Configurá WHATSAPP_TOKEN en los ajustes del servidor.',
+            'to' => $to,
+        ];
+    }
+    if ($phoneId === '') {
+        return [
+            'ok' => false,
+            'http_code' => 0,
+            'error' => 'Falta configurar el Phone Number ID de WhatsApp (WHATSAPP_PHONE_NUMBER_ID)',
+            'error_category' => 'external_service',
+            'error_code' => 'META_PHONE_ID_MISSING',
+            'hint' => 'Configurá WHATSAPP_PHONE_NUMBER_ID en los ajustes del servidor.',
+            'to' => $to,
+        ];
+    }
+    if (!function_exists('curl_init')) {
+        return [
+            'ok' => false,
+            'http_code' => 0,
+            'error' => 'La extensión cURL de PHP no está disponible en el servidor',
+            'error_category' => 'infrastructure',
+            'error_code' => 'PHP_CURL_MISSING',
+            'hint' => 'El servidor web debe tener habilitada la extensión php-curl.',
+            'to' => $to,
+        ];
+    }
+
+    // Meta rechaza \n/\r/\t y >4 espacios en params.
+    $cleanParam = static function (string $text): string {
+        $out = str_replace(['\\r\\n', '\\n', '\\r', "\u{2028}", "\u{2029}"], "\n", $text);
+        $out = str_replace(["\r\n", "\r"], "\n", $out);
+        $out = preg_replace('/\s*\|\s*/u', "\n", $out) ?? $out;
+        $parts = preg_split('/\n+/u', $out) ?: [];
+        $lines = [];
+        foreach ($parts as $part) {
+            $line = trim(preg_replace('/[ \t]+/u', ' ', (string) $part) ?? '');
+            if ($line !== '') {
+                $lines[] = $line;
+            }
+        }
+        return trim(implode(' ', $lines));
+    };
+
+    $patient = $cleanParam(trim((string) ($data['patient_name'] ?? 'Estimado/a paciente')));
+    $fecha = $cleanParam(trim((string) ($data['fecha'] ?? '')));
+    $hora = $cleanParam(trim((string) ($data['hora'] ?? '')));
+    $profesional = $cleanParam(trim((string) ($data['profesional'] ?? '')));
+    $direccion = $cleanParam(trim((string) ($data['direccion'] ?? '')));
+
+    $graphBody = [
+        'messaging_product' => 'whatsapp',
+        'recipient_type' => 'individual',
+        'to' => $to,
+        'type' => 'template',
+        'template' => [
+            'name' => 'confirmacion_turno_kinesica',
+            'language' => ['code' => 'es_AR'],
+            'components' => [
+                [
+                    'type' => 'body',
+                    'parameters' => [
+                        ['type' => 'text', 'text' => $patient !== '' ? $patient : 'Estimado/a paciente'],
+                        ['type' => 'text', 'text' => $fecha !== '' ? $fecha : '-'],
+                        ['type' => 'text', 'text' => $hora !== '' ? $hora : '-'],
+                        ['type' => 'text', 'text' => $profesional !== '' ? $profesional : 'Kinésica'],
+                        ['type' => 'text', 'text' => $direccion !== '' ? $direccion : 'Charcas 3889, 5º B, Palermo'],
+                    ],
+                ],
+            ],
+        ],
+    ];
+
+    $url = 'https://graph.facebook.com/v21.0/' . rawurlencode($phoneId) . '/messages';
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_POST => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER => [
+            'Authorization: Bearer ' . $token,
+            'Content-Type: application/json',
+        ],
+        CURLOPT_POSTFIELDS => json_encode($graphBody, JSON_UNESCAPED_UNICODE),
+        CURLOPT_TIMEOUT => 20,
+    ]);
+    $response = curl_exec($ch);
+    $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
+
+    if ($curlError) {
+        return [
+            'ok' => false,
+            'http_code' => $httpCode,
+            'error' => 'Fallo de conexión con Meta: ' . $curlError,
+            'error_category' => 'infrastructure',
+            'error_code' => 'META_NETWORK_ERROR',
+            'hint' => 'El servidor no pudo conectar con graph.facebook.com. Revisá la conexión de red.',
+            'to' => $to,
+        ];
+    }
+    if ($httpCode >= 200 && $httpCode < 300) {
+        return ['ok' => true, 'http_code' => $httpCode, 'response' => is_string($response) ? $response : '', 'to' => $to];
+    }
+    $metaMsg = '';
+    $metaCode = null;
+    if (is_string($response) && $response !== '') {
+        $decoded = json_decode($response, true);
+        if (is_array($decoded)) {
+            $metaMsg = (string) ($decoded['error']['message'] ?? $decoded['error']['error_user_msg'] ?? '');
+            $metaCode = isset($decoded['error']['code']) ? (int) $decoded['error']['code'] : null;
+            if ($metaCode !== null && $metaMsg !== '') {
+                $metaMsg = '#' . $metaCode . ' ' . $metaMsg;
+            }
+        }
+    }
+    $explanation = whatsapp_explain_meta_error($httpCode, $metaCode, $metaMsg, $to);
+    return [
+        'ok' => false,
+        'http_code' => $httpCode,
+        'error' => $explanation['user_message'],
+        'error_category' => $explanation['category'],
+        'error_code' => $metaCode !== null ? ('META_' . $metaCode) : ('HTTP_' . $httpCode),
+        'hint' => $explanation['hint'],
+        'meta_code' => $metaCode,
+        'raw_error' => $metaMsg,
+        'response' => is_string($response) ? $response : '',
+        'to' => $to,
+    ];
+}

@@ -1,6 +1,6 @@
 <?php
 /**
- * Kinésica - Endpoint de confirmación de turno vía Resend / mail()
+ * Kinésica - Confirmación de turno: mail (Resend/mail) + WhatsApp vía Clara.
  * URL: /api/send-confirmation.php
  */
 
@@ -8,6 +8,7 @@ header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . '/confirmation-mail-lib.php';
 require_once __DIR__ . '/send-confirmation-patient.php';
 require_once __DIR__ . '/send-confirmation-transport.php';
+require_once __DIR__ . '/send-confirmation-whatsapp.php';
 
 // Configuración CORS
 $allowedOrigins = [
@@ -40,21 +41,21 @@ if (!is_array($data)) {
     $data = $_POST;
 }
 
-$email = trim($data['email'] ?? '');
-$paciente = trim($data['paciente'] ?? $data['nombre'] ?? '');
-$fechaRaw = trim($data['fecha'] ?? $data['date'] ?? '');
-$horaRaw = trim($data['hora'] ?? $data['time'] ?? '');
-$profesional = trim($data['profesional'] ?? 'Lic. Norberto Brude');
-$servicio = trim($data['servicio'] ?? $data['especialidad'] ?? '');
-if (empty($servicio) || preg_match('/osteopat[ií]a\s*(?:&|\/|y)?\s*(?:terapia[s]?\s*manual(?:es)?)?/i', $servicio) || $servicio === 'No especifica') {
+$email = trim((string) ($data['email'] ?? ''));
+$telefono = trim((string) ($data['telefono'] ?? $data['phone'] ?? ''));
+$paciente = trim((string) ($data['paciente'] ?? $data['nombre'] ?? ''));
+$fechaRaw = trim((string) ($data['fecha'] ?? $data['date'] ?? ''));
+$horaRaw = trim((string) ($data['hora'] ?? $data['time'] ?? ''));
+$profesional = trim((string) ($data['profesional'] ?? 'Lic. Norberto Brude'));
+$servicio = trim((string) ($data['servicio'] ?? $data['especialidad'] ?? ''));
+if ($servicio === '' || preg_match('/osteopat[ií]a\s*(?:&|\/|y)?\s*(?:terapia[s]?\s*manual(?:es)?)?/i', $servicio) || $servicio === 'No especifica') {
     $servicio = 'Terapias Manuales';
 }
-$direccion = trim($data['direccion'] ?? 'Charcas 3889, Piso 5º B, Palermo');
+$direccion = trim((string) ($data['direccion'] ?? 'Charcas 3889, Piso 5º B, Palermo'));
 $esMenor = !empty($data['esMenor']) || !empty($data['isMenor']);
-$tipo = strtolower(trim($data['tipo'] ?? 'confirmacion'));
+$tipo = strtolower(trim((string) ($data['tipo'] ?? 'confirmacion')));
 $esCancelacion = in_array($tipo, ['cancelacion', 'cancelación', 'anulacion', 'anulación'], true);
 
-// Validaciones estrictas en la frontera
 $isValidEmail = static function (string $raw): bool {
     $s = trim($raw);
     if ($s === '' || strlen($s) > 120 || preg_match('/\s/', $s) || !filter_var($s, FILTER_VALIDATE_EMAIL)) {
@@ -69,37 +70,50 @@ $isValidEmail = static function (string $raw): bool {
     return count($labels) >= 2 && is_string($tld) && (bool) preg_match('/^[A-Za-z]{2,24}$/', $tld);
 };
 
-if (!$isValidEmail($email)) {
+$emailOk = $isValidEmail($email);
+$phoneOk = kinesica_confirmation_phone_usable($telefono);
+
+if (!$emailOk && !$phoneOk) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'error' => 'Email no provisto o con formato inválido.']);
+    echo json_encode([
+        'success' => false,
+        'error' => 'Se requiere un email válido o un WhatsApp válido para enviar la confirmación.',
+        'email' => ['ok' => false, 'skipped' => true],
+        'whatsapp' => ['ok' => false, 'skipped' => true],
+    ]);
     exit;
 }
-if (empty($paciente)) {
+if ($paciente === '') {
     http_response_code(400);
     echo json_encode(['success' => false, 'error' => 'Nombre del paciente es requerido.']);
     exit;
 }
 
 $clientIp = (string) ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
-if (!kinesica_confirmation_rate_ok('email:' . strtolower($email), 4, 3600)
-    || !kinesica_confirmation_rate_ok('ip:' . $clientIp, 20, 3600)) {
+$rateBlocked = !kinesica_confirmation_rate_ok('ip:' . $clientIp, 20, 3600);
+if (!$rateBlocked && $emailOk) {
+    $rateBlocked = !kinesica_confirmation_rate_ok('email:' . strtolower($email), 4, 3600);
+}
+if (!$rateBlocked && $phoneOk) {
+    $digits = kinesica_confirmation_wa_normalize_phone($telefono);
+    $rateBlocked = !kinesica_confirmation_rate_ok('phone:' . $digits, 4, 3600);
+}
+if ($rateBlocked) {
     http_response_code(429);
     echo json_encode(['success' => false, 'error' => 'Demasiados envíos. Probá de nuevo más tarde.']);
     exit;
 }
 
 // Auto-registro/actualización en el Directorio de Pacientes (MySQL)
-kinesica_confirmation_upsert_patient($data, $paciente, $email, $profesional, $servicio);
+kinesica_confirmation_upsert_patient($data, $paciente, $emailOk ? $email : '', $profesional, $servicio);
 
-// Textos del admin (settings.json = lo que sirve admin/api/settings.php), con fallback a los actuales.
 $runtimeSettings = kinesica_read_settings(kinesica_admin_settings_file(__DIR__));
 $practitionerIdRaw = trim((string) ($data['practitionerId'] ?? $data['practitioner_id'] ?? ''));
 
-// Código de gestión web (apellido + email + código) al confirmar reserva.
 $manageCode = '';
 $manageUrl = 'https://www.kinesica.com.ar/mi-turno';
 $eventId = trim((string) ($data['eventId'] ?? $data['event_id'] ?? $data['calendar_event_id'] ?? ''));
-if (!$esCancelacion && $eventId !== '') {
+if (!$esCancelacion && $emailOk && $eventId !== '') {
     try {
         require_once __DIR__ . '/../admin/api/lib.php';
         require_once __DIR__ . '/../admin/api/lib_relational_turnos.php';
@@ -112,7 +126,6 @@ if (!$esCancelacion && $eventId !== '') {
                 $endsAt = date('Y-m-d H:i:s', $endTs);
             }
         }
-        // Rotar solo si el cliente pide reintento (retry / rotate_manage_code).
         $rotateManage = !empty($data['retry'])
             || !empty($data['rotate_manage_code'])
             || !empty($data['force_new_manage_code']);
@@ -142,31 +155,86 @@ if (!$esCancelacion && $eventId !== '') {
     }
 }
 
-$builtMail = kinesica_build_confirmation_mail([
-    'paciente' => $paciente,
-    'fecha' => $fechaRaw,
-    'hora' => $horaRaw,
-    'profesional' => $profesional,
-    'servicio' => $servicio,
-    'direccion' => $direccion,
-    'esMenor' => $esMenor,
-    'esCancelacion' => $esCancelacion,
-    'manageCode' => $manageCode,
-    'manageUrl' => $manageUrl,
-    'settings' => $runtimeSettings,
-]);
+$emailChannel = ['ok' => false, 'skipped' => true];
+$waChannel = ['ok' => false, 'skipped' => true];
 
-$localCfg = kinesica_confirmation_load_local_cfg(__DIR__);
-$replyToEmail = kinesica_reply_to_email($practitionerIdRaw, $profesional, $runtimeSettings, $localCfg);
-$delivery = kinesica_confirmation_deliver_mail(
-    $email,
-    $builtMail['subject'],
-    $builtMail['html'],
-    $replyToEmail,
-    $manageCode,
-    $manageUrl,
-    $localCfg
-);
+if ($emailOk) {
+    $builtMail = kinesica_build_confirmation_mail([
+        'paciente' => $paciente,
+        'fecha' => $fechaRaw,
+        'hora' => $horaRaw,
+        'profesional' => $profesional,
+        'servicio' => $servicio,
+        'direccion' => $direccion,
+        'esMenor' => $esMenor,
+        'esCancelacion' => $esCancelacion,
+        'manageCode' => $manageCode,
+        'manageUrl' => $manageUrl,
+        'settings' => $runtimeSettings,
+    ]);
 
-http_response_code($delivery['status']);
-echo json_encode($delivery['body']);
+    $localCfg = kinesica_confirmation_load_local_cfg(__DIR__);
+    $replyToEmail = kinesica_reply_to_email($practitionerIdRaw, $profesional, $runtimeSettings, $localCfg);
+    $delivery = kinesica_confirmation_deliver_mail(
+        $email,
+        $builtMail['subject'],
+        $builtMail['html'],
+        $replyToEmail,
+        $manageCode,
+        $manageUrl,
+        $localCfg
+    );
+    $emailChannel = [
+        'ok' => !empty($delivery['ok']),
+        'skipped' => false,
+    ];
+    if (!empty($delivery['body']['provider'])) {
+        $emailChannel['provider'] = $delivery['body']['provider'];
+    }
+    if (empty($delivery['ok']) && !empty($delivery['body']['error'])) {
+        $emailChannel['error'] = $delivery['body']['error'];
+    }
+}
+
+// WhatsApp solo en confirmación de reserva (no en anulación).
+if (!$esCancelacion && $phoneOk) {
+    $waRes = kinesica_confirmation_deliver_whatsapp(
+        $telefono,
+        $paciente,
+        $fechaRaw,
+        $horaRaw,
+        $profesional,
+        $servicio,
+        $direccion
+    );
+    $waChannel = [
+        'ok' => !empty($waRes['ok']),
+        'skipped' => !empty($waRes['skipped']),
+    ];
+    if (!empty($waRes['error'])) {
+        $waChannel['error'] = $waRes['error'];
+    }
+    if (!empty($waRes['to'])) {
+        $waChannel['to'] = $waRes['to'];
+    }
+}
+
+$mailSent = !empty($emailChannel['ok']);
+$waSent = !empty($waChannel['ok']);
+$success = $mailSent || $waSent;
+
+$body = [
+    'success' => $success,
+    'email' => $emailChannel,
+    'whatsapp' => $waChannel,
+];
+if ($manageCode !== '') {
+    $body['manageCode'] = $manageCode;
+    $body['manageUrl'] = $manageUrl;
+}
+if (!$success) {
+    $body['error'] = 'No se pudo enviar la confirmación por mail ni por WhatsApp.';
+}
+
+http_response_code($success ? 200 : 502);
+echo json_encode($body);

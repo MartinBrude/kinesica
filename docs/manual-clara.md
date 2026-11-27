@@ -333,6 +333,7 @@ En Kinésica existen dos vías automatizadas para que un paciente gestione su tu
 | **Datos en la descripción** | `📱 WhatsApp`, `🪪 DNI`, `Motivo`, `Técnica` | `📱 WhatsApp`, `🪪 DNI`, `Motivo` | 📋 Toda la información de contacto accesible en el evento. |
 | **Planilla Google Sheets y Directorio** | Se asienta fila automáticamente en tiempo real | Se asienta fila automáticamente en segundo plano | 📊 Base de datos siempre al día sin duplicar datos. |
 | **Alertas a Norberto y María** | Dispara WhatsApp inmediato con datos de la reserva web | Dispara alerta interna inmediata de WhatsApp las 24 hs | 🔔 El profesional se entera al instante en su celular. |
+| **Confirmación al paciente** | Mail + WhatsApp de confirmación (texto, plantilla `confirmacion_turno_kinesica` vía Clara). En admin, si no hay mail, igual se envía WhatsApp. | Coordinación conversacional en el chat | ✉️📲 El paciente recibe el mismo mensaje de reserva confirmada. Distinto del recordatorio 24h. |
 | **Recordatorio automático de turnos** | Se envía el día previo con los 2 botones nativos (si Clara está activa) | Se envía el día previo con los 2 botones nativos (si Clara está activa) | 📲 El paciente confirma o cancela con 1 toque. |
 
 ---

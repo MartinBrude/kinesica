@@ -116,6 +116,38 @@ check(
     && str_contains($widgetSrc, 'retry: true'),
     'booking-widget: reintento de mail pide rotate'
 );
+check(
+    str_contains($widgetSrc, 'sendBookingConfirmation')
+    && !preg_match('/sendBookingConfirmation[\s\S]{0,200}if\s*\(\s*!payload\s*\|\|\s*!payload\.email\)/', $widgetSrc),
+    'booking-widget: confirmación también sin email'
+);
+$step4Src = file_get_contents(__DIR__ . '/../booking/booking-widget-step4.js');
+check(
+    str_contains($step4Src, 'adminDeliveryStatusText')
+    && str_contains($step4Src, 'adminDeliveryBoth'),
+    'booking-widget step4: feedback de envío en admin'
+);
+
+// Helpers WhatsApp de confirmación (sin llamar a Meta)
+require_once __DIR__ . '/../api/send-confirmation-whatsapp.php';
+check(kinesica_confirmation_wa_fecha_corta('2026-10-26') === 'Lunes 26/10', 'WA fecha corta');
+check(kinesica_confirmation_wa_hora('15:30') === '15:30', 'WA hora sin hs');
+check(kinesica_confirmation_wa_hora('15:30 hs') === '15:30', 'WA hora limpia hs');
+check(kinesica_confirmation_wa_first_name('Ana María Pérez') !== '', 'WA nombre de pila');
+check(kinesica_confirmation_phone_usable('5491161564311'), 'WA teléfono usable');
+check(!kinesica_confirmation_phone_usable(''), 'WA teléfono vacío no usable');
+check(!kinesica_confirmation_phone_usable('123'), 'WA teléfono corto no usable');
+$tplSrc = file_get_contents(__DIR__ . '/../admin/api/lib_whatsapp_template.php');
+check(
+    str_contains($tplSrc, 'function send_whatsapp_booking_confirmation_template')
+    && str_contains($tplSrc, "confirmacion_turno_kinesica"),
+    'plantilla Meta confirmacion_turno_kinesica en helper'
+);
+check(
+    str_contains($sendConfSrc, 'kinesica_confirmation_deliver_whatsapp')
+    && str_contains($sendConfSrc, "'whatsapp'"),
+    'send-confirmation despacha WhatsApp y reporta canal'
+);
 
 // --- endpoint real, mail capturado ---
 function render_mail(array $post, ?array $settings): array
@@ -123,7 +155,14 @@ function render_mail(array $post, ?array $settings): array
     $root = sys_get_temp_dir() . '/kin-mail-' . bin2hex(random_bytes(4));
     @mkdir("$root/api", 0777, true);
     @mkdir("$root/admin/api", 0777, true);
-    foreach (['send-confirmation.php', 'send-confirmation-patient.php', 'send-confirmation-transport.php', 'confirmation-mail-lib.php', 'confirmation-mail-templates.php'] as $f) {
+    foreach ([
+        'send-confirmation.php',
+        'send-confirmation-patient.php',
+        'send-confirmation-transport.php',
+        'send-confirmation-whatsapp.php',
+        'confirmation-mail-lib.php',
+        'confirmation-mail-templates.php',
+    ] as $f) {
         copy(__DIR__ . "/../api/$f", "$root/api/$f");
     }
     if ($settings !== null) {

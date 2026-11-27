@@ -17,6 +17,16 @@
       return `${day} ${this.t("at")} ${hm} hs`;
     };
 
+    /** Estado de envío mail/WhatsApp para turnera admin. */
+    proto.adminDeliveryStatusText = function (result) {
+      const emailOk = !!(result && result.confirmationEmail && result.confirmationEmail.ok);
+      const waOk = !!(result && result.confirmationWhatsapp && result.confirmationWhatsapp.ok);
+      if (emailOk && waOk) return this.t("adminDeliveryBoth");
+      if (waOk) return this.t("adminDeliveryWhatsappOnly");
+      if (emailOk) return this.t("adminDeliveryEmailOnly");
+      return this.t("adminDeliveryNone");
+    };
+
     proto.renderConfirmation = function (payload, result) {
       const q = (sel) => this.container.querySelector(sel);
       const esc = (v) => this.escapeHtml(v);
@@ -49,6 +59,9 @@
           </div>` : ""}
           ${this.options.adminMode ? `<div style="margin-top: 6px; font-size: 12px; color: var(--kin-text-muted);">
             ${esc(this.t("eventId"))} <code>${esc((result && result.eventId) || "OK")}</code>
+          </div>
+          <div style="margin-top: 8px; font-size: 13px; color: var(--kin-text-muted);">
+            ${esc(this.adminDeliveryStatusText(result))}
           </div>` : ""}
         `;
       }

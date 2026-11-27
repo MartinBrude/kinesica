@@ -85,3 +85,37 @@ Para que el token no venza cada 24 horas:
      npm run assets:build
      ```
    * Hacé commit y push a GitHub para que impacte en producción.
+
+---
+
+## Plantilla Meta: confirmación al agendar
+
+Además del recordatorio 24h (`recordatorio_turno_kinesica`), la turnera web y admin envían al paciente una confirmación inmediata por WhatsApp con la plantilla utility:
+
+**Nombre:** `confirmacion_turno_kinesica`  
+**Idioma:** `es_AR`  
+**Categoría:** UTILITY  
+**Botones:** ninguno (solo texto)
+
+Texto fijo sugerido:
+
+```text
+¡Hola {{1}}! 🌿
+Tu turno en Kinésica quedó confirmado.
+
+📅 {{2}} a las {{3}} hs
+👤 {{4}}
+📍 {{5}}
+
+Te esperamos. Si necesitás cambiarlo, escribinos por este chat o usá el mail de confirmación.
+```
+
+| Variable | Contenido |
+|----------|-----------|
+| `{{1}}` | Nombre de pila |
+| `{{2}}` | Fecha corta (ej. Jueves 12/03) |
+| `{{3}}` | Hora (ej. 15:30) |
+| `{{4}}` | Profesional · servicio |
+| `{{5}}` | Dirección |
+
+Crearla y aprobarla en Meta Business Manager (WhatsApp → Plantillas de mensajes). Hasta que esté **aprobada**, el mail de confirmación sigue saliendo; el canal WhatsApp fallará con error de plantilla.

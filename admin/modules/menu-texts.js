@@ -38,6 +38,10 @@ export function renderOptCTextEn(template, fees = {}) {
     .replace(/\{medios_pago\}/g, pay);
 }
 
+// Confirmación al agendar (turnera web/admin): plantilla Meta confirmacion_turno_kinesica (solo texto).
+// {{1}} nombre · {{2}} fecha corta · {{3}} hora · {{4}} profesional · {{5}} dirección. Sin botones.
+export const BOOKING_CONFIRMATION_TEMPLATE_NAME = "confirmacion_turno_kinesica";
+
 // Recordatorio: plantilla Meta recordatorio_turno_kinesica.
 // Objetivo (when_phrase): {{1}} nombre · {{2}} tipo · {{3}} "hoy|mañana a las HH:MM hs" · {{4}} indicaciones.
 // Legacy (hasta reaprobar Meta): el texto fijo dice "mañana a las {{3}}" y {{3}} es solo la hora.
