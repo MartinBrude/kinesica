@@ -9,4 +9,4 @@ export {
   formatDisplayPhone,
 } from "./phone-format-core.js?v=2";
 
-export { extractPhoneCandidate } from "./phone-format-extract.js?v=1";
+export { extractPhoneCandidate } from "./phone-format-extract.js?v=2";

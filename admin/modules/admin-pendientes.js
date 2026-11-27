@@ -1,13 +1,20 @@
 /**
  * Kinésica Admin — Tareas pendientes (Administración)
- * Badge de notificaciones: visible para todos los administradores.
+ * Badge y digesto viven en admin-pendientes-badge.js (≤250 líneas).
  */
 
 import { api } from "./api.js?v=79";
 import { dialogAlert, dialogConfirm } from "./dom.js?v=79";
 import { setListControlsEnabled } from "./list-controls.js?v=1";
-import { getSessionUser } from "./auth.js?v=83";
-import { applyBadgeEl, recordAdminPendientesCount } from "./admin-group-badge.js";
+import {
+  PENDIENTES_BADGE_USERNAME,
+  getCachedDigestPaused,
+  countOpenPendientes,
+  updateDigestToggleUI,
+  canShowPendientesBadge,
+  setPendientesPendingBadge,
+  refreshPendientesPendingBadge,
+} from "./admin-pendientes-badge.js?v=1";
 import {
   renderPendientesRows,
   setupPendientesDragAndDrop,
@@ -19,8 +26,15 @@ import {
   initPendienteModalListeners,
 } from "./admin-pendientes-modal.js?v=1";
 
-export const PENDIENTES_BADGE_USERNAME = "norberto";
-export { closePendienteModal, isPendienteModalOpen };
+export {
+  PENDIENTES_BADGE_USERNAME,
+  updateDigestToggleUI,
+  canShowPendientesBadge,
+  setPendientesPendingBadge,
+  refreshPendientesPendingBadge,
+  closePendienteModal,
+  isPendienteModalOpen,
+};
 
 let cachedPendientes = [];
 let currentFilter = "pendientes"; // 'todos' | 'pendientes' | 'resueltos'
@@ -30,66 +44,9 @@ const countPill = document.querySelector("#admin-pendientes-count-label");
 const tbody = document.querySelector("#admin-pendientes-tbody");
 const filterBtns = document.querySelectorAll(".admin-pendientes-filter-btn");
 const digestToggleBtn = document.querySelector("#admin-btn-toggle-digest-pendientes");
-const digestDot = document.querySelector("#admin-digest-pendientes-dot");
-const digestLabel = document.querySelector("#admin-digest-pendientes-label");
-
-let cachedDigestPaused = true;
-
-export function updateDigestToggleUI(isPaused) {
-  cachedDigestPaused = Boolean(isPaused);
-  if (digestDot) {
-    digestDot.className = `dash-status-dot ${cachedDigestPaused ? "inactive" : "active"}`;
-  }
-  if (digestLabel) {
-    digestLabel.textContent = cachedDigestPaused ? "Mails: Pausados" : "Mails: Activos";
-  }
-  if (digestToggleBtn) {
-    digestToggleBtn.title = cachedDigestPaused
-      ? "Los mails semanales de pendientes a Norberto están pausados. Tocá para reanudarlos."
-      : "Los mails semanales de pendientes a Norberto están activos. Tocá para pausarlos.";
-    digestToggleBtn.setAttribute("aria-label", digestToggleBtn.title);
-  }
-}
-
-function countOpen(list) {
-  return (Array.isArray(list) ? list : []).filter((i) => i && i.estado !== "resuelto").length;
-}
-
-export function canShowPendientesBadge(user = getSessionUser()) {
-  return user?.role === "admin";
-}
-
-export function setPendientesPendingBadge(count) {
-  const audience = canShowPendientesBadge();
-  const n = audience ? Math.max(0, Number(count) || 0) : 0;
-  const label = n > 99 ? "99+" : String(n);
-  const show = n > 0;
-  const aria = show ? `${n === 1 ? "1 pendiente" : `${n} pendientes`} en Administración` : "";
-
-  applyBadgeEl(document.getElementById("nav-badge-pendientes"), show, label, aria);
-  recordAdminPendientesCount(audience ? n : 0);
-}
 
 export function syncPendientesBadgeFromCache() {
-  setPendientesPendingBadge(countOpen(cachedPendientes));
-}
-
-export async function refreshPendientesPendingBadge() {
-  if (!canShowPendientesBadge()) {
-    setPendientesPendingBadge(0);
-    return;
-  }
-  try {
-    const resp = await api(`pendientes.php?counts_only=1&_t=${Date.now()}`, { cache: "no-store" });
-    if (!resp || resp.status !== "success") return;
-    const count =
-      typeof resp.pending_count === "number"
-        ? resp.pending_count
-        : Number(resp.totales?.pendientes) || 0;
-    setPendientesPendingBadge(count);
-  } catch {
-    /* silencioso */
-  }
+  setPendientesPendingBadge(countOpenPendientes(cachedPendientes));
 }
 
 export function setPendientesFilter(filter, onReload) {
@@ -243,7 +200,7 @@ export function initPendientesUI({ onReload }) {
 
   if (digestToggleBtn) {
     digestToggleBtn.addEventListener("click", async () => {
-      const willPause = !cachedDigestPaused;
+      const willPause = !getCachedDigestPaused();
       const msg = willPause
         ? "¿Pausar los recordatorios semanales por correo a Norberto?\n\nNo se enviarán digestos de pendientes los lunes hasta que los vuelvas a activar."
         : "¿Reanudar los recordatorios semanales por correo a Norberto?\n\nSe volverá a enviar el resumen de pendientes el próximo día hábil.";

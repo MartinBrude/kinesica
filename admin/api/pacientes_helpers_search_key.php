@@ -1,6 +1,13 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Helpers de claves de búsqueda, validación de email y normalización de nombres de pacientes.
+ * Teléfonos: pacientes_helpers_phone.php · Heal DB: pacientes_helpers_phone_heal.php.
+ */
+
+require_once __DIR__ . '/pacientes_helpers_phone.php';
+require_once __DIR__ . '/pacientes_helpers_phone_heal.php';
 
 function normalize_search_key(string $str): string
 {
@@ -11,18 +18,15 @@ function normalize_search_key(string $str): string
     return preg_replace('/[^a-z0-9]/', '', $unaccent) ?? '';
 }
 
-
 function is_tk3_or_blocked_name(string $text): bool
 {
     $t = trim($text);
     if ($t === '') {
         return false;
     }
-    // Coincide con Tk3, TK 3, tk-3, tk_3, [TK3], etc. pero no con otros apellidos o nombres
     if (preg_match('/(^|[\s\-_\[\(])tk[\s\-_]*3($|[\s\-_\]\)])/iu', $t)) {
         return true;
     }
-    // Coincide con No Dar, No dar: <motivo>, no-dar, no_dar
     if (preg_match('/(?:^|[\s\-_:\[\(])no[\s\-_]*dar(?:$|[\s\-_:\]\)])/iu', $t)
         || preg_match('/(?:^|[\s\-_:\[\(])no[\s\-_]*dar\b/iu', $t)
     ) {
@@ -38,315 +42,6 @@ function is_tk3_or_blocked_name(string $text): bool
         }
     }
     return false;
-}
-
-/**
- * True si $digits ya trae un código de país distinto de AR (+54).
- * Evita “argentinizar” (+34, +1, +598, etc.) anteponiendo 549.
- */
-
-/**
- * True si $digits ya trae un código de país distinto de AR (+54).
- * Evita “argentinizar” (+34, +1, +598, etc.) anteponiendo 549.
- */
-function phone_is_non_ar_international(string $digits): bool
-{
-    if ($digits === '' || str_starts_with($digits, '54')) {
-        return false;
-    }
-    // Prefijos más largos primero. [cc, minLen, maxLen]
-    static $rules = [
-        ['598', 11, 13], // UY
-        ['595', 11, 13], // PY
-        ['593', 11, 13], // EC
-        ['591', 11, 13], // BO
-        ['351', 12, 13], // PT (12: no chocar con área AR 351… de 10 dígitos)
-        ['55', 12, 13],  // BR
-        ['56', 11, 13],  // CL
-        ['57', 12, 13],  // CO
-        ['52', 12, 13],  // MX
-        ['51', 11, 13],  // PE
-        ['58', 11, 13],  // VE
-        ['34', 11, 12],  // ES
-        ['39', 11, 13],  // IT
-        ['33', 11, 13],  // FR
-        ['49', 11, 13],  // DE
-        ['44', 11, 13],  // UK
-        ['61', 11, 13],  // AU
-        ['64', 11, 13],  // NZ
-        ['81', 11, 13],  // JP
-        ['86', 12, 14],  // CN
-        ['1', 11, 11],   // US/CA (NANP)
-    ];
-    $len = strlen($digits);
-    foreach ($rules as [$cc, $min, $max]) {
-        if (str_starts_with($digits, $cc) && $len >= $min && $len <= $max) {
-            return true;
-        }
-    }
-    return false;
-}
-
-/**
- * Normaliza teléfono a dígitos E.164-ish.
- * - AR (local o +54): unifica a 549…
- * - Otros países con código conocido: se preservan (nunca se antepone 549).
- */
-
-/**
- * Normaliza teléfono a dígitos E.164-ish.
- * - AR (local o +54): unifica a 549…
- * - Otros países con código conocido: se preservan (nunca se antepone 549).
- */
-function clean_phone_number(string $raw): string
-{
-    $t = trim($raw);
-    if ($t === '' || str_starts_with($t, 'sin-tel') || str_starts_with($t, 'sin-telefono') || str_starts_with($t, 'ficha-')) {
-        return '';
-    }
-
-    // Si vienen múltiples teléfonos separados por barra, coma o punto y coma, tomar el primero
-    $parts = preg_split('/[\/,;]/', $t);
-    $first = trim($parts[0] ?? $t);
-
-    // Remover aclaraciones entre paréntesis como (celular), (casa), (hijo), etc.
-    $noParens = preg_replace('/\([^)]*\)/', '', $first) ?? $first;
-    // Descartar prefijos de texto habituales ("WhatsApp:", "tel:", "teléfono:", etc.)
-    $withoutPrefix = preg_replace('/^(?:whatsapp|wa\.me|tel[eé]?fono|tel|cel|movil|celular|phone)[:\s\/]*/iu', '', $noParens) ?? $noParens;
-    // Descartar palabras descriptivas comunes ("fijo", "particular", "laboral", etc.)
-    $withoutWords = preg_replace('/\b(?:fijo|cel|celular|movil|casa|particular|laboral|trabajo|int\.?\s*\d*)\b/iu', '', $withoutPrefix) ?? $withoutPrefix;
-
-    // Si contiene letras sueltas que no eran prefijos conocidos, no es un teléfono válido
-    if (preg_match('/[a-zA-Z]/', $withoutWords)) {
-        return '';
-    }
-
-    $digits = preg_replace('/\D+/', '', $withoutWords) ?? '';
-    if ($digits === '') {
-        return '';
-    }
-
-    if (str_starts_with($digits, '00')) {
-        $digits = substr($digits, 2);
-    }
-
-    // Reparar 549/54 pegado por error encima de un CC extranjero (p.ej. 54934… → 34…).
-    if (str_starts_with($digits, '549')) {
-        $restAfter549 = substr($digits, 3);
-        if (phone_is_non_ar_international($restAfter549)) {
-            return $restAfter549;
-        }
-    } elseif (str_starts_with($digits, '54')) {
-        $restAfter54 = substr($digits, 2);
-        if (phone_is_non_ar_international($restAfter54)) {
-            return $restAfter54;
-        }
-    }
-
-    // AR ya internacional
-    if (str_starts_with($digits, '549')) {
-        return $digits;
-    }
-    if (str_starts_with($digits, '54')) {
-        $rest = substr($digits, 2);
-        if (str_starts_with($rest, '0')) {
-            $rest = substr($rest, 1);
-        }
-        if (str_starts_with($rest, '15')) {
-            $rest = '11' . substr($rest, 2);
-        }
-        if (preg_match('/^(11|2\d{2,3}|3\d{2,3})15(\d{6,8})$/', $rest, $m)) {
-            $rest = $m[1] . $m[2];
-        }
-        return '549' . $rest;
-    }
-
-    // Extranjero con código de país: no tocar
-    if (phone_is_non_ar_international($digits)) {
-        return $digits;
-    }
-
-    // España local (9 dígitos móvil/fijo)
-    if (strlen($digits) === 9 && preg_match('/^[6789]/', $digits)) {
-        return '34' . $digits;
-    }
-
-    // Heurísticas locales AR (sin código de país)
-    if (str_starts_with($digits, '0')) {
-        $digits = substr($digits, 1);
-    }
-    if (preg_match('/^(11|2\d{2,3}|3\d{2,3})15(\d{6,8})$/', $digits, $m)) {
-        $digits = $m[1] . $m[2];
-    }
-    if (str_starts_with($digits, '15')) {
-        $digits = '11' . substr($digits, 2);
-    }
-    if (strlen($digits) === 8) {
-        $digits = '11' . $digits;
-    }
-    // Nacional AR de 10 dígitos (CABA 11… o interior 2xx/3xx…)
-    if (strlen($digits) === 10 && preg_match('/^(?:11|[2-9]\d)\d{8}$/', $digits)) {
-        return '549' . $digits;
-    }
-
-    // Cualquier otra cosa (p. ej. 11 dígitos extranjeros no listados): devolver tal cual.
-    // Nunca anteponer 549 a ciegos.
-    return $digits;
-}
-
-
-/**
- * Canoniza telefono/contacto_telefono en la respuesta (sin escribir DB).
- * Persistencia: escrituras (upsert/PUT) ya usan clean_phone_number;
- * backfill → kinesica_pacientes_heal_corrupt_phones() / action=heal_phones.
- *
- * @param list<array<string,mixed>> $rows
- * @return list<array<string,mixed>>
- */
-function kinesica_pacientes_normalize_phone_rows(PDO $pdo, array $rows): array
-{
-    foreach ($rows as &$row) {
-        if (!is_array($row)) {
-            continue;
-        }
-        foreach (['telefono', 'contacto_telefono'] as $field) {
-            if (!array_key_exists($field, $row)) {
-                continue;
-            }
-            $raw = trim((string) ($row[$field] ?? ''));
-            if ($raw === '' || is_placeholder_phone($raw)) {
-                continue;
-            }
-            $clean = clean_phone_number($raw);
-            if ($clean !== '' && $clean !== $raw) {
-                $row[$field] = $clean;
-            }
-        }
-    }
-    unset($row);
-    return $rows;
-}
-
-/**
- * ¿Es un “54/549 pegado” sobre CC extranjero? (p.ej. 54934… → 34…).
- */
-function kinesica_phone_is_ar_prefix_over_foreign(string $rawDigits): bool
-{
-    if ($rawDigits === '') {
-        return false;
-    }
-    if (str_starts_with($rawDigits, '549')) {
-        return phone_is_non_ar_international(substr($rawDigits, 3));
-    }
-    if (str_starts_with($rawDigits, '54') && !str_starts_with($rawDigits, '549')) {
-        return phone_is_non_ar_international(substr($rawDigits, 2));
-    }
-    return false;
-}
-
-/**
- * One-shot / admin: persiste reparación de 549/54 pegado sobre CC extranjeros.
- *
- * @return array{scanned:int, healed:int, skipped_conflict:int, skipped_error:int, samples:list<array<string,mixed>>}
- */
-function kinesica_pacientes_heal_corrupt_phones(PDO $pdo, int $limit = 200): array
-{
-    $limit = max(1, min(500, $limit));
-    if (!function_exists('kinesica_pacientes_alive_sql')) {
-        require_once __DIR__ . '/pacientes_helpers_alive.php';
-    }
-    $alive = kinesica_pacientes_alive_sql($pdo);
-
-    // Overfetch candidatos 54…; el filtro fino (549+CC extranjero) es en PHP.
-    $fetchLimit = min(2000, max($limit * 10, 200));
-    $stmt = $pdo->query(
-        "SELECT id, telefono, contacto_telefono FROM pacientes
-         WHERE ({$alive})
-           AND (telefono LIKE '54%' OR contacto_telefono LIKE '54%')
-         ORDER BY id ASC
-         LIMIT " . (int) $fetchLimit
-    );
-    $rows = $stmt ? ($stmt->fetchAll(PDO::FETCH_ASSOC) ?: []) : [];
-
-    $scannedCorrupt = 0;
-    $healed = 0;
-    $skippedConflict = 0;
-    $skippedError = 0;
-    $samples = [];
-    $conflictCheck = $pdo->prepare(
-        "SELECT id FROM pacientes WHERE telefono = :tel AND id != :id AND ({$alive}) LIMIT 1"
-    );
-    $updateTel = $pdo->prepare('UPDATE pacientes SET telefono = :tel WHERE id = :id LIMIT 1');
-    $updateCtel = $pdo->prepare('UPDATE pacientes SET contacto_telefono = :tel WHERE id = :id LIMIT 1');
-
-    foreach ($rows as $row) {
-        if ($scannedCorrupt >= $limit) {
-            break;
-        }
-        $id = (int) ($row['id'] ?? 0);
-        if ($id <= 0) {
-            continue;
-        }
-        foreach (
-            [
-                'telefono' => $updateTel,
-                'contacto_telefono' => $updateCtel,
-            ] as $field => $updateStmt
-        ) {
-            if ($scannedCorrupt >= $limit) {
-                break;
-            }
-            $raw = trim((string) ($row[$field] ?? ''));
-            if ($raw === '' || !preg_match('/^\d+$/', $raw) || !kinesica_phone_is_ar_prefix_over_foreign($raw)) {
-                continue;
-            }
-            $scannedCorrupt++;
-            $clean = clean_phone_number($raw);
-            if ($clean === '' || $clean === $raw) {
-                continue;
-            }
-            if ($field === 'telefono') {
-                $conflictCheck->execute(['tel' => $clean, 'id' => $id]);
-                $conflict = $conflictCheck->fetch(PDO::FETCH_ASSOC);
-                if ($conflict) {
-                    $skippedConflict++;
-                    if (count($samples) < 20) {
-                        $samples[] = [
-                            'id' => $id,
-                            'field' => $field,
-                            'from' => $raw,
-                            'to' => $clean,
-                            'skipped' => 'conflict',
-                            'conflict_id' => (int) ($conflict['id'] ?? 0),
-                        ];
-                    }
-                    continue;
-                }
-            }
-            try {
-                $updateStmt->execute(['tel' => $clean, 'id' => $id]);
-                $healed++;
-                if (count($samples) < 20) {
-                    $samples[] = [
-                        'id' => $id,
-                        'field' => $field,
-                        'from' => $raw,
-                        'to' => $clean,
-                    ];
-                }
-            } catch (Throwable) {
-                $skippedError++;
-            }
-        }
-    }
-
-    return [
-        'scanned' => $scannedCorrupt,
-        'healed' => $healed,
-        'skipped_conflict' => $skippedConflict,
-        'skipped_error' => $skippedError,
-        'samples' => $samples,
-    ];
 }
 
 function is_valid_email_strict(?string $raw): bool
@@ -372,7 +67,6 @@ function is_valid_email_strict(?string $raw): bool
 
     return true;
 }
-
 
 /**
  * Calendar a veces trae "Apellido Nombre". Mapa de correcciones conocidas → "Nombre Apellido".
@@ -464,4 +158,3 @@ function extract_first_name(string $fullName): string
     }
     return function_exists('capitalize_patient_name') ? capitalize_patient_name($first) : $first;
 }
-

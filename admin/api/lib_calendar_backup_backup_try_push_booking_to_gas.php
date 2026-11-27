@@ -41,10 +41,14 @@ function kinesica_backup_try_push_booking_to_gas(array $payload): array
     }
     $decoded = json_decode($raw, true);
     if (is_array($decoded) && ($decoded['status'] ?? '') === 'success') {
-        return [
+        $out = [
             'synced' => true,
             'google_event_id' => (string) ($decoded['eventId'] ?? 'OK'),
         ];
+        if (!empty($decoded['confirmToken']) && is_string($decoded['confirmToken'])) {
+            $out['confirmToken'] = $decoded['confirmToken'];
+        }
+        return $out;
     }
     return [
         'synced' => false,

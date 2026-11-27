@@ -4,7 +4,7 @@
 
 import { api } from "./api.js?v=79";
 import { escapeHtml, toast, dialogAlert } from "./dom.js?v=79";
-import { normalizePhoneForWhatsApp } from "./phone-format.js?v=6";
+import { normalizePhoneForWhatsApp } from "./phone-format.js?v=8";
 import { markTestFieldError, clearTestFieldError } from "./recordatorios-modal-fields.js?v=1";
 import { resolveRecordatorioEmail, storeTestContact, defaultTestContact } from "./recordatorios-modal-email.js?v=1";
 import { loadRecordatorios } from "./recordatorios-load.js?v=2";

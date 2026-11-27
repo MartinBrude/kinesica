@@ -4,7 +4,7 @@
  */
 
 import { escapeHtml, toast } from "./dom.js?v=79";
-import { formatDisplayPhone, normalizePhoneForWhatsApp } from "./phone-format.js?v=7";
+import { formatDisplayPhone, normalizePhoneForWhatsApp } from "./phone-format.js?v=8";
 import { capitalizePersonName } from "./pacientes-format.js";
 
 const COPY_ICON =

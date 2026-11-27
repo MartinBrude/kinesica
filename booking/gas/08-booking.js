@@ -205,6 +205,19 @@ function handleBookAppointment(payload) {
         ? "Tu llamada de orientación ha sido agendada con éxito."
         : "Tu turno presencial ha sido agendado con éxito."
     };
+    const confirmToken = signBookingConfirmationToken({
+      eventId: bookingResult.eventId,
+      telefono: f.telefono,
+      email: f.email,
+      nombre: f.nombre,
+      date: f.dateStr,
+      time: f.timeStr,
+      practitionerId: f.practitionerId,
+      especialidad: meta.especialidad
+    });
+    if (confirmToken) {
+      bookingResult.confirmToken = confirmToken;
+    }
     // Persistir antes de liberar el lock para que un timeout del navegador sea
     // recuperable reenviando exactamente la misma solicitud.
     storeBookingResult(f.bookingRequestId, bookingResult);

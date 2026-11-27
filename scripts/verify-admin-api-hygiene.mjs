@@ -108,4 +108,17 @@ assert.ok(!sendConf.includes("$normalizePhone("), "send-confirmation no llama $n
 const recordPersist = read("admin/api/recordatorios_lib_recordatorios_persist_directory_contact.php");
 assert.match(recordPersist, /kinesica_pacientes_release_soft_deleted_phone/);
 
+// Sin endpoints one-shot / diagnóstico / probe dejados en api/ o admin/api/.
+const forbiddenName = /(?:diag|probe|oneshot|one_shot|cleanup.*probe|wa-tpl-diag|cron_restore_answered_flags)/i;
+for (const dirRel of ["api", "admin/api"]) {
+  const dirAbs = path.join(root, dirRel);
+  for (const name of fs.readdirSync(dirAbs)) {
+    if (!name.endsWith(".php")) continue;
+    assert.ok(
+      !forbiddenName.test(name),
+      `No dejar endpoints one-shot/diagnóstico en producción: ${dirRel}/${name}`
+    );
+  }
+}
+
 console.log("admin-api-hygiene: ok");

@@ -189,6 +189,7 @@
           serviceName = "Terapias Manuales";
         }
         const eventId = (bookResult && bookResult.eventId) || "";
+        const confirmToken = (bookResult && bookResult.confirmToken) || "";
         const body = {
           email: payload.email || "", paciente: payload.nombre, telefono: payload.telefono || "",
           dni: payload.dni, fecha: payload.date, hora: payload.time,
@@ -198,7 +199,7 @@
           contactoNombre: payload.contactoNombre || "",
           contactoTelefono: payload.contactoTelefono || "",
           contactoNotas: payload.contactoNotas || "",
-          eventId, practitionerId: payload.practitionerId || "",
+          eventId, confirmToken, practitionerId: payload.practitionerId || "",
         };
 
         const postConfirm = (extra) => fetch("/api/send-confirmation.php", {
@@ -207,8 +208,12 @@
         });
 
         let res = await postConfirm();
-        if (!res.ok && eventId && hasEmail) res = await postConfirm({ retry: true, rotate_manage_code: true });
-        const data = await res.json().catch(() => null);
+        let data = await res.json().catch(() => null);
+        // Reintentar también si salió WhatsApp (HTTP 200) pero falló el mail (anti-replay evita duplicar WA).
+        if (eventId && hasEmail && (!res.ok || !data || !data.email || !data.email.ok)) {
+          res = await postConfirm({ retry: true, rotate_manage_code: true });
+          data = await res.json().catch(() => data);
+        }
         if (!data) return null;
         // Devolver flags aunque success=false para que admin muestre el estado.
         return data;

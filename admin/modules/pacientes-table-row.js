@@ -4,7 +4,7 @@
 
 import { escapeHtml } from "./dom.js?v=79";
 import { formatDisplayPhone, capitalizePersonName } from "./pacientes-format.js";
-import { normalizePhoneForWhatsApp } from "./phone-format.js?v=7";
+import { normalizePhoneForWhatsApp } from "./phone-format.js?v=8";
 import { getSessionUser } from "./auth.js?v=83";
 import { formatPatientName } from "./pacientes-name.js?v=4";
 import {

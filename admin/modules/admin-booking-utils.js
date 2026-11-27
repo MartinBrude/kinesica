@@ -1,6 +1,6 @@
 import { getSessionUser } from "./auth.js?v=83";
 import { MAX_RESULTS, getPatients } from "./admin-booking-state.js";
-import { formatDisplayPhone, normalizePhoneForWhatsApp } from "./phone-format.js?v=7";
+import { formatDisplayPhone, normalizePhoneForWhatsApp } from "./phone-format.js?v=8";
 
 export function isAdmin() {
   const user = getSessionUser();

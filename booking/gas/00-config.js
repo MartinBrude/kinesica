@@ -48,5 +48,5 @@ const ADMIN_HOURS_CACHE_KEY = "admin_practitioner_hours_v1";
 const ADMIN_HOURS_CACHE_SECONDS = 120;
 // Última copia buena de los horarios del admin (persistente): se usa si settings.php no responde.
 const ADMIN_HOURS_LAST_GOOD_PROP = "ADMIN_HOURS_LAST_GOOD";
-const GAS_CODE_VERSION = "v30-calendar-id-variants";
+const GAS_CODE_VERSION = "v31-confirm-hmac-token";
 const BOOKING_IDEMPOTENCY_PREFIX = "booking_result_v1_";

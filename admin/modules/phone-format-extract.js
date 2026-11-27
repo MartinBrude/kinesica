@@ -2,7 +2,7 @@
  * Extracción de teléfonos desde texto de calendario / resúmenes.
  */
 
-import { cleanPhoneDigits } from "./phone-format-core.js?v=1";
+import { cleanPhoneDigits } from "./phone-format-core.js?v=2";
 
 function normalizeCalendarKvKey(raw) {
   return String(raw || "")

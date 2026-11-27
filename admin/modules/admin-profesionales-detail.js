@@ -1,4 +1,4 @@
-import { formatDisplayPhone, normalizePhoneForWhatsApp } from "./phone-format.js?v=7";
+import { formatDisplayPhone, normalizePhoneForWhatsApp } from "./phone-format.js?v=8";
 import { getInitials, getAvatarColor } from "./admin-profesionales-avatar.js";
 import {
   modalEl,

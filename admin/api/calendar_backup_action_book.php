@@ -153,17 +153,34 @@ declare(strict_types=1);
             return $state;
         });
 
-        if ($existingIdempotent !== null) {
-            echo json_encode([
-                'status' => 'success',
-                'appointmentType' => 'session',
-                'summary' => $existingIdempotent['summary'] ?? $summary,
-                'date' => $dateStr,
-                'time' => $timeStr,
-                'eventId' => $existingIdempotent['google_event_id'] ?: $existingIdempotent['eventId'],
+        $emitBackupSuccess = static function (string $evId, string $evSummary, array $pData, string $gasToken = '') use ($dateStr, $timeStr): void {
+            $resp = [
+                'status' => 'success', 'appointmentType' => 'session', 'summary' => $evSummary,
+                'date' => $dateStr, 'time' => $timeStr, 'eventId' => $evId,
                 'message' => 'Tu turno presencial ha sido agendado con éxito.',
-            ]);
+            ];
+            $tok = $gasToken;
+            if ($tok === '') {
+                require_once dirname(__DIR__, 2) . '/api/send-confirmation-auth.php';
+                $tok = kinesica_confirmation_sign_token(
+                    ['eventId' => $evId, 'date' => $dateStr, 'time' => $timeStr] + $pData,
+                    function_exists('cfg') ? cfg() : [],
+                    'backup'
+                );
+            }
+            if ($tok !== '') {
+                $resp['confirmToken'] = $tok;
+            }
+            echo json_encode($resp);
             exit;
+        };
+
+        if ($existingIdempotent !== null) {
+            $emitBackupSuccess(
+                (string) ($existingIdempotent['google_event_id'] ?: $existingIdempotent['eventId']),
+                (string) ($existingIdempotent['summary'] ?? $summary),
+                is_array($existingIdempotent['payload'] ?? null) ? $existingIdempotent['payload'] : $params
+            );
         }
 
         if ($hasConflict || $newEntry === null) {
@@ -220,14 +237,10 @@ declare(strict_types=1);
         }
 
         // Respuesta idéntica al flujo normal: el paciente nunca sabe que operó el modo respaldo
-        echo json_encode([
-            'status' => 'success',
-            'appointmentType' => 'session',
-            'summary' => $summary,
-            'date' => $dateStr,
-            'time' => $timeStr,
-            'eventId' => $newEntry['google_event_id'] ?: $newEntry['eventId'],
-            'message' => 'Tu turno presencial ha sido agendado con éxito.',
-        ]);
-        exit;
+        $emitBackupSuccess(
+            (string) ($newEntry['google_event_id'] ?: $newEntry['eventId']),
+            $summary,
+            $newEntry['payload'],
+            (string) ($syncOutcome['confirmToken'] ?? '')
+        );
     }

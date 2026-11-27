@@ -1,11 +1,12 @@
 import assert from "node:assert/strict";
 import { execSync } from "node:child_process";
+// Submódulos puros: la fachada pacientes.js arrastra módulos de DOM (form-runtime).
 import {
   canonicalPatientNameKey,
   cleanPatientDni,
   isPlaceholderPhone,
-  deduplicatePatientsInMemory,
-} from "../admin/modules/pacientes.js";
+} from "../admin/modules/pacientes-identifiers.js";
+import { deduplicatePatientsInMemory } from "../admin/modules/pacientes-dedupe.js";
 import { inferPractitionerFromSlot } from "../admin/modules/horarios-validator.js";
 import { CONTACT } from "./site-contact.mjs";
 

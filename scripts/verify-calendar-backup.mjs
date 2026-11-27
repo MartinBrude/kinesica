@@ -161,6 +161,7 @@ await test("2. BookingClient conmuta de forma 100% transparente al respaldo cuan
     assert.equal(bookOut.status, "success");
     assert.equal(bookOut.message, "Tu turno presencial ha sido agendado con éxito.");
     assert.ok(bookOut.eventId && bookOut.eventId.startsWith("kin_"));
+    assert.match(String(bookOut.confirmToken || ""), /^v1\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/, "El respaldo debe emitir confirmToken HMAC firmado");
     assert.ok(!JSON.stringify(bookOut).toLowerCase().includes("respaldo"), "El paciente nunca debe ver la palabra respaldo");
 
     // Segundo paciente intenta reservar el mismo horario (11:00) mientras Google sigue caído -> Bloqueado!

@@ -41,7 +41,10 @@ function kinesica_confirmation_wa_first_name(string $paciente): string
         return 'Estimado/a paciente';
     }
     if (!function_exists('extract_first_name')) {
-        @require_once dirname(__DIR__) . '/admin/api/pacientes_helpers_search_key.php';
+        $helper = dirname(__DIR__) . '/admin/api/pacientes_helpers_search_key.php';
+        if (is_file($helper)) {
+            require_once $helper;
+        }
     }
     if (function_exists('extract_first_name')) {
         $pila = trim(extract_first_name($full));
@@ -63,7 +66,10 @@ function kinesica_confirmation_wa_normalize_phone(string $raw): string
         return '';
     }
     if (!function_exists('clean_phone_number')) {
-        @require_once dirname(__DIR__) . '/admin/api/pacientes_helpers_search_key.php';
+        $helper = dirname(__DIR__) . '/admin/api/pacientes_helpers_search_key.php';
+        if (is_file($helper)) {
+            require_once $helper;
+        }
     }
     if (function_exists('clean_phone_number')) {
         $clean = clean_phone_number($raw);
@@ -112,7 +118,7 @@ function kinesica_confirmation_deliver_whatsapp(
 
     $profLine = trim($profesional);
     $serv = trim($servicio);
-    if ($serv !== '' && $serv !== 'No especifica' && stripos($profLine, $serv) === false) {
+    if ($serv !== '' && $serv !== 'No especifica' && strcasecmp($serv, 'Terapias Manuales') !== 0 && stripos($profLine, $serv) === false) {
         $profLine = $profLine !== '' ? ($profLine . ' · ' . $serv) : $serv;
     }
     if ($profLine === '') {

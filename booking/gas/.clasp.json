@@ -13,6 +13,7 @@
     "08-booking.js",
     "09-cancel.js",
     "10-notify.js",
-    "11-backup.js"
+    "11-backup.js",
+    "12-confirm-token.js"
   ]
 }

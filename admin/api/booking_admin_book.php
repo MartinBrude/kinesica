@@ -90,5 +90,21 @@ if (($decoded['status'] ?? '') === 'conflict') {
     $outCode = 409;
 } elseif (($decoded['status'] ?? '') === 'error') {
     $outCode = $httpCode >= 400 ? $httpCode : 400;
+} elseif (($decoded['status'] ?? '') === 'success' && empty($decoded['confirmToken']) && !empty($decoded['eventId'])) {
+    // Fallback si GAS aún no fue redesplegado con 12-confirm-token.js.
+    require_once dirname(__DIR__, 2) . '/api/send-confirmation-auth.php';
+    $tok = kinesica_confirmation_sign_token([
+        'eventId' => (string) $decoded['eventId'],
+        'telefono' => (string) ($input['telefono'] ?? ''),
+        'email' => (string) ($input['email'] ?? ''),
+        'nombre' => (string) ($input['nombre'] ?? ''),
+        'date' => (string) ($input['date'] ?? ''),
+        'time' => (string) ($input['time'] ?? ''),
+        'practitionerId' => (string) ($input['practitionerId'] ?? ''),
+        'especialidad' => (string) ($input['especialidad'] ?? $input['motivo'] ?? ''),
+    ], $c, 'admin_proxy');
+    if ($tok !== '') {
+        $decoded['confirmToken'] = $tok;
+    }
 }
 json_out($outCode, $decoded);

@@ -19,7 +19,13 @@ const src = [
   "booking/booking-widget-events.js",
   "booking/booking-widget-step2-dates.js",
 ].map((f) => fs.readFileSync(path.join(root, f), "utf8")).join("\n");
-const copySrc = fs.readFileSync(path.join(root, "booking/booking-widget-copy.js"), "utf8");
+const copySrc = [
+  "booking/booking-widget-copy.js",
+  "booking/booking-widget-copy-es.js",
+  "booking/booking-widget-copy-en.js",
+  "booking/booking-widget-copy-fr.js",
+  "booking/booking-widget-copy-pt.js",
+].map((f) => fs.readFileSync(path.join(root, f), "utf8")).join("\n");
 const i18nSrc = `${src}\n${copySrc}`;
 
 let n = 0;

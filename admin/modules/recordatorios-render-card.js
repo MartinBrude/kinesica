@@ -1,5 +1,5 @@
 import { escapeHtml } from "./dom.js?v=79";
-import { formatDisplayPhone, extractPhoneCandidate, normalizePhoneForWhatsApp } from "./phone-format.js?v=7";
+import { formatDisplayPhone, extractPhoneCandidate, normalizePhoneForWhatsApp } from "./phone-format.js?v=8";
 import { capitalizePersonName } from "./pacientes-format.js";
 import { isAppointmentPast } from "./recordatorios-render-pages.js?v=1";
 

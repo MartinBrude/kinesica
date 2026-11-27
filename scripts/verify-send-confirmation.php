@@ -137,7 +137,8 @@ check(kinesica_confirmation_wa_first_name('Ana María Pérez') !== '', 'WA nombr
 check(kinesica_confirmation_phone_usable('5491161564311'), 'WA teléfono usable');
 check(!kinesica_confirmation_phone_usable(''), 'WA teléfono vacío no usable');
 check(!kinesica_confirmation_phone_usable('123'), 'WA teléfono corto no usable');
-$tplSrc = file_get_contents(__DIR__ . '/../admin/api/lib_whatsapp_template.php');
+$tplSrc = file_get_contents(__DIR__ . '/../admin/api/lib_whatsapp_template.php')
+    . "\n" . file_get_contents(__DIR__ . '/../admin/api/lib_whatsapp_template_confirmation.php');
 check(
     str_contains($tplSrc, 'function send_whatsapp_booking_confirmation_template')
     && str_contains($tplSrc, "confirmacion_turno_kinesica"),
@@ -145,8 +146,9 @@ check(
 );
 check(
     str_contains($sendConfSrc, 'kinesica_confirmation_deliver_whatsapp')
-    && str_contains($sendConfSrc, "'whatsapp'"),
-    'send-confirmation despacha WhatsApp y reporta canal'
+    && str_contains($sendConfSrc, "'whatsapp'")
+    && str_contains($sendConfSrc, 'kinesica_confirmation_verify_token'),
+    'send-confirmation verifica confirmToken y despacha WhatsApp'
 );
 
 // --- endpoint real, mail capturado ---
@@ -157,6 +159,7 @@ function render_mail(array $post, ?array $settings): array
     @mkdir("$root/admin/api", 0777, true);
     foreach ([
         'send-confirmation.php',
+        'send-confirmation-auth.php',
         'send-confirmation-patient.php',
         'send-confirmation-transport.php',
         'send-confirmation-whatsapp.php',
