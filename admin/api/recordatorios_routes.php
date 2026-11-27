@@ -20,7 +20,25 @@ if ($method === 'POST' && in_array($action, ['ingest', 'reconcile', 'check_sent'
         $appt = isset($input['appointment_date']) && is_string($input['appointment_date'])
             ? trim($input['appointment_date'])
             : null;
-        json_out(200, ['ok' => true, 'sent' => recordatorios_check_sent_map($ids, $appt)]);
+        $phones = $input['phones'] ?? $input['wa_ids'] ?? [];
+        $items = $input['items'] ?? [];
+        $phoneByEventId = [];
+        if (is_array($items)) {
+            foreach ($items as $it) {
+                if (is_array($it) && !empty($it['calendar_event_id']) && !empty($it['wa_id'])) {
+                    $phoneByEventId[trim((string) $it['calendar_event_id'])] = trim((string) $it['wa_id']);
+                }
+            }
+        }
+        $sentIds = recordatorios_check_sent_map($ids, $appt, null, $phoneByEventId);
+        $sentPhones = is_array($phones) && $phones !== []
+            ? recordatorios_check_sent_phones_map($phones, $appt)
+            : [];
+        json_out(200, [
+            'ok' => true,
+            'sent' => $sentIds,
+            'sent_phones' => $sentPhones,
+        ]);
     }
     if ($action === 'check_alive') {
         $ids = $input['calendar_event_ids'] ?? [];

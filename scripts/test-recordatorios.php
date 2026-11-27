@@ -167,6 +167,8 @@ ok(
 );
 eq(recordatorios_check_sent_map([]), [], 'check_sent_map vacío => []');
 eq(recordatorios_check_sent_map(['', '_run']), [], 'ignora ids vacíos y _run');
+ok(function_exists('recordatorios_check_sent_phones_map'), 'existe check_sent_phones_map');
+eq(recordatorios_check_sent_phones_map([]), [], 'check_sent_phones_map vacío => []');
 
 section('Contrato check_alive (TC-50 Calendar vivo)');
 require_once $root . '/admin/api/lib_recordatorios_calendar_verify.php';
