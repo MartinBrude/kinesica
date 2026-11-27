@@ -138,15 +138,25 @@ function kinesica_confirmation_deliver_whatsapp(
     }
 
     if (!empty($res['ok'])) {
-        return ['ok' => true, 'to' => $to];
+        $out = ['ok' => true, 'to' => $to];
+        if (!empty($res['language'])) {
+            $out['language'] = $res['language'];
+        }
+        return $out;
     }
 
     $err = (string) ($res['error'] ?? 'No se pudo enviar WhatsApp');
-    error_log('kinesica confirmation whatsapp fail: ' . $err);
-    return [
+    error_log('kinesica confirmation whatsapp fail: ' . $err . ' lang=' . (string) ($res['language'] ?? '') . ' raw=' . (string) ($res['raw_error'] ?? ''));
+    $fail = [
         'ok' => false,
         'error' => $err,
         'to' => $to,
         'error_code' => $res['error_code'] ?? null,
     ];
+    foreach (['language', 'raw_error', 'raw_details', 'hint'] as $k) {
+        if (!empty($res[$k])) {
+            $fail[$k] = $res[$k];
+        }
+    }
+    return $fail;
 }
