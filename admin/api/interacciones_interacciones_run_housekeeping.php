@@ -24,7 +24,8 @@ $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $input = $method === 'POST' ? read_json() : [];
 $action = (string) ($input['action'] ?? '');
 $isLegacyPush = $method === 'POST' && $action === '' && isset($input['wa_id']);
-$botAction = $method === 'POST' && ($isLegacyPush || in_array($action, ['ingest', 'sync_all', 'reconcile'], true));
+$takeoverBotActions = ['takeover_list', 'takeover_start', 'takeover_end', 'takeover_end_all', 'takeover_status'];
+$botAction = $method === 'POST' && ($isLegacyPush || in_array($action, array_merge(['ingest', 'sync_all', 'reconcile'], $takeoverBotActions), true));
 
 if ($botAction && interacciones_bot_authenticated()) {
     if ($action === 'ingest') {
@@ -35,6 +36,55 @@ if ($botAction && interacciones_bot_authenticated()) {
     }
     if ($action === 'reconcile') {
         json_out(200, ['ok' => true] + interacciones_reconcile(null, 8));
+    }
+    if (in_array($action, $takeoverBotActions, true)) {
+        require_once __DIR__ . '/lib_clara_takeover.php';
+        if ($action === 'takeover_list') {
+            json_out(200, [
+                'ok' => true,
+                'ttl_seconds' => CLARA_TAKEOVER_TTL_SECONDS,
+                'items' => clara_takeover_list_active(),
+            ]);
+        }
+        if ($action === 'takeover_status') {
+            $wa = (string) ($input['wa_id'] ?? $input['phone'] ?? '');
+            $row = clara_takeover_get($wa);
+            json_out(200, [
+                'ok' => true,
+                'wa_id' => clara_takeover_normalize_wa_id($wa),
+                'active' => $row !== null,
+                'takeover' => $row,
+                'ttl_seconds' => CLARA_TAKEOVER_TTL_SECONDS,
+            ]);
+        }
+        if ($action === 'takeover_start') {
+            $wa = (string) ($input['wa_id'] ?? $input['phone'] ?? '');
+            $by = (string) ($input['paused_by'] ?? $input['by'] ?? 'bot');
+            try {
+                $row = clara_takeover_start($wa, $by);
+            } catch (InvalidArgumentException $e) {
+                json_out(422, ['error' => $e->getMessage()]);
+            }
+            json_out(200, ['ok' => true, 'action' => 'takeover_start'] + $row);
+        }
+        if ($action === 'takeover_end') {
+            $wa = (string) ($input['wa_id'] ?? $input['phone'] ?? '');
+            $ended = clara_takeover_end($wa);
+            json_out(200, [
+                'ok' => true,
+                'action' => 'takeover_end',
+                'wa_id' => clara_takeover_normalize_wa_id($wa),
+                'ended' => $ended,
+            ]);
+        }
+        if ($action === 'takeover_end_all') {
+            $cleared = clara_takeover_end_all();
+            json_out(200, [
+                'ok' => true,
+                'action' => 'takeover_end_all',
+                'cleared' => $cleared,
+            ]);
+        }
     }
     interacciones_handle_legacy_push($input);
 }
@@ -102,6 +152,66 @@ if (in_array($action, ['archive', 'unarchive', 'toggle_answered'], true)) {
         json_out(404, ['error' => 'Conversación no encontrada']);
     }
     json_out(200, ['ok' => true, 'id' => $id, 'action' => $action]);
+}
+
+// Human takeover: pausar / reanudar Clara para un contacto + responder como Clara.
+if (in_array($action, ['takeover_start', 'takeover_end', 'takeover_end_all', 'takeover_list', 'takeover_status', 'reply'], true)) {
+    require_once __DIR__ . '/lib_clara_takeover.php';
+    $actor = (string) ($auth['name'] ?? $auth['username'] ?? 'admin');
+    if ($action === 'takeover_list') {
+        json_out(200, [
+            'ok' => true,
+            'ttl_seconds' => CLARA_TAKEOVER_TTL_SECONDS,
+            'items' => clara_takeover_list_active(),
+        ]);
+    }
+    if ($action === 'takeover_status') {
+        $wa = (string) ($input['wa_id'] ?? $input['phone'] ?? '');
+        $row = clara_takeover_get($wa);
+        json_out(200, [
+            'ok' => true,
+            'wa_id' => clara_takeover_normalize_wa_id($wa),
+            'active' => $row !== null,
+            'takeover' => $row,
+            'ttl_seconds' => CLARA_TAKEOVER_TTL_SECONDS,
+        ]);
+    }
+    if ($action === 'takeover_start') {
+        $wa = (string) ($input['wa_id'] ?? $input['phone'] ?? '');
+        try {
+            $row = clara_takeover_start($wa, $actor);
+        } catch (InvalidArgumentException $e) {
+            json_out(422, ['error' => $e->getMessage()]);
+        }
+        json_out(200, ['ok' => true, 'action' => 'takeover_start'] + $row);
+    }
+    if ($action === 'takeover_end') {
+        $wa = (string) ($input['wa_id'] ?? $input['phone'] ?? '');
+        $ended = clara_takeover_end($wa);
+        json_out(200, [
+            'ok' => true,
+            'action' => 'takeover_end',
+            'wa_id' => clara_takeover_normalize_wa_id($wa),
+            'ended' => $ended,
+        ]);
+    }
+    if ($action === 'takeover_end_all') {
+        $cleared = clara_takeover_end_all();
+        json_out(200, [
+            'ok' => true,
+            'action' => 'takeover_end_all',
+            'cleared' => $cleared,
+        ]);
+    }
+    if ($action === 'reply') {
+        $wa = (string) ($input['wa_id'] ?? $input['phone'] ?? '');
+        $body = (string) ($input['body'] ?? $input['text'] ?? $input['message'] ?? '');
+        $res = clara_takeover_reply($wa, $body, $actor);
+        if (empty($res['ok'])) {
+            json_out(502, ['error' => $res['error'] ?? 'No se pudo enviar', 'wa_id' => $res['wa_id'] ?? ''] + $res);
+        }
+        json_out(200, ['ok' => true, 'action' => 'reply'] + $res);
+    }
 }
 
 // REL: asociación posterior conversación → paciente (etapa 7).

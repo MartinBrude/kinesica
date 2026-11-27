@@ -494,13 +494,17 @@ Silencia a Clara para **todos** los pacientes en simultáneo (útil ante emergen
   - **Para pausar todo el bot:** Escribirle a Clara `"pausar bot"`, `"silencio"` o `"lo atiendo yo"` (sin especificar paciente). Clara responde *"Entendido [Norberto/María], pausado el bot en general. Te dejo las conversaciones a vos 🙌"* y entra en silencio para todos los pacientes.
   - **Para reanudar todo el bot:** Escribirle `"reanudar bot"`, `"activar bot"`, `"retomar bot"` o `"reanudar todo"`. Clara responde *"¡Listo [Norberto/María]! Vuelvo a estar activa y atenta a las consultas 🌿"*.
 
-#### ℹ️ 2. Por qué la Pausa Individual por Paciente está desactivada
-* La **pausa individual por conversación está desactivada por diseño** para garantizar que Clara siempre responda a los pacientes si vuelven a consultar un horario, la dirección o cualquier opción del menú (además, como Norberto y María contactan al paciente desde sus propias líneas tocando el link `wa.me/...`, Clara nunca interfiere en el chat privado entre el profesional y el paciente).
-* Si Norberto o María escriben por WhatsApp `"pausar a Lucas"` o `"pausar 11 6123-4567"`, Clara les informa:
-  > *"ℹ️ [Norberto/María], la pausa individual está desactivada para que Clara siempre responda las consultas de los pacientes. Si necesitás pausar el bot de forma general, podés usar 'pausar bot' 🙌."*
+#### 👤 2. Pausa individual por paciente (takeover 30 min)
+Útil cuando Norberto o María quieren responder **ellos** un par de mensajes en el chat de Clara sin que el bot interfiera, y luego dejar que Clara vuelva sola.
 
-#### ⏳ 3. Despausa automática de seguridad (Timeout de 8 horas)
-Si se pausa el bot por WhatsApp (`"pausar bot"`) y por descuido nadie envía el comando de reanudación, el sistema **levanta automáticamente la pausa tras 8 horas** para garantizar que ningún paciente quede desatendido al día siguiente.
+* **Cómo pausar un contacto:** Escribirle a Clara `"pausar a Lucas"`, `"pausar 11 6123-4567"`, `"silenciar a Florencia"` o `"atiendo a Juan"`. Clara confirma la pausa de **30 minutos** para ese número y deja de responderle (el resto de pacientes sigue normal).
+* **Cómo reanudar ese contacto antes:** `"reanudar a Lucas"` / `"reanudar 11 6123-4567"`.
+* **Reanudación automática:** a los **30 minutos** Clara vuelve sola a atender ese contacto. También se limpia con `"reanudar bot"` (reanuda todo y borra las pausas puntuales en la base del admin).
+* **Nota:** el chat privado profesional↔paciente por línea propia (`wa.me/...`) nunca pasa por Clara; esta pausa aplica solo al hilo donde escribe Clara.
+
+#### ⏳ 3. Despausa automática de seguridad
+* **Pausa global** (`"pausar bot"`): si nadie reanuda, el sistema **levanta la pausa tras 8 horas**.
+* **Pausa individual**: TTL fijo de **30 minutos** (ver D.2).
 
 ### 🔀 E. Cambiar entre Modo Menú (sin IA) y Modo Agente IA
 Desde el WhatsApp de Norberto o María se puede conmutar en vivo el modo de atención de Clara:
@@ -725,7 +729,7 @@ Guardá esta tablita a mano para gestionar a Clara desde el celular de **Norbert
 | **Pausar todo el bot (Pausa general)** | Tocando **"Pausar bot"** en `/admin/` o en **Clara → Estado de servicios**, o escribiéndole a Clara: `"pausar bot"`, `"lo atiendo yo"` o `"silencio"` (se reanuda solo a las 8 hs si nadie lo reactiva antes). |
 | **Pausar solo la turnera web** | En **Clara → Estado de servicios**, botón **"Pausar turnera"** (no silencia el chat de WhatsApp). |
 | **Reanudar toda la atención de Clara** | Tocando **"Activar bot"** en `/admin/` o en **Clara → Estado de servicios**, o escribiéndole a Clara: `"reanudar bot"`, `"activar bot"` o `"reanudar todo"`. |
-| **Pausa individual por paciente** | *Desactivada por diseño* para que Clara nunca deje a un paciente sin respuesta. |
+| **Pausa individual por paciente** | Escribirle a Clara: `"pausar a Lucas"` / `"pausar 11 6123-4567"` (silencio 30 min; se reactiva sola o con `"reanudar …"` / `"reanudar bot"`). |
 | **Cambiar a Modo Menú por letras (sin IA)** | Escribirle a Clara: `"modo menu"` o `"modo sin ia"` *(modo activo por defecto; números 1 a 9 mapean a letras)*. |
 | **Cambiar a Modo Agente IA conversacional** | Escribirle a Clara: `"modo ia"` o `"modo con ia"`. |
 | **Descargar backup de base de datos** | En **Administración → Copias de seguridad**. |

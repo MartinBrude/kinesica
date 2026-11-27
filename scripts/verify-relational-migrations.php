@@ -125,6 +125,8 @@ assert_true(in_array('014_etapa10_compat', $first['applied'], true), '014_etapa1
 assert_true(in_array('016_turnos_manage_code', $first['applied'], true), '016_turnos_manage_code aplicada');
 assert_true(in_array('019_pacientes_dni_unique', $first['applied'], true), '019_pacientes_dni_unique aplicada');
 assert_true(in_array('020_drop_lista_espera', $first['applied'], true), '020_drop_lista_espera aplicada');
+assert_true(in_array('021_clara_takeover', $first['applied'], true), '021_clara_takeover aplicada');
+assert_true(kinesica_migrations_table_exists($pdo, 'clara_takeover'), 'tabla clara_takeover (021)');
 assert_true(in_array('017_scrub_manage_code_plaintext', $first['applied'], true), '017 scrub manage_code aplicada');
 assert_true(kinesica_migrations_column_exists($pdo, 'turnos', 'manage_code_hash'), 'turnos.manage_code_hash');
 assert_true(kinesica_schema_bridges_should_run($pdo, false) === true, 'bridges siguen on (no corte productivo)');
