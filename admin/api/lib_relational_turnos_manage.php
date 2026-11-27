@@ -182,3 +182,27 @@ function kinesica_rel_manage_cancel_allowed(array $turno, int $minHours = KINESI
     }
     return ['allowed' => true, 'hours_left' => round($hoursLeft, 1)];
 }
+
+/**
+ * ¿Anulación con poca anticipación? (default ≤2 hs antes del turno).
+ *
+ * @param array<string,mixed> $turno
+ */
+function kinesica_rel_manage_is_late_cancel(array $turno, float $withinHours = KINESICA_LATE_CANCEL_NOTICE_HOURS): bool
+{
+    $starts = trim((string) ($turno['starts_at'] ?? ''));
+    if ($starts === '') {
+        return false;
+    }
+    $ts = strtotime($starts);
+    if ($ts === false) {
+        return false;
+    }
+    $hoursLeft = ($ts - time()) / 3600;
+    return $hoursLeft > 0 && $hoursLeft <= $withinHours;
+}
+
+function kinesica_rel_manage_late_cancel_notice(): string
+{
+    return KINESICA_LATE_CANCEL_NOTICE_ES;
+}

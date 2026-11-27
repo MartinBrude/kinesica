@@ -97,6 +97,9 @@
 
     if (opts.cancelled) {
       html += '<p class="mi-turno-ok">' + escapeHtml(t("cancelledOk")) + "</p>";
+      if (opts.lateNotice) {
+        html += '<p class="mi-turno-warn">' + escapeHtml(opts.lateNotice) + "</p>";
+      }
     } else if (canCancel) {
       html += '<button type="button" class="mi-turno-btn mi-turno-btn-danger" id="mt-cancel">' + escapeHtml(t("cancel")) + "</button>";
     } else if (turno.cancel_blocked_reason) {
@@ -123,8 +126,14 @@
     api("cancel", lastCreds)
       .then(function (res) {
         if (res.ok && res.data.success) {
-          setStatus(t("cancelledOk"), "ok");
-          renderTurno(res.data.turno || {}, { cancelled: true });
+          var lateNotice = res.data.late_cancel_notice
+            ? String(res.data.late_cancel_notice)
+            : "";
+          setStatus(res.data.message || t("cancelledOk"), "ok");
+          renderTurno(res.data.turno || {}, {
+            cancelled: true,
+            lateNotice: lateNotice,
+          });
           return;
         }
         if (res.status === 403) {

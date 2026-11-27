@@ -8,6 +8,10 @@ declare(strict_types=1);
 const KINESICA_MANAGE_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const KINESICA_MANAGE_CODE_LEN = 7;
 const KINESICA_MANAGE_CANCEL_HOURS = 24;
+/** Aviso de cortesía si anulan con esta anticipación o menos (horas). */
+const KINESICA_LATE_CANCEL_NOTICE_HOURS = 2;
+const KINESICA_LATE_CANCEL_NOTICE_ES =
+    'Te pedimos que, de ser posible, en una próxima ocasión, nos avises con más tiempo para poder disponer de horario para otros pacientes. Muchas gracias';
 
 function kinesica_rel_turnos_manage_ready(PDO $pdo): bool
 {

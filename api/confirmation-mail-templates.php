@@ -141,10 +141,15 @@ function kinesica_build_confirmation_mail(array $params): array
 
     if ($esCancelacion) {
         $paciente = trim(kinesica_text_to_plain($paciente));
+        $lateCancelNotice = trim((string) ($params['lateCancelNotice'] ?? ''));
+        $lateCancelHtml = $lateCancelNotice !== ''
+            ? '<p style="font-size: 14px; color: #334155; margin-top: 18px; line-height: 1.5;">'
+                . htmlspecialchars($lateCancelNotice) . '</p>'
+            : '';
         $subject = 'Anulación de turno - ' . $fechaLegible . ($horaLegible !== '' ? ' (' . $horaLegible . ')' : '');
         $body = '
       <h1 class="greeting">Turno anulado</h1>
-      <p class="lead-text">Hola <strong>' . htmlspecialchars($paciente) . '</strong>, anulamos tu turno en Kinésica.</p>' . $detailsCard . '
+      <p class="lead-text">Hola <strong>' . htmlspecialchars($paciente) . '</strong>, anulamos tu turno en Kinésica.</p>' . $detailsCard . $lateCancelHtml . '
       <p style="font-size: 13px; color: #64748b; margin-top: 18px;">
         Si querés otro horario, podés reservarlo en <a href="https://www.kinesica.com.ar/agendar" style="color:#005f99;">kinesica.com.ar/agendar</a> o escribirnos por WhatsApp.
       </p>

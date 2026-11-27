@@ -32,6 +32,8 @@ export const MI_TURNO = {
     patient: "Paciente",
     when: "Fecha y hora",
     cancelledOk: "Listo: tu turno fue anulado.",
+    cancelledLateNotice:
+      "Te pedimos que, de ser posible, en una próxima ocasión, nos avises con más tiempo para poder disponer de horario para otros pacientes. Muchas gracias",
     policyBlocked:
       "Para anular con menos de 24 hs de anticipación, escribinos por WhatsApp.",
     whatsapp: "Escribir por WhatsApp",
@@ -78,6 +80,8 @@ export const MI_TURNO = {
     patient: "Patient",
     when: "Date and time",
     cancelledOk: "Done: your appointment was cancelled.",
+    cancelledLateNotice:
+      "If possible, next time please let us know earlier so we can free that slot for other patients. Thank you.",
     policyBlocked:
       "To cancel with less than 24 hours’ notice, please message us on WhatsApp.",
     whatsapp: "Message on WhatsApp",
@@ -124,6 +128,8 @@ export const MI_TURNO = {
     patient: "Patient",
     when: "Date et heure",
     cancelledOk: "C’est fait : votre rendez-vous a été annulé.",
+    cancelledLateNotice:
+      "Si possible, la prochaine fois prévenez-nous plus tôt afin de libérer le créneau pour d’autres patients. Merci beaucoup.",
     policyBlocked:
       "Pour annuler à moins de 24 h, écrivez-nous sur WhatsApp.",
     whatsapp: "Écrire sur WhatsApp",
@@ -170,6 +176,8 @@ export const MI_TURNO = {
     patient: "Paciente",
     when: "Data e hora",
     cancelledOk: "Pronto: seu horário foi cancelado.",
+    cancelledLateNotice:
+      "Se possível, da próxima vez avise com mais antecedência para liberarmos o horário para outros pacientes. Muito obrigado.",
     policyBlocked:
       "Para cancelar com menos de 24 h de antecedência, fale conosco no WhatsApp.",
     whatsapp: "Escrever no WhatsApp",

@@ -129,6 +129,13 @@ try {
     error_log('mi-turno shadow cancel: ' . $e->getMessage());
 }
 
+$lateCancel = kinesica_rel_manage_is_late_cancel($turno);
+$lateNotice = $lateCancel ? kinesica_rel_manage_late_cancel_notice() : '';
+$okMessage = 'Tu turno fue anulado.';
+if ($lateNotice !== '') {
+    $okMessage .= ' ' . $lateNotice;
+}
+
 // Mail de anulación (best-effort; no bloquea la respuesta).
 try {
     if ($email !== '') {
@@ -138,6 +145,7 @@ try {
             'fecha' => $view['fecha'],
             'hora' => $view['hora'],
             'esCancelacion' => true,
+            'lateCancelNotice' => $lateNotice,
         ]);
         // Reutiliza send-confirmation vía include interno sería pesado; mail() simple.
         $cfg = function_exists('cfg') ? cfg() : [];
@@ -160,6 +168,7 @@ try {
 kinesica_mi_turno_json(200, [
     'success' => true,
     'action' => 'cancel',
-    'message' => 'Tu turno fue anulado.',
+    'message' => $okMessage,
+    'late_cancel_notice' => $lateNotice !== '' ? $lateNotice : null,
     'turno' => array_merge($view, ['status' => 'cancelled', 'can_cancel' => false]),
 ]);
