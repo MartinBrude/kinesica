@@ -120,14 +120,14 @@ function whatsapp_explain_meta_error(int $httpCode, ?int $metaCode, string $rawM
         case 132000:
             return [
                 'category' => 'software_logic',
-                'user_message' => 'La plantilla de recordatorio no existe o no fue aprobada en Meta para el idioma configurado.',
-                'hint' => 'Verificá el nombre y el idioma de la plantilla en Meta Business Manager.',
+                'user_message' => 'La cantidad o tipo de variables enviadas no coincide con la plantilla aprobada en Meta.',
+                'hint' => 'Revisá la cantidad de parámetros configurados en el código respecto de la plantilla de Meta.',
             ];
         case 132001:
             return [
                 'category' => 'software_logic',
-                'user_message' => 'La cantidad o tipo de variables enviadas no coincide con la plantilla aprobada en Meta.',
-                'hint' => 'Revisá la cantidad de parámetros configurados en el código respecto de la plantilla de Meta.',
+                'user_message' => 'La plantilla no existe o no está aprobada en Meta para el idioma configurado (nombre + language.code).',
+                'hint' => 'En WhatsApp Manager verificá que el nombre exacto esté APPROVED en ese idioma (p. ej. es_AR).',
             ];
         case 130429:
         case 80007:
@@ -430,82 +430,119 @@ function send_whatsapp_booking_confirmation_template(string $to, array $data): a
     $profesional = $cleanParam(trim((string) ($data['profesional'] ?? '')));
     $direccion = $cleanParam(trim((string) ($data['direccion'] ?? '')));
 
-    $graphBody = [
-        'messaging_product' => 'whatsapp',
-        'recipient_type' => 'individual',
-        'to' => $to,
-        'type' => 'template',
-        'template' => [
-            'name' => 'confirmacion_turno_kinesica',
-            'language' => ['code' => 'es_AR'],
-            'components' => [
-                [
-                    'type' => 'body',
-                    'parameters' => [
-                        ['type' => 'text', 'text' => $patient !== '' ? $patient : 'Estimado/a paciente'],
-                        ['type' => 'text', 'text' => $fecha !== '' ? $fecha : '-'],
-                        ['type' => 'text', 'text' => $hora !== '' ? $hora : '-'],
-                        ['type' => 'text', 'text' => $profesional !== '' ? $profesional : 'Kinésica'],
-                        ['type' => 'text', 'text' => $direccion !== '' ? $direccion : 'Charcas 3889, 5º B, Palermo'],
+    $preferredLang = trim((string) ($data['language'] ?? 'es_AR'));
+    if ($preferredLang === '') {
+        $preferredLang = 'es_AR';
+    }
+    // Preferir es_AR; si Meta responde 132001 (idioma/nombre inexistente), probar fallbacks.
+    $langCandidates = [$preferredLang];
+    foreach (['es_AR', 'es', 'en_US', 'en'] as $alt) {
+        if (!in_array($alt, $langCandidates, true)) {
+            $langCandidates[] = $alt;
+        }
+    }
+
+    $lastFail = null;
+    foreach ($langCandidates as $langCode) {
+        $graphBody = [
+            'messaging_product' => 'whatsapp',
+            'recipient_type' => 'individual',
+            'to' => $to,
+            'type' => 'template',
+            'template' => [
+                'name' => 'confirmacion_turno_kinesica',
+                'language' => ['code' => $langCode],
+                'components' => [
+                    [
+                        'type' => 'body',
+                        'parameters' => [
+                            ['type' => 'text', 'text' => $patient !== '' ? $patient : 'Estimado/a paciente'],
+                            ['type' => 'text', 'text' => $fecha !== '' ? $fecha : '-'],
+                            ['type' => 'text', 'text' => $hora !== '' ? $hora : '-'],
+                            ['type' => 'text', 'text' => $profesional !== '' ? $profesional : 'Kinésica'],
+                            ['type' => 'text', 'text' => $direccion !== '' ? $direccion : 'Charcas 3889, 5º B, Palermo'],
+                        ],
                     ],
                 ],
             ],
-        ],
-    ];
-
-    $url = 'https://graph.facebook.com/v21.0/' . rawurlencode($phoneId) . '/messages';
-    $ch = curl_init($url);
-    curl_setopt_array($ch, [
-        CURLOPT_POST => true,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_HTTPHEADER => [
-            'Authorization: Bearer ' . $token,
-            'Content-Type: application/json',
-        ],
-        CURLOPT_POSTFIELDS => json_encode($graphBody, JSON_UNESCAPED_UNICODE),
-        CURLOPT_TIMEOUT => 20,
-    ]);
-    $response = curl_exec($ch);
-    $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $curlError = curl_error($ch);
-
-    if ($curlError) {
-        return [
-            'ok' => false,
-            'http_code' => $httpCode,
-            'error' => 'Fallo de conexión con Meta: ' . $curlError,
-            'error_category' => 'infrastructure',
-            'error_code' => 'META_NETWORK_ERROR',
-            'hint' => 'El servidor no pudo conectar con graph.facebook.com. Revisá la conexión de red.',
-            'to' => $to,
         ];
-    }
-    if ($httpCode >= 200 && $httpCode < 300) {
-        return ['ok' => true, 'http_code' => $httpCode, 'response' => is_string($response) ? $response : '', 'to' => $to];
-    }
-    $metaMsg = '';
-    $metaCode = null;
-    if (is_string($response) && $response !== '') {
-        $decoded = json_decode($response, true);
-        if (is_array($decoded)) {
-            $metaMsg = (string) ($decoded['error']['message'] ?? $decoded['error']['error_user_msg'] ?? '');
-            $metaCode = isset($decoded['error']['code']) ? (int) $decoded['error']['code'] : null;
-            if ($metaCode !== null && $metaMsg !== '') {
-                $metaMsg = '#' . $metaCode . ' ' . $metaMsg;
+
+        $url = 'https://graph.facebook.com/v21.0/' . rawurlencode($phoneId) . '/messages';
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_POST => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => [
+                'Authorization: Bearer ' . $token,
+                'Content-Type: application/json',
+            ],
+            CURLOPT_POSTFIELDS => json_encode($graphBody, JSON_UNESCAPED_UNICODE),
+            CURLOPT_TIMEOUT => 20,
+        ]);
+        $response = curl_exec($ch);
+        $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
+
+        if ($curlError) {
+            return [
+                'ok' => false,
+                'http_code' => $httpCode,
+                'error' => 'Fallo de conexión con Meta: ' . $curlError,
+                'error_category' => 'infrastructure',
+                'error_code' => 'META_NETWORK_ERROR',
+                'hint' => 'El servidor no pudo conectar con graph.facebook.com. Revisá la conexión de red.',
+                'to' => $to,
+            ];
+        }
+        if ($httpCode >= 200 && $httpCode < 300) {
+            return [
+                'ok' => true,
+                'http_code' => $httpCode,
+                'response' => is_string($response) ? $response : '',
+                'to' => $to,
+                'language' => $langCode,
+            ];
+        }
+
+        $metaMsg = '';
+        $metaCode = null;
+        $metaDetails = '';
+        if (is_string($response) && $response !== '') {
+            $decoded = json_decode($response, true);
+            if (is_array($decoded)) {
+                $metaMsg = (string) ($decoded['error']['message'] ?? $decoded['error']['error_user_msg'] ?? '');
+                $metaCode = isset($decoded['error']['code']) ? (int) $decoded['error']['code'] : null;
+                $metaDetails = (string) ($decoded['error']['error_data']['details'] ?? '');
+                if ($metaCode !== null && $metaMsg !== '') {
+                    $metaMsg = '#' . $metaCode . ' ' . $metaMsg;
+                }
             }
         }
+        $explanation = whatsapp_explain_meta_error($httpCode, $metaCode, $metaMsg, $to);
+        $lastFail = [
+            'ok' => false,
+            'http_code' => $httpCode,
+            'error' => $explanation['user_message'],
+            'error_category' => $explanation['category'],
+            'error_code' => $metaCode !== null ? ('META_' . $metaCode) : ('HTTP_' . $httpCode),
+            'hint' => $explanation['hint'],
+            'meta_code' => $metaCode,
+            'raw_error' => $metaMsg,
+            'raw_details' => $metaDetails,
+            'response' => is_string($response) ? $response : '',
+            'to' => $to,
+            'language' => $langCode,
+        ];
+        // Solo reintentar con otro idioma si Meta dice que no existe en esa traducción.
+        if ($metaCode !== 132001) {
+            break;
+        }
     }
-    $explanation = whatsapp_explain_meta_error($httpCode, $metaCode, $metaMsg, $to);
-    return [
+
+    return is_array($lastFail) ? $lastFail : [
         'ok' => false,
-        'http_code' => $httpCode,
-        'error' => $explanation['user_message'],
-        'error_category' => $explanation['category'],
-        'error_code' => $metaCode !== null ? ('META_' . $metaCode) : ('HTTP_' . $httpCode),
-        'hint' => $explanation['hint'],
-        'meta_code' => $metaCode,
-        'raw_error' => $metaMsg,
-        'response' => is_string($response) ? $response : '',
+        'http_code' => 0,
+        'error' => 'No se pudo enviar la plantilla de confirmación',
         'to' => $to,
     ];
 }

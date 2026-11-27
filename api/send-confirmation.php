@@ -217,6 +217,18 @@ if (!$esCancelacion && $phoneOk) {
     if (!empty($waRes['to'])) {
         $waChannel['to'] = $waRes['to'];
     }
+    if (!empty($waRes['language'])) {
+        $waChannel['language'] = $waRes['language'];
+    }
+    if (!empty($waRes['error_code'])) {
+        $waChannel['error_code'] = $waRes['error_code'];
+    }
+    if (!empty($waRes['raw_error'])) {
+        $waChannel['raw_error'] = $waRes['raw_error'];
+    }
+    if (!empty($waRes['raw_details'])) {
+        $waChannel['raw_details'] = $waRes['raw_details'];
+    }
 }
 
 $mailSent = !empty($emailChannel['ok']);
