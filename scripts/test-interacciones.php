@@ -303,6 +303,26 @@ eq(interacciones_set_state($pdo, 'no-existe', 'archive', 'T'), false, 'id inexis
 eq(interacciones_set_state($pdo, '5499999999999_2026-10-29', 'archive', 'T'), false, 'conversación inexistente => false');
 eq(count_events($pdo), 9, 'cambiar estado no toca eventos');
 
+section('Marcar respondida con último mensaje del paciente');
+$pdo = fresh('manual-answered-patient-last');
+$pBase = (new DateTimeImmutable('2026-11-26 18:00:00', new DateTimeZone('America/Argentina/Buenos_Aires')))->getTimestamp();
+interacciones_store_events([
+    ev('5491100776655', 'patient', 'Disculpa entendí a las 18hs', $pBase, 'PEND1'),
+], $pdo);
+$pView = interacciones_load_view($pdo);
+$pId = (string) ($pView['items'][0]['id'] ?? '');
+eq($pView['items'][0]['answered'] ?? true, false, 'consulta con último msg del paciente arranca pendiente');
+eq(interacciones_set_state($pdo, $pId, 'toggle_answered', 'Tester', true), true, 'API marca respondida');
+$pView2 = interacciones_load_view($pdo);
+eq($pView2['items'][0]['answered'] ?? false, true, 'vista respeta flag manual aunque último msg sea del paciente');
+eq($pView2['unanswered_count'], 0, 'sale de pendientes tras marcar respondida');
+// Nuevo mensaje del paciente reabre vía ingest (no en la vista).
+interacciones_store_events([
+    ev('5491100776655', 'patient', '¿Me confirmás?', $pBase + 600, 'PEND2'),
+], $pdo);
+$pView3 = interacciones_load_view($pdo);
+eq($pView3['items'][0]['answered'] ?? true, false, 'nuevo msg del paciente reabre a pendiente');
+
 section('Estado Instagram Direct (ig_*)');
 $igWa = 'ig_900111222333444';
 $igTs = $base + 5000;

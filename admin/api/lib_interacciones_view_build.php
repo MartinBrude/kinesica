@@ -197,35 +197,18 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
         }
         $archived = !empty($st['archived']);
 
-        $lastMsgFrom = '';
-        for ($i = count($messages) - 1; $i >= 0; $i--) {
-            if (!empty($messages[$i]['from'])) {
-                $lastMsgFrom = $messages[$i]['from'];
-                break;
-            }
-        }
-
         // LÓGICA DETERMINISTA DE ESTADO:
-        // 1. Cancelaciones de turno: INMUNIDAD TOTAL. NUNCA respondidas automáticamente.
-        //    Deben exigir atención humana en '⏳ Pendientes' para ver el turno liberado.
-        if ($isTurnCancel) {
-            $answered = false;
-        }
-        // 2. Confirmación de turno pura: puede ir a respondidas.
-        elseif ($isTurnConfirm) {
+        // 1. Cancelaciones: nunca auto-respondidas; solo el flag manual (atención humana).
+        // 2. Confirmación de turno pura → respondida.
+        // 3. Ruido de diagnóstico técnico puro (test/PRUEBA) → respondida.
+        // 4. Resto: flag persistido. La reapertura ante un nuevo mensaje del paciente
+        //    ocurre al ingest (interacciones_mark_reopened_on_patient_message), no acá:
+        //    si no, "Consulta respondida" no pegaría cuando el último msg es del paciente.
+        if ($isTurnConfirm) {
             $answered = true;
-        }
-        // 3. Ruido de diagnóstico técnico puro (test/PRUEBA explícito)
-        elseif ($isDiagNoise) {
+        } elseif ($isDiagNoise) {
             $answered = true;
-        }
-        // 4. Reapertura: si el último mensaje del hilo lo envió el paciente y no es confirmación,
-        //    la conversación se reabre como Pendiente (ignora answered=1 previo del día).
-        elseif ($lastMsgFrom === 'patient') {
-            $answered = false;
-        }
-        // 5. En el resto de los casos, respeta el flag persistido manualmente o por el bot
-        else {
+        } else {
             $answered = !empty($st['answered']);
         }
 
