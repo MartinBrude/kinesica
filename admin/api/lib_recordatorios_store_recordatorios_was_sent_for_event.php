@@ -71,14 +71,21 @@ function recordatorios_was_sent_for_event(string $calendarEventId, $appointmentD
 /**
  * Consulta batch (una query) para que n8n Parse Patients filtre ya enviados.
  * Opcionalmente acotada por appointment_date para admitir turnos reagendados.
+ * Deduplicación complementaria por teléfono+nombre (teléfono compartido no suprime a otra persona).
  *
  * @param list<mixed> $calendarEventIds
  * @param string|PDO|null $appointmentDateOrPdo Fecha YYYY-MM-DD o instancia PDO
- * @param PDO|null $pdo
+ * @param array<string,string> $phoneByEventId
+ * @param array<string,string> $nameByEventId
  * @return array<string,bool> map calendar_event_id => already sent
  */
-function recordatorios_check_sent_map(array $calendarEventIds, $appointmentDateOrPdo = null, ?PDO $pdo = null, array $phoneByEventId = []): array
-{
+function recordatorios_check_sent_map(
+    array $calendarEventIds,
+    $appointmentDateOrPdo = null,
+    ?PDO $pdo = null,
+    array $phoneByEventId = [],
+    array $nameByEventId = []
+): array {
     $apptDate = null;
     if ($appointmentDateOrPdo instanceof PDO) {
         $pdo = $appointmentDateOrPdo;
@@ -147,23 +154,24 @@ function recordatorios_check_sent_map(array $calendarEventIds, $appointmentDateO
             }
         }
 
-        // Deduplicación complementaria por teléfono: si el turno no coincidió por ID de evento
-        // pero el teléfono del paciente ya recibió recordatorio para esta fecha o en el día de hoy.
         if ($phoneByEventId !== []) {
-            $sentPhones = recordatorios_check_sent_phones_map(array_values($phoneByEventId), $apptDate, $pdo);
+            $sentPeople = recordatorios_fetch_sent_phone_people($apptDate, $pdo);
             foreach ($ids as $cal) {
                 if (!empty($out[$cal])) {
                     continue;
                 }
-                $ph = $phoneByEventId[$cal] ?? '';
-                if ($ph !== '' && !empty($sentPhones[$ph])) {
+                $ph = trim((string) ($phoneByEventId[$cal] ?? ''));
+                if ($ph === '') {
+                    continue;
+                }
+                $nm = trim((string) ($nameByEventId[$cal] ?? ''));
+                if (recordatorios_phone_matches_sent_people($ph, $nm, $sentPeople)) {
                     $out[$cal] = true;
                 }
             }
         }
     } catch (Throwable $e) {
         error_log('kinesica recordatorios check_sent_map: ' . $e->getMessage());
-        // Fail closed: sin consulta fiable, tratar como ya enviado (evita reenvíos duplicados).
         foreach ($ids as $cal) {
             $out[$cal] = true;
         }
@@ -171,101 +179,7 @@ function recordatorios_check_sent_map(array $calendarEventIds, $appointmentDateO
     return $out;
 }
 
-/**
- * Consulta si determinados números de teléfono ya recibieron recordatorio (sent/sent_email)
- * para la fecha de turno indicada o durante el día actual.
- *
- * @param list<string> $phones
- * @param string|PDO|null $appointmentDateOrPdo
- * @param PDO|null $pdo
- * @return array<string,bool>
- */
-function recordatorios_check_sent_phones_map(array $phones, $appointmentDateOrPdo = null, ?PDO $pdo = null): array
-{
-    $apptDate = null;
-    if ($appointmentDateOrPdo instanceof PDO) {
-        $pdo = $appointmentDateOrPdo;
-    } elseif (is_string($appointmentDateOrPdo)) {
-        $apptDate = trim($appointmentDateOrPdo);
-    }
-    $out = [];
-    foreach ($phones as $p) {
-        $raw = trim((string) $p);
-        if ($raw === '') continue;
-        $out[$raw] = false;
-    }
-    if ($out === []) {
-        return $out;
-    }
-    try {
-        $pdo = recordatorios_pdo($pdo);
-        recordatorios_ensure_schema($pdo);
-
-        $tz = function_exists('recordatorios_tz') ? recordatorios_tz() : new DateTimeZone('America/Argentina/Buenos_Aires');
-        $todayStr = (new DateTimeImmutable('now', $tz))->format('Y-m-d');
-        $todayStart = $todayStr . ' 00:00:00';
-        $todayEnd = $todayStr . ' 23:59:59';
-
-        $params = [];
-        $whereAppt = '';
-        if ($apptDate !== null && preg_match('/^\d{4}-\d{2}-\d{2}$/', $apptDate)) {
-            $whereAppt = " OR appointment_date = :apptDate";
-            $params['apptDate'] = $apptDate;
-        }
-
-        $sql = "SELECT DISTINCT wa_id, run_at, appointment_date FROM recordatorio_eventos
-                WHERE status IN ('sent', 'sent_email')
-                  AND (
-                    (run_at >= :todayStart AND run_at <= :todayEnd)
-                    {$whereAppt}
-                  )";
-        $params['todayStart'] = $todayStart;
-        $params['todayEnd'] = $todayEnd;
-
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute($params);
-        $sentRows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
-
-        $sentDigits = [];
-        $sentSuffixes = [];
-        foreach ($sentRows as $r) {
-            $w = preg_replace('/\D+/', '', (string) ($r['wa_id'] ?? ''));
-            if ($w === '') continue;
-            $sentDigits[$w] = true;
-            if (strlen($w) >= 8) {
-                $sentSuffixes[substr($w, -8)] = true;
-            }
-        }
-
-        foreach (array_keys($out) as $rawPhone) {
-            $digits = preg_replace('/\D+/', '', $rawPhone);
-            if ($digits === '') continue;
-            if (isset($sentDigits[$digits])) {
-                $out[$rawPhone] = true;
-                continue;
-            }
-            if (strlen($digits) >= 8 && isset($sentSuffixes[substr($digits, -8)])) {
-                $out[$rawPhone] = true;
-            }
-        }
-    } catch (Throwable $e) {
-        error_log('kinesica recordatorios check_sent_phones_map: ' . $e->getMessage());
-        foreach (array_keys($out) as $k) {
-            $out[$k] = true;
-        }
-    }
-    return $out;
-}
-
-/**
- * True si este teléfono ya recibió recordatorio para la fecha de turno indicada o hoy.
- */
-function recordatorios_was_sent_for_phone(string $phone, $appointmentDateOrPdo = null, ?PDO $pdo = null): bool
-{
-    $res = recordatorios_check_sent_phones_map([$phone], $appointmentDateOrPdo, $pdo);
-    return !empty($res[$phone]);
-}
-
+require_once __DIR__ . '/lib_recordatorios_store_recordatorios_check_sent_phones.php';
 
 function recordatorios_dir(): string
 {

@@ -121,6 +121,27 @@ if (!/catch\s*\(Throwable[^\)]*\)\s*\{[\s\S]*?return true/.test(wasSent)) {
   console.error("✗ was_sent_for_event debe fallar cerrado (return true) ante error de DB");
   process.exit(1);
 }
+const phonesLibPath = path.join(admin, "api/lib_recordatorios_store_recordatorios_check_sent_phones.php");
+mustExist("admin/api/lib_recordatorios_store_recordatorios_check_sent_phones.php");
+const phonesLib = fs.readFileSync(phonesLibPath, "utf8");
+if (
+  !phonesLib.includes("function recordatorios_check_sent_phones_map") ||
+  !phonesLib.includes("function recordatorios_was_sent_for_phone") ||
+  !phonesLib.includes("kinesica_names_compatible")
+) {
+  console.error("✗ check_sent_phones_map debe existir y respetar nombres (teléfono compartido)");
+  process.exit(1);
+}
+const routesSrc = fs.readFileSync(path.join(admin, "api/recordatorios_routes.php"), "utf8");
+if (
+  !routesSrc.includes("sent_phones") ||
+  !routesSrc.includes("sent_phone_people") ||
+  !routesSrc.includes("patient_name") ||
+  !routesSrc.includes("nameByEventId")
+) {
+  console.error("✗ ruta check_sent debe exponer sent_phones/sent_phone_people y aceptar patient_name");
+  process.exit(1);
+}
 const reconcileSrc = fs.readFileSync(
   path.join(admin, "api/lib_recordatorios_n8n_recordatorios_reconcile.php"),
   "utf8"
@@ -141,6 +162,16 @@ if (fs.existsSync(wfPath)) {
   const code = String(parseNode?.parameters?.jsCode || "");
   if (!code.includes("check_sent") || !code.includes("fetchAlreadySentEventIds") || !code.includes("already_sent")) {
     console.error("✗ kinesica-bot Parse Patients debe usar check_sent / already_sent");
+    process.exit(1);
+  }
+  if (
+    !code.includes("sent_phones") ||
+    !code.includes("sent_phone_people") ||
+    !code.includes("patient_name") ||
+    !code.includes("phoneAlreadySentForPatient") ||
+    !code.includes("items:")
+  ) {
+    console.error("✗ kinesica-bot Parse Patients debe enviar phones/items+patient_name y usar sent_phones");
     process.exit(1);
   }
   if (!code.includes("check_alive") || !code.includes("fetchDeadEventReasons")) {

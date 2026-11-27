@@ -55,12 +55,20 @@ Antes de armar los envíos, el nodo **Parse Patients & Phones** (`kinesica-bot/w
 ```http
 POST /admin/api/recordatorios.php
 X-Kinesica-Bot-Secret: …
-{ "action": "check_sent", "calendar_event_ids": ["…", "…"] }
+{
+  "action": "check_sent",
+  "calendar_event_ids": ["…", "…"],
+  "appointment_date": "YYYY-MM-DD",
+  "phones": ["54911…"],
+  "items": [
+    { "calendar_event_id": "…", "wa_id": "54911…", "patient_name": "Juan Perez" }
+  ]
+}
 ```
 
-Respuesta: `{ "ok": true, "sent": { "<calendar_event_id>": true|false } }` (máx. 100 ids, una query batch).
+Respuesta: `{ "ok": true, "sent": { "<id>": true|false }, "sent_phones": { "<wa_id>": true|false }, "sent_phone_people": [{ "wa_id": "…", "patient_name": "…" }] }` (máx. 100 ids).
 
-Si `sent[id] === true` → el ítem se omite con `skip_reason: already_sent` (no reenvía aunque `staticData` no lo tenga). La previsión (webhook) **no** consulta `check_sent`.
+Si `sent[id] === true` → el ítem se omite con `skip_reason: already_sent` (no reenvía aunque `staticData` no lo tenga). La deduplicación por teléfono respeta `patient_name`: un cónyuge/familiar con el mismo número **no** se suprime. La previsión (webhook) **no** consulta `check_sent`.
 
 ### `POST action=check_alive` (bot → admin, TC-50)
 

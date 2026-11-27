@@ -153,6 +153,9 @@ section('Contrato check_sent (bot anti-reenvío)');
 $routesSrc = file_get_contents($root . '/admin/api/recordatorios_routes.php') ?: '';
 ok(str_contains($routesSrc, "'check_sent'"), 'ruta acepta action check_sent');
 ok(str_contains($routesSrc, 'recordatorios_check_sent_map'), 'ruta responde con check_sent_map');
+ok(str_contains($routesSrc, 'sent_phones'), 'ruta expone sent_phones');
+ok(str_contains($routesSrc, 'sent_phone_people'), 'ruta expone sent_phone_people');
+ok(str_contains($routesSrc, 'patient_name'), 'ruta acepta patient_name en items');
 $wasSentSrc = file_get_contents($root . '/admin/api/lib_recordatorios_store_recordatorios_was_sent_for_event.php') ?: '';
 ok(str_contains($wasSentSrc, 'function recordatorios_check_sent_map'), 'existe check_sent_map');
 ok(str_contains($wasSentSrc, 'IN ($placeholders)'), 'check_sent_map usa IN batch');
@@ -167,7 +170,9 @@ ok(
 );
 eq(recordatorios_check_sent_map([]), [], 'check_sent_map vacío => []');
 eq(recordatorios_check_sent_map(['', '_run']), [], 'ignora ids vacíos y _run');
-ok(function_exists('recordatorios_check_sent_phones_map'), 'existe check_sent_phones_map');
+$phonesSrc = file_get_contents($root . '/admin/api/lib_recordatorios_store_recordatorios_check_sent_phones.php') ?: '';
+ok(str_contains($phonesSrc, 'function recordatorios_check_sent_phones_map'), 'existe check_sent_phones_map');
+ok(str_contains($phonesSrc, 'kinesica_names_compatible'), 'phones map respeta nombres compatibles');
 eq(recordatorios_check_sent_phones_map([]), [], 'check_sent_phones_map vacío => []');
 
 section('Contrato check_alive (TC-50 Calendar vivo)');
@@ -212,6 +217,36 @@ $failMap = recordatorios_check_sent_map(['cal-fail-a', 'cal-fail-b'], $brokenPdo
 eq($failMap['cal-fail-a'] ?? null, true, 'check_sent_map DB error => true (a)');
 eq($failMap['cal-fail-b'] ?? null, true, 'check_sent_map DB error => true (b)');
 ok(recordatorios_was_sent_for_event('cal-fail-a', $brokenPdo), 'was_sent DB error => true');
+$failPhones = recordatorios_check_sent_phones_map(['5491100000099'], $brokenPdo);
+eq($failPhones['5491100000099'] ?? null, true, 'check_sent_phones_map DB error => true');
+ok(recordatorios_was_sent_for_phone('5491100000099', $brokenPdo), 'was_sent_for_phone DB error => true');
+
+section('phone_matches_sent_people (exacto / sufijo / compartido)');
+$peopleJuan = [[
+    'digits' => '5491164813623',
+    'suffix' => '64813623',
+    'name' => 'Juan Perez',
+]];
+ok(
+    recordatorios_phone_matches_sent_people('5491164813623', '', $peopleJuan),
+    'match exacto sin nombre candidato => true'
+);
+ok(
+    recordatorios_phone_matches_sent_people('1164813623', 'Juan Perez', $peopleJuan),
+    'match sufijo 8 + mismo nombre => true'
+);
+ok(
+    recordatorios_phone_matches_sent_people('5491164813623', 'Juan Perez', $peopleJuan),
+    'match exacto + mismo nombre => true'
+);
+ok(
+    !recordatorios_phone_matches_sent_people('5491164813623', 'Maria Lopez', $peopleJuan),
+    'teléfono compartido nombre distinto => false'
+);
+ok(
+    !recordatorios_phone_matches_sent_people('5491100000000', 'Juan Perez', $peopleJuan),
+    'otro teléfono => false'
+);
 
 section('Frase amigable de cuándo (BA)');
 require_once $root . '/admin/api/pacientes_helpers_search_key.php';
@@ -565,6 +600,64 @@ $mapDateRescheduled = recordatorios_check_sent_map(['cal-check-a'], $futureDate,
 eq($mapDateRescheduled['cal-check-a'] ?? null, false, 'sent con fecha distinta (reagendado) => false');
 ok(recordatorios_was_sent_for_event('cal-check-a', $tomorrow, $pdo), 'was_sent con fecha coincidente => true');
 ok(!recordatorios_was_sent_for_event('cal-check-a', $futureDate, $pdo), 'was_sent con fecha reagendada => false');
+
+section('check_sent_phones_map match exacto / sufijo / teléfono compartido');
+$pdo = rem_fresh('check-phones');
+$juanSent = recordatorios_normalize_item([
+    'status' => 'sent',
+    'calendar_event_id' => 'cal-phone-juan',
+    'patient_name' => 'Juan Perez',
+    'wa_id' => '5491164813623',
+    'appointment_date' => $tomorrow,
+], 'ph-juan', time());
+recordatorios_store_items([$juanSent], $pdo);
+
+$exact = recordatorios_check_sent_phones_map(['5491164813623'], $tomorrow, $pdo);
+eq($exact['5491164813623'] ?? null, true, 'match exacto de teléfono => true');
+
+$suffix = recordatorios_check_sent_phones_map(['1164813623'], $tomorrow, $pdo);
+eq($suffix['1164813623'] ?? null, true, 'match por sufijo 8 dígitos => true');
+
+$samePerson = recordatorios_check_sent_phones_map(
+    ['5491164813623'],
+    $tomorrow,
+    $pdo,
+    ['5491164813623' => 'Juan Perez']
+);
+eq($samePerson['5491164813623'] ?? null, true, 'mismo nombre compatible => true');
+
+$sharedSpouse = recordatorios_check_sent_phones_map(
+    ['5491164813623'],
+    $tomorrow,
+    $pdo,
+    ['5491164813623' => 'Maria Lopez']
+);
+eq($sharedSpouse['5491164813623'] ?? null, false, 'teléfono compartido nombre distinto => false');
+
+ok(
+    recordatorios_was_sent_for_phone('5491164813623', $tomorrow, $pdo, 'Juan Perez'),
+    'was_sent_for_phone mismo paciente => true'
+);
+ok(
+    !recordatorios_was_sent_for_phone('5491164813623', $tomorrow, $pdo, 'Maria Lopez'),
+    'was_sent_for_phone cónyuge distinto => false'
+);
+
+$mapByPhone = recordatorios_check_sent_map(
+    ['cal-phone-maria-new', 'cal-phone-juan-new'],
+    $tomorrow,
+    $pdo,
+    [
+        'cal-phone-maria-new' => '5491164813623',
+        'cal-phone-juan-new' => '5491164813623',
+    ],
+    [
+        'cal-phone-maria-new' => 'Maria Lopez',
+        'cal-phone-juan-new' => 'Juan Perez',
+    ]
+);
+eq($mapByPhone['cal-phone-maria-new'] ?? null, false, 'check_sent_map no suprime cónyuge por teléfono');
+eq($mapByPhone['cal-phone-juan-new'] ?? null, true, 'check_sent_map suprime mismo paciente por teléfono');
 
 echo $fails === 0 ? "OK recordatorios ($passed assertions)\n" : "FAIL recordatorios ($fails)\n";
 exit($fails === 0 ? 0 : 1);

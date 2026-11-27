@@ -23,5 +23,6 @@ const RECORDATORIOS_SKIP_REASONS = [
  */
 
 require_once __DIR__ . '/lib_recordatorios_store_recordatorios_was_sent_for_event.php';
+require_once __DIR__ . '/lib_recordatorios_store_recordatorios_check_sent_phones.php';
 require_once __DIR__ . '/lib_recordatorios_store_recordatorios_normalize_item.php';
 require_once __DIR__ . '/lib_recordatorios_store_recordatorios_store_items.php';

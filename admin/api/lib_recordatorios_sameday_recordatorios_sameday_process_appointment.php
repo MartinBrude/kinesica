@@ -44,7 +44,11 @@ function recordatorios_sameday_process_appointment(array $appt, string $today, s
     }
 
     $phone = recordatorios_sameday_resolve_phone($appt);
-    if ($phone !== '' && function_exists('recordatorios_was_sent_for_phone') && recordatorios_was_sent_for_phone($phone, $apptDate)) {
+    if (
+        $phone !== ''
+        && function_exists('recordatorios_was_sent_for_phone')
+        && recordatorios_was_sent_for_phone($phone, $apptDate, null, $patientName)
+    ) {
         return ['status' => 'skipped', 'skip_reason' => 'already_sent_phone', 'patient' => $patientName];
     }
     $email = recordatorios_sameday_resolve_email($phone, $patientName, $appt);

@@ -23,21 +23,43 @@ if ($method === 'POST' && in_array($action, ['ingest', 'reconcile', 'check_sent'
         $phones = $input['phones'] ?? $input['wa_ids'] ?? [];
         $items = $input['items'] ?? [];
         $phoneByEventId = [];
+        $nameByEventId = [];
+        $nameByPhone = [];
         if (is_array($items)) {
             foreach ($items as $it) {
-                if (is_array($it) && !empty($it['calendar_event_id']) && !empty($it['wa_id'])) {
-                    $phoneByEventId[trim((string) $it['calendar_event_id'])] = trim((string) $it['wa_id']);
+                if (!is_array($it) || empty($it['calendar_event_id']) || empty($it['wa_id'])) {
+                    continue;
+                }
+                $cal = trim((string) $it['calendar_event_id']);
+                $wa = trim((string) $it['wa_id']);
+                $phoneByEventId[$cal] = $wa;
+                $nm = trim((string) ($it['patient_name'] ?? ''));
+                if ($nm !== '') {
+                    $nameByEventId[$cal] = $nm;
+                    $nameByPhone[$wa] = $nm;
                 }
             }
         }
-        $sentIds = recordatorios_check_sent_map($ids, $appt, null, $phoneByEventId);
+        $sentIds = recordatorios_check_sent_map($ids, $appt, null, $phoneByEventId, $nameByEventId);
         $sentPhones = is_array($phones) && $phones !== []
-            ? recordatorios_check_sent_phones_map($phones, $appt)
+            ? recordatorios_check_sent_phones_map($phones, $appt, null, $nameByPhone)
             : [];
+        $sentPhonePeople = [];
+        try {
+            foreach (recordatorios_fetch_sent_phone_people($appt) as $person) {
+                $sentPhonePeople[] = [
+                    'wa_id' => $person['digits'],
+                    'patient_name' => $person['name'],
+                ];
+            }
+        } catch (Throwable $e) {
+            $sentPhonePeople = [];
+        }
         json_out(200, [
             'ok' => true,
             'sent' => $sentIds,
             'sent_phones' => $sentPhones,
+            'sent_phone_people' => $sentPhonePeople,
         ]);
     }
     if ($action === 'check_alive') {
