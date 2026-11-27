@@ -197,7 +197,16 @@
 
   form.addEventListener("submit", function (e) { e.preventDefault(); runLookup(); });
 
+  function setSearchUiVisible(visible) {
+    var lead = document.querySelector(".mi-turno-lead");
+    var hint = document.querySelector(".mi-turno-hint");
+    form.hidden = !visible;
+    if (lead) lead.hidden = !visible;
+    if (hint) hint.hidden = !visible;
+  }
+
   // Prefill from mail deep-link: /mi-turno?apellido=&email=&codigo=
+  // Con link completo: ocultar búsqueda y mostrar solo el turno / anular.
   try {
     var params = new URLSearchParams(window.location.search || "");
     var qApellido = (params.get("apellido") || params.get("a") || "").trim();
@@ -209,6 +218,24 @@
     if (qApellido && apellidoInput) apellidoInput.value = qApellido;
     if (qEmail && emailInput) emailInput.value = qEmail;
     if (qCodigo && codigoInput) codigoInput.value = qCodigo;
-    if (qApellido && qEmail && isValidCode(qCodigo)) runLookup();
+    if (qApellido && qEmail && isValidCode(qCodigo)) {
+      setSearchUiVisible(false);
+      lastCreds = { apellido: qApellido, email: qEmail, codigo: qCodigo };
+      if (resultEl) { resultEl.hidden = true; resultEl.innerHTML = ""; }
+      setStatus("", "");
+      api("lookup", lastCreds)
+        .then(function (res) {
+          if (res.ok && res.data.success && res.data.turno) {
+            renderTurno(res.data.turno);
+            return;
+          }
+          setSearchUiVisible(true);
+          showFailure((res.data && res.data.error) || t("notFound"), "lookup_failed");
+        })
+        .catch(function () {
+          setSearchUiVisible(true);
+          showFailure(t("genericError"), "lookup_failed");
+        });
+    }
   } catch (prefillErr) {}
 })();
