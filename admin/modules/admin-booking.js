@@ -2,4 +2,4 @@
  * Turnera profesional de ADMIN (facade).
  */
 
-export { initAdminBooking } from "./admin-booking-init.js?v=4";
+export { initAdminBooking } from "./admin-booking-init.js?v=5";

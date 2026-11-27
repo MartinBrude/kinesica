@@ -1,5 +1,5 @@
 import { getModal, setModal } from "./admin-booking-state.js";
-import { openAdminBooking, closeAdminBooking } from "./admin-booking-open.js?v=4";
+import { openAdminBooking, closeAdminBooking } from "./admin-booking-open.js?v=5";
 
 export function initAdminBooking() {
   const modal = document.getElementById("admin-booking-modal");

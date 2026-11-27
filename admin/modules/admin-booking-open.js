@@ -80,7 +80,43 @@ async function persistFirstVisit(payload) {
   setPatientsLoaded(false);
 }
 
-export function openAdminBooking() {
+function waitForBookingWidget(timeoutMs = 8000) {
+  return new Promise((resolve) => {
+    if (typeof window.KinesicaBookingWidget === "function") {
+      resolve(window.KinesicaBookingWidget);
+      return;
+    }
+    const started = Date.now();
+    const tick = () => {
+      if (typeof window.KinesicaBookingWidget === "function") {
+        resolve(window.KinesicaBookingWidget);
+        return;
+      }
+      if (Date.now() - started >= timeoutMs) {
+        resolve(null);
+        return;
+      }
+      setTimeout(tick, 100);
+    };
+    // Si el <script defer> falló (p.ej. CDN cacheó un 404 de ?v=…), reinyectar sin query tóxica.
+    const existing = document.querySelector('script[src*="booking-bundle"]');
+    if (!existing || existing.dataset.kinesicaReload === "1") {
+      tick();
+      return;
+    }
+    const retry = document.createElement("script");
+    retry.src = `/booking/booking-bundle.min.js?v=${Date.now()}`;
+    retry.async = true;
+    retry.dataset.kinesicaReload = "1";
+    retry.onload = tick;
+    retry.onerror = tick;
+    existing.dataset.kinesicaReload = "1";
+    document.head.appendChild(retry);
+    tick();
+  });
+}
+
+export async function openAdminBooking() {
   if (!isAdmin()) {
     showBookingOpenError("Tu sesión no tiene permiso para abrir la turnera. Volvé a iniciar sesión.");
     return;
@@ -93,8 +129,8 @@ export function openAdminBooking() {
     return;
   }
 
-  const Widget = window.KinesicaBookingWidget;
   const mount = document.getElementById("admin-booking-widget-mount");
+  const Widget = await waitForBookingWidget();
   if (!Widget || !mount) {
     showBookingOpenError("La turnera todavía no cargó. Recargá la página (Cmd+Shift+R) e intentá de nuevo.");
     return;
