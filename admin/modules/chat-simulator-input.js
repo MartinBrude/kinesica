@@ -6,7 +6,7 @@ import {
   notifyProfessionalFromSimulator,
   resolveMainMenuResponse,
   withMenuFooter,
-} from "./chat-simulator-engine.js?v=7";
+} from "./chat-simulator-engine.js?v=8";
 import {
   isThanksMessage, getThanksText, isClaraBotQuery, getClaraBotText,
   isMediosPagoQuery, getMediosPagoText, getSaludoBreveText,

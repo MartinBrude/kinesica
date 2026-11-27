@@ -13,8 +13,8 @@ import {
   buildWelcomeMessage,
   mapMainMenuDigitToLetter,
   replyAsBot,
-} from "./chat-simulator-core.js";
-import { handleChatUserInput } from "./chat-simulator-input.js";
+} from "./chat-simulator-core.js?v=8";
+import { handleChatUserInput } from "./chat-simulator-input.js?v=8";
 
 export function setChatContext(next) {
   setSimContext(next);

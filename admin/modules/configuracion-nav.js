@@ -1,4 +1,4 @@
-import { resetChatDemo, initChatSimulator } from "./chat-simulator.js?v=19";
+import { resetChatDemo, initChatSimulator } from "./chat-simulator.js?v=20";
 import { initMailPreview, refreshMailPreviewPrefill } from "./mail-preview.js?v=2";
 import {
   showClaraView as showClaraSubView,

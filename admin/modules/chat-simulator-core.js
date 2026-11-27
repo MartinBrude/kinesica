@@ -3,7 +3,7 @@ import {
   formatWhatsAppMarkdown,
   withTraditionalFirstContactGreeting,
   pickSimText,
-} from "./chat-simulator-engine.js?v=7";
+} from "./chat-simulator-engine.js?v=8";
 
 let ctx = {
   defaults: {},

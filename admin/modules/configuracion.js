@@ -14,7 +14,7 @@ import {
 
 export { DEFAULT_CLARA_TEXTS };
 export { showConsultorioView, hideConsultorioView, hideClaraView, showConfiguracionView, hideConfiguracionView };
-export { appendChatMessage, resetChatDemo, initChatSimulator } from "./chat-simulator.js?v=19";
+export { appendChatMessage, resetChatDemo, initChatSimulator } from "./chat-simulator.js?v=20";
 
 export { showClaraView, switchConfigSubtab } from "./configuracion-nav.js?v=3";
 export { initConfiguracionModule } from "./configuracion-init.js?v=3";

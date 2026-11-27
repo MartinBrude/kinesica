@@ -2,7 +2,7 @@ import { REMINDER_TEMPLATE_TEXT } from "./menu-texts.js?v=3";
 import { api } from "./api.js?v=79";
 import { DEFAULT_CLARA_TEXTS, populateClaraInputs } from "./config-defaults.js?v=5";
 import { updateReminderPreview, updateStatusToggles } from "./config-toggles.js";
-import { resetChatDemo } from "./chat-simulator.js?v=19";
+import { resetChatDemo } from "./chat-simulator.js?v=20";
 import {
   claraInputs,
   inputOptC,

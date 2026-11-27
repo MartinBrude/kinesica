@@ -111,7 +111,7 @@ const NL_FEES = /\b(?:honorarios?|precios?|arancel(?:es)?|costos?|tarifas?|valor
 const isFeesOrCoverage = (raw) => NL_FEES.test(raw) || isCoverageQuery(raw);
 const NL_LOCATION = /\b(?:donde\s+(?:queda|estan|atienden)|direccion|ubicacion|como\s+llego|donde\s+es|horarios?|where\s+(?:are\s+you|is)|address|location|office\s+hours|opening\s+hours)\b/i;
 const NL_ATTIRE = /\b(?:ropa|vestimenta|indumentaria|attire|clothes|clothing|what\s+(?:should\s+i\s+|to\s+)?wear|dress\s+code)\b/i;
-const NL_BOOKING = /\b(?:agendar|agendame|sacar\s+turno|pedir\s+turno|reservar\s+turno|quiero\s+(?:un\s+)?turno|necesito\s+(?:un\s+)?turno|quisiera\s+(?:un\s+)?turno|tienen\s+lugar|hay\s+lugar|turnera|book|appointment|schedule)\b/i;
+const NL_BOOKING = /\b(?:agendar|agendame|sacar\s+(?:un\s+)?turno|pedir\s+(?:un\s+)?turno|reservar\s+(?:un\s+)?turno|quiero\s+(?:un\s+)?turno|necesito\s+(?:un\s+)?turno|quisiera\s+(?:un\s+)?turno|turnos?\s+con\s+(?:el\s+|la\s+)?(?:lic\.?\s*)?(?:norberto|mar[ií]a)|tienen\s+lugar|hay\s+lugar|turnera|book|appointment|schedule)\b/i;
 const NL_PROFESSIONAL = /\b(?:profesional|hablar\s+con|practitioner|talk\s+to|speak\s+with)\b/i;
 
 /**

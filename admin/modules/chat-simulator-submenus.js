@@ -8,7 +8,7 @@ import {
   notifyProfessionalFromSimulator,
   resolveMainMenuResponse,
   withMenuFooter,
-} from "./chat-simulator-engine.js?v=7";
+} from "./chat-simulator-engine.js?v=8";
 import { parseMenuLetterSequence } from "./chat-simulator-faq.js?v=2";
 import {
   appendChatMessage,
