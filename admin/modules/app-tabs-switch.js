@@ -4,7 +4,7 @@ import { showPacientesView, hidePacientesView } from "./pacientes.js?v=21";
 import { showDashboardView, hideDashboardView } from "./dashboard.js?v=13";
 import { showConsultorioView, hideConsultorioView, showClaraView, hideClaraView } from "./configuracion.js?v=41";
 import { showAdminView, hideAdminView } from "./admin-panel.js?v=99";
-import { showInteraccionesView, hideInteraccionesView } from "./interacciones.js?v=20";
+import { showInteraccionesView, hideInteraccionesView } from "./interacciones.js?v=21";
 import { showRecordatoriosView, hideRecordatoriosView } from "./recordatorios.js?v=31";
 import { showEncuestasView, hideEncuestasView } from "./encuestas.js?v=2";
 import { closeAllDropdowns } from "./app-tabs-dropdowns.js";

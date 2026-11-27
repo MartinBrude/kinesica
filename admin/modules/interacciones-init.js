@@ -8,8 +8,8 @@ import {
   setActiveStatusFilter,
 } from "./interacciones-state.js";
 import { refreshInteraccionesPendingBadge } from "./interacciones-badge.js";
-import { loadInteracciones } from "./interacciones-load.js?v=2";
-import { applyFilters } from "./interacciones-page.js?v=2";
+import { loadInteracciones } from "./interacciones-load.js?v=3";
+import { applyFilters } from "./interacciones-page.js?v=3";
 import { isWithinAutoRefreshHours } from "./interacciones-hours.js";
 import { AUTO_REFRESH_INTERVAL_MS } from "./interacciones-constants.js";
 import { getSessionUser } from "./auth.js?v=83";

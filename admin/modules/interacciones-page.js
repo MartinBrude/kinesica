@@ -6,7 +6,7 @@ import {
   buildInteractionCardHtml,
   renderPager,
   bindInteractionEvents,
-} from "./interacciones-render.js?v=5";
+} from "./interacciones-render.js?v=6";
 import { filterInteractionsList, renderStatsHeader } from "./interacciones-filter.js?v=2";
 import {
   getCachedInteractions,
@@ -23,8 +23,13 @@ import {
   bumpPendingMutations,
 } from "./interacciones-state.js";
 import { syncBadgeFromCache } from "./interacciones-badge.js";
-import { captureExpandedThreads, restoreExpandedThreads } from "./interacciones-page-threads.js";
-import { createTakeoverHandlers } from "./interacciones-takeover-actions.js?v=1";
+import {
+  captureExpandedThreads,
+  restoreExpandedThreads,
+  captureTakeoverDrafts,
+  restoreTakeoverDrafts,
+} from "./interacciones-page-threads.js";
+import { createTakeoverHandlers } from "./interacciones-takeover-actions.js?v=2";
 
 function renderInteractions(items) {
   const container = document.getElementById("interacciones-list-container");
@@ -34,6 +39,7 @@ function renderInteractions(items) {
   if (!container) return;
 
   captureExpandedThreads(container);
+  captureTakeoverDrafts(container);
 
   if (!items || items.length === 0) {
     const windowLabel = daysWindow === 1 ? "último día" : `últimos ${daysWindow} días`;
@@ -91,6 +97,7 @@ function renderInteractions(items) {
 
   container.innerHTML = html;
   restoreExpandedThreads(container);
+  restoreTakeoverDrafts(container);
   bindInteractionEvents(container, {
     getSessionUser,
     onThreadToggle: ({ threadId, isOpen }) => {

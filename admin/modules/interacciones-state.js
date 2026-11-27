@@ -8,11 +8,14 @@ let daysWindow = 7;
 let activeStatusFilter = "pending";
 let autoRefreshTimer = null;
 let badgePollTimer = null;
+let takeoverPollTimer = null;
 let isRefreshing = false;
 let isBadgeRefreshing = false;
 let lastLoadedAt = 0;
 let pendingMutations = 0;
 const expandedThreadIds = new Set();
+/** Borradores del compositor takeover (convId → texto) entre re-renders. */
+const takeoverDrafts = new Map();
 
 export function getCachedInteractions() { return cachedInteractions; }
 export function setCachedInteractions(list) { cachedInteractions = Array.isArray(list) ? list : []; }
@@ -38,6 +41,9 @@ export function setAutoRefreshTimer(timer) { autoRefreshTimer = timer; }
 export function getBadgePollTimer() { return badgePollTimer; }
 export function setBadgePollTimer(timer) { badgePollTimer = timer; }
 
+export function getTakeoverPollTimer() { return takeoverPollTimer; }
+export function setTakeoverPollTimer(timer) { takeoverPollTimer = timer; }
+
 export function getIsRefreshing() { return isRefreshing; }
 export function setIsRefreshing(value) { isRefreshing = value; }
 
@@ -54,3 +60,9 @@ export function bumpPendingMutations(delta) {
 }
 
 export function getExpandedThreadIds() { return expandedThreadIds; }
+
+export function getTakeoverDrafts() { return takeoverDrafts; }
+
+export function hasActiveTakeoverInCache() {
+  return cachedInteractions.some((i) => i && i.takeover_active === true);
+}

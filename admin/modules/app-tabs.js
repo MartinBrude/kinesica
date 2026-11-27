@@ -13,7 +13,7 @@ import {
   setInteraccionesPendingBadge,
   startBadgePoll,
   stopBadgePoll,
-} from "./interacciones.js?v=20";
+} from "./interacciones.js?v=21";
 import {
   setPendientesPendingBadge,
   refreshPendientesPendingBadge,

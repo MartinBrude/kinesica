@@ -9,7 +9,7 @@ import {
   canUseTakeoverUi,
   buildTakeoverControlsHtml,
   buildTakeoverComposerHtml,
-} from "./interacciones-takeover.js?v=1";
+} from "./interacciones-takeover.js?v=2";
 
 const MONTH_NAMES = [
   "enero", "febrero", "marzo", "abril", "mayo", "junio",

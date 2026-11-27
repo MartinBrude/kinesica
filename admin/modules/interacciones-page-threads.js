@@ -1,4 +1,4 @@
-import { getExpandedThreadIds } from "./interacciones-state.js";
+import { getExpandedThreadIds, getTakeoverDrafts } from "./interacciones-state.js";
 
 export function captureExpandedThreads(container) {
   const expandedThreadIds = getExpandedThreadIds();
@@ -22,5 +22,27 @@ export function restoreExpandedThreads(container) {
     if (span && span.textContent.includes("▶")) {
       span.textContent = span.textContent.replace("▶", "▼");
     }
+  });
+}
+
+export function captureTakeoverDrafts(container) {
+  const drafts = getTakeoverDrafts();
+  if (!container) return;
+  container.querySelectorAll(".interaccion-takeover-input").forEach((el) => {
+    const id = el.getAttribute("data-conv-id") || "";
+    if (!id) return;
+    const val = String(el.value || "");
+    if (val.trim() === "") drafts.delete(id);
+    else drafts.set(id, val);
+  });
+}
+
+export function restoreTakeoverDrafts(container) {
+  const drafts = getTakeoverDrafts();
+  if (!container || drafts.size === 0) return;
+  container.querySelectorAll(".interaccion-takeover-input").forEach((el) => {
+    const id = el.getAttribute("data-conv-id") || "";
+    if (!id || !drafts.has(id)) return;
+    el.value = drafts.get(id);
   });
 }

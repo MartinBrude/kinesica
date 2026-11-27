@@ -8,8 +8,10 @@ import {
   getCachedInteractions,
   setCachedInteractions,
   bumpPendingMutations,
+  getTakeoverDrafts,
 } from "./interacciones-state.js";
-import { applyTakeoverToConv, appendClaraReplyToConv } from "./interacciones-takeover.js?v=1";
+import { applyTakeoverToConv, appendClaraReplyToConv } from "./interacciones-takeover.js?v=2";
+import { syncTakeoverPoll } from "./interacciones-takeover-poll.js?v=1";
 
 function findConv(list, convId, waId) {
   return list.find((i) => i.id === convId)
@@ -39,6 +41,7 @@ export function createTakeoverHandlers({ applyFilters }) {
         }
         setCachedInteractions(list);
         applyFilters(false);
+        syncTakeoverPoll();
       }
       if (btn) btn.disabled = true;
       bumpPendingMutations(1);
@@ -56,6 +59,7 @@ export function createTakeoverHandlers({ applyFilters }) {
           setCachedInteractions(list);
           applyFilters(false);
         }
+        syncTakeoverPoll();
         toast(
           action === "start"
             ? "Clara en silencio para este contacto (30 min)."
@@ -67,6 +71,7 @@ export function createTakeoverHandlers({ applyFilters }) {
           applyTakeoverToConv(targetConv, prevTakeover, prevActive);
           setCachedInteractions(list);
           applyFilters(false);
+          syncTakeoverPoll();
         }
         console.error("Error takeover:", err);
         toast(err?.message || "No se pudo cambiar el control de Clara.", { type: "danger" });
@@ -100,6 +105,7 @@ export function createTakeoverHandlers({ applyFilters }) {
           applyFilters(false);
         }
         if (input) input.value = "";
+        if (convId) getTakeoverDrafts().delete(String(convId));
         toast("Mensaje enviado como Clara.", { type: "success" });
       } catch (err) {
         console.error("Error reply takeover:", err);

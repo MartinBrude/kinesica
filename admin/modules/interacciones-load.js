@@ -15,9 +15,15 @@ import {
 } from "./interacciones-state.js";
 import { setInteraccionesPendingBadge, syncBadgeFromCache } from "./interacciones-badge.js";
 import { updateLastUpdatedLabel } from "./interacciones-refresh.js";
-import { applyFilters } from "./interacciones-page.js?v=2";
+import { applyFilters } from "./interacciones-page.js?v=3";
+import { syncTakeoverPoll } from "./interacciones-takeover-poll.js?v=1";
 
-export async function loadInteracciones(force = false) {
+/**
+ * @param {boolean} [force=false]
+ * @param {{ quiet?: boolean }} [opts]
+ */
+export async function loadInteracciones(force = false, opts = {}) {
+  const quiet = Boolean(opts?.quiet);
   const container = document.getElementById("interacciones-list-container");
   const refreshBtn = document.getElementById("btn-refresh-interacciones");
   if (!container) return;
@@ -29,7 +35,7 @@ export async function loadInteracciones(force = false) {
     document.querySelector(".interacciones-toolbar"),
     document.getElementById("interacciones-stats"),
   ];
-  setListControlsEnabled(filterRoots, false);
+  if (!quiet) setListControlsEnabled(filterRoots, false);
 
   const hasExisting = container.children.length > 0;
   if (refreshBtn && force) {
@@ -40,7 +46,7 @@ export async function loadInteracciones(force = false) {
     }
   }
 
-  if (!hasExisting) {
+  if (!quiet && !hasExisting) {
     container.innerHTML = `<div class="admin-view-loading" role="status"><span class="loading-spinner" aria-hidden="true"></span><span>Cargando conversaciones recientes...</span></div>`;
   }
 
@@ -74,10 +80,13 @@ export async function loadInteracciones(force = false) {
       syncBadgeFromCache();
     }
     applyFilters(false);
-    renderInteraccionesHealth(document.getElementById("interacciones-stats"), resp.health, resp.sync, {
-      days: getDaysWindow(),
-      eventsCapped: Boolean(resp.events_capped),
-    });
+    syncTakeoverPoll();
+    if (!quiet) {
+      renderInteraccionesHealth(document.getElementById("interacciones-stats"), resp.health, resp.sync, {
+        days: getDaysWindow(),
+        eventsCapped: Boolean(resp.events_capped),
+      });
+    }
 
     if (refreshBtn && force) {
       refreshBtn.innerHTML = `✓ Actualizado`;
@@ -100,6 +109,6 @@ export async function loadInteracciones(force = false) {
     }
   } finally {
     setIsRefreshing(false);
-    setListControlsEnabled(filterRoots, true);
+    if (!quiet) setListControlsEnabled(filterRoots, true);
   }
 }

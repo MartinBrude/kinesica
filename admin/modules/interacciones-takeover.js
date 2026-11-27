@@ -63,7 +63,7 @@ export function buildTakeoverComposerHtml(conv, convKey) {
     : "Clara no responde a este contacto (30 min).";
   return `
     <div class="interaccion-takeover-composer" data-conv-id="${id}">
-      <p class="interaccion-takeover-hint">${untilLine} Los mensajes nuevos del paciente aparecen al refrescar.</p>
+      <p class="interaccion-takeover-hint">${untilLine} Los mensajes nuevos del paciente se actualizan solos.</p>
       <textarea class="interaccion-takeover-input" rows="2" maxlength="2000"
         placeholder="Escribí como Clara…" data-wa-id="${wa}" data-conv-id="${id}"></textarea>
       <div class="interaccion-takeover-actions">

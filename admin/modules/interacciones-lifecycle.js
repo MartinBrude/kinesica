@@ -2,6 +2,7 @@ import { switchActiveView } from "./dom.js?v=79";
 import { setActiveStatusFilter } from "./interacciones-state.js";
 import { loadInteracciones } from "./interacciones-load.js";
 import { startAutoRefresh, stopAutoRefresh } from "./interacciones-refresh.js";
+import { stopTakeoverPoll } from "./interacciones-takeover-poll.js?v=1";
 import {
   AUTO_REFRESH_INTERVAL_MS,
   AUTO_REFRESH_START_HOUR,
@@ -27,6 +28,7 @@ export function hideInteraccionesView() {
   const view = document.getElementById("view-interacciones");
   if (view) view.hidden = true;
   stopAutoRefresh();
+  stopTakeoverPoll();
 }
 
 export { AUTO_REFRESH_INTERVAL_MS, AUTO_REFRESH_START_HOUR, AUTO_REFRESH_END_HOUR };
