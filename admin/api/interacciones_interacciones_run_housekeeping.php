@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 function interacciones_run_housekeeping(bool $force): array
 {
-    $out = ['spool' => null, 'reconcile' => null, 'sla' => null];
+    $out = ['spool' => null, 'reconcile' => null, 'sla' => null, 'answered_restore' => null];
     try {
+        // Backup antes de migrate/reconcile para no congelar un wipe de flags.
+        interacciones_backup_daily();
+        $out['answered_restore'] = interacciones_restore_answered_flags_once();
         interacciones_migrate_legacy();
         $out['spool'] = interacciones_spool_drain(null, 2);
-        interacciones_backup_daily();
         if (interacciones_reconcile_due($force ? 10 : 60)) {
             $out['reconcile'] = interacciones_reconcile(null, 6);
         }

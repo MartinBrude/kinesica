@@ -322,6 +322,11 @@ interacciones_store_events([
 ], $pdo);
 $pView3 = interacciones_load_view($pdo);
 eq($pView3['items'][0]['answered'] ?? true, false, 'nuevo msg del paciente reabre a pendiente');
+// Reinyectar el mismo mensaje (duplicate) no debe volver a tocar answered.
+eq(interacciones_set_state($pdo, $pId, 'toggle_answered', 'Tester', true), true, 're-marcar respondida tras reopen');
+eq(interacciones_insert_event($pdo, ev('5491100776655', 'patient', '¿Me confirmás?', $pBase + 600, 'PEND2')), 'duplicate', 'reinyectar mismo msg = duplicate');
+$pViewDup = interacciones_load_view($pdo);
+eq($pViewDup['items'][0]['answered'] ?? false, true, 'duplicate no borra respondida');
 
 section('Estado Instagram Direct (ig_*)');
 $igWa = 'ig_900111222333444';

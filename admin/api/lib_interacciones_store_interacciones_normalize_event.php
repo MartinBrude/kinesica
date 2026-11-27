@@ -72,6 +72,19 @@ function interacciones_normalize_event(array $in, string $defaultSource = 'push'
 }
 
 /**
+ * Side-effects de bandeja (reabrir / auto-confirm) solo en mensajes vivos nuevos.
+ * Migración, restore y fuentes de archivo no deben tocar answered.
+ */
+function interacciones_event_applies_inbox_side_effects(array $ev): bool
+{
+    $src = strtolower(trim((string) ($ev['source'] ?? '')));
+    if ($src === '') {
+        return true;
+    }
+    return !in_array($src, ['legacy', 'restore', 'legacy-push'], true);
+}
+
+/**
  * Inserta un evento. Idempotente y sin pérdida:
  *  - misma clave y mismo texto => duplicado (se ignora)
  *  - misma clave y texto contenido/subconjunto => duplicado (evita fantasma live+reconcile)
@@ -154,11 +167,15 @@ function interacciones_insert_event(PDO $pdo, array $ev): string
             );
         } catch (Throwable) {
         }
-        try {
-            require_once __DIR__ . '/lib_interacciones_view_classify.php';
-            interacciones_mark_answered_if_confirmation($pdo, $ev);
-            interacciones_mark_reopened_on_patient_message($pdo, $ev);
-        } catch (Throwable) {
+        // Solo en alta nueva: reabrir/auto-confirm. Nunca en duplicados (migrate/reconcile
+        // reinyectan el mismo mensaje y borraban "respondida").
+        if (interacciones_event_applies_inbox_side_effects($ev)) {
+            try {
+                require_once __DIR__ . '/lib_interacciones_view_classify.php';
+                interacciones_mark_answered_if_confirmation($pdo, $ev);
+                interacciones_mark_reopened_on_patient_message($pdo, $ev);
+            } catch (Throwable) {
+            }
         }
         return 'stored';
     } catch (PDOException $e) {
@@ -180,12 +197,6 @@ function interacciones_insert_event(PDO $pdo, array $ev): string
                 'mfile' => $ev['media_filename'] ?? null,
                 'k' => $ev['event_key'],
             ]);
-        }
-        try {
-            require_once __DIR__ . '/lib_interacciones_view_classify.php';
-            interacciones_mark_answered_if_confirmation($pdo, $ev);
-            interacciones_mark_reopened_on_patient_message($pdo, $ev);
-        } catch (Throwable) {
         }
         return 'duplicate';
     }

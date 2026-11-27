@@ -66,7 +66,7 @@ function interacciones_restore_from_backup(string $file, ?PDO $pdo = null): arra
     $pdo = interacciones_pdo($pdo);
     interacciones_ensure_schema($pdo);
     $data = json_decode((string) @file_get_contents($file), true);
-    $res = ['stored' => 0, 'duplicates' => 0];
+    $res = ['stored' => 0, 'duplicates' => 0, 'answered_restored' => 0];
     foreach (($data['events'] ?? []) as $row) {
         $ev = interacciones_normalize_event([
             'event_key' => $row['event_key'] ?? '', 'wa_id' => $row['wa_id'] ?? '', 'direction' => $row['direction'] ?? '',
@@ -90,7 +90,83 @@ function interacciones_restore_from_backup(string $file, ?PDO $pdo = null): arra
             's' => $e['summary'] ?? null, 'n' => $e['patient_name'] ?? null, 'u' => $e['updated_at'] ?? gmdate('Y-m-d H:i:s'), 'ub' => $e['updated_by'] ?? 'restore',
         ]);
     }
+    $res['answered_restored'] = interacciones_restore_answered_flags_from_backup($file, $pdo);
     return $res;
+}
+
+/**
+ * Reaplica answered/archived=1 desde un export diario sin bajar flags actuales a 0.
+ * Cura wipes por reopen en duplicados (migrate/reconcile).
+ *
+ * @return int filas tocadas
+ */
+function interacciones_restore_answered_flags_from_backup(string $file, ?PDO $pdo = null): int
+{
+    $pdo = interacciones_pdo($pdo);
+    interacciones_ensure_schema($pdo);
+    $data = json_decode((string) @file_get_contents($file), true);
+    if (!is_array($data) || !is_array($data['estado'] ?? null)) {
+        return 0;
+    }
+    $stmt = $pdo->prepare(
+        'INSERT INTO interaccion_estado (conversation_key, answered, answered_at, archived, archived_at, updated_at, updated_by)
+         VALUES (:k, :a, :aa, :r, :ra, :u, :ub)
+         ON DUPLICATE KEY UPDATE
+           answered = IF(VALUES(answered) = 1, 1, answered),
+           answered_at = IF(VALUES(answered) = 1, COALESCE(VALUES(answered_at), answered_at), answered_at),
+           archived = IF(VALUES(archived) = 1, 1, archived),
+           archived_at = IF(VALUES(archived) = 1, COALESCE(VALUES(archived_at), archived_at), archived_at),
+           updated_at = IF(VALUES(answered) = 1 OR VALUES(archived) = 1, VALUES(updated_at), updated_at),
+           updated_by = IF(VALUES(answered) = 1 OR VALUES(archived) = 1, VALUES(updated_by), updated_by)'
+    );
+    $n = 0;
+    foreach ($data['estado'] as $e) {
+        if (!is_array($e) || empty($e['conversation_key'])) {
+            continue;
+        }
+        $answered = (int) ($e['answered'] ?? 0) === 1 ? 1 : 0;
+        $archived = (int) ($e['archived'] ?? 0) === 1 ? 1 : 0;
+        if ($answered === 0 && $archived === 0) {
+            continue;
+        }
+        $stmt->execute([
+            'k' => (string) $e['conversation_key'],
+            'a' => $answered,
+            'aa' => $answered ? ($e['answered_at'] ?? null) : null,
+            'r' => $archived,
+            'ra' => $archived ? ($e['archived_at'] ?? null) : null,
+            'u' => gmdate('Y-m-d H:i:s'),
+            'ub' => 'restore-flags',
+        ]);
+        $n += $stmt->rowCount() > 0 ? 1 : 0;
+    }
+    return $n;
+}
+
+/**
+ * Una sola vez: restaura flags answered desde el backup diario más reciente.
+ *
+ * @return array{ran:bool,restored:int,file?:string,reason?:string}
+ */
+function interacciones_restore_answered_flags_once(?PDO $pdo = null): array
+{
+    $marker = interacciones_dir() . '/interacciones.answered_restored.json';
+    if (is_file($marker)) {
+        return ['ran' => false, 'restored' => 0, 'reason' => 'already_restored'];
+    }
+    $files = glob(interacciones_backup_dir() . '/interacciones-????????.json') ?: [];
+    rsort($files);
+    if ($files === []) {
+        return ['ran' => false, 'restored' => 0, 'reason' => 'no_backup'];
+    }
+    $file = $files[0];
+    $restored = interacciones_restore_answered_flags_from_backup($file, $pdo);
+    interacciones_write_atomic($marker, json_encode([
+        'restored_at' => gmdate('c'),
+        'file' => basename($file),
+        'restored' => $restored,
+    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+    return ['ran' => true, 'restored' => $restored, 'file' => basename($file)];
 }
 
 function interacciones_local_to_ts(string $date, string $time): ?int
@@ -186,9 +262,22 @@ function interacciones_migrate_legacy(?PDO $pdo = null, ?string $legacyFile = nu
     foreach ($events as $ev) {
         interacciones_insert_event($pdo, $ev);
     }
+    // Solo sube answered/archived a 1; nunca baja un flag ya marcado en DB.
     $stmt = $pdo->prepare(
-        'INSERT IGNORE INTO interaccion_estado (conversation_key, legacy_id, answered, answered_at, archived, archived_at, category, category_label, summary, patient_name, updated_at, updated_by)
-         VALUES (:k, :lid, :a, :aa, :r, :ra, :c, :cl, :s, :n, :u, :ub)'
+        'INSERT INTO interaccion_estado (conversation_key, legacy_id, answered, answered_at, archived, archived_at, category, category_label, summary, patient_name, updated_at, updated_by)
+         VALUES (:k, :lid, :a, :aa, :r, :ra, :c, :cl, :s, :n, :u, :ub)
+         ON DUPLICATE KEY UPDATE
+           legacy_id = COALESCE(legacy_id, VALUES(legacy_id)),
+           answered = IF(VALUES(answered) = 1, 1, answered),
+           answered_at = IF(VALUES(answered) = 1, COALESCE(VALUES(answered_at), answered_at), answered_at),
+           archived = IF(VALUES(archived) = 1, 1, archived),
+           archived_at = IF(VALUES(archived) = 1, COALESCE(VALUES(archived_at), archived_at), archived_at),
+           category = COALESCE(category, VALUES(category)),
+           category_label = COALESCE(category_label, VALUES(category_label)),
+           summary = COALESCE(summary, VALUES(summary)),
+           patient_name = COALESCE(patient_name, VALUES(patient_name)),
+           updated_at = IF(VALUES(answered) = 1 OR VALUES(archived) = 1, VALUES(updated_at), updated_at),
+           updated_by = IF(VALUES(answered) = 1 OR VALUES(archived) = 1, VALUES(updated_by), updated_by)'
     );
     $convs = 0;
     foreach ($items as $it) {
