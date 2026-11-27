@@ -14,7 +14,7 @@ import {
   searchPatients,
   escapeHtml,
   normalize,
-} from "./admin-booking-utils.js";
+} from "./admin-booking-utils.js?v=3";
 
 export function hideResults() {
   const picker = getPicker();

@@ -12,12 +12,12 @@ import {
   setPatientsLoaded,
   PUBLIC_BOOKING_API_URL,
 } from "./admin-booking-state.js";
-import { isAdmin } from "./admin-booking-utils.js?v=2";
+import { isAdmin, patientPhoneDigits } from "./admin-booking-utils.js?v=3";
 import {
   buildPicker,
   clearSelection,
   updateHint,
-} from "./admin-booking-picker.js?v=2";
+} from "./admin-booking-picker.js?v=3";
 
 function showBookingOpenError(message) {
   console.error("[admin-booking]", message);
@@ -48,7 +48,14 @@ async function loadPatients() {
   if (input) input.disabled = true;
   try {
     const response = await api("pacientes.php");
-    setPatients(Array.isArray(response?.items) ? response.items : []);
+    const items = Array.isArray(response?.items) ? response.items : [];
+    // Canoniza teléfonos al cargar (repara 549 pegado sobre ES/etc.).
+    setPatients(items.map((p) => {
+      const phone = patientPhoneDigits(p);
+      return phone && phone !== String(p.telefono || "").replace(/\D/g, "")
+        ? { ...p, telefono: phone }
+        : p;
+    }));
     setPatientsLoaded(true);
     updateHint(`${getPatients().length} pacientes en el directorio.`);
   } finally {
