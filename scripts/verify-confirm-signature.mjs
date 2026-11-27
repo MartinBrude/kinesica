@@ -199,7 +199,8 @@ test("5. send-confirmation.php bloquea envío anónimo solo-teléfono y descarta
   const runEndpoint = (postObj) => {
     const mailOut = path.join(tmpDir, `mail_${crypto.randomBytes(4).toString("hex")}.eml`);
     const runner = path.join(tmpDir, `ep_${crypto.randomBytes(4).toString("hex")}.php`);
-    fs.writeFileSync(runner, `<?php $_SERVER['REQUEST_METHOD']='POST'; $_POST=json_decode(${JSON.stringify(JSON.stringify(postObj))}, true); include ${JSON.stringify(path.join(sandbox, "api/send-confirmation.php"))};`);
+    const testIp = `127.0.${crypto.randomInt(1, 250)}.${crypto.randomInt(1, 250)}`;
+    fs.writeFileSync(runner, `<?php $_SERVER['REQUEST_METHOD']='POST'; $_SERVER['REMOTE_ADDR']=${JSON.stringify(testIp)}; $_POST=json_decode(${JSON.stringify(JSON.stringify(postObj))}, true); include ${JSON.stringify(path.join(sandbox, "api/send-confirmation.php"))};`);
     const proc = spawnSync("php", ["-d", "display_errors=0", "-d", `sendmail_path=cat > ${mailOut}`, runner], {
       env: { ...process.env, RESEND_API_KEY: "", KINESICA_CONFIRM_STATE_DIR: stateDir },
       encoding: "utf8",
