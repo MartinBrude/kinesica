@@ -106,6 +106,13 @@ eq(clean_phone_number('351912345678'), '351912345678', 'PT 351… (12) no se con
 ok(!str_starts_with(clean_phone_number('34658444935'), '549'), 'ES nunca empieza con 549');
 eq(clean_phone_number('5491145556677'), '5491145556677', 'AR legítimo 549 no se descompone');
 
+section('Detectar 54/549 pegado (heal candidates)');
+ok(kinesica_phone_is_ar_prefix_over_foreign('54934658444935'), '549+ES es corrupto');
+ok(kinesica_phone_is_ar_prefix_over_foreign('5434658444935'), '54+ES es corrupto');
+ok(!kinesica_phone_is_ar_prefix_over_foreign('5491145556677'), 'AR legítimo no es corrupto');
+ok(!kinesica_phone_is_ar_prefix_over_foreign('34658444935'), 'ES limpio no es corrupto');
+ok(!kinesica_phone_is_ar_prefix_over_foreign(''), 'vacío no es corrupto');
+
 section('XSS / escape contrato frontend');
 $renderFiles = glob($root . '/admin/modules/recordatorios-render*.js') ?: [];
 $render = implode("\n", array_map(fn($f) => file_get_contents($f) ?: '', $renderFiles));

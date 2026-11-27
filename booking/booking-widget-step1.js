@@ -77,16 +77,8 @@
       const patient = this.state.adminPatient;
       const q = (sel) => this.container.querySelector(sel);
       const fullName = patient ? String(patient.nombre_completo || `${patient.nombre || ""} ${patient.apellido || ""}`).trim() : "";
-      let telValue = patient ? String(patient.telefono || "") : "";
-      // No arrastrar 549 pegado sobre números extranjeros (p.ej. ES 34…).
-      if (telValue && !/^sin-/i.test(telValue) && !/^ficha-/i.test(telValue)) {
-        const digits = telValue.replace(/\D/g, "");
-        if (digits.startsWith("549") && /^(?:34|598|56|55|1|44|33|39|49)\d{8,12}$/.test(digits.slice(3))) {
-          telValue = digits.slice(3);
-        } else if (digits.startsWith("54") && !digits.startsWith("549") && /^(?:34|598|56|55|1|44|33|39|49)\d{8,12}$/.test(digits.slice(2))) {
-          telValue = digits.slice(2);
-        }
-      }
+      // Teléfono ya viene canonizado (API + picker/loadPatients); no re-reparar acá.
+      const telValue = patient ? String(patient.telefono || "") : "";
       const values = {
         "#kb-input-nombre": fullName,
         "#kb-input-email": patient ? String(patient.email || "") : "",

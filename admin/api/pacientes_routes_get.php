@@ -167,9 +167,10 @@ declare(strict_types=1);
                 'q5' => $like, 'q6' => $like, 'q7' => $like, 'q8' => $like,
             ]);
             $items = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            // Solo normaliza la respuesta; persistir con action=heal_phones (admin).
             json_out(200, [
                 'status' => 'success',
-                'items' => kinesica_pacientes_normalize_phone_rows($pdo, $items, true),
+                'items' => kinesica_pacientes_normalize_phone_rows($pdo, $items),
             ]);
         }
 
@@ -180,7 +181,7 @@ declare(strict_types=1);
         $items = $stmt ? ($stmt->fetchAll(PDO::FETCH_ASSOC) ?: []) : [];
         json_out(200, [
             'status' => 'success',
-            'items' => kinesica_pacientes_normalize_phone_rows($pdo, $items, true),
+            'items' => kinesica_pacientes_normalize_phone_rows($pdo, $items),
         ]);
     }
 

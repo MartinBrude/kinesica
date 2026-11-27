@@ -23,14 +23,20 @@ declare(strict_types=1);
             'toggle_campana',
             'update_phone',
             'get_email_by_phone',
+            'heal_phones',
         ];
         if (in_array($action, $sessionOnlyActions, true) && !$isSession) {
             json_out(403, ['status' => 'error', 'message' => 'Esta acción requiere sesión de usuario en el panel admin.']);
         }
 
-        // Correo libre / encuesta: solo admin con sesión (no profesional ni token).
+        // Correo libre / encuesta / heal DB: solo admin con sesión (no profesional ni token).
         if (
-            ($action === 'send_encuesta_invite' || $action === 'send_email' || $action === 'send_fallback_email')
+            (
+                $action === 'send_encuesta_invite'
+                || $action === 'send_email'
+                || $action === 'send_fallback_email'
+                || $action === 'heal_phones'
+            )
             && !is_admin($auth)
         ) {
             json_out(403, ['status' => 'error', 'message' => 'Solo un administrador con sesión puede realizar esta acción.']);
@@ -63,6 +69,12 @@ declare(strict_types=1);
             $cntStmt = $pdo->query('SELECT COUNT(*) FROM pacientes');
             $total = (int) $cntStmt->fetchColumn();
             json_out(200, ['status' => 'success', 'merged' => $merged, 'resolved' => $resolved, 'total' => $total]);
+        }
+
+        if ($action === 'heal_phones') {
+            $limit = (int) ($data['limit'] ?? 200);
+            $res = kinesica_pacientes_heal_corrupt_phones($pdo, $limit);
+            json_out(200, ['status' => 'success'] + $res);
         }
 
         if ($action === 'merge') {
