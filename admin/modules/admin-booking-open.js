@@ -36,6 +36,7 @@ export function closeAdminBooking() {
   }
   modal.classList.remove("is-open");
   modal.setAttribute("aria-hidden", "true");
+  modal.hidden = true;
   document.body.classList.remove("kinesica-booking-modal-open");
   clearSelection(false);
 }
@@ -151,6 +152,7 @@ export function openAdminBooking() {
     return;
   }
 
+  modal.hidden = false;
   modal.classList.add("is-open");
   modal.setAttribute("aria-hidden", "false");
   document.body.classList.add("kinesica-booking-modal-open");

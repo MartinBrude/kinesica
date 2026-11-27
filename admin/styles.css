@@ -24,6 +24,20 @@
 
 
 /* Turnera profesional: selector autenticado de paciente + widget oficial. */
+/* Fallback: si falla booking-widget.css, el modal no debe filtrarse al pie del admin. */
+#admin-booking-modal.kinesica-booking-modal-overlay:not(.is-open),
+#admin-booking-modal[hidden] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+#admin-booking-modal.kinesica-booking-modal-overlay.is-open {
+  display: flex !important;
+  visibility: visible !important;
+  pointer-events: auto;
+}
+
 .admin-booking-dialog {
   max-width: 820px;
 }
