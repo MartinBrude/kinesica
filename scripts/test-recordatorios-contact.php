@@ -97,11 +97,14 @@ eq(clean_phone_number('WhatsApp: +54 9 11 4555-6677'), '5491145556677', 'prefijo
 eq(clean_phone_number('+34658444935'), '34658444935', 'ES +34 no se argentiniza');
 eq(clean_phone_number('34658444935'), '34658444935', 'ES 34… sin + no se argentiniza');
 eq(clean_phone_number('658444935'), '34658444935', 'ES local 9 dígitos → 34…');
+eq(clean_phone_number('54934658444935'), '34658444935', 'repara 549 pegado sobre ES');
+eq(clean_phone_number('5434658444935'), '34658444935', 'repara 54 pegado sobre ES');
 eq(clean_phone_number('+1 212 555 1234'), '12125551234', 'US +1 no se argentiniza');
 eq(clean_phone_number('+598 99 123 456'), '59899123456', 'UY +598 no se argentiniza');
 eq(clean_phone_number('3511234567'), '5493511234567', 'AR Córdoba 10 dígitos → 549');
 eq(clean_phone_number('351912345678'), '351912345678', 'PT 351… (12) no se confunde con área AR');
 ok(!str_starts_with(clean_phone_number('34658444935'), '549'), 'ES nunca empieza con 549');
+eq(clean_phone_number('5491145556677'), '5491145556677', 'AR legítimo 549 no se descompone');
 
 section('XSS / escape contrato frontend');
 $renderFiles = glob($root . '/admin/modules/recordatorios-render*.js') ?: [];

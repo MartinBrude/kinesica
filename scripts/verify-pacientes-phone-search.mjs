@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { phoneMatches, phoneQueryVariants } from "../admin/modules/phone-search.js";
+import {
+  normalizePhoneForWhatsApp,
+  formatDisplayPhone,
+} from "../admin/modules/phone-format-core.js";
 
 const stored = "5491161164311";
 for (const q of ["(+54) 9 11 6116 4311", "6116 4311", "6116-4311", "011 6116 4311", "15 6116 4311", "+5491161164311", "4311"]) {
@@ -8,6 +12,20 @@ for (const q of ["(+54) 9 11 6116 4311", "6116 4311", "6116-4311", "011 6116 431
 }
 assert.ok(phoneMatches("34612345678", "0034 612 345 678"), "debe encontrar número internacional buscado con prefijo 00");
 assert.ok(phoneMatches("59899123456", "+598 99 123 456"), "debe encontrar número uruguayo con +598");
+
+assert.equal(normalizePhoneForWhatsApp("54934658444935"), "34658444935", "repara 549 pegado sobre ES");
+assert.equal(normalizePhoneForWhatsApp("5434658444935"), "34658444935", "repara 54 pegado sobre ES");
+assert.equal(normalizePhoneForWhatsApp("34658444935"), "34658444935", "ES intacto");
+assert.equal(normalizePhoneForWhatsApp("5491145556677"), "5491145556677", "AR legítimo intacto");
+assert.ok(
+  formatDisplayPhone("54934658444935").startsWith("(+34)"),
+  "display repara y muestra (+34) en vez de (+54)"
+);
+assert.match(
+  readFileSync("admin/modules/pacientes-table-row.js", "utf8"),
+  /normalizePhoneForWhatsApp/,
+  "directorio usa normalizePhoneForWhatsApp en wa.me"
+);
 for (const q of ["6116 4312", "12", "Lucas", ""]) assert.ok(!phoneMatches(stored, q), `no debe encontrar ${q}`);
 assert.deepEqual(phoneQueryVariants("ab"), []);
 assert.ok(!phoneMatches("", "1234"));

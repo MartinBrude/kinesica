@@ -7,6 +7,6 @@ export {
   isNonArInternationalPhone,
   normalizePhoneForWhatsApp,
   formatDisplayPhone,
-} from "./phone-format-core.js?v=1";
+} from "./phone-format-core.js?v=2";
 
 export { extractPhoneCandidate } from "./phone-format-extract.js?v=1";

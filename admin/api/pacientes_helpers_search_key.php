@@ -130,6 +130,19 @@ function clean_phone_number(string $raw): string
         $digits = substr($digits, 2);
     }
 
+    // Reparar 549/54 pegado por error encima de un CC extranjero (p.ej. 54934… → 34…).
+    if (str_starts_with($digits, '549')) {
+        $restAfter549 = substr($digits, 3);
+        if (phone_is_non_ar_international($restAfter549)) {
+            return $restAfter549;
+        }
+    } elseif (str_starts_with($digits, '54')) {
+        $restAfter54 = substr($digits, 2);
+        if (phone_is_non_ar_international($restAfter54)) {
+            return $restAfter54;
+        }
+    }
+
     // AR ya internacional
     if (str_starts_with($digits, '549')) {
         return $digits;

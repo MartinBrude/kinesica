@@ -1,4 +1,4 @@
-import { formatDisplayPhone } from "./phone-format.js";
+import { formatDisplayPhone, normalizePhoneForWhatsApp } from "./phone-format.js?v=7";
 import { getInitials, getAvatarColor } from "./admin-profesionales-avatar.js";
 import {
   modalEl,
@@ -105,7 +105,7 @@ export function openDetailModal(prof) {
     }
   }
   if (detailWaBtn) {
-    const rawDigits = String(prof.telefono || "").replace(/\D/g, "");
+    const rawDigits = normalizePhoneForWhatsApp(prof.telefono || "");
     if (rawDigits.length >= 8) {
       detailWaBtn.hidden = false;
       detailWaBtn.href = `https://wa.me/${rawDigits}`;

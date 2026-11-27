@@ -1,5 +1,5 @@
 import { escapeHtml } from "./dom.js?v=79";
-import { formatDisplayPhone, extractPhoneCandidate } from "./phone-format.js?v=6";
+import { formatDisplayPhone, extractPhoneCandidate, normalizePhoneForWhatsApp } from "./phone-format.js?v=7";
 import { capitalizePersonName } from "./pacientes-format.js";
 import { isAppointmentPast } from "./recordatorios-render-pages.js?v=1";
 
@@ -76,7 +76,7 @@ export function buildRecordatorioCardHtml(item) {
 
   const contactBits = [];
   if (effectiveWaId) {
-    const rawDigits = String(effectiveWaId).replace(/\D/g, "");
+    const rawDigits = normalizePhoneForWhatsApp(effectiveWaId);
     const waUrl = rawDigits ? `https://wa.me/${rawDigits}` : "";
     const phoneFormatted = escapeHtml(formatDisplayPhone(effectiveWaId));
     if (waUrl) {

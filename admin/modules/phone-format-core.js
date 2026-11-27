@@ -67,6 +67,15 @@ export function normalizePhoneForWhatsApp(raw) {
   if (!digits) return "";
   if (digits.startsWith("00")) digits = digits.slice(2);
 
+  // Reparar 549/54 pegado por error encima de un CC extranjero (p.ej. 54934… → 34…).
+  if (digits.startsWith("549")) {
+    const restAfter549 = digits.slice(3);
+    if (isNonArInternationalPhone(restAfter549)) return restAfter549;
+  } else if (digits.startsWith("54")) {
+    const restAfter54 = digits.slice(2);
+    if (isNonArInternationalPhone(restAfter54)) return restAfter54;
+  }
+
   if (digits.startsWith("549")) return digits;
   if (digits.startsWith("54")) {
     let rest = digits.slice(2);
@@ -100,7 +109,8 @@ export function formatDisplayPhone(raw) {
   if (str.startsWith("sin-tel-") || str.startsWith("sin-telefono-") || str.startsWith("ficha-")) {
     return "";
   }
-  const digits = cleanPhoneDigits(str);
+  // Misma canonización que wa.me (repara 549+34… y similares).
+  const digits = normalizePhoneForWhatsApp(str) || cleanPhoneDigits(str);
   if (!digits) return str;
 
   // Argentina: 549... (móvil estándar internacional)

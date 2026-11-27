@@ -4,6 +4,7 @@
 
 import { escapeHtml } from "./dom.js?v=79";
 import { formatDisplayPhone, capitalizePersonName } from "./pacientes-format.js";
+import { normalizePhoneForWhatsApp } from "./phone-format.js?v=7";
 import { getSessionUser } from "./auth.js?v=83";
 import { formatPatientName } from "./pacientes-name.js?v=4";
 import {
@@ -44,7 +45,8 @@ export function buildPacienteRow(p) {
 
   const rawTel = p.telefono || "";
   const isSinTel = patientMissingPhone(p);
-  const cleanDigits = isSinTel ? "" : String(rawTel).replace(/\D/g, "");
+  // Canoniza y repara 549 pegado sobre CC extranjeros (p.ej. ES 34…).
+  const cleanDigits = isSinTel ? "" : normalizePhoneForWhatsApp(rawTel);
   const waLink = cleanDigits ? `https://wa.me/${cleanDigits}` : "#";
   const displayTel = isSinTel ? "" : formatDisplayPhone(rawTel);
 

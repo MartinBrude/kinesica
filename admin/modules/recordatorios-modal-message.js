@@ -4,7 +4,7 @@
  */
 
 import { escapeHtml, toast } from "./dom.js?v=79";
-import { formatDisplayPhone } from "./phone-format.js?v=6";
+import { formatDisplayPhone, normalizePhoneForWhatsApp } from "./phone-format.js?v=7";
 import { capitalizePersonName } from "./pacientes-format.js";
 
 const COPY_ICON =
@@ -62,7 +62,7 @@ export function openRecordatorioMessageModal(item) {
     : "📍 Te esperamos en Charcas 3889, 5º, B (Palermo). ⚠️ Te recordamos que el espacio no cuenta con secretaria, por lo que te pedimos puntualidad estricta para evitar esperas en la entrada y no concurrir con acompañantes. Si tenés estudios médicos previos, no olvides traerlos.";
 
   const viaEmail = item.status === "sent_email";
-  const rawDigits = String(item.wa_id || "").replace(/\D/g, "");
+  const rawDigits = normalizePhoneForWhatsApp(item.wa_id || "");
   const waUrl = rawDigits ? `https://wa.me/${rawDigits}` : "";
   const displayPhone = item.wa_id ? formatDisplayPhone(item.wa_id) : "";
   const effectiveEmail = (
