@@ -10,6 +10,7 @@ import {
 import {
   patientName,
   patientMeta,
+  patientPhoneDigits,
   searchPatients,
   escapeHtml,
   normalize,
@@ -35,9 +36,13 @@ export function showSelected(name, meta) {
 export function choosePatient(patient) {
   const widget = getWidget();
   hideResults();
-  showSelected(patientName(patient), patientMeta(patient) || "Paciente registrado");
+  const phone = patientPhoneDigits(patient);
+  const normalized = phone
+    ? { ...patient, telefono: phone }
+    : patient;
+  showSelected(patientName(normalized), patientMeta(normalized) || "Paciente registrado");
   widget.reset();
-  widget.setAdminPatient(patient);
+  widget.setAdminPatient(normalized);
 }
 
 export function chooseNew() {

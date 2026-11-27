@@ -1,5 +1,6 @@
 import { getSessionUser } from "./auth.js?v=83";
 import { MAX_RESULTS, getPatients } from "./admin-booking-state.js";
+import { formatDisplayPhone, normalizePhoneForWhatsApp } from "./phone-format.js?v=7";
 
 export function isAdmin() {
   const user = getSessionUser();
@@ -18,9 +19,17 @@ export function patientName(patient) {
   return String(patient.nombre_completo || `${patient.nombre || ""} ${patient.apellido || ""}`).trim() || "Sin nombre";
 }
 
+/** Teléfono canónico (repara 549 pegado sobre CC extranjeros). */
+export function patientPhoneDigits(patient) {
+  const raw = String(patient?.telefono || "").trim();
+  if (!raw || raw.startsWith("sin-") || raw.startsWith("ficha-")) return "";
+  return normalizePhoneForWhatsApp(raw) || raw.replace(/\D/g, "");
+}
+
 export function patientMeta(patient) {
   const parts = [];
-  if (patient.telefono && !String(patient.telefono).startsWith("sin-")) parts.push(patient.telefono);
+  const phone = patientPhoneDigits(patient);
+  if (phone) parts.push(formatDisplayPhone(phone) || phone);
   if (patient.dni) parts.push(`DNI ${patient.dni}`);
   return parts.join(" · ");
 }
@@ -36,7 +45,7 @@ export function searchPatients(query) {
       const haystack = normalize(`${patientName(patient)} ${patient.email || ""}`);
       if (terms.every((term) => haystack.includes(term))) return true;
       if (digits.length >= 3) {
-        const phone = String(patient.telefono || "").replace(/\D/g, "");
+        const phone = patientPhoneDigits(patient) || String(patient.telefono || "").replace(/\D/g, "");
         const dni = String(patient.dni || "").replace(/\D/g, "");
         return phone.includes(digits) || dni.includes(digits);
       }

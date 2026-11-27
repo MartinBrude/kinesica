@@ -195,6 +195,60 @@ function clean_phone_number(string $raw): string
 }
 
 
+/**
+ * Canoniza telefono/contacto_telefono en filas de pacientes (repara 549+CC extranjero).
+ * Si $healDb y el valor limpio difiere del almacenado, persiste el arreglo (máx. 50/request).
+ *
+ * @param list<array<string,mixed>> $rows
+ * @return list<array<string,mixed>>
+ */
+function kinesica_pacientes_normalize_phone_rows(PDO $pdo, array $rows, bool $healDb = false): array
+{
+    $healed = 0;
+    $maxHeal = 50;
+    foreach ($rows as &$row) {
+        if (!is_array($row)) {
+            continue;
+        }
+        foreach (['telefono', 'contacto_telefono'] as $field) {
+            if (!array_key_exists($field, $row)) {
+                continue;
+            }
+            $raw = trim((string) ($row[$field] ?? ''));
+            if ($raw === '' || is_placeholder_phone($raw)) {
+                continue;
+            }
+            $clean = clean_phone_number($raw);
+            if ($clean === '' || $clean === $raw) {
+                continue;
+            }
+            $row[$field] = $clean;
+            if (
+                !$healDb
+                || $healed >= $maxHeal
+                || empty($row['id'])
+                || !preg_match('/^\d+$/', $raw)
+            ) {
+                continue;
+            }
+            // Solo persistir cuando era un “549/54 pegado” (dígitos puros que cambian al limpiar).
+            $rawDigits = preg_replace('/\D+/', '', $raw) ?: '';
+            if ($rawDigits === '' || $rawDigits === $clean) {
+                continue;
+            }
+            try {
+                $stmt = $pdo->prepare("UPDATE pacientes SET {$field} = :tel WHERE id = :id LIMIT 1");
+                $stmt->execute(['tel' => $clean, 'id' => (int) $row['id']]);
+                $healed++;
+            } catch (Throwable) {
+                // Best-effort: la respuesta ya lleva el valor corregido.
+            }
+        }
+    }
+    unset($row);
+    return $rows;
+}
+
 function is_valid_email_strict(?string $raw): bool
 {
     if ($raw === null) return true;

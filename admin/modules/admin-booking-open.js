@@ -12,12 +12,12 @@ import {
   setPatientsLoaded,
   PUBLIC_BOOKING_API_URL,
 } from "./admin-booking-state.js";
-import { isAdmin } from "./admin-booking-utils.js";
+import { isAdmin } from "./admin-booking-utils.js?v=2";
 import {
   buildPicker,
   clearSelection,
   updateHint,
-} from "./admin-booking-picker.js";
+} from "./admin-booking-picker.js?v=2";
 
 function showBookingOpenError(message) {
   console.error("[admin-booking]", message);

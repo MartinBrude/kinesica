@@ -166,13 +166,21 @@ declare(strict_types=1);
                 'q1' => $like, 'q2' => $like, 'q3' => $like, 'q4' => $like,
                 'q5' => $like, 'q6' => $like, 'q7' => $like, 'q8' => $like,
             ]);
-            json_out(200, ['status' => 'success', 'items' => $stmt->fetchAll()]);
+            $items = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            json_out(200, [
+                'status' => 'success',
+                'items' => kinesica_pacientes_normalize_phone_rows($pdo, $items, true),
+            ]);
         }
 
         // REL: listado completo sin soft-deleted (etapa 9).
         require_once __DIR__ . '/lib_relational_integrity.php';
         $alive = kinesica_rel_pacientes_not_deleted_sql($pdo);
         $stmt = $pdo->query("SELECT * FROM pacientes WHERE {$alive} AND LOWER(nombre_completo) NOT LIKE \"%tk3%\" AND LOWER(nombre_completo) NOT LIKE \"%tk 3%\" AND LOWER(nombre_completo) NOT LIKE \"%no dar%\" ORDER BY CASE WHEN apellido != \"\" THEN apellido ELSE nombre_completo END ASC, nombre ASC");
-        json_out(200, ['status' => 'success', 'items' => $stmt->fetchAll()]);
+        $items = $stmt ? ($stmt->fetchAll(PDO::FETCH_ASSOC) ?: []) : [];
+        json_out(200, [
+            'status' => 'success',
+            'items' => kinesica_pacientes_normalize_phone_rows($pdo, $items, true),
+        ]);
     }
 
