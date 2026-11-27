@@ -5,6 +5,11 @@ import { formatDisplayPhone } from "./phone-format.js";
 import { capitalizePersonName } from "./pacientes-format.js";
 import { parseBoolean } from "../ficha-rules.mjs?v=89";
 import { renderAttachmentHtml } from "./interacciones-render-attachments.js";
+import {
+  canUseTakeoverUi,
+  buildTakeoverControlsHtml,
+  buildTakeoverComposerHtml,
+} from "./interacciones-takeover.js?v=1";
 
 const MONTH_NAMES = [
   "enero", "febrero", "marzo", "abril", "mayo", "junio",
@@ -132,8 +137,13 @@ export function buildInteractionCardHtml(conv, itemIdx, senderName) {
         Abrir WhatsApp
       </a>`;
 
+  const showTakeover = canUseTakeoverUi(conv, senderName);
+  const takeoverActive = Boolean(conv?.takeover_active);
+  const takeoverControlsHtml = showTakeover ? buildTakeoverControlsHtml(conv, convKey) : "";
+  const takeoverComposerHtml = showTakeover ? buildTakeoverComposerHtml(conv, convKey) : "";
+
   return `
-    <article class="interaccion-card ${isAnswered ? "is-answered" : ""} ${isArchived ? "is-archived" : ""}" id="${cardId}">
+    <article class="interaccion-card ${isAnswered ? "is-answered" : ""} ${isArchived ? "is-archived" : ""} ${takeoverActive ? "is-takeover" : ""}" id="${cardId}">
       <div class="interaccion-header">
         <div class="interaccion-user-info">
           <div class="interaccion-avatar" aria-hidden="true">${escapeHtml(initial)}</div>
@@ -157,7 +167,7 @@ export function buildInteractionCardHtml(conv, itemIdx, senderName) {
           </label>
 
           ${directActionBtnHtml}
-
+          ${takeoverControlsHtml}
           ${archiveBtnHtml}
         </div>
       </div>
@@ -172,6 +182,7 @@ export function buildInteractionCardHtml(conv, itemIdx, senderName) {
 
       <div class="interaccion-chat-thread" id="${threadId}" hidden>
         ${renderChatMessages(conv?.messages || [], name, cleanWa)}
+        ${takeoverComposerHtml}
       </div>
     </article>
   `;

@@ -10,7 +10,7 @@ declare(strict_types=1);
  *  POST action=reconcile    fuerza reconciliación con n8n (bot o sesión no-colaborador)
  *  POST archive|unarchive|toggle_answered   solo sesión, no-colaborador; solo cambia flags, nunca borra mensajes
  *  POST action=takeover_start|takeover_end|takeover_end_all|takeover_list|takeover_status|reply
- *       pausa puntual de Clara (30 min) y respuesta humana como Clara (sesión o secreto bot)
+ *       pausa puntual (bot o sesión); reply solo con sesión admin (no colaborador)
  *  POST action=link_paciente  asocia conversación → paciente_id (etapa 7; no fusiona historias)
  *
  * Modelo: interaccion_eventos ≈ mensajes; interaccion_estado ≈ conversación (día+wa_id).

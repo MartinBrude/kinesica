@@ -63,8 +63,8 @@
    - [🏖️ C. Vacaciones o receso del consultorio](#c-vacaciones-o-receso-del-consultorio)
    - [⏸️ D. Pausar o reanudar a Clara (Desde el Panel Admin o por WhatsApp)](#d-pausar-o-reanudar-a-clara-desde-el-panel-admin-o-por-whatsapp)
      - [🛑 1. Pausa General / Global del Consultorio](#1-pausa-general-global-del-consultorio)
-     - [ℹ️ 2. Por qué la Pausa Individual por Paciente está desactivada](#2-por-que-la-pausa-individual-por-paciente-esta-desactivada)
-     - [⏳ 3. Despausa automática de seguridad (Timeout de 8 horas)](#3-despausa-automatica-de-seguridad-timeout-de-8-horas)
+     - [👤 2. Pausa individual por paciente (takeover 30 min)](#2-pausa-individual-por-paciente-takeover-30-min)
+     - [⏳ 3. Despausa automática de seguridad](#3-despausa-automatica-de-seguridad)
    - [🔀 E. Cambiar entre Modo Menú (sin IA) y Modo Agente IA](#e-cambiar-entre-modo-menu-sin-ia-y-modo-agente-ia)
    - [❌ F. Anular o cancelar un turno de un paciente](#f-anular-o-cancelar-un-turno-de-un-paciente)
    - [🩺 G. Los kinesiólogos no son pacientes (solicitud de turnos)](#g-los-kinesiologos-no-son-pacientes-solicitud-de-turnos)
@@ -495,12 +495,17 @@ Silencia a Clara para **todos** los pacientes en simultáneo (útil ante emergen
   - **Para reanudar todo el bot:** Escribirle `"reanudar bot"`, `"activar bot"`, `"retomar bot"` o `"reanudar todo"`. Clara responde *"¡Listo [Norberto/María]! Vuelvo a estar activa y atenta a las consultas 🌿"*.
 
 #### 👤 2. Pausa individual por paciente (takeover 30 min)
-Útil cuando Norberto o María quieren responder **ellos** un par de mensajes en el chat de Clara sin que el bot interfiera, y luego dejar que Clara vuelva sola.
+Útil cuando Norberto o María quieren responder **ellos** un par de mensajes **como Clara** sin que el bot interfiera, y luego dejar que Clara vuelva sola.
 
-* **Cómo pausar un contacto:** Escribirle a Clara `"pausar a Lucas"`, `"pausar 11 6123-4567"`, `"silenciar a Florencia"` o `"atiendo a Juan"`. Clara confirma la pausa de **30 minutos** para ese número y deja de responderle (el resto de pacientes sigue normal).
-* **Cómo reanudar ese contacto antes:** `"reanudar a Lucas"` / `"reanudar 11 6123-4567"`.
-* **Reanudación automática:** a los **30 minutos** Clara vuelve sola a atender ese contacto. También se limpia con `"reanudar bot"` (reanuda todo y borra las pausas puntuales en la base del admin).
-* **Nota:** el chat privado profesional↔paciente por línea propia (`wa.me/...`) nunca pasa por Clara; esta pausa aplica solo al hilo donde escribe Clara.
+* **Opción A — Desde Meta → Interacciones (`/admin/interacciones`):**
+  1. Abrí la conversación WhatsApp del paciente.
+  2. Tocá **Tomar control** (Clara calla 30 min para ese contacto).
+  3. En el hilo, escribí y enviá con **Enviar como Clara** (renueva los 30 min).
+  4. Los mensajes nuevos del paciente se siguen registrando; refrescá la bandeja para leerlos.
+  5. Tocá **Devolver a Clara** cuando termines (o esperá el vencimiento automático).
+* **Opción B — Por WhatsApp admin:** `"pausar a Lucas"`, `"pausar 11 6123-4567"`, `"silenciar a Florencia"` o `"atiendo a Juan"`. Reanudar: `"reanudar a Lucas"` / `"reanudar 11…"`. `"reanudar bot"` limpia todas las pausas puntuales.
+* **Reanudación automática:** a los **30 minutos** (o al renovar con cada reply desde Interacciones).
+* **Nota:** el chat privado profesional↔paciente por línea propia (`wa.me/...`) nunca pasa por Clara; esta pausa aplica solo al hilo donde escribe Clara. Fuera de la ventana Meta de 24 h el envío libre puede fallar.
 
 #### ⏳ 3. Despausa automática de seguridad
 * **Pausa global** (`"pausar bot"`): si nadie reanuda, el sistema **levanta la pausa tras 8 horas**.
@@ -729,7 +734,7 @@ Guardá esta tablita a mano para gestionar a Clara desde el celular de **Norbert
 | **Pausar todo el bot (Pausa general)** | Tocando **"Pausar bot"** en `/admin/` o en **Clara → Estado de servicios**, o escribiéndole a Clara: `"pausar bot"`, `"lo atiendo yo"` o `"silencio"` (se reanuda solo a las 8 hs si nadie lo reactiva antes). |
 | **Pausar solo la turnera web** | En **Clara → Estado de servicios**, botón **"Pausar turnera"** (no silencia el chat de WhatsApp). |
 | **Reanudar toda la atención de Clara** | Tocando **"Activar bot"** en `/admin/` o en **Clara → Estado de servicios**, o escribiéndole a Clara: `"reanudar bot"`, `"activar bot"` o `"reanudar todo"`. |
-| **Pausa individual por paciente** | Escribirle a Clara: `"pausar a Lucas"` / `"pausar 11 6123-4567"` (silencio 30 min; se reactiva sola o con `"reanudar …"` / `"reanudar bot"`). |
+| **Pausa individual + responder como Clara** | En **Meta → Interacciones**: Tomar control → Enviar como Clara → Devolver a Clara. O por WhatsApp: `"pausar a Lucas"` / `"reanudar …"` (30 min). |
 | **Cambiar a Modo Menú por letras (sin IA)** | Escribirle a Clara: `"modo menu"` o `"modo sin ia"` *(modo activo por defecto; números 1 a 9 mapean a letras)*. |
 | **Cambiar a Modo Agente IA conversacional** | Escribirle a Clara: `"modo ia"` o `"modo con ia"`. |
 | **Descargar backup de base de datos** | En **Administración → Copias de seguridad**. |

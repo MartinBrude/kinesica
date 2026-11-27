@@ -15,7 +15,7 @@ import {
 } from "./interacciones-state.js";
 import { setInteraccionesPendingBadge, syncBadgeFromCache } from "./interacciones-badge.js";
 import { updateLastUpdatedLabel } from "./interacciones-refresh.js";
-import { applyFilters } from "./interacciones-page.js";
+import { applyFilters } from "./interacciones-page.js?v=2";
 
 export async function loadInteracciones(force = false) {
   const container = document.getElementById("interacciones-list-container");

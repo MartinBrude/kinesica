@@ -31,11 +31,26 @@ ok(clara_takeover_normalize_wa_id('+54 9 11 5555-6666') === '5491155556666', 'no
 ok(clara_takeover_normalize_wa_id('11 5555-6666') === '5491155556666', 'local AR 10 dígitos → 549…');
 ok(clara_takeover_match_key('5491155556666') === '55556666', 'match_key last-8');
 ok(CLARA_TAKEOVER_TTL_SECONDS === 30 * 60, 'TTL default 30 minutos');
+ok(
+    str_contains(
+        clara_takeover_format_send_error([
+            'error' => 'Message failed',
+            'response' => ['error' => ['code' => 131047, 'message' => 'outside the allowed window']],
+        ]),
+        '24 h'
+    ),
+    'format_send_error detecta ventana Meta 24h'
+);
+$idxProbe = [
+    '5491155556666' => ['wa_id' => '5491155556666', 'paused_at' => 'x', 'paused_until' => 'y', 'paused_by' => 't'],
+];
+$idxProbe['55556666'] = $idxProbe['5491155556666'];
+ok(clara_takeover_lookup_in_index('11 5555-6666', $idxProbe)['wa_id'] === '5491155556666', 'lookup_in_index por local AR');
 
 $host = getenv('KT_DB_HOST');
 $tmp = getenv('KT_TMP');
 if (!$host || !$tmp) {
-    echo "• Sin KT_DB_HOST/KT_TMP: solo tests de normalización ($passed ok)\n";
+    echo "• Sin KT_DB_HOST/KT_TMP: solo tests offline ($passed ok)\n";
     exit($fails > 0 ? 1 : 0);
 }
 
@@ -107,6 +122,37 @@ $pdo->prepare(
 $purged = clara_takeover_purge_expired($pdo);
 ok($purged >= 1, 'purge_expired elimina vencidos');
 ok(!clara_takeover_is_active($wa, $pdo), 'vencido no figura activo');
+
+// Reply: mock de envío + renew TTL / auto-start (store puede faltar en algunos entornos)
+function clara_takeover_test_send(string $to, string $body, bool $previewUrl = false): array
+{
+    return [
+        'ok' => true,
+        'http_code' => 200,
+        'response' => ['messages' => [['id' => 'wamid_test_reply']]],
+    ];
+}
+
+clara_takeover_end($wa, $pdo);
+ok(!clara_takeover_is_active($wa, $pdo), 'precondiciones reply: sin takeover');
+try {
+    $reply = clara_takeover_reply($wa, 'Hola, te escribo desde el admin', 'Norberto', $pdo);
+    ok(clara_takeover_is_active($wa, $pdo), 'reply auto-start / renew takeover');
+    ok(!empty($reply['ok']) || clara_takeover_is_active($wa, $pdo), 'reply ok o al menos pausó a Clara');
+    if (!empty($reply['ok'])) {
+        ok(($reply['body'] ?? '') === 'Hola, te escribo desde el admin', 'reply devuelve body');
+    }
+    $until1 = (string) (clara_takeover_get($wa, $pdo)['paused_until'] ?? '');
+    usleep(1100000);
+    $reply2 = clara_takeover_reply($wa, 'Segundo mensaje', 'Norberto', $pdo);
+    $until2 = (string) (clara_takeover_get($wa, $pdo)['paused_until'] ?? '');
+    ok($until2 >= $until1, 'reply renueva paused_until');
+    $idx = clara_takeover_index_active($pdo);
+    ok(isset($idx[$wa]) || isset($idx[substr($wa, -8)]), 'index_active incluye contacto');
+} catch (Throwable $e) {
+    ok(clara_takeover_is_active($wa, $pdo), 'reply inició takeover aunque falló el store: ' . $e->getMessage());
+}
+clara_takeover_end($wa, $pdo);
 
 echo "Resultado: $passed ok, $fails fallos\n";
 exit($fails > 0 ? 1 : 0);

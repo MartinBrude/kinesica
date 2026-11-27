@@ -60,11 +60,7 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
     foreach ($rows as $row) {
         $ts = (new DateTimeImmutable((string) $row['ts_utc'], new DateTimeZone('UTC')))->getTimestamp();
         $local = (new DateTimeImmutable('@' . $ts))->setTimezone($tz);
-        // Canonicaliza 54 11… → 549 11… para no duplicar el mismo contacto el mismo día.
-        $wa = interacciones_clean_wa_id((string) $row['wa_id']);
-        if ($wa === '') {
-            $wa = (string) $row['wa_id'];
-        }
+        $wa = interacciones_clean_wa_id((string) $row['wa_id']) ?: (string) $row['wa_id'];
         $key = $wa . '_' . $local->format('Y-m-d');
         $isIg = (string) ($row['source'] ?? '') === 'instagram' || str_starts_with($wa, 'ig_');
         $convs[$key]['channel'] = $isIg ? 'instagram' : ($convs[$key]['channel'] ?? 'whatsapp');
@@ -82,10 +78,8 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
         $convs[$key]['events'][] = [
             'id' => (int) $row['id'], 'event_key' => (string) $row['event_key'], 'direction' => (string) $row['direction'],
             'body' => (string) $row['body'], 'ts' => $ts, 'name' => $eventName,
-            'media_id' => isset($row['media_id']) ? (string) $row['media_id'] : '',
-            'media_type' => isset($row['media_type']) ? (string) $row['media_type'] : '',
-            'media_mime' => isset($row['media_mime']) ? (string) $row['media_mime'] : '',
-            'media_filename' => isset($row['media_filename']) ? (string) $row['media_filename'] : '',
+            'media_id' => (string) ($row['media_id'] ?? ''), 'media_type' => (string) ($row['media_type'] ?? ''),
+            'media_mime' => (string) ($row['media_mime'] ?? ''), 'media_filename' => (string) ($row['media_filename'] ?? ''),
         ];
     }
 
@@ -110,6 +104,9 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
         $dirNames = [];
         $reminderNames = [];
     }
+
+    require_once __DIR__ . '/lib_interacciones_view_takeover.php';
+    $takeoverIndex = interacciones_view_load_takeover_index($pdo);
 
     $items = [];
     $counts = ['answered' => 0, 'unanswered' => 0, 'archived' => 0];
@@ -197,20 +194,7 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
         }
         $archived = !empty($st['archived']);
 
-        // LÓGICA DETERMINISTA DE ESTADO:
-        // 1. Cancelaciones: nunca auto-respondidas; solo el flag manual (atención humana).
-        // 2. Confirmación de turno pura → respondida.
-        // 3. Ruido de diagnóstico técnico puro (test/PRUEBA) → respondida.
-        // 4. Resto: flag persistido. La reapertura ante un nuevo mensaje del paciente
-        //    ocurre al ingest (interacciones_mark_reopened_on_patient_message), no acá:
-        //    si no, "Consulta respondida" no pegaría cuando el último msg es del paciente.
-        if ($isTurnConfirm) {
-            $answered = true;
-        } elseif ($isDiagNoise) {
-            $answered = true;
-        } else {
-            $answered = !empty($st['answered']);
-        }
+        $answered = ($isTurnConfirm || $isDiagNoise) ? true : !empty($st['answered']);
 
         $counts[$archived ? 'archived' : ($answered ? 'answered' : 'unanswered')]++;
         $isIgConv = ($c['channel'] ?? 'whatsapp') === 'instagram' || str_starts_with((string) $c['wa_id'], 'ig_');
@@ -218,7 +202,6 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
             $cat = 'instagram_dm';
             $catLabel = '📸 Instagram Direct';
         }
-        // Confirmación/cancelación/prueba pisan categoría guardada (evita "Consulta WhatsApp" + Pendiente).
         if (!$isTurnCancel && !$isTurnConfirm && !$isDiagNoise) {
             $cat = (string) (($st['category'] ?? '') !== '' ? $st['category'] : $cat);
             $catLabel = (string) (($st['category_label'] ?? '') !== '' ? $st['category_label'] : $catLabel);
@@ -241,8 +224,7 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
             'summary' => (string) (($st['summary'] ?? '') !== '' ? $st['summary'] : mb_substr($firstPatient, 0, 120, 'UTF-8')),
             'has_attachment' => $hasAttachment,
             'messages' => $messages,
-        ];
-        // REL: exponer paciente_id canónico (estado > eventos) para UI / link_paciente.
+        ] + interacciones_view_item_takeover_fields((string) $c['wa_id'], $isIgConv, $takeoverIndex);
         if ($convPid > 0) {
             $item['paciente_id'] = $convPid;
         }

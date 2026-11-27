@@ -42,7 +42,14 @@ export function renderPager({ totalRows, totalPages, currentPage, pageSize, onPa
   pagerEl.append(prevBtn, span, nextBtn);
 }
 
-export function bindInteractionEvents(container, { onToggleAnswered, onArchive, onThreadToggle, getSessionUser }) {
+export function bindInteractionEvents(container, {
+  onToggleAnswered,
+  onArchive,
+  onThreadToggle,
+  onTakeover,
+  onTakeoverReply,
+  getSessionUser,
+}) {
   if (!container) return;
   container.querySelectorAll("[data-thread-toggle]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -92,6 +99,37 @@ export function bindInteractionEvents(container, { onToggleAnswered, onArchive, 
       if (typeof onToggleAnswered === "function") {
         onToggleAnswered({ convId, convKey, isChecked, chk, cardEl, pillEl });
       }
+    });
+  });
+
+  container.querySelectorAll('[data-takeover-action="start"], [data-takeover-action="end"]').forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (typeof onTakeover !== "function") return;
+      onTakeover({
+        action: btn.getAttribute("data-takeover-action"),
+        waId: btn.getAttribute("data-wa-id") || "",
+        convId: btn.getAttribute("data-conv-id") || "",
+        btn,
+        cardEl: btn.closest(".interaccion-card"),
+      });
+    });
+  });
+
+  container.querySelectorAll('[data-takeover-action="reply"]').forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (typeof onTakeoverReply !== "function") return;
+      const waId = btn.getAttribute("data-wa-id") || "";
+      const convId = btn.getAttribute("data-conv-id") || "";
+      const composer = btn.closest(".interaccion-takeover-composer");
+      const input = composer?.querySelector(".interaccion-takeover-input");
+      onTakeoverReply({
+        waId,
+        convId,
+        body: String(input?.value || "").trim(),
+        input,
+        btn,
+        cardEl: btn.closest(".interaccion-card"),
+      });
     });
   });
 }
