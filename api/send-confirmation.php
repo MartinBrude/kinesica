@@ -104,8 +104,11 @@ if ($rateBlocked) {
     exit;
 }
 
-// Auto-registro/actualización en el Directorio de Pacientes (MySQL)
-kinesica_confirmation_upsert_patient($data, $paciente, $emailOk ? $email : '', $profesional, $servicio);
+// Auto-registro solo si hay mail o eventId de turno real (evita clones por probes WA).
+$eventIdForUpsert = trim((string) ($data['eventId'] ?? $data['event_id'] ?? $data['calendar_event_id'] ?? ''));
+if ($emailOk || $eventIdForUpsert !== '') {
+    kinesica_confirmation_upsert_patient($data, $paciente, $emailOk ? $email : '', $profesional, $servicio);
+}
 
 $runtimeSettings = kinesica_read_settings(kinesica_admin_settings_file(__DIR__));
 $practitionerIdRaw = trim((string) ($data['practitionerId'] ?? $data['practitioner_id'] ?? ''));
