@@ -105,7 +105,8 @@ function waitForBookingWidget(timeoutMs = 8000) {
       return;
     }
     const retry = document.createElement("script");
-    retry.src = `/booking/booking-bundle.min.js?v=${Date.now()}`;
+    // Sin ?v=: el CDN a veces cachea 404 negativos en busts recién desplegados.
+    retry.src = "/booking/booking-bundle.min.js";
     retry.async = true;
     retry.dataset.kinesicaReload = "1";
     retry.onload = tick;
