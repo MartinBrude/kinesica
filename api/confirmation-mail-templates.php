@@ -129,7 +129,10 @@ function kinesica_build_confirmation_mail(array $params): array
     $fechaLegible = kinesica_format_fecha_legible($fechaRaw);
     $horaLegible = kinesica_format_hora_legible($horaRaw);
     $customCancellationPolicy = (string) $mailTexts['cancellation_policy'];
-    $servicioTexto = $servicio !== '' ? ' (' . $servicio . ')' : '';
+    // No mostrar el genérico "(Terapias Manuales)"; sí técnicas específicas (ATM, RPG, …).
+    $servicioTexto = ($servicio !== '' && strcasecmp($servicio, 'Terapias Manuales') !== 0)
+        ? ' (' . $servicio . ')'
+        : '';
 
     $detailsCard = '
       <div class="card-details">
