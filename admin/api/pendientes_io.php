@@ -77,7 +77,7 @@ function kinesica_pendientes_load(): array
             ? (int) $item['prioridad']
             : ($estado === 'pendiente' ? $pIdx++ : 0);
 
-        $out[] = [
+        $entry = [
             'id' => $id,
             'titulo' => $titulo,
             'estado' => $estado,
@@ -87,8 +87,57 @@ function kinesica_pendientes_load(): array
             'resolved_at' => $item['resolved_at'] ?? null,
             'resolved_by' => $item['resolved_by'] ?? null,
         ];
+        if (isset($item['updated_at']) && is_scalar($item['updated_at']) && trim((string) $item['updated_at']) !== '') {
+            $entry['updated_at'] = trim((string) $item['updated_at']);
+        }
+        if (isset($item['updated_by']) && is_scalar($item['updated_by']) && trim((string) $item['updated_by']) !== '') {
+            $entry['updated_by'] = trim((string) $item['updated_by']);
+        }
+        $out[] = $entry;
     }
     return kinesica_pendientes_normalize_priorities($out);
+}
+
+/**
+ * Valida y normaliza el título de una tarea pendiente.
+ *
+ * @return array{ok:bool,titulo?:string,error?:string}
+ */
+function kinesica_pendientes_validate_titulo(string $raw): array
+{
+    $titulo = trim($raw);
+    if ($titulo === '') {
+        return ['ok' => false, 'error' => 'El título de la tarea es obligatorio.'];
+    }
+    if (mb_strlen($titulo, 'UTF-8') > 255) {
+        return ['ok' => false, 'error' => 'El título no puede superar los 255 caracteres.'];
+    }
+    return ['ok' => true, 'titulo' => $titulo];
+}
+
+/**
+ * Actualiza el texto (título) de un pendiente existente preservando prioridad y estado.
+ *
+ * @return array{pendiente:array<string,mixed>,pendientes:list<array<string,mixed>>}|null
+ */
+function kinesica_pendientes_update_titulo(array $pendientes, string $id, string $titulo, string $username): ?array
+{
+    $updated = null;
+    $actor = trim($username) !== '' ? trim($username) : 'admin';
+    foreach ($pendientes as &$item) {
+        if (($item['id'] ?? '') === $id) {
+            $item['titulo'] = $titulo;
+            $item['updated_at'] = gmdate('Y-m-d\TH:i:s\Z');
+            $item['updated_by'] = $actor;
+            $updated = $item;
+            break;
+        }
+    }
+    unset($item);
+    if ($updated === null) {
+        return null;
+    }
+    return ['pendiente' => $updated, 'pendientes' => $pendientes];
 }
 
 function kinesica_pendientes_save(array $pendientes): void

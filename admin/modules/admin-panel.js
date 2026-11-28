@@ -42,7 +42,7 @@ import {
   loadPendientesData,
   closePendienteModal,
   isPendienteModalOpen,
-} from "./admin-pendientes.js?v=8";
+} from "./admin-pendientes.js?v=9";
 
 const viewAdmin = document.querySelector("#view-admin");
 

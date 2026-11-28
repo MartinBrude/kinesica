@@ -52,14 +52,13 @@ $input = read_json();
 $action = (string) ($input['action'] ?? '');
 
 if ($action === 'create') {
-    $titulo = trim((string) ($input['titulo'] ?? ''));
-    $posicion = (string) ($input['posicion'] ?? 'top');
-    if ($titulo === '') {
-        json_out(422, ['error' => 'El título de la tarea es obligatorio.']);
+    $rawTitulo = is_scalar($input['titulo'] ?? null) ? (string) $input['titulo'] : '';
+    $posicion = is_scalar($input['posicion'] ?? null) ? (string) $input['posicion'] : 'top';
+    $check = kinesica_pendientes_validate_titulo($rawTitulo);
+    if (!$check['ok']) {
+        json_out(422, ['error' => $check['error']]);
     }
-    if (mb_strlen($titulo) > 255) {
-        json_out(422, ['error' => 'El título no puede superar los 255 caracteres.']);
-    }
+    $titulo = $check['titulo'];
 
     try {
         $id = 'pend_' . bin2hex(random_bytes(6));
@@ -102,6 +101,39 @@ if ($action === 'create') {
         'message' => 'Pendiente agregado.',
         'pendiente' => $nuevo,
         'pendientes' => $pendientes,
+    ]);
+}
+
+if ($action === 'update') {
+    $id = is_scalar($input['id'] ?? null) ? trim((string) $input['id']) : '';
+    if ($id === '') {
+        json_out(422, ['error' => 'ID no especificado.']);
+    }
+    $rawTitulo = is_scalar($input['titulo'] ?? null) ? (string) $input['titulo'] : '';
+    $check = kinesica_pendientes_validate_titulo($rawTitulo);
+    if (!$check['ok']) {
+        json_out(422, ['error' => $check['error']]);
+    }
+
+    $pendientes = kinesica_pendientes_load();
+    $result = kinesica_pendientes_update_titulo(
+        $pendientes,
+        $id,
+        $check['titulo'],
+        (string) ($auth['username'] ?? 'admin')
+    );
+    if ($result === null) {
+        json_out(404, ['error' => 'Tarea pendiente no encontrada.']);
+    }
+
+    $updatedList = kinesica_pendientes_normalize_priorities($result['pendientes']);
+    kinesica_pendientes_save($updatedList);
+
+    json_out(200, [
+        'status' => 'success',
+        'message' => 'Pendiente actualizado.',
+        'pendiente' => $result['pendiente'],
+        'pendientes' => $updatedList,
     ]);
 }
 

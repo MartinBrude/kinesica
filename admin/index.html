@@ -1409,7 +1409,7 @@
                     <th style="width: 120px;">Prioridad</th>
                     <th style="width: 130px;">Estado</th>
                     <th>Tarea</th>
-                    <th style="text-align: right; width: 170px;">Acciones</th>
+                    <th style="text-align: right; width: 220px;">Acciones</th>
                   </tr>
                 </thead>
                 <tbody id="admin-pendientes-tbody">
@@ -2018,7 +2018,7 @@
                 <label for="admin-pendiente-titulo">Tarea *</label>
                 <input type="text" id="admin-pendiente-titulo" required maxlength="255" placeholder="Ej: Revisar cotización de hosting" autocomplete="off">
               </div>
-              <div class="prof-form-group" style="margin-top: 14px;">
+              <div class="prof-form-group" id="admin-pendiente-posicion-group" style="margin-top: 14px;">
                 <label for="admin-pendiente-posicion">Prioridad inicial</label>
                 <select id="admin-pendiente-posicion" class="prof-select" style="width: 100%; padding: 8px 12px; border: 1px solid var(--line); border-radius: 6px; font-size: 14px; background: #fff;">
                   <option value="top">Máxima prioridad (#1 · Al inicio)</option>
@@ -3156,6 +3156,6 @@
   </div>
   <div id="print-root"></div>
   <script src="/booking/booking-bundle.min.js?v=1795820917" defer></script>
-  <script type="module" src="/admin/app.js?v=252"></script>
+  <script type="module" src="/admin/app.js?v=253"></script>
 </body>
 </html>

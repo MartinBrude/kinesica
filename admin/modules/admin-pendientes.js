@@ -8,23 +8,24 @@ import { dialogAlert, dialogConfirm } from "./dom.js?v=79";
 import { setListControlsEnabled } from "./list-controls.js?v=1";
 import {
   PENDIENTES_BADGE_USERNAME,
-  getCachedDigestPaused,
   countOpenPendientes,
   updateDigestToggleUI,
   canShowPendientesBadge,
   setPendientesPendingBadge,
   refreshPendientesPendingBadge,
-} from "./admin-pendientes-badge.js?v=1";
+  initDigestToggleListener,
+} from "./admin-pendientes-badge.js?v=2";
 import {
   renderPendientesRows,
   setupPendientesDragAndDrop,
-} from "./admin-pendientes-render.js?v=2";
+} from "./admin-pendientes-render.js?v=3";
 import {
+  openEditPendienteModal,
   closePendienteModal,
   isPendienteModalOpen,
   handleSavePendiente,
   initPendienteModalListeners,
-} from "./admin-pendientes-modal.js?v=1";
+} from "./admin-pendientes-modal.js?v=2";
 
 export {
   PENDIENTES_BADGE_USERNAME,
@@ -43,7 +44,6 @@ let pendientesLoading = false;
 const countPill = document.querySelector("#admin-pendientes-count-label");
 const tbody = document.querySelector("#admin-pendientes-tbody");
 const filterBtns = document.querySelectorAll(".admin-pendientes-filter-btn");
-const digestToggleBtn = document.querySelector("#admin-btn-toggle-digest-pendientes");
 
 export function syncPendientesBadgeFromCache() {
   setPendientesPendingBadge(countOpenPendientes(cachedPendientes));
@@ -135,6 +135,7 @@ export function renderPendientes(pendientes, onReload, highlightId = null) {
 
   tbody.replaceChildren(...renderPendientesRows(filtered, {
     onToggle: (item) => handleTogglePendiente(item, onReload),
+    onEdit: (item) => openEditPendienteModal(item),
     onMovePriority: (id, dir) => handleMovePriority(id, dir, onReload),
     highlightId,
   }));
@@ -198,44 +199,21 @@ export function initPendientesUI({ onReload }) {
     btn.addEventListener("click", () => setPendientesFilter(btn.dataset.filter, onReload));
   });
 
-  if (digestToggleBtn) {
-    digestToggleBtn.addEventListener("click", async () => {
-      const willPause = !getCachedDigestPaused();
-      const msg = willPause
-        ? "¿Pausar los recordatorios semanales por correo a Norberto?\n\nNo se enviarán digestos de pendientes los lunes hasta que los vuelvas a activar."
-        : "¿Reanudar los recordatorios semanales por correo a Norberto?\n\nSe volverá a enviar el resumen de pendientes el próximo día hábil.";
-      const ok = await dialogConfirm(msg);
-      if (!ok) return;
-
-      try {
-        digestToggleBtn.disabled = true;
-        const resp = await api("pendientes.php", {
-          method: "POST",
-          body: JSON.stringify({ action: "toggle_digest_pause", paused: willPause }),
-        });
-        if (resp && typeof resp.digest_paused === "boolean") {
-          updateDigestToggleUI(resp.digest_paused);
-        }
-      } catch (err) {
-        dialogAlert("No se pudo cambiar el estado de los mails: " + (err.message || "Error desconocido"));
-      } finally {
-        digestToggleBtn.disabled = false;
-      }
-    });
-  }
+  initDigestToggleListener();
 
   initPendienteModalListeners({
     onSubmit: (e) => handleSavePendiente(e, {
-      onSuccess: async (resp) => {
+      onSuccess: async (resp, { mode } = {}) => {
         if (resp && Array.isArray(resp.pendientes)) {
           cachedPendientes = resp.pendientes;
         }
-        if (currentFilter === "resueltos") {
+        if (mode !== "edit" && currentFilter === "resueltos") {
           currentFilter = "pendientes";
           filterBtns.forEach((btn) => {
             btn.classList.toggle("is-active", btn.dataset.filter === "pendientes");
           });
         }
+        renderPendientes(cachedPendientes, onReload);
       },
       onReload,
     }),

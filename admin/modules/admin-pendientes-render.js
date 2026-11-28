@@ -90,7 +90,7 @@ export function setupPendientesDragAndDrop(tbody, onReorder) {
   });
 }
 
-export function renderPendientesRows(filtered, { onToggle, onMovePriority, highlightId }) {
+export function renderPendientesRows(filtered, { onToggle, onEdit, onMovePriority, highlightId }) {
   const pendingItems = filtered.filter((i) => i.estado !== "resuelto");
 
   return filtered.map((item) => {
@@ -179,6 +179,18 @@ export function renderPendientesRows(filtered, { onToggle, onMovePriority, highl
     tdActions.className = "prof-actions-td";
     const cell = document.createElement("div");
     cell.className = "prof-actions-cell";
+
+    const btnEdit = document.createElement("button");
+    btnEdit.type = "button";
+    btnEdit.className = "btn ghost btn-sm btn-prof-edit";
+    btnEdit.textContent = "Editar";
+    btnEdit.title = "Editar texto de la tarea";
+    btnEdit.setAttribute("aria-label", `Editar pendiente: ${item.titulo || ""}`);
+    btnEdit.addEventListener("click", (e) => {
+      e.stopPropagation();
+      onEdit?.(item);
+    });
+    cell.appendChild(btnEdit);
 
     const btnToggle = document.createElement("button");
     btnToggle.type = "button";

@@ -18,7 +18,7 @@ import {
   setPendientesPendingBadge,
   refreshPendientesPendingBadge,
   canShowPendientesBadge,
-} from "./admin-pendientes.js?v=8";
+} from "./admin-pendientes.js?v=9";
 import {
   setErroresPendingBadge,
   refreshErroresPendingBadge,
@@ -30,7 +30,7 @@ import { applyHoursToRuntime } from "./horarios.js?v=4";
 
 export { closeAllDropdowns } from "./app-tabs-dropdowns.js";
 export { closeMobileNav, openMobileNav, toggleMobileNav } from "./app-tabs-mobile.js";
-export { switchTab } from "./app-tabs-switch.js?v=5";
+export { switchTab } from "./app-tabs-switch.js?v=6";
 
 import { closeMobileNav } from "./app-tabs-mobile.js";
 import { bindAdminNavOnce } from "./app-tabs-nav.js";
