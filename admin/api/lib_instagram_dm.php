@@ -191,7 +191,9 @@ function ig_dm_reply(string $waId, string $body, string $actor = '', ?PDO $pdo =
     interacciones_ensure_schema($pdo);
     $mid = (string) ($send['message_id'] ?? '');
     $ts = time();
-    $eventKey = 'ig:' . ($mid !== '' ? $mid : ('admin-reply-' . bin2hex(random_bytes(8))));
+    $eventKey = $mid !== ''
+        ? ('ig:' . (strlen($mid) <= 90 ? $mid : sha1($mid)))
+        : ('ig:admin-reply-' . bin2hex(random_bytes(8)));
 
     $ev = [
         'event_key' => $eventKey,

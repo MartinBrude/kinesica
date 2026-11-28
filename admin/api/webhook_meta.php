@@ -100,9 +100,12 @@ foreach ($payload['entry'] ?? [] as $entry) {
         $direction = $isFromUs ? 'clara' : 'patient';
         $contactId = $isFromUs ? $recipientId : $senderId;
 
+        $eventKey = $mid !== ''
+            ? ('ig:' . (strlen($mid) <= 90 ? $mid : sha1($mid)))
+            : ('ig:' . md5($senderId . '|' . $tsSec . '|' . $text));
         $ev = [
-            'event_key' => 'ig:' . ($mid !== '' ? $mid : md5($senderId . '|' . $tsSec . '|' . $text)),
-            'wa_id' => 'ig_' . $contactId,
+            'event_key' => $eventKey,
+            'wa_id' => substr('ig_' . $contactId, 0, 32),
             'direction' => $direction,
             'body' => $text,
             'ts' => $tsSec,
