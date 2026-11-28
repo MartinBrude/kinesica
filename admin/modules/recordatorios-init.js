@@ -2,12 +2,17 @@
  * Init — recordatorios.
  */
 
-import { debounce } from "./dom.js?v=79";
+import { api } from "./api.js?v=79";
+import { debounce, dialogConfirm, dialogAlert, toast } from "./dom.js?v=79";
 import { getSessionUser } from "./auth.js?v=83";
 import { renderRecordatoriosRules } from "./recordatorios-rules.js?v=8";
 import { recordatoriosStore } from "./recordatorios-store.js?v=1";
 import { loadRecordatorios } from "./recordatorios-load.js?v=2";
-import { applyFiltersAndRender, applyRecordatorioItemUpdate } from "./recordatorios-apply.js?v=1";
+import {
+  applyFiltersAndRender,
+  applyRecordatorioItemUpdate,
+  applyRecordatorioItemDelete,
+} from "./recordatorios-apply.js?v=1";
 import { openRecordatorioContactModal, openRecordatorioDispatchModal } from "./recordatorios-modal-contact.js?v=5";
 import { openRecordatorioMessageModal } from "./recordatorios-modal-message.js?v=2";
 import { openTestCaseModal } from "./recordatorios-modal-test.js?v=2";
@@ -45,7 +50,7 @@ export function initRecordatoriosModule() {
     recordatoriosStore.currentPage = 0;
     applyFiltersAndRender();
   });
-  document.getElementById("recordatorios-list-container")?.addEventListener("click", (e) => {
+  document.getElementById("recordatorios-list-container")?.addEventListener("click", async (e) => {
     const resetBtn = e.target.closest('[data-action="reset-filters"]');
     if (resetBtn) {
       recordatoriosStore.activeStatusFilter = "all";
@@ -72,6 +77,35 @@ export function initRecordatoriosModule() {
       const item = recordatoriosStore.cachedItems.find((it) => String(it.id) === String(id));
       if (!item) return;
       openRecordatorioMessageModal(item);
+      return;
+    }
+    const delBtn = e.target.closest('[data-action="delete-recordatorio"]');
+    if (delBtn) {
+      const id = delBtn.getAttribute("data-id");
+      const item = recordatoriosStore.cachedItems.find((it) => String(it.id) === String(id));
+      if (!item) return;
+      const who = item.patient_name || item.event_summary || `#${id}`;
+      const when = [item.appointment_date, item.appointment_time].filter(Boolean).join(" · ");
+      const confirmed = await dialogConfirm(
+        `¿Confirmás que querés eliminar el recordatorio de "${who}"${when ? ` (${when})` : ""}?\n\nEsta acción no se puede deshacer.`,
+        { title: "Eliminar recordatorio", danger: true, okText: "Eliminar", cancelText: "Cancelar" }
+      );
+      if (!confirmed) return;
+      delBtn.disabled = true;
+      const prevHtml = delBtn.innerHTML;
+      delBtn.textContent = "Eliminando…";
+      try {
+        await api("recordatorios.php", {
+          method: "POST",
+          body: JSON.stringify({ action: "delete", id: Number(id) }),
+        });
+        applyRecordatorioItemDelete(id);
+        toast("Recordatorio eliminado", { type: "success" });
+      } catch (err) {
+        delBtn.disabled = false;
+        delBtn.innerHTML = prevHtml;
+        await dialogAlert(err?.message || "No se pudo eliminar el recordatorio", { type: "danger" });
+      }
       return;
     }
     const btn = e.target.closest('[data-action="dispatch-manual"]');

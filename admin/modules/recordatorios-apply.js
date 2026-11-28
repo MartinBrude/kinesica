@@ -92,3 +92,11 @@ export function applyRecordatorioItemUpdate(updatedItem) {
   recalculateCounts();
   applyFiltersAndRender();
 }
+
+export function applyRecordatorioItemDelete(deletedId) {
+  recordatoriosStore.cachedItems = recordatoriosStore.cachedItems.filter(
+    (it) => String(it.id) !== String(deletedId)
+  );
+  recalculateCounts();
+  applyFiltersAndRender();
+}

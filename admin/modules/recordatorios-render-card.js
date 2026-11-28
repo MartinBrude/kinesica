@@ -1,4 +1,5 @@
 import { escapeHtml } from "./dom.js?v=79";
+import { getSessionUser } from "./auth.js?v=83";
 import { formatDisplayPhone, extractPhoneCandidate, normalizePhoneForWhatsApp } from "./phone-format.js?v=8";
 import { capitalizePersonName } from "./pacientes-format.js";
 import { isAppointmentPast } from "./recordatorios-render-pages.js?v=1";
@@ -177,6 +178,18 @@ export function buildRecordatorioCardHtml(item) {
           <circle cx="12" cy="12" r="3"></circle>
         </svg>Ver mensaje
       </button>`);
+  if (getSessionUser()?.role !== "colaborador") {
+    actions.push(`
+      <button type="button" class="btn light btn-delete-recordatorio" data-action="delete-recordatorio" data-id="${escapeHtml(item.id)}" title="Eliminar recordatorio">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;margin-right:4px;">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+          <path d="M10 11v6"></path>
+          <path d="M14 11v6"></path>
+          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+        </svg>Eliminar
+      </button>`);
+  }
   const actionBtn = actions.length
     ? `<div class="recordatorio-card-actions">${actions.join("")}</div>`
     : "";

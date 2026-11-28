@@ -135,6 +135,26 @@ if ($action === 'reconcile') {
     json_out(200, ['ok' => true] + recordatorios_reconcile(null, 8));
 }
 
+if ($action === 'delete') {
+    $id = (int) ($input['id'] ?? 0);
+    if ($id <= 0) {
+        json_error(400, 'ID de recordatorio inválido', 'user_input', 'INVALID_RECORDATORIO_ID', 'Seleccioná un recordatorio válido.');
+    }
+    try {
+        $pdo = recordatorios_pdo();
+        recordatorios_ensure_schema($pdo);
+        $stmt = $pdo->prepare('DELETE FROM recordatorio_eventos WHERE id = :id');
+        $stmt->execute(['id' => $id]);
+        if ($stmt->rowCount() === 0) {
+            json_error(404, 'Recordatorio no encontrado', 'user_input', 'RECORDATORIO_NOT_FOUND');
+        }
+        json_out(200, ['ok' => true, 'action' => 'delete', 'deleted_id' => $id]);
+    } catch (Throwable $e) {
+        error_log('recordatorios delete error: ' . $e->getMessage());
+        json_error(500, 'No se pudo eliminar el recordatorio', 'infrastructure', 'DELETE_RECORDATORIO_ERROR');
+    }
+}
+
 if ($action === 'save_contact' || $action === 'update_contact') {
     $id = (int) ($input['id'] ?? 0);
     if ($id <= 0) {
