@@ -68,6 +68,12 @@ function interacciones_ensure_schema(?PDO $pdo = null): void
     if (isset($done[$pdo])) {
         return;
     }
+    $driver = (string) $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+    $marker = __DIR__ . '/data/.interacciones_schema_migrated';
+    if ($driver !== 'sqlite' && PHP_SAPI !== 'cli' && is_file($marker)) {
+        $done[$pdo] = true;
+        return;
+    }
     // REL: puente idempotente (no DROP). Se mantiene activo para no romper media_/schema.
     $pdo->exec(
         'CREATE TABLE IF NOT EXISTS interaccion_eventos (
@@ -165,6 +171,12 @@ function interacciones_ensure_schema(?PDO $pdo = null): void
             'TEXT NULL'
         );
     } catch (Throwable $e) {
+    }
+    if ($driver !== 'sqlite' && PHP_SAPI !== 'cli') {
+        if (!is_dir(dirname($marker))) {
+            @mkdir(dirname($marker), 0775, true);
+        }
+        @file_put_contents($marker, (string) time());
     }
     $done[$pdo] = true;
 }

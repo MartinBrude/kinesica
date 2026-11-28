@@ -1,6 +1,16 @@
-import { getUniquePatients, capitalizePersonName } from "../ficha-rules.mjs?v=90";
+import { getUniquePatients, capitalizePersonName } from "../ficha-rules.mjs?v=91";
+import { getSessionUser } from "./auth.js?v=83";
 import { getDirectoryPacientesCache, isDirectoryLoaded } from "./form-patient-state.js";
 import { fetchDirectoryPacientes } from "./form-patient-directory.js";
+
+function normName(str) {
+  return String(str || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
 
 export function populatePatientPicker(allFichas = [], selectedKey = "", extraPacientes = null) {
   const select = document.querySelector("#patient-quick-select");
@@ -12,29 +22,21 @@ export function populatePatientPicker(allFichas = [], selectedKey = "", extraPac
 
   const registeredOnly = [];
   if (dirPacientes && dirPacientes.length > 0) {
+    const fichaDnis = new Set();
+    const fichaNames = new Set();
+    for (const f of fichasPatients) {
+      const fDniClean = String(f.dni || "").replace(/[^0-9kK]/g, "");
+      if (fDniClean) fichaDnis.add(fDniClean);
+      const fNameNorm = normName(f.nombre);
+      if (fNameNorm) fichaNames.add(fNameNorm);
+    }
+
     for (const p of dirPacientes) {
       const pDniClean = String(p.dni || "").replace(/[^0-9kK]/g, "");
-      const pNameNorm = String(p.nombre_completo || `${p.nombre || ""} ${p.apellido || ""}`)
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/\s+/g, " ")
-        .trim();
+      const pNameNorm = normName(p.nombre_completo || `${p.nombre || ""} ${p.apellido || ""}`);
       if (!pNameNorm && !pDniClean) continue;
 
-      const hasFicha = fichasPatients.some((f) => {
-        const fDniClean = String(f.dni || "").replace(/[^0-9kK]/g, "");
-        const fNameNorm = String(f.nombre || "")
-          .toLowerCase()
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .replace(/\s+/g, " ")
-          .trim();
-        if (pDniClean && fDniClean && pDniClean === fDniClean) return true;
-        if (pNameNorm && fNameNorm && pNameNorm === fNameNorm) return true;
-        return false;
-      });
-
+      const hasFicha = (pDniClean && fichaDnis.has(pDniClean)) || (pNameNorm && fichaNames.has(pNameNorm));
       if (!hasFicha) {
         registeredOnly.push(p);
       }
@@ -73,7 +75,7 @@ export function populatePatientPicker(allFichas = [], selectedKey = "", extraPac
 
   select.value = selectedKey || "";
 
-  if (!isDirectoryLoaded() && !extraPacientes) {
+  if (!isDirectoryLoaded() && !extraPacientes && getSessionUser()) {
     fetchDirectoryPacientes().then((pacientes) => {
       if (pacientes && pacientes.length > 0) {
         populatePatientPicker(allFichas, select.value, pacientes);

@@ -2,7 +2,7 @@
  * Kinésica Admin - Navegación y Validación Visual de Pasos del Formulario
  */
 
-import { REQUIRED_FIELDS, validateStep, missingFieldKeys, missingFields } from "../ficha-rules.mjs?v=90";
+import { REQUIRED_FIELDS, validateStep, missingFieldKeys, missingFields } from "../ficha-rules.mjs?v=91";
 import { switchActiveView } from "./dom.js?v=79";
 
 const form = document.querySelector("#ficha");

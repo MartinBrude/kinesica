@@ -1,9 +1,9 @@
 import { escapeHtml } from "./dom.js?v=79";
 import { buildWhatsAppUrl } from "./interacciones-message.js";
 import { isMartinBrudePhone } from "./phone-search.js?v=3";
-import { formatDisplayPhone } from "./phone-format.js";
+import { formatDisplayPhone } from "./phone-format.js?v=8";
 import { capitalizePersonName } from "./pacientes-format.js";
-import { parseBoolean } from "../ficha-rules.mjs?v=89";
+import { parseBoolean } from "../ficha-rules.mjs?v=91";
 import { renderAttachmentHtml } from "./interacciones-render-attachments.js";
 import {
   canUseTakeoverUi,

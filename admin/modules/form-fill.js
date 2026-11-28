@@ -2,7 +2,7 @@
  * Relleno del formulario y cambios laterales.
  */
 
-import { patientKey, validateField, getSessionIndex } from "../ficha-rules.mjs?v=90";
+import { patientKey, validateField, getSessionIndex } from "../ficha-rules.mjs?v=91";
 import { syncFollowups, syncEva } from "./form-eva.js?v=5";
 import { showStep, updateStepValidation as updateStepValidationNav } from "./form-nav.js?v=2";
 import { setDniPower, setPatientLocked, populatePatientPicker } from "./form-patient.js";

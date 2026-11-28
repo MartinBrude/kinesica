@@ -3,7 +3,7 @@
  * Funciones puras de formateo JSON, planificación y reconciliación de entidades de sesión.
  */
 
-import { patientKey, coerceFicha } from "../ficha-rules.mjs?v=90";
+import { patientKey, coerceFicha } from "../ficha-rules.mjs?v=91";
 import { dialogAlert, toast } from "./dom.js?v=79";
 
 export const IMPORT_BATCH = 20;

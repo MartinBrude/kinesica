@@ -2,7 +2,7 @@
  * Kinésica Admin - Lectura y Serialización del Formulario de Ficha
  */
 
-import { emptyFicha, coerceFicha, ageOn, todayISO } from "../ficha-rules.mjs?v=90";
+import { emptyFicha, coerceFicha, ageOn, todayISO } from "../ficha-rules.mjs?v=91";
 import { writeSinglesFromDom, syncSinglesFromDom } from "./form-singles.js?v=2";
 
 export function getBlankFicha() {

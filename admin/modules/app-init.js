@@ -38,13 +38,15 @@ export function initAppControllers({
     onSave: async (data, meta) => {
       if (meta?.identityKey) {
         const siblings = loadAll().filter((ficha) => ficha.id !== data.id && patientKey(ficha) === meta.identityKey);
-        for (const sibling of siblings) {
-          const next = { ...sibling };
-          for (const key of PATIENT_FIELDS) next[key] = data[key];
-          next.sinDocumento = Boolean(data.sinDocumento);
-          next.edad = ageOn(data.nacimiento, sibling.fechaSesion) || sibling.edad;
-          await upsert(next);
-        }
+        await Promise.all(
+          siblings.map((sibling) => {
+            const next = { ...sibling };
+            for (const key of PATIENT_FIELDS) next[key] = data[key];
+            next.sinDocumento = Boolean(data.sinDocumento);
+            next.edad = ageOn(data.nacimiento, sibling.fechaSesion) || sibling.edad;
+            return upsert(next);
+          })
+        );
       }
       await upsert(data);
       showLibrary();

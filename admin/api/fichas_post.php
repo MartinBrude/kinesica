@@ -168,9 +168,16 @@ declare(strict_types=1);
     $incomingName = $nameKey((string) ($data['nombre'] ?? ''));
 
     if ($incomingDoc !== '' && $incomingName !== '') {
-        $stmtDni = $pdo->prepare('SELECT id, payload FROM fichas WHERE JSON_UNQUOTE(JSON_EXTRACT(payload, "$.dni")) LIKE :dniPattern');
-        $stmtDni->execute(['dniPattern' => '%' . trim((string) ($data['dni'] ?? '')) . '%']);
-        $candidateRows = $stmtDni->fetchAll() ?: $pdo->query('SELECT id, payload FROM fichas')->fetchAll();
+        $stmtDni = $pdo->prepare(
+            'SELECT id, payload FROM fichas
+             WHERE REPLACE(REPLACE(REPLACE(LOWER(COALESCE(JSON_UNQUOTE(JSON_EXTRACT(payload, "$.dni")), "")), ".", ""), "-", ""), " ", "") = :docKey
+                OR JSON_UNQUOTE(JSON_EXTRACT(payload, "$.dni")) LIKE :dniPattern'
+        );
+        $stmtDni->execute([
+            'docKey' => $incomingDoc,
+            'dniPattern' => '%' . trim((string) ($data['dni'] ?? '')) . '%',
+        ]);
+        $candidateRows = $stmtDni->fetchAll();
         foreach ($candidateRows as $row) {
             if ((string) $row['id'] === $id) continue;
             $item = json_decode((string) $row['payload'], true);

@@ -3,7 +3,7 @@
  * Agrupa según el ciclo de vida: Enviados, A enviar, Fallidos en enviarse y Omitidos.
  */
 
-import { formatDisplayPhone } from "./phone-format.js";
+import { formatDisplayPhone } from "./phone-format.js?v=8";
 
 const STATUS_FILTERS = {
   all: "all",

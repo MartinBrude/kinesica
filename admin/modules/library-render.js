@@ -3,7 +3,7 @@
  * Agrupa las historias clínicas por paciente, aplica filtros/ordenamiento y renderiza los acordeones DOM.
  */
 
-import { patientKey, capitalizePersonName } from "../ficha-rules.mjs?v=87";
+import { patientKey, capitalizePersonName } from "../ficha-rules.mjs?v=91";
 import { escapeHtml } from "./dom.js?v=79";
 import { patientGroupRow } from "./library-rows.js?v=3";
 import { setLibraryPage } from "./library-pager.js";

@@ -1,4 +1,4 @@
-import { patientKey, capitalizePersonName } from "../ficha-rules.mjs?v=90";
+import { patientKey, capitalizePersonName } from "../ficha-rules.mjs?v=91";
 import { form, setIdentityKey, setIdentityEdited } from "./form-patient-state.js";
 
 export function setDniPower(on, { clear = false } = {}) {

@@ -110,7 +110,7 @@ export function showAdminView(section = "pendientes", routeState = null) {
   if (!user || (user.role !== "admin" && mappedSection !== "creativos")) {
     // Si no es administrador y no es creativos, redirigir silenciosamente al inicio
     try {
-      import("./app-tabs.js").then((m) => m.switchTab("inicio"));
+      import("./app-tabs.js?v=56").then((m) => m.switchTab("inicio"));
     } catch { /* ignore */ }
     return;
   }
@@ -127,7 +127,7 @@ export function showAdminView(section = "pendientes", routeState = null) {
       sessionStorage.setItem("kinesica_admin_view", JSON.stringify(payload));
     } catch { /* ignore */ }
     setAdminActiveSection(validSection);
-    loadAdminData();
+    loadAdminSection(validSection);
     if (validSection === "creativos") {
       const editId = String(routeState?.editId || "").trim();
       queueMicrotask(() => applyCreativosEditFromRoute(
@@ -141,12 +141,34 @@ export function hideAdminView() {
   if (viewAdmin) viewAdmin.hidden = true;
 }
 
+export async function loadAdminSection(section) {
+  const reload = () => loadAdminSection(section);
+  switch (section) {
+    case "usuarios":
+      return loadProfesionalesData(reload);
+    case "pendientes":
+      return loadPendientesData(reload);
+    case "gastos":
+      return loadGastosData(reload);
+    case "errores":
+      return loadErroresData(reload);
+    case "servicios":
+      return loadServiciosData();
+    case "campana":
+      return loadCampanaData();
+    case "creativos":
+      return loadCreativosData();
+    default:
+      return undefined;
+  }
+}
+
 export async function loadAdminData() {
   await Promise.allSettled([
-    loadProfesionalesData(loadAdminData),
-    loadPendientesData(loadAdminData),
-    loadGastosData(loadAdminData),
-    loadErroresData(loadAdminData),
+    loadProfesionalesData(() => loadAdminSection("usuarios")),
+    loadPendientesData(() => loadAdminSection("pendientes")),
+    loadGastosData(() => loadAdminSection("gastos")),
+    loadErroresData(() => loadAdminSection("errores")),
     loadServiciosData(),
     loadCampanaData(),
     loadCreativosData(),
@@ -154,11 +176,11 @@ export async function loadAdminData() {
 }
 
 export function initAdminModule() {
-  initProfesionalesUI({ onReload: loadAdminData });
-  initPendientesUI({ onReload: loadAdminData });
-  initGastosUI({ onReload: loadAdminData });
-  initErroresUI({ onReload: loadAdminData });
-  initServiciosUI({ onReload: loadAdminData });
+  initProfesionalesUI({ onReload: () => loadAdminSection("usuarios") });
+  initPendientesUI({ onReload: () => loadAdminSection("pendientes") });
+  initGastosUI({ onReload: () => loadAdminSection("gastos") });
+  initErroresUI({ onReload: () => loadAdminSection("errores") });
+  initServiciosUI({ onReload: () => loadAdminSection("servicios") });
   initCampanaUI();
   initCreativosUI();
 

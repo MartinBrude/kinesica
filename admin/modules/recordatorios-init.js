@@ -2,6 +2,7 @@
  * Init — recordatorios.
  */
 
+import { debounce } from "./dom.js?v=79";
 import { getSessionUser } from "./auth.js?v=83";
 import { renderRecordatoriosRules } from "./recordatorios-rules.js?v=8";
 import { recordatoriosStore } from "./recordatorios-store.js?v=1";
@@ -29,11 +30,12 @@ export function initRecordatoriosModule() {
   document.getElementById("btn-refresh-recordatorios")?.addEventListener("click", () => {
     loadRecordatorios(true);
   });
-  document.getElementById("recordatorios-search")?.addEventListener("input", () => {
+  const onRecordatoriosSearch = debounce(() => {
     if (recordatoriosStore.isRefreshing) return;
     recordatoriosStore.currentPage = 0;
     applyFiltersAndRender();
-  });
+  }, 180);
+  document.getElementById("recordatorios-search")?.addEventListener("input", onRecordatoriosSearch);
   document.getElementById("recordatorios-stats")?.addEventListener("click", (e) => {
     if (recordatoriosStore.isRefreshing) return;
     const btn = e.target.closest("[data-filter]");

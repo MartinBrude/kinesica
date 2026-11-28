@@ -18,7 +18,7 @@ import {
   mapMainMenuDigitToLetter, getChatSubmenu, setChatSubmenu, getChatLang,
   setChatLang, getSimContext, markMenuShown, wasMenuShownWithin,
   resetUnrecCount, bumpUnrecCount,
-} from "./chat-simulator-core.js";
+} from "./chat-simulator-core.js?v=8";
 import {
   handleMultiLetterSequence,
   handleActiveSubmenu,

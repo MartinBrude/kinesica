@@ -131,10 +131,12 @@ async function refresh() {
     saved = urlRoute.view === "compare" && saved?.view === "compare" ? saved : urlRoute;
   }
 
+  let initialSwitched = false;
   if ((!formView || formView.hidden) && (!compareView || compareView.hidden)) {
     if (saved?.view === "compare" && saved.pKey) showCompare(saved.pKey, saved.xId, saved.yId);
     else if (saved?.view) switchTab(saved.view, saved.section, saved);
     else switchTab("inicio");
+    initialSwitched = true;
   }
 
   const items = await api("fichas.php");
@@ -162,8 +164,13 @@ async function refresh() {
     }
   }
 
-  if (saved?.view) switchTab(saved.view, saved.section, saved);
-  else switchTab("inicio");
+  const libraryView = document.querySelector("#view-library");
+  if (libraryView && !libraryView.hidden) {
+    showLibrary();
+  } else if (!initialSwitched) {
+    if (saved?.view) switchTab(saved.view, saved.section, saved);
+    else switchTab("inicio");
+  }
 }
 
 setAuthRequiredHandler((data) => {
@@ -175,8 +182,6 @@ setAuthRequiredHandler((data) => {
 initAuth({
   onSuccess: async () => {
     await refresh();
-    switchTab("inicio");
-    mountAdminChannels();
   },
   onLogout: () => {
     unmountAdminChannels();
@@ -225,8 +230,6 @@ if (resetToken && resetFormEl) {
       setSessionUser({ username: data.username, name: data.name, role: data.role });
       hideGate();
       await refresh();
-      switchTab("inicio");
-      mountAdminChannels();
     })
     .catch((err) => {
       showGate({ login: true });

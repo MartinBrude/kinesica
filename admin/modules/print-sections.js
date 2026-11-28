@@ -11,7 +11,7 @@ import {
   prose,
   formatParts,
   add,
-} from "./dom.js";
+} from "./dom.js?v=79";
 
 export const CDI_LABELS = {
   "I.a": "I.a) Dolor miofascial sin limitación de apertura",

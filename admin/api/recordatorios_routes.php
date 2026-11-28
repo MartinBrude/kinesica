@@ -91,7 +91,7 @@ require_header();
 $auth = require_auth();
 
 if ($method === 'GET') {
-    $house = recordatorios_run_housekeeping(!empty($_GET['sync']));
+    $house = !empty($_GET['sync']) ? recordatorios_run_housekeeping(true) : ['reconcile' => null];
     try {
         $days = isset($_GET['days']) ? (int) $_GET['days'] : RECORDATORIOS_DEFAULT_DAYS;
         $view = recordatorios_load_view(null, $days);

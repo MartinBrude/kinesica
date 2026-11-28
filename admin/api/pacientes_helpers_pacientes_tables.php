@@ -11,6 +11,11 @@ function ensure_pacientes_tables(PDO $pdo, bool $force = false): void
     // Migrate CLI es la fuente preferida; este ensure no se apaga (seguridad productiva).
 
     $driver = (string) $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+    $marker = __DIR__ . '/data/.pacientes_schema_migrated';
+    if ($driver !== 'sqlite' && !$force && is_file($marker)) {
+        $checked = true;
+        return;
+    }
     if ($driver === 'sqlite') {
         $pdo->exec('
             CREATE TABLE IF NOT EXISTS pacientes (
@@ -85,50 +90,22 @@ function ensure_pacientes_tables(PDO $pdo, bool $force = false): void
         ');
     }
 
-    try {
-        $pdo->exec('ALTER TABLE pacientes ADD COLUMN dejo_review TINYINT(1) NOT NULL DEFAULT 0');
-    } catch (Throwable) {}
-
-    try {
-        $pdo->exec('ALTER TABLE pacientes ADD COLUMN encuesta_enviada TINYINT(1) NOT NULL DEFAULT 0');
-    } catch (Throwable) {}
-
-    try {
-        $pdo->exec('ALTER TABLE pacientes ADD COLUMN viene_de_campana TINYINT(1) NOT NULL DEFAULT 1');
-    } catch (Throwable) {}
-
-    // REL: puente DDL columnas (deleted_at/version/paciente_id/profesional_id)
-    // si migrate.php aún no corrió. Fuente: admin/api/migrations/. Retirar tras etapa 10.
+    // REL: puente DDL columnas si migrate.php aún no corrió. Fuente: admin/api/migrations/.
     require_once __DIR__ . '/lib_migrations.php';
     try {
-        kinesica_migrations_add_column_if_missing(
-            $pdo,
-            'pacientes',
-            'deleted_at',
-            'DATETIME NULL DEFAULT NULL',
-            'TEXT NULL'
-        );
-        kinesica_migrations_add_column_if_missing(
-            $pdo,
-            'pacientes',
-            'version',
-            'INT UNSIGNED NOT NULL DEFAULT 1',
-            'INTEGER NOT NULL DEFAULT 1'
-        );
-        kinesica_migrations_add_column_if_missing(
-            $pdo,
-            'lista_espera',
-            'paciente_id',
-            'INT UNSIGNED NULL',
-            'INTEGER NULL'
-        );
-        kinesica_migrations_add_column_if_missing(
-            $pdo,
-            'lista_espera',
-            'profesional_id',
-            'INT UNSIGNED NULL',
-            'INTEGER NULL'
-        );
+        kinesica_migrations_add_column_if_missing($pdo, 'pacientes', 'dejo_review', 'TINYINT(1) NOT NULL DEFAULT 0', 'INTEGER NOT NULL DEFAULT 0');
+        kinesica_migrations_add_column_if_missing($pdo, 'pacientes', 'encuesta_enviada', 'TINYINT(1) NOT NULL DEFAULT 0', 'INTEGER NOT NULL DEFAULT 0');
+        kinesica_migrations_add_column_if_missing($pdo, 'pacientes', 'viene_de_campana', 'TINYINT(1) NOT NULL DEFAULT 1', 'INTEGER NOT NULL DEFAULT 1');
+        kinesica_migrations_add_column_if_missing($pdo, 'pacientes', 'deleted_at', 'DATETIME NULL DEFAULT NULL', 'TEXT NULL');
+        kinesica_migrations_add_column_if_missing($pdo, 'pacientes', 'version', 'INT UNSIGNED NOT NULL DEFAULT 1', 'INTEGER NOT NULL DEFAULT 1');
+        kinesica_migrations_add_column_if_missing($pdo, 'lista_espera', 'paciente_id', 'INT UNSIGNED NULL', 'INTEGER NULL');
+        kinesica_migrations_add_column_if_missing($pdo, 'lista_espera', 'profesional_id', 'INT UNSIGNED NULL', 'INTEGER NULL');
+        if ($driver !== 'sqlite') {
+            if (!is_dir(dirname($marker))) {
+                @mkdir(dirname($marker), 0775, true);
+            }
+            @file_put_contents($marker, (string) time());
+        }
     } catch (Throwable) {
     }
 

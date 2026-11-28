@@ -4,7 +4,7 @@
  * búsqueda normalizada con debounce, paginación e importación/exportación JSON.
  */
 
-import { matchFichaSearch, nextSession, missingFields } from "../ficha-rules.mjs?v=90";
+import { matchFichaSearch, nextSession, missingFields } from "../ficha-rules.mjs?v=91";
 import { dialogAlert, switchActiveView } from "./dom.js?v=79";
 import { todayISO } from "./form.js?v=92";
 import { sessionRow, patientGroupRow, fichaRow, setRowsContext } from "./library-rows.js?v=3";

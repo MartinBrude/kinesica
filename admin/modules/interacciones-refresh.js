@@ -5,7 +5,7 @@ import {
   getLastLoadedAt,
 } from "./interacciones-state.js";
 import { isWithinAutoRefreshHours } from "./interacciones-hours.js";
-import { loadInteracciones } from "./interacciones-load.js";
+import { loadInteracciones } from "./interacciones-load.js?v=3";
 
 export function updateLastUpdatedLabel() {
   const el = document.getElementById("interacciones-last-updated");
@@ -34,7 +34,7 @@ export function startAutoRefresh() {
       document.visibilityState === "visible" &&
       isWithinAutoRefreshHours()
     ) {
-      loadInteracciones(false);
+      loadInteracciones(false, { quiet: true });
     }
   }, AUTO_REFRESH_INTERVAL_MS));
 }

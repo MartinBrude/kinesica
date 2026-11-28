@@ -185,6 +185,9 @@ function require_header(): void
 
 function kinesica_ensure_csrf_token(): string
 {
+    if (!empty($_SESSION['csrf_token']) && is_string($_SESSION['csrf_token'])) {
+        return (string) $_SESSION['csrf_token'];
+    }
     if (session_status() !== PHP_SESSION_ACTIVE) {
         start_session();
     }

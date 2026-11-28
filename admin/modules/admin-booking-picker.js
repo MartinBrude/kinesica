@@ -1,3 +1,4 @@
+import { debounce } from "./dom.js?v=79";
 import {
   getPicker,
   getPatients,
@@ -147,7 +148,8 @@ export function buildPicker() {
   const input = el.querySelector("input");
   const list = el.querySelector("ul");
 
-  input.addEventListener("input", () => renderResults(input.value));
+  const onPickerInput = debounce(() => renderResults(input.value), 150);
+  input.addEventListener("input", onPickerInput);
   input.addEventListener("focus", () => {
     if (input.value) renderResults(input.value);
   });

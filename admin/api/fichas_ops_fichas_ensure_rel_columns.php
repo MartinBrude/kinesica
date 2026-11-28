@@ -14,6 +14,12 @@ function kinesica_fichas_ensure_rel_columns(PDO $pdo): void
         return;
     }
     require_once __DIR__ . '/lib_migrations.php';
+    $isSqlite = kinesica_migrations_is_sqlite($pdo);
+    $marker = __DIR__ . '/data/.fichas_rel_migrated';
+    if (!$isSqlite && is_file($marker)) {
+        $done[$pdo] = true;
+        return;
+    }
     try {
         kinesica_migrations_add_column_if_missing($pdo, 'fichas', 'paciente_id', 'INT UNSIGNED NULL', 'INTEGER NULL');
         kinesica_migrations_add_column_if_missing($pdo, 'fichas', 'profesional_id', 'INT UNSIGNED NULL', 'INTEGER NULL');
@@ -24,6 +30,12 @@ function kinesica_fichas_ensure_rel_columns(PDO $pdo): void
             'INT UNSIGNED NOT NULL DEFAULT 1',
             'INTEGER NOT NULL DEFAULT 1'
         );
+        if (!$isSqlite) {
+            if (!is_dir(dirname($marker))) {
+                @mkdir(dirname($marker), 0775, true);
+            }
+            @file_put_contents($marker, (string) time());
+        }
     } catch (Throwable $e) {
         error_log('kinesica fichas ensure_rel_columns: ' . $e->getMessage());
     }

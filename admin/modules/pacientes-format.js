@@ -3,7 +3,7 @@
  * Utilidades para normalización de teléfonos, formato internacional y detección de errores de tipeo.
  */
 
-export { formatDisplayPhone, cleanPhoneDigits } from "./phone-format.js";
+export { formatDisplayPhone, cleanPhoneDigits } from "./phone-format.js?v=8";
 
 /**
  * Normaliza nombres y apellidos de pacientes para que solo la inicial esté en mayúscula.

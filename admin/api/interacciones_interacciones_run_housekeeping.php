@@ -96,11 +96,13 @@ $auth = require_auth();
 
 if ($method === 'GET') {
     $countsOnly = !empty($_GET['counts_only']);
-    // Poll del badge: solo conteos, sin housekeeping (evita trabajo cada 2 min).
-    $house = $countsOnly ? ['reconcile' => null] : interacciones_run_housekeeping(!empty($_GET['sync']));
+    // Housekeeping (n8n reconcile, backup diario, SLA) solo con ?sync=1 para no bloquear GET/auto-refresh.
+    $house = (!$countsOnly && !empty($_GET['sync']))
+        ? interacciones_run_housekeeping(true)
+        : ['reconcile' => null];
     $days = isset($_GET['days']) ? (int) $_GET['days'] : INTERACCIONES_DEFAULT_DAYS;
     try {
-        $view = interacciones_load_view(null, $days);
+        $view = interacciones_load_view(null, $days, $countsOnly);
         $health = $countsOnly ? null : interacciones_health();
     } catch (Throwable $e) {
         error_log('interacciones GET: ' . $e->getMessage());

@@ -1,5 +1,5 @@
 import { api } from "./api.js?v=79";
-import { parseBoolean } from "../ficha-rules.mjs?v=89";
+import { parseBoolean } from "../ficha-rules.mjs?v=91";
 import {
   getCachedInteractions,
   getDaysWindow,

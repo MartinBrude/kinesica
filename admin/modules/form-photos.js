@@ -3,7 +3,7 @@
  */
 
 import { dialogAlert, dialogConfirm } from "./dom.js?v=79";
-import { api } from "./api.js";
+import { api } from "./api.js?v=79";
 import { compressImage } from "./form-image.js";
 import { renderPhotoGallery } from "./form-photos-ui.js";
 

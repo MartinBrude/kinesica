@@ -8,6 +8,22 @@ declare(strict_types=1);
  */
 function campana_build_rows(PDO $pdo, array $appointments): array
 {
+    require_once __DIR__ . '/pacientes_helpers_alive.php';
+    require_once __DIR__ . '/pacientes_helpers_match_index.php';
+    kinesica_match_begin_batch($pdo, kinesica_pacientes_alive_sql($pdo));
+    try {
+        return campana_build_rows_inner($pdo, $appointments);
+    } finally {
+        kinesica_match_end_batch($pdo);
+    }
+}
+
+/**
+ * @param list<array<string,mixed>> $appointments
+ * @return list<array<string,mixed>>
+ */
+function campana_build_rows_inner(PDO $pdo, array $appointments): array
+{
     $rows = [];
     foreach ($appointments as $appt) {
         if (!is_array($appt)) {

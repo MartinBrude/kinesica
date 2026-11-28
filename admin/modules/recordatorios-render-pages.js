@@ -4,7 +4,7 @@
  */
 
 import { escapeHtml } from "./dom.js?v=79";
-import { formatDisplayPhone, extractPhoneCandidate } from "./phone-format.js";
+import { formatDisplayPhone, extractPhoneCandidate } from "./phone-format.js?v=8";
 import { capitalizePersonName } from "./pacientes-format.js";
 
 /** Radio de la ventana principal: 1 día atrás y 1 adelante respecto de hoy (AR). */

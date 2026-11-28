@@ -5,7 +5,7 @@
 
 import { formatDate } from "./api.js?v=79";
 import { escapeHtml } from "./dom.js?v=79";
-import { patientKey } from "../ficha-rules.mjs?v=90";
+import { patientKey } from "../ficha-rules.mjs?v=91";
 
 /**
  * Renderiza el contenido de la pestaña comparativa activa (resumen o secciones 0..4 o all).

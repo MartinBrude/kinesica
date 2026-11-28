@@ -197,7 +197,7 @@ export function initServiciosUI({ onReload } = {}) {
       if (!btn || !btn.dataset.gasto) return;
       try {
         const payload = JSON.parse(btn.dataset.gasto);
-        import("./app-tabs.js").then((tabs) => {
+        import("./app-tabs.js?v=56").then((tabs) => {
           tabs.switchTab("admin", "gastos");
           import("./admin-gastos-modal.js").then((modal) => {
             modal.openCreateGastoModal(payload);

@@ -1,4 +1,4 @@
-import { switchTab } from "./app-tabs-switch.js";
+import { switchTab } from "./app-tabs-switch.js?v=8";
 import { closeAllDropdowns } from "./app-tabs-dropdowns.js";
 import { closeMobileNav, toggleMobileNav } from "./app-tabs-mobile.js";
 

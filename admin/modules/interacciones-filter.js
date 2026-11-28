@@ -3,8 +3,8 @@
  * Reglas de búsqueda por texto/teléfono/mensaje y renderizado de píldoras de conteo.
  */
 
-import { formatDisplayPhone } from "./phone-format.js";
-import { parseBoolean } from "../ficha-rules.mjs?v=89";
+import { formatDisplayPhone } from "./phone-format.js?v=8";
+import { parseBoolean } from "../ficha-rules.mjs?v=91";
 
 export function filterInteractionsList(items, term, activeStatusFilter) {
   const rawTerm = String(term || "").trim();

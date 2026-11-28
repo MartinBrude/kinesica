@@ -6,7 +6,7 @@
 import { debounce, dialogAlert, dialogConfirm } from "./dom.js?v=79";
 import { downloadJSON, SEED_PEOPLE } from "./library-io.js";
 import { setLibraryPage } from "./library-pager.js";
-import { exampleFicha } from "../ficha-rules.mjs?v=87";
+import { exampleFicha } from "../ficha-rules.mjs?v=91";
 import { getSessionUser } from "./auth.js?v=83";
 
 export function initLibraryToolbar({

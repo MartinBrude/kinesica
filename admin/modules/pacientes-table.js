@@ -17,6 +17,9 @@ import { patientMissingPhone } from "./pacientes-identifiers.js";
 import { loadPacientes } from "./pacientes-load.js";
 import { createPacientesSectionHeader, buildPacienteRow } from "./pacientes-table-row.js?v=2";
 
+const esCollator = new Intl.Collator("es", { sensitivity: "base" });
+let listDelegationBound = false;
+
 function filterPacientes() {
   const query = (searchInput?.value || "").toLowerCase().trim();
   const normQuery = query.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/,/g, " ").trim();
@@ -53,21 +56,91 @@ function filterPacientes() {
     return nameMatch || phoneMatch || emailMatch || dniMatch || motivoMatch || contactMatch || sinTelMatch;
   });
 
-  list.sort((a, b) => {
-    const nameA = formatPatientName(a);
-    const nameB = formatPatientName(b);
-    const cmpAp = nameA.apellido.localeCompare(nameB.apellido, "es", { sensitivity: "base" });
-    return cmpAp !== 0 ? cmpAp : nameA.nombre.localeCompare(nameB.nombre, "es", { sensitivity: "base" });
+  const keyed = list.map((p) => ({ p, name: formatPatientName(p) }));
+  keyed.sort((a, b) => {
+    const cmpAp = esCollator.compare(a.name.apellido, b.name.apellido);
+    return cmpAp !== 0 ? cmpAp : esCollator.compare(a.name.nombre, b.name.nombre);
   });
 
-  return list;
+  return keyed.map((k) => k.p);
+}
+
+function bindPacientesTableEvents() {
+  if (listDelegationBound || !listEl) return;
+  listDelegationBound = true;
+  listEl.addEventListener("click", async (e) => {
+    const pacientesCache = getPacientesCache();
+    const editBtn = e.target.closest(".btn-edit-paciente");
+    if (editBtn) {
+      const paciente = pacientesCache.find((p) => String(p.id) === String(editBtn.dataset.id));
+      if (paciente) openFullPacienteModal(paciente, loadPacientes);
+      return;
+    }
+    const mergeBtn = e.target.closest(".btn-merge-paciente");
+    if (mergeBtn) {
+      const paciente = pacientesCache.find((p) => String(p.id) === String(mergeBtn.dataset.id));
+      if (paciente) openFullPacienteModal(paciente, loadPacientes, { startInMerge: true });
+      return;
+    }
+    const inviteBtn = e.target.closest("button.btn-encuesta-invite[data-id]");
+    if (inviteBtn) {
+      const id = inviteBtn.dataset.id;
+      if (!id) return;
+      const name = inviteBtn.dataset.name || "el paciente";
+      const confirmed = await dialogConfirm(
+        `¿Que Clara le envíe a ${name} la invitación a la breve encuesta por WhatsApp?\n\nSolo se puede enviar una vez.`,
+        { okText: "Enviar", cancelText: "Cancelar" }
+      );
+      if (!confirmed) return;
+      inviteBtn.disabled = true;
+      const originalHtml = inviteBtn.innerHTML;
+      inviteBtn.innerHTML = "Enviando…";
+      try {
+        await api("pacientes.php", {
+          method: "POST",
+          body: JSON.stringify({ action: "send_encuesta_invite", id: Number(id) }),
+        });
+        const paciente = pacientesCache.find((p) => String(p.id) === String(id));
+        if (paciente) paciente.encuesta_enviada = 1;
+        renderPacientesTable();
+      } catch (err) {
+        inviteBtn.disabled = false;
+        inviteBtn.innerHTML = originalHtml;
+        const msg = String(err?.payload?.message || err?.payload?.error || err?.message || err || "Error desconocido");
+        if (/ya fue enviada/i.test(msg) || err?.status === 409) {
+          const paciente = pacientesCache.find((p) => String(p.id) === String(id));
+          if (paciente) paciente.encuesta_enviada = 1;
+          renderPacientesTable();
+          return;
+        }
+        await dialogAlert(`No se pudo enviar la encuesta: ${msg}`);
+      }
+      return;
+    }
+    const delBtn = e.target.closest(".btn-delete-paciente");
+    if (delBtn) {
+      const confirmed = await dialogConfirm(
+        `¿Confirmás que querés eliminar al paciente "${delBtn.dataset.name}" del directorio?`,
+        { danger: true, okText: "Eliminar", cancelText: "Cancelar" }
+      );
+      if (!confirmed) return;
+      try {
+        await api(`pacientes.php?id=${delBtn.dataset.id}`, { method: "DELETE" });
+        setPacientesCache(pacientesCache.filter((p) => String(p.id) !== String(delBtn.dataset.id)));
+        invalidateDirectoryCache();
+        renderPacientesTable();
+      } catch (err) {
+        dialogAlert(`No se pudo eliminar el paciente: ${err.message}`);
+      }
+    }
+  });
 }
 
 export function renderPacientesTable() {
   syncPacientesBadgeFromCache();
   if (!listEl) return;
+  bindPacientesTableEvents();
   const filtered = filterPacientes();
-  const pacientesCache = getPacientesCache();
 
   if (countEl) {
     countEl.textContent = `${filtered.length} paciente${filtered.length === 1 ? "" : "s"}`;
@@ -81,86 +154,19 @@ export function renderPacientesTable() {
   const missingPhone = filtered.filter((p) => patientMissingPhone(p));
   const withPhone = filtered.filter((p) => !patientMissingPhone(p));
 
-  listEl.innerHTML = "";
+  const frag = document.createDocumentFragment();
 
   if (missingPhone.length > 0) {
-    listEl.append(createPacientesSectionHeader("Sin teléfono", missingPhone.length, { accent: true }));
-    missingPhone.forEach((p) => listEl.append(buildPacienteRow(p)));
+    frag.append(createPacientesSectionHeader("Sin teléfono", missingPhone.length, { accent: true }));
+    missingPhone.forEach((p) => frag.append(buildPacienteRow(p)));
   }
 
   if (withPhone.length > 0) {
     if (missingPhone.length > 0) {
-      listEl.append(createPacientesSectionHeader("Resto del directorio", withPhone.length));
+      frag.append(createPacientesSectionHeader("Resto del directorio", withPhone.length));
     }
-    withPhone.forEach((p) => listEl.append(buildPacienteRow(p)));
+    withPhone.forEach((p) => frag.append(buildPacienteRow(p)));
   }
 
-  listEl.querySelectorAll(".btn-edit-paciente").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const paciente = pacientesCache.find((p) => String(p.id) === String(btn.dataset.id));
-      if (paciente) openFullPacienteModal(paciente, loadPacientes);
-    });
-  });
-
-  listEl.querySelectorAll(".btn-merge-paciente").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const paciente = pacientesCache.find((p) => String(p.id) === String(btn.dataset.id));
-      if (paciente) openFullPacienteModal(paciente, loadPacientes, { startInMerge: true });
-    });
-  });
-
-  listEl.querySelectorAll("button.btn-encuesta-invite[data-id]").forEach((btn) => {
-    btn.addEventListener("click", async () => {
-      const id = btn.dataset.id;
-      if (!id) return;
-      const name = btn.dataset.name || "el paciente";
-      const confirmed = await dialogConfirm(
-        `¿Que Clara le envíe a ${name} la invitación a la breve encuesta por WhatsApp?\n\nSolo se puede enviar una vez.`,
-        { okText: "Enviar", cancelText: "Cancelar" }
-      );
-      if (!confirmed) return;
-
-      btn.disabled = true;
-      const originalHtml = btn.innerHTML;
-      btn.innerHTML = "Enviando…";
-      try {
-        await api("pacientes.php", {
-          method: "POST",
-          body: JSON.stringify({ action: "send_encuesta_invite", id: Number(id) }),
-        });
-        const paciente = pacientesCache.find((p) => String(p.id) === String(id));
-        if (paciente) paciente.encuesta_enviada = 1;
-        renderPacientesTable();
-      } catch (err) {
-        btn.disabled = false;
-        btn.innerHTML = originalHtml;
-        const msg = String(err?.payload?.message || err?.payload?.error || err?.message || err || "Error desconocido");
-        if (/ya fue enviada/i.test(msg) || err?.status === 409) {
-          const paciente = pacientesCache.find((p) => String(p.id) === String(id));
-          if (paciente) paciente.encuesta_enviada = 1;
-          renderPacientesTable();
-          return;
-        }
-        await dialogAlert(`No se pudo enviar la encuesta: ${msg}`);
-      }
-    });
-  });
-
-  listEl.querySelectorAll(".btn-delete-paciente").forEach((btn) => {
-    btn.addEventListener("click", async () => {
-      const confirmed = await dialogConfirm(
-        `¿Confirmás que querés eliminar al paciente "${btn.dataset.name}" del directorio?`,
-        { danger: true, okText: "Eliminar", cancelText: "Cancelar" }
-      );
-      if (!confirmed) return;
-      try {
-        await api(`pacientes.php?id=${btn.dataset.id}`, { method: "DELETE" });
-        setPacientesCache(pacientesCache.filter((p) => String(p.id) !== String(btn.dataset.id)));
-        invalidateDirectoryCache();
-        renderPacientesTable();
-      } catch (err) {
-        dialogAlert(`No se pudo eliminar el paciente: ${err.message}`);
-      }
-    });
-  });
+  listEl.replaceChildren(frag);
 }

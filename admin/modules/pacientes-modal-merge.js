@@ -3,7 +3,7 @@
  */
 
 import { api } from "./api.js?v=79";
-import { escapeHtml, dialogAlert, dialogConfirm, toast } from "./dom.js?v=79";
+import { escapeHtml, dialogAlert, dialogConfirm, toast, debounce } from "./dom.js?v=79";
 import { getPacientesCache, setPacientesCache } from "./pacientes-state.js";
 import { phoneMatches } from "./phone-search.js?v=3";
 import { formatPatientName } from "./pacientes-name.js?v=4";
@@ -137,14 +137,15 @@ export function bindPacienteModalMerge({ backdrop, paciente, onReload, startInMe
     if (!searchInput.value.trim()) showSuggestions();
   });
 
-  searchInput.addEventListener("input", () => {
+  const onMergeSearch = debounce(() => {
     const val = searchInput.value.trim();
     if (val.length < 2) {
       showSuggestions();
       return;
     }
     renderCandidates(searchCandidates(val, paciente.id), "Resultados de búsqueda:");
-  });
+  }, 180);
+  searchInput.addEventListener("input", onMergeSearch);
 
   backdrop.addEventListener("click", (e) => {
     if (!resultsEl.contains(e.target) && e.target !== searchInput) {

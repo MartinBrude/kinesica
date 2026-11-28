@@ -50,11 +50,18 @@ function require_auth(): array
         } catch (Throwable $e2) {
         }
     }
-    return [
+    if (empty($_SESSION['csrf_token']) || !is_string($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(16));
+    }
+    $auth = [
         'username' => $username,
         'name' => $_SESSION['name'] ?? $username,
         'role' => $role,
     ];
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        session_write_close();
+    }
+    return $auth;
 }
 
 
@@ -65,7 +72,7 @@ function is_admin(?array $auth = null): bool
             return $auth['role'] === 'admin';
         }
     }
-    if (session_status() === PHP_SESSION_ACTIVE && !empty($_SESSION['role'])) {
+    if (!empty($_SESSION['role'])) {
         return $_SESSION['role'] === 'admin';
     }
     return false;
@@ -77,13 +84,11 @@ function is_colaborador(?array $auth = null): bool
     if ($auth !== null && isset($auth['role'])) {
         return $auth['role'] === 'colaborador';
     }
-    if (session_status() === PHP_SESSION_ACTIVE && !empty($_SESSION['role'])) {
+    if (!empty($_SESSION['role'])) {
         return $_SESSION['role'] === 'colaborador';
     }
     return false;
 }
-
-/** Admin o profesional (misma regla que admin-booking.js). */
 
 /** Admin o profesional (misma regla que admin-booking.js). */
 function can_use_admin_booking(?array $auth = null): bool
@@ -94,7 +99,7 @@ function can_use_admin_booking(?array $auth = null): bool
     if ($auth !== null && isset($auth['role'])) {
         return $auth['role'] === 'professional';
     }
-    if (session_status() === PHP_SESSION_ACTIVE && !empty($_SESSION['role'])) {
+    if (!empty($_SESSION['role'])) {
         return $_SESSION['role'] === 'professional';
     }
     return false;

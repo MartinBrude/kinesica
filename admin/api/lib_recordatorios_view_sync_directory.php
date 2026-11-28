@@ -101,6 +101,9 @@ function recordatorios_sync_item_to_directory(PDO $pdo, array $item, array $r, s
                 'pila' => mb_substr($pila, 0, 60, 'UTF-8'),
                 'prof' => $profInferred,
             ]);
+            if (function_exists('kinesica_match_batch_store')) {
+                kinesica_match_batch_store($pdo, 'invalidate');
+            }
         }
         $directory['by_phone'][$phoneEndCheck] = $email;
     } catch (Throwable $syncEx) {

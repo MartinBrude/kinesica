@@ -10,7 +10,7 @@ import {
   ageOn,
   formatSessionBadgeText,
   shouldOmitInvariableFields,
-} from "../ficha-rules.mjs?v=90";
+} from "../ficha-rules.mjs?v=91";
 import { formatDate } from "./api.js?v=79";
 import {
   node,
@@ -18,7 +18,7 @@ import {
   prose,
   formatParts,
   add,
-} from "./dom.js";
+} from "./dom.js?v=79";
 import {
   CDI_LABELS,
   buildAtmSection,

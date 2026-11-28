@@ -2,7 +2,7 @@
  * Kinésica Admin - Formulario Clínico de ATM (Ficha).
  */
 
-import { patientKey, validateField, getSessionIndex } from "../ficha-rules.mjs?v=90";
+import { patientKey, validateField, getSessionIndex } from "../ficha-rules.mjs?v=91";
 import { dialogConfirm } from "./dom.js?v=79";
 import { setupInputRestrictions } from "./form-restrictions.js";
 import { syncFotoPreview, getCurrentFotos, getUploadInFlight, initFormPhotos } from "./form-photos.js";

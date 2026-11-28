@@ -3,7 +3,7 @@
  */
 
 import { escapeHtml } from "./dom.js?v=79";
-import { patientHasReview } from "./pacientes.js";
+import { patientHasReview } from "./pacientes.js?v=21";
 
 export function buildPacienteModalMarkup({
   isEdit,

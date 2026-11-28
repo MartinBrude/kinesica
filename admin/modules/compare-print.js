@@ -3,7 +3,7 @@
  * Renderiza el reporte comparativo para imprimir o exportar a PDF con KPIs, tabla diferencial y firmas.
  */
 
-import { CLINICIAN_DETAILS } from "../ficha-rules.mjs?v=90";
+import { CLINICIAN_DETAILS } from "../ficha-rules.mjs?v=91";
 import { formatDate } from "./api.js?v=79";
 import { escapeHtml, node } from "./dom.js?v=79";
 

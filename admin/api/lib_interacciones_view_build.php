@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /** @return array{items:list<array>,answered_count:int,unanswered_count:int,archived_count:int,grouped:array,days:?int,since_utc:?string,events_capped:bool} */
-function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
+function interacciones_load_view(?PDO $pdo = null, ?int $days = null, bool $countsOnly = false): array
 {
     $pdo = interacciones_pdo($pdo);
     interacciones_ensure_schema($pdo);
@@ -90,23 +90,25 @@ function interacciones_load_view(?PDO $pdo = null, ?int $days = null): array
 
     $dirNames = [];
     $reminderNames = [];
-    try {
-        if (!function_exists('clean_phone_number') || !function_exists('ensure_pacientes_tables')) {
-            $helpers = __DIR__ . '/pacientes_helpers.php';
-            if (is_file($helpers)) {
-                require_once $helpers;
+    if (!$countsOnly) {
+        try {
+            if (!function_exists('clean_phone_number') || !function_exists('ensure_pacientes_tables')) {
+                $helpers = __DIR__ . '/pacientes_helpers.php';
+                if (is_file($helpers)) {
+                    require_once $helpers;
+                }
             }
+            $waList = array_values(array_unique(array_map(static fn(array $c): string => (string) $c['wa_id'], $convs)));
+            $dirNames = interacciones_lookup_directory_names($pdo, $waList);
+            $reminderNames = interacciones_lookup_recordatorio_names($pdo, $waList);
+        } catch (Throwable $e) {
+            $dirNames = [];
+            $reminderNames = [];
         }
-        $waList = array_values(array_unique(array_map(static fn(array $c): string => (string) $c['wa_id'], $convs)));
-        $dirNames = interacciones_lookup_directory_names($pdo, $waList);
-        $reminderNames = interacciones_lookup_recordatorio_names($pdo, $waList);
-    } catch (Throwable $e) {
-        $dirNames = [];
-        $reminderNames = [];
     }
 
     require_once __DIR__ . '/lib_interacciones_view_takeover.php';
-    $takeoverIndex = interacciones_view_load_takeover_index($pdo);
+    $takeoverIndex = $countsOnly ? [] : interacciones_view_load_takeover_index($pdo);
 
     $items = [];
     $counts = ['answered' => 0, 'unanswered' => 0, 'archived' => 0];

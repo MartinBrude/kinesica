@@ -5,7 +5,7 @@
 
 import { api } from "./api.js?v=79";
 import { toast, dialogConfirm } from "./dom.js?v=79";
-import { validateCesionDraft } from "./horarios-cesiones-validator.js";
+import { validateCesionDraft } from "./horarios-cesiones-validator.js?v=79";
 import { renderCesionesForm, renderCesionesList } from "./horarios-cesiones-ui.js";
 
 let currentOverrides = [];

@@ -34,19 +34,34 @@ function kinesica_migrations_is_sqlite(PDO $pdo): bool
 
 function kinesica_migrations_table_exists(PDO $pdo, string $table): bool
 {
+    static $cache = null;
+    $useCache = PHP_SAPI !== 'cli';
+    if ($useCache) {
+        $cache = $cache ?? new WeakMap();
+        $map = $cache[$pdo] ?? [];
+        if (!empty($map[$table])) {
+            return true;
+        }
+    }
     if (kinesica_migrations_is_sqlite($pdo)) {
         $stmt = $pdo->prepare(
             "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = :t LIMIT 1"
         );
         $stmt->execute(['t' => $table]);
-        return (bool) $stmt->fetchColumn();
+        $exists = (bool) $stmt->fetchColumn();
+    } else {
+        $stmt = $pdo->prepare(
+            'SELECT 1 FROM information_schema.TABLES
+             WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :t LIMIT 1'
+        );
+        $stmt->execute(['t' => $table]);
+        $exists = (bool) $stmt->fetchColumn();
     }
-    $stmt = $pdo->prepare(
-        'SELECT 1 FROM information_schema.TABLES
-         WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :t LIMIT 1'
-    );
-    $stmt->execute(['t' => $table]);
-    return (bool) $stmt->fetchColumn();
+    if ($useCache && $exists) {
+        $map[$table] = true;
+        $cache[$pdo] = $map;
+    }
+    return $exists;
 }
 
 /** Evita interpolar identificadores arbitrarios en DDL. */
@@ -64,36 +79,44 @@ function kinesica_migrations_assert_ident(string $name): string
 function kinesica_migrations_column_exists(PDO $pdo, string $table, string $column): bool
 {
     $table = kinesica_migrations_assert_ident($table);
+    static $cache = null;
+    $useCache = PHP_SAPI !== 'cli';
+    $key = strtolower($table . '.' . $column);
+    if ($useCache) {
+        $cache = $cache ?? new WeakMap();
+        $map = $cache[$pdo] ?? [];
+        if (!empty($map[$key])) {
+            return true;
+        }
+    }
     if (!kinesica_migrations_table_exists($pdo, $table)) {
         return false;
     }
+    $exists = false;
     if (kinesica_migrations_is_sqlite($pdo)) {
         $stmt = $pdo->query('PRAGMA table_info(' . $table . ')');
-        if ($stmt === false) {
-            return false;
-        }
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            if (strcasecmp((string) ($row['name'] ?? ''), $column) === 0) {
-                return true;
+        if ($stmt !== false) {
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                if (strcasecmp((string) ($row['name'] ?? ''), $column) === 0) {
+                    $exists = true;
+                    break;
+                }
             }
         }
-        return false;
+    } else {
+        $stmt = $pdo->prepare(
+            'SELECT 1 FROM information_schema.COLUMNS
+             WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :t AND COLUMN_NAME = :c LIMIT 1'
+        );
+        $stmt->execute(['t' => $table, 'c' => $column]);
+        $exists = (bool) $stmt->fetchColumn();
     }
-    $stmt = $pdo->prepare(
-        'SELECT 1 FROM information_schema.COLUMNS
-         WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :t AND COLUMN_NAME = :c LIMIT 1'
-    );
-    $stmt->execute(['t' => $table, 'c' => $column]);
-    return (bool) $stmt->fetchColumn();
+    if ($useCache && $exists) {
+        $map[$key] = true;
+        $cache[$pdo] = $map;
+    }
+    return $exists;
 }
-
-/**
- * Añade columna si falta. Idempotente.
- *
- * @param string $definitionMySql  p.ej. "INT UNSIGNED NULL AFTER id"
- * @param string|null $definitionSqlite  si null, se quita la cláusula AFTER
- * @return bool true si se ejecutó ALTER
- */
 
 /**
  * Añade columna si falta. Idempotente.

@@ -63,7 +63,11 @@ function kinesica_settings_can_read_private(): bool
         return false;
     }
     start_session();
-    return !empty($_SESSION['user']) && !empty($_SESSION['full']);
+    $ok = !empty($_SESSION['user']) && !empty($_SESSION['full']);
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        session_write_close();
+    }
+    return $ok;
 }
 
 function get_runtime_settings(string $file, bool $includePrivate = false): array

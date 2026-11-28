@@ -15,7 +15,7 @@ import {
   getChatSubmenu,
   setChatSubmenu,
   getChatLang,
-} from "./chat-simulator-core.js";
+} from "./chat-simulator-core.js?v=8";
 
 /**
  * Procesa secuencias multi-letra (ABC / A B C). Devuelve true si fue manejada.

@@ -146,7 +146,9 @@ ok(str_contains($storeSrc, 'recordatorios_sync_paciente_from_event'), 'store sin
 ok(is_file($root . '/admin/api/lib_recordatorios_store_recordatorios_sync_paciente.php'), 'existe sync_paciente');
 $syncSrc = file_get_contents($root . '/admin/api/lib_recordatorios_store_recordatorios_sync_paciente.php') ?: '';
 ok(str_contains($syncSrc, 'sin-tel-cal-'), 'placeholder sin-tel-cal para nombre sin teléfono');
-$viewSrc = file_get_contents($root . '/admin/api/lib_recordatorios_view_recordatorios_load_view.php') ?: '';
+$viewSrc = (file_get_contents($root . '/admin/api/lib_recordatorios_view_recordatorios_load_view.php') ?: '')
+    . "\n"
+    . (file_get_contents($root . '/admin/api/lib_recordatorios_view_cleanup.php') ?: '');
 ok(str_contains($viewSrc, "pend.status IN ('pending', 'missing_phone')") || str_contains($viewSrc, "pend.status = 'pending'"), 'vista borra pending si ya hay sent');
 
 section('Contrato check_sent (bot anti-reenvío)');

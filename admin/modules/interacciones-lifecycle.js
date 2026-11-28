@@ -1,6 +1,8 @@
+import { api } from "./api.js?v=79";
+import { getSessionUser } from "./auth.js?v=83";
 import { switchActiveView } from "./dom.js?v=79";
 import { setActiveStatusFilter } from "./interacciones-state.js";
-import { loadInteracciones } from "./interacciones-load.js";
+import { loadInteracciones } from "./interacciones-load.js?v=3";
 import { startAutoRefresh, stopAutoRefresh } from "./interacciones-refresh.js";
 import { stopTakeoverPoll } from "./interacciones-takeover-poll.js?v=1";
 import {
@@ -20,7 +22,21 @@ export function showInteraccionesView() {
   } catch { /* ignore */ }
 
   setActiveStatusFilter("pending");
-  loadInteracciones(true);
+  // Mostrar de inmediato desde DB y reconciliar con n8n en segundo plano sin bloquear la UI.
+  loadInteracciones(false).then(() => {
+    if (getSessionUser()?.role === "colaborador") return;
+    api("interacciones.php", {
+      method: "POST",
+      body: JSON.stringify({ action: "reconcile" }),
+    })
+      .then((res) => {
+        const currentView = document.getElementById("view-interacciones");
+        if (currentView && !currentView.hidden && Number(res?.inserted || 0) > 0) {
+          loadInteracciones(false, { quiet: true });
+        }
+      })
+      .catch(() => { /* reconciliación en segundo plano: ignorar fallo silenciosamente */ });
+  });
   startAutoRefresh();
 }
 

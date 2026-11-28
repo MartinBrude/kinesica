@@ -127,6 +127,25 @@ function kinesica_match_by_canonical_name(
         }
     }
 
+    $cleanPhone = clean_phone_number($incomingPhone);
+    $haveRealPhone = $cleanPhone !== '' && !is_placeholder_phone($cleanPhone);
+
+    // Si hay un índice de lote activo (recordatorios/campaña), lookup O(1) en memoria.
+    if (function_exists('kinesica_match_batch_store')) {
+        $byKey = kinesica_match_batch_store($pdo, null, $aliveSql);
+        if (is_array($byKey)) {
+            foreach ($byKey[$nameKey] ?? [] as $cand) {
+                if ($haveRealPhone
+                    && !kinesica_phones_compatible_for_name_merge($cleanPhone, (string) ($cand['telefono'] ?? ''))
+                ) {
+                    continue;
+                }
+                return $cand;
+            }
+            return null;
+        }
+    }
+
     $stmtAll = $pdo->query(
         "SELECT id, nombre, apellido, nombre_completo, telefono, deleted_at, viene_de_campana
          FROM pacientes WHERE ({$aliveSql})"
@@ -134,8 +153,6 @@ function kinesica_match_by_canonical_name(
     if (!$stmtAll) {
         return null;
     }
-    $cleanPhone = clean_phone_number($incomingPhone);
-    $haveRealPhone = $cleanPhone !== '' && !is_placeholder_phone($cleanPhone);
     while ($cand = $stmtAll->fetch(PDO::FETCH_ASSOC)) {
         $candFull = trim((string) (($cand['nombre_completo'] ?? '') ?: trim(($cand['nombre'] ?? '') . ' ' . ($cand['apellido'] ?? ''))));
         $candKey = canonical_patient_name_key($candFull);

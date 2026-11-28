@@ -36,7 +36,7 @@ import {
   refreshReminderPreview,
   syncTogglesUI,
 } from "./configuracion-clara-data.js";
-import { switchConfigSubtab } from "./configuracion-nav.js";
+import { switchConfigSubtab } from "./configuracion-nav.js?v=3";
 import { loadEstadoServicios } from "./clara-estado-servicios.js?v=3";
 
 export function initConfiguracionModule(callbacks = {}) {

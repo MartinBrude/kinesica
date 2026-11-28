@@ -2,7 +2,7 @@
  * Kinésica Admin - Controles EVA, Edad, Hábitos y Derivaciones Condicionales
  */
 
-import { ageOn } from "../ficha-rules.mjs?v=90";
+import { ageOn } from "../ficha-rules.mjs?v=91";
 import { singles } from "./form-runtime.js?v=5";
 import { selectedSingleValue, toggleSingleSelection } from "./form-singles.js?v=2";
 

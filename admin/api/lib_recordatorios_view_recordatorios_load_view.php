@@ -14,50 +14,8 @@ function recordatorios_load_view(?PDO $pdo = null, int $days = RECORDATORIOS_DEF
         ->modify('-' . $days . ' days')
         ->format('Y-m-d H:i:s');
 
-    try {
-        $todayBA = (new DateTimeImmutable('now', recordatorios_tz()))->format('Y-m-d');
-        $pdo->prepare('DELETE FROM recordatorio_eventos WHERE status = "pending" AND appointment_date IS NOT NULL AND appointment_date != "" AND appointment_date < :today')->execute(['today' => $todayBA]);
-        // Casos de prueba ya resueltos (mantener pending para poder enviar).
-        $pdo->exec("DELETE FROM recordatorio_eventos WHERE (calendar_event_id LIKE 'test:%' OR exec_id = 'manual-test' OR event_summary LIKE '[PRUEBA]%') AND status != 'pending'");
-        // Limpiar ruido de corridas omitidas (Clara pausada) y bloqueos.
-        $pdo->exec("DELETE FROM recordatorio_eventos WHERE status = 'run_skipped' OR skip_reason = 'clara_inactive'");
-        $pdo->exec("DELETE FROM recordatorio_eventos WHERE skip_reason = 'blocked' OR LOWER(patient_name) LIKE '%no dar%' OR LOWER(event_summary) LIKE '%no dar%' OR LOWER(patient_name) LIKE '%bloqueado%' OR LOWER(event_summary) LIKE '%bloqueado%' OR LOWER(patient_name) LIKE '%tk3%' OR LOWER(event_summary) LIKE '%tk3%' OR LOWER(patient_name) LIKE '%tk 3%' OR LOWER(event_summary) LIKE '%tk 3%'");
-        // Si hay sent, borrar pending/missing_phone del mismo evento. failed se conserva para auditoría.
-        $pdo->exec("DELETE pend FROM recordatorio_eventos pend
-                    INNER JOIN recordatorio_eventos sent
-                      ON (
-                        pend.calendar_event_id = sent.calendar_event_id
-                        OR REPLACE(pend.calendar_event_id, '@google.com', '') = REPLACE(sent.calendar_event_id, '@google.com', '')
-                      )
-                     AND pend.calendar_event_id != ''
-                     AND pend.calendar_event_id != '_run'
-                     AND pend.status IN ('pending', 'missing_phone')
-                     AND sent.status IN ('sent', 'sent_email')");
-        // Si el evento fue cancelado o eliminado, borrar pending/missing_phone huérfano.
-        $pdo->exec("DELETE pend FROM recordatorio_eventos pend
-                    INNER JOIN recordatorio_eventos sk
-                      ON (
-                        pend.calendar_event_id = sk.calendar_event_id
-                        OR REPLACE(pend.calendar_event_id, '@google.com', '') = REPLACE(sk.calendar_event_id, '@google.com', '')
-                      )
-                     AND pend.calendar_event_id != ''
-                     AND pend.calendar_event_id != '_run'
-                     AND pend.status IN ('pending', 'missing_phone')
-                     AND sk.status = 'skipped'
-                     AND sk.skip_reason IN ('cancelled', 'event_gone', 'event_moved')");
-        $pdo->exec("DELETE r1 FROM recordatorio_eventos r1
-                    JOIN recordatorio_eventos r2
-                      ON (
-                        r1.calendar_event_id = r2.calendar_event_id
-                        OR REPLACE(r1.calendar_event_id, '@google.com', '') = REPLACE(r2.calendar_event_id, '@google.com', '')
-                      )
-                     AND r1.calendar_event_id != ''
-                     AND r1.calendar_event_id != '_run'
-                     AND r1.id < r2.id
-                     AND r1.status = r2.status");
-    } catch (Throwable $e) {
-        error_log('kinesica recordatorios view: dedupe cleanup: ' . $e->getMessage());
-    }
+    require_once __DIR__ . '/lib_recordatorios_view_cleanup.php';
+    recordatorios_run_view_cleanup($pdo);
 
     $hasPacienteCol = false;
     try {
@@ -120,6 +78,16 @@ function recordatorios_load_view(?PDO $pdo = null, int $days = RECORDATORIOS_DEF
     $items = [];
     $grouped = [];
 
+    $batchActive = false;
+    try {
+        require_once __DIR__ . '/pacientes_helpers_alive.php';
+        require_once __DIR__ . '/pacientes_helpers_match_index.php';
+        kinesica_match_begin_batch($pdo, kinesica_pacientes_alive_sql($pdo));
+        $batchActive = true;
+    } catch (Throwable) {
+    }
+
+    try {
     foreach ($rows as $r) {
         if (recordatorios_is_blocked_event($r)) {
             continue;
@@ -234,6 +202,11 @@ function recordatorios_load_view(?PDO $pdo = null, int $days = RECORDATORIOS_DEF
             recordatorios_sync_item_to_directory($pdo, $item, $r, $email, $directory);
         } catch (Throwable $e) {
             error_log('recordatorios sync directory: ' . $e->getMessage());
+        }
+    }
+    } finally {
+        if ($batchActive) {
+            kinesica_match_end_batch($pdo);
         }
     }
 

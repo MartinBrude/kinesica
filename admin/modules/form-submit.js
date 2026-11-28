@@ -8,7 +8,7 @@ import {
   validateFicha,
   dniNameConflict,
   patientKey,
-} from "../ficha-rules.mjs?v=90";
+} from "../ficha-rules.mjs?v=91";
 import { dialogAlert } from "./dom.js?v=79";
 import { showStep, highlightMissingFields, highlightErrorFields } from "./form-nav.js?v=2";
 

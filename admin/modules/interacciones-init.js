@@ -12,6 +12,7 @@ import { loadInteracciones } from "./interacciones-load.js?v=3";
 import { applyFilters } from "./interacciones-page.js?v=3";
 import { isWithinAutoRefreshHours } from "./interacciones-hours.js";
 import { AUTO_REFRESH_INTERVAL_MS } from "./interacciones-constants.js";
+import { debounce } from "./dom.js?v=79";
 import { getSessionUser } from "./auth.js?v=83";
 
 export function initInteraccionesModule() {
@@ -60,10 +61,11 @@ export function initInteraccionesModule() {
   }
 
   if (searchInput) {
-    searchInput.addEventListener("input", () => {
+    const onSearchInput = debounce(() => {
       if (getIsRefreshing()) return;
       applyFilters(true);
-    });
+    }, 180);
+    searchInput.addEventListener("input", onSearchInput);
   }
   if (refreshBtn) refreshBtn.addEventListener("click", () => loadInteracciones(true));
 

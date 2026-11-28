@@ -12,6 +12,12 @@ function recordatorios_ensure_schema(?PDO $pdo = null): void
     if (isset($done[$pdo])) {
         return;
     }
+    $driver = (string) $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+    $marker = __DIR__ . '/data/.recordatorios_schema_migrated';
+    if ($driver !== 'sqlite' && PHP_SAPI !== 'cli' && is_file($marker)) {
+        $done[$pdo] = true;
+        return;
+    }
     // REL: puente idempotente (no DROP). Activo como red de seguridad productiva.
     $pdo->exec(
         'CREATE TABLE IF NOT EXISTS recordatorio_eventos (
@@ -76,6 +82,12 @@ function recordatorios_ensure_schema(?PDO $pdo = null): void
             }
         }
     } catch (Throwable $e) {
+    }
+    if ($driver !== 'sqlite' && PHP_SAPI !== 'cli') {
+        if (!is_dir(dirname($marker))) {
+            @mkdir(dirname($marker), 0775, true);
+        }
+        @file_put_contents($marker, (string) time());
     }
     $done[$pdo] = true;
 }

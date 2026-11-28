@@ -1,4 +1,4 @@
-import { patientKey } from "../ficha-rules.mjs?v=90";
+import { patientKey } from "../ficha-rules.mjs?v=91";
 import { form, getDirectoryPacientesCache } from "./form-patient-state.js";
 import { setDniPower, setPatientLocked } from "./form-patient-lock.js";
 import { clearPatientInputs, applyPatientData } from "./form-patient-fill.js";
