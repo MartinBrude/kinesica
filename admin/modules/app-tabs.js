@@ -30,7 +30,7 @@ import { applyHoursToRuntime } from "./horarios.js?v=4";
 
 export { closeAllDropdowns } from "./app-tabs-dropdowns.js";
 export { closeMobileNav, openMobileNav, toggleMobileNav } from "./app-tabs-mobile.js";
-export { switchTab } from "./app-tabs-switch.js?v=7";
+export { switchTab } from "./app-tabs-switch.js?v=8";
 
 import { closeMobileNav } from "./app-tabs-mobile.js";
 import { bindAdminNavOnce } from "./app-tabs-nav.js";

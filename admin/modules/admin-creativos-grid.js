@@ -14,7 +14,7 @@ import {
   colaHeartHtml,
   refreshColaButtons,
 } from "./admin-creativos-cola-ui.js?v=4";
-import { CREATIVOS_DATA } from "./admin-creativos-data.js?v=1";
+import { CREATIVOS_DATA } from "./admin-creativos-data.js?v=2";
 import {
   getActiveFormat,
   getActiveFilter,

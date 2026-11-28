@@ -21,7 +21,7 @@ import {
   setSearchQuery,
   getSelectedItem,
 } from "./admin-creativos-state.js?v=1";
-import { renderCreativosGrid } from "./admin-creativos-grid.js?v=3";
+import { renderCreativosGrid } from "./admin-creativos-grid.js?v=4";
 import {
   openLightboxModal,
   closeLightboxModal,
