@@ -57,7 +57,7 @@ function ig_dm_account_profile(): array
     if (is_file($cacheFile) && (time() - (int) @filemtime($cacheFile)) < 600) {
         $cached = json_decode((string) @file_get_contents($cacheFile), true);
         if (is_array($cached) && !empty($cached['username'])) {
-            return $cached;
+            return ig_dm_attach_last_webhook($cached);
         }
     }
 
@@ -92,6 +92,18 @@ function ig_dm_account_profile(): array
         'source' => 'graph_api',
     ];
     @file_put_contents($cacheFile, json_encode($profile, JSON_UNESCAPED_UNICODE));
+    return ig_dm_attach_last_webhook($profile);
+}
+
+function ig_dm_attach_last_webhook(array $profile): array
+{
+    $diagFile = rtrim(sys_get_temp_dir(), '/') . '/kinesica_webhook_meta_last.json';
+    if (is_file($diagFile)) {
+        $diag = json_decode((string) @file_get_contents($diagFile), true);
+        if (is_array($diag)) {
+            $profile['last_webhook'] = $diag;
+        }
+    }
     return $profile;
 }
 

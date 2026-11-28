@@ -36,12 +36,17 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $rawBody = (string) file_get_contents('php://input');
+$diagFile = rtrim(sys_get_temp_dir(), '/') . '/kinesica_webhook_meta_last.json';
+$writeDiag = static function (array $info) use ($diagFile): void {
+    @file_put_contents($diagFile, json_encode(['at' => gmdate('c')] + $info, JSON_UNESCAPED_UNICODE));
+};
 $appSecret = (string) ($c['meta_app_secret'] ?? '');
 
 if ($appSecret !== '') {
     $headerSig = (string) ($_SERVER['HTTP_X_HUB_SIGNATURE_256'] ?? '');
     $expected = 'sha256=' . hash_hmac('sha256', $rawBody, $appSecret);
     if (!hash_equals($expected, $headerSig)) {
+        $writeDiag(['stage' => 'sig_fail', 'len' => strlen($rawBody)]);
         http_response_code(403);
         echo 'Invalid signature';
         exit(0);
@@ -50,6 +55,7 @@ if ($appSecret !== '') {
 
 $payload = json_decode($rawBody, true);
 if (!is_array($payload) || ($payload['object'] ?? '') !== 'instagram') {
+    $writeDiag(['stage' => 'ignored_object', 'object' => is_array($payload) ? ($payload['object'] ?? '') : 'invalid_json', 'len' => strlen($rawBody)]);
     // Meta requiere 200 para eventos desconocidos para no reintentar en bucle
     echo 'EVENT_RECEIVED';
     exit(0);
@@ -126,13 +132,20 @@ foreach ($payload['entry'] ?? [] as $entry) {
         } catch (Throwable $e) {
             error_log('Error ingestando mensaje de Instagram: ' . $e->getMessage());
             $insertResults[] = [
-                'mid' => $mid,
+                'mid' => substr($mid, 0, 24),
                 'result' => 'error',
-                'error' => 'insert_failed',
+                'error' => mb_substr($e->getMessage(), 0, 180),
             ];
         }
     }
 }
+
+$writeDiag([
+    'stage' => 'processed',
+    'object' => (string) ($payload['object'] ?? ''),
+    'entries' => count($payload['entry'] ?? []),
+    'inserts' => $insertResults,
+]);
 
 // Debug opcional: header X-Kinesica-Debug = webhook_secret → JSON con resultado de inserts
 $debugSecret = (string) ($_SERVER['HTTP_X_KINESICA_DEBUG'] ?? '');

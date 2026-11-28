@@ -28,7 +28,11 @@ function renderInstagramAccountBadge(igAccount) {
   const handle = `@${String(igAccount.username).replace(/^@/, "")}`;
   const idPart = igAccount.id ? ` · ID ${igAccount.id}` : "";
   const statusLabel = igAccount.configured ? "Conectada" : "Sin token";
-  el.innerHTML = `<span class="interacciones-ig-pill">📸 Instagram Business: <strong>${escapeHtml(handle)}</strong>${escapeHtml(idPart)} · ${escapeHtml(statusLabel)}</span>`;
+  const wh = igAccount.last_webhook;
+  const whPart = wh?.at
+    ? ` · Webhook: ${wh.stage}${Array.isArray(wh.inserts) ? ` (${wh.inserts.map((x) => x.result + (x.error ? `:${x.error}` : "")).join(",") || "0"})` : ""}`
+    : "";
+  el.innerHTML = `<span class="interacciones-ig-pill">📸 Instagram Business: <strong>${escapeHtml(handle)}</strong>${escapeHtml(idPart)} · ${escapeHtml(statusLabel)}${escapeHtml(whPart)}</span>`;
   el.hidden = false;
 }
 
