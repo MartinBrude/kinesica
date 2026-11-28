@@ -1,11 +1,11 @@
 /** AUTO-GENERATED — no editar. Fuente: npm run reviews:fetch */
 window.KINESICA_GOOGLE_REVIEWS = {
   "placeId": "ChIJZ2mPW9K1vJUR3J5kGRi5gws",
-  "fetchedAt": "2026-11-24T21:59:49.123Z",
+  "fetchedAt": "2026-11-28T03:10:24.758Z",
   "displayName": "Kinesica",
   "googleMapsUri": "https://maps.google.com/?cid=829710269522681564&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA",
   "rating": 5,
-  "userRatingCount": 38,
+  "userRatingCount": 39,
   "reviews": [
     {
       "author": "Anita Engel",
@@ -124,7 +124,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Great!\nEfficient, very competent, attentive, and results achieved without being abrupt... it's a shame she's not in France near me!",
         "language": "en",
-        "relativeTime": "a week ago",
+        "relativeTime": "2 weeks ago",
         "publishTime": "2026-11-13T14:17:37.188096687Z"
       },
       {
@@ -173,7 +173,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Super !\nEfficace, très compétente, attentive, des résultats sans brusquerie.. dommage qu’elle ne soit pas en France près de chez moi!",
         "language": "fr",
-        "relativeTime": "il y a une semaine",
+        "relativeTime": "il y a 2 semaines",
         "publishTime": "2026-11-13T14:17:37.188096687Z"
       },
       {
@@ -223,7 +223,7 @@ window.KINESICA_GOOGLE_REVIEWS = {
         "rating": 5,
         "text": "Excelente!\n\nEficiente, muito competente, atenciosa e alcança resultados sem ser abrupta... é uma pena que ela não esteja na França perto de mim!",
         "language": "pt",
-        "relativeTime": "há uma semana",
+        "relativeTime": "há 2 semanas",
         "publishTime": "2026-11-13T14:17:37.188096687Z"
       },
       {
