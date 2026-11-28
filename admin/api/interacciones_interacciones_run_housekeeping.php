@@ -123,9 +123,11 @@ if ($method === 'GET') {
         'sync' => $house['reconcile'],
     ];
     if (!$countsOnly) {
+        require_once __DIR__ . '/lib_instagram_dm.php';
         $payload['items'] = $items;
         $payload['interactions'] = $items;
         $payload['grouped'] = $view['grouped'];
+        $payload['instagram_account'] = ig_dm_account_profile();
     }
     json_out(200, $payload);
 }
@@ -210,7 +212,13 @@ if (in_array($action, ['takeover_start', 'takeover_end', 'takeover_end_all', 'ta
     if ($action === 'reply') {
         $wa = (string) ($input['wa_id'] ?? $input['phone'] ?? '');
         $body = (string) ($input['body'] ?? $input['text'] ?? $input['message'] ?? '');
-        $res = clara_takeover_reply($wa, $body, $actor);
+        $channel = strtolower(trim((string) ($input['channel'] ?? '')));
+        if ($channel === 'instagram' || str_starts_with(trim($wa), 'ig_')) {
+            require_once __DIR__ . '/lib_instagram_dm.php';
+            $res = ig_dm_reply($wa, $body, $actor);
+        } else {
+            $res = clara_takeover_reply($wa, $body, $actor);
+        }
         if (empty($res['ok'])) {
             json_out(502, ['error' => $res['error'] ?? 'No se pudo enviar', 'wa_id' => $res['wa_id'] ?? ''] + $res);
         }

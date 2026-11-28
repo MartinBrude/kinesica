@@ -6,7 +6,7 @@ import {
   buildInteractionCardHtml,
   renderPager,
   bindInteractionEvents,
-} from "./interacciones-render.js?v=6";
+} from "./interacciones-render.js?v=7";
 import { filterInteractionsList, renderStatsHeader } from "./interacciones-filter.js?v=2";
 import {
   getCachedInteractions,
@@ -29,7 +29,7 @@ import {
   captureTakeoverDrafts,
   restoreTakeoverDrafts,
 } from "./interacciones-page-threads.js";
-import { createTakeoverHandlers } from "./interacciones-takeover-actions.js?v=2";
+import { createTakeoverHandlers } from "./interacciones-takeover-actions.js?v=3";
 
 function renderInteractions(items) {
   const container = document.getElementById("interacciones-list-container");

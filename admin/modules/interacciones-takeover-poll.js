@@ -38,7 +38,7 @@ export function syncTakeoverPoll() {
       return;
     }
     if (getIsRefreshing() || getPendingMutations() > 0) return;
-    import("./interacciones-load.js?v=3")
+    import("./interacciones-load.js?v=4")
       .then((m) => m.loadInteracciones(false, { quiet: true }))
       .catch(() => {});
   }, TAKEOVER_POLL_INTERVAL_MS));

@@ -15,8 +15,22 @@ import {
 } from "./interacciones-state.js";
 import { setInteraccionesPendingBadge, syncBadgeFromCache } from "./interacciones-badge.js";
 import { updateLastUpdatedLabel } from "./interacciones-refresh.js";
-import { applyFilters } from "./interacciones-page.js?v=3";
+import { applyFilters } from "./interacciones-page.js?v=4";
 import { syncTakeoverPoll } from "./interacciones-takeover-poll.js?v=1";
+
+function renderInstagramAccountBadge(igAccount) {
+  const el = document.getElementById("interacciones-ig-account");
+  if (!el) return;
+  if (!igAccount || !igAccount.username) {
+    el.hidden = true;
+    return;
+  }
+  const handle = `@${String(igAccount.username).replace(/^@/, "")}`;
+  const idPart = igAccount.id ? ` · ID ${igAccount.id}` : "";
+  const statusLabel = igAccount.configured ? "Conectada" : "Sin token";
+  el.innerHTML = `<span class="interacciones-ig-pill">📸 Instagram Business: <strong>${escapeHtml(handle)}</strong>${escapeHtml(idPart)} · ${escapeHtml(statusLabel)}</span>`;
+  el.hidden = false;
+}
 
 /**
  * @param {boolean} [force=false]
@@ -81,6 +95,9 @@ export async function loadInteracciones(force = false, opts = {}) {
     }
     applyFilters(false);
     syncTakeoverPoll();
+    if (resp.instagram_account) {
+      renderInstagramAccountBadge(resp.instagram_account);
+    }
     if (!quiet) {
       renderInteraccionesHealth(document.getElementById("interacciones-stats"), resp.health, resp.sync, {
         days: getDaysWindow(),

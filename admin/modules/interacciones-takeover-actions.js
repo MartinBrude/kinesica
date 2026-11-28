@@ -10,12 +10,13 @@ import {
   bumpPendingMutations,
   getTakeoverDrafts,
 } from "./interacciones-state.js";
-import { applyTakeoverToConv, appendClaraReplyToConv } from "./interacciones-takeover.js?v=2";
+import { applyTakeoverToConv, appendClaraReplyToConv } from "./interacciones-takeover.js?v=3";
 import { syncTakeoverPoll } from "./interacciones-takeover-poll.js?v=1";
 
 function findConv(list, convId, waId) {
   return list.find((i) => i.id === convId)
-    || list.find((i) => String(i.wa_id || "").replace(/\D+/g, "") === waId)
+    || list.find((i) => String(i.wa_id || "") === waId)
+    || list.find((i) => !String(waId || "").startsWith("ig_") && String(i.wa_id || "").replace(/\D+/g, "") === waId)
     || null;
 }
 
@@ -81,32 +82,35 @@ export function createTakeoverHandlers({ applyFilters }) {
       }
     },
 
-    onTakeoverReply: async ({ waId, convId, body, input, btn }) => {
+    onTakeoverReply: async ({ waId, convId, channel = "whatsapp", body, input, btn }) => {
       if (getSessionUser()?.role === "colaborador") return;
       if (!waId || !body) {
         toast("Escribí un mensaje antes de enviar.", { type: "info" });
         return;
       }
+      const isIg = channel === "instagram" || String(waId).startsWith("ig_");
       if (btn) btn.disabled = true;
       bumpPendingMutations(1);
       try {
         const resp = await api("interacciones.php", {
           method: "POST",
-          body: JSON.stringify({ action: "reply", wa_id: waId, body }),
+          body: JSON.stringify({ action: "reply", wa_id: waId, body, channel: isIg ? "instagram" : "whatsapp" }),
         });
         if (!resp || !resp.ok) throw new Error(resp?.error || "No se pudo enviar");
         const list = [...getCachedInteractions()];
         const targetConv = findConv(list, convId, waId);
         if (targetConv) {
-          if (resp.takeover) applyTakeoverToConv(targetConv, resp.takeover, true);
-          else applyTakeoverToConv(targetConv, { wa_id: waId }, true);
+          if (!isIg) {
+            if (resp.takeover) applyTakeoverToConv(targetConv, resp.takeover, true);
+            else applyTakeoverToConv(targetConv, { wa_id: waId }, true);
+          }
           appendClaraReplyToConv(targetConv, resp.body || body, resp.ts);
           setCachedInteractions(list);
           applyFilters(false);
         }
         if (input) input.value = "";
         if (convId) getTakeoverDrafts().delete(String(convId));
-        toast("Mensaje enviado como Clara.", { type: "success" });
+        toast(isIg ? "Mensaje enviado por Instagram Direct." : "Mensaje enviado como Clara.", { type: "success" });
       } catch (err) {
         console.error("Error reply takeover:", err);
         toast(err?.message || "No se pudo enviar el mensaje.", { type: "danger" });

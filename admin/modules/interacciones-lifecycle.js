@@ -2,7 +2,7 @@ import { api } from "./api.js?v=79";
 import { getSessionUser } from "./auth.js?v=83";
 import { switchActiveView } from "./dom.js?v=79";
 import { setActiveStatusFilter } from "./interacciones-state.js";
-import { loadInteracciones } from "./interacciones-load.js?v=3";
+import { loadInteracciones } from "./interacciones-load.js?v=4";
 import { startAutoRefresh, stopAutoRefresh } from "./interacciones-refresh.js";
 import { stopTakeoverPoll } from "./interacciones-takeover-poll.js?v=1";
 import {

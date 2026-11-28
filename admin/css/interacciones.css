@@ -827,6 +827,40 @@ button.interacciones-stat-pill {
   color: #ffffff;
 }
 
+.interacciones-ig-account {
+  margin-top: 8px;
+}
+
+.interacciones-ig-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 11px;
+  border-radius: 14px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #7c2d6c;
+  background: linear-gradient(90deg, rgba(240, 148, 51, 0.12), rgba(188, 24, 136, 0.14));
+  border: 1px solid rgba(188, 24, 136, 0.25);
+}
+
+.interaccion-ig-composer {
+  border-color: rgba(188, 24, 136, 0.35);
+}
+
+.interaccion-ig-hint {
+  color: #833ab4;
+}
+
+.btn-ig-send {
+  background: linear-gradient(45deg, #833ab4, #cc2366, #e6683c);
+  box-shadow: 0 2px 6px rgba(188, 24, 136, 0.28);
+}
+
+.btn-ig-send:hover {
+  background: linear-gradient(45deg, #6d2d99, #b01e57, #cf5830);
+}
+
 @media (max-width: 640px) {
   .interacciones-toolbar {
     flex-direction: column;

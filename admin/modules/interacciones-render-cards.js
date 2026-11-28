@@ -9,7 +9,8 @@ import {
   canUseTakeoverUi,
   buildTakeoverControlsHtml,
   buildTakeoverComposerHtml,
-} from "./interacciones-takeover.js?v=2";
+  buildInstagramComposerHtml,
+} from "./interacciones-takeover.js?v=3";
 
 const MONTH_NAMES = [
   "enero", "febrero", "marzo", "abril", "mayo", "junio",
@@ -58,7 +59,7 @@ export function formatDateHeader(dateStr) {
   return `${dayName} ${d} de ${monthName} de ${y}${prefix}`;
 }
 
-export function renderChatMessages(messages, patientName, waId = null) {
+export function renderChatMessages(messages, patientName, waId = null, isInstagram = false) {
   if (!Array.isArray(messages) || messages.length === 0) {
     return `<div style="text-align: center; font-size: 13px; color: var(--muted);">Sin mensajes registrados.</div>`;
   }
@@ -71,7 +72,9 @@ export function renderChatMessages(messages, patientName, waId = null) {
     .map((m) => {
       const isPatient = m.from === "patient";
       const bubbleClass = isPatient ? "chat-bubble-patient" : "chat-bubble-clara";
-      const senderTitle = isPatient ? resolvedPatientName : "🤖 Clara (Asistente Virtual)";
+      const senderTitle = isPatient
+        ? resolvedPatientName
+        : (isInstagram ? "📸 Kinésica (@kinesicabrude)" : "🤖 Clara (Asistente Virtual)");
       const rawText = String(m.text || "");
       const formattedText = escapeHtml(rawText).replace(/\n/g, "<br>");
       const attachmentHtml = renderAttachmentHtml(m.attachment);
@@ -140,7 +143,9 @@ export function buildInteractionCardHtml(conv, itemIdx, senderName) {
   const showTakeover = canUseTakeoverUi(conv, senderName);
   const takeoverActive = Boolean(conv?.takeover_active);
   const takeoverControlsHtml = showTakeover ? buildTakeoverControlsHtml(conv, convKey) : "";
-  const takeoverComposerHtml = showTakeover ? buildTakeoverComposerHtml(conv, convKey) : "";
+  const takeoverComposerHtml = isInstagram
+    ? buildInstagramComposerHtml(conv, convKey, senderName)
+    : (showTakeover ? buildTakeoverComposerHtml(conv, convKey) : "");
 
   return `
     <article class="interaccion-card ${isAnswered ? "is-answered" : ""} ${isArchived ? "is-archived" : ""} ${takeoverActive ? "is-takeover" : ""}" id="${cardId}">
@@ -181,7 +186,7 @@ export function buildInteractionCardHtml(conv, itemIdx, senderName) {
       </button>
 
       <div class="interaccion-chat-thread" id="${threadId}" hidden>
-        ${renderChatMessages(conv?.messages || [], name, cleanWa)}
+        ${renderChatMessages(conv?.messages || [], name, cleanWa, isInstagram)}
         ${takeoverComposerHtml}
       </div>
     </article>

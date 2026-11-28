@@ -16,5 +16,5 @@ export {
   stopBadgePoll,
 } from "./interacciones-badge.js";
 export { isWithinAutoRefreshHours, showInteraccionesView, hideInteraccionesView } from "./interacciones-lifecycle.js";
-export { loadInteracciones } from "./interacciones-load.js?v=3";
+export { loadInteracciones } from "./interacciones-load.js?v=4";
 export { initInteraccionesModule } from "./interacciones-init.js?v=3";

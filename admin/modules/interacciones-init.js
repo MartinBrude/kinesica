@@ -8,7 +8,7 @@ import {
   setActiveStatusFilter,
 } from "./interacciones-state.js";
 import { refreshInteraccionesPendingBadge } from "./interacciones-badge.js";
-import { loadInteracciones } from "./interacciones-load.js?v=3";
+import { loadInteracciones } from "./interacciones-load.js?v=4";
 import { applyFilters } from "./interacciones-page.js?v=3";
 import { isWithinAutoRefreshHours } from "./interacciones-hours.js";
 import { AUTO_REFRESH_INTERVAL_MS } from "./interacciones-constants.js";

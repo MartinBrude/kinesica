@@ -68,7 +68,25 @@ export function buildTakeoverComposerHtml(conv, convKey) {
         placeholder="Escribí como Clara…" data-wa-id="${wa}" data-conv-id="${id}"></textarea>
       <div class="interaccion-takeover-actions">
         <button type="button" class="btn-takeover-send" data-takeover-action="reply"
-          data-wa-id="${wa}" data-conv-id="${id}">Enviar como Clara</button>
+          data-channel="whatsapp" data-wa-id="${wa}" data-conv-id="${id}">Enviar como Clara</button>
+      </div>
+    </div>`;
+}
+
+export function buildInstagramComposerHtml(conv, convKey, sessionUser) {
+  if (!conv || sessionUser?.role === "colaborador") return "";
+  const rawWa = String(conv?.wa_id || "").trim();
+  if (!rawWa) return "";
+  const wa = escapeHtml(rawWa.startsWith("ig_") ? rawWa : `ig_${rawWa}`);
+  const id = escapeHtml(String(conv?.id || convKey));
+  return `
+    <div class="interaccion-takeover-composer interaccion-ig-composer" data-conv-id="${id}">
+      <p class="interaccion-takeover-hint interaccion-ig-hint">📸 Respondiendo desde <strong>@kinesicabrude</strong> por Instagram Direct (envío en vivo vía Meta API).</p>
+      <textarea class="interaccion-takeover-input" rows="2" maxlength="1000"
+        placeholder="Escribí tu respuesta por Instagram Direct…" data-wa-id="${wa}" data-conv-id="${id}"></textarea>
+      <div class="interaccion-takeover-actions">
+        <button type="button" class="btn-takeover-send btn-ig-send" data-takeover-action="reply"
+          data-channel="instagram" data-wa-id="${wa}" data-conv-id="${id}">Enviar por Instagram</button>
       </div>
     </div>`;
 }

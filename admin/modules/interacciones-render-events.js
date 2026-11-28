@@ -120,11 +120,13 @@ export function bindInteractionEvents(container, {
       if (typeof onTakeoverReply !== "function") return;
       const waId = btn.getAttribute("data-wa-id") || "";
       const convId = btn.getAttribute("data-conv-id") || "";
+      const channel = btn.getAttribute("data-channel") || (waId.startsWith("ig_") ? "instagram" : "whatsapp");
       const composer = btn.closest(".interaccion-takeover-composer");
       const input = composer?.querySelector(".interaccion-takeover-input");
       onTakeoverReply({
         waId,
         convId,
+        channel,
         body: String(input?.value || "").trim(),
         input,
         btn,
