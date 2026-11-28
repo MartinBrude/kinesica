@@ -66,19 +66,19 @@ export const CREATIVOS_PART_13 = [
     "title": "Cabeza adelante, mandíbula apretada",
     "cat": "POSTURA & ATM",
     "group": "columna",
-    "body": "La cabeza adelantada cierra la mandíbula y carga la ATM. Corregimos postura cervical y liberamos la articulación.",
+    "body": "La cabeza adelantada altera la posición mandibular y sobrecarga la ATM. Corregimos postura cervical y liberamos la articulación.",
     "feedUrl": "campanas/feed/catalogo_feed_152_cabeza_adelante_atm.png",
     "storyUrl": "campanas/story/catalogo_story_152_cabeza_adelante_atm.png",
-    "copy": "Cabeza adelante, mandíbula apretada 📱\n\nLa postura con cabeza adelantada cierra la mandíbula y sobrecarga la ATM. Pantalla + estrés = circuito de tensión.\n\nEn Kinésica corregimos la postura cervical y liberamos la articulación para cortar ese patrón.\n\n📍 Charcas 3889, Palermo\n📲 WhatsApp: +54 9 11 3178-1733\n#Postura #ATM #Cervicalgia #RPG #Kinésica"
+    "copy": "Cabeza adelante, mandíbula apretada 📱\n\nLa postura con cabeza adelantada altera la posición mandibular y sobrecarga la ATM. Pantalla + estrés = circuito de tensión.\n\nEn Kinésica corregimos la postura cervical y liberamos la articulación para cortar ese patrón.\n\n📍 Charcas 3889, Palermo\n📲 WhatsApp: +54 9 11 3178-1733\n#Postura #ATM #Cervicalgia #RPG #Kinésica"
   },
   {
     "id": "153_trigemino_atm",
     "title": "¿Dolor eléctrico en la cara al masticar?",
     "cat": "TRIGÉMINO & ATM",
     "group": "columna",
-    "body": "El trigémino conecta mandíbula, sienes y cuello. Evaluamos ATM y cadena cervical cuando el dolor facial parece neuralgia.",
+    "body": "El complejo trigémino-cervical conecta mandíbula, sienes y cuello. Evaluamos ATM y cervicales cuando el dolor facial parece neuralgia.",
     "feedUrl": "campanas/feed/catalogo_feed_153_trigemino_atm.png",
     "storyUrl": "campanas/story/catalogo_story_153_trigemino_atm.png",
-    "copy": "¿Dolor eléctrico en la cara al masticar? ⚡\n\nEl nervio trigémino conecta mandíbula, sienes y cuello. Cuando la ATM o los masticatorios están sobrecargados, el dolor puede sentir “eléctrico” o irradiado a la cara.\n\nEn Kinésica evaluamos el complejo trigémino-cervical con terapia manual de ATM y cadena cervical (sin confundirlo con una neuralgia médica que requiere otro abordaje).\n\n📍 Charcas 3889, Palermo\n📲 WhatsApp: +54 9 11 3178-1733\n#Trigemino #ATM #DolorFacial #Neurodinamia #Kinésica"
+    "copy": "¿Dolor eléctrico en la cara al masticar? ⚡\n\nEl complejo trigémino-cervical conecta funcionalmente mandíbula, sienes y cuello. Cuando la ATM o los masticatorios están sobrecargados, el dolor puede sentirse “eléctrico” o irradiado a la cara.\n\nEn Kinésica evaluamos el complejo trigémino-cervical con terapia manual de ATM y cadena cervical (sin confundirlo con una neuralgia médica que requiere otro abordaje).\n\n📍 Charcas 3889, Palermo\n📲 WhatsApp: +54 9 11 3178-1733\n#Trigemino #ATM #DolorFacial #Neurodinamia #Kinésica"
   }
 ];

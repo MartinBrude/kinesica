@@ -109,14 +109,14 @@ export const CREATIVOS_PART_01 = [
     "body": "Descomprimimos la raíz nerviosa y reequilibramos las cadenas musculares con RPG personalizada antes de considerar operar.",
     "feedUrl": "campanas/feed/catalogo_feed_11_hernia_disco.png",
     "storyUrl": "campanas/story/catalogo_story_11_hernia_disco.png",
-    "copy": "Tener una hernia de disco no es una condena a vivir con dolor ni a operarte. 🛡️\n\nEn más del 80% de los casos, el tratamiento conservador con RPG y terapia manual logra descomprimir el disco y reducir la inflamación de la raíz nerviosa de forma contundente.\n\n👉 Evaluá tu caso con el Lic. Norberto Silvio Brude.\n📍 Charcas 3889, Palermo\n📲 Turnos WhatsApp: +54 9 11 3178-1733\n#HerniaDeDisco #RPG #Columna #Ciática #KinesiologiaPalermo"
+    "copy": "Tener una hernia de disco no es una condena a vivir con dolor ni a operarte. 🛡️\n\nEn más del 80% de los casos, el tratamiento conservador con RPG y terapia manual reduce la sobrecarga mecánica y acompaña la desinflamación de la raíz nerviosa sin necesidad de cirugía.\n\n👉 Evaluá tu caso con el Lic. Norberto Silvio Brude.\n📍 Charcas 3889, Palermo\n📲 Turnos WhatsApp: +54 9 11 3178-1733\n#HerniaDeDisco #RPG #Columna #Ciática #KinesiologiaPalermo"
   },
   {
     "id": "12_alivia_bruxismo",
     "title": "Aliviá el bruxismo de raíz",
     "cat": "ATM & CERVICALES",
     "group": "columna",
-    "body": "Tratamos la causa cervical y postural de tu bruxismo mediante terapia manual intra y extraoral indolora.",
+    "body": "Aliviamos la sobrecarga mandibular, cervical y postural asociada al bruxismo con terapia manual intra y extraoral suave.",
     "feedUrl": "campanas/feed/catalogo_feed_12_alivia_bruxismo.png",
     "storyUrl": "campanas/story/catalogo_story_12_alivia_bruxismo.png",
     "copy": "La placa de descanso protege los dientes, pero la terapia manual desactiva la contractura. 🦷\n\nSi te despertás con mandíbula cansada, ruidos al masticar o dolor de cabeza, el tratamiento de la ATM libera los puntos gatillo de los maseteros y alinea el cuello para aliviar la tensión de raíz.\n\n📍 Charcas 3889, Palermo\n📲 WhatsApp directo: +54 9 11 3178-1733\n#Bruxismo #ATM #TerapiaManual #Cefalea #Kinésica"

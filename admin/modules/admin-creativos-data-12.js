@@ -26,7 +26,7 @@ export const CREATIVOS_PART_12 = [
     "title": "Te despertaste y el cuello no gira",
     "cat": "TORTÍCOLIS",
     "group": "columna",
-    "body": "No fuerzas el movimiento. Evaluamos bloqueo cervical y cadenas para recuperar el giro sin agravar el espasmo.",
+    "body": "No fuerces el movimiento. Evaluamos bloqueo cervical y cadenas para recuperar el giro sin agravar el espasmo.",
     "feedUrl": "campanas/feed/catalogo_feed_136_torticolis_manana.png",
     "storyUrl": "campanas/story/catalogo_story_136_torticolis_manana.png",
     "copy": "Te despertaste y el cuello no gira 😣\n\nLa tortícolis suele ser un espasmo defensivo: el cuerpo “traba” para proteger una zona irritada.\n\nForzar el giro o “hacerse crujir” puede empeorarlo.\nEn Kinésica evaluamos cervicales y cadenas (hombros, dorsal, ATM) para liberar el bloqueo con terapia manual suave.\n\n📍 Charcas 3889, Palermo\n📲 WhatsApp: +54 9 11 3178-1733\n\n#Torticolis #DolorDeCuello #Cervicalgia #Kinésica"
@@ -49,7 +49,7 @@ export const CREATIVOS_PART_12 = [
     "body": "Pueden relacionarse con cervicales o sistema vestibular. Evaluamos con calma antes de forzar el cuello.",
     "feedUrl": "campanas/feed/catalogo_feed_138_mareos.png",
     "storyUrl": "campanas/story/catalogo_story_138_mareos.png",
-    "copy": "Mareos al mover la cabeza 🌀\n\nNo siempre es “presión” ni “ansiedad”.\nA veces el cuello o el sistema del equilibrio estánan señales confusas.\n\nEn Kinésica evaluamos con cuidado: historia, cervicales y estabilidad. Sin maniobras agresivas a ciegas.\n\nSi los mareos son intensos, con vómitos o déficit neurológico, consultá urgencias primero.\n\n📍 Charcas 3889, Palermo\n📲 WhatsApp: +54 9 11 3178-1733\n\n#Mareos #Vertigo #Cervicalgia #Kinésica"
+    "copy": "Mareos al mover la cabeza 🌀\n\nNo siempre es “presión” ni “ansiedad”.\nA veces el cuello o el sistema del equilibrio envían señales confusas.\n\nEn Kinésica evaluamos con cuidado: historia, cervicales y estabilidad. Sin maniobras agresivas a ciegas.\n\nSi los mareos son intensos, con vómitos o déficit neurológico, consultá urgencias primero.\n\n📍 Charcas 3889, Palermo\n📲 WhatsApp: +54 9 11 3178-1733\n\n#Mareos #Vertigo #Cervicalgia #Kinésica"
   },
   {
     "id": "139_esguince_tobillo",
@@ -59,7 +59,7 @@ export const CREATIVOS_PART_12 = [
     "body": "Hielo y reposo no alcanzan. Recuperamos movilidad, propiocepción y carga para que no se repita.",
     "feedUrl": "campanas/feed/catalogo_feed_139_esguince_tobillo.png",
     "storyUrl": "campanas/story/catalogo_story_139_esguince_tobillo.png",
-    "copy": "Tobillo inestable tras el esguince 🦶\n\nEl moretón baja… pero la inseguridad al apoyar suele quedar.\nSin reeducación, el próximo torcedura aparece más fácil.\n\nEn Kinésica trabajamos inflamación, movilidad y propiocepción: que el tobillo vuelva a confiar.\n\n📍 Charcas 3889, Palermo\n📲 WhatsApp: +54 9 11 3178-1733\n\n#Esguince #Tobillo #Rehabilitacion #Kinésica"
+    "copy": "Tobillo inestable tras el esguince 🦶\n\nEl moretón baja… pero la inseguridad al apoyar suele quedar.\nSin reeducación, la próxima torcedura aparece más fácil.\n\nEn Kinésica trabajamos inflamación, movilidad y propiocepción: que el tobillo vuelva a confiar.\n\n📍 Charcas 3889, Palermo\n📲 WhatsApp: +54 9 11 3178-1733\n\n#Esguince #Tobillo #Rehabilitacion #Kinésica"
   },
   {
     "id": "140_elongar_prevenir",

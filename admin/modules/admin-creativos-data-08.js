@@ -9,7 +9,7 @@ export const CREATIVOS_PART_08 = [
     "body": "Suavizamos la articulación y liberamos masticatorios para mover la mandíbula con menos dolor.",
     "feedUrl": "campanas/feed/catalogo_feed_86_cat_artrosis_atm.png",
     "storyUrl": "campanas/story/catalogo_story_86_cat_artrosis_atm.png",
-    "copy": "Artrosis e inflamación de la ATM 🩺\n\nEn Kinésica tratamos artrosis de la atm: articulación y masticatorios.\n\nSesiones 1 a 1 de terapia manual en Palermo.\n\n📍 Charcas 3889, Palermo\n📲 WhatsApp: +54 9 11 3178-1733\n#ArtrosisATM #Mandibula #Kinésica"
+    "copy": "Artrosis e inflamación de la ATM 🩺\n\nEn Kinésica tratamos artrosis de la ATM: articulación y masticatorios.\n\nSesiones 1 a 1 de terapia manual en Palermo.\n\n📍 Charcas 3889, Palermo\n📲 WhatsApp: +54 9 11 3178-1733\n#ArtrosisATM #Mandibula #Kinésica"
   },
   {
     "id": "87_cat_torticolis",
@@ -26,10 +26,10 @@ export const CREATIVOS_PART_08 = [
     "title": "Artrosis y artritis: dolor articular",
     "cat": "ARTROSIS Y ARTRITIS",
     "group": "articulaciones",
-    "body": "Flexibilizamos cápsula y tejidos para bajar la presión sobre el cartílago.",
+    "body": "Flexibilizamos cápsula y tejidos periarticulares para reducir la sobrecarga articular y mejorar la movilidad.",
     "feedUrl": "campanas/feed/catalogo_feed_88_cat_artrosis_artritis.png",
     "storyUrl": "campanas/story/catalogo_story_88_cat_artrosis_artritis.png",
-    "copy": "Artrosis y artritis: dolor articular 🩺\n\nEn Kinésica tratamos artrosis y artritis: cápsula y tejidos periarticulares.\n\nSesiones 1 a 1 de terapia manual en Palermo.\n\n📍 Charcas 3889, Palermo\n📲 WhatsApp: +54 9 11 3178-1733\n#Artrosis #Artritis #Kinésica"
+    "copy": "Artrosis y artritis: dolor articular 🩺\n\nEn Kinésica acompañamos artrosis y artritis (junto al control médico): cápsula, movilidad y tejidos periarticulares.\n\nSesiones 1 a 1 de terapia manual en Palermo.\n\n📍 Charcas 3889, Palermo\n📲 WhatsApp: +54 9 11 3178-1733\n#Artrosis #Artritis #Kinésica"
   },
   {
     "id": "89_cat_hombro_congelado",
@@ -119,6 +119,6 @@ export const CREATIVOS_PART_08 = [
     "body": "Cargar siempre del mismo lado enseña a tu columna a compensar. Lo corregimos antes de que se fije.",
     "feedUrl": "campanas/feed/catalogo_feed_97_mochila_hombro.png",
     "storyUrl": "campanas/story/catalogo_story_97_mochila_hombro.png",
-    "copy": "La mochila de un solo hombro no es inocente 🎒\n\nCargar siempre del mismo lado enseña a tu columna a compensar. En Kinésica corregimos hábitos y reeducamos la postura antes de que duela.\n\n📍 Charcas 3889, Palermo\n📲 WhatsApp: +54 9 11 3178-1733\n#Postura #Estudiantes #EscoliosisFuncional #Kinésica"
+    "copy": "La mochila de un solo hombro no es inocente 🎒\n\nCargar siempre del mismo lado enseña a tu columna a compensar. En Kinésica corregimos hábitos y reeducamos la postura antes de que duela.\n\n📍 Charcas 3889, Palermo\n📲 WhatsApp: +54 9 11 3178-1733\n#Postura #Estudiantes #SaludPostural #Kinésica"
   }
 ];

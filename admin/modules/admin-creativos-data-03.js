@@ -46,7 +46,7 @@ export const CREATIVOS_PART_03 = [
     "title": "¿No podés abrir bien la boca?",
     "cat": "ATM BLOQUEADA",
     "group": "columna",
-    "body": "El traba o la apertura limitada pide evaluación urgente de la ATM. Con terapia manual suave restauramos el deslizamiento articular sin forzar.",
+    "body": "El trabado o la apertura limitada pide evaluación oportuna de la ATM. Con terapia manual suave restauramos el deslizamiento articular sin forzar.",
     "feedUrl": "campanas/feed/catalogo_feed_30_boca_trabada.png",
     "storyUrl": "campanas/story/catalogo_story_30_boca_trabada.png",
     "copy": "¿No podés abrir bien la boca o se te “traba”? 🛑\n\nLa apertura limitada o el bloqueo de la ATM no se resuelve forzando. Hay que restaurar el deslizamiento articular con técnica suave y precisa.\n\nEn Kinésica evaluamos la articulación, los masticatorios y el cuello para devolver movilidad sin dolor.\n\n📍 Charcas 3889, Palermo\n📲 Turnos WhatsApp: +54 9 11 3178-1733\n#ATMBloqueada #Trismo #Mandibula #KinesiologiaPalermo #Kinésica"

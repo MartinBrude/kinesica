@@ -119,6 +119,6 @@ export const CREATIVOS_PART_07 = [
     "body": "Restauramos el deslizamiento articular con terapia manual suave, sin forzar.",
     "feedUrl": "campanas/feed/catalogo_feed_85_cat_desplazamiento_disco_atm.png",
     "storyUrl": "campanas/story/catalogo_story_85_cat_desplazamiento_disco_atm.png",
-    "copy": "Desplazamiento del disco de la ATM 🩺\n\nEn Kinésica tratamos desplazamiento del disco de la atm: deslizamiento articular suave.\n\nSesiones 1 a 1 de terapia manual en Palermo.\n\n📍 Charcas 3889, Palermo\n📲 WhatsApp: +54 9 11 3178-1733\n#ATM #DiscoArticular #Kinésica"
+    "copy": "Desplazamiento del disco de la ATM 🩺\n\nEn Kinésica tratamos desplazamiento del disco de la ATM: deslizamiento articular suave.\n\nSesiones 1 a 1 de terapia manual en Palermo.\n\n📍 Charcas 3889, Palermo\n📲 WhatsApp: +54 9 11 3178-1733\n#ATM #DiscoArticular #Kinésica"
   }
 ];

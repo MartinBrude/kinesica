@@ -106,10 +106,10 @@ export const CREATIVOS_PART_10 = [
     "title": "El bolso siempre del mismo lado te desvía",
     "cat": "CARGA ASIMÉTRICA",
     "group": "filosofia",
-    "body": "Una carga fija enseña escoliosis funcional. Alternamos hábitos y reeducamos la postura.",
+    "body": "Una carga fija favorece asimetrías posturales y sobrecargas musculares. Alternamos hábitos y reeducamos la postura.",
     "feedUrl": "campanas/feed/catalogo_feed_120_bolso_lado.png",
     "storyUrl": "campanas/story/catalogo_story_120_bolso_lado.png",
-    "copy": "El bolso siempre del mismo lado te desvía 👜\n\nUna carga fija enseña escoliosis funcional. Alternamos hábitos y reeducamos la postura.\n\n📍 Charcas 3889, Palermo\n📲 WhatsApp: +54 9 11 3178-1733\n#Postura #CargaAsimetrica #Escoliosis #Kinésica"
+    "copy": "El bolso siempre del mismo lado te desvía 👜\n\nUna carga fija favorece asimetrías posturales y sobrecargas musculares. Alternamos hábitos y reeducamos la postura.\n\n📍 Charcas 3889, Palermo\n📲 WhatsApp: +54 9 11 3178-1733\n#Postura #CargaAsimetrica #SaludPostural #Kinésica"
   },
   {
     "id": "121_agacharse_zapatos",

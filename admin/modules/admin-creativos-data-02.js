@@ -39,7 +39,7 @@ export const CREATIVOS_PART_02 = [
     "body": "Liberamos la presión articular y devolvemos la movilidad a los tejidos circundantes mediante terapia manual especializada.",
     "feedUrl": "campanas/feed/catalogo_feed_16_artrosis.png",
     "storyUrl": "campanas/story/catalogo_story_16_artrosis.png",
-    "copy": "Tener artrosis no significa resignarse a vivir con dolor. 🛡️\n\nEl desgaste articular duele cuando los músculos y fascias de alrededor se contracturan y aumentan la presión sobre el cartílago. La terapia manual flexibiliza la cápsula y mejora la nutrición articular para que te muevas con libertad.\n\n📍 Charcas 3889, Palermo\n📲 Turnos WhatsApp: +54 9 11 3178-1733\n#Artrosis #SaludArticular #TerapiaManual #KinesiologiaPalermo #Kinésica"
+    "copy": "Tener artrosis no significa resignarse a vivir con dolor. 🛡️\n\nEl desgaste articular suele doler más cuando los músculos y fascias de alrededor se contracturan y aumentan la sobrecarga sobre la articulación y el hueso subcondral. La terapia manual flexibiliza la cápsula y mejora la movilidad para que te muevas con libertad.\n\n📍 Charcas 3889, Palermo\n📲 Turnos WhatsApp: +54 9 11 3178-1733\n#Artrosis #SaludArticular #TerapiaManual #KinesiologiaPalermo #Kinésica"
   },
   {
     "id": "18_primera_sesion",
