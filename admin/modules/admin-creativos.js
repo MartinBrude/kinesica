@@ -14,7 +14,7 @@ import {
 import { ensureColaUiPaint } from "./admin-creativos-cola-ui.js?v=4";
 import { initListaUI } from "./admin-creativos-lista.js?v=12";
 import { bindImageTextUi } from "./admin-creativos-image-text.js?v=7";
-import { CREATIVOS_DATA } from "./admin-creativos-data.js?v=1";
+import { CREATIVOS_DATA } from "./admin-creativos-data.js?v=2";
 import {
   setActiveFormat,
   setActiveFilter,
