@@ -61,7 +61,17 @@ interacciones_ensure_schema($pdo);
 $insertResults = [];
 
 foreach ($payload['entry'] ?? [] as $entry) {
-    foreach ($entry['messaging'] ?? [] as $msg) {
+    $items = [];
+    foreach ($entry['messaging'] ?? [] as $m) {
+        if (is_array($m)) $items[] = $m;
+    }
+    foreach ($entry['changes'] ?? [] as $ch) {
+        if (is_array($ch) && ($ch['field'] ?? '') === 'messages' && is_array($ch['value'] ?? null)) {
+            $items[] = $ch['value'];
+        }
+    }
+
+    foreach ($items as $msg) {
         $senderId = (string) ($msg['sender']['id'] ?? '');
         $recipientId = (string) ($msg['recipient']['id'] ?? '');
         $message = $msg['message'] ?? null;
@@ -69,8 +79,15 @@ foreach ($payload['entry'] ?? [] as $entry) {
 
         $mid = (string) ($message['mid'] ?? '');
         $text = trim((string) ($message['text'] ?? ''));
-        $tsMs = (int) ($msg['timestamp'] ?? (time() * 1000));
-        $tsSec = (int) floor($tsMs / 1000);
+        $tsRaw = (int) ($msg['timestamp'] ?? 0);
+        // Meta envía timestamp en milisegundos (13 dígitos) o segundos (10 dígitos según versión).
+        if ($tsRaw > 100000000000) {
+            $tsSec = (int) floor($tsRaw / 1000);
+        } elseif ($tsRaw > 1000000000) {
+            $tsSec = $tsRaw;
+        } else {
+            $tsSec = time();
+        }
 
         $attachments = $message['attachments'] ?? [];
         if ($text === '' && !empty($attachments)) {
@@ -79,7 +96,7 @@ foreach ($payload['entry'] ?? [] as $entry) {
         }
         if ($text === '') continue;
 
-        $isFromUs = ($myIgId !== '' && $senderId === $myIgId);
+        $isFromUs = !empty($message['is_echo']) || ($myIgId !== '' && $senderId === $myIgId);
         $direction = $isFromUs ? 'clara' : 'patient';
         $contactId = $isFromUs ? $recipientId : $senderId;
 
